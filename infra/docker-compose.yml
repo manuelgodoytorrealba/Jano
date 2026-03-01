@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16
+    container_name: jano_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jano
+      POSTGRES_PASSWORD: jano123
+      POSTGRES_DB: jano
+    ports:
+      - "5432:5432"
+    volumes:
+      - jano_pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: jano_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+
+volumes:
+  jano_pgdata:
