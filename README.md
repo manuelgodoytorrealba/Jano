@@ -1,33 +1,65 @@
+
+---
+
 # JANO
 
-Museo digital curado + herramienta académica premium.
+Digital curated museum + academic relational exploration platform.
 
-JANO es una plataforma híbrida entre:
+JANO is a hybrid platform between:
 
-- Un museo digital curado (contenido 100% seleccionado manualmente)
-- Una herramienta académica tipo Wikipedia + Genius
-- Un sistema de visualización relacional tipo Obsidian Graph View
+* A manually curated digital museum
+* An academic knowledge tool (Wikipedia × Genius)
+* A relational visualization system inspired by Obsidian Graph View
 
-La idea central es estudiar el arte a través de sus conexiones.
-
----
-
-# 🏗 Estado actual (MVP funcional)
-
-✔ Base de datos PostgreSQL  
-✔ Prisma 7 configurado  
-✔ Migraciones funcionando  
-✔ Seed inicial  
-✔ Backend NestJS con endpoints REST  
-✔ Frontend Angular (standalone + SSR ready)  
-✔ Vista split (obra / información)  
-✔ Relaciones bidireccionales (incoming + outgoing)  
-✔ Vista de grafo (layout circular básico)  
-✔ Navegación entre entidades desde el grafo  
+The core idea: **study art through its connections.**
 
 ---
 
-# 📂 Estructura del proyecto
+# 🏗 Current Status (Functional MVP)
+
+* PostgreSQL database configured
+* Prisma 7 ORM integrated
+* Migrations working
+* Initial seed implemented
+* NestJS REST API
+* Angular standalone frontend (SSR-ready architecture)
+* Split entity layout (image + information panel)
+* Bidirectional relationships (incoming / outgoing)
+* Basic circular graph visualization (SVG)
+* Graph-driven entity navigation
+
+---
+
+# 🧠 Concept
+
+Each node in the system is an **Entity**.
+
+An entity can represent:
+
+* ARTWORK
+* CONCEPT
+* PERSON
+* MOVEMENT
+* etc.
+
+Entities are connected through typed relationships.
+
+Example:
+
+```
+Artwork A -- EXPLORES --> Concept B
+```
+
+The system allows:
+
+* Viewing outgoing relations
+* Viewing incoming relations
+* Graph visualization of connections
+* Navigation between related entities
+
+---
+
+# 🏛 Architecture Overview
 
 ```
 Jano/
@@ -35,125 +67,149 @@ Jano/
 ├── backend/
 │   └── api/          → NestJS + Prisma + PostgreSQL
 │
-└── frontend/         → Angular standalone app
+├── frontend/         → Angular (standalone + SSR-ready)
+│
+└── infra/            → Docker compose (database + services)
 ```
 
 ---
 
-# 🧠 Concepto técnico
+# 🗄 Database Layer
 
-Cada entidad puede ser:
+### Stack
 
-- ARTWORK
-- CONCEPT
-- PERSON
-- MOVEMENT
-- etc.
+* PostgreSQL
+* Prisma 7
 
-Las entidades se conectan mediante relaciones tipadas.
+### Core Tables
 
-Ejemplo:
+* `Entity`
+* `Relation`
 
+The data model is relational and connection-driven.
+
+Each relation stores:
+
+* source entity
+* target entity
+* relation type
+* metadata
+
+---
+
+# 🚀 Running the Project
+
+You can run it either:
+
+* Locally (Node + local PostgreSQL)
+* Or via Docker (recommended for clean setup)
+
+---
+
+# 🐳 — Docker 
+
+From project root:
+
+```bash
+docker compose -f infra/docker-compose.yml up --build
 ```
-Obra demo -- EXPLORES --> Tiempo
-```
 
-El sistema permite:
+Make sure Docker Desktop is running or Docker is runnig on your device.
 
-- Ver relaciones salientes
-- Ver relaciones entrantes
-- Visualizar conexiones en grafo
-- Navegar entre entidades conectadas
+This will start:
+
+* PostgreSQL
+* Adminer (if configured)
 
 ---
 
-# 🗄 Base de datos
-
-Tecnologías:
-
-- PostgreSQL
-- Prisma 7
-
-Tablas principales:
-
-- Entity
-- Relation
-
----
-
-# 🚀 Cómo correr el proyecto
-
----
+# 💻  — Local Development
 
 ## 1️⃣ Backend
 
-Ir a:
+Navigate to:
 
-```
+```bash
 cd backend/api
 ```
 
-Instalar dependencias:
+Install dependencies:
 
-```
+```bash
 npm install
 ```
 
-Asegurarse de tener PostgreSQL corriendo.
+Make sure your `.env` contains:
 
-Ejecutar migraciones:
-
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/jano?schema=public
 ```
+
+Run migrations:
+
+```bash
 npx prisma migrate dev
 ```
 
-Ejecutar seed:
+Generate Prisma client (important):
 
+```bash
+npx prisma generate
 ```
+
+Seed database:
+
+```bash
 npx prisma db seed
 ```
 
-Levantar servidor:
+Start NestJS in dev mode:
 
-```
+```bash
 npm run start:dev
 ```
 
-Backend corre en:
+Backend runs on:
 
 ```
 http://localhost:3000
 ```
 
-Probar:
+Test:
 
 ```
 http://localhost:3000/entities
+```
+
+If database is empty, this endpoint returns:
+
+```
+[]
 ```
 
 ---
 
 ## 2️⃣ Frontend
 
-Ir a:
+Navigate to:
 
-```
+```bash
 cd frontend
 ```
 
-Instalar dependencias:
+Install dependencies:
 
-```
+```bash
 npm install
 ```
 
-Levantar servidor:
+Start Angular:
 
-```
+```bash
 npm start
 ```
 
-Frontend corre en:
+Frontend runs on:
 
 ```
 http://localhost:4200
@@ -161,7 +217,7 @@ http://localhost:4200
 
 ---
 
-# 🌐 Endpoints principales
+# 🌐 API Endpoints
 
 ```
 GET /entities
@@ -171,84 +227,351 @@ GET /entities/:slug/graph
 
 ---
 
-# 🖥 UI
+# 🖥 UI Overview
 
 ## Home
 
-Lista todas las entidades.
+Displays all entities.
 
-## Entity view
+## Entity View
 
-Layout split:
+Split layout:
 
-LEFT → imagen (obra o placeholder)  
-RIGHT → información, relaciones, grafo  
+LEFT → Artwork image or placeholder
+RIGHT → Metadata + relationships
 
-Incluye:
+Includes:
 
-- Relaciones salientes
-- Relaciones entrantes
-- Botón para visualizar grafo
+* Outgoing relations
+* Incoming relations
+* Graph visualization toggle
 
 ## Graph View
 
-- Nodo central
-- Relaciones circulares
-- Click en nodo navega a la entidad
-- Layout SVG básico (circular)
+* Central node
+* Circular layout
+* SVG-based rendering
+* Click on node navigates to entity
+* Bidirectional relationship support
 
 ---
 
-# 🔬 Qué falta por implementar
+# 🧩 Tech Stack
 
-- Panel Curator (CRUD desde UI)
-- Mejor layout de grafo (force-directed real)
-- Estilos visuales más refinados
-- Filtros por tipo
-- Autocomplete de búsqueda
-- Paginación
-- Sistema de autenticación (curadores)
-- Mejor sistema de imágenes para CONCEPT
+## Backend
+
+* NestJS
+* Prisma 7
+* PostgreSQL
+* TypeScript
+
+## Frontend
+
+* Angular (Standalone Architecture)
+* Signals
+* Modern Control Flow (`@if`, `@for`)
+* RxJS
+* SVG rendering for graph
+
+## Infra
+
+* Docker
+* Docker Compose
 
 ---
 
-# 🧩 Stack tecnológico
+# ⚙ Requirements
 
-Backend:
-- NestJS
-- Prisma 7
-- PostgreSQL
+* Node 18+
+* PostgreSQL (if running locally)
+* Docker (recommended)
+* npm
+
+---
+
+# 🔬 Roadmap (Next Iteration)
+
+* Curator Panel (Admin CRUD UI)
+* Authentication system
+* Advanced graph algorithm (force-directed layout)
+* Filtering by entity type
+* Search + autocomplete
+* Pagination
+* Improved visual identity
+* Image storage strategy
+* Production Docker setup
+
+---
+
+# 🎯 Vision
+
+JANO is not a list-based catalog.
+
+It is a **relational knowledge system**.
+
+A visual network of cultural thought.
+
+An academic-grade exploration tool built with modern web architecture.
+
+---
+
+# 📌 Notes for Developers
+
+* After changing `schema.prisma`, always run:
+
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
+
+* If Prisma client errors occur, try:
+
+```bash
+rm -rf node_modules
+npm install
+npx prisma generate
+```
+
+* If `/entities` returns `[]`, database is empty.
+
+---
+
+---
+
+
+# 🗄 Database Inspection & Management
+
+During development, you can inspect and manage the database using the following tools.
+
+---
+
+## 🥇 Prisma Studio (Recommended)
+
+Prisma Studio provides a visual interface to explore and edit your database.
+
+From the backend folder:
+
+```bash
+cd backend/api
+npx prisma studio
+```
+
+This will open:
+
+```
+http://localhost:5555
+```
+
+With Prisma Studio you can:
+
+* View all tables
+* Create, edit, and delete records
+* Filter and search data
+* Inspect relationships
+
+This is especially useful before implementing the Curator Panel UI.
+
+---
+
+## 🥈 Adminer (If using Docker)
+
+If the Docker stack includes Adminer, it is typically available at:
+
+```
+http://localhost:8080
+```
+
+Connection settings:
+
+* System: PostgreSQL
+* Server: `db` (if using Docker network) or `localhost`
+* Username: defined in docker-compose
+* Password: defined in docker-compose
+* Database: `jano`
+
+Adminer provides a more traditional SQL-based interface.
+
+---
+
+## 🥉 PostgreSQL CLI (Advanced)
+
+You can also connect directly via terminal.
+
+If using Docker:
+
+```bash
+docker exec -it <db_container_name> psql -U postgres -d jano
+```
+
+If using local PostgreSQL:
+
+```bash
+psql -U postgres -d jano
+```
+
+Common commands:
+
+```sql
+\dt
+SELECT * FROM "Entity";
+SELECT * FROM "Relation";
+```
+
+---
+
+## ⚠ Important Notes
+
+* If `/entities` returns `[]`, the database is empty.
+* After modifying `schema.prisma`, always run:
+
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
+
+* If Prisma Client errors occur, regenerate it:
+
+```bash
+npx prisma generate
+```
+
+---
+
+Perfect 👌 here’s a **clean, professional Data Flow & Architecture Diagram section** you can append to your README.
+
+---
+
+# 🔄 Data Flow & Architecture
+
+JANO follows a layered architecture with a clear separation of concerns between frontend, backend, and database.
+
+---
+
+## 🧩 High-Level Architecture
+
+```
+Browser (Angular Frontend)
+        │
+        │ HTTP (REST)
+        ▼
+NestJS API (Backend)
+        │
+        │ Prisma ORM
+        ▼
+PostgreSQL Database
+```
+
+---
+
+## 📡 Request Flow Example
+
+### Example: `GET /entities`
+
+1. User navigates to the Home page.
+2. Angular sends an HTTP request:
+
+```
+GET http://localhost:3000/entities
+```
+
+3. NestJS:
+
+   * Receives request in `EntitiesController`
+   * Calls `EntitiesService`
+   * Uses `PrismaService`
+4. Prisma executes a SQL query against PostgreSQL.
+5. Database returns rows.
+6. NestJS serializes the response.
+7. Angular renders the list of entities.
+
+---
+
+## 🧠 Graph View Data Flow
+
+When visiting:
+
+```
+GET /entities/:slug/graph
+```
+
+The backend:
+
+* Fetches the central entity
+* Retrieves outgoing relations
+* Retrieves incoming relations
+* Returns a structured graph payload
 
 Frontend:
-- Angular (standalone components)
-- RxJS
-- Control flow moderno (@if, @for)
-- Signals
-- SVG para visualización de grafo
+
+* Parses graph response
+* Renders SVG nodes
+* Calculates circular layout
+* Enables navigation on node click
 
 ---
 
-# ⚙ Requisitos
+## 🗄 Backend Layer Responsibilities
 
-- Node 18+
-- PostgreSQL local
-- npm
+### Controller Layer
+
+Handles routing and HTTP interface.
+
+### Service Layer
+
+Contains business logic and orchestration.
+
+### Prisma Layer
+
+Responsible for database access and query execution.
 
 ---
 
-# 📈 Próxima iteración
+## 🎨 Frontend Layer Responsibilities
 
-1. Curator Panel
-2. Edición de relaciones desde UI
-3. Mejor algoritmo de grafo
-4. Preparar despliegue (Docker + producción)
+### UI Layer
+
+* Rendering components
+* Layout logic
+* Graph visualization (SVG)
+
+### Data Layer
+
+* HTTP requests via Angular services
+* State management (Signals / RxJS)
+* Entity navigation
 
 ---
 
-# 🎯 Visión
+## 📦 Separation of Concerns
 
-JANO no es solo un catálogo.
+| Layer      | Responsibility       |
+| ---------- | -------------------- |
+| Angular    | UI & interaction     |
+| NestJS     | API & business logic |
+| Prisma     | Database abstraction |
+| PostgreSQL | Data persistence     |
 
-Es una red de pensamiento visual.
-Un sistema de conexiones culturales.
-Una herramienta para estudiar el arte desde la relación, no desde la lista.
+---
+
+## 🚀 Scalability Considerations
+
+The architecture allows:
+
+* Replacing REST with GraphQL (future)
+* Adding authentication layer
+* Deploying backend independently
+* Moving database to managed cloud provider
+* Scaling graph algorithm independently
+
+---
+
+## 🔮 Future Architectural Evolution
+
+* Authentication & authorization (curator roles)
+* Caching layer (Redis)
+* Graph algorithm optimization
+* Image storage abstraction (S3 or similar)
+* Docker production orchestration
+
+---
+
