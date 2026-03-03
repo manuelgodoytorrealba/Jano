@@ -3,7 +3,7 @@ import { EntitiesService } from './entities.service';
 
 @Controller('entities')
 export class EntitiesController {
-  constructor(private service: EntitiesService) {}
+  constructor(private service: EntitiesService) { }
 
   @Get()
   list() {
@@ -18,5 +18,10 @@ export class EntitiesController {
   @Get(':slug/graph')
   graph(@Param('slug') slug: string) {
     return this.service.graphBySlug(slug);
+  }
+
+  @Get(':slug/preview')
+  preview(@Param('slug') slug: string) {
+    return this.service.previewBySlug(slug);
   }
 }

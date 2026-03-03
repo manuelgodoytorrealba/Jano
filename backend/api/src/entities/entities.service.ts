@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class EntitiesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   list() {
     return this.prisma.entity.findMany({
@@ -90,5 +90,30 @@ export class EntitiesService {
     }));
 
     return { centerId: center.id, nodes, edges };
+  }
+
+  async previewBySlug(slug: string) {
+    const e = await this.prisma.entity.findUnique({
+      where: { slug },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        type: true,
+        summary: true,
+        status: true,
+        contentLevel: true,
+        startYear: true,
+        endYear: true,
+        mediaLinks: {
+          take: 1,
+          where: { role: 'PRIMARY' as any },
+          select: { media: { select: { url: true, alt: true } } },
+        },
+      },
+    });
+
+    if (!e) throw new NotFoundException('Entity not found');
+    return e;
   }
 }

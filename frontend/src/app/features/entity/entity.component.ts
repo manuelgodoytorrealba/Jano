@@ -1,15 +1,17 @@
+// frontend/src/app/features/entity/entity.component.ts
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { map, distinctUntilChanged, switchMap, shareReplay } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { GraphComponent } from './graph.component';
+import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 
 @Component({
   standalone: true,
   selector: 'app-entity',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, RouterLink, GraphComponent],
+  imports: [AsyncPipe, RouterLink, GraphComponent, RichTextComponent],
   template: `
     @if (entity$ | async; as entity) {
       <div class="split">
@@ -65,12 +67,16 @@ import { GraphComponent } from './graph.component';
           </header>
 
           @if (entity.summary) {
-            <p class="summary">{{ entity.summary }}</p>
+            <p class="summary">
+              <app-rich-text [text]="entity.summary"></app-rich-text>
+            </p>
           }
 
           @if (entity.content) {
             <h3 class="section">Ensayo</h3>
-            <p class="content">{{ entity.content }}</p>
+            <div class="content">
+              <app-rich-text [text]="entity.content"></app-rich-text>
+            </div>
           }
 
           @if (showGraph()) {
@@ -102,12 +108,18 @@ import { GraphComponent } from './graph.component';
               @if (entity.artist.links) { <li><strong>Links:</strong> {{ entity.artist.links }}</li> }
             </ul>
             @if (entity.artist.bioShort) {
-              <p class="content">{{ entity.artist.bioShort }}</p>
+              <div class="content">
+                <app-rich-text [text]="entity.artist.bioShort"></app-rich-text>
+              </div>
             }
           } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
-            <p class="content">{{ entity.concept.definition }}</p>
+            <div class="content">
+              <app-rich-text [text]="entity.concept.definition"></app-rich-text>
+            </div>
           } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
-            <p class="content">{{ entity.period.definition }}</p>
+            <div class="content">
+              <app-rich-text [text]="entity.period.definition"></app-rich-text>
+            </div>
           } @else {
             <p class="muted">Sin ficha específica para este tipo.</p>
           }
@@ -159,8 +171,10 @@ import { GraphComponent } from './graph.component';
                 <li class="relation">
                   <span class="rel-type">{{ r.type }}</span>
                   <span class="arrow">→</span>
-                  <a class="rel-link" [routerLink]="['/entity', r.to.slug]">{{ r.to.title }}</a>
-                  @if (r.justification) { <span class="note">— {{ r.justification }}</span> }
+                  <a class="rel-link" [routerLink]="['/entity', r.to.slug]">
+                    {{ r.to.title }}
+                  </a>
+                  @if (r.justification) { <span class="note">— <app-rich-text [text]="r.justification"></app-rich-text></span> }
                   @else if (r.weight !== null && r.weight !== undefined) { <span class="note">— peso: {{ r.weight }}</span> }
                 </li>
               }
@@ -176,8 +190,10 @@ import { GraphComponent } from './graph.component';
                 <li class="relation">
                   <span class="rel-type">{{ r.type }}</span>
                   <span class="arrow">←</span>
-                  <a class="rel-link" [routerLink]="['/entity', r.from.slug]">{{ r.from.title }}</a>
-                  @if (r.justification) { <span class="note">— {{ r.justification }}</span> }
+                  <a class="rel-link" [routerLink]="['/entity', r.from.slug]">
+                    {{ r.from.title }}
+                  </a>
+                  @if (r.justification) { <span class="note">— <app-rich-text [text]="r.justification"></app-rich-text></span> }
                   @else if (r.weight !== null && r.weight !== undefined) { <span class="note">— peso: {{ r.weight }}</span> }
                 </li>
               }
@@ -251,6 +267,7 @@ import { GraphComponent } from './graph.component';
     .badge {
       font-size: 12px; padding: 4px 10px; border-radius: 999px;
       border: 1px solid #e6e6e6; background: #fff; color: #444;
+      text-transform: uppercase; letter-spacing: .06em;
     }
 
     .years {
@@ -318,11 +335,12 @@ import { GraphComponent } from './graph.component';
       color: #111;
       text-decoration: none;
       border-bottom: 1px solid transparent;
-      font-weight: 600;
+      font-weight: 700;
     }
     .rel-link:hover { border-bottom-color: #111; }
 
     .note { color: #666; font-size: 13px; }
+    .note app-rich-text { display: inline; }
 
     .quote {
       margin: 6px 0 12px;
@@ -353,7 +371,6 @@ export class EntityComponent {
     this.showGraph.update((v) => !v);
   }
 
-  // Helper: media principal (role PRIMARY, pero por ahora tomamos el primero)
   primaryMedia(entity: any) {
     return entity?.mediaLinks?.[0]?.media ?? null;
   }
