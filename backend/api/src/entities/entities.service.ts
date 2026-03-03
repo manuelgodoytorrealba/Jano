@@ -9,6 +9,13 @@ export class EntitiesService {
     return this.prisma.entity.findMany({
       take: 50,
       orderBy: { createdAt: 'desc' },
+      include: {
+        mediaLinks: {
+          include: { media: true },
+          where: { role: 'PRIMARY' as any },
+          take: 1,
+        },
+      },
     });
   }
 
@@ -16,8 +23,32 @@ export class EntitiesService {
     const entity = await this.prisma.entity.findUnique({
       where: { slug },
       include: {
-        outgoing: { include: { to: true } },
-        incoming: { include: { from: true } },
+        // details por tipo
+        artwork: true,
+        artist: true,
+        concept: true,
+        period: true,
+
+        // media + licencia
+        mediaLinks: {
+          include: { media: true },
+        },
+
+        // colaboradores
+        contributors: true,
+
+        // bibliografía
+        sourceRefs: {
+          include: { source: true },
+        },
+
+        // grafo
+        outgoing: {
+          include: { to: true },
+        },
+        incoming: {
+          include: { from: true },
+        },
       },
     });
 
@@ -54,8 +85,8 @@ export class EntitiesService {
       from: r.fromId,
       to: r.toId,
       type: r.type,
-      note: r.note,
       weight: r.weight,
+      justification: r.justification,
     }));
 
     return { centerId: center.id, nodes, edges };

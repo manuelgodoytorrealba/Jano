@@ -4,46 +4,223 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  
 }
 
 enum EntityType {
   ARTWORK
   ARTIST
-  MOVEMENT
   CONCEPT
+  MOVEMENT
+  PERIOD
   TEXT
+  PLACE
+}
+
+enum EntityStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+}
+
+enum ContentLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum MediaKind {
+  IMAGE
+}
+
+enum MediaRole {
+  PRIMARY
+}
+
+enum SourceType {
+  BOOK
+  ARTICLE
+  WEBSITE
+  CATALOG
+  PAPER
 }
 
 model Entity {
-  id          String     @id @default(cuid())
-  type        EntityType
-  title       String
-  slug        String     @unique
-  summary     String?
-  content     String?    // markdown/html para textos críticos
-  startYear   Int?       // límite temporal (inicio)
-  endYear     Int?       // límite temporal (fin)
-  metadata    Json?      // técnica, medidas, museo, etc.
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id           String       @id @default(cuid())
+  type         EntityType
+  title        String
+  slug         String       @unique
+  summary      String?
+  content      String?
+  contentLevel ContentLevel?
+  status       EntityStatus @default(DRAFT)
 
-  outgoing    Relation[] @relation("outgoing")
-  incoming    Relation[] @relation("incoming")
+  startYear    Int?
+  endYear      Int?
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Graph
+  outgoing     Relation[]   @relation("outgoing")
+  incoming     Relation[]   @relation("incoming")
+
+  // Media (1..n)
+  mediaLinks   EntityMedia[]
+
+  // Sources
+  sourceRefs   SourceRef[]
+
+  // Internal notes
+  curatorNotes CuratorNote[]
+
+  // Collaborators / contributors
+  contributors Contributor[]
+
+  // Type-specific details (1..1, optional)
+  artwork      ArtworkDetails?
+  artist       ArtistDetails?
+  concept      ConceptDetails?
+  period       PeriodDetails?
 }
 
 model Relation {
-  id        String  @id @default(cuid())
-  fromId    String
-  toId      String
-  type      String  // "CREATED_BY", "EXPLORES", "BELONGS_TO", etc.
-  weight    Float?  // opcional: fuerza de relación
-  note      String? // por qué está conectada
+  id            String  @id @default(cuid())
+  fromId        String
+  toId          String
+  type          String  // "CREATED_BY", "REPRESENTS_CONCEPT", ...
+  weight        Float?
+  justification String?
 
-  from      Entity  @relation("outgoing", fields: [fromId], references: [id])
-  to        Entity  @relation("incoming", fields: [toId], references: [id])
+  from          Entity  @relation("outgoing", fields: [fromId], references: [id])
+  to            Entity  @relation("incoming", fields: [toId], references: [id])
 
   @@index([fromId])
   @@index([toId])
   @@index([type])
+}
+
+model Media {
+  id        String    @id @default(cuid())
+  url       String
+  kind      MediaKind @default(IMAGE)
+
+  alt       String?
+  source    String?  // where it comes from (page/museum/etc)
+  photoBy   String?  // photographer
+  license   String?  // license type
+
+  createdAt DateTime  @default(now())
+
+  entities  EntityMedia[]
+}
+
+model EntityMedia {
+  id       String    @id @default(cuid())
+  entityId String
+  mediaId  String
+  role     MediaRole @default(PRIMARY)
+
+  entity   Entity    @relation(fields: [entityId], references: [id])
+  media    Media     @relation(fields: [mediaId], references: [id])
+
+  @@index([entityId])
+  @@index([mediaId])
+}
+
+model Source {
+  id        String     @id @default(cuid())
+  type      SourceType
+  author    String?
+  title     String
+  publisher String?
+  year      Int?
+  url       String?
+
+  createdAt DateTime   @default(now())
+
+  refs      SourceRef[]
+}
+
+model SourceRef {
+  id       String @id @default(cuid())
+  entityId String
+  sourceId String
+
+  page     String?
+  quote    String?
+  note     String?
+
+  entity   Entity @relation(fields: [entityId], references: [id])
+  source   Source @relation(fields: [sourceId], references: [id])
+
+  @@index([entityId])
+  @@index([sourceId])
+}
+
+model CuratorNote {
+  id        String   @id @default(cuid())
+  entityId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  entity    Entity   @relation(fields: [entityId], references: [id])
+
+  @@index([entityId])
+}
+
+model Contributor {
+  id       String @id @default(cuid())
+  entityId String
+
+  name     String
+  role     String // curator | advisor | restorer | composer | ...
+  note     String?
+
+  entity   Entity  @relation(fields: [entityId], references: [id])
+
+  @@index([entityId])
+}
+
+model ArtworkDetails {
+  entityId      String @id
+  authorNation  String?
+
+  technique     String?
+  materials     String?
+  dimensions    String?
+
+  location      String? // museum/gallery/current location
+  collection    String?
+  state         String? // restored, destroyed, unfinished...
+
+  entity        Entity @relation(fields: [entityId], references: [id])
+}
+
+model ArtistDetails {
+  entityId     String @id
+
+  country      String?
+  city         String?
+  birthYear    Int?
+  deathYear    Int?
+
+  disciplines  String? // simple string list for now
+  bioShort     String?
+  links        String? // simple string list for now
+
+  entity       Entity @relation(fields: [entityId], references: [id])
+}
+
+model ConceptDetails {
+  entityId   String @id
+  definition String?
+
+  entity     Entity @relation(fields: [entityId], references: [id])
+}
+
+model PeriodDetails {
+  entityId   String @id
+  definition String?
+
+  entity     Entity @relation(fields: [entityId], references: [id])
 }
