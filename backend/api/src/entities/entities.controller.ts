@@ -1,13 +1,20 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { EntitiesService } from './entities.service';
+import { ListEntitiesQuery } from './dto/list-entities.query';
 
 @Controller('entities')
 export class EntitiesController {
-  constructor(private service: EntitiesService) { }
+  constructor(private service: EntitiesService) {}
 
   @Get()
-  list() {
-    return this.service.list();
+  list(@Query() query: ListEntitiesQuery) {
+    return this.service.list(query);
+  }
+
+  // ✅ IMPORTANTE: antes de :slug
+  @Get('home')
+  home() {
+    return this.service.home();
   }
 
   @Get(':slug')

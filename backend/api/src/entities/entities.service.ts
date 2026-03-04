@@ -1,54 +1,95 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
 
 @Injectable()
 export class EntitiesService {
-  constructor(private prisma: PrismaService) { }
+  private readonly HOME_TYPES: EntityType[] = [
+    'ARTWORK',
+    'PERIOD',
+    'MOVEMENT',
+    'CONCEPT',
+    'ARTIST',
+  ];
 
-  list() {
-    return this.prisma.entity.findMany({
-      take: 50,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        mediaLinks: {
-          include: { media: true },
-          where: { role: 'PRIMARY' as any },
-          take: 1,
+  constructor(private prisma: PrismaService) {}
+
+  async list(query: ListEntitiesQuery) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 24;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+
+    if (query.type) where.type = query.type;
+
+    if (query.q) {
+      where.OR = [
+        { title: { contains: query.q, mode: 'insensitive' } },
+        { summary: { contains: query.q, mode: 'insensitive' } },
+      ];
+    }
+
+    const orderBy =
+  query.sort === 'title'
+    ? ({ title: 'asc' as const })
+    : ({ createdAt: 'desc' as const });
+
+    const [items, total] = await Promise.all([
+      this.prisma.entity.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+        include: {
+          mediaLinks: {
+            include: { media: true },
+            where: { role: 'PRIMARY' as any },
+            take: 1,
+          },
         },
-      },
-    });
+      }),
+      this.prisma.entity.count({ where }),
+    ]);
+
+    return { items, page, limit, total, totalPages: Math.ceil(total / limit) };
   }
 
+  // ✅ Home optimizado: 1 por tipo, orden fijo
+  async home() {
+    const results = await Promise.all(
+      this.HOME_TYPES.map((type) =>
+        this.prisma.entity.findFirst({
+          where: { type },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            mediaLinks: {
+              include: { media: true },
+              where: { role: 'PRIMARY' as any },
+              take: 1,
+            },
+          },
+        }),
+      ),
+    );
+
+    return results.filter(Boolean);
+  }
+
+  // lo demás igual
   async getBySlug(slug: string) {
     const entity = await this.prisma.entity.findUnique({
       where: { slug },
       include: {
-        // details por tipo
         artwork: true,
         artist: true,
         concept: true,
         period: true,
-
-        // media + licencia
-        mediaLinks: {
-          include: { media: true },
-        },
-
-        // colaboradores
+        mediaLinks: { include: { media: true } },
         contributors: true,
-
-        // bibliografía
-        sourceRefs: {
-          include: { source: true },
-        },
-
-        // grafo
-        outgoing: {
-          include: { to: true },
-        },
-        incoming: {
-          include: { from: true },
-        },
+        sourceRefs: { include: { source: true } },
+        outgoing: { include: { to: true } },
+        incoming: { include: { from: true } },
       },
     });
 

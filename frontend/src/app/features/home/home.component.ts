@@ -1,7 +1,6 @@
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AsyncPipe, } from '@angular/common';
-import { map } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 
 type Entity = any;
@@ -20,8 +19,7 @@ type Entity = any;
         </div>
       </header>
 
-      @if (entities$ | async; as entities) {
-        @let home = homeEntries(entities);
+      @if (home$ | async; as home) {
         <!-- HERO GALLERY / FIRST FILTER -->
         <section class="gallery">
           <div class="gallery-shell">
@@ -38,7 +36,7 @@ type Entity = any;
               </button>
 
               <div class="stack" role="list">
-                @for (e of homeEntries(entities); track e.type) {
+                @for (e of home; track e.type) {
                   <article
                     role="listitem"
                     class="card"
@@ -85,7 +83,7 @@ type Entity = any;
                   type="button"
                   class="dot"
                   [class.on]="$index === activeIndex()"
-                  (click)="setActive($index)"
+                  (click)="setActive($index, home)"
                   [attr.aria-label]="'Ir a ' + e.type"
                 ></button>
               }
@@ -93,7 +91,7 @@ type Entity = any;
           </div>
         </section>
 
-        <!-- BELOW: classic grid (optional second view) -->
+        <!-- BELOW: classic grid -->
         <section class="below">
           <h2 class="h2">Explorar</h2>
           <div class="grid">
@@ -102,7 +100,9 @@ type Entity = any;
                 <div class="mini-thumb">
                   @if (thumb(e)) {
                     <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
-                  } @else { <div class="mini-ph"></div> }
+                  } @else {
+                    <div class="mini-ph"></div>
+                  }
                 </div>
                 <div class="mini-meta">
                   <div class="mini-title">{{ e.title }}</div>
@@ -294,6 +294,7 @@ type Entity = any;
       border-radius: 16px;
       background: #fff;
       cursor: pointer;
+      transition: box-shadow .15s ease, transform .15s ease;
     }
     .mini:hover { box-shadow: 0 10px 24px rgba(0,0,0,.06); transform: translateY(-1px); }
     .mini-thumb { width: 54px; height: 54px; border-radius: 12px; overflow: hidden; background: #f3f3f3; border: 1px solid #eee; }
@@ -312,27 +313,20 @@ type Entity = any;
     }
   `],
 })
-
-
-
-//TS
-
-
 export class HomeComponent {
   private api = inject(EntitiesApi);
   private router = inject(Router);
 
-  entities$ = this.api.list();
+  home$ = this.api.home();
   activeIndex = signal(0);
 
-  // Para que se vea siempre bonito aunque no haya imagen
   fallbackBg = 'https://picsum.photos/id/1060/1400/900';
 
   thumb(e: Entity): string | null {
     return e?.mediaLinks?.[0]?.media?.url ?? null;
   }
 
-  setActive(i: number, entities?: Entity[]) {
+  setActive(i: number, entities: Entity[]) {
     const len = entities?.length ?? 0;
     if (!len) return;
     this.activeIndex.set(((i % len) + len) % len);
@@ -350,22 +344,10 @@ export class HomeComponent {
     this.activeIndex.set((i + 1) % entities.length);
   }
 
-  onCardClick(entities: Entity[], index: number) {
-    // 1er click: centrar
-    if (index !== this.activeIndex()) {
-      this.activeIndex.set(index);
-      return;
-    }
-    // 2do click (card activa): navegar
-    const e = entities[index];
-    if (e?.slug) this.go(e.slug);
-  }
-
   go(slug: string) {
     this.router.navigate(['/entity', slug]);
   }
 
-  // Estilo coverflow: centro + lados
   cardTransform(index: number, active: number): string {
     const d = index - active;
     const clamped = Math.max(-2, Math.min(2, d));
@@ -374,7 +356,7 @@ export class HomeComponent {
     const x = clamped * 140;
     const rotY = clamped * -18;
     const scale = abs === 0 ? 1 : abs === 1 ? 0.92 : 0.86;
-    const y = abs === 0 ? 0 : 6; // un pelín abajo los laterales
+    const y = abs === 0 ? 0 : 6;
 
     return `translate3d(${x}px, ${y}px, 0) rotateY(${rotY}deg) scale(${scale})`;
   }
@@ -397,42 +379,24 @@ export class HomeComponent {
 
   @HostListener('window:keydown', ['$event'])
   onKey(ev: KeyboardEvent) {
-    // Navegación tipo gallery con teclado
     if (ev.key === 'ArrowLeft') ev.preventDefault();
     if (ev.key === 'ArrowRight') ev.preventDefault();
   }
+
   cardZ(index: number, active: number): number {
     const d = index - active;
     const abs = Math.abs(d);
 
-    if (abs > 2) return 0;      // fuera del rango bonito
-    if (abs === 0) return 30;   // activa
+    if (abs > 2) return 0;
+    if (abs === 0) return 30;
 
-    // base por distancia
     const base = abs === 1 ? 20 : 10;
-
-    // desempate: el lado izquierdo por encima del derecho (o al revés si prefieres)
     const tieBreaker = d < 0 ? 1 : 0;
 
     return base + tieBreaker;
   }
-  private readonly HOME_TYPES = ['ARTWORK', 'PERIOD', 'MOVEMENT', 'CONCEPT', 'ARTIST'] as const;
-
-  homeEntries(entities: Entity[]): Entity[] {
-    // 1 entidad representativa por tipo (la primera que aparezca)
-    const byType = new Map<string, Entity>();
-    for (const e of entities ?? []) {
-      if (!e?.type) continue;
-      if (this.HOME_TYPES.includes(e.type) && !byType.has(e.type)) byType.set(e.type, e);
-    }
-
-    // Asegura el orden fijo de las 5 cards
-    return this.HOME_TYPES.map((t) => byType.get(t)).filter(Boolean) as Entity[];
-  }
 
   goType(type: string) {
-    // ruta a tu “listado por tipo”
-    // AJUSTA esto a tu routing real:
     this.router.navigate(['/entities', type.toLowerCase()]);
   }
 }
