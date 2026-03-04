@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, } from '@angular/common';
+import { map } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 
 type Entity = any;
@@ -20,31 +21,33 @@ type Entity = any;
       </header>
 
       @if (entities$ | async; as entities) {
+        @let home = homeEntries(entities);
         <!-- HERO GALLERY / FIRST FILTER -->
         <section class="gallery">
           <div class="gallery-shell">
             <!-- ambient bg from active card -->
             <div
               class="bg"
-              [style.backgroundImage]="'url(' + (thumb(entities[activeIndex()] ) || fallbackBg) + ')'"
+              [style.backgroundImage]="'url(' + (thumb(home[activeIndex()]) || fallbackBg) + ')'"
             ></div>
             <div class="bg-overlay"></div>
 
             <div class="gallery-ui">
-              <button class="nav left" type="button" (click)="prev(entities)" aria-label="Anterior">
+              <button class="nav left" type="button" (click)="prev(home)" aria-label="Anterior">
                 ‹
               </button>
 
               <div class="stack" role="list">
-                @for (e of entities; track e.id) {
+                @for (e of homeEntries(entities); track e.type) {
                   <article
                     role="listitem"
                     class="card"
                     [class.is-active]="$index === activeIndex()"
+                    [style.zIndex]="cardZ($index, activeIndex())"
                     [style.transform]="cardTransform($index, activeIndex())"
                     [style.opacity]="cardOpacity($index, activeIndex())"
                     [style.filter]="cardFilter($index, activeIndex())"
-                    (click)="onCardClick(entities, $index)"
+                    (click)="goType(e.type)"
                   >
                     <div class="card-media">
                       @if (thumb(e)) {
@@ -71,19 +74,19 @@ type Entity = any;
                 }
               </div>
 
-              <button class="nav right" type="button" (click)="next(entities)" aria-label="Siguiente">
+              <button class="nav right" type="button" (click)="next(home)" aria-label="Siguiente">
                 ›
               </button>
             </div>
 
             <div class="dots" aria-label="Paginación">
-              @for (e of entities; track e.id) {
+              @for (e of home; track e.type) {
                 <button
                   type="button"
                   class="dot"
                   [class.on]="$index === activeIndex()"
                   (click)="setActive($index)"
-                  [attr.aria-label]="'Ir a ' + e.title"
+                  [attr.aria-label]="'Ir a ' + e.type"
                 ></button>
               }
             </div>
@@ -94,7 +97,7 @@ type Entity = any;
         <section class="below">
           <h2 class="h2">Explorar</h2>
           <div class="grid">
-            @for (e of entities; track e.id) {
+            @for (e of home; track e.type) {
               <button class="mini" type="button" (click)="go(e.slug)">
                 <div class="mini-thumb">
                   @if (thumb(e)) {
@@ -188,18 +191,18 @@ type Entity = any;
       height: 360px;
       border-radius: 22px;
       overflow: hidden;
-      background: rgba(255,255,255,.88);
+      background: white;
       border: 1px solid rgba(255,255,255,.18);
       box-shadow: 0 30px 70px rgba(0,0,0,.35);
       display: grid;
       grid-template-columns: 1.05fr 1fr;
       cursor: pointer;
       transition: transform .22s ease, opacity .22s ease, filter .22s ease;
-      transform-style: preserve-3d;
-      backdrop-filter: blur(10px);
+      will-change: transform;
+      backdrop-filter: none;
     }
     .card.is-active {
-      background: rgba(255,255,255,.94);
+      background: white;
       border-color: rgba(255,255,255,.26);
     }
 
@@ -309,6 +312,12 @@ type Entity = any;
     }
   `],
 })
+
+
+
+//TS
+
+
 export class HomeComponent {
   private api = inject(EntitiesApi);
   private router = inject(Router);
@@ -323,8 +332,10 @@ export class HomeComponent {
     return e?.mediaLinks?.[0]?.media?.url ?? null;
   }
 
-  setActive(i: number) {
-    this.activeIndex.set(i);
+  setActive(i: number, entities?: Entity[]) {
+    const len = entities?.length ?? 0;
+    if (!len) return;
+    this.activeIndex.set(((i % len) + len) % len);
   }
 
   prev(entities: Entity[]) {
@@ -357,24 +368,22 @@ export class HomeComponent {
   // Estilo coverflow: centro + lados
   cardTransform(index: number, active: number): string {
     const d = index - active;
-    const abs = Math.abs(d);
-
-    // Solo mostramos +-2 alrededor del activo “bonito”
     const clamped = Math.max(-2, Math.min(2, d));
+    const abs = Math.abs(clamped);
 
     const x = clamped * 140;
-    const z = -abs * 120;
     const rotY = clamped * -18;
-    const scale = abs === 0 ? 1 : 0.88;
+    const scale = abs === 0 ? 1 : abs === 1 ? 0.92 : 0.86;
+    const y = abs === 0 ? 0 : 6; // un pelín abajo los laterales
 
-    return `translateX(${x}px) translateZ(${z}px) rotateY(${rotY}deg) scale(${scale})`;
+    return `translate3d(${x}px, ${y}px, 0) rotateY(${rotY}deg) scale(${scale})`;
   }
 
   cardOpacity(index: number, active: number): string {
     const abs = Math.abs(index - active);
     if (abs === 0) return '1';
-    if (abs === 1) return '0.75';
-    if (abs === 2) return '0.45';
+    if (abs === 1) return '1';
+    if (abs === 2) return '1';
     return '0';
   }
 
@@ -391,5 +400,39 @@ export class HomeComponent {
     // Navegación tipo gallery con teclado
     if (ev.key === 'ArrowLeft') ev.preventDefault();
     if (ev.key === 'ArrowRight') ev.preventDefault();
+  }
+  cardZ(index: number, active: number): number {
+    const d = index - active;
+    const abs = Math.abs(d);
+
+    if (abs > 2) return 0;      // fuera del rango bonito
+    if (abs === 0) return 30;   // activa
+
+    // base por distancia
+    const base = abs === 1 ? 20 : 10;
+
+    // desempate: el lado izquierdo por encima del derecho (o al revés si prefieres)
+    const tieBreaker = d < 0 ? 1 : 0;
+
+    return base + tieBreaker;
+  }
+  private readonly HOME_TYPES = ['ARTWORK', 'PERIOD', 'MOVEMENT', 'CONCEPT', 'ARTIST'] as const;
+
+  homeEntries(entities: Entity[]): Entity[] {
+    // 1 entidad representativa por tipo (la primera que aparezca)
+    const byType = new Map<string, Entity>();
+    for (const e of entities ?? []) {
+      if (!e?.type) continue;
+      if (this.HOME_TYPES.includes(e.type) && !byType.has(e.type)) byType.set(e.type, e);
+    }
+
+    // Asegura el orden fijo de las 5 cards
+    return this.HOME_TYPES.map((t) => byType.get(t)).filter(Boolean) as Entity[];
+  }
+
+  goType(type: string) {
+    // ruta a tu “listado por tipo”
+    // AJUSTA esto a tu routing real:
+    this.router.navigate(['/entities', type.toLowerCase()]);
   }
 }
