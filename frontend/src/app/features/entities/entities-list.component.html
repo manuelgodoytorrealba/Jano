@@ -1,0 +1,327 @@
+<div class="page">
+      <header class="top">
+        <button class="back" type="button" (click)="back()">←</button>
+        <div>
+          <h1 class="h1">{{ title$ | async }}</h1>
+          <p class="muted">Explora {{ (title$ | async)?.toLowerCase() }} en JANO</p>
+        </div>
+      </header>
+
+      <!-- VIEW TOGGLE -->
+      <section class="viewbar">
+        <div class="view-toggle" role="tablist" aria-label="Modo de visualización">
+          <button
+            type="button"
+            class="toggle"
+            role="tab"
+            [attr.aria-selected]="viewMode === 'explore'"
+            [class.on]="viewMode === 'explore'"
+            (click)="setView('explore')"
+          >
+            Explorer
+          </button>
+
+          <button
+            type="button"
+            class="toggle"
+            role="tab"
+            [attr.aria-selected]="viewMode === 'list'"
+            [class.on]="viewMode === 'list'"
+            (click)="setView('list')"
+          >
+            Lista
+          </button>
+        </div>
+      </section>
+
+      <section class="controls">
+        <input
+          class="search"
+          type="search"
+          placeholder="Buscar…"
+          [value]="qFromUrl$ | async"
+          (input)="setQ(($any($event.target)).value)"
+        />
+
+        <!-- Search chip -->
+        @if (qFromUrl$ | async; as q) {
+          @if (q) {
+            <div class="search-chip">
+              <span class="search-label">Buscando:</span>
+              <span class="search-value">“{{ q }}”</span>
+              <button
+                type="button"
+                class="search-x"
+                (click)="clearSearch()"
+                aria-label="Limpiar búsqueda"
+                title="Limpiar búsqueda"
+              >
+                ✕
+              </button>
+            </div>
+          }
+        }
+
+        <!-- SORT -->
+        <div class="sort">
+          <div class="label">Orden</div>
+          <div class="chips">
+            <button
+              type="button"
+              class="chip"
+              [class.on]="(sortFromUrl$ | async) === 'recent'"
+              (click)="toggleSort('recent')"
+            >
+              Recientes
+            </button>
+
+            <button
+              type="button"
+              class="chip"
+              [class.on]="(sortFromUrl$ | async) === 'title'"
+              (click)="toggleSort('title')"
+            >
+              Título A–Z
+            </button>
+
+            <button
+              type="button"
+              class="chip"
+              [class.on]="(sortFromUrl$ | async) === 'relevance'"
+              [disabled]="!(qFromUrl$ | async)"
+              (click)="toggleSort('relevance')"
+              title="Activa una búsqueda para ordenar por relevancia"
+            >
+              Relevancia
+            </button>
+          </div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filters">
+          <div class="filter-group">
+            <div class="label">Status</div>
+            <div class="chips">
+              <button
+                type="button"
+                class="chip"
+                [class.on]="(statusFromUrl$ | async) === 'DRAFT'"
+                (click)="toggleStatus('DRAFT')"
+              >
+                Draft
+              </button>
+
+              <button
+                type="button"
+                class="chip"
+                [class.on]="(statusFromUrl$ | async) === 'IN_REVIEW'"
+                (click)="toggleStatus('IN_REVIEW')"
+              >
+                In review
+              </button>
+
+              <button
+                type="button"
+                class="chip"
+                [class.on]="(statusFromUrl$ | async) === 'PUBLISHED'"
+                (click)="toggleStatus('PUBLISHED')"
+              >
+                Published
+              </button>
+
+              <button
+                type="button"
+                class="chip ghost"
+                [class.on]="!(statusFromUrl$ | async)"
+                (click)="toggleStatus('')"
+              >
+                Todos
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <div class="label">Nivel</div>
+            <div class="chips">
+              <button
+                type="button"
+                class="chip"
+                [class.on]="(contentLevelFromUrl$ | async) === 'BASIC'"
+                (click)="toggleContentLevel('BASIC')"
+              >
+                Basic
+              </button>
+
+              <button
+                type="button"
+                class="chip"
+                [class.on]="(contentLevelFromUrl$ | async) === 'INTERMEDIATE'"
+                (click)="toggleContentLevel('INTERMEDIATE')"
+              >
+                Intermediate
+              </button>
+
+              <button
+                type="button"
+                class="chip"
+                [class.on]="(contentLevelFromUrl$ | async) === 'ADVANCED'"
+                (click)="toggleContentLevel('ADVANCED')"
+              >
+                Advanced
+              </button>
+
+              <button
+                type="button"
+                class="chip ghost"
+                [class.on]="!(contentLevelFromUrl$ | async)"
+                (click)="toggleContentLevel('')"
+              >
+                Todos
+              </button>
+            </div>
+          </div>
+        </div>
+
+        @if (hasActiveFilters$ | async) {
+          <button type="button" class="reset" (click)="resetFilters()">
+            Reset filtros
+          </button>
+        }
+
+        <div class="meta">
+          @if (vm$ | async; as vm) {
+            <span class="pill">{{ vm.total }} resultados</span>
+            <span class="pill">Página {{ vm.page }} / {{ vm.totalPages }}</span>
+          }
+        </div>
+      </section>
+
+      @if (vm$ | async; as vm) {
+
+        @if (vm.items.length) {
+
+          <!-- EXPLORE VIEW -->
+         @if (viewMode === 'explore') {
+
+  <section class="explorer-wrap">
+    <button class="xnav left" type="button" (click)="scrollExplorer(-1)" aria-label="Anterior">‹</button>
+
+    <section #explorer class="explorer">
+      @for (e of vm.items; track e.slug) {
+       <article
+  class="explore-card"
+  [attr.data-i]="$index"
+  [class.active]="$index === activeIndex()"
+  [class.side]="$index !== activeIndex()"
+  [class.up]="$index % 2 === 0"
+  [class.down]="$index % 2 === 1"
+  (click)="go(e.slug)"
+>
+          <div class="explore-media">
+            @if (thumb(e)) {
+              <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
+            } @else {
+              <div class="explore-ph"></div>
+            }
+          </div>
+
+          <div class="explore-meta">
+            <div
+              class="explore-title"
+              [innerHTML]="highlight(e.title ?? '', (qFromUrl$ | async) ?? '')"
+            ></div>
+
+            @if (e.summary) {
+              <div
+                class="explore-summary"
+                [innerHTML]="highlight(cleanWiki(e.summary ?? ''), (qFromUrl$ | async) ?? '')"
+              ></div>
+            }
+
+            <div class="explore-badges">
+              <span class="badge">{{ e.type }}</span>
+              @if (e.status) { <span class="badge">{{ e.status }}</span> }
+              @if (e.contentLevel) { <span class="badge">{{ e.contentLevel }}</span> }
+            </div>
+          </div>
+        </article>
+      }
+    </section>
+
+    <button class="xnav right" type="button" (click)="scrollExplorer(1)" aria-label="Siguiente">›</button>
+
+    <div class="fade left"></div>
+    <div class="fade right"></div>
+  </section>
+
+}
+
+          <!-- LIST VIEW -->
+          @if (viewMode === 'list') {
+            <section class="grid">
+              @for (e of vm.items; track e.slug) {
+                <article class="card" (click)="go(e.slug)">
+                  <div class="thumb">
+                    @if (thumb(e)) {
+                      <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
+                    } @else {
+                      <div class="ph"></div>
+                    }
+                  </div>
+
+                  <div class="body">
+                    <div class="badges">
+                      <span class="badge">{{ e.type }}</span>
+                      @if (e.status) { <span class="badge">{{ e.status }}</span> }
+                      @if (e.contentLevel) { <span class="badge">{{ e.contentLevel }}</span> }
+                    </div>
+
+                    <div
+                      class="title"
+                      [innerHTML]="highlight(e.title ?? '', (qFromUrl$ | async) ?? '')"
+                    ></div>
+
+                    @if (e.summary) {
+                      <div
+                        class="summary"
+                        [innerHTML]="highlight(cleanWiki(e.summary ?? ''), (qFromUrl$ | async) ?? '')"
+                      ></div>
+                    }
+                  </div>
+                </article>
+              }
+            </section>
+
+            <section class="pager">
+              <button class="btn" type="button" (click)="prevPage()" [disabled]="vm.page <= 1">
+                Anterior
+              </button>
+              <button class="btn" type="button" (click)="nextPage(vm.totalPages)" [disabled]="vm.page >= vm.totalPages">
+                Siguiente
+              </button>
+            </section>
+          }
+
+        } @else {
+          <div class="empty">
+            <div class="empty-title">Sin resultados</div>
+            <div class="empty-sub">Prueba con otra búsqueda o ajusta los filtros.</div>
+          </div>
+        }
+
+      } @else {
+        <!-- Skeleton loader -->
+        <section class="grid">
+          @for (_ of skeleton; track $index) {
+            <article class="card sk">
+              <div class="thumb"><div class="sk-img"></div></div>
+              <div class="body">
+                <div class="sk-line w1"></div>
+                <div class="sk-line w2"></div>
+                <div class="sk-line w3"></div>
+              </div>
+            </article>
+          }
+        </section>
+      }
+    </div>
