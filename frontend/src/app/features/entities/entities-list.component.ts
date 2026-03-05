@@ -347,4 +347,22 @@ export class EntitiesListComponent implements AfterViewInit, OnDestroy {
   back() {
     this.router.navigate(['/']);
   }
+
+  onExploreClick(items: Entity[], index: number) {
+  if (index !== this.activeIndex()) {
+    this.activeIndex.set(index);
+    // opcional: scrollear para centrar la card
+    this.scrollToIndex(index);
+    return;
+  }
+  const e = items[index];
+  if (e?.slug) this.go(e.slug);
+}
+
+private scrollToIndex(index: number) {
+  const el = this.explorerRef?.nativeElement;
+  if (!el) return;
+  const card = el.querySelector<HTMLElement>(`.explore-card[data-i="${index}"]`);
+  card?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
 }

@@ -215,7 +215,7 @@
   [class.side]="$index !== activeIndex()"
   [class.up]="$index % 2 === 0"
   [class.down]="$index % 2 === 1"
-  (click)="go(e.slug)"
+  (click)="onExploreClick(vm.items, $index)"
 >
           <div class="explore-media">
             @if (thumb(e)) {
@@ -260,7 +260,7 @@
           @if (viewMode === 'list') {
             <section class="grid">
               @for (e of vm.items; track e.slug) {
-                <article class="card" (click)="go(e.slug)">
+                <article class="card" (click)="onExploreClick(vm.items, $index)">
                   <div class="thumb">
                     @if (thumb(e)) {
                       <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
