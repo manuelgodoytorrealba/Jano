@@ -17,11 +17,31 @@ export class EntitiesApi {
 
   // ✅ EXISTENTE (mantén firma): listado simple para pantallas antiguas (si lo usas en algún lado)
   // Si ya no lo usas, igual lo dejamos para no romper.
-  list(params?: { type?: string; q?: string; page?: number; limit?: number; sort?: 'recent' | 'title' }) {
-    // ahora tu backend devuelve paginado, así que devolvemos el objeto
-    return this.http.get<{ items: Entity[]; page: number; limit: number; total: number; totalPages: number }>(
+ list(params: {
+  type?: string;
+  q?: string;
+  page?: number;
+  limit?: number;
+  sort?: 'recent' | 'title' | 'relevance';
+  status?: string;
+  contentLevel?: string;
+}) {
+    const clean: any = {};
+
+    for (const [k, v] of Object.entries(params ?? {})) {
+      if (v === undefined || v === null) continue;
+      if (typeof v === 'string') {
+        const s = v.trim();
+        if (!s || s === 'undefined' || s === 'null') continue;
+        clean[k] = s;
+      } else {
+        clean[k] = v;
+      }
+    }
+
+    return this.http.get<{ items: any[]; page: number; limit: number; total: number; totalPages: number }>(
       `${this.base}/entities`,
-      { params: params as any },
+      { params: clean },
     );
   }
 

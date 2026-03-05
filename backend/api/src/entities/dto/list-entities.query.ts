@@ -26,7 +26,15 @@ export class ListEntitiesQuery {
   @Max(60)
   limit: number = 24;
 
+@IsOptional()
+@IsIn(['recent', 'title', 'relevance'])
+sort?: 'recent' | 'title' | 'relevance';
+
   @IsOptional()
-  @IsIn(['recent', 'title'] as const)
-  sort?: 'recent' | 'title';
+  @IsString()
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  contentLevel?: string;
 }

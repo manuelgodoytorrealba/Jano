@@ -56,11 +56,10 @@ type Entity = any;
                     </div>
 
                     <div class="card-body">
-                      <div class="badges">
-                        <span class="badge">{{ e.type }}</span>
-                        @if (e.status) { <span class="badge">{{ e.status }}</span> }
-                        @if (e.contentLevel) { <span class="badge">{{ e.contentLevel }}</span> }
-                      </div>
+                      <div class="kicker">{{ copy(e.type).label }}</div>
+                      <div class="title">{{ copy(e.type).title }}</div>
+                      <div class="summary">{{ copy(e.type).desc }}</div>
+                      <div class="cta">{{ copy(e.type).cta }}</div>
 
                       <div class="title">{{ e.title }}</div>
 
@@ -239,6 +238,19 @@ type Entity = any;
       letter-spacing: .06em;
       text-transform: uppercase;
     }
+    .kicker{
+  font-size: 12px;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,.55);
+}
+
+.cta{
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(0,0,0,.78);
+}
 
     .title {
       font-size: 22px;
@@ -316,6 +328,43 @@ type Entity = any;
 export class HomeComponent {
   private api = inject(EntitiesApi);
   private router = inject(Router);
+
+  private readonly TYPE_COPY: Record<string, { label: string; title: string; desc: string; cta: string }> = {
+    ARTWORK: {
+      label: 'Artwork',
+      title: 'Obras',
+      desc: 'Piezas y obras clave. Analiza técnicas, contexto y conexiones.',
+      cta: 'Explorar obras →',
+    },
+    ARTIST: {
+      label: 'Artist',
+      title: 'Artistas',
+      desc: 'Autores, biografías y estilos. Descubre su red de influencias.',
+      cta: 'Explorar artistas →',
+    },
+    PERIOD: {
+      label: 'Period',
+      title: 'Períodos',
+      desc: 'Etapas históricas y cambios culturales que moldean el arte.',
+      cta: 'Explorar períodos →',
+    },
+    MOVEMENT: {
+      label: 'Movement',
+      title: 'Movimientos',
+      desc: 'Corrientes y manifiestos. Qué defendían y cómo se conectan.',
+      cta: 'Explorar movimientos →',
+    },
+    CONCEPT: {
+      label: 'Concept',
+      title: 'Conceptos',
+      desc: 'Ideas y términos para leer el arte con claridad.',
+      cta: 'Explorar conceptos →',
+    },
+  };
+
+  copy(type: string) {
+    return this.TYPE_COPY[type] ?? { label: type, title: type, desc: '', cta: 'Explorar →' };
+  }
 
   home$ = this.api.home();
   activeIndex = signal(0);
