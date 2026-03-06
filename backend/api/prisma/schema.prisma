@@ -4,8 +4,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  
+}
 
+enum UserRole {
+  USER
+  ADMIN
 }
 
 enum EntityType {
@@ -47,30 +50,30 @@ enum SourceType {
 }
 
 model Entity {
-  id           String       @id @default(cuid())
+  id           String        @id @default(cuid())
   type         EntityType
   title        String
-  slug         String       @unique
+  slug         String        @unique
   summary      String?
   content      String?
   contentLevel ContentLevel?
-  status       EntityStatus @default(DRAFT)
+  status       EntityStatus  @default(DRAFT)
 
-  startYear    Int?
-  endYear      Int?
+  startYear Int?
+  endYear   Int?
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Graph
-  outgoing     Relation[]   @relation("outgoing")
-  incoming     Relation[]   @relation("incoming")
+  outgoing Relation[] @relation("outgoing")
+  incoming Relation[] @relation("incoming")
 
   // Media (1..n)
-  mediaLinks   EntityMedia[]
+  mediaLinks EntityMedia[]
 
   // Sources
-  sourceRefs   SourceRef[]
+  sourceRefs SourceRef[]
 
   // Internal notes
   curatorNotes CuratorNote[]
@@ -79,22 +82,25 @@ model Entity {
   contributors Contributor[]
 
   // Type-specific details (1..1, optional)
-  artwork      ArtworkDetails?
-  artist       ArtistDetails?
-  concept      ConceptDetails?
-  period       PeriodDetails?
+  artwork ArtworkDetails?
+  artist  ArtistDetails?
+  concept ConceptDetails?
+  period  PeriodDetails?
+
+  // Saved by users
+  savedBy SavedEntity[]
 }
 
 model Relation {
   id            String  @id @default(cuid())
   fromId        String
   toId          String
-  type          String  // "CREATED_BY", "REPRESENTS_CONCEPT", ...
+  type          String // "CREATED_BY", "REPRESENTS_CONCEPT", ...
   weight        Float?
   justification String?
 
-  from          Entity  @relation("outgoing", fields: [fromId], references: [id])
-  to            Entity  @relation("incoming", fields: [toId], references: [id])
+  from Entity @relation("outgoing", fields: [fromId], references: [id])
+  to   Entity @relation("incoming", fields: [toId], references: [id])
 
   @@index([fromId])
   @@index([toId])
@@ -102,18 +108,18 @@ model Relation {
 }
 
 model Media {
-  id        String    @id @default(cuid())
-  url       String
-  kind      MediaKind @default(IMAGE)
+  id   String    @id @default(cuid())
+  url  String
+  kind MediaKind @default(IMAGE)
 
-  alt       String?
-  source    String?  // where it comes from (page/museum/etc)
-  photoBy   String?  // photographer
-  license   String?  // license type
+  alt     String?
+  source  String? // where it comes from (page/museum/etc)
+  photoBy String? // photographer
+  license String? // license type
 
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
-  entities  EntityMedia[]
+  entities EntityMedia[]
 }
 
 model EntityMedia {
@@ -122,8 +128,8 @@ model EntityMedia {
   mediaId  String
   role     MediaRole @default(PRIMARY)
 
-  entity   Entity    @relation(fields: [entityId], references: [id])
-  media    Media     @relation(fields: [mediaId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id])
+  media  Media  @relation(fields: [mediaId], references: [id])
 
   @@index([entityId])
   @@index([mediaId])
@@ -138,9 +144,9 @@ model Source {
   year      Int?
   url       String?
 
-  createdAt DateTime   @default(now())
+  createdAt DateTime @default(now())
 
-  refs      SourceRef[]
+  refs SourceRef[]
 }
 
 model SourceRef {
@@ -148,12 +154,12 @@ model SourceRef {
   entityId String
   sourceId String
 
-  page     String?
-  quote    String?
-  note     String?
+  page  String?
+  quote String?
+  note  String?
 
-  entity   Entity @relation(fields: [entityId], references: [id])
-  source   Source @relation(fields: [sourceId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id])
+  source Source @relation(fields: [sourceId], references: [id])
 
   @@index([entityId])
   @@index([sourceId])
@@ -165,7 +171,7 @@ model CuratorNote {
   body      String
   createdAt DateTime @default(now())
 
-  entity    Entity   @relation(fields: [entityId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id])
 
   @@index([entityId])
 }
@@ -174,55 +180,83 @@ model Contributor {
   id       String @id @default(cuid())
   entityId String
 
-  name     String
-  role     String // curator | advisor | restorer | composer | ...
-  note     String?
+  name String
+  role String // curator | advisor | restorer | composer | ...
+  note String?
 
-  entity   Entity  @relation(fields: [entityId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id])
 
   @@index([entityId])
 }
 
 model ArtworkDetails {
-  entityId      String @id
-  authorNation  String?
+  entityId     String  @id
+  authorNation String?
 
-  technique     String?
-  materials     String?
-  dimensions    String?
+  technique  String?
+  materials  String?
+  dimensions String?
 
-  location      String? // museum/gallery/current location
-  collection    String?
-  state         String? // restored, destroyed, unfinished...
+  location   String? // museum/gallery/current location
+  collection String?
+  state      String? // restored, destroyed, unfinished...
 
-  entity        Entity @relation(fields: [entityId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id])
 }
 
 model ArtistDetails {
-  entityId     String @id
+  entityId String @id
 
-  country      String?
-  city         String?
-  birthYear    Int?
-  deathYear    Int?
+  country   String?
+  city      String?
+  birthYear Int?
+  deathYear Int?
 
-  disciplines  String? // simple string list for now
-  bioShort     String?
-  links        String? // simple string list for now
+  disciplines String? // simple string list for now
+  bioShort    String?
+  links       String? // simple string list for now
 
-  entity       Entity @relation(fields: [entityId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id])
 }
 
 model ConceptDetails {
-  entityId   String @id
+  entityId   String  @id
   definition String?
 
-  entity     Entity @relation(fields: [entityId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id])
 }
 
 model PeriodDetails {
-  entityId   String @id
+  entityId   String  @id
   definition String?
 
-  entity     Entity @relation(fields: [entityId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         UserRole @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  savedEntities SavedEntity[]
+}
+
+model SavedEntity {
+  id        String   @id @default(cuid())
+  userId    String
+  entityId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entityId])
+  @@index([userId])
+  @@index([entityId])
+  @@index([createdAt])
 }
