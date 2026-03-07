@@ -1,7 +1,10 @@
-export interface User {
+export type UserRole = 'USER' | 'ADMIN';
+
+export interface AuthUser {
   id: string;
   email: string;
-  role: string;
+  name: string | null;
+  role: UserRole;
 }
 
 export interface LoginDto {
@@ -14,8 +17,7 @@ export interface RegisterDto {
   password: string;
   name?: string;
 }
-
 export interface AuthResponse {
   accessToken: string;
-  user: User;
+  user: AuthUser;
 }

@@ -5,30 +5,15 @@ import { EntitiesListComponent } from './features/entities/entities-list.compone
 import { LoginComponent } from './features/auth/login.component';
 import { RegisterComponent } from './features/auth/register.component';
 import { MySpaceComponent } from './features/my-space/my-space.component';
-import { authGuard } from './core/auth/auth.guard';
-import { guestGuard } from './core/auth/guest.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-
-  {
-    path: 'login',
-    component: LoginComponent,
-    canActivate: [guestGuard],
-  },
-  {
-    path: 'register',
-    component: RegisterComponent,
-    canActivate: [guestGuard],
-  },
-  {
-    path: 'my-space',
-    component: MySpaceComponent,
-    canActivate: [authGuard],
-  },
-
-  { path: 'entity/:slug', component: EntityComponent },
   { path: 'entities/:type', component: EntitiesListComponent },
+  { path: 'entity/:slug', component: EntityComponent },
+
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'my-space', component: MySpaceComponent },
 
   { path: '**', redirectTo: '' },
 ];
