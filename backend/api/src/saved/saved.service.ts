@@ -100,4 +100,17 @@ export class SavedService {
 
     return { ok: true };
   }
+
+  async isSaved(userId: string, entityId: string) {
+  const existing = await this.prisma.savedEntity.findUnique({
+    where: {
+      userId_entityId: {
+        userId,
+        entityId,
+      },
+    },
+  });
+
+  return { saved: !!existing };
+}
 }

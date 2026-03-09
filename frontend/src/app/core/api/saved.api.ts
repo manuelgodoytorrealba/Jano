@@ -17,4 +17,8 @@ export class SavedApi {
   remove(entityId: string) {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}`);
   }
+
+  check(entityId: string) {
+  return this.http.get<{ saved: boolean }>(`${this.baseUrl}/check/${entityId}`);
+}
 }

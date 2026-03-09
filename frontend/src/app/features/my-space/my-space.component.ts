@@ -1,7 +1,8 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SavedApi } from '../../core/api/saved.api';
+import { BehaviorSubject, of, switchMap, catchError, combineLatest } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
@@ -86,7 +87,17 @@ export class MySpaceComponent {
   private savedApi = inject(SavedApi);
   private router = inject(Router);
 
-  saved$ = this.savedApi.list();
+  private refresh$ = new BehaviorSubject<void>(undefined);
+
+  saved$ = combineLatest([this.auth.user$, this.refresh$]).pipe(
+    switchMap(([user]) => {
+      if (!user) return of([]);
+
+      return this.savedApi.list().pipe(
+        catchError(() => of([]))
+      );
+    })
+  );
 
   thumb(e: any): string | null {
     return e?.mediaLinks?.[0]?.media?.url ?? null;
@@ -101,12 +112,16 @@ export class MySpaceComponent {
   }
 
   remove(entityId: string) {
-    this.saved$ = this.savedApi.remove(entityId) as any;
-    this.saved$ = this.savedApi.list();
+    this.savedApi.remove(entityId).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => { },
+    });
   }
 
+
   logout() {
-    this.auth.logout();
-    this.router.navigate(['/login']);
-  }
+  this.auth.logout();
+  this.refresh$.next();
+  this.router.navigate(['/login']);
+}
 }

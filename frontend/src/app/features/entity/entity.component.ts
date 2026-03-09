@@ -1,9 +1,10 @@
-// frontend/src/app/features/entity/entity.component.ts
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { map, distinctUntilChanged, switchMap, shareReplay } from 'rxjs';
+import { map, distinctUntilChanged, switchMap, shareReplay, tap } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
+import { SavedApi } from '../../core/api/saved.api';
+import { AuthService } from '../../core/auth/auth.service';
 import { GraphComponent } from './graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 
@@ -60,6 +61,24 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
             </div>
 
             <div class="actions">
+              @if (auth.isLoggedIn) {
+                <button
+                  class="btn"
+                  type="button"
+                  [class.btn-saved]="isSaved()"
+                  [disabled]="saveLoading()"
+                  (click)="toggleSave(entity.id)"
+                >
+                  @if (saveLoading()) {
+                    {{ isSaved() ? 'Quitando...' : 'Guardando...' }}
+                  } @else if (isSaved()) {
+                    Guardado ✓
+                  } @else {
+                    Guardar
+                  }
+                </button>
+              }
+
               <button class="btn" type="button" (click)="toggleGraph()">
                 @if (showGraph()) { Cerrar grafo } @else { Ver grafo }
               </button>
@@ -281,6 +300,13 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
       background: #fff;
     }
 
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
     .btn {
       appearance: none;
       border: 1px solid #e6e6e6;
@@ -291,6 +317,12 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
       font-size: 14px;
     }
     .btn:hover { background: #fafafa; }
+
+    .btn-saved {
+      border-color: rgba(0,0,0,.14);
+      background: rgba(0,0,0,.05);
+      font-weight: 700;
+    }
 
     .summary { margin: 0 0 18px; color: #222; line-height: 1.6; max-width: 70ch; }
     .content { margin: 0 0 18px; color: #222; line-height: 1.7; max-width: 76ch; white-space: pre-wrap; }
@@ -364,9 +396,14 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 })
 export class EntityComponent {
   private api = inject(EntitiesApi);
+  private savedApi = inject(SavedApi);
+  auth = inject(AuthService);
   private route = inject(ActivatedRoute);
 
   showGraph = signal(false);
+  isSaved = signal(false);
+  saveLoading = signal(false);
+
   toggleGraph() {
     this.showGraph.update((v) => !v);
   }
@@ -382,6 +419,37 @@ export class EntityComponent {
 
   entity$ = this.slug$.pipe(
     switchMap((slug) => this.api.get(slug)),
+    tap((entity) => {
+      if (!this.auth.isLoggedIn) {
+        this.isSaved.set(false);
+        return;
+      }
+
+      this.savedApi.check(entity.id).subscribe({
+        next: (res) => this.isSaved.set(res.saved),
+        error: () => this.isSaved.set(false),
+      });
+    }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+
+  toggleSave(entityId: string) {
+    if (!this.auth.isLoggedIn || this.saveLoading()) return;
+
+    this.saveLoading.set(true);
+
+    const req$ = this.isSaved()
+      ? this.savedApi.remove(entityId)
+      : this.savedApi.save(entityId);
+
+    req$.subscribe({
+      next: () => {
+        this.isSaved.update((v) => !v);
+        this.saveLoading.set(false);
+      },
+      error: () => {
+        this.saveLoading.set(false);
+      },
+    });
+  }
 }
