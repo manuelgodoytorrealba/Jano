@@ -56,7 +56,7 @@ export class SavedService {
       throw new ConflictException('Entity already saved');
     }
 
-    return this.prisma.savedEntity.create({
+    const saved = await this.prisma.savedEntity.create({
       data: {
         userId,
         entityId,
@@ -73,6 +73,36 @@ export class SavedService {
         },
       },
     });
+
+    // Añadir automáticamente a la colección default si existe
+    const defaultCollection = await this.prisma.collection.findFirst({
+      where: {
+        userId,
+        isDefault: true,
+      },
+      select: { id: true },
+    });
+
+    if (defaultCollection) {
+      const existingCollectionItem = await this.prisma.collectionEntity.findFirst({
+        where: {
+          collectionId: defaultCollection.id,
+          entityId,
+        },
+        select: { id: true },
+      });
+
+      if (!existingCollectionItem) {
+        await this.prisma.collectionEntity.create({
+          data: {
+            collectionId: defaultCollection.id,
+            entityId,
+          },
+        });
+      }
+    }
+
+    return saved;
   }
 
   async removeSaved(userId: string, entityId: string) {
@@ -102,15 +132,15 @@ export class SavedService {
   }
 
   async isSaved(userId: string, entityId: string) {
-  const existing = await this.prisma.savedEntity.findUnique({
-    where: {
-      userId_entityId: {
-        userId,
-        entityId,
+    const existing = await this.prisma.savedEntity.findUnique({
+      where: {
+        userId_entityId: {
+          userId,
+          entityId,
+        },
       },
-    },
-  });
+    });
 
-  return { saved: !!existing };
-}
+    return { saved: !!existing };
+  }
 }

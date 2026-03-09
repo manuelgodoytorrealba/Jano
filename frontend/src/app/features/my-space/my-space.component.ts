@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { CollectionsApi } from '../../core/api/collections.api';
+import { SavedApi } from '../../core/api/saved.api';
 
 @Component({
   standalone: true,
@@ -25,6 +26,63 @@ import { CollectionsApi } from '../../core/api/collections.api';
         <button class="logout" type="button" (click)="logout()">Salir</button>
       </header>
 
+      <!-- SAVED -->
+      <section class="saved-box">
+        <div class="saved-head">
+          <div>
+            <h2 class="section-title">Guardados</h2>
+            <p class="section-sub">Entities guardadas rápidamente, aunque no estén en una colección.</p>
+          </div>
+        </div>
+
+        @if (saved$ | async; as savedItems) {
+          @if (savedItems.length) {
+            <section class="grid">
+              @for (row of savedItems; track row.id) {
+                <article class="card">
+                  <div class="thumb" (click)="go(row.entity.slug)">
+                    @if (thumb(row.entity)) {
+                      <img [src]="thumb(row.entity)!" [alt]="row.entity.title" />
+                    } @else {
+                      <div class="ph"></div>
+                    }
+                  </div>
+
+                  <div class="body">
+                    <div class="title" (click)="go(row.entity.slug)">
+                      {{ row.entity.title }}
+                    </div>
+
+                    <div class="summary">
+                      {{ cleanWiki(row.entity.summary ?? '') }}
+                    </div>
+
+                    <div class="actions">
+                      <button type="button" class="ghost" (click)="go(row.entity.slug)">
+                        Ver
+                      </button>
+                      <button
+                        type="button"
+                        class="danger"
+                        (click)="removeSaved(row.entity.id)"
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              }
+            </section>
+          } @else {
+            <div class="empty">
+              <div class="empty-title">No tienes entities guardadas</div>
+              <div class="empty-sub">Usa el botón Guardar desde una entity para que aparezca aquí.</div>
+            </div>
+          }
+        }
+      </section>
+
+      <!-- CREATE COLLECTION -->
       <section class="create-box">
         <div class="create-head">
           <div>
@@ -65,6 +123,7 @@ import { CollectionsApi } from '../../core/api/collections.api';
         }
       </section>
 
+      <!-- COLLECTIONS -->
       @if (collections$ | async; as collections) {
         @if (collections.length) {
           <div class="collections">
@@ -167,6 +226,7 @@ import { CollectionsApi } from '../../core/api/collections.api';
       cursor: pointer;
     }
 
+    .saved-box,
     .create-box {
       border: 1px solid rgba(0,0,0,.08);
       border-radius: 20px;
@@ -205,6 +265,7 @@ import { CollectionsApi } from '../../core/api/collections.api';
       cursor: pointer;
       white-space: nowrap;
     }
+
     .primary:disabled {
       opacity: .5;
       cursor: not-allowed;
@@ -227,6 +288,7 @@ import { CollectionsApi } from '../../core/api/collections.api';
       padding: 18px;
       display: grid;
       gap: 16px;
+      margin-bottom: 18px;
     }
 
     .collection-head {
@@ -363,6 +425,7 @@ import { CollectionsApi } from '../../core/api/collections.api';
 export class MySpaceComponent {
   auth = inject(AuthService);
   private collectionsApi = inject(CollectionsApi);
+  private savedApi = inject(SavedApi);
   private router = inject(Router);
 
   private refresh$ = new BehaviorSubject<void>(undefined);
@@ -371,6 +434,16 @@ export class MySpaceComponent {
   newCollectionDescription = '';
   creating = false;
   createError = '';
+
+  saved$ = combineLatest([this.auth.user$, this.refresh$]).pipe(
+    switchMap(([user]) => {
+      if (!user) return of([]);
+
+      return this.savedApi.list().pipe(
+        catchError(() => of([])),
+      );
+    }),
+  );
 
   collections$ = combineLatest([this.auth.user$, this.refresh$]).pipe(
     switchMap(([user]) => {
@@ -413,6 +486,13 @@ export class MySpaceComponent {
         this.creating = false;
         this.createError = err?.error?.message ?? 'No se pudo crear la colección';
       },
+    });
+  }
+
+  removeSaved(entityId: string) {
+    this.savedApi.remove(entityId).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => {},
     });
   }
 

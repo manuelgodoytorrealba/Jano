@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { map, distinctUntilChanged, switchMap, shareReplay, tap } from 'rxjs';
+import { map, distinctUntilChanged, switchMap, shareReplay, tap, of, catchError } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { SavedApi } from '../../core/api/saved.api';
+import { CollectionsApi } from '../../core/api/collections.api';
 import { AuthService } from '../../core/auth/auth.service';
 import { GraphComponent } from './graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
@@ -16,7 +17,6 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
   template: `
     @if (entity$ | async; as entity) {
       <div class="split">
-        <!-- LEFT: image -->
         <div class="left">
           @if (primaryMedia(entity)?.url) {
             <div class="media">
@@ -39,7 +39,6 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
           }
         </div>
 
-        <!-- RIGHT: info -->
         <div class="right">
           <header class="header">
             <div class="title-wrap">
@@ -77,6 +76,19 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
                     Guardar
                   }
                 </button>
+
+                <button
+                  class="btn"
+                  type="button"
+                  [disabled]="collectionsLoading()"
+                  (click)="toggleCollectionsPanel()"
+                >
+                  @if (collectionsLoading()) {
+                    Cargando...
+                  } @else {
+                    Añadir a colección
+                  }
+                </button>
               }
 
               <button class="btn" type="button" (click)="toggleGraph()">
@@ -84,6 +96,41 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
               </button>
             </div>
           </header>
+
+          @if (showCollectionsPanel() && auth.isLoggedIn) {
+            <section class="collections-panel">
+              <div class="collections-head">
+                <h3 class="collections-title">Tus colecciones</h3>
+                <button class="close-mini" type="button" (click)="toggleCollectionsPanel()">✕</button>
+              </div>
+
+              @if (collectionMessage()) {
+                <div class="collection-message">{{ collectionMessage() }}</div>
+              }
+
+              @if (collections$ | async; as collections) {
+                @if (collections.length) {
+                  <div class="collection-list">
+                    @for (collection of collections; track collection.id) {
+                      <button
+                        type="button"
+                        class="collection-option"
+                        [disabled]="addingToCollection()"
+                        (click)="addToCollection(collection.id, entity.id)"
+                      >
+                        <div class="collection-option-name">{{ collection.name }}</div>
+                        <div class="collection-option-meta">
+                          {{ collection.items?.length ?? 0 }} items
+                        </div>
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <p class="muted">No tienes colecciones todavía. Créala en My Space.</p>
+                }
+              }
+            </section>
+          }
 
           @if (entity.summary) {
             <p class="summary">
@@ -104,7 +151,6 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
             </div>
           }
 
-          <!-- FACT SHEET -->
           <h3 class="section">Ficha</h3>
 
           @if (entity.type === 'ARTWORK' && entity.artwork) {
@@ -143,7 +189,6 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
             <p class="muted">Sin ficha específica para este tipo.</p>
           }
 
-          <!-- CONTRIBUTORS -->
           @if ((entity.contributors?.length ?? 0) > 0) {
             <h3 class="section">Colaboradores</h3>
             <ul class="relations">
@@ -157,7 +202,6 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
             </ul>
           }
 
-          <!-- SOURCES -->
           @if ((entity.sourceRefs?.length ?? 0) > 0) {
             <h3 class="section">Fuentes</h3>
             <ul class="relations">
@@ -178,7 +222,6 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
             </ul>
           }
 
-          <!-- RELATIONS -->
           <h3 class="section">Relaciones</h3>
 
           <h4 class="sub">Salientes</h4>
@@ -317,11 +360,82 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
       font-size: 14px;
     }
     .btn:hover { background: #fafafa; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
 
     .btn-saved {
       border-color: rgba(0,0,0,.14);
       background: rgba(0,0,0,.05);
       font-weight: 700;
+    }
+
+    .collections-panel {
+      margin: 0 0 18px;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .collections-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .collections-title {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .close-mini {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .collection-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .collection-option {
+      text-align: left;
+      border: 1px solid rgba(0,0,0,.08);
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      display: grid;
+      gap: 4px;
+    }
+
+    .collection-option:hover {
+      background: #fafafa;
+    }
+
+    .collection-option-name {
+      font-weight: 700;
+    }
+
+    .collection-option-meta {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .collection-message {
+      font-size: 13px;
+      color: #444;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.04);
+      border: 1px solid rgba(0,0,0,.06);
     }
 
     .summary { margin: 0 0 18px; color: #222; line-height: 1.6; max-width: 70ch; }
@@ -397,6 +511,7 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 export class EntityComponent {
   private api = inject(EntitiesApi);
   private savedApi = inject(SavedApi);
+  private collectionsApi = inject(CollectionsApi);
   auth = inject(AuthService);
   private route = inject(ActivatedRoute);
 
@@ -404,8 +519,17 @@ export class EntityComponent {
   isSaved = signal(false);
   saveLoading = signal(false);
 
+  showCollectionsPanel = signal(false);
+  collectionsLoading = signal(false);
+  addingToCollection = signal(false);
+  collectionMessage = signal('');
+
   toggleGraph() {
     this.showGraph.update((v) => !v);
+  }
+
+  toggleCollectionsPanel() {
+    this.showCollectionsPanel.update((v) => !v);
   }
 
   primaryMedia(entity: any) {
@@ -416,6 +540,26 @@ export class EntityComponent {
     map((p) => p.get('slug') ?? ''),
     distinctUntilChanged()
   );
+
+ collections$ = this.auth.user$.pipe(
+  switchMap((user) => {
+    if (!user) {
+      this.collectionsLoading.set(false);
+      return of([]);
+    }
+
+    this.collectionsLoading.set(true);
+
+    return this.collectionsApi.list().pipe(
+      tap(() => this.collectionsLoading.set(false)),
+      catchError(() => {
+        this.collectionsLoading.set(false);
+        return of([]);
+      }),
+    );
+  }),
+  shareReplay({ bufferSize: 1, refCount: true })
+);
 
   entity$ = this.slug$.pipe(
     switchMap((slug) => this.api.get(slug)),
@@ -449,6 +593,24 @@ export class EntityComponent {
       },
       error: () => {
         this.saveLoading.set(false);
+      },
+    });
+  }
+
+  addToCollection(collectionId: string, entityId: string) {
+    if (this.addingToCollection()) return;
+
+    this.addingToCollection.set(true);
+    this.collectionMessage.set('');
+
+    this.collectionsApi.addEntity(collectionId, entityId).subscribe({
+      next: () => {
+        this.addingToCollection.set(false);
+        this.collectionMessage.set('Entity añadida a la colección.');
+      },
+      error: (err) => {
+        this.addingToCollection.set(false);
+        this.collectionMessage.set(err?.error?.message ?? 'No se pudo añadir a la colección.');
       },
     });
   }
