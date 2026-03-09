@@ -11,6 +11,11 @@ enum UserRole {
   ADMIN
 }
 
+enum UserPlan {
+  FREE
+  PREMIUM
+}
+
 enum EntityType {
   ARTWORK
   ARTIST
@@ -81,14 +86,17 @@ model Entity {
   // Collaborators / contributors
   contributors Contributor[]
 
+  // Saved by users
+  savedBy SavedEntity[]
+
+  // Collections
+  collectionItems CollectionEntity[]
+
   // Type-specific details (1..1, optional)
   artwork ArtworkDetails?
   artist  ArtistDetails?
   concept ConceptDetails?
   period  PeriodDetails?
-
-  // Saved by users
-  savedBy SavedEntity[]
 }
 
 model Relation {
@@ -239,11 +247,13 @@ model User {
   passwordHash String
   name         String?
   role         UserRole @default(USER)
+  plan         UserPlan @default(FREE)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   savedEntities SavedEntity[]
+  collections   Collection[]
 }
 
 model SavedEntity {
@@ -257,6 +267,38 @@ model SavedEntity {
 
   @@unique([userId, entityId])
   @@index([userId])
+  @@index([entityId])
+  @@index([createdAt])
+}
+
+model Collection {
+  id          String  @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  isDefault   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CollectionEntity[]
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model CollectionEntity {
+  id           String   @id @default(cuid())
+  collectionId String
+  entityId     String
+  createdAt    DateTime @default(now())
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  entity     Entity     @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, entityId])
+  @@index([collectionId])
   @@index([entityId])
   @@index([createdAt])
 }
