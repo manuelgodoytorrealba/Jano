@@ -1,5 +1,20 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { EntitiesService } from './entities.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { CreateEntityDto } from './dto/create-entity.dto';
+import { UpdateEntityDto } from './dto/update-entity.dto';
 import { ListEntitiesQuery } from './dto/list-entities.query';
 
 @Controller('entities')
@@ -11,10 +26,30 @@ export class EntitiesController {
     return this.service.list(query);
   }
 
-  // ✅ IMPORTANTE: antes de :slug
   @Get('home')
   home() {
     return this.service.home();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Post()
+  create(@Body() dto: CreateEntityDto) {
+    return this.service.adminCreate(dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateEntityDto) {
+    return this.service.adminUpdate(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.service.adminDelete(id);
   }
 
   @Get(':slug')

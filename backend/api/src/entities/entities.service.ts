@@ -2,6 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
 import { ContentLevel, EntityStatus } from '@prisma/client';
+import { ConflictException } from '@nestjs/common';
+import { CreateEntityDto } from './dto/create-entity.dto';
+import { UpdateEntityDto } from './dto/update-entity.dto';
 
 @Injectable()
 export class EntitiesService {
@@ -258,5 +261,84 @@ export class EntitiesService {
 
     if (!e) throw new NotFoundException('Entity not found');
     return e;
+  }
+
+    async adminCreate(dto: CreateEntityDto) {
+    const existing = await this.prisma.entity.findUnique({
+      where: { slug: dto.slug },
+      select: { id: true },
+    });
+
+    if (existing) {
+      throw new ConflictException('Slug already exists');
+    }
+
+    return this.prisma.entity.create({
+      data: {
+        type: dto.type,
+        title: dto.title.trim(),
+        slug: dto.slug.trim(),
+        summary: dto.summary?.trim(),
+        content: dto.content?.trim(),
+        contentLevel: dto.contentLevel,
+        status: dto.status ?? 'DRAFT',
+        startYear: dto.startYear,
+        endYear: dto.endYear,
+      },
+    });
+  }
+
+  async adminUpdate(id: string, dto: UpdateEntityDto) {
+    const existing = await this.prisma.entity.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    if (dto.slug) {
+      const slugOwner = await this.prisma.entity.findUnique({
+        where: { slug: dto.slug },
+        select: { id: true },
+      });
+
+      if (slugOwner && slugOwner.id !== id) {
+        throw new ConflictException('Slug already exists');
+      }
+    }
+
+    return this.prisma.entity.update({
+      where: { id },
+      data: {
+        type: dto.type,
+        title: dto.title?.trim(),
+        slug: dto.slug?.trim(),
+        summary: dto.summary?.trim(),
+        content: dto.content?.trim(),
+        contentLevel: dto.contentLevel,
+        status: dto.status,
+        startYear: dto.startYear,
+        endYear: dto.endYear,
+      },
+    });
+  }
+
+  async adminDelete(id: string) {
+    const existing = await this.prisma.entity.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    await this.prisma.entity.delete({
+      where: { id },
+    });
+
+    return { ok: true };
   }
 }
