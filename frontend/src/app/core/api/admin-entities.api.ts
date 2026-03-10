@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 export type AdminEntityPayload = {
   type: 'ARTWORK' | 'ARTIST' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
@@ -19,7 +19,17 @@ export class AdminEntitiesApi {
   private readonly baseUrl = 'http://localhost:3000/api/entities';
 
   list(params?: Record<string, string | number | undefined>) {
-    return this.http.get<any>(this.baseUrl, { params: params as any });
+    let httpParams = new HttpParams();
+
+    if (params) {
+      for (const [key, value] of Object.entries(params)) {
+        if (value !== undefined && value !== null && value !== '') {
+          httpParams = httpParams.set(key, String(value));
+        }
+      }
+    }
+
+    return this.http.get<any>(this.baseUrl, { params: httpParams });
   }
 
   getById(id: string) {
@@ -36,5 +46,24 @@ export class AdminEntitiesApi {
 
   remove(id: string) {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${id}`);
+  }
+
+  listRelations(entityId: string) {
+    return this.http.get<any[]>(`${this.baseUrl}/${entityId}/relations`);
+  }
+
+  listIncomingRelations(entityId: string) {
+    return this.http.get<any[]>(`${this.baseUrl}/${entityId}/relations/incoming`);
+  }
+
+  createRelation(
+    entityId: string,
+    data: { toId: string; type: string; justification?: string; weight?: number }
+  ) {
+    return this.http.post<any>(`${this.baseUrl}/${entityId}/relations`, data);
+  }
+
+  deleteRelation(entityId: string, relationId: string) {
+    return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/relations/${relationId}`);
   }
 }

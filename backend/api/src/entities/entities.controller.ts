@@ -60,6 +60,40 @@ export class EntitiesController {
     return this.service.adminGetById(id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Get(':id/relations')
+  listRelations(@Param('id') id: string) {
+    return this.service.adminListRelations(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Post(':id/relations')
+  createRelation(
+    @Param('id') id: string,
+    @Body() dto: { toId: string; type: string; justification?: string; weight?: number },
+  ) {
+    return this.service.adminCreateRelation(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Delete(':id/relations/:relationId')
+  deleteRelation(
+    @Param('id') id: string,
+    @Param('relationId') relationId: string,
+  ) {
+    return this.service.adminDeleteRelation(id, relationId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Get(':id/relations/incoming')
+  listIncomingRelations(@Param('id') id: string) {
+    return this.service.adminListIncomingRelations(id);
+  }
+
   @Get(':slug')
   get(@Param('slug') slug: string) {
     return this.service.getBySlug(slug);

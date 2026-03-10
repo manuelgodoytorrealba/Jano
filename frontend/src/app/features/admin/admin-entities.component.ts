@@ -1,14 +1,18 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
 import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
+
+type AdminType = '' | 'ARTWORK' | 'ARTIST' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
+type AdminStatus = '' | 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED';
 
 @Component({
   standalone: true,
   selector: 'app-admin-entities',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, RouterLink],
+  imports: [AsyncPipe, RouterLink, FormsModule],
   template: `
     <div class="page">
       <header class="top">
@@ -23,12 +27,64 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
         </div>
       </header>
 
+      <section class="filters-card">
+        <div class="filters-grid">
+          <label class="field field-search">
+            <span>Buscar</span>
+            <input
+              type="text"
+              [(ngModel)]="search"
+              (ngModelChange)="onSearchChange($event)"
+              placeholder="Título, resumen o contenido..."
+            />
+          </label>
+
+          <label class="field">
+            <span>Tipo</span>
+            <select [(ngModel)]="selectedType" (ngModelChange)="refresh()">
+              <option value="">Todos</option>
+              @for (type of types; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Status</span>
+            <select [(ngModel)]="selectedStatus" (ngModelChange)="refresh()">
+              <option value="">Todos</option>
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+          </label>
+
+          <div class="filters-actions">
+            <button class="btn ghost" type="button" (click)="resetFilters()">
+              Reset
+            </button>
+          </div>
+        </div>
+      </section>
+
       @if (vm$ | async; as vm) {
         <section class="meta">
-          <span class="pill">{{ vm.total ?? 0 }} entities</span>
+          <div class="meta-left">
+            <span class="pill">{{ vm.total ?? 0 }} entities</span>
+
+            @if (hasActiveFilters()) {
+              <span class="pill subtle">Filtros activos</span>
+            }
+          </div>
+
+          @if (feedbackMessage) {
+            <span class="pill success">{{ feedbackMessage }}</span>
+          }
         </section>
 
-        @if ((vm.items?.length ?? 0) > 0) {
+        @if (loading) {
+          <div class="loading-box">Cargando entities…</div>
+        } @else if ((vm.items?.length ?? 0) > 0) {
           <section class="table-wrap">
             <table class="table">
               <thead>
@@ -53,16 +109,32 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
                         }
                       </div>
                     </td>
-                    <td>{{ item.type }}</td>
-                    <td>{{ item.status }}</td>
-                    <td>{{ item.contentLevel || '—' }}</td>
+
+                    <td>
+                      <span class="mini-pill">{{ item.type }}</span>
+                    </td>
+
+                    <td>
+                      <span class="mini-pill">{{ item.status }}</span>
+                    </td>
+
+                    <td>
+                      <span class="mini-pill">{{ item.contentLevel || '—' }}</span>
+                    </td>
+
                     <td class="slug">{{ item.slug }}</td>
+
                     <td>
                       <div class="row-actions">
                         <a class="mini" [routerLink]="['/entity', item.slug]">Ver</a>
                         <a class="mini" [routerLink]="['/admin/entities', item.id, 'edit']">Editar</a>
-                        <button class="mini danger" type="button" (click)="remove(item.id, item.title)">
-                          Borrar
+                        <button
+                          class="mini danger"
+                          type="button"
+                          [disabled]="deletingId === item.id"
+                          (click)="remove(item.id, item.title)"
+                        >
+                          @if (deletingId === item.id) { Borrando... } @else { Borrar }
                         </button>
                       </div>
                     </td>
@@ -73,12 +145,14 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
           </section>
         } @else {
           <div class="empty">
-            <div class="empty-title">No hay entities</div>
-            <div class="empty-sub">Crea la primera desde el panel admin.</div>
+            <div class="empty-title">No hay resultados</div>
+            <div class="empty-sub">
+              Ajusta la búsqueda o los filtros, o crea una nueva entity.
+            </div>
           </div>
         }
       } @else {
-        <div class="loading">Cargando…</div>
+        <div class="loading-box">Cargando…</div>
       }
     </div>
   `,
@@ -113,12 +187,57 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
       color: #111;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
     }
 
     .btn.primary {
       background: #111;
       color: #fff;
       border-color: #111;
+    }
+
+    .filters-card {
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(160px, .7fr)) auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field span {
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #666;
+      font-weight: 700;
+    }
+
+    input, select {
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #fff;
+      padding: 0 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    .filters-actions {
+      display: flex;
+      align-items: end;
+      gap: 10px;
     }
 
     .pill {
@@ -128,9 +247,47 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
       border: 1px solid rgba(0,0,0,.08);
       background: rgba(255,255,255,.8);
       color: rgba(0,0,0,.72);
+      width: fit-content;
     }
 
-    .meta { margin-bottom: 14px; }
+    .pill.subtle {
+      background: rgba(0,0,0,.03);
+    }
+
+    .pill.success {
+      border-color: rgba(0,128,0,.14);
+      background: rgba(0,128,0,.06);
+      color: #126b12;
+    }
+
+    .meta {
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .meta-left {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .loading-box,
+    .empty {
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 18px;
+      background: #fff;
+      padding: 18px;
+    }
+
+    .loading-box { color: #666; }
+
+    .empty-title { font-weight: 800; }
+    .empty-sub { margin-top: 6px; color: #666; }
 
     .table-wrap {
       border: 1px solid rgba(0,0,0,.08);
@@ -168,12 +325,30 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
       font-size: 13px;
       max-width: 42ch;
       line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .slug {
       color: #666;
       font-family: monospace;
       font-size: 12px;
+    }
+
+    .mini-pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(0,0,0,.03);
+      color: rgba(0,0,0,.72);
+      text-transform: uppercase;
+      letter-spacing: .05em;
     }
 
     .row-actions {
@@ -194,6 +369,7 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
       display: inline-flex;
       align-items: center;
       font-size: 13px;
+      justify-content: center;
     }
 
     .mini.danger {
@@ -201,17 +377,24 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
       border-color: rgba(176,0,32,.18);
     }
 
-    .empty {
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 18px;
-      background: #fff;
-      padding: 18px;
+    .mini:disabled {
+      opacity: .55;
+      cursor: not-allowed;
     }
 
-    .empty-title { font-weight: 800; }
-    .empty-sub { margin-top: 6px; color: #666; }
+    @media (max-width: 1100px) {
+      .filters-grid {
+        grid-template-columns: 1fr 1fr;
+      }
 
-    .loading { color: #666; padding: 40px 0; }
+      .field-search {
+        grid-column: 1 / -1;
+      }
+
+      .filters-actions {
+        grid-column: 1 / -1;
+      }
+    }
 
     @media (max-width: 900px) {
       .table-wrap {
@@ -222,29 +405,113 @@ import { AdminEntitiesApi } from '../../core/api/admin-entities.api';
         min-width: 900px;
       }
     }
+
+    @media (max-width: 640px) {
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   `],
 })
 export class AdminEntitiesComponent {
   private api = inject(AdminEntitiesApi);
-  private router = inject(Router);
+
+  types: Exclude<AdminType, ''>[] = [
+    'ARTWORK',
+    'ARTIST',
+    'CONCEPT',
+    'MOVEMENT',
+    'PERIOD',
+    'TEXT',
+    'PLACE',
+  ];
+
+  statuses: Exclude<AdminStatus, ''>[] = [
+    'DRAFT',
+    'IN_REVIEW',
+    'PUBLISHED',
+  ];
+
+  search = '';
+  selectedType: AdminType = '';
+  selectedStatus: AdminStatus = '';
+
+  loading = false;
+  deletingId = '';
+  feedbackMessage = '';
 
   private refresh$ = new BehaviorSubject<void>(undefined);
+  private search$ = new BehaviorSubject<string>('');
 
-  vm$ = this.refresh$.pipe(
-    switchMap(() =>
-      this.api.list({ page: 1, limit: 24, sort: 'recent' }).pipe(
-        catchError(() => of({ items: [], total: 0 }))
-      )
-    )
+  vm$ = combineLatest([
+    this.refresh$,
+    this.search$.pipe(
+      debounceTime(220),
+      distinctUntilChanged(),
+      startWith(''),
+    ),
+  ]).pipe(
+    switchMap(([_, q]) => {
+      this.loading = true;
+      this.feedbackMessage = '';
+
+      return this.api.list({
+        page: 1,
+        limit: 60,
+        sort: 'recent',
+        q: q.trim() || undefined,
+        type: this.selectedType || undefined,
+        status: this.selectedStatus || undefined,
+      }).pipe(
+        map((res) => {
+          this.loading = false;
+          return res;
+        }),
+        catchError(() => {
+          this.loading = false;
+          return of({ items: [], total: 0 });
+        }),
+      );
+    }),
   );
+
+  onSearchChange(value: string) {
+    this.search$.next(value ?? '');
+  }
+
+  refresh() {
+    this.refresh$.next();
+  }
+
+  resetFilters() {
+    this.search = '';
+    this.selectedType = '';
+    this.selectedStatus = '';
+    this.search$.next('');
+    this.refresh();
+  }
+
+  hasActiveFilters() {
+    return !!(this.search.trim() || this.selectedType || this.selectedStatus);
+  }
 
   remove(id: string, title: string) {
     const ok = window.confirm(`¿Borrar "${title}"?`);
     if (!ok) return;
 
+    this.deletingId = id;
+    this.feedbackMessage = '';
+
     this.api.remove(id).subscribe({
-      next: () => this.refresh$.next(),
-      error: () => alert('No se pudo borrar la entity'),
+      next: () => {
+        this.deletingId = '';
+        this.feedbackMessage = 'Entity eliminada';
+        this.refresh();
+      },
+      error: () => {
+        this.deletingId = '';
+        this.feedbackMessage = 'No se pudo borrar la entity';
+      },
     });
   }
 }
