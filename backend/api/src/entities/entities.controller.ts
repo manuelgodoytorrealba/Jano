@@ -19,7 +19,7 @@ import { ListEntitiesQuery } from './dto/list-entities.query';
 
 @Controller('entities')
 export class EntitiesController {
-  constructor(private service: EntitiesService) {}
+  constructor(private service: EntitiesService) { }
 
   @Get()
   list(@Query() query: ListEntitiesQuery) {
@@ -50,6 +50,14 @@ export class EntitiesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.service.adminDelete(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Get('admin/:id')
+  getByIdForAdmin(@Param('id') id: string) {
+    console.log('ADMIN GET ENTITY BY ID:', id);
+    return this.service.adminGetById(id);
   }
 
   @Get(':slug')

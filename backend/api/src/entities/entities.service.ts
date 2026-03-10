@@ -341,4 +341,19 @@ export class EntitiesService {
 
     return { ok: true };
   }
+
+  async adminGetById(id: string) {
+      console.log('SERVICE adminGetById id =', id);
+  const entity = await this.prisma.entity.findUnique({
+    where: { id },
+  });
+
+   console.log('SERVICE adminGetById entity =', entity);
+
+  if (!entity) {
+    throw new NotFoundException('Entity not found');
+  }
+
+  return entity;
+}
 }
