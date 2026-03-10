@@ -1,0 +1,26 @@
+<div class="auth-page">
+      <div class="card">
+        <h1>Login</h1>
+        <p class="muted">Accede a tu espacio en JANO</p>
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <label>Email</label>
+          <input type="email" formControlName="email" />
+
+          <label>Password</label>
+          <input type="password" formControlName="password" />
+
+          @if (error) {
+            <div class="error">{{ error }}</div>
+          }
+
+          <button type="submit" [disabled]="form.invalid || loading">
+            {{ loading ? 'Entrando…' : 'Entrar' }}
+          </button>
+        </form>
+
+        <p class="foot">
+          ¿No tienes cuenta? <a routerLink="/register">Crear cuenta</a>
+        </p>
+      </div>
+    </div>

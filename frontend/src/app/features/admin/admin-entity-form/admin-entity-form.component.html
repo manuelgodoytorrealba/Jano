@@ -1,0 +1,384 @@
+   <div class="page">
+  <header class="top">
+    <div>
+      <h1>{{ isEdit ? 'Editar entity' : 'Nueva entity' }}</h1>
+      <p class="muted">Administra el contenido principal de JANO.</p>
+    </div>
+
+    <div class="top-actions">
+      <a class="btn ghost" routerLink="/admin">Volver</a>
+    </div>
+  </header>
+
+  @if (loadError) {
+    <div class="error-box">{{ loadError }}</div>
+  }
+
+  <section class="editor-layout">
+    <!-- LEFT COLUMN -->
+    <section class="form-wrap">
+      <div class="grid">
+        <label class="field">
+          <span>Tipo</span>
+          <select [(ngModel)]="form.type" name="type">
+            @for (type of types; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Status</span>
+          <select [(ngModel)]="form.status" name="status">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Nivel</span>
+          <select [(ngModel)]="form.contentLevel" name="contentLevel">
+            <option value="">—</option>
+            @for (level of levels; track level) {
+              <option [value]="level">{{ level }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Año inicio</span>
+          <input type="number" [(ngModel)]="form.startYear" name="startYear" />
+        </label>
+
+        <label class="field">
+          <span>Año fin</span>
+          <input type="number" [(ngModel)]="form.endYear" name="endYear" />
+        </label>
+
+        <div></div>
+
+        <label class="field full">
+          <span>Título</span>
+          <input
+            type="text"
+            [(ngModel)]="form.title"
+            (ngModelChange)="onTitleChange($event)"
+            name="title"
+          />
+        </label>
+
+        <label class="field full">
+          <span>Slug</span>
+          <input
+            type="text"
+            [(ngModel)]="form.slug"
+            (ngModelChange)="onSlugChange($event)"
+            name="slug"
+          />
+          <small class="hint">URL amigable de la entity.</small>
+        </label>
+
+        <label class="field full">
+          <span>Resumen</span>
+          <textarea
+            rows="5"
+            [(ngModel)]="form.summary"
+            name="summary"
+          ></textarea>
+        </label>
+
+       <label class="field full content-field">
+  <span>Contenido</span>
+  <textarea
+    #contentTextarea
+    rows="14"
+    [(ngModel)]="form.content"
+    (input)="onContentInput()"
+    (keydown.escape)="closeLinkSuggestions()"
+    name="content"
+  ></textarea>
+
+  @if (showLinkSuggestions) {
+    <div class="link-suggestions" (mousedown)="$event.preventDefault()">
+      @if (linkLoading) {
+        <div class="link-suggestion muted">Buscando entities…</div>
+      } @else if (linkSuggestions.length) {
+        @for (item of linkSuggestions; track item.id) {
+          <button
+            type="button"
+            class="link-suggestion"
+            (click)="insertEntityLink(item)"
+          >
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.type }} · {{ item.slug }}</span>
+          </button>
+        }
+      } @else {
+        <div class="link-suggestion muted">
+          No se encontraron entities para "{{ linkSearch }}"
+        </div>
+      }
+    </div>
+  }
+</label>
+      </div>
+
+      @if (isEdit) {
+        <section class="relations-box">
+          <div class="relations-head">
+            <h3>Relaciones</h3>
+            <p class="muted">Conecta esta entity con otras del sistema.</p>
+          </div>
+
+          <div class="relation-form">
+            <label class="field full">
+              <span>Buscar entity</span>
+              <input
+                type="text"
+                [(ngModel)]="relationSearch"
+                (input)="searchRelationTargets()"
+                placeholder="Busca por título, slug o resumen..."
+              />
+            </label>
+
+            @if (relationLoading) {
+              <div class="muted">Buscando…</div>
+            }
+
+            @if (relationResults.length) {
+              <div class="search-results">
+                @for (item of relationResults; track item.id) {
+                  <button
+                    type="button"
+                    class="search-item"
+                    (click)="selectRelationTarget(item)"
+                  >
+                    <strong>{{ item.title }}</strong>
+                    <span>{{ item.type }}</span>
+                  </button>
+                }
+              </div>
+            }
+
+            <label class="field">
+              <span>Tipo de relación</span>
+              <select [(ngModel)]="newRelation.type" name="newRelationType">
+                @for (type of relationTypes; track type) {
+                  <option [value]="type">{{ type }}</option>
+                }
+              </select>
+            </label>
+
+            <label class="field full">
+              <span>Justificación (opcional)</span>
+              <textarea
+                rows="3"
+                [(ngModel)]="newRelation.justification"
+                name="newRelationJustification"
+              ></textarea>
+            </label>
+
+            <div class="relations-actions">
+              <button class="btn primary" type="button" (click)="addRelation()">
+                Añadir relación
+              </button>
+            </div>
+          </div>
+
+          <div class="current-relations">
+            <h4>Relaciones actuales</h4>
+
+            @if (relationsLoading) {
+              <div class="muted">Cargando relaciones…</div>
+            } @else if (relations.length) {
+              <div class="relations-list">
+                @for (rel of relations; track rel.id) {
+                  <article class="relation-card">
+                    <div class="relation-main">
+                      <div class="relation-type">{{ rel.type }}</div>
+                      <div class="relation-target">
+  <span class="relation-arrow">→</span>
+  {{ rel.to?.title }}
+  @if (rel.to?.type) {
+    <span class="relation-meta">· {{ rel.to.type }}</span>
+  }
+</div>
+
+                      @if (rel.justification) {
+                        <div class="relation-note">{{ rel.justification }}</div>
+                      }
+                    </div>
+
+                    <button
+                      type="button"
+                      class="btn danger"
+                      (click)="removeRelation(rel.id)"
+                    >
+                      Quitar
+                    </button>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="preview-empty">
+                Esta entity aún no tiene relaciones salientes.
+              </div>
+            }
+          </div>
+
+          <div class="current-relations">
+  <h4>Relaciones entrantes</h4>
+
+  @if (incomingRelationsLoading) {
+    <div class="muted">Cargando relaciones entrantes…</div>
+  } @else if (incomingRelations.length) {
+    <div class="relations-list">
+      @for (rel of incomingRelations; track rel.id) {
+        <article class="relation-card incoming">
+          <div class="relation-main">
+            <div class="relation-type">{{ rel.type }}</div>
+            <div class="relation-target">
+  <span class="relation-arrow incoming">←</span>
+  {{ rel.from?.title }}
+  @if (rel.from?.type) {
+    <span class="relation-meta">· {{ rel.from.type }}</span>
+  }
+</div>
+
+            @if (rel.justification) {
+              <div class="relation-note">{{ rel.justification }}</div>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="preview-empty">
+      Esta entity aún no tiene relaciones entrantes.
+    </div>
+  }
+</div>
+        </section>
+      }
+
+      @if (errorMessage) {
+        <div class="error-box">{{ errorMessage }}</div>
+      }
+      @if (successMessage) {
+  <div class="success-box">{{ successMessage }}</div>
+}
+
+      <div class="actions">
+  <a class="btn ghost" routerLink="/admin">Cancelar</a>
+
+  <button
+    class="btn ghost"
+    type="button"
+    [disabled]="saving || loading"
+    (click)="submit('stay')"
+  >
+    @if (saving && submitMode === 'stay') {
+      Guardando...
+    } @else {
+      Guardar y seguir
+    }
+  </button>
+
+  <button
+    class="btn primary"
+    type="button"
+    [disabled]="saving || loading"
+    (click)="submit('back')"
+  >
+    @if (loading) {
+      Cargando...
+    } @else if (saving && submitMode === 'back') {
+      Guardando...
+    } @else {
+      Guardar
+    }
+  </button>
+</div>
+    </section>
+
+    <!-- RIGHT COLUMN -->
+    <aside class="preview-wrap">
+      <div class="preview-head">
+        <h2>Preview</h2>
+        <span class="preview-pill">{{ form.type }}</span>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-badges">
+          <span class="badge">{{ form.status }}</span>
+
+          @if (form.contentLevel) {
+            <span class="badge">{{ form.contentLevel }}</span>
+          }
+
+          @if (form.startYear || form.endYear) {
+            <span class="badge">
+              {{ form.startYear || '—' }}@if (form.endYear) {–{{ form.endYear }}}
+            </span>
+          }
+        </div>
+
+        <h3 class="preview-title">
+          {{ form.title || 'Título de la entity' }}
+        </h3>
+
+        <div class="preview-slug">
+          /entity/{{ form.slug || 'slug-de-la-entity' }}
+        </div>
+
+        @if (form.summary) {
+          <div
+          class="preview-summary"
+          [innerHTML]="renderContentPreview(form.summary)"
+        ></div>
+        } @else {
+          <div class="preview-empty">
+            El resumen aparecerá aquí.
+          </div>
+        }
+
+        <div class="preview-section-title">Contenido</div>
+
+        @if (form.content) {
+          <div
+          #previewContainer
+          class="preview-content"
+          [innerHTML]="renderContentPreview(form.content)">
+        </div>
+
+
+        } @else {
+          <div class="preview-empty">
+            El contenido principal aparecerá aquí.
+          </div>
+        }
+      </div>
+
+      @if (hoveredSlug) {
+  <div
+    class="entity-preview-popover"
+    (mouseenter)="isHoveringPreviewPopup = true; cancelClosePreview()"
+    (mouseleave)="isHoveringPreviewPopup = false; scheduleClosePreview()"
+  >
+    @if (previewLoading) {
+      <div class="muted">Cargando preview…</div>
+    }
+
+    @if (!previewLoading && previewData) {
+      <h4>{{ previewData.title }}</h4>
+
+      @if (previewData.summary) {
+        <p>{{ previewData.summary }}</p>
+      }
+    }
+  </div>
+}
+    </aside>
+  </section>
+</div>

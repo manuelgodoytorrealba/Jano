@@ -66,4 +66,7 @@ export class AdminEntitiesApi {
   deleteRelation(entityId: string, relationId: string) {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/relations/${relationId}`);
   }
+  previewBySlug(slug: string) {
+  return this.http.get<any>(`/api/entities/preview/${slug}`);
+}
 }

@@ -2,13 +2,13 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
 import { EntityComponent } from './features/entity/entity.component';
 import { EntitiesListComponent } from './features/entities/entities-list.component';
-import { LoginComponent } from './features/auth/login.component';
+import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register.component';
 import { MySpaceComponent } from './features/my-space/my-space.component';
 import { authGuard } from './core/auth/auth.guard';
 import { adminGuard } from './core/auth/admin.guard';
-import { AdminEntitiesComponent } from './features/admin/admin-entities.component';
-import { AdminEntityFormComponent } from './features/admin/admin-entity-form.component';
+import { AdminEntitiesComponent } from './features/admin/admin-entities/admin-entities.component';
+import { AdminEntityFormComponent } from './features/admin/admin-entity-form/admin-entity-form.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
