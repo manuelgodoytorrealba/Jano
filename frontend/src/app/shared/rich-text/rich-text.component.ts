@@ -1,5 +1,10 @@
-// frontend/src/app/shared/rich-text/rich-text.component.ts
-import { ChangeDetectionStrategy, Component, Input, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
 
@@ -22,27 +27,97 @@ export class RichTextComponent {
 
   openSlug = signal<string | null>(null);
   preview = signal<any | null>(null);
+  previewLoading = signal(false);
 
-  tokens = computed<Token[]>(() => parseWikilinks(this.text ?? ''));
+  private closeTimer: ReturnType<typeof setTimeout> | null = null;
+  private requestId = 0;
 
-  previewImageUrl = computed<string | null>(() => {
+  isHoveringLink = false;
+  isHoveringTooltip = false;
+
+  get tokens(): Token[] {
+    return parseWikilinks(this.text ?? '');
+  }
+
+  get previewImageUrl(): string | null {
     const p = this.preview();
     return p?.mediaLinks?.[0]?.media?.url ?? null;
-  });
+  }
 
-  open(slug: string) {
+  onLinkEnter(slug: string) {
+    this.isHoveringLink = true;
+    this.cancelClose();
+
+    if (this.openSlug() === slug && (this.previewLoading() || this.preview())) {
+      return;
+    }
+
     this.openSlug.set(slug);
+    this.preview.set(null);
+    this.previewLoading.set(true);
 
-    // cache simple
-    if (this.preview()?.slug === slug) return;
+    const currentRequest = ++this.requestId;
 
-    this.api.preview(slug).subscribe((p: any) => {
-      this.preview.set(p);
+    this.api.preview(slug).subscribe({
+      next: (p: any) => {
+        if (currentRequest !== this.requestId) return;
+        if (this.openSlug() !== slug) return;
+
+        this.preview.set(p);
+        this.previewLoading.set(false);
+      },
+      error: () => {
+        if (currentRequest !== this.requestId) return;
+        if (this.openSlug() !== slug) return;
+
+        this.preview.set(null);
+        this.previewLoading.set(false);
+      },
     });
   }
 
-  close() {
-    this.openSlug.set(null);
+  onLinkLeave() {
+    this.isHoveringLink = false;
+    this.scheduleClose();
+  }
+
+  onTooltipEnter() {
+    this.isHoveringTooltip = true;
+    this.cancelClose();
+  }
+
+  onTooltipLeave() {
+    this.isHoveringTooltip = false;
+    this.scheduleClose();
+  }
+
+  onLinkFocus(slug: string) {
+    this.onLinkEnter(slug);
+  }
+
+  onLinkBlur() {
+    this.onLinkLeave();
+  }
+
+  private scheduleClose() {
+    this.cancelClose();
+
+    this.closeTimer = setTimeout(() => {
+      if (this.isHoveringLink || this.isHoveringTooltip) {
+        return;
+      }
+
+      this.openSlug.set(null);
+      this.preview.set(null);
+      this.previewLoading.set(false);
+    }, 140);
+  }
+
+  private cancelClose() {
+    if (this.closeTimer) {
+      clearTimeout(this.closeTimer);
+      this.closeTimer = null;
+    }
   }
 }
 
@@ -54,7 +129,9 @@ function parseWikilinks(input: string): Token[] {
   let m: RegExpExecArray | null;
 
   while ((m = re.exec(input))) {
-    if (m.index > last) tokens.push({ kind: 'text', value: input.slice(last, m.index) });
+    if (m.index > last) {
+      tokens.push({ kind: 'text', value: input.slice(last, m.index) });
+    }
 
     const slug = (m[1] ?? '').trim();
     const label = (m[3] ?? m[1] ?? '').trim();
@@ -63,6 +140,9 @@ function parseWikilinks(input: string): Token[] {
     last = re.lastIndex;
   }
 
-  if (last < input.length) tokens.push({ kind: 'text', value: input.slice(last) });
+  if (last < input.length) {
+    tokens.push({ kind: 'text', value: input.slice(last) });
+  }
+
   return tokens;
 }

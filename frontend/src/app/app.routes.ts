@@ -3,7 +3,7 @@ import { HomeComponent } from './features/home/home.component';
 import { EntityComponent } from './features/entity/entity.component';
 import { EntitiesListComponent } from './features/entities/entities-list.component';
 import { LoginComponent } from './features/auth/login/login.component';
-import { RegisterComponent } from './features/auth/register.component';
+import { RegisterComponent } from './features/auth/register/register.component';
 import { MySpaceComponent } from './features/my-space/my-space.component';
 import { authGuard } from './core/auth/auth.guard';
 import { adminGuard } from './core/auth/admin.guard';

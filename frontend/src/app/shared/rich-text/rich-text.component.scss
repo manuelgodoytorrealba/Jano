@@ -1,48 +1,73 @@
-    .rt { position: relative; }
+.rt {
+  line-height: 1.7;
+}
 
-    .link-wrap {
-      position: relative;
-      display: inline-block;
-    }
+.link-wrap {
+  position: relative;
+  display: inline;
+}
 
-    .link {
-      color: #111;
-      font-weight: 650;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
+.link {
+  color: #6b46c1;
+  text-decoration: underline;
+  text-decoration-color: rgba(107, 70, 193, 0.32);
+  text-underline-offset: 2px;
+  transition: color .12s ease, text-decoration-color .12s ease;
+  cursor: pointer;
+}
 
-    .tooltip {
-      position: absolute;
-      z-index: 20;
-      left: 0;
-      top: 22px;
-      display: block;
-      min-width: 260px;
-      max-width: 360px;
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(0,0,0,.08);
-      background: #fff;
-      box-shadow: 0 14px 40px rgba(0,0,0,.12);
-      color: #222;
-    }
+.link:hover {
+  color: #4c2f92;
+  text-decoration-color: #4c2f92;
+}
 
-    .tt-title { font-weight: 800; margin-bottom: 4px; }
-    .tt-meta {
-      font-size: 12px;
-      color: #666;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-    .tt-summary { font-size: 13px; color: #444; line-height: 1.4; }
+.tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 80;
+  width: 320px;
+  max-width: min(320px, 88vw);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.16);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
 
-    .tt-img {
-      width: 100%;
-      margin-top: 10px;
-      border-radius: 10px;
-      object-fit: cover;
-      max-height: 140px;
-    }
+.tt-loading {
+  font-size: 13px;
+  color: #666;
+}
+
+.tt-title {
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #111;
+}
+
+.tt-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.tt-summary {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.tt-img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  object-fit: cover;
+}
