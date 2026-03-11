@@ -1,0 +1,43 @@
+ <span class="rt">
+      @for (t of tokens(); track $index) {
+        @if (t.kind === 'text') {
+          <span>{{ t.value }}</span>
+        } @else {
+          <span class="link-wrap">
+            <a
+              class="link"
+              [routerLink]="['/entity', t.slug]"
+              (mouseenter)="open(t.slug)"
+              (focus)="open(t.slug)"
+              (mouseleave)="close()"
+              (blur)="close()"
+            >
+              {{ t.label }}
+            </a>
+
+            @if (openSlug() === t.slug && preview()) {
+              <span class="tooltip" role="tooltip">
+                <div class="tt-title">{{ preview()!.title }}</div>
+
+                <div class="tt-meta">
+                  <span>{{ preview()!.type }}</span>
+                  @if (preview()!.startYear || preview()!.endYear) {
+                    <span>• {{ preview()!.startYear ?? '' }}@if (preview()!.endYear) {–{{ preview()!.endYear }} }</span>
+                  }
+                  @if (preview()!.status) { <span>• {{ preview()!.status }}</span> }
+                  @if (preview()!.contentLevel) { <span>• {{ preview()!.contentLevel }}</span> }
+                </div>
+
+                @if (preview()!.summary) {
+                  <div class="tt-summary">{{ preview()!.summary }}</div>
+                }
+
+                @if (previewImageUrl()) {
+                  <img class="tt-img" [src]="previewImageUrl()!" [alt]="preview()!.title" />
+                }
+              </span>
+            }
+          </span>
+        }
+      }
+    </span>

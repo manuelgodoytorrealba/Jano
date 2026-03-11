@@ -1,0 +1,48 @@
+    .rt { position: relative; }
+
+    .link-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .link {
+      color: #111;
+      font-weight: 650;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .tooltip {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      top: 22px;
+      display: block;
+      min-width: 260px;
+      max-width: 360px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: #fff;
+      box-shadow: 0 14px 40px rgba(0,0,0,.12);
+      color: #222;
+    }
+
+    .tt-title { font-weight: 800; margin-bottom: 4px; }
+    .tt-meta {
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .tt-summary { font-size: 13px; color: #444; line-height: 1.4; }
+
+    .tt-img {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+      object-fit: cover;
+      max-height: 140px;
+    }

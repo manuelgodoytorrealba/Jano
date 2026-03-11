@@ -1,0 +1,38 @@
+
+    @if (vm$ | async; as vm) {
+      <svg class="svg" viewBox="0 0 1000 700">
+        <!-- edges -->
+        @for (e of vm.edges; track e.id) {
+          <line
+            [attr.x1]="vm.pos[e.from].x"
+            [attr.y1]="vm.pos[e.from].y"
+            [attr.x2]="vm.pos[e.to].x"
+            [attr.y2]="vm.pos[e.to].y"
+            class="edge"
+          />
+        }
+
+        <!-- nodes -->
+        @for (n of vm.nodes; track n.id) {
+          <g
+            class="node-group"
+            [attr.transform]="'translate(' + vm.pos[n.id].x + ',' + vm.pos[n.id].y + ')'"
+            (click)="go(n.slug)"
+          >
+            <circle class="node" r="22"></circle>
+            <circle class="node-ring" r="28"></circle>
+
+            <text class="label" x="40" y="6">
+              {{ n.title }}
+            </text>
+
+            <text class="sub" x="40" y="26">
+              {{ n.type }}
+            </text>
+          </g>
+        }
+      </svg>
+    } @else {
+      <div class="loading">Cargando grafo…</div>
+    }
+  

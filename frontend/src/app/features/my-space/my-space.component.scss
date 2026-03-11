@@ -1,0 +1,217 @@
+
+    .page { padding: 28px; }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 22px;
+    }
+
+    h1 { margin: 0; }
+    .muted { margin: 6px 0 0; color: #666; }
+
+    .logout {
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .saved-box,
+    .create-box {
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 20px;
+      background: #fff;
+      padding: 18px;
+      margin-bottom: 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .section-title { margin: 0; font-size: 18px; }
+    .section-sub { margin: 6px 0 0; color: #666; font-size: 14px; }
+
+    .create-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+    }
+
+    .input {
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,.10);
+      padding: 0 12px;
+      background: #fff;
+      outline: none;
+    }
+
+    .primary {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: none;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .error {
+      color: #b00020;
+      font-size: 13px;
+    }
+
+    .collections {
+      display: grid;
+      gap: 18px;
+    }
+
+    .collection-card {
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 20px;
+      background: #fff;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .collection-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .collection-title-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .collection-title {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .collection-description {
+      margin: 6px 0 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .pill,
+    .count-pill {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.8);
+      color: rgba(0,0,0,.72);
+      width: fit-content;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    .card {
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .thumb {
+      height: 180px;
+      background: #f3f3f3;
+      cursor: pointer;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ph {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f2f2f2, #fafafa);
+    }
+
+    .body {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .title {
+      font-weight: 800;
+      cursor: pointer;
+      letter-spacing: -0.02em;
+    }
+
+    .summary {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .ghost,
+    .danger {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .danger {
+      border-color: rgba(176,0,32,.20);
+      color: #b00020;
+    }
+
+    .empty {
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 18px;
+      background: #fff;
+      padding: 18px;
+    }
+
+    .main-empty {
+      margin-top: 10px;
+    }
+
+    .empty-title { font-weight: 800; }
+    .empty-sub { margin-top: 6px; color: #666; }
+
+    @media (max-width: 860px) {
+      .create-form {
+        grid-template-columns: 1fr;
+      }
+
+      .collection-head {
+        flex-direction: column;
+      }
+    }
