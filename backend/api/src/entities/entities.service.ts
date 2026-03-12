@@ -16,7 +16,7 @@ export class EntitiesService {
     'ARTIST',
   ];
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async list(query: ListEntitiesQuery) {
 
@@ -183,8 +183,32 @@ export class EntitiesService {
         mediaLinks: { include: { media: true } },
         contributors: true,
         sourceRefs: { include: { source: true } },
-        outgoing: { include: { to: true } },
-        incoming: { include: { from: true } },
+        outgoing: {
+          include: {
+            to: {
+              include: {
+                mediaLinks: {
+                  include: { media: true },
+                  where: { role: 'PRIMARY' as any },
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
+        incoming: {
+          include: {
+            from: {
+              include: {
+                mediaLinks: {
+                  include: { media: true },
+                  where: { role: 'PRIMARY' as any },
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
       },
     });
 
@@ -502,26 +526,26 @@ export class EntitiesService {
   }
 
   private extractEntityLinks(content: string | null | undefined): string[] {
-  if (!content) return [];
+    if (!content) return [];
 
-  const regex = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
+    const regex = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
-  const slugs: string[] = [];
-  let match: RegExpExecArray | null;
+    const slugs: string[] = [];
+    let match: RegExpExecArray | null;
 
-  while ((match = regex.exec(content)) !== null) {
-    const slug = (match[1] ?? '').trim();
-    if (slug) slugs.push(slug);
+    while ((match = regex.exec(content)) !== null) {
+      const slug = (match[1] ?? '').trim();
+      if (slug) slugs.push(slug);
+    }
+
+    return [...new Set(slugs)];
   }
 
-  return [...new Set(slugs)];
-}
-
   private async syncContentRelations(entityId: string, content: string | null) {
-  const slugs = this.extractEntityLinks(content);
+    const slugs = this.extractEntityLinks(content);
 
-  const targets = slugs.length
-    ? await this.prisma.entity.findMany({
+    const targets = slugs.length
+      ? await this.prisma.entity.findMany({
         where: {
           slug: {
             in: slugs,
@@ -535,45 +559,45 @@ export class EntitiesService {
           slug: true,
         },
       })
-    : [];
+      : [];
 
-  const targetIds = new Set(targets.map((t) => t.id));
+    const targetIds = new Set(targets.map((t) => t.id));
 
-  const existingMentions = await this.prisma.relation.findMany({
-    where: {
-      fromId: entityId,
-      type: 'MENTIONS',
-    },
-    select: {
-      id: true,
-      toId: true,
-    },
-  });
+    const existingMentions = await this.prisma.relation.findMany({
+      where: {
+        fromId: entityId,
+        type: 'MENTIONS',
+      },
+      select: {
+        id: true,
+        toId: true,
+      },
+    });
 
-  const existingTargetIds = new Set(existingMentions.map((r) => r.toId));
+    const existingTargetIds = new Set(existingMentions.map((r) => r.toId));
 
-  // Crear nuevas relaciones que no existían
-  for (const target of targets) {
-    if (!existingTargetIds.has(target.id)) {
-      await this.prisma.relation.create({
-        data: {
-          fromId: entityId,
-          toId: target.id,
-          type: 'MENTIONS',
-        },
-      });
+    // Crear nuevas relaciones que no existían
+    for (const target of targets) {
+      if (!existingTargetIds.has(target.id)) {
+        await this.prisma.relation.create({
+          data: {
+            fromId: entityId,
+            toId: target.id,
+            type: 'MENTIONS',
+          },
+        });
+      }
+    }
+
+    // Eliminar relaciones antiguas que ya no están en el contenido
+    for (const relation of existingMentions) {
+      if (!targetIds.has(relation.toId)) {
+        await this.prisma.relation.delete({
+          where: {
+            id: relation.id,
+          },
+        });
+      }
     }
   }
-
-  // Eliminar relaciones antiguas que ya no están en el contenido
-  for (const relation of existingMentions) {
-    if (!targetIds.has(relation.toId)) {
-      await this.prisma.relation.delete({
-        where: {
-          id: relation.id,
-        },
-      });
-    }
-  }
-}
 }

@@ -14,9 +14,9 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
   selector: 'app-entity',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AsyncPipe, RouterLink, GraphComponent, RichTextComponent],
-   templateUrl: './entity.component.html',
+  templateUrl: './entity.component.html',
   styleUrls: ['./entity.component.scss'],
-   
+
 })
 export class EntityComponent {
   private api = inject(EntitiesApi);
@@ -51,25 +51,25 @@ export class EntityComponent {
     distinctUntilChanged()
   );
 
- collections$ = this.auth.user$.pipe(
-  switchMap((user) => {
-    if (!user) {
-      this.collectionsLoading.set(false);
-      return of([]);
-    }
-
-    this.collectionsLoading.set(true);
-
-    return this.collectionsApi.list().pipe(
-      tap(() => this.collectionsLoading.set(false)),
-      catchError(() => {
+  collections$ = this.auth.user$.pipe(
+    switchMap((user) => {
+      if (!user) {
         this.collectionsLoading.set(false);
         return of([]);
-      }),
-    );
-  }),
-  shareReplay({ bufferSize: 1, refCount: true })
-);
+      }
+
+      this.collectionsLoading.set(true);
+
+      return this.collectionsApi.list().pipe(
+        tap(() => this.collectionsLoading.set(false)),
+        catchError(() => {
+          this.collectionsLoading.set(false);
+          return of([]);
+        }),
+      );
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   entity$ = this.slug$.pipe(
     switchMap((slug) => this.api.get(slug)),
@@ -123,5 +123,68 @@ export class EntityComponent {
         this.collectionMessage.set(err?.error?.message ?? 'No se pudo añadir a la colección.');
       },
     });
+  }
+
+  relationMedia(entity: any) {
+    return entity?.mediaLinks?.[0]?.media ?? null;
+  }
+
+  outgoingByType(entity: any, type: string) {
+    return (entity?.outgoing ?? []).filter((r: any) => r.type === type);
+  }
+
+  incomingByType(entity: any, type: string) {
+    return (entity?.incoming ?? []).filter((r: any) => r.type === type);
+  }
+
+  relatedOutgoing(entity: any, type: string) {
+    return this.outgoingByType(entity, type).map((r: any) => r.to);
+  }
+
+  relatedIncoming(entity: any, type: string) {
+    return this.incomingByType(entity, type).map((r: any) => r.from);
+  }
+
+  firstRelated(entity: any, type: string) {
+    return this.relatedOutgoing(entity, type)[0] ?? null;
+  }
+
+  allConcepts(entity: any) {
+    return this.relatedOutgoing(entity, 'ABOUT_CONCEPT');
+  }
+
+  allPlaces(entity: any) {
+    return this.relatedOutgoing(entity, 'LOCATED_IN');
+  }
+
+  allRelatedArtworks(entity: any) {
+    const outgoing = this.relatedOutgoing(entity, 'RELATED_TO').filter((e: any) => e.type === 'ARTWORK');
+    const incoming = this.relatedIncoming(entity, 'RELATED_TO').filter((e: any) => e.type === 'ARTWORK');
+
+    const map = new Map<string, any>();
+
+    for (const item of [...outgoing, ...incoming]) {
+      map.set(item.id, item);
+    }
+
+    return Array.from(map.values());
+  }
+
+  allOtherOutgoing(entity: any) {
+    const hidden = new Set([
+      'CREATED_BY',
+      'BELONGS_TO_MOVEMENT',
+      'BELONGS_TO_PERIOD',
+      'ABOUT_CONCEPT',
+      'LOCATED_IN',
+      'RELATED_TO',
+      'MENTIONS',
+    ]);
+
+    return (entity?.outgoing ?? []).filter((r: any) => !hidden.has(r.type));
+  }
+
+  allMentions(entity: any) {
+    return this.outgoingByType(entity, 'MENTIONS');
   }
 }

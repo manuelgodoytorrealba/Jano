@@ -248,6 +248,148 @@
         }
 
         <section class="entity-section">
+  <p class="section-label">Conexiones clave</p>
+
+  @if (firstRelated(entity, 'CREATED_BY'); as author) {
+    <div class="relations-group">
+      <h3 class="title-section entity-subtitle">Autor</h3>
+      <a class="entity-link-card ds-card" [routerLink]="['/entity', author.slug]">
+        @if (relationMedia(author)?.url) {
+          <img
+            class="entity-link-card__image"
+            [src]="relationMedia(author)!.url"
+            [alt]="relationMedia(author)!.alt || author.title"
+            loading="lazy"
+          />
+        }
+        <div class="entity-link-card__body">
+          <div class="entity-link-card__title">{{ author.title }}</div>
+          <div class="entity-link-card__meta">{{ author.type }}</div>
+          @if (author.summary) {
+            <div class="entity-link-card__summary">{{ author.summary }}</div>
+          }
+        </div>
+      </a>
+    </div>
+  }
+
+  @if (firstRelated(entity, 'BELONGS_TO_MOVEMENT'); as movement) {
+    <div class="relations-group">
+      <h3 class="title-section entity-subtitle">Movimiento</h3>
+      <a class="entity-link-card ds-card" [routerLink]="['/entity', movement.slug]">
+        <div class="entity-link-card__body">
+          <div class="entity-link-card__title">{{ movement.title }}</div>
+          <div class="entity-link-card__meta">{{ movement.type }}</div>
+          @if (movement.summary) {
+            <div class="entity-link-card__summary">{{ movement.summary }}</div>
+          }
+        </div>
+      </a>
+    </div>
+  }
+
+  @if (firstRelated(entity, 'BELONGS_TO_PERIOD'); as period) {
+    <div class="relations-group">
+      <h3 class="title-section entity-subtitle">Periodo</h3>
+      <a class="entity-link-card ds-card" [routerLink]="['/entity', period.slug]">
+        <div class="entity-link-card__body">
+          <div class="entity-link-card__title">{{ period.title }}</div>
+          <div class="entity-link-card__meta">{{ period.type }}</div>
+          @if (period.summary) {
+            <div class="entity-link-card__summary">{{ period.summary }}</div>
+          }
+        </div>
+      </a>
+    </div>
+  }
+
+  @if (allConcepts(entity).length) {
+    <div class="relations-group">
+      <h3 class="title-section entity-subtitle">Conceptos</h3>
+      <div class="entity-mini-grid">
+        @for (concept of allConcepts(entity); track concept.id) {
+          <a class="entity-mini-card ds-card" [routerLink]="['/entity', concept.slug]">
+            <div class="entity-mini-card__title">{{ concept.title }}</div>
+            <div class="entity-mini-card__meta">{{ concept.type }}</div>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  @if (allPlaces(entity).length) {
+    <div class="relations-group">
+      <h3 class="title-section entity-subtitle">Ubicación</h3>
+      <div class="entity-mini-grid">
+        @for (place of allPlaces(entity); track place.id) {
+          <a class="entity-link-card ds-card" [routerLink]="['/entity', place.slug]">
+            @if (relationMedia(place)?.url) {
+              <img
+                class="entity-link-card__image"
+                [src]="relationMedia(place)!.url"
+                [alt]="relationMedia(place)!.alt || place.title"
+                loading="lazy"
+              />
+            }
+            <div class="entity-link-card__body">
+              <div class="entity-link-card__title">{{ place.title }}</div>
+              <div class="entity-link-card__meta">{{ place.type }}</div>
+              @if (place.summary) {
+                <div class="entity-link-card__summary">{{ place.summary }}</div>
+              }
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  @if (allRelatedArtworks(entity).length) {
+    <div class="relations-group">
+      <h3 class="title-section entity-subtitle">Obras relacionadas</h3>
+      <div class="entity-mini-grid entity-mini-grid--artworks">
+        @for (artwork of allRelatedArtworks(entity); track artwork.id) {
+          <a class="entity-art-card ds-card" [routerLink]="['/entity', artwork.slug]">
+            @if (relationMedia(artwork)?.url) {
+              <img
+                class="entity-art-card__image"
+                [src]="relationMedia(artwork)!.url"
+                [alt]="relationMedia(artwork)!.alt || artwork.title"
+                loading="lazy"
+              />
+            }
+            <div class="entity-art-card__body">
+              <div class="entity-art-card__title">{{ artwork.title }}</div>
+              <div class="entity-art-card__meta">
+                {{ artwork.type }}
+                @if (artwork.startYear) { · {{ artwork.startYear }} }
+              </div>
+              @if (artwork.summary) {
+                <div class="entity-art-card__summary">{{ artwork.summary }}</div>
+              }
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  @if (allMentions(entity).length) {
+    <div class="relations-group">
+      <h3 class="title-section entity-subtitle">Menciones en el texto</h3>
+      <div class="entity-mini-grid">
+        @for (r of allMentions(entity); track r.id) {
+          <a class="entity-mini-card ds-card" [routerLink]="['/entity', r.to.slug]">
+            <div class="entity-mini-card__title">{{ r.to.title }}</div>
+            <div class="entity-mini-card__meta">{{ r.to.type }}</div>
+          </a>
+        }
+      </div>
+    </div>
+  }
+</section>
+
+        <section class="entity-section">
           <p class="section-label">Relaciones</p>
 
           <div class="relations-group">
