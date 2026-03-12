@@ -1,0 +1,127 @@
+.ds-btn {
+  appearance: none;
+  border: 1px solid var(--color-border);
+  background: rgba(255,255,255,0.7);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  height: 42px;
+  padding: 0 var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.ds-btn:hover {
+  background: rgba(255,255,255,0.95);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.ds-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.ds-btn-primary {
+  background: var(--color-text);
+  color: white;
+  border-color: var(--color-text);
+}
+
+.ds-btn-primary:hover {
+  background: #1f1f1f;
+  border-color: #1f1f1f;
+}
+
+.ds-btn-danger {
+  color: var(--color-danger);
+  border-color: rgba(180, 35, 24, 0.18);
+  background: rgba(255,255,255,0.72);
+}
+
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: rgba(255,255,255,0.68);
+  color: var(--color-text-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.ds-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: rgba(255,255,255,0.78);
+  color: var(--color-text-soft);
+  font-size: 12px;
+}
+
+.ds-input,
+.ds-select,
+.ds-textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: rgba(255,255,255,0.84);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.ds-input,
+.ds-select {
+  height: 44px;
+  padding: 0 var(--space-4);
+}
+
+.ds-textarea {
+  min-height: 120px;
+  padding: var(--space-3) var(--space-4);
+  resize: vertical;
+}
+
+.ds-input:focus,
+.ds-select:focus,
+.ds-textarea:focus {
+  border-color: rgba(107, 70, 193, 0.34);
+  box-shadow: 0 0 0 4px rgba(107, 70, 193, 0.08);
+  background: rgba(255,255,255,0.98);
+}
+
+.ds-card {
+  background: rgba(255,255,255,0.74);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.ds-panel {
+  background: rgba(255,255,255,0.72);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
