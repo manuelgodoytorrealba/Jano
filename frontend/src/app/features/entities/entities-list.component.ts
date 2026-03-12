@@ -42,7 +42,7 @@ export class EntitiesListComponent implements AfterViewInit, OnDestroy {
   private readonly limit = 24;
 
   // ✅ modo de vista (Explorer por defecto)
-  viewMode: ViewMode = 'explore';
+  viewMode: ViewMode = 'list';
 
   // Skeleton items
   skeleton = Array.from({ length: 8 });

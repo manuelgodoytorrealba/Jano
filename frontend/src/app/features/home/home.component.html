@@ -1,104 +1,119 @@
-<div class="page">
-      <header class="top">
-        <div>
-          <h1>JANO</h1>
-          <p class="muted">Museo digital curado + estudio académico</p>
-        </div>
-      </header>
+<div class="page-shell home-page">
+  <header class="home-top">
+    <div class="home-heading">
+      <p class="home-eyebrow">Digital art archive</p>
+      <h1 class="home-title">JANO</h1>
+      <p class="home-subtitle">Museo digital curado + estudio académico</p>
+    </div>
+  </header>
 
-      @if (home$ | async; as home) {
-        <!-- HERO GALLERY / FIRST FILTER -->
-        <section class="gallery">
-          <div class="gallery-shell">
-            <!-- ambient bg from active card -->
-            <div
-              class="bg"
-              [style.backgroundImage]="'url(' + (thumb(home[activeIndex()]) || fallbackBg) + ')'"
-            ></div>
-            <div class="bg-overlay"></div>
+  @if (home$ | async; as home) {
+    <section class="hero-gallery">
+      <div class="hero-shell ds-panel">
+        <div
+          class="hero-bg"
+          [style.backgroundImage]="'url(' + (thumb(home[activeIndex()]) || fallbackBg) + ')'"
+        ></div>
+        <div class="hero-bg-overlay"></div>
 
-            <div class="gallery-ui">
-              <button class="nav left" type="button" (click)="prev(home)" aria-label="Anterior">
-                ‹
-              </button>
+        <div class="hero-ui">
+          <button
+            class="hero-nav"
+            type="button"
+            (click)="prev(home)"
+            aria-label="Anterior"
+          >
+            ‹
+          </button>
 
-              <div class="stack" role="list">
-                @for (e of home; track e.type) {
-                  <article
-                    role="listitem"
-                    class="card"
-                    [class.is-active]="$index === activeIndex()"
-                    [style.zIndex]="cardZ($index, activeIndex())"
-                    [style.transform]="cardTransform($index, activeIndex())"
-                    [style.opacity]="cardOpacity($index, activeIndex())"
-                    [style.filter]="cardFilter($index, activeIndex())"
-                    (click)="goType(e.type)"
-                  >
-                    <div class="card-media">
-                      @if (thumb(e)) {
-                        <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
-                      } @else {
-                        <div class="ph">Sin imagen</div>
-                      }
-                    </div>
-
-                    <div class="card-body">
-                      <div class="kicker">{{ copy(e.type).label }}</div>
-                      <div class="title">{{ copy(e.type).title }}</div>
-                      <div class="summary">{{ copy(e.type).desc }}</div>
-                      <div class="cta">{{ copy(e.type).cta }}</div>
-
-                      <div class="title">{{ e.title }}</div>
-
-                      @if (e.summary) {
-                        <div class="summary">{{ e.summary }}</div>
-                      }
-                    </div>
-                  </article>
-                }
-              </div>
-
-              <button class="nav right" type="button" (click)="next(home)" aria-label="Siguiente">
-                ›
-              </button>
-            </div>
-
-            <div class="dots" aria-label="Paginación">
-              @for (e of home; track e.type) {
-                <button
-                  type="button"
-                  class="dot"
-                  [class.on]="$index === activeIndex()"
-                  (click)="setActive($index, home)"
-                  [attr.aria-label]="'Ir a ' + e.type"
-                ></button>
-              }
-            </div>
-          </div>
-        </section>
-
-        <!-- BELOW: classic grid -->
-        <section class="below">
-          <h2 class="h2">Explorar</h2>
-          <div class="grid">
+          <div class="hero-stack" role="list">
             @for (e of home; track e.type) {
-              <button class="mini" type="button" (click)="go(e.slug)">
-                <div class="mini-thumb">
+              <article
+                role="listitem"
+                class="hero-card"
+                [class.is-active]="$index === activeIndex()"
+                [style.zIndex]="cardZ($index, activeIndex())"
+                [style.transform]="cardTransform($index, activeIndex())"
+                [style.opacity]="cardOpacity($index, activeIndex())"
+                [style.filter]="cardFilter($index, activeIndex())"
+                (click)="goType(e.type)"
+              >
+                <div class="hero-card-media">
                   @if (thumb(e)) {
                     <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
                   } @else {
-                    <div class="mini-ph"></div>
+                    <div class="hero-card-placeholder">Sin imagen</div>
                   }
                 </div>
-                <div class="mini-meta">
-                  <div class="mini-title">{{ e.title }}</div>
-                  <div class="mini-sub">{{ e.type }}</div>
+
+                <div class="hero-card-body">
+                  <div class="hero-card-kicker">{{ copy(e.type).label }}</div>
+                  <h2 class="hero-card-title">{{ copy(e.type).title }}</h2>
+                  <p class="hero-card-description">{{ copy(e.type).desc }}</p>
+                  <div class="hero-card-cta">{{ copy(e.type).cta }}</div>
+
+                  <div class="hero-divider"></div>
+
+                  <h3 class="hero-entity-title">{{ e.title }}</h3>
+
+                  @if (e.summary) {
+                    <p class="hero-entity-summary">{{ e.summary }}</p>
+                  }
                 </div>
-              </button>
+              </article>
             }
           </div>
-        </section>
-      } @else {
-        <div class="loading">Cargando…</div>
-      }
-    </div>
+
+          <button
+            class="hero-nav"
+            type="button"
+            (click)="next(home)"
+            aria-label="Siguiente"
+          >
+            ›
+          </button>
+        </div>
+
+        <div class="hero-dots" aria-label="Paginación">
+          @for (e of home; track e.type) {
+            <button
+              type="button"
+              class="hero-dot"
+              [class.is-active]="$index === activeIndex()"
+              (click)="setActive($index, home)"
+              [attr.aria-label]="'Ir a ' + e.type"
+            ></button>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="explore-section">
+      <div class="section-head">
+        <p class="section-label">Explore</p>
+        <h2 class="section-title">Puertas de entrada</h2>
+      </div>
+
+      <div class="explore-grid">
+        @for (e of home; track e.type) {
+          <button class="explore-card ds-card" type="button" (click)="go(e.slug)">
+            <div class="explore-card-thumb">
+              @if (thumb(e)) {
+                <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
+              } @else {
+                <div class="explore-card-placeholder"></div>
+              }
+            </div>
+
+            <div class="explore-card-meta">
+              <div class="explore-card-title">{{ e.title }}</div>
+              <div class="explore-card-subtitle">{{ e.type }}</div>
+            </div>
+          </button>
+        }
+      </div>
+    </section>
+  } @else {
+    <div class="home-loading">Cargando…</div>
+  }
+</div>

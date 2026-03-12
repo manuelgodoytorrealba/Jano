@@ -1,251 +1,316 @@
-  @if (entity$ | async; as entity) {
-      <div class="split">
-        <div class="left">
-          @if (primaryMedia(entity)?.url) {
-            <div class="media">
-              <img
-                [src]="primaryMedia(entity)!.url"
-                [alt]="primaryMedia(entity)!.alt || entity.title"
-                loading="lazy"
-              />
+@if (entity$ | async; as entity) {
+  <div class="entity-detail page-shell">
+    <div class="entity-detail__layout">
+      <aside class="entity-detail__media-pane">
+        @if (primaryMedia(entity)?.url) {
+          <figure class="entity-media ds-panel">
+            <img
+              class="entity-media__image"
+              [src]="primaryMedia(entity)!.url"
+              [alt]="primaryMedia(entity)!.alt || entity.title"
+              loading="lazy"
+            />
 
-              <div class="media-meta">
-                @if (primaryMedia(entity)!.source) { <div><strong>Fuente:</strong> {{ primaryMedia(entity)!.source }}</div> }
-                @if (primaryMedia(entity)!.photoBy) { <div><strong>Foto:</strong> {{ primaryMedia(entity)!.photoBy }}</div> }
-                @if (primaryMedia(entity)!.license) { <div><strong>Licencia:</strong> {{ primaryMedia(entity)!.license }}</div> }
-              </div>
-            </div>
-          } @else {
-            <div class="placeholder">
-              <span>Sin imagen</span>
-            </div>
-          }
-        </div>
+            <figcaption class="entity-media__meta">
+              @if (primaryMedia(entity)!.source) {
+                <div><strong>Fuente:</strong> {{ primaryMedia(entity)!.source }}</div>
+              }
+              @if (primaryMedia(entity)!.photoBy) {
+                <div><strong>Foto:</strong> {{ primaryMedia(entity)!.photoBy }}</div>
+              }
+              @if (primaryMedia(entity)!.license) {
+                <div><strong>Licencia:</strong> {{ primaryMedia(entity)!.license }}</div>
+              }
+            </figcaption>
+          </figure>
+        } @else {
+          <div class="entity-media-placeholder ds-panel">
+            <span>Sin imagen</span>
+          </div>
+        }
+      </aside>
 
-        <div class="right">
-          <header class="header">
-            <div class="title-wrap">
-              <a class="back" routerLink="/">← Volver</a>
+      <section class="entity-detail__content-pane">
+        <header class="entity-header">
+          <div class="entity-header__main">
+            <a class="entity-header__back" routerLink="/">← Volver</a>
 
-              <h2 class="title">{{ entity.title }}</h2>
+            <h1 class="title-display entity-header__title">
+              {{ entity.title }}
+            </h1>
 
-              <div class="badges">
-                <span class="badge">{{ entity.status }}</span>
-                @if (entity.contentLevel) { <span class="badge">{{ entity.contentLevel }}</span> }
-                <span class="badge">{{ entity.type }}</span>
+            <div class="entity-header__meta">
+              <div class="entity-header__badges">
+                <span class="ds-badge">{{ entity.status }}</span>
+                @if (entity.contentLevel) {
+                  <span class="ds-badge">{{ entity.contentLevel }}</span>
+                }
+                <span class="ds-badge">{{ entity.type }}</span>
               </div>
 
               @if (entity.startYear || entity.endYear) {
-                <span class="years">
+                <span class="ds-pill">
                   {{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}
                 </span>
               }
             </div>
+          </div>
 
-            <div class="actions">
-              @if (auth.isLoggedIn) {
-                <button
-                  class="btn"
-                  type="button"
-                  [class.btn-saved]="isSaved()"
-                  [disabled]="saveLoading()"
-                  (click)="toggleSave(entity.id)"
-                >
-                  @if (saveLoading()) {
-                    {{ isSaved() ? 'Quitando...' : 'Guardando...' }}
-                  } @else if (isSaved()) {
-                    Guardado ✓
-                  } @else {
-                    Guardar
-                  }
-                </button>
+          <div class="entity-header__actions">
+            @if (auth.isLoggedIn) {
+              <button
+                class="ds-btn"
+                type="button"
+                [class.is-active]="isSaved()"
+                [disabled]="saveLoading()"
+                (click)="toggleSave(entity.id)"
+              >
+                @if (saveLoading()) {
+                  {{ isSaved() ? 'Quitando...' : 'Guardando...' }}
+                } @else if (isSaved()) {
+                  Guardado ✓
+                } @else {
+                  Guardar
+                }
+              </button>
 
-                <button
-                  class="btn"
-                  type="button"
-                  [disabled]="collectionsLoading()"
-                  (click)="toggleCollectionsPanel()"
-                >
-                  @if (collectionsLoading()) {
-                    Cargando...
-                  } @else {
-                    Añadir a colección
-                  }
-                </button>
-              }
+              <button
+                class="ds-btn"
+                type="button"
+                [disabled]="collectionsLoading()"
+                (click)="toggleCollectionsPanel()"
+              >
+                @if (collectionsLoading()) {
+                  Cargando...
+                } @else {
+                  Añadir a colección
+                }
+              </button>
+            }
 
-              <button class="btn" type="button" (click)="toggleGraph()">
-                @if (showGraph()) { Cerrar grafo } @else { Ver grafo }
+            <button class="ds-btn ds-btn-primary" type="button" (click)="toggleGraph()">
+              @if (showGraph()) { Cerrar grafo } @else { Ver grafo }
+            </button>
+          </div>
+        </header>
+
+        @if (showCollectionsPanel() && auth.isLoggedIn) {
+          <section class="collections-panel ds-panel">
+            <div class="collections-panel__head">
+              <h2 class="title-section">Tus colecciones</h2>
+              <button class="ds-btn collections-panel__close" type="button" (click)="toggleCollectionsPanel()">
+                ✕
               </button>
             </div>
-          </header>
 
-          @if (showCollectionsPanel() && auth.isLoggedIn) {
-            <section class="collections-panel">
-              <div class="collections-head">
-                <h3 class="collections-title">Tus colecciones</h3>
-                <button class="close-mini" type="button" (click)="toggleCollectionsPanel()">✕</button>
+            @if (collectionMessage()) {
+              <div class="collections-panel__message">
+                {{ collectionMessage() }}
               </div>
+            }
 
-              @if (collectionMessage()) {
-                <div class="collection-message">{{ collectionMessage() }}</div>
+            @if (collections$ | async; as collections) {
+              @if (collections.length) {
+                <div class="collections-panel__list">
+                  @for (collection of collections; track collection.id) {
+                    <button
+                      type="button"
+                      class="collection-option ds-card"
+                      [disabled]="addingToCollection()"
+                      (click)="addToCollection(collection.id, entity.id)"
+                    >
+                      <div class="collection-option__name">{{ collection.name }}</div>
+                      <div class="collection-option__meta">
+                        {{ collection.items?.length ?? 0 }} items
+                      </div>
+                    </button>
+                  }
+                </div>
+              } @else {
+                <p class="text-muted">No tienes colecciones todavía. Créala en My Space.</p>
               }
+            }
+          </section>
+        }
 
-              @if (collections$ | async; as collections) {
-                @if (collections.length) {
-                  <div class="collection-list">
-                    @for (collection of collections; track collection.id) {
-                      <button
-                        type="button"
-                        class="collection-option"
-                        [disabled]="addingToCollection()"
-                        (click)="addToCollection(collection.id, entity.id)"
-                      >
-                        <div class="collection-option-name">{{ collection.name }}</div>
-                        <div class="collection-option-meta">
-                          {{ collection.items?.length ?? 0 }} items
-                        </div>
-                      </button>
-                    }
-                  </div>
-                } @else {
-                  <p class="muted">No tienes colecciones todavía. Créala en My Space.</p>
-                }
-              }
-            </section>
-          }
-
-          @if (entity.summary) {
-            <p class="summary">
+        @if (entity.summary) {
+          <section class="entity-section">
+            <div class="entity-prose entity-prose--summary">
               <app-rich-text [text]="entity.summary"></app-rich-text>
-            </p>
-          }
+            </div>
+          </section>
+        }
 
-          @if (entity.content) {
-            <h3 class="section">Ensayo</h3>
-            <div class="content">
+        @if (entity.content) {
+          <section class="entity-section">
+            <p class="section-label">Ensayo</p>
+            <div class="entity-prose">
               <app-rich-text [text]="entity.content"></app-rich-text>
             </div>
-          }
+          </section>
+        }
 
-          @if (showGraph()) {
-            <div class="graph-wrap">
+        @if (showGraph()) {
+          <section class="entity-section">
+            <div class="graph-wrap ds-card">
               <app-graph [slug]="entity.slug" />
             </div>
-          }
+          </section>
+        }
 
-          <h3 class="section">Ficha</h3>
+        <section class="entity-section">
+          <p class="section-label">Ficha</p>
 
           @if (entity.type === 'ARTWORK' && entity.artwork) {
-            <ul class="facts">
-              @if (entity.artwork.technique) { <li><strong>Técnica:</strong> {{ entity.artwork.technique }}</li> }
-              @if (entity.artwork.materials) { <li><strong>Materiales:</strong> {{ entity.artwork.materials }}</li> }
-              @if (entity.artwork.dimensions) { <li><strong>Dimensiones:</strong> {{ entity.artwork.dimensions }}</li> }
-              @if (entity.artwork.location) { <li><strong>Ubicación:</strong> {{ entity.artwork.location }}</li> }
-              @if (entity.artwork.collection) { <li><strong>Colección:</strong> {{ entity.artwork.collection }}</li> }
-              @if (entity.artwork.state) { <li><strong>Estado:</strong> {{ entity.artwork.state }}</li> }
-              @if (entity.artwork.authorNation) { <li><strong>Nacionalidad autor:</strong> {{ entity.artwork.authorNation }}</li> }
+            <ul class="facts-list">
+              @if (entity.artwork.technique) { <li class="facts-list__item"><strong>Técnica:</strong> {{ entity.artwork.technique }}</li> }
+              @if (entity.artwork.materials) { <li class="facts-list__item"><strong>Materiales:</strong> {{ entity.artwork.materials }}</li> }
+              @if (entity.artwork.dimensions) { <li class="facts-list__item"><strong>Dimensiones:</strong> {{ entity.artwork.dimensions }}</li> }
+              @if (entity.artwork.location) { <li class="facts-list__item"><strong>Ubicación:</strong> {{ entity.artwork.location }}</li> }
+              @if (entity.artwork.collection) { <li class="facts-list__item"><strong>Colección:</strong> {{ entity.artwork.collection }}</li> }
+              @if (entity.artwork.state) { <li class="facts-list__item"><strong>Estado:</strong> {{ entity.artwork.state }}</li> }
+              @if (entity.artwork.authorNation) { <li class="facts-list__item"><strong>Nacionalidad autor:</strong> {{ entity.artwork.authorNation }}</li> }
             </ul>
           } @else if (entity.type === 'ARTIST' && entity.artist) {
-            <ul class="facts">
-              @if (entity.artist.country) { <li><strong>País:</strong> {{ entity.artist.country }}</li> }
-              @if (entity.artist.city) { <li><strong>Ciudad:</strong> {{ entity.artist.city }}</li> }
-              @if (entity.artist.birthYear) { <li><strong>Nacimiento:</strong> {{ entity.artist.birthYear }}</li> }
-              @if (entity.artist.deathYear) { <li><strong>Muerte:</strong> {{ entity.artist.deathYear }}</li> }
-              @if (entity.artist.disciplines) { <li><strong>Disciplinas:</strong> {{ entity.artist.disciplines }}</li> }
-              @if (entity.artist.links) { <li><strong>Links:</strong> {{ entity.artist.links }}</li> }
+            <ul class="facts-list">
+              @if (entity.artist.country) { <li class="facts-list__item"><strong>País:</strong> {{ entity.artist.country }}</li> }
+              @if (entity.artist.city) { <li class="facts-list__item"><strong>Ciudad:</strong> {{ entity.artist.city }}</li> }
+              @if (entity.artist.birthYear) { <li class="facts-list__item"><strong>Nacimiento:</strong> {{ entity.artist.birthYear }}</li> }
+              @if (entity.artist.deathYear) { <li class="facts-list__item"><strong>Muerte:</strong> {{ entity.artist.deathYear }}</li> }
+              @if (entity.artist.disciplines) { <li class="facts-list__item"><strong>Disciplinas:</strong> {{ entity.artist.disciplines }}</li> }
+              @if (entity.artist.links) { <li class="facts-list__item"><strong>Links:</strong> {{ entity.artist.links }}</li> }
             </ul>
+
             @if (entity.artist.bioShort) {
-              <div class="content">
+              <div class="entity-prose">
                 <app-rich-text [text]="entity.artist.bioShort"></app-rich-text>
               </div>
             }
           } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
-            <div class="content">
+            <div class="entity-prose">
               <app-rich-text [text]="entity.concept.definition"></app-rich-text>
             </div>
           } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
-            <div class="content">
+            <div class="entity-prose">
               <app-rich-text [text]="entity.period.definition"></app-rich-text>
             </div>
           } @else {
-            <p class="muted">Sin ficha específica para este tipo.</p>
+            <p class="text-muted">Sin ficha específica para este tipo.</p>
           }
+        </section>
 
-          @if ((entity.contributors?.length ?? 0) > 0) {
-            <h3 class="section">Colaboradores</h3>
-            <ul class="relations">
+        @if ((entity.contributors?.length ?? 0) > 0) {
+          <section class="entity-section">
+            <p class="section-label">Colaboradores</p>
+
+            <ul class="relations-list">
               @for (c of entity.contributors; track c.id) {
-                <li class="relation">
-                  <span class="rel-type">{{ c.role }}</span>
-                  <span class="arrow">—</span>
-                  <span class="note">{{ c.name }}@if (c.note) { ({{ c.note }}) }</span>
-                </li>
-              }
-            </ul>
-          }
-
-          @if ((entity.sourceRefs?.length ?? 0) > 0) {
-            <h3 class="section">Fuentes</h3>
-            <ul class="relations">
-              @for (r of entity.sourceRefs; track r.id) {
-                <li class="relation">
-                  <span class="rel-type">{{ r.source.type }}</span>
-                  <span class="note">
-                    <strong>{{ r.source.title }}</strong>
-                    @if (r.source.author) { — {{ r.source.author }} }
-                    @if (r.source.publisher || r.source.year) {
-                      ({{ r.source.publisher ?? '' }}@if (r.source.year) {, {{ r.source.year }} })
-                    }
-                    @if (r.page) { — p. {{ r.page }} }
+                <li class="relation-card ds-card">
+                  <span class="ds-badge">{{ c.role }}</span>
+                  <span class="relation-card__separator">—</span>
+                  <span class="relation-card__text">
+                    {{ c.name }}@if (c.note) { ({{ c.note }}) }
                   </span>
                 </li>
-                @if (r.quote) { <div class="quote">“{{ r.quote }}”</div> }
               }
             </ul>
-          }
+          </section>
+        }
 
-          <h3 class="section">Relaciones</h3>
+        @if ((entity.sourceRefs?.length ?? 0) > 0) {
+          <section class="entity-section">
+            <p class="section-label">Fuentes</p>
 
-          <h4 class="sub">Salientes</h4>
-          @if ((entity.outgoing?.length ?? 0) === 0) {
-            <p class="muted">No hay relaciones salientes.</p>
-          } @else {
-            <ul class="relations">
-              @for (r of entity.outgoing; track r.id) {
-                <li class="relation">
-                  <span class="rel-type">{{ r.type }}</span>
-                  <span class="arrow">→</span>
-                  <a class="rel-link" [routerLink]="['/entity', r.to.slug]">
-                    {{ r.to.title }}
-                  </a>
-                  @if (r.justification) { <span class="note">— <app-rich-text [text]="r.justification"></app-rich-text></span> }
-                  @else if (r.weight !== null && r.weight !== undefined) { <span class="note">— peso: {{ r.weight }}</span> }
+            <ul class="relations-list">
+              @for (r of entity.sourceRefs; track r.id) {
+                <li class="relation-source">
+                  <div class="relation-card ds-card">
+                    <span class="ds-badge">{{ r.source.type }}</span>
+                    <span class="relation-card__text">
+                      <strong>{{ r.source.title }}</strong>
+                      @if (r.source.author) { — {{ r.source.author }} }
+                      @if (r.source.publisher || r.source.year) {
+                        ({{ r.source.publisher ?? '' }}@if (r.source.year) {, {{ r.source.year }} })
+                      }
+                      @if (r.page) { — p. {{ r.page }} }
+                    </span>
+                  </div>
+
+                  @if (r.quote) {
+                    <div class="quote-block">
+                      “{{ r.quote }}”
+                    </div>
+                  }
                 </li>
               }
             </ul>
-          }
+          </section>
+        }
 
-          <h4 class="sub">Entrantes</h4>
-          @if ((entity.incoming?.length ?? 0) === 0) {
-            <p class="muted">No hay relaciones entrantes.</p>
-          } @else {
-            <ul class="relations">
-              @for (r of entity.incoming; track r.id) {
-                <li class="relation">
-                  <span class="rel-type">{{ r.type }}</span>
-                  <span class="arrow">←</span>
-                  <a class="rel-link" [routerLink]="['/entity', r.from.slug]">
-                    {{ r.from.title }}
-                  </a>
-                  @if (r.justification) { <span class="note">— <app-rich-text [text]="r.justification"></app-rich-text></span> }
-                  @else if (r.weight !== null && r.weight !== undefined) { <span class="note">— peso: {{ r.weight }}</span> }
-                </li>
-              }
-            </ul>
-          }
-        </div>
-      </div>
-    } @else {
-      <div class="loading">Cargando…</div>
-    }
+        <section class="entity-section">
+          <p class="section-label">Relaciones</p>
+
+          <div class="relations-group">
+            <h3 class="title-section entity-subtitle">Salientes</h3>
+
+            @if ((entity.outgoing?.length ?? 0) === 0) {
+              <p class="text-muted">No hay relaciones salientes.</p>
+            } @else {
+              <ul class="relations-list">
+                @for (r of entity.outgoing; track r.id) {
+                  <li class="relation-card ds-card">
+                    <span class="ds-badge">{{ r.type }}</span>
+                    <span class="relation-card__separator">→</span>
+                    <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">
+                      {{ r.to.title }}
+                    </a>
+
+                    @if (r.justification) {
+                      <span class="relation-card__text">
+                        — <app-rich-text [text]="r.justification"></app-rich-text>
+                      </span>
+                    } @else if (r.weight !== null && r.weight !== undefined) {
+                      <span class="relation-card__text">— peso: {{ r.weight }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+
+          <div class="relations-group">
+            <h3 class="title-section entity-subtitle">Entrantes</h3>
+
+            @if ((entity.incoming?.length ?? 0) === 0) {
+              <p class="text-muted">No hay relaciones entrantes.</p>
+            } @else {
+              <ul class="relations-list">
+                @for (r of entity.incoming; track r.id) {
+                  <li class="relation-card ds-card">
+                    <span class="ds-badge">{{ r.type }}</span>
+                    <span class="relation-card__separator">←</span>
+                    <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">
+                      {{ r.from.title }}
+                    </a>
+
+                    @if (r.justification) {
+                      <span class="relation-card__text">
+                        — <app-rich-text [text]="r.justification"></app-rich-text>
+                      </span>
+                    } @else if (r.weight !== null && r.weight !== undefined) {
+                      <span class="relation-card__text">— peso: {{ r.weight }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </section>
+      </section>
+    </div>
+  </div>
+} @else {
+  <div class="entity-loading page-shell">
+    <div class="ds-panel entity-loading__panel">Cargando…</div>
+  </div>
+}
