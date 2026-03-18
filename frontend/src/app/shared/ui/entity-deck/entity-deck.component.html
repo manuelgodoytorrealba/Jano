@@ -1,0 +1,100 @@
+<section class="entity-deck" [class.entity-deck--viewport]="fullViewport()">
+    <div class="entity-deck__shell">
+        <div class="entity-deck__bg" [style.backgroundImage]="'url(' + backgroundImage() + ')'"></div>
+
+        <div class="entity-deck__overlay"></div>
+
+        @if (showRail()) {
+        <aside class="entity-deck__rail" aria-label="Acciones rápidas">
+            <button class="entity-deck__rail-btn" type="button" aria-label="Destacados" (click)="onRailClick('spark')">
+                ✦
+            </button>
+
+            <button class="entity-deck__rail-btn" type="button" aria-label="Favoritos"
+                (click)="onRailClick('favorite')">
+                ♡
+            </button>
+
+            <button class="entity-deck__rail-btn" type="button" aria-label="Buscar" (click)="onRailClick('search')">
+                ⌕
+            </button>
+        </aside>
+        }
+
+        @if (showNav()) {
+        <button class="entity-deck__nav entity-deck__nav--left" type="button" (click)="prev()" aria-label="Anterior">
+            ‹
+        </button>
+        }
+
+        <div class="entity-deck__stage">
+            <div class="entity-deck__stack" role="list">
+                @for (item of items(); track item.id) {
+                <article role="listitem" class="entity-deck__card" [class.is-active]="$index === activeIndex()"
+                    [style.zIndex]="cardZ($index)" [style.transform]="cardTransform($index)"
+                    [style.opacity]="cardOpacity($index)" [style.filter]="cardFilter($index)"
+                    (click)="onCardClick(item)">
+                    <div class="entity-deck__media">
+                        <img [src]="item.image" [alt]="item.title" loading="lazy" />
+                    </div>
+
+                    <div class="entity-deck__body">
+                        <div class="entity-deck__topline">
+                            <span class="entity-deck__eyebrow">{{ item.eyebrow }}</span>
+
+                            <button class="entity-deck__chip" type="button" (click)="onExpandClick($event, item)">
+                                Expand
+                            </button>
+                        </div>
+
+                        <div class="entity-deck__content">
+                            <h2 class="entity-deck__title">{{ item.title }}</h2>
+
+                            @if (item.description) {
+                            <p class="entity-deck__description">{{ item.description }}</p>
+                            }
+                        </div>
+
+                        <div class="entity-deck__footer">
+                            @if (item.meta) {
+                            <div class="entity-deck__meta">{{ item.meta }}</div>
+                            }
+
+                            @if (item.cta) {
+                            <div class="entity-deck__cta">{{ item.cta }}</div>
+                            }
+                        </div>
+                    </div>
+                </article>
+                }
+            </div>
+        </div>
+
+        @if (showNav()) {
+        <button class="entity-deck__nav entity-deck__nav--right" type="button" (click)="next()" aria-label="Siguiente">
+            ›
+        </button>
+        }
+
+        <div class="entity-deck__bottom-nav">
+            <div class="entity-deck__bottom-glass">
+                <form class="entity-deck__search" (submit)="onSearchSubmit(searchInput.value); searchInput.blur()">
+                    <span class="entity-deck__search-icon">⌕</span>
+                    <input #searchInput type="text" name="search" placeholder="Buscar artistas, obras, movimientos..."
+                        autocomplete="off" />
+                </form>
+
+
+            </div>
+        </div>
+
+        @if (showDots()) {
+        <div class="entity-deck__dots" aria-label="Paginación">
+            @for (item of items(); track item.id) {
+            <button type="button" class="entity-deck__dot" [class.is-active]="$index === activeIndex()"
+                (click)="setActive($index)" [attr.aria-label]="'Ir a ' + item.title"></button>
+            }
+        </div>
+        }
+    </div>
+</section>

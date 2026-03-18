@@ -1,139 +1,116 @@
-import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { EntitiesApi } from '../../core/api/entities.api';
-
-type Entity = any;
+import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
+import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
 
 @Component({
   standalone: true,
   selector: 'app-home',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe],
+  imports: [EntityDeckComponent],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  styleUrl: './home.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
-  private api = inject(EntitiesApi);
   private router = inject(Router);
 
-  private readonly TYPE_COPY: Record<string, { label: string; title: string; desc: string; cta: string }> = {
-    ARTWORK: {
-      label: 'Artwork',
+  deckItems: DeckItem[] = [
+    {
+      id: 'artwork',
+      eyebrow: 'Artwork',
       title: 'Obras',
-      desc: 'Piezas y obras clave. Analiza técnicas, contexto y conexiones.',
+      description: 'Piezas clave para estudiar forma, técnica, simbolismo y contexto.',
+      meta: 'Artwork',
       cta: 'Explorar obras →',
+      image: '/assets/home/artwork.jpg',
+      routeType: 'artwork',
     },
-    ARTIST: {
-      label: 'Artist',
+    {
+      id: 'artist',
+      eyebrow: 'Artist',
       title: 'Artistas',
-      desc: 'Autores, biografías y estilos. Descubre su red de influencias.',
+      description: 'Autores, trayectorias, obsesiones visuales e influencias cruzadas.',
+      meta: 'Artist',
       cta: 'Explorar artistas →',
+      image: '/assets/home/artist.jpg',
+      routeType: 'artist',
     },
-    PERIOD: {
-      label: 'Period',
-      title: 'Períodos',
-      desc: 'Etapas históricas y cambios culturales que moldean el arte.',
-      cta: 'Explorar períodos →',
-    },
-    MOVEMENT: {
-      label: 'Movement',
+    {
+      id: 'movement',
+      eyebrow: 'Movement',
       title: 'Movimientos',
-      desc: 'Corrientes y manifiestos. Qué defendían y cómo se conectan.',
+      description: 'Corrientes estéticas e ideas que redefinieron la historia del arte.',
+      meta: 'Movement',
       cta: 'Explorar movimientos →',
+      image: '/assets/home/movement.jpg',
+      routeType: 'movement',
     },
-    CONCEPT: {
-      label: 'Concept',
+    {
+      id: 'period',
+      eyebrow: 'Period',
+      title: 'Períodos',
+      description: 'Etapas históricas para entender cambios culturales y visuales.',
+      meta: 'Period',
+      cta: 'Explorar períodos →',
+      image: '/assets/home/period.jpg',
+      routeType: 'period',
+    },
+    {
+      id: 'concept',
+      eyebrow: 'Concept',
       title: 'Conceptos',
-      desc: 'Ideas y términos para leer el arte con claridad.',
+      description: 'Ideas fundamentales para leer obras y relaciones con más claridad.',
+      meta: 'Concept',
       cta: 'Explorar conceptos →',
+      image: '/assets/home/concept.jpg',
+      routeType: 'concept',
     },
-  };
+  ];
 
-  copy(type: string) {
-    return this.TYPE_COPY[type] ?? { label: type, title: type, desc: '', cta: 'Explorar →' };
+  onCardClick(item: DeckItem): void {
+    if (!item.routeType) return;
+    this.router.navigate(['/entities', item.routeType]);
   }
 
-  home$ = this.api.home();
-  activeIndex = signal(0);
-
-  fallbackBg = 'https://picsum.photos/id/1060/1400/900';
-
-  thumb(e: Entity): string | null {
-    return e?.mediaLinks?.[0]?.media?.url ?? null;
+  onExpandClick(item: DeckItem): void {
+    if (!item.routeType) return;
+    this.router.navigate(['/entities', item.routeType]);
   }
 
-  setActive(i: number, entities: Entity[]) {
-    const len = entities?.length ?? 0;
-    if (!len) return;
-    this.activeIndex.set(((i % len) + len) % len);
+  onRailClick(action: DeckRailAction): void {
+    if (action === 'favorite') {
+      this.router.navigate(['/my-space']);
+    }
+
+    if (action === 'search') {
+      // luego abres search modal o search page
+    }
+
+    if (action === 'spark') {
+      // luego puedes llevar a destacados o curated feed
+    }
+
   }
 
-  prev(entities: Entity[]) {
-    if (!entities?.length) return;
-    const i = this.activeIndex();
-    this.activeIndex.set((i - 1 + entities.length) % entities.length);
+  onSearchSubmit(query: string): void {
+    this.router.navigate(['/search'], {
+      queryParams: { q: query },
+    });
   }
 
-  next(entities: Entity[]) {
-    if (!entities?.length) return;
-    const i = this.activeIndex();
-    this.activeIndex.set((i + 1) % entities.length);
-  }
+  onTabChange(tab: 'home' | 'picks' | 'my-space'): void {
+    if (tab === 'home') {
+      this.router.navigate(['/']);
+      return;
+    }
 
-  go(slug: string) {
-    this.router.navigate(['/entity', slug]);
-  }
+    if (tab === 'picks') {
+      this.router.navigate(['/recommended']);
+      return;
+    }
 
-  cardTransform(index: number, active: number): string {
-    const d = index - active;
-    const clamped = Math.max(-2, Math.min(2, d));
-    const abs = Math.abs(clamped);
-
-    const x = clamped * 140;
-    const rotY = clamped * -18;
-    const scale = abs === 0 ? 1 : abs === 1 ? 0.92 : 0.86;
-    const y = abs === 0 ? 0 : 6;
-
-    return `translate3d(${x}px, ${y}px, 0) rotateY(${rotY}deg) scale(${scale})`;
-  }
-
-  cardOpacity(index: number, active: number): string {
-    const abs = Math.abs(index - active);
-    if (abs === 0) return '1';
-    if (abs === 1) return '1';
-    if (abs === 2) return '1';
-    return '0';
-  }
-
-  cardFilter(index: number, active: number): string {
-    const abs = Math.abs(index - active);
-    if (abs === 0) return 'none';
-    if (abs === 1) return 'blur(0.6px)';
-    if (abs === 2) return 'blur(1.4px)';
-    return 'blur(2px)';
-  }
-
-  @HostListener('window:keydown', ['$event'])
-  onKey(ev: KeyboardEvent) {
-    if (ev.key === 'ArrowLeft') ev.preventDefault();
-    if (ev.key === 'ArrowRight') ev.preventDefault();
-  }
-
-  cardZ(index: number, active: number): number {
-    const d = index - active;
-    const abs = Math.abs(d);
-
-    if (abs > 2) return 0;
-    if (abs === 0) return 30;
-
-    const base = abs === 1 ? 20 : 10;
-    const tieBreaker = d < 0 ? 1 : 0;
-
-    return base + tieBreaker;
-  }
-
-  goType(type: string) {
-    this.router.navigate(['/entities', type.toLowerCase()]);
+    if (tab === 'my-space') {
+      this.router.navigate(['/my-space']);
+    }
   }
 }
