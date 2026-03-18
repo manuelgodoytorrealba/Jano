@@ -2,11 +2,12 @@ import {
     ChangeDetectionStrategy,
     Component,
     HostListener,
+    inject,
     input,
     output,
     signal,
-
 } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { DeckItem, DeckRailAction } from './entity-deck.types';
 
@@ -18,6 +19,8 @@ import { DeckItem, DeckRailAction } from './entity-deck.types';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntityDeckComponent {
+    private router = inject(Router);
+
     items = input.required<DeckItem[]>();
 
     backgroundImage = input<string>('/assets/home/museum-room.jpg');
@@ -80,6 +83,24 @@ export class EntityDeckComponent {
 
     onTabChange(tab: 'home' | 'picks' | 'my-space'): void {
         this.tabChange.emit(tab);
+    }
+
+    isRailActive(action: DeckRailAction): boolean {
+        const url = this.router.url;
+
+        if (action === 'home') {
+            return url === '/';
+        }
+
+        if (action === 'picks') {
+            return url.startsWith('/recommended');
+        }
+
+        if (action === 'profile') {
+            return url.startsWith('/my-space') || url.startsWith('/admin');
+        }
+
+        return false;
     }
 
     private relativeIndex(index: number, active: number, length: number): number {

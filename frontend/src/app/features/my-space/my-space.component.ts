@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { CollectionsApi } from '../../core/api/collections.api';
@@ -10,7 +10,7 @@ import { SavedApi } from '../../core/api/saved.api';
   standalone: true,
   selector: 'app-my-space',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, RouterLink],
   templateUrl: './my-space.component.html',
   styleUrls: ['./my-space.component.scss'],
 })
@@ -55,6 +55,14 @@ export class MySpaceComponent {
     return (text ?? '').replace(/\[\[(.*?)\|(.*?)\]\]/g, '$2');
   }
 
+  isAdmin(user: any): boolean {
+    return String(user?.role ?? '').toUpperCase() === 'ADMIN';
+  }
+
+  roleLabel(user: any): string {
+    return this.isAdmin(user) ? 'ADMIN' : 'MEMBER';
+  }
+
   createCollection() {
     const name = this.newCollectionName.trim();
     const description = this.newCollectionDescription.trim();
@@ -97,6 +105,10 @@ export class MySpaceComponent {
 
   go(slug: string) {
     this.router.navigate(['/entity', slug]);
+  }
+
+  goToAdmin() {
+    this.router.navigate(['/admin']);
   }
 
   logout() {

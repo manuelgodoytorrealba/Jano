@@ -78,18 +78,18 @@ export class RecommendedComponent {
     }
 
     onRailClick(action: DeckRailAction): void {
-        if (action === 'favorite') {
-            this.router.navigate(['/my-space']);
+        if (action === 'home') {
+            this.router.navigate(['/']);
             return;
         }
 
-        if (action === 'spark') {
+        if (action === 'picks') {
             this.router.navigate(['/recommended']);
             return;
         }
 
-        if (action === 'search') {
-            console.log('open search');
+        if (action === 'profile') {
+            this.router.navigate(['/my-space']);
         }
     }
 

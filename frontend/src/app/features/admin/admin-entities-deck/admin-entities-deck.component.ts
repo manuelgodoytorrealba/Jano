@@ -88,18 +88,18 @@ export class AdminEntitiesDeckComponent {
     }
 
     onRailClick(action: DeckRailAction): void {
-        if (action === 'spark') {
+        if (action === 'home') {
+            this.router.navigate(['/']);
+            return;
+        }
+
+        if (action === 'picks') {
+            this.router.navigate(['/recommended']);
+            return;
+        }
+
+        if (action === 'profile') {
             this.router.navigate(['/admin']);
-            return;
-        }
-
-        if (action === 'favorite') {
-            this.router.navigate(['/my-space']);
-            return;
-        }
-
-        if (action === 'search') {
-            console.log('admin search');
         }
     }
 

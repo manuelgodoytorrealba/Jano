@@ -5,25 +5,43 @@
         <div class="entity-deck__overlay"></div>
 
         @if (showRail()) {
-        <aside class="entity-deck__rail" aria-label="Acciones rápidas">
-            <button class="entity-deck__rail-btn" type="button" aria-label="Destacados" (click)="onRailClick('spark')">
-                ✦
+        <aside class="entity-deck__rail" aria-label="Navegación principal">
+            <button class="entity-deck__rail-btn" [class.is-active]="isRailActive('home')" type="button"
+                aria-label="Home" (click)="onRailClick('home')">
+                <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9-1.9 4.6-1.9-4.6-4.6-1.9 4.6-1.9L12 3.5z"
+                        fill="currentColor" />
+                </svg>
             </button>
 
-            <button class="entity-deck__rail-btn" type="button" aria-label="Favoritos"
-                (click)="onRailClick('favorite')">
-                ♡
+            <button class="entity-deck__rail-btn" [class.is-active]="isRailActive('picks')" type="button"
+                aria-label="Recommended" (click)="onRailClick('picks')">
+                <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M12 19.25c-.17 0-.33-.06-.46-.16-.95-.76-1.86-1.46-2.73-2.13C5.86 14.69 4 13.23 4 10.88 4 8.98 5.47 7.5 7.27 7.5c1.22 0 2.33.58 3.03 1.54A3.8 3.8 0 0 1 13.33 7.5c1.8 0 3.27 1.48 3.27 3.38 0 2.35-1.86 3.81-4.81 6.08-.87.67-1.78 1.37-2.73 2.13-.13.1-.29.16-.46.16Z"
+                        fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"
+                        stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                </svg>
             </button>
 
-            <button class="entity-deck__rail-btn" type="button" aria-label="Buscar" (click)="onRailClick('search')">
-                ⌕
+            <button class="entity-deck__rail-btn" [class.is-active]="isRailActive('profile')" type="button"
+                aria-label="Profile" (click)="onRailClick('profile')">
+                <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 12a3.75 3.75 0 1 0 0-7.5A3.75 3.75 0 0 0 12 12z" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M5 19.25c1.45-2.56 4.04-4 7-4s5.55 1.44 7 4" fill="none" stroke="currentColor"
+                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
             </button>
         </aside>
         }
 
         @if (showNav()) {
         <button class="entity-deck__nav entity-deck__nav--left" type="button" (click)="prev()" aria-label="Anterior">
-            ‹
+            <svg class="entity-deck__nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14.5 6.5L9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
         </button>
         }
 
@@ -72,7 +90,10 @@
 
         @if (showNav()) {
         <button class="entity-deck__nav entity-deck__nav--right" type="button" (click)="next()" aria-label="Siguiente">
-            ›
+            <svg class="entity-deck__nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9.5 6.5L15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
         </button>
         }
 

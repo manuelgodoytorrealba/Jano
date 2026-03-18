@@ -10,4 +10,4 @@ export type DeckItem = {
     routeType?: string;
 };
 
-export type DeckRailAction = 'spark' | 'favorite' | 'search';
+export type DeckRailAction = 'home' | 'picks' | 'profile';
