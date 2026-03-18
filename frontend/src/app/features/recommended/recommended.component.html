@@ -1,0 +1,4 @@
+<app-entity-deck [items]="deckItems" [backgroundImage]="'/assets/home/museum-room.jpg'" [showRail]="true"
+    [showDots]="true" [showNav]="true" [fullViewport]="true" (cardClick)="onCardClick($event)"
+    (expandClick)="onExpandClick($event)" (railClick)="onRailClick($event)" (searchSubmit)="onSearchSubmit($event)"
+    (tabChange)="onTabChange($event)" />

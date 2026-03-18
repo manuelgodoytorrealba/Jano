@@ -1,8 +1,18 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { BehaviorSubject, catchError, combineLatest, debounceTime, distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
 
 type AdminType = '' | 'ARTWORK' | 'ARTIST' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
@@ -18,6 +28,7 @@ type AdminStatus = '' | 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED';
 })
 export class AdminEntitiesComponent {
   private api = inject(AdminEntitiesApi);
+  private route = inject(ActivatedRoute);
 
   types: Exclude<AdminType, ''>[] = [
     'ARTWORK',
@@ -77,6 +88,21 @@ export class AdminEntitiesComponent {
       );
     }),
   );
+
+  constructor() {
+    this.route.queryParamMap.subscribe((params) => {
+      const type = (params.get('type') ?? '').toUpperCase() as AdminType;
+      const status = (params.get('status') ?? '').toUpperCase() as AdminStatus;
+      const q = params.get('q') ?? '';
+
+      this.selectedType = this.types.includes(type as Exclude<AdminType, ''>) ? type : '';
+      this.selectedStatus = this.statuses.includes(status as Exclude<AdminStatus, ''>) ? status : '';
+      this.search = q;
+
+      this.search$.next(q);
+      this.refresh();
+    });
+  }
 
   onSearchChange(value: string) {
     this.search$.next(value ?? '');

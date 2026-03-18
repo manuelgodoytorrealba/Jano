@@ -1,141 +1,138 @@
 <div class="page">
-      <header class="top">
-        <div>
-          <h1>Admin · Entities</h1>
-          <p class="muted">Gestiona el contenido de JANO.</p>
-        </div>
+  <header class="top">
+    <div>
+      <h1>Admin · Entities</h1>
+      <p class="muted">Gestiona el contenido de JANO.</p>
+    </div>
 
-        <div class="top-actions">
-          <a class="btn ghost" routerLink="/">Volver al sitio</a>
-          <a class="btn primary" routerLink="/admin/entities/new">Nueva entity</a>
-        </div>
-      </header>
+    <div class="top-actions">
+      <a class="btn ghost" routerLink="/admin">Selector visual</a>
+      <a class="btn ghost" routerLink="/">Volver al sitio</a>
+      <a class="btn primary" routerLink="/admin/entities/new">Nueva entity</a>
+    </div>
+  </header>
 
-      <section class="filters-card">
-        <div class="filters-grid">
-          <label class="field field-search">
-            <span>Buscar</span>
-            <input
-              type="text"
-              [(ngModel)]="search"
-              (ngModelChange)="onSearchChange($event)"
-              placeholder="Título, resumen o contenido..."
-            />
-          </label>
+  <section class="filters-card">
+    <div class="filters-grid">
+      <label class="field field-search">
+        <span>Buscar</span>
+        <input type="text" [(ngModel)]="search" (ngModelChange)="onSearchChange($event)"
+          placeholder="Título, resumen o contenido..." />
+      </label>
 
-          <label class="field">
-            <span>Tipo</span>
-            <select [(ngModel)]="selectedType" (ngModelChange)="refresh()">
-              <option value="">Todos</option>
-              @for (type of types; track type) {
-                <option [value]="type">{{ type }}</option>
-              }
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Status</span>
-            <select [(ngModel)]="selectedStatus" (ngModelChange)="refresh()">
-              <option value="">Todos</option>
-              @for (status of statuses; track status) {
-                <option [value]="status">{{ status }}</option>
-              }
-            </select>
-          </label>
-
-          <div class="filters-actions">
-            <button class="btn ghost" type="button" (click)="resetFilters()">
-              Reset
-            </button>
-          </div>
-        </div>
-      </section>
-
-      @if (vm$ | async; as vm) {
-        <section class="meta">
-          <div class="meta-left">
-            <span class="pill">{{ vm.total ?? 0 }} entities</span>
-
-            @if (hasActiveFilters()) {
-              <span class="pill subtle">Filtros activos</span>
-            }
-          </div>
-
-          @if (feedbackMessage) {
-            <span class="pill success">{{ feedbackMessage }}</span>
+      <label class="field">
+        <span>Tipo</span>
+        <select [(ngModel)]="selectedType" (ngModelChange)="refresh()">
+          <option value="">Todos</option>
+          @for (type of types; track type) {
+          <option [value]="type">{{ type }}</option>
           }
-        </section>
+        </select>
+      </label>
 
-        @if (loading) {
-          <div class="loading-box">Cargando entities…</div>
-        } @else if ((vm.items?.length ?? 0) > 0) {
-          <section class="table-wrap">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Título</th>
-                  <th>Tipo</th>
-                  <th>Status</th>
-                  <th>Nivel</th>
-                  <th>Slug</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
+      <label class="field">
+        <span>Status</span>
+        <select [(ngModel)]="selectedStatus" (ngModelChange)="refresh()">
+          <option value="">Todos</option>
+          @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </label>
 
-              <tbody>
-                @for (item of vm.items; track item.id) {
-                  <tr>
-                    <td>
-                      <div class="title-cell">
-                        <div class="title">{{ item.title }}</div>
-                        @if (item.summary) {
-                          <div class="summary">{{ item.summary }}</div>
-                        }
-                      </div>
-                    </td>
+      <div class="filters-actions">
+        <button class="btn ghost" type="button" (click)="resetFilters()">
+          Reset
+        </button>
+      </div>
+    </div>
+  </section>
 
-                    <td>
-                      <span class="mini-pill">{{ item.type }}</span>
-                    </td>
+  @if (vm$ | async; as vm) {
+  <section class="meta">
+    <div class="meta-left">
+      <span class="pill">{{ vm.total ?? 0 }} entities</span>
 
-                    <td>
-                      <span class="mini-pill">{{ item.status }}</span>
-                    </td>
+      @if (hasActiveFilters()) {
+      <span class="pill subtle">Filtros activos</span>
+      }
 
-                    <td>
-                      <span class="mini-pill">{{ item.contentLevel || '—' }}</span>
-                    </td>
+      @if (selectedType) {
+      <span class="pill type-pill">Tipo: {{ selectedType }}</span>
+      }
 
-                    <td class="slug">{{ item.slug }}</td>
-
-                    <td>
-                      <div class="row-actions">
-                        <a class="mini" [routerLink]="['/entity', item.slug]">Ver</a>
-                        <a class="mini" [routerLink]="['/admin/entities', item.id, 'edit']">Editar</a>
-                        <button
-                          class="mini danger"
-                          type="button"
-                          [disabled]="deletingId === item.id"
-                          (click)="remove(item.id, item.title)"
-                        >
-                          @if (deletingId === item.id) { Borrando... } @else { Borrar }
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </section>
-        } @else {
-          <div class="empty">
-            <div class="empty-title">No hay resultados</div>
-            <div class="empty-sub">
-              Ajusta la búsqueda o los filtros, o crea una nueva entity.
-            </div>
-          </div>
-        }
-      } @else {
-        <div class="loading-box">Cargando…</div>
+      @if (feedbackMessage) {
+      <span class="pill success">{{ feedbackMessage }}</span>
       }
     </div>
+  </section>
+
+  @if (loading) {
+  <div class="loading-box">Cargando entities…</div>
+  } @else if ((vm.items?.length ?? 0) > 0) {
+  <section class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Tipo</th>
+          <th>Status</th>
+          <th>Nivel</th>
+          <th>Slug</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (item of vm.items; track item.id) {
+        <tr>
+          <td>
+            <div class="title-cell">
+              <div class="title">{{ item.title }}</div>
+              @if (item.summary) {
+              <div class="summary">{{ item.summary }}</div>
+              }
+            </div>
+          </td>
+
+          <td>
+            <span class="mini-pill">{{ item.type }}</span>
+          </td>
+
+          <td>
+            <span class="mini-pill">{{ item.status }}</span>
+          </td>
+
+          <td>
+            <span class="mini-pill">{{ item.contentLevel || '—' }}</span>
+          </td>
+
+          <td class="slug">{{ item.slug }}</td>
+
+          <td>
+            <div class="row-actions">
+              <a class="mini" [routerLink]="['/entity', item.slug]">Ver</a>
+              <a class="mini" [routerLink]="['/admin/entities', item.id, 'edit']">Editar</a>
+              <button class="mini danger" type="button" [disabled]="deletingId === item.id"
+                (click)="remove(item.id, item.title)">
+                @if (deletingId === item.id) { Borrando... } @else { Borrar }
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+  } @else {
+  <div class="empty">
+    <div class="empty-title">No hay resultados</div>
+    <div class="empty-sub">
+      Ajusta la búsqueda o los filtros, o crea una nueva entity.
+    </div>
+  </div>
+  }
+  } @else {
+  <div class="loading-box">Cargando…</div>
+  }
+</div>

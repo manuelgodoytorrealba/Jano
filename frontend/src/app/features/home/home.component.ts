@@ -80,16 +80,17 @@ export class HomeComponent {
   onRailClick(action: DeckRailAction): void {
     if (action === 'favorite') {
       this.router.navigate(['/my-space']);
-    }
-
-    if (action === 'search') {
-      // luego abres search modal o search page
+      return;
     }
 
     if (action === 'spark') {
-      // luego puedes llevar a destacados o curated feed
+      this.router.navigate(['/recommended']);
+      return;
     }
 
+    if (action === 'search') {
+      console.log('open search');
+    }
   }
 
   onSearchSubmit(query: string): void {

@@ -8,10 +8,13 @@ import { MySpaceComponent } from './features/my-space/my-space.component';
 import { authGuard } from './core/auth/auth.guard';
 import { adminGuard } from './core/auth/admin.guard';
 import { AdminEntitiesComponent } from './features/admin/admin-entities/admin-entities.component';
+import { AdminEntitiesDeckComponent } from './features/admin/admin-entities-deck/admin-entities-deck.component';
 import { AdminEntityFormComponent } from './features/admin/admin-entity-form/admin-entity-form.component';
+import { RecommendedComponent } from './features/recommended/recommended.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'recommended', component: RecommendedComponent },
   { path: 'entities/:type', component: EntitiesListComponent },
   { path: 'entity/:slug', component: EntityComponent },
 
@@ -19,9 +22,24 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'my-space', component: MySpaceComponent, canActivate: [authGuard] },
 
-  { path: 'admin', component: AdminEntitiesComponent, canActivate: [adminGuard] },
-  { path: 'admin/entities/new', component: AdminEntityFormComponent, canActivate: [adminGuard] },
-  { path: 'admin/entities/:id/edit', component: AdminEntityFormComponent, canActivate: [adminGuard] },
+  // 🔥 ADMIN NUEVO FLUJO
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    children: [
+      // 👉 pantalla inicial: deck visual
+      { path: '', component: AdminEntitiesDeckComponent },
+
+      // 👉 tabla real (con filtros y query params)
+      { path: 'entities', component: AdminEntitiesComponent },
+
+      // 👉 crear
+      { path: 'entities/new', component: AdminEntityFormComponent },
+
+      // 👉 editar
+      { path: 'entities/:id/edit', component: AdminEntityFormComponent },
+    ],
+  },
 
   { path: '**', redirectTo: '' },
 ];
