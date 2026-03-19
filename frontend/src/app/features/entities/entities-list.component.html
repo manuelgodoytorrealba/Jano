@@ -1,4 +1,144 @@
-<div class="entities-page page-shell">
+<div class="entities-page page-shell" [class.entities-page--explore]="viewMode === 'explore'">
+  @if (viewMode === 'explore') {
+  <section class="entities-explorer-layout">
+    @if (vm$ | async; as vm) {
+    @if (vm.items.length) {
+    <div class="entities-explorer-stage">
+      <app-entities-explorer-3d [items]="vm.items" [activeIndex]="activeIndex()"
+        (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)">
+      </app-entities-explorer-3d>
+    </div>
+
+    <header class="entities-topbar ds-panel">
+      <div class="entities-topbar__main">
+        <button class="ds-btn entities-header__back" type="button" (click)="back()">
+          ←
+        </button>
+
+        <div class="entities-header__copy">
+          <h1 class="title-display">{{ title$ | async }}</h1>
+          <p class="text-muted">
+            Explora {{ (title$ | async)?.toLowerCase() }} en JANO
+          </p>
+        </div>
+      </div>
+
+      <div class="entities-topbar__actions">
+        <div class="view-toggle ds-panel" role="tablist" aria-label="Modo de visualización">
+          <button type="button" class="view-toggle__button is-active" role="tab" aria-selected="true"
+            (click)="setView('explore')">
+            Explorer
+          </button>
+
+          <button type="button" class="view-toggle__button" role="tab" aria-selected="false" (click)="setView('list')">
+            Lista
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <aside class="entities-filter-rail ds-panel">
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Buscar</div>
+        <input class="ds-input entities-search entities-filter-rail__search" type="search" placeholder="Buscar…"
+          [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />
+      </div>
+
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Orden</div>
+        <div class="entities-filter-rail__chips">
+          <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'recent'"
+            (click)="toggleSort('recent')">
+            Recientes
+          </button>
+
+          <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'title'"
+            (click)="toggleSort('title')">
+            Título A–Z
+          </button>
+
+          <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'relevance'"
+            [disabled]="!(qFromUrl$ | async)" (click)="toggleSort('relevance')"
+            title="Activa una búsqueda para ordenar por relevancia">
+            Relevancia
+          </button>
+        </div>
+      </div>
+
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Status</div>
+        <div class="entities-filter-rail__chips">
+          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'DRAFT'"
+            (click)="toggleStatus('DRAFT')">
+            Draft
+          </button>
+
+          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'IN_REVIEW'"
+            (click)="toggleStatus('IN_REVIEW')">
+            In review
+          </button>
+
+          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'PUBLISHED'"
+            (click)="toggleStatus('PUBLISHED')">
+            Published
+          </button>
+
+          <button type="button" class="filter-chip filter-chip--ghost" [class.is-active]="!(statusFromUrl$ | async)"
+            (click)="toggleStatus('')">
+            Todos
+          </button>
+        </div>
+      </div>
+
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Nivel</div>
+        <div class="entities-filter-rail__chips">
+          <button type="button" class="filter-chip" [class.is-active]="(contentLevelFromUrl$ | async) === 'BASIC'"
+            (click)="toggleContentLevel('BASIC')">
+            Basic
+          </button>
+
+          <button type="button" class="filter-chip"
+            [class.is-active]="(contentLevelFromUrl$ | async) === 'INTERMEDIATE'"
+            (click)="toggleContentLevel('INTERMEDIATE')">
+            Intermediate
+          </button>
+
+          <button type="button" class="filter-chip" [class.is-active]="(contentLevelFromUrl$ | async) === 'ADVANCED'"
+            (click)="toggleContentLevel('ADVANCED')">
+            Advanced
+          </button>
+
+          <button type="button" class="filter-chip filter-chip--ghost"
+            [class.is-active]="!(contentLevelFromUrl$ | async)" (click)="toggleContentLevel('')">
+            Todos
+          </button>
+        </div>
+      </div>
+
+      @if (hasActiveFilters$ | async) {
+      <div class="entities-filter-rail__section entities-filter-rail__section--actions">
+        <button type="button" class="ds-btn entities-filter-rail__reset" (click)="resetFilters()">
+          Reset filtros
+        </button>
+      </div>
+      }
+
+      <div class="entities-filter-rail__meta">
+        <span class="ds-pill">{{ vm.total }} resultados</span>
+        <span class="ds-pill">Página {{ vm.page }} / {{ vm.totalPages }}</span>
+      </div>
+    </aside>
+
+    } @else {
+    <div class="empty-state ds-panel">
+      <div class="empty-state__title">Sin resultados</div>
+      <div class="empty-state__text">Prueba con otra búsqueda o ajusta los filtros.</div>
+    </div>
+    }
+    }
+  </section>
+  } @else {
   <header class="entities-header">
     <button class="ds-btn entities-header__back" type="button" (click)="back()">
       ←
@@ -14,19 +154,18 @@
 
   <section class="entities-viewbar">
     <div class="view-toggle ds-panel" role="tablist" aria-label="Modo de visualización">
-      <button type="button" class="view-toggle__button" role="tab" [attr.aria-selected]="viewMode === 'explore'"
-        [class.is-active]="viewMode === 'explore'" (click)="setView('explore')">
+      <button type="button" class="view-toggle__button" role="tab" aria-selected="false" (click)="setView('explore')">
         Explorer
       </button>
 
-      <button type="button" class="view-toggle__button" role="tab" [attr.aria-selected]="viewMode === 'list'"
-        [class.is-active]="viewMode === 'list'" (click)="setView('list')">
+      <button type="button" class="view-toggle__button is-active" role="tab" aria-selected="true"
+        (click)="setView('list')">
         Lista
       </button>
     </div>
   </section>
 
-  <!-- <section class="entities-controls ds-panel">
+  <section class="entities-controls ds-panel">
     <input class="ds-input entities-search" type="search" placeholder="Buscar…" [value]="qFromUrl$ | async"
       (input)="setQ(($any($event.target)).value)" />
 
@@ -132,16 +271,10 @@
       <span class="ds-pill">Página {{ vm.page }} / {{ vm.totalPages }}</span>
       }
     </div>
-  </section> -->
+  </section>
 
   @if (vm$ | async; as vm) {
   @if (vm.items.length) {
-  @if (viewMode === 'explore') {
-  <app-entities-explorer-3d [items]="vm.items" [activeIndex]="activeIndex()"
-    (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)"></app-entities-explorer-3d>
-  }
-
-  @if (viewMode === 'list') {
   <section class="entities-grid">
     @for (e of vm.items; track e.slug) {
     <article class="entity-card ds-card" (click)="go(e.slug)">
@@ -160,11 +293,13 @@
           @if (e.contentLevel) { <span class="ds-badge">{{ e.contentLevel }}</span> }
         </div>
 
-        <div class="entity-card__title" [innerHTML]="highlight(e.title ?? '', (qFromUrl$ | async) ?? '')"></div>
+        <div class="entity-card__title" [innerHTML]="highlight(e.title ?? '', (qFromUrl$ | async) ?? '')">
+        </div>
 
         @if (e.summary) {
         <div class="entity-card__summary"
-          [innerHTML]="highlight(cleanWiki(e.summary ?? ''), (qFromUrl$ | async) ?? '')"></div>
+          [innerHTML]="highlight(cleanWiki(e.summary ?? ''), (qFromUrl$ | async) ?? '')">
+        </div>
         }
       </div>
     </article>
@@ -180,7 +315,6 @@
       Siguiente
     </button>
   </section>
-  }
   } @else {
   <div class="empty-state ds-panel">
     <div class="empty-state__title">Sin resultados</div>
@@ -203,5 +337,6 @@
     </article>
     }
   </section>
+  }
   }
 </div>
