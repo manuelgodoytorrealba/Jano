@@ -14,87 +14,52 @@
 
   <section class="entities-viewbar">
     <div class="view-toggle ds-panel" role="tablist" aria-label="Modo de visualización">
-      <button
-        type="button"
-        class="view-toggle__button"
-        role="tab"
-        [attr.aria-selected]="viewMode === 'explore'"
-        [class.is-active]="viewMode === 'explore'"
-        (click)="setView('explore')"
-      >
+      <button type="button" class="view-toggle__button" role="tab" [attr.aria-selected]="viewMode === 'explore'"
+        [class.is-active]="viewMode === 'explore'" (click)="setView('explore')">
         Explorer
       </button>
 
-      <button
-        type="button"
-        class="view-toggle__button"
-        role="tab"
-        [attr.aria-selected]="viewMode === 'list'"
-        [class.is-active]="viewMode === 'list'"
-        (click)="setView('list')"
-      >
+      <button type="button" class="view-toggle__button" role="tab" [attr.aria-selected]="viewMode === 'list'"
+        [class.is-active]="viewMode === 'list'" (click)="setView('list')">
         Lista
       </button>
     </div>
   </section>
 
-  <section class="entities-controls ds-panel">
-    <input
-      class="ds-input entities-search"
-      type="search"
-      placeholder="Buscar…"
-      [value]="qFromUrl$ | async"
-      (input)="setQ(($any($event.target)).value)"
-    />
+  <!-- <section class="entities-controls ds-panel">
+    <input class="ds-input entities-search" type="search" placeholder="Buscar…" [value]="qFromUrl$ | async"
+      (input)="setQ(($any($event.target)).value)" />
 
     @if (qFromUrl$ | async; as q) {
-      @if (q) {
-        <div class="search-chip">
-          <span class="search-chip__label">Buscando:</span>
-          <span class="search-chip__value">“{{ q }}”</span>
-          <button
-            type="button"
-            class="ds-btn search-chip__clear"
-            (click)="clearSearch()"
-            aria-label="Limpiar búsqueda"
-            title="Limpiar búsqueda"
-          >
-            ✕
-          </button>
-        </div>
-      }
+    @if (q) {
+    <div class="search-chip">
+      <span class="search-chip__label">Buscando:</span>
+      <span class="search-chip__value">“{{ q }}”</span>
+      <button type="button" class="ds-btn search-chip__clear" (click)="clearSearch()" aria-label="Limpiar búsqueda"
+        title="Limpiar búsqueda">
+        ✕
+      </button>
+    </div>
+    }
     }
 
     <div class="control-block">
       <p class="section-label">Orden</p>
 
       <div class="control-chips">
-        <button
-          type="button"
-          class="filter-chip"
-          [class.is-active]="(sortFromUrl$ | async) === 'recent'"
-          (click)="toggleSort('recent')"
-        >
+        <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'recent'"
+          (click)="toggleSort('recent')">
           Recientes
         </button>
 
-        <button
-          type="button"
-          class="filter-chip"
-          [class.is-active]="(sortFromUrl$ | async) === 'title'"
-          (click)="toggleSort('title')"
-        >
+        <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'title'"
+          (click)="toggleSort('title')">
           Título A–Z
         </button>
 
-        <button
-          type="button"
-          class="filter-chip"
-          [class.is-active]="(sortFromUrl$ | async) === 'relevance'"
-          [disabled]="!(qFromUrl$ | async)"
-          (click)="toggleSort('relevance')"
-          title="Activa una búsqueda para ordenar por relevancia"
-        >
+        <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'relevance'"
+          [disabled]="!(qFromUrl$ | async)" (click)="toggleSort('relevance')"
+          title="Activa una búsqueda para ordenar por relevancia">
           Relevancia
         </button>
       </div>
@@ -105,39 +70,23 @@
         <p class="section-label">Status</p>
 
         <div class="control-chips">
-          <button
-            type="button"
-            class="filter-chip"
-            [class.is-active]="(statusFromUrl$ | async) === 'DRAFT'"
-            (click)="toggleStatus('DRAFT')"
-          >
+          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'DRAFT'"
+            (click)="toggleStatus('DRAFT')">
             Draft
           </button>
 
-          <button
-            type="button"
-            class="filter-chip"
-            [class.is-active]="(statusFromUrl$ | async) === 'IN_REVIEW'"
-            (click)="toggleStatus('IN_REVIEW')"
-          >
+          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'IN_REVIEW'"
+            (click)="toggleStatus('IN_REVIEW')">
             In review
           </button>
 
-          <button
-            type="button"
-            class="filter-chip"
-            [class.is-active]="(statusFromUrl$ | async) === 'PUBLISHED'"
-            (click)="toggleStatus('PUBLISHED')"
-          >
+          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'PUBLISHED'"
+            (click)="toggleStatus('PUBLISHED')">
             Published
           </button>
 
-          <button
-            type="button"
-            class="filter-chip filter-chip--ghost"
-            [class.is-active]="!(statusFromUrl$ | async)"
-            (click)="toggleStatus('')"
-          >
+          <button type="button" class="filter-chip filter-chip--ghost" [class.is-active]="!(statusFromUrl$ | async)"
+            (click)="toggleStatus('')">
             Todos
           </button>
         </div>
@@ -147,39 +96,24 @@
         <p class="section-label">Nivel</p>
 
         <div class="control-chips">
-          <button
-            type="button"
-            class="filter-chip"
-            [class.is-active]="(contentLevelFromUrl$ | async) === 'BASIC'"
-            (click)="toggleContentLevel('BASIC')"
-          >
+          <button type="button" class="filter-chip" [class.is-active]="(contentLevelFromUrl$ | async) === 'BASIC'"
+            (click)="toggleContentLevel('BASIC')">
             Basic
           </button>
 
-          <button
-            type="button"
-            class="filter-chip"
+          <button type="button" class="filter-chip"
             [class.is-active]="(contentLevelFromUrl$ | async) === 'INTERMEDIATE'"
-            (click)="toggleContentLevel('INTERMEDIATE')"
-          >
+            (click)="toggleContentLevel('INTERMEDIATE')">
             Intermediate
           </button>
 
-          <button
-            type="button"
-            class="filter-chip"
-            [class.is-active]="(contentLevelFromUrl$ | async) === 'ADVANCED'"
-            (click)="toggleContentLevel('ADVANCED')"
-          >
+          <button type="button" class="filter-chip" [class.is-active]="(contentLevelFromUrl$ | async) === 'ADVANCED'"
+            (click)="toggleContentLevel('ADVANCED')">
             Advanced
           </button>
 
-          <button
-            type="button"
-            class="filter-chip filter-chip--ghost"
-            [class.is-active]="!(contentLevelFromUrl$ | async)"
-            (click)="toggleContentLevel('')"
-          >
+          <button type="button" class="filter-chip filter-chip--ghost"
+            [class.is-active]="!(contentLevelFromUrl$ | async)" (click)="toggleContentLevel('')">
             Todos
           </button>
         </div>
@@ -187,144 +121,87 @@
     </div>
 
     @if (hasActiveFilters$ | async) {
-      <button type="button" class="ds-btn" (click)="resetFilters()">
-        Reset filtros
-      </button>
+    <button type="button" class="ds-btn" (click)="resetFilters()">
+      Reset filtros
+    </button>
     }
 
     <div class="entities-meta">
       @if (vm$ | async; as vm) {
-        <span class="ds-pill">{{ vm.total }} resultados</span>
-        <span class="ds-pill">Página {{ vm.page }} / {{ vm.totalPages }}</span>
+      <span class="ds-pill">{{ vm.total }} resultados</span>
+      <span class="ds-pill">Página {{ vm.page }} / {{ vm.totalPages }}</span>
       }
     </div>
-  </section>
+  </section> -->
 
   @if (vm$ | async; as vm) {
-    @if (vm.items.length) {
-      @if (viewMode === 'explore') {
-        <section class="explorer-wrap">
-          <button class="explorer-nav explorer-nav--left" type="button" (click)="scrollExplorer(-1)" aria-label="Anterior">
-            ‹
-          </button>
+  @if (vm.items.length) {
+  @if (viewMode === 'explore') {
+  <app-entities-explorer-3d [items]="vm.items" [activeIndex]="activeIndex()"
+    (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)"></app-entities-explorer-3d>
+  }
 
-          <section #explorer class="explorer-track">
-            @for (e of vm.items; track e.slug) {
-              <article
-                class="explore-card ds-card"
-                [attr.data-i]="$index"
-                [class.is-active]="$index === activeIndex()"
-                [class.is-side]="$index !== activeIndex()"
-                [class.is-up]="$index % 2 === 0"
-                [class.is-down]="$index % 2 === 1"
-                (click)="onExploreClick(vm.items, $index)"
-              >
-                <div class="explore-card__media">
-                  @if (thumb(e)) {
-                    <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
-                  } @else {
-                    <div class="explore-card__placeholder"></div>
-                  }
-                </div>
-
-                <div class="explore-card__body">
-                  <div
-                    class="explore-card__title"
-                    [innerHTML]="highlight(e.title ?? '', (qFromUrl$ | async) ?? '')"
-                  ></div>
-
-                  @if (e.summary) {
-                    <div
-                      class="explore-card__summary"
-                      [innerHTML]="highlight(cleanWiki(e.summary ?? ''), (qFromUrl$ | async) ?? '')"
-                    ></div>
-                  }
-
-                  <div class="explore-card__badges">
-                    <span class="ds-badge">{{ e.type }}</span>
-                    @if (e.status) { <span class="ds-badge">{{ e.status }}</span> }
-                    @if (e.contentLevel) { <span class="ds-badge">{{ e.contentLevel }}</span> }
-                  </div>
-                </div>
-              </article>
-            }
-          </section>
-
-          <button class="explorer-nav explorer-nav--right" type="button" (click)="scrollExplorer(1)" aria-label="Siguiente">
-            ›
-          </button>
-
-          <div class="explorer-fade explorer-fade--left"></div>
-          <div class="explorer-fade explorer-fade--right"></div>
-        </section>
-      }
-
-      @if (viewMode === 'list') {
-        <section class="entities-grid">
-          @for (e of vm.items; track e.slug) {
-            <article class="entity-card ds-card" (click)="onExploreClick(vm.items, $index)">
-              <div class="entity-card__thumb">
-                @if (thumb(e)) {
-                  <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
-                } @else {
-                  <div class="entity-card__placeholder"></div>
-                }
-              </div>
-
-              <div class="entity-card__body">
-                <div class="entity-card__badges">
-                  <span class="ds-badge">{{ e.type }}</span>
-                  @if (e.status) { <span class="ds-badge">{{ e.status }}</span> }
-                  @if (e.contentLevel) { <span class="ds-badge">{{ e.contentLevel }}</span> }
-                </div>
-
-                <div
-                  class="entity-card__title"
-                  [innerHTML]="highlight(e.title ?? '', (qFromUrl$ | async) ?? '')"
-                ></div>
-
-                @if (e.summary) {
-                  <div
-                    class="entity-card__summary"
-                    [innerHTML]="highlight(cleanWiki(e.summary ?? ''), (qFromUrl$ | async) ?? '')"
-                  ></div>
-                }
-              </div>
-            </article>
-          }
-        </section>
-
-        <section class="entities-pager">
-          <button class="ds-btn" type="button" (click)="prevPage()" [disabled]="vm.page <= 1">
-            Anterior
-          </button>
-
-          <button class="ds-btn" type="button" (click)="nextPage(vm.totalPages)" [disabled]="vm.page >= vm.totalPages">
-            Siguiente
-          </button>
-        </section>
-      }
-    } @else {
-      <div class="empty-state ds-panel">
-        <div class="empty-state__title">Sin resultados</div>
-        <div class="empty-state__text">Prueba con otra búsqueda o ajusta los filtros.</div>
+  @if (viewMode === 'list') {
+  <section class="entities-grid">
+    @for (e of vm.items; track e.slug) {
+    <article class="entity-card ds-card" (click)="go(e.slug)">
+      <div class="entity-card__thumb">
+        @if (thumb(e)) {
+        <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
+        } @else {
+        <div class="entity-card__placeholder"></div>
+        }
       </div>
-    }
-  } @else {
-    <section class="entities-grid">
-      @for (_ of skeleton; track $index) {
-        <article class="entity-card entity-card--skeleton ds-card">
-          <div class="entity-card__thumb">
-            <div class="skeleton-box skeleton-box--media"></div>
-          </div>
 
-          <div class="entity-card__body">
-            <div class="skeleton-box skeleton-box--line skeleton-box--w1"></div>
-            <div class="skeleton-box skeleton-box--line skeleton-box--w2"></div>
-            <div class="skeleton-box skeleton-box--line skeleton-box--w3"></div>
-          </div>
-        </article>
-      }
-    </section>
+      <div class="entity-card__body">
+        <div class="entity-card__badges">
+          <span class="ds-badge">{{ e.type }}</span>
+          @if (e.status) { <span class="ds-badge">{{ e.status }}</span> }
+          @if (e.contentLevel) { <span class="ds-badge">{{ e.contentLevel }}</span> }
+        </div>
+
+        <div class="entity-card__title" [innerHTML]="highlight(e.title ?? '', (qFromUrl$ | async) ?? '')"></div>
+
+        @if (e.summary) {
+        <div class="entity-card__summary"
+          [innerHTML]="highlight(cleanWiki(e.summary ?? ''), (qFromUrl$ | async) ?? '')"></div>
+        }
+      </div>
+    </article>
+    }
+  </section>
+
+  <section class="entities-pager">
+    <button class="ds-btn" type="button" (click)="prevPage()" [disabled]="vm.page <= 1">
+      Anterior
+    </button>
+
+    <button class="ds-btn" type="button" (click)="nextPage(vm.totalPages)" [disabled]="vm.page >= vm.totalPages">
+      Siguiente
+    </button>
+  </section>
+  }
+  } @else {
+  <div class="empty-state ds-panel">
+    <div class="empty-state__title">Sin resultados</div>
+    <div class="empty-state__text">Prueba con otra búsqueda o ajusta los filtros.</div>
+  </div>
+  }
+  } @else {
+  <section class="entities-grid">
+    @for (_ of skeleton; track $index) {
+    <article class="entity-card entity-card--skeleton ds-card">
+      <div class="entity-card__thumb">
+        <div class="skeleton-box skeleton-box--media"></div>
+      </div>
+
+      <div class="entity-card__body">
+        <div class="skeleton-box skeleton-box--line skeleton-box--w1"></div>
+        <div class="skeleton-box skeleton-box--line skeleton-box--w2"></div>
+        <div class="skeleton-box skeleton-box--line skeleton-box--w3"></div>
+      </div>
+    </article>
+    }
+  </section>
   }
 </div>

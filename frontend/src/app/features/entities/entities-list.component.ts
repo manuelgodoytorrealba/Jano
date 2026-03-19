@@ -1,11 +1,7 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, } from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
-  OnDestroy,
-  ViewChild,
   inject,
   signal,
 } from '@angular/core';
@@ -19,6 +15,8 @@ import {
   switchMap,
 } from 'rxjs';
 
+import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
+
 type Entity = any;
 
 type Sort = 'recent' | 'title' | 'relevance';
@@ -30,31 +28,21 @@ type ViewMode = 'explore' | 'list';
   standalone: true,
   selector: 'app-entities-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, EntitiesExplorer3dComponent],
   templateUrl: './entities-list.component.html',
   styleUrls: ['./entities-list.component.scss'],
 })
-export class EntitiesListComponent implements AfterViewInit, OnDestroy {
+export class EntitiesListComponent {
   private api = inject(EntitiesApi);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   private readonly limit = 24;
 
-  // ✅ modo de vista (Explorer por defecto)
-  viewMode: ViewMode = 'list';
-
-  // Skeleton items
+  viewMode: ViewMode = 'explore';
   skeleton = Array.from({ length: 8 });
-
-  // ---------- Explorer refs/state ----------
-  @ViewChild('explorer', { static: false })
-  explorerRef?: ElementRef<HTMLElement>;
-
   activeIndex = signal(0);
-  private io?: IntersectionObserver;
 
-  // -------- URL -> state --------
   title$ = this.route.paramMap.pipe(
     map((pm) => (pm.get('type') ?? 'entities').toLowerCase()),
     map((t) => t.charAt(0).toUpperCase() + t.slice(1)),
@@ -109,7 +97,6 @@ export class EntitiesListComponent implements AfterViewInit, OnDestroy {
     distinctUntilChanged(),
   );
 
-  // -------- VM --------
   vm$ = combineLatest([
     this.typeFromUrl$,
     this.qFromUrl$.pipe(debounceTime(300)),
@@ -123,7 +110,6 @@ export class EntitiesListComponent implements AfterViewInit, OnDestroy {
       const ss = (status ?? '').trim();
       const cc = (contentLevel ?? '').trim();
 
-      // relevance sin búsqueda no tiene sentido
       const safeSort: Sort = sort === 'relevance' && !qq ? 'recent' : sort;
 
       return this.api.list({
@@ -138,70 +124,60 @@ export class EntitiesListComponent implements AfterViewInit, OnDestroy {
     }),
   );
 
-  // -------- lifecycle --------
-  ngAfterViewInit() {
-    // el template se monta después; dejamos que Angular pinte primero
-    queueMicrotask(() => this.setupExplorerObserver());
-  }
-
-  ngOnDestroy() {
-    this.io?.disconnect();
-  }
-
-  // -------- explorer logic --------
   setView(mode: ViewMode) {
     this.viewMode = mode;
+  }
 
-    // si vuelves a explorer, asegúrate de re-observar cards
-    if (mode === 'explore') {
-      queueMicrotask(() => this.setupExplorerObserver());
-    } else {
-      this.io?.disconnect();
+  moveActive(dir: -1 | 1, total: number) {
+    if (!total) return;
+    const next = Math.max(0, Math.min(total - 1, this.activeIndex() + dir));
+    this.activeIndex.set(next);
+  }
+
+  planeStyle(index: number, total: number) {
+    const active = this.activeIndex();
+    const delta = index - active;
+    const abs = Math.abs(delta);
+
+    if (abs > 4) {
+      return {
+        opacity: '0',
+        pointerEvents: 'none',
+        transform: 'translate3d(-50%, -50%, -600px) rotateZ(-8deg) scale(0.82)',
+        zIndex: '0',
+      };
     }
+
+    const slots = [
+      { x: 8, y: 84, r: -10, s: 0.82, o: 0.30 },
+      { x: 24, y: 66, r: -7, s: 0.88, o: 0.46 },
+      { x: 42, y: 48, r: -4, s: 0.96, o: 0.72 },
+      { x: 60, y: 30, r: -1, s: 1.06, o: 1.00 },
+      { x: 77, y: 13, r: 3, s: 0.94, o: 0.64 },
+      { x: 91, y: -1, r: 5, s: 0.86, o: 0.34 },
+    ];
+
+    const slotIndex = Math.max(0, Math.min(slots.length - 1, delta + 3));
+    const slot = slots[slotIndex];
+
+    const depth = delta === 0 ? 0 : -abs * 110;
+    const blur = delta === 0 ? 0 : Math.min(abs * 1.4, 4);
+    const opacity = delta === 0 ? 1 : slot.o;
+
+    return {
+      left: `${slot.x}%`,
+      top: `${slot.y}%`,
+      zIndex: `${100 - abs}`,
+      opacity: `${opacity}`,
+      filter: `blur(${blur}px)`,
+      transform: `
+      translate3d(-50%, -50%, ${depth}px)
+      rotateZ(${slot.r}deg)
+      scale(${slot.s})
+    `,
+    };
   }
 
-  private setupExplorerObserver() {
-    const root = this.explorerRef?.nativeElement;
-    if (!root) return;
-
-    this.io?.disconnect();
-
-    this.io = new IntersectionObserver(
-      (entries) => {
-        let best: IntersectionObserverEntry | null = null;
-
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          if (!best || e.intersectionRatio > best.intersectionRatio) best = e;
-        }
-        if (!best) return;
-
-        const el = best.target as HTMLElement;
-        const raw = el.dataset['i'];
-        const idx = raw ? Number(raw) : 0;
-        if (Number.isFinite(idx)) this.activeIndex.set(idx);
-      },
-      {
-        root,
-        rootMargin: '0px -40% 0px -40%',
-        threshold: [0.15, 0.25, 0.35, 0.5, 0.65, 0.8, 0.95],
-      },
-    );
-
-    const cards = root.querySelectorAll<HTMLElement>('.explore-card');
-    cards.forEach((c) => this.io!.observe(c));
-  }
-
-  scrollExplorer(dir: -1 | 1) {
-    const el = this.explorerRef?.nativeElement;
-    if (!el) return;
-
-    const card = el.querySelector<HTMLElement>('.explore-card');
-    const step = (card?.offsetWidth ?? 520) + 42;
-    el.scrollBy({ left: dir * step, behavior: 'smooth' });
-  }
-
-  // -------- helpers --------
   thumb(e: Entity): string | null {
     return e?.mediaLinks?.[0]?.media?.url ?? null;
   }
@@ -241,7 +217,6 @@ export class EntitiesListComponent implements AfterViewInit, OnDestroy {
     return out;
   }
 
-  // -------- UI handlers --------
   clearSearch() {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -270,7 +245,6 @@ export class EntitiesListComponent implements AfterViewInit, OnDestroy {
     const current = (this.route.snapshot.queryParamMap.get('sort') ?? 'recent').trim();
     const q = (this.route.snapshot.queryParamMap.get('q') ?? '').trim();
 
-    // Si no hay búsqueda, relevance no aplica
     if (next === 'relevance' && !q) next = 'recent';
 
     const value = next === current ? 'recent' : next;
@@ -349,20 +323,15 @@ export class EntitiesListComponent implements AfterViewInit, OnDestroy {
   }
 
   onExploreClick(items: Entity[], index: number) {
-  if (index !== this.activeIndex()) {
-    this.activeIndex.set(index);
-    // opcional: scrollear para centrar la card
-    this.scrollToIndex(index);
-    return;
-  }
-  const e = items[index];
-  if (e?.slug) this.go(e.slug);
-}
+    if (index !== this.activeIndex()) {
+      this.activeIndex.set(index);
+      return;
+    }
 
-private scrollToIndex(index: number) {
-  const el = this.explorerRef?.nativeElement;
-  if (!el) return;
-  const card = el.querySelector<HTMLElement>(`.explore-card[data-i="${index}"]`);
-  card?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-}
+    const e = items[index];
+    if (e?.slug) this.go(e.slug);
+  }
+  isMuted(index: number): boolean {
+    return Math.abs(index - this.activeIndex()) > 3;
+  }
 }

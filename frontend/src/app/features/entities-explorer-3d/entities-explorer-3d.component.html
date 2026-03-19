@@ -1,0 +1,25 @@
+<div class="explorer3d">
+    <div #canvasHost class="explorer3d__canvas"></div>
+
+    @if (activeItem; as active) {
+    <aside class="explorer3d__info">
+        <div class="explorer3d__eyebrow">JANO Explorer</div>
+
+        <h2 class="explorer3d__title">{{ active.title }}</h2>
+
+        <div class="explorer3d__meta">
+            <span>{{ active.type }}</span>
+            @if (active.status) { <span>{{ active.status }}</span> }
+            @if (active.contentLevel) { <span>{{ active.contentLevel }}</span> }
+        </div>
+
+        @if (active.summary) {
+        <p class="explorer3d__summary">{{ cleanWiki(active.summary) }}</p>
+        }
+
+        <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
+            Abrir entidad
+        </button>
+    </aside>
+    }
+</div>
