@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, Location } from '@angular/common';
 import { map, distinctUntilChanged, switchMap, shareReplay, tap, of, catchError } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { SavedApi } from '../../core/api/saved.api';
@@ -16,12 +16,13 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
   imports: [AsyncPipe, RouterLink, GraphComponent, RichTextComponent],
   templateUrl: './entity.component.html',
   styleUrls: ['./entity.component.scss'],
-
 })
 export class EntityComponent {
   private api = inject(EntitiesApi);
   private savedApi = inject(SavedApi);
   private collectionsApi = inject(CollectionsApi);
+  private location = inject(Location);
+
   auth = inject(AuthService);
   private route = inject(ActivatedRoute);
 
@@ -33,6 +34,10 @@ export class EntityComponent {
   collectionsLoading = signal(false);
   addingToCollection = signal(false);
   collectionMessage = signal('');
+
+  goBack() {
+    this.location.back();
+  }
 
   toggleGraph() {
     this.showGraph.update((v) => !v);
@@ -186,5 +191,45 @@ export class EntityComponent {
 
   allMentions(entity: any) {
     return this.outgoingByType(entity, 'MENTIONS');
+  }
+
+  relationLabel(type: string): string {
+    const labels: Record<string, string> = {
+      CREATED_BY: 'Creado por',
+      BELONGS_TO_MOVEMENT: 'Pertenece al movimiento',
+      BELONGS_TO_PERIOD: 'Pertenece al periodo',
+      ABOUT_CONCEPT: 'Explora el concepto',
+      LOCATED_IN: 'Ubicado en',
+      RELATED_TO: 'Relacionado con',
+      MENTIONS: 'Menciona',
+      ASSOCIATED_WITH: 'Asociado con',
+      INSPIRED_BY: 'Inspirado por',
+      INFLUENCED_BY: 'Influenciado por',
+      PART_OF: 'Forma parte de',
+    };
+
+    return labels[type] ?? type.replaceAll('_', ' ').toLowerCase();
+  }
+
+  relationDirectionLabel(type: string, direction: 'outgoing' | 'incoming'): string {
+    if (direction === 'outgoing') {
+      return this.relationLabel(type);
+    }
+
+    const incomingLabels: Record<string, string> = {
+      CREATED_BY: 'Obra creada por esta entidad',
+      BELONGS_TO_MOVEMENT: 'Entidad dentro de este movimiento',
+      BELONGS_TO_PERIOD: 'Entidad dentro de este periodo',
+      ABOUT_CONCEPT: 'Entidad relacionada con este concepto',
+      LOCATED_IN: 'Entidad ubicada aquí',
+      RELATED_TO: 'Relacionado con esta entidad',
+      MENTIONS: 'Mencionado por',
+      ASSOCIATED_WITH: 'Asociado con esta entidad',
+      INSPIRED_BY: 'Inspira a',
+      INFLUENCED_BY: 'Influye en',
+      PART_OF: 'Incluye esta entidad',
+    };
+
+    return incomingLabels[type] ?? 'Relacionado con esta entidad';
   }
 }

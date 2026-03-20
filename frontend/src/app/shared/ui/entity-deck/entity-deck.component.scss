@@ -19,7 +19,7 @@
     border-radius: 36px;
     overflow: hidden;
     background:
-        radial-gradient(circle at center, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.86) 70%),
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.88) 70%),
         #070707;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
@@ -45,7 +45,7 @@
         linear-gradient(180deg,
             rgba(0, 0, 0, 0.18),
             rgba(0, 0, 0, 0.24) 38%,
-            rgba(0, 0, 0, 0.42) 100%);
+            rgba(0, 0, 0, 0.44) 100%);
     pointer-events: none;
 }
 
@@ -79,13 +79,13 @@
     cursor: pointer;
     isolation: isolate;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.10)),
-        rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.20);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.12)),
+        rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     backdrop-filter: blur(24px) saturate(1.15);
     -webkit-backdrop-filter: blur(24px) saturate(1.15);
     box-shadow:
-        0 24px 80px rgba(0, 0, 0, 0.22),
+        0 24px 80px rgba(0, 0, 0, 0.24),
         inset 0 1px 0 rgba(255, 255, 255, 0.24),
         inset 0 -1px 0 rgba(255, 255, 255, 0.05);
     transition:
@@ -100,7 +100,10 @@
     position: absolute;
     inset: 0;
     background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.04) 38%, transparent 58%);
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.10),
+            rgba(255, 255, 255, 0.03) 38%,
+            transparent 58%);
     pointer-events: none;
     z-index: 1;
 }
@@ -120,7 +123,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: saturate(0.92) contrast(1.02);
+    filter: saturate(0.94) contrast(1.03);
 }
 
 .entity-deck__body {
@@ -128,8 +131,10 @@
     flex-direction: column;
     justify-content: space-between;
     padding: 26px 26px 24px;
-    color: rgba(255, 255, 255, 0.96);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+    color: rgba(255, 255, 255, 0.97);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.04)),
+        rgba(22, 22, 28, 0.58);
 }
 
 .entity-deck__topline {
@@ -144,24 +149,25 @@
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.68);
+    color: rgba(255, 255, 255, 0.74);
 }
 
 .entity-deck__chip {
     height: 42px;
     padding: 0 18px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.26);
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07));
-    color: rgba(255, 255, 255, 0.96);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
+        rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.98);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    backdrop-filter: blur(22px) saturate(1.2);
-    -webkit-backdrop-filter: blur(22px) saturate(1.2);
+    backdrop-filter: blur(18px) saturate(1.12);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26),
         0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
@@ -171,13 +177,14 @@
     line-height: 0.96;
     letter-spacing: -0.05em;
     color: #fff;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.18);
 }
 
 .entity-deck__description {
     margin: 14px 0 0;
     font-size: 1.05rem;
     line-height: 1.62;
-    color: rgba(255, 255, 255, 0.82);
+    color: rgba(255, 255, 255, 0.90);
     max-width: 32ch;
 }
 
@@ -189,7 +196,7 @@
 
 .entity-deck__meta {
     font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.56);
+    color: rgba(255, 255, 255, 0.64);
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -197,7 +204,7 @@
 .entity-deck__cta {
     font-size: 1rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.92);
+    color: rgba(255, 255, 255, 0.96);
 }
 
 .entity-deck__rail {
@@ -210,14 +217,15 @@
     gap: 14px;
     padding: 16px 10px 18px;
     border-radius: 999px;
-    backdrop-filter: blur(32px) saturate(1.24);
-    -webkit-backdrop-filter: blur(32px) saturate(1.24);
+    backdrop-filter: blur(28px) saturate(1.18);
+    -webkit-backdrop-filter: blur(28px) saturate(1.18);
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.07));
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07)),
+        rgba(22, 22, 28, 0.28);
     border: 1px solid rgba(255, 255, 255, 0.22);
     box-shadow:
         0 24px 56px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.30),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28),
         inset 0 -1px 0 rgba(255, 255, 255, 0.06);
 }
 
@@ -227,7 +235,7 @@
     border-radius: 999px;
     border: 1px solid transparent;
     background: transparent;
-    color: rgba(255, 255, 255, 0.90);
+    color: rgba(255, 255, 255, 0.92);
     display: grid;
     place-items: center;
     cursor: pointer;
@@ -240,8 +248,10 @@
 }
 
 .entity-deck__rail-btn.is-active {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
-    border-color: rgba(255, 255, 255, 0.14);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07)),
+        rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.16);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.18),
         0 4px 12px rgba(0, 0, 0, 0.12);
@@ -256,8 +266,6 @@
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12));
 }
 
-
-
 .entity-deck__nav {
     position: absolute;
     z-index: 4;
@@ -267,17 +275,18 @@
     height: 58px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.22);
-    backdrop-filter: blur(30px) saturate(1.22);
-    -webkit-backdrop-filter: blur(30px) saturate(1.22);
+    backdrop-filter: blur(26px) saturate(1.14);
+    -webkit-backdrop-filter: blur(26px) saturate(1.14);
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
-    color: rgba(255, 255, 255, 0.96);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+        rgba(22, 22, 28, 0.28);
+    color: rgba(255, 255, 255, 0.98);
     display: grid;
     place-items: center;
     cursor: pointer;
     box-shadow:
         0 10px 40px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.30),
         inset 0 -1px 0 rgba(255, 255, 255, 0.08);
     transition:
         transform 220ms ease,
@@ -292,18 +301,19 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.25), transparent 60%);
-    opacity: 0.42;
+    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.22), transparent 60%);
+    opacity: 0.4;
     pointer-events: none;
 }
 
 .entity-deck__nav:hover {
     transform: translateY(-50%) scale(1.06);
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.10));
+        linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.09)),
+        rgba(22, 22, 28, 0.32);
     box-shadow:
         0 18px 60px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        inset 0 1px 0 rgba(255, 255, 255, 0.38);
 }
 
 .entity-deck__nav-icon {
@@ -337,14 +347,15 @@
     gap: 14px;
     padding: 16px 18px;
     border-radius: 30px;
-    backdrop-filter: blur(30px) saturate(1.2);
-    -webkit-backdrop-filter: blur(30px) saturate(1.2);
+    backdrop-filter: blur(26px) saturate(1.14);
+    -webkit-backdrop-filter: blur(26px) saturate(1.14);
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
-    border: 1px solid rgba(255, 255, 255, 0.22);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06)),
+        rgba(18, 18, 24, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow:
         0 30px 80px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        inset 0 1px 0 rgba(255, 255, 255, 0.26);
 }
 
 .entity-deck__search {
@@ -359,7 +370,7 @@
 }
 
 .entity-deck__search-icon {
-    color: rgba(255, 255, 255, 0.74);
+    color: rgba(255, 255, 255, 0.78);
     font-size: 1rem;
 }
 
@@ -374,7 +385,7 @@
 }
 
 .entity-deck__search input::placeholder {
-    color: rgba(255, 255, 255, 0.58);
+    color: rgba(255, 255, 255, 0.62);
 }
 
 .entity-deck__tabs {
@@ -390,7 +401,7 @@
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.14);
     background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(255, 255, 255, 0.9);
     font-size: 0.92rem;
     font-weight: 600;
     cursor: pointer;
@@ -441,6 +452,121 @@
 .entity-deck__dot.is-active {
     width: 28px;
     background: rgba(255, 255, 255, 0.82);
+}
+
+/* FIREFOX: HACER EL PANEL MUCHO MÁS SÓLIDO */
+
+@supports (-moz-appearance: none) {
+    .entity-deck__card {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+            rgba(42, 42, 48, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(8px) saturate(1);
+        -webkit-backdrop-filter: blur(8px) saturate(1);
+        box-shadow:
+            0 30px 90px rgba(0, 0, 0, 0.38),
+            inset 0 1px 0 rgba(255, 255, 255, 0.12),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .entity-deck__card::before {
+        background:
+            linear-gradient(135deg,
+                rgba(255, 255, 255, 0.06),
+                rgba(255, 255, 255, 0.015) 38%,
+                transparent 58%);
+    }
+
+    .entity-deck__body {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+            rgba(16, 16, 22, 0.78);
+    }
+
+    .entity-deck__title {
+        color: rgba(255, 255, 255, 0.99);
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.22);
+    }
+
+    .entity-deck__description {
+        color: rgba(255, 255, 255, 0.92);
+    }
+
+    .entity-deck__meta {
+        color: rgba(255, 255, 255, 0.68);
+    }
+
+    .entity-deck__cta {
+        color: rgba(255, 255, 255, 0.98);
+    }
+
+    .entity-deck__chip {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)),
+            rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(8px) saturate(1);
+        -webkit-backdrop-filter: blur(8px) saturate(1);
+    }
+
+    .entity-deck__rail {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03)),
+            rgba(18, 18, 24, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(10px) saturate(1);
+        -webkit-backdrop-filter: blur(10px) saturate(1);
+    }
+
+    .entity-deck__nav {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03)),
+            rgba(18, 18, 24, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(8px) saturate(1);
+        -webkit-backdrop-filter: blur(8px) saturate(1);
+    }
+
+    .entity-deck__bottom-glass {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+            rgba(16, 16, 22, 0.86);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(10px) saturate(1);
+        -webkit-backdrop-filter: blur(10px) saturate(1);
+    }
+
+    .entity-deck__search {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .entity-deck__card {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.16)),
+            rgba(255, 255, 255, 0.14);
+    }
+
+    .entity-deck__body {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08)),
+            rgba(20, 20, 24, 0.16);
+    }
+
+    .entity-deck__rail,
+    .entity-deck__nav,
+    .entity-deck__bottom-glass,
+    .entity-deck__chip {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07));
+    }
+
+    .entity-deck__search {
+        background: rgba(255, 255, 255, 0.08);
+    }
 }
 
 @media (max-width: 860px) {

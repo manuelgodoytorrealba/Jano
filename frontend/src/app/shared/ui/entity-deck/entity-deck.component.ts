@@ -133,8 +133,8 @@ export class EntityDeckComponent {
         const abs = Math.abs(this.relativeIndex(index, this.activeIndex(), list.length));
 
         if (abs === 0) return '1';
-        if (abs === 1) return '0.72';
-        if (abs === 2) return '0.42';
+        if (abs === 1) return '0.58';
+        if (abs === 2) return '0.28';
         return '0';
     }
 
