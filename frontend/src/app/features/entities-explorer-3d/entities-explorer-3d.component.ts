@@ -18,13 +18,20 @@ import * as THREE from 'three';
 
 type Entity = any;
 
-type PlaneUserData = {
+type CardUserData = {
     index: number;
     slug?: string;
     targetPosition?: THREE.Vector3;
     targetRotation?: THREE.Euler;
     targetScale?: number;
     targetOpacity?: number;
+};
+
+type Card3D = {
+    group: THREE.Group;
+    frame: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+    image: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+    glass: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
 };
 
 @Component({
@@ -56,8 +63,8 @@ export class EntitiesExplorer3dComponent
     private animationFrameId = 0;
     private resizeObserver?: ResizeObserver;
 
-    private planes: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshPhysicalMaterial>[] = [];
-    private textureLoader = new THREE.TextureLoader();
+    private cards: Card3D[] = [];
+    private raycastTargets: THREE.Mesh[] = [];
 
     private isDragging = false;
     private dragStartX = 0;
@@ -80,8 +87,8 @@ export class EntitiesExplorer3dComponent
 
         this.initScene();
         this.ensureCenteredStart();
-        this.buildPlanes();
-        this.updatePlaneTargets();
+        this.buildCards();
+        this.updateCardTargets();
         this.startRenderLoop();
         this.observeResize();
     }
@@ -93,13 +100,13 @@ export class EntitiesExplorer3dComponent
             this.ensureCenteredStart();
 
             if (this.scene) {
-                this.buildPlanes();
-                this.updatePlaneTargets();
+                this.buildCards();
+                this.updateCardTargets();
             }
         }
 
         if (changes['activeIndex'] && this.scene) {
-            this.updatePlaneTargets();
+            this.updateCardTargets();
         }
     }
 
@@ -120,13 +127,7 @@ export class EntitiesExplorer3dComponent
             this.renderer.domElement.removeEventListener('wheel', this.onWheel as EventListener);
         }
 
-        this.planes.forEach((plane) => {
-            plane.geometry.dispose();
-            plane.material.map?.dispose();
-            plane.material.dispose();
-            this.scene.remove(plane);
-        });
-
+        this.disposeCards();
         this.renderer?.dispose();
     }
 
@@ -186,52 +187,259 @@ export class EntitiesExplorer3dComponent
         });
     }
 
-    private buildPlanes(): void {
-        this.planes.forEach((plane) => {
-            plane.geometry.dispose();
-            plane.material.map?.dispose();
-            plane.material.dispose();
-            this.scene.remove(plane);
+    private disposeCards(): void {
+        this.cards.forEach((card) => {
+            card.frame.geometry.dispose();
+            card.frame.material.map?.dispose();
+            card.frame.material.dispose();
+
+            card.image.geometry.dispose();
+            card.image.material.map?.dispose();
+            card.image.material.dispose();
+
+            card.glass.geometry.dispose();
+            card.glass.material.map?.dispose();
+            card.glass.material.dispose();
+
+            this.scene.remove(card.group);
         });
 
-        this.planes = [];
+        this.cards = [];
+        this.raycastTargets = [];
+    }
+
+    private createRoundedRectTexture(
+        width: number,
+        height: number,
+        radius: number,
+        fillStyle: string,
+        strokeStyle?: string,
+        strokeWidth = 0,
+        alpha = 1,
+    ): THREE.CanvasTexture {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error('No se pudo crear canvas 2D');
+        }
+
+        ctx.clearRect(0, 0, width, height);
+        ctx.globalAlpha = alpha;
+
+        this.drawRoundedRect(ctx, 0, 0, width, height, radius);
+
+        ctx.fillStyle = fillStyle;
+        ctx.fill();
+
+        if (strokeStyle && strokeWidth > 0) {
+            ctx.strokeStyle = strokeStyle;
+            ctx.lineWidth = strokeWidth;
+            ctx.stroke();
+        }
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.needsUpdate = true;
+        return texture;
+    }
+
+    private createSpecularHighlightTexture(
+        width: number,
+        height: number,
+        radius: number,
+    ): THREE.CanvasTexture {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error('No se pudo crear canvas 2D');
+        }
+
+        ctx.clearRect(0, 0, width, height);
+
+        this.drawRoundedRect(ctx, 0, 0, width, height, radius);
+        ctx.clip();
+
+        const grad = ctx.createLinearGradient(0, 0, width * 0.72, height);
+        grad.addColorStop(0, 'rgba(255,255,255,0)');
+        grad.addColorStop(0.16, 'rgba(255,255,255,0)');
+        grad.addColorStop(0.26, 'rgba(255,255,255,0.48)');
+        grad.addColorStop(0.34, 'rgba(255,255,255,0.14)');
+        grad.addColorStop(0.42, 'rgba(255,255,255,0.06)');
+        grad.addColorStop(0.54, 'rgba(255,255,255,0)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, width, height);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.needsUpdate = true;
+        return texture;
+    }
+
+    private createRoundedImageTexture(
+        image: HTMLImageElement,
+        width: number,
+        height: number,
+        radius: number,
+    ): THREE.CanvasTexture {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error('No se pudo crear canvas 2D');
+        }
+
+        ctx.clearRect(0, 0, width, height);
+
+        this.drawRoundedRect(ctx, 0, 0, width, height, radius);
+        ctx.clip();
+
+        const imageRatio = image.width / image.height;
+        const canvasRatio = width / height;
+
+        let drawWidth = width;
+        let drawHeight = height;
+        let dx = 0;
+        let dy = 0;
+
+        if (imageRatio > canvasRatio) {
+            drawHeight = height;
+            drawWidth = height * imageRatio;
+            dx = (width - drawWidth) / 2;
+        } else {
+            drawWidth = width;
+            drawHeight = width / imageRatio;
+            dy = (height - drawHeight) / 2;
+        }
+
+        ctx.drawImage(image, dx, dy, drawWidth, drawHeight);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.needsUpdate = true;
+        return texture;
+    }
+
+    private drawRoundedRect(
+        ctx: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        radius: number,
+    ): void {
+        const r = Math.min(radius, width / 2, height / 2);
+
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + width - r, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+        ctx.lineTo(x + width, y + height - r);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+        ctx.lineTo(x + r, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+    }
+
+    private buildCards(): void {
+        this.disposeCards();
 
         this.items.forEach((item, index) => {
-            // Más anchas para un look más panel / premium
-            const geometry = new THREE.PlaneGeometry(2.95, 3.2, 1, 1);
+            const frameGeometry = new THREE.PlaneGeometry(3.18, 3.43, 1, 1);
+            const imageGeometry = new THREE.PlaneGeometry(2.95, 3.2, 1, 1);
+            const glassGeometry = new THREE.PlaneGeometry(3.08, 3.33, 1, 1);
 
-            const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color('#ffffff'),
+            const frameTexture = this.createRoundedRectTexture(
+                1100,
+                1200,
+                58,
+                'rgba(255,255,255,0.16)',
+                'rgba(255,255,255,0.95)',
+                12,
+                1,
+            );
+
+            const glassTexture = this.createSpecularHighlightTexture(1100, 1200, 54);
+
+            const frameMaterial = new THREE.MeshBasicMaterial({
+                map: frameTexture,
                 transparent: true,
-                opacity: 0.58,
-                roughness: 0.08,
-                metalness: 0,
-                transmission: 0.9,
-                thickness: 0.45,
-                reflectivity: 0.35,
-                clearcoat: 0.65,
-                clearcoatRoughness: 0.1,
+                opacity: 0.56,
+                depthWrite: false,
             });
+
+            const imageMaterial = new THREE.MeshBasicMaterial({
+                color: new THREE.Color('#f2f2ef'),
+                transparent: true,
+                opacity: 1,
+            });
+
+            const glassMaterial = new THREE.MeshBasicMaterial({
+                map: glassTexture,
+                transparent: true,
+                opacity: 0.24,
+                depthWrite: false,
+            });
+
+            const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+            const image = new THREE.Mesh(imageGeometry, imageMaterial);
+            const glass = new THREE.Mesh(glassGeometry, glassMaterial);
+
+            const group = new THREE.Group();
+
+            frame.position.z = -0.035;
+            image.position.z = 0.02;
+            glass.position.z = 0.055;
 
             const textureUrl = this.thumb(item);
             if (textureUrl) {
-                this.textureLoader.load(textureUrl, (texture: THREE.Texture) => {
-                    texture.colorSpace = THREE.SRGBColorSpace;
-                    material.map = texture;
-                    material.needsUpdate = true;
-                });
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const roundedTexture = this.createRoundedImageTexture(img, 1100, 1200, 48);
+                    imageMaterial.map = roundedTexture;
+                    imageMaterial.needsUpdate = true;
+                };
+                img.src = textureUrl;
             } else {
-                material.color = new THREE.Color('#ecece8');
+                imageMaterial.color = new THREE.Color('#ecece8');
             }
 
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.userData = {
+            group.userData = {
                 index,
                 slug: item?.slug,
-            } satisfies PlaneUserData;
+            } satisfies CardUserData;
 
-            this.scene.add(mesh);
-            this.planes.push(mesh);
+            image.userData = {
+                index,
+                slug: item?.slug,
+            } satisfies CardUserData;
+
+            group.add(frame);
+            group.add(image);
+            group.add(glass);
+
+            this.scene.add(group);
+
+            this.cards.push({
+                group,
+                frame,
+                image,
+                glass,
+            });
+
+            this.raycastTargets.push(image);
         });
     }
 
@@ -245,44 +453,48 @@ export class EntitiesExplorer3dComponent
         return diff;
     }
 
-    private updatePlaneTargets(): void {
+    private updateCardTargets(): void {
         const total = this.items.length;
         if (!total) return;
 
         const spacing = 1.72;
         const depthSpacing = 1.28;
 
-        this.planes.forEach((plane, i) => {
+        // Ajusta este valor para subir o bajar TODAS las cards
+        const baseY = 0.2;
+
+        // Déjalo en 0 para mantenerlas alineadas y ordenadas
+        const sideYOffset = 0;
+
+        this.cards.forEach((card, i) => {
             const offset = this.getCircularOffset(i, this.activeIndex, total);
             const abs = Math.abs(offset);
 
             const visible = abs <= Math.min(5, Math.floor(total / 2));
-            plane.visible = visible;
+            card.group.visible = visible;
 
             if (!visible) return;
 
             const isHovered = this.hoveredIndex === i;
             const isActive = offset === 0;
 
-            // Diagonal limpia y más viva
             const x = offset * spacing;
-            const y = -offset * 0.2;
+            const y = baseY + (isActive ? 0 : sideYOffset);
             const z =
                 -abs * depthSpacing +
                 (isActive ? 1.55 : 0) +
-                (isHovered ? 0.95 : 0);
+                (isHovered ? 0.42 : 0);
 
-            // La activa casi recta. Las demás se inclinan de forma sutil.
             const rotY = isActive ? 0 : offset * -0.09;
             const rotZ = isActive ? 0 : offset * -0.022;
 
             const scaleBase = isActive ? 1.34 : Math.max(0.86, 1 - abs * 0.06);
-            const scale = isHovered ? scaleBase + 0.1 : scaleBase;
+            const scale = isHovered ? scaleBase + 0.045 : scaleBase;
 
             const opacityBase = isActive ? 1 : Math.max(0.22, 0.68 - abs * 0.1);
             const opacity = isHovered ? Math.min(1, opacityBase + 0.1) : opacityBase;
 
-            const userData = plane.userData as PlaneUserData;
+            const userData = card.group.userData as CardUserData;
             userData.targetPosition = new THREE.Vector3(x, y, z);
             userData.targetRotation = new THREE.Euler(0, rotY, rotZ);
             userData.targetScale = scale;
@@ -294,34 +506,58 @@ export class EntitiesExplorer3dComponent
         const tick = () => {
             this.animationFrameId = window.requestAnimationFrame(tick);
 
-            this.planes.forEach((plane) => {
-                if (!plane.visible) return;
+            this.cards.forEach((card) => {
+                if (!card.group.visible) return;
 
-                const userData = plane.userData as PlaneUserData;
+                const userData = card.group.userData as CardUserData;
                 const targetPosition = userData.targetPosition;
                 const targetRotation = userData.targetRotation;
                 const targetScale = userData.targetScale;
                 const targetOpacity = userData.targetOpacity;
 
                 if (targetPosition) {
-                    plane.position.lerp(targetPosition, 0.082);
+                    card.group.position.lerp(targetPosition, 0.082);
                 }
 
                 if (targetRotation) {
-                    plane.rotation.x = THREE.MathUtils.lerp(plane.rotation.x, targetRotation.x, 0.082);
-                    plane.rotation.y = THREE.MathUtils.lerp(plane.rotation.y, targetRotation.y, 0.082);
-                    plane.rotation.z = THREE.MathUtils.lerp(plane.rotation.z, targetRotation.z, 0.082);
+                    card.group.rotation.x = THREE.MathUtils.lerp(
+                        card.group.rotation.x,
+                        targetRotation.x,
+                        0.082,
+                    );
+                    card.group.rotation.y = THREE.MathUtils.lerp(
+                        card.group.rotation.y,
+                        targetRotation.y,
+                        0.082,
+                    );
+                    card.group.rotation.z = THREE.MathUtils.lerp(
+                        card.group.rotation.z,
+                        targetRotation.z,
+                        0.082,
+                    );
                 }
 
                 if (typeof targetScale === 'number') {
-                    const next = THREE.MathUtils.lerp(plane.scale.x, targetScale, 0.082);
-                    plane.scale.setScalar(next);
+                    const next = THREE.MathUtils.lerp(card.group.scale.x, targetScale, 0.082);
+                    card.group.scale.setScalar(next);
                 }
 
                 if (typeof targetOpacity === 'number') {
-                    plane.material.opacity = THREE.MathUtils.lerp(
-                        plane.material.opacity,
+                    card.image.material.opacity = THREE.MathUtils.lerp(
+                        card.image.material.opacity,
                         targetOpacity,
+                        0.082,
+                    );
+
+                    card.frame.material.opacity = THREE.MathUtils.lerp(
+                        card.frame.material.opacity,
+                        targetOpacity === 1 ? 0.68 : Math.max(0.2, targetOpacity * 0.3),
+                        0.082,
+                    );
+
+                    card.glass.material.opacity = THREE.MathUtils.lerp(
+                        card.glass.material.opacity,
+                        targetOpacity === 1 ? 0.24 : Math.max(0.07, targetOpacity * 0.12),
                         0.082,
                     );
                 }
@@ -358,7 +594,7 @@ export class EntitiesExplorer3dComponent
         this.pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
 
         this.raycaster.setFromCamera(this.pointer, this.camera);
-        return this.raycaster.intersectObjects(this.planes, false);
+        return this.raycaster.intersectObjects(this.raycastTargets, false);
     }
 
     private setActiveIndex(next: number): void {
@@ -389,21 +625,22 @@ export class EntitiesExplorer3dComponent
         this.dragMoved = false;
         this.dragStartX = event.clientX;
         this.dragAccumulatedX = 0;
+        this.renderer.domElement.classList.add('is-dragging');
     };
 
     private onPointerMove = (event: PointerEvent) => {
         const hits = this.pickPlane(event.clientX, event.clientY);
         const first = hits[0];
-        this.hoveredIndex = first ? (first.object.userData as PlaneUserData).index : null;
-        this.updatePlaneTargets();
+        this.hoveredIndex = first ? (first.object.userData as CardUserData).index : null;
+        this.updateCardTargets();
 
         if (!this.isDragging) return;
 
         const delta = event.clientX - this.dragStartX;
-        this.dragAccumulatedX += delta;
+        this.dragAccumulatedX += delta * 0.85;
         this.dragStartX = event.clientX;
 
-        if (Math.abs(this.dragAccumulatedX) >= 34) {
+        if (Math.abs(this.dragAccumulatedX) >= 52) {
             this.dragMoved = true;
 
             const direction = this.dragAccumulatedX < 0 ? 1 : -1;
@@ -416,6 +653,7 @@ export class EntitiesExplorer3dComponent
     private onPointerUp = (event: PointerEvent) => {
         if (!this.isDragging) return;
         this.isDragging = false;
+        this.renderer.domElement.classList.remove('is-dragging');
 
         if (this.dragMoved) {
             this.dragMoved = false;
@@ -426,7 +664,7 @@ export class EntitiesExplorer3dComponent
         const first = hits[0];
         if (!first) return;
 
-        const data = first.object.userData as PlaneUserData;
+        const data = first.object.userData as CardUserData;
 
         if (data.index === this.activeIndex) {
             if (data.slug) {
@@ -442,6 +680,7 @@ export class EntitiesExplorer3dComponent
         this.isDragging = false;
         this.dragMoved = false;
         this.hoveredIndex = null;
-        this.updatePlaneTargets();
+        this.renderer.domElement.classList.remove('is-dragging');
+        this.updateCardTargets();
     };
 }
