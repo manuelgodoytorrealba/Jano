@@ -1,7 +1,7 @@
 .page-shell {
   width: min(100%, var(--container-page));
   margin-inline: auto;
-  padding-inline: var(--space-7);
+  padding-inline: clamp(var(--space-4), 2vw, var(--space-6));
 }
 
 .surface {
@@ -37,13 +37,13 @@
 }
 
 .title-display {
-  font-size: var(--text-2xl);
+  font-size: clamp(1.75rem, 1.2rem + 1.25vw, var(--text-2xl));
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
 }
 
 .title-section {
-  font-size: var(--text-lg);
+  font-size: clamp(1rem, 0.92rem + 0.32vw, var(--text-lg));
   line-height: 1.2;
   letter-spacing: var(--tracking-soft);
 }

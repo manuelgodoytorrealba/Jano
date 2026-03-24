@@ -1,9 +1,11 @@
 html {
   color-scheme: light;
+  scrollbar-width: none;
 }
 
 body {
   margin: 0;
+  overflow-y: scroll;
   background:
     radial-gradient(circle at top, rgba(255,255,255,.8), transparent 40%),
     var(--color-bg);
@@ -14,6 +16,12 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 *,

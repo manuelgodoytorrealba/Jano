@@ -20,6 +20,7 @@ import { DeckItem, DeckRailAction } from './entity-deck.types';
 })
 export class EntityDeckComponent {
     private router = inject(Router);
+    private viewportWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 1440);
 
     items = input.required<DeckItem[]>();
 
@@ -113,17 +114,32 @@ export class EntityDeckComponent {
         return diff;
     }
 
+    private deckMotionScale(): number {
+        const width = this.viewportWidth();
+
+        if (width >= 1800) return 1.06;
+        if (width >= 1440) return 1;
+        if (width >= 1180) return 0.93;
+        return 0.88;
+    }
+
     cardTransform(index: number): string {
         const list = this.items();
         const d = this.relativeIndex(index, this.activeIndex(), list.length);
         const clamped = Math.max(-2, Math.min(2, d));
         const abs = Math.abs(clamped);
+        const motionScale = this.deckMotionScale();
 
-        const x = clamped * 118;
-        const y = abs === 0 ? 0 : abs === 1 ? 12 : 24;
-        const z = abs === 0 ? 0 : abs === 1 ? -120 : -240;
-        const rotY = clamped * -16;
-        const scale = abs === 0 ? 1 : abs === 1 ? 0.92 : 0.84;
+        const xBase = abs === 0 ? 0 : abs === 1 ? 104 : 182;
+        const yBase = abs === 0 ? 0 : abs === 1 ? 10 : 22;
+        const zBase = abs === 0 ? 0 : abs === 1 ? -94 : -178;
+        const rotBase = abs === 0 ? 0 : abs === 1 ? -12 : -18;
+        const scale = abs === 0 ? 1 : abs === 1 ? 0.9 : 0.8;
+
+        const x = Math.sign(clamped) * xBase * motionScale;
+        const y = yBase * motionScale;
+        const z = zBase * motionScale;
+        const rotY = Math.sign(clamped) * rotBase;
 
         return `translate3d(${x}px, ${y}px, ${z}px) rotateY(${rotY}deg) scale(${scale})`;
     }
@@ -169,6 +185,11 @@ export class EntityDeckComponent {
             event.preventDefault();
             this.next();
         }
+    }
+
+    @HostListener('window:resize')
+    onResize(): void {
+        this.viewportWidth.set(window.innerWidth);
     }
 
     @HostListener('wheel', ['$event'])
