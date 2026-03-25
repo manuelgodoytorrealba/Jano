@@ -26,7 +26,6 @@ export class EntityComponent {
   auth = inject(AuthService);
   private route = inject(ActivatedRoute);
 
-  showGraph = signal(false);
   isSaved = signal(false);
   saveLoading = signal(false);
 
@@ -37,10 +36,6 @@ export class EntityComponent {
 
   goBack() {
     this.location.back();
-  }
-
-  toggleGraph() {
-    this.showGraph.update((v) => !v);
   }
 
   toggleCollectionsPanel() {

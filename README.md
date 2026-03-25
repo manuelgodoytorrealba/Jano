@@ -256,6 +256,71 @@ Includes:
 
 ---
 
+# 🗂 Visual Explorer File Map
+
+The entity explorer is mainly split between the entity page shell and the graph feature itself.
+
+## Entity Page Shell
+
+* [frontend/src/app/features/entity/entity.component.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/entity/entity.component.ts)
+  Controls entity-page data flow and passes the current entity context into the explorer.
+* [frontend/src/app/features/entity/entity.component.html](/home/manuel/Desarrollos/Jano/frontend/src/app/features/entity/entity.component.html)
+  Defines the entity page structure and mounts the visual explorer.
+* [frontend/src/app/features/entity/entity.component.scss](/home/manuel/Desarrollos/Jano/frontend/src/app/features/entity/entity.component.scss)
+  Styles the entity page shell, header, spacing and viewport available to the explorer.
+
+## Graph Feature Core
+
+* [frontend/src/app/features/graph/graph.component.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph.component.ts)
+  Main orchestrator for graph data loading, viewport state, selection, focus, drag/zoom/pan behavior and image-graph synchronization.
+* [frontend/src/app/features/graph/graph.component.html](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph.component.html)
+  Renders the dual explorer layout: image panel, graph panel, controls, contextual card and filters.
+* [frontend/src/app/features/graph/graph.component.scss](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph.component.scss)
+  Owns the visual composition of the explorer, including split layout, control hierarchy, canvas styling and interaction states.
+
+## Layout And Geometry
+
+* [frontend/src/app/features/graph/graph-layout.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph-layout.ts)
+  Computes node placement, force-layout evolution, edge geometry and graph bounds.
+* [frontend/src/app/features/graph/graph-viewport.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph-viewport.ts)
+  Handles graph viewport math: fit, focus, pan, zoom and interpolation.
+* [frontend/src/app/features/graph/image-viewport.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/image-viewport.ts)
+  Handles image viewport math: fit-to-frame, pan/zoom clamping and transform interpolation.
+
+## Interaction And UI Rules
+
+* [frontend/src/app/features/graph/graph-interaction.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph-interaction.ts)
+  Centralizes pointer-session logic, drag thresholds, hover suppression and pointer-capture helpers.
+* [frontend/src/app/features/graph/graph-labels.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph-labels.ts)
+  Encodes when edge labels should appear depending on mode, zoom and density.
+* [frontend/src/app/features/graph/graph.config.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph.config.ts)
+  Central visual registry for entity types and relation types: colors, icons, shapes, line styles and labels.
+* [frontend/src/app/features/graph/graph.models.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph.models.ts)
+  Shared types for graph nodes, edges, viewports, tooltips and DTOs.
+
+## Persistence And Sync
+
+* [frontend/src/app/features/graph/graph-persistence.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/graph-persistence.ts)
+  Saves and restores explorer state per entity, including graph viewport, image viewport, filters and node positions.
+* [frontend/src/app/features/graph/image-graph-sync.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/features/graph/image-graph-sync.ts)
+  Defines visual synchronization rules between selected graph nodes and image overlays.
+
+## Data Source
+
+* [frontend/src/app/core/api/entities.api.ts](/home/manuel/Desarrollos/Jano/frontend/src/app/core/api/entities.api.ts)
+  Frontend API client used by the explorer to request graph data from the backend.
+
+This is the main file set to inspect when changing:
+
+* Initial graph spawn and focus behavior
+* Graph drag, zoom and pan
+* Image zoom and pan
+* Contextual card behavior
+* Image↔graph synchronization
+* Explorer layout and hierarchy
+
+---
+
 # 🧩 Tech Stack
 
 ## Backend
@@ -574,4 +639,3 @@ The architecture allows:
 * Docker production orchestration
 
 ---
-

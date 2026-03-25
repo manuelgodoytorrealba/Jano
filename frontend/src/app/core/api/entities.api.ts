@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { GraphResponseDto } from '../../features/graph/graph.models';
 
 type Entity = any;
 
@@ -52,7 +53,7 @@ export class EntitiesApi {
 
   // ✅ ALIAS para graph.component.ts
   graph(slug: string) {
-    return this.http.get<any>(`${this.base}/entities/${slug}/graph`);
+    return this.http.get<GraphResponseDto>(`${this.base}/entities/${slug}/graph`);
   }
 
   // ✅ ALIAS para rich-text.component.ts

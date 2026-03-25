@@ -1,38 +1,298 @@
+@if (loading()) {
+  <div class="explorer-state">Cargando explorador…</div>
+} @else if (error()) {
+  <div class="explorer-state explorer-state--error">{{ error() }}</div>
+} @else if (graph(); as graph) {
+  <section class="explorer-shell">
+    <div class="explorer-canvas">
+      <section class="explorer-image-pane">
+        <div
+          #imageStage
+          class="image-stage"
+          (wheel)="onImageWheel($event)"
+          (pointerdown)="onImagePointerDown($event)"
+          (pointermove)="onImagePointerMove($event)"
+          (pointerup)="onImagePointerUp($event)"
+          (pointercancel)="onImagePointerCancel($event)"
+        >
+          @if (imageUrl) {
+            <div class="image-stage__asset" [style.transform]="imageTransform()">
+              <img
+                class="image-stage__img"
+                [src]="imageUrl!"
+                [alt]="imageAlt || entityTitle"
+                loading="lazy"
+                draggable="false"
+                (load)="onImageLoaded($event)"
+              />
 
-    @if (vm$ | async; as vm) {
-      <svg class="svg" viewBox="0 0 1000 700">
-        <!-- edges -->
-        @for (e of vm.edges; track e.id) {
-          <line
-            [attr.x1]="vm.pos[e.from].x"
-            [attr.y1]="vm.pos[e.from].y"
-            [attr.x2]="vm.pos[e.to].x"
-            [attr.y2]="vm.pos[e.to].y"
-            class="edge"
-          />
-        }
+              @if (imageSyncOverlay(); as overlay) {
+                <div
+                  class="image-sync"
+                  [class.image-sync--oval]="overlay.shape === 'oval'"
+                  [class.image-sync--frame]="overlay.shape === 'frame'"
+                  [style.--sync-color]="overlay.color"
+                  [style.left.%]="overlay.x"
+                  [style.top.%]="overlay.y"
+                  [style.width.%]="overlay.width"
+                  [style.height.%]="overlay.height"
+                >
+                  <span class="image-sync__label">{{ overlay.label }}</span>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="image-stage__empty">
+              <span>Sin imagen disponible</span>
+            </div>
+          }
 
-        <!-- nodes -->
-        @for (n of vm.nodes; track n.id) {
-          <g
-            class="node-group"
-            [attr.transform]="'translate(' + vm.pos[n.id].x + ',' + vm.pos[n.id].y + ')'"
-            (click)="go(n.slug)"
-          >
-            <circle class="node" r="22"></circle>
-            <circle class="node-ring" r="28"></circle>
+          <div class="image-overlay-bar">
+            <div class="explorer-surface-label">Imagen</div>
 
-            <text class="label" x="40" y="6">
-              {{ n.title }}
-            </text>
+            <div class="surface-controls surface-controls--image">
+              <button type="button" class="surface-control" [disabled]="!imageAsset()" (click)="adjustImageZoom(1.14)">+</button>
+              <button type="button" class="surface-control" [disabled]="!imageAsset()" (click)="adjustImageZoom(0.88)">−</button>
+              <button type="button" class="surface-control surface-control--wide" [disabled]="!imageAsset()" (click)="resetImageView()">
+                Reset
+              </button>
+            </div>
+          </div>
 
-            <text class="sub" x="40" y="26">
-              {{ n.type }}
-            </text>
-          </g>
-        }
-      </svg>
-    } @else {
-      <div class="loading">Cargando grafo…</div>
-    }
-  
+          @if (imageMeta?.source || imageMeta?.photoBy || imageMeta?.license) {
+            <div class="image-meta-card">
+              @if (imageMeta?.source) {
+                <div><strong>Fuente</strong> {{ imageMeta?.source }}</div>
+              }
+              @if (imageMeta?.photoBy) {
+                <div><strong>Foto</strong> {{ imageMeta?.photoBy }}</div>
+              }
+              @if (imageMeta?.license) {
+                <div><strong>Licencia</strong> {{ imageMeta?.license }}</div>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="explorer-graph-pane">
+        <div class="graph-panel-bar">
+          <div class="graph-panel-bar__group graph-panel-bar__group--status">
+            <div class="explorer-surface-label">Relaciones</div>
+
+            <div class="graph-mode-block">
+              <span class="graph-panel-caption">Labels</span>
+              <div class="graph-mode-switch">
+                <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode() === 'auto'" (click)="setLabelsMode('auto')">
+                  Auto
+                </button>
+                <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode() === 'always'" (click)="setLabelsMode('always')">
+                  Mostrar
+                </button>
+                <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode() === 'hidden'" (click)="setLabelsMode('hidden')">
+                  Ocultar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="graph-panel-bar__group graph-panel-bar__group--actions">
+            <div class="graph-panel-bar__meta">
+              <span>{{ filteredNodes().length }} nodos</span>
+              <span>{{ filteredEdges().length }} relaciones</span>
+              <span>{{ (graphViewport().scale * 100).toFixed(0) }}%</span>
+            </div>
+
+            <div class="graph-panel-bar__shortcuts">
+              <button type="button" class="graph-utility-btn" (click)="resetAllViews()">Reset view</button>
+              <button type="button" class="graph-utility-btn" [disabled]="!hasVisibleSelection()" (click)="centerSelection()">
+                Ir al nodo principal
+              </button>
+            </div>
+
+            <div class="surface-controls surface-controls--graph">
+              <button type="button" class="surface-control" (click)="adjustGraphZoom(1.14)">+</button>
+              <button type="button" class="surface-control" (click)="adjustGraphZoom(0.88)">−</button>
+              <button type="button" class="surface-control surface-control--wide" (click)="resetGraphView()">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          #graphStage
+          class="graph-stage"
+          (wheel)="onGraphWheel($event)"
+          (pointerdown)="onGraphStagePointerDown($event)"
+          (pointermove)="onGraphStagePointerMove($event)"
+          (pointerup)="onGraphStagePointerUp($event)"
+          (pointercancel)="onGraphStagePointerUp($event)"
+        >
+          <svg class="graph-svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              @for (type of graph.relationTypes; track type) {
+                <marker
+                  [attr.id]="edgeMarkerId(type)"
+                  markerWidth="11"
+                  markerHeight="11"
+                  refX="8"
+                  refY="4"
+                  orient="auto"
+                  markerUnits="strokeWidth"
+                >
+                  <path d="M 0 0 L 8 4 L 0 8 z" [attr.fill]="relationConfig(type).color"></path>
+                </marker>
+              }
+            </defs>
+
+            <g [attr.transform]="graphViewportTransform()">
+              @for (edge of filteredEdges(); track edge.id) {
+                <g class="graph-edge-group">
+                  <path
+                    class="graph-edge"
+                    [attr.d]="edgePath(edge)"
+                    [attr.stroke]="relationConfig(edge.relationType).color"
+                    [attr.stroke-width]="relationConfig(edge.relationType).width"
+                    [attr.stroke-dasharray]="edgeDasharray(edge.relationType)"
+                    [attr.marker-end]="edge.directed ? 'url(#' + edgeMarkerId(edge.relationType) + ')' : null"
+                    [class.is-muted]="isEdgeMuted(edge)"
+                  ></path>
+
+                  <path
+                    class="graph-edge-hit"
+                    [attr.d]="edgePath(edge)"
+                    (pointerenter)="onEdgeHover($event, edge)"
+                    (pointermove)="onTooltipMove($event)"
+                    (pointerleave)="clearHover()"
+                  ></path>
+
+                  @if (shouldShowEdgeLabel(edge)) {
+                    <text
+                      class="graph-edge-label"
+                      [class.is-muted]="isEdgeMuted(edge)"
+                      [attr.x]="edgeLabelPoint(edge).x"
+                      [attr.y]="edgeLabelPoint(edge).y"
+                    >
+                      {{ edgeLabel(edge) }}
+                    </text>
+                  }
+                </g>
+              }
+
+              @for (node of filteredNodes(); track node.id) {
+                <g
+                  class="graph-node"
+                  [attr.transform]="nodeTransform(node.id)"
+                  [class.is-selected]="selectedNodeId() === node.id"
+                  [class.is-muted]="isNodeMuted(node.id)"
+                  (pointerdown)="onNodePointerDown($event, node.id)"
+                  (pointermove)="onNodePointerMove($event)"
+                  (pointerup)="onNodePointerUp($event)"
+                  (pointercancel)="onNodePointerCancel($event)"
+                  (pointerenter)="onNodeHover($event, node.id)"
+                  (pointerleave)="clearHover()"
+                >
+                  <circle
+                    class="graph-node__halo"
+                    cx="0"
+                    cy="0"
+                    [attr.r]="nodeHaloSize(node.id)"
+                    [attr.fill]="nodeConfig(node.type).halo"
+                  ></circle>
+
+                  <path
+                    class="graph-node__shape"
+                    [attr.d]="nodeShapePath(node.id)"
+                    [attr.fill]="nodeConfig(node.type).color"
+                    [attr.stroke]="nodeConfig(node.type).accent"
+                  ></path>
+
+                  <text class="graph-node__icon" text-anchor="middle" dy="0.35em" [attr.fill]="nodeConfig(node.type).textColor">
+                    {{ nodeConfig(node.type).icon }}
+                  </text>
+
+                  <g class="graph-node__label" [attr.transform]="'translate(' + (nodeSize(node.id) + 18) + ', 0)'">
+                    <text class="graph-node__title" y="-2">{{ compactLabel(node.label, 28) }}</text>
+                    <text class="graph-node__subtitle" y="18">{{ entityTypeLabel(node.type) }}</text>
+                  </g>
+                </g>
+              }
+            </g>
+          </svg>
+
+          @if (tooltip(); as tooltip) {
+            <div class="graph-tooltip" [ngStyle]="tooltipStyle()">
+              <div class="graph-tooltip__title">{{ tooltip.title }}</div>
+              <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>
+              @if (tooltip.body) {
+                <div class="graph-tooltip__body">{{ tooltip.body }}</div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="graph-panel-footer">
+          @if (contextualNode(); as selectedNode) {
+            <button type="button" class="selection-card selection-card--interactive" (click)="openSelectedEntity()">
+              <div class="selection-card__head">
+                <span class="selection-card__type" [style.--node-color]="nodeConfig(selectedNode.type).color">
+                  {{ entityTypeLabel(selectedNode.type) }}
+                </span>
+                <span class="selection-card__meta">{{ selectedNode.degree }} conexiones</span>
+              </div>
+
+              <h3>{{ selectedNode.label }}</h3>
+              @if (selectedNode.metadata?.summary) {
+                <p>{{ selectedNode.metadata?.summary }}</p>
+              }
+              @if (imageSyncOverlay()) {
+                <div class="selection-card__sync">Sincronizado con la imagen</div>
+              }
+            </button>
+          }
+
+          <div class="graph-filter-tray">
+            <div class="graph-filter-group">
+              <div class="filter-group__head">
+                <span class="filter-group__label">Tipos</span>
+                <button type="button" class="filter-action" (click)="setAllEntityTypes(true)">Todos</button>
+              </div>
+              @for (type of graph.entityTypes; track type) {
+                <button
+                  type="button"
+                  class="filter-chip"
+                  [class.is-active]="entityTypeFilters()[type] !== false"
+                  [style.--chip-color]="nodeConfig(type).color"
+                  (click)="toggleEntityType(type)"
+                >
+                  <span class="filter-chip__dot"></span>
+                  {{ entityTypeLabel(type) }}
+                </button>
+              }
+            </div>
+
+            <div class="graph-filter-group">
+              <div class="filter-group__head">
+                <span class="filter-group__label">Relaciones</span>
+                <button type="button" class="filter-action" (click)="setAllRelationTypes(true)">Todas</button>
+              </div>
+              @for (type of graph.relationTypes; track type) {
+                <button
+                  type="button"
+                  class="filter-chip filter-chip--relation"
+                  [class.is-active]="relationTypeFilters()[type] !== false"
+                  [style.--chip-color]="relationConfig(type).color"
+                  (click)="toggleRelationType(type)"
+                >
+                  <span class="filter-chip__line"></span>
+                  {{ relationTypeLabel(type) }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+} @else {
+  <div class="explorer-state">No hay datos de exploración para esta entidad.</div>
+}

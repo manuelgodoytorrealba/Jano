@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-const TYPES = ['ARTWORK', 'PERIOD', 'MOVEMENT', 'CONCEPT', 'ARTIST'] as const;
+const TYPES = ['ARTWORK', 'PERIOD', 'MOVEMENT', 'CONCEPT', 'ARTIST', 'PLACE', 'TEXT'] as const;
 export type EntityType = (typeof TYPES)[number];
 
 export class ListEntitiesQuery {

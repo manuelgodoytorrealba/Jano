@@ -5,6 +5,30 @@ import { ContentLevel, EntityStatus } from '@prisma/client';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 
+type GraphNodePayload = {
+  id: string;
+  label: string;
+  type: string;
+  slug: string;
+  image: string | null;
+  metadata: {
+    summary: string | null;
+    startYear: number | null;
+    endYear: number | null;
+  };
+};
+
+type GraphEdgePayload = {
+  id: string;
+  source: string;
+  target: string;
+  relationType: string;
+  label: string;
+  directed: boolean;
+  weight: number;
+  justification: string | null;
+};
+
 @Injectable()
 export class EntitiesService {
 
@@ -17,6 +41,29 @@ export class EntitiesService {
   ];
 
   constructor(private prisma: PrismaService) { }
+
+  private relationLabel(type: string): string {
+    const labels: Record<string, string> = {
+      CREATED_BY: 'Creado por',
+      BELONGS_TO_MOVEMENT: 'Pertenece al movimiento',
+      BELONGS_TO_PERIOD: 'Pertenece al periodo',
+      ABOUT_CONCEPT: 'Explora el concepto',
+      LOCATED_IN: 'Ubicado en',
+      RELATED_TO: 'Relacionado con',
+      MENTIONS: 'Menciona',
+      ASSOCIATED_WITH: 'Asociado con',
+      INSPIRED_BY: 'Inspirado por',
+      INFLUENCED_BY: 'Influenciado por',
+      PART_OF: 'Forma parte de',
+      DEPICTS: 'Representa',
+    };
+
+    return labels[type] ?? type.replaceAll('_', ' ').toLowerCase();
+  }
+
+  private isDirectedRelation(type: string): boolean {
+    return !['RELATED_TO', 'ASSOCIATED_WITH'].includes(type);
+  }
 
   async list(query: ListEntitiesQuery) {
 
@@ -221,6 +268,13 @@ export class EntitiesService {
 
     const center = await this.prisma.entity.findUnique({
       where: { slug },
+      include: {
+        mediaLinks: {
+          include: { media: true },
+          where: { role: 'PRIMARY' as any },
+          take: 1,
+        },
+      },
     });
 
     if (!center) throw new NotFoundException('Entity not found');
@@ -233,41 +287,78 @@ export class EntitiesService {
         ],
       },
       include: {
-        from: true,
-        to: true,
+        from: {
+          include: {
+            mediaLinks: {
+              include: { media: true },
+              where: { role: 'PRIMARY' as any },
+              take: 1,
+            },
+          },
+        },
+        to: {
+          include: {
+            mediaLinks: {
+              include: { media: true },
+              where: { role: 'PRIMARY' as any },
+              take: 1,
+            },
+          },
+        },
       },
     });
 
-    const nodesMap = new Map<string, any>();
+    const nodesMap = new Map<string, GraphNodePayload>();
 
-    nodesMap.set(center.id, center);
+    const toNodePayload = (node: any): GraphNodePayload => ({
+      id: node.id,
+      label: node.title,
+      type: node.type,
+      slug: node.slug,
+      image: node.mediaLinks?.[0]?.media?.url ?? null,
+      metadata: {
+        summary: node.summary ?? null,
+        startYear: node.startYear ?? null,
+        endYear: node.endYear ?? null,
+      },
+    });
+
+    nodesMap.set(center.id, toNodePayload(center));
 
     for (const r of relations) {
 
-      nodesMap.set(r.from.id, r.from);
-      nodesMap.set(r.to.id, r.to);
+      nodesMap.set(r.from.id, toNodePayload(r.from));
+      nodesMap.set(r.to.id, toNodePayload(r.to));
     }
 
-    const nodes = Array.from(nodesMap.values()).map((n) => ({
-      id: n.id,
-      type: n.type,
-      title: n.title,
-      slug: n.slug,
+    const nodes = Array.from(nodesMap.values()).sort((a, b) => {
+      if (a.id === center.id) return -1;
+      if (b.id === center.id) return 1;
+      return a.label.localeCompare(b.label, 'es');
+    });
+
+    const edges: GraphEdgePayload[] = relations.map((r) => ({
+      id: r.id,
+      source: r.fromId,
+      target: r.toId,
+      relationType: r.type,
+      label: this.relationLabel(r.type),
+      directed: this.isDirectedRelation(r.type),
+      weight: r.weight ?? 1,
+      justification: r.justification ?? null,
     }));
 
-    const edges = relations.map((r) => ({
-      id: r.id,
-      from: r.fromId,
-      to: r.toId,
-      type: r.type,
-      weight: r.weight,
-      justification: r.justification,
-    }));
+    const entityTypes = Array.from(new Set(nodes.map((node) => node.type))).sort();
+    const relationTypes = Array.from(new Set(edges.map((edge) => edge.relationType))).sort();
 
     return {
       centerId: center.id,
       nodes,
       edges,
+      filters: {
+        entityTypes,
+        relationTypes,
+      },
     };
   }
 
