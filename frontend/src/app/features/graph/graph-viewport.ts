@@ -13,7 +13,7 @@ export function createGraphViewport(width: number, height: number, scale = 0.82)
 }
 
 export function graphViewportTransform(viewport: GraphViewport): string {
-  return `translate(${viewport.x} ${viewport.y}) scale(${viewport.scale})`;
+  return `matrix(${viewport.scale} 0 0 ${viewport.scale} ${viewport.x} ${viewport.y})`;
 }
 
 export function panGraphViewport(viewport: GraphViewport, deltaX: number, deltaY: number): GraphViewport {

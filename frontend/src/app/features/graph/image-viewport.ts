@@ -26,10 +26,9 @@ export function createImageViewport(
 
   const insetX = Math.min(Math.max(container.width * 0.065, 36), 92);
   const insetY = Math.min(Math.max(container.height * 0.075, 42), 116);
-  const fitScale = Math.min(
-    1,
-    (container.width - insetX * 2) / asset.width,
-    (container.height - insetY * 2) / asset.height,
+  const fitScale = Math.max(
+    0.01,
+    Math.min((container.width - insetX * 2) / asset.width, (container.height - insetY * 2) / asset.height),
   );
   const width = asset.width * fitScale;
   const height = asset.height * fitScale;

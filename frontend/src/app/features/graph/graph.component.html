@@ -51,9 +51,9 @@
             <div class="explorer-surface-label">Imagen</div>
 
             <div class="surface-controls surface-controls--image">
-              <button type="button" class="surface-control" [disabled]="!imageAsset()" (click)="adjustImageZoom(1.14)">+</button>
-              <button type="button" class="surface-control" [disabled]="!imageAsset()" (click)="adjustImageZoom(0.88)">−</button>
-              <button type="button" class="surface-control surface-control--wide" [disabled]="!imageAsset()" (click)="resetImageView()">
+              <button type="button" class="surface-control" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(1.14)">+</button>
+              <button type="button" class="surface-control" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(0.88)">−</button>
+              <button type="button" class="surface-control surface-control--wide" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="resetImageView()">
                 Reset
               </button>
             </div>
