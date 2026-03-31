@@ -80,9 +80,9 @@
 }
 
 .entity-explorer {
-  padding: 0.2rem;
+  padding: 0.32rem;
   overflow: hidden;
-  min-height: clamp(792px, calc(100dvh - 6.15rem), 1100px);
+  min-height: clamp(650px, calc(100dvh - 8.8rem), 900px);
   border-color: rgba(255, 255, 255, 0.14);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),

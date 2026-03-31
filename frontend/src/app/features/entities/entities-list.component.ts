@@ -16,6 +16,7 @@ import {
 } from 'rxjs';
 
 import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
+import { entityVisualUrl } from '../../shared/media/media.utils';
 
 type Entity = any;
 
@@ -179,7 +180,7 @@ export class EntitiesListComponent {
   }
 
   thumb(e: Entity): string | null {
-    return e?.mediaLinks?.[0]?.media?.url ?? null;
+    return entityVisualUrl(e);
   }
 
   cleanWiki(text: string): string {

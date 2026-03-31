@@ -28,8 +28,106 @@ type CreateEntityWithMediaInput = {
     source?: string;
     photoBy?: string;
     license?: string;
+    canonicalUrl?: string;
+    displayUrl?: string;
+    sourcePageUrl?: string;
+    mimeType?: string;
+    width?: number;
+    height?: number;
+    isVector?: boolean;
+    provider?: 'WIKIMEDIA_COMMONS' | 'WIKIPEDIA' | 'MUSEUM' | 'IIIF' | 'OPENVERSE' | 'UNKNOWN';
+    qualityTier?: 'LOW' | 'MEDIUM' | 'HIGH' | 'MASTER';
   };
 };
+
+function inferMediaMetadata(url: string) {
+  const lowerUrl = url.toLowerCase();
+  const mimeType = inferMimeType(lowerUrl);
+  const isVector = mimeType === 'image/svg+xml';
+  const provider = inferMediaProvider(lowerUrl);
+  const qualityTier = inferQualityTier(lowerUrl, provider, isVector);
+
+  return {
+    canonicalUrl: url,
+    displayUrl: url,
+    sourcePageUrl: null,
+    mimeType,
+    isVector,
+    provider,
+    qualityTier,
+  } as const;
+}
+
+function inferMimeType(url: string): string {
+  if (url.includes('.svg')) return 'image/svg+xml';
+  if (url.includes('.png')) return 'image/png';
+  if (url.includes('.webp')) return 'image/webp';
+  if (url.includes('.gif')) return 'image/gif';
+  return 'image/jpeg';
+}
+
+function inferMediaProvider(url: string): 'WIKIMEDIA_COMMONS' | 'WIKIPEDIA' | 'MUSEUM' | 'IIIF' | 'OPENVERSE' | 'UNKNOWN' {
+  if (
+    url.includes('upload.wikimedia.org/wikipedia/commons/') ||
+    url.includes('commons.wikimedia.org/wiki/file:') ||
+    url.includes('commons.wikimedia.org/wiki/special:redirect/file/')
+  ) {
+    return 'WIKIMEDIA_COMMONS';
+  }
+
+  if (url.includes('wikipedia.org/wiki/') || url.includes('upload.wikimedia.org/wikipedia/en/')) {
+    return 'WIKIPEDIA';
+  }
+
+  if (url.includes('/iiif/') || url.includes('/iiif-img/') || url.includes('/full/full/0/default.')) {
+    return 'IIIF';
+  }
+
+  if (url.includes('openverse')) {
+    return 'OPENVERSE';
+  }
+
+  if (
+    url.includes('moma.org') ||
+    url.includes('museoreinasofia.es') ||
+    url.includes('museodelprado.es') ||
+    url.includes('tate.org.uk') ||
+    url.includes('guggenheim') ||
+    url.includes('museo')
+  ) {
+    return 'MUSEUM';
+  }
+
+  return 'UNKNOWN';
+}
+
+function inferQualityTier(
+  url: string,
+  provider: 'WIKIMEDIA_COMMONS' | 'WIKIPEDIA' | 'MUSEUM' | 'IIIF' | 'OPENVERSE' | 'UNKNOWN',
+  isVector: boolean,
+): 'LOW' | 'MEDIUM' | 'HIGH' | 'MASTER' {
+  if (isVector) {
+    return 'MEDIUM';
+  }
+
+  if (provider === 'IIIF') {
+    return 'MASTER';
+  }
+
+  if (provider === 'WIKIMEDIA_COMMONS') {
+    return 'HIGH';
+  }
+
+  if (provider === 'WIKIPEDIA' || url.includes('/wikipedia/en/')) {
+    return 'LOW';
+  }
+
+  if (provider === 'MUSEUM') {
+    return 'HIGH';
+  }
+
+  return 'MEDIUM';
+}
 
 async function resetDatabase() {
   await prisma.collectionEntity.deleteMany();
@@ -72,10 +170,20 @@ async function createEntityWithOptionalPrimaryMedia(
   });
 
   if (input.media) {
+    const inferred = inferMediaMetadata(input.media.url);
     const media = await prisma.media.create({
       data: {
         url: input.media.url,
+        canonicalUrl: input.media.canonicalUrl ?? inferred.canonicalUrl,
+        displayUrl: input.media.displayUrl ?? inferred.displayUrl,
+        sourcePageUrl: input.media.sourcePageUrl ?? inferred.sourcePageUrl,
         kind: 'IMAGE',
+        mimeType: input.media.mimeType ?? inferred.mimeType,
+        width: input.media.width,
+        height: input.media.height,
+        isVector: input.media.isVector ?? inferred.isVector,
+        provider: input.media.provider ?? inferred.provider,
+        qualityTier: input.media.qualityTier ?? inferred.qualityTier,
         alt: input.media.alt,
         source: input.media.source,
         photoBy: input.media.photoBy,
@@ -185,6 +293,13 @@ async function main() {
       'Periodo marcado por transformaciones políticas, industrialización, romanticismo, realismo y el surgimiento de nuevas sensibilidades modernas.',
     startYear: 1801,
     endYear: 1900,
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Goya_-_The_Third_of_May_1808_in_Madrid.jpg',
+      alt: 'El tres de mayo de 1808 de Francisco de Goya',
+      source: 'Museo del Prado / Wikimedia Commons',
+      photoBy: 'Dominio público',
+      license: 'Public domain',
+    },
   });
 
   await prisma.periodDetails.create({
@@ -204,6 +319,19 @@ async function main() {
       'El siglo XX concentra vanguardias históricas, guerras mundiales, transformaciones tecnológicas y nuevas formas radicales de representación.',
     startYear: 1901,
     endYear: 2000,
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      canonicalUrl: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      sourcePageUrl: 'https://www.museoreinasofia.es/en/collection/artwork/guernica',
+      mimeType: 'image/jpeg',
+      provider: 'WIKIPEDIA',
+      qualityTier: 'LOW',
+      alt: 'Guernica de Pablo Picasso',
+      source: 'Museo Reina Sofía / referencia visual',
+      photoBy: 'Pablo Picasso',
+      license: 'Uso informativo / referencia visual',
+    },
   });
 
   await prisma.periodDetails.create({
@@ -223,6 +351,13 @@ async function main() {
       'Periodo marcado por redes, digitalización, circulación global de imágenes y nuevos modelos de producción cultural.',
     startYear: 2001,
     endYear: null,
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Guggenheim_Bilbao_Museoa.jpg',
+      alt: 'Vista exterior del Guggenheim Bilbao',
+      source: 'Wikimedia Commons',
+      photoBy: 'Francisco Anzola',
+      license: 'CC BY 2.0',
+    },
   });
 
   await prisma.periodDetails.create({
@@ -242,6 +377,13 @@ async function main() {
       'Movimiento que enfatiza emoción, subjetividad, intensidad y experiencia histórica.',
     content:
       'El Romanticismo privilegia la emoción, la imaginación, lo sublime, el dramatismo y una relación intensa entre arte, historia y experiencia humana.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Goya_-_The_Third_of_May_1808_in_Madrid.jpg',
+      alt: 'El tres de mayo de 1808 de Francisco de Goya',
+      source: 'Museo del Prado / Wikimedia Commons',
+      photoBy: 'Dominio público',
+      license: 'Public domain',
+    },
   });
 
   const cubismo = await createEntityWithOptionalPrimaryMedia({
@@ -252,6 +394,19 @@ async function main() {
       'Movimiento de vanguardia que fragmenta y reorganiza la representación.',
     content:
       'El Cubismo reformula la representación mediante la fragmentación del plano y la multiplicidad de puntos de vista.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      canonicalUrl: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      sourcePageUrl: 'https://www.museoreinasofia.es/en/collection/artwork/guernica',
+      mimeType: 'image/jpeg',
+      provider: 'WIKIPEDIA',
+      qualityTier: 'LOW',
+      alt: 'Guernica de Pablo Picasso',
+      source: 'Museo Reina Sofía / referencia visual',
+      photoBy: 'Pablo Picasso',
+      license: 'Uso informativo / referencia visual',
+    },
   });
 
   const surrealismo = await createEntityWithOptionalPrimaryMedia({
@@ -262,6 +417,19 @@ async function main() {
       'Movimiento que explora sueño, subconsciente, deseo e irracionalidad.',
     content:
       'El Surrealismo explora asociaciones libres, imágenes oníricas y relaciones inesperadas entre objetos, tiempo y memoria.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      canonicalUrl: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      sourcePageUrl: 'https://www.moma.org/collection/works/79018',
+      mimeType: 'image/jpeg',
+      provider: 'WIKIPEDIA',
+      qualityTier: 'LOW',
+      alt: 'La persistencia de la memoria de Salvador Dalí',
+      source: 'MoMA / referencia visual',
+      photoBy: 'Salvador Dalí',
+      license: 'Uso informativo / referencia visual',
+    },
   });
 
   const arteModerno = await createEntityWithOptionalPrimaryMedia({
@@ -272,6 +440,25 @@ async function main() {
       'Conjunto amplio de prácticas artísticas que redefinen la modernidad visual.',
     content:
       'El arte moderno reúne procesos de ruptura formal, experimentación material y nuevas formas de ver el mundo.',
+    media: {
+      url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/The_Museum_of_Modern_Art%2C_MoMA%2C_New_York_%2850415923226%29.jpg',
+      canonicalUrl:
+        'https://commons.wikimedia.org/wiki/File:The_Museum_of_Modern_Art,_MoMA,_New_York_(50415923226).jpg',
+      displayUrl:
+        'https://commons.wikimedia.org/wiki/Special:Redirect/file/The_Museum_of_Modern_Art%2C_MoMA%2C_New_York_%2850415923226%29.jpg',
+      sourcePageUrl:
+        'https://commons.wikimedia.org/wiki/File:The_Museum_of_Modern_Art,_MoMA,_New_York_(50415923226).jpg',
+      mimeType: 'image/jpeg',
+      width: 6000,
+      height: 4000,
+      isVector: false,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'HIGH',
+      alt: 'Vista exterior del Museum of Modern Art de Nueva York',
+      source: 'Wikimedia Commons',
+      photoBy: 'Ming-yen Hsu',
+      license: 'CC BY 2.0',
+    },
   });
 
   const arteContemporaneo = await createEntityWithOptionalPrimaryMedia({
@@ -282,6 +469,21 @@ async function main() {
       'Prácticas artísticas contemporáneas, híbridas y conceptuales.',
     content:
       'El arte contemporáneo incorpora instalación, performance, escultura expandida, crítica institucional y una fuerte dimensión conceptual.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/NGC_Maman.JPG',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:NGC_Maman.JPG',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/NGC_Maman.JPG',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:NGC_Maman.JPG',
+      mimeType: 'image/jpeg',
+      width: 1613,
+      height: 1097,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'HIGH',
+      alt: 'Maman de Louise Bourgeois frente a la National Gallery of Canada',
+      source: 'Wikimedia Commons',
+      photoBy: 'Radagast',
+      license: 'Public domain',
+    },
   });
 
   console.log('💡 Creating concepts...');
@@ -293,6 +495,19 @@ async function main() {
     summary: 'Duración, cambio, memoria y finitud.',
     content:
       'El tiempo en arte puede aparecer como duración, ruina, repetición, espera, simultaneidad o memoria materializada.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      canonicalUrl: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      sourcePageUrl: 'https://www.moma.org/collection/works/79018',
+      mimeType: 'image/jpeg',
+      provider: 'WIKIPEDIA',
+      qualityTier: 'LOW',
+      alt: 'La persistencia de la memoria de Salvador Dalí',
+      source: 'MoMA / referencia visual',
+      photoBy: 'Salvador Dalí',
+      license: 'Uso informativo / referencia visual',
+    },
   });
 
   await prisma.conceptDetails.create({
@@ -310,6 +525,19 @@ async function main() {
     summary: 'Recuerdo individual y colectivo, archivo y huella.',
     content:
       'La memoria articula identidad, historia, trauma, archivo y persistencia de imágenes o experiencias.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      canonicalUrl: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      sourcePageUrl: 'https://www.moma.org/collection/works/79018',
+      mimeType: 'image/jpeg',
+      provider: 'WIKIPEDIA',
+      qualityTier: 'LOW',
+      alt: 'La persistencia de la memoria de Salvador Dalí',
+      source: 'MoMA / referencia visual',
+      photoBy: 'Salvador Dalí',
+      license: 'Uso informativo / referencia visual',
+    },
   });
 
   await prisma.conceptDetails.create({
@@ -327,6 +555,19 @@ async function main() {
     summary: 'Violencia organizada, conflicto histórico y devastación.',
     content:
       'La guerra aparece en el arte como trauma, denuncia, destrucción, heroísmo, sufrimiento o memoria política.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      canonicalUrl: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      sourcePageUrl: 'https://www.museoreinasofia.es/en/collection/artwork/guernica',
+      mimeType: 'image/jpeg',
+      provider: 'WIKIPEDIA',
+      qualityTier: 'LOW',
+      alt: 'Guernica de Pablo Picasso',
+      source: 'Museo Reina Sofía / referencia visual',
+      photoBy: 'Pablo Picasso',
+      license: 'Uso informativo / referencia visual',
+    },
   });
 
   await prisma.conceptDetails.create({
@@ -344,6 +585,21 @@ async function main() {
     summary: 'Construcción simbólica del yo, el cuerpo y la pertenencia.',
     content:
       'La identidad atraviesa autorrepresentación, género, nación, memoria personal y representación del cuerpo.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Las_dos_Fridas.jpg',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Las_dos_Fridas.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Las_dos_Fridas.jpg',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Las_dos_Fridas.jpg',
+      mimeType: 'image/jpeg',
+      width: 750,
+      height: 736,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'MEDIUM',
+      alt: 'Las dos Fridas de Frida Kahlo',
+      source: 'Wikimedia Commons / referencia visual',
+      photoBy: 'Ed Uthman',
+      license: 'CC BY 2.0',
+    },
   });
 
   await prisma.conceptDetails.create({
@@ -361,6 +617,21 @@ async function main() {
     summary: 'Presencia material, gesto, vulnerabilidad y representación.',
     content:
       'El cuerpo es soporte, materia, símbolo, territorio político y forma de presencia en el espacio.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Las_dos_Fridas.jpg',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Las_dos_Fridas.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Las_dos_Fridas.jpg',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Las_dos_Fridas.jpg',
+      mimeType: 'image/jpeg',
+      width: 750,
+      height: 736,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'MEDIUM',
+      alt: 'Las dos Fridas de Frida Kahlo',
+      source: 'Wikimedia Commons / referencia visual',
+      photoBy: 'Ed Uthman',
+      license: 'CC BY 2.0',
+    },
   });
 
   await prisma.conceptDetails.create({
@@ -378,6 +649,21 @@ async function main() {
     summary: 'Sufrimiento físico, emocional y simbólico.',
     content:
       'El dolor en arte se vincula con trauma, pérdida, vulnerabilidad, enfermedad y resistencia.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Las_dos_Fridas.jpg',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Las_dos_Fridas.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Las_dos_Fridas.jpg',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Las_dos_Fridas.jpg',
+      mimeType: 'image/jpeg',
+      width: 750,
+      height: 736,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'MEDIUM',
+      alt: 'Las dos Fridas de Frida Kahlo',
+      source: 'Wikimedia Commons / referencia visual',
+      photoBy: 'Ed Uthman',
+      license: 'CC BY 2.0',
+    },
   });
 
   await prisma.conceptDetails.create({
@@ -395,6 +681,21 @@ async function main() {
     summary: 'Vínculo, cuidado, origen, ambivalencia y memoria afectiva.',
     content:
       'La maternidad puede aparecer como origen, protección, tensión afectiva, cuerpo compartido o ambivalencia emocional.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/NGC_Maman.JPG',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:NGC_Maman.JPG',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/NGC_Maman.JPG',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:NGC_Maman.JPG',
+      mimeType: 'image/jpeg',
+      width: 1613,
+      height: 1097,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'HIGH',
+      alt: 'Maman de Louise Bourgeois frente a la National Gallery of Canada',
+      source: 'Wikimedia Commons',
+      photoBy: 'Radagast',
+      license: 'Public domain',
+    },
   });
 
   await prisma.conceptDetails.create({
@@ -412,6 +713,13 @@ async function main() {
     summary: 'Daño físico, simbólico, social o histórico.',
     content:
       'La violencia en arte puede manifestarse como agresión, trauma, imposición, ruptura o denuncia visual.',
+    media: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Francisco_de_Goya%2C_Saturno_devorando_a_su_hijo_%281819-1823%29.jpg',
+      alt: 'Saturno devorando a su hijo de Francisco de Goya',
+      source: 'Museo del Prado / Wikimedia Commons',
+      photoBy: 'Dominio público',
+      license: 'Public domain',
+    },
   });
 
   await prisma.conceptDetails.create({
@@ -464,11 +772,23 @@ async function main() {
     content:
       'Museo central para el estudio del arte moderno y contemporáneo internacional.',
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/9/97/Museum_of_Modern_Art_%28New_York_City%29_logo.svg',
-      alt: 'Identidad visual del Museum of Modern Art',
+      url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/The_Museum_of_Modern_Art%2C_MoMA%2C_New_York_%2850415923226%29.jpg',
+      canonicalUrl:
+        'https://commons.wikimedia.org/wiki/File:The_Museum_of_Modern_Art,_MoMA,_New_York_(50415923226).jpg',
+      displayUrl:
+        'https://commons.wikimedia.org/wiki/Special:Redirect/file/The_Museum_of_Modern_Art%2C_MoMA%2C_New_York_%2850415923226%29.jpg',
+      sourcePageUrl:
+        'https://commons.wikimedia.org/wiki/File:The_Museum_of_Modern_Art,_MoMA,_New_York_(50415923226).jpg',
+      mimeType: 'image/jpeg',
+      width: 6000,
+      height: 4000,
+      isVector: false,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'HIGH',
+      alt: 'Vista exterior del Museum of Modern Art de Nueva York',
       source: 'Wikimedia Commons',
-      photoBy: 'MoMA',
-      license: 'Uso informativo / referencia visual',
+      photoBy: 'Ming-yen Hsu',
+      license: 'CC BY 2.0',
     },
   });
 
@@ -480,7 +800,7 @@ async function main() {
     content:
       'Museo internacionalmente reconocido por su arquitectura y su colección de arte contemporáneo.',
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Guggenheim_Bilbao_Museoa.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/1/19/Guggenheim_Bilbao_Museoa.jpg',
       alt: 'Vista exterior del Guggenheim Bilbao',
       source: 'Wikimedia Commons',
       photoBy: 'Francisco Anzola',
@@ -501,11 +821,19 @@ async function main() {
     startYear: 1746,
     endYear: 1828,
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/7/74/Francisco_de_Goya_y_Lucientes.jpg',
-      alt: 'Retrato de Francisco de Goya',
-      source: 'Wikimedia Commons',
-      photoBy: 'Dominio público',
-      license: 'Public domain',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Autorretrato_Goya_1815.jpg',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Autorretrato_Goya_1815.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Autorretrato_Goya_1815.jpg',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Autorretrato_Goya_1815.jpg',
+      mimeType: 'image/jpeg',
+      width: 2268,
+      height: 3051,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'HIGH',
+      alt: 'Autorretrato de Francisco de Goya',
+      source: 'Museo del Prado / Wikimedia Commons',
+      photoBy: 'Francisco de Goya',
+      license: 'Public domain / PD-Art',
     },
   });
 
@@ -600,7 +928,15 @@ async function main() {
     startYear: 1907,
     endYear: 1954,
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/0/06/Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/06/Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
+      mimeType: 'image/jpeg',
+      width: 1197,
+      height: 1795,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'HIGH',
       alt: 'Retrato de Frida Kahlo',
       source: 'Wikimedia Commons',
       photoBy: 'Guillermo Kahlo',
@@ -633,11 +969,19 @@ async function main() {
     startYear: 1911,
     endYear: 2010,
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/6/65/Louise_Bourgeois%2C_1997.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/1/10/Louise_Bourgeois%2C_c._2000.jpg',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Louise_Bourgeois,_c._2000.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/10/Louise_Bourgeois%2C_c._2000.jpg',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Louise_Bourgeois,_c._2000.jpg',
+      mimeType: 'image/jpeg',
+      width: 1054,
+      height: 742,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'MEDIUM',
       alt: 'Retrato de Louise Bourgeois',
       source: 'Wikimedia Commons',
-      photoBy: 'Christopher Lyon',
-      license: 'CC BY-SA 3.0',
+      photoBy: 'Tetsuo Harada',
+      license: 'CC0',
     },
   });
 
@@ -669,7 +1013,7 @@ async function main() {
     endYear: 1823,
     contentLevel: 'INTERMEDIATE',
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Francisco_de_Goya%2C_Saturno_devorando_a_su_hijo_%281819-1823%29.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Francisco_de_Goya%2C_Saturno_devorando_a_su_hijo_%281819-1823%29.jpg',
       alt: 'Saturno devorando a su hijo de Francisco de Goya',
       source: 'Museo del Prado / Wikimedia Commons',
       photoBy: 'Dominio público',
@@ -702,7 +1046,7 @@ async function main() {
     endYear: 1814,
     contentLevel: 'INTERMEDIATE',
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Goya_-_The_Third_of_May_1808_in_Madrid.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/6/66/El_tres_de_mayo_de_1808_en_Madrid.jpg',
       alt: 'El tres de mayo de 1808 de Francisco de Goya',
       source: 'Museo del Prado / Wikimedia Commons',
       photoBy: 'Dominio público',
@@ -736,6 +1080,15 @@ async function main() {
     contentLevel: 'INTERMEDIATE',
     media: {
       url: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      canonicalUrl: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg',
+      sourcePageUrl: 'https://www.museoreinasofia.es/en/collection/artwork/guernica',
+      mimeType: 'image/jpeg',
+      width: 1000,
+      height: 443,
+      isVector: false,
+      provider: 'WIKIPEDIA',
+      qualityTier: 'LOW',
       alt: 'Guernica de Pablo Picasso',
       source: 'Museo Reina Sofía / referencia visual',
       photoBy: 'Pablo Picasso',
@@ -769,6 +1122,12 @@ async function main() {
     contentLevel: 'INTERMEDIATE',
     media: {
       url: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      canonicalUrl: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg',
+      sourcePageUrl: 'https://www.moma.org/collection/works/79018',
+      mimeType: 'image/jpeg',
+      provider: 'WIKIPEDIA',
+      qualityTier: 'LOW',
       alt: 'La persistencia de la memoria de Salvador Dalí',
       source: 'MoMA / referencia visual',
       photoBy: 'Salvador Dalí',
@@ -801,11 +1160,19 @@ async function main() {
     endYear: 1939,
     contentLevel: 'INTERMEDIATE',
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/1/1f/Frida_Kahlo_%28Las_dos_Fridas%29.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Las_dos_Fridas.jpg',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Las_dos_Fridas.jpg',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Las_dos_Fridas.jpg',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Las_dos_Fridas.jpg',
+      mimeType: 'image/jpeg',
+      width: 750,
+      height: 736,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'MEDIUM',
       alt: 'Las dos Fridas de Frida Kahlo',
-      source: 'Wikimedia Commons',
-      photoBy: 'Dominio público / referencia visual',
-      license: 'Public domain / educational reference',
+      source: 'Wikimedia Commons / referencia visual',
+      photoBy: 'Ed Uthman',
+      license: 'CC BY 2.0',
     },
   });
 
@@ -834,11 +1201,19 @@ async function main() {
     endYear: 1999,
     contentLevel: 'INTERMEDIATE',
     media: {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/5/5f/Maman.jpg',
-      alt: 'Maman de Louise Bourgeois',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/NGC_Maman.JPG',
+      canonicalUrl: 'https://commons.wikimedia.org/wiki/File:NGC_Maman.JPG',
+      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/NGC_Maman.JPG',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:NGC_Maman.JPG',
+      mimeType: 'image/jpeg',
+      width: 1613,
+      height: 1097,
+      provider: 'WIKIMEDIA_COMMONS',
+      qualityTier: 'HIGH',
+      alt: 'Maman de Louise Bourgeois frente a la National Gallery of Canada',
       source: 'Wikimedia Commons',
-      photoBy: 'Jorge Láscar',
-      license: 'CC BY 2.0',
+      photoBy: 'Radagast',
+      license: 'Public domain',
     },
   });
 

@@ -61,7 +61,7 @@
     </header>
 
     <section class="entity-explorer entity-glass">
-      <app-graph [slug]="entity.slug" [imageUrl]="primaryMedia(entity)?.url ?? null"
+      <app-graph [slug]="entity.slug" [imageUrl]="visualUrl(entity)"
         [imageAlt]="primaryMedia(entity)?.alt || entity.title" [entityTitle]="entity.title" [entityType]="entity.type"
         [imageMeta]="{
           source: primaryMedia(entity)?.source ?? null,
@@ -184,7 +184,8 @@
           <h3 class="title-section entity-subtitle">Autor</h3>
           <a class="entity-link-card entity-glass-card" [routerLink]="['/entity', author.slug]">
             @if (relationMedia(author)?.url) {
-            <img class="entity-link-card__image" [src]="relationMedia(author)!.url"
+            <img class="entity-link-card__image"
+              [src]="relationMedia(author)?.displayUrl || relationMedia(author)?.url || null"
               [alt]="relationMedia(author)!.alt || author.title" loading="lazy" />
             }
             <div class="entity-link-card__body">

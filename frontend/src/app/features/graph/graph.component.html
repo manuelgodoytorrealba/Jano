@@ -2,7 +2,7 @@
   <div class="explorer-state">Cargando explorador…</div>
 } @else if (error()) {
   <div class="explorer-state explorer-state--error">{{ error() }}</div>
-} @else if (graph(); as graph) {
+} @else if (graph(); as graphData) {
   <section class="explorer-shell">
     <div class="explorer-canvas">
       <section class="explorer-image-pane">
@@ -16,6 +16,7 @@
           (pointercancel)="onImagePointerCancel($event)"
         >
           @if (imageUrl) {
+            <div class="image-stage__backdrop" [style.background-image]="imageBackdrop()" aria-hidden="true"></div>
             <div class="image-stage__asset" [style.transform]="imageTransform()">
               <img
                 class="image-stage__img"
@@ -104,8 +105,7 @@
             </div>
 
             <div class="graph-panel-bar__shortcuts">
-              <button type="button" class="graph-utility-btn" (click)="resetAllViews()">Reset view</button>
-              <button type="button" class="graph-utility-btn" [disabled]="!hasVisibleSelection()" (click)="centerSelection()">
+              <button type="button" class="graph-utility-btn" [disabled]="!graphData" (click)="centerSelection()">
                 Ir al nodo principal
               </button>
             </div>
@@ -129,7 +129,7 @@
         >
           <svg class="graph-svg" preserveAspectRatio="xMidYMid meet">
             <defs>
-              @for (type of graph.relationTypes; track type) {
+              @for (type of graphData.relationTypes; track type) {
                 <marker
                   [attr.id]="edgeMarkerId(type)"
                   markerWidth="11"
@@ -256,7 +256,7 @@
                 <span class="filter-group__label">Tipos</span>
                 <button type="button" class="filter-action" (click)="setAllEntityTypes(true)">Todos</button>
               </div>
-              @for (type of graph.entityTypes; track type) {
+              @for (type of graphData.entityTypes; track type) {
                 <button
                   type="button"
                   class="filter-chip"
@@ -275,7 +275,7 @@
                 <span class="filter-group__label">Relaciones</span>
                 <button type="button" class="filter-action" (click)="setAllRelationTypes(true)">Todas</button>
               </div>
-              @for (type of graph.relationTypes; track type) {
+              @for (type of graphData.relationTypes; track type) {
                 <button
                   type="button"
                   class="filter-chip filter-chip--relation"

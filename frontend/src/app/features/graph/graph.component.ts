@@ -104,8 +104,20 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() entityType = '';
   @Input() imageMeta: ImageMeta | null = null;
 
-  @ViewChild('graphStage') graphStage?: ElementRef<HTMLDivElement>;
-  @ViewChild('imageStage') imageStage?: ElementRef<HTMLDivElement>;
+  private graphStage?: ElementRef<HTMLDivElement>;
+  private imageStage?: ElementRef<HTMLDivElement>;
+
+  @ViewChild('graphStage')
+  set graphStageRef(value: ElementRef<HTMLDivElement> | undefined) {
+    this.graphStage = value;
+    this.setupGraphStage();
+  }
+
+  @ViewChild('imageStage')
+  set imageStageRef(value: ElementRef<HTMLDivElement> | undefined) {
+    this.imageStage = value;
+    this.setupImageStage();
+  }
 
   readonly graph = signal<GraphData | null>(null);
   readonly loading = signal(false);
@@ -123,12 +135,15 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly entityTypeFilters = signal<Record<string, boolean>>({});
   readonly relationTypeFilters = signal<Record<string, boolean>>({});
   readonly renderTick = signal(0);
+  readonly initialGraphViewportReady = signal(true);
 
   private loadSub?: Subscription;
   private graphResizeObserver?: ResizeObserver;
   private imageResizeObserver?: ResizeObserver;
   private frameId: number | null = null;
   private initialFocusFrameId: number | null = null;
+  private initialFocusFallbackId: number | null = null;
+  private initialFitFrameId: number | null = null;
   private initialFocusPasses = 0;
   private targetGraphViewport: GraphViewport | null = null;
   private targetImageViewport: ImageViewport | null = null;
@@ -140,6 +155,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private persistedState: ExplorerPersistedState | null = null;
   private pendingInitialEntityFocus = false;
   private selectedNodeSource: 'center' | 'explicit' = 'center';
+  private hasUserAdjustedGraphView = false;
 
   readonly filteredNodes = computed(() => {
     const graph = this.graph();
@@ -241,6 +257,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.imageAsset.set(null);
       this.imageViewport.set({ x: 0, y: 0, scale: 1, fitScale: 1 });
       this.selectedNodeSource = 'center';
+      this.hasUserAdjustedGraphView = false;
       this.loadGraph();
     }
 
@@ -258,26 +275,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.measureGraphStage();
-    this.measureImageStage();
-
     if (this.graph()) {
       this.pinCenterNode();
       this.pendingInitialEntityFocus = true;
       this.startAnimationLoop();
       this.scheduleInitialEntityFocus();
-    }
-
-    const graphStage = this.graphStage?.nativeElement;
-    if (graphStage) {
-      this.graphResizeObserver = new ResizeObserver(() => this.measureGraphStage());
-      this.graphResizeObserver.observe(graphStage);
-    }
-
-    const imageStage = this.imageStage?.nativeElement;
-    if (imageStage) {
-      this.imageResizeObserver = new ResizeObserver(() => this.measureImageStage());
-      this.imageResizeObserver.observe(imageStage);
     }
   }
 
@@ -293,6 +295,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     if (this.initialFocusFrameId !== null && this.isBrowser) {
       cancelAnimationFrame(this.initialFocusFrameId);
+    }
+
+    if (this.initialFocusFallbackId !== null && this.isBrowser) {
+      clearTimeout(this.initialFocusFallbackId);
+    }
+
+    if (this.initialFitFrameId !== null && this.isBrowser) {
+      cancelAnimationFrame(this.initialFitFrameId);
     }
   }
 
@@ -323,6 +333,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
         this.velocities = {};
         this.pinCenterNode();
+        this.warmupGraphLayout();
 
         this.entityTypeFilters.set(this.createFilterMap(graph.entityTypes, persistedGraph?.entityTypeFilters));
         this.relationTypeFilters.set(this.createFilterMap(graph.relationTypes, persistedGraph?.relationTypeFilters));
@@ -334,20 +345,16 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         this.hoveredEdgeId.set(null);
         this.tooltip.set(null);
 
+        this.pendingInitialEntityFocus = true;
+        this.hasUserAdjustedGraphView = false;
         this.targetGraphViewport = null;
         this.graphViewportReady = false;
-        const initialViewport = this.createEntityFocusedGraphViewport();
-        if (initialViewport) {
-          this.graphViewport.set(initialViewport);
-          this.graphViewportReady = true;
-        } else {
-          this.graphViewport.set({ x: 0, y: 0, scale: 0.82 });
-        }
-        this.pendingInitialEntityFocus = true;
+        this.focusCurrentEntity(false);
 
         this.loading.set(false);
         this.startAnimationLoop();
         this.scheduleInitialEntityFocus();
+        this.ensureInitialGraphFit();
       },
       error: () => {
         this.loading.set(false);
@@ -403,6 +410,18 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.velocities[graph.centerId] = { x: 0, y: 0 };
   }
 
+  private warmupGraphLayout(passes = 36): void {
+    const graph = this.graph();
+    if (!graph) {
+      return;
+    }
+
+    for (let index = 0; index < passes; index += 1) {
+      stepForceLayout(graph, this.positions, this.velocities, null);
+      this.pinCenterNode();
+    }
+  }
+
   private startAnimationLoop(): void {
     if (!this.isBrowser || this.frameId !== null) {
       return;
@@ -429,6 +448,46 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     };
 
     this.frameId = requestAnimationFrame(frame);
+  }
+
+  private setupGraphStage(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.graphResizeObserver?.disconnect();
+
+    const graphStage = this.graphStage?.nativeElement;
+    if (!graphStage) {
+      return;
+    }
+
+    this.measureGraphStage();
+    this.graphResizeObserver = new ResizeObserver(() => this.measureGraphStage());
+    this.graphResizeObserver.observe(graphStage);
+
+    if (this.graph() && !this.hasUserAdjustedGraphView) {
+      this.pendingInitialEntityFocus = true;
+      this.scheduleInitialEntityFocus();
+      this.ensureInitialGraphFit();
+    }
+  }
+
+  private setupImageStage(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.imageResizeObserver?.disconnect();
+
+    const imageStage = this.imageStage?.nativeElement;
+    if (!imageStage) {
+      return;
+    }
+
+    this.measureImageStage();
+    this.imageResizeObserver = new ResizeObserver(() => this.measureImageStage());
+    this.imageResizeObserver.observe(imageStage);
   }
 
   private animateGraphViewport(): void {
@@ -486,8 +545,24 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    if (this.targetGraphViewport && previous.width && previous.height) {
+      const restoredCurrent = restoreGraphViewport(
+        serializeGraphViewport(this.graphViewport(), previous),
+        { width: rect.width, height: rect.height },
+      );
+      const restoredTarget = restoreGraphViewport(
+        serializeGraphViewport(this.targetGraphViewport, previous),
+        { width: rect.width, height: rect.height },
+      );
+
+      if (restoredCurrent && restoredTarget) {
+        this.graphViewport.set(restoredCurrent);
+        this.targetGraphViewport = restoredTarget;
+      }
+      return;
+    }
+
     if (!previous.width || !previous.height || !this.graphViewportReady) {
-      this.scheduleInitialEntityFocus();
       return;
     }
 
@@ -500,6 +575,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.targetGraphViewport = null;
     this.graphViewport.set(restored);
     this.graphViewportReady = true;
+    this.initialGraphViewportReady.set(true);
   }
 
   private measureImageStage(): void {
@@ -528,7 +604,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     const snapshot = serializeImageViewport(this.targetImageViewport ?? this.imageViewport(), previous);
     this.targetImageViewport = null;
-    this.imageViewport.set(restoreImageViewport(snapshot, { width: rect.width, height: rect.height }, asset));
+    this.imageViewport.set(
+      restoreImageViewport(snapshot, { width: rect.width, height: rect.height }, asset, { entityType: this.entityType }),
+    );
     this.imageViewportReady = true;
   }
 
@@ -549,6 +627,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   imageTransform(): string {
     return imageViewportTransform(this.imageViewport());
+  }
+
+  imageBackdrop(): string | null {
+    return this.imageUrl ? `url("${this.imageUrl}")` : null;
   }
 
   nodePosition(nodeId: string): GraphPoint {
@@ -656,8 +738,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   resetImageView(animate = true): void {
-    const next = createImageViewport(this.imageSize(), this.imageAsset());
-    if (!this.imageAsset() || !this.imageSize().width || !this.imageSize().height) {
+    const size = this.currentImageStageSize();
+    const next = createImageViewport(size, this.imageAsset(), { entityType: this.entityType });
+    if (!this.imageAsset() || !size.width || !size.height) {
       return;
     }
 
@@ -676,11 +759,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   centerSelection(): void {
     const graph = this.graph();
     if (!graph) {
-      this.resetGraphView();
       return;
     }
 
-    this.resetGraphView();
+    this.focusNode(graph.centerId);
   }
 
   focusCurrentEntity(animate = false): void {
@@ -705,6 +787,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.targetGraphViewport = null;
       this.graphViewport.set(next);
       this.graphViewportReady = true;
+      if (!this.pendingInitialEntityFocus) {
+        this.initialGraphViewportReady.set(true);
+      }
     }
 
     this.renderTick.update((value) => value + 1);
@@ -722,6 +807,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.cancelPendingInitialGraphFocus(true);
     this.selectedNodeSource = nodeId === graph.centerId ? 'center' : 'explicit';
     this.selectedNodeId.set(nodeId);
     if (nodeId === graph.centerId) {
@@ -753,6 +839,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.cancelPendingInitialGraphFocus(true);
     const rect = stage.getBoundingClientRect();
     this.targetGraphViewport = null;
     this.graphViewport.set(
@@ -778,6 +865,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.cancelPendingInitialGraphFocus(true);
     const factor = event.deltaY < 0 ? 1.1 : 0.92;
     this.targetGraphViewport = null;
     this.graphViewport.set(
@@ -805,6 +893,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.cancelPendingInitialGraphFocus(true);
     const currentTarget = event.currentTarget as HTMLElement;
     currentTarget.setPointerCapture(event.pointerId);
     this.pointerSession = {
@@ -864,6 +953,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.cancelPendingInitialGraphFocus(true);
     const rect = stage.getBoundingClientRect();
     const worldPoint = this.graphClientToWorld(event.clientX, event.clientY, rect);
     const nodePoint = this.nodePosition(nodeId);
@@ -988,7 +1078,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     this.targetImageViewport = null;
-    this.imageViewport.set(panImageViewport(this.imageViewport(), deltaX, deltaY, this.imageSize(), asset));
+    this.imageViewport.set(panImageViewport(this.imageViewport(), deltaX, deltaY, this.currentImageStageSize(), asset));
     this.pointerSession = {
       ...this.pointerSession,
       lastClient: { x: event.clientX, y: event.clientY },
@@ -1019,6 +1109,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.cancelGraphViewportTarget();
     const node = this.graph()?.nodes.find((item) => item.id === nodeId);
     if (!node) {
       return;
@@ -1040,6 +1131,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.cancelGraphViewportTarget();
     this.hoveredEdgeId.set(edge.id);
     this.tooltip.set({
       kind: 'edge',
@@ -1056,6 +1148,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.cancelGraphViewportTarget();
     const tooltip = this.tooltip();
     if (!tooltip) {
       return;
@@ -1215,7 +1308,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private scheduleInitialEntityFocus(): void {
-    if (!this.isBrowser || !this.pendingInitialEntityFocus) {
+    if (!this.isBrowser || !this.pendingInitialEntityFocus || this.hasUserAdjustedGraphView) {
       return;
     }
 
@@ -1231,6 +1324,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     if (this.initialFocusFrameId !== null) {
       cancelAnimationFrame(this.initialFocusFrameId);
+    }
+
+    if (this.initialFocusFallbackId !== null) {
+      clearTimeout(this.initialFocusFallbackId);
     }
 
     const runPass = () => {
@@ -1249,10 +1346,32 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         return;
       }
 
+      this.pinCenterNode();
+      this.resetGraphView(false);
       this.pendingInitialEntityFocus = false;
+      this.initialGraphViewportReady.set(true);
+      this.ensureInitialGraphFit();
+      this.renderTick.update((value) => value + 1);
       this.initialFocusFrameId = null;
+      this.initialFocusFallbackId = null;
       this.persistExplorerState();
     };
+
+    this.initialFocusFallbackId = window.setTimeout(() => {
+      if (!this.pendingInitialEntityFocus) {
+        this.initialFocusFallbackId = null;
+        return;
+      }
+
+      this.pinCenterNode();
+      this.resetGraphView(false);
+      this.pendingInitialEntityFocus = false;
+      this.initialGraphViewportReady.set(true);
+      this.ensureInitialGraphFit();
+      this.renderTick.update((value) => value + 1);
+      this.initialFocusFallbackId = null;
+      this.persistExplorerState();
+    }, 220);
 
     this.initialFocusFrameId = requestAnimationFrame(runPass);
   }
@@ -1279,6 +1398,78 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.graphViewportReady = true;
   }
 
+  private ensureInitialGraphFit(attempt = 0): void {
+    if (!this.isBrowser || this.hasUserAdjustedGraphView) {
+      return;
+    }
+
+    if (this.initialFitFrameId !== null) {
+      cancelAnimationFrame(this.initialFitFrameId);
+      this.initialFitFrameId = null;
+    }
+
+    const maxAttempts = 18;
+    const run = () => {
+      if (!this.graph()) {
+        this.initialFitFrameId = null;
+        return;
+      }
+
+      this.pinCenterNode();
+      const next = this.createEntityFocusedGraphViewport();
+      if (next) {
+        this.targetGraphViewport = null;
+        this.graphViewport.set(next);
+        this.graphViewportReady = true;
+        this.renderTick.update((value) => value + 1);
+        this.persistExplorerState();
+      }
+
+      if (attempt >= maxAttempts || (next && next.scale < 0.8)) {
+        this.initialFitFrameId = null;
+        return;
+      }
+
+      attempt += 1;
+      this.initialFitFrameId = requestAnimationFrame(run);
+    };
+
+    this.initialFitFrameId = requestAnimationFrame(run);
+  }
+
+  private cancelPendingInitialGraphFocus(markUserAdjusted = false): void {
+    if (markUserAdjusted) {
+      this.hasUserAdjustedGraphView = true;
+    }
+
+    this.pendingInitialEntityFocus = false;
+    this.initialGraphViewportReady.set(true);
+
+    if (this.initialFocusFrameId !== null && this.isBrowser) {
+      cancelAnimationFrame(this.initialFocusFrameId);
+      this.initialFocusFrameId = null;
+    }
+
+    if (this.initialFitFrameId !== null && this.isBrowser) {
+      cancelAnimationFrame(this.initialFitFrameId);
+      this.initialFitFrameId = null;
+    }
+
+    if (this.initialFocusFallbackId !== null && this.isBrowser) {
+      clearTimeout(this.initialFocusFallbackId);
+      this.initialFocusFallbackId = null;
+    }
+  }
+
+  private cancelGraphViewportTarget(): void {
+    if (!this.targetGraphViewport) {
+      return;
+    }
+
+    this.targetGraphViewport = null;
+    this.graphViewportReady = true;
+  }
+
   private syncImageViewport(
     mapViewport?: (current: ImageViewport) => ImageViewport,
     animate = false,
@@ -1290,10 +1481,12 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    const fit = createImageViewport(size, asset);
+    const fit = createImageViewport(size, asset, { entityType: this.entityType });
     const current = mapViewport ? mapViewport(this.imageViewport()) : this.imageViewport();
     const restored =
-      !forceFit && !this.imageViewportReady ? restoreImageViewport(this.persistedState?.image, size, asset) : null;
+      !forceFit && !this.imageViewportReady
+        ? restoreImageViewport(this.persistedState?.image, size, asset, { entityType: this.entityType })
+        : null;
     const shouldFit = forceFit || !this.imageViewportReady || current.scale <= current.fitScale * 1.02;
 
     const next = shouldFit

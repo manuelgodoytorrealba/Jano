@@ -8,6 +8,7 @@ import { CollectionsApi } from '../../core/api/collections.api';
 import { AuthService } from '../../core/auth/auth.service';
 import { GraphComponent } from '../graph/graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
+import { entityVisualUrl, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
 
 @Component({
   standalone: true,
@@ -43,7 +44,11 @@ export class EntityComponent {
   }
 
   primaryMedia(entity: any) {
-    return entity?.mediaLinks?.[0]?.media ?? null;
+    return selectPrimaryVisualMedia(entity);
+  }
+
+  visualUrl(entity: any) {
+    return entityVisualUrl(entity);
   }
 
   private slug$ = this.route.paramMap.pipe(
@@ -126,7 +131,7 @@ export class EntityComponent {
   }
 
   relationMedia(entity: any) {
-    return entity?.mediaLinks?.[0]?.media ?? null;
+    return selectPrimaryVisualMedia(entity);
   }
 
   outgoingByType(entity: any, type: string) {

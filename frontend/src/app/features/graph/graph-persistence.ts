@@ -1,5 +1,5 @@
 import { GraphPoint, GraphViewport } from './graph.models';
-import { clampImageViewport, createImageViewport, ImageAssetSize, ImageViewport } from './image-viewport';
+import { clampImageViewport, createImageViewport, ImageAssetSize, ImageViewport, ImageViewportOptions } from './image-viewport';
 import { focusGraphPoint } from './graph-viewport';
 
 const STORAGE_PREFIX = 'jano:entity-explorer';
@@ -84,8 +84,9 @@ export function restoreImageViewport(
   payload: { center: GraphPoint; scaleRatio: number } | undefined,
   container: { width: number; height: number },
   asset: ImageAssetSize,
+  options?: ImageViewportOptions,
 ): ImageViewport {
-  const fit = createImageViewport(container, asset);
+  const fit = createImageViewport(container, asset, options);
 
   if (!payload) {
     return fit;

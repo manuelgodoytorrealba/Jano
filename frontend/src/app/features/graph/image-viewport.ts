@@ -9,11 +9,16 @@ export interface ImageViewport extends GraphViewport {
   fitScale: number;
 }
 
+export interface ImageViewportOptions {
+  entityType?: string | null;
+}
+
 const IMAGE_MAX_FACTOR = 6;
 
 export function createImageViewport(
   container: { width: number; height: number },
   asset: ImageAssetSize | null,
+  options?: ImageViewportOptions,
 ): ImageViewport {
   if (!asset?.width || !asset?.height || !container.width || !container.height) {
     return {
@@ -24,18 +29,39 @@ export function createImageViewport(
     };
   }
 
-  const insetX = Math.min(Math.max(container.width * 0.065, 36), 92);
-  const insetY = Math.min(Math.max(container.height * 0.075, 42), 116);
-  const fitScale = Math.max(
+  const insetX = Math.min(Math.max(container.width * 0.018, 10), 24);
+  const insetY = Math.min(Math.max(container.height * 0.02, 12), 24);
+  const containScale = Math.max(
     0.01,
     Math.min((container.width - insetX * 2) / asset.width, (container.height - insetY * 2) / asset.height),
   );
-  const width = asset.width * fitScale;
-  const height = asset.height * fitScale;
+  const aspectRatio = asset.width / asset.height;
+  const type = (options?.entityType ?? '').toUpperCase();
+  const isArtwork = type === 'ARTWORK';
+  const isPortraitSubject = type === 'ARTIST' || type === 'PERSON';
+  const targetWidthScale = (container.width * 0.985) / asset.width;
+  const targetHeightScale = (container.height * 0.965) / asset.height;
+  const coverScale = Math.max(
+    0.01,
+    Math.max((container.width - insetX * 2) / asset.width, (container.height - insetY * 2) / asset.height),
+  );
+
+  let scale = containScale;
+
+  if (isPortraitSubject && aspectRatio <= 0.92) {
+    scale = Math.max(containScale, coverScale);
+  } else if (isArtwork && aspectRatio <= 0.9) {
+    scale = Math.max(containScale, Math.min((container.height * 0.92) / asset.height, (container.width * 0.94) / asset.width));
+  } else if (!isArtwork && aspectRatio > 1.05 && aspectRatio < 1.8) {
+    scale = Math.max(containScale, Math.min((container.width * 0.99) / asset.width, (container.height * 0.96) / asset.height));
+  }
+
+  const width = asset.width * scale;
+  const height = asset.height * scale;
 
   return {
-    fitScale,
-    scale: fitScale,
+    fitScale: scale,
+    scale,
     x: (container.width - width) / 2,
     y: (container.height - height) / 2,
   };
@@ -98,10 +124,14 @@ export function clampImageViewport(
   const imageWidth = asset.width * viewport.scale;
   const imageHeight = asset.height * viewport.scale;
 
-  const minX = Math.min(0, container.width - imageWidth);
-  const minY = Math.min(0, container.height - imageHeight);
-  const maxX = imageWidth < container.width ? (container.width - imageWidth) / 2 : 0;
-  const maxY = imageHeight < container.height ? (container.height - imageHeight) / 2 : 0;
+  const centeredX = (container.width - imageWidth) / 2;
+  const centeredY = (container.height - imageHeight) / 2;
+  const lockX = imageWidth <= container.width;
+  const lockY = imageHeight <= container.height;
+  const minX = lockX ? centeredX : container.width - imageWidth;
+  const minY = lockY ? centeredY : container.height - imageHeight;
+  const maxX = lockX ? centeredX : 0;
+  const maxY = lockY ? centeredY : 0;
 
   return {
     ...viewport,

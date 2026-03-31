@@ -4,7 +4,7 @@
 
 .explorer-shell {
   display: grid;
-  min-height: clamp(792px, calc(100dvh - 7.1rem), 1040px);
+  min-height: clamp(660px, calc(100dvh - 10rem), 900px);
 }
 
 .explorer-btn,
@@ -53,18 +53,15 @@
 
 .explorer-canvas {
   display: grid;
-  grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
-  gap: 0;
-  min-height: clamp(772px, calc(100dvh - 7.2rem), 1020px);
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 0.42rem;
+  min-height: clamp(620px, calc(100dvh - 10.4rem), 860px);
   align-items: stretch;
-  border-radius: 32px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background:
-    linear-gradient(90deg, rgba(247, 243, 238, 0.82) 0%, rgba(247, 243, 238, 0.82) 47%, rgba(8, 11, 16, 0.96) 47%, rgba(3, 5, 8, 0.98) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    0 24px 60px rgba(13, 18, 28, 0.12);
+  border-radius: 28px;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .explorer-image-pane,
@@ -76,23 +73,32 @@
 .explorer-image-pane {
   display: flex;
   min-height: 0;
-  padding: 0.72rem 0.4rem 0.72rem 0.72rem;
+  padding: 0.32rem;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   background:
     radial-gradient(circle at top left, rgba(242, 211, 169, 0.18), transparent 28%),
     linear-gradient(180deg, rgba(244, 240, 235, 0.88), rgba(232, 227, 221, 0.72));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.46),
+    0 14px 34px rgba(13, 18, 28, 0.08);
 }
 
 .explorer-graph-pane {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 0.55rem;
+  gap: 0.42rem;
   min-height: 0;
-  padding: 0.72rem 0.72rem 0.72rem 0.4rem;
+  padding: 0.32rem;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background:
     radial-gradient(circle at 12% 12%, rgba(79, 143, 186, 0.15), transparent 24%),
     radial-gradient(circle at 82% 18%, rgba(143, 110, 213, 0.14), transparent 22%),
     linear-gradient(180deg, rgba(8, 11, 16, 0.94), rgba(3, 5, 8, 0.98));
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 42px rgba(4, 7, 12, 0.18);
 }
 
 .explorer-surface-label {
@@ -112,7 +118,7 @@
   overflow: hidden;
   min-height: 0;
   height: 100%;
-  border-radius: 24px;
+  border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 30px 70px rgba(9, 13, 20, 0.14);
   user-select: none;
@@ -128,12 +134,26 @@
   cursor: grab;
 }
 
+.image-stage__backdrop {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(26px) saturate(0.9) brightness(0.82);
+  transform: scale(1.08);
+  opacity: 0.32;
+}
+
 .graph-stage {
   background:
     radial-gradient(circle at top left, rgba(79, 143, 186, 0.18), transparent 36%),
     radial-gradient(circle at 85% 18%, rgba(143, 110, 213, 0.18), transparent 30%),
     linear-gradient(180deg, rgba(8, 11, 16, 0.94), rgba(3, 5, 8, 0.98));
   cursor: grab;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 22px 44px rgba(3, 6, 10, 0.22);
 }
 
 .image-stage:active,
@@ -145,9 +165,11 @@
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 1;
   transform-origin: top left;
   will-change: transform;
   isolation: isolate;
+  contain: layout paint;
 }
 
 .image-stage__img {
@@ -213,9 +235,9 @@
 
 .image-overlay-bar {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  right: 1rem;
+  top: 0.8rem;
+  left: 0.8rem;
+  right: 0.8rem;
   z-index: 3;
   display: flex;
   align-items: flex-start;
@@ -226,13 +248,13 @@
 
 .image-meta-card {
   position: absolute;
-  left: 1rem;
-  bottom: 1rem;
+  left: 0.8rem;
+  bottom: 0.8rem;
   z-index: 2;
   display: grid;
   gap: 0.3rem;
   max-width: min(360px, calc(100% - 2rem));
-  padding: 0.8rem 0.9rem;
+  padding: 0.7rem 0.82rem;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.76);
   color: rgba(40, 45, 57, 0.9);
@@ -248,7 +270,7 @@
 .graph-panel-footer {
   display: grid;
   gap: 0.38rem;
-  padding: 0.54rem 0.62rem;
+  padding: 0.46rem 0.54rem;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   background:
@@ -399,7 +421,7 @@
   gap: 0.2rem;
   width: 100%;
   max-width: 100%;
-  padding: 0.78rem 0.84rem;
+  padding: 0.68rem 0.76rem;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.03);
@@ -440,8 +462,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.8rem;
-  margin-bottom: 0.5rem;
+  gap: 0.7rem;
+  margin-bottom: 0.38rem;
 }
 
 .selection-card__type {
@@ -455,7 +477,7 @@
 
 .selection-card__meta {
   color: rgba(191, 213, 230, 0.64);
-  font-size: 0.8rem;
+  font-size: 0.76rem;
 }
 
 .selection-card h3,
@@ -464,22 +486,22 @@
 }
 
 .selection-card p {
-  margin-top: 0.22rem;
+  margin-top: 0.16rem;
   color: rgba(224, 237, 248, 0.76);
-  line-height: 1.42;
-  font-size: 0.88rem;
+  line-height: 1.36;
+  font-size: 0.84rem;
 }
 
 .selection-card__sync {
-  margin-top: 0.38rem;
+  margin-top: 0.28rem;
   color: rgba(176, 214, 238, 0.84);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
 }
 
 .graph-filter-tray {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.36rem;
   min-width: 0;
 }
 
@@ -487,8 +509,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.62rem 0.68rem;
+  gap: 0.38rem;
+  padding: 0.52rem 0.58rem;
   border-radius: 16px;
   background: rgba(8, 13, 19, 0.44);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -504,18 +526,18 @@
 
 .filter-group__label {
   color: rgba(190, 211, 228, 0.74);
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .filter-action {
-  padding: 0.36rem 0.62rem;
+  padding: 0.3rem 0.56rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
   color: rgba(220, 237, 248, 0.74);
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 700;
 }
 
@@ -525,13 +547,13 @@
   flex: 0 0 auto;
   align-items: center;
   gap: 0.5rem;
-  min-height: 38px;
-  padding: 0 0.78rem;
+  min-height: 34px;
+  padding: 0 0.7rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: rgba(228, 239, 247, 0.78);
-  font-size: 0.8rem;
+  font-size: 0.76rem;
 }
 
 .filter-chip.is-active {

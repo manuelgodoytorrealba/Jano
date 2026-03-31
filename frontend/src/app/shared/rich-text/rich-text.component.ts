@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
+import { entityVisualUrl } from '../media/media.utils';
 
 type Token =
   | { kind: 'text'; value: string }
@@ -40,8 +41,7 @@ export class RichTextComponent {
   }
 
   get previewImageUrl(): string | null {
-    const p = this.preview();
-    return p?.mediaLinks?.[0]?.media?.url ?? null;
+    return entityVisualUrl(this.preview());
   }
 
   onLinkEnter(slug: string) {

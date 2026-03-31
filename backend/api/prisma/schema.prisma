@@ -42,6 +42,22 @@ enum MediaKind {
   IMAGE
 }
 
+enum MediaProvider {
+  WIKIMEDIA_COMMONS
+  WIKIPEDIA
+  MUSEUM
+  IIIF
+  OPENVERSE
+  UNKNOWN
+}
+
+enum MediaQualityTier {
+  LOW
+  MEDIUM
+  HIGH
+  MASTER
+}
+
 enum MediaRole {
   PRIMARY
 }
@@ -119,6 +135,16 @@ model Media {
   id   String    @id @default(cuid())
   url  String
   kind MediaKind @default(IMAGE)
+
+  canonicalUrl String?
+  displayUrl   String?
+  sourcePageUrl String?
+  mimeType     String?
+  width        Int?
+  height       Int?
+  isVector     Boolean          @default(false)
+  provider     MediaProvider    @default(UNKNOWN)
+  qualityTier  MediaQualityTier @default(MEDIUM)
 
   alt     String?
   source  String? // where it comes from (page/museum/etc)

@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
+import { entityVisualUrl } from '../../shared/media/media.utils';
 
 type Entity = any;
 
@@ -311,6 +312,9 @@ export class EntitiesExplorer3dComponent
         let dx = 0;
         let dy = 0;
 
+        ctx.fillStyle = '#e9e3dc';
+        ctx.fillRect(0, 0, width, height);
+
         if (imageRatio > canvasRatio) {
             drawHeight = height;
             drawWidth = height * imageRatio;
@@ -407,7 +411,12 @@ export class EntitiesExplorer3dComponent
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 img.onload = () => {
-                    const roundedTexture = this.createRoundedImageTexture(img, 1100, 1200, 48);
+                    const roundedTexture = this.createRoundedImageTexture(
+                        img,
+                        1100,
+                        1200,
+                        48,
+                    );
                     imageMaterial.map = roundedTexture;
                     imageMaterial.needsUpdate = true;
                 };
@@ -585,7 +594,7 @@ export class EntitiesExplorer3dComponent
     }
 
     private thumb(e: Entity): string | null {
-        return e?.mediaLinks?.[0]?.media?.url ?? null;
+        return entityVisualUrl(e);
     }
 
     private pickPlane(clientX: number, clientY: number): THREE.Intersection<THREE.Object3D>[] {

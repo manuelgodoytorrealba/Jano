@@ -5,6 +5,7 @@ import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs'
 import { AuthService } from '../../core/auth/auth.service';
 import { CollectionsApi } from '../../core/api/collections.api';
 import { SavedApi } from '../../core/api/saved.api';
+import { entityVisualUrl } from '../../shared/media/media.utils';
 
 @Component({
   standalone: true,
@@ -48,7 +49,7 @@ export class MySpaceComponent {
   );
 
   thumb(e: any): string | null {
-    return e?.mediaLinks?.[0]?.media?.url ?? null;
+    return entityVisualUrl(e);
   }
 
   cleanWiki(text: string): string {

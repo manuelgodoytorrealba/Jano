@@ -140,9 +140,13 @@
     @if (viewMode === 'explore') {
     @if (vm.items.length) {
     <div class="entities-explorer-stage">
+      @defer (when viewMode === 'explore') {
       <app-entities-explorer-3d [items]="vm.items" [activeIndex]="activeIndex()"
         (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)">
       </app-entities-explorer-3d>
+      } @placeholder {
+      <div class="entities-explorer-placeholder ds-panel" aria-hidden="true"></div>
+      }
     </div>
     } @else {
     <div class="entities-stage-shell entities-stage-shell--empty">
