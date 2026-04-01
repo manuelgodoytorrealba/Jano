@@ -4,6 +4,7 @@ import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
 import { ContentLevel, EntityStatus } from '@prisma/client';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
+import { attachResolvedMedia, resolvedMediaUrl, type ResolvedMediaPayload } from './media.resolver';
 
 type GraphNodePayload = {
   id: string;
@@ -11,6 +12,7 @@ type GraphNodePayload = {
   type: string;
   slug: string;
   image: string | null;
+  resolvedMedia?: ResolvedMediaPayload;
   metadata: {
     summary: string | null;
     startYear: number | null;
@@ -41,6 +43,10 @@ export class EntitiesService {
   ];
 
   constructor(private prisma: PrismaService) { }
+
+  private withResolvedMedia<T extends { mediaLinks?: any[] | null }>(entity: T): T & { resolvedMedia: ResolvedMediaPayload } {
+    return attachResolvedMedia(entity);
+  }
 
   private relationLabel(type: string): string {
     const labels: Record<string, string> = {
@@ -123,14 +129,16 @@ export class EntitiesService {
         include: {
           mediaLinks: {
             include: { media: true },
-            where: { role: 'PRIMARY_LEGACY' as any },
-            take: 1,
+            orderBy: [
+              { sortOrder: 'asc' },
+              { id: 'asc' },
+            ],
           },
         },
       });
 
       return {
-        items,
+        items: items.map((item) => this.withResolvedMedia(item)),
         page: safePage,
         limit: safeLimit,
         total,
@@ -147,8 +155,10 @@ export class EntitiesService {
       include: {
         mediaLinks: {
           include: { media: true },
-          where: { role: 'PRIMARY_LEGACY' as any },
-          take: 1,
+          orderBy: [
+            { sortOrder: 'asc' },
+            { id: 'asc' },
+          ],
         },
       },
     });
@@ -186,7 +196,9 @@ export class EntitiesService {
       })
       .map((x) => x.e);
 
-    const items = ranked.slice(skip, skip + safeLimit);
+    const items = ranked
+      .slice(skip, skip + safeLimit)
+      .map((item) => this.withResolvedMedia(item));
 
     return {
       items,
@@ -207,15 +219,17 @@ export class EntitiesService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY_LEGACY' as any },
-              take: 1,
+              orderBy: [
+                { sortOrder: 'asc' },
+                { id: 'asc' },
+              ],
             },
           },
         }),
       ),
     );
 
-    return results.filter(Boolean);
+    return results.filter(Boolean).map((entity) => this.withResolvedMedia(entity!));
   }
 
   async getBySlug(slug: string) {
@@ -227,7 +241,13 @@ export class EntitiesService {
         artist: true,
         concept: true,
         period: true,
-        mediaLinks: { include: { media: true } },
+        mediaLinks: {
+          include: { media: true },
+          orderBy: [
+            { sortOrder: 'asc' },
+            { id: 'asc' },
+          ],
+        },
         contributors: true,
         sourceRefs: { include: { source: true } },
         outgoing: {
@@ -236,8 +256,10 @@ export class EntitiesService {
               include: {
                 mediaLinks: {
                   include: { media: true },
-                  where: { role: 'PRIMARY_LEGACY' as any },
-                  take: 1,
+                  orderBy: [
+                    { sortOrder: 'asc' },
+                    { id: 'asc' },
+                  ],
                 },
               },
             },
@@ -249,8 +271,10 @@ export class EntitiesService {
               include: {
                 mediaLinks: {
                   include: { media: true },
-                  where: { role: 'PRIMARY_LEGACY' as any },
-                  take: 1,
+                  orderBy: [
+                    { sortOrder: 'asc' },
+                    { id: 'asc' },
+                  ],
                 },
               },
             },
@@ -261,7 +285,17 @@ export class EntitiesService {
 
     if (!entity) throw new NotFoundException('Entity not found');
 
-    return entity;
+    return {
+      ...this.withResolvedMedia(entity),
+      outgoing: (entity.outgoing ?? []).map((relation: any) => ({
+        ...relation,
+        to: relation.to ? this.withResolvedMedia(relation.to) : relation.to,
+      })),
+      incoming: (entity.incoming ?? []).map((relation: any) => ({
+        ...relation,
+        from: relation.from ? this.withResolvedMedia(relation.from) : relation.from,
+      })),
+    };
   }
 
   async graphBySlug(slug: string) {
@@ -271,8 +305,10 @@ export class EntitiesService {
       include: {
         mediaLinks: {
           include: { media: true },
-          where: { role: 'PRIMARY_LEGACY' as any },
-          take: 1,
+          orderBy: [
+            { sortOrder: 'asc' },
+            { id: 'asc' },
+          ],
         },
       },
     });
@@ -291,8 +327,10 @@ export class EntitiesService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY_LEGACY' as any },
-              take: 1,
+              orderBy: [
+                { sortOrder: 'asc' },
+                { id: 'asc' },
+              ],
             },
           },
         },
@@ -300,8 +338,10 @@ export class EntitiesService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY_LEGACY' as any },
-              take: 1,
+              orderBy: [
+                { sortOrder: 'asc' },
+                { id: 'asc' },
+              ],
             },
           },
         },
@@ -310,18 +350,30 @@ export class EntitiesService {
 
     const nodesMap = new Map<string, GraphNodePayload>();
 
-    const toNodePayload = (node: any): GraphNodePayload => ({
-      id: node.id,
-      label: node.title,
-      type: node.type,
-      slug: node.slug,
-      image: node.mediaLinks?.[0]?.media?.url ?? null,
-      metadata: {
-        summary: node.summary ?? null,
-        startYear: node.startYear ?? null,
-        endYear: node.endYear ?? null,
-      },
-    });
+    const toNodePayload = (node: any): GraphNodePayload => {
+      const resolvedNode = this.withResolvedMedia(node);
+      const image =
+        resolvedMediaUrl(resolvedNode.resolvedMedia.thumbnail)
+        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.card)
+        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.detail)
+        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.hero)
+        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.explorer3d)
+        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.primary);
+
+      return {
+        id: node.id,
+        label: node.title,
+        type: node.type,
+        slug: node.slug,
+        image: image ?? null,
+        resolvedMedia: resolvedNode.resolvedMedia,
+        metadata: {
+          summary: node.summary ?? null,
+          startYear: node.startYear ?? null,
+          endYear: node.endYear ?? null,
+        },
+      };
+    };
 
     nodesMap.set(center.id, toNodePayload(center));
 
