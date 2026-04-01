@@ -273,6 +273,12 @@
       display: flex;
       gap: 8px;
       align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .media-create__caption {
+      font-size: 13px;
+      color: #666;
     }
 
     .media-grid {
@@ -288,6 +294,18 @@
       border-radius: 16px;
       padding: 14px;
       background: rgba(0,0,0,.018);
+      transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+
+    .upload-dropzone--active {
+      border-color: rgba(0, 109, 91, .34);
+      background: rgba(0, 109, 91, .05);
+      box-shadow: inset 0 0 0 1px rgba(0, 109, 91, .12);
+    }
+
+    .upload-dropzone--invalid {
+      border-color: rgba(176,0,32,.28);
+      background: rgba(176,0,32,.035);
     }
 
     .upload-input {
@@ -340,6 +358,13 @@
       margin: 0;
     }
 
+    .media-slots__legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
     .slot-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -355,6 +380,11 @@
       gap: 12px;
     }
 
+    .slot-card--empty {
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(248,248,248,1));
+      border-style: dashed;
+    }
+
     .slot-card__head {
       display: flex;
       justify-content: space-between;
@@ -365,6 +395,15 @@
     .slot-card__title {
       font-weight: 800;
       letter-spacing: -0.02em;
+    }
+
+    .slot-card__eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 4px;
     }
 
     .slot-card__description,
@@ -474,6 +513,13 @@
       letter-spacing: -0.02em;
     }
 
+    .media-card__eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
     .media-card__meta {
       color: #666;
       font-size: 13px;
@@ -521,6 +567,36 @@
       background: rgba(0, 109, 91, .08);
       border-color: rgba(0, 109, 91, .16);
       color: #0a6759;
+    }
+
+    .media-pill--external {
+      background: rgba(7, 67, 171, .07);
+      border-color: rgba(7, 67, 171, .14);
+      color: #18468d;
+    }
+
+    .media-pill--ingested {
+      background: rgba(145, 102, 0, .08);
+      border-color: rgba(145, 102, 0, .16);
+      color: #8a5f05;
+    }
+
+    .media-pill--slot-explicit {
+      background: rgba(0, 128, 0, .08);
+      border-color: rgba(0, 128, 0, .16);
+      color: #126b12;
+    }
+
+    .media-pill--slot-fallback {
+      background: rgba(178, 108, 0, .08);
+      border-color: rgba(178, 108, 0, .16);
+      color: #8a5f05;
+    }
+
+    .media-pill--slot-empty {
+      background: rgba(0,0,0,.035);
+      border-color: rgba(0,0,0,.08);
+      color: #666;
     }
 
     .btn.mini {

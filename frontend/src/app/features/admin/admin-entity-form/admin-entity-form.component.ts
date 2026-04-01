@@ -24,6 +24,20 @@ import {
   resolveEntityMediaSlot,
 } from '../../../shared/media/media.utils';
 
+const MAX_UPLOAD_SIZE_BYTES = 15 * 1024 * 1024;
+const ALLOWED_UPLOAD_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+]);
+
+type UploadPreviewDimensions = {
+  width: number;
+  height: number;
+};
+
 type EditableAdminMediaLink = {
   id: string;
   role: string;
@@ -83,6 +97,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
 @ViewChild('previewContainer')
 previewContainer?: ElementRef<HTMLElement>;
 
+@ViewChild('uploadInput')
+uploadInput?: ElementRef<HTMLInputElement>;
+
   linkSuggestions: any[] = [];
   linkSearch = '';
   linkLoading = false;
@@ -109,7 +126,10 @@ previewContainer?: ElementRef<HTMLElement>;
   mediaError = '';
   addingMedia = false;
   uploadingMedia = false;
+  uploadDragActive = false;
+  uploadValidationError = '';
   uploadPreviewUrl: string | null = null;
+  uploadPreviewDimensions: UploadPreviewDimensions | null = null;
   selectedUploadFile: File | null = null;
 
   mediaRoles = [
@@ -580,6 +600,38 @@ previewContainer?: ElementRef<HTMLElement>;
     }
   }
 
+  mediaOriginDescription(originType: string | null | undefined): string {
+    switch (originType) {
+      case 'UPLOAD':
+        return 'Asset propio subido al storage local de JANO.';
+      case 'INGESTED':
+        return 'Asset propio generado desde una fuente externa.';
+      case 'EXTERNAL_URL':
+      default:
+        return 'Referencia externa remota; no se almacena en JANO.';
+    }
+  }
+
+  mediaOriginTone(originType: string | null | undefined): string {
+    switch (originType) {
+      case 'UPLOAD':
+        return 'media-pill--upload';
+      case 'INGESTED':
+        return 'media-pill--ingested';
+      case 'EXTERNAL_URL':
+      default:
+        return 'media-pill--external';
+    }
+  }
+
+  get uploadAcceptedFormatsLabel(): string {
+    return 'JPEG, PNG, WEBP, GIF o AVIF';
+  }
+
+  get maxUploadSizeLabel(): string {
+    return this.formatFileSize(MAX_UPLOAD_SIZE_BYTES);
+  }
+
   get mediaEntityContext() {
     return {
       type: this.form.type,
@@ -694,9 +746,27 @@ previewContainer?: ElementRef<HTMLElement>;
     }
 
     const hasCard = links.some((link) => link.role === 'CARD');
+    const hasHero = links.some((link) => link.role === 'HERO');
     const hasDetail = links.some((link) => link.role === 'DETAIL');
     const hasOnlyLegacy = links.every((link) => link.role === 'PRIMARY_LEGACY');
     const galleryLinks = links.filter((link) => link.role === 'GALLERY');
+    const missingAltCount = links.filter((link) => !String(link.media.alt ?? '').trim()).length;
+    const uploadedWithoutContext = links.filter(
+      (link) =>
+        link.media.originType === 'UPLOAD'
+        && !String(link.media.alt ?? '').trim()
+        && !String(link.media.source ?? '').trim(),
+    ).length;
+    const fallbackHeavyCount = this.visualSlots.filter(
+      (slot) =>
+        slot.key !== 'gallery'
+        && slot.key !== 'primary'
+        && slot.state.source === 'fallback',
+    ).length;
+
+    if (!hasHero) {
+      warnings.push('No hay una media HERO explícita. La pieza destacada seguirá dependiendo de fallback.');
+    }
 
     if (!hasCard) {
       warnings.push('No hay una media CARD explícita. El listado dependerá de fallback.');
@@ -718,7 +788,78 @@ previewContainer?: ElementRef<HTMLElement>;
       }
     }
 
+    if (missingAltCount > 0) {
+      warnings.push(`Hay ${missingAltCount} media assets sin alt. Conviene completar texto alternativo para mantener calidad editorial.`);
+    }
+
+    if (uploadedWithoutContext > 0) {
+      warnings.push(`Hay ${uploadedWithoutContext} uploads sin alt ni source. Conviene documentarlos mejor para el equipo editorial.`);
+    }
+
+    if (fallbackHeavyCount >= 3) {
+      warnings.push('Varios slots importantes están entrando por fallback. Conviene explicitar Hero, Card, Detail y Explorer 3D.');
+    }
+
     return warnings;
+  }
+
+  slotResolutionLabel(slot: VisualSlot): string {
+    if (slot.state.source === 'explicit') {
+      return 'Asignación explícita';
+    }
+
+    if (slot.state.source === 'fallback') {
+      return slot.state.matchedRole
+        ? `Resuelto por fallback desde ${this.mediaRoleLabel(slot.state.matchedRole)}`
+        : 'Resuelto por fallback';
+    }
+
+    return 'No hay media resuelta para este contexto';
+  }
+
+  slotStateClass(slot: VisualSlot): string {
+    switch (slot.state.source) {
+      case 'explicit':
+        return 'media-pill--slot-explicit';
+      case 'fallback':
+        return slot.state.matchedRole === 'PRIMARY_LEGACY'
+          ? 'media-pill--legacy'
+          : 'media-pill--slot-fallback';
+      default:
+        return 'media-pill--slot-empty';
+    }
+  }
+
+  slotPreviewEyebrow(slot: VisualSlot): string {
+    switch (slot.key) {
+      case 'hero':
+        return 'Vista destacada';
+      case 'card':
+        return 'Catálogo';
+      case 'detail':
+        return 'Detalle';
+      case 'thumbnail':
+        return 'Compacto';
+      case 'explorer3d':
+        return 'Explorer';
+      case 'gallery':
+        return 'Galería';
+      case 'primary':
+      default:
+        return 'Fallback';
+    }
+  }
+
+  formatFileSize(value: number | null | undefined): string {
+    if (!value || value <= 0) {
+      return '—';
+    }
+
+    if (value >= 1024 * 1024) {
+      return `${(value / 1024 / 1024).toFixed(2)} MB`;
+    }
+
+    return `${Math.max(1, Math.round(value / 1024))} KB`;
   }
 
   addMedia() {
@@ -760,10 +901,19 @@ previewContainer?: ElementRef<HTMLElement>;
 
   onUploadDragOver(event: DragEvent) {
     event.preventDefault();
+    this.uploadDragActive = true;
+    this.cdr.markForCheck();
+  }
+
+  onUploadDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.uploadDragActive = false;
+    this.cdr.markForCheck();
   }
 
   onUploadDrop(event: DragEvent) {
     event.preventDefault();
+    this.uploadDragActive = false;
     const file = event.dataTransfer?.files?.[0] ?? null;
     this.setUploadFile(file);
   }
@@ -773,7 +923,7 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   uploadMediaFromFile() {
-    if (!this.entityId || this.uploadingMedia || !this.selectedUploadFile) {
+    if (!this.entityId || this.uploadingMedia || !this.selectedUploadFile || this.uploadValidationError) {
       return;
     }
 
@@ -909,17 +1059,47 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   private setUploadFile(file: File | null) {
+    this.uploadValidationError = '';
+    this.uploadDragActive = false;
+
     if (this.uploadPreviewUrl) {
       URL.revokeObjectURL(this.uploadPreviewUrl);
       this.uploadPreviewUrl = null;
     }
+    this.uploadPreviewDimensions = null;
 
     this.selectedUploadFile = file;
 
-    if (file && file.type.startsWith('image/')) {
-      this.uploadPreviewUrl = URL.createObjectURL(file);
+    if (!file) {
+      if (this.uploadInput?.nativeElement) {
+        this.uploadInput.nativeElement.value = '';
+      }
+      this.cdr.markForCheck();
+      return;
     }
 
+    if (!ALLOWED_UPLOAD_MIME_TYPES.has(file.type)) {
+      this.selectedUploadFile = null;
+      this.uploadValidationError = `Formato no permitido. Usa ${this.uploadAcceptedFormatsLabel}.`;
+      if (this.uploadInput?.nativeElement) {
+        this.uploadInput.nativeElement.value = '';
+      }
+      this.cdr.markForCheck();
+      return;
+    }
+
+    if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+      this.selectedUploadFile = null;
+      this.uploadValidationError = `El archivo supera el máximo permitido de ${this.maxUploadSizeLabel}.`;
+      if (this.uploadInput?.nativeElement) {
+        this.uploadInput.nativeElement.value = '';
+      }
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.uploadPreviewUrl = URL.createObjectURL(file);
+    this.readUploadPreviewDimensions(this.uploadPreviewUrl);
     this.cdr.markForCheck();
   }
 
@@ -1011,6 +1191,8 @@ previewContainer?: ElementRef<HTMLElement>;
       source: String(source.source ?? '').trim() || undefined,
       photoBy: String(source.photoBy ?? '').trim() || undefined,
       license: String(source.license ?? '').trim() || undefined,
+      width: this.uploadPreviewDimensions?.width,
+      height: this.uploadPreviewDimensions?.height,
       role: source.role,
       sortOrder: Number(source.sortOrder ?? 0),
       isPrimary: !!source.isPrimary,
@@ -1027,6 +1209,25 @@ previewContainer?: ElementRef<HTMLElement>;
 
     const numeric = Number(value);
     return Number.isFinite(numeric) ? numeric : null;
+  }
+
+  private readUploadPreviewDimensions(objectUrl: string) {
+    const image = new Image();
+
+    image.onload = () => {
+      this.uploadPreviewDimensions = {
+        width: image.naturalWidth,
+        height: image.naturalHeight,
+      };
+      this.cdr.markForCheck();
+    };
+
+    image.onerror = () => {
+      this.uploadPreviewDimensions = null;
+      this.cdr.markForCheck();
+    };
+
+    image.src = objectUrl;
   }
 
   onContentInput() {
