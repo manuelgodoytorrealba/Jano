@@ -58,6 +58,12 @@ enum MediaQualityTier {
   MASTER
 }
 
+enum MediaOriginType {
+  EXTERNAL_URL
+  UPLOAD
+  INGESTED
+}
+
 enum MediaRole {
   PRIMARY_LEGACY
   HERO
@@ -146,10 +152,14 @@ model Media {
   id   String    @id @default(cuid())
   url  String
   kind MediaKind @default(IMAGE)
+  originType MediaOriginType @default(EXTERNAL_URL)
 
   canonicalUrl String?
   displayUrl   String?
   sourcePageUrl String?
+  storageKey   String?
+  originalFilename String?
+  fileSize     Int?
   mimeType     String?
   width        Int?
   height       Int?

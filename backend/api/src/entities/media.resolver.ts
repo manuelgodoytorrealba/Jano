@@ -1,9 +1,13 @@
 type MediaLike = {
   id: string;
   url: string;
+  originType?: string | null;
   canonicalUrl?: string | null;
   displayUrl?: string | null;
   sourcePageUrl?: string | null;
+  storageKey?: string | null;
+  originalFilename?: string | null;
+  fileSize?: number | null;
   mimeType?: string | null;
   width?: number | null;
   height?: number | null;
@@ -35,9 +39,13 @@ type EntityWithMediaLinks = {
 export type ResolvedMediaItem = {
   id: string;
   url: string;
+  originType: string | null;
   canonicalUrl: string | null;
   displayUrl: string | null;
   sourcePageUrl: string | null;
+  storageKey: string | null;
+  originalFilename: string | null;
+  fileSize: number | null;
   mimeType: string | null;
   width: number | null;
   height: number | null;
@@ -244,9 +252,13 @@ function toResolvedMediaItem(link: NormalizedMediaLink): ResolvedMediaItem {
   return {
     id: link.media.id,
     url: link.media.url,
+    originType: link.media.originType ?? null,
     canonicalUrl: link.media.canonicalUrl ?? null,
     displayUrl: link.media.displayUrl ?? null,
     sourcePageUrl: link.media.sourcePageUrl ?? null,
+    storageKey: link.media.storageKey ?? null,
+    originalFilename: link.media.originalFilename ?? null,
+    fileSize: link.media.fileSize ?? null,
     mimeType: link.media.mimeType ?? null,
     width: link.media.width ?? null,
     height: link.media.height ?? null,
