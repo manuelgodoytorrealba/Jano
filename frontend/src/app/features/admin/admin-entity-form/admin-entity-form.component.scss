@@ -562,6 +562,22 @@
       color: #5d3f00;
     }
 
+    .media-card__promote-callout {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(12, 106, 92, .18);
+      background: rgba(12, 106, 92, .07);
+      color: #0a6759;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .media-card__promote-callout strong {
+      color: #0a5c4f;
+    }
+
     .media-quick-actions {
       display: flex;
       flex-wrap: wrap;
@@ -607,6 +623,12 @@
       background: rgba(145, 102, 0, .08);
       border-color: rgba(145, 102, 0, .16);
       color: #8a5f05;
+    }
+
+    .media-pill--promoted {
+      background: rgba(12, 106, 92, .08);
+      border-color: rgba(12, 106, 92, .16);
+      color: #0a6759;
     }
 
     .media-pill--slot-explicit {

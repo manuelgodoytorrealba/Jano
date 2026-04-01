@@ -456,6 +456,12 @@
                               <span>· {{ link.media.originalFilename }}</span>
                             }
                           </div>
+                          @if (replacementIngestedLink(link); as promotedIngested) {
+                            <div class="media-card__source-note">
+                              Reemplazo visual activo:
+                              <span>asset INGESTED {{ promotedIngested.media.id }}</span>
+                            </div>
+                          }
                           @if (ingestedSourceLabel(link); as ingestedSource) {
                             <div class="media-card__source-note">
                               Derivado de:
@@ -555,6 +561,9 @@
                         @if (link.isPrimary) {
                           <span class="media-pill media-pill--primary">Fallback primary activo</span>
                         }
+                        @if (hasPromotedVisualReplacement(link)) {
+                          <span class="media-pill media-pill--promoted">Reemplazo visual activo</span>
+                        }
                       </div>
 
                       @if (canIngestMedia(link)) {
@@ -563,6 +572,20 @@
                           <span>Descarga esta referencia externa al storage local de JANO y crea un nuevo asset <code>INGESTED</code>. El original externo se conserva sin cambios.</span>
                           <button class="btn mini ghost" type="button" [disabled]="link.ingesting" (click)="ingestMedia(link)">
                             @if (link.ingesting) { Ingestando... } @else { Ingestar como asset propio }
+                          </button>
+                        </div>
+                      }
+
+                      @if (canPromoteIngestedMedia(link)) {
+                        <div class="media-card__promote-callout">
+                          <strong>Usar como reemplazo visual</strong>
+                          <span>
+                            Este asset <code>INGESTED</code> puede asumir el papel visual de
+                            {{ replacementTargetLabel(link) || 'su asset externo origen' }}.
+                            El asset externo seguirá visible como referencia.
+                          </span>
+                          <button class="btn mini ghost" type="button" [disabled]="link.promoting" (click)="promoteIngestedMedia(link)">
+                            @if (link.promoting) { Promoviendo... } @else { Usar como reemplazo visual }
                           </button>
                         </div>
                       }

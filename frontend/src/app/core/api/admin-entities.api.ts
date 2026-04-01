@@ -113,6 +113,10 @@ export class AdminEntitiesApi {
     return this.http.post<any>(`${this.baseUrl}/${entityId}/media/${linkId}/ingest`, {});
   }
 
+  promoteIngestedMedia(entityId: string, linkId: string) {
+    return this.http.post<any>(`${this.baseUrl}/${entityId}/media/${linkId}/promote`, {});
+  }
+
   deleteMedia(entityId: string, linkId: string) {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}`);
   }

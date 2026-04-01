@@ -68,6 +68,7 @@ type EditableAdminMediaLink = {
   saving?: boolean;
   removing?: boolean;
   ingesting?: boolean;
+  promoting?: boolean;
 };
 
 type VisualSlot = {
@@ -639,12 +640,91 @@ uploadInput?: ElementRef<HTMLInputElement>;
     return link.media.originType === 'EXTERNAL_URL' && !link.ingesting && !link.saving && !link.removing;
   }
 
+  sourceExternalLink(link: EditableAdminMediaLink): EditableAdminMediaLink | null {
+    if (link.media.originType !== 'INGESTED') {
+      return null;
+    }
+
+    const canonical = String(link.media.canonicalUrl ?? '').trim().replace(/\/+$/, '');
+    if (!canonical) {
+      return null;
+    }
+
+    return this.mediaLinks.find((candidate) => {
+      if (candidate.id === link.id || candidate.media.originType !== 'EXTERNAL_URL') {
+        return false;
+      }
+
+      const values = [
+        candidate.media.canonicalUrl,
+        candidate.media.displayUrl,
+        candidate.media.url,
+      ]
+        .map((value) => String(value ?? '').trim().replace(/\/+$/, ''))
+        .filter(Boolean);
+
+      return values.includes(canonical);
+    }) ?? null;
+  }
+
+  canPromoteIngestedMedia(link: EditableAdminMediaLink): boolean {
+    return link.media.originType === 'INGESTED'
+      && !!this.sourceExternalLink(link)
+      && !link.promoting
+      && !link.ingesting
+      && !link.saving
+      && !link.removing;
+  }
+
   ingestedSourceLabel(link: EditableAdminMediaLink): string | null {
     if (link.media.originType !== 'INGESTED') {
       return null;
     }
 
     return link.media.canonicalUrl || link.media.sourcePageUrl || null;
+  }
+
+  replacementTargetLabel(link: EditableAdminMediaLink): string | null {
+    const source = this.sourceExternalLink(link);
+    if (!source) {
+      return null;
+    }
+
+    return `${this.mediaRoleLabel(source.role)} · asset ${source.media.id}`;
+  }
+
+  hasPromotedVisualReplacement(link: EditableAdminMediaLink): boolean {
+    const source = this.sourceExternalLink(link);
+    if (!source || link.media.originType !== 'INGESTED') {
+      return false;
+    }
+
+    return source.role === 'GALLERY'
+      && (link.role !== 'GALLERY' || link.isPrimary);
+  }
+
+  replacementIngestedLink(link: EditableAdminMediaLink): EditableAdminMediaLink | null {
+    if (link.media.originType !== 'EXTERNAL_URL') {
+      return null;
+    }
+
+    const externalCandidates = [
+      link.media.canonicalUrl,
+      link.media.displayUrl,
+      link.media.url,
+    ]
+      .map((value) => String(value ?? '').trim().replace(/\/+$/, ''))
+      .filter(Boolean);
+
+    if (!externalCandidates.length) {
+      return null;
+    }
+
+    return this.mediaLinks.find((candidate) =>
+      candidate.media.originType === 'INGESTED'
+      && this.hasPromotedVisualReplacement(candidate)
+      && externalCandidates.includes(String(candidate.media.canonicalUrl ?? '').trim().replace(/\/+$/, '')),
+    ) ?? null;
   }
 
   get mediaEntityContext() {
@@ -1057,6 +1137,45 @@ uploadInput?: ElementRef<HTMLInputElement>;
     });
   }
 
+  promoteIngestedMedia(link: EditableAdminMediaLink) {
+    if (!this.entityId || !this.canPromoteIngestedMedia(link)) {
+      return;
+    }
+
+    const source = this.sourceExternalLink(link);
+    const sourceRoleLabel = source ? this.mediaRoleLabel(source.role) : 'el asset externo origen';
+
+    const ok = window.confirm(
+      `El asset INGESTED asumirá ${sourceRoleLabel}, sortOrder, isPrimary, displayMode y focales del externo del que deriva. El externo quedará visible como referencia GALLERY. ¿Continuar?`,
+    );
+    if (!ok) {
+      return;
+    }
+
+    this.mediaError = '';
+    this.mediaMessage = '';
+    link.promoting = true;
+
+    this.adminApi.promoteIngestedMedia(this.entityId, link.id).subscribe({
+      next: (result) => {
+        link.promoting = false;
+        if (result?.promotedLink) {
+          this.upsertMediaLink(result.promotedLink);
+        }
+        if (result?.sourceLink) {
+          this.upsertMediaLink(result.sourceLink);
+        }
+        this.mediaMessage = 'El asset INGESTED ocupa ahora el papel visual del externo. El asset externo sigue visible como referencia.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        link.promoting = false;
+        this.mediaError = err?.error?.message ?? 'No se pudo promover el asset INGESTED.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   assignRole(link: EditableAdminMediaLink, role: string) {
     if (link.role === role) {
       return;
@@ -1180,6 +1299,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
       saving: false,
       removing: false,
       ingesting: false,
+      promoting: false,
     };
   }
 
