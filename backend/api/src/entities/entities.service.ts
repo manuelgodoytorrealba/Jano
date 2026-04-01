@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
-import { ContentLevel, EntityStatus } from '@prisma/client';
+import { ContentLevel, EntityStatus, MediaRole } from '@prisma/client';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
+import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
+import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
 import { attachResolvedMedia, resolvedMediaUrl, type ResolvedMediaPayload } from './media.resolver';
 
 type GraphNodePayload = {
@@ -543,6 +545,17 @@ export class EntitiesService {
 
     const entity = await this.prisma.entity.findUnique({
       where: { id },
+      include: {
+        mediaLinks: {
+          include: {
+            media: true,
+          },
+          orderBy: [
+            { sortOrder: 'asc' },
+            { id: 'asc' },
+          ],
+        },
+      },
     });
 
     if (!entity) {
@@ -550,6 +563,128 @@ export class EntitiesService {
     }
 
     return entity;
+  }
+
+  async adminCreateMedia(entityId: string, dto: CreateEntityMediaDto) {
+
+    const entity = await this.prisma.entity.findUnique({
+      where: { id: entityId },
+      select: { id: true },
+    });
+
+    if (!entity) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    const media = await this.prisma.media.create({
+      data: {
+        url: dto.url.trim(),
+        displayUrl: dto.displayUrl?.trim() || undefined,
+        sourcePageUrl: dto.sourcePageUrl?.trim() || undefined,
+        alt: dto.alt?.trim() || undefined,
+        source: dto.source?.trim() || undefined,
+        photoBy: dto.photoBy?.trim() || undefined,
+        license: dto.license?.trim() || undefined,
+      },
+    });
+
+    return this.prisma.entityMedia.create({
+      data: {
+        entityId,
+        mediaId: media.id,
+        role: dto.role ?? MediaRole.CARD,
+        sortOrder: dto.sortOrder ?? 0,
+        isPrimary: dto.isPrimary ?? false,
+        displayMode: dto.displayMode ?? null,
+        focalX: dto.focalX ?? null,
+        focalY: dto.focalY ?? null,
+      },
+      include: {
+        media: true,
+      },
+    });
+  }
+
+  async adminUpdateMedia(entityId: string, linkId: string, dto: UpdateEntityMediaDto) {
+
+    const link = await this.prisma.entityMedia.findFirst({
+      where: {
+        id: linkId,
+        entityId,
+      },
+      include: {
+        media: true,
+      },
+    });
+
+    if (!link) {
+      throw new NotFoundException('Entity media link not found');
+    }
+
+    const mediaData = {
+      url: dto.url?.trim(),
+      displayUrl: dto.displayUrl !== undefined ? (dto.displayUrl?.trim() || null) : undefined,
+      sourcePageUrl: dto.sourcePageUrl !== undefined ? (dto.sourcePageUrl?.trim() || null) : undefined,
+      alt: dto.alt !== undefined ? (dto.alt?.trim() || null) : undefined,
+      source: dto.source !== undefined ? (dto.source?.trim() || null) : undefined,
+      photoBy: dto.photoBy !== undefined ? (dto.photoBy?.trim() || null) : undefined,
+      license: dto.license !== undefined ? (dto.license?.trim() || null) : undefined,
+    };
+
+    const linkData = {
+      role: dto.role,
+      sortOrder: dto.sortOrder,
+      isPrimary: dto.isPrimary,
+      displayMode: dto.displayMode === undefined
+        ? undefined
+        : dto.displayMode ?? null,
+      focalX: dto.focalX === undefined ? undefined : dto.focalX ?? null,
+      focalY: dto.focalY === undefined ? undefined : dto.focalY ?? null,
+    };
+
+    await this.prisma.$transaction(async (tx) => {
+      if (Object.values(mediaData).some((value) => value !== undefined)) {
+        await tx.media.update({
+          where: { id: link.mediaId },
+          data: mediaData,
+        });
+      }
+
+      if (Object.values(linkData).some((value) => value !== undefined)) {
+        await tx.entityMedia.update({
+          where: { id: linkId },
+          data: linkData,
+        });
+      }
+    });
+
+    return this.prisma.entityMedia.findUnique({
+      where: { id: linkId },
+      include: {
+        media: true,
+      },
+    });
+  }
+
+  async adminDeleteMedia(entityId: string, linkId: string) {
+
+    const link = await this.prisma.entityMedia.findFirst({
+      where: {
+        id: linkId,
+        entityId,
+      },
+      select: { id: true },
+    });
+
+    if (!link) {
+      throw new NotFoundException('Entity media link not found');
+    }
+
+    await this.prisma.entityMedia.delete({
+      where: { id: linkId },
+    });
+
+    return { ok: true };
   }
 
   async adminListRelations(entityId: string) {

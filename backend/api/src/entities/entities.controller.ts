@@ -16,6 +16,8 @@ import { Roles } from '../auth/roles.decorator';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { ListEntitiesQuery } from './dto/list-entities.query';
+import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
+import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
 
 @Controller('entities')
 export class EntitiesController {
@@ -56,8 +58,38 @@ export class EntitiesController {
   @Roles('ADMIN')
   @Get('admin/:id')
   getByIdForAdmin(@Param('id') id: string) {
-    console.log('ADMIN GET ENTITY BY ID:', id);
     return this.service.adminGetById(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Post(':id/media')
+  createMedia(
+    @Param('id') id: string,
+    @Body() dto: CreateEntityMediaDto,
+  ) {
+    return this.service.adminCreateMedia(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id/media/:linkId')
+  updateMedia(
+    @Param('id') id: string,
+    @Param('linkId') linkId: string,
+    @Body() dto: UpdateEntityMediaDto,
+  ) {
+    return this.service.adminUpdateMedia(id, linkId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Delete(':id/media/:linkId')
+  deleteMedia(
+    @Param('id') id: string,
+    @Param('linkId') linkId: string,
+  ) {
+    return this.service.adminDeleteMedia(id, linkId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
