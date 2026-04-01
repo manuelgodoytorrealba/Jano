@@ -2,6 +2,7 @@ type MediaLike = {
   id: string;
   url: string;
   originType?: string | null;
+  derivedFromMediaId?: string | null;
   canonicalUrl?: string | null;
   displayUrl?: string | null;
   sourcePageUrl?: string | null;
@@ -40,6 +41,7 @@ export type ResolvedMediaItem = {
   id: string;
   url: string;
   originType: string | null;
+  derivedFromMediaId: string | null;
   canonicalUrl: string | null;
   displayUrl: string | null;
   sourcePageUrl: string | null;
@@ -253,6 +255,7 @@ function toResolvedMediaItem(link: NormalizedMediaLink): ResolvedMediaItem {
     id: link.media.id,
     url: link.media.url,
     originType: link.media.originType ?? null,
+    derivedFromMediaId: link.media.derivedFromMediaId ?? null,
     canonicalUrl: link.media.canonicalUrl ?? null,
     displayUrl: link.media.displayUrl ?? null,
     sourcePageUrl: link.media.sourcePageUrl ?? null,

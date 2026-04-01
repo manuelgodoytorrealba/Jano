@@ -153,6 +153,7 @@ model Media {
   url  String
   kind MediaKind @default(IMAGE)
   originType MediaOriginType @default(EXTERNAL_URL)
+  derivedFromMediaId String?
 
   canonicalUrl String?
   displayUrl   String?
@@ -174,7 +175,11 @@ model Media {
 
   createdAt DateTime @default(now())
 
+  derivedFromMedia Media?  @relation("MediaDerivation", fields: [derivedFromMediaId], references: [id])
+  derivedAssets    Media[] @relation("MediaDerivation")
   entities EntityMedia[]
+
+  @@index([derivedFromMediaId])
 }
 
 model EntityMedia {

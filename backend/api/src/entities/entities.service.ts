@@ -134,11 +134,18 @@ export class EntitiesService {
     );
   }
 
-  private async findSourceExternalLinkForIngested(entityId: string, linkId: string, canonicalUrl: string | null | undefined) {
-    const normalizedCanonical = this.normalizeUrlCandidate(canonicalUrl);
-    if (!normalizedCanonical) {
-      throw new BadRequestException('El asset INGESTED no conserva referencia suficiente al asset externo');
-    }
+  private async findSourceExternalLinkForIngested(
+    entityId: string,
+    linkId: string,
+    ingestedMediaId: string,
+    canonicalUrl: string | null | undefined,
+  ) {
+    const ingestedMedia = await this.prisma.media.findUnique({
+      where: { id: ingestedMediaId },
+      select: {
+        derivedFromMediaId: true,
+      },
+    });
 
     const candidates = await this.prisma.entityMedia.findMany({
       where: {
@@ -160,6 +167,18 @@ export class EntitiesService {
       ],
     });
 
+    if (ingestedMedia?.derivedFromMediaId) {
+      const direct = candidates.find((candidate) => candidate.mediaId === ingestedMedia.derivedFromMediaId);
+      if (direct) {
+        return direct;
+      }
+    }
+
+    const normalizedCanonical = this.normalizeUrlCandidate(canonicalUrl);
+    if (!normalizedCanonical) {
+      throw new BadRequestException('El asset INGESTED no conserva referencia suficiente al asset externo');
+    }
+
     const match = candidates.find((candidate) =>
       this.mediaSourceCandidates(candidate.media).includes(normalizedCanonical),
     );
@@ -169,6 +188,31 @@ export class EntitiesService {
     }
 
     return match;
+  }
+
+  private async findPromotedIngestedLinkForExternal(entityId: string, externalLinkId: string, externalMediaId: string) {
+    const candidates = await this.prisma.entityMedia.findMany({
+      where: {
+        entityId,
+        id: {
+          not: externalLinkId,
+        },
+        media: {
+          originType: MediaOriginType.INGESTED,
+          derivedFromMediaId: externalMediaId,
+        },
+      },
+      include: {
+        media: true,
+      },
+      orderBy: [
+        { isPrimary: 'desc' },
+        { sortOrder: 'asc' },
+        { id: 'asc' },
+      ],
+    });
+
+    return candidates.find((candidate) => candidate.role !== MediaRole.GALLERY || candidate.isPrimary) ?? candidates[0] ?? null;
   }
 
   private inferOriginalFilename(urlValue: string, fallbackExt: string): string {
@@ -892,6 +936,7 @@ export class EntitiesService {
             provider: link.media.provider,
             qualityTier: link.media.qualityTier,
             originType: MediaOriginType.INGESTED,
+            derivedFromMediaId: link.media.id,
             alt: link.media.alt?.trim() || undefined,
             source: link.media.source?.trim() || undefined,
             photoBy: link.media.photoBy?.trim() || undefined,
@@ -945,6 +990,7 @@ export class EntitiesService {
     const sourceExternalLink = await this.findSourceExternalLinkForIngested(
       entityId,
       linkId,
+      ingestedLink.mediaId,
       ingestedLink.media.canonicalUrl,
     );
 
@@ -1001,6 +1047,91 @@ export class EntitiesService {
     return {
       promotedLink,
       sourceLink: updatedSourceLink,
+    };
+  }
+
+  async adminRestoreExternalMedia(entityId: string, linkId: string) {
+    const externalLink = await this.prisma.entityMedia.findFirst({
+      where: {
+        id: linkId,
+        entityId,
+      },
+      include: {
+        media: true,
+      },
+    });
+
+    if (!externalLink) {
+      throw new NotFoundException('Entity media link not found');
+    }
+
+    if (externalLink.media.originType !== MediaOriginType.EXTERNAL_URL) {
+      throw new BadRequestException('Solo se puede restaurar un asset con origen EXTERNAL_URL');
+    }
+
+    const promotedIngestedLink = await this.findPromotedIngestedLinkForExternal(
+      entityId,
+      linkId,
+      externalLink.mediaId,
+    );
+
+    if (!promotedIngestedLink) {
+      throw new BadRequestException('No hay un asset INGESTED promovido que restaurar para este externo');
+    }
+
+    const galleryMax = await this.prisma.entityMedia.aggregate({
+      where: {
+        entityId,
+        role: MediaRole.GALLERY,
+        id: {
+          notIn: [linkId, promotedIngestedLink.id],
+        },
+      },
+      _max: {
+        sortOrder: true,
+      },
+    });
+
+    const restoredLink = await this.prisma.$transaction(async (tx) => {
+      await tx.entityMedia.update({
+        where: { id: linkId },
+        data: {
+          role: promotedIngestedLink.role,
+          sortOrder: promotedIngestedLink.sortOrder,
+          isPrimary: promotedIngestedLink.isPrimary,
+          displayMode: promotedIngestedLink.displayMode ?? null,
+          focalX: promotedIngestedLink.focalX ?? null,
+          focalY: promotedIngestedLink.focalY ?? null,
+        },
+      });
+
+      await tx.entityMedia.update({
+        where: { id: promotedIngestedLink.id },
+        data: {
+          role: MediaRole.GALLERY,
+          sortOrder: (galleryMax._max.sortOrder ?? -1) + 1,
+          isPrimary: false,
+        },
+      });
+
+      return tx.entityMedia.findUniqueOrThrow({
+        where: { id: linkId },
+        include: {
+          media: true,
+        },
+      });
+    });
+
+    const updatedIngestedLink = await this.prisma.entityMedia.findUniqueOrThrow({
+      where: { id: promotedIngestedLink.id },
+      include: {
+        media: true,
+      },
+    });
+
+    return {
+      restoredLink,
+      ingestedLink: updatedIngestedLink,
     };
   }
 
