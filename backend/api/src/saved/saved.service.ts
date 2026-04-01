@@ -18,7 +18,7 @@ export class SavedService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY' as any },
+              where: { role: 'PRIMARY_LEGACY' as any },
               take: 1,
             },
           },
@@ -66,7 +66,7 @@ export class SavedService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY' as any },
+              where: { role: 'PRIMARY_LEGACY' as any },
               take: 1,
             },
           },

@@ -123,7 +123,7 @@ export class EntitiesService {
         include: {
           mediaLinks: {
             include: { media: true },
-            where: { role: 'PRIMARY' as any },
+            where: { role: 'PRIMARY_LEGACY' as any },
             take: 1,
           },
         },
@@ -147,7 +147,7 @@ export class EntitiesService {
       include: {
         mediaLinks: {
           include: { media: true },
-          where: { role: 'PRIMARY' as any },
+          where: { role: 'PRIMARY_LEGACY' as any },
           take: 1,
         },
       },
@@ -207,7 +207,7 @@ export class EntitiesService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY' as any },
+              where: { role: 'PRIMARY_LEGACY' as any },
               take: 1,
             },
           },
@@ -236,7 +236,7 @@ export class EntitiesService {
               include: {
                 mediaLinks: {
                   include: { media: true },
-                  where: { role: 'PRIMARY' as any },
+                  where: { role: 'PRIMARY_LEGACY' as any },
                   take: 1,
                 },
               },
@@ -249,7 +249,7 @@ export class EntitiesService {
               include: {
                 mediaLinks: {
                   include: { media: true },
-                  where: { role: 'PRIMARY' as any },
+                  where: { role: 'PRIMARY_LEGACY' as any },
                   take: 1,
                 },
               },
@@ -271,7 +271,7 @@ export class EntitiesService {
       include: {
         mediaLinks: {
           include: { media: true },
-          where: { role: 'PRIMARY' as any },
+          where: { role: 'PRIMARY_LEGACY' as any },
           take: 1,
         },
       },
@@ -291,7 +291,7 @@ export class EntitiesService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY' as any },
+              where: { role: 'PRIMARY_LEGACY' as any },
               take: 1,
             },
           },
@@ -300,7 +300,7 @@ export class EntitiesService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY' as any },
+              where: { role: 'PRIMARY_LEGACY' as any },
               take: 1,
             },
           },
@@ -378,7 +378,7 @@ export class EntitiesService {
         endYear: true,
         mediaLinks: {
           take: 1,
-          where: { role: 'PRIMARY' as any },
+          where: { role: 'PRIMARY_LEGACY' as any },
           select: {
             media: {
               select: {

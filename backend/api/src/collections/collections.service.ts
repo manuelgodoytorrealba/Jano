@@ -24,7 +24,7 @@ export class CollectionsService {
               include: {
                 mediaLinks: {
                   include: { media: true },
-                  where: { role: 'PRIMARY' as any },
+                  where: { role: 'PRIMARY_LEGACY' as any },
                   take: 1,
                 },
               },
@@ -79,7 +79,7 @@ export class CollectionsService {
               include: {
                 mediaLinks: {
                   include: { media: true },
-                  where: { role: 'PRIMARY' as any },
+                  where: { role: 'PRIMARY_LEGACY' as any },
                   take: 1,
                 },
               },
@@ -134,7 +134,7 @@ export class CollectionsService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY' as any },
+              where: { role: 'PRIMARY_LEGACY' as any },
               take: 1,
             },
           },
