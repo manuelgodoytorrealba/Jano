@@ -8,6 +8,9 @@ import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
 import { UploadEntityMediaDto } from './dto/upload-entity-media.dto';
 import { attachResolvedMedia, resolvedMediaUrl, type ResolvedMediaPayload } from './media.resolver';
+import { mkdir, unlink, writeFile } from 'fs/promises';
+import { extname, join } from 'path';
+import { randomUUID } from 'crypto';
 
 type GraphNodePayload = {
   id: string;
@@ -39,6 +42,22 @@ type GraphEdgePayload = {
   directed: boolean;
   weight: number;
   justification: string | null;
+};
+
+const MAX_INGEST_SIZE_BYTES = 15 * 1024 * 1024;
+const ALLOWED_INGEST_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+]);
+const MIME_EXTENSION_MAP: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+  'image/avif': '.avif',
 };
 
 @Injectable()
@@ -80,6 +99,46 @@ export class EntitiesService {
 
   private isDirectedRelation(type: string): boolean {
     return !['RELATED_TO', 'ASSOCIATED_WITH'].includes(type);
+  }
+
+  private buildPublicUploadUrl(storageKey: string): string {
+    return `${this.mediaPublicBaseUrl}/uploads/${storageKey}`;
+  }
+
+  private normalizeMimeType(value: string | null | undefined): string | null {
+    return value?.split(';')[0]?.trim().toLowerCase() ?? null;
+  }
+
+  private inferOriginalFilename(urlValue: string, fallbackExt: string): string {
+    try {
+      const parsed = new URL(urlValue);
+      const candidate = parsed.pathname.split('/').pop()?.trim();
+      if (candidate) {
+        return candidate;
+      }
+    } catch {
+      // ignore invalid URL parsing and use fallback
+    }
+
+    return `ingested${fallbackExt}`;
+  }
+
+  private inferFileExtension(urlValue: string, mimeType: string | null): string {
+    if (mimeType && MIME_EXTENSION_MAP[mimeType]) {
+      return MIME_EXTENSION_MAP[mimeType];
+    }
+
+    try {
+      const parsed = new URL(urlValue);
+      const extension = extname(parsed.pathname);
+      if (extension) {
+        return extension;
+      }
+    } catch {
+      // ignore invalid URL parsing and use fallback
+    }
+
+    return '.jpg';
   }
 
   async list(query: ListEntitiesQuery) {
@@ -635,7 +694,7 @@ export class EntitiesService {
     }
 
     const storageKey = `media/${file.filename}`;
-    const publicUrl = `${this.mediaPublicBaseUrl}/uploads/${storageKey}`;
+    const publicUrl = this.buildPublicUploadUrl(storageKey);
 
     const media = await this.prisma.media.create({
       data: {
@@ -671,6 +730,135 @@ export class EntitiesService {
         media: true,
       },
     });
+  }
+
+  async adminIngestMedia(entityId: string, linkId: string) {
+    const link = await this.prisma.entityMedia.findFirst({
+      where: {
+        id: linkId,
+        entityId,
+      },
+      include: {
+        media: true,
+      },
+    });
+
+    if (!link) {
+      throw new NotFoundException('Entity media link not found');
+    }
+
+    if (link.media.originType !== MediaOriginType.EXTERNAL_URL) {
+      throw new BadRequestException('Solo se pueden ingestar assets con origen EXTERNAL_URL');
+    }
+
+    const sourceUrl = link.media.displayUrl?.trim() || link.media.url?.trim();
+    if (!sourceUrl) {
+      throw new BadRequestException('La media externa no tiene una URL descargable');
+    }
+
+    let response: Response;
+
+    try {
+      response = await fetch(sourceUrl);
+    } catch {
+      throw new BadRequestException('No se pudo descargar la media externa');
+    }
+
+    if (!response.ok) {
+      throw new BadRequestException(`La descarga devolvió ${response.status}`);
+    }
+
+    const mimeType = this.normalizeMimeType(response.headers.get('content-type'));
+    if (!mimeType || !ALLOWED_INGEST_MIME_TYPES.has(mimeType)) {
+      throw new BadRequestException('La ingestión solo admite JPEG, PNG, WEBP, GIF o AVIF');
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    if (!buffer.length) {
+      throw new BadRequestException('La descarga no devolvió contenido útil');
+    }
+
+    if (buffer.length > MAX_INGEST_SIZE_BYTES) {
+      throw new BadRequestException('La media externa supera el tamaño máximo permitido para ingestión');
+    }
+
+    const extension = this.inferFileExtension(sourceUrl, mimeType);
+    const filename = `${Date.now()}-${randomUUID()}${extension}`;
+    const storageKey = `media/ingested/${filename}`;
+    const storagePath = join(process.cwd(), 'uploads', storageKey);
+
+    await mkdir(join(process.cwd(), 'uploads', 'media', 'ingested'), { recursive: true });
+
+    try {
+      await writeFile(storagePath, buffer);
+    } catch {
+      throw new BadRequestException('No se pudo guardar la media ingerida en el storage local');
+    }
+
+    try {
+      const maxSort = await this.prisma.entityMedia.aggregate({
+        where: {
+          entityId,
+          role: MediaRole.GALLERY,
+        },
+        _max: {
+          sortOrder: true,
+        },
+      });
+
+      const publicUrl = this.buildPublicUploadUrl(storageKey);
+      const sourceReference = link.media.canonicalUrl?.trim()
+        || link.media.displayUrl?.trim()
+        || link.media.url?.trim()
+        || sourceUrl;
+
+      const created = await this.prisma.$transaction(async (tx) => {
+        const media = await tx.media.create({
+          data: {
+            url: publicUrl,
+            canonicalUrl: sourceReference,
+            displayUrl: publicUrl,
+            sourcePageUrl: link.media.sourcePageUrl?.trim() || undefined,
+            storageKey,
+            originalFilename: this.inferOriginalFilename(sourceUrl, extension),
+            fileSize: buffer.length,
+            mimeType,
+            width: link.media.width ?? undefined,
+            height: link.media.height ?? undefined,
+            provider: link.media.provider,
+            qualityTier: link.media.qualityTier,
+            originType: MediaOriginType.INGESTED,
+            alt: link.media.alt?.trim() || undefined,
+            source: link.media.source?.trim() || undefined,
+            photoBy: link.media.photoBy?.trim() || undefined,
+            license: link.media.license?.trim() || undefined,
+          },
+        });
+
+        return tx.entityMedia.create({
+          data: {
+            entityId,
+            mediaId: media.id,
+            role: MediaRole.GALLERY,
+            sortOrder: (maxSort._max.sortOrder ?? -1) + 1,
+            isPrimary: false,
+            displayMode: link.displayMode ?? null,
+            focalX: link.focalX ?? null,
+            focalY: link.focalY ?? null,
+          },
+          include: {
+            media: true,
+          },
+        });
+      });
+
+      return created;
+    } catch (error) {
+      await unlink(storagePath).catch(() => undefined);
+      throw error;
+    }
   }
 
   async adminUpdateMedia(entityId: string, linkId: string, dto: UpdateEntityMediaDto) {
