@@ -1,5 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import * as express from 'express';
+import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -11,6 +13,7 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
+  app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
 
   // ✅ Añadir esto
   app.useGlobalPipes(

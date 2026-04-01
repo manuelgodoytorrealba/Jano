@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,7 +8,9 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { EntitiesService } from './entities.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -18,6 +21,19 @@ import { UpdateEntityDto } from './dto/update-entity.dto';
 import { ListEntitiesQuery } from './dto/list-entities.query';
 import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
+import { UploadEntityMediaDto } from './dto/upload-entity-media.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { mkdirSync } from 'fs';
+import { randomUUID } from 'crypto';
+
+type UploadedImageFile = {
+  filename: string;
+  originalname: string;
+  mimetype: string;
+  size: number;
+};
 
 @Controller('entities')
 export class EntitiesController {
@@ -69,6 +85,43 @@ export class EntitiesController {
     @Body() dto: CreateEntityMediaDto,
   ) {
     return this.service.adminCreateMedia(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Post(':id/media/upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_req, _file, callback) => {
+          const destination = join(process.cwd(), 'uploads', 'media');
+          mkdirSync(destination, { recursive: true });
+          callback(null, destination);
+        },
+        filename: (_req, file, callback) => {
+          const suffix = `${Date.now()}-${randomUUID()}`;
+          callback(null, `${suffix}${extname(file.originalname)}`);
+        },
+      }),
+      fileFilter: (_req, file, callback) => {
+        if (!file.mimetype?.startsWith('image/')) {
+          callback(new BadRequestException('Solo se permiten imágenes'), false);
+          return;
+        }
+
+        callback(null, true);
+      },
+      limits: {
+        fileSize: 15 * 1024 * 1024,
+      },
+    }),
+  )
+  uploadMedia(
+    @Param('id') id: string,
+    @UploadedFile() file: UploadedImageFile,
+    @Body() dto: UploadEntityMediaDto,
+  ) {
+    return this.service.adminUploadMedia(id, file, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
-import { ContentLevel, EntityStatus, MediaRole } from '@prisma/client';
+import { ContentLevel, EntityStatus, MediaOriginType, MediaRole } from '@prisma/client';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
+import { UploadEntityMediaDto } from './dto/upload-entity-media.dto';
 import { attachResolvedMedia, resolvedMediaUrl, type ResolvedMediaPayload } from './media.resolver';
 
 type GraphNodePayload = {
@@ -22,6 +23,13 @@ type GraphNodePayload = {
   };
 };
 
+type UploadedImageFile = {
+  filename: string;
+  originalname: string;
+  mimetype: string;
+  size: number;
+};
+
 type GraphEdgePayload = {
   id: string;
   source: string;
@@ -35,6 +43,7 @@ type GraphEdgePayload = {
 
 @Injectable()
 export class EntitiesService {
+  private readonly mediaPublicBaseUrl = process.env.MEDIA_PUBLIC_BASE_URL ?? 'http://localhost:3000';
 
   private readonly HOME_TYPES: EntityType[] = [
     'ARTWORK',
@@ -579,10 +588,67 @@ export class EntitiesService {
     const media = await this.prisma.media.create({
       data: {
         url: dto.url.trim(),
+        originType: MediaOriginType.EXTERNAL_URL,
         displayUrl: dto.displayUrl?.trim() || undefined,
         sourcePageUrl: dto.sourcePageUrl?.trim() || undefined,
         alt: dto.alt?.trim() || undefined,
         source: dto.source?.trim() || undefined,
+        photoBy: dto.photoBy?.trim() || undefined,
+        license: dto.license?.trim() || undefined,
+      },
+    });
+
+    return this.prisma.entityMedia.create({
+      data: {
+        entityId,
+        mediaId: media.id,
+        role: dto.role ?? MediaRole.CARD,
+        sortOrder: dto.sortOrder ?? 0,
+        isPrimary: dto.isPrimary ?? false,
+        displayMode: dto.displayMode ?? null,
+        focalX: dto.focalX ?? null,
+        focalY: dto.focalY ?? null,
+      },
+      include: {
+        media: true,
+      },
+    });
+  }
+
+  async adminUploadMedia(entityId: string, file: UploadedImageFile | undefined, dto: UploadEntityMediaDto) {
+
+    const entity = await this.prisma.entity.findUnique({
+      where: { id: entityId },
+      select: { id: true },
+    });
+
+    if (!entity) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    if (!file) {
+      throw new BadRequestException('No se recibió ningún archivo');
+    }
+
+    if (!file.mimetype?.startsWith('image/')) {
+      throw new BadRequestException('Solo se permiten imágenes');
+    }
+
+    const storageKey = `media/${file.filename}`;
+    const publicUrl = `${this.mediaPublicBaseUrl}/uploads/${storageKey}`;
+
+    const media = await this.prisma.media.create({
+      data: {
+        url: publicUrl,
+        canonicalUrl: publicUrl,
+        displayUrl: publicUrl,
+        originType: MediaOriginType.UPLOAD,
+        storageKey,
+        originalFilename: file.originalname,
+        fileSize: file.size,
+        mimeType: file.mimetype,
+        alt: dto.alt?.trim() || undefined,
+        source: dto.source?.trim() || 'Uploaded via admin',
         photoBy: dto.photoBy?.trim() || undefined,
         license: dto.license?.trim() || undefined,
       },
