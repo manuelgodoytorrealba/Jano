@@ -176,6 +176,7 @@
 
                   <div class="slot-card__meta">
                     @if (slot.state.item) {
+                      <div><strong>Origen:</strong> {{ mediaOriginLabel(slot.state.item.originType) }}</div>
                       <div><strong>Rol:</strong> {{ mediaRoleLabel(slot.state.item.role) }}</div>
                       <div><strong>Display:</strong> {{ slot.state.item.displayMode || 'Auto' }}</div>
                       <div><strong>Focal:</strong> {{ slot.state.item.focalX ?? '—' }} / {{ slot.state.item.focalY ?? '—' }}</div>
@@ -201,6 +202,9 @@
 
           <div class="media-create">
             <h4>Nueva media por URL</h4>
+            <div class="media-create__eyebrow">
+              <span class="media-pill">External URL</span>
+            </div>
 
             <div class="media-grid">
               <label class="field full">
@@ -284,6 +288,111 @@
             </div>
           </div>
 
+          <div class="media-create">
+            <h4>Subir archivo</h4>
+            <div class="media-create__eyebrow">
+              <span class="media-pill media-pill--upload">Uploaded file</span>
+            </div>
+
+            <div class="upload-dropzone"
+              (dragover)="onUploadDragOver($event)"
+              (drop)="onUploadDrop($event)">
+              <input #uploadInput type="file" accept="image/*" class="upload-input" (change)="onUploadFileSelected($event)" />
+
+              @if (uploadPreviewUrl) {
+                <div class="upload-preview">
+                  <img [src]="uploadPreviewUrl" [alt]="uploadMediaDraft.alt || 'Preview upload'" />
+                </div>
+              } @else {
+                <div class="upload-dropzone__placeholder">
+                  <strong>Arrastra una imagen aquí</strong>
+                  <span>o selecciónala desde tu PC</span>
+                </div>
+              }
+
+              <div class="upload-dropzone__actions">
+                <button class="btn ghost" type="button" (click)="uploadInput.click()">Seleccionar archivo</button>
+                @if (selectedUploadFile) {
+                  <button class="btn ghost" type="button" (click)="clearSelectedUpload()">Quitar</button>
+                }
+              </div>
+
+              @if (selectedUploadFile) {
+                <div class="upload-dropzone__meta">
+                  <span>{{ selectedUploadFile.name }}</span>
+                  <span>· {{ (selectedUploadFile.size / 1024 / 1024).toFixed(2) }} MB</span>
+                  <span>· {{ selectedUploadFile.type || 'image/*' }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="media-grid">
+              <label class="field full">
+                <span>Alt</span>
+                <input type="text" [(ngModel)]="uploadMediaDraft.alt" name="uploadMediaAlt" />
+              </label>
+
+              <label class="field">
+                <span>Rol visual</span>
+                <select [(ngModel)]="uploadMediaDraft.role" name="uploadMediaRole">
+                  @for (role of mediaRoles; track role) {
+                    <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Display mode</span>
+                <select [(ngModel)]="uploadMediaDraft.displayMode" name="uploadMediaDisplayMode">
+                  @for (mode of displayModes; track mode.value) {
+                    <option [value]="mode.value">{{ mode.label }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Sort order</span>
+                <input type="number" [(ngModel)]="uploadMediaDraft.sortOrder" name="uploadMediaSortOrder" />
+              </label>
+
+              <label class="field field--checkbox">
+                <span>Primary fallback</span>
+                <input type="checkbox" [(ngModel)]="uploadMediaDraft.isPrimary" name="uploadMediaIsPrimary" />
+              </label>
+
+              <label class="field">
+                <span>Focal X</span>
+                <input type="number" min="0" max="100" step="0.1" [(ngModel)]="uploadMediaDraft.focalX" name="uploadMediaFocalX" />
+              </label>
+
+              <label class="field">
+                <span>Focal Y</span>
+                <input type="number" min="0" max="100" step="0.1" [(ngModel)]="uploadMediaDraft.focalY" name="uploadMediaFocalY" />
+              </label>
+
+              <label class="field">
+                <span>Source</span>
+                <input type="text" [(ngModel)]="uploadMediaDraft.source" name="uploadMediaSource" />
+              </label>
+
+              <label class="field">
+                <span>Photo by</span>
+                <input type="text" [(ngModel)]="uploadMediaDraft.photoBy" name="uploadMediaPhotoBy" />
+              </label>
+
+              <label class="field full">
+                <span>License</span>
+                <input type="text" [(ngModel)]="uploadMediaDraft.license" name="uploadMediaLicense" />
+              </label>
+            </div>
+
+            <div class="relations-actions">
+              <button class="btn primary" type="button" [disabled]="uploadingMedia || !selectedUploadFile" (click)="uploadMediaFromFile()">
+                @if (uploadingMedia) { Subiendo... } @else { Subir archivo }
+              </button>
+            </div>
+          </div>
+
           <div class="current-relations">
             <h4>Media asociada</h4>
 
@@ -300,11 +409,15 @@
                         <div>
                           <div class="media-card__title">{{ mediaRoleLabel(link.role) }}</div>
                           <div class="media-card__meta">
+                            <span>{{ mediaOriginLabel(link.media.originType) }}</span>
                             @if (link.media.provider) { <span>{{ link.media.provider }}</span> }
                             @if (link.media.width || link.media.height) {
                               <span>· {{ link.media.width ?? '—' }}×{{ link.media.height ?? '—' }}</span>
                             }
                             <span>· Asset {{ link.media.id }}</span>
+                            @if (link.media.originalFilename) {
+                              <span>· {{ link.media.originalFilename }}</span>
+                            }
                           </div>
                         </div>
 
@@ -390,6 +503,9 @@
 
                       <div class="media-card__notes">
                         <span class="media-pill">Rol técnico: {{ link.role }}</span>
+                        <span class="media-pill" [class.media-pill--upload]="link.media.originType === 'UPLOAD'">
+                          {{ mediaOriginLabel(link.media.originType) }}
+                        </span>
                         @if (link.role === 'PRIMARY_LEGACY') {
                           <span class="media-pill media-pill--legacy">Compatibilidad legacy</span>
                         }

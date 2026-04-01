@@ -15,6 +15,7 @@ import {
   AdminEntitiesApi,
   AdminEntityMediaPayload,
   AdminEntityPayload,
+  AdminUploadEntityMediaPayload,
 } from '../../../core/api/admin-entities.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import {
@@ -43,6 +44,10 @@ type EditableAdminMediaLink = {
     provider?: string | null;
     width?: number | null;
     height?: number | null;
+    originType?: string | null;
+    storageKey?: string | null;
+    originalFilename?: string | null;
+    fileSize?: number | null;
   };
   saving?: boolean;
   removing?: boolean;
@@ -103,6 +108,9 @@ previewContainer?: ElementRef<HTMLElement>;
   mediaMessage = '';
   mediaError = '';
   addingMedia = false;
+  uploadingMedia = false;
+  uploadPreviewUrl: string | null = null;
+  selectedUploadFile: File | null = null;
 
   mediaRoles = [
     'PRIMARY_LEGACY',
@@ -131,6 +139,7 @@ previewContainer?: ElementRef<HTMLElement>;
   ];
 
   newMedia = this.createEmptyMediaDraft();
+  uploadMediaDraft = this.createEmptyMediaDraft();
 
   private linkSearch$ = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -559,6 +568,18 @@ previewContainer?: ElementRef<HTMLElement>;
     return this.mediaRoleLabels[role ?? ''] ?? role ?? '—';
   }
 
+  mediaOriginLabel(originType: string | null | undefined): string {
+    switch (originType) {
+      case 'UPLOAD':
+        return 'Uploaded file';
+      case 'INGESTED':
+        return 'Ingested asset';
+      case 'EXTERNAL_URL':
+      default:
+        return 'External URL';
+    }
+  }
+
   get mediaEntityContext() {
     return {
       type: this.form.type,
@@ -731,6 +752,54 @@ previewContainer?: ElementRef<HTMLElement>;
     });
   }
 
+  onUploadFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0] ?? null;
+    this.setUploadFile(file);
+  }
+
+  onUploadDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  onUploadDrop(event: DragEvent) {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0] ?? null;
+    this.setUploadFile(file);
+  }
+
+  clearSelectedUpload() {
+    this.setUploadFile(null);
+  }
+
+  uploadMediaFromFile() {
+    if (!this.entityId || this.uploadingMedia || !this.selectedUploadFile) {
+      return;
+    }
+
+    this.mediaError = '';
+    this.mediaMessage = '';
+
+    const payload = this.buildUploadPayload(this.uploadMediaDraft);
+    this.uploadingMedia = true;
+
+    this.adminApi.uploadMedia(this.entityId, this.selectedUploadFile, payload).subscribe({
+      next: (link) => {
+        this.upsertMediaLink(link);
+        this.uploadingMedia = false;
+        this.uploadMediaDraft = this.createEmptyMediaDraft();
+        this.clearSelectedUpload();
+        this.mediaMessage = 'Archivo subido y asociado correctamente.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.uploadingMedia = false;
+        this.mediaError = err?.error?.message ?? 'No se pudo subir el archivo.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   saveMedia(link: EditableAdminMediaLink) {
     if (!this.entityId || link.saving) {
       return;
@@ -839,6 +908,21 @@ previewContainer?: ElementRef<HTMLElement>;
     };
   }
 
+  private setUploadFile(file: File | null) {
+    if (this.uploadPreviewUrl) {
+      URL.revokeObjectURL(this.uploadPreviewUrl);
+      this.uploadPreviewUrl = null;
+    }
+
+    this.selectedUploadFile = file;
+
+    if (file && file.type.startsWith('image/')) {
+      this.uploadPreviewUrl = URL.createObjectURL(file);
+    }
+
+    this.cdr.markForCheck();
+  }
+
   private normalizeMediaLink(link: any): EditableAdminMediaLink {
     return {
       id: link.id,
@@ -860,6 +944,10 @@ previewContainer?: ElementRef<HTMLElement>;
         provider: link.media?.provider ?? null,
         width: link.media?.width ?? null,
         height: link.media?.height ?? null,
+        originType: link.media?.originType ?? 'EXTERNAL_URL',
+        storageKey: link.media?.storageKey ?? null,
+        originalFilename: link.media?.originalFilename ?? null,
+        fileSize: link.media?.fileSize ?? null,
       },
       saving: false,
       removing: false,
@@ -904,6 +992,21 @@ previewContainer?: ElementRef<HTMLElement>;
       url,
       displayUrl: String(source.displayUrl ?? '').trim() || undefined,
       sourcePageUrl: String(source.sourcePageUrl ?? '').trim() || undefined,
+      alt: String(source.alt ?? '').trim() || undefined,
+      source: String(source.source ?? '').trim() || undefined,
+      photoBy: String(source.photoBy ?? '').trim() || undefined,
+      license: String(source.license ?? '').trim() || undefined,
+      role: source.role,
+      sortOrder: Number(source.sortOrder ?? 0),
+      isPrimary: !!source.isPrimary,
+      displayMode: source.displayMode || null,
+      focalX: this.toNullableNumber(source.focalX),
+      focalY: this.toNullableNumber(source.focalY),
+    };
+  }
+
+  private buildUploadPayload(source: any): AdminUploadEntityMediaPayload {
+    return {
       alt: String(source.alt ?? '').trim() || undefined,
       source: String(source.source ?? '').trim() || undefined,
       photoBy: String(source.photoBy ?? '').trim() || undefined,
@@ -1026,6 +1129,10 @@ previewContainer?: ElementRef<HTMLElement>;
 }
 
   ngOnDestroy() {
+    if (this.uploadPreviewUrl) {
+      URL.revokeObjectURL(this.uploadPreviewUrl);
+    }
+
     this.destroy$.next();
     this.destroy$.complete();
   }

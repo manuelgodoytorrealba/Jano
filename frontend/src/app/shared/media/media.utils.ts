@@ -1,9 +1,13 @@
 export type MediaLike = {
   id?: string | null;
   url?: string | null;
+  originType?: string | null;
   canonicalUrl?: string | null;
   displayUrl?: string | null;
   sourcePageUrl?: string | null;
+  storageKey?: string | null;
+  originalFilename?: string | null;
+  fileSize?: number | null;
   mimeType?: string | null;
   isVector?: boolean | null;
   width?: number | null;

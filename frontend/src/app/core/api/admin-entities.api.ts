@@ -40,6 +40,19 @@ export type AdminEntityMediaPayload = {
   focalY?: number | null;
 };
 
+export type AdminUploadEntityMediaPayload = {
+  alt?: string;
+  source?: string;
+  photoBy?: string;
+  license?: string;
+  role?: AdminMediaRole;
+  sortOrder?: number;
+  isPrimary?: boolean;
+  displayMode?: AdminMediaDisplayMode | null;
+  focalX?: number | null;
+  focalY?: number | null;
+};
+
 @Injectable({ providedIn: 'root' })
 export class AdminEntitiesApi {
   private http = inject(HttpClient);
@@ -73,6 +86,21 @@ export class AdminEntitiesApi {
 
   createMedia(entityId: string, data: AdminEntityMediaPayload) {
     return this.http.post<any>(`${this.baseUrl}/${entityId}/media`, data);
+  }
+
+  uploadMedia(entityId: string, file: File, data: AdminUploadEntityMediaPayload) {
+    const formData = new FormData();
+    formData.set('file', file);
+
+    for (const [key, value] of Object.entries(data)) {
+      if (value === undefined || value === null || value === '') {
+        continue;
+      }
+
+      formData.set(key, String(value));
+    }
+
+    return this.http.post<any>(`${this.baseUrl}/${entityId}/media/upload`, formData);
   }
 
   updateMedia(entityId: string, linkId: string, data: Partial<AdminEntityMediaPayload>) {
