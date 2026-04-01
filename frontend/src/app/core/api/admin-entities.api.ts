@@ -13,6 +13,33 @@ export type AdminEntityPayload = {
   endYear?: number | null;
 };
 
+export type AdminMediaRole =
+  | 'PRIMARY_LEGACY'
+  | 'HERO'
+  | 'CARD'
+  | 'DETAIL'
+  | 'THUMBNAIL'
+  | 'EXPLORER_3D'
+  | 'GALLERY';
+
+export type AdminMediaDisplayMode = 'COVER' | 'CONTAIN';
+
+export type AdminEntityMediaPayload = {
+  url: string;
+  displayUrl?: string;
+  sourcePageUrl?: string;
+  alt?: string;
+  source?: string;
+  photoBy?: string;
+  license?: string;
+  role?: AdminMediaRole;
+  sortOrder?: number;
+  isPrimary?: boolean;
+  displayMode?: AdminMediaDisplayMode | null;
+  focalX?: number | null;
+  focalY?: number | null;
+};
+
 @Injectable({ providedIn: 'root' })
 export class AdminEntitiesApi {
   private http = inject(HttpClient);
@@ -42,6 +69,18 @@ export class AdminEntitiesApi {
 
   update(id: string, data: Partial<AdminEntityPayload>) {
     return this.http.patch<any>(`${this.baseUrl}/${id}`, data);
+  }
+
+  createMedia(entityId: string, data: AdminEntityMediaPayload) {
+    return this.http.post<any>(`${this.baseUrl}/${entityId}/media`, data);
+  }
+
+  updateMedia(entityId: string, linkId: string, data: Partial<AdminEntityMediaPayload>) {
+    return this.http.patch<any>(`${this.baseUrl}/${entityId}/media/${linkId}`, data);
+  }
+
+  deleteMedia(entityId: string, linkId: string) {
+    return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}`);
   }
 
   remove(id: string) {
