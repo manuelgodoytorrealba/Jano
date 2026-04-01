@@ -143,6 +143,14 @@
               </div>
             </div>
 
+            @if (mediaWarnings.length) {
+              <div class="media-warning-list">
+                @for (warning of mediaWarnings; track warning) {
+                  <div class="media-warning">{{ warning }}</div>
+                }
+              </div>
+            }
+
             <div class="slot-grid">
               @for (slot of visualSlots; track slot.key) {
                 <article class="slot-card">
@@ -388,6 +396,15 @@
                         @if (link.isPrimary) {
                           <span class="media-pill media-pill--primary">Fallback primary activo</span>
                         }
+                      </div>
+
+                      <div class="media-quick-actions">
+                        <button class="btn mini" type="button" (click)="assignRole(link, 'HERO')">Usar como Hero</button>
+                        <button class="btn mini" type="button" (click)="assignRole(link, 'CARD')">Usar como Card</button>
+                        <button class="btn mini" type="button" (click)="assignRole(link, 'DETAIL')">Usar como Detail</button>
+                        <button class="btn mini" type="button" (click)="assignRole(link, 'THUMBNAIL')">Thumbnail</button>
+                        <button class="btn mini" type="button" (click)="assignRole(link, 'EXPLORER_3D')">Explorer 3D</button>
+                        <button class="btn mini" type="button" (click)="assignRole(link, 'GALLERY')">Gallery</button>
                       </div>
 
                       <div class="relations-actions">

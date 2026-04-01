@@ -352,6 +352,21 @@
       min-height: 220px;
     }
 
+    .media-warning-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .media-warning {
+      border: 1px solid rgba(191, 128, 0, .18);
+      background: rgba(191, 128, 0, .07);
+      color: #7a5600;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
     .field--checkbox {
       align-content: end;
     }
@@ -417,6 +432,12 @@
       gap: 8px;
     }
 
+    .media-quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
     .media-pill {
       display: inline-flex;
       align-items: center;
@@ -438,6 +459,13 @@
       background: rgba(0, 128, 0, .08);
       border-color: rgba(0, 128, 0, .16);
       color: #126b12;
+    }
+
+    .btn.mini {
+      height: 34px;
+      padding: 0 10px;
+      font-size: 12px;
+      border-radius: 10px;
     }
 
 

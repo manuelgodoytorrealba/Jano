@@ -658,6 +658,48 @@ previewContainer?: ElementRef<HTMLElement>;
     ];
   }
 
+  get mediaWarnings(): string[] {
+    const warnings: string[] = [];
+    const links = this.mediaLinks;
+
+    if (!links.length) {
+      warnings.push('Esta entity no tiene media asociada todavía.');
+      return warnings;
+    }
+
+    const primaryCount = links.filter((link) => link.isPrimary).length;
+    if (primaryCount > 1) {
+      warnings.push(`Hay ${primaryCount} medias marcadas como primary fallback. Conviene dejar solo una.`);
+    }
+
+    const hasCard = links.some((link) => link.role === 'CARD');
+    const hasDetail = links.some((link) => link.role === 'DETAIL');
+    const hasOnlyLegacy = links.every((link) => link.role === 'PRIMARY_LEGACY');
+    const galleryLinks = links.filter((link) => link.role === 'GALLERY');
+
+    if (!hasCard) {
+      warnings.push('No hay una media CARD explícita. El listado dependerá de fallback.');
+    }
+
+    if (!hasDetail) {
+      warnings.push('No hay una media DETAIL explícita. El detalle principal dependerá de fallback.');
+    }
+
+    if (hasOnlyLegacy) {
+      warnings.push('La entity depende solo de PRIMARY_LEGACY. Conviene asignar roles visuales explícitos.');
+    }
+
+    if (galleryLinks.length > 1) {
+      const sortOrders = galleryLinks.map((link) => Number(link.sortOrder ?? 0));
+      const uniqueOrders = new Set(sortOrders);
+      if (uniqueOrders.size !== sortOrders.length) {
+        warnings.push('Hay varias medias GALLERY con el mismo sortOrder. El orden puede ser ambiguo.');
+      }
+    }
+
+    return warnings;
+  }
+
   addMedia() {
     if (!this.entityId || this.addingMedia) {
       return;
@@ -748,6 +790,15 @@ previewContainer?: ElementRef<HTMLElement>;
         this.cdr.markForCheck();
       },
     });
+  }
+
+  assignRole(link: EditableAdminMediaLink, role: string) {
+    if (link.role === role) {
+      return;
+    }
+
+    link.role = role;
+    this.saveMedia(link);
   }
 
   slotStatusLabel(slot: VisualSlot): string {
