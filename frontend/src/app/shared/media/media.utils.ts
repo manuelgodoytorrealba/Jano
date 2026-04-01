@@ -1,6 +1,9 @@
-type MediaLike = {
+export type MediaLike = {
+  id?: string | null;
   url?: string | null;
+  canonicalUrl?: string | null;
   displayUrl?: string | null;
+  sourcePageUrl?: string | null;
   mimeType?: string | null;
   isVector?: boolean | null;
   width?: number | null;
@@ -11,21 +14,81 @@ type MediaLike = {
   source?: string | null;
   photoBy?: string | null;
   license?: string | null;
+  displayMode?: 'COVER' | 'CONTAIN' | string | null;
+  focalX?: number | null;
+  focalY?: number | null;
 };
 
-type EntityWithMediaLinks = {
+export type ResolvedMediaItem = MediaLike & {
+  role?: string | null;
+  sortOrder?: number | null;
+  isPrimary?: boolean | null;
+  displayMode?: 'COVER' | 'CONTAIN' | string | null;
+  focalX?: number | null;
+  focalY?: number | null;
+};
+
+export type ResolvedMediaPayload = {
+  hero?: ResolvedMediaItem | null;
+  card?: ResolvedMediaItem | null;
+  detail?: ResolvedMediaItem | null;
+  thumbnail?: ResolvedMediaItem | null;
+  explorer3d?: ResolvedMediaItem | null;
+  gallery?: ResolvedMediaItem[] | null;
+  primary?: ResolvedMediaItem | null;
+};
+
+export type MediaLinkLike = {
+  id?: string | null;
+  role?: string | null;
+  sortOrder?: number | null;
+  isPrimary?: boolean | null;
+  displayMode?: 'COVER' | 'CONTAIN' | string | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  media?: MediaLike | null;
+};
+
+export type MediaUsage =
+  | 'hero'
+  | 'card'
+  | 'detail'
+  | 'thumbnail'
+  | 'explorer3d'
+  | 'gallery'
+  | 'primary';
+
+export type EntityWithMediaLinks = {
   title?: string | null;
   summary?: string | null;
   startYear?: number | null;
   endYear?: number | null;
   type?: string | null;
-  mediaLinks?: Array<{
-    role?: string | null;
-    media?: MediaLike | null;
-  }> | null;
+  resolvedMedia?: ResolvedMediaPayload | null;
+  mediaLinks?: MediaLinkLike[] | null;
+};
+
+type NormalizedMediaLink = {
+  id: string | null;
+  role: string | null;
+  sortOrder: number;
+  isPrimary: boolean;
+  displayMode: 'COVER' | 'CONTAIN' | null;
+  focalX: number | null;
+  focalY: number | null;
+  media: MediaLike;
 };
 
 const ABSTRACT_ENTITY_TYPES = new Set(['CONCEPT', 'MOVEMENT', 'PERIOD']);
+
+const ROLE_ORDER: Record<Exclude<MediaUsage, 'gallery'>, string[]> = {
+  hero: ['HERO', 'DETAIL', 'CARD', 'THUMBNAIL', 'EXPLORER_3D'],
+  card: ['CARD', 'THUMBNAIL', 'HERO', 'DETAIL', 'EXPLORER_3D'],
+  detail: ['DETAIL', 'HERO', 'CARD'],
+  thumbnail: ['THUMBNAIL', 'CARD'],
+  explorer3d: ['EXPLORER_3D', 'CARD', 'THUMBNAIL', 'DETAIL', 'HERO'],
+  primary: ['PRIMARY_LEGACY', 'HERO', 'CARD', 'DETAIL', 'THUMBNAIL', 'EXPLORER_3D'],
+};
 
 export function mediaDisplayUrl(media: MediaLike | null | undefined): string | null {
   const displayUrl = media?.displayUrl ?? null;
@@ -58,30 +121,247 @@ export function isRenderableRasterMedia(media: MediaLike | null | undefined): bo
   return !mime || mime.startsWith('image/');
 }
 
-export function selectPrimaryVisualMedia(entity: EntityWithMediaLinks | null | undefined): MediaLike | null {
-  const mediaEntries = (entity?.mediaLinks ?? [])
-    .map((link) => link?.media ?? null)
-    .filter((media): media is MediaLike => !!media);
+export function isAbstractEntityType(entityOrType: EntityWithMediaLinks | string | null | undefined): boolean {
+  const type = typeof entityOrType === 'string'
+    ? entityOrType
+    : entityOrType?.type;
 
-  const raster = mediaEntries.filter(isRenderableRasterMedia);
-  if (!raster.length) {
+  return ABSTRACT_ENTITY_TYPES.has((type ?? '').toUpperCase());
+}
+
+export function selectPrimaryVisualMedia(entity: EntityWithMediaLinks | null | undefined): ResolvedMediaItem | MediaLike | null {
+  const resolvedPrimary = entity?.resolvedMedia?.primary
+    ?? entity?.resolvedMedia?.detail
+    ?? entity?.resolvedMedia?.card
+    ?? entity?.resolvedMedia?.hero
+    ?? entity?.resolvedMedia?.thumbnail
+    ?? entity?.resolvedMedia?.explorer3d
+    ?? null;
+
+  if (resolvedPrimary && isRenderableRasterMedia(resolvedPrimary)) {
+    return resolvedPrimary;
+  }
+
+  const legacy = selectLegacyMediaLink(entity, 'primary');
+  return legacy ? toResolvedMediaItem(legacy) : null;
+}
+
+export function resolveEntityMediaItem(
+  entity: EntityWithMediaLinks | null | undefined,
+  usage: Exclude<MediaUsage, 'gallery'> = 'card',
+): ResolvedMediaItem | null {
+  const resolved = selectResolvedMediaItem(entity, usage);
+  if (resolved) {
+    return resolved;
+  }
+
+  if (isAbstractEntityType(entity)) {
     return null;
   }
 
-  const byQuality = [...raster].sort((a, b) => compareMediaQuality(a, b, entity?.type ?? null));
-  return byQuality[0] ?? null;
+  const legacy = selectLegacyMediaLink(entity, usage);
+  return legacy ? toResolvedMediaItem(legacy) : null;
 }
 
-export function entityVisualUrl(entity: EntityWithMediaLinks | null | undefined): string | null {
+export function resolveEntityMediaGallery(
+  entity: EntityWithMediaLinks | null | undefined,
+): ResolvedMediaItem[] {
+  const resolved = entity?.resolvedMedia?.gallery?.filter(isRenderableRasterMedia) ?? [];
+  if (resolved.length) {
+    return resolved;
+  }
+
+  const normalized = normalizeMediaLinks(entity);
+  const gallery = normalized
+    .filter((link) => link.role === 'GALLERY')
+    .map(toResolvedMediaItem);
+
+  if (gallery.length) {
+    return gallery;
+  }
+
+  const detail = resolveEntityMediaItem(entity, 'detail');
+  return detail ? [detail] : [];
+}
+
+export function entityVisualUrl(
+  entity: EntityWithMediaLinks | null | undefined,
+  usage: Exclude<MediaUsage, 'gallery'> = 'card',
+): string | null {
   if (!entity) {
     return null;
   }
 
-  if (ABSTRACT_ENTITY_TYPES.has((entity.type ?? '').toUpperCase())) {
+  const resolved = selectResolvedMediaItem(entity, usage);
+  if (resolved) {
+    return mediaDisplayUrl(resolved);
+  }
+
+  if (isAbstractEntityType(entity)) {
     return buildAbstractEntityPoster(entity);
   }
 
-  return mediaDisplayUrl(selectPrimaryVisualMedia(entity));
+  const legacy = selectLegacyMediaLink(entity, usage);
+  return legacy ? mediaDisplayUrl(legacy.media) : null;
+}
+
+export function mediaObjectFit(
+  media: Pick<ResolvedMediaItem, 'displayMode'> | MediaLike | null | undefined,
+  usage: MediaUsage = 'card',
+): 'cover' | 'contain' {
+  const displayMode = normalizeDisplayMode(media?.displayMode);
+  if (displayMode === 'CONTAIN') {
+    return 'contain';
+  }
+
+  if (displayMode === 'COVER') {
+    return 'cover';
+  }
+
+  switch (usage) {
+    case 'detail':
+    case 'gallery':
+      return 'contain';
+    default:
+      return 'cover';
+  }
+}
+
+export function mediaObjectPosition(
+  media: Pick<ResolvedMediaItem, 'focalX' | 'focalY'> | MediaLike | null | undefined,
+): string {
+  const x = normalizeFocal(media?.focalX);
+  const y = normalizeFocal(media?.focalY);
+
+  return `${x}% ${y}%`;
+}
+
+function selectResolvedMediaItem(
+  entity: EntityWithMediaLinks | null | undefined,
+  usage: Exclude<MediaUsage, 'gallery'>,
+): ResolvedMediaItem | null {
+  const resolved = entity?.resolvedMedia ?? null;
+
+  if (!resolved) {
+    return null;
+  }
+
+  const direct = resolved[usage];
+  if (direct && isRenderableRasterMedia(direct)) {
+    return direct;
+  }
+
+  if (usage !== 'primary' && resolved.primary && isRenderableRasterMedia(resolved.primary)) {
+    return resolved.primary;
+  }
+
+  return null;
+}
+
+function selectLegacyMediaLink(
+  entity: EntityWithMediaLinks | null | undefined,
+  usage: Exclude<MediaUsage, 'gallery'>,
+): NormalizedMediaLink | null {
+  const links = normalizeMediaLinks(entity);
+
+  if (!links.length) {
+    return null;
+  }
+
+  for (const role of ROLE_ORDER[usage]) {
+    const candidate = firstByRole(links, role);
+    if (candidate) {
+      return candidate;
+    }
+  }
+
+  return selectLegacyPrimary(links) ?? selectBestAvailable(links, entity?.type ?? null);
+}
+
+function normalizeMediaLinks(entity: EntityWithMediaLinks | null | undefined): NormalizedMediaLink[] {
+  return (entity?.mediaLinks ?? [])
+    .filter((link): link is MediaLinkLike => !!link?.media)
+    .map((link) => ({
+      id: link.id ?? null,
+      role: link.role ?? null,
+      sortOrder: link.sortOrder ?? 0,
+      isPrimary: !!link.isPrimary,
+      displayMode: normalizeDisplayMode(link.displayMode),
+      focalX: link.focalX ?? null,
+      focalY: link.focalY ?? null,
+      media: link.media!,
+    }))
+    .filter((link) => isRenderableRasterMedia(link.media))
+    .sort(compareNormalizedLinks);
+}
+
+function normalizeDisplayMode(value: string | null | undefined): 'COVER' | 'CONTAIN' | null {
+  if (!value) {
+    return null;
+  }
+
+  const normalized = value.toUpperCase();
+  return normalized === 'COVER' || normalized === 'CONTAIN'
+    ? normalized
+    : null;
+}
+
+function normalizeFocal(value: number | null | undefined): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return 50;
+  }
+
+  const scaled = value <= 1 && value >= 0 ? value * 100 : value;
+  return Math.min(100, Math.max(0, scaled));
+}
+
+function compareNormalizedLinks(a: NormalizedMediaLink, b: NormalizedMediaLink): number {
+  if (a.sortOrder !== b.sortOrder) {
+    return a.sortOrder - b.sortOrder;
+  }
+
+  if (a.isPrimary !== b.isPrimary) {
+    return a.isPrimary ? -1 : 1;
+  }
+
+  const roleA = a.role ?? '';
+  const roleB = b.role ?? '';
+
+  if (roleA !== roleB) {
+    return roleA.localeCompare(roleB, 'en');
+  }
+
+  return (a.id ?? '').localeCompare(b.id ?? '', 'en');
+}
+
+function firstByRole(links: NormalizedMediaLink[], role: string): NormalizedMediaLink | null {
+  return links.find((link) => link.role === role) ?? null;
+}
+
+function selectLegacyPrimary(links: NormalizedMediaLink[]): NormalizedMediaLink | null {
+  return (
+    links.find((link) => link.role === 'PRIMARY_LEGACY' && link.isPrimary)
+    ?? links.find((link) => link.role === 'PRIMARY_LEGACY')
+    ?? links.find((link) => link.isPrimary)
+    ?? null
+  );
+}
+
+function selectBestAvailable(links: NormalizedMediaLink[], entityType: string | null): NormalizedMediaLink | null {
+  const byQuality = [...links].sort((a, b) => compareMediaQuality(a.media, b.media, entityType));
+  return byQuality[0] ?? null;
+}
+
+function toResolvedMediaItem(link: NormalizedMediaLink): ResolvedMediaItem {
+  return {
+    ...link.media,
+    role: link.role,
+    sortOrder: link.sortOrder,
+    isPrimary: link.isPrimary,
+    displayMode: link.displayMode,
+    focalX: link.focalX,
+    focalY: link.focalY,
+  };
 }
 
 function compareMediaQuality(a: MediaLike, b: MediaLike, entityType: string | null): number {
