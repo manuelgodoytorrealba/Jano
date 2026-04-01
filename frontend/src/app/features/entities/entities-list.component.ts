@@ -16,7 +16,7 @@ import {
 } from 'rxjs';
 
 import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
-import { entityVisualUrl } from '../../shared/media/media.utils';
+import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 type Entity = any;
 
@@ -29,7 +29,7 @@ type ViewMode = 'explore' | 'list';
   standalone: true,
   selector: 'app-entities-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, EntitiesExplorer3dComponent],
+  imports: [AsyncPipe, EntitiesExplorer3dComponent, JanoMediaComponent],
   templateUrl: './entities-list.component.html',
   styleUrls: ['./entities-list.component.scss'],
 })
@@ -177,10 +177,6 @@ export class EntitiesListComponent {
       scale(${slot.s})
     `,
     };
-  }
-
-  thumb(e: Entity): string | null {
-    return entityVisualUrl(e);
   }
 
   cleanWiki(text: string): string {

@@ -165,11 +165,7 @@
         @for (e of vm.items; track e.slug) {
         <article class="entity-card ds-card" (click)="go(e.slug)">
           <div class="entity-card__thumb">
-            @if (thumb(e)) {
-            <img [src]="thumb(e)!" [alt]="e.title" loading="lazy" />
-            } @else {
-            <div class="entity-card__placeholder"></div>
-            }
+            <app-jano-media [entity]="e" usage="card" [alt]="e.title"></app-jano-media>
           </div>
 
           <div class="entity-card__body">

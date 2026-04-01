@@ -8,13 +8,14 @@ import { CollectionsApi } from '../../core/api/collections.api';
 import { AuthService } from '../../core/auth/auth.service';
 import { GraphComponent } from '../graph/graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
+import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { entityVisualUrl, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
 
 @Component({
   standalone: true,
   selector: 'app-entity',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, RouterLink, GraphComponent, RichTextComponent],
+  imports: [AsyncPipe, RouterLink, GraphComponent, RichTextComponent, JanoMediaComponent],
   templateUrl: './entity.component.html',
   styleUrls: ['./entity.component.scss'],
 })
@@ -128,10 +129,6 @@ export class EntityComponent {
         this.collectionMessage.set(err?.error?.message ?? 'No se pudo añadir a la colección.');
       },
     });
-  }
-
-  relationMedia(entity: any) {
-    return selectPrimaryVisualMedia(entity);
   }
 
   outgoingByType(entity: any, type: string) {

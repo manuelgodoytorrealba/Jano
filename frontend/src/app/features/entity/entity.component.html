@@ -183,11 +183,8 @@
         <div class="relations-group">
           <h3 class="title-section entity-subtitle">Autor</h3>
           <a class="entity-link-card entity-glass-card" [routerLink]="['/entity', author.slug]">
-            @if (relationMedia(author)?.url) {
-            <img class="entity-link-card__image"
-              [src]="relationMedia(author)?.displayUrl || relationMedia(author)?.url || null"
-              [alt]="relationMedia(author)!.alt || author.title" loading="lazy" />
-            }
+            <app-jano-media class="entity-link-card__image" [entity]="author" usage="thumbnail"
+              [alt]="author.title"></app-jano-media>
             <div class="entity-link-card__body">
               <div class="entity-link-card__title">{{ author.title }}</div>
               <div class="entity-link-card__meta">{{ author.type }}</div>
@@ -249,10 +246,8 @@
             <div class="entity-mini-grid">
               @for (place of allPlaces(entity); track place.id) {
               <a class="entity-link-card entity-glass-card" [routerLink]="['/entity', place.slug]">
-                @if (relationMedia(place)?.url) {
-                <img class="entity-link-card__image" [src]="relationMedia(place)!.url"
-                  [alt]="relationMedia(place)!.alt || place.title" loading="lazy" />
-                }
+                <app-jano-media class="entity-link-card__image" [entity]="place" usage="thumbnail"
+                  [alt]="place.title"></app-jano-media>
                 <div class="entity-link-card__body">
                   <div class="entity-link-card__title">{{ place.title }}</div>
                   <div class="entity-link-card__meta">{{ place.type }}</div>
@@ -272,10 +267,8 @@
             <div class="entity-mini-grid entity-mini-grid--artworks">
               @for (artwork of allRelatedArtworks(entity); track artwork.id) {
               <a class="entity-art-card entity-glass-card" [routerLink]="['/entity', artwork.slug]">
-                @if (relationMedia(artwork)?.url) {
-                <img class="entity-art-card__image" [src]="relationMedia(artwork)!.url"
-                  [alt]="relationMedia(artwork)!.alt || artwork.title" loading="lazy" />
-                }
+                <app-jano-media class="entity-art-card__image" [entity]="artwork" usage="card"
+                  [alt]="artwork.title"></app-jano-media>
                 <div class="entity-art-card__body">
                   <div class="entity-art-card__title">{{ artwork.title }}</div>
                   <div class="entity-art-card__meta">
