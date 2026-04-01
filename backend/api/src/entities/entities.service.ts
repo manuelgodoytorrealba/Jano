@@ -260,9 +260,12 @@ export class EntitiesService {
     const q = (query.q ?? '').trim();
     const status = (query.status ?? '').trim();
     const contentLevel = (query.contentLevel ?? '').trim();
+    const movement = (query.movement ?? '').trim().toLowerCase();
+    const period = (query.period ?? '').trim().toLowerCase();
     const sort = (query.sort ?? 'recent').trim();
 
     const where: any = {};
+    const and: any[] = [];
 
     if (query.type) where.type = query.type;
 
@@ -277,11 +280,45 @@ export class EntitiesService {
     const qValid = q && q !== 'undefined' && q !== 'null';
 
     if (qValid) {
-      where.OR = [
+      and.push({
+        OR: [
         { title: { contains: q, mode: 'insensitive' } },
         { summary: { contains: q, mode: 'insensitive' } },
         { content: { contains: q, mode: 'insensitive' } },
-      ];
+        ],
+      });
+    }
+
+    if (movement && movement !== 'undefined' && movement !== 'null') {
+      and.push({
+        outgoing: {
+          some: {
+            type: 'BELONGS_TO_MOVEMENT',
+            to: {
+              type: 'MOVEMENT',
+              slug: movement,
+            },
+          },
+        },
+      });
+    }
+
+    if (period && period !== 'undefined' && period !== 'null') {
+      and.push({
+        outgoing: {
+          some: {
+            type: 'BELONGS_TO_PERIOD',
+            to: {
+              type: 'PERIOD',
+              slug: period,
+            },
+          },
+        },
+      });
+    }
+
+    if (and.length) {
+      where.AND = and;
     }
 
     const total = await this.prisma.entity.count({ where });

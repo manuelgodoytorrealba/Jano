@@ -37,4 +37,12 @@ sort?: 'recent' | 'title' | 'relevance';
   @IsOptional()
   @IsString()
   contentLevel?: string;
+
+  @IsOptional()
+  @IsString()
+  movement?: string;
+
+  @IsOptional()
+  @IsString()
+  period?: string;
 }
