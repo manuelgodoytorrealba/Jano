@@ -30,6 +30,14 @@ export class UploadEntityMediaDto {
   license?: string;
 
   @IsOptional()
+  @IsNumber()
+  width?: number;
+
+  @IsOptional()
+  @IsNumber()
+  height?: number;
+
+  @IsOptional()
   @IsEnum(MediaRole)
   role?: MediaRole;
 

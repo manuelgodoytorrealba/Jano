@@ -45,6 +45,8 @@ export type AdminUploadEntityMediaPayload = {
   source?: string;
   photoBy?: string;
   license?: string;
+  width?: number;
+  height?: number;
   role?: AdminMediaRole;
   sortOrder?: number;
   isPrimary?: boolean;

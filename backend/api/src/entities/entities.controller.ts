@@ -35,6 +35,14 @@ type UploadedImageFile = {
   size: number;
 };
 
+const ALLOWED_UPLOAD_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+]);
+
 @Controller('entities')
 export class EntitiesController {
   constructor(private service: EntitiesService) { }
@@ -104,8 +112,11 @@ export class EntitiesController {
         },
       }),
       fileFilter: (_req, file, callback) => {
-        if (!file.mimetype?.startsWith('image/')) {
-          callback(new BadRequestException('Solo se permiten imágenes'), false);
+        if (!ALLOWED_UPLOAD_MIME_TYPES.has(file.mimetype ?? '')) {
+          callback(
+            new BadRequestException('Formato no permitido. Usa JPEG, PNG, WEBP, GIF o AVIF.'),
+            false,
+          );
           return;
         }
 

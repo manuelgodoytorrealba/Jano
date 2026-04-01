@@ -43,7 +43,7 @@ type GraphEdgePayload = {
 
 @Injectable()
 export class EntitiesService {
-  private readonly mediaPublicBaseUrl = process.env.MEDIA_PUBLIC_BASE_URL ?? 'http://localhost:3000';
+  private readonly mediaPublicBaseUrl = (process.env.MEDIA_PUBLIC_BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
 
   private readonly HOME_TYPES: EntityType[] = [
     'ARTWORK',
@@ -631,7 +631,7 @@ export class EntitiesService {
     }
 
     if (!file.mimetype?.startsWith('image/')) {
-      throw new BadRequestException('Solo se permiten imágenes');
+      throw new BadRequestException('Solo se permiten imágenes raster válidas');
     }
 
     const storageKey = `media/${file.filename}`;
@@ -647,6 +647,8 @@ export class EntitiesService {
         originalFilename: file.originalname,
         fileSize: file.size,
         mimeType: file.mimetype,
+        width: dto.width ?? undefined,
+        height: dto.height ?? undefined,
         alt: dto.alt?.trim() || undefined,
         source: dto.source?.trim() || 'Uploaded via admin',
         photoBy: dto.photoBy?.trim() || undefined,
