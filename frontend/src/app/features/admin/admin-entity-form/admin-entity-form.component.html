@@ -124,6 +124,242 @@
 </label>
       </div>
 
+      <section class="media-box">
+        <div class="relations-head">
+          <h3>Media Library</h3>
+          <p class="muted">Gestiona URLs externas y su asignación visual para esta entity.</p>
+        </div>
+
+        @if (!isEdit) {
+          <div class="preview-empty">
+            Guarda primero la entity para poder asociarle media.
+          </div>
+        } @else {
+          @if (mediaError) {
+            <div class="error-box">{{ mediaError }}</div>
+          }
+
+          @if (mediaMessage) {
+            <div class="success-box">{{ mediaMessage }}</div>
+          }
+
+          <div class="media-create">
+            <h4>Nueva media por URL</h4>
+
+            <div class="media-grid">
+              <label class="field full">
+                <span>URL externa</span>
+                <input type="url" [(ngModel)]="newMedia.url" name="newMediaUrl" placeholder="https://..." />
+              </label>
+
+              <label class="field full">
+                <span>Display URL</span>
+                <input type="url" [(ngModel)]="newMedia.displayUrl" name="newMediaDisplayUrl" placeholder="Opcional" />
+              </label>
+
+              <label class="field full">
+                <span>Source page URL</span>
+                <input type="url" [(ngModel)]="newMedia.sourcePageUrl" name="newMediaSourcePageUrl" placeholder="Opcional" />
+              </label>
+
+              <label class="field full">
+                <span>Alt</span>
+                <input type="text" [(ngModel)]="newMedia.alt" name="newMediaAlt" />
+              </label>
+
+              <label class="field">
+                <span>Rol visual</span>
+                <select [(ngModel)]="newMedia.role" name="newMediaRole">
+                  @for (role of mediaRoles; track role) {
+                    <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Display mode</span>
+                <select [(ngModel)]="newMedia.displayMode" name="newMediaDisplayMode">
+                  @for (mode of displayModes; track mode.value) {
+                    <option [value]="mode.value">{{ mode.label }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Sort order</span>
+                <input type="number" [(ngModel)]="newMedia.sortOrder" name="newMediaSortOrder" />
+              </label>
+
+              <label class="field field--checkbox">
+                <span>Primary fallback</span>
+                <input type="checkbox" [(ngModel)]="newMedia.isPrimary" name="newMediaIsPrimary" />
+              </label>
+
+              <label class="field">
+                <span>Focal X</span>
+                <input type="number" min="0" max="100" step="0.1" [(ngModel)]="newMedia.focalX" name="newMediaFocalX" />
+              </label>
+
+              <label class="field">
+                <span>Focal Y</span>
+                <input type="number" min="0" max="100" step="0.1" [(ngModel)]="newMedia.focalY" name="newMediaFocalY" />
+              </label>
+
+              <label class="field">
+                <span>Source</span>
+                <input type="text" [(ngModel)]="newMedia.source" name="newMediaSource" />
+              </label>
+
+              <label class="field">
+                <span>Photo by</span>
+                <input type="text" [(ngModel)]="newMedia.photoBy" name="newMediaPhotoBy" />
+              </label>
+
+              <label class="field full">
+                <span>License</span>
+                <input type="text" [(ngModel)]="newMedia.license" name="newMediaLicense" />
+              </label>
+            </div>
+
+            <div class="relations-actions">
+              <button class="btn primary" type="button" [disabled]="addingMedia" (click)="addMedia()">
+                @if (addingMedia) { Añadiendo... } @else { Añadir media }
+              </button>
+            </div>
+          </div>
+
+          <div class="current-relations">
+            <h4>Media asociada</h4>
+
+            @if (mediaLinks.length) {
+              <div class="media-list">
+                @for (link of mediaLinks; track link.id) {
+                  <article class="media-card">
+                    <div class="media-card__preview">
+                      <app-jano-media [media]="mediaPreview(link)" usage="card" [alt]="link.media.alt || form.title"></app-jano-media>
+                    </div>
+
+                    <div class="media-card__body">
+                      <div class="media-card__head">
+                        <div>
+                          <div class="media-card__title">{{ mediaRoleLabel(link.role) }}</div>
+                          <div class="media-card__meta">
+                            @if (link.media.provider) { <span>{{ link.media.provider }}</span> }
+                            @if (link.media.width || link.media.height) {
+                              <span>· {{ link.media.width ?? '—' }}×{{ link.media.height ?? '—' }}</span>
+                            }
+                            <span>· Asset {{ link.media.id }}</span>
+                          </div>
+                        </div>
+
+                        <button class="btn danger" type="button" [disabled]="link.removing" (click)="removeMedia(link)">
+                          @if (link.removing) { Quitando... } @else { Quitar }
+                        </button>
+                      </div>
+
+                      <div class="media-grid">
+                        <label class="field full">
+                          <span>URL</span>
+                          <input type="url" [(ngModel)]="link.media.url" [name]="'media-url-' + link.id" />
+                        </label>
+
+                        <label class="field full">
+                          <span>Display URL</span>
+                          <input type="url" [(ngModel)]="link.media.displayUrl" [name]="'media-display-url-' + link.id" />
+                        </label>
+
+                        <label class="field full">
+                          <span>Source page URL</span>
+                          <input type="url" [(ngModel)]="link.media.sourcePageUrl" [name]="'media-source-page-url-' + link.id" />
+                        </label>
+
+                        <label class="field full">
+                          <span>Alt</span>
+                          <input type="text" [(ngModel)]="link.media.alt" [name]="'media-alt-' + link.id" />
+                        </label>
+
+                        <label class="field">
+                          <span>Rol visual</span>
+                          <select [(ngModel)]="link.role" [name]="'media-role-' + link.id">
+                            @for (role of mediaRoles; track role) {
+                              <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+                            }
+                          </select>
+                        </label>
+
+                        <label class="field">
+                          <span>Display mode</span>
+                          <select [(ngModel)]="link.displayMode" [name]="'media-display-mode-' + link.id">
+                            @for (mode of displayModes; track mode.value) {
+                              <option [value]="mode.value">{{ mode.label }}</option>
+                            }
+                          </select>
+                        </label>
+
+                        <label class="field">
+                          <span>Sort order</span>
+                          <input type="number" [(ngModel)]="link.sortOrder" [name]="'media-sort-order-' + link.id" />
+                        </label>
+
+                        <label class="field field--checkbox">
+                          <span>Primary fallback</span>
+                          <input type="checkbox" [(ngModel)]="link.isPrimary" [name]="'media-primary-' + link.id" />
+                        </label>
+
+                        <label class="field">
+                          <span>Focal X</span>
+                          <input type="number" min="0" max="100" step="0.1" [(ngModel)]="link.focalX" [name]="'media-focal-x-' + link.id" />
+                        </label>
+
+                        <label class="field">
+                          <span>Focal Y</span>
+                          <input type="number" min="0" max="100" step="0.1" [(ngModel)]="link.focalY" [name]="'media-focal-y-' + link.id" />
+                        </label>
+
+                        <label class="field">
+                          <span>Source</span>
+                          <input type="text" [(ngModel)]="link.media.source" [name]="'media-source-' + link.id" />
+                        </label>
+
+                        <label class="field">
+                          <span>Photo by</span>
+                          <input type="text" [(ngModel)]="link.media.photoBy" [name]="'media-photo-by-' + link.id" />
+                        </label>
+
+                        <label class="field full">
+                          <span>License</span>
+                          <input type="text" [(ngModel)]="link.media.license" [name]="'media-license-' + link.id" />
+                        </label>
+                      </div>
+
+                      <div class="media-card__notes">
+                        <span class="media-pill">Rol técnico: {{ link.role }}</span>
+                        @if (link.role === 'PRIMARY_LEGACY') {
+                          <span class="media-pill media-pill--legacy">Compatibilidad legacy</span>
+                        }
+                        @if (link.isPrimary) {
+                          <span class="media-pill media-pill--primary">Fallback primary activo</span>
+                        }
+                      </div>
+
+                      <div class="relations-actions">
+                        <button class="btn ghost" type="button" [disabled]="link.saving" (click)="saveMedia(link)">
+                          @if (link.saving) { Guardando... } @else { Guardar media }
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="preview-empty">
+                Esta entity aún no tiene media asociada.
+              </div>
+            }
+          </div>
+        }
+      </section>
+
       @if (isEdit) {
         <section class="relations-box">
           <div class="relations-head">

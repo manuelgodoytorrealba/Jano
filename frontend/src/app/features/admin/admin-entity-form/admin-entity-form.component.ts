@@ -11,13 +11,43 @@ import {
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AdminEntitiesApi, AdminEntityPayload } from '../../../core/api/admin-entities.api';
+import {
+  AdminEntitiesApi,
+  AdminEntityMediaPayload,
+  AdminEntityPayload,
+} from '../../../core/api/admin-entities.api';
+import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
+
+type EditableAdminMediaLink = {
+  id: string;
+  role: string;
+  sortOrder: number | string;
+  isPrimary: boolean;
+  displayMode: string;
+  focalX: number | string | null;
+  focalY: number | string | null;
+  media: {
+    id: string;
+    url: string;
+    displayUrl?: string | null;
+    sourcePageUrl?: string | null;
+    alt?: string | null;
+    source?: string | null;
+    photoBy?: string | null;
+    license?: string | null;
+    provider?: string | null;
+    width?: number | null;
+    height?: number | null;
+  };
+  saving?: boolean;
+  removing?: boolean;
+};
 
 @Component({
   standalone: true,
   selector: 'app-admin-entity-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, JanoMediaComponent],
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
 })
@@ -52,6 +82,40 @@ previewContainer?: ElementRef<HTMLElement>;
 
   successMessage = '';
   submitMode: 'back' | 'stay' = 'back';
+
+  mediaLinks: EditableAdminMediaLink[] = [];
+  mediaLoading = false;
+  mediaMessage = '';
+  mediaError = '';
+  addingMedia = false;
+
+  mediaRoles = [
+    'PRIMARY_LEGACY',
+    'HERO',
+    'CARD',
+    'DETAIL',
+    'THUMBNAIL',
+    'EXPLORER_3D',
+    'GALLERY',
+  ] as const;
+
+  mediaRoleLabels: Record<string, string> = {
+    PRIMARY_LEGACY: 'Primary legacy',
+    HERO: 'Hero',
+    CARD: 'Card',
+    DETAIL: 'Detail',
+    THUMBNAIL: 'Thumbnail',
+    EXPLORER_3D: 'Explorer 3D',
+    GALLERY: 'Gallery',
+  };
+
+  displayModes = [
+    { value: '', label: 'Auto' },
+    { value: 'COVER', label: 'Cover' },
+    { value: 'CONTAIN', label: 'Contain' },
+  ];
+
+  newMedia = this.createEmptyMediaDraft();
 
   private linkSearch$ = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -183,32 +247,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.loading = true;
     this.loadError = '';
 
-    this.adminApi.getById(this.entityId).subscribe({
-      next: (entity) => {
-        this.form = {
-          type: entity.type ?? 'ARTWORK',
-          title: entity.title ?? '',
-          slug: entity.slug ?? '',
-          summary: entity.summary ?? '',
-          content: entity.content ?? '',
-          contentLevel: entity.contentLevel ?? '',
-          status: entity.status ?? 'DRAFT',
-          startYear: entity.startYear ?? null,
-          endYear: entity.endYear ?? null,
-        };
-
-        this.slugTouched = true;
-        this.loading = false;
-        this.loadRelations();
-        this.loadIncomingRelations();
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        this.loadError = err?.error?.message ?? 'No se pudo cargar la entity';
-        this.loading = false;
-        this.cdr.markForCheck();
-      },
-    });
+    this.loadEntity();
   }
   ngAfterViewInit() {
   const container = this.previewContainer?.nativeElement;
@@ -294,6 +333,43 @@ previewContainer?: ElementRef<HTMLElement>;
           ? Number(this.form.endYear)
           : undefined,
     };
+  }
+
+  private loadEntity() {
+    if (!this.entityId) {
+      return;
+    }
+
+    this.adminApi.getById(this.entityId).subscribe({
+      next: (entity) => {
+        this.form = {
+          type: entity.type ?? 'ARTWORK',
+          title: entity.title ?? '',
+          slug: entity.slug ?? '',
+          summary: entity.summary ?? '',
+          content: entity.content ?? '',
+          contentLevel: entity.contentLevel ?? '',
+          status: entity.status ?? 'DRAFT',
+          startYear: entity.startYear ?? null,
+          endYear: entity.endYear ?? null,
+        };
+
+        this.mediaLinks = Array.isArray(entity.mediaLinks)
+          ? entity.mediaLinks.map((link: any) => this.normalizeMediaLink(link))
+          : [];
+
+        this.slugTouched = true;
+        this.loading = false;
+        this.loadRelations();
+        this.loadIncomingRelations();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.loadError = err?.error?.message ?? 'No se pudo cargar la entity';
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   submit(mode: 'back' | 'stay' = 'back') {
@@ -462,6 +538,216 @@ previewContainer?: ElementRef<HTMLElement>;
         this.cdr.markForCheck();
       },
     });
+  }
+
+  mediaRoleLabel(role: string | null | undefined): string {
+    return this.mediaRoleLabels[role ?? ''] ?? role ?? '—';
+  }
+
+  addMedia() {
+    if (!this.entityId || this.addingMedia) {
+      return;
+    }
+
+    this.mediaError = '';
+    this.mediaMessage = '';
+
+    const payload = this.buildMediaPayload(this.newMedia);
+    if (!payload) {
+      return;
+    }
+
+    this.addingMedia = true;
+
+    this.adminApi.createMedia(this.entityId, payload).subscribe({
+      next: (link) => {
+        this.upsertMediaLink(link);
+        this.newMedia = this.createEmptyMediaDraft();
+        this.addingMedia = false;
+        this.mediaMessage = 'Media añadida correctamente.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.addingMedia = false;
+        this.mediaError = err?.error?.message ?? 'No se pudo añadir la media.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  saveMedia(link: EditableAdminMediaLink) {
+    if (!this.entityId || link.saving) {
+      return;
+    }
+
+    this.mediaError = '';
+    this.mediaMessage = '';
+
+    const payload = this.buildMediaPayload({
+      ...link,
+      ...link.media,
+    });
+
+    if (!payload) {
+      return;
+    }
+
+    link.saving = true;
+
+    this.adminApi.updateMedia(this.entityId, link.id, payload).subscribe({
+      next: (updatedLink) => {
+        this.upsertMediaLink(updatedLink);
+        this.mediaMessage = 'Media actualizada correctamente.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        link.saving = false;
+        this.mediaError = err?.error?.message ?? 'No se pudo actualizar la media.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  removeMedia(link: EditableAdminMediaLink) {
+    if (!this.entityId || link.removing) {
+      return;
+    }
+
+    const ok = window.confirm('¿Quitar esta media de la entity? La media global no se borrará.');
+    if (!ok) {
+      return;
+    }
+
+    this.mediaError = '';
+    this.mediaMessage = '';
+    link.removing = true;
+
+    this.adminApi.deleteMedia(this.entityId, link.id).subscribe({
+      next: () => {
+        this.mediaLinks = this.mediaLinks.filter((item) => item.id !== link.id);
+        this.mediaMessage = 'Asociación de media eliminada.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        link.removing = false;
+        this.mediaError = err?.error?.message ?? 'No se pudo quitar la media.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  mediaPreview(link: EditableAdminMediaLink) {
+    return {
+      ...link.media,
+      displayMode: link.displayMode || null,
+      focalX: this.toNullableNumber(link.focalX),
+      focalY: this.toNullableNumber(link.focalY),
+    };
+  }
+
+  private createEmptyMediaDraft() {
+    return {
+      url: '',
+      displayUrl: '',
+      sourcePageUrl: '',
+      alt: '',
+      source: '',
+      photoBy: '',
+      license: '',
+      role: 'CARD',
+      sortOrder: 0,
+      isPrimary: false,
+      displayMode: '',
+      focalX: null as number | string | null,
+      focalY: null as number | string | null,
+    };
+  }
+
+  private normalizeMediaLink(link: any): EditableAdminMediaLink {
+    return {
+      id: link.id,
+      role: link.role ?? 'CARD',
+      sortOrder: link.sortOrder ?? 0,
+      isPrimary: !!link.isPrimary,
+      displayMode: link.displayMode ?? '',
+      focalX: link.focalX ?? null,
+      focalY: link.focalY ?? null,
+      media: {
+        id: link.media?.id ?? '',
+        url: link.media?.url ?? '',
+        displayUrl: link.media?.displayUrl ?? '',
+        sourcePageUrl: link.media?.sourcePageUrl ?? '',
+        alt: link.media?.alt ?? '',
+        source: link.media?.source ?? '',
+        photoBy: link.media?.photoBy ?? '',
+        license: link.media?.license ?? '',
+        provider: link.media?.provider ?? null,
+        width: link.media?.width ?? null,
+        height: link.media?.height ?? null,
+      },
+      saving: false,
+      removing: false,
+    };
+  }
+
+  private upsertMediaLink(link: any) {
+    const normalized = this.normalizeMediaLink(link);
+    const existingIndex = this.mediaLinks.findIndex((item) => item.id === normalized.id);
+
+    if (existingIndex >= 0) {
+      const next = [...this.mediaLinks];
+      next[existingIndex] = normalized;
+      this.mediaLinks = this.sortMediaLinks(next);
+      return;
+    }
+
+    this.mediaLinks = this.sortMediaLinks([...this.mediaLinks, normalized]);
+  }
+
+  private sortMediaLinks(items: EditableAdminMediaLink[]) {
+    return [...items].sort((a, b) => {
+      const orderDiff = Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0);
+      if (orderDiff !== 0) {
+        return orderDiff;
+      }
+
+      return (a.id ?? '').localeCompare(b.id ?? '', 'en');
+    });
+  }
+
+  private buildMediaPayload(source: any): AdminEntityMediaPayload | null {
+    const url = String(source.url ?? '').trim();
+
+    if (!url) {
+      this.mediaError = 'La URL de media es obligatoria.';
+      this.cdr.markForCheck();
+      return null;
+    }
+
+    return {
+      url,
+      displayUrl: String(source.displayUrl ?? '').trim() || undefined,
+      sourcePageUrl: String(source.sourcePageUrl ?? '').trim() || undefined,
+      alt: String(source.alt ?? '').trim() || undefined,
+      source: String(source.source ?? '').trim() || undefined,
+      photoBy: String(source.photoBy ?? '').trim() || undefined,
+      license: String(source.license ?? '').trim() || undefined,
+      role: source.role,
+      sortOrder: Number(source.sortOrder ?? 0),
+      isPrimary: !!source.isPrimary,
+      displayMode: source.displayMode || null,
+      focalX: this.toNullableNumber(source.focalX),
+      focalY: this.toNullableNumber(source.focalY),
+    };
+  }
+
+  private toNullableNumber(value: unknown): number | null {
+    if (value === '' || value === null || value === undefined) {
+      return null;
+    }
+
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : null;
   }
 
   onContentInput() {

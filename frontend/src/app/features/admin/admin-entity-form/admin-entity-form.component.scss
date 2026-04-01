@@ -235,7 +235,15 @@
       font-size: 14px;
     }
 
-        .relations-box {
+    .relations-box {
+      margin-top: 8px;
+      border-top: 1px solid rgba(0,0,0,.08);
+      padding-top: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .media-box {
       margin-top: 8px;
       border-top: 1px solid rgba(0,0,0,.08);
       padding-top: 18px;
@@ -246,6 +254,113 @@
     .relations-head h3,
     .current-relations h4 {
       margin: 0;
+    }
+
+    .media-create {
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 16px;
+      background: rgba(0,0,0,.015);
+    }
+
+    .media-create h4 {
+      margin: 0;
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field--checkbox {
+      align-content: end;
+    }
+
+    .field--checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .media-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .media-card {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 16px;
+      padding: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    .media-card__preview {
+      min-height: 240px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(0,0,0,.04);
+    }
+
+    .media-card__body {
+      display: grid;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .media-card__head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .media-card__title {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .media-card__meta {
+      color: #666;
+      font-size: 13px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .media-card__notes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .media-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.04);
+      border: 1px solid rgba(0,0,0,.08);
+      font-size: 12px;
+      color: rgba(0,0,0,.72);
+    }
+
+    .media-pill--legacy {
+      background: rgba(117, 90, 255, .08);
+      border-color: rgba(117, 90, 255, .16);
+      color: #5b43b2;
+    }
+
+    .media-pill--primary {
+      background: rgba(0, 128, 0, .08);
+      border-color: rgba(0, 128, 0, .16);
+      color: #126b12;
     }
 
     .relation-form {
