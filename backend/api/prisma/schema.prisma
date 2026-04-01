@@ -59,7 +59,18 @@ enum MediaQualityTier {
 }
 
 enum MediaRole {
-  PRIMARY
+  PRIMARY_LEGACY
+  HERO
+  CARD
+  DETAIL
+  THUMBNAIL
+  EXPLORER_3D
+  GALLERY
+}
+
+enum MediaDisplayMode {
+  COVER
+  CONTAIN
 }
 
 enum SourceType {
@@ -157,16 +168,23 @@ model Media {
 }
 
 model EntityMedia {
-  id       String    @id @default(cuid())
-  entityId String
-  mediaId  String
-  role     MediaRole @default(PRIMARY)
+  id          String            @id @default(cuid())
+  entityId    String
+  mediaId     String
+  role        MediaRole         @default(PRIMARY_LEGACY)
+  sortOrder   Int               @default(0)
+  isPrimary   Boolean           @default(false)
+  displayMode MediaDisplayMode?
+  focalX      Float?
+  focalY      Float?
 
   entity Entity @relation(fields: [entityId], references: [id])
   media  Media  @relation(fields: [mediaId], references: [id])
 
   @@index([entityId])
   @@index([mediaId])
+  @@index([entityId, role, sortOrder])
+  @@index([entityId, isPrimary])
 }
 
 model Source {
