@@ -594,7 +594,7 @@ export class EntitiesExplorer3dComponent
     }
 
     private thumb(e: Entity): string | null {
-        return entityVisualUrl(e);
+        return entityVisualUrl(e, 'explorer3d');
     }
 
     private pickPlane(clientX: number, clientY: number): THREE.Intersection<THREE.Object3D>[] {
