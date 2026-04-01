@@ -195,7 +195,9 @@ async function createEntityWithOptionalPrimaryMedia(
       data: {
         entityId: entity.id,
         mediaId: media.id,
-        role: 'PRIMARY',
+        role: 'PRIMARY_LEGACY',
+        isPrimary: true,
+        sortOrder: 0,
       },
     });
   }
