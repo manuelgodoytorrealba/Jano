@@ -9,7 +9,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { GraphComponent } from '../graph/graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
-import { entityVisualUrl, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
+import { entityVisualUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
 
 @Component({
   standalone: true,
@@ -48,8 +48,12 @@ export class EntityComponent {
     return selectPrimaryVisualMedia(entity);
   }
 
+  detailMedia(entity: any) {
+    return resolveEntityMediaItem(entity, 'detail') ?? this.primaryMedia(entity);
+  }
+
   visualUrl(entity: any) {
-    return entityVisualUrl(entity);
+    return entityVisualUrl(entity, 'detail');
   }
 
   private slug$ = this.route.paramMap.pipe(

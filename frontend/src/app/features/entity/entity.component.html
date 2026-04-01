@@ -62,11 +62,11 @@
 
     <section class="entity-explorer entity-glass">
       <app-graph [slug]="entity.slug" [imageUrl]="visualUrl(entity)"
-        [imageAlt]="primaryMedia(entity)?.alt || entity.title" [entityTitle]="entity.title" [entityType]="entity.type"
+        [imageAlt]="detailMedia(entity)?.alt || entity.title" [entityTitle]="entity.title" [entityType]="entity.type"
         [imageMeta]="{
-          source: primaryMedia(entity)?.source ?? null,
-          photoBy: primaryMedia(entity)?.photoBy ?? null,
-          license: primaryMedia(entity)?.license ?? null
+          source: detailMedia(entity)?.source ?? null,
+          photoBy: detailMedia(entity)?.photoBy ?? null,
+          license: detailMedia(entity)?.license ?? null
         }" />
     </section>
 
