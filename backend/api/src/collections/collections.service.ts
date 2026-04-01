@@ -7,13 +7,14 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { UserPlan } from '@prisma/client';
 import { CreateCollectionDto } from './dto/create-collection.dto';
+import { attachResolvedMedia } from '../entities/media.resolver';
 
 @Injectable()
 export class CollectionsService {
   constructor(private prisma: PrismaService) {}
 
   async list(userId: string) {
-    return this.prisma.collection.findMany({
+    const collections = await this.prisma.collection.findMany({
       where: { userId },
       orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
       include: {
@@ -24,8 +25,10 @@ export class CollectionsService {
               include: {
                 mediaLinks: {
                   include: { media: true },
-                  where: { role: 'PRIMARY_LEGACY' as any },
-                  take: 1,
+                  orderBy: [
+                    { sortOrder: 'asc' },
+                    { id: 'asc' },
+                  ],
                 },
               },
             },
@@ -33,6 +36,14 @@ export class CollectionsService {
         },
       },
     });
+
+    return collections.map((collection) => ({
+      ...collection,
+      items: (collection.items ?? []).map((item: any) => ({
+        ...item,
+        entity: item.entity ? attachResolvedMedia(item.entity) : item.entity,
+      })),
+    }));
   }
 
   async create(userId: string, dto: CreateCollectionDto) {
@@ -65,7 +76,7 @@ export class CollectionsService {
       throw new ConflictException('Collection name already exists');
     }
 
-    return this.prisma.collection.create({
+    const collection = await this.prisma.collection.create({
       data: {
         userId,
         name: dto.name.trim(),
@@ -79,8 +90,10 @@ export class CollectionsService {
               include: {
                 mediaLinks: {
                   include: { media: true },
-                  where: { role: 'PRIMARY_LEGACY' as any },
-                  take: 1,
+                  orderBy: [
+                    { sortOrder: 'asc' },
+                    { id: 'asc' },
+                  ],
                 },
               },
             },
@@ -88,6 +101,14 @@ export class CollectionsService {
         },
       },
     });
+
+    return {
+      ...collection,
+      items: (collection.items ?? []).map((item: any) => ({
+        ...item,
+        entity: item.entity ? attachResolvedMedia(item.entity) : item.entity,
+      })),
+    };
   }
 
   async addEntity(userId: string, collectionId: string, entityId: string) {
@@ -124,7 +145,7 @@ export class CollectionsService {
       throw new ConflictException('Entity already exists in collection');
     }
 
-    return this.prisma.collectionEntity.create({
+    const item = await this.prisma.collectionEntity.create({
       data: {
         collectionId,
         entityId,
@@ -134,13 +155,20 @@ export class CollectionsService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY_LEGACY' as any },
-              take: 1,
+              orderBy: [
+                { sortOrder: 'asc' },
+                { id: 'asc' },
+              ],
             },
           },
         },
       },
     });
+
+    return {
+      ...item,
+      entity: item.entity ? attachResolvedMedia(item.entity) : item.entity,
+    };
   }
 
   async removeEntity(userId: string, collectionId: string, entityId: string) {

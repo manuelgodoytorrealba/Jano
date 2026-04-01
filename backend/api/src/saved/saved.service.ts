@@ -4,6 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { attachResolvedMedia } from '../entities/media.resolver';
 
 @Injectable()
 export class SavedService {
@@ -18,8 +19,10 @@ export class SavedService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY_LEGACY' as any },
-              take: 1,
+              orderBy: [
+                { sortOrder: 'asc' },
+                { id: 'asc' },
+              ],
             },
           },
         },
@@ -29,7 +32,7 @@ export class SavedService {
     return rows.map((row) => ({
       id: row.id,
       createdAt: row.createdAt,
-      entity: row.entity,
+      entity: attachResolvedMedia(row.entity),
     }));
   }
 
@@ -56,7 +59,7 @@ export class SavedService {
       throw new ConflictException('Entity already saved');
     }
 
-    return this.prisma.savedEntity.create({
+    const saved = await this.prisma.savedEntity.create({
       data: {
         userId,
         entityId,
@@ -66,13 +69,20 @@ export class SavedService {
           include: {
             mediaLinks: {
               include: { media: true },
-              where: { role: 'PRIMARY_LEGACY' as any },
-              take: 1,
+              orderBy: [
+                { sortOrder: 'asc' },
+                { id: 'asc' },
+              ],
             },
           },
         },
       },
     });
+
+    return {
+      ...saved,
+      entity: saved.entity ? attachResolvedMedia(saved.entity) : saved.entity,
+    };
   }
 
   async removeSaved(userId: string, entityId: string) {
