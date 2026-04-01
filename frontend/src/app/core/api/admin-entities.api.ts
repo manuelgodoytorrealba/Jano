@@ -109,6 +109,10 @@ export class AdminEntitiesApi {
     return this.http.patch<any>(`${this.baseUrl}/${entityId}/media/${linkId}`, data);
   }
 
+  ingestMedia(entityId: string, linkId: string) {
+    return this.http.post<any>(`${this.baseUrl}/${entityId}/media/${linkId}/ingest`, {});
+  }
+
   deleteMedia(entityId: string, linkId: string) {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}`);
   }

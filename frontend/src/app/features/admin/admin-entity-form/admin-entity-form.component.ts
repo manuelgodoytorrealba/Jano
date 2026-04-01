@@ -49,6 +49,7 @@ type EditableAdminMediaLink = {
   media: {
     id: string;
     url: string;
+    canonicalUrl?: string | null;
     displayUrl?: string | null;
     sourcePageUrl?: string | null;
     alt?: string | null;
@@ -56,6 +57,7 @@ type EditableAdminMediaLink = {
     photoBy?: string | null;
     license?: string | null;
     provider?: string | null;
+    qualityTier?: string | null;
     width?: number | null;
     height?: number | null;
     originType?: string | null;
@@ -65,6 +67,7 @@ type EditableAdminMediaLink = {
   };
   saving?: boolean;
   removing?: boolean;
+  ingesting?: boolean;
 };
 
 type VisualSlot = {
@@ -605,7 +608,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
       case 'UPLOAD':
         return 'Asset propio subido al storage local de JANO.';
       case 'INGESTED':
-        return 'Asset propio generado desde una fuente externa.';
+        return 'Asset propio generado desde una referencia externa ya asociada.';
       case 'EXTERNAL_URL':
       default:
         return 'Referencia externa remota; no se almacena en JANO.';
@@ -630,6 +633,18 @@ uploadInput?: ElementRef<HTMLInputElement>;
 
   get maxUploadSizeLabel(): string {
     return this.formatFileSize(MAX_UPLOAD_SIZE_BYTES);
+  }
+
+  canIngestMedia(link: EditableAdminMediaLink): boolean {
+    return link.media.originType === 'EXTERNAL_URL' && !link.ingesting && !link.saving && !link.removing;
+  }
+
+  ingestedSourceLabel(link: EditableAdminMediaLink): string | null {
+    if (link.media.originType !== 'INGESTED') {
+      return null;
+    }
+
+    return link.media.canonicalUrl || link.media.sourcePageUrl || null;
   }
 
   get mediaEntityContext() {
@@ -1011,6 +1026,37 @@ uploadInput?: ElementRef<HTMLInputElement>;
     });
   }
 
+  ingestMedia(link: EditableAdminMediaLink) {
+    if (!this.entityId || !this.canIngestMedia(link)) {
+      return;
+    }
+
+    const ok = window.confirm(
+      'Se descargará esta media externa al storage local de JANO y se creará un nuevo asset INGESTED. El asset externo original se mantendrá sin cambios. ¿Continuar?',
+    );
+    if (!ok) {
+      return;
+    }
+
+    this.mediaError = '';
+    this.mediaMessage = '';
+    link.ingesting = true;
+
+    this.adminApi.ingestMedia(this.entityId, link.id).subscribe({
+      next: (createdLink) => {
+        link.ingesting = false;
+        this.upsertMediaLink(createdLink);
+        this.mediaMessage = 'Media ingerida correctamente. Se añadió como asset INGESTED sin reemplazar la referencia externa.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        link.ingesting = false;
+        this.mediaError = err?.error?.message ?? 'No se pudo ingerir la media externa.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   assignRole(link: EditableAdminMediaLink, role: string) {
     if (link.role === role) {
       return;
@@ -1115,6 +1161,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
       media: {
         id: link.media?.id ?? '',
         url: link.media?.url ?? '',
+        canonicalUrl: link.media?.canonicalUrl ?? '',
         displayUrl: link.media?.displayUrl ?? '',
         sourcePageUrl: link.media?.sourcePageUrl ?? '',
         alt: link.media?.alt ?? '',
@@ -1122,6 +1169,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
         photoBy: link.media?.photoBy ?? '',
         license: link.media?.license ?? '',
         provider: link.media?.provider ?? null,
+        qualityTier: link.media?.qualityTier ?? null,
         width: link.media?.width ?? null,
         height: link.media?.height ?? null,
         originType: link.media?.originType ?? 'EXTERNAL_URL',
@@ -1131,6 +1179,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
       },
       saving: false,
       removing: false,
+      ingesting: false,
     };
   }
 

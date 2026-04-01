@@ -456,6 +456,12 @@
                               <span>· {{ link.media.originalFilename }}</span>
                             }
                           </div>
+                          @if (ingestedSourceLabel(link); as ingestedSource) {
+                            <div class="media-card__source-note">
+                              Derivado de:
+                              <a [href]="ingestedSource" target="_blank" rel="noreferrer">{{ ingestedSource }}</a>
+                            </div>
+                          }
                         </div>
 
                         <button class="btn danger" type="button" [disabled]="link.removing" (click)="removeMedia(link)">
@@ -550,6 +556,16 @@
                           <span class="media-pill media-pill--primary">Fallback primary activo</span>
                         }
                       </div>
+
+                      @if (canIngestMedia(link)) {
+                        <div class="media-card__ingest-callout">
+                          <strong>Convertir en asset propio</strong>
+                          <span>Descarga esta referencia externa al storage local de JANO y crea un nuevo asset <code>INGESTED</code>. El original externo se conserva sin cambios.</span>
+                          <button class="btn mini ghost" type="button" [disabled]="link.ingesting" (click)="ingestMedia(link)">
+                            @if (link.ingesting) { Ingestando... } @else { Ingestar como asset propio }
+                          </button>
+                        </div>
+                      }
 
                       <div class="media-quick-actions">
                         <button class="btn mini" type="button" (click)="assignRole(link, 'HERO')">Usar como Hero</button>

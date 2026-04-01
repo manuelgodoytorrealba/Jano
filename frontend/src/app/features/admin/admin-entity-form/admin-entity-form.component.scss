@@ -528,10 +528,38 @@
       gap: 4px;
     }
 
+    .media-card__source-note {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .media-card__source-note a {
+      color: #18468d;
+    }
+
     .media-card__notes {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+    }
+
+    .media-card__ingest-callout {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(145, 102, 0, .16);
+      background: rgba(145, 102, 0, .06);
+      color: #6c4a00;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .media-card__ingest-callout strong {
+      color: #5d3f00;
     }
 
     .media-quick-actions {
