@@ -135,6 +135,54 @@
             Guarda primero la entity para poder asociarle media.
           </div>
         } @else {
+          <section class="media-slots">
+            <div class="media-slots__head">
+              <div>
+                <h4>Visual Slots</h4>
+                <p class="muted">Así se resolverían los usos visuales con la configuración actual.</p>
+              </div>
+            </div>
+
+            <div class="slot-grid">
+              @for (slot of visualSlots; track slot.key) {
+                <article class="slot-card">
+                  <div class="slot-card__head">
+                    <div>
+                      <div class="slot-card__title">{{ slot.label }}</div>
+                      <div class="slot-card__description">{{ slot.description }}</div>
+                    </div>
+
+                    <span class="media-pill" [class.media-pill--legacy]="slot.state.source === 'fallback' && slot.state.matchedRole === 'PRIMARY_LEGACY'">
+                      {{ slotStatusLabel(slot) }}
+                    </span>
+                  </div>
+
+                  <div class="slot-preview" [class]="slot.previewClass">
+                    <app-jano-media
+                      [entity]="mediaEntityContext"
+                      [media]="slot.state.item"
+                      [usage]="slot.previewUsage"
+                      [alt]="slot.state.item?.alt || form.title"
+                    ></app-jano-media>
+                  </div>
+
+                  <div class="slot-card__meta">
+                    @if (slot.state.item) {
+                      <div><strong>Rol:</strong> {{ mediaRoleLabel(slot.state.item.role) }}</div>
+                      <div><strong>Display:</strong> {{ slot.state.item.displayMode || 'Auto' }}</div>
+                      <div><strong>Focal:</strong> {{ slot.state.item.focalX ?? '—' }} / {{ slot.state.item.focalY ?? '—' }}</div>
+                      @if (slot.count && slot.key === 'gallery') {
+                        <div><strong>Items:</strong> {{ slot.count }}</div>
+                      }
+                    } @else {
+                      <div>Sin media resuelta para este uso.</div>
+                    }
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+
           @if (mediaError) {
             <div class="error-box">{{ mediaError }}</div>
           }

@@ -17,6 +17,11 @@ import {
   AdminEntityPayload,
 } from '../../../core/api/admin-entities.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
+import {
+  ResolvedMediaSlotState,
+  resolveEntityMediaGallery,
+  resolveEntityMediaSlot,
+} from '../../../shared/media/media.utils';
 
 type EditableAdminMediaLink = {
   id: string;
@@ -41,6 +46,16 @@ type EditableAdminMediaLink = {
   };
   saving?: boolean;
   removing?: boolean;
+};
+
+type VisualSlot = {
+  key: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery' | 'primary';
+  label: string;
+  description: string;
+  previewUsage: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery';
+  previewClass: string;
+  state: ResolvedMediaSlotState;
+  count?: number;
 };
 
 @Component({
@@ -544,6 +559,105 @@ previewContainer?: ElementRef<HTMLElement>;
     return this.mediaRoleLabels[role ?? ''] ?? role ?? '—';
   }
 
+  get mediaEntityContext() {
+    return {
+      type: this.form.type,
+      title: this.form.title,
+      summary: this.form.summary,
+      mediaLinks: this.mediaLinks.map((link) => ({
+        id: link.id,
+        role: link.role,
+        sortOrder: Number(link.sortOrder ?? 0),
+        isPrimary: !!link.isPrimary,
+        displayMode: link.displayMode || null,
+        focalX: this.toNullableNumber(link.focalX),
+        focalY: this.toNullableNumber(link.focalY),
+        media: {
+          ...link.media,
+          displayMode: link.displayMode || null,
+          focalX: this.toNullableNumber(link.focalX),
+          focalY: this.toNullableNumber(link.focalY),
+        },
+      })),
+    };
+  }
+
+  get visualSlots(): VisualSlot[] {
+    const entity = this.mediaEntityContext;
+    const galleryItems = resolveEntityMediaGallery(entity);
+    const galleryState: ResolvedMediaSlotState = galleryItems.length
+      ? {
+        item: galleryItems[0] ?? null,
+        source: entity.mediaLinks.some((link) => link.role === 'GALLERY') ? 'explicit' : 'fallback',
+        matchedRole: galleryItems[0]?.role ?? null,
+      }
+      : {
+        item: null,
+        source: 'empty',
+        matchedRole: null,
+      };
+
+    return [
+      {
+        key: 'hero',
+        label: 'Hero',
+        description: 'Uso principal amplio o destacado.',
+        previewUsage: 'hero',
+        previewClass: 'slot-preview--hero',
+        state: resolveEntityMediaSlot(entity, 'hero'),
+      },
+      {
+        key: 'card',
+        label: 'Card',
+        description: 'Listado y tarjetas del catálogo.',
+        previewUsage: 'card',
+        previewClass: 'slot-preview--card',
+        state: resolveEntityMediaSlot(entity, 'card'),
+      },
+      {
+        key: 'detail',
+        label: 'Detail',
+        description: 'Panel principal del detalle.',
+        previewUsage: 'detail',
+        previewClass: 'slot-preview--detail',
+        state: resolveEntityMediaSlot(entity, 'detail'),
+      },
+      {
+        key: 'thumbnail',
+        label: 'Thumbnail',
+        description: 'Relaciones, previews y formatos compactos.',
+        previewUsage: 'thumbnail',
+        previewClass: 'slot-preview--thumbnail',
+        state: resolveEntityMediaSlot(entity, 'thumbnail'),
+      },
+      {
+        key: 'explorer3d',
+        label: 'Explorer 3D',
+        description: 'Textura preferida para la vista inmersiva.',
+        previewUsage: 'explorer3d',
+        previewClass: 'slot-preview--explorer',
+        state: resolveEntityMediaSlot(entity, 'explorer3d'),
+      },
+      {
+        key: 'gallery',
+        label: 'Gallery',
+        description: 'Biblioteca adicional de imágenes.',
+        previewUsage: 'gallery',
+        previewClass: 'slot-preview--gallery',
+        state: galleryState,
+        count: galleryItems.length,
+      },
+      {
+        key: 'primary',
+        label: 'Primary fallback',
+        description: 'Compatibilidad y fallback general.',
+        previewUsage: 'card',
+        previewClass: 'slot-preview--card',
+        state: resolveEntityMediaSlot(entity, 'primary'),
+      },
+    ];
+  }
+
   addMedia() {
     if (!this.entityId || this.addingMedia) {
       return;
@@ -634,6 +748,17 @@ previewContainer?: ElementRef<HTMLElement>;
         this.cdr.markForCheck();
       },
     });
+  }
+
+  slotStatusLabel(slot: VisualSlot): string {
+    switch (slot.state.source) {
+      case 'explicit':
+        return 'Explícito';
+      case 'fallback':
+        return `Fallback${slot.state.matchedRole ? ` · ${this.mediaRoleLabel(slot.state.matchedRole)}` : ''}`;
+      default:
+        return 'Vacío';
+    }
   }
 
   mediaPreview(link: EditableAdminMediaLink) {

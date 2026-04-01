@@ -58,6 +58,12 @@ export type MediaUsage =
   | 'gallery'
   | 'primary';
 
+export type ResolvedMediaSlotState = {
+  item: ResolvedMediaItem | null;
+  source: 'explicit' | 'fallback' | 'empty';
+  matchedRole: string | null;
+};
+
 export type EntityWithMediaLinks = {
   title?: string | null;
   summary?: string | null;
@@ -184,6 +190,48 @@ export function resolveEntityMediaGallery(
   return detail ? [detail] : [];
 }
 
+export function resolveEntityMediaSlot(
+  entity: EntityWithMediaLinks | null | undefined,
+  usage: Exclude<MediaUsage, 'gallery'>,
+): ResolvedMediaSlotState {
+  const resolved = entity?.resolvedMedia ?? null;
+  const exactRole = exactRoleForUsage(usage);
+
+  if (resolved) {
+    const direct = resolved[usage];
+    if (direct && isRenderableRasterMedia(direct)) {
+      return {
+        item: direct,
+        source: direct.role === exactRole ? 'explicit' : 'fallback',
+        matchedRole: direct.role ?? null,
+      };
+    }
+
+    if (usage !== 'primary' && resolved.primary && isRenderableRasterMedia(resolved.primary)) {
+      return {
+        item: resolved.primary,
+        source: 'fallback',
+        matchedRole: resolved.primary.role ?? null,
+      };
+    }
+  }
+
+  const legacy = selectLegacyMediaLinkWithSource(entity, usage);
+  if (legacy) {
+    return {
+      item: toResolvedMediaItem(legacy.link),
+      source: legacy.source,
+      matchedRole: legacy.link.role,
+    };
+  }
+
+  return {
+    item: null,
+    source: 'empty',
+    matchedRole: null,
+  };
+}
+
 export function entityVisualUrl(
   entity: EntityWithMediaLinks | null | undefined,
   usage: Exclude<MediaUsage, 'gallery'> = 'card',
@@ -262,6 +310,13 @@ function selectLegacyMediaLink(
   entity: EntityWithMediaLinks | null | undefined,
   usage: Exclude<MediaUsage, 'gallery'>,
 ): NormalizedMediaLink | null {
+  return selectLegacyMediaLinkWithSource(entity, usage)?.link ?? null;
+}
+
+function selectLegacyMediaLinkWithSource(
+  entity: EntityWithMediaLinks | null | undefined,
+  usage: Exclude<MediaUsage, 'gallery'>,
+): { link: NormalizedMediaLink; source: 'explicit' | 'fallback' } | null {
   const links = normalizeMediaLinks(entity);
 
   if (!links.length) {
@@ -271,11 +326,20 @@ function selectLegacyMediaLink(
   for (const role of ROLE_ORDER[usage]) {
     const candidate = firstByRole(links, role);
     if (candidate) {
-      return candidate;
+      return {
+        link: candidate,
+        source: candidate.role === exactRoleForUsage(usage) ? 'explicit' : 'fallback',
+      };
     }
   }
 
-  return selectLegacyPrimary(links) ?? selectBestAvailable(links, entity?.type ?? null);
+  const fallback = selectLegacyPrimary(links) ?? selectBestAvailable(links, entity?.type ?? null);
+  return fallback
+    ? {
+      link: fallback,
+      source: 'fallback',
+    }
+    : null;
 }
 
 function normalizeMediaLinks(entity: EntityWithMediaLinks | null | undefined): NormalizedMediaLink[] {
@@ -304,6 +368,23 @@ function normalizeDisplayMode(value: string | null | undefined): 'COVER' | 'CONT
   return normalized === 'COVER' || normalized === 'CONTAIN'
     ? normalized
     : null;
+}
+
+function exactRoleForUsage(usage: Exclude<MediaUsage, 'gallery'>): string {
+  switch (usage) {
+    case 'hero':
+      return 'HERO';
+    case 'card':
+      return 'CARD';
+    case 'detail':
+      return 'DETAIL';
+    case 'thumbnail':
+      return 'THUMBNAIL';
+    case 'explorer3d':
+      return 'EXPLORER_3D';
+    case 'primary':
+      return 'PRIMARY_LEGACY';
+  }
 }
 
 function normalizeFocal(value: number | null | undefined): number {
