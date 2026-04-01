@@ -109,6 +109,68 @@ export class EntitiesService {
     return value?.split(';')[0]?.trim().toLowerCase() ?? null;
   }
 
+  private normalizeUrlCandidate(value: string | null | undefined): string | null {
+    const trimmed = value?.trim();
+    if (!trimmed) {
+      return null;
+    }
+
+    return trimmed.replace(/\/+$/, '');
+  }
+
+  private mediaSourceCandidates(media: {
+    url?: string | null;
+    displayUrl?: string | null;
+    canonicalUrl?: string | null;
+  }): string[] {
+    return Array.from(
+      new Set(
+        [
+          this.normalizeUrlCandidate(media.canonicalUrl),
+          this.normalizeUrlCandidate(media.displayUrl),
+          this.normalizeUrlCandidate(media.url),
+        ].filter((value): value is string => !!value),
+      ),
+    );
+  }
+
+  private async findSourceExternalLinkForIngested(entityId: string, linkId: string, canonicalUrl: string | null | undefined) {
+    const normalizedCanonical = this.normalizeUrlCandidate(canonicalUrl);
+    if (!normalizedCanonical) {
+      throw new BadRequestException('El asset INGESTED no conserva referencia suficiente al asset externo');
+    }
+
+    const candidates = await this.prisma.entityMedia.findMany({
+      where: {
+        entityId,
+        id: {
+          not: linkId,
+        },
+        media: {
+          originType: MediaOriginType.EXTERNAL_URL,
+        },
+      },
+      include: {
+        media: true,
+      },
+      orderBy: [
+        { isPrimary: 'desc' },
+        { sortOrder: 'asc' },
+        { id: 'asc' },
+      ],
+    });
+
+    const match = candidates.find((candidate) =>
+      this.mediaSourceCandidates(candidate.media).includes(normalizedCanonical),
+    );
+
+    if (!match) {
+      throw new BadRequestException('No se encontró el asset externo origen dentro de esta entity');
+    }
+
+    return match;
+  }
+
   private inferOriginalFilename(urlValue: string, fallbackExt: string): string {
     try {
       const parsed = new URL(urlValue);
@@ -859,6 +921,87 @@ export class EntitiesService {
       await unlink(storagePath).catch(() => undefined);
       throw error;
     }
+  }
+
+  async adminPromoteIngestedMedia(entityId: string, linkId: string) {
+    const ingestedLink = await this.prisma.entityMedia.findFirst({
+      where: {
+        id: linkId,
+        entityId,
+      },
+      include: {
+        media: true,
+      },
+    });
+
+    if (!ingestedLink) {
+      throw new NotFoundException('Entity media link not found');
+    }
+
+    if (ingestedLink.media.originType !== MediaOriginType.INGESTED) {
+      throw new BadRequestException('Solo se pueden promover assets con origen INGESTED');
+    }
+
+    const sourceExternalLink = await this.findSourceExternalLinkForIngested(
+      entityId,
+      linkId,
+      ingestedLink.media.canonicalUrl,
+    );
+
+    const galleryMax = await this.prisma.entityMedia.aggregate({
+      where: {
+        entityId,
+        role: MediaRole.GALLERY,
+        id: {
+          notIn: [linkId, sourceExternalLink.id],
+        },
+      },
+      _max: {
+        sortOrder: true,
+      },
+    });
+
+    const promotedLink = await this.prisma.$transaction(async (tx) => {
+      await tx.entityMedia.update({
+        where: { id: linkId },
+        data: {
+          role: sourceExternalLink.role,
+          sortOrder: sourceExternalLink.sortOrder,
+          isPrimary: sourceExternalLink.isPrimary,
+          displayMode: sourceExternalLink.displayMode ?? null,
+          focalX: sourceExternalLink.focalX ?? null,
+          focalY: sourceExternalLink.focalY ?? null,
+        },
+      });
+
+      await tx.entityMedia.update({
+        where: { id: sourceExternalLink.id },
+        data: {
+          role: MediaRole.GALLERY,
+          sortOrder: (galleryMax._max.sortOrder ?? -1) + 1,
+          isPrimary: false,
+        },
+      });
+
+      return tx.entityMedia.findUniqueOrThrow({
+        where: { id: linkId },
+        include: {
+          media: true,
+        },
+      });
+    });
+
+    const updatedSourceLink = await this.prisma.entityMedia.findUniqueOrThrow({
+      where: { id: sourceExternalLink.id },
+      include: {
+        media: true,
+      },
+    });
+
+    return {
+      promotedLink,
+      sourceLink: updatedSourceLink,
+    };
   }
 
   async adminUpdateMedia(entityId: string, linkId: string, dto: UpdateEntityMediaDto) {

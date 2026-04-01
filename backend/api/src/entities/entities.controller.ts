@@ -158,6 +158,16 @@ export class EntitiesController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @Post(':id/media/:linkId/promote')
+  promoteIngestedMedia(
+    @Param('id') id: string,
+    @Param('linkId') linkId: string,
+  ) {
+    return this.service.adminPromoteIngestedMedia(id, linkId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Delete(':id/media/:linkId')
   deleteMedia(
     @Param('id') id: string,
