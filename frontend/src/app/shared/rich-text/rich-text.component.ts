@@ -8,6 +8,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { entityVisualUrl } from '../media/media.utils';
+import { JanoMediaComponent } from '../media/jano-media.component';
 
 type Token =
   | { kind: 'text'; value: string }
@@ -17,7 +18,7 @@ type Token =
   standalone: true,
   selector: 'app-rich-text',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, JanoMediaComponent],
   templateUrl: './rich-text.component.html',
   styleUrls: ['./rich-text.component.scss'],
 })
@@ -41,7 +42,7 @@ export class RichTextComponent {
   }
 
   get previewImageUrl(): string | null {
-    return entityVisualUrl(this.preview());
+    return entityVisualUrl(this.preview(), 'thumbnail');
   }
 
   onLinkEnter(slug: string) {

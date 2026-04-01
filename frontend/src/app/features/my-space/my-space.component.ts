@@ -5,13 +5,13 @@ import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs'
 import { AuthService } from '../../core/auth/auth.service';
 import { CollectionsApi } from '../../core/api/collections.api';
 import { SavedApi } from '../../core/api/saved.api';
-import { entityVisualUrl } from '../../shared/media/media.utils';
+import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 @Component({
   standalone: true,
   selector: 'app-my-space',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, RouterLink],
+  imports: [AsyncPipe, RouterLink, JanoMediaComponent],
   templateUrl: './my-space.component.html',
   styleUrls: ['./my-space.component.scss'],
 })
@@ -47,10 +47,6 @@ export class MySpaceComponent {
       );
     }),
   );
-
-  thumb(e: any): string | null {
-    return entityVisualUrl(e);
-  }
 
   cleanWiki(text: string): string {
     return (text ?? '').replace(/\[\[(.*?)\|(.*?)\]\]/g, '$2');

@@ -50,11 +50,8 @@
               }
 
               @if (previewImageUrl) {
-                <img
-                  class="tt-img"
-                  [src]="previewImageUrl!"
-                  [alt]="preview()!.title"
-                />
+                <app-jano-media class="tt-img" [entity]="preview()" usage="thumbnail"
+                  [alt]="preview()!.title"></app-jano-media>
               }
             }
           </span>

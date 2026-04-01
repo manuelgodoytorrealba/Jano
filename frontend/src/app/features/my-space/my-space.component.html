@@ -44,11 +44,7 @@
       @for (row of savedItems; track row.id) {
       <article class="card">
         <div class="thumb" (click)="go(row.entity.slug)">
-          @if (thumb(row.entity)) {
-          <img [src]="thumb(row.entity)!" [alt]="row.entity.title" />
-          } @else {
-          <div class="ph"></div>
-          }
+          <app-jano-media [entity]="row.entity" usage="card" [alt]="row.entity.title"></app-jano-media>
         </div>
 
         <div class="body">
@@ -138,11 +134,7 @@
         @for (item of collection.items; track item.id) {
         <article class="card">
           <div class="thumb" (click)="go(item.entity.slug)">
-            @if (thumb(item.entity)) {
-            <img [src]="thumb(item.entity)!" [alt]="item.entity.title" />
-            } @else {
-            <div class="ph"></div>
-            }
+            <app-jano-media [entity]="item.entity" usage="card" [alt]="item.entity.title"></app-jano-media>
           </div>
 
           <div class="body">
