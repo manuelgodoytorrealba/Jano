@@ -12,6 +12,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   map,
+  shareReplay,
   switchMap,
 } from 'rxjs';
 
@@ -19,6 +20,7 @@ import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-ex
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 type Entity = any;
+type FilterOption = { slug: string; title: string };
 
 type Sort = 'recent' | 'title' | 'relevance';
 type Status = 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | '';
@@ -78,9 +80,61 @@ export class EntitiesListComponent {
     distinctUntilChanged(),
   );
 
+  movementFromUrl$ = this.route.queryParamMap.pipe(
+    map((qpm) => (qpm.get('movement') ?? '').trim()),
+    distinctUntilChanged(),
+  );
+
+  periodFromUrl$ = this.route.queryParamMap.pipe(
+    map((qpm) => (qpm.get('period') ?? '').trim()),
+    distinctUntilChanged(),
+  );
+
   sortFromUrl$ = this.route.queryParamMap.pipe(
     map((qpm) => (qpm.get('sort') ?? 'recent').trim()),
     map((s) => (s === 'title' || s === 'relevance' ? s : 'recent') as Sort),
+    distinctUntilChanged(),
+  );
+
+  movementOptions$ = this.api.list({
+    type: 'MOVEMENT',
+    limit: 60,
+    page: 1,
+    sort: 'title',
+    status: 'PUBLISHED',
+  }).pipe(
+    map((result) =>
+      (result.items ?? []).map((item) => ({
+        slug: item.slug,
+        title: item.title,
+      }) as FilterOption),
+    ),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  periodOptions$ = this.api.list({
+    type: 'PERIOD',
+    limit: 60,
+    page: 1,
+    sort: 'title',
+    status: 'PUBLISHED',
+  }).pipe(
+    map((result) =>
+      (result.items ?? []).map((item) => ({
+        slug: item.slug,
+        title: item.title,
+      }) as FilterOption),
+    ),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  movementLabel$ = combineLatest([this.movementFromUrl$, this.movementOptions$]).pipe(
+    map(([slug, options]) => options.find((item) => item.slug === slug)?.title ?? slug),
+    distinctUntilChanged(),
+  );
+
+  periodLabel$ = combineLatest([this.periodFromUrl$, this.periodOptions$]).pipe(
+    map(([slug, options]) => options.find((item) => item.slug === slug)?.title ?? slug),
     distinctUntilChanged(),
   );
 
@@ -88,12 +142,16 @@ export class EntitiesListComponent {
     this.qFromUrl$,
     this.statusFromUrl$,
     this.contentLevelFromUrl$,
+    this.movementFromUrl$,
+    this.periodFromUrl$,
   ]).pipe(
-    map(([q, status, contentLevel]) => {
+    map(([q, status, contentLevel, movement, period]) => {
       const qq = (q ?? '').trim();
       const ss = (status ?? '').trim();
       const cc = (contentLevel ?? '').trim();
-      return !!(qq || ss || cc);
+      const mm = (movement ?? '').trim();
+      const pp = (period ?? '').trim();
+      return !!(qq || ss || cc || mm || pp);
     }),
     distinctUntilChanged(),
   );
@@ -104,12 +162,16 @@ export class EntitiesListComponent {
     this.pageFromUrl$,
     this.statusFromUrl$,
     this.contentLevelFromUrl$,
+    this.movementFromUrl$,
+    this.periodFromUrl$,
     this.sortFromUrl$,
   ]).pipe(
-    switchMap(([type, q, page, status, contentLevel, sort]) => {
+    switchMap(([type, q, page, status, contentLevel, movement, period, sort]) => {
       const qq = (q ?? '').trim();
       const ss = (status ?? '').trim();
       const cc = (contentLevel ?? '').trim();
+      const mm = (movement ?? '').trim();
+      const pp = (period ?? '').trim();
 
       const safeSort: Sort = sort === 'relevance' && !qq ? 'recent' : sort;
 
@@ -121,6 +183,8 @@ export class EntitiesListComponent {
         sort: safeSort,
         status: ss.length ? ss : undefined,
         contentLevel: cc.length ? cc : undefined,
+        movement: mm.length ? mm : undefined,
+        period: pp.length ? pp : undefined,
       });
     }),
   );
@@ -297,6 +361,26 @@ export class EntitiesListComponent {
     });
   }
 
+  setMovement(next: string) {
+    const value = (next ?? '').trim();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { movement: value || null, page: 1 },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  setPeriod(next: string) {
+    const value = (next ?? '').trim();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { period: value || null, page: 1 },
+      queryParamsHandling: 'merge',
+    });
+  }
+
   resetFilters() {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -304,6 +388,8 @@ export class EntitiesListComponent {
         q: null,
         status: null,
         contentLevel: null,
+        movement: null,
+        period: null,
         sort: null,
         page: 1,
       },

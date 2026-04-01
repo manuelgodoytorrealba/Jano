@@ -26,6 +26,8 @@ export class EntitiesApi {
   sort?: 'recent' | 'title' | 'relevance';
   status?: string;
   contentLevel?: string;
+  movement?: string;
+  period?: string;
 }) {
     const clean: any = {};
 

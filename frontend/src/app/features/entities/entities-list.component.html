@@ -49,6 +49,30 @@
         </div>
         }
         }
+
+        @if ((movementFromUrl$ | async) || (periodFromUrl$ | async)) {
+        <div class="entities-active-filters">
+          @if (movementFromUrl$ | async; as movementSlug) {
+          @if (movementSlug) {
+          <button type="button" class="search-chip entities-active-filter" (click)="setMovement('')">
+            <span class="search-chip__label">Movimiento</span>
+            <span class="search-chip__value">{{ movementLabel$ | async }}</span>
+            <span class="entities-active-filter__clear">✕</span>
+          </button>
+          }
+          }
+
+          @if (periodFromUrl$ | async; as periodSlug) {
+          @if (periodSlug) {
+          <button type="button" class="search-chip entities-active-filter" (click)="setPeriod('')">
+            <span class="search-chip__label">Periodo</span>
+            <span class="search-chip__value">{{ periodLabel$ | async }}</span>
+            <span class="entities-active-filter__clear">✕</span>
+          </button>
+          }
+          }
+        </div>
+        }
       </div>
 
       <div class="entities-filter-rail__section">
@@ -121,6 +145,32 @@
             Todos
           </button>
         </div>
+      </div>
+
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Movimiento</div>
+        <select class="ds-input entities-filter-select" [value]="(movementFromUrl$ | async) ?? ''"
+          (change)="setMovement(($any($event.target)).value)">
+          <option value="">Todos los movimientos</option>
+          @if (movementOptions$ | async; as movementOptions) {
+          @for (option of movementOptions; track option.slug) {
+          <option [value]="option.slug">{{ option.title }}</option>
+          }
+          }
+        </select>
+      </div>
+
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Periodo</div>
+        <select class="ds-input entities-filter-select" [value]="(periodFromUrl$ | async) ?? ''"
+          (change)="setPeriod(($any($event.target)).value)">
+          <option value="">Todos los periodos</option>
+          @if (periodOptions$ | async; as periodOptions) {
+          @for (option of periodOptions; track option.slug) {
+          <option [value]="option.slug">{{ option.title }}</option>
+          }
+          }
+        </select>
       </div>
 
       @if (hasActiveFilters$ | async) {
