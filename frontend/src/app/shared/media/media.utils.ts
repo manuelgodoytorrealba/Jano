@@ -2,6 +2,7 @@ export type MediaLike = {
   id?: string | null;
   url?: string | null;
   originType?: string | null;
+  derivedFromMediaId?: string | null;
   canonicalUrl?: string | null;
   displayUrl?: string | null;
   sourcePageUrl?: string | null;

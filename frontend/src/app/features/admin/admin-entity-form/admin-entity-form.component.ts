@@ -49,6 +49,7 @@ type EditableAdminMediaLink = {
   media: {
     id: string;
     url: string;
+    derivedFromMediaId?: string | null;
     canonicalUrl?: string | null;
     displayUrl?: string | null;
     sourcePageUrl?: string | null;
@@ -69,6 +70,7 @@ type EditableAdminMediaLink = {
   removing?: boolean;
   ingesting?: boolean;
   promoting?: boolean;
+  restoring?: boolean;
 };
 
 type VisualSlot = {
@@ -645,6 +647,13 @@ uploadInput?: ElementRef<HTMLInputElement>;
       return null;
     }
 
+    if (link.media.derivedFromMediaId) {
+      const direct = this.mediaLinks.find((candidate) => candidate.media.id === link.media.derivedFromMediaId);
+      if (direct?.media.originType === 'EXTERNAL_URL') {
+        return direct;
+      }
+    }
+
     const canonical = String(link.media.canonicalUrl ?? '').trim().replace(/\/+$/, '');
     if (!canonical) {
       return null;
@@ -676,6 +685,14 @@ uploadInput?: ElementRef<HTMLInputElement>;
       && !link.removing;
   }
 
+  canRestoreExternalMedia(link: EditableAdminMediaLink): boolean {
+    return link.media.originType === 'EXTERNAL_URL'
+      && !!this.replacementIngestedLink(link)
+      && !link.restoring
+      && !link.saving
+      && !link.removing;
+  }
+
   ingestedSourceLabel(link: EditableAdminMediaLink): string | null {
     if (link.media.originType !== 'INGESTED') {
       return null;
@@ -691,6 +708,11 @@ uploadInput?: ElementRef<HTMLInputElement>;
     }
 
     return `${this.mediaRoleLabel(source.role)} · asset ${source.media.id}`;
+  }
+
+  replacementIngestedLabel(link: EditableAdminMediaLink): string | null {
+    const ingested = this.replacementIngestedLink(link);
+    return ingested ? `asset INGESTED ${ingested.media.id}` : null;
   }
 
   hasPromotedVisualReplacement(link: EditableAdminMediaLink): boolean {
@@ -717,7 +739,21 @@ uploadInput?: ElementRef<HTMLInputElement>;
       .filter(Boolean);
 
     if (!externalCandidates.length) {
-      return null;
+      return this.mediaLinks.find((candidate) =>
+        candidate.media.originType === 'INGESTED'
+        && candidate.media.derivedFromMediaId === link.media.id
+        && this.hasPromotedVisualReplacement(candidate),
+      ) ?? null;
+    }
+
+    const byDerivedFrom = this.mediaLinks.find((candidate) =>
+      candidate.media.originType === 'INGESTED'
+      && candidate.media.derivedFromMediaId === link.media.id
+      && this.hasPromotedVisualReplacement(candidate),
+    );
+
+    if (byDerivedFrom) {
+      return byDerivedFrom;
     }
 
     return this.mediaLinks.find((candidate) =>
@@ -1176,6 +1212,45 @@ uploadInput?: ElementRef<HTMLInputElement>;
     });
   }
 
+  restoreExternalMedia(link: EditableAdminMediaLink) {
+    if (!this.entityId || !this.canRestoreExternalMedia(link)) {
+      return;
+    }
+
+    const ingested = this.replacementIngestedLink(link);
+    const ingestedRoleLabel = ingested ? this.mediaRoleLabel(ingested.role) : 'el asset ingerido promovido';
+
+    const ok = window.confirm(
+      `El asset EXTERNAL_URL recuperará ${ingestedRoleLabel}, sortOrder, isPrimary, displayMode y focales. El INGESTED seguirá visible como referencia GALLERY. ¿Continuar?`,
+    );
+    if (!ok) {
+      return;
+    }
+
+    this.mediaError = '';
+    this.mediaMessage = '';
+    link.restoring = true;
+
+    this.adminApi.restoreExternalMedia(this.entityId, link.id).subscribe({
+      next: (result) => {
+        link.restoring = false;
+        if (result?.restoredLink) {
+          this.upsertMediaLink(result.restoredLink);
+        }
+        if (result?.ingestedLink) {
+          this.upsertMediaLink(result.ingestedLink);
+        }
+        this.mediaMessage = 'El asset externo recupera ahora el papel visual principal. El INGESTED sigue visible como referencia.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        link.restoring = false;
+        this.mediaError = err?.error?.message ?? 'No se pudo restaurar el asset externo.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   assignRole(link: EditableAdminMediaLink, role: string) {
     if (link.role === role) {
       return;
@@ -1280,6 +1355,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
       media: {
         id: link.media?.id ?? '',
         url: link.media?.url ?? '',
+        derivedFromMediaId: link.media?.derivedFromMediaId ?? null,
         canonicalUrl: link.media?.canonicalUrl ?? '',
         displayUrl: link.media?.displayUrl ?? '',
         sourcePageUrl: link.media?.sourcePageUrl ?? '',
@@ -1300,6 +1376,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
       removing: false,
       ingesting: false,
       promoting: false,
+      restoring: false,
     };
   }
 

@@ -117,6 +117,10 @@ export class AdminEntitiesApi {
     return this.http.post<any>(`${this.baseUrl}/${entityId}/media/${linkId}/promote`, {});
   }
 
+  restoreExternalMedia(entityId: string, linkId: string) {
+    return this.http.post<any>(`${this.baseUrl}/${entityId}/media/${linkId}/restore-external`, {});
+  }
+
   deleteMedia(entityId: string, linkId: string) {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}`);
   }

@@ -435,6 +435,9 @@
                             <span [class]="'media-pill ' + mediaOriginTone(link.media.originType)">
                               {{ mediaOriginLabel(link.media.originType) }}
                             </span>
+                            @if (link.media.derivedFromMediaId) {
+                              <span class="media-pill">Deriva de asset {{ link.media.derivedFromMediaId }}</span>
+                            }
                             @if (link.role === 'PRIMARY_LEGACY') {
                               <span class="media-pill media-pill--legacy">Legacy primary</span>
                             }
@@ -564,6 +567,9 @@
                         @if (hasPromotedVisualReplacement(link)) {
                           <span class="media-pill media-pill--promoted">Reemplazo visual activo</span>
                         }
+                        @if (canRestoreExternalMedia(link)) {
+                          <span class="media-pill media-pill--restorable">Restaurable</span>
+                        }
                       </div>
 
                       @if (canIngestMedia(link)) {
@@ -586,6 +592,20 @@
                           </span>
                           <button class="btn mini ghost" type="button" [disabled]="link.promoting" (click)="promoteIngestedMedia(link)">
                             @if (link.promoting) { Promoviendo... } @else { Usar como reemplazo visual }
+                          </button>
+                        </div>
+                      }
+
+                      @if (canRestoreExternalMedia(link)) {
+                        <div class="media-card__restore-callout">
+                          <strong>Restaurar externo como visual principal</strong>
+                          <span>
+                            Este asset externo puede recuperar el papel visual que ahora ocupa
+                            {{ replacementIngestedLabel(link) || 'su asset ingerido derivado' }}.
+                            El asset INGESTED seguirá visible como referencia.
+                          </span>
+                          <button class="btn mini ghost" type="button" [disabled]="link.restoring" (click)="restoreExternalMedia(link)">
+                            @if (link.restoring) { Restaurando... } @else { Restaurar externo }
                           </button>
                         </div>
                       }
