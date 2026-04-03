@@ -28,6 +28,8 @@ export class EntitiesApi {
   contentLevel?: string;
   movement?: string;
   period?: string;
+  institution?: string;
+  nationality?: string;
 }) {
     const clean: any = {};
 
@@ -46,6 +48,14 @@ export class EntitiesApi {
       `${this.base}/entities`,
       { params: clean },
     );
+  }
+
+  institutions() {
+    return this.http.get<string[]>(`${this.base}/entities/institutions`);
+  }
+
+  nationalities() {
+    return this.http.get<string[]>(`${this.base}/entities/nationalities`);
   }
 
   // ✅ ALIAS para no romper entity.component.ts

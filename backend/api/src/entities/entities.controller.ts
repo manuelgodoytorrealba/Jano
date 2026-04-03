@@ -52,6 +52,16 @@ export class EntitiesController {
     return this.service.list(query);
   }
 
+  @Get('institutions')
+  institutions() {
+    return this.service.listInstitutions();
+  }
+
+  @Get('nationalities')
+  nationalities() {
+    return this.service.listNationalities();
+  }
+
   @Get('home')
   home() {
     return this.service.home();

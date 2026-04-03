@@ -5,15 +5,18 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
 import {
+  Observable,
   combineLatest,
   debounceTime,
   distinctUntilChanged,
   map,
   shareReplay,
   switchMap,
+  tap,
 } from 'rxjs';
 
 import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
@@ -21,11 +24,33 @@ import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 type Entity = any;
 type FilterOption = { slug: string; title: string };
+type EntityListVm = { items: Entity[]; page: number; limit: number; total: number; totalPages: number };
+type FilterSupport = { movement: boolean; period: boolean; institution: boolean; nationality: boolean };
 
 type Sort = 'recent' | 'title' | 'relevance';
 type Status = 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | '';
 type Level = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED' | '';
 type ViewMode = 'explore' | 'list';
+
+const STATUS_LABELS: Record<Exclude<Status, ''>, string> = {
+  DRAFT: 'Draft',
+  IN_REVIEW: 'In review',
+  PUBLISHED: 'Published',
+};
+
+const CONTENT_LEVEL_LABELS: Record<Exclude<Level, ''>, string> = {
+  BASIC: 'Basic',
+  INTERMEDIATE: 'Intermediate',
+  ADVANCED: 'Advanced',
+};
+
+const FILTER_SUPPORT_BY_TYPE: Record<string, FilterSupport> = {
+  ARTIST: { movement: true, period: true, institution: false, nationality: true },
+  ARTWORK: { movement: true, period: true, institution: true, nationality: false },
+  MOVEMENT: { movement: false, period: false, institution: false, nationality: false },
+  PERIOD: { movement: false, period: false, institution: false, nationality: false },
+  CONCEPT: { movement: false, period: false, institution: false, nationality: false },
+};
 
 @Component({
   standalone: true,
@@ -41,10 +66,61 @@ export class EntitiesListComponent {
   private router = inject(Router);
 
   private readonly limit = 24;
+  private readonly contextualFilterKeys = ['movement', 'period', 'institution', 'nationality'] as const;
+
+  private filterSupportForType(type: string | null | undefined): FilterSupport {
+    return FILTER_SUPPORT_BY_TYPE[(type ?? '').trim().toUpperCase()] ?? {
+      movement: false,
+      period: false,
+      institution: false,
+      nationality: false,
+    };
+  }
+
+  private obsoleteQueryParamsForType(type: string, queryParamMap: { get(key: string): string | null }) {
+    const support = this.filterSupportForType(type);
+    const obsolete: Record<string, null> = {};
+
+    for (const key of this.contextualFilterKeys) {
+      const value = (queryParamMap.get(key) ?? '').trim();
+      if (!value) continue;
+
+      const isSupported =
+        key === 'movement' ? support.movement :
+          key === 'period' ? support.period :
+            key === 'institution' ? support.institution :
+              support.nationality;
+
+      if (!isSupported) {
+        obsolete[key] = null;
+      }
+    }
+
+    return Object.keys(obsolete).length ? obsolete : null;
+  }
 
   viewMode: ViewMode = 'explore';
   skeleton = Array.from({ length: 8 });
   activeIndex = signal(0);
+  advancedFiltersOpen = signal(false);
+
+  constructor() {
+    combineLatest([this.typeFromUrl$, this.route.queryParamMap]).pipe(
+      map(([type, queryParamMap]) => this.obsoleteQueryParamsForType(type, queryParamMap)),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      tap((obsolete) => {
+        if (!obsolete) return;
+
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: obsolete,
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+      }),
+      takeUntilDestroyed(),
+    ).subscribe();
+  }
 
   title$ = this.route.paramMap.pipe(
     map((pm) => (pm.get('type') ?? 'entities').toLowerCase()),
@@ -90,6 +166,16 @@ export class EntitiesListComponent {
     distinctUntilChanged(),
   );
 
+  institutionFromUrl$ = this.route.queryParamMap.pipe(
+    map((qpm) => (qpm.get('institution') ?? '').trim()),
+    distinctUntilChanged(),
+  );
+
+  nationalityFromUrl$ = this.route.queryParamMap.pipe(
+    map((qpm) => (qpm.get('nationality') ?? '').trim()),
+    distinctUntilChanged(),
+  );
+
   sortFromUrl$ = this.route.queryParamMap.pipe(
     map((qpm) => (qpm.get('sort') ?? 'recent').trim()),
     map((s) => (s === 'title' || s === 'relevance' ? s : 'recent') as Sort),
@@ -128,6 +214,61 @@ export class EntitiesListComponent {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
+  institutionOptions$ = this.api.institutions().pipe(
+    map((items) =>
+      (items ?? []).map((item) => ({
+        slug: item,
+        title: item,
+      }) as FilterOption),
+    ),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  nationalityOptions$ = this.api.nationalities().pipe(
+    map((items) =>
+      (items ?? []).map((item) => ({
+        slug: item,
+        title: item,
+      }) as FilterOption),
+    ),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  filterSupport$ = this.typeFromUrl$.pipe(
+    map((type) => this.filterSupportForType(type)),
+    distinctUntilChanged((a, b) =>
+      a.movement === b.movement &&
+      a.period === b.period &&
+      a.institution === b.institution &&
+      a.nationality === b.nationality,
+    ),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  supportsMovement$ = this.filterSupport$.pipe(
+    map((support) => support.movement),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  supportsPeriod$ = this.filterSupport$.pipe(
+    map((support) => support.period),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  supportsInstitution$ = this.filterSupport$.pipe(
+    map((support) => support.institution),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
+  supportsNationality$ = this.filterSupport$.pipe(
+    map((support) => support.nationality),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
   movementLabel$ = combineLatest([this.movementFromUrl$, this.movementOptions$]).pipe(
     map(([slug, options]) => options.find((item) => item.slug === slug)?.title ?? slug),
     distinctUntilChanged(),
@@ -138,25 +279,69 @@ export class EntitiesListComponent {
     distinctUntilChanged(),
   );
 
+  institutionLabel$ = combineLatest([this.institutionFromUrl$, this.institutionOptions$]).pipe(
+    map(([value, options]) => options.find((item) => item.slug === value)?.title ?? value),
+    distinctUntilChanged(),
+  );
+
+  nationalityLabel$ = combineLatest([this.nationalityFromUrl$, this.nationalityOptions$]).pipe(
+    map(([value, options]) => options.find((item) => item.slug === value)?.title ?? value),
+    distinctUntilChanged(),
+  );
+
   hasActiveFilters$ = combineLatest([
     this.qFromUrl$,
     this.statusFromUrl$,
     this.contentLevelFromUrl$,
     this.movementFromUrl$,
     this.periodFromUrl$,
+    this.institutionFromUrl$,
+    this.nationalityFromUrl$,
+    this.filterSupport$,
   ]).pipe(
-    map(([q, status, contentLevel, movement, period]) => {
+    map(([q, status, contentLevel, movement, period, institution, nationality, support]) => {
       const qq = (q ?? '').trim();
       const ss = (status ?? '').trim();
       const cc = (contentLevel ?? '').trim();
-      const mm = (movement ?? '').trim();
-      const pp = (period ?? '').trim();
-      return !!(qq || ss || cc || mm || pp);
+      const mm = support.movement ? (movement ?? '').trim() : '';
+      const pp = support.period ? (period ?? '').trim() : '';
+      const ii = support.institution ? (institution ?? '').trim() : '';
+      const nn = support.nationality ? (nationality ?? '').trim() : '';
+      return !!(qq || ss || cc || mm || pp || ii || nn);
     }),
     distinctUntilChanged(),
   );
 
-  vm$ = combineLatest([
+  hasVisibleFilterChips$ = combineLatest([
+    this.statusFromUrl$,
+    this.contentLevelFromUrl$,
+    this.movementFromUrl$,
+    this.periodFromUrl$,
+    this.institutionFromUrl$,
+    this.nationalityFromUrl$,
+    this.filterSupport$,
+  ]).pipe(
+    map(([status, contentLevel, movement, period, institution, nationality, support]) => {
+      const ss = (status ?? '').trim();
+      const cc = (contentLevel ?? '').trim();
+      const mm = support.movement ? (movement ?? '').trim() : '';
+      const pp = support.period ? (period ?? '').trim() : '';
+      const ii = support.institution ? (institution ?? '').trim() : '';
+      const nn = support.nationality ? (nationality ?? '').trim() : '';
+      return !!(ss || cc || mm || pp || ii || nn);
+    }),
+    distinctUntilChanged(),
+  );
+
+  hasAdvancedFilters$ = combineLatest([
+    this.statusFromUrl$,
+    this.contentLevelFromUrl$,
+  ]).pipe(
+    map(([status, contentLevel]) => !!((status ?? '').trim() || (contentLevel ?? '').trim())),
+    distinctUntilChanged(),
+  );
+
+  vm$: Observable<EntityListVm> = combineLatest([
     this.typeFromUrl$,
     this.qFromUrl$.pipe(debounceTime(300)),
     this.pageFromUrl$,
@@ -164,14 +349,19 @@ export class EntitiesListComponent {
     this.contentLevelFromUrl$,
     this.movementFromUrl$,
     this.periodFromUrl$,
+    this.institutionFromUrl$,
+    this.nationalityFromUrl$,
     this.sortFromUrl$,
+    this.filterSupport$,
   ]).pipe(
-    switchMap(([type, q, page, status, contentLevel, movement, period, sort]) => {
+    switchMap(([type, q, page, status, contentLevel, movement, period, institution, nationality, sort, support]) => {
       const qq = (q ?? '').trim();
       const ss = (status ?? '').trim();
       const cc = (contentLevel ?? '').trim();
-      const mm = (movement ?? '').trim();
-      const pp = (period ?? '').trim();
+      const mm = support.movement ? (movement ?? '').trim() : '';
+      const pp = support.period ? (period ?? '').trim() : '';
+      const ii = support.institution ? (institution ?? '').trim() : '';
+      const nn = support.nationality ? (nationality ?? '').trim() : '';
 
       const safeSort: Sort = sort === 'relevance' && !qq ? 'recent' : sort;
 
@@ -185,12 +375,36 @@ export class EntitiesListComponent {
         contentLevel: cc.length ? cc : undefined,
         movement: mm.length ? mm : undefined,
         period: pp.length ? pp : undefined,
+        institution: ii.length ? ii : undefined,
+        nationality: nn.length ? nn : undefined,
       });
+    }),
+    tap((result: EntityListVm) => {
+      const total = result.items?.length ?? 0;
+      const nextIndex = total > 0 ? Math.floor((total - 1) / 2) : 0;
+
+      if (this.activeIndex() !== nextIndex) {
+        this.activeIndex.set(nextIndex);
+      }
     }),
   );
 
   setView(mode: ViewMode) {
     this.viewMode = mode;
+  }
+
+  toggleAdvancedFilters() {
+    this.advancedFiltersOpen.update((value) => !value);
+  }
+
+  statusLabel(value: string | null | undefined): string {
+    const key = (value ?? '').trim() as Exclude<Status, ''>;
+    return STATUS_LABELS[key] ?? key;
+  }
+
+  contentLevelLabel(value: string | null | undefined): string {
+    const key = (value ?? '').trim() as Exclude<Level, ''>;
+    return CONTENT_LEVEL_LABELS[key] ?? key;
   }
 
   moveActive(dir: -1 | 1, total: number) {
@@ -381,6 +595,26 @@ export class EntitiesListComponent {
     });
   }
 
+  setInstitution(next: string) {
+    const value = (next ?? '').trim();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { institution: value || null, page: 1 },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  setNationality(next: string) {
+    const value = (next ?? '').trim();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { nationality: value || null, page: 1 },
+      queryParamsHandling: 'merge',
+    });
+  }
+
   resetFilters() {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -390,6 +624,8 @@ export class EntitiesListComponent {
         contentLevel: null,
         movement: null,
         period: null,
+        institution: null,
+        nationality: null,
         sort: null,
         page: 1,
       },

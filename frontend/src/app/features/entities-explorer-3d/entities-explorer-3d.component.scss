@@ -8,7 +8,8 @@
     height: 100%;
     border-radius: 24px;
     padding-top: 132px;
-    padding-left: 200px;
+    padding-left: 228px;
+    padding-right: 352px;
     box-sizing: border-box;
     overflow: hidden;
     background:
@@ -74,7 +75,7 @@
     top: 132px;
     right: 28px;
     bottom: auto;
-    width: min(320px, calc(100% - 56px));
+    width: min(308px, calc(100% - 56px));
     padding: 16px 16px 18px;
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.62);
@@ -126,7 +127,7 @@
     font-size: 12.5px;
     line-height: 1.58;
     color: rgba(31, 41, 55, 0.74);
-    max-width: 22ch;
+    max-width: 24ch;
 }
 
 .explorer3d__cta {
@@ -141,7 +142,8 @@
     .explorer3d {
         min-height: 84vh;
         padding-top: 138px;
-        padding-left: 256px;
+        padding-left: 264px;
+        padding-right: 368px;
     }
 
     .explorer3d__canvas {
@@ -164,13 +166,14 @@
 
     .explorer3d {
         padding-top: 112px;
-        padding-left: 216px;
+        padding-left: 188px;
+        padding-right: 320px;
     }
 
     .explorer3d__info {
         top: 112px;
         right: 18px;
-        width: min(300px, calc(100% - 36px));
+        width: min(286px, calc(100% - 36px));
         padding: 16px;
     }
 
@@ -195,6 +198,7 @@
     .explorer3d {
         padding-top: 0;
         padding-left: 0;
+        padding-right: 0;
     }
 
     .explorer3d__info {

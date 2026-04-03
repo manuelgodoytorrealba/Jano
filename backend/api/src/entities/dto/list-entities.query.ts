@@ -45,4 +45,12 @@ sort?: 'recent' | 'title' | 'relevance';
   @IsOptional()
   @IsString()
   period?: string;
+
+  @IsOptional()
+  @IsString()
+  institution?: string;
+
+  @IsOptional()
+  @IsString()
+  nationality?: string;
 }

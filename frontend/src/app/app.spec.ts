@@ -14,10 +14,9 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should expose the app title signal', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, jano-web-app');
+    const app = fixture.componentInstance as any;
+    expect(app.title()).toBe('jano-web-app');
   });
 });

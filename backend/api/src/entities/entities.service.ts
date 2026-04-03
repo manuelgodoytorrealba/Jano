@@ -262,6 +262,10 @@ export class EntitiesService {
     const contentLevel = (query.contentLevel ?? '').trim();
     const movement = (query.movement ?? '').trim().toLowerCase();
     const period = (query.period ?? '').trim().toLowerCase();
+    const supportsInstitution = query.type === 'ARTWORK';
+    const institution = supportsInstitution ? (query.institution ?? '').trim() : '';
+    const supportsNationality = query.type === 'ARTIST';
+    const nationality = supportsNationality ? (query.nationality ?? '').trim() : '';
     const sort = (query.sort ?? 'recent').trim();
 
     const where: any = {};
@@ -293,7 +297,9 @@ export class EntitiesService {
       and.push({
         outgoing: {
           some: {
-            type: 'BELONGS_TO_MOVEMENT',
+            type: {
+              in: ['BELONGS_TO_MOVEMENT', 'ASSOCIATED_WITH'],
+            },
             to: {
               type: 'MOVEMENT',
               slug: movement,
@@ -311,6 +317,32 @@ export class EntitiesService {
             to: {
               type: 'PERIOD',
               slug: period,
+            },
+          },
+        },
+      });
+    }
+
+    if (institution && institution !== 'undefined' && institution !== 'null') {
+      and.push({
+        artwork: {
+          is: {
+            location: {
+              equals: institution,
+              mode: 'insensitive',
+            },
+          },
+        },
+      });
+    }
+
+    if (nationality && nationality !== 'undefined' && nationality !== 'null') {
+      and.push({
+        artist: {
+          is: {
+            country: {
+              equals: nationality,
+              mode: 'insensitive',
             },
           },
         },
@@ -420,6 +452,64 @@ export class EntitiesService {
       total,
       totalPages,
     };
+  }
+
+  async listInstitutions() {
+    const rows = await this.prisma.artworkDetails.findMany({
+      where: {
+        location: {
+          not: null,
+        },
+        entity: {
+          status: EntityStatus.PUBLISHED,
+          type: 'ARTWORK',
+        },
+      },
+      select: {
+        location: true,
+      },
+      distinct: ['location'],
+      orderBy: {
+        location: 'asc',
+      },
+    });
+
+    return Array.from(
+      new Set(
+        rows
+          .map((row) => row.location?.trim())
+          .filter((value): value is string => !!value),
+      ),
+    ).sort((a, b) => a.localeCompare(b, 'es'));
+  }
+
+  async listNationalities() {
+    const rows = await this.prisma.artistDetails.findMany({
+      where: {
+        country: {
+          not: null,
+        },
+        entity: {
+          status: EntityStatus.PUBLISHED,
+          type: 'ARTIST',
+        },
+      },
+      select: {
+        country: true,
+      },
+      distinct: ['country'],
+      orderBy: {
+        country: 'asc',
+      },
+    });
+
+    return Array.from(
+      new Set(
+        rows
+          .map((row) => row.country?.trim())
+          .filter((value): value is string => !!value),
+      ),
+    ).sort((a, b) => a.localeCompare(b, 'es'));
   }
 
   async home() {

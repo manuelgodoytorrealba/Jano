@@ -50,34 +50,156 @@
         }
         }
 
-        @if ((movementFromUrl$ | async) || (periodFromUrl$ | async)) {
+        @if (hasVisibleFilterChips$ | async) {
         <div class="entities-active-filters">
-          @if (movementFromUrl$ | async; as movementSlug) {
-          @if (movementSlug) {
-          <button type="button" class="search-chip entities-active-filter" (click)="setMovement('')">
-            <span class="search-chip__label">Movimiento</span>
-            <span class="search-chip__value">{{ movementLabel$ | async }}</span>
+          @if (statusFromUrl$ | async; as status) {
+          @if (status) {
+          <button type="button" class="search-chip entities-active-filter entities-active-filter--advanced"
+            (click)="toggleStatus('')">
+            <span class="entities-active-filter__content">
+              <span class="search-chip__label">Status</span>
+              <span class="search-chip__value">{{ statusLabel(status) }}</span>
+            </span>
             <span class="entities-active-filter__clear">✕</span>
           </button>
           }
           }
 
+          @if (contentLevelFromUrl$ | async; as contentLevel) {
+          @if (contentLevel) {
+          <button type="button" class="search-chip entities-active-filter entities-active-filter--advanced"
+            (click)="toggleContentLevel('')">
+            <span class="entities-active-filter__content">
+              <span class="search-chip__label">Nivel</span>
+              <span class="search-chip__value">{{ contentLevelLabel(contentLevel) }}</span>
+            </span>
+            <span class="entities-active-filter__clear">✕</span>
+          </button>
+          }
+          }
+
+          @if (supportsMovement$ | async) {
+          @if (movementFromUrl$ | async; as movementSlug) {
+          @if (movementSlug) {
+          <button type="button" class="search-chip entities-active-filter" (click)="setMovement('')">
+            <span class="entities-active-filter__content">
+              <span class="search-chip__label">Movimiento</span>
+              <span class="search-chip__value">{{ movementLabel$ | async }}</span>
+            </span>
+            <span class="entities-active-filter__clear">✕</span>
+          </button>
+          }
+          }
+          }
+
+          @if (supportsPeriod$ | async) {
           @if (periodFromUrl$ | async; as periodSlug) {
           @if (periodSlug) {
           <button type="button" class="search-chip entities-active-filter" (click)="setPeriod('')">
-            <span class="search-chip__label">Periodo</span>
-            <span class="search-chip__value">{{ periodLabel$ | async }}</span>
+            <span class="entities-active-filter__content">
+              <span class="search-chip__label">Periodo</span>
+              <span class="search-chip__value">{{ periodLabel$ | async }}</span>
+            </span>
             <span class="entities-active-filter__clear">✕</span>
           </button>
+          }
+          }
+          }
+
+          @if (supportsInstitution$ | async) {
+          @if (institutionFromUrl$ | async; as institution) {
+          @if (institution) {
+          <button type="button" class="search-chip entities-active-filter" (click)="setInstitution('')">
+            <span class="entities-active-filter__content">
+              <span class="search-chip__label">Institución</span>
+              <span class="search-chip__value">{{ institutionLabel$ | async }}</span>
+            </span>
+            <span class="entities-active-filter__clear">✕</span>
+          </button>
+          }
+          }
+          }
+
+          @if (supportsNationality$ | async) {
+          @if (nationalityFromUrl$ | async; as nationality) {
+          @if (nationality) {
+          <button type="button" class="search-chip entities-active-filter" (click)="setNationality('')">
+            <span class="entities-active-filter__content">
+              <span class="search-chip__label">Nacionalidad</span>
+              <span class="search-chip__value">{{ nationalityLabel$ | async }}</span>
+            </span>
+            <span class="entities-active-filter__clear">✕</span>
+          </button>
+          }
           }
           }
         </div>
         }
       </div>
 
+      @if (supportsMovement$ | async) {
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Movimiento</div>
+        <select class="ds-input entities-filter-select" [value]="(movementFromUrl$ | async) ?? ''"
+          (change)="setMovement(($any($event.target)).value)">
+          <option value="">Todos los movimientos</option>
+          @if (movementOptions$ | async; as movementOptions) {
+          @for (option of movementOptions; track option.slug) {
+          <option [value]="option.slug">{{ option.title }}</option>
+          }
+          }
+        </select>
+      </div>
+      }
+
+      @if (supportsPeriod$ | async) {
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Periodo</div>
+        <select class="ds-input entities-filter-select" [value]="(periodFromUrl$ | async) ?? ''"
+          (change)="setPeriod(($any($event.target)).value)">
+          <option value="">Todos los periodos</option>
+          @if (periodOptions$ | async; as periodOptions) {
+          @for (option of periodOptions; track option.slug) {
+          <option [value]="option.slug">{{ option.title }}</option>
+          }
+          }
+        </select>
+      </div>
+      }
+
+      @if (supportsInstitution$ | async) {
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Institución</div>
+        <select class="ds-input entities-filter-select" [value]="(institutionFromUrl$ | async) ?? ''"
+          (change)="setInstitution(($any($event.target)).value)">
+          <option value="">Todas las instituciones</option>
+          @if (institutionOptions$ | async; as institutionOptions) {
+          @for (option of institutionOptions; track option.slug) {
+          <option [value]="option.slug">{{ option.title }}</option>
+          }
+          }
+        </select>
+      </div>
+      }
+
+      @if (supportsNationality$ | async) {
+      <div class="entities-filter-rail__section">
+        <div class="entities-filter-rail__label">Nacionalidad</div>
+        <select class="ds-input entities-filter-select" [value]="(nationalityFromUrl$ | async) ?? ''"
+          (change)="setNationality(($any($event.target)).value)">
+          <option value="">Todas las nacionalidades</option>
+          @if (nationalityOptions$ | async; as nationalityOptions) {
+          @for (option of nationalityOptions; track option.slug) {
+          <option [value]="option.slug">{{ option.title }}</option>
+          }
+          }
+        </select>
+      </div>
+      }
+
       <div class="entities-filter-rail__section">
         <div class="entities-filter-rail__label">Orden</div>
-        <div class="entities-filter-rail__chips">
+        <div class="entities-filter-rail__chips entities-filter-rail__chips--compact">
           <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'recent'"
             (click)="toggleSort('recent')">
             Recientes
@@ -96,81 +218,74 @@
         </div>
       </div>
 
-      <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Status</div>
-        <div class="entities-filter-rail__chips">
-          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'DRAFT'"
-            (click)="toggleStatus('DRAFT')">
-            Draft
-          </button>
+      <div class="entities-filter-rail__section entities-filter-rail__section--advanced"
+        [class.is-open]="advancedFiltersOpen() || (hasAdvancedFilters$ | async)">
+        <button type="button" class="entities-advanced-toggle" (click)="toggleAdvancedFilters()"
+          [attr.aria-expanded]="advancedFiltersOpen() || (hasAdvancedFilters$ | async)">
+          <span class="entities-filter-rail__label">Filtros avanzados</span>
+          <span class="entities-advanced-toggle__meta">
+            @if (hasAdvancedFilters$ | async) {
+            Activos
+            } @else {
+            Opcional
+            }
+          </span>
+        </button>
 
-          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'IN_REVIEW'"
-            (click)="toggleStatus('IN_REVIEW')">
-            In review
-          </button>
+        @if (advancedFiltersOpen() || (hasAdvancedFilters$ | async)) {
+        <div class="entities-advanced-panel">
+          <div class="entities-filter-rail__group">
+            <div class="entities-filter-rail__sublabel">Status editorial</div>
+            <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
+              <button type="button" class="filter-chip filter-chip--secondary"
+                [class.is-active]="(statusFromUrl$ | async) === 'DRAFT'" (click)="toggleStatus('DRAFT')">
+                Draft
+              </button>
 
-          <button type="button" class="filter-chip" [class.is-active]="(statusFromUrl$ | async) === 'PUBLISHED'"
-            (click)="toggleStatus('PUBLISHED')">
-            Published
-          </button>
+              <button type="button" class="filter-chip filter-chip--secondary"
+                [class.is-active]="(statusFromUrl$ | async) === 'IN_REVIEW'" (click)="toggleStatus('IN_REVIEW')">
+                In review
+              </button>
 
-          <button type="button" class="filter-chip filter-chip--ghost" [class.is-active]="!(statusFromUrl$ | async)"
-            (click)="toggleStatus('')">
-            Todos
-          </button>
+              <button type="button" class="filter-chip filter-chip--secondary"
+                [class.is-active]="(statusFromUrl$ | async) === 'PUBLISHED'" (click)="toggleStatus('PUBLISHED')">
+                Published
+              </button>
+
+              <button type="button" class="filter-chip filter-chip--ghost filter-chip--secondary"
+                [class.is-active]="!(statusFromUrl$ | async)" (click)="toggleStatus('')">
+                Todos
+              </button>
+            </div>
+          </div>
+
+          <div class="entities-filter-rail__group">
+            <div class="entities-filter-rail__sublabel">Nivel de lectura</div>
+            <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
+              <button type="button" class="filter-chip filter-chip--secondary"
+                [class.is-active]="(contentLevelFromUrl$ | async) === 'BASIC'" (click)="toggleContentLevel('BASIC')">
+                Basic
+              </button>
+
+              <button type="button" class="filter-chip filter-chip--secondary"
+                [class.is-active]="(contentLevelFromUrl$ | async) === 'INTERMEDIATE'"
+                (click)="toggleContentLevel('INTERMEDIATE')">
+                Intermediate
+              </button>
+
+              <button type="button" class="filter-chip filter-chip--secondary"
+                [class.is-active]="(contentLevelFromUrl$ | async) === 'ADVANCED'" (click)="toggleContentLevel('ADVANCED')">
+                Advanced
+              </button>
+
+              <button type="button" class="filter-chip filter-chip--ghost filter-chip--secondary"
+                [class.is-active]="!(contentLevelFromUrl$ | async)" (click)="toggleContentLevel('')">
+                Todos
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Nivel</div>
-        <div class="entities-filter-rail__chips">
-          <button type="button" class="filter-chip" [class.is-active]="(contentLevelFromUrl$ | async) === 'BASIC'"
-            (click)="toggleContentLevel('BASIC')">
-            Basic
-          </button>
-
-          <button type="button" class="filter-chip"
-            [class.is-active]="(contentLevelFromUrl$ | async) === 'INTERMEDIATE'"
-            (click)="toggleContentLevel('INTERMEDIATE')">
-            Intermediate
-          </button>
-
-          <button type="button" class="filter-chip" [class.is-active]="(contentLevelFromUrl$ | async) === 'ADVANCED'"
-            (click)="toggleContentLevel('ADVANCED')">
-            Advanced
-          </button>
-
-          <button type="button" class="filter-chip filter-chip--ghost"
-            [class.is-active]="!(contentLevelFromUrl$ | async)" (click)="toggleContentLevel('')">
-            Todos
-          </button>
-        </div>
-      </div>
-
-      <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Movimiento</div>
-        <select class="ds-input entities-filter-select" [value]="(movementFromUrl$ | async) ?? ''"
-          (change)="setMovement(($any($event.target)).value)">
-          <option value="">Todos los movimientos</option>
-          @if (movementOptions$ | async; as movementOptions) {
-          @for (option of movementOptions; track option.slug) {
-          <option [value]="option.slug">{{ option.title }}</option>
-          }
-          }
-        </select>
-      </div>
-
-      <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Periodo</div>
-        <select class="ds-input entities-filter-select" [value]="(periodFromUrl$ | async) ?? ''"
-          (change)="setPeriod(($any($event.target)).value)">
-          <option value="">Todos los periodos</option>
-          @if (periodOptions$ | async; as periodOptions) {
-          @for (option of periodOptions; track option.slug) {
-          <option [value]="option.slug">{{ option.title }}</option>
-          }
-          }
-        </select>
+        }
       </div>
 
       @if (hasActiveFilters$ | async) {
