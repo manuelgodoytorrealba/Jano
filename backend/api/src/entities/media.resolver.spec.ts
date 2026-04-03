@@ -55,6 +55,21 @@ describe('media.resolver', () => {
     expect(resolveEntityMedia(entity, 'thumbnail')?.id).toBe('legacy-media');
   });
 
+  it('does not let detail override card, hero or explorer3d when a primary fallback exists', () => {
+    const entity = {
+      type: 'ARTWORK',
+      mediaLinks: [
+        createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: true }),
+        createLink({ id: 'detail', mediaId: 'detail-media', role: 'DETAIL' }),
+      ],
+    };
+
+    expect(resolveEntityMedia(entity, 'hero')?.id).toBe('legacy-media');
+    expect(resolveEntityMedia(entity, 'card')?.id).toBe('legacy-media');
+    expect(resolveEntityMedia(entity, 'detail')?.id).toBe('detail-media');
+    expect(resolveEntityMedia(entity, 'explorer3d')?.id).toBe('legacy-media');
+  });
+
   it('uses detail as gallery fallback when no explicit gallery media exists', () => {
     const entity = {
       type: 'ARTWORK',

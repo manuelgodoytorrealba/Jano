@@ -87,8 +87,47 @@
       border-radius: 18px;
       padding: 16px;
       display: grid;
-      gap: 14px;
+      gap: 12px;
       background: linear-gradient(180deg, rgba(255,255,255,1), rgba(250,250,250,1));
+    }
+
+    .preview-media-hero {
+      min-height: 220px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(0,0,0,.04);
+    }
+
+    .preview-media-summary {
+      display: grid;
+      gap: 8px;
+    }
+
+    .preview-media-summary__item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.84);
+    }
+
+    .preview-media-summary__item--empty {
+      border-style: dashed;
+      background: rgba(0,0,0,.015);
+    }
+
+    .preview-media-summary__item strong,
+    .preview-media-summary__item span {
+      display: block;
+    }
+
+    .preview-media-summary__item span {
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
     }
 
     .preview-badges {
@@ -351,7 +390,7 @@
 
     .media-slots {
       display: grid;
-      gap: 14px;
+      gap: 12px;
     }
 
     .media-slots__head h4 {
@@ -368,16 +407,24 @@
     .slot-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      gap: 12px;
+    }
+
+    .slot-grid--summary {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .slot-grid--secondary {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .slot-card {
       border: 1px solid rgba(0,0,0,.08);
       border-radius: 18px;
-      padding: 14px;
+      padding: 12px;
       background: linear-gradient(180deg, rgba(255,255,255,1), rgba(250,250,250,1));
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .slot-card--empty {
@@ -385,11 +432,19 @@
       border-style: dashed;
     }
 
+    .slot-card--secondary {
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(252,252,252,1));
+    }
+
     .slot-card__head {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       align-items: start;
+    }
+
+    .slot-card__head--secondary {
+      align-items: center;
     }
 
     .slot-card__title {
@@ -409,13 +464,39 @@
     .slot-card__description,
     .slot-card__meta {
       color: #666;
-      font-size: 13px;
+      font-size: 12px;
       line-height: 1.5;
     }
 
     .slot-card__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .slot-preview {
+      min-height: 154px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(0,0,0,.04);
+    }
+
+    .slot-preview--mini {
+      min-height: 92px;
+    }
+
+    .media-list {
       display: grid;
-      gap: 4px;
+      gap: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .slot-grid,
+      .slot-grid--summary,
+      .slot-grid--secondary {
+        grid-template-columns: 1fr;
+      }
     }
 
     .slot-preview {

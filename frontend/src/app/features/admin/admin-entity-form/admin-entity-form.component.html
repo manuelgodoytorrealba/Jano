@@ -139,7 +139,7 @@
             <div class="media-slots__head">
               <div>
                 <h4>Visual Slots</h4>
-                <p class="muted">Así se resolverían los usos visuales con la configuración actual.</p>
+                <p class="muted">Lectura rapida de las imagenes activas. Hero, Card y Detail quedan arriba; el resto se resume abajo.</p>
               </div>
               <div class="media-slots__legend">
                 <span class="media-pill media-pill--slot-explicit">Slot explícito</span>
@@ -156,14 +156,14 @@
               </div>
             }
 
-            <div class="slot-grid">
-              @for (slot of visualSlots; track slot.key) {
+            <div class="slot-grid slot-grid--summary">
+              @for (slot of primaryVisualSlots; track slot.key) {
                 <article class="slot-card" [class.slot-card--empty]="slot.state.source === 'empty'">
                   <div class="slot-card__head">
                     <div>
                       <div class="slot-card__eyebrow">{{ slotPreviewEyebrow(slot) }}</div>
                       <div class="slot-card__title">{{ slot.label }}</div>
-                      <div class="slot-card__description">{{ slot.description }}</div>
+                      <div class="slot-card__description">{{ slot.state.item?.alt || slot.description }}</div>
                     </div>
 
                     <span [class]="'media-pill ' + slotStateClass(slot)">
@@ -182,21 +182,47 @@
 
                   <div class="slot-card__meta">
                     @if (slot.state.item) {
-                      <div><strong>Resolución:</strong> {{ slotResolutionLabel(slot) }}</div>
-                      <div><strong>Origen:</strong> {{ mediaOriginLabel(slot.state.item.originType) }}</div>
-                      <div><strong>Rol:</strong> {{ mediaRoleLabel(slot.state.item.role) }}</div>
-                      @if (slot.state.item.originalFilename) {
-                        <div><strong>Archivo:</strong> {{ slot.state.item.originalFilename }}</div>
-                      }
-                      <div><strong>Display:</strong> {{ slot.state.item.displayMode || 'Auto' }}</div>
-                      <div><strong>Focal:</strong> {{ slot.state.item.focalX ?? '—' }} / {{ slot.state.item.focalY ?? '—' }}</div>
-                      @if (slot.count && slot.key === 'gallery') {
-                        <div><strong>Items:</strong> {{ slot.count }}</div>
-                      }
+                      <span>{{ mediaRoleLabel(slot.state.item.role) }}</span>
+                      <span>· {{ mediaOriginLabel(slot.state.item.originType) }}</span>
+                      <span>· {{ slotResolutionLabel(slot) }}</span>
                     } @else {
                       <div>Sin media resuelta para este uso.</div>
                     }
                   </div>
+                </article>
+              }
+            </div>
+
+            <div class="slot-grid slot-grid--secondary">
+              @for (slot of secondaryVisualSlots; track slot.key) {
+                <article class="slot-card slot-card--secondary" [class.slot-card--empty]="slot.state.source === 'empty'">
+                  <div class="slot-card__head slot-card__head--secondary">
+                    <div>
+                      <div class="slot-card__title">{{ slot.label }}</div>
+                      <div class="slot-card__description">
+                        @if (slot.state.item) {
+                          {{ mediaRoleLabel(slot.state.item.role) }} · {{ mediaOriginLabel(slot.state.item.originType) }}
+                          @if (slot.count && slot.key === 'gallery') { · {{ slot.count }} items }
+                        } @else {
+                          Sin media resuelta
+                        }
+                      </div>
+                    </div>
+
+                    <span [class]="'media-pill ' + slotStateClass(slot)">
+                      {{ slotStatusLabel(slot) }}
+                    </span>
+                  </div>
+
+                  <div class="slot-preview slot-preview--mini" [class]="slot.previewClass">
+                    <app-jano-media
+                      [entity]="mediaEntityContext"
+                      [media]="slot.state.item"
+                      [usage]="slot.previewUsage"
+                      [alt]="slot.state.item?.alt || form.title"
+                    ></app-jano-media>
+                  </div>
+
                 </article>
               }
             </div>
@@ -210,211 +236,13 @@
             <div class="success-box">{{ mediaMessage }}</div>
           }
 
-          <div class="media-create">
-            <h4>Nueva media por URL</h4>
-            <div class="media-create__eyebrow">
-              <span class="media-pill media-pill--external">External URL</span>
-              <span class="media-create__caption">Referencia remota rápida. No copia el asset dentro de JANO.</span>
-            </div>
-
-            <div class="media-grid">
-              <label class="field full">
-                <span>URL externa</span>
-                <input type="url" [(ngModel)]="newMedia.url" name="newMediaUrl" placeholder="https://..." />
-              </label>
-
-              <label class="field full">
-                <span>Display URL</span>
-                <input type="url" [(ngModel)]="newMedia.displayUrl" name="newMediaDisplayUrl" placeholder="Opcional" />
-              </label>
-
-              <label class="field full">
-                <span>Source page URL</span>
-                <input type="url" [(ngModel)]="newMedia.sourcePageUrl" name="newMediaSourcePageUrl" placeholder="Opcional" />
-              </label>
-
-              <label class="field full">
-                <span>Alt</span>
-                <input type="text" [(ngModel)]="newMedia.alt" name="newMediaAlt" />
-              </label>
-
-              <label class="field">
-                <span>Rol visual</span>
-                <select [(ngModel)]="newMedia.role" name="newMediaRole">
-                  @for (role of mediaRoles; track role) {
-                    <option [value]="role">{{ mediaRoleLabel(role) }}</option>
-                  }
-                </select>
-              </label>
-
-              <label class="field">
-                <span>Display mode</span>
-                <select [(ngModel)]="newMedia.displayMode" name="newMediaDisplayMode">
-                  @for (mode of displayModes; track mode.value) {
-                    <option [value]="mode.value">{{ mode.label }}</option>
-                  }
-                </select>
-              </label>
-
-              <label class="field">
-                <span>Sort order</span>
-                <input type="number" [(ngModel)]="newMedia.sortOrder" name="newMediaSortOrder" />
-              </label>
-
-              <label class="field field--checkbox">
-                <span>Primary fallback</span>
-                <input type="checkbox" [(ngModel)]="newMedia.isPrimary" name="newMediaIsPrimary" />
-              </label>
-
-              <label class="field">
-                <span>Focal X</span>
-                <input type="number" min="0" max="100" step="0.1" [(ngModel)]="newMedia.focalX" name="newMediaFocalX" />
-              </label>
-
-              <label class="field">
-                <span>Focal Y</span>
-                <input type="number" min="0" max="100" step="0.1" [(ngModel)]="newMedia.focalY" name="newMediaFocalY" />
-              </label>
-
-              <label class="field">
-                <span>Source</span>
-                <input type="text" [(ngModel)]="newMedia.source" name="newMediaSource" />
-              </label>
-
-              <label class="field">
-                <span>Photo by</span>
-                <input type="text" [(ngModel)]="newMedia.photoBy" name="newMediaPhotoBy" />
-              </label>
-
-              <label class="field full">
-                <span>License</span>
-                <input type="text" [(ngModel)]="newMedia.license" name="newMediaLicense" />
-              </label>
-            </div>
-
-            <div class="relations-actions">
-              <button class="btn primary" type="button" [disabled]="addingMedia" (click)="addMedia()">
-                @if (addingMedia) { Añadiendo... } @else { Añadir media }
-              </button>
-            </div>
-          </div>
-
-          <div class="media-create">
-            <h4>Subir archivo</h4>
-            <div class="media-create__eyebrow">
-              <span class="media-pill media-pill--upload">Uploaded file</span>
-              <span class="media-create__caption">Asset propio estable para curación visual y slots premium.</span>
-            </div>
-
-            <div class="upload-dropzone"
-              [class.upload-dropzone--active]="uploadDragActive"
-              [class.upload-dropzone--invalid]="!!uploadValidationError"
-              (dragover)="onUploadDragOver($event)"
-              (dragleave)="onUploadDragLeave($event)"
-              (drop)="onUploadDrop($event)">
-              <input #uploadInput type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" class="upload-input" (change)="onUploadFileSelected($event)" />
-
-              @if (uploadPreviewUrl) {
-                <div class="upload-preview">
-                  <img [src]="uploadPreviewUrl" [alt]="uploadMediaDraft.alt || 'Preview upload'" />
-                </div>
-              } @else {
-                <div class="upload-dropzone__placeholder">
-                  <strong>Arrastra una imagen aquí</strong>
-                  <span>o selecciónala desde tu PC</span>
-                  <span class="hint">Formatos permitidos: {{ uploadAcceptedFormatsLabel }} · Máximo {{ maxUploadSizeLabel }}</span>
-                </div>
-              }
-
-              <div class="upload-dropzone__actions">
-                <button class="btn ghost" type="button" (click)="uploadInput.click()">Seleccionar archivo</button>
-                @if (selectedUploadFile) {
-                  <button class="btn ghost" type="button" (click)="clearSelectedUpload()">Quitar</button>
-                }
-              </div>
-
-              @if (selectedUploadFile) {
-                <div class="upload-dropzone__meta">
-                  <span>{{ selectedUploadFile.name }}</span>
-                  <span>· {{ formatFileSize(selectedUploadFile.size) }}</span>
-                  <span>· {{ selectedUploadFile.type || 'image/*' }}</span>
-                  @if (uploadPreviewDimensions) {
-                    <span>· {{ uploadPreviewDimensions.width }}×{{ uploadPreviewDimensions.height }}</span>
-                  }
-                </div>
-              }
-            </div>
-
-            @if (uploadValidationError) {
-              <div class="error-box">{{ uploadValidationError }}</div>
-            }
-
-            <div class="media-grid">
-              <label class="field full">
-                <span>Alt</span>
-                <input type="text" [(ngModel)]="uploadMediaDraft.alt" name="uploadMediaAlt" />
-              </label>
-
-              <label class="field">
-                <span>Rol visual</span>
-                <select [(ngModel)]="uploadMediaDraft.role" name="uploadMediaRole">
-                  @for (role of mediaRoles; track role) {
-                    <option [value]="role">{{ mediaRoleLabel(role) }}</option>
-                  }
-                </select>
-              </label>
-
-              <label class="field">
-                <span>Display mode</span>
-                <select [(ngModel)]="uploadMediaDraft.displayMode" name="uploadMediaDisplayMode">
-                  @for (mode of displayModes; track mode.value) {
-                    <option [value]="mode.value">{{ mode.label }}</option>
-                  }
-                </select>
-              </label>
-
-              <label class="field">
-                <span>Sort order</span>
-                <input type="number" [(ngModel)]="uploadMediaDraft.sortOrder" name="uploadMediaSortOrder" />
-              </label>
-
-              <label class="field field--checkbox">
-                <span>Primary fallback</span>
-                <input type="checkbox" [(ngModel)]="uploadMediaDraft.isPrimary" name="uploadMediaIsPrimary" />
-              </label>
-
-              <label class="field">
-                <span>Focal X</span>
-                <input type="number" min="0" max="100" step="0.1" [(ngModel)]="uploadMediaDraft.focalX" name="uploadMediaFocalX" />
-              </label>
-
-              <label class="field">
-                <span>Focal Y</span>
-                <input type="number" min="0" max="100" step="0.1" [(ngModel)]="uploadMediaDraft.focalY" name="uploadMediaFocalY" />
-              </label>
-
-              <label class="field">
-                <span>Source</span>
-                <input type="text" [(ngModel)]="uploadMediaDraft.source" name="uploadMediaSource" />
-              </label>
-
-              <label class="field">
-                <span>Photo by</span>
-                <input type="text" [(ngModel)]="uploadMediaDraft.photoBy" name="uploadMediaPhotoBy" />
-              </label>
-
-              <label class="field full">
-                <span>License</span>
-                <input type="text" [(ngModel)]="uploadMediaDraft.license" name="uploadMediaLicense" />
-              </label>
-            </div>
-
-            <div class="relations-actions">
-              <button class="btn primary" type="button" [disabled]="uploadingMedia || !selectedUploadFile || !!uploadValidationError" (click)="uploadMediaFromFile()">
-                @if (uploadingMedia) { Subiendo... } @else { Subir archivo }
-              </button>
-            </div>
-          </div>
+          <app-media-add-panel
+            [adding]="addingMedia"
+            [uploading]="uploadingMedia"
+            [resetVersion]="mediaAddResetVersion"
+            (addExternal)="addExternalMedia($event)"
+            (addUpload)="uploadMediaFromDraft($event)"
+          ></app-media-add-panel>
 
           <div class="current-relations">
             <h4>Media asociada</h4>
@@ -422,210 +250,24 @@
             @if (mediaLinks.length) {
               <div class="media-list">
                 @for (link of mediaLinks; track link.id) {
-                  <article class="media-card">
-                    <div class="media-card__preview">
-                      <app-jano-media [media]="mediaPreview(link)" usage="card" [alt]="link.media.alt || form.title"></app-jano-media>
-                    </div>
-
-                    <div class="media-card__body">
-                      <div class="media-card__head">
-                        <div>
-                          <div class="media-card__title">{{ mediaRoleLabel(link.role) }}</div>
-                          <div class="media-card__eyebrow">
-                            <span [class]="'media-pill ' + mediaOriginTone(link.media.originType)">
-                              {{ mediaOriginLabel(link.media.originType) }}
-                            </span>
-                            @if (link.media.derivedFromMediaId) {
-                              <span class="media-pill">Deriva de asset {{ link.media.derivedFromMediaId }}</span>
-                            }
-                            @if (link.role === 'PRIMARY_LEGACY') {
-                              <span class="media-pill media-pill--legacy">Legacy primary</span>
-                            }
-                            @if (link.isPrimary) {
-                              <span class="media-pill media-pill--primary">Primary fallback</span>
-                            }
-                          </div>
-                          <div class="media-card__meta">
-                            <span>{{ mediaOriginDescription(link.media.originType) }}</span>
-                            @if (link.media.provider) { <span>{{ link.media.provider }}</span> }
-                            @if (link.media.width || link.media.height) {
-                              <span>· {{ link.media.width ?? '—' }}×{{ link.media.height ?? '—' }}</span>
-                            }
-                            @if (link.media.fileSize) {
-                              <span>· {{ formatFileSize(link.media.fileSize) }}</span>
-                            }
-                            <span>· Asset {{ link.media.id }}</span>
-                            @if (link.media.originalFilename) {
-                              <span>· {{ link.media.originalFilename }}</span>
-                            }
-                          </div>
-                          @if (replacementIngestedLink(link); as promotedIngested) {
-                            <div class="media-card__source-note">
-                              Reemplazo visual activo:
-                              <span>asset INGESTED {{ promotedIngested.media.id }}</span>
-                            </div>
-                          }
-                          @if (ingestedSourceLabel(link); as ingestedSource) {
-                            <div class="media-card__source-note">
-                              Derivado de:
-                              <a [href]="ingestedSource" target="_blank" rel="noreferrer">{{ ingestedSource }}</a>
-                            </div>
-                          }
-                        </div>
-
-                        <button class="btn danger" type="button" [disabled]="link.removing" (click)="removeMedia(link)">
-                          @if (link.removing) { Quitando... } @else { Quitar }
-                        </button>
-                      </div>
-
-                      <div class="media-grid">
-                        <label class="field full">
-                          <span>URL</span>
-                          <input type="url" [(ngModel)]="link.media.url" [name]="'media-url-' + link.id" />
-                        </label>
-
-                        <label class="field full">
-                          <span>Display URL</span>
-                          <input type="url" [(ngModel)]="link.media.displayUrl" [name]="'media-display-url-' + link.id" />
-                        </label>
-
-                        <label class="field full">
-                          <span>Source page URL</span>
-                          <input type="url" [(ngModel)]="link.media.sourcePageUrl" [name]="'media-source-page-url-' + link.id" />
-                        </label>
-
-                        <label class="field full">
-                          <span>Alt</span>
-                          <input type="text" [(ngModel)]="link.media.alt" [name]="'media-alt-' + link.id" />
-                        </label>
-
-                        <label class="field">
-                          <span>Rol visual</span>
-                          <select [(ngModel)]="link.role" [name]="'media-role-' + link.id">
-                            @for (role of mediaRoles; track role) {
-                              <option [value]="role">{{ mediaRoleLabel(role) }}</option>
-                            }
-                          </select>
-                        </label>
-
-                        <label class="field">
-                          <span>Display mode</span>
-                          <select [(ngModel)]="link.displayMode" [name]="'media-display-mode-' + link.id">
-                            @for (mode of displayModes; track mode.value) {
-                              <option [value]="mode.value">{{ mode.label }}</option>
-                            }
-                          </select>
-                        </label>
-
-                        <label class="field">
-                          <span>Sort order</span>
-                          <input type="number" [(ngModel)]="link.sortOrder" [name]="'media-sort-order-' + link.id" />
-                        </label>
-
-                        <label class="field field--checkbox">
-                          <span>Primary fallback</span>
-                          <input type="checkbox" [(ngModel)]="link.isPrimary" [name]="'media-primary-' + link.id" />
-                        </label>
-
-                        <label class="field">
-                          <span>Focal X</span>
-                          <input type="number" min="0" max="100" step="0.1" [(ngModel)]="link.focalX" [name]="'media-focal-x-' + link.id" />
-                        </label>
-
-                        <label class="field">
-                          <span>Focal Y</span>
-                          <input type="number" min="0" max="100" step="0.1" [(ngModel)]="link.focalY" [name]="'media-focal-y-' + link.id" />
-                        </label>
-
-                        <label class="field">
-                          <span>Source</span>
-                          <input type="text" [(ngModel)]="link.media.source" [name]="'media-source-' + link.id" />
-                        </label>
-
-                        <label class="field">
-                          <span>Photo by</span>
-                          <input type="text" [(ngModel)]="link.media.photoBy" [name]="'media-photo-by-' + link.id" />
-                        </label>
-
-                        <label class="field full">
-                          <span>License</span>
-                          <input type="text" [(ngModel)]="link.media.license" [name]="'media-license-' + link.id" />
-                        </label>
-                      </div>
-
-                      <div class="media-card__notes">
-                        <span class="media-pill">Rol técnico: {{ link.role }}</span>
-                        <span [class]="'media-pill ' + mediaOriginTone(link.media.originType)">
-                          {{ mediaOriginLabel(link.media.originType) }}
-                        </span>
-                        @if (link.role === 'PRIMARY_LEGACY') {
-                          <span class="media-pill media-pill--legacy">Compatibilidad legacy</span>
-                        }
-                        @if (link.isPrimary) {
-                          <span class="media-pill media-pill--primary">Fallback primary activo</span>
-                        }
-                        @if (hasPromotedVisualReplacement(link)) {
-                          <span class="media-pill media-pill--promoted">Reemplazo visual activo</span>
-                        }
-                        @if (canRestoreExternalMedia(link)) {
-                          <span class="media-pill media-pill--restorable">Restaurable</span>
-                        }
-                      </div>
-
-                      @if (canIngestMedia(link)) {
-                        <div class="media-card__ingest-callout">
-                          <strong>Convertir en asset propio</strong>
-                          <span>Descarga esta referencia externa al storage local de JANO y crea un nuevo asset <code>INGESTED</code>. El original externo se conserva sin cambios.</span>
-                          <button class="btn mini ghost" type="button" [disabled]="link.ingesting" (click)="ingestMedia(link)">
-                            @if (link.ingesting) { Ingestando... } @else { Ingestar como asset propio }
-                          </button>
-                        </div>
-                      }
-
-                      @if (canPromoteIngestedMedia(link)) {
-                        <div class="media-card__promote-callout">
-                          <strong>Usar como reemplazo visual</strong>
-                          <span>
-                            Este asset <code>INGESTED</code> puede asumir el papel visual de
-                            {{ replacementTargetLabel(link) || 'su asset externo origen' }}.
-                            El asset externo seguirá visible como referencia.
-                          </span>
-                          <button class="btn mini ghost" type="button" [disabled]="link.promoting" (click)="promoteIngestedMedia(link)">
-                            @if (link.promoting) { Promoviendo... } @else { Usar como reemplazo visual }
-                          </button>
-                        </div>
-                      }
-
-                      @if (canRestoreExternalMedia(link)) {
-                        <div class="media-card__restore-callout">
-                          <strong>Restaurar externo como visual principal</strong>
-                          <span>
-                            Este asset externo puede recuperar el papel visual que ahora ocupa
-                            {{ replacementIngestedLabel(link) || 'su asset ingerido derivado' }}.
-                            El asset INGESTED seguirá visible como referencia.
-                          </span>
-                          <button class="btn mini ghost" type="button" [disabled]="link.restoring" (click)="restoreExternalMedia(link)">
-                            @if (link.restoring) { Restaurando... } @else { Restaurar externo }
-                          </button>
-                        </div>
-                      }
-
-                      <div class="media-quick-actions">
-                        <button class="btn mini" type="button" (click)="assignRole(link, 'HERO')">Usar como Hero</button>
-                        <button class="btn mini" type="button" (click)="assignRole(link, 'CARD')">Usar como Card</button>
-                        <button class="btn mini" type="button" (click)="assignRole(link, 'DETAIL')">Usar como Detail</button>
-                        <button class="btn mini" type="button" (click)="assignRole(link, 'THUMBNAIL')">Thumbnail</button>
-                        <button class="btn mini" type="button" (click)="assignRole(link, 'EXPLORER_3D')">Explorer 3D</button>
-                        <button class="btn mini" type="button" (click)="assignRole(link, 'GALLERY')">Gallery</button>
-                      </div>
-
-                      <div class="relations-actions">
-                        <button class="btn ghost" type="button" [disabled]="link.saving" (click)="saveMedia(link)">
-                          @if (link.saving) { Guardando... } @else { Guardar media }
-                        </button>
-                      </div>
-                    </div>
-                  </article>
+                  <app-media-card-editor
+                    [link]="link"
+                    [entityTitle]="form.title"
+                    [activeSlotLabels]="activeSlotLabels(link)"
+                    [canIngest]="canIngestMedia(link)"
+                    [canPromote]="canPromoteIngestedMedia(link)"
+                    [canRestore]="canRestoreExternalMedia(link)"
+                    [hasPromotedReplacement]="hasPromotedVisualReplacement(link)"
+                    [replacementTargetLabel]="replacementTargetLabel(link)"
+                    [replacementIngestedLabel]="replacementIngestedLabel(link)"
+                    [ingestedSourceLabel]="ingestedSourceLabel(link)"
+                    (assignRole)="assignRole($event.link, $event.role)"
+                    (save)="saveMedia($event)"
+                    (remove)="removeMedia($event)"
+                    (ingest)="ingestMedia($event)"
+                    (promote)="promoteIngestedMedia($event)"
+                    (restore)="restoreExternalMedia($event)"
+                  ></app-media-card-editor>
                 }
               </div>
             } @else {
@@ -823,6 +465,36 @@
       </div>
 
       <div class="preview-card">
+        <div class="preview-media-hero">
+          <app-jano-media
+            [entity]="mediaEntityContext"
+            [media]="primaryVisualSlots[0]?.state?.item || null"
+            usage="hero"
+            [alt]="primaryVisualSlots[0]?.state?.item?.alt || form.title"
+            [lazy]="false"
+          ></app-jano-media>
+        </div>
+
+        <div class="preview-media-summary">
+          @for (slot of primaryVisualSlots; track slot.key) {
+            <div class="preview-media-summary__item" [class.preview-media-summary__item--empty]="slot.state.source === 'empty'">
+              <div>
+                <strong>{{ slot.label }}</strong>
+                <span>
+                  @if (slot.state.item) {
+                    {{ mediaRoleLabel(slot.state.item.role) }} · {{ mediaOriginLabel(slot.state.item.originType) }}
+                  } @else {
+                    Sin imagen
+                  }
+                </span>
+              </div>
+              <span [class]="'media-pill ' + slotStateClass(slot)">
+                {{ slotStatusLabel(slot) }}
+              </span>
+            </div>
+          }
+        </div>
+
         <div class="preview-badges">
           <span class="badge">{{ form.status }}</span>
 

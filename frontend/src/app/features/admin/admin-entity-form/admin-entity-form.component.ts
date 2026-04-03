@@ -23,55 +23,15 @@ import {
   resolveEntityMediaGallery,
   resolveEntityMediaSlot,
 } from '../../../shared/media/media.utils';
-
-const MAX_UPLOAD_SIZE_BYTES = 15 * 1024 * 1024;
-const ALLOWED_UPLOAD_MIME_TYPES = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/gif',
-  'image/avif',
-]);
-
-type UploadPreviewDimensions = {
-  width: number;
-  height: number;
-};
-
-type EditableAdminMediaLink = {
-  id: string;
-  role: string;
-  sortOrder: number | string;
-  isPrimary: boolean;
-  displayMode: string;
-  focalX: number | string | null;
-  focalY: number | string | null;
-  media: {
-    id: string;
-    url: string;
-    derivedFromMediaId?: string | null;
-    canonicalUrl?: string | null;
-    displayUrl?: string | null;
-    sourcePageUrl?: string | null;
-    alt?: string | null;
-    source?: string | null;
-    photoBy?: string | null;
-    license?: string | null;
-    provider?: string | null;
-    qualityTier?: string | null;
-    width?: number | null;
-    height?: number | null;
-    originType?: string | null;
-    storageKey?: string | null;
-    originalFilename?: string | null;
-    fileSize?: number | null;
-  };
-  saving?: boolean;
-  removing?: boolean;
-  ingesting?: boolean;
-  promoting?: boolean;
-  restoring?: boolean;
-};
+import { MediaAddPanelComponent } from './media-add-panel.component';
+import { MediaCardEditorComponent } from './media-card-editor.component';
+import {
+  EditableAdminMediaLink,
+  MEDIA_ROLE_LABELS,
+  MediaAddExternalSubmit,
+  MediaAddUploadSubmit,
+  UploadPreviewDimensions,
+} from './media-admin.models';
 
 type VisualSlot = {
   key: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery' | 'primary';
@@ -87,7 +47,7 @@ type VisualSlot = {
   standalone: true,
   selector: 'app-admin-entity-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink, JanoMediaComponent],
+  imports: [FormsModule, RouterLink, JanoMediaComponent, MediaAddPanelComponent, MediaCardEditorComponent],
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
 })
@@ -102,9 +62,6 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
 
 @ViewChild('previewContainer')
 previewContainer?: ElementRef<HTMLElement>;
-
-@ViewChild('uploadInput')
-uploadInput?: ElementRef<HTMLInputElement>;
 
   linkSuggestions: any[] = [];
   linkSearch = '';
@@ -132,40 +89,8 @@ uploadInput?: ElementRef<HTMLInputElement>;
   mediaError = '';
   addingMedia = false;
   uploadingMedia = false;
-  uploadDragActive = false;
-  uploadValidationError = '';
-  uploadPreviewUrl: string | null = null;
-  uploadPreviewDimensions: UploadPreviewDimensions | null = null;
-  selectedUploadFile: File | null = null;
-
-  mediaRoles = [
-    'PRIMARY_LEGACY',
-    'HERO',
-    'CARD',
-    'DETAIL',
-    'THUMBNAIL',
-    'EXPLORER_3D',
-    'GALLERY',
-  ] as const;
-
-  mediaRoleLabels: Record<string, string> = {
-    PRIMARY_LEGACY: 'Primary legacy',
-    HERO: 'Hero',
-    CARD: 'Card',
-    DETAIL: 'Detail',
-    THUMBNAIL: 'Thumbnail',
-    EXPLORER_3D: 'Explorer 3D',
-    GALLERY: 'Gallery',
-  };
-
-  displayModes = [
-    { value: '', label: 'Auto' },
-    { value: 'COVER', label: 'Cover' },
-    { value: 'CONTAIN', label: 'Contain' },
-  ];
-
-  newMedia = this.createEmptyMediaDraft();
-  uploadMediaDraft = this.createEmptyMediaDraft();
+  mediaAddResetVersion = 0;
+  mediaRoleLabels: Record<string, string> = MEDIA_ROLE_LABELS;
 
   private linkSearch$ = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -630,12 +555,12 @@ uploadInput?: ElementRef<HTMLInputElement>;
     }
   }
 
-  get uploadAcceptedFormatsLabel(): string {
-    return 'JPEG, PNG, WEBP, GIF o AVIF';
+  get primaryVisualSlots(): VisualSlot[] {
+    return this.visualSlots.filter((slot) => ['hero', 'card', 'detail'].includes(slot.key));
   }
 
-  get maxUploadSizeLabel(): string {
-    return this.formatFileSize(MAX_UPLOAD_SIZE_BYTES);
+  get secondaryVisualSlots(): VisualSlot[] {
+    return this.visualSlots.filter((slot) => !['hero', 'card', 'detail'].includes(slot.key));
   }
 
   canIngestMedia(link: EditableAdminMediaLink): boolean {
@@ -993,7 +918,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
     return `${Math.max(1, Math.round(value / 1024))} KB`;
   }
 
-  addMedia() {
+  addExternalMedia(event: MediaAddExternalSubmit) {
     if (!this.entityId || this.addingMedia) {
       return;
     }
@@ -1001,7 +926,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
     this.mediaError = '';
     this.mediaMessage = '';
 
-    const payload = this.buildMediaPayload(this.newMedia);
+    const payload = this.buildMediaPayload(event.draft);
     if (!payload) {
       return;
     }
@@ -1011,7 +936,7 @@ uploadInput?: ElementRef<HTMLInputElement>;
     this.adminApi.createMedia(this.entityId, payload).subscribe({
       next: (link) => {
         this.upsertMediaLink(link);
-        this.newMedia = this.createEmptyMediaDraft();
+        this.mediaAddResetVersion += 1;
         this.addingMedia = false;
         this.mediaMessage = 'Media añadida correctamente.';
         this.cdr.markForCheck();
@@ -1024,52 +949,22 @@ uploadInput?: ElementRef<HTMLInputElement>;
     });
   }
 
-  onUploadFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement | null;
-    const file = input?.files?.[0] ?? null;
-    this.setUploadFile(file);
-  }
-
-  onUploadDragOver(event: DragEvent) {
-    event.preventDefault();
-    this.uploadDragActive = true;
-    this.cdr.markForCheck();
-  }
-
-  onUploadDragLeave(event: DragEvent) {
-    event.preventDefault();
-    this.uploadDragActive = false;
-    this.cdr.markForCheck();
-  }
-
-  onUploadDrop(event: DragEvent) {
-    event.preventDefault();
-    this.uploadDragActive = false;
-    const file = event.dataTransfer?.files?.[0] ?? null;
-    this.setUploadFile(file);
-  }
-
-  clearSelectedUpload() {
-    this.setUploadFile(null);
-  }
-
-  uploadMediaFromFile() {
-    if (!this.entityId || this.uploadingMedia || !this.selectedUploadFile || this.uploadValidationError) {
+  uploadMediaFromDraft(event: MediaAddUploadSubmit) {
+    if (!this.entityId || this.uploadingMedia) {
       return;
     }
 
     this.mediaError = '';
     this.mediaMessage = '';
 
-    const payload = this.buildUploadPayload(this.uploadMediaDraft);
+    const payload = this.buildUploadPayload(event.draft, event.dimensions);
     this.uploadingMedia = true;
 
-    this.adminApi.uploadMedia(this.entityId, this.selectedUploadFile, payload).subscribe({
+    this.adminApi.uploadMedia(this.entityId, event.file, payload).subscribe({
       next: (link) => {
         this.upsertMediaLink(link);
+        this.mediaAddResetVersion += 1;
         this.uploadingMedia = false;
-        this.uploadMediaDraft = this.createEmptyMediaDraft();
-        this.clearSelectedUpload();
         this.mediaMessage = 'Archivo subido y asociado correctamente.';
         this.cdr.markForCheck();
       },
@@ -1280,69 +1175,6 @@ uploadInput?: ElementRef<HTMLInputElement>;
     };
   }
 
-  private createEmptyMediaDraft() {
-    return {
-      url: '',
-      displayUrl: '',
-      sourcePageUrl: '',
-      alt: '',
-      source: '',
-      photoBy: '',
-      license: '',
-      role: 'CARD',
-      sortOrder: 0,
-      isPrimary: false,
-      displayMode: '',
-      focalX: null as number | string | null,
-      focalY: null as number | string | null,
-    };
-  }
-
-  private setUploadFile(file: File | null) {
-    this.uploadValidationError = '';
-    this.uploadDragActive = false;
-
-    if (this.uploadPreviewUrl) {
-      URL.revokeObjectURL(this.uploadPreviewUrl);
-      this.uploadPreviewUrl = null;
-    }
-    this.uploadPreviewDimensions = null;
-
-    this.selectedUploadFile = file;
-
-    if (!file) {
-      if (this.uploadInput?.nativeElement) {
-        this.uploadInput.nativeElement.value = '';
-      }
-      this.cdr.markForCheck();
-      return;
-    }
-
-    if (!ALLOWED_UPLOAD_MIME_TYPES.has(file.type)) {
-      this.selectedUploadFile = null;
-      this.uploadValidationError = `Formato no permitido. Usa ${this.uploadAcceptedFormatsLabel}.`;
-      if (this.uploadInput?.nativeElement) {
-        this.uploadInput.nativeElement.value = '';
-      }
-      this.cdr.markForCheck();
-      return;
-    }
-
-    if (file.size > MAX_UPLOAD_SIZE_BYTES) {
-      this.selectedUploadFile = null;
-      this.uploadValidationError = `El archivo supera el máximo permitido de ${this.maxUploadSizeLabel}.`;
-      if (this.uploadInput?.nativeElement) {
-        this.uploadInput.nativeElement.value = '';
-      }
-      this.cdr.markForCheck();
-      return;
-    }
-
-    this.uploadPreviewUrl = URL.createObjectURL(file);
-    this.readUploadPreviewDimensions(this.uploadPreviewUrl);
-    this.cdr.markForCheck();
-  }
-
   private normalizeMediaLink(link: any): EditableAdminMediaLink {
     return {
       id: link.id,
@@ -1431,14 +1263,14 @@ uploadInput?: ElementRef<HTMLInputElement>;
     };
   }
 
-  private buildUploadPayload(source: any): AdminUploadEntityMediaPayload {
+  private buildUploadPayload(source: any, dimensions: UploadPreviewDimensions | null): AdminUploadEntityMediaPayload {
     return {
       alt: String(source.alt ?? '').trim() || undefined,
       source: String(source.source ?? '').trim() || undefined,
       photoBy: String(source.photoBy ?? '').trim() || undefined,
       license: String(source.license ?? '').trim() || undefined,
-      width: this.uploadPreviewDimensions?.width,
-      height: this.uploadPreviewDimensions?.height,
+      width: dimensions?.width,
+      height: dimensions?.height,
       role: source.role,
       sortOrder: Number(source.sortOrder ?? 0),
       isPrimary: !!source.isPrimary,
@@ -1457,23 +1289,10 @@ uploadInput?: ElementRef<HTMLInputElement>;
     return Number.isFinite(numeric) ? numeric : null;
   }
 
-  private readUploadPreviewDimensions(objectUrl: string) {
-    const image = new Image();
-
-    image.onload = () => {
-      this.uploadPreviewDimensions = {
-        width: image.naturalWidth,
-        height: image.naturalHeight,
-      };
-      this.cdr.markForCheck();
-    };
-
-    image.onerror = () => {
-      this.uploadPreviewDimensions = null;
-      this.cdr.markForCheck();
-    };
-
-    image.src = objectUrl;
+  activeSlotLabels(link: EditableAdminMediaLink): string[] {
+    return this.visualSlots
+      .filter((slot) => slot.state.item?.id === link.media.id)
+      .map((slot) => slot.label);
   }
 
   onContentInput() {
@@ -1576,10 +1395,6 @@ uploadInput?: ElementRef<HTMLInputElement>;
 }
 
   ngOnDestroy() {
-    if (this.uploadPreviewUrl) {
-      URL.revokeObjectURL(this.uploadPreviewUrl);
-    }
-
     this.destroy$.next();
     this.destroy$.complete();
   }

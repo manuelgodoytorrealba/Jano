@@ -1,0 +1,209 @@
+<article class="media-card" [class.media-card--active]="activeSlotLabels.length > 0">
+  <div class="media-card__preview">
+    <app-jano-media [media]="previewMedia" usage="detail" [alt]="link.media.alt || entityTitle"></app-jano-media>
+  </div>
+
+  <div class="media-card__body">
+    <div class="media-card__head">
+      <div class="media-card__identity">
+        <div class="media-card__title-row">
+          <div class="media-card__title">{{ mediaRoleLabel(link.role) }}</div>
+          @if (activeSlotLabels.length) {
+            <div class="media-card__active-slots">
+              @for (label of activeSlotLabels; track label) {
+                <span class="media-pill media-pill--active-slot">{{ label }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        @if (activeSlotLabels.length) {
+          <div class="media-card__active-summary">
+            Imagen activa ahora en {{ activeSlotLabels.join(', ') }}.
+          </div>
+        }
+
+        <div class="media-card__eyebrow">
+          <span [class]="'media-pill ' + mediaOriginTone(link.media.originType)">
+            {{ mediaOriginLabel(link.media.originType) }}
+          </span>
+          <span class="media-pill">{{ mediaRoleLabel(link.role) }}</span>
+          @if (link.isPrimary) {
+            <span class="media-pill media-pill--primary">Primary fallback</span>
+          }
+          @if (hasPromotedReplacement) {
+            <span class="media-pill media-pill--promoted">Reemplazo visual activo</span>
+          }
+        </div>
+
+        <div class="media-card__meta">
+          <span>{{ mediaOriginDescription(link.media.originType) }}</span>
+          @if (link.media.width || link.media.height) {
+            <span>· {{ link.media.width ?? '—' }}×{{ link.media.height ?? '—' }}</span>
+          }
+          @if (link.media.fileSize) {
+            <span>· {{ formatFileSize(link.media.fileSize) }}</span>
+          }
+          <span>· Asset {{ link.media.id }}</span>
+          @if (link.media.originalFilename) {
+            <span>· {{ link.media.originalFilename }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="media-card__main-actions">
+        <div class="media-card__primary-actions">
+          <button class="btn mini btn--primary-quick" type="button" (click)="setRole('HERO')">Usar como Hero</button>
+          <button class="btn mini btn--primary-quick" type="button" (click)="setRole('CARD')">Usar como Card</button>
+          <button class="btn mini btn--primary-quick" type="button" (click)="setRole('DETAIL')">Usar como Detail</button>
+        </div>
+        <button class="btn mini ghost" type="button" (click)="toggleAdvanced()">
+          @if (showAdvanced) { Cerrar edicion } @else { Editar }
+        </button>
+        <button class="btn mini danger" type="button" [disabled]="link.removing" (click)="removeLink()">
+          @if (link.removing) { Quitando... } @else { Eliminar }
+        </button>
+      </div>
+    </div>
+
+    @if (ingestedSourceLabel) {
+      <div class="media-card__source-note">
+        Derivado de:
+        <a [href]="ingestedSourceLabel" target="_blank" rel="noreferrer">{{ ingestedSourceLabel }}</a>
+      </div>
+    }
+
+    @if (showAdvanced) {
+      <div class="media-card__advanced">
+        <div class="media-grid">
+          <label class="field full">
+            <span>Alt</span>
+            <input type="text" [(ngModel)]="link.media.alt" [name]="'media-alt-' + link.id" />
+          </label>
+
+          <label class="field full">
+            <span>URL</span>
+            <input type="url" [(ngModel)]="link.media.url" [name]="'media-url-' + link.id" />
+          </label>
+
+          <label class="field full">
+            <span>Display URL</span>
+            <input type="url" [(ngModel)]="link.media.displayUrl" [name]="'media-display-url-' + link.id" />
+          </label>
+
+          <label class="field full">
+            <span>Source page URL</span>
+            <input type="url" [(ngModel)]="link.media.sourcePageUrl" [name]="'media-source-page-url-' + link.id" />
+          </label>
+
+          <label class="field">
+            <span>Rol visual</span>
+            <select [(ngModel)]="link.role" [name]="'media-role-' + link.id">
+              @for (role of mediaRoles; track role) {
+                <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Display mode</span>
+            <select [(ngModel)]="link.displayMode" [name]="'media-display-mode-' + link.id">
+              @for (mode of displayModes; track mode.value) {
+                <option [value]="mode.value">{{ mode.label }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Sort order</span>
+            <input type="number" [(ngModel)]="link.sortOrder" [name]="'media-sort-order-' + link.id" />
+          </label>
+
+          <label class="field field--checkbox">
+            <span>Primary fallback</span>
+            <input type="checkbox" [(ngModel)]="link.isPrimary" [name]="'media-primary-' + link.id" />
+          </label>
+
+          <label class="field">
+            <span>Focal X</span>
+            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="link.focalX" [name]="'media-focal-x-' + link.id" />
+          </label>
+
+          <label class="field">
+            <span>Focal Y</span>
+            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="link.focalY" [name]="'media-focal-y-' + link.id" />
+          </label>
+
+          <label class="field">
+            <span>Source</span>
+            <input type="text" [(ngModel)]="link.media.source" [name]="'media-source-' + link.id" />
+          </label>
+
+          <label class="field">
+            <span>Photo by</span>
+            <input type="text" [(ngModel)]="link.media.photoBy" [name]="'media-photo-by-' + link.id" />
+          </label>
+
+          <label class="field full">
+            <span>License</span>
+            <input type="text" [(ngModel)]="link.media.license" [name]="'media-license-' + link.id" />
+          </label>
+        </div>
+
+        <div class="media-card__secondary-actions">
+          <button class="btn mini ghost" type="button" (click)="setRole('THUMBNAIL')">Thumbnail</button>
+          <button class="btn mini ghost" type="button" (click)="setRole('EXPLORER_3D')">Explorer 3D</button>
+          <button class="btn mini ghost" type="button" (click)="setRole('GALLERY')">Gallery</button>
+        </div>
+
+        @if (canIngest || canPromote || canRestore) {
+          <div class="workflow-actions">
+            <div class="workflow-actions__label">Acciones de asset</div>
+
+            @if (canIngest) {
+              <div class="workflow-callout">
+                <div>
+                  <strong>Convertir en asset propio</strong>
+                  <span>Descarga esta referencia externa al storage local de JANO sin perder la referencia original.</span>
+                </div>
+                <button class="btn mini ghost" type="button" [disabled]="link.ingesting" (click)="ingestLink()">
+                  @if (link.ingesting) { Ingestando... } @else { Ingestar }
+                </button>
+              </div>
+            }
+
+            @if (canPromote) {
+              <div class="workflow-callout">
+                <div>
+                  <strong>Usar como reemplazo visual</strong>
+                  <span>Este asset puede asumir el papel visual de {{ replacementTargetLabel || 'su externo origen' }}.</span>
+                </div>
+                <button class="btn mini ghost" type="button" [disabled]="link.promoting" (click)="promoteLink()">
+                  @if (link.promoting) { Promoviendo... } @else { Promover }
+                </button>
+              </div>
+            }
+
+            @if (canRestore) {
+              <div class="workflow-callout">
+                <div>
+                  <strong>Restaurar externo</strong>
+                  <span>El externo puede recuperar el papel visual que ahora ocupa {{ replacementIngestedLabel || 'el asset derivado' }}.</span>
+                </div>
+                <button class="btn mini ghost" type="button" [disabled]="link.restoring" (click)="restoreLink()">
+                  @if (link.restoring) { Restaurando... } @else { Restaurar }
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="media-card__footer">
+          <button class="btn ghost" type="button" [disabled]="link.saving" (click)="saveChanges()">
+            @if (link.saving) { Guardando... } @else { Guardar cambios }
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</article>

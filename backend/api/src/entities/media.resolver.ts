@@ -96,14 +96,30 @@ type NormalizedMediaLink = {
   media: MediaLike;
 };
 
-const ROLE_ORDER: Record<Exclude<MediaUsage, 'gallery'>, string[]> = {
-  hero: ['HERO', 'DETAIL', 'CARD', 'THUMBNAIL', 'EXPLORER_3D'],
-  card: ['CARD', 'THUMBNAIL', 'HERO', 'DETAIL', 'EXPLORER_3D'],
+const ROLE_ORDER: Record<Exclude<MediaUsage, 'gallery' | 'primary'>, string[]> = {
+  hero: ['HERO'],
+  card: ['CARD', 'THUMBNAIL'],
   detail: ['DETAIL', 'HERO', 'CARD'],
   thumbnail: ['THUMBNAIL', 'CARD'],
-  explorer3d: ['EXPLORER_3D', 'CARD', 'THUMBNAIL', 'DETAIL', 'HERO'],
-  primary: ['PRIMARY_LEGACY', 'HERO', 'CARD', 'DETAIL', 'THUMBNAIL', 'EXPLORER_3D'],
+  explorer3d: ['EXPLORER_3D'],
 };
+
+const PRIMARY_ROLE_ORDER = ['PRIMARY_LEGACY', 'HERO', 'CARD', 'DETAIL', 'THUMBNAIL', 'EXPLORER_3D'];
+
+const PRIMARY_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | 'primary'>>([
+  'hero',
+  'card',
+  'thumbnail',
+  'explorer3d',
+]);
+
+const BEST_AVAILABLE_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | 'primary'>>([
+  'hero',
+  'card',
+  'detail',
+  'thumbnail',
+  'explorer3d',
+]);
 
 export function buildResolvedMedia(entity: EntityWithMediaLinks | null | undefined): ResolvedMediaPayload {
   return {
@@ -148,6 +164,23 @@ export function resolveEntityMedia(
     return detailFallback ? [detailFallback] : [];
   }
 
+  if (usage === 'primary') {
+    for (const role of PRIMARY_ROLE_ORDER) {
+      const candidate = firstByRole(links, role);
+      if (candidate) {
+        return toResolvedMediaItem(candidate);
+      }
+    }
+
+    const legacyPrimary = selectLegacyPrimary(links);
+    if (legacyPrimary) {
+      return toResolvedMediaItem(legacyPrimary);
+    }
+
+    const best = selectBestAvailable(links, entity?.type ?? null);
+    return best ? toResolvedMediaItem(best) : null;
+  }
+
   const roles = ROLE_ORDER[usage];
 
   for (const role of roles) {
@@ -157,13 +190,19 @@ export function resolveEntityMedia(
     }
   }
 
-  const legacyPrimary = selectLegacyPrimary(links);
-  if (legacyPrimary) {
-    return toResolvedMediaItem(legacyPrimary);
+  if (PRIMARY_FALLBACK_USAGES.has(usage)) {
+    const legacyPrimary = selectLegacyPrimary(links);
+    if (legacyPrimary) {
+      return toResolvedMediaItem(legacyPrimary);
+    }
   }
 
-  const best = selectBestAvailable(links, entity?.type ?? null);
-  return best ? toResolvedMediaItem(best) : null;
+  if (BEST_AVAILABLE_FALLBACK_USAGES.has(usage)) {
+    const best = selectBestAvailable(links, entity?.type ?? null);
+    return best ? toResolvedMediaItem(best) : null;
+  }
+
+  return null;
 }
 
 export function attachResolvedMedia<T extends EntityWithMediaLinks>(entity: T): T & { resolvedMedia: ResolvedMediaPayload } {

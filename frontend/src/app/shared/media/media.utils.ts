@@ -92,18 +92,34 @@ type NormalizedMediaLink = {
 
 const ABSTRACT_ENTITY_TYPES = new Set(['CONCEPT', 'MOVEMENT', 'PERIOD']);
 
-const ROLE_ORDER: Record<Exclude<MediaUsage, 'gallery'>, string[]> = {
-  hero: ['HERO', 'DETAIL', 'CARD', 'THUMBNAIL', 'EXPLORER_3D'],
-  card: ['CARD', 'THUMBNAIL', 'HERO', 'DETAIL', 'EXPLORER_3D'],
+const ROLE_ORDER: Record<Exclude<MediaUsage, 'gallery' | 'primary'>, string[]> = {
+  hero: ['HERO'],
+  card: ['CARD', 'THUMBNAIL'],
   detail: ['DETAIL', 'HERO', 'CARD'],
   thumbnail: ['THUMBNAIL', 'CARD'],
-  explorer3d: ['EXPLORER_3D', 'CARD', 'THUMBNAIL', 'DETAIL', 'HERO'],
-  primary: ['PRIMARY_LEGACY', 'HERO', 'CARD', 'DETAIL', 'THUMBNAIL', 'EXPLORER_3D'],
+  explorer3d: ['EXPLORER_3D'],
 };
 
+const PRIMARY_ROLE_ORDER = ['PRIMARY_LEGACY', 'HERO', 'CARD', 'DETAIL', 'THUMBNAIL', 'EXPLORER_3D'];
+
+const PRIMARY_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | 'primary'>>([
+  'hero',
+  'card',
+  'thumbnail',
+  'explorer3d',
+]);
+
+const BEST_AVAILABLE_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | 'primary'>>([
+  'hero',
+  'card',
+  'detail',
+  'thumbnail',
+  'explorer3d',
+]);
+
 export function mediaDisplayUrl(media: MediaLike | null | undefined): string | null {
-  const displayUrl = media?.displayUrl ?? null;
-  const url = media?.url ?? null;
+  const displayUrl = normalizeMediaUrlValue(media?.displayUrl);
+  const url = normalizeMediaUrlValue(media?.url);
 
   if (displayUrl && isCommonsWikiRedirect(displayUrl) && url) {
     return url;
@@ -304,10 +320,6 @@ function selectResolvedMediaItem(
     return direct;
   }
 
-  if (usage !== 'primary' && resolved.primary && isRenderableRasterMedia(resolved.primary)) {
-    return resolved.primary;
-  }
-
   return null;
 }
 
@@ -328,6 +340,26 @@ function selectLegacyMediaLinkWithSource(
     return null;
   }
 
+  if (usage === 'primary') {
+    for (const role of PRIMARY_ROLE_ORDER) {
+      const candidate = firstByRole(links, role);
+      if (candidate) {
+        return {
+          link: candidate,
+          source: candidate.role === 'PRIMARY_LEGACY' ? 'explicit' : 'fallback',
+        };
+      }
+    }
+
+    const fallback = selectLegacyPrimary(links) ?? selectBestAvailable(links, entity?.type ?? null);
+    return fallback
+      ? {
+        link: fallback,
+        source: fallback.role === 'PRIMARY_LEGACY' ? 'explicit' : 'fallback',
+      }
+      : null;
+  }
+
   for (const role of ROLE_ORDER[usage]) {
     const candidate = firstByRole(links, role);
     if (candidate) {
@@ -338,7 +370,11 @@ function selectLegacyMediaLinkWithSource(
     }
   }
 
-  const fallback = selectLegacyPrimary(links) ?? selectBestAvailable(links, entity?.type ?? null);
+  const fallback = PRIMARY_FALLBACK_USAGES.has(usage)
+    ? selectLegacyPrimary(links) ?? (BEST_AVAILABLE_FALLBACK_USAGES.has(usage) ? selectBestAvailable(links, entity?.type ?? null) : null)
+    : BEST_AVAILABLE_FALLBACK_USAGES.has(usage)
+      ? selectBestAvailable(links, entity?.type ?? null)
+      : null;
   return fallback
     ? {
       link: fallback,
@@ -373,6 +409,11 @@ function normalizeDisplayMode(value: string | null | undefined): 'COVER' | 'CONT
   return normalized === 'COVER' || normalized === 'CONTAIN'
     ? normalized
     : null;
+}
+
+function normalizeMediaUrlValue(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
 }
 
 function exactRoleForUsage(usage: Exclude<MediaUsage, 'gallery'>): string {

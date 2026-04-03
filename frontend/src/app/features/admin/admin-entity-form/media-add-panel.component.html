@@ -1,0 +1,248 @@
+<section class="media-add-panel">
+  <div class="media-add-panel__head">
+    <div>
+      <h4>Anadir imagen</h4>
+      <p class="muted">Alta rapida para referencia externa o asset propio, con opciones avanzadas solo cuando hacen falta.</p>
+    </div>
+
+    <div class="media-add-panel__modes">
+      <button class="mode-pill" type="button" [class.mode-pill--active]="mode === 'url'" (click)="setMode('url')">
+        Por URL externa
+      </button>
+      <button class="mode-pill" type="button" [class.mode-pill--active]="mode === 'upload'" (click)="setMode('upload')">
+        Subir archivo
+      </button>
+    </div>
+  </div>
+
+  @if (mode === 'url') {
+    <div class="media-create">
+      <div class="media-create__eyebrow">
+        <span class="media-pill media-pill--external">External</span>
+        <span class="media-create__caption">Referencia remota rapida. No copia el asset dentro de JANO.</span>
+      </div>
+
+      <div class="url-preview">
+        @if (externalPreviewMedia) {
+          <app-jano-media
+            [media]="externalPreviewMedia"
+            usage="detail"
+            [alt]="externalDraft.alt || 'Preview URL externa'"
+            [lazy]="false"
+          ></app-jano-media>
+        } @else {
+          <div class="url-preview__empty">
+            La preview aparecera en cuanto pegues una URL directa de imagen.
+          </div>
+        }
+      </div>
+
+      <div class="media-grid media-grid--compact">
+        <label class="field full">
+          <span>URL externa</span>
+          <input type="url" [(ngModel)]="externalDraft.url" name="externalUrl" placeholder="https://..." />
+        </label>
+
+        <label class="field full">
+          <span>Alt</span>
+          <input type="text" [(ngModel)]="externalDraft.alt" name="externalAlt" placeholder="Opcional" />
+        </label>
+
+        <label class="field">
+          <span>Rol inicial</span>
+          <select [(ngModel)]="externalDraft.role" name="externalRole">
+            @for (role of roleOptions; track role) {
+              <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+            }
+          </select>
+        </label>
+      </div>
+    </div>
+  } @else {
+    <div class="media-create">
+      <div class="media-create__eyebrow">
+        <span class="media-pill media-pill--upload">Upload</span>
+        <span class="media-create__caption">Asset propio estable para curacion visual y reemplazos editoriales.</span>
+      </div>
+
+      <div class="upload-dropzone"
+        [class.upload-dropzone--active]="uploadDragActive"
+        [class.upload-dropzone--invalid]="!!uploadValidationError"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)">
+        <input #uploadInput type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" class="upload-input" (change)="onFileSelected($event)" />
+
+        @if (uploadPreviewUrl) {
+          <div class="upload-preview">
+            <img [src]="uploadPreviewUrl" [alt]="uploadDraft.alt || 'Preview upload'" />
+          </div>
+        } @else {
+          <div class="upload-dropzone__placeholder">
+            <strong>Arrastra una imagen aqui</strong>
+            <span>o seleccionala desde tu PC</span>
+            <span class="hint">Formatos permitidos: {{ uploadAcceptedFormatsLabel }} · Maximo {{ maxUploadSizeLabel }}</span>
+          </div>
+        }
+
+        <div class="upload-dropzone__actions">
+          <button class="btn ghost" type="button" (click)="uploadInput.click()">Seleccionar archivo</button>
+          @if (selectedUploadFile) {
+            <button class="btn ghost" type="button" (click)="clearSelectedUpload()">Quitar</button>
+          }
+        </div>
+
+        @if (selectedUploadFile) {
+          <div class="upload-dropzone__meta">
+            <span>{{ selectedUploadFile.name }}</span>
+            <span>· {{ formatFileSize(selectedUploadFile.size) }}</span>
+            <span>· {{ selectedUploadFile.type || 'image/*' }}</span>
+            @if (uploadPreviewDimensions) {
+              <span>· {{ uploadPreviewDimensions.width }}×{{ uploadPreviewDimensions.height }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      @if (uploadValidationError) {
+        <div class="error-box">{{ uploadValidationError }}</div>
+      }
+
+      <div class="media-grid media-grid--compact">
+        <label class="field full">
+          <span>Alt</span>
+          <input type="text" [(ngModel)]="uploadDraft.alt" name="uploadAlt" placeholder="Opcional" />
+        </label>
+
+        <label class="field">
+          <span>Rol inicial</span>
+          <select [(ngModel)]="uploadDraft.role" name="uploadRole">
+            @for (role of roleOptions; track role) {
+              <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+            }
+          </select>
+        </label>
+      </div>
+    </div>
+  }
+
+  <div class="advanced-toggle">
+    <button class="btn ghost" type="button" (click)="toggleAdvanced()">
+      @if (showAdvanced) { Ocultar opciones avanzadas } @else { Mostrar opciones avanzadas }
+    </button>
+  </div>
+
+  @if (showAdvanced) {
+    <div class="media-advanced">
+      @if (mode === 'url') {
+        <div class="media-grid">
+          <label class="field full">
+            <span>Display URL</span>
+            <input type="url" [(ngModel)]="externalDraft.displayUrl" name="externalDisplayUrl" placeholder="Opcional" />
+          </label>
+
+          <label class="field full">
+            <span>Source page URL</span>
+            <input type="url" [(ngModel)]="externalDraft.sourcePageUrl" name="externalSourcePageUrl" placeholder="Opcional" />
+          </label>
+
+          <label class="field">
+            <span>Display mode</span>
+            <select [(ngModel)]="externalDraft.displayMode" name="externalDisplayMode">
+              @for (modeOption of displayModes; track modeOption.value) {
+                <option [value]="modeOption.value">{{ modeOption.label }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Sort order</span>
+            <input type="number" [(ngModel)]="externalDraft.sortOrder" name="externalSortOrder" />
+          </label>
+
+          <label class="field field--checkbox">
+            <span>Primary fallback</span>
+            <input type="checkbox" [(ngModel)]="externalDraft.isPrimary" name="externalIsPrimary" />
+          </label>
+
+          <label class="field">
+            <span>Focal X</span>
+            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="externalDraft.focalX" name="externalFocalX" />
+          </label>
+
+          <label class="field">
+            <span>Focal Y</span>
+            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="externalDraft.focalY" name="externalFocalY" />
+          </label>
+
+          <label class="field">
+            <span>Source</span>
+            <input type="text" [(ngModel)]="externalDraft.source" name="externalSource" />
+          </label>
+
+          <label class="field">
+            <span>Photo by</span>
+            <input type="text" [(ngModel)]="externalDraft.photoBy" name="externalPhotoBy" />
+          </label>
+
+          <label class="field full">
+            <span>License</span>
+            <input type="text" [(ngModel)]="externalDraft.license" name="externalLicense" />
+          </label>
+        </div>
+      } @else {
+        <div class="media-grid">
+          <label class="field">
+            <span>Display mode</span>
+            <select [(ngModel)]="uploadDraft.displayMode" name="uploadDisplayMode">
+              @for (modeOption of displayModes; track modeOption.value) {
+                <option [value]="modeOption.value">{{ modeOption.label }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Sort order</span>
+            <input type="number" [(ngModel)]="uploadDraft.sortOrder" name="uploadSortOrder" />
+          </label>
+
+          <label class="field field--checkbox">
+            <span>Primary fallback</span>
+            <input type="checkbox" [(ngModel)]="uploadDraft.isPrimary" name="uploadIsPrimary" />
+          </label>
+
+          <label class="field">
+            <span>Focal X</span>
+            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="uploadDraft.focalX" name="uploadFocalX" />
+          </label>
+
+          <label class="field">
+            <span>Focal Y</span>
+            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="uploadDraft.focalY" name="uploadFocalY" />
+          </label>
+
+          <label class="field">
+            <span>Source</span>
+            <input type="text" [(ngModel)]="uploadDraft.source" name="uploadSource" />
+          </label>
+
+          <label class="field">
+            <span>Photo by</span>
+            <input type="text" [(ngModel)]="uploadDraft.photoBy" name="uploadPhotoBy" />
+          </label>
+
+          <label class="field full">
+            <span>License</span>
+            <input type="text" [(ngModel)]="uploadDraft.license" name="uploadLicense" />
+          </label>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="media-add-panel__actions">
+    <button class="btn primary" type="button" [disabled]="submitDisabled" (click)="submit()">
+      {{ submitLabel }}
+    </button>
+  </div>
+</section>
