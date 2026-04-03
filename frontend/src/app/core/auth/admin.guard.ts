@@ -1,6 +1,7 @@
 import { inject, PLATFORM_ID } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { catchError, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export const adminGuard: CanActivateFn = (_route, state) => {
@@ -24,5 +25,10 @@ export const adminGuard: CanActivateFn = (_route, state) => {
     return true;
   }
 
-  return router.createUrlTree(['/']);
+  return auth.refreshSession().pipe(
+    map((freshUser) => freshUser.role === 'ADMIN' ? true : router.createUrlTree(['/'])),
+    catchError(() => of(router.createUrlTree(['/login'], {
+      queryParams: { redirectTo: state.url },
+    }))),
+  );
 };

@@ -6,9 +6,18 @@ import { UserRole } from '@prisma/client';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
+  private normalizeEmail(email: string) {
+    return email.trim().toLowerCase();
+  }
+
   findByEmail(email: string) {
-    return this.prisma.user.findUnique({
-      where: { email },
+    return this.prisma.user.findFirst({
+      where: {
+        email: {
+          equals: this.normalizeEmail(email),
+          mode: 'insensitive',
+        },
+      },
     });
   }
 
@@ -26,7 +35,7 @@ export class UsersService {
   }) {
     return this.prisma.user.create({
       data: {
-        email: data.email,
+        email: this.normalizeEmail(data.email),
         passwordHash: data.passwordHash,
         name: data.name,
         role: data.role ?? UserRole.USER,

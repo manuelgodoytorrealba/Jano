@@ -1,8 +1,8 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
-import { AuthResponse, AuthUser } from './auth.types';
+import { AuthResponse, AuthUser, SessionUser } from './auth.types';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -36,19 +36,37 @@ export class AuthService {
   }
 
   register(data: { email: string; password: string; name?: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/register`, data).pipe(
+    return this.http.post<AuthResponse>(`${this.baseUrl}/register`, {
+      ...data,
+      email: data.email.trim().toLowerCase(),
+    }).pipe(
       tap((res) => this.persistSession(res)),
     );
   }
 
   login(data: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, data).pipe(
+    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, {
+      ...data,
+      email: data.email.trim().toLowerCase(),
+    }).pipe(
       tap((res) => this.persistSession(res)),
     );
   }
 
-  me(): Observable<{ userId: string; email: string; role: string }> {
-    return this.http.get<{ userId: string; email: string; role: string }>(`${this.baseUrl}/me`);
+  me(): Observable<AuthUser> {
+    return this.http.get<SessionUser>(`${this.baseUrl}/me`).pipe(
+      map((user) => this.normalizeSessionUser(user)),
+    );
+  }
+
+  refreshSession(): Observable<AuthUser> {
+    return this.me().pipe(
+      tap((user) => this.persistUser(user)),
+      catchError((error) => {
+        this.logout();
+        return throwError(() => error);
+      }),
+    );
   }
 
   logout() {
@@ -62,9 +80,24 @@ export class AuthService {
   private persistSession(res: AuthResponse) {
     if (this.isBrowser) {
       localStorage.setItem(this.tokenKey, res.accessToken);
-      localStorage.setItem(this.userKey, JSON.stringify(res.user));
     }
-    this.userSubject.next(res.user);
+    this.persistUser(res.user);
+  }
+
+  private persistUser(user: AuthUser) {
+    if (this.isBrowser) {
+      localStorage.setItem(this.userKey, JSON.stringify(user));
+    }
+    this.userSubject.next(user);
+  }
+
+  private normalizeSessionUser(user: SessionUser): AuthUser {
+    return {
+      id: user.id ?? user.userId ?? '',
+      email: user.email,
+      name: user.name ?? null,
+      role: user.role,
+    };
   }
 
   private readStoredUser(): AuthUser | null {

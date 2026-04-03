@@ -7,6 +7,10 @@ export interface AuthUser {
   role: UserRole;
 }
 
+export interface SessionUser extends AuthUser {
+  userId?: string;
+}
+
 export interface LoginDto {
   email: string;
   password: string;
