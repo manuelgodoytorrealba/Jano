@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthResponse, AuthUser, SessionUser } from './auth.types';
+import { apiUrl } from '../api/api-base';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
 
-  private readonly baseUrl = 'http://localhost:3000/api/auth';
+  private readonly baseUrl = apiUrl('/auth');
   private readonly tokenKey = 'jano_access_token';
   private readonly userKey = 'jano_user';
 

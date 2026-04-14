@@ -6,10 +6,15 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { SavedModule } from './saved/saved.module';
 import { CollectionsModule } from './collections/collections.module';
+import { validateEnv } from './config/env.validation';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      validate: validateEnv,
+    }),
     PrismaModule,
     EntitiesModule,
     UsersModule,

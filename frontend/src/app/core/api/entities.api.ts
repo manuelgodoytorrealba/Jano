@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { GraphResponseDto } from '../../features/graph/graph.models';
+import { apiUrl } from './api-base';
 
 type Entity = any;
 
@@ -8,12 +9,9 @@ type Entity = any;
 export class EntitiesApi {
   private http = inject(HttpClient);
 
-  // ✅ con /api por tu globalPrefix
-  private base = 'http://localhost:3000/api';
-
   // ✅ NUEVO: home (5 cards)
   home() {
-    return this.http.get<Entity[]>(`${this.base}/entities/home`);
+    return this.http.get<Entity[]>(apiUrl('/entities/home'));
   }
 
   // ✅ EXISTENTE (mantén firma): listado simple para pantallas antiguas (si lo usas en algún lado)
@@ -45,31 +43,31 @@ export class EntitiesApi {
     }
 
     return this.http.get<{ items: any[]; page: number; limit: number; total: number; totalPages: number }>(
-      `${this.base}/entities`,
+      apiUrl('/entities'),
       { params: clean },
     );
   }
 
   institutions() {
-    return this.http.get<string[]>(`${this.base}/entities/institutions`);
+    return this.http.get<string[]>(apiUrl('/entities/institutions'));
   }
 
   nationalities() {
-    return this.http.get<string[]>(`${this.base}/entities/nationalities`);
+    return this.http.get<string[]>(apiUrl('/entities/nationalities'));
   }
 
   // ✅ ALIAS para no romper entity.component.ts
   get(slug: string) {
-    return this.http.get<Entity>(`${this.base}/entities/${slug}`);
+    return this.http.get<Entity>(apiUrl(`/entities/${slug}`));
   }
 
   // ✅ ALIAS para graph.component.ts
   graph(slug: string) {
-    return this.http.get<GraphResponseDto>(`${this.base}/entities/${slug}/graph`);
+    return this.http.get<GraphResponseDto>(apiUrl(`/entities/${slug}/graph`));
   }
 
   // ✅ ALIAS para rich-text.component.ts
   preview(slug: string) {
-    return this.http.get<any>(`${this.base}/entities/${slug}/preview`);
+    return this.http.get<any>(apiUrl(`/entities/${slug}/preview`));
   }
 }

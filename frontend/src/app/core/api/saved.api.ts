@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { apiUrl } from './api-base';
 
 @Injectable({ providedIn: 'root' })
 export class SavedApi {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/me/saved';
+  private readonly baseUrl = apiUrl('/me/saved');
 
   list() {
     return this.http.get<any[]>(this.baseUrl);
@@ -19,6 +20,6 @@ export class SavedApi {
   }
 
   check(entityId: string) {
-  return this.http.get<{ saved: boolean }>(`${this.baseUrl}/check/${entityId}`);
-}
+    return this.http.get<{ saved: boolean }>(`${this.baseUrl}/check/${entityId}`);
+  }
 }

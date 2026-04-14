@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { apiUrl } from './api-base';
 
 export type AdminEntityPayload = {
   type: 'ARTWORK' | 'ARTIST' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
@@ -58,7 +59,7 @@ export type AdminUploadEntityMediaPayload = {
 @Injectable({ providedIn: 'root' })
 export class AdminEntitiesApi {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/entities';
+  private readonly baseUrl = apiUrl('/entities');
 
   list(params?: Record<string, string | number | undefined>) {
     let httpParams = new HttpParams();
@@ -148,6 +149,6 @@ export class AdminEntitiesApi {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/relations/${relationId}`);
   }
   previewBySlug(slug: string) {
-  return this.http.get<any>(`/api/entities/preview/${slug}`);
-}
+    return this.http.get<any>(apiUrl(`/entities/preview/${slug}`));
+  }
 }

@@ -1,0 +1,13 @@
+.DS_Store
+.env
+
+backend/api/.env
+backend/api/dist
+backend/api/node_modules
+backend/api/uploads
+
+frontend/.angular
+frontend/dist
+frontend/node_modules
+
+docs/.DS_Store

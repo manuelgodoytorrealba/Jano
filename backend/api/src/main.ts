@@ -1,14 +1,24 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import * as express from 'express';
 import { join } from 'path';
 import { AppModule } from './app.module';
+import { info, muted, success } from './config/terminal';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('PORT', 3000);
+  const host = configService.get<string>('HOST', '0.0.0.0');
+  const frontendOrigin = configService.get<string>('FRONTEND_ORIGIN', 'http://localhost:4200');
+  const corsOrigins = frontendOrigin
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
   app.enableCors({
-    origin: ['http://localhost:4200'],
+    origin: corsOrigins,
     credentials: true,
   });
 
@@ -25,6 +35,9 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3000);
+  await app.listen(port, host);
+  console.log(success(`Backend running on http://localhost:${port}`));
+  console.log(info(`Allowed frontend origin(s): ${corsOrigins.join(', ')}`));
+  console.log(muted(`Uploads served from ${join(process.cwd(), 'uploads')}`));
 }
 bootstrap();
