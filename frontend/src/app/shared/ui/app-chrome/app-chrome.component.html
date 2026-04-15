@@ -1,0 +1,77 @@
+<header class="app-chrome__header app-glass">
+  <a class="app-chrome__brand" routerLink="/" aria-label="Ir al inicio de JANO">
+    <span class="app-chrome__brand-mark">J</span>
+    <span class="app-chrome__brand-copy">
+      <span class="app-chrome__brand-name">JANO</span>
+      <span class="app-chrome__brand-tag">Art discovery system</span>
+    </span>
+  </a>
+
+  <form class="app-chrome__search" role="search" (submit)="preventPlaceholderAction($event)">
+    <span class="app-chrome__search-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M10.5 5.5a5 5 0 1 0 0 10a5 5 0 0 0 0-10Z" fill="none" stroke="currentColor" stroke-width="1.8" />
+        <path d="m14 14 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </span>
+    <input
+      class="ds-input app-chrome__search-input"
+      type="search"
+      placeholder="Buscar artistas, obras, movimientos o conceptos"
+      aria-label="Buscar en JANO"
+    />
+  </form>
+
+  <nav class="app-chrome__nav" aria-label="Navegación principal">
+    @for (item of navItems; track item.label) {
+      @if (item.kind === 'route') {
+        <a
+          class="app-chrome__nav-link"
+          [class.is-active]="isRouteActive(item)"
+          [routerLink]="item.route ?? '/'"
+        >
+          {{ item.label }}
+        </a>
+      } @else {
+        <button type="button" class="app-chrome__nav-link is-placeholder" (click)="preventPlaceholderAction($event)">
+          {{ item.label }}
+        </button>
+      }
+    }
+  </nav>
+
+  <div class="app-chrome__actions">
+    <button type="button" class="app-chrome__quick app-chrome__quick--ghost" (click)="preventPlaceholderAction($event)">
+      Curated
+    </button>
+    <a class="app-chrome__quick app-chrome__quick--primary" routerLink="/my-space">
+      Mi espacio
+    </a>
+  </div>
+</header>
+
+<aside class="app-chrome__utility app-glass" aria-label="Utilidades">
+  @for (item of utilityItems; track item.label) {
+    @if (item.kind === 'route') {
+      <a
+        class="app-chrome__utility-btn"
+        [class.is-active]="isRouteActive(item)"
+        [routerLink]="item.route ?? '/'"
+        [attr.aria-label]="item.label"
+        [title]="item.label"
+      >
+        <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+      </a>
+    } @else {
+      <button
+        type="button"
+        class="app-chrome__utility-btn is-placeholder"
+        [attr.aria-label]="item.label"
+        [title]="item.label"
+        (click)="preventPlaceholderAction($event)"
+      >
+        <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+      </button>
+    }
+  }
+</aside>

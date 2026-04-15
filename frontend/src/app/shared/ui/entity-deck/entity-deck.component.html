@@ -97,6 +97,7 @@
         </button>
         }
 
+        @if (showBottomSearch()) {
         <div class="entity-deck__bottom-nav">
             <div class="entity-deck__bottom-glass">
                 <form class="entity-deck__search" (submit)="onSearchSubmit(searchInput.value); searchInput.blur()">
@@ -104,10 +105,9 @@
                     <input #searchInput type="text" name="search" placeholder="Buscar artistas, obras, movimientos..."
                         autocomplete="off" />
                 </form>
-
-
             </div>
         </div>
+        }
 
         @if (showDots()) {
         <div class="entity-deck__dots" aria-label="Paginación">

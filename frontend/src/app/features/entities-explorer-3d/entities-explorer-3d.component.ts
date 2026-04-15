@@ -18,6 +18,7 @@ import * as THREE from 'three';
 import { entityVisualUrl } from '../../shared/media/media.utils';
 
 type Entity = any;
+type NavDirection = -1 | 1;
 
 type CardUserData = {
     index: number;
@@ -53,6 +54,9 @@ export class EntitiesExplorer3dComponent
     @ViewChild('canvasHost', { static: true })
     canvasHostRef!: ElementRef<HTMLDivElement>;
 
+    @ViewChild('root', { static: true })
+    rootRef!: ElementRef<HTMLDivElement>;
+
     private readonly isBrowser: boolean;
 
     private scene!: THREE.Scene;
@@ -74,6 +78,10 @@ export class EntitiesExplorer3dComponent
     private hoveredIndex: number | null = null;
 
     private hasInitializedCenter = false;
+    private wheelIntent = 0;
+    private lastWheelEventAt = 0;
+    private lastWheelNavigationAt = 0;
+    private hoverActivatedFocus = false;
 
     constructor(@Inject(PLATFORM_ID) platformId: object) {
         this.isBrowser = isPlatformBrowser(platformId);
@@ -133,10 +141,7 @@ export class EntitiesExplorer3dComponent
     }
 
     openActive(): void {
-        const active = this.activeItem;
-        if (active?.slug) {
-            this.openEntity.emit(active.slug);
-        }
+        this.openIndex(this.activeIndex);
     }
 
     cleanWiki(text: string): string {
@@ -153,6 +158,43 @@ export class EntitiesExplorer3dComponent
         }
 
         this.hasInitializedCenter = true;
+    }
+
+    onKeyDown(event: KeyboardEvent): void {
+        if (this.shouldIgnoreKeyboardEvent(event)) return;
+
+        if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            this.prev();
+            return;
+        }
+
+        if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            this.next();
+            return;
+        }
+
+        if (event.key === 'Home') {
+            event.preventDefault();
+            this.goToIndex(0);
+            return;
+        }
+
+        if (event.key === 'End') {
+            event.preventDefault();
+            this.goToIndex(this.items.length - 1);
+            return;
+        }
+
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            this.openActive();
+        }
+    }
+
+    onMouseEnter(): void {
+        this.activateExplorerFocus('hover');
     }
 
     private initScene(): void {
@@ -186,6 +228,7 @@ export class EntitiesExplorer3dComponent
         this.renderer.domElement.addEventListener('wheel', this.onWheel as EventListener, {
             passive: false,
         });
+        this.renderer.domElement.tabIndex = -1;
     }
 
     private disposeCards(): void {
@@ -606,7 +649,7 @@ export class EntitiesExplorer3dComponent
         return this.raycaster.intersectObjects(this.raycastTargets, false);
     }
 
-    private setActiveIndex(next: number): void {
+    private goToIndex(next: number): void {
         const total = this.items.length;
         if (!total) return;
 
@@ -620,16 +663,158 @@ export class EntitiesExplorer3dComponent
         this.activeIndexChange.emit(circular);
     }
 
+    private next(): void {
+        this.moveByDirection(1);
+    }
+
+    private prev(): void {
+        this.moveByDirection(-1);
+    }
+
+    private moveByDirection(direction: NavDirection): void {
+        if (!this.items.length) return;
+        this.goToIndex(this.activeIndex + direction);
+    }
+
+    private openIndex(index: number): void {
+        const item = this.items[index];
+        if (item?.slug) {
+            this.openEntity.emit(item.slug);
+        }
+    }
+
+    private activateExplorerFocus(source: 'hover' | 'pointer' | 'wheel'): void {
+        if (!this.isBrowser) return;
+
+        const root = this.rootRef.nativeElement;
+        const activeElement = document.activeElement as HTMLElement | null;
+
+        if (activeElement === root || root.contains(activeElement)) {
+            this.hoverActivatedFocus = source === 'hover';
+            return;
+        }
+
+        if (source === 'hover' && this.shouldPreserveExternalFocus(activeElement)) {
+            return;
+        }
+
+        root.focus({ preventScroll: true });
+        this.hoverActivatedFocus = source === 'hover';
+    }
+
+    private deactivateExplorerFocus(): void {
+        if (!this.isBrowser || !this.hoverActivatedFocus) return;
+
+        const root = this.rootRef.nativeElement;
+        if (document.activeElement === root) {
+            root.blur();
+        }
+
+        this.hoverActivatedFocus = false;
+    }
+
+    private shouldIgnoreKeyboardEvent(event: KeyboardEvent): boolean {
+        const target = event.target as HTMLElement | null;
+        if (!target) return false;
+
+        return !!target.closest(
+            'input, textarea, select, button, a, [contenteditable=""], [contenteditable="true"]',
+        );
+    }
+
+    private shouldPreserveExternalFocus(activeElement: HTMLElement | null): boolean {
+        if (!activeElement || activeElement === document.body) {
+            return false;
+        }
+
+        if (this.rootRef.nativeElement.contains(activeElement)) {
+            return false;
+        }
+
+        return !!activeElement.closest(
+            'input, textarea, select, [contenteditable=""], [contenteditable="true"]',
+        );
+    }
+
+    private isTrackpadWheel(event: WheelEvent): boolean {
+        if (event.deltaMode !== WheelEvent.DOM_DELTA_PIXEL) {
+            return false;
+        }
+
+        const absX = Math.abs(event.deltaX);
+        const absY = Math.abs(event.deltaY);
+        const hasFractionalDelta = !Number.isInteger(event.deltaX) || !Number.isInteger(event.deltaY);
+
+        return hasFractionalDelta || (absX > 0 && absX < 24) || (absY > 0 && absY < 24);
+    }
+
+    private normalizeWheelDelta(event: WheelEvent): number {
+        const multiplier =
+            event.deltaMode === WheelEvent.DOM_DELTA_LINE
+                ? 16
+                : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+                    ? window.innerHeight
+                    : 1;
+
+        const scaledX = event.deltaX * multiplier * 0.65;
+        const scaledY = event.deltaY * multiplier;
+
+        return Math.abs(scaledX) > Math.abs(scaledY) ? scaledX : scaledY;
+    }
+
+    private trackWheelIntent(event: WheelEvent): NavDirection | null {
+        const now = performance.now();
+        const delta = this.normalizeWheelDelta(event);
+        const isTrackpad = this.isTrackpadWheel(event);
+        const threshold = isTrackpad ? 90 : 48;
+        const cooldown = isTrackpad ? 260 : 140;
+        const resetWindow = isTrackpad ? 180 : 120;
+
+        if (Math.abs(delta) < 4) {
+            return null;
+        }
+
+        if (now - this.lastWheelEventAt > resetWindow) {
+            this.wheelIntent = 0;
+        }
+
+        if (this.wheelIntent !== 0 && Math.sign(this.wheelIntent) !== Math.sign(delta)) {
+            this.wheelIntent = 0;
+        }
+
+        this.lastWheelEventAt = now;
+        this.wheelIntent += delta;
+
+        if (Math.abs(this.wheelIntent) < threshold) {
+            return null;
+        }
+
+        if (now - this.lastWheelNavigationAt < cooldown) {
+            this.wheelIntent = Math.sign(this.wheelIntent) * threshold;
+            return null;
+        }
+
+        this.lastWheelNavigationAt = now;
+
+        const direction = this.wheelIntent > 0 ? 1 : -1;
+        this.wheelIntent = 0;
+        return direction;
+    }
+
     private onWheel = (event: WheelEvent) => {
         event.preventDefault();
 
         if (!this.items.length) return;
+        this.activateExplorerFocus('wheel');
 
-        const direction = event.deltaY > 0 ? 1 : -1;
-        this.setActiveIndex(this.activeIndex + direction);
+        const direction = this.trackWheelIntent(event);
+        if (!direction) return;
+
+        this.moveByDirection(direction);
     };
 
     private onPointerDown = (event: PointerEvent) => {
+        this.activateExplorerFocus('pointer');
         this.isDragging = true;
         this.dragMoved = false;
         this.dragStartX = event.clientX;
@@ -653,7 +838,7 @@ export class EntitiesExplorer3dComponent
             this.dragMoved = true;
 
             const direction = this.dragAccumulatedX < 0 ? 1 : -1;
-            this.setActiveIndex(this.activeIndex + direction);
+            this.moveByDirection(direction);
 
             this.dragAccumulatedX = 0;
         }
@@ -676,13 +861,11 @@ export class EntitiesExplorer3dComponent
         const data = first.object.userData as CardUserData;
 
         if (data.index === this.activeIndex) {
-            if (data.slug) {
-                this.openEntity.emit(data.slug);
-            }
+            this.openIndex(data.index);
             return;
         }
 
-        this.setActiveIndex(data.index);
+        this.goToIndex(data.index);
     };
 
     private onPointerLeave = () => {
@@ -691,5 +874,6 @@ export class EntitiesExplorer3dComponent
         this.hoveredIndex = null;
         this.renderer.domElement.classList.remove('is-dragging');
         this.updateCardTargets();
+        this.deactivateExplorerFocus();
     };
 }

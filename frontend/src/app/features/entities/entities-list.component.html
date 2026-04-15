@@ -1,22 +1,14 @@
 <div class="entities-page page-shell" [class.entities-page--immersive]="viewMode === 'explore'"
   [class.entities-page--list-shell]="viewMode === 'list'">
   <section class="entities-explorer-layout" [class.is-list]="viewMode === 'list'">
-    <header class="entities-topbar ds-panel">
-      <div class="entities-topbar__main">
-        <button class="ds-btn entities-header__back" type="button" (click)="back()">
-          ←
-        </button>
+    <header class="entities-hud" aria-label="Contexto de la vista">
+      <button class="ds-btn entities-header__back entities-header__back--floating" type="button" (click)="back()"
+        aria-label="Volver">
+        ←
+      </button>
 
-        <div class="entities-header__copy">
-          <h1 class="title-display">{{ title$ | async }}</h1>
-          <p class="text-muted">
-            Explora {{ (title$ | async)?.toLowerCase() }} en JANO
-          </p>
-        </div>
-      </div>
-
-      <div class="entities-topbar__actions">
-        <div class="view-toggle ds-panel" role="tablist" aria-label="Modo de visualización">
+      <div class="entities-mode-pill ds-panel">
+        <div class="view-toggle" role="tablist" aria-label="Modo de visualización">
           <button type="button" class="view-toggle__button" [class.is-active]="viewMode === 'explore'" role="tab"
             [attr.aria-selected]="viewMode === 'explore'" (click)="setView('explore')">
             Explorer

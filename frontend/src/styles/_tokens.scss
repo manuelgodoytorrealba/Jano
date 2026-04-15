@@ -1,20 +1,22 @@
 :root {
   /* Colors */
-  --color-bg: #f5f5f2;
-  --color-surface: rgba(255, 255, 255, 0.72);
-  --color-surface-solid: #ffffff;
-  --color-surface-muted: #f8f8f6;
-  --color-border: rgba(15, 23, 42, 0.08);
-  --color-border-strong: rgba(15, 23, 42, 0.14);
+  --color-bg: #ede8e0;
+  --color-bg-deep: #e5ddd1;
+  --color-surface: rgba(255, 252, 247, 0.72);
+  --color-surface-strong: rgba(255, 252, 247, 0.84);
+  --color-surface-solid: #fffdfa;
+  --color-surface-muted: #f7f1e8;
+  --color-border: rgba(63, 52, 36, 0.09);
+  --color-border-strong: rgba(63, 52, 36, 0.16);
 
-  --color-text: #111111;
-  --color-text-soft: #3f3f46;
-  --color-text-muted: #6b7280;
-  --color-text-faint: #9ca3af;
+  --color-text: #191714;
+  --color-text-soft: #433d35;
+  --color-text-muted: #74695c;
+  --color-text-faint: #9f9384;
 
-  --color-accent: #6b46c1;
-  --color-accent-hover: #5534a8;
-  --color-accent-soft: rgba(107, 70, 193, 0.08);
+  --color-accent: #9a7d52;
+  --color-accent-hover: #816742;
+  --color-accent-soft: rgba(154, 125, 82, 0.12);
 
   --color-success: #1f7a45;
   --color-success-soft: rgba(31, 122, 69, 0.08);
@@ -23,7 +25,7 @@
   --color-danger-soft: rgba(180, 35, 24, 0.08);
 
   /* Typography */
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "SF Pro Display", "Avenir Next", "Neue Haas Grotesk Text Pro", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
   --font-mono: "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
@@ -48,6 +50,7 @@
   --radius-md: 14px;
   --radius-lg: 18px;
   --radius-xl: 24px;
+  --radius-2xl: 32px;
   --radius-pill: 999px;
 
   /* Spacing */
@@ -63,13 +66,17 @@
   --space-12: 44px;
 
   /* Shadows */
-  --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.07);
-  --shadow-lg: 0 20px 50px rgba(15, 23, 42, 0.12);
+  --shadow-sm: 0 12px 28px rgba(71, 56, 31, 0.06);
+  --shadow-md: 0 24px 54px rgba(71, 56, 31, 0.1);
+  --shadow-lg: 0 36px 90px rgba(35, 28, 16, 0.16);
+  --shadow-glass: 0 24px 70px rgba(45, 35, 19, 0.1);
 
   /* Layout */
   --container-page: 1360px;
   --container-content: 800px;
+  --app-shell-gap: clamp(14px, 1.6vw, 24px);
+  --app-header-height: 74px;
+  --app-rail-width: 72px;
 
   /* Motion */
   --ease-standard: cubic-bezier(.2, .8, .2, 1);

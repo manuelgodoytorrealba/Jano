@@ -1,0 +1,392 @@
+:host {
+  display: contents;
+}
+
+.app-chrome__header {
+  position: fixed;
+  z-index: 80;
+  top: var(--app-shell-gap);
+  left: var(--app-shell-gap);
+  right: calc(var(--app-shell-gap) + var(--app-rail-width) + 14px);
+  min-height: var(--app-header-height);
+  padding: 12px 16px;
+  border-radius: var(--radius-2xl);
+  display: grid;
+  grid-template-columns: auto minmax(260px, 1.2fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+    rgba(22, 22, 28, 0.24);
+  backdrop-filter: blur(28px) saturate(1.16);
+  -webkit-backdrop-filter: blur(28px) saturate(1.16);
+  box-shadow:
+    0 24px 64px rgba(17, 15, 12, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.app-chrome__header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(255, 255, 255, 0.34), transparent 24%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 42%);
+  opacity: 0.92;
+}
+
+.app-chrome__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.app-chrome__brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, rgba(46, 41, 34, 0.96), rgba(24, 21, 18, 0.96));
+  color: #fff8ef;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 16px 28px rgba(23, 19, 15, 0.18);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.app-chrome__brand-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.app-chrome__brand-name {
+  font-size: 0.94rem;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.app-chrome__brand-tag {
+  font-size: 0.74rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+}
+
+.app-chrome__search {
+  position: relative;
+  min-width: 0;
+  z-index: 1;
+}
+
+.app-chrome__search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.app-chrome__search-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.app-chrome__search-input.ds-input {
+  height: 48px;
+  padding-left: 44px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+    rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 250, 244, 0.94);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 24px rgba(17, 15, 12, 0.12);
+}
+
+.app-chrome__search-input.ds-input::placeholder {
+  color: rgba(255, 247, 239, 0.54);
+}
+
+.app-chrome__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
+}
+
+.app-chrome__nav-link,
+.app-chrome__quick {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 247, 239, 0.82);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.app-chrome__nav-link:hover,
+.app-chrome__quick:hover {
+  transform: translateY(-1px);
+  color: rgba(255, 251, 246, 0.98);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.app-chrome__nav-link.is-active {
+  color: rgba(255, 252, 248, 0.98);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 8px 18px rgba(0, 0, 0, 0.16);
+}
+
+.app-chrome__nav-link.is-placeholder,
+.app-chrome__utility-btn.is-placeholder {
+  opacity: 0.7;
+}
+
+.app-chrome__actions {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.app-chrome__quick {
+  text-decoration: none;
+}
+
+.app-chrome__quick--ghost {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)),
+    rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.app-chrome__quick--primary {
+  color: #fffaf4;
+  border-color: rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(44, 39, 32, 0.96), rgba(23, 20, 17, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 20px 32px rgba(12, 11, 10, 0.26);
+}
+
+.app-chrome__quick--primary:hover {
+  color: #ffffff;
+  background: linear-gradient(180deg, #393229, #1f1b16);
+}
+
+.app-chrome__utility {
+  position: fixed;
+  z-index: 79;
+  top: 50dvh;
+  right: var(--app-shell-gap);
+  transform: translateY(-50%);
+  width: var(--app-rail-width);
+  padding: 10px 0;
+  border-radius: 999px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+    rgba(22, 22, 28, 0.24);
+  backdrop-filter: blur(28px) saturate(1.16);
+  -webkit-backdrop-filter: blur(28px) saturate(1.16);
+  box-shadow:
+    0 24px 64px rgba(17, 15, 12, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.app-chrome__utility::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.32), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 36%);
+  opacity: 0.9;
+}
+
+.app-chrome__utility-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 247, 239, 0.86);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 22px rgba(48, 39, 21, 0.08);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.app-chrome__utility-btn:hover,
+.app-chrome__utility-btn.is-active {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+    rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 18px 28px rgba(12, 11, 10, 0.2);
+}
+
+.app-chrome__utility-icon {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+
+.app-chrome__utility-icon::before,
+.app-chrome__utility-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-color: currentColor;
+}
+
+.app-chrome__utility-icon[data-icon='profile']::before {
+  inset: 2px 5px 10px;
+  border: 1.8px solid currentColor;
+  border-radius: 999px;
+}
+
+.app-chrome__utility-icon[data-icon='profile']::after {
+  inset: 12px 2px 1px;
+  border: 1.8px solid currentColor;
+  border-top-left-radius: 999px;
+  border-top-right-radius: 999px;
+  border-bottom: 0;
+}
+
+.app-chrome__utility-icon[data-icon='saved']::before {
+  inset: 3px;
+  border: 1.8px solid currentColor;
+  border-radius: 8px 8px 3px 3px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+}
+
+.app-chrome__utility-icon[data-icon='saved']::after {
+  display: none;
+}
+
+.app-chrome__utility-icon[data-icon='collections']::before {
+  inset: 4px 3px 6px 7px;
+  border: 1.8px solid currentColor;
+  border-radius: 6px;
+}
+
+.app-chrome__utility-icon[data-icon='collections']::after {
+  inset: 8px 7px 2px 3px;
+  border: 1.8px solid currentColor;
+  border-radius: 6px;
+}
+
+.app-chrome__utility-icon[data-icon='settings']::before {
+  inset: 5px;
+  border: 1.8px solid currentColor;
+  border-radius: 999px;
+}
+
+.app-chrome__utility-icon[data-icon='settings']::after {
+  inset: 0;
+  background:
+    linear-gradient(currentColor, currentColor) center 1px / 2px 6px no-repeat,
+    linear-gradient(currentColor, currentColor) center calc(100% - 1px) / 2px 6px no-repeat,
+    linear-gradient(currentColor, currentColor) 1px center / 6px 2px no-repeat,
+    linear-gradient(currentColor, currentColor) calc(100% - 1px) center / 6px 2px no-repeat;
+}
+
+@media (max-width: 1200px) {
+  .app-chrome__header {
+    grid-template-columns: auto minmax(220px, 1fr) auto;
+  }
+
+  .app-chrome__nav {
+    order: 4;
+    grid-column: 1 / -1;
+    justify-self: start;
+    flex-wrap: wrap;
+  }
+
+  .app-chrome__actions {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 860px) {
+  .app-chrome__header {
+    right: var(--app-shell-gap);
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+  }
+
+  .app-chrome__brand,
+  .app-chrome__actions {
+    justify-self: start;
+  }
+
+  .app-chrome__utility {
+    top: auto;
+    bottom: var(--app-shell-gap);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 8px;
+    grid-auto-flow: column;
+  }
+}

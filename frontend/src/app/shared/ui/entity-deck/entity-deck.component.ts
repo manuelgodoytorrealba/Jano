@@ -28,6 +28,7 @@ export class EntityDeckComponent {
     showRail = input<boolean>(true);
     showDots = input<boolean>(true);
     showNav = input<boolean>(true);
+    showBottomSearch = input<boolean>(true);
     fullViewport = input<boolean>(false);
 
     activeIndex = signal(0);

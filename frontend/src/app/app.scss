@@ -1,0 +1,58 @@
+.app-shell {
+  min-height: 100dvh;
+  position: relative;
+}
+
+.app-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(255, 255, 255, 0.58), transparent 24%),
+    radial-gradient(circle at 86% 14%, rgba(235, 207, 164, 0.22), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(255, 247, 235, 0.42), transparent 36%),
+    linear-gradient(180deg, rgba(252, 248, 242, 0.94), rgba(239, 232, 222, 0.96));
+  filter: saturate(1.02);
+}
+
+.app-shell--entities::before {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(255, 255, 255, 0.14), transparent 16%),
+    radial-gradient(circle at 50% 10%, rgba(116, 88, 170, 0.26), transparent 18%),
+    radial-gradient(circle at 82% 16%, rgba(225, 180, 108, 0.16), transparent 18%),
+    radial-gradient(circle at 22% 88%, rgba(43, 36, 92, 0.24), transparent 24%),
+    linear-gradient(180deg, rgba(14, 13, 18, 0.98), rgba(7, 7, 11, 0.995));
+  filter: saturate(1.08);
+}
+
+.app-shell__content {
+  position: relative;
+  z-index: 0;
+  min-height: 100dvh;
+  padding:
+    calc(var(--app-shell-gap) + var(--app-header-height) + 18px)
+    calc(var(--app-shell-gap) + var(--app-rail-width) + 18px)
+    var(--app-shell-gap)
+    var(--app-shell-gap);
+}
+
+.app-shell--immersive .app-shell__content {
+  padding: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 860px) {
+  .app-shell__content {
+    padding:
+      calc(var(--app-shell-gap) + 152px)
+      var(--app-shell-gap)
+      calc(var(--app-shell-gap) + 92px)
+      var(--app-shell-gap);
+  }
+
+  .app-shell--immersive .app-shell__content {
+    padding: 0;
+  }
+}
