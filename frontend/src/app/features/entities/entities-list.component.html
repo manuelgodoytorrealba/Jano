@@ -1,6 +1,7 @@
 <div class="entities-page page-shell" [class.entities-page--immersive]="viewMode === 'explore'"
   [class.entities-page--list-shell]="viewMode === 'list'">
-  <section class="entities-explorer-layout" [class.is-list]="viewMode === 'list'">
+  <section class="entities-explorer-layout" [class.is-list]="viewMode === 'list'"
+    [class.is-filters-collapsed]="!filtersPanelOpen()" [class.is-info-collapsed]="!infoPanelOpen()">
     <header class="entities-hud" aria-label="Contexto de la vista">
       <div class="entities-mode-pill ds-panel">
         <div class="view-toggle" role="tablist" aria-label="Modo de visualización">
@@ -17,8 +18,21 @@
       </div>
     </header>
 
+    <button type="button" class="entities-rail-handle ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
+      (click)="toggleFiltersPanel()"
+      [attr.aria-label]="filtersPanelOpen() ? 'Ocultar filtros' : 'Mostrar filtros'"
+      [attr.aria-expanded]="filtersPanelOpen()">
+      <span class="entities-rail-handle__glyph" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <span class="entities-rail-handle__label">Filtros</span>
+    </button>
+
     @if (vm$ | async; as vm) {
-    <aside class="entities-filter-rail ds-panel">
+    <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
+      [attr.aria-hidden]="!filtersPanelOpen()">
       <div class="entities-filter-rail__section">
         <div class="entities-filter-rail__label">Buscar</div>
         <input class="ds-input entities-search entities-filter-rail__search" type="search" placeholder="Buscar…"
@@ -294,7 +308,8 @@
     <div class="entities-explorer-stage">
       @defer (when viewMode === 'explore') {
       <app-entities-explorer-3d [items]="vm.items" [activeIndex]="activeIndex()"
-        (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)">
+        [infoOpen]="infoPanelOpen()" (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)"
+        (requestInfoOpen)="openInfoPanel()" (requestInfoClose)="closeInfoPanel()">
       </app-entities-explorer-3d>
       } @placeholder {
       <div class="entities-explorer-placeholder ds-panel" aria-hidden="true"></div>
@@ -362,7 +377,8 @@
     </div>
     }
     } @else {
-    <aside class="entities-filter-rail ds-panel">
+    <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
+      [attr.aria-hidden]="!filtersPanelOpen()">
       <div class="entities-filter-rail__section">
         <div class="entities-filter-rail__label">Buscar</div>
         <input class="ds-input entities-search entities-filter-rail__search" type="search" placeholder="Buscar…"

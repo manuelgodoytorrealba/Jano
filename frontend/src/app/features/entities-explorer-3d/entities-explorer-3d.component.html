@@ -9,7 +9,26 @@
     <div #canvasHost class="explorer3d__canvas"></div>
 
     @if (activeItem; as active) {
-    <aside class="explorer3d__info">
+    <button
+        class="explorer3d__info-toggle"
+        [class.is-visible]="!infoOpen"
+        type="button"
+        (click)="openInfoPanel()"
+        [attr.aria-label]="'Mostrar información de ' + active.title"
+    >
+        <span aria-hidden="true">i</span>
+    </button>
+
+    <aside class="explorer3d__info" [class.is-hidden]="!infoOpen" [attr.aria-hidden]="!infoOpen">
+        <button
+            class="explorer3d__info-close"
+            type="button"
+            (click)="closeInfoPanel()"
+            aria-label="Cerrar información"
+        >
+            <span aria-hidden="true">×</span>
+        </button>
+
         <div class="explorer3d__eyebrow">JANO Explorer</div>
 
         <h2 class="explorer3d__title">{{ active.title }}</h2>

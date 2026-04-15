@@ -1,8 +1,8 @@
 .app-shell {
   min-height: 100svh;
-  height: 100svh;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app-shell::before {
@@ -38,6 +38,13 @@
     calc(var(--app-shell-gap) + var(--app-rail-width) + 18px)
     var(--app-shell-gap)
     var(--app-shell-gap);
+  overflow: visible;
+}
+
+.app-shell--immersive,
+.app-shell--entities {
+  height: 100svh;
+  overflow: hidden;
 }
 
 .app-shell--immersive .app-shell__content {

@@ -48,9 +48,12 @@ export class EntitiesExplorer3dComponent
     implements AfterViewInit, OnChanges, OnDestroy {
     @Input() items: Entity[] = [];
     @Input() activeIndex = 0;
+    @Input() infoOpen = true;
 
     @Output() activeIndexChange = new EventEmitter<number>();
     @Output() openEntity = new EventEmitter<string>();
+    @Output() requestInfoOpen = new EventEmitter<void>();
+    @Output() requestInfoClose = new EventEmitter<void>();
 
     @ViewChild('canvasHost', { static: true })
     canvasHostRef!: ElementRef<HTMLDivElement>;
@@ -143,6 +146,14 @@ export class EntitiesExplorer3dComponent
 
     openActive(): void {
         this.openIndex(this.activeIndex);
+    }
+
+    openInfoPanel(): void {
+        this.requestInfoOpen.emit();
+    }
+
+    closeInfoPanel(): void {
+        this.requestInfoClose.emit();
     }
 
     cleanWiki(text: string): string {

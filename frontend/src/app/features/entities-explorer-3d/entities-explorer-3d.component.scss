@@ -90,6 +90,54 @@
     cursor: default !important;
 }
 
+.explorer3d__info-toggle {
+    position: absolute;
+    top: clamp(134px, 16svh, 168px);
+    right: clamp(72px, 11vw, 132px);
+    z-index: 4;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+        rgba(21, 21, 28, 0.36);
+    color: rgba(255, 248, 241, 0.92);
+    backdrop-filter: blur(20px) saturate(1.08);
+    -webkit-backdrop-filter: blur(20px) saturate(1.08);
+    box-shadow:
+        0 16px 30px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(6px) scale(0.96);
+    transition:
+        opacity 180ms ease,
+        visibility 180ms ease,
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast);
+}
+
+.explorer3d__info-toggle.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.explorer3d__info-toggle:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
 .explorer3d__info {
     position: absolute;
     top: clamp(74px, 11svh, 104px);
@@ -110,6 +158,46 @@
     z-index: 3;
     display: grid;
     gap: 10px;
+    opacity: 1;
+    visibility: visible;
+    transform: translate3d(0, 0, 0);
+    transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        visibility 180ms ease;
+}
+
+.explorer3d__info.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(10px, 0, 0);
+}
+
+.explorer3d__info-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 245, 237, 0.72);
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        background var(--transition-fast),
+        color var(--transition-fast);
+}
+
+.explorer3d__info-close:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 252, 246, 0.92);
 }
 
 .explorer3d__eyebrow {
@@ -176,6 +264,11 @@
         top: clamp(78px, 10svh, 116px);
         right: clamp(26px, 3vw, 48px);
     }
+
+    .explorer3d__info-toggle {
+        top: clamp(138px, 15svh, 176px);
+        right: clamp(78px, 10vw, 148px);
+    }
 }
 
 @media (min-width: 981px) and (max-height: 920px) {
@@ -190,6 +283,11 @@
         right: clamp(18px, 2.4vw, 28px);
         width: min(292px, calc(100% - 40px));
     }
+
+    .explorer3d__info-toggle {
+        top: clamp(148px, 18svh, 188px);
+        right: clamp(60px, 10vw, 110px);
+    }
 }
 
 @media (min-width: 981px) and (max-height: 840px) {
@@ -203,6 +301,11 @@
         top: clamp(98px, 15svh, 136px);
         right: clamp(16px, 2.2vw, 24px);
         width: min(278px, calc(100% - 36px));
+    }
+
+    .explorer3d__info-toggle {
+        top: clamp(162px, 20svh, 198px);
+        right: clamp(56px, 10vw, 96px);
     }
 }
 
@@ -225,6 +328,11 @@
         right: 18px;
         width: min(286px, calc(100% - 36px));
         padding: 16px;
+    }
+
+    .explorer3d__info-toggle {
+        top: clamp(108px, 14svh, 136px);
+        right: clamp(38px, 9vw, 72px);
     }
 
     .explorer3d__title {
@@ -259,6 +367,11 @@
         width: auto;
         padding: 16px;
         border-radius: 16px;
+    }
+
+    .explorer3d__info-toggle {
+        top: 18px;
+        right: 18px;
     }
 
     .explorer3d__title {

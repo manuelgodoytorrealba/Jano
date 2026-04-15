@@ -103,6 +103,8 @@ export class EntitiesListComponent {
   skeleton = Array.from({ length: 8 });
   activeIndex = signal(0);
   advancedFiltersOpen = signal(false);
+  filtersPanelOpen = signal(true);
+  infoPanelOpen = signal(true);
 
   constructor() {
     combineLatest([this.typeFromUrl$, this.route.queryParamMap]).pipe(
@@ -391,6 +393,22 @@ export class EntitiesListComponent {
 
   setView(mode: ViewMode) {
     this.viewMode = mode;
+  }
+
+  toggleFiltersPanel() {
+    this.filtersPanelOpen.update((value) => !value);
+  }
+
+  openFiltersPanel() {
+    this.filtersPanelOpen.set(true);
+  }
+
+  closeInfoPanel() {
+    this.infoPanelOpen.set(false);
+  }
+
+  openInfoPanel() {
+    this.infoPanelOpen.set(true);
   }
 
   toggleAdvancedFilters() {
