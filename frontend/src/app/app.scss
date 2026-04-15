@@ -1,6 +1,8 @@
 .app-shell {
-  min-height: 100dvh;
+  min-height: 100svh;
+  height: 100svh;
   position: relative;
+  overflow: hidden;
 }
 
 .app-shell::before {
@@ -19,18 +21,18 @@
 
 .app-shell--entities::before {
   background:
-    radial-gradient(circle at 14% 8%, rgba(255, 255, 255, 0.14), transparent 16%),
-    radial-gradient(circle at 50% 10%, rgba(116, 88, 170, 0.26), transparent 18%),
+    radial-gradient(circle at 14% 8%, rgba(255, 255, 255, 0.16), transparent 16%),
+    radial-gradient(circle at 50% 10%, rgba(116, 88, 170, 0.24), transparent 18%),
     radial-gradient(circle at 82% 16%, rgba(225, 180, 108, 0.16), transparent 18%),
-    radial-gradient(circle at 22% 88%, rgba(43, 36, 92, 0.24), transparent 24%),
-    linear-gradient(180deg, rgba(14, 13, 18, 0.98), rgba(7, 7, 11, 0.995));
-  filter: saturate(1.08);
+    radial-gradient(circle at 22% 88%, rgba(43, 36, 92, 0.22), transparent 24%),
+    linear-gradient(180deg, rgba(18, 17, 22, 0.96), rgba(8, 8, 12, 0.985));
+  filter: saturate(1.08) brightness(1.02);
 }
 
 .app-shell__content {
   position: relative;
   z-index: 0;
-  min-height: 100dvh;
+  min-height: 100svh;
   padding:
     calc(var(--app-shell-gap) + var(--app-header-height) + 18px)
     calc(var(--app-shell-gap) + var(--app-rail-width) + 18px)
@@ -39,6 +41,11 @@
 }
 
 .app-shell--immersive .app-shell__content {
+  padding: 0;
+  overflow: hidden;
+}
+
+.app-shell--entities .app-shell__content {
   padding: 0;
   overflow: hidden;
 }

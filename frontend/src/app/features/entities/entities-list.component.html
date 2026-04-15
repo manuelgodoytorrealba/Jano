@@ -2,11 +2,6 @@
   [class.entities-page--list-shell]="viewMode === 'list'">
   <section class="entities-explorer-layout" [class.is-list]="viewMode === 'list'">
     <header class="entities-hud" aria-label="Contexto de la vista">
-      <button class="ds-btn entities-header__back entities-header__back--floating" type="button" (click)="back()"
-        aria-label="Volver">
-        ←
-      </button>
-
       <div class="entities-mode-pill ds-panel">
         <div class="view-toggle" role="tablist" aria-label="Modo de visualización">
           <button type="button" class="view-toggle__button" [class.is-active]="viewMode === 'explore'" role="tab"

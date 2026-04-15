@@ -1,13 +1,13 @@
 :host {
   display: block;
   --entities-shell-padding-x: clamp(10px, 1vw, 18px);
-  --entities-shell-top-offset: clamp(10px, 1vw, 14px);
+  --entities-shell-top-offset: clamp(120px, 0.8vw, 10px);
   --entities-rail-width: clamp(256px, 18vw, 292px);
   --entities-rail-gap: clamp(12px, 1vw, 18px);
   --entities-rail-left: 16px;
-  --entities-rail-top: 72px;
+  --entities-rail-top: 120px;
   --entities-stage-right-gutter: clamp(16px, 1.6vw, 26px);
-  --entities-stage-top-padding: clamp(42px, 4.6vh, 58px);
+  --entities-stage-top-padding: clamp(200px, 6vh, 72px);
 }
 
 .entities-page {
@@ -306,9 +306,9 @@ mark {
 
 .entities-page--immersive,
 .entities-page--list-shell {
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
+  height: 100svh;
+  min-height: 100svh;
+  max-height: 100svh;
   overflow: hidden;
   padding-top: 0;
   padding-bottom: 0;
@@ -396,13 +396,14 @@ mark {
 .entities-hud {
   position: absolute;
   top: var(--entities-shell-top-offset);
-  left: var(--entities-shell-padding-x);
-  right: var(--entities-shell-padding-x);
+  left: 50%;
+  right: auto;
   z-index: 20;
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: center;
+  gap: 0;
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
@@ -445,24 +446,7 @@ mark {
   box-shadow:
     0 18px 34px rgba(0, 0, 0, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.entities-header__back.ds-btn {
-  width: 38px;
-  min-width: 38px;
-  height: 38px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05)),
-    rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.18);
-  color: rgba(255, 248, 241, 0.94);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 10px 18px rgba(0, 0, 0, 0.12);
-}
-
-.entities-header__back--floating {
-  pointer-events: auto;
+  z-index: 3;
 }
 
 .entities-mode-pill .view-toggle {
@@ -500,7 +484,7 @@ mark {
   z-index: 20;
 
   width: min(var(--entities-rail-width), calc(100vw - var(--entities-rail-left) - var(--entities-shell-padding-x)));
-  max-height: calc(100dvh - 98px);
+  max-height: calc(100svh - 98px);
   display: grid;
   gap: 12px;
 
@@ -727,34 +711,33 @@ mark {
     --entities-rail-width: 232px;
     --entities-rail-gap: 10px;
     --entities-rail-left: 12px;
-    --entities-rail-top: 76px;
+    --entities-rail-top: 62px;
     --entities-stage-right-gutter: 14px;
   }
 
   .entities-filter-rail {
-    max-height: calc(100dvh - 118px);
+    max-height: calc(100svh - 118px);
   }
 }
 
 @media (max-width: 980px) {
   .entities-hud {
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    gap: 10px;
+    top: 10px;
+    left: 50%;
+    right: auto;
   }
 
   .entities-filter-rail {
-    top: 68px;
+    top: 60px;
     left: 12px;
     width: 164px;
-    max-height: calc(100dvh - 104px);
+    max-height: calc(100svh - 104px);
     padding: 10px 10px 14px;
   }
 
   .entities-stage-shell--list,
   .entities-stage-shell--empty {
-    padding-top: 74px;
+    padding-top: 60px;
     padding-right: 14px;
     padding-bottom: 18px;
     padding-left: calc(164px + 22px);
@@ -766,14 +749,14 @@ mark {
   .entities-page--immersive,
   .entities-page--list-shell {
     height: auto;
-    min-height: 100dvh;
+    min-height: 100svh;
     max-height: none;
     overflow: visible;
   }
 
   .entities-explorer-layout {
     height: auto;
-    min-height: 100dvh;
+    min-height: 100svh;
     overflow: visible;
     padding-top: 0;
   }
@@ -781,8 +764,8 @@ mark {
   .entities-explorer-stage {
     position: relative;
     inset: auto;
-    min-height: 100dvh;
-    height: 100dvh;
+    min-height: 100svh;
+    height: 100svh;
   }
 
   .entities-stage-shell {
@@ -810,7 +793,6 @@ mark {
   .entities-hud {
     position: relative;
     top: auto;
-    left: auto;
     right: auto;
     display: grid;
     gap: 12px;

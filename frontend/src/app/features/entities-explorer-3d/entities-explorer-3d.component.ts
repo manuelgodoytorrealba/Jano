@@ -203,14 +203,14 @@ export class EntitiesExplorer3dComponent
         const height = host.clientHeight || 700;
 
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color('#f5f5f3');
+        this.scene.background = null;
 
         this.camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 100);
         this.camera.position.set(0, 0.1, 11.2);
 
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
-            alpha: false,
+            alpha: true,
             powerPreference: 'high-performance',
         });
 
@@ -275,7 +275,15 @@ export class EntitiesExplorer3dComponent
 
         this.drawRoundedRect(ctx, 0, 0, width, height, radius);
 
+        const ambient = ctx.createLinearGradient(0, 0, 0, height);
+        ambient.addColorStop(0, 'rgba(255,255,255,0.22)');
+        ambient.addColorStop(0.28, 'rgba(255,255,255,0.08)');
+        ambient.addColorStop(0.7, 'rgba(255,255,255,0.03)');
+        ambient.addColorStop(1, 'rgba(255,255,255,0.1)');
+
         ctx.fillStyle = fillStyle;
+        ctx.fill();
+        ctx.fillStyle = ambient;
         ctx.fill();
 
         if (strokeStyle && strokeWidth > 0) {
@@ -311,15 +319,22 @@ export class EntitiesExplorer3dComponent
 
         const grad = ctx.createLinearGradient(0, 0, width * 0.72, height);
         grad.addColorStop(0, 'rgba(255,255,255,0)');
-        grad.addColorStop(0.16, 'rgba(255,255,255,0)');
-        grad.addColorStop(0.26, 'rgba(255,255,255,0.48)');
-        grad.addColorStop(0.34, 'rgba(255,255,255,0.14)');
-        grad.addColorStop(0.42, 'rgba(255,255,255,0.06)');
-        grad.addColorStop(0.54, 'rgba(255,255,255,0)');
+        grad.addColorStop(0.14, 'rgba(255,255,255,0)');
+        grad.addColorStop(0.23, 'rgba(255,255,255,0.62)');
+        grad.addColorStop(0.31, 'rgba(255,255,255,0.2)');
+        grad.addColorStop(0.38, 'rgba(255,255,255,0.08)');
+        grad.addColorStop(0.5, 'rgba(255,255,255,0)');
         grad.addColorStop(1, 'rgba(255,255,255,0)');
 
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, width, height);
+
+        const rim = ctx.createLinearGradient(0, 0, 0, height);
+        rim.addColorStop(0, 'rgba(255,255,255,0.22)');
+        rim.addColorStop(0.18, 'rgba(255,255,255,0.08)');
+        rim.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = rim;
+        ctx.fillRect(0, 0, width, height * 0.18);
 
         const texture = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;
@@ -403,17 +418,17 @@ export class EntitiesExplorer3dComponent
         this.disposeCards();
 
         this.items.forEach((item, index) => {
-            const frameGeometry = new THREE.PlaneGeometry(3.18, 3.43, 1, 1);
-            const imageGeometry = new THREE.PlaneGeometry(2.95, 3.2, 1, 1);
-            const glassGeometry = new THREE.PlaneGeometry(3.08, 3.33, 1, 1);
+            const frameGeometry = new THREE.PlaneGeometry(2.84, 3.08, 1, 1);
+            const imageGeometry = new THREE.PlaneGeometry(2.64, 2.90, 1, 1);
+            const glassGeometry = new THREE.PlaneGeometry(2.74, 2.98, 1, 1);
 
             const frameTexture = this.createRoundedRectTexture(
                 1100,
                 1200,
                 58,
-                'rgba(255,255,255,0.16)',
-                'rgba(255,255,255,0.95)',
-                12,
+                'rgba(255,255,255,0.08)',
+                'rgba(255,255,255,0.52)',
+                6,
                 1,
             );
 
@@ -422,7 +437,7 @@ export class EntitiesExplorer3dComponent
             const frameMaterial = new THREE.MeshBasicMaterial({
                 map: frameTexture,
                 transparent: true,
-                opacity: 0.56,
+                opacity: 0.42,
                 depthWrite: false,
             });
 
@@ -435,7 +450,7 @@ export class EntitiesExplorer3dComponent
             const glassMaterial = new THREE.MeshBasicMaterial({
                 map: glassTexture,
                 transparent: true,
-                opacity: 0.24,
+                opacity: 0.18,
                 depthWrite: false,
             });
 
@@ -445,9 +460,9 @@ export class EntitiesExplorer3dComponent
 
             const group = new THREE.Group();
 
-            frame.position.z = -0.035;
+            frame.position.z = -0.022;
             image.position.z = 0.02;
-            glass.position.z = 0.055;
+            glass.position.z = 0.036;
 
             const textureUrl = this.thumb(item);
             if (textureUrl) {
@@ -540,7 +555,7 @@ export class EntitiesExplorer3dComponent
             const rotY = isActive ? 0 : offset * -0.09;
             const rotZ = isActive ? 0 : offset * -0.022;
 
-            const scaleBase = isActive ? 1.34 : Math.max(0.86, 1 - abs * 0.06);
+            const scaleBase = isActive ? 1.26 : Math.max(0.86, 1 - abs * 0.06);
             const scale = isHovered ? scaleBase + 0.045 : scaleBase;
 
             const opacityBase = isActive ? 1 : Math.max(0.22, 0.68 - abs * 0.1);
@@ -603,13 +618,13 @@ export class EntitiesExplorer3dComponent
 
                     card.frame.material.opacity = THREE.MathUtils.lerp(
                         card.frame.material.opacity,
-                        targetOpacity === 1 ? 0.68 : Math.max(0.2, targetOpacity * 0.3),
+                        targetOpacity === 1 ? 0.5 : Math.max(0.12, targetOpacity * 0.2),
                         0.082,
                     );
 
                     card.glass.material.opacity = THREE.MathUtils.lerp(
                         card.glass.material.opacity,
-                        targetOpacity === 1 ? 0.24 : Math.max(0.07, targetOpacity * 0.12),
+                        targetOpacity === 1 ? 0.16 : Math.max(0.05, targetOpacity * 0.08),
                         0.082,
                     );
                 }
