@@ -4,6 +4,7 @@ import {
     Component,
     ElementRef,
     EventEmitter,
+    HostListener,
     Inject,
     Input,
     OnChanges,
@@ -81,7 +82,7 @@ export class EntitiesExplorer3dComponent
     private wheelIntent = 0;
     private lastWheelEventAt = 0;
     private lastWheelNavigationAt = 0;
-    private hoverActivatedFocus = false;
+    private keyboardNavigationActive = false;
 
     constructor(@Inject(PLATFORM_ID) platformId: object) {
         this.isBrowser = isPlatformBrowser(platformId);
@@ -160,7 +161,9 @@ export class EntitiesExplorer3dComponent
         this.hasInitializedCenter = true;
     }
 
-    onKeyDown(event: KeyboardEvent): void {
+    @HostListener('window:keydown', ['$event'])
+    onWindowKeyDown(event: KeyboardEvent): void {
+        if (!this.keyboardNavigationActive) return;
         if (this.shouldIgnoreKeyboardEvent(event)) return;
 
         if (event.key === 'ArrowLeft') {
@@ -197,6 +200,10 @@ export class EntitiesExplorer3dComponent
         this.activateExplorerFocus('hover');
     }
 
+    onMouseLeave(): void {
+        this.deactivateExplorerFocus();
+    }
+
     private initScene(): void {
         const host = this.canvasHostRef.nativeElement;
         const width = host.clientWidth || 1200;
@@ -228,7 +235,6 @@ export class EntitiesExplorer3dComponent
         this.renderer.domElement.addEventListener('wheel', this.onWheel as EventListener, {
             passive: false,
         });
-        this.renderer.domElement.tabIndex = -1;
     }
 
     private disposeCards(): void {
@@ -701,31 +707,18 @@ export class EntitiesExplorer3dComponent
     private activateExplorerFocus(source: 'hover' | 'pointer' | 'wheel'): void {
         if (!this.isBrowser) return;
 
-        const root = this.rootRef.nativeElement;
         const activeElement = document.activeElement as HTMLElement | null;
-
-        if (activeElement === root || root.contains(activeElement)) {
-            this.hoverActivatedFocus = source === 'hover';
-            return;
-        }
 
         if (source === 'hover' && this.shouldPreserveExternalFocus(activeElement)) {
             return;
         }
 
-        root.focus({ preventScroll: true });
-        this.hoverActivatedFocus = source === 'hover';
+        this.keyboardNavigationActive = true;
     }
 
     private deactivateExplorerFocus(): void {
-        if (!this.isBrowser || !this.hoverActivatedFocus) return;
-
-        const root = this.rootRef.nativeElement;
-        if (document.activeElement === root) {
-            root.blur();
-        }
-
-        this.hoverActivatedFocus = false;
+        if (!this.isBrowser) return;
+        this.keyboardNavigationActive = false;
     }
 
     private shouldIgnoreKeyboardEvent(event: KeyboardEvent): boolean {
@@ -889,6 +882,5 @@ export class EntitiesExplorer3dComponent
         this.hoveredIndex = null;
         this.renderer.domElement.classList.remove('is-dragging');
         this.updateCardTargets();
-        this.deactivateExplorerFocus();
     };
 }

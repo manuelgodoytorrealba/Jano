@@ -1,11 +1,10 @@
 <div
     #root
     class="explorer3d"
-    tabindex="0"
     role="region"
     aria-label="Explorer 3D de entidades"
     (mouseenter)="onMouseEnter()"
-    (keydown)="onKeyDown($event)"
+    (mouseleave)="onMouseLeave()"
 >
     <div #canvasHost class="explorer3d__canvas"></div>
 
