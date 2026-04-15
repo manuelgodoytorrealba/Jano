@@ -145,75 +145,77 @@
             </defs>
 
             <g [attr.transform]="graphViewportTransform()">
-              @for (edge of filteredEdges(); track edge.id) {
+              @for (renderedEdge of renderedEdges(); track renderedEdge.edge.id) {
                 <g class="graph-edge-group">
                   <path
                     class="graph-edge"
-                    [attr.d]="edgePath(edge)"
-                    [attr.stroke]="relationConfig(edge.relationType).color"
-                    [attr.stroke-width]="relationConfig(edge.relationType).width"
-                    [attr.stroke-dasharray]="edgeDasharray(edge.relationType)"
-                    [attr.marker-end]="edge.directed ? 'url(#' + edgeMarkerId(edge.relationType) + ')' : null"
-                    [class.is-muted]="isEdgeMuted(edge)"
+                    [attr.d]="renderedEdge.path"
+                    [attr.stroke]="renderedEdge.relationVisual.color"
+                    [attr.stroke-width]="renderedEdge.relationVisual.width"
+                    [attr.stroke-dasharray]="edgeDasharray(renderedEdge.edge.relationType)"
+                    [attr.marker-end]="renderedEdge.edge.directed ? 'url(#' + edgeMarkerId(renderedEdge.edge.relationType) + ')' : null"
+                    [class.is-muted]="renderedEdge.muted"
                   ></path>
 
                   <path
                     class="graph-edge-hit"
-                    [attr.d]="edgePath(edge)"
-                    (pointerenter)="onEdgeHover($event, edge)"
+                    [attr.d]="renderedEdge.path"
+                    (pointerenter)="onEdgeHover($event, renderedEdge.edge)"
                     (pointermove)="onTooltipMove($event)"
                     (pointerleave)="clearHover()"
                   ></path>
 
-                  @if (shouldShowEdgeLabel(edge)) {
+                  @if (shouldShowEdgeLabel(renderedEdge.edge)) {
                     <text
                       class="graph-edge-label"
-                      [class.is-muted]="isEdgeMuted(edge)"
-                      [attr.x]="edgeLabelPoint(edge).x"
-                      [attr.y]="edgeLabelPoint(edge).y"
+                      [class.is-muted]="renderedEdge.muted"
+                      [attr.x]="renderedEdge.labelPoint.x"
+                      [attr.y]="renderedEdge.labelPoint.y"
                     >
-                      {{ edgeLabel(edge) }}
+                      {{ edgeLabel(renderedEdge.edge) }}
                     </text>
                   }
                 </g>
               }
 
-              @for (node of filteredNodes(); track node.id) {
+              @for (renderedNode of renderedNodes(); track renderedNode.node.id) {
                 <g
                   class="graph-node"
-                  [attr.transform]="nodeTransform(node.id)"
-                  [class.is-selected]="selectedNodeId() === node.id"
-                  [class.is-muted]="isNodeMuted(node.id)"
-                  (pointerdown)="onNodePointerDown($event, node.id)"
+                  [attr.transform]="renderedNode.transform"
+                  [class.is-selected]="renderedNode.selected"
+                  [class.is-muted]="renderedNode.muted"
+                  (pointerdown)="onNodePointerDown($event, renderedNode.node.id)"
                   (pointermove)="onNodePointerMove($event)"
                   (pointerup)="onNodePointerUp($event)"
                   (pointercancel)="onNodePointerCancel($event)"
-                  (pointerenter)="onNodeHover($event, node.id)"
+                  (pointerenter)="onNodeHover($event, renderedNode.node.id)"
                   (pointerleave)="clearHover()"
                 >
                   <circle
                     class="graph-node__halo"
                     cx="0"
                     cy="0"
-                    [attr.r]="nodeHaloSize(node.id)"
-                    [attr.fill]="nodeConfig(node.type).halo"
+                    [attr.r]="renderedNode.haloSize"
+                    [attr.fill]="renderedNode.nodeVisual.halo"
                   ></circle>
 
                   <path
                     class="graph-node__shape"
-                    [attr.d]="nodeShapePath(node.id)"
-                    [attr.fill]="nodeConfig(node.type).color"
-                    [attr.stroke]="nodeConfig(node.type).accent"
+                    [attr.d]="renderedNode.shapePath"
+                    [attr.fill]="renderedNode.nodeVisual.color"
+                    [attr.stroke]="renderedNode.nodeVisual.accent"
                   ></path>
 
-                  <text class="graph-node__icon" text-anchor="middle" dy="0.35em" [attr.fill]="nodeConfig(node.type).textColor">
-                    {{ nodeConfig(node.type).icon }}
+                  <text class="graph-node__icon" text-anchor="middle" dy="0.35em" [attr.fill]="renderedNode.nodeVisual.textColor">
+                    {{ renderedNode.nodeVisual.icon }}
                   </text>
 
-                  <g class="graph-node__label" [attr.transform]="'translate(' + (nodeSize(node.id) + 18) + ', 0)'">
-                    <text class="graph-node__title" y="-2">{{ compactLabel(node.label, 28) }}</text>
-                    <text class="graph-node__subtitle" y="18">{{ entityTypeLabel(node.type) }}</text>
-                  </g>
+                  @if (shouldShowNodeLabel(renderedNode.node.id)) {
+                    <g class="graph-node__label" [attr.transform]="renderedNode.labelTransform">
+                      <text class="graph-node__title" y="-2">{{ compactLabel(renderedNode.node.label, 28) }}</text>
+                      <text class="graph-node__subtitle" y="18">{{ entityTypeLabel(renderedNode.node.type) }}</text>
+                    </g>
+                  }
                 </g>
               }
             </g>

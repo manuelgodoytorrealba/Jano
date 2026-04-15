@@ -156,6 +156,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private pendingInitialEntityFocus = false;
   private selectedNodeSource: 'center' | 'explicit' = 'center';
   private hasUserAdjustedGraphView = false;
+  private graphLayoutActive = false;
+  private graphSettledFrames = 0;
 
   readonly filteredNodes = computed(() => {
     const graph = this.graph();
@@ -168,6 +170,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   });
 
   readonly visibleNodeIds = computed(() => new Set(this.filteredNodes().map((node) => node.id)));
+
+  readonly nodeMap = computed(() => {
+    const graph = this.graph();
+    return new Map(graph?.nodes.map((node) => [node.id, node]) ?? []);
+  });
 
   readonly filteredEdges = computed(() => {
     const graph = this.graph();
@@ -187,16 +194,15 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   });
 
   readonly selectedNode = computed(() => {
-    const graph = this.graph();
     const selectedNodeId = this.selectedNodeId();
-    return graph?.nodes.find((node) => node.id === selectedNodeId) ?? null;
+    return selectedNodeId ? this.nodeMap().get(selectedNodeId) ?? null : null;
   });
 
   readonly contextualNode = computed(() => this.selectedNode() ?? this.centerNode());
 
   readonly centerNode = computed(() => {
     const graph = this.graph();
-    return graph?.nodes.find((node) => node.id === graph.centerId) ?? null;
+    return graph ? this.nodeMap().get(graph.centerId) ?? null : null;
   });
 
   readonly imageSyncOverlay = computed(() =>
@@ -226,6 +232,62 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     return related;
   });
+
+  readonly renderedEdges = computed(() => {
+    this.renderTick();
+
+    const selectedNodeId = this.selectedNodeId();
+
+    return this.filteredEdges().map((edge) => {
+      const source = this.positions[edge.source] ?? { x: 0, y: 0 };
+      const target = this.positions[edge.target] ?? { x: 0, y: 0 };
+      const relationVisual = this.relationConfig(edge.relationType);
+      const curve = edgeCurveOffset(edge);
+      const path = edgePath(source, target, curve);
+
+      return {
+        edge,
+        path,
+        labelPoint: edgeMidpoint(source, target, curve),
+        muted: !!selectedNodeId && edge.source !== selectedNodeId && edge.target !== selectedNodeId,
+        relationVisual,
+      };
+    });
+  });
+
+  readonly renderedNodes = computed(() => {
+    this.renderTick();
+
+    const graph = this.graph();
+    const selectedNodeId = this.selectedNodeId();
+    const selectedNeighbors = this.selectedNeighbors();
+    const centerId = graph?.centerId ?? null;
+
+    return this.filteredNodes().map((node) => {
+      const point = this.positions[node.id] ?? { x: 0, y: 0 };
+      const nodeVisual = this.nodeConfig(node.type);
+      const base = node.id === centerId ? 28 : 22;
+      const degreeBoost = Math.min(node.degree ?? 0, 5) * 1.25;
+      const selectedBoost = selectedNodeId === node.id ? 6 : 0;
+      const size = base + degreeBoost + selectedBoost;
+      const muted = !!selectedNodeId && selectedNodeId !== node.id && !selectedNeighbors.has(node.id);
+
+      return {
+        node,
+        point,
+        transform: `translate(${point.x} ${point.y})`,
+        selected: selectedNodeId === node.id,
+        muted,
+        size,
+        haloSize: size + 12,
+        shapePath: graphNodeShapePath(nodeVisual.shape, size),
+        labelTransform: `translate(${size + 18}, 0)`,
+        nodeVisual,
+      };
+    });
+  });
+
+  readonly isDenseGraph = computed(() => this.filteredNodes().length >= 42 || this.filteredEdges().length >= 84);
 
   readonly hasVisibleSelection = computed(() => {
     const selectedNodeId = this.selectedNodeId();
@@ -349,6 +411,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         this.hasUserAdjustedGraphView = false;
         this.targetGraphViewport = null;
         this.graphViewportReady = false;
+        this.graphLayoutActive = true;
+        this.graphSettledFrames = 0;
         this.focusCurrentEntity(false);
 
         this.loading.set(false);
@@ -410,13 +474,23 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.velocities[graph.centerId] = { x: 0, y: 0 };
   }
 
-  private warmupGraphLayout(passes = 36): void {
+  private warmupGraphLayout(passes?: number): void {
     const graph = this.graph();
     if (!graph) {
       return;
     }
 
-    for (let index = 0; index < passes; index += 1) {
+    const nodeCount = graph.nodes.length;
+    const edgeCount = graph.edges.length;
+    const resolvedPasses =
+      passes
+      ?? (nodeCount >= 80 || edgeCount >= 140
+        ? 16
+        : nodeCount >= 48 || edgeCount >= 88
+          ? 22
+          : 36);
+
+    for (let index = 0; index < resolvedPasses; index += 1) {
       stepForceLayout(graph, this.positions, this.velocities, null);
       this.pinCenterNode();
     }
@@ -428,23 +502,63 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     const frame = () => {
-      this.frameId = requestAnimationFrame(frame);
-
       const graph = this.graph();
-      if (graph) {
-        stepForceLayout(
-          graph,
-          this.positions,
-          this.velocities,
-          this.pointerSession?.kind === 'node-drag' ? this.pointerSession.nodeId : null,
-        );
+      let shouldContinue = false;
+      let shouldRender = false;
 
-        this.pinCenterNode();
+      if (graph) {
+        const draggingNodeId = this.pointerSession?.kind === 'node-drag' ? this.pointerSession.nodeId : null;
+        const shouldStepLayout = this.graphLayoutActive || draggingNodeId !== null;
+
+        if (shouldStepLayout) {
+          const motion = stepForceLayout(
+            graph,
+            this.positions,
+            this.velocities,
+            draggingNodeId,
+          );
+
+          this.pinCenterNode();
+          shouldRender = true;
+
+          if (draggingNodeId !== null) {
+            this.graphLayoutActive = true;
+            this.graphSettledFrames = 0;
+          } else if (motion < 0.28) {
+            this.graphSettledFrames += 1;
+            if (this.graphSettledFrames >= 14) {
+              this.graphLayoutActive = false;
+            }
+          } else {
+            this.graphLayoutActive = true;
+            this.graphSettledFrames = 0;
+          }
+        }
+
+        shouldContinue ||= this.graphLayoutActive || draggingNodeId !== null;
       }
 
-      this.animateGraphViewport();
-      this.animateImageViewport();
-      this.renderTick.update((value) => value + 1);
+      if (this.targetGraphViewport) {
+        this.animateGraphViewport();
+        shouldRender = true;
+        shouldContinue = true;
+      }
+
+      if (this.targetImageViewport) {
+        this.animateImageViewport();
+        shouldContinue = true;
+      }
+
+      if (shouldRender) {
+        this.renderTick.update((value) => value + 1);
+      }
+
+      if (!shouldContinue) {
+        this.frameId = null;
+        return;
+      }
+
+      this.frameId = requestAnimationFrame(frame);
     };
 
     this.frameId = requestAnimationFrame(frame);
@@ -644,14 +758,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   nodeShapePath(nodeId: string): string {
-    const graph = this.graph();
-    const node = graph?.nodes.find((item) => item.id === nodeId);
+    const node = this.nodeMap().get(nodeId);
     return graphNodeShapePath(getEntityTypeConfig(node?.type ?? '').shape, this.nodeSize(nodeId));
   }
 
   nodeSize(nodeId: string): number {
     const graph = this.graph();
-    const node = graph?.nodes.find((item) => item.id === nodeId);
+    const node = this.nodeMap().get(nodeId);
     const base = nodeId === graph?.centerId ? 28 : 22;
     const degreeBoost = Math.min(node?.degree ?? 0, 5) * 1.25;
     const selectedBoost = this.selectedNodeId() === nodeId ? 6 : 0;
@@ -698,6 +811,42 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     return compactGraphLabel(label, maxLength);
   }
 
+  shouldShowEdgeLabel(edge: GraphEdge): boolean {
+    if (this.isDenseGraph()) {
+      return false;
+    }
+
+    const selectedNodeId = this.selectedNodeId();
+
+    return shouldRenderGraphLabel({
+      mode: this.labelsMode(),
+      scale: this.graphViewport().scale,
+      edgeCount: this.filteredEdges().length,
+      highlighted: this.hoveredEdgeId() === edge.id,
+      connectedToSelection: edge.source === selectedNodeId || edge.target === selectedNodeId,
+    });
+  }
+
+  shouldShowNodeLabel(nodeId: string): boolean {
+    const graph = this.graph();
+    if (!graph) {
+      return false;
+    }
+
+    const selectedNodeId = this.selectedNodeId();
+
+    return shouldRenderGraphLabel({
+      mode: this.labelsMode(),
+      scale: this.graphViewport().scale,
+      edgeCount: this.filteredEdges().length,
+      highlighted: this.hoveredNodeId() === nodeId,
+      connectedToSelection:
+        nodeId === graph.centerId ||
+        nodeId === selectedNodeId ||
+        this.selectedNeighbors().has(nodeId),
+    });
+  }
+
   isNodeMuted(nodeId: string): boolean {
     const selectedNodeId = this.selectedNodeId();
     if (!selectedNodeId || selectedNodeId === nodeId) {
@@ -714,18 +863,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     return edge.source !== selectedNodeId && edge.target !== selectedNodeId;
-  }
-
-  shouldShowEdgeLabel(edge: GraphEdge): boolean {
-    const selectedNodeId = this.selectedNodeId();
-
-    return shouldRenderGraphLabel({
-      mode: this.labelsMode(),
-      scale: this.graphViewport().scale,
-      edgeCount: this.filteredEdges().length,
-      highlighted: this.hoveredEdgeId() === edge.id,
-      connectedToSelection: edge.source === selectedNodeId || edge.target === selectedNodeId,
-    });
   }
 
   resetAllViews(): void {
@@ -746,6 +883,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     if (animate) {
       this.targetImageViewport = next;
+      this.startAnimationLoop();
       this.persistExplorerState();
       return;
     }
@@ -783,6 +921,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     if (animate) {
       this.targetGraphViewport = next;
+      this.startAnimationLoop();
     } else {
       this.targetGraphViewport = null;
       this.graphViewport.set(next);
@@ -802,7 +941,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    const node = graph.nodes.find((item) => item.id === nodeId);
+    const node = this.nodeMap().get(nodeId);
     if (!node) {
       return;
     }
@@ -823,6 +962,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     this.targetGraphViewport = next;
+    this.startAnimationLoop();
     this.persistExplorerState();
   }
 
@@ -970,6 +1110,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       },
       moved: false,
     };
+    this.graphLayoutActive = true;
+    this.graphSettledFrames = 0;
+    this.startAnimationLoop();
     this.tooltip.set(null);
   }
 
@@ -1019,6 +1162,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     if (!this.pointerSession.moved) {
       this.focusNode(this.pointerSession.nodeId);
     }
+    this.graphLayoutActive = true;
+    this.graphSettledFrames = 0;
+    this.startAnimationLoop();
     this.persistExplorerState();
     this.pointerSession = null;
   }
@@ -1110,7 +1256,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     this.cancelGraphViewportTarget();
-    const node = this.graph()?.nodes.find((item) => item.id === nodeId);
+    const node = this.nodeMap().get(nodeId);
     if (!node) {
       return;
     }

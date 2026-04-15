@@ -106,7 +106,7 @@ export function stepForceLayout(
   positions: Record<string, GraphPoint>,
   velocities: Record<string, GraphPoint>,
   draggingNodeId: string | null,
-): void {
+): number {
   const repulsion = 54000;
   const springLength = 180;
   const springStrength = 0.0018;
@@ -202,6 +202,18 @@ export function stepForceLayout(
 
   velocities[graph.centerId] = { x: 0, y: 0 };
   positions[graph.centerId] = { x: 0, y: 0 };
+
+  let totalMotion = 0;
+  for (const nodeId of nodeIds) {
+    if (nodeId === graph.centerId || nodeId === draggingNodeId) {
+      continue;
+    }
+
+    const velocity = velocities[nodeId];
+    totalMotion += Math.abs(velocity.x) + Math.abs(velocity.y);
+  }
+
+  return totalMotion;
 }
 
 export function edgeCurveOffset(edge: GraphEdge): number {
