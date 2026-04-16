@@ -1,0 +1,40 @@
+<div class="graph-panel-bar">
+  <div class="graph-panel-bar__group graph-panel-bar__group--status">
+    <div class="explorer-surface-label">Relaciones</div>
+
+    <div class="graph-mode-block">
+      <span class="graph-panel-caption">Labels</span>
+      <div class="graph-mode-switch">
+        <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode === 'auto'" (click)="setLabelsMode('auto')">
+          Auto
+        </button>
+        <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode === 'always'" (click)="setLabelsMode('always')">
+          Mostrar
+        </button>
+        <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode === 'hidden'" (click)="setLabelsMode('hidden')">
+          Ocultar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="graph-panel-bar__group graph-panel-bar__group--actions">
+    <div class="graph-panel-bar__meta">
+      <span>{{ nodeCount }} nodos</span>
+      <span>{{ edgeCount }} relaciones</span>
+      <span>{{ scalePercent }}%</span>
+    </div>
+
+    <div class="graph-panel-bar__shortcuts">
+      <button type="button" class="graph-utility-btn" [disabled]="!graphReady" (click)="centerSelection.emit()">
+        Ir al nodo principal
+      </button>
+    </div>
+
+    <div class="surface-controls surface-controls--graph">
+      <button type="button" class="surface-control" (click)="zoom(1.14)">+</button>
+      <button type="button" class="surface-control" (click)="zoom(0.88)">−</button>
+      <button type="button" class="surface-control surface-control--wide" (click)="resetGraphView.emit()">Reset</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="graph-panel-footer">
+  @if (selectedNode && selectedNodeMeta) {
+    <button type="button" class="selection-card selection-card--interactive" (click)="openSelectedEntity.emit()">
+      <div class="selection-card__head">
+        <span class="selection-card__type" [style.--node-color]="selectedNodeMeta.color">
+          {{ selectedNodeMeta.label }}
+        </span>
+        <span class="selection-card__meta">{{ selectedNode.degree }} conexiones</span>
+      </div>
+
+      <h3>{{ selectedNode.label }}</h3>
+      @if (selectedNode.metadata?.summary) {
+        <p>{{ selectedNode.metadata?.summary }}</p>
+      }
+      @if (imageSyncActive) {
+        <div class="selection-card__sync">Sincronizado con la imagen</div>
+      }
+    </button>
+  }
+
+  <div class="graph-filter-tray">
+    <div class="graph-filter-group">
+      <div class="filter-group__head">
+        <span class="filter-group__label">Tipos</span>
+        <button type="button" class="filter-action" (click)="setAllEntityTypes.emit(true)">Todos</button>
+      </div>
+      @for (type of entityTypes; track type) {
+        <button
+          type="button"
+          class="filter-chip"
+          [class.is-active]="entityTypeFilters[type] !== false"
+          [style.--chip-color]="entityTypeMeta[type]?.color"
+          (click)="toggleEntityType.emit(type)"
+        >
+          <span class="filter-chip__dot"></span>
+          {{ entityTypeMeta[type]?.label ?? type }}
+        </button>
+      }
+    </div>
+
+    <div class="graph-filter-group">
+      <div class="filter-group__head">
+        <span class="filter-group__label">Relaciones</span>
+        <button type="button" class="filter-action" (click)="setAllRelationTypes.emit(true)">Todas</button>
+      </div>
+      @for (type of relationTypes; track type) {
+        <button
+          type="button"
+          class="filter-chip filter-chip--relation"
+          [class.is-active]="relationTypeFilters[type] !== false"
+          [style.--chip-color]="relationTypeMeta[type]?.color"
+          (click)="toggleRelationType.emit(type)"
+        >
+          <span class="filter-chip__line"></span>
+          {{ relationTypeMeta[type]?.label ?? type }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

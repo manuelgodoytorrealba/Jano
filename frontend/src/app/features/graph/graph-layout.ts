@@ -14,6 +14,11 @@ export interface GraphBounds {
   centerY: number;
 }
 
+export interface ForceLayoutScratch {
+  nodeIds: string[];
+  forces: Record<string, GraphPoint>;
+}
+
 export function buildGraphData(raw: GraphData): GraphData {
   return raw;
 }
@@ -101,11 +106,22 @@ export function createInitialPositions(graph: GraphData): Record<string, GraphPo
   return positions;
 }
 
+export function createForceLayoutScratch(graph: GraphData): ForceLayoutScratch {
+  const nodeIds = graph.nodes.map((node) => node.id);
+  const forces = nodeIds.reduce<Record<string, GraphPoint>>((acc, nodeId) => {
+    acc[nodeId] = { x: 0, y: 0 };
+    return acc;
+  }, {});
+
+  return { nodeIds, forces };
+}
+
 export function stepForceLayout(
   graph: GraphData,
   positions: Record<string, GraphPoint>,
   velocities: Record<string, GraphPoint>,
   draggingNodeId: string | null,
+  scratch?: ForceLayoutScratch,
 ): number {
   const repulsion = 54000;
   const springLength = 180;
@@ -114,14 +130,18 @@ export function stepForceLayout(
   const damping = 0.84;
   const maxSpeed = 8;
 
-  const nodeIds = graph.nodes.map((node) => node.id);
-  const forces: Record<string, GraphPoint> = {};
+  const nodeIds = scratch?.nodeIds ?? graph.nodes.map((node) => node.id);
+  const forces = scratch?.forces ?? {};
 
-  nodeIds.forEach((id) => {
-    forces[id] = { x: 0, y: 0 };
+  for (let index = 0; index < nodeIds.length; index += 1) {
+    const id = nodeIds[index];
+    const force = (forces[id] ??= { x: 0, y: 0 });
+
+    force.x = 0;
+    force.y = 0;
     velocities[id] ??= { x: 0, y: 0 };
     positions[id] ??= { x: 0, y: 0 };
-  });
+  }
 
   for (let i = 0; i < nodeIds.length; i += 1) {
     for (let j = i + 1; j < nodeIds.length; j += 1) {
@@ -142,11 +162,12 @@ export function stepForceLayout(
     }
   }
 
-  graph.edges.forEach((edge) => {
+  for (let edgeIndex = 0; edgeIndex < graph.edges.length; edgeIndex += 1) {
+    const edge = graph.edges[edgeIndex];
     const source = positions[edge.source];
     const target = positions[edge.target];
     if (!source || !target) {
-      return;
+      continue;
     }
 
     const dx = target.x - source.x;
@@ -161,29 +182,38 @@ export function stepForceLayout(
     forces[edge.source].y += fy;
     forces[edge.target].x -= fx;
     forces[edge.target].y -= fy;
-  });
+  }
 
-  graph.nodes.forEach((node) => {
+  for (let nodeIndex = 0; nodeIndex < graph.nodes.length; nodeIndex += 1) {
+    const node = graph.nodes[nodeIndex];
     const point = positions[node.id];
     if (!point) {
-      return;
+      continue;
     }
 
-    const target = node.id === graph.centerId ? { x: 0, y: 0 } : { x: point.x * 0.08, y: point.y * 0.08 };
-    forces[node.id].x -= target.x * centeringStrength;
-    forces[node.id].y -= target.y * centeringStrength;
-  });
+    const targetX = node.id === graph.centerId ? 0 : point.x * 0.08;
+    const targetY = node.id === graph.centerId ? 0 : point.y * 0.08;
+    forces[node.id].x -= targetX * centeringStrength;
+    forces[node.id].y -= targetY * centeringStrength;
+  }
 
-  graph.nodes.forEach((node) => {
+  for (let nodeIndex = 0; nodeIndex < graph.nodes.length; nodeIndex += 1) {
+    const node = graph.nodes[nodeIndex];
     if (node.id === graph.centerId) {
-      velocities[node.id] = { x: 0, y: 0 };
-      positions[node.id] = { x: 0, y: 0 };
-      return;
+      const centerVelocity = (velocities[node.id] ??= { x: 0, y: 0 });
+      const centerPosition = (positions[node.id] ??= { x: 0, y: 0 });
+      centerVelocity.x = 0;
+      centerVelocity.y = 0;
+      centerPosition.x = 0;
+      centerPosition.y = 0;
+      continue;
     }
 
     if (node.id === draggingNodeId) {
-      velocities[node.id] = { x: 0, y: 0 };
-      return;
+      const draggedVelocity = (velocities[node.id] ??= { x: 0, y: 0 });
+      draggedVelocity.x = 0;
+      draggedVelocity.y = 0;
+      continue;
     }
 
     const velocity = velocities[node.id];
@@ -198,10 +228,14 @@ export function stepForceLayout(
 
     positions[node.id].x += velocity.x;
     positions[node.id].y += velocity.y;
-  });
+  }
 
-  velocities[graph.centerId] = { x: 0, y: 0 };
-  positions[graph.centerId] = { x: 0, y: 0 };
+  const centerVelocity = (velocities[graph.centerId] ??= { x: 0, y: 0 });
+  const centerPosition = (positions[graph.centerId] ??= { x: 0, y: 0 });
+  centerVelocity.x = 0;
+  centerVelocity.y = 0;
+  centerPosition.x = 0;
+  centerPosition.y = 0;
 
   let totalMotion = 0;
   for (const nodeId of nodeIds) {

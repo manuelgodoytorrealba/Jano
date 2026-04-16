@@ -86,8 +86,8 @@ export function fitGraphBounds(
 export function interpolateViewport(
   current: GraphViewport,
   target: GraphViewport,
-  easing = 0.18,
-  epsilon = 0.8,
+  easing = 0.26,
+  epsilon = 1.1,
 ): { next: GraphViewport; done: boolean } {
   const dx = target.x - current.x;
   const dy = target.y - current.y;

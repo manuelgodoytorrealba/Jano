@@ -1,0 +1,103 @@
+<svg class="graph-svg" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    @for (markerDef of markerDefs; track markerDef.id) {
+      <marker
+        [attr.id]="markerDef.id"
+        markerWidth="11"
+        markerHeight="11"
+        refX="8"
+        refY="4"
+        orient="auto"
+        markerUnits="strokeWidth"
+      >
+        <path d="M 0 0 L 8 4 L 0 8 z" [attr.fill]="markerDef.color"></path>
+      </marker>
+    }
+  </defs>
+
+  <g [attr.transform]="viewportTransform">
+    @for (renderedEdge of renderedEdges; track renderedEdge.edge.id) {
+      <g class="graph-edge-group">
+        <path
+          class="graph-edge"
+          [attr.d]="renderedEdge.path"
+          [attr.stroke]="renderedEdge.relationVisual.color"
+          [attr.stroke-width]="renderedEdge.relationVisual.width"
+          [attr.stroke-dasharray]="renderedEdge.dasharray"
+          [attr.marker-end]="renderedEdge.edge.directed ? 'url(#' + renderedEdge.markerId + ')' : null"
+          [class.is-muted]="renderedEdge.muted"
+        ></path>
+
+        <path
+          class="graph-edge-hit"
+          [attr.d]="renderedEdge.path"
+          (pointerenter)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
+          (pointermove)="tooltipMove.emit($event)"
+          (pointerleave)="clearHover.emit()"
+        ></path>
+
+        @if (edgeLabelVisibility[renderedEdge.edge.id]) {
+          <text
+            class="graph-edge-label"
+            [class.is-muted]="renderedEdge.muted"
+            [attr.x]="renderedEdge.labelPoint.x"
+            [attr.y]="renderedEdge.labelPoint.y"
+          >
+            {{ renderedEdge.displayLabel }}
+          </text>
+        }
+      </g>
+    }
+
+    @for (renderedNode of renderedNodes; track renderedNode.node.id) {
+      <g
+        class="graph-node"
+        [attr.transform]="renderedNode.transform"
+        [class.is-selected]="renderedNode.selected"
+        [class.is-muted]="renderedNode.muted"
+        (pointerdown)="nodePointerDown.emit({ event: $event, nodeId: renderedNode.node.id })"
+        (pointermove)="nodePointerMove.emit($event)"
+        (pointerup)="nodePointerUp.emit($event)"
+        (pointercancel)="nodePointerCancel.emit($event)"
+        (pointerenter)="nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })"
+        (pointerleave)="clearHover.emit()"
+      >
+        <circle
+          class="graph-node__halo"
+          cx="0"
+          cy="0"
+          [attr.r]="renderedNode.haloSize"
+          [attr.fill]="renderedNode.nodeVisual.halo"
+        ></circle>
+
+        <path
+          class="graph-node__shape"
+          [attr.d]="renderedNode.shapePath"
+          [attr.fill]="renderedNode.nodeVisual.color"
+          [attr.stroke]="renderedNode.nodeVisual.accent"
+        ></path>
+
+        <text class="graph-node__icon" text-anchor="middle" dy="0.35em" [attr.fill]="renderedNode.nodeVisual.textColor">
+          {{ renderedNode.nodeVisual.icon }}
+        </text>
+
+        @if (nodeLabelVisibility[renderedNode.node.id]) {
+          <g class="graph-node__label" [attr.transform]="renderedNode.labelTransform">
+            <text class="graph-node__title" y="-2">{{ renderedNode.titleLabel }}</text>
+            <text class="graph-node__subtitle" y="18">{{ renderedNode.typeLabel }}</text>
+          </g>
+        }
+      </g>
+    }
+  </g>
+</svg>
+
+@if (tooltip) {
+  <div class="graph-tooltip" [ngStyle]="tooltipStyle">
+    <div class="graph-tooltip__title">{{ tooltip.title }}</div>
+    <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>
+    @if (tooltip.body) {
+      <div class="graph-tooltip__body">{{ tooltip.body }}</div>
+    }
+  </div>
+}

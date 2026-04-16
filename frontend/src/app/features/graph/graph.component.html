@@ -77,46 +77,17 @@
       </section>
 
       <section class="explorer-graph-pane">
-        <div class="graph-panel-bar">
-          <div class="graph-panel-bar__group graph-panel-bar__group--status">
-            <div class="explorer-surface-label">Relaciones</div>
-
-            <div class="graph-mode-block">
-              <span class="graph-panel-caption">Labels</span>
-              <div class="graph-mode-switch">
-                <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode() === 'auto'" (click)="setLabelsMode('auto')">
-                  Auto
-                </button>
-                <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode() === 'always'" (click)="setLabelsMode('always')">
-                  Mostrar
-                </button>
-                <button type="button" class="graph-mode-switch__item" [class.is-active]="labelsMode() === 'hidden'" (click)="setLabelsMode('hidden')">
-                  Ocultar
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="graph-panel-bar__group graph-panel-bar__group--actions">
-            <div class="graph-panel-bar__meta">
-              <span>{{ filteredNodes().length }} nodos</span>
-              <span>{{ filteredEdges().length }} relaciones</span>
-              <span>{{ (graphViewport().scale * 100).toFixed(0) }}%</span>
-            </div>
-
-            <div class="graph-panel-bar__shortcuts">
-              <button type="button" class="graph-utility-btn" [disabled]="!graphData" (click)="centerSelection()">
-                Ir al nodo principal
-              </button>
-            </div>
-
-            <div class="surface-controls surface-controls--graph">
-              <button type="button" class="surface-control" (click)="adjustGraphZoom(1.14)">+</button>
-              <button type="button" class="surface-control" (click)="adjustGraphZoom(0.88)">−</button>
-              <button type="button" class="surface-control surface-control--wide" (click)="resetGraphView()">Reset</button>
-            </div>
-          </div>
-        </div>
+        <app-graph-controls-bar
+          [labelsMode]="labelsMode()"
+          [nodeCount]="graphDerived().filteredNodes.length"
+          [edgeCount]="graphDerived().filteredEdges.length"
+          [scalePercent]="+(graphViewport().scale * 100).toFixed(0)"
+          [graphReady]="!!graphData"
+          (labelsModeChange)="setLabelsMode($event)"
+          (centerSelection)="centerSelection()"
+          (graphZoom)="adjustGraphZoom($event)"
+          (resetGraphView)="resetGraphView()"
+        />
 
         <div
           #graphStage
@@ -127,171 +98,42 @@
           (pointerup)="onGraphStagePointerUp($event)"
           (pointercancel)="onGraphStagePointerUp($event)"
         >
-          <svg class="graph-svg" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              @for (type of graphData.relationTypes; track type) {
-                <marker
-                  [attr.id]="edgeMarkerId(type)"
-                  markerWidth="11"
-                  markerHeight="11"
-                  refX="8"
-                  refY="4"
-                  orient="auto"
-                  markerUnits="strokeWidth"
-                >
-                  <path d="M 0 0 L 8 4 L 0 8 z" [attr.fill]="relationConfig(type).color"></path>
-                </marker>
-              }
-            </defs>
-
-            <g [attr.transform]="graphViewportTransform()">
-              @for (renderedEdge of renderedEdges(); track renderedEdge.edge.id) {
-                <g class="graph-edge-group">
-                  <path
-                    class="graph-edge"
-                    [attr.d]="renderedEdge.path"
-                    [attr.stroke]="renderedEdge.relationVisual.color"
-                    [attr.stroke-width]="renderedEdge.relationVisual.width"
-                    [attr.stroke-dasharray]="edgeDasharray(renderedEdge.edge.relationType)"
-                    [attr.marker-end]="renderedEdge.edge.directed ? 'url(#' + edgeMarkerId(renderedEdge.edge.relationType) + ')' : null"
-                    [class.is-muted]="renderedEdge.muted"
-                  ></path>
-
-                  <path
-                    class="graph-edge-hit"
-                    [attr.d]="renderedEdge.path"
-                    (pointerenter)="onEdgeHover($event, renderedEdge.edge)"
-                    (pointermove)="onTooltipMove($event)"
-                    (pointerleave)="clearHover()"
-                  ></path>
-
-                  @if (shouldShowEdgeLabel(renderedEdge.edge)) {
-                    <text
-                      class="graph-edge-label"
-                      [class.is-muted]="renderedEdge.muted"
-                      [attr.x]="renderedEdge.labelPoint.x"
-                      [attr.y]="renderedEdge.labelPoint.y"
-                    >
-                      {{ edgeLabel(renderedEdge.edge) }}
-                    </text>
-                  }
-                </g>
-              }
-
-              @for (renderedNode of renderedNodes(); track renderedNode.node.id) {
-                <g
-                  class="graph-node"
-                  [attr.transform]="renderedNode.transform"
-                  [class.is-selected]="renderedNode.selected"
-                  [class.is-muted]="renderedNode.muted"
-                  (pointerdown)="onNodePointerDown($event, renderedNode.node.id)"
-                  (pointermove)="onNodePointerMove($event)"
-                  (pointerup)="onNodePointerUp($event)"
-                  (pointercancel)="onNodePointerCancel($event)"
-                  (pointerenter)="onNodeHover($event, renderedNode.node.id)"
-                  (pointerleave)="clearHover()"
-                >
-                  <circle
-                    class="graph-node__halo"
-                    cx="0"
-                    cy="0"
-                    [attr.r]="renderedNode.haloSize"
-                    [attr.fill]="renderedNode.nodeVisual.halo"
-                  ></circle>
-
-                  <path
-                    class="graph-node__shape"
-                    [attr.d]="renderedNode.shapePath"
-                    [attr.fill]="renderedNode.nodeVisual.color"
-                    [attr.stroke]="renderedNode.nodeVisual.accent"
-                  ></path>
-
-                  <text class="graph-node__icon" text-anchor="middle" dy="0.35em" [attr.fill]="renderedNode.nodeVisual.textColor">
-                    {{ renderedNode.nodeVisual.icon }}
-                  </text>
-
-                  @if (shouldShowNodeLabel(renderedNode.node.id)) {
-                    <g class="graph-node__label" [attr.transform]="renderedNode.labelTransform">
-                      <text class="graph-node__title" y="-2">{{ compactLabel(renderedNode.node.label, 28) }}</text>
-                      <text class="graph-node__subtitle" y="18">{{ entityTypeLabel(renderedNode.node.type) }}</text>
-                    </g>
-                  }
-                </g>
-              }
-            </g>
-          </svg>
-
-          @if (tooltip(); as tooltip) {
-            <div class="graph-tooltip" [ngStyle]="tooltipStyle()">
-              <div class="graph-tooltip__title">{{ tooltip.title }}</div>
-              <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>
-              @if (tooltip.body) {
-                <div class="graph-tooltip__body">{{ tooltip.body }}</div>
-              }
-            </div>
-          }
+          <app-graph-scene
+            [markerDefs]="graphDerived().relationMarkerDefs"
+            [viewportTransform]="graphViewportTransform()"
+            [renderedEdges]="renderedEdges()"
+            [renderedNodes]="renderedNodes()"
+            [edgeLabelVisibility]="graphDerived().edgeLabelVisibility"
+            [nodeLabelVisibility]="graphDerived().nodeLabelVisibility"
+            [tooltip]="tooltip()"
+            [tooltipStyle]="tooltipStyle()"
+            (nodePointerDown)="onNodePointerDown($event.event, $event.nodeId)"
+            (nodePointerMove)="onNodePointerMove($event)"
+            (nodePointerUp)="onNodePointerUp($event)"
+            (nodePointerCancel)="onNodePointerCancel($event)"
+            (nodeHover)="onNodeHover($event.event, $event.nodeId)"
+            (edgeHover)="onEdgeHover($event.event, $event.edge)"
+            (tooltipMove)="onTooltipMove($event)"
+            (clearHover)="clearHover()"
+          />
         </div>
 
-        <div class="graph-panel-footer">
-          @if (contextualNode(); as selectedNode) {
-            <button type="button" class="selection-card selection-card--interactive" (click)="openSelectedEntity()">
-              <div class="selection-card__head">
-                <span class="selection-card__type" [style.--node-color]="nodeConfig(selectedNode.type).color">
-                  {{ entityTypeLabel(selectedNode.type) }}
-                </span>
-                <span class="selection-card__meta">{{ selectedNode.degree }} conexiones</span>
-              </div>
-
-              <h3>{{ selectedNode.label }}</h3>
-              @if (selectedNode.metadata?.summary) {
-                <p>{{ selectedNode.metadata?.summary }}</p>
-              }
-              @if (imageSyncOverlay()) {
-                <div class="selection-card__sync">Sincronizado con la imagen</div>
-              }
-            </button>
-          }
-
-          <div class="graph-filter-tray">
-            <div class="graph-filter-group">
-              <div class="filter-group__head">
-                <span class="filter-group__label">Tipos</span>
-                <button type="button" class="filter-action" (click)="setAllEntityTypes(true)">Todos</button>
-              </div>
-              @for (type of graphData.entityTypes; track type) {
-                <button
-                  type="button"
-                  class="filter-chip"
-                  [class.is-active]="entityTypeFilters()[type] !== false"
-                  [style.--chip-color]="nodeConfig(type).color"
-                  (click)="toggleEntityType(type)"
-                >
-                  <span class="filter-chip__dot"></span>
-                  {{ entityTypeLabel(type) }}
-                </button>
-              }
-            </div>
-
-            <div class="graph-filter-group">
-              <div class="filter-group__head">
-                <span class="filter-group__label">Relaciones</span>
-                <button type="button" class="filter-action" (click)="setAllRelationTypes(true)">Todas</button>
-              </div>
-              @for (type of graphData.relationTypes; track type) {
-                <button
-                  type="button"
-                  class="filter-chip filter-chip--relation"
-                  [class.is-active]="relationTypeFilters()[type] !== false"
-                  [style.--chip-color]="relationConfig(type).color"
-                  (click)="toggleRelationType(type)"
-                >
-                  <span class="filter-chip__line"></span>
-                  {{ relationTypeLabel(type) }}
-                </button>
-              }
-            </div>
-          </div>
-        </div>
+        <app-graph-inspector-panel
+          [selectedNode]="graphDerived().contextualNode"
+          [selectedNodeMeta]="graphDerived().contextualNodeMeta"
+          [imageSyncActive]="!!imageSyncOverlay()"
+          [entityTypes]="graphData.entityTypes"
+          [relationTypes]="graphData.relationTypes"
+          [entityTypeFilters]="entityTypeFilters()"
+          [relationTypeFilters]="relationTypeFilters()"
+          [entityTypeMeta]="graphDerived().entityTypeMeta"
+          [relationTypeMeta]="graphDerived().relationTypeMeta"
+          (openSelectedEntity)="openSelectedEntity()"
+          (setAllEntityTypes)="setAllEntityTypes($event)"
+          (toggleEntityType)="toggleEntityType($event)"
+          (setAllRelationTypes)="setAllRelationTypes($event)"
+          (toggleRelationType)="toggleRelationType($event)"
+        />
       </section>
     </div>
   </section>

@@ -65,6 +65,11 @@ export interface GraphRelationVisualConfig {
   directed: boolean;
 }
 
+export interface GraphTypeMeta {
+  label: string;
+  color: string;
+}
+
 export interface GraphNode extends GraphNodeDto {
   degree: number;
 }
@@ -103,4 +108,35 @@ export interface GraphTooltip {
   title: string;
   subtitle: string;
   body?: string | null;
+}
+
+export interface GraphRenderedEdge {
+  edge: GraphEdge;
+  path: string;
+  labelPoint: GraphPoint;
+  muted: boolean;
+  relationVisual: GraphRelationVisualConfig;
+  markerId: string;
+  dasharray: string;
+  displayLabel: string;
+}
+
+export interface GraphRenderedNode {
+  node: GraphNode;
+  point: GraphPoint;
+  transform: string;
+  selected: boolean;
+  muted: boolean;
+  size: number;
+  haloSize: number;
+  shapePath: string;
+  labelTransform: string;
+  nodeVisual: GraphEntityVisualConfig;
+  titleLabel: string;
+  typeLabel: string;
+}
+
+export interface GraphMarkerDef {
+  id: string;
+  color: string;
 }
