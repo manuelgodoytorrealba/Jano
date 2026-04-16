@@ -61,32 +61,44 @@
           </div>
 
           @if (imageMeta?.source || imageMeta?.photoBy || imageMeta?.license) {
-            <div class="image-meta-card">
-              @if (imageMeta?.source) {
-                <div><strong>Fuente</strong> {{ imageMeta?.source }}</div>
-              }
-              @if (imageMeta?.photoBy) {
-                <div><strong>Foto</strong> {{ imageMeta?.photoBy }}</div>
-              }
-              @if (imageMeta?.license) {
-                <div><strong>Licencia</strong> {{ imageMeta?.license }}</div>
-              }
+            <div class="image-meta-dock">
+              <button
+                type="button"
+                class="image-meta-dock__toggle"
+                (pointerdown)="$event.stopPropagation()"
+              >
+                Creditos
+              </button>
+
+              <div class="image-meta-card">
+                @if (imageMeta?.source) {
+                  <div><strong>Fuente</strong> {{ imageMeta?.source }}</div>
+                }
+                @if (imageMeta?.photoBy) {
+                  <div><strong>Foto</strong> {{ imageMeta?.photoBy }}</div>
+                }
+                @if (imageMeta?.license) {
+                  <div><strong>Licencia</strong> {{ imageMeta?.license }}</div>
+                }
+              </div>
             </div>
           }
         </div>
       </section>
 
-      <section class="explorer-graph-pane">
+      <section class="explorer-graph-pane" [class.explorer-graph-pane--inspector-hidden]="!inspectorVisible()">
         <app-graph-controls-bar
           [labelsMode]="labelsMode()"
           [nodeCount]="graphDerived().filteredNodes.length"
           [edgeCount]="graphDerived().filteredEdges.length"
           [scalePercent]="+(graphViewport().scale * 100).toFixed(0)"
           [graphReady]="!!graphData"
+          [inspectorVisible]="inspectorVisible()"
           (labelsModeChange)="setLabelsMode($event)"
           (centerSelection)="centerSelection()"
           (graphZoom)="adjustGraphZoom($event)"
           (resetGraphView)="resetGraphView()"
+          (toggleInspector)="toggleInspector()"
         />
 
         <div
@@ -118,22 +130,24 @@
           />
         </div>
 
-        <app-graph-inspector-panel
-          [selectedNode]="graphDerived().contextualNode"
-          [selectedNodeMeta]="graphDerived().contextualNodeMeta"
-          [imageSyncActive]="!!imageSyncOverlay()"
-          [entityTypes]="graphData.entityTypes"
-          [relationTypes]="graphData.relationTypes"
-          [entityTypeFilters]="entityTypeFilters()"
-          [relationTypeFilters]="relationTypeFilters()"
-          [entityTypeMeta]="graphDerived().entityTypeMeta"
-          [relationTypeMeta]="graphDerived().relationTypeMeta"
-          (openSelectedEntity)="openSelectedEntity()"
-          (setAllEntityTypes)="setAllEntityTypes($event)"
-          (toggleEntityType)="toggleEntityType($event)"
-          (setAllRelationTypes)="setAllRelationTypes($event)"
-          (toggleRelationType)="toggleRelationType($event)"
-        />
+        @if (inspectorVisible()) {
+          <app-graph-inspector-panel
+            [selectedNode]="graphDerived().contextualNode"
+            [selectedNodeMeta]="graphDerived().contextualNodeMeta"
+            [imageSyncActive]="!!imageSyncOverlay()"
+            [entityTypes]="graphData.entityTypes"
+            [relationTypes]="graphData.relationTypes"
+            [entityTypeFilters]="entityTypeFilters()"
+            [relationTypeFilters]="relationTypeFilters()"
+            [entityTypeMeta]="graphDerived().entityTypeMeta"
+            [relationTypeMeta]="graphDerived().relationTypeMeta"
+            (openSelectedEntity)="openSelectedEntity()"
+            (setAllEntityTypes)="setAllEntityTypes($event)"
+            (toggleEntityType)="toggleEntityType($event)"
+            (setAllRelationTypes)="setAllRelationTypes($event)"
+            (toggleRelationType)="toggleRelationType($event)"
+          />
+        }
       </section>
     </div>
   </section>

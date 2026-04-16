@@ -1,15 +1,16 @@
 .graph-panel-footer {
   display: grid;
-  gap: 0.38rem;
-  padding: 0.46rem 0.54rem;
+  gap: 0.34rem;
+  padding: 0.38rem 0.44rem;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
-    rgba(6, 9, 14, 0.42);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), rgba(255, 255, 255, 0.01)),
+    rgba(6, 9, 14, 0.32);
   color: #eef7ff;
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .selection-card {
@@ -18,10 +19,10 @@
   gap: 0.2rem;
   width: 100%;
   max-width: 100%;
-  padding: 0.68rem 0.76rem;
+  padding: 0.58rem 0.66rem;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.024);
   color: #eef7ff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
@@ -60,21 +61,21 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.7rem;
-  margin-bottom: 0.38rem;
+  margin-bottom: 0.24rem;
 }
 
 .selection-card__type {
   --node-color: #94a3b8;
-  padding: 0.3rem 0.58rem;
+  padding: 0.24rem 0.5rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--node-color) 22%, rgba(255, 255, 255, 0.08));
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
 }
 
 .selection-card__meta {
-  color: rgba(191, 213, 230, 0.64);
-  font-size: 0.76rem;
+  color: rgba(191, 213, 230, 0.58);
+  font-size: 0.72rem;
 }
 
 .selection-card h3,
@@ -84,21 +85,21 @@
 
 .selection-card p {
   margin-top: 0.16rem;
-  color: rgba(224, 237, 248, 0.76);
-  line-height: 1.36;
-  font-size: 0.84rem;
+  color: rgba(224, 237, 248, 0.66);
+  line-height: 1.32;
+  font-size: 0.8rem;
 }
 
 .selection-card__sync {
-  margin-top: 0.28rem;
-  color: rgba(176, 214, 238, 0.84);
-  font-size: 0.72rem;
+  margin-top: 0.2rem;
+  color: rgba(176, 214, 238, 0.76);
+  font-size: 0.68rem;
   font-weight: 700;
 }
 
 .graph-filter-tray {
   display: grid;
-  gap: 0.36rem;
+  gap: 0.3rem;
   min-width: 0;
 }
 
@@ -106,10 +107,10 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.38rem;
-  padding: 0.52rem 0.58rem;
+  gap: 0.32rem;
+  padding: 0.42rem 0.48rem;
   border-radius: 16px;
-  background: rgba(8, 13, 19, 0.44);
+  background: rgba(8, 13, 19, 0.34);
   border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(14px);
 }
@@ -122,8 +123,8 @@
 }
 
 .filter-group__label {
-  color: rgba(190, 211, 228, 0.74);
-  font-size: 0.7rem;
+  color: rgba(190, 211, 228, 0.66);
+  font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -146,11 +147,11 @@
 }
 
 .filter-action {
-  padding: 0.3rem 0.56rem;
+  padding: 0.24rem 0.48rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(220, 237, 248, 0.74);
-  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(220, 237, 248, 0.68);
+  font-size: 0.66rem;
   font-weight: 700;
 }
 
@@ -159,14 +160,14 @@
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 0.5rem;
-  min-height: 34px;
-  padding: 0 0.7rem;
+  gap: 0.42rem;
+  min-height: 30px;
+  padding: 0 0.58rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  color: rgba(228, 239, 247, 0.78);
-  font-size: 0.76rem;
+  color: rgba(228, 239, 247, 0.72);
+  font-size: 0.72rem;
 }
 
 .filter-chip.is-active {

@@ -11,6 +11,11 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { entityVisualUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
 
+type DetailFact = {
+  label: string;
+  value: string;
+};
+
 @Component({
   standalone: true,
   selector: 'app-entity',
@@ -54,6 +59,107 @@ export class EntityComponent {
 
   visualUrl(entity: any) {
     return entityVisualUrl(entity, 'detail');
+  }
+
+  detailHeroSubtitle(entity: any): string | null {
+    const parts: string[] = [];
+    const author = entity?.type === 'ARTWORK' ? this.firstRelated(entity, 'CREATED_BY')?.title : null;
+
+    if (author) {
+      parts.push(author);
+    }
+
+    if (entity?.startYear || entity?.endYear) {
+      parts.push(
+        entity.startYear && entity.endYear && entity.startYear !== entity.endYear
+          ? `${entity.startYear}-${entity.endYear}`
+          : `${entity.startYear ?? entity.endYear}`,
+      );
+    }
+
+    if (entity?.type) {
+      parts.push(this.entityTypeLabel(entity.type));
+    }
+
+    return parts.length ? parts.join(' · ') : null;
+  }
+
+  detailFacts(entity: any): DetailFact[] {
+    if (entity?.type === 'ARTWORK' && entity.artwork) {
+      return this.compactFacts([
+        { label: 'Técnica', value: entity.artwork.technique },
+        { label: 'Materiales', value: entity.artwork.materials },
+        { label: 'Dimensiones', value: entity.artwork.dimensions },
+        { label: 'Ubicación', value: entity.artwork.location },
+        { label: 'Colección', value: entity.artwork.collection },
+        { label: 'Estado', value: entity.artwork.state },
+        { label: 'Nacionalidad autor', value: entity.artwork.authorNation },
+      ]);
+    }
+
+    if (entity?.type === 'ARTIST' && entity.artist) {
+      return this.compactFacts([
+        { label: 'País', value: entity.artist.country },
+        { label: 'Ciudad', value: entity.artist.city },
+        { label: 'Nacimiento', value: entity.artist.birthYear },
+        { label: 'Muerte', value: entity.artist.deathYear },
+        { label: 'Disciplinas', value: entity.artist.disciplines },
+        { label: 'Links', value: entity.artist.links },
+      ]);
+    }
+
+    return [];
+  }
+
+  detailFactKicker(entity: any): string {
+    switch (entity?.type) {
+      case 'ARTWORK':
+        return 'Obra';
+      case 'ARTIST':
+        return 'Artista';
+      case 'CONCEPT':
+        return 'Concepto';
+      case 'PERIOD':
+        return 'Periodo';
+      default:
+        return 'Ficha';
+    }
+  }
+
+  detailFactTitle(entity: any): string {
+    switch (entity?.type) {
+      case 'ARTWORK':
+        return 'Materialidad y contexto';
+      case 'ARTIST':
+        return 'Trayectoria esencial';
+      case 'CONCEPT':
+        return 'Definición base';
+      case 'PERIOD':
+        return 'Marco histórico';
+      default:
+        return 'Información principal';
+    }
+  }
+
+  detailFactSummary(entity: any): string | null {
+    if (entity?.type === 'ARTWORK' && entity.artwork) {
+      return this.joinFactSummary([
+        entity.artwork.technique,
+        entity.artwork.materials,
+        entity.artwork.dimensions,
+        entity.artwork.location,
+      ]);
+    }
+
+    if (entity?.type === 'ARTIST' && entity.artist) {
+      return this.joinFactSummary([
+        entity.artist.country,
+        entity.artist.city,
+        entity.artist.disciplines,
+      ]);
+    }
+
+    return null;
   }
 
   private slug$ = this.route.paramMap.pipe(
@@ -232,5 +338,27 @@ export class EntityComponent {
     };
 
     return incomingLabels[type] ?? 'Relacionado con esta entidad';
+  }
+
+  private compactFacts(items: Array<{ label: string; value: any }>): DetailFact[] {
+    return items
+      .filter((item) => item.value !== null && item.value !== undefined && `${item.value}`.trim().length > 0)
+      .map((item) => ({ label: item.label, value: `${item.value}` }));
+  }
+
+  private joinFactSummary(values: Array<any>): string | null {
+    const parts = values
+      .filter((value) => value !== null && value !== undefined && `${value}`.trim().length > 0)
+      .map((value) => `${value}`.trim());
+
+    return parts.length ? parts.join(' · ') : null;
+  }
+
+  private entityTypeLabel(type: string): string {
+    return type
+      .toLowerCase()
+      .split('_')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
   }
 }

@@ -1,40 +1,47 @@
 @if (entity$ | async; as entity) {
 <div class="entity-detail page-shell">
-  <div class="entity-detail__ambient"></div>
+  <div class="entity-detail__ambient" aria-hidden="true">
+    <div class="entity-detail__ambient-bg"></div>
+    <div class="entity-detail__ambient-overlay"></div>
+  </div>
 
   <div class="entity-detail__layout">
-    <header class="entity-hero entity-glass">
-      <div class="entity-hero__glow"></div>
-
-      <div class="entity-header">
-        <div class="entity-header__main">
-          <button class="entity-header__back" type="button" (click)="goBack()">
+    <header class="entity-topbar">
+      <div class="entity-topbar__row">
+        <div class="entity-topbar__lead">
+          <!-- <button class="entity-header__back" type="button" (click)="goBack()">
             ← Volver
-          </button>
+          </button> -->
 
-          <h1 class="title-display entity-header__title">
-            {{ entity.title }}
-          </h1>
+          <div class="entity-topbar__title-block">
+            <h1 class="title-display entity-header__title">
+              {{ entity.title }}
+            </h1>
 
-          <div class="entity-header__meta">
-            <div class="entity-header__badges">
-              <span class="ds-badge entity-badge">{{ entity.status }}</span>
-              @if (entity.contentLevel) {
-              <span class="ds-badge entity-badge">{{ entity.contentLevel }}</span>
-              }
-              <span class="ds-badge entity-badge">{{ entity.type }}</span>
-            </div>
-
-            @if (entity.startYear || entity.endYear) {
-            <span class="ds-pill entity-pill">
-              {{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}
-            </span>
+            @if (detailHeroSubtitle(entity); as subtitle) {
+            <p class="entity-topbar__subtitle">{{ subtitle }}</p>
             }
+
+            <div class="entity-topbar__meta">
+              <div class="entity-header__badges">
+                <span class="ds-badge entity-badge">{{ entity.status }}</span>
+                @if (entity.contentLevel) {
+                <span class="ds-badge entity-badge">{{ entity.contentLevel }}</span>
+                }
+                <span class="ds-badge entity-badge">{{ entity.type }}</span>
+              </div>
+
+              @if (entity.startYear || entity.endYear) {
+              <span class="ds-pill entity-pill">
+                {{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}
+              </span>
+              }
+            </div>
           </div>
         </div>
 
+        @if (auth.isLoggedIn) {
         <div class="entity-header__actions">
-          @if (auth.isLoggedIn) {
           <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved()" [disabled]="saveLoading()"
             (click)="toggleSave(entity.id)">
             @if (saveLoading()) {
@@ -54,10 +61,9 @@
             Añadir a colección
             }
           </button>
-          }
         </div>
+        }
       </div>
-
     </header>
 
     <section class="entity-explorer entity-glass">
@@ -123,51 +129,57 @@
           <p class="section-label">Ficha</p>
         </div>
 
-        @if (entity.type === 'ARTWORK' && entity.artwork) {
-        <ul class="facts-list">
-          @if (entity.artwork.technique) { <li class="facts-list__item"><strong>Técnica:</strong> {{
-            entity.artwork.technique }}</li> }
-          @if (entity.artwork.materials) { <li class="facts-list__item"><strong>Materiales:</strong> {{
-            entity.artwork.materials }}</li> }
-          @if (entity.artwork.dimensions) { <li class="facts-list__item"><strong>Dimensiones:</strong> {{
-            entity.artwork.dimensions }}</li> }
-          @if (entity.artwork.location) { <li class="facts-list__item"><strong>Ubicación:</strong> {{
-            entity.artwork.location }}</li> }
-          @if (entity.artwork.collection) { <li class="facts-list__item"><strong>Colección:</strong> {{
-            entity.artwork.collection }}</li> }
-          @if (entity.artwork.state) { <li class="facts-list__item"><strong>Estado:</strong> {{ entity.artwork.state }}
-          </li> }
-          @if (entity.artwork.authorNation) { <li class="facts-list__item"><strong>Nacionalidad autor:</strong> {{
-            entity.artwork.authorNation }}</li> }
-        </ul>
-        } @else if (entity.type === 'ARTIST' && entity.artist) {
-        <ul class="facts-list">
-          @if (entity.artist.country) { <li class="facts-list__item"><strong>País:</strong> {{ entity.artist.country }}
-          </li> }
-          @if (entity.artist.city) { <li class="facts-list__item"><strong>Ciudad:</strong> {{ entity.artist.city }}</li>
-          }
-          @if (entity.artist.birthYear) { <li class="facts-list__item"><strong>Nacimiento:</strong> {{
-            entity.artist.birthYear }}</li> }
-          @if (entity.artist.deathYear) { <li class="facts-list__item"><strong>Muerte:</strong> {{
-            entity.artist.deathYear }}</li> }
-          @if (entity.artist.disciplines) { <li class="facts-list__item"><strong>Disciplinas:</strong> {{
-            entity.artist.disciplines }}</li> }
-          @if (entity.artist.links) { <li class="facts-list__item"><strong>Links:</strong> {{ entity.artist.links }}
-          </li> }
-        </ul>
+        @if (detailFacts(entity).length) {
+        <div class="facts-sheet">
+          <div class="facts-sheet__intro">
+            <span class="facts-sheet__kicker">{{ detailFactKicker(entity) }}</span>
+            <h3 class="facts-sheet__title">{{ detailFactTitle(entity) }}</h3>
+            @if (detailFactSummary(entity); as summary) {
+            <p class="facts-sheet__summary">{{ summary }}</p>
+            }
+          </div>
 
-        @if (entity.artist.bioShort) {
-        <div class="entity-prose entity-prose--inline">
-          <app-rich-text [text]="entity.artist.bioShort"></app-rich-text>
+          <div class="facts-grid">
+            @for (fact of detailFacts(entity); track fact.label) {
+            <article class="fact-card entity-glass-card">
+              <span class="fact-card__label">{{ fact.label }}</span>
+              <p class="fact-card__value">{{ fact.value }}</p>
+            </article>
+            }
+          </div>
+
+          @if (entity.type === 'ARTIST' && entity.artist?.bioShort) {
+          <div class="fact-note entity-glass-card">
+            <span class="fact-note__label">Biografía breve</span>
+            <div class="entity-prose entity-prose--inline">
+              <app-rich-text [text]="entity.artist.bioShort"></app-rich-text>
+            </div>
+          </div>
+          }
         </div>
-        }
         } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
-        <div class="entity-prose">
-          <app-rich-text [text]="entity.concept.definition"></app-rich-text>
+        <div class="facts-sheet facts-sheet--textual">
+          <div class="facts-sheet__intro">
+            <span class="facts-sheet__kicker">{{ detailFactKicker(entity) }}</span>
+            <h3 class="facts-sheet__title">{{ detailFactTitle(entity) }}</h3>
+          </div>
+          <div class="fact-note entity-glass-card">
+            <div class="entity-prose">
+              <app-rich-text [text]="entity.concept.definition"></app-rich-text>
+            </div>
+          </div>
         </div>
         } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
-        <div class="entity-prose">
-          <app-rich-text [text]="entity.period.definition"></app-rich-text>
+        <div class="facts-sheet facts-sheet--textual">
+          <div class="facts-sheet__intro">
+            <span class="facts-sheet__kicker">{{ detailFactKicker(entity) }}</span>
+            <h3 class="facts-sheet__title">{{ detailFactTitle(entity) }}</h3>
+          </div>
+          <div class="fact-note entity-glass-card">
+            <div class="entity-prose">
+              <app-rich-text [text]="entity.period.definition"></app-rich-text>
+            </div>
+          </div>
         </div>
         } @else {
         <p class="text-muted">Sin ficha específica para este tipo.</p>
@@ -179,10 +191,19 @@
           <p class="section-label">Conexiones clave</p>
         </div>
 
+        <div class="relations-sheet">
+          <div class="relations-sheet__intro">
+            <span class="relations-sheet__kicker">Lectura guiada</span>
+            <h3 class="relations-sheet__title">Ejes principales alrededor de la entidad</h3>
+            <p class="relations-sheet__summary">
+              Autoría, contexto histórico y relaciones conceptuales para entender la obra desde sus conexiones más útiles.
+            </p>
+          </div>
+
         @if (firstRelated(entity, 'CREATED_BY'); as author) {
         <div class="relations-group">
           <h3 class="title-section entity-subtitle">Autor</h3>
-          <a class="entity-link-card entity-glass-card" [routerLink]="['/entity', author.slug]">
+          <a class="entity-link-card entity-link-card--feature entity-glass-card" [routerLink]="['/entity', author.slug]">
             <app-jano-media class="entity-link-card__image" [entity]="author" usage="thumbnail"
               [alt]="author.title"></app-jano-media>
             <div class="entity-link-card__body">
@@ -199,7 +220,7 @@
         @if (firstRelated(entity, 'BELONGS_TO_MOVEMENT'); as movement) {
         <div class="relations-group">
           <h3 class="title-section entity-subtitle">Movimiento</h3>
-          <a class="entity-link-card entity-glass-card" [routerLink]="['/entity', movement.slug]">
+          <a class="entity-link-card entity-link-card--textual entity-glass-card" [routerLink]="['/entity', movement.slug]">
             <div class="entity-link-card__body">
               <div class="entity-link-card__title">{{ movement.title }}</div>
               <div class="entity-link-card__meta">{{ movement.type }}</div>
@@ -214,7 +235,7 @@
         @if (firstRelated(entity, 'BELONGS_TO_PERIOD'); as period) {
         <div class="relations-group">
           <h3 class="title-section entity-subtitle">Periodo</h3>
-          <a class="entity-link-card entity-glass-card" [routerLink]="['/entity', period.slug]">
+          <a class="entity-link-card entity-link-card--textual entity-glass-card" [routerLink]="['/entity', period.slug]">
             <div class="entity-link-card__body">
               <div class="entity-link-card__title">{{ period.title }}</div>
               <div class="entity-link-card__meta">{{ period.type }}</div>
@@ -229,7 +250,7 @@
         @if (allConcepts(entity).length) {
         <div class="relations-group">
           <h3 class="title-section entity-subtitle">Conceptos</h3>
-          <div class="entity-mini-grid">
+          <div class="entity-mini-grid entity-mini-grid--compact">
             @for (concept of allConcepts(entity); track concept.id) {
             <a class="entity-mini-card entity-glass-card" [routerLink]="['/entity', concept.slug]">
               <div class="entity-mini-card__title">{{ concept.title }}</div>
@@ -243,9 +264,9 @@
         @if (allPlaces(entity).length) {
           <div class="relations-group">
             <h3 class="title-section entity-subtitle">Ubicación</h3>
-            <div class="entity-mini-grid">
+            <div class="entity-mini-grid entity-mini-grid--places">
               @for (place of allPlaces(entity); track place.id) {
-              <a class="entity-link-card entity-glass-card" [routerLink]="['/entity', place.slug]">
+              <a class="entity-link-card entity-link-card--feature entity-glass-card" [routerLink]="['/entity', place.slug]">
                 <app-jano-media class="entity-link-card__image" [entity]="place" usage="thumbnail"
                   [alt]="place.title"></app-jano-media>
                 <div class="entity-link-card__body">
@@ -288,7 +309,7 @@
           @if (allMentions(entity).length) {
           <div class="relations-group">
             <h3 class="title-section entity-subtitle">Menciones en el texto</h3>
-            <div class="entity-mini-grid">
+            <div class="entity-mini-grid entity-mini-grid--compact">
               @for (r of allMentions(entity); track r.id) {
               <a class="entity-mini-card entity-glass-card" [routerLink]="['/entity', r.to.slug]">
                 <div class="entity-mini-card__title">{{ r.to.title }}</div>
@@ -298,6 +319,7 @@
             </div>
           </div>
           }
+        </div>
       </section>
     </div>
 
