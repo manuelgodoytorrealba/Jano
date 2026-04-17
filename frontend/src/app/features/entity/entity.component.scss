@@ -177,6 +177,23 @@
   -webkit-backdrop-filter: blur(24px) saturate(145%);
 }
 
+.entity-topbar--embedded {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.entity-topbar--embedded .entity-topbar__row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.9rem 1rem;
+}
+
 .entity-topbar__row {
   display: grid;
   grid-template-columns: minmax(0, var(--detail-topbar-content-width)) auto;
@@ -358,6 +375,11 @@
 .entity-section--wide {
   grid-column: 1 / -1;
   z-index: 3;
+}
+
+.entity-story {
+  gap: 1.15rem;
+  padding-block: 1.25rem 1.35rem;
 }
 
 .entity-section__head {
@@ -553,40 +575,6 @@
   gap: 0.85rem;
 }
 
-.relations-sheet {
-  display: grid;
-  gap: 1rem;
-}
-
-.relations-sheet__intro {
-  display: grid;
-  gap: 0.34rem;
-  max-width: 56ch;
-}
-
-.relations-sheet__kicker {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(88, 96, 113, 0.66);
-}
-
-.relations-sheet__title {
-  margin: 0;
-  font-size: clamp(1.18rem, 1.8vw, 1.5rem);
-  line-height: 1.04;
-  letter-spacing: -0.03em;
-  color: rgba(20, 26, 38, 0.94);
-}
-
-.relations-sheet__summary {
-  margin: 0;
-  color: rgba(72, 79, 94, 0.84);
-  font-size: 0.98rem;
-  line-height: 1.6;
-}
-
 .relations-list {
   display: grid;
   gap: 0.75rem;
@@ -616,6 +604,31 @@
   align-items: baseline;
   gap: 0.65rem;
   flex-wrap: wrap;
+}
+
+.relation-card__label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(92, 99, 116, 0.68);
+}
+
+.relation-card__link {
+  color: rgba(20, 26, 38, 0.94);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.relation-card__link:hover {
+  text-decoration: underline;
+  text-decoration-color: rgba(20, 26, 38, 0.34);
+  text-underline-offset: 2px;
+}
+
+.relation-card__text {
+  color: rgba(72, 79, 94, 0.84);
+  line-height: 1.58;
 }
 
 .relation-card__label {

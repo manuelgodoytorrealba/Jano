@@ -6,66 +6,6 @@
   </div>
 
   <div class="entity-detail__layout">
-    <header class="entity-topbar">
-      <div class="entity-topbar__row">
-        <div class="entity-topbar__lead">
-          <!-- <button class="entity-header__back" type="button" (click)="goBack()">
-            ← Volver
-          </button> -->
-
-          <div class="entity-topbar__title-block">
-            <h1 class="title-display entity-header__title">
-              {{ entity.title }}
-            </h1>
-
-            @if (detailHeroSubtitle(entity); as subtitle) {
-            <p class="entity-topbar__subtitle">{{ subtitle }}</p>
-            }
-
-            <div class="entity-topbar__meta">
-              <div class="entity-header__badges">
-                <span class="ds-badge entity-badge">{{ entity.status }}</span>
-                @if (entity.contentLevel) {
-                <span class="ds-badge entity-badge">{{ entity.contentLevel }}</span>
-                }
-                <span class="ds-badge entity-badge">{{ entity.type }}</span>
-              </div>
-
-              @if (entity.startYear || entity.endYear) {
-              <span class="ds-pill entity-pill">
-                {{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}
-              </span>
-              }
-            </div>
-          </div>
-        </div>
-
-        @if (auth.isLoggedIn) {
-        <div class="entity-header__actions">
-          <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved()" [disabled]="saveLoading()"
-            (click)="toggleSave(entity.id)">
-            @if (saveLoading()) {
-            {{ isSaved() ? 'Quitando...' : 'Guardando...' }}
-            } @else if (isSaved()) {
-            Guardado ✓
-            } @else {
-            Guardar
-            }
-          </button>
-
-          <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading()"
-            (click)="toggleCollectionsPanel()">
-            @if (collectionsLoading()) {
-            Cargando...
-            } @else {
-            Añadir a colección
-            }
-          </button>
-        </div>
-        }
-      </div>
-    </header>
-
     <section class="entity-explorer entity-glass">
       <app-graph [slug]="entity.slug" [imageUrl]="visualUrl(entity)"
         [imageAlt]="detailMedia(entity)?.alt || entity.title" [entityTitle]="entity.title" [entityType]="entity.type"
@@ -111,19 +51,79 @@
     </section>
     }
 
-    <div class="entity-detail__sections">
+    <section class="entity-section entity-glass entity-section--wide entity-story">
+      <header class="entity-topbar entity-topbar--embedded">
+        <div class="entity-topbar__row">
+          <div class="entity-topbar__lead">
+            <div class="entity-topbar__title-block">
+              <h1 class="title-display entity-header__title">
+                {{ entity.title }}
+              </h1>
+
+              @if (detailHeroSubtitle(entity); as subtitle) {
+              <p class="entity-topbar__subtitle">{{ subtitle }}</p>
+              }
+
+              <div class="entity-topbar__meta">
+                <div class="entity-header__badges">
+                  <span class="ds-badge entity-badge">{{ entity.status }}</span>
+                  @if (entity.contentLevel) {
+                  <span class="ds-badge entity-badge">{{ entity.contentLevel }}</span>
+                  }
+                  <span class="ds-badge entity-badge">{{ entity.type }}</span>
+                </div>
+
+                @if (entity.startYear || entity.endYear) {
+                <span class="ds-pill entity-pill">
+                  {{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}
+                </span>
+                }
+              </div>
+            </div>
+          </div>
+
+          @if (auth.isLoggedIn) {
+          <div class="entity-header__actions">
+            <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved()" [disabled]="saveLoading()"
+              (click)="toggleSave(entity.id)">
+              @if (saveLoading()) {
+              {{ isSaved() ? 'Quitando...' : 'Guardando...' }}
+              } @else if (isSaved()) {
+              Guardado ✓
+              } @else {
+              Guardar
+              }
+            </button>
+
+            <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading()"
+              (click)="toggleCollectionsPanel()">
+              @if (collectionsLoading()) {
+              Cargando...
+              } @else {
+              Añadir a colección
+              }
+            </button>
+          </div>
+          }
+        </div>
+      </header>
+
       @if (entity.content) {
-      <section class="entity-section entity-glass entity-section--wide">
-        <div class="entity-section__head">
-          <p class="section-label">Ensayo</p>
-        </div>
+      <div class="entity-section__head">
+        <p class="section-label">Ensayo</p>
+      </div>
 
+      <div class="entity-prose">
+        <app-rich-text [text]="entity.content"></app-rich-text>
+      </div>
+      } @else if (entity.summary) {
         <div class="entity-prose">
-          <app-rich-text [text]="entity.content"></app-rich-text>
+          {{ entity.summary }}
         </div>
-      </section>
       }
+    </section>
 
+    <div class="entity-detail__sections">
       <section class="entity-section entity-glass">
         <div class="entity-section__head">
           <p class="section-label">Ficha</p>
@@ -188,163 +188,81 @@
 
       <section class="entity-section entity-glass">
         <div class="entity-section__head">
-          <p class="section-label">Conexiones clave</p>
+          <p class="section-label">Relaciones</p>
         </div>
 
-        <div class="relations-sheet">
-          <div class="relations-sheet__intro">
-            <span class="relations-sheet__kicker">Lectura guiada</span>
-            <h3 class="relations-sheet__title">Ejes principales alrededor de la entidad</h3>
-            <p class="relations-sheet__summary">
-              Autoría, contexto histórico y relaciones conceptuales para entender la obra desde sus conexiones más útiles.
-            </p>
-          </div>
-
-        @if (firstRelated(entity, 'CREATED_BY'); as author) {
         <div class="relations-group">
-          <h3 class="title-section entity-subtitle">Autor</h3>
-          <a class="entity-link-card entity-link-card--feature entity-glass-card" [routerLink]="['/entity', author.slug]">
-            <app-jano-media class="entity-link-card__image" [entity]="author" usage="thumbnail"
-              [alt]="author.title"></app-jano-media>
-            <div class="entity-link-card__body">
-              <div class="entity-link-card__title">{{ author.title }}</div>
-              <div class="entity-link-card__meta">{{ author.type }}</div>
-              @if (author.summary) {
-              <div class="entity-link-card__summary">{{ author.summary }}</div>
+          <h3 class="title-section entity-subtitle">Conecta con</h3>
+
+          @if ((entity.outgoing?.length ?? 0) === 0) {
+          <p class="text-muted">No hay conexiones directas desde esta entidad.</p>
+          } @else {
+          <ul class="relations-list">
+            @for (r of entity.outgoing; track r.id) {
+            <li class="relation-card entity-glass-card relation-card--friendly">
+              <div class="relation-card__topline">
+                <span class="relation-card__label">
+                  {{ relationDirectionLabel(r.type, 'outgoing') }}
+                </span>
+
+                <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">
+                  {{ r.to.title }}
+                </a>
+              </div>
+
+              @if (r.justification) {
+              <div class="relation-card__text">
+                <app-rich-text [text]="r.justification"></app-rich-text>
+              </div>
+              } @else if (r.weight !== null && r.weight !== undefined) {
+              <div class="relation-card__text">
+                Intensidad de relación: {{ r.weight }}
+              </div>
               }
-            </div>
-          </a>
-        </div>
-        }
-
-        @if (firstRelated(entity, 'BELONGS_TO_MOVEMENT'); as movement) {
-        <div class="relations-group">
-          <h3 class="title-section entity-subtitle">Movimiento</h3>
-          <a class="entity-link-card entity-link-card--textual entity-glass-card" [routerLink]="['/entity', movement.slug]">
-            <div class="entity-link-card__body">
-              <div class="entity-link-card__title">{{ movement.title }}</div>
-              <div class="entity-link-card__meta">{{ movement.type }}</div>
-              @if (movement.summary) {
-              <div class="entity-link-card__summary">{{ movement.summary }}</div>
-              }
-            </div>
-          </a>
-        </div>
-        }
-
-        @if (firstRelated(entity, 'BELONGS_TO_PERIOD'); as period) {
-        <div class="relations-group">
-          <h3 class="title-section entity-subtitle">Periodo</h3>
-          <a class="entity-link-card entity-link-card--textual entity-glass-card" [routerLink]="['/entity', period.slug]">
-            <div class="entity-link-card__body">
-              <div class="entity-link-card__title">{{ period.title }}</div>
-              <div class="entity-link-card__meta">{{ period.type }}</div>
-              @if (period.summary) {
-              <div class="entity-link-card__summary">{{ period.summary }}</div>
-              }
-            </div>
-          </a>
-        </div>
-        }
-
-        @if (allConcepts(entity).length) {
-        <div class="relations-group">
-          <h3 class="title-section entity-subtitle">Conceptos</h3>
-          <div class="entity-mini-grid entity-mini-grid--compact">
-            @for (concept of allConcepts(entity); track concept.id) {
-            <a class="entity-mini-card entity-glass-card" [routerLink]="['/entity', concept.slug]">
-              <div class="entity-mini-card__title">{{ concept.title }}</div>
-              <div class="entity-mini-card__meta">{{ concept.type }}</div>
-            </a>
+            </li>
             }
-          </div>
+          </ul>
+          }
         </div>
-        }
 
-        @if (allPlaces(entity).length) {
-          <div class="relations-group">
-            <h3 class="title-section entity-subtitle">Ubicación</h3>
-            <div class="entity-mini-grid entity-mini-grid--places">
-              @for (place of allPlaces(entity); track place.id) {
-              <a class="entity-link-card entity-link-card--feature entity-glass-card" [routerLink]="['/entity', place.slug]">
-                <app-jano-media class="entity-link-card__image" [entity]="place" usage="thumbnail"
-                  [alt]="place.title"></app-jano-media>
-                <div class="entity-link-card__body">
-                  <div class="entity-link-card__title">{{ place.title }}</div>
-                  <div class="entity-link-card__meta">{{ place.type }}</div>
-                  @if (place.summary) {
-                  <div class="entity-link-card__summary">{{ place.summary }}</div>
-                  }
-                </div>
-              </a>
-              }
-            </div>
-          </div>
-          }
+        <div class="relations-group">
+          <h3 class="title-section entity-subtitle">También aparece en</h3>
 
-          @if (allRelatedArtworks(entity).length) {
-          <div class="relations-group">
-            <h3 class="title-section entity-subtitle">Obras relacionadas</h3>
-            <div class="entity-mini-grid entity-mini-grid--artworks">
-              @for (artwork of allRelatedArtworks(entity); track artwork.id) {
-              <a class="entity-art-card entity-glass-card" [routerLink]="['/entity', artwork.slug]">
-                <app-jano-media class="entity-art-card__image" [entity]="artwork" usage="card"
-                  [alt]="artwork.title"></app-jano-media>
-                <div class="entity-art-card__body">
-                  <div class="entity-art-card__title">{{ artwork.title }}</div>
-                  <div class="entity-art-card__meta">
-                    {{ artwork.type }}
-                    @if (artwork.startYear) { · {{ artwork.startYear }} }
-                  </div>
-                  @if (artwork.summary) {
-                  <div class="entity-art-card__summary">{{ artwork.summary }}</div>
-                  }
-                </div>
-              </a>
-              }
-            </div>
-          </div>
-          }
+          @if ((entity.incoming?.length ?? 0) === 0) {
+          <p class="text-muted">No hay otras entidades conectando hacia esta.</p>
+          } @else {
+          <ul class="relations-list">
+            @for (r of entity.incoming; track r.id) {
+            <li class="relation-card entity-glass-card relation-card--friendly">
+              <div class="relation-card__topline">
+                <span class="relation-card__label">
+                  {{ relationDirectionLabel(r.type, 'incoming') }}
+                </span>
 
-          @if (allMentions(entity).length) {
-          <div class="relations-group">
-            <h3 class="title-section entity-subtitle">Menciones en el texto</h3>
-            <div class="entity-mini-grid entity-mini-grid--compact">
-              @for (r of allMentions(entity); track r.id) {
-              <a class="entity-mini-card entity-glass-card" [routerLink]="['/entity', r.to.slug]">
-                <div class="entity-mini-card__title">{{ r.to.title }}</div>
-                <div class="entity-mini-card__meta">{{ r.to.type }}</div>
-              </a>
+                <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">
+                  {{ r.from.title }}
+                </a>
+              </div>
+
+              @if (r.justification) {
+              <div class="relation-card__text">
+                <app-rich-text [text]="r.justification"></app-rich-text>
+              </div>
+              } @else if (r.weight !== null && r.weight !== undefined) {
+              <div class="relation-card__text">
+                Intensidad de relación: {{ r.weight }}
+              </div>
               }
-            </div>
-          </div>
+            </li>
+            }
+          </ul>
           }
         </div>
       </section>
     </div>
 
-    @if ((entity.contributors?.length ?? 0) > 0) {
-    <section class="entity-section entity-glass">
-      <div class="entity-section__head">
-        <p class="section-label">Colaboradores</p>
-      </div>
-
-      <ul class="relations-list">
-        @for (c of entity.contributors; track c.id) {
-        <li class="relation-card entity-glass-card">
-          <span class="ds-badge entity-badge">{{ c.role }}</span>
-          <span class="relation-card__separator">—</span>
-          <span class="relation-card__text">
-            {{ c.name }}@if (c.note) { ({{ c.note }}) }
-          </span>
-        </li>
-        }
-      </ul>
-    </section>
-    }
-
     @if ((entity.sourceRefs?.length ?? 0) > 0) {
-    <section class="entity-section entity-glass">
+    <section class="entity-section entity-glass entity-section--wide">
       <div class="entity-section__head">
         <p class="section-label">Fuentes</p>
       </div>
@@ -374,80 +292,6 @@
       </ul>
     </section>
     }
-
-    <section class="entity-section entity-glass">
-      <div class="entity-section__head">
-        <p class="section-label">Relaciones</p>
-      </div>
-
-      <div class="relations-group">
-        <h3 class="title-section entity-subtitle">Conecta con</h3>
-
-        @if ((entity.outgoing?.length ?? 0) === 0) {
-        <p class="text-muted">No hay conexiones directas desde esta entidad.</p>
-        } @else {
-        <ul class="relations-list">
-          @for (r of entity.outgoing; track r.id) {
-          <li class="relation-card entity-glass-card relation-card--friendly">
-            <div class="relation-card__topline">
-              <span class="relation-card__label">
-                {{ relationDirectionLabel(r.type, 'outgoing') }}
-              </span>
-
-              <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">
-                {{ r.to.title }}
-              </a>
-            </div>
-
-            @if (r.justification) {
-            <div class="relation-card__text">
-              <app-rich-text [text]="r.justification"></app-rich-text>
-            </div>
-            } @else if (r.weight !== null && r.weight !== undefined) {
-            <div class="relation-card__text">
-              Intensidad de relación: {{ r.weight }}
-            </div>
-            }
-          </li>
-          }
-        </ul>
-        }
-      </div>
-
-      <div class="relations-group">
-        <h3 class="title-section entity-subtitle">También aparece en</h3>
-
-        @if ((entity.incoming?.length ?? 0) === 0) {
-        <p class="text-muted">No hay otras entidades conectando hacia esta.</p>
-        } @else {
-        <ul class="relations-list">
-          @for (r of entity.incoming; track r.id) {
-          <li class="relation-card entity-glass-card relation-card--friendly">
-            <div class="relation-card__topline">
-              <span class="relation-card__label">
-                {{ relationDirectionLabel(r.type, 'incoming') }}
-              </span>
-
-              <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">
-                {{ r.from.title }}
-              </a>
-            </div>
-
-            @if (r.justification) {
-            <div class="relation-card__text">
-              <app-rich-text [text]="r.justification"></app-rich-text>
-            </div>
-            } @else if (r.weight !== null && r.weight !== undefined) {
-            <div class="relation-card__text">
-              Intensidad de relación: {{ r.weight }}
-            </div>
-            }
-          </li>
-          }
-        </ul>
-        }
-      </div>
-    </section>
   </div>
 </div>
 } @else {
