@@ -23,6 +23,8 @@ export class HomeComponent {
       meta: 'Artwork',
       cta: 'Explorar obras →',
       image: '/assets/home/artwork.jpg',
+      imageWidth: 736,
+      imageHeight: 736,
       routeType: 'artwork',
     },
     {
@@ -33,6 +35,8 @@ export class HomeComponent {
       meta: 'Artist',
       cta: 'Explorar artistas →',
       image: '/assets/home/artist.jpg',
+      imageWidth: 736,
+      imageHeight: 736,
       routeType: 'artist',
     },
     {
@@ -43,6 +47,8 @@ export class HomeComponent {
       meta: 'Movement',
       cta: 'Explorar movimientos →',
       image: '/assets/home/movement.jpg',
+      imageWidth: 736,
+      imageHeight: 977,
       routeType: 'movement',
     },
     {
@@ -53,6 +59,8 @@ export class HomeComponent {
       meta: 'Period',
       cta: 'Explorar períodos →',
       image: '/assets/home/period.jpg',
+      imageWidth: 600,
+      imageHeight: 800,
       routeType: 'period',
     },
     {
@@ -63,6 +71,8 @@ export class HomeComponent {
       meta: 'Concept',
       cta: 'Explorar conceptos →',
       image: '/assets/home/concept.jpg',
+      imageWidth: 639,
+      imageHeight: 960,
       routeType: 'concept',
     },
   ];

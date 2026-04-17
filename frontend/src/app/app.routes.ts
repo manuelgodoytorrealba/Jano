@@ -1,43 +1,69 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './features/home/home.component';
-import { EntityComponent } from './features/entity/entity.component';
-import { EntitiesListComponent } from './features/entities/entities-list.component';
-import { LoginComponent } from './features/auth/login/login.component';
-import { RegisterComponent } from './features/auth/register/register.component';
-import { MySpaceComponent } from './features/my-space/my-space.component';
 import { authGuard } from './core/auth/auth.guard';
 import { adminGuard } from './core/auth/admin.guard';
-import { AdminEntitiesComponent } from './features/admin/admin-entities/admin-entities.component';
-import { AdminEntitiesDeckComponent } from './features/admin/admin-entities-deck/admin-entities-deck.component';
-import { AdminEntityFormComponent } from './features/admin/admin-entity-form/admin-entity-form.component';
-import { RecommendedComponent } from './features/recommended/recommended.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'recommended', component: RecommendedComponent },
-  { path: 'entities/:type', component: EntitiesListComponent },
-  { path: 'entity/:slug', component: EntityComponent },
+  {
+    path: '',
+    loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
+  },
+  {
+    path: 'recommended',
+    loadComponent: () => import('./features/recommended/recommended.component').then((m) => m.RecommendedComponent),
+  },
+  {
+    path: 'entities/:type',
+    loadComponent: () => import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
+  },
+  {
+    path: 'entity/:slug',
+    loadComponent: () => import('./features/entity/entity.component').then((m) => m.EntityComponent),
+  },
 
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'my-space', component: MySpaceComponent, canActivate: [authGuard] },
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+  },
+  {
+    path: 'my-space',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/my-space/my-space.component').then((m) => m.MySpaceComponent),
+  },
 
-  // 🔥 ADMIN NUEVO FLUJO
   {
     path: 'admin',
     canActivate: [adminGuard],
     children: [
-      // 👉 pantalla inicial: deck visual
-      { path: '', component: AdminEntitiesDeckComponent },
-
-      // 👉 tabla real (con filtros y query params)
-      { path: 'entities', component: AdminEntitiesComponent },
-
-      // 👉 crear
-      { path: 'entities/new', component: AdminEntityFormComponent },
-
-      // 👉 editar
-      { path: 'entities/:id/edit', component: AdminEntityFormComponent },
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/admin/admin-entities-deck/admin-entities-deck.component').then(
+            (m) => m.AdminEntitiesDeckComponent,
+          ),
+      },
+      {
+        path: 'entities',
+        loadComponent: () =>
+          import('./features/admin/admin-entities/admin-entities.component').then((m) => m.AdminEntitiesComponent),
+      },
+      {
+        path: 'entities/new',
+        loadComponent: () =>
+          import('./features/admin/admin-entity-form/admin-entity-form.component').then(
+            (m) => m.AdminEntityFormComponent,
+          ),
+      },
+      {
+        path: 'entities/:id/edit',
+        loadComponent: () =>
+          import('./features/admin/admin-entity-form/admin-entity-form.component').then(
+            (m) => m.AdminEntityFormComponent,
+          ),
+      },
     ],
   },
 

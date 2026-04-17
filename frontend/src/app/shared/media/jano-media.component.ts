@@ -25,6 +25,7 @@ export class JanoMediaComponent {
   @Input() usage: MediaUsage = 'card';
   @Input() alt: string | null = null;
   @Input() lazy = true;
+  @Input() priority: 'auto' | 'high' | 'low' = 'auto';
   @Input() placeholderMode: 'auto' | 'none' = 'auto';
 
   get src(): string | null {
@@ -64,6 +65,18 @@ export class JanoMediaComponent {
 
   get loadingAttr(): 'lazy' | 'eager' {
     return this.lazy ? 'lazy' : 'eager';
+  }
+
+  get fetchPriorityAttr(): 'high' | 'low' | null {
+    return this.priority === 'auto' ? null : this.priority;
+  }
+
+  get widthAttr(): number | null {
+    return this.mediaWithPresentation?.width ?? null;
+  }
+
+  get heightAttr(): number | null {
+    return this.mediaWithPresentation?.height ?? null;
   }
 
   private get normalizedUsage(): Exclude<MediaUsage, 'gallery'> {

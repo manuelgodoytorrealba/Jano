@@ -87,6 +87,26 @@ export class EntityDeckComponent {
         this.tabChange.emit(tab);
     }
 
+    imgLoading(index: number): 'eager' | 'lazy' {
+        return index === this.activeIndex() ? 'eager' : 'lazy';
+    }
+
+    imgFetchPriority(index: number): 'high' | 'low' {
+        return index === this.activeIndex() ? 'high' : 'low';
+    }
+
+    imgDecoding(index: number): 'sync' | 'async' {
+        return index === this.activeIndex() ? 'sync' : 'async';
+    }
+
+    imgWidth(item: DeckItem): number | null {
+        return item.imageWidth ?? null;
+    }
+
+    imgHeight(item: DeckItem): number | null {
+        return item.imageHeight ?? null;
+    }
+
     isRailActive(action: DeckRailAction): boolean {
         const url = this.router.url;
 

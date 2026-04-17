@@ -61,6 +61,10 @@ export class EntityComponent {
     return entityVisualUrl(entity, 'detail');
   }
 
+  visualAlt(entity: any): string {
+    return this.detailMedia(entity)?.alt || entity?.title || 'Imagen de entidad';
+  }
+
   detailHeroSubtitle(entity: any): string | null {
     const parts: string[] = [];
     const author = entity?.type === 'ARTWORK' ? this.firstRelated(entity, 'CREATED_BY')?.title : null;

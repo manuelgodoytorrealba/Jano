@@ -53,7 +53,15 @@
                     [style.opacity]="cardOpacity($index)" [style.filter]="cardFilter($index)"
                     (click)="onCardClick(item)">
                     <div class="entity-deck__media">
-                        <img [src]="item.image" [alt]="item.title" loading="lazy" />
+                        <img
+                            [src]="item.image"
+                            [alt]="item.title"
+                            [attr.loading]="imgLoading($index)"
+                            [attr.fetchpriority]="imgFetchPriority($index)"
+                            [attr.decoding]="imgDecoding($index)"
+                            [attr.width]="imgWidth(item)"
+                            [attr.height]="imgHeight(item)"
+                        />
                     </div>
 
                     <div class="entity-deck__body">

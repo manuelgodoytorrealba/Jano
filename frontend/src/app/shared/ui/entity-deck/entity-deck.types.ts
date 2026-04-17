@@ -6,6 +6,8 @@ export type DeckItem = {
     meta?: string;
     cta?: string;
     image: string;
+    imageWidth?: number;
+    imageHeight?: number;
     badge?: string;
     routeType?: string;
 };

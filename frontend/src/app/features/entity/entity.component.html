@@ -7,13 +7,35 @@
 
   <div class="entity-detail__layout">
     <section class="entity-explorer entity-glass">
+      @defer (on idle) {
       <app-graph [slug]="entity.slug" [imageUrl]="visualUrl(entity)"
-        [imageAlt]="detailMedia(entity)?.alt || entity.title" [entityTitle]="entity.title" [entityType]="entity.type"
+        [imageAlt]="visualAlt(entity)" [entityTitle]="entity.title" [entityType]="entity.type"
         [imageMeta]="{
           source: detailMedia(entity)?.source ?? null,
           photoBy: detailMedia(entity)?.photoBy ?? null,
           license: detailMedia(entity)?.license ?? null
         }" />
+      } @placeholder {
+      <div class="entity-explorer__fallback">
+        <div class="entity-explorer__fallback-media">
+          <app-jano-media
+            [entity]="entity"
+            usage="detail"
+            [alt]="visualAlt(entity)"
+            [lazy]="false"
+            priority="high"
+          />
+        </div>
+
+        <div class="entity-explorer__fallback-copy">
+          <span class="entity-explorer__fallback-kicker">Explorer</span>
+          <h2 class="entity-explorer__fallback-title">{{ entity.title }}</h2>
+          @if (detailHeroSubtitle(entity); as subtitle) {
+          <p class="entity-explorer__fallback-subtitle">{{ subtitle }}</p>
+          }
+        </div>
+      </div>
+      }
     </section>
 
     @if (showCollectionsPanel() && auth.isLoggedIn) {
