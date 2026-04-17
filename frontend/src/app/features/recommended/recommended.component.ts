@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { SeoService } from '../../core/seo/seo.service';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
 
@@ -13,6 +14,17 @@ import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-dec
 })
 export class RecommendedComponent {
     private router = inject(Router);
+    private readonly seo = inject(SeoService);
+
+    constructor() {
+        this.seo.setPageMeta({
+            title: 'Recommended Art Picks | JANO',
+            description:
+                'Browse curated recommendations in JANO to start with essential artworks, artists, movements, periods, and concepts.',
+            path: '/recommended',
+            image: '/assets/home/artwork.jpg',
+        });
+    }
 
     deckItems: DeckItem[] = [
         {

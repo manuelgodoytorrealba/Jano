@@ -23,7 +23,22 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
-  app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
+  app.use(
+    '/uploads',
+    express.static(join(process.cwd(), 'uploads'), {
+      maxAge: '7d',
+      etag: true,
+      lastModified: true,
+      setHeaders: (res, filePath) => {
+        if (/\.(avif|webp|png|jpe?g|gif|svg)$/i.test(filePath)) {
+          res.setHeader('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
+          return;
+        }
+
+        res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+      },
+    }),
+  );
 
   // ✅ Añadir esto
   app.useGlobalPipes(

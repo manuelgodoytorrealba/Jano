@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { navigateToAppSearch } from '../../../core/search/search-navigation';
 
 type HeaderNavItem = {
   label: string;
@@ -53,5 +54,10 @@ export class AppChromeComponent {
 
   preventPlaceholderAction(event: Event): void {
     event.preventDefault();
+  }
+
+  onSearchSubmit(event: Event, rawQuery: string): void {
+    event.preventDefault();
+    void navigateToAppSearch(this.router, rawQuery);
   }
 }

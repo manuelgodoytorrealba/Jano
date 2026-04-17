@@ -72,11 +72,11 @@ export class JanoMediaComponent {
   }
 
   get widthAttr(): number | null {
-    return this.mediaWithPresentation?.width ?? null;
+    return this.mediaWithPresentation?.width ?? this.fallbackDimensions.width;
   }
 
   get heightAttr(): number | null {
-    return this.mediaWithPresentation?.height ?? null;
+    return this.mediaWithPresentation?.height ?? this.fallbackDimensions.height;
   }
 
   private get normalizedUsage(): Exclude<MediaUsage, 'gallery'> {
@@ -106,5 +106,23 @@ export class JanoMediaComponent {
 
   private get mediaWithPresentation(): MediaLike | null {
     return this.media ?? this.selectedEntityMedia;
+  }
+
+  private get fallbackDimensions(): { width: number; height: number } {
+    switch (this.usage) {
+      case 'hero':
+        return { width: 1440, height: 1440 };
+      case 'detail':
+      case 'gallery':
+        return { width: 1200, height: 900 };
+      case 'thumbnail':
+        return { width: 320, height: 320 };
+      case 'explorer3d':
+        return { width: 1024, height: 1024 };
+      case 'primary':
+      case 'card':
+      default:
+        return { width: 736, height: 736 };
+    }
   }
 }

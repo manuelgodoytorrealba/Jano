@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { SeoService } from '../../core/seo/seo.service';
+import { navigateToAppSearch } from '../../core/search/search-navigation';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
 
@@ -13,6 +15,17 @@ import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-dec
 })
 export class HomeComponent {
   private router = inject(Router);
+  private readonly seo = inject(SeoService);
+
+  constructor() {
+    this.seo.setPageMeta({
+      title: 'JANO | Discover Art Through Visual Exploration',
+      description:
+        'Explore artworks, artists, movements, periods, and concepts in JANO through an immersive, visual-first art discovery experience.',
+      path: '/',
+      image: '/assets/home/artwork.jpg',
+    });
+  }
 
   deckItems: DeckItem[] = [
     {
@@ -104,9 +117,7 @@ export class HomeComponent {
   }
 
   onSearchSubmit(query: string): void {
-    this.router.navigate(['/search'], {
-      queryParams: { q: query },
-    });
+    void navigateToAppSearch(this.router, query);
   }
 
   onTabChange(tab: 'home' | 'picks' | 'my-space'): void {

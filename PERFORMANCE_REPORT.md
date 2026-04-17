@@ -203,21 +203,34 @@ Notes:
 
 ## Quick Wins Still Pending
 
-- Add real route metadata with `Title`/`Meta` per major route:
-  - homepage
-  - entities list
-  - entity detail
-  - recommended
-- Add canonical URLs and real meta descriptions.
 - Fix the search architecture:
   - either create `/search`
   - or make `AppChrome` and `HomeComponent` route to `/entities/:type` consistently.
-- Investigate the minified browser console errors on entities/detail routes in production mode.
-- Fix the SSR `localhost` / allowed-host setup so production SSR can render data routes locally and behind the intended hostnames.
 - Add proxy/CDN caching and compression:
   - `Cache-Control` for static assets
   - Brotli/Gzip for JS/CSS
   - immutable cache for hashed bundles
+
+## Second Pass Notes
+
+An additional optimization pass was applied after the first report:
+
+- Added route-level SEO metadata service and connected it to home, recommended, entities list/search, and entity detail.
+- Enabled Angular SSR allowed hosts for `localhost` and `127.0.0.1`.
+- Added frontend proxying for `/api` and `/uploads` in the SSR server so server-rendered routes can resolve local data and media from the same origin.
+- Normalized absolute local upload URLs like `http://localhost:3000/uploads/...` to same-origin `/uploads/...` paths in the shared media utilities. This directly targets the CORS and failed-image issues observed on entity listing routes.
+- Added explicit fallback image dimensions in `app-jano-media` for media records that do not carry width/height, reducing layout instability risk on external assets.
+- Added accessible labels/ids to the entities search input and filter selects to remove the remaining accessibility regression on the listing route.
+- Reduced expensive glassmorphism effects on mobile/tablet for the immersive home/recommended/deck surfaces to lower paint cost without changing the visual direction.
+
+Verification status for the second pass:
+
+- Production Angular build completed successfully after these changes.
+- SSR HTML checks confirm:
+  - dynamic titles and descriptions are present on key routes
+  - detail hero media now renders with `loading="eager"`, `fetchpriority="high"`, and explicit dimensions
+  - entities filters now expose real labels / `aria-label`s
+- A full browser re-measurement for this second pass was attempted, but the local headless Chrome run failed due an environment-level process/sandbox issue, so fresh before/after tables for this pass are still pending.
 - Consider a lighter fallback for `/entities/:type` on mobile if the explorer-first experience remains too expensive on cold cache.
 - Consider route-specific preload for the next likely chunk rather than unconditional eager work.
 

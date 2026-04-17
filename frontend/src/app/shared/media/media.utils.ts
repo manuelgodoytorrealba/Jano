@@ -413,7 +413,16 @@ function normalizeDisplayMode(value: string | null | undefined): 'COVER' | 'CONT
 
 function normalizeMediaUrlValue(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
-  return trimmed ? trimmed : null;
+  if (!trimmed) {
+    return null;
+  }
+
+  if (/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?\/uploads\//i.test(trimmed)) {
+    const normalized = trimmed.replace(/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?/i, '');
+    return normalized.startsWith('/') ? normalized : `/${normalized}`;
+  }
+
+  return trimmed;
 }
 
 function exactRoleForUsage(usage: Exclude<MediaUsage, 'gallery'>): string {

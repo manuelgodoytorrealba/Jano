@@ -95,4 +95,14 @@ describe('media.utils', () => {
     expect(resolveEntityMediaItem(entity, 'card')?.id).toBe('card-media');
     expect(mediaDisplayUrl(resolveEntityMediaItem(entity, 'card'))).toBe('https://images.unsplash.com/photo-1554188248-986adbb73be4');
   });
+
+  it('rewrites local upload media to same-origin paths so SSR and browser reuse the frontend origin', () => {
+    expect(mediaDisplayUrl({
+      displayUrl: 'http://localhost:3000/uploads/media/uploaded-file.jpg',
+    })).toBe('/uploads/media/uploaded-file.jpg');
+
+    expect(mediaDisplayUrl({
+      url: 'http://127.0.0.1:3000/uploads/media/uploaded-file.jpg',
+    })).toBe('/uploads/media/uploaded-file.jpg');
+  });
 });

@@ -1,5 +1,16 @@
 <div class="entities-page page-shell" [class.entities-page--immersive]="viewMode === 'explore'"
   [class.entities-page--list-shell]="viewMode === 'list'">
+  <h1 class="sr-only">
+    @if (qFromUrl$ | async; as q) {
+      @if (q) {
+        Search results for {{ q }}
+      } @else {
+        @if (title$ | async; as title) { {{ title }} }
+      }
+    } @else {
+      @if (title$ | async; as title) { {{ title }} }
+    }
+  </h1>
   <section class="entities-explorer-layout" [class.is-list]="viewMode === 'list'"
     [class.is-filters-collapsed]="!filtersPanelOpen()" [class.is-info-collapsed]="!infoPanelOpen()">
     <header class="entities-hud" aria-label="Contexto de la vista">
@@ -34,8 +45,9 @@
     <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
       [attr.aria-hidden]="!filtersPanelOpen()">
       <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Buscar</div>
-        <input class="ds-input entities-search entities-filter-rail__search" type="search" placeholder="Buscar…"
+        <label class="entities-filter-rail__label" for="entities-search-main">Buscar</label>
+        <input id="entities-search-main" class="ds-input entities-search entities-filter-rail__search" type="search"
+          placeholder="Buscar…" aria-label="Buscar entidades"
           [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />
 
         @if (qFromUrl$ | async; as q) {
@@ -140,8 +152,9 @@
 
       @if (supportsMovement$ | async) {
       <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Movimiento</div>
-        <select class="ds-input entities-filter-select" [value]="(movementFromUrl$ | async) ?? ''"
+        <label class="entities-filter-rail__label" for="entities-filter-movement">Movimiento</label>
+        <select id="entities-filter-movement" class="ds-input entities-filter-select" aria-label="Filtrar por movimiento"
+          [value]="(movementFromUrl$ | async) ?? ''"
           (change)="setMovement(($any($event.target)).value)">
           <option value="">Todos los movimientos</option>
           @if (movementOptions$ | async; as movementOptions) {
@@ -155,8 +168,9 @@
 
       @if (supportsPeriod$ | async) {
       <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Periodo</div>
-        <select class="ds-input entities-filter-select" [value]="(periodFromUrl$ | async) ?? ''"
+        <label class="entities-filter-rail__label" for="entities-filter-period">Periodo</label>
+        <select id="entities-filter-period" class="ds-input entities-filter-select" aria-label="Filtrar por periodo"
+          [value]="(periodFromUrl$ | async) ?? ''"
           (change)="setPeriod(($any($event.target)).value)">
           <option value="">Todos los periodos</option>
           @if (periodOptions$ | async; as periodOptions) {
@@ -170,8 +184,9 @@
 
       @if (supportsInstitution$ | async) {
       <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Institución</div>
-        <select class="ds-input entities-filter-select" [value]="(institutionFromUrl$ | async) ?? ''"
+        <label class="entities-filter-rail__label" for="entities-filter-institution">Institución</label>
+        <select id="entities-filter-institution" class="ds-input entities-filter-select"
+          aria-label="Filtrar por institución" [value]="(institutionFromUrl$ | async) ?? ''"
           (change)="setInstitution(($any($event.target)).value)">
           <option value="">Todas las instituciones</option>
           @if (institutionOptions$ | async; as institutionOptions) {
@@ -185,8 +200,9 @@
 
       @if (supportsNationality$ | async) {
       <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Nacionalidad</div>
-        <select class="ds-input entities-filter-select" [value]="(nationalityFromUrl$ | async) ?? ''"
+        <label class="entities-filter-rail__label" for="entities-filter-nationality">Nacionalidad</label>
+        <select id="entities-filter-nationality" class="ds-input entities-filter-select"
+          aria-label="Filtrar por nacionalidad" [value]="(nationalityFromUrl$ | async) ?? ''"
           (change)="setNationality(($any($event.target)).value)">
           <option value="">Todas las nacionalidades</option>
           @if (nationalityOptions$ | async; as nationalityOptions) {
@@ -380,8 +396,9 @@
     <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
       [attr.aria-hidden]="!filtersPanelOpen()">
       <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Buscar</div>
-        <input class="ds-input entities-search entities-filter-rail__search" type="search" placeholder="Buscar…"
+        <label class="entities-filter-rail__label" for="entities-search-skeleton">Buscar</label>
+        <input id="entities-search-skeleton" class="ds-input entities-search entities-filter-rail__search" type="search"
+          placeholder="Buscar…" aria-label="Buscar entidades"
           [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />
       </div>
     </aside>

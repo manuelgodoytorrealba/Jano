@@ -7,7 +7,7 @@
     </span>
   </a>
 
-  <form class="app-chrome__search" role="search" (submit)="preventPlaceholderAction($event)">
+  <form class="app-chrome__search" role="search" (submit)="onSearchSubmit($event, searchInput.value)">
     <span class="app-chrome__search-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24">
         <path d="M10.5 5.5a5 5 0 1 0 0 10a5 5 0 0 0 0-10Z" fill="none" stroke="currentColor" stroke-width="1.8" />
@@ -15,6 +15,7 @@
       </svg>
     </span>
     <input
+      #searchInput
       class="ds-input app-chrome__search-input"
       type="search"
       placeholder="Buscar artistas, obras, movimientos o conceptos"
@@ -41,9 +42,9 @@
   </nav>
 
   <div class="app-chrome__actions">
-    <button type="button" class="app-chrome__quick app-chrome__quick--ghost" (click)="preventPlaceholderAction($event)">
+    <a class="app-chrome__quick app-chrome__quick--ghost" routerLink="/recommended">
       Curated
-    </button>
+    </a>
     <a class="app-chrome__quick app-chrome__quick--primary" routerLink="/my-space">
       Mi espacio
     </a>

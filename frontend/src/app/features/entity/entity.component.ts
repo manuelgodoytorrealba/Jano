@@ -6,6 +6,7 @@ import { EntitiesApi } from '../../core/api/entities.api';
 import { SavedApi } from '../../core/api/saved.api';
 import { CollectionsApi } from '../../core/api/collections.api';
 import { AuthService } from '../../core/auth/auth.service';
+import { SeoService } from '../../core/seo/seo.service';
 import { GraphComponent } from '../graph/graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
@@ -29,6 +30,7 @@ export class EntityComponent {
   private savedApi = inject(SavedApi);
   private collectionsApi = inject(CollectionsApi);
   private location = inject(Location);
+  private readonly seo = inject(SeoService);
 
   auth = inject(AuthService);
   private route = inject(ActivatedRoute);
@@ -194,6 +196,13 @@ export class EntityComponent {
   entity$ = this.slug$.pipe(
     switchMap((slug) => this.api.get(slug)),
     tap((entity) => {
+      this.seo.setPageMeta({
+        title: `${entity.title} | JANO`,
+        description: entity.summary ?? `Explore ${entity.title} in JANO.`,
+        path: `/entity/${entity.slug}`,
+        image: this.visualUrl(entity),
+      });
+
       if (!this.auth.isLoggedIn) {
         this.isSaved.set(false);
         return;

@@ -116,6 +116,14 @@
         box-shadow 320ms ease;
 }
 
+.entity-deck__card:not(.is-active) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+        rgba(255, 255, 255, 0.03);
+}
+
 .entity-deck__card::before {
     content: "";
     position: absolute;
@@ -157,6 +165,12 @@
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
         rgba(21, 20, 23, 0.58);
+}
+
+.entity-deck__card:not(.is-active) .entity-deck__body {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+        rgba(21, 20, 23, 0.5);
 }
 
 .entity-deck__topline {
@@ -725,6 +739,14 @@
         width: min(92vw, 520px);
         height: 400px;
         grid-template-columns: 1fr;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)),
+            rgba(255, 255, 255, 0.04);
+        box-shadow:
+            0 20px 48px rgba(0, 0, 0, 0.24),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .entity-deck__media {
@@ -738,6 +760,8 @@
         top: auto;
         bottom: 136px;
         transform: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 
     .entity-deck__nav:hover {
@@ -759,6 +783,8 @@
         grid-auto-flow: column;
         gap: 8px;
         padding: 8px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 
     .entity-deck__bottom-nav {

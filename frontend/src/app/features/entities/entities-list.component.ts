@@ -8,6 +8,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
+import { SeoService } from '../../core/seo/seo.service';
 import {
   Observable,
   combineLatest,
@@ -64,6 +65,7 @@ export class EntitiesListComponent {
   private api = inject(EntitiesApi);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private readonly seo = inject(SeoService);
 
   private readonly limit = 24;
   private readonly contextualFilterKeys = ['movement', 'period', 'institution', 'nationality'] as const;
@@ -118,6 +120,30 @@ export class EntitiesListComponent {
           queryParams: obsolete,
           queryParamsHandling: 'merge',
           replaceUrl: true,
+        });
+      }),
+      takeUntilDestroyed(),
+    ).subscribe();
+
+    combineLatest([this.title$, this.qFromUrl$]).pipe(
+      tap(([title, query]) => {
+        const normalizedTitle = title || 'Entities';
+        const normalizedQuery = query.trim();
+        const pageTitle = normalizedQuery
+          ? `Search ${normalizedTitle} for "${normalizedQuery}" | JANO`
+          : `${normalizedTitle} | JANO`;
+        const description = normalizedQuery
+          ? `Browse JANO results for "${normalizedQuery}" inside ${normalizedTitle.toLowerCase()}.`
+          : `Explore ${normalizedTitle.toLowerCase()} in JANO with visual browsing and editorial filters.`;
+        const typeSlug = normalizedTitle.toLowerCase();
+        const path = normalizedQuery
+          ? `/entities/${typeSlug}?q=${encodeURIComponent(normalizedQuery)}`
+          : `/entities/${typeSlug}`;
+
+        this.seo.setPageMeta({
+          title: pageTitle,
+          description,
+          path,
         });
       }),
       takeUntilDestroyed(),

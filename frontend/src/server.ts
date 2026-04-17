@@ -8,9 +8,64 @@ import express from 'express';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
+const backendOrigin = (process.env['SSR_API_ORIGIN'] ?? 'http://127.0.0.1:3000').replace(/\/+$/, '');
+const allowedHosts = (process.env['NG_ALLOWED_HOSTS'] ?? 'localhost,127.0.0.1')
+  .split(',')
+  .map((host) => host.trim())
+  .filter(Boolean);
 
 const app = express();
-const angularApp = new AngularNodeAppEngine();
+const angularApp = new AngularNodeAppEngine({ allowedHosts });
+
+function hasFingerprint(assetPath: string): boolean {
+  return /-[A-Z0-9]{6,}\.(?:js|mjs|css|woff2?|png|jpg|jpeg|webp|avif|svg)$/i.test(assetPath);
+}
+
+app.use(['/api', '/uploads'], express.raw({ type: '*/*', limit: '25mb' }));
+
+app.use(['/api', '/uploads'], async (req, res, next) => {
+  try {
+    const targetUrl = `${backendOrigin}${req.originalUrl}`;
+    const headers = new Headers();
+
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (!value || key === 'host' || key === 'content-length' || key === 'connection') {
+        continue;
+      }
+
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          headers.append(key, item);
+        }
+        continue;
+      }
+
+      headers.set(key, value);
+    }
+
+    const upstream = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body: req.method === 'GET' || req.method === 'HEAD' ? undefined : req.body,
+      duplex: 'half',
+    } as RequestInit);
+
+    res.status(upstream.status);
+
+    upstream.headers.forEach((value, key) => {
+      if (key === 'content-encoding' || key === 'transfer-encoding' || key === 'connection') {
+        return;
+      }
+
+      res.setHeader(key, value);
+    });
+
+    const body = Buffer.from(await upstream.arrayBuffer());
+    res.send(body);
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -32,6 +87,14 @@ app.use(
     maxAge: '1y',
     index: false,
     redirect: false,
+    setHeaders: (res, filePath) => {
+      if (hasFingerprint(filePath)) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        return;
+      }
+
+      res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    },
   }),
 );
 
