@@ -1,8 +1,32 @@
+:host {
+  /* QUICK MAP
+   * Inspector overall density: tweak --graph-inspector-gap / --graph-inspector-padding-*
+   * Selected node card: tweak --graph-inspector-card-*
+   * Filter rows: tweak --graph-inspector-filter-*
+   * Filter chips: tweak --graph-inspector-chip-*
+   */
+  --graph-inspector-gap: 0.34rem;
+  --graph-inspector-padding-y: 0.38rem;
+  --graph-inspector-padding-x: 0.44rem;
+  --graph-inspector-radius: 18px;
+
+  --graph-inspector-card-padding-y: 0.58rem;
+  --graph-inspector-card-padding-x: 0.66rem;
+  --graph-inspector-card-radius: 16px;
+
+  --graph-inspector-filter-gap: 0.32rem;
+  --graph-inspector-filter-padding-y: 0.42rem;
+  --graph-inspector-filter-padding-x: 0.48rem;
+  --graph-inspector-chip-min-height: 30px;
+  --graph-inspector-chip-padding-x: 0.58rem;
+  --graph-inspector-chip-font-size: 0.72rem;
+}
+
 .graph-panel-footer {
   display: grid;
-  gap: 0.34rem;
-  padding: 0.38rem 0.44rem;
-  border-radius: 18px;
+  gap: var(--graph-inspector-gap);
+  padding: var(--graph-inspector-padding-y) var(--graph-inspector-padding-x);
+  border-radius: var(--graph-inspector-radius);
   border: 1px solid rgba(255, 255, 255, 0.05);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.024), rgba(255, 255, 255, 0.01)),
@@ -19,8 +43,8 @@
   gap: 0.2rem;
   width: 100%;
   max-width: 100%;
-  padding: 0.58rem 0.66rem;
-  border-radius: 16px;
+  padding: var(--graph-inspector-card-padding-y) var(--graph-inspector-card-padding-x);
+  border-radius: var(--graph-inspector-card-radius);
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.024);
   color: #eef7ff;
@@ -99,7 +123,7 @@
 
 .graph-filter-tray {
   display: grid;
-  gap: 0.3rem;
+  gap: var(--graph-inspector-gap);
   min-width: 0;
 }
 
@@ -107,8 +131,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.32rem;
-  padding: 0.42rem 0.48rem;
+  gap: var(--graph-inspector-filter-gap);
+  padding: var(--graph-inspector-filter-padding-y) var(--graph-inspector-filter-padding-x);
   border-radius: 16px;
   background: rgba(8, 13, 19, 0.34);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -161,13 +185,13 @@
   flex: 0 0 auto;
   align-items: center;
   gap: 0.42rem;
-  min-height: 30px;
-  padding: 0 0.58rem;
+  min-height: var(--graph-inspector-chip-min-height);
+  padding: 0 var(--graph-inspector-chip-padding-x);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: rgba(228, 239, 247, 0.72);
-  font-size: 0.72rem;
+  font-size: var(--graph-inspector-chip-font-size);
 }
 
 .filter-chip.is-active {

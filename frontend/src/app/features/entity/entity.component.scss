@@ -4,6 +4,15 @@
 
 .entity-detail {
   /* Detail sizing controls tuned for a 13-inch MacBook viewport. */
+  /* QUICK MAP
+   * Top card height: tweak --detail-topbar-padding-*
+   * Top card width balance: tweak --detail-topbar-content-width
+   * Title scale: tweak --detail-title-size / --detail-title-max-width
+   * Shared hero height (image + graph): tweak --detail-hero-min-height-*
+   * Image vs graph width split: tweak --detail-media-image-fr / --detail-media-graph-fr
+   * Shared media row height floor: tweak --detail-media-pane-min-height
+   * Inner air of each side: tweak --detail-image-pane-padding / --detail-graph-pane-padding / --detail-graph-pane-gap
+   */
   --detail-hero-min-height-min: 620px;
   --detail-hero-min-height-offset: 8.25rem;
   --detail-hero-min-height-max: 820px;
@@ -139,12 +148,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.44),
     0 18px 52px rgba(0, 0, 0, 0.16),
     0 6px 18px rgba(15, 23, 42, 0.05);
-}
-
-.entity-explorer__lead {
-  margin: 0.35rem 0 0;
-  color: rgba(66, 73, 90, 0.78);
-  font-size: 0.96rem;
 }
 
 .entity-detail__sections {
@@ -291,21 +294,26 @@
 }
 
 @media (max-width: 1480px) {
-  .entity-header__actions {
-    
-    justify-content: flex-start;
+  /* Responsive preset for laptop-ish widths.
+   * Prefer adjusting these variables instead of hardcoding the rules below.
+   */
+  .entity-detail {
+    --detail-title-max-width: none;
+    --detail-title-size: clamp(1.5rem, 2vw, 1.5rem);
+    --detail-title-line-height: 1.2;
+    --detail-hero-min-height-min: 560px;
+    --detail-hero-min-height-offset: 0.75rem;
+    --detail-hero-min-height-max: 760px;
+  }
 
+  .entity-header__actions {
+    justify-content: flex-start;
   }
 
   .entity-header__title {
-    max-width: 10ch;
-    font-size: clamp(1.5rem, 2vw, 1.5rem);
-    line-height: 1.2;
-    max-width: none;
-  }
-
-  .entity-explorer {
-    min-height: clamp(560px, calc(100dvh - 0.75rem), 760px);
+    max-width: var(--detail-title-max-width);
+    font-size: var(--detail-title-size);
+    line-height: var(--detail-title-line-height);
   }
 }
 
@@ -335,14 +343,6 @@
 .entity-action--primary:hover {
   color: #fff;
   transform: translateY(-1px);
-}
-
-.entity-hero__summary {
-  position: relative;
-  z-index: 1;
-  max-width: 72ch;
-  margin-top: 0.5rem;
-  color: rgba(35, 42, 55, 0.92);
 }
 
 .entity-section {
@@ -811,6 +811,16 @@
 }
 
 @media (max-width: 1080px) {
+  /* Tablet/small laptop preset.
+   * Keep changing the tokens here if the hero or title feel too tall/short.
+   */
+  .entity-detail {
+    --detail-title-max-width: none;
+    --detail-hero-min-height-min: 520px;
+    --detail-hero-min-height-offset: 9.5rem;
+    --detail-hero-min-height-max: 700px;
+  }
+
   .entity-detail__sections {
     grid-template-columns: 1fr;
   }
@@ -821,11 +831,7 @@
   }
 
   .entity-header__title {
-    max-width: none;
-  }
-
-  .entity-explorer {
-    min-height: clamp(520px, calc(100dvh - 9.5rem), 700px);
+    max-width: var(--detail-title-max-width);
   }
 
   .facts-grid {
@@ -847,7 +853,11 @@
 }
 
 @media (max-width: 640px) {
+  /* Mobile preset.
+   * Use this block for mobile-only title scale or shell spacing.
+   */
   .entity-detail {
+    --detail-title-size: clamp(2rem, 10vw, 2.8rem);
     padding-top: 1rem;
     padding-bottom: 1.5rem;
   }
@@ -875,7 +885,7 @@
   }
 
   .entity-header__title {
-    font-size: clamp(2rem, 10vw, 2.8rem);
+    font-size: var(--detail-title-size);
   }
 
   .entity-prose--summary {

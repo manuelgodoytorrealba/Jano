@@ -1,9 +1,44 @@
+:host {
+  /* QUICK MAP
+   * Toolbar overall size: tweak --graph-bar-padding-* / --graph-bar-radius
+   * Meta chips: tweak --graph-bar-chip-*
+   * Section pill ("RELACIONES"): tweak --graph-bar-label-*
+   * Action buttons: tweak --graph-bar-button-*
+   * Zoom/reset controls: tweak --graph-bar-control-*
+   */
+  --graph-bar-gap-y: 0.24rem;
+  --graph-bar-gap-x: 0.36rem;
+  --graph-bar-padding-y: 0.18rem;
+  --graph-bar-padding-x: 0.24rem;
+  --graph-bar-radius: 16px;
+
+  --graph-bar-chip-padding-y: 0.12rem;
+  --graph-bar-chip-padding-x: 0.32rem;
+  --graph-bar-chip-font-size: 0.58rem;
+
+  --graph-bar-label-padding-y: 0.22rem;
+  --graph-bar-label-padding-x: 0.42rem;
+  --graph-bar-label-font-size: 0.58rem;
+
+  --graph-bar-button-min-height: 24px;
+  --graph-bar-button-padding-y: 0.2rem;
+  --graph-bar-button-padding-x: 0.46rem;
+  --graph-bar-button-font-size: 0.62rem;
+  --graph-bar-button-min-width: 92px;
+
+  --graph-bar-control-size: 24px;
+  --graph-bar-control-padding-x: 0.46rem;
+  --graph-bar-control-font-size: 0.62rem;
+  --graph-bar-control-text-padding-x: 0.56rem;
+  --graph-bar-control-wide-min-width: 76px;
+}
+
 .graph-panel-bar {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.24rem 0.36rem;
-  padding: 0.18rem 0.24rem;
-  border-radius: 16px;
+  gap: var(--graph-bar-gap-y) var(--graph-bar-gap-x);
+  padding: var(--graph-bar-padding-y) var(--graph-bar-padding-x);
+  border-radius: var(--graph-bar-radius);
   border: 1px solid rgba(255, 255, 255, 0.05);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.022), rgba(255, 255, 255, 0.008)),
@@ -36,12 +71,12 @@
 }
 
 .explorer-surface-label {
-  padding: 0.22rem 0.42rem;
+  padding: var(--graph-bar-label-padding-y) var(--graph-bar-label-padding-x);
   border-radius: 999px;
   background: rgba(6, 10, 15, 0.56);
   color: rgba(222, 237, 250, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 0.58rem;
+  font-size: var(--graph-bar-label-font-size);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -81,12 +116,12 @@
 }
 
 .graph-panel-bar__meta span {
-  padding: 0.12rem 0.32rem;
+  padding: var(--graph-bar-chip-padding-y) var(--graph-bar-chip-padding-x);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   color: rgba(193, 212, 226, 0.66);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 0.58rem;
+  font-size: var(--graph-bar-chip-font-size);
   white-space: nowrap;
 }
 
@@ -102,18 +137,18 @@
 }
 
 .graph-utility-btn {
-  min-height: 24px;
-  padding: 0.2rem 0.46rem;
+  min-height: var(--graph-bar-button-min-height);
+  padding: var(--graph-bar-button-padding-y) var(--graph-bar-button-padding-x);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.045);
   color: rgba(233, 242, 249, 0.76);
   font-weight: 600;
-  font-size: 0.62rem;
+  font-size: var(--graph-bar-button-font-size);
   white-space: nowrap;
 }
 
 .graph-utility-btn--mode {
-  min-width: 92px;
+  min-width: var(--graph-bar-button-min-width);
   justify-content: center;
 }
 
@@ -124,25 +159,25 @@
 }
 
 .surface-control {
-  min-width: 24px;
-  height: 24px;
-  padding: 0 0.46rem;
+  min-width: var(--graph-bar-control-size);
+  height: var(--graph-bar-control-size);
+  padding: 0 var(--graph-bar-control-padding-x);
   border-radius: 999px;
   background: rgba(8, 13, 19, 0.66);
   color: rgba(237, 247, 255, 0.92);
   font-weight: 700;
   backdrop-filter: blur(14px);
-  font-size: 0.62rem;
+  font-size: var(--graph-bar-control-font-size);
 }
 
 .surface-control--text {
   min-width: unset;
-  padding-inline: 0.56rem;
+  padding-inline: var(--graph-bar-control-text-padding-x);
 }
 
 .surface-control--wide,
 .graph-utility-btn--mode {
-  min-width: 76px;
+  min-width: var(--graph-bar-control-wide-min-width);
 }
 
 @media (max-width: 1320px) {
