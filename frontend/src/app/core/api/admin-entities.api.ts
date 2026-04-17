@@ -14,6 +14,42 @@ export type AdminEntityPayload = {
   endYear?: number | null;
 };
 
+export type AdminEntityDetailsPayload = {
+  authorNation?: string;
+  technique?: string;
+  materials?: string;
+  dimensions?: string;
+  location?: string;
+  collection?: string;
+  state?: string;
+  country?: string;
+  city?: string;
+  birthYear?: number | null;
+  deathYear?: number | null;
+  disciplines?: string;
+  bioShort?: string;
+  links?: string;
+  definition?: string;
+};
+
+export type AdminSourceRefPayload = {
+  sourceType: 'BOOK' | 'ARTICLE' | 'WEBSITE' | 'CATALOG' | 'PAPER';
+  sourceTitle: string;
+  sourceAuthor?: string;
+  sourcePublisher?: string;
+  sourceYear?: number | null;
+  sourceUrl?: string;
+  page?: string;
+  quote?: string;
+  note?: string;
+};
+
+export type AdminContributorPayload = {
+  name: string;
+  role: string;
+  note?: string;
+};
+
 export type AdminMediaRole =
   | 'PRIMARY_LEGACY'
   | 'HERO'
@@ -79,6 +115,10 @@ export class AdminEntitiesApi {
     return this.http.get<any>(`${this.baseUrl}/admin/${id}`);
   }
 
+  updateDetails(id: string, data: AdminEntityDetailsPayload) {
+    return this.http.patch<any>(`${this.baseUrl}/${id}/details`, data);
+  }
+
   create(data: AdminEntityPayload) {
     return this.http.post<any>(this.baseUrl, data);
   }
@@ -138,6 +178,30 @@ export class AdminEntitiesApi {
     return this.http.get<any[]>(`${this.baseUrl}/${entityId}/relations/incoming`);
   }
 
+  createSourceRef(entityId: string, data: AdminSourceRefPayload) {
+    return this.http.post<any>(`${this.baseUrl}/${entityId}/source-refs`, data);
+  }
+
+  updateSourceRef(entityId: string, refId: string, data: Partial<AdminSourceRefPayload>) {
+    return this.http.patch<any>(`${this.baseUrl}/${entityId}/source-refs/${refId}`, data);
+  }
+
+  deleteSourceRef(entityId: string, refId: string) {
+    return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/source-refs/${refId}`);
+  }
+
+  createContributor(entityId: string, data: AdminContributorPayload) {
+    return this.http.post<any>(`${this.baseUrl}/${entityId}/contributors`, data);
+  }
+
+  updateContributor(entityId: string, contributorId: string, data: Partial<AdminContributorPayload>) {
+    return this.http.patch<any>(`${this.baseUrl}/${entityId}/contributors/${contributorId}`, data);
+  }
+
+  deleteContributor(entityId: string, contributorId: string) {
+    return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/contributors/${contributorId}`);
+  }
+
   createRelation(
     entityId: string,
     data: { toId: string; type: string; justification?: string; weight?: number }
@@ -149,6 +213,6 @@ export class AdminEntitiesApi {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/relations/${relationId}`);
   }
   previewBySlug(slug: string) {
-    return this.http.get<any>(apiUrl(`/entities/preview/${slug}`));
+    return this.http.get<any>(`${this.baseUrl}/${slug}/preview`);
   }
 }

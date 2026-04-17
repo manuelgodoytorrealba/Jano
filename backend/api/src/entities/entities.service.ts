@@ -7,6 +7,11 @@ import { UpdateEntityDto } from './dto/update-entity.dto';
 import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
 import { UploadEntityMediaDto } from './dto/upload-entity-media.dto';
+import { UpdateEntityDetailsDto } from './dto/update-entity-details.dto';
+import { CreateSourceRefDto } from './dto/create-source-ref.dto';
+import { UpdateSourceRefDto } from './dto/update-source-ref.dto';
+import { CreateContributorDto } from './dto/create-contributor.dto';
+import { UpdateContributorDto } from './dto/update-contributor.dto';
 import { attachResolvedMedia, resolvedMediaUrl, type ResolvedMediaPayload } from './media.resolver';
 import { mkdir, unlink, writeFile } from 'fs/promises';
 import { extname, join } from 'path';
@@ -847,12 +852,62 @@ export class EntitiesService {
     const entity = await this.prisma.entity.findUnique({
       where: { id },
       include: {
+        artwork: true,
+        artist: true,
+        concept: true,
+        period: true,
         mediaLinks: {
           include: {
             media: true,
           },
           orderBy: [
             { sortOrder: 'asc' },
+            { id: 'asc' },
+          ],
+        },
+        contributors: {
+          orderBy: [
+            { role: 'asc' },
+            { id: 'asc' },
+          ],
+        },
+        sourceRefs: {
+          include: { source: true },
+          orderBy: [
+            { id: 'asc' },
+          ],
+        },
+        outgoing: {
+          include: {
+            to: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                type: true,
+                summary: true,
+              },
+            },
+          },
+          orderBy: [
+            { type: 'asc' },
+            { id: 'asc' },
+          ],
+        },
+        incoming: {
+          include: {
+            from: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                type: true,
+                summary: true,
+              },
+            },
+          },
+          orderBy: [
+            { type: 'asc' },
             { id: 'asc' },
           ],
         },
@@ -864,6 +919,96 @@ export class EntitiesService {
     }
 
     return entity;
+  }
+
+  async adminUpdateDetails(id: string, dto: UpdateEntityDetailsDto) {
+    const entity = await this.prisma.entity.findUnique({
+      where: { id },
+      select: { id: true, type: true },
+    });
+
+    if (!entity) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    switch (entity.type) {
+      case 'ARTWORK':
+        await this.prisma.artworkDetails.upsert({
+          where: { entityId: id },
+          update: {
+            authorNation: dto.authorNation?.trim() || null,
+            technique: dto.technique?.trim() || null,
+            materials: dto.materials?.trim() || null,
+            dimensions: dto.dimensions?.trim() || null,
+            location: dto.location?.trim() || null,
+            collection: dto.collection?.trim() || null,
+            state: dto.state?.trim() || null,
+          },
+          create: {
+            entityId: id,
+            authorNation: dto.authorNation?.trim() || null,
+            technique: dto.technique?.trim() || null,
+            materials: dto.materials?.trim() || null,
+            dimensions: dto.dimensions?.trim() || null,
+            location: dto.location?.trim() || null,
+            collection: dto.collection?.trim() || null,
+            state: dto.state?.trim() || null,
+          },
+        });
+        break;
+      case 'ARTIST':
+        await this.prisma.artistDetails.upsert({
+          where: { entityId: id },
+          update: {
+            country: dto.country?.trim() || null,
+            city: dto.city?.trim() || null,
+            birthYear: dto.birthYear ?? null,
+            deathYear: dto.deathYear ?? null,
+            disciplines: dto.disciplines?.trim() || null,
+            bioShort: dto.bioShort?.trim() || null,
+            links: dto.links?.trim() || null,
+          },
+          create: {
+            entityId: id,
+            country: dto.country?.trim() || null,
+            city: dto.city?.trim() || null,
+            birthYear: dto.birthYear ?? null,
+            deathYear: dto.deathYear ?? null,
+            disciplines: dto.disciplines?.trim() || null,
+            bioShort: dto.bioShort?.trim() || null,
+            links: dto.links?.trim() || null,
+          },
+        });
+        break;
+      case 'CONCEPT':
+        await this.prisma.conceptDetails.upsert({
+          where: { entityId: id },
+          update: {
+            definition: dto.definition?.trim() || null,
+          },
+          create: {
+            entityId: id,
+            definition: dto.definition?.trim() || null,
+          },
+        });
+        break;
+      case 'PERIOD':
+        await this.prisma.periodDetails.upsert({
+          where: { entityId: id },
+          update: {
+            definition: dto.definition?.trim() || null,
+          },
+          create: {
+            entityId: id,
+            definition: dto.definition?.trim() || null,
+          },
+        });
+        break;
+      default:
+        return this.adminGetById(id);
+    }
+
+    return this.adminGetById(id);
   }
 
   async adminCreateMedia(entityId: string, dto: CreateEntityMediaDto) {
@@ -1458,6 +1603,177 @@ export class EntitiesService {
         },
       },
     });
+  }
+
+  async adminCreateSourceRef(entityId: string, dto: CreateSourceRefDto) {
+    const entity = await this.prisma.entity.findUnique({
+      where: { id: entityId },
+      select: { id: true },
+    });
+
+    if (!entity) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    const source = await this.prisma.source.create({
+      data: {
+        type: dto.sourceType,
+        title: dto.sourceTitle.trim(),
+        author: dto.sourceAuthor?.trim() || null,
+        publisher: dto.sourcePublisher?.trim() || null,
+        year: dto.sourceYear ?? null,
+        url: dto.sourceUrl?.trim() || null,
+      },
+    });
+
+    return this.prisma.sourceRef.create({
+      data: {
+        entityId,
+        sourceId: source.id,
+        page: dto.page?.trim() || null,
+        quote: dto.quote?.trim() || null,
+        note: dto.note?.trim() || null,
+      },
+      include: {
+        source: true,
+      },
+    });
+  }
+
+  async adminUpdateSourceRef(entityId: string, refId: string, dto: UpdateSourceRefDto) {
+    const existing = await this.prisma.sourceRef.findFirst({
+      where: {
+        id: refId,
+        entityId,
+      },
+      include: {
+        source: true,
+      },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Source reference not found');
+    }
+
+    await this.prisma.source.update({
+      where: { id: existing.sourceId },
+      data: {
+        type: dto.sourceType ?? undefined,
+        title: dto.sourceTitle !== undefined ? (dto.sourceTitle?.trim() || existing.source.title) : undefined,
+        author: dto.sourceAuthor !== undefined ? (dto.sourceAuthor?.trim() || null) : undefined,
+        publisher: dto.sourcePublisher !== undefined ? (dto.sourcePublisher?.trim() || null) : undefined,
+        year: dto.sourceYear !== undefined ? (dto.sourceYear ?? null) : undefined,
+        url: dto.sourceUrl !== undefined ? (dto.sourceUrl?.trim() || null) : undefined,
+      },
+    });
+
+    return this.prisma.sourceRef.update({
+      where: { id: refId },
+      data: {
+        page: dto.page !== undefined ? (dto.page?.trim() || null) : undefined,
+        quote: dto.quote !== undefined ? (dto.quote?.trim() || null) : undefined,
+        note: dto.note !== undefined ? (dto.note?.trim() || null) : undefined,
+      },
+      include: {
+        source: true,
+      },
+    });
+  }
+
+  async adminDeleteSourceRef(entityId: string, refId: string) {
+    const existing = await this.prisma.sourceRef.findFirst({
+      where: {
+        id: refId,
+        entityId,
+      },
+      select: {
+        id: true,
+        sourceId: true,
+      },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Source reference not found');
+    }
+
+    await this.prisma.sourceRef.delete({
+      where: { id: refId },
+    });
+
+    const remaining = await this.prisma.sourceRef.count({
+      where: { sourceId: existing.sourceId },
+    });
+
+    if (remaining === 0) {
+      await this.prisma.source.delete({
+        where: { id: existing.sourceId },
+      });
+    }
+
+    return { ok: true };
+  }
+
+  async adminCreateContributor(entityId: string, dto: CreateContributorDto) {
+    const entity = await this.prisma.entity.findUnique({
+      where: { id: entityId },
+      select: { id: true },
+    });
+
+    if (!entity) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    return this.prisma.contributor.create({
+      data: {
+        entityId,
+        name: dto.name.trim(),
+        role: dto.role.trim(),
+        note: dto.note?.trim() || null,
+      },
+    });
+  }
+
+  async adminUpdateContributor(entityId: string, contributorId: string, dto: UpdateContributorDto) {
+    const existing = await this.prisma.contributor.findFirst({
+      where: {
+        id: contributorId,
+        entityId,
+      },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Contributor not found');
+    }
+
+    return this.prisma.contributor.update({
+      where: { id: contributorId },
+      data: {
+        name: dto.name !== undefined ? dto.name.trim() : undefined,
+        role: dto.role !== undefined ? dto.role.trim() : undefined,
+        note: dto.note !== undefined ? (dto.note?.trim() || null) : undefined,
+      },
+    });
+  }
+
+  async adminDeleteContributor(entityId: string, contributorId: string) {
+    const existing = await this.prisma.contributor.findFirst({
+      where: {
+        id: contributorId,
+        entityId,
+      },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Contributor not found');
+    }
+
+    await this.prisma.contributor.delete({
+      where: { id: contributorId },
+    });
+
+    return { ok: true };
   }
 
   private extractEntityLinks(content: string | null | undefined): string[] {

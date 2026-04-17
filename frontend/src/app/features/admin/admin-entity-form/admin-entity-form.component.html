@@ -124,6 +124,112 @@
 </label>
       </div>
 
+      @if (supportsTypedDetails()) {
+        <section class="details-box">
+          <div class="relations-head">
+            <h3>{{ typedDetailsTitle() }}</h3>
+            <p class="muted">Campos específicos que alimentan la ficha pública de esta entidad.</p>
+          </div>
+
+          @if (detailsError) {
+            <div class="error-box">{{ detailsError }}</div>
+          }
+
+          @if (detailsMessage) {
+            <div class="success-box">{{ detailsMessage }}</div>
+          }
+
+          <div class="grid">
+            @if (form.type === 'ARTWORK') {
+              <label class="field">
+                <span>Técnica</span>
+                <input type="text" [(ngModel)]="detailsForm.technique" name="artworkTechnique" />
+              </label>
+
+              <label class="field">
+                <span>Materiales</span>
+                <input type="text" [(ngModel)]="detailsForm.materials" name="artworkMaterials" />
+              </label>
+
+              <label class="field">
+                <span>Dimensiones</span>
+                <input type="text" [(ngModel)]="detailsForm.dimensions" name="artworkDimensions" />
+              </label>
+
+              <label class="field">
+                <span>Ubicación</span>
+                <input type="text" [(ngModel)]="detailsForm.location" name="artworkLocation" />
+              </label>
+
+              <label class="field">
+                <span>Colección</span>
+                <input type="text" [(ngModel)]="detailsForm.collection" name="artworkCollection" />
+              </label>
+
+              <label class="field">
+                <span>Estado</span>
+                <input type="text" [(ngModel)]="detailsForm.state" name="artworkState" />
+              </label>
+
+              <label class="field full">
+                <span>Nacionalidad autor</span>
+                <input type="text" [(ngModel)]="detailsForm.authorNation" name="artworkAuthorNation" />
+              </label>
+            }
+
+            @if (form.type === 'ARTIST') {
+              <label class="field">
+                <span>País</span>
+                <input type="text" [(ngModel)]="detailsForm.country" name="artistCountry" />
+              </label>
+
+              <label class="field">
+                <span>Ciudad</span>
+                <input type="text" [(ngModel)]="detailsForm.city" name="artistCity" />
+              </label>
+
+              <label class="field">
+                <span>Nacimiento</span>
+                <input type="number" [(ngModel)]="detailsForm.birthYear" name="artistBirthYear" />
+              </label>
+
+              <label class="field">
+                <span>Muerte</span>
+                <input type="number" [(ngModel)]="detailsForm.deathYear" name="artistDeathYear" />
+              </label>
+
+              <label class="field full">
+                <span>Disciplinas</span>
+                <input type="text" [(ngModel)]="detailsForm.disciplines" name="artistDisciplines" />
+              </label>
+
+              <label class="field full">
+                <span>Biografía breve</span>
+                <textarea rows="4" [(ngModel)]="detailsForm.bioShort" name="artistBioShort"></textarea>
+              </label>
+
+              <label class="field full">
+                <span>Links</span>
+                <textarea rows="3" [(ngModel)]="detailsForm.links" name="artistLinks"></textarea>
+              </label>
+            }
+
+            @if (form.type === 'CONCEPT' || form.type === 'PERIOD') {
+              <label class="field full">
+                <span>Definición</span>
+                <textarea rows="6" [(ngModel)]="detailsForm.definition" name="typedDefinition"></textarea>
+              </label>
+            }
+          </div>
+
+          <div class="relations-actions">
+            <button class="btn primary" type="button" [disabled]="detailsSaving" (click)="saveDetails()">
+              @if (detailsSaving) { Guardando ficha... } @else { Guardar ficha }
+            </button>
+          </div>
+        </section>
+      }
+
       <section class="media-box">
         <div class="relations-head">
           <h3>Media Library</h3>
@@ -278,6 +384,226 @@
           </div>
         }
       </section>
+
+      @if (isEdit) {
+        <section class="sources-box">
+          <div class="relations-head">
+            <h3>Fuentes</h3>
+            <p class="muted">Referencias documentales que alimentan la ficha pública.</p>
+          </div>
+
+          @if (sourcesError) {
+            <div class="error-box">{{ sourcesError }}</div>
+          }
+
+          @if (sourcesMessage) {
+            <div class="success-box">{{ sourcesMessage }}</div>
+          }
+
+          <div class="relation-form">
+            <div class="grid">
+              <label class="field">
+                <span>Tipo</span>
+                <select [(ngModel)]="newSourceRef.sourceType" name="newSourceType">
+                  @for (type of sourceTypes; track type) {
+                    <option [value]="type">{{ type }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Año</span>
+                <input type="number" [(ngModel)]="newSourceRef.sourceYear" name="newSourceYear" />
+              </label>
+
+              <label class="field full">
+                <span>Título</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourceTitle" name="newSourceTitle" />
+              </label>
+
+              <label class="field">
+                <span>Autor</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourceAuthor" name="newSourceAuthor" />
+              </label>
+
+              <label class="field">
+                <span>Publisher</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourcePublisher" name="newSourcePublisher" />
+              </label>
+
+              <label class="field full">
+                <span>URL</span>
+                <input type="url" [(ngModel)]="newSourceRef.sourceUrl" name="newSourceUrl" />
+              </label>
+
+              <label class="field">
+                <span>Página</span>
+                <input type="text" [(ngModel)]="newSourceRef.page" name="newSourcePage" />
+              </label>
+
+              <label class="field full">
+                <span>Cita</span>
+                <textarea rows="3" [(ngModel)]="newSourceRef.quote" name="newSourceQuote"></textarea>
+              </label>
+
+              <label class="field full">
+                <span>Nota</span>
+                <textarea rows="2" [(ngModel)]="newSourceRef.note" name="newSourceNote"></textarea>
+              </label>
+            </div>
+
+            <div class="relations-actions">
+              <button class="btn primary" type="button" [disabled]="sourcesSaving" (click)="addSourceRef()">
+                @if (sourcesSaving) { Guardando... } @else { Añadir fuente }
+              </button>
+            </div>
+          </div>
+
+          <div class="current-relations">
+            <h4>Fuentes actuales</h4>
+
+            @if (sourceRefs.length) {
+              <div class="sources-list">
+                @for (ref of sourceRefs; track ref.id) {
+                  <article class="source-card">
+                    <div class="grid">
+                      <label class="field">
+                        <span>Tipo</span>
+                        <select [(ngModel)]="ref.sourceType" [name]="'sourceType-' + ref.id">
+                          @for (type of sourceTypes; track type) {
+                            <option [value]="type">{{ type }}</option>
+                          }
+                        </select>
+                      </label>
+
+                      <label class="field">
+                        <span>Año</span>
+                        <input type="number" [(ngModel)]="ref.sourceYear" [name]="'sourceYear-' + ref.id" />
+                      </label>
+
+                      <label class="field full">
+                        <span>Título</span>
+                        <input type="text" [(ngModel)]="ref.sourceTitle" [name]="'sourceTitle-' + ref.id" />
+                      </label>
+
+                      <label class="field">
+                        <span>Autor</span>
+                        <input type="text" [(ngModel)]="ref.sourceAuthor" [name]="'sourceAuthor-' + ref.id" />
+                      </label>
+
+                      <label class="field">
+                        <span>Publisher</span>
+                        <input type="text" [(ngModel)]="ref.sourcePublisher" [name]="'sourcePublisher-' + ref.id" />
+                      </label>
+
+                      <label class="field full">
+                        <span>URL</span>
+                        <input type="url" [(ngModel)]="ref.sourceUrl" [name]="'sourceUrl-' + ref.id" />
+                      </label>
+
+                      <label class="field">
+                        <span>Página</span>
+                        <input type="text" [(ngModel)]="ref.page" [name]="'sourcePage-' + ref.id" />
+                      </label>
+
+                      <label class="field full">
+                        <span>Cita</span>
+                        <textarea rows="3" [(ngModel)]="ref.quote" [name]="'sourceQuote-' + ref.id"></textarea>
+                      </label>
+
+                      <label class="field full">
+                        <span>Nota</span>
+                        <textarea rows="2" [(ngModel)]="ref.note" [name]="'sourceNote-' + ref.id"></textarea>
+                      </label>
+                    </div>
+
+                    <div class="source-card__actions">
+                      <button class="btn" type="button" [disabled]="sourcesSaving" (click)="saveSourceRef(ref)">Guardar</button>
+                      <button class="btn danger" type="button" [disabled]="sourcesSaving" (click)="removeSourceRef(ref.id)">Quitar</button>
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="preview-empty">Esta entity aún no tiene fuentes editoriales.</div>
+            }
+          </div>
+        </section>
+
+        <section class="contributors-box">
+          <div class="relations-head">
+            <h3>Colaboradores</h3>
+            <p class="muted">Créditos y participantes vinculados a la entidad.</p>
+          </div>
+
+          @if (contributorsError) {
+            <div class="error-box">{{ contributorsError }}</div>
+          }
+
+          @if (contributorsMessage) {
+            <div class="success-box">{{ contributorsMessage }}</div>
+          }
+
+          <div class="grid">
+            <label class="field">
+              <span>Nombre</span>
+              <input type="text" [(ngModel)]="newContributor.name" name="newContributorName" />
+            </label>
+
+            <label class="field">
+              <span>Rol</span>
+              <input type="text" [(ngModel)]="newContributor.role" name="newContributorRole" />
+            </label>
+
+            <label class="field full">
+              <span>Nota</span>
+              <textarea rows="2" [(ngModel)]="newContributor.note" name="newContributorNote"></textarea>
+            </label>
+          </div>
+
+          <div class="relations-actions">
+            <button class="btn primary" type="button" [disabled]="contributorsSaving" (click)="addContributor()">
+              @if (contributorsSaving) { Guardando... } @else { Añadir colaborador }
+            </button>
+          </div>
+
+          <div class="current-relations">
+            <h4>Colaboradores actuales</h4>
+
+            @if (contributors.length) {
+              <div class="contributors-list">
+                @for (contributor of contributors; track contributor.id) {
+                  <article class="contributor-card">
+                    <div class="grid">
+                      <label class="field">
+                        <span>Nombre</span>
+                        <input type="text" [(ngModel)]="contributor.name" [name]="'contributorName-' + contributor.id" />
+                      </label>
+
+                      <label class="field">
+                        <span>Rol</span>
+                        <input type="text" [(ngModel)]="contributor.role" [name]="'contributorRole-' + contributor.id" />
+                      </label>
+
+                      <label class="field full">
+                        <span>Nota</span>
+                        <textarea rows="2" [(ngModel)]="contributor.note" [name]="'contributorNote-' + contributor.id"></textarea>
+                      </label>
+                    </div>
+
+                    <div class="source-card__actions">
+                      <button class="btn" type="button" [disabled]="contributorsSaving" (click)="saveContributor(contributor)">Guardar</button>
+                      <button class="btn danger" type="button" [disabled]="contributorsSaving" (click)="removeContributor(contributor.id)">Quitar</button>
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="preview-empty">Esta entity aún no tiene colaboradores.</div>
+            }
+          </div>
+        </section>
+      }
 
       @if (isEdit) {
         <section class="relations-box">
@@ -541,6 +867,51 @@
         } @else {
           <div class="preview-empty">
             El contenido principal aparecerá aquí.
+          </div>
+        }
+
+        @if (supportsTypedDetails()) {
+          <div class="preview-section-title">Ficha</div>
+          @if (typedDetailsSummary()) {
+            <div class="preview-summary">{{ typedDetailsSummary() }}</div>
+          } @else {
+            <div class="preview-empty">La ficha específica aparecerá aquí.</div>
+          }
+        }
+
+        @if (hasPreviewKeyConnections()) {
+        <div class="preview-section-title">Conexiones clave</div>
+          <div class="preview-chip-list">
+            @for (item of previewKeyConnections(); track item.label) {
+              <div class="preview-chip-card">
+                <strong>{{ item.label }}</strong>
+                <span>{{ item.value }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (sourceRefs.length) {
+          <div class="preview-section-title">Fuentes</div>
+          <div class="preview-stack">
+            @for (ref of sourceRefs; track ref.id) {
+              <div class="preview-list-card">
+                <strong>{{ ref.sourceTitle }}</strong>
+                <span>{{ ref.sourceType }}@if (ref.sourceAuthor) { · {{ ref.sourceAuthor }} }@if (ref.sourceYear) { · {{ ref.sourceYear }} }</span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (contributors.length) {
+          <div class="preview-section-title">Colaboradores</div>
+          <div class="preview-stack">
+            @for (contributor of contributors; track contributor.id) {
+              <div class="preview-list-card">
+                <strong>{{ contributor.name }}</strong>
+                <span>{{ contributor.role }}@if (contributor.note) { · {{ contributor.note }} }</span>
+              </div>
+            }
           </div>
         }
       </div>

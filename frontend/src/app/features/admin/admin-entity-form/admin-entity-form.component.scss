@@ -190,6 +190,29 @@
       white-space: pre-wrap;
     }
 
+    .preview-chip-list,
+    .preview-stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .preview-chip-card,
+    .preview-list-card {
+      display: grid;
+      gap: 4px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.84);
+    }
+
+    .preview-chip-card span,
+    .preview-list-card span {
+      color: #666;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     .preview-empty {
       color: #888;
       font-size: 14px;
@@ -282,7 +305,17 @@
       gap: 16px;
     }
 
+    .details-box,
     .media-box {
+      margin-top: 8px;
+      border-top: 1px solid rgba(0,0,0,.08);
+      padding-top: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .sources-box,
+    .contributors-box {
       margin-top: 8px;
       border-top: 1px solid rgba(0,0,0,.08);
       padding-top: 18px;
@@ -919,6 +952,28 @@
     .btn.danger {
       color: #b00020;
       border-color: rgba(176,0,32,.18);
+    }
+
+    .sources-list,
+    .contributors-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .source-card,
+    .contributor-card {
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .source-card__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     @media (max-width: 1080px) {

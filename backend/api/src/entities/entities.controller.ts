@@ -22,6 +22,11 @@ import { ListEntitiesQuery } from './dto/list-entities.query';
 import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
 import { UploadEntityMediaDto } from './dto/upload-entity-media.dto';
+import { UpdateEntityDetailsDto } from './dto/update-entity-details.dto';
+import { CreateSourceRefDto } from './dto/create-source-ref.dto';
+import { UpdateSourceRefDto } from './dto/update-source-ref.dto';
+import { CreateContributorDto } from './dto/create-contributor.dto';
+import { UpdateContributorDto } from './dto/update-contributor.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
@@ -93,6 +98,16 @@ export class EntitiesController {
   @Get('admin/:id')
   getByIdForAdmin(@Param('id') id: string) {
     return this.service.adminGetById(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id/details')
+  updateDetails(
+    @Param('id') id: string,
+    @Body() dto: UpdateEntityDetailsDto,
+  ) {
+    return this.service.adminUpdateDetails(id, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -228,6 +243,68 @@ export class EntitiesController {
   @Get(':id/relations/incoming')
   listIncomingRelations(@Param('id') id: string) {
     return this.service.adminListIncomingRelations(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Post(':id/source-refs')
+  createSourceRef(
+    @Param('id') id: string,
+    @Body() dto: CreateSourceRefDto,
+  ) {
+    return this.service.adminCreateSourceRef(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id/source-refs/:refId')
+  updateSourceRef(
+    @Param('id') id: string,
+    @Param('refId') refId: string,
+    @Body() dto: UpdateSourceRefDto,
+  ) {
+    return this.service.adminUpdateSourceRef(id, refId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Delete(':id/source-refs/:refId')
+  deleteSourceRef(
+    @Param('id') id: string,
+    @Param('refId') refId: string,
+  ) {
+    return this.service.adminDeleteSourceRef(id, refId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Post(':id/contributors')
+  createContributor(
+    @Param('id') id: string,
+    @Body() dto: CreateContributorDto,
+  ) {
+    return this.service.adminCreateContributor(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id/contributors/:contributorId')
+  updateContributor(
+    @Param('id') id: string,
+    @Param('contributorId') contributorId: string,
+    @Body() dto: UpdateContributorDto,
+  ) {
+    return this.service.adminUpdateContributor(id, contributorId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Delete(':id/contributors/:contributorId')
+  deleteContributor(
+    @Param('id') id: string,
+    @Param('contributorId') contributorId: string,
+  ) {
+    return this.service.adminDeleteContributor(id, contributorId);
   }
 
   @Get(':slug')

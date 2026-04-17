@@ -13,8 +13,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   AdminEntitiesApi,
+  AdminContributorPayload,
+  AdminEntityDetailsPayload,
   AdminEntityMediaPayload,
   AdminEntityPayload,
+  AdminSourceRefPayload,
   AdminUploadEntityMediaPayload,
 } from '../../../core/api/admin-entities.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
@@ -98,12 +101,26 @@ previewContainer?: ElementRef<HTMLElement>;
   incomingRelations: any[] = [];
   incomingRelationsLoading = false;
 
+  sourceTypes: AdminSourceRefPayload['sourceType'][] = [
+    'BOOK',
+    'ARTICLE',
+    'WEBSITE',
+    'CATALOG',
+    'PAPER',
+  ];
+
   relationTypes = [
-    'RELATES_TO',
+    'CREATED_BY',
+    'BELONGS_TO_MOVEMENT',
+    'BELONGS_TO_PERIOD',
+    'ABOUT_CONCEPT',
+    'LOCATED_IN',
+    'RELATED_TO',
+    'MENTIONS',
+    'ASSOCIATED_WITH',
+    'INSPIRED_BY',
     'INFLUENCED_BY',
     'PART_OF',
-    'CREATED_BY',
-    'REFERENCES',
   ];
 
   relations: any[] = [];
@@ -114,8 +131,39 @@ previewContainer?: ElementRef<HTMLElement>;
 
   newRelation = {
     toId: '',
-    type: 'RELATES_TO',
+    type: 'RELATED_TO',
     justification: '',
+  };
+
+  detailsSaving = false;
+  detailsMessage = '';
+  detailsError = '';
+  detailsForm: AdminEntityDetailsPayload = {};
+
+  sourceRefs: any[] = [];
+  sourcesSaving = false;
+  sourcesMessage = '';
+  sourcesError = '';
+  newSourceRef: AdminSourceRefPayload = {
+    sourceType: 'WEBSITE',
+    sourceTitle: '',
+    sourceAuthor: '',
+    sourcePublisher: '',
+    sourceYear: null,
+    sourceUrl: '',
+    page: '',
+    quote: '',
+    note: '',
+  };
+
+  contributors: any[] = [];
+  contributorsSaving = false;
+  contributorsMessage = '';
+  contributorsError = '';
+  newContributor: AdminContributorPayload = {
+    name: '',
+    role: '',
+    note: '',
   };
 
   types: AdminEntityPayload['type'][] = [
@@ -332,6 +380,13 @@ previewContainer?: ElementRef<HTMLElement>;
         this.mediaLinks = Array.isArray(entity.mediaLinks)
           ? entity.mediaLinks.map((link: any) => this.normalizeMediaLink(link))
           : [];
+        this.detailsForm = this.extractDetailsForm(entity);
+        this.sourceRefs = Array.isArray(entity.sourceRefs)
+          ? entity.sourceRefs.map((ref: any) => this.normalizeSourceRef(ref))
+          : [];
+        this.contributors = Array.isArray(entity.contributors)
+          ? entity.contributors.map((contributor: any) => this.normalizeContributor(contributor))
+          : [];
 
         this.slugTouched = true;
         this.loading = false;
@@ -482,7 +537,7 @@ previewContainer?: ElementRef<HTMLElement>;
       next: () => {
         this.newRelation = {
           toId: '',
-          type: 'RELATES_TO',
+          type: 'RELATED_TO',
           justification: '',
         };
         this.relationSearch = '';
@@ -513,6 +568,296 @@ previewContainer?: ElementRef<HTMLElement>;
         this.cdr.markForCheck();
       },
     });
+  }
+
+  saveDetails() {
+    if (!this.entityId || this.detailsSaving || !this.supportsTypedDetails()) {
+      return;
+    }
+
+    this.detailsError = '';
+    this.detailsMessage = '';
+    this.detailsSaving = true;
+
+    this.adminApi.updateDetails(this.entityId, this.buildDetailsPayload()).subscribe({
+      next: (entity) => {
+        this.detailsSaving = false;
+        this.detailsForm = this.extractDetailsForm(entity);
+        this.detailsMessage = 'Ficha específica actualizada correctamente.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.detailsSaving = false;
+        this.detailsError = err?.error?.message ?? 'No se pudo actualizar la ficha específica.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  addSourceRef() {
+    if (!this.entityId || this.sourcesSaving) {
+      return;
+    }
+
+    const payload = this.buildSourceRefPayload(this.newSourceRef);
+    if (!payload) {
+      return;
+    }
+
+    this.sourcesError = '';
+    this.sourcesMessage = '';
+    this.sourcesSaving = true;
+
+    this.adminApi.createSourceRef(this.entityId, payload).subscribe({
+      next: (ref) => {
+        this.sourcesSaving = false;
+        this.sourceRefs = [...this.sourceRefs, this.normalizeSourceRef(ref)];
+        this.newSourceRef = {
+          sourceType: 'WEBSITE',
+          sourceTitle: '',
+          sourceAuthor: '',
+          sourcePublisher: '',
+          sourceYear: null,
+          sourceUrl: '',
+          page: '',
+          quote: '',
+          note: '',
+        };
+        this.sourcesMessage = 'Fuente añadida correctamente.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.sourcesSaving = false;
+        this.sourcesError = err?.error?.message ?? 'No se pudo añadir la fuente.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  saveSourceRef(ref: any) {
+    if (!this.entityId || this.sourcesSaving) {
+      return;
+    }
+
+    const payload = this.buildSourceRefPayload(ref);
+    if (!payload) {
+      return;
+    }
+
+    this.sourcesError = '';
+    this.sourcesMessage = '';
+    this.sourcesSaving = true;
+
+    this.adminApi.updateSourceRef(this.entityId, ref.id, payload).subscribe({
+      next: (updated) => {
+        this.sourcesSaving = false;
+        this.upsertSourceRef(updated);
+        this.sourcesMessage = 'Fuente actualizada correctamente.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.sourcesSaving = false;
+        this.sourcesError = err?.error?.message ?? 'No se pudo actualizar la fuente.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  removeSourceRef(refId: string) {
+    if (!this.entityId || this.sourcesSaving) {
+      return;
+    }
+
+    const ok = window.confirm('¿Quitar esta fuente de la entidad?');
+    if (!ok) {
+      return;
+    }
+
+    this.sourcesError = '';
+    this.sourcesMessage = '';
+    this.sourcesSaving = true;
+
+    this.adminApi.deleteSourceRef(this.entityId, refId).subscribe({
+      next: () => {
+        this.sourcesSaving = false;
+        this.sourceRefs = this.sourceRefs.filter((ref) => ref.id !== refId);
+        this.sourcesMessage = 'Fuente eliminada.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.sourcesSaving = false;
+        this.sourcesError = err?.error?.message ?? 'No se pudo eliminar la fuente.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  addContributor() {
+    if (!this.entityId || this.contributorsSaving) {
+      return;
+    }
+
+    const payload = this.buildContributorPayload(this.newContributor);
+    if (!payload) {
+      return;
+    }
+
+    this.contributorsError = '';
+    this.contributorsMessage = '';
+    this.contributorsSaving = true;
+
+    this.adminApi.createContributor(this.entityId, payload).subscribe({
+      next: (contributor) => {
+        this.contributorsSaving = false;
+        this.contributors = [...this.contributors, this.normalizeContributor(contributor)];
+        this.newContributor = { name: '', role: '', note: '' };
+        this.contributorsMessage = 'Colaborador añadido correctamente.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.contributorsSaving = false;
+        this.contributorsError = err?.error?.message ?? 'No se pudo añadir el colaborador.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  saveContributor(contributor: any) {
+    if (!this.entityId || this.contributorsSaving) {
+      return;
+    }
+
+    const payload = this.buildContributorPayload(contributor);
+    if (!payload) {
+      return;
+    }
+
+    this.contributorsError = '';
+    this.contributorsMessage = '';
+    this.contributorsSaving = true;
+
+    this.adminApi.updateContributor(this.entityId, contributor.id, payload).subscribe({
+      next: (updated) => {
+        this.contributorsSaving = false;
+        this.upsertContributor(updated);
+        this.contributorsMessage = 'Colaborador actualizado correctamente.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.contributorsSaving = false;
+        this.contributorsError = err?.error?.message ?? 'No se pudo actualizar el colaborador.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  removeContributor(contributorId: string) {
+    if (!this.entityId || this.contributorsSaving) {
+      return;
+    }
+
+    const ok = window.confirm('¿Quitar este colaborador?');
+    if (!ok) {
+      return;
+    }
+
+    this.contributorsError = '';
+    this.contributorsMessage = '';
+    this.contributorsSaving = true;
+
+    this.adminApi.deleteContributor(this.entityId, contributorId).subscribe({
+      next: () => {
+        this.contributorsSaving = false;
+        this.contributors = this.contributors.filter((item) => item.id !== contributorId);
+        this.contributorsMessage = 'Colaborador eliminado.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.contributorsSaving = false;
+        this.contributorsError = err?.error?.message ?? 'No se pudo eliminar el colaborador.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  supportsTypedDetails(): boolean {
+    return ['ARTWORK', 'ARTIST', 'CONCEPT', 'PERIOD'].includes(this.form.type);
+  }
+
+  typedDetailsTitle(): string {
+    switch (this.form.type) {
+      case 'ARTWORK':
+        return 'Ficha de obra';
+      case 'ARTIST':
+        return 'Ficha de artista';
+      case 'CONCEPT':
+        return 'Ficha de concepto';
+      case 'PERIOD':
+        return 'Ficha de periodo';
+      default:
+        return 'Ficha específica';
+    }
+  }
+
+  typedDetailsSummary(): string {
+    switch (this.form.type) {
+      case 'ARTWORK':
+        return this.compactJoin([
+          this.detailsForm.technique,
+          this.detailsForm.materials,
+          this.detailsForm.dimensions,
+          this.detailsForm.location,
+        ]);
+      case 'ARTIST':
+        return this.compactJoin([
+          this.detailsForm.country,
+          this.detailsForm.city,
+          this.detailsForm.disciplines,
+        ]);
+      case 'CONCEPT':
+      case 'PERIOD':
+        return String(this.detailsForm.definition ?? '').trim();
+      default:
+        return '';
+    }
+  }
+
+  previewKeyConnections(): Array<{ label: string; value: string }> {
+    const groups: Array<{ label: string; value: string }> = [];
+    const outgoing = Array.isArray(this.relations) ? this.relations : [];
+    const incoming = Array.isArray(this.incomingRelations) ? this.incomingRelations : [];
+
+    const first = (type: string) => outgoing.find((rel) => rel.type === type);
+    const collectTargets = (type: string) => outgoing.filter((rel) => rel.type === type).map((rel) => rel.to?.title).filter(Boolean);
+
+    const author = first('CREATED_BY')?.to?.title;
+    if (author) groups.push({ label: 'Autor', value: author });
+
+    const movement = first('BELONGS_TO_MOVEMENT')?.to?.title;
+    if (movement) groups.push({ label: 'Movimiento', value: movement });
+
+    const period = first('BELONGS_TO_PERIOD')?.to?.title;
+    if (period) groups.push({ label: 'Periodo', value: period });
+
+    const concepts = collectTargets('ABOUT_CONCEPT');
+    if (concepts.length) groups.push({ label: 'Conceptos', value: concepts.join(' · ') });
+
+    const places = collectTargets('LOCATED_IN');
+    if (places.length) groups.push({ label: 'Ubicación', value: places.join(' · ') });
+
+    const relatedArtworks = [
+      ...outgoing.filter((rel) => rel.type === 'RELATED_TO' && rel.to?.type === 'ARTWORK').map((rel) => rel.to?.title),
+      ...incoming.filter((rel) => rel.type === 'RELATED_TO' && rel.from?.type === 'ARTWORK').map((rel) => rel.from?.title),
+    ].filter(Boolean);
+    if (relatedArtworks.length) {
+      groups.push({ label: 'Obras relacionadas', value: Array.from(new Set(relatedArtworks)).join(' · ') });
+    }
+
+    return groups;
+  }
+
+  hasPreviewKeyConnections(): boolean {
+    return this.previewKeyConnections().length > 0;
   }
 
   mediaRoleLabel(role: string | null | undefined): string {
@@ -1173,6 +1518,143 @@ previewContainer?: ElementRef<HTMLElement>;
       focalX: this.toNullableNumber(link.focalX),
       focalY: this.toNullableNumber(link.focalY),
     };
+  }
+
+  private extractDetailsForm(entity: any): AdminEntityDetailsPayload {
+    return {
+      authorNation: entity?.artwork?.authorNation ?? '',
+      technique: entity?.artwork?.technique ?? '',
+      materials: entity?.artwork?.materials ?? '',
+      dimensions: entity?.artwork?.dimensions ?? '',
+      location: entity?.artwork?.location ?? '',
+      collection: entity?.artwork?.collection ?? '',
+      state: entity?.artwork?.state ?? '',
+      country: entity?.artist?.country ?? '',
+      city: entity?.artist?.city ?? '',
+      birthYear: entity?.artist?.birthYear ?? null,
+      deathYear: entity?.artist?.deathYear ?? null,
+      disciplines: entity?.artist?.disciplines ?? '',
+      bioShort: entity?.artist?.bioShort ?? '',
+      links: entity?.artist?.links ?? '',
+      definition: entity?.concept?.definition ?? entity?.period?.definition ?? '',
+    };
+  }
+
+  private buildDetailsPayload(): AdminEntityDetailsPayload {
+    return {
+      authorNation: String(this.detailsForm.authorNation ?? '').trim() || undefined,
+      technique: String(this.detailsForm.technique ?? '').trim() || undefined,
+      materials: String(this.detailsForm.materials ?? '').trim() || undefined,
+      dimensions: String(this.detailsForm.dimensions ?? '').trim() || undefined,
+      location: String(this.detailsForm.location ?? '').trim() || undefined,
+      collection: String(this.detailsForm.collection ?? '').trim() || undefined,
+      state: String(this.detailsForm.state ?? '').trim() || undefined,
+      country: String(this.detailsForm.country ?? '').trim() || undefined,
+      city: String(this.detailsForm.city ?? '').trim() || undefined,
+      birthYear: this.toNullableNumber(this.detailsForm.birthYear),
+      deathYear: this.toNullableNumber(this.detailsForm.deathYear),
+      disciplines: String(this.detailsForm.disciplines ?? '').trim() || undefined,
+      bioShort: String(this.detailsForm.bioShort ?? '').trim() || undefined,
+      links: String(this.detailsForm.links ?? '').trim() || undefined,
+      definition: String(this.detailsForm.definition ?? '').trim() || undefined,
+    };
+  }
+
+  private normalizeSourceRef(ref: any) {
+    return {
+      id: ref.id,
+      sourceType: ref.source?.type ?? 'WEBSITE',
+      sourceTitle: ref.source?.title ?? '',
+      sourceAuthor: ref.source?.author ?? '',
+      sourcePublisher: ref.source?.publisher ?? '',
+      sourceYear: ref.source?.year ?? null,
+      sourceUrl: ref.source?.url ?? '',
+      page: ref.page ?? '',
+      quote: ref.quote ?? '',
+      note: ref.note ?? '',
+    };
+  }
+
+  private buildSourceRefPayload(source: any): AdminSourceRefPayload | null {
+    const title = String(source.sourceTitle ?? '').trim();
+    if (!title) {
+      this.sourcesError = 'El título de la fuente es obligatorio.';
+      this.cdr.markForCheck();
+      return null;
+    }
+
+    return {
+      sourceType: source.sourceType,
+      sourceTitle: title,
+      sourceAuthor: String(source.sourceAuthor ?? '').trim() || undefined,
+      sourcePublisher: String(source.sourcePublisher ?? '').trim() || undefined,
+      sourceYear: this.toNullableNumber(source.sourceYear),
+      sourceUrl: String(source.sourceUrl ?? '').trim() || undefined,
+      page: String(source.page ?? '').trim() || undefined,
+      quote: String(source.quote ?? '').trim() || undefined,
+      note: String(source.note ?? '').trim() || undefined,
+    };
+  }
+
+  private upsertSourceRef(ref: any) {
+    const normalized = this.normalizeSourceRef(ref);
+    const existingIndex = this.sourceRefs.findIndex((item) => item.id === normalized.id);
+
+    if (existingIndex >= 0) {
+      const next = [...this.sourceRefs];
+      next[existingIndex] = normalized;
+      this.sourceRefs = next;
+      return;
+    }
+
+    this.sourceRefs = [...this.sourceRefs, normalized];
+  }
+
+  private normalizeContributor(contributor: any) {
+    return {
+      id: contributor.id,
+      name: contributor.name ?? '',
+      role: contributor.role ?? '',
+      note: contributor.note ?? '',
+    };
+  }
+
+  private buildContributorPayload(source: any): AdminContributorPayload | null {
+    const name = String(source.name ?? '').trim();
+    const role = String(source.role ?? '').trim();
+
+    if (!name || !role) {
+      this.contributorsError = 'Nombre y rol del colaborador son obligatorios.';
+      this.cdr.markForCheck();
+      return null;
+    }
+
+    return {
+      name,
+      role,
+      note: String(source.note ?? '').trim() || undefined,
+    };
+  }
+
+  private upsertContributor(contributor: any) {
+    const normalized = this.normalizeContributor(contributor);
+    const existingIndex = this.contributors.findIndex((item) => item.id === normalized.id);
+
+    if (existingIndex >= 0) {
+      const next = [...this.contributors];
+      next[existingIndex] = normalized;
+      this.contributors = next;
+      return;
+    }
+
+    this.contributors = [...this.contributors, normalized];
+  }
+
+  private compactJoin(values: Array<string | number | null | undefined>): string {
+    return values
+      .map((value) => String(value ?? '').trim())
+      .filter(Boolean)
+      .join(' · ');
   }
 
   private normalizeMediaLink(link: any): EditableAdminMediaLink {
