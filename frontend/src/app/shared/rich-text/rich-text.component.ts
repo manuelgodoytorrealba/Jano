@@ -8,7 +8,6 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
-import { entityVisualUrl } from '../media/media.utils';
 import { JanoMediaComponent } from '../media/jano-media.component';
 
 type InlineToken =
@@ -50,8 +49,8 @@ export class RichTextComponent {
     return parseBlocks(this.text ?? '');
   }
 
-  get previewImageUrl(): string | null {
-    return entityVisualUrl(this.preview(), 'thumbnail');
+  get previewImageMedia(): any | null {
+    return this.selectPreviewImage(this.preview());
   }
 
   onLinkEnter(slug: string) {
@@ -128,6 +127,27 @@ export class RichTextComponent {
       clearTimeout(this.closeTimer);
       this.closeTimer = null;
     }
+  }
+
+  private selectPreviewImage(entity: any): any | null {
+    const resolvedSlots = Array.isArray(entity?.mediaLibrary?.resolvedSlots)
+      ? entity.mediaLibrary.resolvedSlots
+      : [];
+
+    for (const slotKey of ['preview', 'list', 'detail']) {
+      const slot = resolvedSlots.find((candidate: any) => candidate?.slotKey === slotKey);
+      if (slot?.item) {
+        return slot.item;
+      }
+    }
+
+    return entity?.resolvedMedia?.thumbnail
+      ?? entity?.resolvedMedia?.card
+      ?? entity?.resolvedMedia?.detail
+      ?? entity?.resolvedMedia?.hero
+      ?? entity?.resolvedMedia?.primary
+      ?? entity?.mediaLinks?.[0]?.media
+      ?? null;
   }
 }
 

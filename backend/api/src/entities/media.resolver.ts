@@ -12,6 +12,8 @@ type MediaLike = {
   mimeType?: string | null;
   width?: number | null;
   height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
   isVector?: boolean | null;
   provider?: string | null;
   qualityTier?: string | null;
@@ -29,7 +31,17 @@ type MediaLinkLike = {
   displayMode?: 'COVER' | 'CONTAIN' | null | string;
   focalX?: number | null;
   focalY?: number | null;
+  cropExplorer3d?: unknown;
+  cropList?: unknown;
+  cropDetail?: unknown;
+  cropPreview?: unknown;
   media?: MediaLike | null;
+};
+
+type CropPresetLike = {
+  x?: number | null;
+  y?: number | null;
+  zoom?: number | null;
 };
 
 type EntityWithMediaLinks = {
@@ -65,6 +77,11 @@ export type ResolvedMediaItem = {
   displayMode: 'COVER' | 'CONTAIN' | null;
   focalX: number | null;
   focalY: number | null;
+  assetFocalX: number | null;
+  assetFocalY: number | null;
+  cropX: number | null;
+  cropY: number | null;
+  cropZoom: number | null;
 };
 
 export type ResolvedMediaPayload = {
@@ -86,6 +103,14 @@ export type MediaUsage =
   | 'gallery'
   | 'primary';
 
+export type AdminResolvedSlotKey =
+  | 'explorer3d'
+  | 'list'
+  | 'detail'
+  | 'preview';
+
+export type AdminResolvedSlotSource = 'explicit' | 'fallback' | 'legacy' | 'empty';
+
 export type ResolvedMediaSlotState = {
   item: ResolvedMediaItem | null;
   source: 'explicit' | 'fallback' | 'empty';
@@ -105,14 +130,26 @@ export type AdminMediaAssignment = {
   displayMode: 'COVER' | 'CONTAIN' | null;
   focalX: number | null;
   focalY: number | null;
+  assetFocalX: number | null;
+  assetFocalY: number | null;
+  slotCrops: Partial<Record<AdminResolvedSlotKey, CropPresetLike | null>>;
 };
 
 export type AdminResolvedSlot = {
-  slotKey: MediaUsage;
-  source: 'explicit' | 'fallback' | 'empty';
+  slotKey: AdminResolvedSlotKey;
+  source: AdminResolvedSlotSource;
   matchedRole: string | null;
   item: ResolvedMediaItem | null;
-  count?: number;
+  explanation: string;
+  reasonCode: string;
+};
+
+export type AdminAdditionalMediaItem = {
+  assignmentId: string;
+  assetId: string;
+  role: string | null;
+  sortOrder: number;
+  item: ResolvedMediaItem;
 };
 
 export type AdminMediaWarning = {
@@ -126,6 +163,7 @@ export type AdminMediaCoverageSummary = {
   emptySlots: string[];
   fallbackSlots: string[];
   explicitSlots: string[];
+  legacySlots: string[];
   assetCount: number;
   assignmentCount: number;
   unusedAssetCount: number;
@@ -135,6 +173,7 @@ export type AdminMediaLibraryPayload = {
   assets: AdminMediaAsset[];
   assignments: AdminMediaAssignment[];
   resolvedSlots: AdminResolvedSlot[];
+  additionalMedia: AdminAdditionalMediaItem[];
   warnings: AdminMediaWarning[];
   coverageSummary: AdminMediaCoverageSummary;
 };
@@ -147,6 +186,10 @@ type NormalizedMediaLink = {
   displayMode: 'COVER' | 'CONTAIN' | null;
   focalX: number | null;
   focalY: number | null;
+  cropExplorer3d: CropPresetLike | null;
+  cropList: CropPresetLike | null;
+  cropDetail: CropPresetLike | null;
+  cropPreview: CropPresetLike | null;
   media: MediaLike;
 };
 
@@ -174,6 +217,13 @@ const BEST_AVAILABLE_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | '
   'thumbnail',
   'explorer3d',
 ]);
+
+const ADMIN_EDITORIAL_SLOT_ORDER: AdminResolvedSlotKey[] = [
+  'explorer3d',
+  'list',
+  'detail',
+  'preview',
+];
 
 export function buildResolvedMedia(entity: EntityWithMediaLinks | null | undefined): ResolvedMediaPayload {
   return {
@@ -208,7 +258,7 @@ export function resolveEntityMedia(
   if (usage === 'gallery') {
     const gallery = links
       .filter((link) => link.role === 'GALLERY')
-      .map(toResolvedMediaItem);
+      .map((link) => toResolvedMediaItem(link, 'detail'));
 
     if (gallery.length) {
       return gallery;
@@ -240,20 +290,20 @@ export function resolveEntityMedia(
   for (const role of roles) {
     const candidate = firstByRole(links, role);
     if (candidate) {
-      return toResolvedMediaItem(candidate);
+      return toResolvedMediaItem(candidate, usage);
     }
   }
 
   if (PRIMARY_FALLBACK_USAGES.has(usage)) {
     const legacyPrimary = selectLegacyPrimary(links);
     if (legacyPrimary) {
-      return toResolvedMediaItem(legacyPrimary);
+      return toResolvedMediaItem(legacyPrimary, usage);
     }
   }
 
   if (BEST_AVAILABLE_FALLBACK_USAGES.has(usage)) {
     const best = selectBestAvailable(links, entity?.type ?? null);
-    return best ? toResolvedMediaItem(best) : null;
+    return best ? toResolvedMediaItem(best, usage) : null;
   }
 
   return null;
@@ -320,6 +370,14 @@ export function buildAdminMediaLibrary(entity: EntityWithMediaLinks | null | und
     displayMode: link.displayMode,
     focalX: link.focalX,
     focalY: link.focalY,
+    assetFocalX: normalizeFocal(link.media.focalX),
+    assetFocalY: normalizeFocal(link.media.focalY),
+    slotCrops: {
+      explorer3d: sanitizeCropPreset(link.cropExplorer3d),
+      list: sanitizeCropPreset(link.cropList),
+      detail: sanitizeCropPreset(link.cropDetail),
+      preview: sanitizeCropPreset(link.cropPreview),
+    },
   }));
 
   const assets = Array.from(
@@ -335,50 +393,18 @@ export function buildAdminMediaLibrary(entity: EntityWithMediaLinks | null | und
     }, new Map<string, AdminMediaAsset>()).values(),
   );
 
-  const galleryItems = resolvedEntity.resolvedMedia.gallery ?? [];
-  const resolvedSlots: AdminResolvedSlot[] = [
-    {
-      slotKey: 'hero',
-      ...resolveEntityMediaSlot(resolvedEntity, 'hero'),
-    },
-    {
-      slotKey: 'card',
-      ...resolveEntityMediaSlot(resolvedEntity, 'card'),
-    },
-    {
-      slotKey: 'detail',
-      ...resolveEntityMediaSlot(resolvedEntity, 'detail'),
-    },
-    {
-      slotKey: 'thumbnail',
-      ...resolveEntityMediaSlot(resolvedEntity, 'thumbnail'),
-    },
-    {
-      slotKey: 'explorer3d',
-      ...resolveEntityMediaSlot(resolvedEntity, 'explorer3d'),
-    },
-    {
-      slotKey: 'gallery',
-      source: galleryItems.length
-        ? assignments.some((assignment) => assignment.role === 'GALLERY') ? 'explicit' : 'fallback'
-        : 'empty',
-      matchedRole: galleryItems[0]?.role ?? null,
-      item: galleryItems[0] ?? null,
-      count: galleryItems.length,
-    },
-    {
-      slotKey: 'primary',
-      ...resolveEntityMediaSlot(resolvedEntity, 'primary'),
-    },
-  ];
-
-  const warnings = buildAdminMediaWarnings(assignments, assets, resolvedSlots);
-  const coverageSummary = buildCoverageSummary(assignments, assets.length, resolvedSlots);
+  const resolvedSlots = ADMIN_EDITORIAL_SLOT_ORDER.map((slotKey) =>
+    resolveAdminEditorialSlot(normalizedLinks, entity?.type ?? null, slotKey),
+  );
+  const additionalMedia = buildAdditionalMedia(normalizedLinks);
+  const warnings = buildAdminMediaWarnings(assignments, assets, resolvedSlots, additionalMedia);
+  const coverageSummary = buildCoverageSummary(assignments, assets.length, resolvedSlots, additionalMedia);
 
   return {
     assets,
     assignments,
     resolvedSlots,
+    additionalMedia,
     warnings,
     coverageSummary,
   };
@@ -407,6 +433,10 @@ function normalizeMediaLinks(entity: EntityWithMediaLinks | null | undefined): N
       displayMode: normalizeDisplayMode(link.displayMode),
       focalX: link.focalX ?? null,
       focalY: link.focalY ?? null,
+      cropExplorer3d: sanitizeCropPreset(link.cropExplorer3d),
+      cropList: sanitizeCropPreset(link.cropList),
+      cropDetail: sanitizeCropPreset(link.cropDetail),
+      cropPreview: sanitizeCropPreset(link.cropPreview),
       media: link.media!,
     }))
     .filter((link) => isRenderableRasterMedia(link.media))
@@ -518,10 +548,223 @@ function selectLegacyMediaLinkWithSource(
     : null;
 }
 
+function resolveAdminEditorialSlot(
+  links: NormalizedMediaLink[],
+  entityType: string | null | undefined,
+  slotKey: AdminResolvedSlotKey,
+): AdminResolvedSlot {
+  const explicit = selectAdminExplicitSlot(links, slotKey);
+  if (explicit) {
+    return {
+      slotKey,
+      source: 'explicit',
+      matchedRole: explicit.role,
+      item: toResolvedMediaItem(explicit, slotKey),
+      explanation: buildSlotExplanation(slotKey, 'explicit', explicit.role),
+      reasonCode: `explicit_${String(explicit.role ?? '').toLowerCase() || 'assignment'}`,
+    };
+  }
+
+  const fallback = selectAdminFallbackSlot(links, entityType, slotKey);
+  if (fallback) {
+    return {
+      slotKey,
+      source: fallback.source,
+      matchedRole: fallback.link.role,
+      item: toResolvedMediaItem(fallback.link, slotKey),
+      explanation: buildSlotExplanation(slotKey, fallback.source, fallback.link.role),
+      reasonCode: fallback.reasonCode,
+    };
+  }
+
+  return {
+    slotKey,
+    source: 'empty',
+    matchedRole: null,
+    item: null,
+    explanation: buildSlotExplanation(slotKey, 'empty', null),
+    reasonCode: 'empty',
+  };
+}
+
+function selectAdminExplicitSlot(links: NormalizedMediaLink[], slotKey: AdminResolvedSlotKey): NormalizedMediaLink | null {
+  switch (slotKey) {
+    case 'explorer3d':
+      return firstByRole(links, 'EXPLORER_3D');
+    case 'list':
+      return firstByRole(links, 'CARD');
+    case 'detail':
+      return firstByRole(links, 'DETAIL') ?? firstByRole(links, 'HERO');
+    case 'preview':
+      return firstByRole(links, 'THUMBNAIL');
+  }
+}
+
+function selectAdminFallbackSlot(
+  links: NormalizedMediaLink[],
+  _entityType: string | null | undefined,
+  slotKey: AdminResolvedSlotKey,
+): { link: NormalizedMediaLink; source: 'fallback' | 'legacy'; reasonCode: string } | null {
+  const legacy = selectLegacyPrimary(links);
+
+  if (legacy) {
+    return {
+      link: legacy,
+      source: 'legacy',
+      reasonCode: 'legacy_primary_fallback',
+    };
+  }
+
+  return null;
+}
+
+function buildAdditionalMedia(links: NormalizedMediaLink[]): AdminAdditionalMediaItem[] {
+  return links
+    .filter((link) => link.role === 'GALLERY')
+    .map((link) => ({
+      assignmentId: link.id ?? '',
+      assetId: link.media.id,
+      role: link.role,
+      sortOrder: link.sortOrder,
+      item: toResolvedMediaItem(link, 'detail'),
+    }));
+}
+
+function buildSlotExplanation(
+  slotKey: AdminResolvedSlotKey,
+  source: AdminResolvedSlotSource,
+  matchedRole: string | null,
+): string {
+  const slotLabel = adminSlotLabel(slotKey);
+  const roleLabel = adminRoleLabel(matchedRole);
+
+  if (source === 'empty') {
+    switch (slotKey) {
+      case 'explorer3d':
+        return 'Explorer 3D no tiene imagen específica ni fallback legacy activo.';
+      case 'list':
+        return 'No hay imagen específica para List.';
+      case 'detail':
+        return 'No hay imagen específica para Detail.';
+      case 'preview':
+        return 'No hay imagen específica para Preview.';
+    }
+  }
+
+  if (source === 'legacy') {
+    return `${slotLabel} depende todavía de fallback legacy${roleLabel ? ` desde ${roleLabel}` : ''}.`;
+  }
+
+  if (source === 'explicit') {
+    if (slotKey === 'detail' && matchedRole === 'HERO') {
+      return 'Detail usa una asignación HERO existente como imagen principal.';
+    }
+
+    return `${slotLabel} tiene asignación específica${roleLabel ? ` desde ${roleLabel}` : ''}.`;
+  }
+
+  switch (slotKey) {
+    case 'explorer3d':
+      return `Explorer 3D usa fallback${roleLabel ? ` desde ${roleLabel}` : ''}.`;
+    case 'list':
+      return `List usa fallback${roleLabel ? ` desde ${roleLabel}` : ''}.`;
+    case 'detail':
+      return `Detail usa fallback${roleLabel ? ` desde ${roleLabel}` : ''}.`;
+    case 'preview':
+      return `Preview usa fallback${roleLabel ? ` desde ${roleLabel}` : ''}.`;
+  }
+}
+
+function adminSlotLabel(slotKey: AdminResolvedSlotKey): string {
+  switch (slotKey) {
+    case 'explorer3d':
+      return 'Explorer 3D';
+    case 'list':
+      return 'List';
+    case 'detail':
+      return 'Detail';
+    case 'preview':
+      return 'Preview';
+  }
+}
+
+function adminRoleLabel(role: string | null): string | null {
+  switch (role) {
+    case 'PRIMARY_LEGACY':
+      return 'legacy';
+    case 'HERO':
+      return 'Hero';
+    case 'CARD':
+      return 'List';
+    case 'DETAIL':
+      return 'Detail';
+    case 'THUMBNAIL':
+      return 'Preview';
+    case 'EXPLORER_3D':
+      return 'Explorer 3D';
+    case 'GALLERY':
+      return 'Additional Media';
+    default:
+      return role;
+  }
+}
+
+function normalizeFocal(value: number | null | undefined): number | null {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return null;
+  }
+
+  return Math.min(100, Math.max(0, Number(value)));
+}
+
+function sanitizeCropPreset(value: unknown): CropPresetLike | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const crop = value as Record<string, unknown>;
+  const x = normalizeFocal(crop['x'] as number | null | undefined);
+  const y = normalizeFocal(crop['y'] as number | null | undefined);
+  const zoomValue = crop['zoom'];
+  const zoom = zoomValue === null || zoomValue === undefined || Number.isNaN(Number(zoomValue))
+    ? null
+    : Math.min(3, Math.max(1, Number(zoomValue)));
+
+  if (x === null && y === null && zoom === null) {
+    return null;
+  }
+
+  return {
+    x,
+    y,
+    zoom,
+  };
+}
+
+function cropPresetForSlot(
+  link: NormalizedMediaLink,
+  slotKey?: AdminResolvedSlotKey | 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d',
+): CropPresetLike | null {
+  switch (slotKey) {
+    case 'explorer3d':
+      return link.cropExplorer3d;
+    case 'list':
+    case 'card':
+      return link.cropList;
+    case 'detail':
+    case 'hero':
+      return link.cropDetail;
+    case 'preview':
+    case 'thumbnail':
+      return link.cropPreview;
+    default:
+      return null;
+  }
+}
+
 function selectLegacyPrimary(links: NormalizedMediaLink[]): NormalizedMediaLink | null {
   return (
     links.find((link) => link.role === 'PRIMARY_LEGACY' && link.isPrimary)
-    ?? links.find((link) => link.role === 'PRIMARY_LEGACY')
     ?? links.find((link) => link.isPrimary)
     ?? null
   );
@@ -532,7 +775,14 @@ function selectBestAvailable(links: NormalizedMediaLink[], entityType: string | 
   return byQuality[0] ?? null;
 }
 
-function toResolvedMediaItem(link: NormalizedMediaLink): ResolvedMediaItem {
+function toResolvedMediaItem(
+  link: NormalizedMediaLink,
+  slotKey?: AdminResolvedSlotKey | 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d',
+): ResolvedMediaItem {
+  const crop = cropPresetForSlot(link, slotKey);
+  const assetFocalX = normalizeFocal(link.media.focalX);
+  const assetFocalY = normalizeFocal(link.media.focalY);
+
   return {
     id: link.media.id,
     url: link.media.url,
@@ -558,8 +808,13 @@ function toResolvedMediaItem(link: NormalizedMediaLink): ResolvedMediaItem {
     sortOrder: link.sortOrder,
     isPrimary: link.isPrimary,
     displayMode: link.displayMode,
-    focalX: link.focalX,
-    focalY: link.focalY,
+    focalX: normalizeFocal(link.focalX) ?? assetFocalX,
+    focalY: normalizeFocal(link.focalY) ?? assetFocalY,
+    assetFocalX,
+    assetFocalY,
+    cropX: normalizeFocal(crop?.x) ?? null,
+    cropY: normalizeFocal(crop?.y) ?? null,
+    cropZoom: crop?.zoom === null || crop?.zoom === undefined ? null : Math.min(3, Math.max(1, Number(crop.zoom))),
   };
 }
 
@@ -648,6 +903,7 @@ function buildAdminMediaWarnings(
   assignments: AdminMediaAssignment[],
   assets: AdminMediaAsset[],
   resolvedSlots: AdminResolvedSlot[],
+  additionalMedia: AdminAdditionalMediaItem[],
 ): AdminMediaWarning[] {
   if (!assignments.length) {
     return [
@@ -665,59 +921,53 @@ function buildAdminMediaWarnings(
     warnings.push({
       code: 'media.multiple_primary',
       severity: 'warning',
-      message: `Hay ${primaryCount} medias marcadas como primary fallback. Conviene dejar solo una.`,
+      message: `Hay ${primaryCount} medias marcadas como fallback legacy. Conviene dejar solo una.`,
     });
   }
 
-  const hasCard = assignments.some((assignment) => assignment.role === 'CARD');
-  const hasHero = assignments.some((assignment) => assignment.role === 'HERO');
-  const hasDetail = assignments.some((assignment) => assignment.role === 'DETAIL');
-  const hasOnlyLegacy = assignments.every((assignment) => assignment.role === 'PRIMARY_LEGACY');
+  for (const slot of resolvedSlots) {
+    if (slot.source === 'empty') {
+      warnings.push({
+        code: `media.${slot.slotKey}_empty`,
+        severity: 'warning',
+        message: slot.explanation,
+      });
+      continue;
+    }
+
+    if (slot.source === 'legacy') {
+      warnings.push({
+        code: `media.${slot.slotKey}_legacy`,
+        severity: 'warning',
+        message: `${adminSlotLabel(slot.slotKey)} depende de fallback legacy${slot.matchedRole ? ` desde ${adminRoleLabel(slot.matchedRole)}` : ''}.`,
+      });
+      continue;
+    }
+
+    if (slot.source === 'fallback') {
+      warnings.push({
+        code: `media.${slot.slotKey}_fallback`,
+        severity: 'warning',
+        message: slot.explanation,
+      });
+    }
+
+    const qualityWarning = buildSlotQualityWarning(slot);
+    if (qualityWarning) {
+      warnings.push(qualityWarning);
+    }
+  }
+
   const galleryAssignments = assignments.filter((assignment) => assignment.role === 'GALLERY');
-  const fallbackHeavyCount = resolvedSlots.filter(
-    (slot) => slot.slotKey !== 'gallery' && slot.slotKey !== 'primary' && slot.source === 'fallback',
-  ).length;
-
-  if (!hasHero) {
-    warnings.push({
-      code: 'media.hero_missing',
-      severity: 'warning',
-      message: 'No hay una media HERO explícita. La pieza destacada seguirá dependiendo de fallback.',
-    });
-  }
-
-  if (!hasCard) {
-    warnings.push({
-      code: 'media.card_missing',
-      severity: 'warning',
-      message: 'No hay una media CARD explícita. El listado dependerá de fallback.',
-    });
-  }
-
-  if (!hasDetail) {
-    warnings.push({
-      code: 'media.detail_missing',
-      severity: 'warning',
-      message: 'No hay una media DETAIL explícita. El detalle principal dependerá de fallback.',
-    });
-  }
-
-  if (hasOnlyLegacy) {
-    warnings.push({
-      code: 'media.only_legacy',
-      severity: 'warning',
-      message: 'La entity depende solo de PRIMARY_LEGACY. Conviene asignar roles visuales explícitos.',
-    });
-  }
 
   if (galleryAssignments.length > 1) {
     const sortOrders = galleryAssignments.map((assignment) => Number(assignment.sortOrder ?? 0));
     const uniqueOrders = new Set(sortOrders);
     if (uniqueOrders.size !== sortOrders.length) {
       warnings.push({
-        code: 'media.gallery_sort_ambiguous',
+        code: 'media.additional_sort_ambiguous',
         severity: 'warning',
-        message: 'Hay varias medias GALLERY con el mismo sortOrder. El orden puede ser ambiguo.',
+        message: 'Additional Media tiene varios assets con el mismo sortOrder. Conviene ordenar mejor el material secundario.',
       });
     }
   }
@@ -731,29 +981,121 @@ function buildAdminMediaWarnings(
     });
   }
 
-  if (fallbackHeavyCount >= 3) {
+  const activeAssetIds = new Set([
+    ...resolvedSlots.map((slot) => slot.item?.id).filter((value): value is string => !!value),
+    ...additionalMedia.map((item) => item.item.id),
+  ]);
+  const unusedAssetCount = assignments.filter((assignment) => !activeAssetIds.has(assignment.assetId)).length;
+  if (unusedAssetCount > 0) {
     warnings.push({
-      code: 'media.fallback_heavy',
+      code: 'media.unused_assets',
       severity: 'warning',
-      message: 'Varios slots importantes están entrando por fallback. Conviene explicitar Hero, Card, Detail y Explorer 3D.',
+      message: `Hay ${unusedAssetCount} assets sin uso ni en slots principales ni en Additional Media.`,
     });
   }
 
   return warnings;
 }
 
+function buildSlotQualityWarning(slot: AdminResolvedSlot): AdminMediaWarning | null {
+  const item = slot.item;
+  if (!item) {
+    return null;
+  }
+
+  const minRule = slotMinimumSize(slot.slotKey);
+  if ((item.width ?? 0) < minRule.width || (item.height ?? 0) < minRule.height) {
+    return {
+      code: `media.${slot.slotKey}_low_resolution`,
+      severity: 'warning',
+      message: `${adminSlotLabel(slot.slotKey)} tiene resolución justa para producto. Recomendado mínimo ${minRule.width}×${minRule.height}.`,
+    };
+  }
+
+  const ratio = item.width && item.height ? item.width / item.height : null;
+  if (ratio !== null && !slotRatioLooksHealthy(slot.slotKey, ratio)) {
+    return {
+      code: `media.${slot.slotKey}_ratio_warning`,
+      severity: 'warning',
+      message: `${adminSlotLabel(slot.slotKey)} usa una imagen con ratio poco ideal para este contexto.`,
+    };
+  }
+
+  if ((item.fileSize ?? 0) > 3 * 1024 * 1024) {
+    return {
+      code: `media.${slot.slotKey}_heavy`,
+      severity: 'warning',
+      message: `${adminSlotLabel(slot.slotKey)} usa un asset pesado. Conviene optimizarlo para edición y producto.`,
+    };
+  }
+
+  if ((item.cropZoom ?? 1) >= 2.35) {
+    return {
+      code: `media.${slot.slotKey}_crop_extreme`,
+      severity: 'warning',
+      message: `${adminSlotLabel(slot.slotKey)} tiene un crop muy cerrado. Revisa que no pierda legibilidad visual.`,
+    };
+  }
+
+  const focalX = normalizeFocal(item.focalX);
+  const focalY = normalizeFocal(item.focalY);
+  if (
+    focalX !== null
+    && focalY !== null
+    && (focalX < 8 || focalX > 92 || focalY < 8 || focalY > 92)
+  ) {
+    return {
+      code: `media.${slot.slotKey}_focal_edge`,
+      severity: 'warning',
+      message: `${adminSlotLabel(slot.slotKey)} usa un foco muy extremo. Comprueba que el sujeto siga entrando bien en el marco.`,
+    };
+  }
+
+  return null;
+}
+
+function slotMinimumSize(slotKey: AdminResolvedSlotKey): { width: number; height: number } {
+  switch (slotKey) {
+    case 'explorer3d':
+      return { width: 1024, height: 1024 };
+    case 'list':
+      return { width: 800, height: 800 };
+    case 'detail':
+      return { width: 1400, height: 1000 };
+    case 'preview':
+      return { width: 400, height: 400 };
+  }
+}
+
+function slotRatioLooksHealthy(slotKey: AdminResolvedSlotKey, ratio: number): boolean {
+  switch (slotKey) {
+    case 'explorer3d':
+      return ratio >= 0.8 && ratio <= 1.25;
+    case 'list':
+      return ratio >= 0.75 && ratio <= 1.15;
+    case 'detail':
+      return ratio >= 0.9 && ratio <= 1.9;
+    case 'preview':
+      return ratio >= 0.8 && ratio <= 1.25;
+  }
+}
+
 function buildCoverageSummary(
   assignments: AdminMediaAssignment[],
   assetCount: number,
   resolvedSlots: AdminResolvedSlot[],
+  additionalMedia: AdminAdditionalMediaItem[],
 ): AdminMediaCoverageSummary {
   const coveredSlots = resolvedSlots.filter((slot) => slot.source !== 'empty').map((slot) => slot.slotKey);
   const emptySlots = resolvedSlots.filter((slot) => slot.source === 'empty').map((slot) => slot.slotKey);
   const fallbackSlots = resolvedSlots.filter((slot) => slot.source === 'fallback').map((slot) => slot.slotKey);
   const explicitSlots = resolvedSlots.filter((slot) => slot.source === 'explicit').map((slot) => slot.slotKey);
+  const legacySlots = resolvedSlots.filter((slot) => slot.source === 'legacy').map((slot) => slot.slotKey);
   const activeAssetIds = new Set(
-    resolvedSlots
-      .map((slot) => slot.item?.id)
+    [
+      ...resolvedSlots.map((slot) => slot.item?.id),
+      ...additionalMedia.map((item) => item.item.id),
+    ]
       .filter((value): value is string => !!value),
   );
 
@@ -762,6 +1104,7 @@ function buildCoverageSummary(
     emptySlots,
     fallbackSlots,
     explicitSlots,
+    legacySlots,
     assetCount,
     assignmentCount: assignments.length,
     unusedAssetCount: assignments.filter((assignment) => !activeAssetIds.has(assignment.assetId)).length,

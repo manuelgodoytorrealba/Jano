@@ -18,6 +18,9 @@ jest.mock('./image-metadata', () => ({
 
 describe('EntitiesService media admin workflows', () => {
   let service: EntitiesService;
+  const txMediaUpdate = jest.fn();
+  const txEntityMediaUpdate = jest.fn();
+  const txEntityMediaUpdateMany = jest.fn();
 
   const prisma = {
     entity: {
@@ -31,7 +34,9 @@ describe('EntitiesService media admin workflows', () => {
       create: jest.fn(),
       findFirst: jest.fn(),
       findMany: jest.fn(),
+      findUnique: jest.fn(),
       findUniqueOrThrow: jest.fn(),
+      updateMany: jest.fn(),
       aggregate: jest.fn(),
     },
     $transaction: jest.fn(),
@@ -45,24 +50,36 @@ describe('EntitiesService media admin workflows', () => {
     prisma.entityMedia.create.mockReset();
     prisma.entityMedia.findFirst.mockReset();
     prisma.entityMedia.findMany.mockReset();
+    prisma.entityMedia.findUnique.mockReset();
     prisma.entityMedia.findUniqueOrThrow.mockReset();
+    prisma.entityMedia.updateMany.mockReset();
     prisma.entityMedia.aggregate.mockReset();
     prisma.$transaction.mockReset();
+    txMediaUpdate.mockReset();
+    txEntityMediaUpdate.mockReset();
+    txEntityMediaUpdateMany.mockReset();
     prisma.entity.findUnique.mockResolvedValue({ id: 'entity-1' });
     prisma.media.create.mockResolvedValue({ id: 'media-1' });
     prisma.media.findUnique.mockResolvedValue(null);
     prisma.entityMedia.create.mockResolvedValue({ id: 'link-1', media: { id: 'media-1' } });
     prisma.entityMedia.findFirst.mockResolvedValue(null);
     prisma.entityMedia.findMany.mockResolvedValue([]);
+    prisma.entityMedia.findUnique.mockResolvedValue({ id: 'link-1', media: { id: 'media-1' } });
     prisma.entityMedia.findUniqueOrThrow.mockResolvedValue({ id: 'link-1', media: { id: 'media-1' } });
+    prisma.entityMedia.updateMany.mockResolvedValue({ count: 0 });
     prisma.entityMedia.aggregate.mockResolvedValue({ _max: { sortOrder: 0 } });
+    txMediaUpdate.mockResolvedValue(undefined);
+    txEntityMediaUpdate.mockResolvedValue(undefined);
+    txEntityMediaUpdateMany.mockResolvedValue({ count: 0 });
     prisma.$transaction.mockImplementation(async (callback: (tx: any) => Promise<unknown>) => callback({
       media: {
         create: prisma.media.create,
+        update: txMediaUpdate,
       },
       entityMedia: {
         create: prisma.entityMedia.create,
-        update: jest.fn(),
+        update: txEntityMediaUpdate,
+        updateMany: txEntityMediaUpdateMany,
         findUniqueOrThrow: prisma.entityMedia.findUniqueOrThrow,
       },
     }));
@@ -133,7 +150,7 @@ describe('EntitiesService media admin workflows', () => {
     });
 
     expect(prisma.entityMedia.create).toHaveBeenCalledWith({
-      data: {
+      data: expect.objectContaining({
         entityId: 'entity-1',
         mediaId: 'media-external-1',
         role: MediaRole.DETAIL,
@@ -142,7 +159,7 @@ describe('EntitiesService media admin workflows', () => {
         displayMode: 'CONTAIN',
         focalX: 32.5,
         focalY: 61.2,
-      },
+      }),
       include: {
         media: true,
       },
@@ -219,7 +236,7 @@ describe('EntitiesService media admin workflows', () => {
     });
 
     expect(prisma.entityMedia.create).toHaveBeenCalledWith({
-      data: {
+      data: expect.objectContaining({
         entityId: 'entity-1',
         mediaId: 'media-upload-1',
         role: MediaRole.CARD,
@@ -228,7 +245,7 @@ describe('EntitiesService media admin workflows', () => {
         displayMode: 'COVER',
         focalX: 44,
         focalY: 55,
-      },
+      }),
       include: {
         media: true,
       },
@@ -240,6 +257,69 @@ describe('EntitiesService media admin workflows', () => {
       sortOrder: 2,
       displayMode: 'COVER',
     }));
+  });
+
+  it('does not mark a new external media as fallback legacy unless explicitly requested', async () => {
+    prisma.media.create.mockResolvedValue({
+      id: 'media-external-plain',
+      url: 'https://example.com/plain.jpg',
+    });
+    prisma.entityMedia.create.mockResolvedValue({
+      id: 'link-external-plain',
+      role: 'THUMBNAIL',
+      sortOrder: 0,
+      isPrimary: false,
+      media: {
+        id: 'media-external-plain',
+        url: 'https://example.com/plain.jpg',
+      },
+    });
+
+    await service.adminCreateMedia('entity-1', {
+      url: 'https://example.com/plain.jpg',
+      role: MediaRole.THUMBNAIL,
+    });
+
+    expect(prisma.entityMedia.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        isPrimary: false,
+      }),
+    }));
+    expect(txEntityMediaUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it('keeps a single legacy fallback by disabling the previous one when a new one is created', async () => {
+    prisma.media.create.mockResolvedValue({
+      id: 'media-external-legacy',
+      url: 'https://example.com/legacy-next.jpg',
+    });
+    prisma.entityMedia.create.mockResolvedValue({
+      id: 'link-external-legacy',
+      role: 'DETAIL',
+      sortOrder: 0,
+      isPrimary: true,
+      media: {
+        id: 'media-external-legacy',
+        url: 'https://example.com/legacy-next.jpg',
+      },
+    });
+
+    await service.adminCreateMedia('entity-1', {
+      url: 'https://example.com/legacy-next.jpg',
+      role: MediaRole.DETAIL,
+      isPrimary: true,
+    });
+
+    expect(txEntityMediaUpdateMany).toHaveBeenCalledWith({
+      where: {
+        entityId: 'entity-1',
+        id: { not: 'link-external-legacy' },
+        isPrimary: true,
+      },
+      data: {
+        isPrimary: false,
+      },
+    });
   });
 
   it('ingests an external media link into a derived INGESTED gallery asset preserving lineage and visual metadata', async () => {
@@ -416,6 +496,7 @@ describe('EntitiesService media admin workflows', () => {
     prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) => callback({
       entityMedia: {
         update: txUpdate,
+        updateMany: txEntityMediaUpdateMany,
         findUniqueOrThrow: jest.fn().mockResolvedValue(promotedLink),
       },
     }));
@@ -564,6 +645,7 @@ describe('EntitiesService media admin workflows', () => {
     prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) => callback({
       entityMedia: {
         update: txUpdate,
+        updateMany: txEntityMediaUpdateMany,
         findUniqueOrThrow: jest.fn().mockResolvedValue(restoredLink),
       },
     }));
@@ -613,6 +695,157 @@ describe('EntitiesService media admin workflows', () => {
         sortOrder: 5,
         isPrimary: false,
       }),
+    });
+  });
+
+  it('persists removing legacy fallback when isPrimary is saved as false', async () => {
+    prisma.entityMedia.findFirst.mockResolvedValue({
+      id: 'link-legacy-1',
+      entityId: 'entity-1',
+      mediaId: 'media-legacy-1',
+      role: MediaRole.PRIMARY_LEGACY,
+      sortOrder: 0,
+      isPrimary: true,
+      displayMode: 'COVER',
+      focalX: null,
+      focalY: null,
+      media: {
+        id: 'media-legacy-1',
+        originType: MediaOriginType.EXTERNAL_URL,
+        url: 'https://example.com/legacy.jpg',
+        displayUrl: 'https://example.com/legacy.jpg',
+      },
+    });
+    prisma.entityMedia.findUnique.mockResolvedValue({
+      id: 'link-legacy-1',
+      entityId: 'entity-1',
+      mediaId: 'media-legacy-1',
+      role: MediaRole.PRIMARY_LEGACY,
+      sortOrder: 0,
+      isPrimary: false,
+      displayMode: 'COVER',
+      focalX: null,
+      focalY: null,
+      media: {
+        id: 'media-legacy-1',
+        originType: MediaOriginType.EXTERNAL_URL,
+      },
+    } as any);
+
+    await service.adminUpdateMedia('entity-1', 'link-legacy-1', {
+      url: 'https://example.com/legacy.jpg',
+      displayUrl: 'https://example.com/legacy.jpg',
+      isPrimary: false,
+    });
+
+    expect(txEntityMediaUpdate).toHaveBeenCalledWith({
+      where: { id: 'link-legacy-1' },
+      data: expect.objectContaining({
+        isPrimary: false,
+      }),
+    });
+  });
+
+  it('returns canonical resolved slots in previewBySlug so contextual previews can choose preview, list or detail', async () => {
+    prisma.entity.findUnique.mockResolvedValue({
+      id: 'entity-1',
+      slug: 'guernica',
+      title: 'Guernica',
+      type: 'ARTWORK',
+      summary: 'Resumen',
+      status: 'PUBLISHED',
+      contentLevel: 'INTERMEDIATE',
+      startYear: 1937,
+      endYear: null,
+      mediaLinks: [
+        {
+          id: 'preview-link',
+          role: MediaRole.THUMBNAIL,
+          sortOrder: 0,
+          isPrimary: false,
+          displayMode: 'COVER',
+          focalX: null,
+          focalY: null,
+          media: {
+            id: 'preview-media',
+            url: 'https://example.com/preview.jpg',
+            displayUrl: 'https://example.com/preview.jpg',
+            originType: MediaOriginType.EXTERNAL_URL,
+            derivedFromMediaId: null,
+            canonicalUrl: null,
+            sourcePageUrl: null,
+            storageKey: null,
+            originalFilename: null,
+            fileSize: null,
+            mimeType: 'image/jpeg',
+            width: 800,
+            height: 800,
+            isVector: false,
+            provider: 'MUSEUM',
+            qualityTier: 'HIGH',
+            alt: 'Preview',
+            source: null,
+            photoBy: null,
+            license: null,
+          },
+        },
+      ],
+    });
+
+    const result = await service.previewBySlug('guernica');
+
+    expect(result.mediaLibrary.resolvedSlots.find((slot: any) => slot.slotKey === 'preview')).toEqual(
+      expect.objectContaining({
+        source: 'explicit',
+        matchedRole: 'THUMBNAIL',
+        item: expect.objectContaining({
+          id: 'preview-media',
+        }),
+      }),
+    );
+    expect(result.resolvedMedia.thumbnail).toEqual(
+      expect.objectContaining({
+        id: 'preview-media',
+      }),
+    );
+  });
+
+  it('normalizes legacy fallback to a single active media when adminGetById loads dirty data', async () => {
+    prisma.entityMedia.findMany
+      .mockResolvedValueOnce([
+        { id: 'legacy-a' },
+        { id: 'legacy-b' },
+        { id: 'legacy-c' },
+      ] as any)
+      .mockResolvedValueOnce([]);
+    prisma.entity.findUnique.mockResolvedValue({
+      id: 'entity-1',
+      type: 'ARTWORK',
+      title: 'Entidad',
+      slug: 'entidad',
+      artwork: null,
+      artist: null,
+      concept: null,
+      period: null,
+      contributors: [],
+      sourceRefs: [],
+      outgoing: [],
+      incoming: [],
+      mediaLinks: [],
+    });
+
+    await service.adminGetById('entity-1');
+
+    expect(prisma.entityMedia.updateMany).toHaveBeenCalledWith({
+      where: {
+        entityId: 'entity-1',
+        id: {
+          in: ['legacy-b', 'legacy-c'],
+        },
+      },
+      data: {
+        isPrimary: false,
+      },
     });
   });
 });

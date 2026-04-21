@@ -61,6 +61,16 @@ export type AdminMediaRole =
 
 export type AdminMediaDisplayMode = 'COVER' | 'CONTAIN';
 
+export type AdminSlotCropKey = 'explorer3d' | 'list' | 'detail' | 'preview';
+
+export type AdminSlotCrop = {
+  x: number | null;
+  y: number | null;
+  zoom: number | null;
+};
+
+export type AdminSlotCropMap = Partial<Record<AdminSlotCropKey, AdminSlotCrop | null>>;
+
 export type AdminEntityMediaPayload = {
   url: string;
   displayUrl?: string;
@@ -75,6 +85,9 @@ export type AdminEntityMediaPayload = {
   displayMode?: AdminMediaDisplayMode | null;
   focalX?: number | null;
   focalY?: number | null;
+  assetFocalX?: number | null;
+  assetFocalY?: number | null;
+  slotCrops?: AdminSlotCropMap;
 };
 
 export type AdminUploadEntityMediaPayload = {
@@ -90,6 +103,9 @@ export type AdminUploadEntityMediaPayload = {
   displayMode?: AdminMediaDisplayMode | null;
   focalX?: number | null;
   focalY?: number | null;
+  assetFocalX?: number | null;
+  assetFocalY?: number | null;
+  slotCrops?: AdminSlotCropMap;
 };
 
 export type AdminMediaAsset = {
@@ -120,6 +136,11 @@ export type AdminMediaAsset = {
   displayMode: AdminMediaDisplayMode | null;
   focalX: number | null;
   focalY: number | null;
+  assetFocalX: number | null;
+  assetFocalY: number | null;
+  cropX: number | null;
+  cropY: number | null;
+  cropZoom: number | null;
 };
 
 export type AdminMediaAssignment = {
@@ -131,14 +152,26 @@ export type AdminMediaAssignment = {
   displayMode: AdminMediaDisplayMode | null;
   focalX: number | null;
   focalY: number | null;
+  assetFocalX: number | null;
+  assetFocalY: number | null;
+  slotCrops: AdminSlotCropMap;
 };
 
 export type AdminResolvedSlot = {
-  slotKey: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery' | 'primary';
-  source: 'explicit' | 'fallback' | 'empty';
+  slotKey: 'explorer3d' | 'list' | 'detail' | 'preview';
+  source: 'explicit' | 'fallback' | 'legacy' | 'empty';
   matchedRole: string | null;
   item: AdminMediaAsset | null;
-  count?: number;
+  explanation: string;
+  reasonCode: string;
+};
+
+export type AdminAdditionalMediaItem = {
+  assignmentId: string;
+  assetId: string;
+  role: AdminMediaRole | string | null;
+  sortOrder: number;
+  item: AdminMediaAsset;
 };
 
 export type AdminMediaWarning = {
@@ -152,6 +185,7 @@ export type AdminMediaCoverageSummary = {
   emptySlots: string[];
   fallbackSlots: string[];
   explicitSlots: string[];
+  legacySlots: string[];
   assetCount: number;
   assignmentCount: number;
   unusedAssetCount: number;
@@ -161,6 +195,7 @@ export type AdminMediaLibraryPayload = {
   assets: AdminMediaAsset[];
   assignments: AdminMediaAssignment[];
   resolvedSlots: AdminResolvedSlot[];
+  additionalMedia: AdminAdditionalMediaItem[];
   warnings: AdminMediaWarning[];
   coverageSummary: AdminMediaCoverageSummary;
 };
@@ -232,6 +267,11 @@ export class AdminEntitiesApi {
 
     for (const [key, value] of Object.entries(data)) {
       if (value === undefined || value === null || value === '') {
+        continue;
+      }
+
+      if (typeof value === 'object') {
+        formData.set(key, JSON.stringify(value));
         continue;
       }
 

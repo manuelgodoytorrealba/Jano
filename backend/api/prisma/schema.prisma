@@ -165,6 +165,8 @@ model Media {
   mimeType     String?
   width        Int?
   height       Int?
+  focalX       Float?
+  focalY       Float?
   isVector     Boolean          @default(false)
   provider     MediaProvider    @default(UNKNOWN)
   qualityTier  MediaQualityTier @default(MEDIUM)
@@ -193,6 +195,10 @@ model EntityMedia {
   displayMode MediaDisplayMode?
   focalX      Float?
   focalY      Float?
+  cropExplorer3d Json?
+  cropList       Json?
+  cropDetail     Json?
+  cropPreview    Json?
 
   entity Entity @relation(fields: [entityId], references: [id])
   media  Media  @relation(fields: [mediaId], references: [id])

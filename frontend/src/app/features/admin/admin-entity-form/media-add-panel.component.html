@@ -1,8 +1,8 @@
 <section class="media-add-panel">
   <div class="media-add-panel__head">
     <div>
-      <h4>Anadir imagen</h4>
-      <p class="muted">Alta rapida para referencia externa o asset propio, con opciones avanzadas solo cuando hacen falta.</p>
+      <h4>Add Media</h4>
+      <p class="muted">Elige entre referencia externa y asset propio antes de decidir dónde se usará dentro del producto.</p>
     </div>
 
     <div class="media-add-panel__modes">
@@ -19,7 +19,7 @@
     <div class="media-create">
       <div class="media-create__eyebrow">
         <span class="media-pill media-pill--external">External</span>
-        <span class="media-create__caption">Referencia remota rapida. No copia el asset dentro de JANO.</span>
+        <span class="media-create__caption">Referencia remota para documentar o probar una imagen sin copiarla todavía a JANO.</span>
       </div>
 
       <div class="url-preview">
@@ -49,7 +49,7 @@
         </label>
 
         <label class="field">
-          <span>Rol inicial</span>
+          <span>Uso editorial inicial</span>
           <select [(ngModel)]="externalDraft.role" name="externalRole">
             @for (role of roleOptions; track role) {
               <option [value]="role">{{ mediaRoleLabel(role) }}</option>
@@ -62,7 +62,7 @@
     <div class="media-create">
       <div class="media-create__eyebrow">
         <span class="media-pill media-pill--upload">Upload</span>
-        <span class="media-create__caption">Asset propio estable para curacion visual y reemplazos editoriales.</span>
+        <span class="media-create__caption">Asset propio estable para cobertura principal, reemplazos y trabajo editorial duradero.</span>
       </div>
 
       <div class="upload-dropzone"
@@ -115,7 +115,7 @@
         </label>
 
         <label class="field">
-          <span>Rol inicial</span>
+          <span>Uso editorial inicial</span>
           <select [(ngModel)]="uploadDraft.role" name="uploadRole">
             @for (role of roleOptions; track role) {
               <option [value]="role">{{ mediaRoleLabel(role) }}</option>
@@ -161,7 +161,7 @@
           </label>
 
           <label class="field field--checkbox">
-            <span>Primary fallback</span>
+            <span>Fallback legacy unica</span>
             <input type="checkbox" [(ngModel)]="externalDraft.isPrimary" name="externalIsPrimary" />
           </label>
 
@@ -207,7 +207,7 @@
           </label>
 
           <label class="field field--checkbox">
-            <span>Primary fallback</span>
+            <span>Fallback legacy unica</span>
             <input type="checkbox" [(ngModel)]="uploadDraft.isPrimary" name="uploadIsPrimary" />
           </label>
 

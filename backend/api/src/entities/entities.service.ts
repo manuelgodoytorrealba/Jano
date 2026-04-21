@@ -67,6 +67,13 @@ const MIME_EXTENSION_MAP: Record<string, string> = {
   'image/avif': '.avif',
 };
 
+type SlotCropInput = {
+  explorer3d?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
+  list?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
+  detail?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
+  preview?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
+} | null | undefined;
+
 @Injectable()
 export class EntitiesService {
   private readonly mediaPublicBaseUrl = (process.env.MEDIA_PUBLIC_BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
@@ -253,6 +260,97 @@ export class EntitiesService {
     }
 
     return '.jpg';
+  }
+
+  private normalizePercent(value: number | null | undefined): number | null {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return null;
+    }
+
+    return Math.min(100, Math.max(0, Number(value)));
+  }
+
+  private normalizeZoom(value: number | null | undefined): number | null {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return null;
+    }
+
+    return Math.min(3, Math.max(1, Number(value)));
+  }
+
+  private normalizeCropPreset(value: { x?: number | null; y?: number | null; zoom?: number | null } | null | undefined) {
+    if (!value) {
+      return null;
+    }
+
+    const x = this.normalizePercent(value.x);
+    const y = this.normalizePercent(value.y);
+    const zoom = this.normalizeZoom(value.zoom);
+
+    if (x === null && y === null && zoom === null) {
+      return null;
+    }
+
+    return { x, y, zoom };
+  }
+
+  private slotCropColumns(input: SlotCropInput) {
+    return {
+      cropExplorer3d: this.normalizeCropPreset(input?.explorer3d),
+      cropList: this.normalizeCropPreset(input?.list),
+      cropDetail: this.normalizeCropPreset(input?.detail),
+      cropPreview: this.normalizeCropPreset(input?.preview),
+    };
+  }
+
+  private async clearOtherLegacyPrimaries(
+    tx: { entityMedia: { updateMany: (args: any) => Promise<unknown> } },
+    entityId: string,
+    activeLinkId: string,
+  ) {
+    await tx.entityMedia.updateMany({
+      where: {
+        entityId,
+        id: { not: activeLinkId },
+        isPrimary: true,
+      },
+      data: {
+        isPrimary: false,
+      },
+    });
+  }
+
+  private async normalizeEntityLegacyPrimary(entityId: string) {
+    const activeLegacyLinks = await this.prisma.entityMedia.findMany({
+      where: {
+        entityId,
+        isPrimary: true,
+      },
+      select: {
+        id: true,
+      },
+      orderBy: [
+        { sortOrder: 'asc' },
+        { id: 'asc' },
+      ],
+    });
+
+    if (activeLegacyLinks.length <= 1) {
+      return;
+    }
+
+    const [keep, ...extra] = activeLegacyLinks;
+    await this.prisma.entityMedia.updateMany({
+      where: {
+        entityId,
+        id: {
+          in: extra.map((link) => link.id),
+        },
+      },
+      data: {
+        isPrimary: false,
+      },
+    });
   }
 
   async list(query: ListEntitiesQuery) {
@@ -740,13 +838,40 @@ export class EntitiesService {
         startYear: true,
         endYear: true,
         mediaLinks: {
-          take: 1,
-          where: { role: 'PRIMARY_LEGACY' as any },
+          orderBy: [
+            { sortOrder: 'asc' },
+            { id: 'asc' },
+          ],
           select: {
+            id: true,
+            role: true,
+            sortOrder: true,
+            isPrimary: true,
+            displayMode: true,
+            focalX: true,
+            focalY: true,
             media: {
               select: {
+                id: true,
                 url: true,
+                originType: true,
+                derivedFromMediaId: true,
+                canonicalUrl: true,
+                displayUrl: true,
+                sourcePageUrl: true,
+                storageKey: true,
+                originalFilename: true,
+                fileSize: true,
+                mimeType: true,
+                width: true,
+                height: true,
+                isVector: true,
+                provider: true,
+                qualityTier: true,
                 alt: true,
+                source: true,
+                photoBy: true,
+                license: true,
               },
             },
           },
@@ -756,7 +881,10 @@ export class EntitiesService {
 
     if (!e) throw new NotFoundException('Entity not found');
 
-    return e;
+    return {
+      ...this.withResolvedMedia(e),
+      mediaLibrary: buildAdminMediaLibrary(e),
+    };
   }
 
   async adminCreate(dto: CreateEntityDto) {
@@ -851,6 +979,7 @@ export class EntitiesService {
   }
 
   async adminGetById(id: string) {
+    await this.normalizeEntityLegacyPrimary(id);
 
     const entity = await this.prisma.entity.findUnique({
       where: { id },
@@ -1031,33 +1160,44 @@ export class EntitiesService {
       throw new NotFoundException('Entity not found');
     }
 
-    const media = await this.prisma.media.create({
-      data: {
-        url: dto.url.trim(),
-        originType: MediaOriginType.EXTERNAL_URL,
-        displayUrl: dto.displayUrl?.trim() || undefined,
-        sourcePageUrl: dto.sourcePageUrl?.trim() || undefined,
-        alt: dto.alt?.trim() || undefined,
-        source: dto.source?.trim() || undefined,
-        photoBy: dto.photoBy?.trim() || undefined,
-        license: dto.license?.trim() || undefined,
-      },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const media = await tx.media.create({
+        data: {
+          url: dto.url.trim(),
+          originType: MediaOriginType.EXTERNAL_URL,
+          displayUrl: dto.displayUrl?.trim() || undefined,
+          sourcePageUrl: dto.sourcePageUrl?.trim() || undefined,
+          alt: dto.alt?.trim() || undefined,
+          source: dto.source?.trim() || undefined,
+          photoBy: dto.photoBy?.trim() || undefined,
+          license: dto.license?.trim() || undefined,
+          focalX: this.normalizePercent(dto.assetFocalX) ?? undefined,
+          focalY: this.normalizePercent(dto.assetFocalY) ?? undefined,
+        } as any,
+      });
 
-    return this.prisma.entityMedia.create({
-      data: {
-        entityId,
-        mediaId: media.id,
-        role: dto.role ?? MediaRole.CARD,
-        sortOrder: dto.sortOrder ?? 0,
-        isPrimary: dto.isPrimary ?? false,
-        displayMode: dto.displayMode ?? null,
-        focalX: dto.focalX ?? null,
-        focalY: dto.focalY ?? null,
-      },
-      include: {
-        media: true,
-      },
+      const createdLink = await tx.entityMedia.create({
+        data: {
+          entityId,
+          mediaId: media.id,
+          role: dto.role ?? MediaRole.CARD,
+          sortOrder: dto.sortOrder ?? 0,
+          isPrimary: dto.isPrimary ?? false,
+          displayMode: dto.displayMode ?? null,
+          focalX: dto.focalX ?? null,
+          focalY: dto.focalY ?? null,
+          ...this.slotCropColumns(dto.slotCrops),
+        } as any,
+        include: {
+          media: true,
+        },
+      });
+
+      if (dto.isPrimary) {
+        await this.clearOtherLegacyPrimaries(tx as any, entityId, createdLink.id);
+      }
+
+      return createdLink;
     });
   }
 
@@ -1086,39 +1226,50 @@ export class EntitiesService {
     const storageKey = `media/${file.filename}`;
     const publicUrl = this.buildPublicUploadUrl(storageKey);
 
-    const media = await this.prisma.media.create({
-      data: {
-        url: publicUrl,
-        canonicalUrl: publicUrl,
-        displayUrl: publicUrl,
-        originType: MediaOriginType.UPLOAD,
-        storageKey,
-        originalFilename: file.originalname,
-        fileSize: file.size,
-        mimeType: file.mimetype,
-        width: dimensions.width ?? undefined,
-        height: dimensions.height ?? undefined,
-        alt: dto.alt?.trim() || undefined,
-        source: dto.source?.trim() || 'Uploaded via admin',
-        photoBy: dto.photoBy?.trim() || undefined,
-        license: dto.license?.trim() || undefined,
-      },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const media = await tx.media.create({
+        data: {
+          url: publicUrl,
+          canonicalUrl: publicUrl,
+          displayUrl: publicUrl,
+          originType: MediaOriginType.UPLOAD,
+          storageKey,
+          originalFilename: file.originalname,
+          fileSize: file.size,
+          mimeType: file.mimetype,
+          width: dimensions.width ?? undefined,
+          height: dimensions.height ?? undefined,
+          alt: dto.alt?.trim() || undefined,
+          source: dto.source?.trim() || 'Uploaded via admin',
+          photoBy: dto.photoBy?.trim() || undefined,
+          license: dto.license?.trim() || undefined,
+          focalX: this.normalizePercent(dto.assetFocalX) ?? undefined,
+          focalY: this.normalizePercent(dto.assetFocalY) ?? undefined,
+        } as any,
+      });
 
-    return this.prisma.entityMedia.create({
-      data: {
-        entityId,
-        mediaId: media.id,
-        role: dto.role ?? MediaRole.CARD,
-        sortOrder: dto.sortOrder ?? 0,
-        isPrimary: dto.isPrimary ?? false,
-        displayMode: dto.displayMode ?? null,
-        focalX: dto.focalX ?? null,
-        focalY: dto.focalY ?? null,
-      },
-      include: {
-        media: true,
-      },
+      const createdLink = await tx.entityMedia.create({
+        data: {
+          entityId,
+          mediaId: media.id,
+          role: dto.role ?? MediaRole.CARD,
+          sortOrder: dto.sortOrder ?? 0,
+          isPrimary: dto.isPrimary ?? false,
+          displayMode: dto.displayMode ?? null,
+          focalX: dto.focalX ?? null,
+          focalY: dto.focalY ?? null,
+          ...this.slotCropColumns(dto.slotCrops),
+        } as any,
+        include: {
+          media: true,
+        },
+      });
+
+      if (dto.isPrimary) {
+        await this.clearOtherLegacyPrimaries(tx as any, entityId, createdLink.id);
+      }
+
+      return createdLink;
     });
   }
 
@@ -1340,6 +1491,10 @@ export class EntitiesService {
         },
       });
 
+      if (sourceExternalLink.isPrimary) {
+        await this.clearOtherLegacyPrimaries(tx as any, entityId, linkId);
+      }
+
       return tx.entityMedia.findUniqueOrThrow({
         where: { id: linkId },
         include: {
@@ -1416,6 +1571,10 @@ export class EntitiesService {
         },
       });
 
+      if (promotedIngestedLink.isPrimary) {
+        await this.clearOtherLegacyPrimaries(tx as any, entityId, linkId);
+      }
+
       await tx.entityMedia.update({
         where: { id: promotedIngestedLink.id },
         data: {
@@ -1480,6 +1639,8 @@ export class EntitiesService {
       source: dto.source !== undefined ? (dto.source?.trim() || null) : undefined,
       photoBy: dto.photoBy !== undefined ? (dto.photoBy?.trim() || null) : undefined,
       license: dto.license !== undefined ? (dto.license?.trim() || null) : undefined,
+      focalX: dto.assetFocalX === undefined ? undefined : this.normalizePercent(dto.assetFocalX),
+      focalY: dto.assetFocalY === undefined ? undefined : this.normalizePercent(dto.assetFocalY),
     };
 
     const linkData = {
@@ -1491,6 +1652,7 @@ export class EntitiesService {
         : dto.displayMode ?? null,
       focalX: dto.focalX === undefined ? undefined : dto.focalX ?? null,
       focalY: dto.focalY === undefined ? undefined : dto.focalY ?? null,
+      ...(dto.slotCrops === undefined ? {} : this.slotCropColumns(dto.slotCrops)),
     };
 
     await this.prisma.$transaction(async (tx) => {
@@ -1504,8 +1666,12 @@ export class EntitiesService {
       if (Object.values(linkData).some((value) => value !== undefined)) {
         await tx.entityMedia.update({
           where: { id: linkId },
-          data: linkData,
+          data: linkData as any,
         });
+
+        if (dto.isPrimary === true) {
+          await this.clearOtherLegacyPrimaries(tx as any, entityId, linkId);
+        }
       }
     });
 

@@ -3,6 +3,16 @@ export type UploadPreviewDimensions = {
   height: number;
 };
 
+export type MediaEditorSlotKey = 'explorer3d' | 'list' | 'detail' | 'preview';
+
+export type MediaSlotCrop = {
+  x: number | null;
+  y: number | null;
+  zoom: number | null;
+};
+
+export type MediaSlotCropMap = Record<MediaEditorSlotKey, MediaSlotCrop>;
+
 export type MediaDraft = {
   url: string;
   displayUrl: string;
@@ -17,6 +27,9 @@ export type MediaDraft = {
   displayMode: string;
   focalX: number | string | null;
   focalY: number | string | null;
+  assetFocalX: number | string | null;
+  assetFocalY: number | string | null;
+  slotCrops: MediaSlotCropMap;
 };
 
 export type EditableAdminMediaLink = {
@@ -27,6 +40,9 @@ export type EditableAdminMediaLink = {
   displayMode: string;
   focalX: number | string | null;
   focalY: number | string | null;
+  assetFocalX: number | string | null;
+  assetFocalY: number | string | null;
+  slotCrops: MediaSlotCropMap;
   media: {
     id: string;
     url: string;
@@ -59,7 +75,7 @@ export type EditableAdminMediaEditor = {
   persisted: EditableAdminMediaLink;
   draft: EditableAdminMediaLink;
   isDirty: boolean;
-  saveState: 'idle' | 'saving' | 'error';
+  saveState: 'idle' | 'saving' | 'saved' | 'error';
   errorMessage: string;
   removing: boolean;
   ingesting: boolean;
@@ -88,24 +104,48 @@ export const MEDIA_ROLE_OPTIONS = [
 ] as const;
 
 export const MEDIA_ADD_ROLE_OPTIONS = [
-  'HERO',
+  'EXPLORER_3D',
   'CARD',
   'DETAIL',
+  'THUMBNAIL',
   'GALLERY',
 ] as const;
 
 export const MEDIA_ROLE_LABELS: Record<string, string> = {
-  PRIMARY_LEGACY: 'Primary legacy',
-  HERO: 'Hero',
-  CARD: 'Card',
+  PRIMARY_LEGACY: 'Fallback legacy',
+  HERO: 'Detail destacado',
+  CARD: 'List',
   DETAIL: 'Detail',
-  THUMBNAIL: 'Thumbnail',
+  THUMBNAIL: 'Preview',
   EXPLORER_3D: 'Explorer 3D',
-  GALLERY: 'Gallery',
+  GALLERY: 'Additional Media',
 };
 
 export const MEDIA_DISPLAY_MODES = [
   { value: '', label: 'Auto' },
   { value: 'COVER', label: 'Cover' },
   { value: 'CONTAIN', label: 'Contain' },
+];
+
+export const MEDIA_PRIMARY_ROLE_PILLS = [
+  { role: 'EXPLORER_3D', label: 'Explorer 3D' },
+  { role: 'CARD', label: 'List' },
+  { role: 'DETAIL', label: 'Detail' },
+  { role: 'THUMBNAIL', label: 'Preview' },
+] as const;
+
+export const MEDIA_SECONDARY_ROLE_PILLS = [
+  { role: 'GALLERY', label: 'Additional Media' },
+  { role: 'HERO', label: 'Detail destacado' },
+] as const;
+
+export const MEDIA_EDITOR_SLOT_OPTIONS: Array<{
+  key: MediaEditorSlotKey;
+  label: string;
+  frame: 'square' | 'portrait' | 'landscape';
+}> = [
+  { key: 'explorer3d', label: 'Explorer 3D', frame: 'square' },
+  { key: 'list', label: 'List', frame: 'square' },
+  { key: 'detail', label: 'Detail', frame: 'landscape' },
+  { key: 'preview', label: 'Preview', frame: 'portrait' },
 ];

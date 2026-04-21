@@ -22,6 +22,11 @@ export type MediaLike = {
   displayMode?: 'COVER' | 'CONTAIN' | string | null;
   focalX?: number | null;
   focalY?: number | null;
+  assetFocalX?: number | null;
+  assetFocalY?: number | null;
+  cropX?: number | null;
+  cropY?: number | null;
+  cropZoom?: number | null;
 };
 
 export type ResolvedMediaItem = MediaLike & {
@@ -297,12 +302,23 @@ export function mediaObjectFit(
 }
 
 export function mediaObjectPosition(
-  media: Pick<ResolvedMediaItem, 'focalX' | 'focalY'> | MediaLike | null | undefined,
+  media: Pick<ResolvedMediaItem, 'focalX' | 'focalY' | 'cropX' | 'cropY'> | MediaLike | null | undefined,
 ): string {
-  const x = normalizeFocal(media?.focalX);
-  const y = normalizeFocal(media?.focalY);
+  const x = normalizeFocal(media?.cropX ?? media?.focalX);
+  const y = normalizeFocal(media?.cropY ?? media?.focalY);
 
   return `${x}% ${y}%`;
+}
+
+export function mediaTransform(
+  media: Pick<ResolvedMediaItem, 'cropZoom'> | MediaLike | null | undefined,
+): string {
+  const zoom = media?.cropZoom ?? null;
+  if (zoom === null || zoom === undefined || Number.isNaN(Number(zoom)) || Number(zoom) <= 1) {
+    return 'scale(1)';
+  }
+
+  return `scale(${Math.min(3, Math.max(1, Number(zoom))).toFixed(3)})`;
 }
 
 function selectResolvedMediaItem(

@@ -196,6 +196,14 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
       displayMode: '',
       focalX: null,
       focalY: null,
+      assetFocalX: null,
+      assetFocalY: null,
+      slotCrops: {
+        explorer3d: { x: null, y: null, zoom: null },
+        list: { x: null, y: null, zoom: null },
+        detail: { x: null, y: null, zoom: null },
+        preview: { x: null, y: null, zoom: null },
+      },
     };
   }
 

@@ -8,6 +8,7 @@ import {
   mediaDisplayUrl,
   mediaObjectFit,
   mediaObjectPosition,
+  mediaTransform,
   resolveEntityMediaGallery,
   resolveEntityMediaItem,
 } from './media.utils';
@@ -61,6 +62,10 @@ export class JanoMediaComponent {
 
   get objectPosition(): string {
     return mediaObjectPosition(this.mediaWithPresentation);
+  }
+
+  get imageTransform(): string {
+    return mediaTransform(this.mediaWithPresentation);
   }
 
   get loadingAttr(): 'lazy' | 'eager' {

@@ -1,16 +1,19 @@
 @if (src) {
-  <img
-    class="jano-media__img"
-    [src]="src"
-    [alt]="altText"
-    [attr.loading]="loadingAttr"
-    [attr.fetchpriority]="fetchPriorityAttr"
-    [attr.width]="widthAttr"
-    [attr.height]="heightAttr"
-    decoding="async"
-    [style.object-fit]="objectFit"
-    [style.object-position]="objectPosition"
-  />
+  <div class="jano-media__viewport">
+    <img
+      class="jano-media__img"
+      [src]="src"
+      [alt]="altText"
+      [attr.loading]="loadingAttr"
+      [attr.fetchpriority]="fetchPriorityAttr"
+      [attr.width]="widthAttr"
+      [attr.height]="heightAttr"
+      decoding="async"
+      [style.object-fit]="objectFit"
+      [style.object-position]="objectPosition"
+      [style.transform]="imageTransform"
+    />
+  </div>
 } @else {
   <div class="jano-media__placeholder" aria-hidden="true"></div>
 }

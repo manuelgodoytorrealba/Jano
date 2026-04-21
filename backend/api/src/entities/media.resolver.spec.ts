@@ -119,21 +119,93 @@ describe('media.resolver', () => {
       mediaLinks: [
         createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: true, alt: '' }),
         createLink({ id: 'detail', mediaId: 'detail-media', role: 'DETAIL' }),
+        createLink({ id: 'gallery', mediaId: 'gallery-media', role: 'GALLERY', sortOrder: 3 }),
       ],
     };
 
     const library = buildAdminMediaLibrary(entity);
 
-    expect(library.assignments).toHaveLength(2);
-    expect(library.assets).toHaveLength(2);
-    expect(library.resolvedSlots.find((slot) => slot.slotKey === 'hero')).toEqual(
+    expect(library.assignments).toHaveLength(3);
+    expect(library.assets).toHaveLength(3);
+    expect(library.additionalMedia).toEqual([
       expect.objectContaining({
-        source: 'fallback',
+        assignmentId: 'gallery',
+        assetId: 'gallery-media',
+      }),
+    ]);
+    expect(library.resolvedSlots.find((slot) => slot.slotKey === 'explorer3d')).toEqual(
+      expect.objectContaining({
+        source: 'legacy',
         matchedRole: 'PRIMARY_LEGACY',
       }),
     );
     expect(library.warnings.map((warning) => warning.code)).toEqual(
-      expect.arrayContaining(['media.hero_missing', 'media.card_missing', 'media.alt_missing']),
+      expect.arrayContaining(['media.explorer3d_legacy', 'media.list_legacy', 'media.preview_legacy', 'media.alt_missing']),
     );
+  });
+
+  it('does not let list colonize explorer3d, detail or preview in admin resolved slots', () => {
+    const entity = {
+      type: 'ARTWORK',
+      mediaLinks: [
+        createLink({ id: 'list', mediaId: 'list-media', role: 'CARD' }),
+      ],
+    };
+
+    const library = buildAdminMediaLibrary(entity);
+
+    expect(library.resolvedSlots).toEqual([
+      expect.objectContaining({ slotKey: 'explorer3d', source: 'empty', item: null }),
+      expect.objectContaining({ slotKey: 'list', source: 'explicit', matchedRole: 'CARD', item: expect.objectContaining({ id: 'list-media' }) }),
+      expect.objectContaining({ slotKey: 'detail', source: 'empty', item: null }),
+      expect.objectContaining({ slotKey: 'preview', source: 'empty', item: null }),
+    ]);
+  });
+
+  it('treats preview as an explicit first-class slot instead of falling back from list', () => {
+    const entity = {
+      type: 'ARTWORK',
+      mediaLinks: [
+        createLink({ id: 'list', mediaId: 'list-media', role: 'CARD' }),
+        createLink({ id: 'preview', mediaId: 'preview-media', role: 'THUMBNAIL' }),
+      ],
+    };
+
+    const library = buildAdminMediaLibrary(entity);
+    const preview = library.resolvedSlots.find((slot) => slot.slotKey === 'preview');
+    const detail = library.resolvedSlots.find((slot) => slot.slotKey === 'detail');
+
+    expect(preview).toEqual(
+      expect.objectContaining({
+        source: 'explicit',
+        matchedRole: 'THUMBNAIL',
+        item: expect.objectContaining({ id: 'preview-media' }),
+      }),
+    );
+    expect(detail).toEqual(
+      expect.objectContaining({
+        source: 'empty',
+        item: null,
+      }),
+    );
+  });
+
+  it('does not keep using PRIMARY_LEGACY when the assignment is no longer marked as legacy fallback', () => {
+    const entity = {
+      type: 'ARTWORK',
+      mediaLinks: [
+        createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: false }),
+      ],
+    };
+
+    const library = buildAdminMediaLibrary(entity);
+
+    expect(library.resolvedSlots).toEqual([
+      expect.objectContaining({ slotKey: 'explorer3d', source: 'empty', item: null }),
+      expect.objectContaining({ slotKey: 'list', source: 'empty', item: null }),
+      expect.objectContaining({ slotKey: 'detail', source: 'empty', item: null }),
+      expect.objectContaining({ slotKey: 'preview', source: 'empty', item: null }),
+    ]);
+    expect(library.coverageSummary.legacySlots).toEqual([]);
   });
 });

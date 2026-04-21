@@ -12,6 +12,7 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of, takeUntil }
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
+  AdminAdditionalMediaItem,
   AdminEntityResponse,
   AdminEntitiesApi,
   AdminContributorPayload,
@@ -19,9 +20,9 @@ import {
   AdminMediaAsset,
   AdminMediaAssignment,
   AdminMediaCoverageSummary,
-  AdminMediaWarning,
   AdminEntityMediaPayload,
   AdminEntityPayload,
+  AdminMediaWarning,
   AdminResolvedSlot,
   AdminSourceRefPayload,
   AdminUploadEntityMediaPayload,
@@ -35,24 +36,34 @@ import {
   MEDIA_ROLE_LABELS,
   MediaAddExternalSubmit,
   MediaAddUploadSubmit,
+  MediaEditorSlotKey,
+  MediaSlotCropMap,
   UploadPreviewDimensions,
 } from './media-admin.models';
 
 type ResolvedMediaSlotState = {
   item: AdminMediaAsset | null;
-  source: 'explicit' | 'fallback' | 'empty';
+  source: 'explicit' | 'fallback' | 'legacy' | 'empty';
   matchedRole: string | null;
+  explanation: string;
+  reasonCode: string;
 };
 
 type VisualSlot = {
-  key: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery' | 'primary';
+  key: 'explorer3d' | 'list' | 'detail' | 'preview';
   label: string;
   description: string;
-  previewUsage: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery';
+  previewUsage: 'explorer3d' | 'card' | 'detail' | 'thumbnail';
   previewClass: string;
   state: ResolvedMediaSlotState;
-  count?: number;
 };
+
+type DashboardSectionId =
+  | 'section-content'
+  | 'section-media'
+  | 'section-sources'
+  | 'section-contributors'
+  | 'section-relations';
 
 @Component({
   standalone: true,
@@ -98,7 +109,8 @@ previewContainer?: ElementRef<HTMLElement>;
     { id: 'section-contributors', label: 'Colaboradores' },
     { id: 'section-relations', label: 'Relaciones' },
   ] as const;
-  activeDashboardSection = 'section-content';
+  activeDashboardSection: DashboardSectionId = 'section-content';
+  previewVisible = true;
 
   successMessage = '';
   submitMode: 'back' | 'stay' = 'back';
@@ -106,8 +118,11 @@ previewContainer?: ElementRef<HTMLElement>;
   mediaEditors: EditableAdminMediaEditor[] = [];
   persistedMediaLinks: EditableAdminMediaLink[] = [];
   resolvedVisualSlots: VisualSlot[] = [];
+  additionalMediaItems: AdminAdditionalMediaItem[] = [];
   mediaWarningMessages: string[] = [];
+  mediaWarningsDetailed: AdminMediaWarning[] = [];
   mediaCoverageSummary: AdminMediaCoverageSummary | null = null;
+  activeMediaEditorId: string | null = null;
   mediaLoading = false;
   mediaMessage = '';
   mediaError = '';
@@ -245,6 +260,8 @@ previewContainer?: ElementRef<HTMLElement>;
     const id = this.route.snapshot.paramMap.get('id');
     this.isEdit = !!id;
     this.entityId = id ?? '';
+    this.restoreDashboardSection();
+    this.restorePreviewVisibility();
 
     this.linkSearch$
       .pipe(
@@ -295,28 +312,10 @@ previewContainer?: ElementRef<HTMLElement>;
     this.loadEntity();
   }
 
-  scrollToSection(sectionId: string) {
-    if (typeof document === 'undefined') {
-      return;
-    }
-
+  scrollToSection(sectionId: DashboardSectionId) {
     this.activeDashboardSection = sectionId;
-
-    if (typeof window !== 'undefined' && window.location.hash) {
-      const cleanUrl = `${window.location.pathname}${window.location.search}`;
-      window.history.replaceState(null, '', cleanUrl);
-    }
-
-    const target = document.getElementById(sectionId);
-    if (!target) {
-      return;
-    }
-
-    target.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-      inline: 'nearest',
-    });
+    this.persistDashboardSection(sectionId);
+    this.cdr.markForCheck();
   }
   ngAfterViewInit() {
   const container = this.previewContainer?.nativeElement;
@@ -963,12 +962,59 @@ previewContainer?: ElementRef<HTMLElement>;
     }
   }
 
-  get primaryVisualSlots(): VisualSlot[] {
-    return this.visualSlots.filter((slot) => ['hero', 'card', 'detail'].includes(slot.key));
+  get mainVisualSlots(): VisualSlot[] {
+    return this.visualSlots;
   }
 
-  get secondaryVisualSlots(): VisualSlot[] {
-    return this.visualSlots.filter((slot) => !['hero', 'card', 'detail'].includes(slot.key));
+  get coverageCards() {
+    return this.mainVisualSlots.map((slot) => ({
+      ...slot,
+      countLabel: this.mediaCoverageSummary?.coveredSlots.includes(slot.key)
+        ? 'Cubierto'
+        : 'Pendiente',
+    }));
+  }
+
+  get primaryPreviewSlot(): VisualSlot | null {
+    return this.mainVisualSlots.find((slot) => slot.key === 'detail')
+      ?? this.mainVisualSlots.find((slot) => slot.key === 'list')
+      ?? this.mainVisualSlots[0]
+      ?? null;
+  }
+
+  get mainUsedEditors(): EditableAdminMediaEditor[] {
+    return this.mediaEditors.filter((editor) => this.activeSlotLabels(editor.persisted).length > 0);
+  }
+
+  get additionalMediaEditors(): EditableAdminMediaEditor[] {
+    const assignmentIds = new Set(this.additionalMediaItems.map((item) => item.assignmentId));
+    return this.mediaEditors.filter((editor) => assignmentIds.has(editor.id));
+  }
+
+  get derivedEditors(): EditableAdminMediaEditor[] {
+    const activeIds = new Set(this.mainUsedEditors.map((editor) => editor.id));
+    const additionalIds = new Set(this.additionalMediaEditors.map((editor) => editor.id));
+
+    return this.mediaEditors.filter((editor) => {
+      if (activeIds.has(editor.id) || additionalIds.has(editor.id)) {
+        return false;
+      }
+
+      return editor.persisted.media.originType === 'INGESTED'
+        || !!editor.persisted.media.derivedFromMediaId
+        || this.hasPromotedVisualReplacement(editor.persisted)
+        || !!this.replacementIngestedLink(editor.persisted);
+    });
+  }
+
+  get unusedEditors(): EditableAdminMediaEditor[] {
+    const excludedIds = new Set([
+      ...this.mainUsedEditors.map((editor) => editor.id),
+      ...this.additionalMediaEditors.map((editor) => editor.id),
+      ...this.derivedEditors.map((editor) => editor.id),
+    ]);
+
+    return this.mediaEditors.filter((editor) => !excludedIds.has(editor.id));
   }
 
   canIngestMedia(link: EditableAdminMediaLink): boolean {
@@ -1098,15 +1144,25 @@ previewContainer?: ElementRef<HTMLElement>;
     return this.mediaWarningMessages;
   }
 
+  get activeMediaEditor(): EditableAdminMediaEditor | null {
+    if (!this.mediaEditors.length) {
+      return null;
+    }
+
+    return this.mediaEditors.find((editor) => editor.id === this.activeMediaEditorId) ?? this.mediaEditors[0] ?? null;
+  }
+
   slotResolutionLabel(slot: VisualSlot): string {
     if (slot.state.source === 'explicit') {
-      return 'Asignación explícita';
+      return slot.state.explanation;
     }
 
     if (slot.state.source === 'fallback') {
-      return slot.state.matchedRole
-        ? `Resuelto por fallback desde ${this.mediaRoleLabel(slot.state.matchedRole)}`
-        : 'Resuelto por fallback';
+      return slot.state.explanation;
+    }
+
+    if (slot.state.source === 'legacy') {
+      return slot.state.explanation;
     }
 
     return 'No hay media resuelta para este contexto';
@@ -1117,9 +1173,9 @@ previewContainer?: ElementRef<HTMLElement>;
       case 'explicit':
         return 'media-pill--slot-explicit';
       case 'fallback':
-        return slot.state.matchedRole === 'PRIMARY_LEGACY'
-          ? 'media-pill--legacy'
-          : 'media-pill--slot-fallback';
+        return 'media-pill--slot-fallback';
+      case 'legacy':
+        return 'media-pill--legacy';
       default:
         return 'media-pill--slot-empty';
     }
@@ -1127,21 +1183,16 @@ previewContainer?: ElementRef<HTMLElement>;
 
   slotPreviewEyebrow(slot: VisualSlot): string {
     switch (slot.key) {
-      case 'hero':
-        return 'Vista destacada';
-      case 'card':
-        return 'Catálogo';
+      case 'explorer3d':
+        return 'Inmersivo';
+      case 'list':
+        return 'Lista y grids';
       case 'detail':
         return 'Detalle';
-      case 'thumbnail':
-        return 'Compacto';
-      case 'explorer3d':
-        return 'Explorer';
-      case 'gallery':
-        return 'Galería';
-      case 'primary':
+      case 'preview':
+        return 'Preview contextual';
       default:
-        return 'Fallback';
+        return 'Media';
     }
   }
 
@@ -1223,10 +1274,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.mediaMessage = '';
     this.markEditorDirty(editor);
 
-    const payload = this.buildMediaPayload({
-      ...editor.draft,
-      ...editor.draft.media,
-    });
+    const payload = this.buildMediaUpdatePayload(editor.draft);
 
     if (!payload) {
       return;
@@ -1237,7 +1285,6 @@ previewContainer?: ElementRef<HTMLElement>;
 
     this.adminApi.updateMedia(this.entityId, link.id, payload).subscribe({
       next: () => {
-        editor.saveState = 'idle';
         this.mediaMessage = 'Media actualizada correctamente.';
         this.refreshMediaLibrary(true, editor.id);
       },
@@ -1322,7 +1369,7 @@ previewContainer?: ElementRef<HTMLElement>;
     const sourceRoleLabel = source ? this.mediaRoleLabel(source.role) : 'el asset externo origen';
 
     const ok = window.confirm(
-      `El asset INGESTED asumirá ${sourceRoleLabel}, sortOrder, isPrimary, displayMode y focales del externo del que deriva. El externo quedará visible como referencia GALLERY. ¿Continuar?`,
+      `El asset INGESTED asumirá ${sourceRoleLabel}, sortOrder, isPrimary, displayMode y focales del externo del que deriva. El externo quedará visible como Additional Media. ¿Continuar?`,
     );
     if (!ok) {
       return;
@@ -1335,7 +1382,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.adminApi.promoteIngestedMedia(this.entityId, link.id).subscribe({
       next: () => {
         editor.promoting = false;
-        this.mediaMessage = 'El asset INGESTED ocupa ahora el papel visual del externo. El asset externo sigue visible como referencia.';
+        this.mediaMessage = 'El asset INGESTED ocupa ahora el papel visual del externo. El asset externo sigue visible como Additional Media.';
         this.refreshMediaLibrary(true);
       },
       error: (err) => {
@@ -1356,7 +1403,7 @@ previewContainer?: ElementRef<HTMLElement>;
     const ingestedRoleLabel = ingested ? this.mediaRoleLabel(ingested.role) : 'el asset ingerido promovido';
 
     const ok = window.confirm(
-      `El asset EXTERNAL_URL recuperará ${ingestedRoleLabel}, sortOrder, isPrimary, displayMode y focales. El INGESTED seguirá visible como referencia GALLERY. ¿Continuar?`,
+      `El asset EXTERNAL_URL recuperará ${ingestedRoleLabel}, sortOrder, isPrimary, displayMode y focales. El INGESTED seguirá visible como Additional Media. ¿Continuar?`,
     );
     if (!ok) {
       return;
@@ -1369,7 +1416,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.adminApi.restoreExternalMedia(this.entityId, link.id).subscribe({
       next: () => {
         editor.restoring = false;
-        this.mediaMessage = 'El asset externo recupera ahora el papel visual principal. El INGESTED sigue visible como referencia.';
+        this.mediaMessage = 'El asset externo recupera ahora el papel visual principal. El INGESTED sigue visible como Additional Media.';
         this.refreshMediaLibrary(true);
       },
       error: (err) => {
@@ -1381,16 +1428,51 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   assignRole(link: EditableAdminMediaLink, role: string) {
-    if (link.role === role) {
+    const editor = this.editorForLink(link);
+    if (!editor || link.role === role) {
       return;
     }
 
     link.role = role;
+    this.markEditorDirty(editor);
+    this.cdr.markForCheck();
+  }
+
+  toggleLegacyFallback(link: EditableAdminMediaLink) {
     const editor = this.editorForLink(link);
-    if (editor) {
-      this.markEditorDirty(editor);
+    if (!editor) {
+      return;
     }
-    this.saveMedia(link);
+
+    const nextValue = !editor.draft.isPrimary;
+    editor.draft.isPrimary = nextValue;
+    this.markEditorDirty(editor);
+
+    if (nextValue) {
+      for (const candidate of this.mediaEditors) {
+        if (candidate.id === editor.id || !candidate.draft.isPrimary) {
+          continue;
+        }
+
+        candidate.draft.isPrimary = false;
+        this.markEditorDirty(candidate);
+      }
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  discardMediaChanges(link: EditableAdminMediaLink) {
+    const editor = this.editorForLink(link);
+    if (!editor || editor.saveState === 'saving') {
+      return;
+    }
+
+    editor.draft = this.cloneMediaLink(editor.persisted);
+    editor.isDirty = false;
+    editor.saveState = 'idle';
+    editor.errorMessage = '';
+    this.cdr.markForCheck();
   }
 
   slotStatusLabel(slot: VisualSlot): string {
@@ -1399,6 +1481,8 @@ previewContainer?: ElementRef<HTMLElement>;
         return 'Explícito';
       case 'fallback':
         return `Fallback${slot.state.matchedRole ? ` · ${this.mediaRoleLabel(slot.state.matchedRole)}` : ''}`;
+      case 'legacy':
+        return 'Legacy';
       default:
         return 'Vacío';
     }
@@ -1411,6 +1495,192 @@ previewContainer?: ElementRef<HTMLElement>;
       focalX: this.toNullableNumber(link.focalX),
       focalY: this.toNullableNumber(link.focalY),
     };
+  }
+
+  hasOtherPersistedLegacy(linkId: string): boolean {
+    return this.persistedMediaLinks.some((link) => link.isPrimary && link.id !== linkId);
+  }
+
+  isActiveSection(sectionId: DashboardSectionId): boolean {
+    return this.activeDashboardSection === sectionId;
+  }
+
+  sectionCount(sectionId: DashboardSectionId): string | null {
+    switch (sectionId) {
+      case 'section-content':
+        return this.supportsTypedDetails() ? 'Base + ficha' : 'Base';
+      case 'section-media':
+        return this.isEdit ? String(this.persistedMediaLinks.length) : '—';
+      case 'section-sources':
+        return this.isEdit ? String(this.sourceRefs.length) : '—';
+      case 'section-contributors':
+        return this.isEdit ? String(this.contributors.length) : '—';
+      case 'section-relations':
+        return this.isEdit ? String(this.relations.length + this.incomingRelations.length) : '—';
+    }
+  }
+
+  sectionMeta(sectionId: DashboardSectionId): string {
+    switch (sectionId) {
+      case 'section-content':
+        return this.supportsTypedDetails()
+          ? 'Contenido principal y ficha específica'
+          : 'Contenido principal de la entity';
+      case 'section-media':
+        return this.isEdit
+          ? `${this.persistedMediaLinks.length} assets cargados`
+          : 'Guarda la entity para habilitar media';
+      case 'section-sources':
+        return this.isEdit
+          ? `${this.sourceRefs.length} fuentes editoriales`
+          : 'Disponible tras guardar';
+      case 'section-contributors':
+        return this.isEdit
+          ? `${this.contributors.length} créditos y participantes`
+          : 'Disponible tras guardar';
+      case 'section-relations':
+        return this.isEdit
+          ? `${this.relations.length + this.incomingRelations.length} conexiones registradas`
+          : 'Disponible tras guardar';
+    }
+  }
+
+  sectionStatus(sectionId: DashboardSectionId): 'error' | 'saving' | 'ready' | 'locked' | null {
+    switch (sectionId) {
+      case 'section-content':
+        if (this.errorMessage || this.detailsError) {
+          return 'error';
+        }
+        if (this.saving || this.detailsSaving) {
+          return 'saving';
+        }
+        return 'ready';
+      case 'section-media':
+        if (!this.isEdit) {
+          return 'locked';
+        }
+        if (this.mediaError) {
+          return 'error';
+        }
+        if (this.addingMedia || this.uploadingMedia || this.mediaEditors.some((editor) => editor.saveState === 'saving')) {
+          return 'saving';
+        }
+        return 'ready';
+      case 'section-sources':
+        if (!this.isEdit) {
+          return 'locked';
+        }
+        if (this.sourcesError) {
+          return 'error';
+        }
+        return this.sourcesSaving ? 'saving' : 'ready';
+      case 'section-contributors':
+        if (!this.isEdit) {
+          return 'locked';
+        }
+        if (this.contributorsError) {
+          return 'error';
+        }
+        return this.contributorsSaving ? 'saving' : 'ready';
+      case 'section-relations':
+        if (!this.isEdit) {
+          return 'locked';
+        }
+        if (this.errorMessage) {
+          return 'error';
+        }
+        return this.relationsLoading || this.incomingRelationsLoading ? 'saving' : 'ready';
+    }
+  }
+
+  sectionStatusLabel(sectionId: DashboardSectionId): string | null {
+    switch (this.sectionStatus(sectionId)) {
+      case 'error':
+        return 'Error';
+      case 'saving':
+        return 'Activo';
+      case 'locked':
+        return 'Bloqueado';
+      case 'ready':
+        return 'Listo';
+      default:
+        return null;
+    }
+  }
+
+  sectionStatusClass(sectionId: DashboardSectionId): string {
+    switch (this.sectionStatus(sectionId)) {
+      case 'error':
+        return 'admin-section-pill admin-section-pill--error';
+      case 'saving':
+        return 'admin-section-pill admin-section-pill--saving';
+      case 'locked':
+        return 'admin-section-pill admin-section-pill--locked';
+      default:
+        return 'admin-section-pill';
+    }
+  }
+
+  activeSectionTitle(): string {
+    return this.dashboardSections.find((section) => section.id === this.activeDashboardSection)?.label ?? 'Contenido';
+  }
+
+  togglePreviewPanel() {
+    this.previewVisible = !this.previewVisible;
+    this.persistPreviewVisibility();
+    this.cdr.markForCheck();
+  }
+
+  private dashboardSectionStorageKey(): string {
+    return `jano-admin-entity-section:${this.entityId || 'new'}`;
+  }
+
+  private restoreDashboardSection() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const saved = window.localStorage.getItem(this.dashboardSectionStorageKey()) as DashboardSectionId | null;
+    if (!saved) {
+      return;
+    }
+
+    if (this.dashboardSections.some((section) => section.id === saved)) {
+      this.activeDashboardSection = saved;
+    }
+  }
+
+  private persistDashboardSection(sectionId: DashboardSectionId) {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem(this.dashboardSectionStorageKey(), sectionId);
+  }
+
+  private previewVisibilityStorageKey(): string {
+    return `jano-admin-entity-preview:${this.entityId || 'new'}`;
+  }
+
+  private restorePreviewVisibility() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const saved = window.localStorage.getItem(this.previewVisibilityStorageKey());
+    if (saved === null) {
+      return;
+    }
+
+    this.previewVisible = saved !== 'hidden';
+  }
+
+  private persistPreviewVisibility() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem(this.previewVisibilityStorageKey(), this.previewVisible ? 'visible' : 'hidden');
   }
 
   private extractDetailsForm(entity: any): AdminEntityDetailsPayload {
@@ -1582,7 +1852,7 @@ previewContainer?: ElementRef<HTMLElement>;
         persisted,
         draft: this.cloneMediaLink(persisted),
         isDirty: false,
-        saveState: 'idle',
+        saveState: clearedEditorId === persisted.id ? 'saved' : 'idle',
         errorMessage: '',
         removing: false,
         ingesting: false,
@@ -1591,9 +1861,40 @@ previewContainer?: ElementRef<HTMLElement>;
       };
     });
 
+    if (!this.activeMediaEditorId || !this.mediaEditors.some((editor) => editor.id === this.activeMediaEditorId)) {
+      this.activeMediaEditorId = this.mediaEditors[0]?.id ?? null;
+    }
+
     this.resolvedVisualSlots = (library?.resolvedSlots ?? []).map((slot) => this.normalizeResolvedSlot(slot));
-    this.mediaWarningMessages = (library?.warnings ?? []).map((warning) => warning.message);
+    this.additionalMediaItems = library?.additionalMedia ?? [];
+    this.mediaWarningsDetailed = library?.warnings ?? [];
+    this.mediaWarningMessages = this.mediaWarningsDetailed.map((warning) => warning.message);
     this.mediaCoverageSummary = library?.coverageSummary ?? null;
+  }
+
+  slotWarningsForEditor(link: EditableAdminMediaLink): Partial<Record<MediaEditorSlotKey, string[]>> {
+    const record: Partial<Record<MediaEditorSlotKey, string[]>> = {};
+
+    for (const slot of this.resolvedVisualSlots) {
+      if (slot.state.item?.id !== link.media.id) {
+        continue;
+      }
+
+      const matches = this.mediaWarningsDetailed
+        .filter((warning) => warning.code.startsWith(`media.${slot.key}_`))
+        .map((warning) => warning.message);
+
+      if (matches.length) {
+        record[slot.key] = matches;
+      }
+    }
+
+    return record;
+  }
+
+  selectMediaEditor(linkOrId: EditableAdminMediaLink | string | null | undefined) {
+    this.activeMediaEditorId = typeof linkOrId === 'string' ? linkOrId : linkOrId?.id ?? null;
+    this.cdr.markForCheck();
   }
 
   private normalizeMediaAssignment(assignment: AdminMediaAssignment, asset?: AdminMediaAsset): EditableAdminMediaLink | null {
@@ -1609,6 +1910,9 @@ previewContainer?: ElementRef<HTMLElement>;
       displayMode: assignment.displayMode ?? '',
       focalX: assignment.focalX ?? null,
       focalY: assignment.focalY ?? null,
+      assetFocalX: assignment.assetFocalX ?? asset.assetFocalX ?? asset.focalX ?? null,
+      assetFocalY: assignment.assetFocalY ?? asset.assetFocalY ?? asset.focalY ?? null,
+      slotCrops: this.normalizeSlotCrops(assignment.slotCrops),
       media: {
         id: asset.id ?? asset.assetId,
         url: asset.url ?? '',
@@ -1642,18 +1946,18 @@ previewContainer?: ElementRef<HTMLElement>;
       displayMode: link.displayMode ?? null,
       focalX: link.focalX ?? null,
       focalY: link.focalY ?? null,
+      assetFocalX: link.media?.focalX ?? null,
+      assetFocalY: link.media?.focalY ?? null,
+      slotCrops: this.emptySlotCropMap(),
     }));
   }
 
   private normalizeResolvedSlot(slot: AdminResolvedSlot): VisualSlot {
-    const definitions: Record<VisualSlot['key'], Omit<VisualSlot, 'state' | 'count'>> = {
-      hero: { key: 'hero', label: 'Hero', description: 'Uso principal amplio o destacado.', previewUsage: 'hero', previewClass: 'slot-preview--hero' },
-      card: { key: 'card', label: 'Card', description: 'Listado y tarjetas del catálogo.', previewUsage: 'card', previewClass: 'slot-preview--card' },
-      detail: { key: 'detail', label: 'Detail', description: 'Panel principal del detalle.', previewUsage: 'detail', previewClass: 'slot-preview--detail' },
-      thumbnail: { key: 'thumbnail', label: 'Thumbnail', description: 'Relaciones, previews y formatos compactos.', previewUsage: 'thumbnail', previewClass: 'slot-preview--thumbnail' },
-      explorer3d: { key: 'explorer3d', label: 'Explorer 3D', description: 'Textura preferida para la vista inmersiva.', previewUsage: 'explorer3d', previewClass: 'slot-preview--explorer' },
-      gallery: { key: 'gallery', label: 'Gallery', description: 'Biblioteca adicional de imágenes.', previewUsage: 'gallery', previewClass: 'slot-preview--gallery' },
-      primary: { key: 'primary', label: 'Primary fallback', description: 'Compatibilidad y fallback general.', previewUsage: 'card', previewClass: 'slot-preview--card' },
+    const definitions: Record<VisualSlot['key'], Omit<VisualSlot, 'state'>> = {
+      explorer3d: { key: 'explorer3d', label: 'Explorer 3D', description: 'Imagen para la vista inmersiva.', previewUsage: 'explorer3d', previewClass: 'slot-preview--explorer' },
+      list: { key: 'list', label: 'List', description: 'Imagen para listas, grids y railes.', previewUsage: 'card', previewClass: 'slot-preview--card' },
+      detail: { key: 'detail', label: 'Detail', description: 'Imagen principal de la entidad.', previewUsage: 'detail', previewClass: 'slot-preview--detail' },
+      preview: { key: 'preview', label: 'Preview', description: 'Imagen para previews contextuales.', previewUsage: 'thumbnail', previewClass: 'slot-preview--thumbnail' },
     };
 
     return {
@@ -1662,14 +1966,16 @@ previewContainer?: ElementRef<HTMLElement>;
         item: slot.item,
         source: slot.source,
         matchedRole: slot.matchedRole,
+        explanation: slot.explanation,
+        reasonCode: slot.reasonCode,
       },
-      count: slot.count,
     };
   }
 
   private cloneMediaLink(link: EditableAdminMediaLink): EditableAdminMediaLink {
     return {
       ...link,
+      slotCrops: this.cloneSlotCrops(link.slotCrops),
       media: {
         ...link.media,
       },
@@ -1685,6 +1991,11 @@ previewContainer?: ElementRef<HTMLElement>;
     if (!editor.isDirty && editor.saveState !== 'saving') {
       editor.saveState = 'idle';
       editor.errorMessage = '';
+      return;
+    }
+
+    if (editor.isDirty && editor.saveState === 'saved') {
+      editor.saveState = 'idle';
     }
   }
 
@@ -1726,6 +2037,9 @@ previewContainer?: ElementRef<HTMLElement>;
       displayMode: link.displayMode ?? '',
       focalX: link.focalX ?? null,
       focalY: link.focalY ?? null,
+      assetFocalX: link.media?.focalX ?? null,
+      assetFocalY: link.media?.focalY ?? null,
+      slotCrops: this.emptySlotCropMap(),
       media: {
         id: link.media?.id ?? '',
         url: link.media?.url ?? '',
@@ -1783,6 +2097,9 @@ previewContainer?: ElementRef<HTMLElement>;
       displayMode: source.displayMode || null,
       focalX: this.toNullableNumber(source.focalX),
       focalY: this.toNullableNumber(source.focalY),
+      assetFocalX: this.toNullableNumber(source.assetFocalX),
+      assetFocalY: this.toNullableNumber(source.assetFocalY),
+      slotCrops: this.buildSlotCropPayload(source.slotCrops),
     };
   }
 
@@ -1800,7 +2117,98 @@ previewContainer?: ElementRef<HTMLElement>;
       displayMode: source.displayMode || null,
       focalX: this.toNullableNumber(source.focalX),
       focalY: this.toNullableNumber(source.focalY),
+      assetFocalX: this.toNullableNumber(source.assetFocalX),
+      assetFocalY: this.toNullableNumber(source.assetFocalY),
+      slotCrops: this.buildSlotCropPayload(source.slotCrops),
     };
+  }
+
+  private buildMediaUpdatePayload(source: EditableAdminMediaLink): Partial<AdminEntityMediaPayload> | null {
+    const payload: Partial<AdminEntityMediaPayload> = {
+      alt: String(source.media.alt ?? '').trim() || undefined,
+      source: String(source.media.source ?? '').trim() || undefined,
+      photoBy: String(source.media.photoBy ?? '').trim() || undefined,
+      license: String(source.media.license ?? '').trim() || undefined,
+      role: source.role as AdminEntityMediaPayload['role'],
+      sortOrder: Number(source.sortOrder ?? 0),
+      isPrimary: !!source.isPrimary,
+      displayMode: (source.displayMode || null) as AdminEntityMediaPayload['displayMode'],
+      focalX: this.toNullableNumber(source.focalX),
+      focalY: this.toNullableNumber(source.focalY),
+      assetFocalX: this.toNullableNumber(source.assetFocalX),
+      assetFocalY: this.toNullableNumber(source.assetFocalY),
+      slotCrops: this.buildSlotCropPayload(source.slotCrops),
+    };
+
+    if (source.media.originType === 'EXTERNAL_URL') {
+      const url = String(source.media.url ?? '').trim();
+      if (!url) {
+        this.mediaError = 'La URL de media es obligatoria.';
+        this.cdr.markForCheck();
+        return null;
+      }
+
+      payload.url = url;
+      payload.displayUrl = String(source.media.displayUrl ?? '').trim() || undefined;
+      payload.sourcePageUrl = String(source.media.sourcePageUrl ?? '').trim() || undefined;
+    } else if (source.media.sourcePageUrl) {
+      payload.sourcePageUrl = String(source.media.sourcePageUrl ?? '').trim() || undefined;
+    }
+
+    if (source.media.originType !== 'EXTERNAL_URL') {
+      delete payload.url;
+      delete payload.displayUrl;
+    }
+
+    return payload;
+  }
+
+  private normalizeSlotCrops(value: any): MediaSlotCropMap {
+    return {
+      explorer3d: this.normalizeCropValue(value?.explorer3d),
+      list: this.normalizeCropValue(value?.list),
+      detail: this.normalizeCropValue(value?.detail),
+      preview: this.normalizeCropValue(value?.preview),
+    };
+  }
+
+  private normalizeCropValue(value: any) {
+    return {
+      x: this.toNullableNumber(value?.x),
+      y: this.toNullableNumber(value?.y),
+      zoom: this.toNullableNumber(value?.zoom),
+    };
+  }
+
+  private emptySlotCropMap(): MediaSlotCropMap {
+    return {
+      explorer3d: { x: null, y: null, zoom: null },
+      list: { x: null, y: null, zoom: null },
+      detail: { x: null, y: null, zoom: null },
+      preview: { x: null, y: null, zoom: null },
+    };
+  }
+
+  private cloneSlotCrops(slotCrops: MediaSlotCropMap | null | undefined): MediaSlotCropMap {
+    return this.normalizeSlotCrops(slotCrops ?? this.emptySlotCropMap());
+  }
+
+  private buildSlotCropPayload(slotCrops: MediaSlotCropMap | null | undefined) {
+    if (!slotCrops) {
+      return undefined;
+    }
+
+    const keys: MediaEditorSlotKey[] = ['explorer3d', 'list', 'detail', 'preview'];
+    const payload = keys.reduce((acc, key) => {
+      const crop = slotCrops[key];
+      const x = this.toNullableNumber(crop?.x);
+      const y = this.toNullableNumber(crop?.y);
+      const zoom = this.toNullableNumber(crop?.zoom);
+      acc[key] = x === null && y === null && zoom === null ? null : { x, y, zoom };
+      return acc;
+    }, {} as Record<MediaEditorSlotKey, { x: number | null; y: number | null; zoom: number | null } | null>);
+
+    return payload;
   }
 
   private toNullableNumber(value: unknown): number | null {
