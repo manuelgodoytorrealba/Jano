@@ -54,6 +54,19 @@ export type EditableAdminMediaLink = {
   restoring?: boolean;
 };
 
+export type EditableAdminMediaEditor = {
+  id: string;
+  persisted: EditableAdminMediaLink;
+  draft: EditableAdminMediaLink;
+  isDirty: boolean;
+  saveState: 'idle' | 'saving' | 'error';
+  errorMessage: string;
+  removing: boolean;
+  ingesting: boolean;
+  promoting: boolean;
+  restoring: boolean;
+};
+
 export type MediaAddExternalSubmit = {
   draft: MediaDraft;
 };

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
-import { EditableAdminMediaLink, MEDIA_DISPLAY_MODES, MEDIA_ROLE_LABELS, MEDIA_ROLE_OPTIONS } from './media-admin.models';
+import { EditableAdminMediaEditor, EditableAdminMediaLink, MEDIA_DISPLAY_MODES, MEDIA_ROLE_LABELS, MEDIA_ROLE_OPTIONS } from './media-admin.models';
 
 @Component({
   standalone: true,
@@ -12,7 +12,7 @@ import { EditableAdminMediaLink, MEDIA_DISPLAY_MODES, MEDIA_ROLE_LABELS, MEDIA_R
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MediaCardEditorComponent {
-  @Input({ required: true }) link!: EditableAdminMediaLink;
+  @Input({ required: true }) editor!: EditableAdminMediaEditor;
   @Input() entityTitle = '';
   @Input() activeSlotLabels: string[] = [];
   @Input() canIngest = false;
@@ -36,13 +36,33 @@ export class MediaCardEditorComponent {
   readonly displayModes = MEDIA_DISPLAY_MODES;
   readonly roleLabels = MEDIA_ROLE_LABELS;
 
+  get draft(): EditableAdminMediaLink {
+    return this.editor.draft;
+  }
+
+  get persisted(): EditableAdminMediaLink {
+    return this.editor.persisted;
+  }
+
   get previewMedia() {
     return {
-      ...this.link.media,
-      displayMode: this.link.displayMode || null,
-      focalX: this.toNullableNumber(this.link.focalX),
-      focalY: this.toNullableNumber(this.link.focalY),
+      ...this.draft.media,
+      displayMode: this.draft.displayMode || null,
+      focalX: this.toNullableNumber(this.draft.focalX),
+      focalY: this.toNullableNumber(this.draft.focalY),
     };
+  }
+
+  get canEditSourceUrls(): boolean {
+    return this.draft.media.originType === 'EXTERNAL_URL';
+  }
+
+  get hasDraftChanges(): boolean {
+    return JSON.stringify(this.persisted) !== JSON.stringify(this.draft);
+  }
+
+  get saving(): boolean {
+    return this.editor.saveState === 'saving';
   }
 
   mediaRoleLabel(role: string | null | undefined): string {
@@ -90,31 +110,31 @@ export class MediaCardEditorComponent {
   }
 
   setRole(role: string) {
-    if (this.link.role === role) {
+    if (this.draft.role === role) {
       return;
     }
 
-    this.assignRole.emit({ link: this.link, role });
+    this.assignRole.emit({ link: this.draft, role });
   }
 
   saveChanges() {
-    this.save.emit(this.link);
+    this.save.emit(this.draft);
   }
 
   removeLink() {
-    this.remove.emit(this.link);
+    this.remove.emit(this.persisted);
   }
 
   ingestLink() {
-    this.ingest.emit(this.link);
+    this.ingest.emit(this.persisted);
   }
 
   promoteLink() {
-    this.promote.emit(this.link);
+    this.promote.emit(this.persisted);
   }
 
   restoreLink() {
-    this.restore.emit(this.link);
+    this.restore.emit(this.persisted);
   }
 
   formatFileSize(value: number | null | undefined): string {

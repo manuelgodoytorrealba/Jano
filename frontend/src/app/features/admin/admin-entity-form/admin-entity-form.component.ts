@@ -12,29 +12,37 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of, takeUntil }
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
+  AdminEntityResponse,
   AdminEntitiesApi,
   AdminContributorPayload,
   AdminEntityDetailsPayload,
+  AdminMediaAsset,
+  AdminMediaAssignment,
+  AdminMediaCoverageSummary,
+  AdminMediaWarning,
   AdminEntityMediaPayload,
   AdminEntityPayload,
+  AdminResolvedSlot,
   AdminSourceRefPayload,
   AdminUploadEntityMediaPayload,
 } from '../../../core/api/admin-entities.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
-import {
-  ResolvedMediaSlotState,
-  resolveEntityMediaGallery,
-  resolveEntityMediaSlot,
-} from '../../../shared/media/media.utils';
 import { MediaAddPanelComponent } from './media-add-panel.component';
 import { MediaCardEditorComponent } from './media-card-editor.component';
 import {
+  EditableAdminMediaEditor,
   EditableAdminMediaLink,
   MEDIA_ROLE_LABELS,
   MediaAddExternalSubmit,
   MediaAddUploadSubmit,
   UploadPreviewDimensions,
 } from './media-admin.models';
+
+type ResolvedMediaSlotState = {
+  item: AdminMediaAsset | null;
+  source: 'explicit' | 'fallback' | 'empty';
+  matchedRole: string | null;
+};
 
 type VisualSlot = {
   key: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery' | 'primary';
@@ -83,10 +91,23 @@ previewContainer?: ElementRef<HTMLElement>;
   isHoveringPreviewPopup = false;
   private previewRequestSlug: string | null = null;
 
+  readonly dashboardSections = [
+    { id: 'section-content', label: 'Contenido' },
+    { id: 'section-media', label: 'Media library' },
+    { id: 'section-sources', label: 'Fuentes' },
+    { id: 'section-contributors', label: 'Colaboradores' },
+    { id: 'section-relations', label: 'Relaciones' },
+  ] as const;
+  activeDashboardSection = 'section-content';
+
   successMessage = '';
   submitMode: 'back' | 'stay' = 'back';
 
-  mediaLinks: EditableAdminMediaLink[] = [];
+  mediaEditors: EditableAdminMediaEditor[] = [];
+  persistedMediaLinks: EditableAdminMediaLink[] = [];
+  resolvedVisualSlots: VisualSlot[] = [];
+  mediaWarningMessages: string[] = [];
+  mediaCoverageSummary: AdminMediaCoverageSummary | null = null;
   mediaLoading = false;
   mediaMessage = '';
   mediaError = '';
@@ -169,6 +190,7 @@ previewContainer?: ElementRef<HTMLElement>;
   types: AdminEntityPayload['type'][] = [
     'ARTWORK',
     'ARTIST',
+    'ARTICLE',
     'CONCEPT',
     'MOVEMENT',
     'PERIOD',
@@ -272,6 +294,30 @@ previewContainer?: ElementRef<HTMLElement>;
 
     this.loadEntity();
   }
+
+  scrollToSection(sectionId: string) {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    this.activeDashboardSection = sectionId;
+
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const cleanUrl = `${window.location.pathname}${window.location.search}`;
+      window.history.replaceState(null, '', cleanUrl);
+    }
+
+    const target = document.getElementById(sectionId);
+    if (!target) {
+      return;
+    }
+
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest',
+    });
+  }
   ngAfterViewInit() {
   const container = this.previewContainer?.nativeElement;
   if (!container) return;
@@ -365,29 +411,7 @@ previewContainer?: ElementRef<HTMLElement>;
 
     this.adminApi.getById(this.entityId).subscribe({
       next: (entity) => {
-        this.form = {
-          type: entity.type ?? 'ARTWORK',
-          title: entity.title ?? '',
-          slug: entity.slug ?? '',
-          summary: entity.summary ?? '',
-          content: entity.content ?? '',
-          contentLevel: entity.contentLevel ?? '',
-          status: entity.status ?? 'DRAFT',
-          startYear: entity.startYear ?? null,
-          endYear: entity.endYear ?? null,
-        };
-
-        this.mediaLinks = Array.isArray(entity.mediaLinks)
-          ? entity.mediaLinks.map((link: any) => this.normalizeMediaLink(link))
-          : [];
-        this.detailsForm = this.extractDetailsForm(entity);
-        this.sourceRefs = Array.isArray(entity.sourceRefs)
-          ? entity.sourceRefs.map((ref: any) => this.normalizeSourceRef(ref))
-          : [];
-        this.contributors = Array.isArray(entity.contributors)
-          ? entity.contributors.map((contributor: any) => this.normalizeContributor(contributor))
-          : [];
-
+        this.applyEntityResponse(entity, false);
         this.slugTouched = true;
         this.loading = false;
         this.loadRelations();
@@ -400,6 +424,29 @@ previewContainer?: ElementRef<HTMLElement>;
         this.cdr.markForCheck();
       },
     });
+  }
+
+  private applyEntityResponse(entity: AdminEntityResponse, preserveDirtyMediaEditors = true, clearedEditorId?: string) {
+    this.form = {
+      type: entity.type ?? 'ARTWORK',
+      title: entity.title ?? '',
+      slug: entity.slug ?? '',
+      summary: entity.summary ?? '',
+      content: entity.content ?? '',
+      contentLevel: entity.contentLevel ?? '',
+      status: entity.status ?? 'DRAFT',
+      startYear: entity.startYear ?? null,
+      endYear: entity.endYear ?? null,
+    };
+
+    this.applyMediaLibraryState(entity, preserveDirtyMediaEditors, clearedEditorId);
+    this.detailsForm = this.extractDetailsForm(entity);
+    this.sourceRefs = Array.isArray(entity.sourceRefs)
+      ? entity.sourceRefs.map((ref: any) => this.normalizeSourceRef(ref))
+      : [];
+    this.contributors = Array.isArray(entity.contributors)
+      ? entity.contributors.map((contributor: any) => this.normalizeContributor(contributor))
+      : [];
   }
 
   submit(mode: 'back' | 'stay' = 'back') {
@@ -799,6 +846,22 @@ previewContainer?: ElementRef<HTMLElement>;
     }
   }
 
+  contentFieldLabel(): string {
+    return this.form.type === 'ARTICLE' ? 'Cuerpo del artículo' : 'Contenido';
+  }
+
+  contentFieldHint(): string {
+    return this.form.type === 'ARTICLE'
+      ? 'Usa #, ## y ### para títulos, > para citas, :::lead ... ::: para texto grande, y [[slug]] o [[slug|texto]] para enlazar entidades.'
+      : 'Texto principal de la entidad. Puedes usar [[slug]] o [[slug|texto]] para enlazar.';
+  }
+
+  summaryFieldHint(): string {
+    return this.form.type === 'ARTICLE'
+      ? 'Entradilla breve para la portada y el hero del artículo.'
+      : 'Resumen breve de la entidad.';
+  }
+
   typedDetailsSummary(): string {
     switch (this.form.type) {
       case 'ARTWORK':
@@ -909,7 +972,7 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   canIngestMedia(link: EditableAdminMediaLink): boolean {
-    return link.media.originType === 'EXTERNAL_URL' && !link.ingesting && !link.saving && !link.removing;
+    return link.media.originType === 'EXTERNAL_URL';
   }
 
   sourceExternalLink(link: EditableAdminMediaLink): EditableAdminMediaLink | null {
@@ -918,7 +981,7 @@ previewContainer?: ElementRef<HTMLElement>;
     }
 
     if (link.media.derivedFromMediaId) {
-      const direct = this.mediaLinks.find((candidate) => candidate.media.id === link.media.derivedFromMediaId);
+      const direct = this.persistedMediaLinks.find((candidate) => candidate.media.id === link.media.derivedFromMediaId);
       if (direct?.media.originType === 'EXTERNAL_URL') {
         return direct;
       }
@@ -929,7 +992,7 @@ previewContainer?: ElementRef<HTMLElement>;
       return null;
     }
 
-    return this.mediaLinks.find((candidate) => {
+    return this.persistedMediaLinks.find((candidate) => {
       if (candidate.id === link.id || candidate.media.originType !== 'EXTERNAL_URL') {
         return false;
       }
@@ -949,18 +1012,12 @@ previewContainer?: ElementRef<HTMLElement>;
   canPromoteIngestedMedia(link: EditableAdminMediaLink): boolean {
     return link.media.originType === 'INGESTED'
       && !!this.sourceExternalLink(link)
-      && !link.promoting
-      && !link.ingesting
-      && !link.saving
-      && !link.removing;
+      ;
   }
 
   canRestoreExternalMedia(link: EditableAdminMediaLink): boolean {
     return link.media.originType === 'EXTERNAL_URL'
-      && !!this.replacementIngestedLink(link)
-      && !link.restoring
-      && !link.saving
-      && !link.removing;
+      && !!this.replacementIngestedLink(link);
   }
 
   ingestedSourceLabel(link: EditableAdminMediaLink): string | null {
@@ -1009,14 +1066,14 @@ previewContainer?: ElementRef<HTMLElement>;
       .filter(Boolean);
 
     if (!externalCandidates.length) {
-      return this.mediaLinks.find((candidate) =>
+      return this.persistedMediaLinks.find((candidate) =>
         candidate.media.originType === 'INGESTED'
         && candidate.media.derivedFromMediaId === link.media.id
         && this.hasPromotedVisualReplacement(candidate),
       ) ?? null;
     }
 
-    const byDerivedFrom = this.mediaLinks.find((candidate) =>
+    const byDerivedFrom = this.persistedMediaLinks.find((candidate) =>
       candidate.media.originType === 'INGESTED'
       && candidate.media.derivedFromMediaId === link.media.id
       && this.hasPromotedVisualReplacement(candidate),
@@ -1026,182 +1083,19 @@ previewContainer?: ElementRef<HTMLElement>;
       return byDerivedFrom;
     }
 
-    return this.mediaLinks.find((candidate) =>
+    return this.persistedMediaLinks.find((candidate) =>
       candidate.media.originType === 'INGESTED'
       && this.hasPromotedVisualReplacement(candidate)
       && externalCandidates.includes(String(candidate.media.canonicalUrl ?? '').trim().replace(/\/+$/, '')),
     ) ?? null;
   }
 
-  get mediaEntityContext() {
-    return {
-      type: this.form.type,
-      title: this.form.title,
-      summary: this.form.summary,
-      mediaLinks: this.mediaLinks.map((link) => ({
-        id: link.id,
-        role: link.role,
-        sortOrder: Number(link.sortOrder ?? 0),
-        isPrimary: !!link.isPrimary,
-        displayMode: link.displayMode || null,
-        focalX: this.toNullableNumber(link.focalX),
-        focalY: this.toNullableNumber(link.focalY),
-        media: {
-          ...link.media,
-          displayMode: link.displayMode || null,
-          focalX: this.toNullableNumber(link.focalX),
-          focalY: this.toNullableNumber(link.focalY),
-        },
-      })),
-    };
-  }
-
   get visualSlots(): VisualSlot[] {
-    const entity = this.mediaEntityContext;
-    const galleryItems = resolveEntityMediaGallery(entity);
-    const galleryState: ResolvedMediaSlotState = galleryItems.length
-      ? {
-        item: galleryItems[0] ?? null,
-        source: entity.mediaLinks.some((link) => link.role === 'GALLERY') ? 'explicit' : 'fallback',
-        matchedRole: galleryItems[0]?.role ?? null,
-      }
-      : {
-        item: null,
-        source: 'empty',
-        matchedRole: null,
-      };
-
-    return [
-      {
-        key: 'hero',
-        label: 'Hero',
-        description: 'Uso principal amplio o destacado.',
-        previewUsage: 'hero',
-        previewClass: 'slot-preview--hero',
-        state: resolveEntityMediaSlot(entity, 'hero'),
-      },
-      {
-        key: 'card',
-        label: 'Card',
-        description: 'Listado y tarjetas del catálogo.',
-        previewUsage: 'card',
-        previewClass: 'slot-preview--card',
-        state: resolveEntityMediaSlot(entity, 'card'),
-      },
-      {
-        key: 'detail',
-        label: 'Detail',
-        description: 'Panel principal del detalle.',
-        previewUsage: 'detail',
-        previewClass: 'slot-preview--detail',
-        state: resolveEntityMediaSlot(entity, 'detail'),
-      },
-      {
-        key: 'thumbnail',
-        label: 'Thumbnail',
-        description: 'Relaciones, previews y formatos compactos.',
-        previewUsage: 'thumbnail',
-        previewClass: 'slot-preview--thumbnail',
-        state: resolveEntityMediaSlot(entity, 'thumbnail'),
-      },
-      {
-        key: 'explorer3d',
-        label: 'Explorer 3D',
-        description: 'Textura preferida para la vista inmersiva.',
-        previewUsage: 'explorer3d',
-        previewClass: 'slot-preview--explorer',
-        state: resolveEntityMediaSlot(entity, 'explorer3d'),
-      },
-      {
-        key: 'gallery',
-        label: 'Gallery',
-        description: 'Biblioteca adicional de imágenes.',
-        previewUsage: 'gallery',
-        previewClass: 'slot-preview--gallery',
-        state: galleryState,
-        count: galleryItems.length,
-      },
-      {
-        key: 'primary',
-        label: 'Primary fallback',
-        description: 'Compatibilidad y fallback general.',
-        previewUsage: 'card',
-        previewClass: 'slot-preview--card',
-        state: resolveEntityMediaSlot(entity, 'primary'),
-      },
-    ];
+    return this.resolvedVisualSlots;
   }
 
   get mediaWarnings(): string[] {
-    const warnings: string[] = [];
-    const links = this.mediaLinks;
-
-    if (!links.length) {
-      warnings.push('Esta entity no tiene media asociada todavía.');
-      return warnings;
-    }
-
-    const primaryCount = links.filter((link) => link.isPrimary).length;
-    if (primaryCount > 1) {
-      warnings.push(`Hay ${primaryCount} medias marcadas como primary fallback. Conviene dejar solo una.`);
-    }
-
-    const hasCard = links.some((link) => link.role === 'CARD');
-    const hasHero = links.some((link) => link.role === 'HERO');
-    const hasDetail = links.some((link) => link.role === 'DETAIL');
-    const hasOnlyLegacy = links.every((link) => link.role === 'PRIMARY_LEGACY');
-    const galleryLinks = links.filter((link) => link.role === 'GALLERY');
-    const missingAltCount = links.filter((link) => !String(link.media.alt ?? '').trim()).length;
-    const uploadedWithoutContext = links.filter(
-      (link) =>
-        link.media.originType === 'UPLOAD'
-        && !String(link.media.alt ?? '').trim()
-        && !String(link.media.source ?? '').trim(),
-    ).length;
-    const fallbackHeavyCount = this.visualSlots.filter(
-      (slot) =>
-        slot.key !== 'gallery'
-        && slot.key !== 'primary'
-        && slot.state.source === 'fallback',
-    ).length;
-
-    if (!hasHero) {
-      warnings.push('No hay una media HERO explícita. La pieza destacada seguirá dependiendo de fallback.');
-    }
-
-    if (!hasCard) {
-      warnings.push('No hay una media CARD explícita. El listado dependerá de fallback.');
-    }
-
-    if (!hasDetail) {
-      warnings.push('No hay una media DETAIL explícita. El detalle principal dependerá de fallback.');
-    }
-
-    if (hasOnlyLegacy) {
-      warnings.push('La entity depende solo de PRIMARY_LEGACY. Conviene asignar roles visuales explícitos.');
-    }
-
-    if (galleryLinks.length > 1) {
-      const sortOrders = galleryLinks.map((link) => Number(link.sortOrder ?? 0));
-      const uniqueOrders = new Set(sortOrders);
-      if (uniqueOrders.size !== sortOrders.length) {
-        warnings.push('Hay varias medias GALLERY con el mismo sortOrder. El orden puede ser ambiguo.');
-      }
-    }
-
-    if (missingAltCount > 0) {
-      warnings.push(`Hay ${missingAltCount} media assets sin alt. Conviene completar texto alternativo para mantener calidad editorial.`);
-    }
-
-    if (uploadedWithoutContext > 0) {
-      warnings.push(`Hay ${uploadedWithoutContext} uploads sin alt ni source. Conviene documentarlos mejor para el equipo editorial.`);
-    }
-
-    if (fallbackHeavyCount >= 3) {
-      warnings.push('Varios slots importantes están entrando por fallback. Conviene explicitar Hero, Card, Detail y Explorer 3D.');
-    }
-
-    return warnings;
+    return this.mediaWarningMessages;
   }
 
   slotResolutionLabel(slot: VisualSlot): string {
@@ -1279,12 +1173,11 @@ previewContainer?: ElementRef<HTMLElement>;
     this.addingMedia = true;
 
     this.adminApi.createMedia(this.entityId, payload).subscribe({
-      next: (link) => {
-        this.upsertMediaLink(link);
+      next: () => {
         this.mediaAddResetVersion += 1;
         this.addingMedia = false;
         this.mediaMessage = 'Media añadida correctamente.';
-        this.cdr.markForCheck();
+        this.refreshMediaLibrary(true);
       },
       error: (err) => {
         this.addingMedia = false;
@@ -1306,12 +1199,11 @@ previewContainer?: ElementRef<HTMLElement>;
     this.uploadingMedia = true;
 
     this.adminApi.uploadMedia(this.entityId, event.file, payload).subscribe({
-      next: (link) => {
-        this.upsertMediaLink(link);
+      next: () => {
         this.mediaAddResetVersion += 1;
         this.uploadingMedia = false;
         this.mediaMessage = 'Archivo subido y asociado correctamente.';
-        this.cdr.markForCheck();
+        this.refreshMediaLibrary(true);
       },
       error: (err) => {
         this.uploadingMedia = false;
@@ -1322,32 +1214,36 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   saveMedia(link: EditableAdminMediaLink) {
-    if (!this.entityId || link.saving) {
+    const editor = this.editorForLink(link);
+    if (!this.entityId || !editor || editor.saveState === 'saving') {
       return;
     }
 
     this.mediaError = '';
     this.mediaMessage = '';
+    this.markEditorDirty(editor);
 
     const payload = this.buildMediaPayload({
-      ...link,
-      ...link.media,
+      ...editor.draft,
+      ...editor.draft.media,
     });
 
     if (!payload) {
       return;
     }
 
-    link.saving = true;
+    editor.saveState = 'saving';
+    editor.errorMessage = '';
 
     this.adminApi.updateMedia(this.entityId, link.id, payload).subscribe({
-      next: (updatedLink) => {
-        this.upsertMediaLink(updatedLink);
+      next: () => {
+        editor.saveState = 'idle';
         this.mediaMessage = 'Media actualizada correctamente.';
-        this.cdr.markForCheck();
+        this.refreshMediaLibrary(true, editor.id);
       },
       error: (err) => {
-        link.saving = false;
+        editor.saveState = 'error';
+        editor.errorMessage = err?.error?.message ?? 'No se pudo actualizar la media.';
         this.mediaError = err?.error?.message ?? 'No se pudo actualizar la media.';
         this.cdr.markForCheck();
       },
@@ -1355,7 +1251,8 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   removeMedia(link: EditableAdminMediaLink) {
-    if (!this.entityId || link.removing) {
+    const editor = this.editorForLink(link);
+    if (!this.entityId || !editor || editor.removing) {
       return;
     }
 
@@ -1366,16 +1263,16 @@ previewContainer?: ElementRef<HTMLElement>;
 
     this.mediaError = '';
     this.mediaMessage = '';
-    link.removing = true;
+    editor.removing = true;
 
     this.adminApi.deleteMedia(this.entityId, link.id).subscribe({
       next: () => {
-        this.mediaLinks = this.mediaLinks.filter((item) => item.id !== link.id);
+        editor.removing = false;
         this.mediaMessage = 'Asociación de media eliminada.';
-        this.cdr.markForCheck();
+        this.refreshMediaLibrary(true, editor.id);
       },
       error: (err) => {
-        link.removing = false;
+        editor.removing = false;
         this.mediaError = err?.error?.message ?? 'No se pudo quitar la media.';
         this.cdr.markForCheck();
       },
@@ -1383,7 +1280,8 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   ingestMedia(link: EditableAdminMediaLink) {
-    if (!this.entityId || !this.canIngestMedia(link)) {
+    const editor = this.editorForLink(link);
+    if (!this.entityId || !editor || !this.canIngestMedia(link) || editor.ingesting) {
       return;
     }
 
@@ -1396,17 +1294,18 @@ previewContainer?: ElementRef<HTMLElement>;
 
     this.mediaError = '';
     this.mediaMessage = '';
-    link.ingesting = true;
+    editor.ingesting = true;
 
     this.adminApi.ingestMedia(this.entityId, link.id).subscribe({
       next: (createdLink) => {
-        link.ingesting = false;
-        this.upsertMediaLink(createdLink);
-        this.mediaMessage = 'Media ingerida correctamente. Se añadió como asset INGESTED sin reemplazar la referencia externa.';
-        this.cdr.markForCheck();
+        editor.ingesting = false;
+        this.mediaMessage = createdLink?.alreadyExisted
+          ? 'Ya existía un asset INGESTED derivado de esta referencia. Se reutiliza la asociación existente.'
+          : 'Media ingerida correctamente. Se añadió como asset INGESTED sin reemplazar la referencia externa.';
+        this.refreshMediaLibrary(true);
       },
       error: (err) => {
-        link.ingesting = false;
+        editor.ingesting = false;
         this.mediaError = err?.error?.message ?? 'No se pudo ingerir la media externa.';
         this.cdr.markForCheck();
       },
@@ -1414,7 +1313,8 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   promoteIngestedMedia(link: EditableAdminMediaLink) {
-    if (!this.entityId || !this.canPromoteIngestedMedia(link)) {
+    const editor = this.editorForLink(link);
+    if (!this.entityId || !editor || !this.canPromoteIngestedMedia(link) || editor.promoting) {
       return;
     }
 
@@ -1430,22 +1330,16 @@ previewContainer?: ElementRef<HTMLElement>;
 
     this.mediaError = '';
     this.mediaMessage = '';
-    link.promoting = true;
+    editor.promoting = true;
 
     this.adminApi.promoteIngestedMedia(this.entityId, link.id).subscribe({
-      next: (result) => {
-        link.promoting = false;
-        if (result?.promotedLink) {
-          this.upsertMediaLink(result.promotedLink);
-        }
-        if (result?.sourceLink) {
-          this.upsertMediaLink(result.sourceLink);
-        }
+      next: () => {
+        editor.promoting = false;
         this.mediaMessage = 'El asset INGESTED ocupa ahora el papel visual del externo. El asset externo sigue visible como referencia.';
-        this.cdr.markForCheck();
+        this.refreshMediaLibrary(true);
       },
       error: (err) => {
-        link.promoting = false;
+        editor.promoting = false;
         this.mediaError = err?.error?.message ?? 'No se pudo promover el asset INGESTED.';
         this.cdr.markForCheck();
       },
@@ -1453,7 +1347,8 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   restoreExternalMedia(link: EditableAdminMediaLink) {
-    if (!this.entityId || !this.canRestoreExternalMedia(link)) {
+    const editor = this.editorForLink(link);
+    if (!this.entityId || !editor || !this.canRestoreExternalMedia(link) || editor.restoring) {
       return;
     }
 
@@ -1469,22 +1364,16 @@ previewContainer?: ElementRef<HTMLElement>;
 
     this.mediaError = '';
     this.mediaMessage = '';
-    link.restoring = true;
+    editor.restoring = true;
 
     this.adminApi.restoreExternalMedia(this.entityId, link.id).subscribe({
-      next: (result) => {
-        link.restoring = false;
-        if (result?.restoredLink) {
-          this.upsertMediaLink(result.restoredLink);
-        }
-        if (result?.ingestedLink) {
-          this.upsertMediaLink(result.ingestedLink);
-        }
+      next: () => {
+        editor.restoring = false;
         this.mediaMessage = 'El asset externo recupera ahora el papel visual principal. El INGESTED sigue visible como referencia.';
-        this.cdr.markForCheck();
+        this.refreshMediaLibrary(true);
       },
       error: (err) => {
-        link.restoring = false;
+        editor.restoring = false;
         this.mediaError = err?.error?.message ?? 'No se pudo restaurar el asset externo.';
         this.cdr.markForCheck();
       },
@@ -1497,6 +1386,10 @@ previewContainer?: ElementRef<HTMLElement>;
     }
 
     link.role = role;
+    const editor = this.editorForLink(link);
+    if (editor) {
+      this.markEditorDirty(editor);
+    }
     this.saveMedia(link);
   }
 
@@ -1657,6 +1550,173 @@ previewContainer?: ElementRef<HTMLElement>;
       .join(' · ');
   }
 
+  private applyMediaLibraryState(entity: AdminEntityResponse, preserveDirtyEditors = true, clearedEditorId?: string) {
+    const library = entity.mediaLibrary;
+    const assetMap = new Map<string, AdminMediaAsset>();
+
+    for (const asset of library?.assets ?? []) {
+      assetMap.set(asset.assetId, asset);
+    }
+
+    const assignments = library?.assignments ?? this.legacyAssignmentsFromEntity(entity);
+    const nextPersisted = assignments
+      .map((assignment) => this.normalizeMediaAssignment(assignment, assetMap.get(assignment.assetId)))
+      .filter((assignment): assignment is EditableAdminMediaLink => !!assignment);
+
+    const existingEditors = new Map(this.mediaEditors.map((editor) => [editor.id, editor]));
+
+    this.persistedMediaLinks = this.sortMediaLinks(nextPersisted);
+    this.mediaEditors = this.persistedMediaLinks.map((persisted) => {
+      const existing = existingEditors.get(persisted.id);
+      const preserveDraft = preserveDirtyEditors && existing?.isDirty && existing.id !== clearedEditorId;
+
+      if (existing && preserveDraft) {
+        return {
+          ...existing,
+          persisted,
+        };
+      }
+
+      return {
+        id: persisted.id,
+        persisted,
+        draft: this.cloneMediaLink(persisted),
+        isDirty: false,
+        saveState: 'idle',
+        errorMessage: '',
+        removing: false,
+        ingesting: false,
+        promoting: false,
+        restoring: false,
+      };
+    });
+
+    this.resolvedVisualSlots = (library?.resolvedSlots ?? []).map((slot) => this.normalizeResolvedSlot(slot));
+    this.mediaWarningMessages = (library?.warnings ?? []).map((warning) => warning.message);
+    this.mediaCoverageSummary = library?.coverageSummary ?? null;
+  }
+
+  private normalizeMediaAssignment(assignment: AdminMediaAssignment, asset?: AdminMediaAsset): EditableAdminMediaLink | null {
+    if (!assignment?.assignmentId || !asset) {
+      return null;
+    }
+
+    return {
+      id: assignment.assignmentId,
+      role: assignment.role ?? 'CARD',
+      sortOrder: assignment.sortOrder ?? 0,
+      isPrimary: !!assignment.isPrimary,
+      displayMode: assignment.displayMode ?? '',
+      focalX: assignment.focalX ?? null,
+      focalY: assignment.focalY ?? null,
+      media: {
+        id: asset.id ?? asset.assetId,
+        url: asset.url ?? '',
+        derivedFromMediaId: asset.derivedFromMediaId ?? null,
+        canonicalUrl: asset.canonicalUrl ?? '',
+        displayUrl: asset.displayUrl ?? '',
+        sourcePageUrl: asset.sourcePageUrl ?? '',
+        alt: asset.alt ?? '',
+        source: asset.source ?? '',
+        photoBy: asset.photoBy ?? '',
+        license: asset.license ?? '',
+        provider: asset.provider ?? null,
+        qualityTier: asset.qualityTier ?? null,
+        width: asset.width ?? null,
+        height: asset.height ?? null,
+        originType: asset.originType ?? 'EXTERNAL_URL',
+        storageKey: asset.storageKey ?? null,
+        originalFilename: asset.originalFilename ?? null,
+        fileSize: asset.fileSize ?? null,
+      },
+    };
+  }
+
+  private legacyAssignmentsFromEntity(entity: AdminEntityResponse): AdminMediaAssignment[] {
+    return (entity.mediaLinks ?? []).map((link: any) => ({
+      assignmentId: link.id,
+      assetId: link.media?.id,
+      role: link.role ?? 'CARD',
+      sortOrder: link.sortOrder ?? 0,
+      isPrimary: !!link.isPrimary,
+      displayMode: link.displayMode ?? null,
+      focalX: link.focalX ?? null,
+      focalY: link.focalY ?? null,
+    }));
+  }
+
+  private normalizeResolvedSlot(slot: AdminResolvedSlot): VisualSlot {
+    const definitions: Record<VisualSlot['key'], Omit<VisualSlot, 'state' | 'count'>> = {
+      hero: { key: 'hero', label: 'Hero', description: 'Uso principal amplio o destacado.', previewUsage: 'hero', previewClass: 'slot-preview--hero' },
+      card: { key: 'card', label: 'Card', description: 'Listado y tarjetas del catálogo.', previewUsage: 'card', previewClass: 'slot-preview--card' },
+      detail: { key: 'detail', label: 'Detail', description: 'Panel principal del detalle.', previewUsage: 'detail', previewClass: 'slot-preview--detail' },
+      thumbnail: { key: 'thumbnail', label: 'Thumbnail', description: 'Relaciones, previews y formatos compactos.', previewUsage: 'thumbnail', previewClass: 'slot-preview--thumbnail' },
+      explorer3d: { key: 'explorer3d', label: 'Explorer 3D', description: 'Textura preferida para la vista inmersiva.', previewUsage: 'explorer3d', previewClass: 'slot-preview--explorer' },
+      gallery: { key: 'gallery', label: 'Gallery', description: 'Biblioteca adicional de imágenes.', previewUsage: 'gallery', previewClass: 'slot-preview--gallery' },
+      primary: { key: 'primary', label: 'Primary fallback', description: 'Compatibilidad y fallback general.', previewUsage: 'card', previewClass: 'slot-preview--card' },
+    };
+
+    return {
+      ...definitions[slot.slotKey],
+      state: {
+        item: slot.item,
+        source: slot.source,
+        matchedRole: slot.matchedRole,
+      },
+      count: slot.count,
+    };
+  }
+
+  private cloneMediaLink(link: EditableAdminMediaLink): EditableAdminMediaLink {
+    return {
+      ...link,
+      media: {
+        ...link.media,
+      },
+    };
+  }
+
+  private editorForLink(link: EditableAdminMediaLink): EditableAdminMediaEditor | null {
+    return this.mediaEditors.find((editor) => editor.id === link.id) ?? null;
+  }
+
+  private markEditorDirty(editor: EditableAdminMediaEditor) {
+    editor.isDirty = !this.mediaLinksEqual(editor.persisted, editor.draft);
+    if (!editor.isDirty && editor.saveState !== 'saving') {
+      editor.saveState = 'idle';
+      editor.errorMessage = '';
+    }
+  }
+
+  private syncMediaDraftFlags() {
+    for (const editor of this.mediaEditors) {
+      this.markEditorDirty(editor);
+    }
+  }
+
+  private mediaLinksEqual(a: EditableAdminMediaLink, b: EditableAdminMediaLink): boolean {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+
+  private refreshMediaLibrary(preserveDirtyEditors = true, clearedEditorId?: string) {
+    if (!this.entityId) {
+      return;
+    }
+
+    this.syncMediaDraftFlags();
+
+    this.adminApi.getById(this.entityId).subscribe({
+      next: (entity) => {
+        this.applyEntityResponse(entity, preserveDirtyEditors, clearedEditorId);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.mediaError = err?.error?.message ?? 'No se pudo refrescar la media.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   private normalizeMediaLink(link: any): EditableAdminMediaLink {
     return {
       id: link.id,
@@ -1686,26 +1746,7 @@ previewContainer?: ElementRef<HTMLElement>;
         originalFilename: link.media?.originalFilename ?? null,
         fileSize: link.media?.fileSize ?? null,
       },
-      saving: false,
-      removing: false,
-      ingesting: false,
-      promoting: false,
-      restoring: false,
     };
-  }
-
-  private upsertMediaLink(link: any) {
-    const normalized = this.normalizeMediaLink(link);
-    const existingIndex = this.mediaLinks.findIndex((item) => item.id === normalized.id);
-
-    if (existingIndex >= 0) {
-      const next = [...this.mediaLinks];
-      next[existingIndex] = normalized;
-      this.mediaLinks = this.sortMediaLinks(next);
-      return;
-    }
-
-    this.mediaLinks = this.sortMediaLinks([...this.mediaLinks, normalized]);
   }
 
   private sortMediaLinks(items: EditableAdminMediaLink[]) {

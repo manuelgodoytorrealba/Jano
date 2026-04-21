@@ -15,117 +15,190 @@
   }
 
   <section class="editor-layout">
-    <!-- LEFT COLUMN -->
-    <section class="form-wrap">
-      <div class="grid">
-        <label class="field">
-          <span>Tipo</span>
-          <select [(ngModel)]="form.type" name="type">
-            @for (type of types; track type) {
-              <option [value]="type">{{ type }}</option>
-            }
-          </select>
-        </label>
-
-        <label class="field">
-          <span>Status</span>
-          <select [(ngModel)]="form.status" name="status">
-            @for (status of statuses; track status) {
-              <option [value]="status">{{ status }}</option>
-            }
-          </select>
-        </label>
-
-        <label class="field">
-          <span>Nivel</span>
-          <select [(ngModel)]="form.contentLevel" name="contentLevel">
-            <option value="">—</option>
-            @for (level of levels; track level) {
-              <option [value]="level">{{ level }}</option>
-            }
-          </select>
-        </label>
-
-        <label class="field">
-          <span>Año inicio</span>
-          <input type="number" [(ngModel)]="form.startYear" name="startYear" />
-        </label>
-
-        <label class="field">
-          <span>Año fin</span>
-          <input type="number" [(ngModel)]="form.endYear" name="endYear" />
-        </label>
-
-        <div></div>
-
-        <label class="field full">
-          <span>Título</span>
-          <input
-            type="text"
-            [(ngModel)]="form.title"
-            (ngModelChange)="onTitleChange($event)"
-            name="title"
-          />
-        </label>
-
-        <label class="field full">
-          <span>Slug</span>
-          <input
-            type="text"
-            [(ngModel)]="form.slug"
-            (ngModelChange)="onSlugChange($event)"
-            name="slug"
-          />
-          <small class="hint">URL amigable de la entity.</small>
-        </label>
-
-        <label class="field full">
-          <span>Resumen</span>
-          <textarea
-            rows="5"
-            [(ngModel)]="form.summary"
-            name="summary"
-          ></textarea>
-        </label>
-
-       <label class="field full content-field">
-  <span>Contenido</span>
-  <textarea
-    #contentTextarea
-    rows="14"
-    [(ngModel)]="form.content"
-    (input)="onContentInput()"
-    (keydown.escape)="closeLinkSuggestions()"
-    name="content"
-  ></textarea>
-
-  @if (showLinkSuggestions) {
-    <div class="link-suggestions" (mousedown)="$event.preventDefault()">
-      @if (linkLoading) {
-        <div class="link-suggestion muted">Buscando entities…</div>
-      } @else if (linkSuggestions.length) {
-        @for (item of linkSuggestions; track item.id) {
+    <aside class="admin-sidebar">
+      <nav class="admin-dashboard-nav">
+        @for (section of dashboardSections; track section.id) {
           <button
             type="button"
-            class="link-suggestion"
-            (click)="insertEntityLink(item)"
+            class="admin-dashboard-nav__item"
+            [class.is-active]="activeDashboardSection === section.id"
+            (click)="scrollToSection(section.id)"
           >
-            <strong>{{ item.title }}</strong>
-            <span>{{ item.type }} · {{ item.slug }}</span>
+            {{ section.label }}
           </button>
         }
-      } @else {
-        <div class="link-suggestion muted">
-          No se encontraron entities para "{{ linkSearch }}"
-        </div>
-      }
-    </div>
-  }
-</label>
+      </nav>
+      <div class="admin-sidebar__summary">
+        <span class="admin-sidebar__eyebrow">Editor dashboard</span>
+        <h2 class="admin-sidebar__title">Recorre el contenido por bloques</h2>
+        <p class="admin-sidebar__text">
+          Usa esta navegación para saltar entre contenido, media, fuentes, colaboradores y relaciones sin perder el preview.
+        </p>
       </div>
+    </aside>
 
-      @if (supportsTypedDetails()) {
-        <section class="details-box">
+    <section class="form-wrap">
+
+      <section id="section-content" class="admin-dashboard-panel">
+        <div class="admin-dashboard-panel__head">
+          <div>
+            <h2>Contenido · Resumen</h2>
+            <p class="muted">Base editorial de la entity: identidad, metadata y cuerpo del texto.</p>
+          </div>
+          <span class="admin-dashboard-panel__pill">Paso 1</span>
+        </div>
+
+        <div class="grid">
+          <label class="field">
+            <span>Tipo</span>
+            <select [(ngModel)]="form.type" name="type">
+              @for (type of types; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Status</span>
+            <select [(ngModel)]="form.status" name="status">
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Nivel</span>
+            <select [(ngModel)]="form.contentLevel" name="contentLevel">
+              <option value="">—</option>
+              @for (level of levels; track level) {
+                <option [value]="level">{{ level }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Año inicio</span>
+            <input type="number" [(ngModel)]="form.startYear" name="startYear" />
+          </label>
+
+          <label class="field">
+            <span>Año fin</span>
+            <input type="number" [(ngModel)]="form.endYear" name="endYear" />
+          </label>
+
+          <div></div>
+
+          <label class="field full">
+            <span>Título</span>
+            <input
+              type="text"
+              [(ngModel)]="form.title"
+              (ngModelChange)="onTitleChange($event)"
+              name="title"
+            />
+          </label>
+
+          <label class="field full">
+            <span>Slug</span>
+            <input
+              type="text"
+              [(ngModel)]="form.slug"
+              (ngModelChange)="onSlugChange($event)"
+              name="slug"
+            />
+            <small class="hint">URL amigable de la entity.</small>
+          </label>
+
+          <label class="field full">
+            <span>Resumen</span>
+            <textarea
+              rows="5"
+              [(ngModel)]="form.summary"
+              name="summary"
+            ></textarea>
+            <small class="hint">{{ summaryFieldHint() }}</small>
+          </label>
+
+          <label class="field full content-field">
+            <span>{{ contentFieldLabel() }}</span>
+            <textarea
+              #contentTextarea
+              rows="14"
+              [(ngModel)]="form.content"
+              (input)="onContentInput()"
+              (keydown.escape)="closeLinkSuggestions()"
+              name="content"
+            ></textarea>
+            <small class="hint">{{ contentFieldHint() }}</small>
+
+            @if (form.type === 'ARTICLE') {
+              <div class="article-cheatsheet">
+                <div class="article-cheatsheet__head">
+                  <strong>Sintaxis rápida</strong>
+                  <span>Se renderiza en la vista pública del artículo.</span>
+                </div>
+
+                <div class="article-cheatsheet__grid">
+                  <div class="article-cheatsheet__item">
+                    <code># Título</code>
+                    <span>Título grande</span>
+                  </div>
+                  <div class="article-cheatsheet__item">
+                    <code>## Sección</code>
+                    <span>Subtítulo</span>
+                  </div>
+                  <div class="article-cheatsheet__item">
+                    <code>&gt; Cita destacada</code>
+                    <span>Quote editorial</span>
+                  </div>
+                  <div class="article-cheatsheet__item">
+                    <code>**texto**</code>
+                    <span>Negrita</span>
+                  </div>
+                  <div class="article-cheatsheet__item">
+                    <code>*texto*</code>
+                    <span>Cursiva</span>
+                  </div>
+                  <div class="article-cheatsheet__item">
+                    <code>[[guernica|obra]]</code>
+                    <span>Enlace con preview</span>
+                  </div>
+                  <div class="article-cheatsheet__item article-cheatsheet__item--wide">
+                    <code>:::lead ... :::</code>
+                    <span>Párrafo de apertura más grande</span>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (showLinkSuggestions) {
+              <div class="link-suggestions" (mousedown)="$event.preventDefault()">
+                @if (linkLoading) {
+                  <div class="link-suggestion muted">Buscando entities…</div>
+                } @else if (linkSuggestions.length) {
+                  @for (item of linkSuggestions; track item.id) {
+                    <button
+                      type="button"
+                      class="link-suggestion"
+                      (click)="insertEntityLink(item)"
+                    >
+                      <strong>{{ item.title }}</strong>
+                      <span>{{ item.type }} · {{ item.slug }}</span>
+                    </button>
+                  }
+                } @else {
+                  <div class="link-suggestion muted">
+                    No se encontraron entities para "{{ linkSearch }}"
+                  </div>
+                }
+              </div>
+            }
+          </label>
+        </div>
+
+        @if (supportsTypedDetails()) {
+          <section class="details-box">
           <div class="relations-head">
             <h3>{{ typedDetailsTitle() }}</h3>
             <p class="muted">Campos específicos que alimentan la ficha pública de esta entidad.</p>
@@ -227,10 +300,18 @@
               @if (detailsSaving) { Guardando ficha... } @else { Guardar ficha }
             </button>
           </div>
-        </section>
-      }
+          </section>
+        }
+      </section>
 
-      <section class="media-box">
+      <section id="section-media" class="admin-dashboard-panel media-box">
+        <div class="admin-dashboard-panel__head">
+          <div>
+            <h2>Media library</h2>
+            <p class="muted">Assets, uploads, slots visuales y cobertura de imagen.</p>
+          </div>
+          <span class="admin-dashboard-panel__pill">Paso 2</span>
+        </div>
         <div class="relations-head">
           <h3>Media Library</h3>
           <p class="muted">Gestiona referencias externas, uploads propios y su asignación visual para esta entity.</p>
@@ -279,7 +360,6 @@
 
                   <div class="slot-preview" [class]="slot.previewClass">
                     <app-jano-media
-                      [entity]="mediaEntityContext"
                       [media]="slot.state.item"
                       [usage]="slot.previewUsage"
                       [alt]="slot.state.item?.alt || form.title"
@@ -322,7 +402,6 @@
 
                   <div class="slot-preview slot-preview--mini" [class]="slot.previewClass">
                     <app-jano-media
-                      [entity]="mediaEntityContext"
                       [media]="slot.state.item"
                       [usage]="slot.previewUsage"
                       [alt]="slot.state.item?.alt || form.title"
@@ -353,20 +432,20 @@
           <div class="current-relations">
             <h4>Media asociada</h4>
 
-            @if (mediaLinks.length) {
+            @if (mediaEditors.length) {
               <div class="media-list">
-                @for (link of mediaLinks; track link.id) {
+                @for (editor of mediaEditors; track editor.id) {
                   <app-media-card-editor
-                    [link]="link"
+                    [editor]="editor"
                     [entityTitle]="form.title"
-                    [activeSlotLabels]="activeSlotLabels(link)"
-                    [canIngest]="canIngestMedia(link)"
-                    [canPromote]="canPromoteIngestedMedia(link)"
-                    [canRestore]="canRestoreExternalMedia(link)"
-                    [hasPromotedReplacement]="hasPromotedVisualReplacement(link)"
-                    [replacementTargetLabel]="replacementTargetLabel(link)"
-                    [replacementIngestedLabel]="replacementIngestedLabel(link)"
-                    [ingestedSourceLabel]="ingestedSourceLabel(link)"
+                    [activeSlotLabels]="activeSlotLabels(editor.persisted)"
+                    [canIngest]="canIngestMedia(editor.persisted)"
+                    [canPromote]="canPromoteIngestedMedia(editor.persisted)"
+                    [canRestore]="canRestoreExternalMedia(editor.persisted)"
+                    [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
+                    [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
+                    [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
+                    [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
                     (assignRole)="assignRole($event.link, $event.role)"
                     (save)="saveMedia($event)"
                     (remove)="removeMedia($event)"
@@ -386,7 +465,14 @@
       </section>
 
       @if (isEdit) {
-        <section class="sources-box">
+        <section id="section-sources" class="admin-dashboard-panel sources-box">
+          <div class="admin-dashboard-panel__head">
+            <div>
+              <h2>Fuentes</h2>
+              <p class="muted">Base documental y citas usadas para sostener el contenido.</p>
+            </div>
+            <span class="admin-dashboard-panel__pill">Paso 3</span>
+          </div>
           <div class="relations-head">
             <h3>Fuentes</h3>
             <p class="muted">Referencias documentales que alimentan la ficha pública.</p>
@@ -530,7 +616,14 @@
           </div>
         </section>
 
-        <section class="contributors-box">
+        <section id="section-contributors" class="admin-dashboard-panel contributors-box">
+          <div class="admin-dashboard-panel__head">
+            <div>
+              <h2>Colaboradores</h2>
+              <p class="muted">Autores, editores, asesores y créditos editoriales.</p>
+            </div>
+            <span class="admin-dashboard-panel__pill">Paso 4</span>
+          </div>
           <div class="relations-head">
             <h3>Colaboradores</h3>
             <p class="muted">Créditos y participantes vinculados a la entidad.</p>
@@ -606,7 +699,14 @@
       }
 
       @if (isEdit) {
-        <section class="relations-box">
+        <section id="section-relations" class="admin-dashboard-panel relations-box">
+          <div class="admin-dashboard-panel__head">
+            <div>
+              <h2>Relaciones</h2>
+              <p class="muted">Conecta la entity con otras obras, conceptos, periodos o artículos.</p>
+            </div>
+            <span class="admin-dashboard-panel__pill">Paso 5</span>
+          </div>
           <div class="relations-head">
             <h3>Relaciones</h3>
             <p class="muted">Conecta esta entity con otras del sistema.</p>
@@ -750,37 +850,37 @@
   <div class="success-box">{{ successMessage }}</div>
 }
 
-      <div class="actions">
-  <a class="btn ghost" routerLink="/admin">Cancelar</a>
+      <div class="actions admin-dashboard-actions">
+        <a class="btn ghost" routerLink="/admin">Cancelar</a>
 
-  <button
-    class="btn ghost"
-    type="button"
-    [disabled]="saving || loading"
-    (click)="submit('stay')"
-  >
-    @if (saving && submitMode === 'stay') {
-      Guardando...
-    } @else {
-      Guardar y seguir
-    }
-  </button>
+        <button
+          class="btn ghost"
+          type="button"
+          [disabled]="saving || loading"
+          (click)="submit('stay')"
+        >
+          @if (saving && submitMode === 'stay') {
+            Guardando...
+          } @else {
+            Guardar y seguir
+          }
+        </button>
 
-  <button
-    class="btn primary"
-    type="button"
-    [disabled]="saving || loading"
-    (click)="submit('back')"
-  >
-    @if (loading) {
-      Cargando...
-    } @else if (saving && submitMode === 'back') {
-      Guardando...
-    } @else {
-      Guardar
-    }
-  </button>
-</div>
+        <button
+          class="btn primary"
+          type="button"
+          [disabled]="saving || loading"
+          (click)="submit('back')"
+        >
+          @if (loading) {
+            Cargando...
+          } @else if (saving && submitMode === 'back') {
+            Guardando...
+          } @else {
+            Guardar
+          }
+        </button>
+      </div>
     </section>
 
     <!-- RIGHT COLUMN -->
@@ -793,7 +893,6 @@
       <div class="preview-card">
         <div class="preview-media-hero">
           <app-jano-media
-            [entity]="mediaEntityContext"
             [media]="primaryVisualSlots[0]?.state?.item || null"
             usage="hero"
             [alt]="primaryVisualSlots[0]?.state?.item?.alt || form.title"

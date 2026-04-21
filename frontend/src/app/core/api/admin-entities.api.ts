@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { apiUrl } from './api-base';
 
 export type AdminEntityPayload = {
-  type: 'ARTWORK' | 'ARTIST' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
+  type: 'ARTWORK' | 'ARTIST' | 'ARTICLE' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
   title: string;
   slug: string;
   summary?: string;
@@ -92,6 +92,101 @@ export type AdminUploadEntityMediaPayload = {
   focalY?: number | null;
 };
 
+export type AdminMediaAsset = {
+  assetId: string;
+  id: string;
+  url: string;
+  originType: string | null;
+  derivedFromMediaId: string | null;
+  canonicalUrl: string | null;
+  displayUrl: string | null;
+  sourcePageUrl: string | null;
+  storageKey: string | null;
+  originalFilename: string | null;
+  fileSize: number | null;
+  mimeType: string | null;
+  width: number | null;
+  height: number | null;
+  isVector: boolean;
+  provider: string | null;
+  qualityTier: string | null;
+  alt: string | null;
+  source: string | null;
+  photoBy: string | null;
+  license: string | null;
+  role: string | null;
+  sortOrder: number | null;
+  isPrimary: boolean;
+  displayMode: AdminMediaDisplayMode | null;
+  focalX: number | null;
+  focalY: number | null;
+};
+
+export type AdminMediaAssignment = {
+  assignmentId: string;
+  assetId: string;
+  role: AdminMediaRole | string | null;
+  sortOrder: number;
+  isPrimary: boolean;
+  displayMode: AdminMediaDisplayMode | null;
+  focalX: number | null;
+  focalY: number | null;
+};
+
+export type AdminResolvedSlot = {
+  slotKey: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d' | 'gallery' | 'primary';
+  source: 'explicit' | 'fallback' | 'empty';
+  matchedRole: string | null;
+  item: AdminMediaAsset | null;
+  count?: number;
+};
+
+export type AdminMediaWarning = {
+  code: string;
+  severity: 'warning';
+  message: string;
+};
+
+export type AdminMediaCoverageSummary = {
+  coveredSlots: string[];
+  emptySlots: string[];
+  fallbackSlots: string[];
+  explicitSlots: string[];
+  assetCount: number;
+  assignmentCount: number;
+  unusedAssetCount: number;
+};
+
+export type AdminMediaLibraryPayload = {
+  assets: AdminMediaAsset[];
+  assignments: AdminMediaAssignment[];
+  resolvedSlots: AdminResolvedSlot[];
+  warnings: AdminMediaWarning[];
+  coverageSummary: AdminMediaCoverageSummary;
+};
+
+export type AdminEntityResponse = {
+  id: string;
+  type: AdminEntityPayload['type'];
+  title: string;
+  slug: string;
+  summary?: string | null;
+  content?: string | null;
+  contentLevel?: AdminEntityPayload['contentLevel'] | null;
+  status?: AdminEntityPayload['status'] | null;
+  startYear?: number | null;
+  endYear?: number | null;
+  mediaLinks?: any[];
+  mediaLibrary?: AdminMediaLibraryPayload;
+  resolvedMedia?: any;
+  artwork?: any;
+  artist?: any;
+  concept?: any;
+  period?: any;
+  sourceRefs?: any[];
+  contributors?: any[];
+};
+
 @Injectable({ providedIn: 'root' })
 export class AdminEntitiesApi {
   private http = inject(HttpClient);
@@ -112,7 +207,7 @@ export class AdminEntitiesApi {
   }
 
   getById(id: string) {
-    return this.http.get<any>(`${this.baseUrl}/admin/${id}`);
+    return this.http.get<AdminEntityResponse>(`${this.baseUrl}/admin/${id}`);
   }
 
   updateDetails(id: string, data: AdminEntityDetailsPayload) {
