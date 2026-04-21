@@ -1,13 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaOriginType, MediaRole } from '@prisma/client';
-import { mkdir, unlink, writeFile } from 'fs/promises';
+import { mkdir, readFile, unlink, writeFile } from 'fs/promises';
 import { EntitiesService } from './entities.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { detectImageDimensionsFromBuffer } from './image-metadata';
 
 jest.mock('fs/promises', () => ({
   mkdir: jest.fn(),
+  readFile: jest.fn(),
   writeFile: jest.fn(),
   unlink: jest.fn(),
+}));
+
+jest.mock('./image-metadata', () => ({
+  detectImageDimensionsFromBuffer: jest.fn(),
 }));
 
 describe('EntitiesService media admin workflows', () => {
@@ -33,6 +39,15 @@ describe('EntitiesService media admin workflows', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    prisma.entity.findUnique.mockReset();
+    prisma.media.create.mockReset();
+    prisma.media.findUnique.mockReset();
+    prisma.entityMedia.create.mockReset();
+    prisma.entityMedia.findFirst.mockReset();
+    prisma.entityMedia.findMany.mockReset();
+    prisma.entityMedia.findUniqueOrThrow.mockReset();
+    prisma.entityMedia.aggregate.mockReset();
+    prisma.$transaction.mockReset();
     prisma.entity.findUnique.mockResolvedValue({ id: 'entity-1' });
     prisma.media.create.mockResolvedValue({ id: 'media-1' });
     prisma.media.findUnique.mockResolvedValue(null);
@@ -53,8 +68,10 @@ describe('EntitiesService media admin workflows', () => {
     }));
 
     (mkdir as jest.Mock).mockResolvedValue(undefined);
+    (readFile as jest.Mock).mockResolvedValue(Buffer.from([1, 2, 3]));
     (writeFile as jest.Mock).mockResolvedValue(undefined);
     (unlink as jest.Mock).mockResolvedValue(undefined);
+    (detectImageDimensionsFromBuffer as jest.Mock).mockReturnValue({ width: 1200, height: 900 });
     global.fetch = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -166,13 +183,14 @@ describe('EntitiesService media admin workflows', () => {
       originalname: 'original-file.jpg',
       mimetype: 'image/jpeg',
       size: 123456,
+      path: '/tmp/uploaded-file.jpg',
     }, {
       alt: ' Obra subida ',
       source: '',
       photoBy: ' Equipo JANO ',
       license: ' Uso interno ',
-      width: 1200,
-      height: 900,
+      width: 10,
+      height: 10,
       role: MediaRole.CARD,
       sortOrder: 2,
       isPrimary: false,
@@ -225,7 +243,8 @@ describe('EntitiesService media admin workflows', () => {
   });
 
   it('ingests an external media link into a derived INGESTED gallery asset preserving lineage and visual metadata', async () => {
-    prisma.entityMedia.findFirst.mockResolvedValue({
+    prisma.entityMedia.findFirst
+      .mockResolvedValueOnce({
       id: 'link-external-1',
       entityId: 'entity-1',
       mediaId: 'media-external-1',
@@ -251,8 +270,10 @@ describe('EntitiesService media admin workflows', () => {
         photoBy: 'Photo credit',
         license: 'CC BY',
       },
-    });
+      })
+      .mockResolvedValueOnce(null);
     prisma.entityMedia.aggregate.mockResolvedValue({ _max: { sortOrder: 6 } });
+    (detectImageDimensionsFromBuffer as jest.Mock).mockReturnValue({ width: 1440, height: 960 });
 
     const transactionMediaCreate = jest.fn().mockResolvedValue({ id: 'media-ingested-1' });
     const transactionEntityMediaCreate = jest.fn().mockResolvedValue({
@@ -296,8 +317,8 @@ describe('EntitiesService media admin workflows', () => {
         canonicalUrl: 'https://museum.example.com/work/source',
         sourcePageUrl: 'https://museum.example.com/work',
         derivedFromMediaId: 'media-external-1',
-        width: 1200,
-        height: 900,
+        width: 1440,
+        height: 960,
         provider: 'MUSEUM',
         qualityTier: 'HIGH',
         alt: 'Detalle original',
@@ -444,6 +465,47 @@ describe('EntitiesService media admin workflows', () => {
         isPrimary: false,
       }),
     });
+  });
+
+  it('returns an existing derived ingested asset instead of ingesting twice', async () => {
+    const existingLink = {
+      id: 'link-ingested-existing',
+      entityId: 'entity-1',
+      mediaId: 'media-ingested-existing',
+      role: MediaRole.GALLERY,
+      sortOrder: 7,
+      isPrimary: false,
+      displayMode: 'CONTAIN',
+      focalX: 21,
+      focalY: 73,
+      media: {
+        id: 'media-ingested-existing',
+        originType: MediaOriginType.INGESTED,
+        derivedFromMediaId: 'media-external-1',
+      },
+    };
+
+    prisma.entityMedia.findFirst
+      .mockResolvedValueOnce({
+        id: 'link-external-1',
+        entityId: 'entity-1',
+        mediaId: 'media-external-1',
+        media: {
+          id: 'media-external-1',
+          originType: MediaOriginType.EXTERNAL_URL,
+          url: 'https://images.example.com/source.jpg',
+          displayUrl: null,
+        },
+      })
+      .mockResolvedValueOnce(existingLink);
+
+    const result = await service.adminIngestMedia('entity-1', 'link-external-1');
+
+    expect(result).toEqual({
+      ...existingLink,
+      alreadyExisted: true,
+    });
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it('restores the external asset as the main visual and demotes the promoted ingested asset back to gallery', async () => {

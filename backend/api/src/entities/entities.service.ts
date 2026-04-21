@@ -12,10 +12,11 @@ import { CreateSourceRefDto } from './dto/create-source-ref.dto';
 import { UpdateSourceRefDto } from './dto/update-source-ref.dto';
 import { CreateContributorDto } from './dto/create-contributor.dto';
 import { UpdateContributorDto } from './dto/update-contributor.dto';
-import { attachResolvedMedia, resolvedMediaUrl, type ResolvedMediaPayload } from './media.resolver';
-import { mkdir, unlink, writeFile } from 'fs/promises';
+import { attachResolvedMedia, buildAdminMediaLibrary, resolvedMediaUrl, type ResolvedMediaPayload } from './media.resolver';
+import { mkdir, readFile, unlink, writeFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
+import { detectImageDimensionsFromBuffer } from './image-metadata';
 
 type GraphNodePayload = {
   id: string;
@@ -36,6 +37,7 @@ type UploadedImageFile = {
   originalname: string;
   mimetype: string;
   size: number;
+  path: string;
 };
 
 type GraphEdgePayload = {
@@ -918,7 +920,13 @@ export class EntitiesService {
       throw new NotFoundException('Entity not found');
     }
 
-    return entity;
+    const resolvedEntity = this.withResolvedMedia(entity);
+
+    return {
+      ...entity,
+      resolvedMedia: resolvedEntity.resolvedMedia,
+      mediaLibrary: buildAdminMediaLibrary(entity),
+    };
   }
 
   async adminUpdateDetails(id: string, dto: UpdateEntityDetailsDto) {
@@ -1071,6 +1079,9 @@ export class EntitiesService {
       throw new BadRequestException('Solo se permiten imágenes raster válidas');
     }
 
+    const fileBuffer = await readFile(file.path);
+    const dimensions = detectImageDimensionsFromBuffer(fileBuffer, file.mimetype);
+
     const storageKey = `media/${file.filename}`;
     const publicUrl = this.buildPublicUploadUrl(storageKey);
 
@@ -1084,8 +1095,8 @@ export class EntitiesService {
         originalFilename: file.originalname,
         fileSize: file.size,
         mimeType: file.mimetype,
-        width: dto.width ?? undefined,
-        height: dto.height ?? undefined,
+        width: dimensions.width ?? undefined,
+        height: dimensions.height ?? undefined,
         alt: dto.alt?.trim() || undefined,
         source: dto.source?.trim() || 'Uploaded via admin',
         photoBy: dto.photoBy?.trim() || undefined,
@@ -1129,6 +1140,31 @@ export class EntitiesService {
       throw new BadRequestException('Solo se pueden ingestar assets con origen EXTERNAL_URL');
     }
 
+    const existingDerived = await this.prisma.entityMedia.findFirst({
+      where: {
+        entityId,
+        media: {
+          originType: MediaOriginType.INGESTED,
+          derivedFromMediaId: link.media.id,
+        },
+      },
+      include: {
+        media: true,
+      },
+      orderBy: [
+        { isPrimary: 'desc' },
+        { sortOrder: 'asc' },
+        { id: 'asc' },
+      ],
+    });
+
+    if (existingDerived) {
+      return {
+        ...existingDerived,
+        alreadyExisted: true,
+      };
+    }
+
     const sourceUrl = link.media.displayUrl?.trim() || link.media.url?.trim();
     if (!sourceUrl) {
       throw new BadRequestException('La media externa no tiene una URL descargable');
@@ -1161,6 +1197,8 @@ export class EntitiesService {
     if (buffer.length > MAX_INGEST_SIZE_BYTES) {
       throw new BadRequestException('La media externa supera el tamaño máximo permitido para ingestión');
     }
+
+    const detectedDimensions = detectImageDimensionsFromBuffer(buffer, mimeType);
 
     const extension = this.inferFileExtension(sourceUrl, mimeType);
     const filename = `${Date.now()}-${randomUUID()}${extension}`;
@@ -1203,8 +1241,8 @@ export class EntitiesService {
             originalFilename: this.inferOriginalFilename(sourceUrl, extension),
             fileSize: buffer.length,
             mimeType,
-            width: link.media.width ?? undefined,
-            height: link.media.height ?? undefined,
+            width: detectedDimensions.width ?? link.media.width ?? undefined,
+            height: detectedDimensions.height ?? link.media.height ?? undefined,
             provider: link.media.provider,
             qualityTier: link.media.qualityTier,
             originType: MediaOriginType.INGESTED,
@@ -1421,6 +1459,16 @@ export class EntitiesService {
 
     if (!link) {
       throw new NotFoundException('Entity media link not found');
+    }
+
+    if (
+      link.media.originType !== MediaOriginType.EXTERNAL_URL
+      && (
+        (dto.url !== undefined && dto.url.trim() !== link.media.url)
+        || (dto.displayUrl !== undefined && (dto.displayUrl?.trim() || null) !== (link.media.displayUrl ?? null))
+      )
+    ) {
+      throw new BadRequestException('No se puede editar manualmente URL o display URL en assets locales');
     }
 
     const mediaData = {

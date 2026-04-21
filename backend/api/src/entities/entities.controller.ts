@@ -31,6 +31,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { mkdirSync } from 'fs';
+import { unlink } from 'fs/promises';
 import { randomUUID } from 'crypto';
 
 type UploadedImageFile = {
@@ -38,6 +39,7 @@ type UploadedImageFile = {
   originalname: string;
   mimetype: string;
   size: number;
+  path: string;
 };
 
 const ALLOWED_UPLOAD_MIME_TYPES = new Set([
@@ -152,12 +154,20 @@ export class EntitiesController {
       },
     }),
   )
-  uploadMedia(
+  async uploadMedia(
     @Param('id') id: string,
     @UploadedFile() file: UploadedImageFile,
     @Body() dto: UploadEntityMediaDto,
   ) {
-    return this.service.adminUploadMedia(id, file, dto);
+    try {
+      return await this.service.adminUploadMedia(id, file, dto);
+    } catch (error) {
+      if (file?.path) {
+        await unlink(file.path).catch(() => undefined);
+      }
+
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

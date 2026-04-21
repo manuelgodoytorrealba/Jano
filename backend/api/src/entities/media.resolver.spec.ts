@@ -1,4 +1,4 @@
-import { buildResolvedMedia, resolveEntityMedia } from './media.resolver';
+import { buildAdminMediaLibrary, buildResolvedMedia, resolveEntityMedia } from './media.resolver';
 
 describe('media.resolver', () => {
   const createLink = (overrides: Record<string, any> = {}) => ({
@@ -111,5 +111,29 @@ describe('media.resolver', () => {
     };
 
     expect(resolveEntityMedia(entity, 'detail')?.id).toBe('raster-media');
+  });
+
+  it('builds canonical admin slot states and warnings from the backend resolver', () => {
+    const entity = {
+      type: 'ARTWORK',
+      mediaLinks: [
+        createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: true, alt: '' }),
+        createLink({ id: 'detail', mediaId: 'detail-media', role: 'DETAIL' }),
+      ],
+    };
+
+    const library = buildAdminMediaLibrary(entity);
+
+    expect(library.assignments).toHaveLength(2);
+    expect(library.assets).toHaveLength(2);
+    expect(library.resolvedSlots.find((slot) => slot.slotKey === 'hero')).toEqual(
+      expect.objectContaining({
+        source: 'fallback',
+        matchedRole: 'PRIMARY_LEGACY',
+      }),
+    );
+    expect(library.warnings.map((warning) => warning.code)).toEqual(
+      expect.arrayContaining(['media.hero_missing', 'media.card_missing', 'media.alt_missing']),
+    );
   });
 });
