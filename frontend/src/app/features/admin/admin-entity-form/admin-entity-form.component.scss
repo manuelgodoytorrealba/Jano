@@ -19,11 +19,12 @@
 
     .editor-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      grid-template-columns: 220px minmax(0, 1fr) minmax(360px, 0.72fr);
       gap: 18px;
       align-items: start;
     }
 
+    .admin-sidebar,
     .form-wrap,
     .preview-wrap {
       border: 1px solid rgba(0,0,0,.08);
@@ -32,9 +33,128 @@
       padding: 18px;
     }
 
+    .admin-sidebar {
+      position: sticky;
+      top: 20px;
+      display: grid;
+      gap: 18px;
+      align-self: start;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(247,244,239,.92));
+      box-shadow: 0 18px 44px rgba(25, 20, 14, .05);
+    }
+
     .form-wrap {
       display: grid;
+      gap: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(252,252,252,.96));
+    }
+
+    .admin-dashboard-nav {
+      display: grid;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      border-radius: 18px;
+      background: transparent;
+    }
+
+    .admin-sidebar__summary {
+      display: grid;
+      gap: 8px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(0,0,0,.06);
+    }
+
+    .admin-sidebar__eyebrow {
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #8b7662;
+      font-weight: 700;
+    }
+
+    .admin-sidebar__title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.12;
+    }
+
+    .admin-sidebar__text {
+      margin: 0;
+      color: #716860;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .admin-dashboard-nav__item {
+      text-align: left;
+      padding: 9px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.88);
+      color: #2a2a2a;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .14s ease, background .14s ease, color .14s ease, border-color .14s ease;
+    }
+
+    .admin-dashboard-nav__item:hover {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+      transform: translateX(2px);
+    }
+
+    .admin-dashboard-nav__item.is-active {
+      background: linear-gradient(180deg, rgba(24,24,24,.98), rgba(12,12,12,.96));
+      color: #fff;
+      border-color: #111;
+      box-shadow: 0 10px 24px rgba(17,17,17,.14);
+    }
+
+    .admin-dashboard-panel {
+      display: grid;
       gap: 16px;
+      padding: 20px;
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(250,250,250,.95));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8),
+        0 12px 30px rgba(22, 18, 14, .04);
+      scroll-margin-top: 96px;
+    }
+
+    .admin-dashboard-panel__head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+
+    .admin-dashboard-panel__head h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .admin-dashboard-panel__pill {
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      color: #6a625d;
+      background: rgba(255,255,255,.92);
+      white-space: nowrap;
     }
 
     .preview-wrap {
@@ -42,6 +162,7 @@
       top: 20px;
       display: grid;
       gap: 14px;
+      box-shadow: 0 18px 44px rgba(25, 20, 14, .05);
     }
 
     .preview-head {
@@ -297,28 +418,11 @@
       font-size: 14px;
     }
 
-    .relations-box {
-      margin-top: 8px;
-      border-top: 1px solid rgba(0,0,0,.08);
-      padding-top: 18px;
-      display: grid;
-      gap: 16px;
-    }
-
+    .relations-box,
     .details-box,
-    .media-box {
-      margin-top: 8px;
-      border-top: 1px solid rgba(0,0,0,.08);
-      padding-top: 18px;
-      display: grid;
-      gap: 16px;
-    }
-
+    .media-box,
     .sources-box,
     .contributors-box {
-      margin-top: 8px;
-      border-top: 1px solid rgba(0,0,0,.08);
-      padding-top: 18px;
       display: grid;
       gap: 16px;
     }
@@ -1036,8 +1140,99 @@
       color: #666;
     }
 
+    .article-cheatsheet {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid rgba(127, 74, 27, .12);
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.94), rgba(248,244,239,.92));
+    }
+
+    .article-cheatsheet__head {
+      display: grid;
+      gap: 4px;
+    }
+
+    .article-cheatsheet__head strong {
+      color: #2a221b;
+      font-size: 14px;
+    }
+
+    .article-cheatsheet__head span {
+      color: #6e6258;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .article-cheatsheet__grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .article-cheatsheet__item {
+      display: grid;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.72);
+    }
+
+    .article-cheatsheet__item--wide {
+      grid-column: 1 / -1;
+    }
+
+    .article-cheatsheet__item code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: #7f4a1b;
+      font-weight: 600;
+    }
+
+    .article-cheatsheet__item span {
+      font-size: 12px;
+      color: #665d56;
+      line-height: 1.45;
+    }
+
+    .admin-dashboard-actions {
+      position: sticky;
+      bottom: 0;
+      padding: 14px 0 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.96) 34%);
+    }
+
     @media (max-width: 860px) {
       .grid {
         grid-template-columns: 1fr;
+      }
+
+      .article-cheatsheet__grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .editor-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-sidebar {
+        position: static;
+      }
+
+      .admin-dashboard-nav {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+
+      .admin-dashboard-actions {
+        position: static;
+        background: transparent;
+        padding-top: 0;
       }
     }

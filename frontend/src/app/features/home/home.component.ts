@@ -21,7 +21,7 @@ export class HomeComponent {
     this.seo.setPageMeta({
       title: 'JANO | Discover Art Through Visual Exploration',
       description:
-        'Explore artworks, artists, movements, periods, and concepts in JANO through an immersive, visual-first art discovery experience.',
+        'Explore artworks, articles, artists, movements, periods, and concepts in JANO through an immersive, visual-first art discovery experience.',
       path: '/',
       image: '/assets/home/artwork.jpg',
     });
@@ -39,6 +39,18 @@ export class HomeComponent {
       imageWidth: 736,
       imageHeight: 736,
       routeType: 'artwork',
+    },
+    {
+      id: 'article',
+      eyebrow: 'Article',
+      title: 'Artículos',
+      description: 'Lecturas editoriales, opinión y conexiones entre obras, autores e ideas.',
+      meta: 'Article',
+      cta: 'Explorar artículos →',
+      image: '/assets/home/concept.jpg',
+      imageWidth: 639,
+      imageHeight: 960,
+      routeType: 'article',
     },
     {
       id: 'artist',

@@ -6,6 +6,78 @@
   </div>
 
   <div class="entity-detail__layout">
+    @if (isArticle(entity)) {
+    <section class="entity-section entity-glass entity-section--wide entity-article-hero">
+      <div class="entity-article-hero__media">
+        <app-jano-media
+          [entity]="entity"
+          usage="hero"
+          [alt]="visualAlt(entity)"
+          [lazy]="false"
+          priority="high"
+        />
+        <div class="entity-article-hero__overlay"></div>
+      </div>
+
+      <div class="entity-article-hero__content">
+        <div class="entity-article-hero__meta">
+          <div class="entity-header__badges">
+            <span class="ds-badge entity-badge">{{ entity.status }}</span>
+            @if (entity.contentLevel) {
+            <span class="ds-badge entity-badge">{{ entity.contentLevel }}</span>
+            }
+            <span class="ds-badge entity-badge">ARTICLE</span>
+          </div>
+
+          <div class="entity-article-hero__byline">
+            @if (articleByline(entity); as author) {
+            <span>Por {{ author }}</span>
+            }
+            @if (articleDateLabel(entity); as dateLabel) {
+            <span>{{ dateLabel }}</span>
+            }
+            @if (entity.startYear || entity.endYear) {
+            <span>
+              {{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}
+            </span>
+            }
+          </div>
+        </div>
+
+        <div class="entity-article-hero__title-block">
+          <h1 class="entity-article-hero__title">{{ entity.title }}</h1>
+
+          @if (entity.summary) {
+          <p class="entity-article-hero__summary">{{ entity.summary }}</p>
+          }
+        </div>
+
+        @if (auth.isLoggedIn) {
+        <div class="entity-header__actions entity-header__actions--article">
+          <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved()" [disabled]="saveLoading()"
+            (click)="toggleSave(entity.id)">
+            @if (saveLoading()) {
+            {{ isSaved() ? 'Quitando...' : 'Guardando...' }}
+            } @else if (isSaved()) {
+            Guardado ✓
+            } @else {
+            Guardar
+            }
+          </button>
+
+          <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading()"
+            (click)="toggleCollectionsPanel()">
+            @if (collectionsLoading()) {
+            Cargando...
+            } @else {
+            Añadir a colección
+            }
+          </button>
+        </div>
+        }
+      </div>
+    </section>
+    } @else {
     <section class="entity-explorer entity-glass">
       @defer (on idle) {
       <app-graph [slug]="entity.slug" [imageUrl]="visualUrl(entity)"
@@ -37,6 +109,7 @@
       </div>
       }
     </section>
+    }
 
     @if (showCollectionsPanel() && auth.isLoggedIn) {
     <section class="collections-panel entity-glass">
@@ -73,7 +146,7 @@
     </section>
     }
 
-    <section class="entity-section entity-glass entity-section--wide entity-story">
+    <section class="entity-section entity-glass entity-section--wide entity-story" [class.entity-story--article]="isArticle(entity)">
       <header class="entity-topbar entity-topbar--embedded">
         <div class="entity-topbar__row">
           <div class="entity-topbar__lead">
@@ -132,7 +205,7 @@
 
       @if (entity.content) {
       <div class="entity-section__head">
-        <p class="section-label">Ensayo</p>
+        <p class="section-label">{{ storySectionLabel(entity) }}</p>
       </div>
 
       <div class="entity-prose">
@@ -146,6 +219,35 @@
     </section>
 
     <div class="entity-detail__sections">
+      @if (isArticle(entity)) {
+      <section class="entity-section entity-glass entity-article-graph">
+        <div class="entity-section__head">
+          <p class="section-label">Mapa de conexiones</p>
+        </div>
+
+        @defer (on idle) {
+        <app-graph [slug]="entity.slug" [imageUrl]="visualUrl(entity)"
+          [imageAlt]="visualAlt(entity)" [entityTitle]="entity.title" [entityType]="entity.type"
+          [imageMeta]="{
+            source: detailMedia(entity)?.source ?? null,
+            photoBy: detailMedia(entity)?.photoBy ?? null,
+            license: detailMedia(entity)?.license ?? null
+          }" />
+        } @placeholder {
+        <div class="entity-explorer__fallback entity-explorer__fallback--compact">
+          <div class="entity-explorer__fallback-media">
+            <app-jano-media
+              [entity]="entity"
+              usage="detail"
+              [alt]="visualAlt(entity)"
+              [lazy]="false"
+              priority="high"
+            />
+          </div>
+        </div>
+        }
+      </section>
+      } @else {
       <section class="entity-section entity-glass">
         <div class="entity-section__head">
           <p class="section-label">Ficha</p>
@@ -207,6 +309,7 @@
         <p class="text-muted">Sin ficha específica para este tipo.</p>
         }
       </section>
+      }
 
       <section class="entity-section entity-glass">
         <div class="entity-section__head">

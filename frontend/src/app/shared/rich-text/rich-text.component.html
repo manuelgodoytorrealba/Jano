@@ -1,7 +1,41 @@
-<span class="rt">
+<div class="rt">
+  @for (block of blocks; track $index) {
+    @if (block.kind === 'heading' && block.level === 1) {
+      <h1 class="rt-block rt-h1">
+        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens }" />
+      </h1>
+    } @else if (block.kind === 'heading' && block.level === 2) {
+      <h2 class="rt-block rt-h2">
+        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens }" />
+      </h2>
+    } @else if (block.kind === 'heading' && block.level === 3) {
+      <h3 class="rt-block rt-h3">
+        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens }" />
+      </h3>
+    } @else if (block.kind === 'lead') {
+      <p class="rt-block rt-lead">
+        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens }" />
+      </p>
+    } @else if (block.kind === 'quote') {
+      <blockquote class="rt-block rt-quote">
+        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens }" />
+      </blockquote>
+    } @else {
+      <p class="rt-block rt-paragraph">
+        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens }" />
+      </p>
+    }
+  }
+</div>
+
+<ng-template #inlineTokens let-tokens>
   @for (t of tokens; track $index) {
     @if (t.kind === 'text') {
       <span>{{ t.value }}</span>
+    } @else if (t.kind === 'strong') {
+      <strong>{{ t.value }}</strong>
+    } @else if (t.kind === 'em') {
+      <em>{{ t.value }}</em>
     } @else {
       <span class="link-wrap">
         <a
@@ -59,4 +93,4 @@
       </span>
     }
   }
-</span>
+</ng-template>

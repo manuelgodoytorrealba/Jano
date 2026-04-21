@@ -15,7 +15,7 @@ import {
 } from 'rxjs';
 import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
 
-type AdminType = '' | 'ARTWORK' | 'ARTIST' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
+type AdminType = '' | 'ARTWORK' | 'ARTIST' | 'ARTICLE' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
 type AdminStatus = '' | 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED';
 
 @Component({
@@ -33,6 +33,7 @@ export class AdminEntitiesComponent {
   types: Exclude<AdminType, ''>[] = [
     'ARTWORK',
     'ARTIST',
+    'ARTICLE',
     'CONCEPT',
     'MOVEMENT',
     'PERIOD',

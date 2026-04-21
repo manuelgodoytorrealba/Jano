@@ -73,6 +73,7 @@ export class EntitiesService {
 
   private readonly HOME_TYPES: EntityType[] = [
     'ARTWORK',
+    'ARTICLE',
     'PERIOD',
     'MOVEMENT',
     'CONCEPT',

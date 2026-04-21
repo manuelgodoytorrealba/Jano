@@ -67,6 +67,42 @@ export class EntityComponent {
     return this.detailMedia(entity)?.alt || entity?.title || 'Imagen de entidad';
   }
 
+  isArticle(entity: any): boolean {
+    return entity?.type === 'ARTICLE';
+  }
+
+  articleByline(entity: any): string | null {
+    const contributors = Array.isArray(entity?.contributors) ? entity.contributors : [];
+    const authorish =
+      contributors.find((item: any) => ['author', 'autor', 'writer', 'editor'].includes(`${item?.role ?? ''}`.trim().toLowerCase()))
+      ?? contributors[0]
+      ?? null;
+
+    return authorish?.name?.trim() || null;
+  }
+
+  articleDateLabel(entity: any): string | null {
+    const value = entity?.createdAt ?? null;
+    if (!value) {
+      return null;
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+
+    return new Intl.DateTimeFormat('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(date);
+  }
+
+  storySectionLabel(entity: any): string {
+    return this.isArticle(entity) ? 'Artículo' : 'Ensayo';
+  }
+
   detailHeroSubtitle(entity: any): string | null {
     const parts: string[] = [];
     const author = entity?.type === 'ARTWORK' ? this.firstRelated(entity, 'CREATED_BY')?.title : null;
@@ -123,6 +159,8 @@ export class EntityComponent {
         return 'Obra';
       case 'ARTIST':
         return 'Artista';
+      case 'ARTICLE':
+        return 'Artículo';
       case 'CONCEPT':
         return 'Concepto';
       case 'PERIOD':
@@ -138,6 +176,8 @@ export class EntityComponent {
         return 'Materialidad y contexto';
       case 'ARTIST':
         return 'Trayectoria esencial';
+      case 'ARTICLE':
+        return 'Contexto editorial';
       case 'CONCEPT':
         return 'Definición base';
       case 'PERIOD':
@@ -148,6 +188,13 @@ export class EntityComponent {
   }
 
   detailFactSummary(entity: any): string | null {
+    if (entity?.type === 'ARTICLE') {
+      return this.joinFactSummary([
+        this.articleByline(entity),
+        entity.summary,
+      ]);
+    }
+
     if (entity?.type === 'ARTWORK' && entity.artwork) {
       return this.joinFactSummary([
         entity.artwork.technique,

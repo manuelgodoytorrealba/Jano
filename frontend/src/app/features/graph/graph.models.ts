@@ -1,6 +1,7 @@
 export type GraphEntityType =
   | 'ARTIST'
   | 'ARTWORK'
+  | 'ARTICLE'
   | 'MOVEMENT'
   | 'CONCEPT'
   | 'PERIOD'

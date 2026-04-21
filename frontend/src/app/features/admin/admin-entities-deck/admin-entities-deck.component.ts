@@ -36,6 +36,16 @@ export class AdminEntitiesDeckComponent {
             routeType: 'artist',
         },
         {
+            id: 'admin-article',
+            eyebrow: 'Admin',
+            title: 'Artículos',
+            description: 'Gestiona piezas editoriales, ensayos y opinión enlazable.',
+            meta: 'Entity Type',
+            cta: 'Abrir artículos →',
+            image: '/assets/home/concept.jpg',
+            routeType: 'article',
+        },
+        {
             id: 'admin-movement',
             eyebrow: 'Admin',
             title: 'Movimientos',

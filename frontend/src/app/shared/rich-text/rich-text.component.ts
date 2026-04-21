@@ -5,20 +5,29 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { entityVisualUrl } from '../media/media.utils';
 import { JanoMediaComponent } from '../media/jano-media.component';
 
-type Token =
+type InlineToken =
   | { kind: 'text'; value: string }
+  | { kind: 'strong'; value: string }
+  | { kind: 'em'; value: string }
   | { kind: 'link'; slug: string; label: string };
+
+type Block =
+  | { kind: 'heading'; level: 1 | 2 | 3; tokens: InlineToken[] }
+  | { kind: 'paragraph'; tokens: InlineToken[] }
+  | { kind: 'lead'; tokens: InlineToken[] }
+  | { kind: 'quote'; tokens: InlineToken[] };
 
 @Component({
   standalone: true,
   selector: 'app-rich-text',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, JanoMediaComponent],
+  imports: [NgTemplateOutlet, RouterLink, JanoMediaComponent],
   templateUrl: './rich-text.component.html',
   styleUrls: ['./rich-text.component.scss'],
 })
@@ -37,8 +46,8 @@ export class RichTextComponent {
   isHoveringLink = false;
   isHoveringTooltip = false;
 
-  get tokens(): Token[] {
-    return parseWikilinks(this.text ?? '');
+  get blocks(): Block[] {
+    return parseBlocks(this.text ?? '');
   }
 
   get previewImageUrl(): string | null {
@@ -122,8 +131,100 @@ export class RichTextComponent {
   }
 }
 
-function parseWikilinks(input: string): Token[] {
-  const tokens: Token[] = [];
+function parseBlocks(input: string): Block[] {
+  const normalized = input.replace(/\r\n?/g, '\n').trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const lines = normalized.split('\n');
+  const blocks: Block[] = [];
+  const paragraphBuffer: string[] = [];
+
+  const flushParagraph = () => {
+    const text = paragraphBuffer.join(' ').trim();
+    paragraphBuffer.length = 0;
+
+    if (!text) {
+      return;
+    }
+
+    blocks.push({ kind: 'paragraph', tokens: parseWikilinks(text) });
+  };
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const rawLine = lines[index] ?? '';
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushParagraph();
+      continue;
+    }
+
+    const headingMatch = /^(#{1,3})\s+(.*)$/.exec(line);
+    if (headingMatch) {
+      flushParagraph();
+      const level = headingMatch[1].length as 1 | 2 | 3;
+      blocks.push({
+        kind: 'heading',
+        level,
+        tokens: parseWikilinks((headingMatch[2] ?? '').trim()),
+      });
+      continue;
+    }
+
+    if (line.startsWith(':::lead')) {
+      flushParagraph();
+      const leadLines: string[] = [];
+      let cursor = index + 1;
+
+      while (cursor < lines.length && (lines[cursor] ?? '').trim() !== ':::') {
+        leadLines.push((lines[cursor] ?? '').trim());
+        cursor += 1;
+      }
+
+      const leadText = leadLines.join(' ').trim();
+      if (leadText) {
+        blocks.push({ kind: 'lead', tokens: parseWikilinks(leadText) });
+      }
+
+      index = cursor;
+      continue;
+    }
+
+    if (line.startsWith('>')) {
+      flushParagraph();
+      const quoteLines: string[] = [line.replace(/^>\s?/, '').trim()];
+      let cursor = index + 1;
+
+      while (cursor < lines.length) {
+        const quoteLine = (lines[cursor] ?? '').trim();
+        if (!quoteLine.startsWith('>')) {
+          break;
+        }
+
+        quoteLines.push(quoteLine.replace(/^>\s?/, '').trim());
+        cursor += 1;
+      }
+
+      const quoteText = quoteLines.join(' ').trim();
+      if (quoteText) {
+        blocks.push({ kind: 'quote', tokens: parseWikilinks(quoteText) });
+      }
+
+      index = cursor - 1;
+      continue;
+    }
+
+    paragraphBuffer.push(line);
+  }
+
+  flushParagraph();
+  return blocks;
+}
+
+function parseWikilinks(input: string): InlineToken[] {
+  const tokens: InlineToken[] = [];
   const re = /\[\[([^\]|]+)(\|([^\]]+))?\]\]/g;
 
   let last = 0;
@@ -131,13 +232,46 @@ function parseWikilinks(input: string): Token[] {
 
   while ((m = re.exec(input))) {
     if (m.index > last) {
-      tokens.push({ kind: 'text', value: input.slice(last, m.index) });
+      tokens.push(...parseInlineMarks(input.slice(last, m.index)));
     }
 
     const slug = (m[1] ?? '').trim();
     const label = (m[3] ?? m[1] ?? '').trim();
 
     tokens.push({ kind: 'link', slug, label });
+    last = re.lastIndex;
+  }
+
+  if (last < input.length) {
+    tokens.push(...parseInlineMarks(input.slice(last)));
+  }
+
+  return tokens;
+}
+
+function parseInlineMarks(input: string): InlineToken[] {
+  const tokens: InlineToken[] = [];
+  const re = /(\*\*([^*]+)\*\*)|(\*([^*]+)\*)/g;
+
+  let last = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(input))) {
+    if (match.index > last) {
+      tokens.push({ kind: 'text', value: input.slice(last, match.index) });
+    }
+
+    const strongValue = (match[2] ?? '').trim();
+    const emValue = (match[4] ?? '').trim();
+
+    if (strongValue) {
+      tokens.push({ kind: 'strong', value: strongValue });
+    } else if (emValue) {
+      tokens.push({ kind: 'em', value: emValue });
+    } else {
+      tokens.push({ kind: 'text', value: match[0] ?? '' });
+    }
+
     last = re.lastIndex;
   }
 

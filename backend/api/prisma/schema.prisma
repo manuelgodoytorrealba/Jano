@@ -19,6 +19,7 @@ enum UserPlan {
 enum EntityType {
   ARTWORK
   ARTIST
+  ARTICLE
   CONCEPT
   MOVEMENT
   PERIOD

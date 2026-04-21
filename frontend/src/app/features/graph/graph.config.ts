@@ -41,6 +41,15 @@ export const GRAPH_ENTITY_TYPE_CONFIG: Record<string, GraphEntityVisualConfig> =
     icon: 'O',
     shape: 'square',
   },
+  ARTICLE: {
+    label: 'Articulo',
+    color: '#b35c2e',
+    accent: '#f7ddcf',
+    textColor: '#fff6f1',
+    halo: 'rgba(179, 92, 46, 0.22)',
+    icon: 'R',
+    shape: 'square',
+  },
   MOVEMENT: {
     label: 'Movimiento',
     color: '#8f6ed5',

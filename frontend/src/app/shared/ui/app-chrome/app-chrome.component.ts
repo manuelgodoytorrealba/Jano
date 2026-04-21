@@ -28,7 +28,7 @@ export class AppChromeComponent {
 
   readonly navItems: HeaderNavItem[] = [
     { label: 'Explorar', route: '/entities/artwork', kind: 'route' },
-    { label: 'Colecciones', kind: 'placeholder' },
+    { label: 'Artículos', route: '/entities/article', kind: 'route' },
     { label: 'Descubrir', route: '/recommended', kind: 'route' },
     { label: 'Perfil', route: '/my-space', kind: 'route' },
   ];
@@ -36,7 +36,7 @@ export class AppChromeComponent {
   readonly utilityItems: UtilityItem[] = [
     { label: 'Perfil', route: '/my-space', icon: 'profile', kind: 'route' },
     { label: 'Favoritos', route: '/recommended', icon: 'saved', kind: 'route' },
-    { label: 'Colecciones', icon: 'collections', kind: 'placeholder' },
+    { label: 'Artículos', route: '/entities/article', icon: 'collections', kind: 'route' },
     { label: 'Ajustes', icon: 'settings', kind: 'placeholder' },
   ];
 

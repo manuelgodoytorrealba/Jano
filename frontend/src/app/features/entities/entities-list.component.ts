@@ -47,10 +47,22 @@ const CONTENT_LEVEL_LABELS: Record<Exclude<Level, ''>, string> = {
 
 const FILTER_SUPPORT_BY_TYPE: Record<string, FilterSupport> = {
   ARTIST: { movement: true, period: true, institution: false, nationality: true },
+  ARTICLE: { movement: false, period: false, institution: false, nationality: false },
   ARTWORK: { movement: true, period: true, institution: true, nationality: false },
   MOVEMENT: { movement: false, period: false, institution: false, nationality: false },
   PERIOD: { movement: false, period: false, institution: false, nationality: false },
   CONCEPT: { movement: false, period: false, institution: false, nationality: false },
+};
+
+const TYPE_ROUTE_LABELS: Record<string, string> = {
+  artwork: 'Artworks',
+  article: 'Articles',
+  artist: 'Artists',
+  movement: 'Movements',
+  period: 'Periods',
+  concept: 'Concepts',
+  place: 'Places',
+  text: 'Texts',
 };
 
 @Component({
@@ -125,8 +137,8 @@ export class EntitiesListComponent {
       takeUntilDestroyed(),
     ).subscribe();
 
-    combineLatest([this.title$, this.qFromUrl$]).pipe(
-      tap(([title, query]) => {
+    combineLatest([this.title$, this.typeFromUrl$, this.qFromUrl$]).pipe(
+      tap(([title, type, query]) => {
         const normalizedTitle = title || 'Entities';
         const normalizedQuery = query.trim();
         const pageTitle = normalizedQuery
@@ -135,7 +147,7 @@ export class EntitiesListComponent {
         const description = normalizedQuery
           ? `Browse JANO results for "${normalizedQuery}" inside ${normalizedTitle.toLowerCase()}.`
           : `Explore ${normalizedTitle.toLowerCase()} in JANO with visual browsing and editorial filters.`;
-        const typeSlug = normalizedTitle.toLowerCase();
+        const typeSlug = (type ?? '').trim().toLowerCase() || 'entities';
         const path = normalizedQuery
           ? `/entities/${typeSlug}?q=${encodeURIComponent(normalizedQuery)}`
           : `/entities/${typeSlug}`;
@@ -152,7 +164,7 @@ export class EntitiesListComponent {
 
   title$ = this.route.paramMap.pipe(
     map((pm) => (pm.get('type') ?? 'entities').toLowerCase()),
-    map((t) => t.charAt(0).toUpperCase() + t.slice(1)),
+    map((t) => TYPE_ROUTE_LABELS[t] ?? (t.charAt(0).toUpperCase() + t.slice(1))),
     distinctUntilChanged(),
   );
 
