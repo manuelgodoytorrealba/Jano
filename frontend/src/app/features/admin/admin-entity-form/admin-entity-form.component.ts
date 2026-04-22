@@ -65,6 +65,8 @@ type DashboardSectionId =
   | 'section-contributors'
   | 'section-relations';
 
+type MediaLibraryViewId = 'coverage' | 'library' | 'add';
+
 @Component({
   standalone: true,
   selector: 'app-admin-entity-form',
@@ -110,6 +112,8 @@ previewContainer?: ElementRef<HTMLElement>;
     { id: 'section-relations', label: 'Relaciones' },
   ] as const;
   activeDashboardSection: DashboardSectionId = 'section-content';
+  activeMediaLibraryView: MediaLibraryViewId = 'coverage';
+  adminSidebarVisible = true;
   previewVisible = true;
 
   successMessage = '';
@@ -130,6 +134,23 @@ previewContainer?: ElementRef<HTMLElement>;
   uploadingMedia = false;
   mediaAddResetVersion = 0;
   mediaRoleLabels: Record<string, string> = MEDIA_ROLE_LABELS;
+  readonly mediaLibraryViews = [
+    {
+      id: 'coverage' as const,
+      label: 'Cobertura',
+      description: 'Cómo queda publicado y qué slot ocupa cada asset.',
+    },
+    {
+      id: 'library' as const,
+      label: 'Biblioteca',
+      description: 'Gestiona assets, composición editorial y reemplazos.',
+    },
+    {
+      id: 'add' as const,
+      label: 'Añadir media',
+      description: 'Incorpora nuevo material sin mezclarlo con la edición actual.',
+    },
+  ];
 
   private linkSearch$ = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -262,6 +283,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.entityId = id ?? '';
     this.restoreDashboardSection();
     this.restorePreviewVisibility();
+    this.restoreAdminSidebarVisibility();
 
     this.linkSearch$
       .pipe(
@@ -975,6 +997,52 @@ previewContainer?: ElementRef<HTMLElement>;
     }));
   }
 
+  get coverageSummaryCards(): Array<{ label: string; value: string; tone?: 'warning' | 'ok' | 'neutral' }> {
+    const summary = this.mediaCoverageSummary;
+    if (!summary) {
+      return [];
+    }
+
+    return [
+      {
+        label: 'Slots cubiertos',
+        value: `${summary.coveredSlots.length}/4`,
+        tone: summary.emptySlots.length ? 'warning' : 'ok',
+      },
+      {
+        label: 'Fallbacks activos',
+        value: String(summary.fallbackSlots.length),
+        tone: summary.fallbackSlots.length ? 'neutral' : 'ok',
+      },
+      {
+        label: 'Assets en biblioteca',
+        value: String(summary.assetCount),
+        tone: 'neutral',
+      },
+      {
+        label: 'Sin uso',
+        value: String(summary.unusedAssetCount),
+        tone: summary.unusedAssetCount ? 'neutral' : 'ok',
+      },
+    ];
+  }
+
+  get coverageHealthLabel(): string {
+    if (this.mediaCoverageSummary?.emptySlots.length) {
+      return 'Cobertura incompleta';
+    }
+
+    if (this.mediaWarnings.length) {
+      return 'Cobertura revisable';
+    }
+
+    return 'Cobertura lista';
+  }
+
+  get coverageHealthTone(): 'warning' | 'ok' {
+    return this.mediaCoverageSummary?.emptySlots.length || this.mediaWarnings.length ? 'warning' : 'ok';
+  }
+
   get primaryPreviewSlot(): VisualSlot | null {
     return this.mainVisualSlots.find((slot) => slot.key === 'detail')
       ?? this.mainVisualSlots.find((slot) => slot.key === 'list')
@@ -1015,6 +1083,13 @@ previewContainer?: ElementRef<HTMLElement>;
     ]);
 
     return this.mediaEditors.filter((editor) => !excludedIds.has(editor.id));
+  }
+
+  get libraryManagedCount(): number {
+    return this.mainUsedEditors.length
+      + this.derivedEditors.length
+      + this.unusedEditors.length
+      + this.additionalMediaEditors.length;
   }
 
   canIngestMedia(link: EditableAdminMediaLink): boolean {
@@ -1150,6 +1225,26 @@ previewContainer?: ElementRef<HTMLElement>;
     }
 
     return this.mediaEditors.find((editor) => editor.id === this.activeMediaEditorId) ?? this.mediaEditors[0] ?? null;
+  }
+
+  mediaLibraryViewCount(viewId: MediaLibraryViewId): string {
+    switch (viewId) {
+      case 'coverage':
+        return `${this.mediaCoverageSummary?.coveredSlots.length ?? 0}/4`;
+      case 'library':
+        return String(this.libraryManagedCount);
+      case 'add':
+        return this.mediaEditors.length ? 'Listo' : 'Vacío';
+    }
+  }
+
+  mediaLibraryViewClass(viewId: MediaLibraryViewId): string {
+    return `admin-dashboard-nav__item media-library-nav__item${this.activeMediaLibraryView === viewId ? ' is-active' : ''}`;
+  }
+
+  setMediaLibraryView(viewId: MediaLibraryViewId) {
+    this.activeMediaLibraryView = viewId;
+    this.cdr.markForCheck();
   }
 
   slotResolutionLabel(slot: VisualSlot): string {
@@ -1625,9 +1720,19 @@ previewContainer?: ElementRef<HTMLElement>;
     return this.dashboardSections.find((section) => section.id === this.activeDashboardSection)?.label ?? 'Contenido';
   }
 
+  get sidebarToggleLabel(): string {
+    return this.adminSidebarVisible ? 'Ocultar editor' : 'Mostrar editor';
+  }
+
   togglePreviewPanel() {
     this.previewVisible = !this.previewVisible;
     this.persistPreviewVisibility();
+    this.cdr.markForCheck();
+  }
+
+  toggleAdminSidebar() {
+    this.adminSidebarVisible = !this.adminSidebarVisible;
+    this.persistAdminSidebarVisibility();
     this.cdr.markForCheck();
   }
 
@@ -1662,6 +1767,10 @@ previewContainer?: ElementRef<HTMLElement>;
     return `jano-admin-entity-preview:${this.entityId || 'new'}`;
   }
 
+  private adminSidebarStorageKey(): string {
+    return `jano-admin-entity-sidebar:${this.entityId || 'new'}`;
+  }
+
   private restorePreviewVisibility() {
     if (typeof window === 'undefined') {
       return;
@@ -1675,12 +1784,33 @@ previewContainer?: ElementRef<HTMLElement>;
     this.previewVisible = saved !== 'hidden';
   }
 
+  private restoreAdminSidebarVisibility() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const saved = window.localStorage.getItem(this.adminSidebarStorageKey());
+    if (saved === null) {
+      return;
+    }
+
+    this.adminSidebarVisible = saved !== 'hidden';
+  }
+
   private persistPreviewVisibility() {
     if (typeof window === 'undefined') {
       return;
     }
 
     window.localStorage.setItem(this.previewVisibilityStorageKey(), this.previewVisible ? 'visible' : 'hidden');
+  }
+
+  private persistAdminSidebarVisibility() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem(this.adminSidebarStorageKey(), this.adminSidebarVisible ? 'visible' : 'hidden');
   }
 
   private extractDetailsForm(entity: any): AdminEntityDetailsPayload {
@@ -1870,6 +2000,12 @@ previewContainer?: ElementRef<HTMLElement>;
     this.mediaWarningsDetailed = library?.warnings ?? [];
     this.mediaWarningMessages = this.mediaWarningsDetailed.map((warning) => warning.message);
     this.mediaCoverageSummary = library?.coverageSummary ?? null;
+
+    if (!this.mediaEditors.length && !this.additionalMediaItems.length) {
+      this.activeMediaLibraryView = 'add';
+    } else if (!this.activeMediaLibraryView) {
+      this.activeMediaLibraryView = 'coverage';
+    }
   }
 
   slotWarningsForEditor(link: EditableAdminMediaLink): Partial<Record<MediaEditorSlotKey, string[]>> {

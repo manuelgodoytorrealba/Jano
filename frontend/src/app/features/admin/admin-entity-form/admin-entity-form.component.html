@@ -1,29 +1,23 @@
    <div class="page">
-  <header class="top">
-    <div>
-      <h1>{{ isEdit ? 'Editar entity' : 'Nueva entity' }}</h1>
-      <p class="muted">Administra el contenido principal de JANO.</p>
-    </div>
-
-    <div class="top-actions">
-      <button class="btn ghost" type="button" (click)="togglePreviewPanel()">
-        @if (previewVisible) { Ocultar preview } @else { Mostrar preview }
-      </button>
-      <a class="btn ghost" routerLink="/admin">Volver</a>
-    </div>
-  </header>
-
   @if (loadError) {
     <div class="error-box">{{ loadError }}</div>
   }
 
   <section class="editor-layout" [class.editor-layout--preview-hidden]="!previewVisible">
-    <aside class="admin-sidebar">
+    <div class="admin-sidebar-layer" [style.width.px]="adminSidebarVisible ? 220 : 64">
+    @if (adminSidebarVisible) {
+    <aside class="admin-sidebar" style="width:220px">
       <div class="admin-sidebar__toolhead">
         <span class="admin-sidebar__tooltitle">Editor</span>
-        <button class="admin-sidebar__preview-toggle" type="button" (click)="togglePreviewPanel()">
-          @if (previewVisible) { Preview on } @else { Preview off }
-        </button>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <button class="admin-sidebar__preview-toggle" type="button" (click)="togglePreviewPanel()">
+            @if (previewVisible) { Preview on } @else { Preview off }
+          </button>
+          <button class="admin-sidebar__preview-toggle" type="button" (click)="toggleAdminSidebar()">
+            Ocultar editor
+          </button>
+          <a class="admin-sidebar__preview-toggle" routerLink="/admin">Volver</a>
+        </div>
       </div>
       <nav class="admin-dashboard-nav">
         @for (section of dashboardSections; track section.id) {
@@ -50,12 +44,18 @@
       </nav>
       <div class="admin-sidebar__summary">
         <span class="admin-sidebar__eyebrow">Editor dashboard</span>
-        <h2 class="admin-sidebar__title">{{ activeSectionTitle() }}</h2>
+        <h2 class="admin-sidebar__title">{{ form.title || 'Entity sin título' }}</h2>
         <p class="admin-sidebar__text">
-          Trabaja una sola sección cada vez sin perder inputs ni contexto del preview.
+          {{ activeSectionTitle() }} · trabaja una sola sección cada vez sin perder inputs ni contexto del preview.
         </p>
       </div>
     </aside>
+    } @else {
+    <button class="admin-sidebar__peek" type="button" (click)="toggleAdminSidebar()" style="position:sticky;top:22px;margin-left:6px;min-height:180px;padding:14px 10px;border-radius:22px;border:1px solid rgba(0,0,0,.08);background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(246,243,237,.94));color:#38322d;font-size:12px;font-weight:700;cursor:pointer;writing-mode:vertical-rl;transform:rotate(180deg);box-shadow:0 18px 44px rgba(25,20,14,.05)">
+        Mostrar editor
+      </button>
+    }
+    </div>
 
     <section class="form-wrap">
 
@@ -325,69 +325,26 @@
       </section>
 
       <section id="section-media" class="admin-dashboard-panel media-box" [class.admin-dashboard-panel--active]="isActiveSection('section-media')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-media')" [attr.aria-hidden]="!isActiveSection('section-media')">
-        <div class="admin-dashboard-panel__head">
-          <div>
-            <h2>Media library</h2>
-            <p class="muted">Cobertura visual real, assets en uso y material adicional para la entidad.</p>
-          </div>
-          <span class="admin-dashboard-panel__pill">Paso 2</span>
-        </div>
-
         @if (!isEdit) {
           <div class="preview-empty">
             Guarda primero la entity para poder asociarle media.
           </div>
         } @else {
-          <section class="media-overview">
-            <div class="media-slots__head">
-              <div>
-                <h3>Slots principales</h3>
-                <p class="muted">Cobertura real de Explorer 3D, List, Detail y Preview.</p>
-              </div>
-              <div class="media-slots__legend">
-                <span class="media-pill media-pill--slot-explicit">Explícito</span>
-                <span class="media-pill media-pill--slot-fallback">Fallback activo</span>
-                <span class="media-pill media-pill--legacy">Legacy</span>
-                <span class="media-pill media-pill--slot-empty">Sin cobertura</span>
-              </div>
-            </div>
-
-            <div class="slot-grid slot-grid--summary slot-grid--compact">
-              @for (slot of mainVisualSlots; track slot.key) {
-                <article class="slot-card" [class.slot-card--empty]="slot.state.source === 'empty'">
-                  <div class="slot-card__head">
-                    <div>
-                      <div class="slot-card__title">{{ slot.label }}</div>
-                      <div class="slot-card__description">{{ slotStatusLabel(slot) }}</div>
-                    </div>
-
-                    <span [class]="'media-pill ' + slotStateClass(slot)">
-                      {{ slot.state.source === 'empty' ? 'Vacío' : slot.state.source === 'explicit' ? 'OK' : slot.state.source === 'legacy' ? 'Legacy' : 'Fallback' }}
-                    </span>
-                  </div>
-
-                  <div class="slot-preview" [class]="slot.previewClass">
-                    <app-jano-media
-                      [media]="slot.state.item"
-                      [usage]="slot.previewUsage"
-                      [alt]="slot.state.item?.alt || form.title"
-                    ></app-jano-media>
-                  </div>
-
-                  <div class="slot-card__meta">
-                    @if (slot.state.item) {
-                      <span>{{ mediaRoleLabel(slot.state.item.role) }}</span>
-                      <span>· {{ mediaOriginLabel(slot.state.item.originType) }}</span>
-                    } @else {
-                      <span>Sin asset</span>
-                    }
-                  </div>
-
-                  <div class="slot-card__reason">{{ slotResolutionLabel(slot) }}</div>
-                </article>
-              }
-            </div>
-          </section>
+          <div class="media-library-nav__tabs" role="tablist" aria-label="Navegación interna de Media Library">
+            @for (view of mediaLibraryViews; track view.id) {
+              <button
+                type="button"
+                [class]="mediaLibraryViewClass(view.id)"
+                [attr.aria-selected]="activeMediaLibraryView === view.id"
+                (click)="setMediaLibraryView(view.id)"
+              >
+                <span class="admin-dashboard-nav__item-main">
+                  <span>{{ view.label }}</span>
+                  <span class="admin-dashboard-nav__item-count">{{ mediaLibraryViewCount(view.id) }}</span>
+                </span>
+              </button>
+            }
+          </div>
 
           @if (mediaError) {
             <div class="error-box">{{ mediaError }}</div>
@@ -397,197 +354,270 @@
             <div class="success-box">{{ mediaMessage }}</div>
           }
 
-          @if (mediaWarnings.length) {
-            <section class="media-warning-stack">
-              <div class="relations-head">
-                <h4>Warnings</h4>
-                <p class="muted">Señales editoriales para completar cobertura y limpiar la librería.</p>
-              </div>
-              <div class="media-warning-list">
-                @for (warning of mediaWarnings; track warning) {
-                  <div class="media-warning">{{ warning }}</div>
-                }
-              </div>
-            </section>
-          }
-
-          <div class="media-library-workspace">
-            <div class="media-library-stack">
-            <section class="current-relations">
-              <div class="relations-head">
-                <h4>Assets Library</h4>
-                <p class="muted">Biblioteca principal agrupada por uso real dentro del producto.</p>
-              </div>
-
-              <div class="media-library-sections">
-                <section class="media-library-group">
-                <div class="media-library-group__head">
-                  <h5>En uso</h5>
-                  <span>{{ mainUsedEditors.length }}</span>
+          <div class="media-library-view" [class.media-library-view--hidden]="activeMediaLibraryView !== 'coverage'" [attr.aria-hidden]="activeMediaLibraryView !== 'coverage'">
+            <section class="media-overview">
+              <div class="media-coverage__head">
+                <div>
+                  <h3>Cobertura</h3>
+                  <p class="muted">Lectura editorial de lo que realmente se publica en Explorer 3D, List, Detail y Preview.</p>
                 </div>
-                @if (mainUsedEditors.length) {
-                  <div class="media-list">
-                    @for (editor of mainUsedEditors; track editor.id) {
-                      <app-media-card-editor
-                        [editor]="editor"
-                        [compact]="true"
-                        [selected]="activeMediaEditor?.id === editor.id"
-                        [entityTitle]="form.title"
-                        [activeSlotLabels]="activeSlotLabels(editor.persisted)"
-                        [canIngest]="canIngestMedia(editor.persisted)"
-                        [canPromote]="canPromoteIngestedMedia(editor.persisted)"
-                        [canRestore]="canRestoreExternalMedia(editor.persisted)"
-                        [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
-                        [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
-                        [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
-                        [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
-                        [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
-                        [slotWarnings]="slotWarningsForEditor(editor.persisted)"
-                        (editRequested)="selectMediaEditor($event)"
-                        (assignRole)="assignRole($event.link, $event.role)"
-                        (toggleLegacy)="toggleLegacyFallback($event)"
-                        (save)="saveMedia($event)"
-                        (discard)="discardMediaChanges($event)"
-                        (remove)="removeMedia($event)"
-                        (ingest)="ingestMedia($event)"
-                        (promote)="promoteIngestedMedia($event)"
-                        (restore)="restoreExternalMedia($event)"
-                      ></app-media-card-editor>
-                    }
-                  </div>
-                } @else {
-                  <div class="preview-empty">Todavía no hay assets cubriendo los slots principales.</div>
-                }
-              </section>
-
-              <section class="media-library-group">
-                <div class="media-library-group__head">
-                  <h5>Derivados / reemplazos</h5>
-                  <span>{{ derivedEditors.length }}</span>
-                </div>
-                @if (derivedEditors.length) {
-                  <div class="media-list">
-                    @for (editor of derivedEditors; track editor.id) {
-                      <app-media-card-editor
-                        [editor]="editor"
-                        [compact]="true"
-                        [selected]="activeMediaEditor?.id === editor.id"
-                        [entityTitle]="form.title"
-                        [activeSlotLabels]="activeSlotLabels(editor.persisted)"
-                        [canIngest]="canIngestMedia(editor.persisted)"
-                        [canPromote]="canPromoteIngestedMedia(editor.persisted)"
-                        [canRestore]="canRestoreExternalMedia(editor.persisted)"
-                        [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
-                        [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
-                        [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
-                        [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
-                        [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
-                        [slotWarnings]="slotWarningsForEditor(editor.persisted)"
-                        (editRequested)="selectMediaEditor($event)"
-                        (assignRole)="assignRole($event.link, $event.role)"
-                        (toggleLegacy)="toggleLegacyFallback($event)"
-                        (save)="saveMedia($event)"
-                        (discard)="discardMediaChanges($event)"
-                        (remove)="removeMedia($event)"
-                        (ingest)="ingestMedia($event)"
-                        (promote)="promoteIngestedMedia($event)"
-                        (restore)="restoreExternalMedia($event)"
-                      ></app-media-card-editor>
-                    }
-                  </div>
-                } @else {
-                  <div class="preview-empty">No hay derivados o reemplazos fuera del uso principal.</div>
-                }
-              </section>
-
-              <section class="media-library-group">
-                <div class="media-library-group__head">
-                  <h5>Sin uso</h5>
-                  <span>{{ unusedEditors.length }}</span>
-                </div>
-                @if (unusedEditors.length) {
-                  <div class="media-list">
-                    @for (editor of unusedEditors; track editor.id) {
-                      <app-media-card-editor
-                        [editor]="editor"
-                        [compact]="true"
-                        [selected]="activeMediaEditor?.id === editor.id"
-                        [entityTitle]="form.title"
-                        [activeSlotLabels]="activeSlotLabels(editor.persisted)"
-                        [canIngest]="canIngestMedia(editor.persisted)"
-                        [canPromote]="canPromoteIngestedMedia(editor.persisted)"
-                        [canRestore]="canRestoreExternalMedia(editor.persisted)"
-                        [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
-                        [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
-                        [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
-                        [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
-                        [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
-                        [slotWarnings]="slotWarningsForEditor(editor.persisted)"
-                        (editRequested)="selectMediaEditor($event)"
-                        (assignRole)="assignRole($event.link, $event.role)"
-                        (toggleLegacy)="toggleLegacyFallback($event)"
-                        (save)="saveMedia($event)"
-                        (discard)="discardMediaChanges($event)"
-                        (remove)="removeMedia($event)"
-                        (ingest)="ingestMedia($event)"
-                        (promote)="promoteIngestedMedia($event)"
-                        (restore)="restoreExternalMedia($event)"
-                      ></app-media-card-editor>
-                    }
-                  </div>
-                } @else {
-                  <div class="preview-empty">No hay assets huérfanos fuera de uso principal.</div>
-                }
-              </section>
-              </div>
-            </section>
-
-            <section class="current-relations current-relations--secondary">
-              <div class="relations-head">
-                <h4>Additional Media</h4>
-                <p class="muted">Material documental, extra o de apoyo. No compite con los slots principales.</p>
+                <span class="admin-dashboard-panel__pill">Publicado</span>
               </div>
 
-              @if (additionalMediaEditors.length) {
-                <div class="media-list">
-                  @for (editor of additionalMediaEditors; track editor.id) {
-                    <app-media-card-editor
-                      [editor]="editor"
-                      [compact]="true"
-                      [selected]="activeMediaEditor?.id === editor.id"
-                      [entityTitle]="form.title"
-                      [activeSlotLabels]="activeSlotLabels(editor.persisted)"
-                      [canIngest]="canIngestMedia(editor.persisted)"
-                      [canPromote]="canPromoteIngestedMedia(editor.persisted)"
-                      [canRestore]="canRestoreExternalMedia(editor.persisted)"
-                      [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
-                      [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
-                      [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
-                      [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
-                      [slotWarnings]="slotWarningsForEditor(editor.persisted)"
-                      (editRequested)="selectMediaEditor($event)"
-                      (assignRole)="assignRole($event.link, $event.role)"
-                      (save)="saveMedia($event)"
-                      (discard)="discardMediaChanges($event)"
-                      (remove)="removeMedia($event)"
-                      (ingest)="ingestMedia($event)"
-                      (promote)="promoteIngestedMedia($event)"
-                      (restore)="restoreExternalMedia($event)"
-                    ></app-media-card-editor>
+              @if (coverageSummaryCards.length) {
+                <div class="media-coverage-summary">
+                  @for (card of coverageSummaryCards; track card.label) {
+                    <article class="media-coverage-card">
+                      <span>{{ card.label }}</span>
+                      <strong>{{ card.value }}</strong>
+                    </article>
                   }
                 </div>
-              } @else {
-                <div class="preview-empty">No hay material adicional definido todavía.</div>
               }
+
+              <div class="media-slots__head">
+                <div>
+                  <h3>Slots principales</h3>
+                  <p class="muted">Qué asset ocupa cada slot y desde qué lógica se resuelve.</p>
+                </div>
+                <div class="media-slots__legend">
+                  <span class="media-pill media-pill--slot-explicit">Explícito</span>
+                  <span class="media-pill media-pill--slot-fallback">Fallback activo</span>
+                  <span class="media-pill media-pill--legacy">Legacy</span>
+                  <span class="media-pill media-pill--slot-empty">Sin cobertura</span>
+                </div>
+              </div>
+
+              <div class="slot-grid slot-grid--summary slot-grid--compact">
+                @for (slot of mainVisualSlots; track slot.key) {
+                  <article class="slot-card" [class.slot-card--empty]="slot.state.source === 'empty'">
+                    <div class="slot-card__head">
+                      <div>
+                        <div class="slot-card__title">{{ slot.label }}</div>
+                        <div class="slot-card__description">{{ slotStatusLabel(slot) }}</div>
+                      </div>
+
+                      <span [class]="'media-pill ' + slotStateClass(slot)">
+                        {{ slot.state.source === 'empty' ? 'Vacío' : slot.state.source === 'explicit' ? 'OK' : slot.state.source === 'legacy' ? 'Legacy' : 'Fallback' }}
+                      </span>
+                    </div>
+
+                    <div class="slot-preview" [class]="slot.previewClass">
+                      <app-jano-media
+                        [media]="slot.state.item"
+                        [usage]="slot.previewUsage"
+                        [alt]="slot.state.item?.alt || form.title"
+                      ></app-jano-media>
+                    </div>
+
+                    <div class="slot-card__meta">
+                      @if (slot.state.item) {
+                        <span>{{ mediaRoleLabel(slot.state.item.role) }}</span>
+                        <span>· {{ mediaOriginLabel(slot.state.item.originType) }}</span>
+                      } @else {
+                        <span>Sin asset</span>
+                      }
+                    </div>
+
+                    <div class="slot-card__reason">{{ slotResolutionLabel(slot) }}</div>
+                  </article>
+                }
+              </div>
             </section>
-            </div>
+
+            @if (mediaWarnings.length) {
+              <section class="media-warning-stack">
+                <div class="relations-head">
+                  <h4>Warnings</h4>
+                  <p class="muted">Señales editoriales para completar cobertura y limpiar la librería.</p>
+                </div>
+                <div class="media-warning-list">
+                  @for (warning of mediaWarnings; track warning) {
+                    <div class="media-warning">{{ warning }}</div>
+                  }
+                </div>
+              </section>
+            }
+          </div>
+
+          <div class="media-library-view" [class.media-library-view--hidden]="activeMediaLibraryView !== 'library'" [attr.aria-hidden]="activeMediaLibraryView !== 'library'">
+            <div class="media-library-workspace">
+              <div class="media-library-stack">
+                <section class="current-relations">
+                  <div class="relations-head">
+                    <h4>Assets Library</h4>
+                    <p class="muted">Selector de assets para cargar una imagen en el editor visual.</p>
+                  </div>
+
+                  <div class="media-library-sections">
+                    <section class="media-library-group">
+                      <div class="media-library-group__head">
+                        <h5>En uso</h5>
+                        <span>{{ mainUsedEditors.length }}</span>
+                      </div>
+                      @if (mainUsedEditors.length) {
+                        <div class="media-list">
+                          @for (editor of mainUsedEditors; track editor.id) {
+                            <app-media-card-editor
+                              [editor]="editor"
+                              [compact]="true"
+                              [selected]="activeMediaEditor?.id === editor.id"
+                              [entityTitle]="form.title"
+                              [activeSlotLabels]="activeSlotLabels(editor.persisted)"
+                              [canIngest]="canIngestMedia(editor.persisted)"
+                              [canPromote]="canPromoteIngestedMedia(editor.persisted)"
+                              [canRestore]="canRestoreExternalMedia(editor.persisted)"
+                              [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
+                              [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
+                              [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
+                              [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
+                              [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
+                              [slotWarnings]="slotWarningsForEditor(editor.persisted)"
+                              (editRequested)="selectMediaEditor($event)"
+                              (assignRole)="assignRole($event.link, $event.role)"
+                              (toggleLegacy)="toggleLegacyFallback($event)"
+                              (save)="saveMedia($event)"
+                              (discard)="discardMediaChanges($event)"
+                              (remove)="removeMedia($event)"
+                              (ingest)="ingestMedia($event)"
+                              (promote)="promoteIngestedMedia($event)"
+                              (restore)="restoreExternalMedia($event)"
+                            ></app-media-card-editor>
+                          }
+                        </div>
+                      } @else {
+                        <div class="preview-empty">Todavía no hay assets cubriendo los slots principales.</div>
+                      }
+                    </section>
+
+                    <section class="media-library-group">
+                      <div class="media-library-group__head">
+                        <h5>Derivados / reemplazos</h5>
+                        <span>{{ derivedEditors.length }}</span>
+                      </div>
+                      @if (derivedEditors.length) {
+                        <div class="media-list">
+                          @for (editor of derivedEditors; track editor.id) {
+                            <app-media-card-editor
+                              [editor]="editor"
+                              [compact]="true"
+                              [selected]="activeMediaEditor?.id === editor.id"
+                              [entityTitle]="form.title"
+                              [activeSlotLabels]="activeSlotLabels(editor.persisted)"
+                              [canIngest]="canIngestMedia(editor.persisted)"
+                              [canPromote]="canPromoteIngestedMedia(editor.persisted)"
+                              [canRestore]="canRestoreExternalMedia(editor.persisted)"
+                              [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
+                              [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
+                              [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
+                              [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
+                              [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
+                              [slotWarnings]="slotWarningsForEditor(editor.persisted)"
+                              (editRequested)="selectMediaEditor($event)"
+                              (assignRole)="assignRole($event.link, $event.role)"
+                              (toggleLegacy)="toggleLegacyFallback($event)"
+                              (save)="saveMedia($event)"
+                              (discard)="discardMediaChanges($event)"
+                              (remove)="removeMedia($event)"
+                              (ingest)="ingestMedia($event)"
+                              (promote)="promoteIngestedMedia($event)"
+                              (restore)="restoreExternalMedia($event)"
+                            ></app-media-card-editor>
+                          }
+                        </div>
+                      } @else {
+                        <div class="preview-empty">No hay derivados o reemplazos fuera del uso principal.</div>
+                      }
+                    </section>
+
+                    <section class="media-library-group">
+                      <div class="media-library-group__head">
+                        <h5>Sin uso</h5>
+                        <span>{{ unusedEditors.length }}</span>
+                      </div>
+                      @if (unusedEditors.length) {
+                        <div class="media-list">
+                          @for (editor of unusedEditors; track editor.id) {
+                            <app-media-card-editor
+                              [editor]="editor"
+                              [compact]="true"
+                              [selected]="activeMediaEditor?.id === editor.id"
+                              [entityTitle]="form.title"
+                              [activeSlotLabels]="activeSlotLabels(editor.persisted)"
+                              [canIngest]="canIngestMedia(editor.persisted)"
+                              [canPromote]="canPromoteIngestedMedia(editor.persisted)"
+                              [canRestore]="canRestoreExternalMedia(editor.persisted)"
+                              [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
+                              [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
+                              [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
+                              [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
+                              [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
+                              [slotWarnings]="slotWarningsForEditor(editor.persisted)"
+                              (editRequested)="selectMediaEditor($event)"
+                              (assignRole)="assignRole($event.link, $event.role)"
+                              (toggleLegacy)="toggleLegacyFallback($event)"
+                              (save)="saveMedia($event)"
+                              (discard)="discardMediaChanges($event)"
+                              (remove)="removeMedia($event)"
+                              (ingest)="ingestMedia($event)"
+                              (promote)="promoteIngestedMedia($event)"
+                              (restore)="restoreExternalMedia($event)"
+                            ></app-media-card-editor>
+                          }
+                        </div>
+                      } @else {
+                        <div class="preview-empty">No hay assets huérfanos fuera de uso principal.</div>
+                      }
+                    </section>
+                  </div>
+                </section>
+
+                <section class="current-relations current-relations--secondary">
+                  <div class="relations-head">
+                    <h4>Additional Media</h4>
+                    <p class="muted">Material documental, extra o de apoyo. No compite con los slots principales.</p>
+                  </div>
+
+                  @if (additionalMediaEditors.length) {
+                    <div class="media-list">
+                      @for (editor of additionalMediaEditors; track editor.id) {
+                        <app-media-card-editor
+                          [editor]="editor"
+                          [compact]="true"
+                          [selected]="activeMediaEditor?.id === editor.id"
+                          [entityTitle]="form.title"
+                          [activeSlotLabels]="activeSlotLabels(editor.persisted)"
+                          [canIngest]="canIngestMedia(editor.persisted)"
+                          [canPromote]="canPromoteIngestedMedia(editor.persisted)"
+                          [canRestore]="canRestoreExternalMedia(editor.persisted)"
+                          [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
+                          [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
+                          [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
+                          [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
+                          [slotWarnings]="slotWarningsForEditor(editor.persisted)"
+                          (editRequested)="selectMediaEditor($event)"
+                          (assignRole)="assignRole($event.link, $event.role)"
+                          (save)="saveMedia($event)"
+                          (discard)="discardMediaChanges($event)"
+                          (remove)="removeMedia($event)"
+                          (ingest)="ingestMedia($event)"
+                          (promote)="promoteIngestedMedia($event)"
+                          (restore)="restoreExternalMedia($event)"
+                        ></app-media-card-editor>
+                      }
+                    </div>
+                  } @else {
+                    <div class="preview-empty">No hay material adicional definido todavía.</div>
+                  }
+                </section>
+              </div>
 
               <aside class="media-editor-panel">
                 @if (activeMediaEditor; as activeEditor) {
                   <div class="media-editor-panel__head">
                     <div>
                       <h4>Editor visual</h4>
-                      <p class="muted">Trabaja una sola imagen cada vez con crop, foco, metadata y guardado local.</p>
+                      <p class="muted">{{ form.title || 'Entity sin título' }} · trabaja una sola imagen cada vez con crop, foco, metadata y guardado local.</p>
                     </div>
                     <span class="admin-dashboard-panel__pill">Media tool</span>
                   </div>
@@ -620,21 +650,24 @@
                   <div class="preview-empty">Selecciona un asset de la biblioteca para editarlo aquí.</div>
                 }
               </aside>
+            </div>
           </div>
 
-          <section class="media-intake">
-            <div class="relations-head">
-              <h4>Add Media</h4>
-              <p class="muted">Añade nuevos assets cuando ya tengas clara la cobertura editorial.</p>
-            </div>
-            <app-media-add-panel
-              [adding]="addingMedia"
-              [uploading]="uploadingMedia"
-              [resetVersion]="mediaAddResetVersion"
-              (addExternal)="addExternalMedia($event)"
-              (addUpload)="uploadMediaFromDraft($event)"
-            ></app-media-add-panel>
-          </section>
+          <div class="media-library-view" [class.media-library-view--hidden]="activeMediaLibraryView !== 'add'" [attr.aria-hidden]="activeMediaLibraryView !== 'add'">
+            <section class="media-intake">
+              <div class="relations-head">
+                <h4>Añadir media</h4>
+                <p class="muted">Alta rápida de URL externa, subida de archivo y opciones avanzadas en un bloque separado del trabajo editorial.</p>
+              </div>
+              <app-media-add-panel
+                [adding]="addingMedia"
+                [uploading]="uploadingMedia"
+                [resetVersion]="mediaAddResetVersion"
+                (addExternal)="addExternalMedia($event)"
+                (addUpload)="uploadMediaFromDraft($event)"
+              ></app-media-add-panel>
+            </section>
+          </div>
         }
       </section>
 

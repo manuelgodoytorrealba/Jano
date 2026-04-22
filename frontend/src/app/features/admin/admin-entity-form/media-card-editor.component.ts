@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import {
@@ -21,7 +21,7 @@ import {
   styleUrls: ['./media-card-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MediaCardEditorComponent {
+export class MediaCardEditorComponent implements OnChanges {
   @Input({ required: true }) editor!: EditableAdminMediaEditor;
   @Input() entityTitle = '';
   @Input() activeSlotLabels: string[] = [];
@@ -51,11 +51,14 @@ export class MediaCardEditorComponent {
 
   showAdvanced = false;
   activeEditorSlot: MediaEditorSlotKey = 'detail';
-  compositionOpen = true;
-  previewsOpen = true;
+  compositionOpen = false;
+  previewsOpen = false;
   metadataOpen = false;
+  precisionOpen = false;
   private dragTarget: 'asset' | 'slot' | null = null;
   private dragSurface: HTMLElement | null = null;
+  private dragPointerId: number | null = null;
+  private lastEditorId: string | null = null;
 
   readonly mediaRoles = MEDIA_ROLE_OPTIONS;
   readonly displayModes = MEDIA_DISPLAY_MODES;
@@ -161,6 +164,18 @@ export class MediaCardEditorComponent {
     return this.editorSlotOptions.find((slot) => slot.key === this.activeEditorSlot)?.label ?? 'Slot';
   }
 
+  get saveStateLabel(): string {
+    if (this.saving) {
+      return 'Guardando...';
+    }
+
+    if (this.hasDraftChanges) {
+      return 'Listo para guardar';
+    }
+
+    return 'Sin cambios';
+  }
+
   get warningCount(): number {
     return Object.values(this.slotWarnings).reduce((total, items) => total + (items?.length ?? 0), 0);
   }
@@ -186,7 +201,19 @@ export class MediaCardEditorComponent {
   }
 
   get compactActionLabel(): string {
-    return this.selected ? 'Editando' : 'Abrir editor';
+    return this.selected ? 'Activa' : 'Seleccionar';
+  }
+
+  get compactMetaLabel(): string {
+    if (this.activeSlotLabels.length) {
+      return this.activeSlotLabels.join(' · ');
+    }
+
+    if (this.draft.media.width || this.draft.media.height) {
+      return `${this.draft.media.width ?? '—'}×${this.draft.media.height ?? '—'}`;
+    }
+
+    return this.currentRoleLabel;
   }
 
   get isLocalAsset(): boolean {
@@ -203,6 +230,12 @@ export class MediaCardEditorComponent {
     }
 
     return 'Referencia externa';
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['editor']) {
+      this.syncActiveEditorSlot();
+    }
   }
 
   get legacyStatusLabel(): string {
@@ -317,7 +350,12 @@ export class MediaCardEditorComponent {
     this.metadataOpen = !this.metadataOpen;
   }
 
+  togglePrecision() {
+    this.precisionOpen = !this.precisionOpen;
+  }
+
   setRole(role: string) {
+    this.syncSlotToRole(role);
     this.assignRole.emit({ link: this.draft, role });
   }
 
@@ -329,6 +367,7 @@ export class MediaCardEditorComponent {
       return;
     }
 
+    this.syncSlotToRole(role);
     this.assignRole.emit({ link: this.draft, role });
   }
 
@@ -469,8 +508,10 @@ export class MediaCardEditorComponent {
     }
 
     event.preventDefault();
+    surface.setPointerCapture?.(event.pointerId);
     this.dragTarget = 'asset';
     this.dragSurface = surface;
+    this.dragPointerId = event.pointerId;
     this.updatePointFromPointer(event);
   }
 
@@ -481,8 +522,10 @@ export class MediaCardEditorComponent {
     }
 
     event.preventDefault();
+    surface.setPointerCapture?.(event.pointerId);
     this.dragTarget = 'slot';
     this.dragSurface = surface;
+    this.dragPointerId = event.pointerId;
     this.updatePointFromPointer(event);
   }
 
@@ -492,15 +535,29 @@ export class MediaCardEditorComponent {
       return;
     }
 
+    if (this.dragPointerId !== null && event.pointerId !== this.dragPointerId) {
+      return;
+    }
+
+    if (event.buttons === 0) {
+      this.stopDrag();
+      return;
+    }
+
     event.preventDefault();
     this.updatePointFromPointer(event);
   }
 
   @HostListener('window:pointerup')
   @HostListener('window:pointercancel')
+  @HostListener('window:blur')
   stopDrag() {
+    if (this.dragSurface && this.dragPointerId !== null && this.dragSurface.hasPointerCapture?.(this.dragPointerId)) {
+      this.dragSurface.releasePointerCapture(this.dragPointerId);
+    }
     this.dragTarget = null;
     this.dragSurface = null;
+    this.dragPointerId = null;
   }
 
   private updatePointFromPointer(event: PointerEvent) {
@@ -578,5 +635,37 @@ export class MediaCardEditorComponent {
 
   private clamp(value: number, min: number, max: number) {
     return Math.min(max, Math.max(min, value));
+  }
+
+  private syncActiveEditorSlot() {
+    const editorId = this.draft?.id ?? null;
+    if (!editorId || editorId === this.lastEditorId) {
+      return;
+    }
+
+    this.lastEditorId = editorId;
+    this.activeEditorSlot = this.slotForRole(this.draft.role) ?? 'detail';
+  }
+
+  private syncSlotToRole(role: string) {
+    const slot = this.slotForRole(role);
+    if (slot) {
+      this.activeEditorSlot = slot;
+    }
+  }
+
+  private slotForRole(role: string | null | undefined): MediaEditorSlotKey | null {
+    switch (role) {
+      case 'EXPLORER_3D':
+        return 'explorer3d';
+      case 'CARD':
+        return 'list';
+      case 'DETAIL':
+        return 'detail';
+      case 'THUMBNAIL':
+        return 'preview';
+      default:
+        return null;
+    }
   }
 }
