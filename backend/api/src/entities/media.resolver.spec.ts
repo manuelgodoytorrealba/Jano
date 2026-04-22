@@ -52,6 +52,7 @@ describe('media.resolver', () => {
     };
 
     expect(resolveEntityMedia(entity, 'hero')?.id).toBe('legacy-media');
+    expect(resolveEntityMedia(entity, 'detail')?.id).toBe('legacy-media');
     expect(resolveEntityMedia(entity, 'thumbnail')?.id).toBe('legacy-media');
   });
 

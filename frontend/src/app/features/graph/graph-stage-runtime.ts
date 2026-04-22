@@ -6,7 +6,7 @@ import {
   shouldRestoreGraphStageAfterResize,
   shouldSyncImageStageAfterResize,
 } from './graph-lifecycle';
-import { createImageViewport, ImageAssetSize, ImageViewport } from './image-viewport';
+import { createImageViewport, ImageAssetSize, ImageViewport, ImageViewportOptions } from './image-viewport';
 import { GraphViewport } from './graph.models';
 
 export function setupResizeObserverRuntime(options: {
@@ -74,7 +74,7 @@ export function measureImageStageRuntime(options: {
   imageViewportReady: boolean;
   viewport: ImageViewport;
   asset: ImageAssetSize | null;
-  entityType: string;
+  viewportOptions?: ImageViewportOptions;
 }): {
   nextSize: { width: number; height: number } | null;
   nextViewport: ImageViewport | null;
@@ -106,8 +106,8 @@ export function measureImageStageRuntime(options: {
         nextSize,
         viewport: options.viewport,
         asset: options.asset,
-        entityType: options.entityType,
-      }) ?? createImageViewport(nextSize, options.asset, { entityType: options.entityType }),
+        entityType: options.viewportOptions?.entityType ?? '',
+      }) ?? createImageViewport(nextSize, options.asset, options.viewportOptions),
     shouldSyncViewport: false,
   };
 }

@@ -80,7 +80,7 @@
     } @else {
     <section class="entity-explorer entity-glass">
       @defer (on idle) {
-      <app-graph [slug]="entity.slug" [imageUrl]="visualUrl(entity)"
+      <app-graph [slug]="entity.slug" [imageMedia]="detailMedia(entity)"
         [imageAlt]="visualAlt(entity)" [entityTitle]="entity.title" [entityType]="entity.type"
         [imageMeta]="{
           source: detailMedia(entity)?.source ?? null,
@@ -226,7 +226,7 @@
         </div>
 
         @defer (on idle) {
-        <app-graph [slug]="entity.slug" [imageUrl]="visualUrl(entity)"
+        <app-graph [slug]="entity.slug" [imageMedia]="detailMedia(entity)"
           [imageAlt]="visualAlt(entity)" [entityTitle]="entity.title" [entityType]="entity.type"
           [imageMeta]="{
             source: detailMedia(entity)?.source ?? null,

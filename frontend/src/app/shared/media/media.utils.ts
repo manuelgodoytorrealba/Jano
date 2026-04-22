@@ -110,6 +110,7 @@ const PRIMARY_ROLE_ORDER = ['PRIMARY_LEGACY', 'HERO', 'CARD', 'DETAIL', 'THUMBNA
 const PRIMARY_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | 'primary'>>([
   'hero',
   'card',
+  'detail',
   'thumbnail',
   'explorer3d',
 ]);
@@ -121,6 +122,17 @@ const BEST_AVAILABLE_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | '
   'thumbnail',
   'explorer3d',
 ]);
+
+export type MediaPresentation = {
+  src: string | null;
+  objectFit: 'cover' | 'contain';
+  objectPosition: string;
+  imageTransform: string;
+  transformOrigin: string;
+  focusX: number;
+  focusY: number;
+  zoom: number;
+};
 
 export function mediaDisplayUrl(media: MediaLike | null | undefined): string | null {
   const displayUrl = normalizeMediaUrlValue(media?.displayUrl);
@@ -319,6 +331,29 @@ export function mediaTransform(
   }
 
   return `scale(${Math.min(3, Math.max(1, Number(zoom))).toFixed(3)})`;
+}
+
+export function resolveMediaPresentation(
+  media: Pick<ResolvedMediaItem, 'displayMode' | 'focalX' | 'focalY' | 'cropX' | 'cropY' | 'cropZoom'> | MediaLike | null | undefined,
+  usage: MediaUsage = 'card',
+): MediaPresentation {
+  const focusX = normalizeFocal(media?.cropX ?? media?.focalX);
+  const focusY = normalizeFocal(media?.cropY ?? media?.focalY);
+  const zoomValue = media?.cropZoom;
+  const zoom = zoomValue === null || zoomValue === undefined || Number.isNaN(Number(zoomValue))
+    ? 1
+    : Math.min(3, Math.max(1, Number(zoomValue)));
+
+  return {
+    src: mediaDisplayUrl(media),
+    objectFit: mediaObjectFit(media, usage),
+    objectPosition: `${focusX}% ${focusY}%`,
+    imageTransform: zoom <= 1 ? 'scale(1)' : `scale(${zoom.toFixed(3)})`,
+    transformOrigin: `${focusX}% ${focusY}%`,
+    focusX,
+    focusY,
+    zoom,
+  };
 }
 
 function selectResolvedMediaItem(

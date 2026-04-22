@@ -206,6 +206,7 @@ const PRIMARY_ROLE_ORDER = ['PRIMARY_LEGACY', 'HERO', 'CARD', 'DETAIL', 'THUMBNA
 const PRIMARY_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | 'primary'>>([
   'hero',
   'card',
+  'detail',
   'thumbnail',
   'explorer3d',
 ]);

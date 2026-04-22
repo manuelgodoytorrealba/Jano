@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { GraphViewportFocusPlan } from './graph-focus';
 import { createGraphWheelViewport } from './graph-stage-interactions';
 import { GraphData, GraphNode, GraphPoint, GraphViewport } from './graph.models';
-import { ImageViewport } from './image-viewport';
+import { ImageViewport, ImageViewportOptions } from './image-viewport';
 import {
   createImageButtonZoomRuntime,
   createImageWheelZoomRuntime,
@@ -21,7 +21,7 @@ export function runResetImageViewRuntime(options: {
   animate: boolean;
   size: StageSize;
   asset: { width: number; height: number } | null;
-  entityType: string;
+  viewportOptions?: ImageViewportOptions;
   setTargetImageViewport: (viewport: ImageViewport | null) => void;
   setImageViewport: (viewport: ImageViewport) => void;
   markImageViewportReady: () => void;
@@ -31,7 +31,7 @@ export function runResetImageViewRuntime(options: {
   const next = createResetImageRuntime({
     size: options.size,
     asset: options.asset,
-    entityType: options.entityType,
+    viewportOptions: options.viewportOptions,
   });
   if (!next) {
     return;

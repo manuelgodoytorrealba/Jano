@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
-import { entityVisualUrl } from '../../shared/media/media.utils';
+import { MediaPresentation, resolveEntityMediaItem, resolveMediaPresentation } from '../../shared/media/media.utils';
 
 type Entity = any;
 type NavDirection = -1 | 1;
@@ -364,6 +364,7 @@ export class EntitiesExplorer3dComponent
         width: number,
         height: number,
         radius: number,
+        presentation: MediaPresentation,
     ): THREE.CanvasTexture {
         const canvas = document.createElement('canvas');
         canvas.width = width;
@@ -379,28 +380,18 @@ export class EntitiesExplorer3dComponent
         this.drawRoundedRect(ctx, 0, 0, width, height, radius);
         ctx.clip();
 
-        const imageRatio = image.width / image.height;
-        const canvasRatio = width / height;
-
-        let drawWidth = width;
-        let drawHeight = height;
-        let dx = 0;
-        let dy = 0;
-
         ctx.fillStyle = '#e9e3dc';
         ctx.fillRect(0, 0, width, height);
 
-        if (imageRatio > canvasRatio) {
-            drawHeight = height;
-            drawWidth = height * imageRatio;
-            dx = (width - drawWidth) / 2;
-        } else {
-            drawWidth = width;
-            drawHeight = width / imageRatio;
-            dy = (height - drawHeight) / 2;
-        }
+        const draw = this.resolveImagePlacement({
+            imageWidth: image.width,
+            imageHeight: image.height,
+            width,
+            height,
+            presentation,
+        });
 
-        ctx.drawImage(image, dx, dy, drawWidth, drawHeight);
+        ctx.drawImage(image, draw.dx, draw.dy, draw.drawWidth, draw.drawHeight);
 
         const texture = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;
@@ -483,6 +474,7 @@ export class EntitiesExplorer3dComponent
 
             const textureUrl = this.thumb(item);
             if (textureUrl) {
+                const presentation = this.mediaPresentation(item);
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 img.onload = () => {
@@ -491,6 +483,7 @@ export class EntitiesExplorer3dComponent
                         1100,
                         1200,
                         48,
+                        presentation,
                     );
                     imageMaterial.map = roundedTexture;
                     imageMaterial.needsUpdate = true;
@@ -669,7 +662,57 @@ export class EntitiesExplorer3dComponent
     }
 
     private thumb(e: Entity): string | null {
-        return entityVisualUrl(e, 'explorer3d');
+        return this.mediaPresentation(e).src;
+    }
+
+    private mediaPresentation(entity: Entity): MediaPresentation {
+        return resolveMediaPresentation(
+            resolveEntityMediaItem(entity, 'explorer3d'),
+            'explorer3d',
+        );
+    }
+
+    private resolveImagePlacement(options: {
+        imageWidth: number;
+        imageHeight: number;
+        width: number;
+        height: number;
+        presentation: MediaPresentation;
+    }): { drawWidth: number; drawHeight: number; dx: number; dy: number } {
+        const {
+            imageWidth,
+            imageHeight,
+            width,
+            height,
+            presentation,
+        } = options;
+
+        const baseScale = presentation.objectFit === 'contain'
+            ? Math.min(width / imageWidth, height / imageHeight)
+            : Math.max(width / imageWidth, height / imageHeight);
+        const scale = baseScale * presentation.zoom;
+        const drawWidth = imageWidth * scale;
+        const drawHeight = imageHeight * scale;
+        const focusX = drawWidth * (presentation.focusX / 100);
+        const focusY = drawHeight * (presentation.focusY / 100);
+
+        const targetDx = width / 2 - focusX;
+        const targetDy = height / 2 - focusY;
+
+        return {
+            drawWidth,
+            drawHeight,
+            dx: this.clampDrawOffset(targetDx, drawWidth, width),
+            dy: this.clampDrawOffset(targetDy, drawHeight, height),
+        };
+    }
+
+    private clampDrawOffset(offset: number, drawSize: number, viewportSize: number): number {
+        if (drawSize <= viewportSize) {
+            return (viewportSize - drawSize) / 2;
+        }
+
+        return THREE.MathUtils.clamp(offset, viewportSize - drawSize, 0);
     }
 
     private pickPlane(clientX: number, clientY: number): THREE.Intersection<THREE.Object3D>[] {

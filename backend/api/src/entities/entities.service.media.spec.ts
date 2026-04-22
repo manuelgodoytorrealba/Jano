@@ -766,6 +766,14 @@ describe('EntitiesService media admin workflows', () => {
           displayMode: 'COVER',
           focalX: null,
           focalY: null,
+          cropExplorer3d: null,
+          cropList: null,
+          cropDetail: null,
+          cropPreview: {
+            x: 22,
+            y: 64,
+            zoom: 1.8,
+          },
           media: {
             id: 'preview-media',
             url: 'https://example.com/preview.jpg',
@@ -780,6 +788,8 @@ describe('EntitiesService media admin workflows', () => {
             mimeType: 'image/jpeg',
             width: 800,
             height: 800,
+            focalX: 35,
+            focalY: 45,
             isVector: false,
             provider: 'MUSEUM',
             qualityTier: 'HIGH',
@@ -806,6 +816,11 @@ describe('EntitiesService media admin workflows', () => {
     expect(result.resolvedMedia.thumbnail).toEqual(
       expect.objectContaining({
         id: 'preview-media',
+        cropX: 22,
+        cropY: 64,
+        cropZoom: 1.8,
+        assetFocalX: 35,
+        assetFocalY: 45,
       }),
     );
   });

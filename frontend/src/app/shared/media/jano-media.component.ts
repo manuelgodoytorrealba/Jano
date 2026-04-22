@@ -6,9 +6,7 @@ import {
   entityVisualUrl,
   isAbstractEntityType,
   mediaDisplayUrl,
-  mediaObjectFit,
-  mediaObjectPosition,
-  mediaTransform,
+  resolveMediaPresentation,
   resolveEntityMediaGallery,
   resolveEntityMediaItem,
 } from './media.utils';
@@ -30,7 +28,7 @@ export class JanoMediaComponent {
   @Input() placeholderMode: 'auto' | 'none' = 'auto';
 
   get src(): string | null {
-    const direct = mediaDisplayUrl(this.media);
+    const direct = this.mediaPresentation.src;
     if (direct) {
       return direct;
     }
@@ -57,15 +55,19 @@ export class JanoMediaComponent {
   }
 
   get objectFit(): 'cover' | 'contain' {
-    return mediaObjectFit(this.mediaWithPresentation, this.usage);
+    return this.mediaPresentation.objectFit;
   }
 
   get objectPosition(): string {
-    return mediaObjectPosition(this.mediaWithPresentation);
+    return this.mediaPresentation.objectPosition;
   }
 
   get imageTransform(): string {
-    return mediaTransform(this.mediaWithPresentation);
+    return this.mediaPresentation.imageTransform;
+  }
+
+  get imageTransformOrigin(): string {
+    return this.mediaPresentation.transformOrigin;
   }
 
   get loadingAttr(): 'lazy' | 'eager' {
@@ -111,6 +113,10 @@ export class JanoMediaComponent {
 
   private get mediaWithPresentation(): MediaLike | null {
     return this.media ?? this.selectedEntityMedia;
+  }
+
+  private get mediaPresentation() {
+    return resolveMediaPresentation(this.mediaWithPresentation, this.usage);
   }
 
   private get fallbackDimensions(): { width: number; height: number } {

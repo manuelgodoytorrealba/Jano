@@ -17,6 +17,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
+import { MediaLike, resolveMediaPresentation } from '../../shared/media/media.utils';
 import {
   currentDraggedNodeId,
   GraphPointerSession,
@@ -29,7 +30,6 @@ import {
   graphViewportTransform,
 } from './graph-viewport';
 import {
-  createImageViewport,
   imageViewportTransform,
   ImageAssetSize,
   ImageViewport,
@@ -163,6 +163,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   @Input({ required: true }) slug!: string;
+  @Input() imageMedia: MediaLike | null = null;
   @Input() imageUrl: string | null = null;
   @Input() imageAlt = '';
   @Input() entityTitle = '';
@@ -272,6 +273,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   });
 
   readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphViewport().scale));
+  readonly imagePresentation = computed(() => resolveMediaPresentation(this.imageMedia));
 
   ngOnChanges(changes: SimpleChanges): void {
     const next = resolveGraphInputChangesRuntime({
@@ -559,7 +561,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       imageViewportReady: this.imageViewportReady,
       viewport: this.imageViewport(),
       asset: this.imageAsset(),
-      entityType: this.entityType,
+      viewportOptions: this.imageViewportOptions(),
     });
     const nextSize = measured.nextSize;
     if (!nextSize) {
@@ -601,7 +603,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   imageBackdrop(): string | null {
-    return graphImageBackdrop(this.imageUrl);
+    return graphImageBackdrop(this.imagePresentation().src ?? this.imageUrl);
   }
 
   nodePosition(nodeId: string): GraphPoint {
@@ -628,7 +630,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       animate,
       size: this.currentImageStageSize(),
       asset: this.imageAsset(),
-      entityType: this.entityType,
+      viewportOptions: this.imageViewportOptions(),
       setTargetImageViewport: (viewport) => {
         this.targetImageViewport = viewport;
       },
@@ -1163,7 +1165,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       size: this.currentImageStageSize(),
       current: this.imageViewport(),
       persistedImage: this.persistedState?.image,
-      entityType: this.entityType,
+      viewportOptions: this.imageViewportOptions(),
       imageViewportReady: this.imageViewportReady,
       forceFit,
       mapViewport,
@@ -1189,6 +1191,16 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   private currentImageStageSize(): { width: number; height: number } {
     return resolveLiveStageSize(this.imageStage?.nativeElement, this.imageSize());
+  }
+
+  private imageViewportOptions() {
+    const presentation = this.imagePresentation();
+    return {
+      entityType: this.entityType,
+      focusX: presentation.focusX,
+      focusY: presentation.focusY,
+      zoom: presentation.zoom,
+    };
   }
 
   private persistExplorerState(): void {

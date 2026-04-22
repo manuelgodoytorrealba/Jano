@@ -2,6 +2,7 @@ import {
   clampImageViewport,
   createImageViewport,
   ImageAssetSize,
+  ImageViewportOptions,
   ImageViewport,
   panImageViewport,
   zoomImageViewport,
@@ -12,14 +13,14 @@ import { GraphPoint } from './graph.models';
 export function createResetImageViewport(options: {
   size: { width: number; height: number };
   asset: ImageAssetSize | null;
-  entityType: string;
+  viewportOptions?: ImageViewportOptions;
 }): ImageViewport | null {
-  const { size, asset, entityType } = options;
+  const { size, asset, viewportOptions } = options;
   if (!asset || !size.width || !size.height) {
     return null;
   }
 
-  return createImageViewport(size, asset, { entityType });
+  return createImageViewport(size, asset, viewportOptions);
 }
 
 export function createImageWheelAnchor(event: WheelEvent, rect: DOMRect): GraphPoint {
@@ -34,21 +35,21 @@ export function syncGraphImageViewport(options: {
   size: { width: number; height: number };
   current: ImageViewport;
   persistedImage?: ExplorerPersistedState['image'];
-  entityType: string;
+  viewportOptions?: ImageViewportOptions;
   imageViewportReady: boolean;
   forceFit?: boolean;
   mapViewport?: (current: ImageViewport) => ImageViewport;
 }): ImageViewport | null {
-  const { asset, size, current, persistedImage, entityType, imageViewportReady, forceFit, mapViewport } = options;
+  const { asset, size, current, persistedImage, viewportOptions, imageViewportReady, forceFit, mapViewport } = options;
   if (!asset || !size.width || !size.height) {
     return null;
   }
 
-  const fit = createImageViewport(size, asset, { entityType });
+  const fit = createImageViewport(size, asset, viewportOptions);
   const mappedCurrent = mapViewport ? mapViewport(current) : current;
   const restored =
     !forceFit && !imageViewportReady
-      ? restoreImageViewport(persistedImage, size, asset, { entityType })
+      ? restoreImageViewport(persistedImage, size, asset, viewportOptions)
       : null;
   const shouldFit = forceFit || !imageViewportReady || mappedCurrent.scale <= mappedCurrent.fitScale * 1.02;
 

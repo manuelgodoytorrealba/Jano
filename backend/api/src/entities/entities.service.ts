@@ -850,6 +850,10 @@ export class EntitiesService {
             displayMode: true,
             focalX: true,
             focalY: true,
+            cropExplorer3d: true,
+            cropList: true,
+            cropDetail: true,
+            cropPreview: true,
             media: {
               select: {
                 id: true,
@@ -865,6 +869,8 @@ export class EntitiesService {
                 mimeType: true,
                 width: true,
                 height: true,
+                focalX: true,
+                focalY: true,
                 isVector: true,
                 provider: true,
                 qualityTier: true,

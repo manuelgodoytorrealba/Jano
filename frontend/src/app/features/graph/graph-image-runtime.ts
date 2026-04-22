@@ -6,7 +6,7 @@ import {
   syncGraphImageViewport,
   zoomGraphImageViewport,
 } from './graph-image';
-import { ImageAssetSize, ImageViewport } from './image-viewport';
+import { ImageAssetSize, ImageViewport, ImageViewportOptions } from './image-viewport';
 import { ExplorerPersistedState } from './graph-persistence';
 import { GraphPoint } from './graph.models';
 
@@ -102,7 +102,7 @@ export function createImageButtonZoomRuntime(options: {
 export function createResetImageRuntime(options: {
   size: { width: number; height: number };
   asset: ImageAssetSize | null;
-  entityType: string;
+  viewportOptions?: ImageViewportOptions;
 }): ImageViewport | null {
   return createResetImageViewport(options);
 }
@@ -112,7 +112,7 @@ export function syncImageViewportRuntime(options: {
   size: { width: number; height: number };
   current: ImageViewport;
   persistedImage?: ExplorerPersistedState['image'];
-  entityType: string;
+  viewportOptions?: ImageViewportOptions;
   imageViewportReady: boolean;
   forceFit?: boolean;
   mapViewport?: (current: ImageViewport) => ImageViewport;

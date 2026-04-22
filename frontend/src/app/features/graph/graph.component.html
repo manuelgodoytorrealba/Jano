@@ -15,12 +15,12 @@
           (pointerup)="onImagePointerUp($event)"
           (pointercancel)="onImagePointerCancel($event)"
         >
-          @if (imageUrl) {
+          @if (imagePresentation().src || imageUrl) {
             <div class="image-stage__backdrop" [style.background-image]="imageBackdrop()" aria-hidden="true"></div>
             <div class="image-stage__asset" [style.transform]="imageTransform()">
               <img
                 class="image-stage__img"
-                [src]="imageUrl!"
+                [src]="imagePresentation().src ?? imageUrl!"
                 [alt]="imageAlt || entityTitle"
                 loading="lazy"
                 draggable="false"

@@ -11,6 +11,9 @@ export interface ImageViewport extends GraphViewport {
 
 export interface ImageViewportOptions {
   entityType?: string | null;
+  focusX?: number | null;
+  focusY?: number | null;
+  zoom?: number | null;
 }
 
 const IMAGE_MAX_FACTOR = 6;
@@ -59,12 +62,14 @@ export function createImageViewport(
   const width = asset.width * scale;
   const height = asset.height * scale;
 
-  return {
+  const fitViewport = {
     fitScale: scale,
     scale,
     x: (container.width - width) / 2,
     y: (container.height - height) / 2,
   };
+
+  return applyEditorialViewport(fitViewport, container, asset, options);
 }
 
 export function zoomImageViewport(
@@ -171,4 +176,48 @@ export function interpolateImageViewport(
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
+}
+
+function applyEditorialViewport(
+  viewport: ImageViewport,
+  container: { width: number; height: number },
+  asset: ImageAssetSize,
+  options?: ImageViewportOptions,
+): ImageViewport {
+  const focusX = normalizePercent(options?.focusX, 50);
+  const focusY = normalizePercent(options?.focusY, 50);
+  const zoom = normalizeZoom(options?.zoom);
+
+  if (focusX === 50 && focusY === 50 && zoom === 1) {
+    return viewport;
+  }
+
+  const scale = clamp(viewport.fitScale * zoom, viewport.fitScale, viewport.fitScale * IMAGE_MAX_FACTOR);
+
+  return clampImageViewport(
+    {
+      ...viewport,
+      scale,
+      x: container.width / 2 - asset.width * scale * (focusX / 100),
+      y: container.height / 2 - asset.height * scale * (focusY / 100),
+    },
+    container,
+    asset,
+  );
+}
+
+function normalizePercent(value: number | null | undefined, fallback: number): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return fallback;
+  }
+
+  return clamp(value, 0, 100);
+}
+
+function normalizeZoom(value: number | null | undefined): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return 1;
+  }
+
+  return clamp(value, 1, IMAGE_MAX_FACTOR);
 }

@@ -10,7 +10,7 @@ import { SeoService } from '../../core/seo/seo.service';
 import { GraphComponent } from '../graph/graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
-import { entityVisualUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
+import { mediaDisplayUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
 
 type DetailFact = {
   label: string;
@@ -60,7 +60,7 @@ export class EntityComponent {
   }
 
   visualUrl(entity: any) {
-    return entityVisualUrl(entity, 'detail');
+    return mediaDisplayUrl(this.detailMedia(entity));
   }
 
   visualAlt(entity: any): string {

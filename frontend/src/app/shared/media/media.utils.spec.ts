@@ -1,4 +1,4 @@
-import { mediaDisplayUrl, resolveEntityMediaItem, resolveEntityMediaSlot } from './media.utils';
+import { mediaDisplayUrl, resolveEntityMediaItem, resolveEntityMediaSlot, resolveMediaPresentation } from './media.utils';
 
 describe('media.utils', () => {
   it('keeps hero, card and detail separated when resolvedMedia provides distinct assets', () => {
@@ -71,6 +71,27 @@ describe('media.utils', () => {
     expect(resolveEntityMediaSlot(entity, 'explorer3d').item?.id).toBe('legacy-media');
   });
 
+  it('prefers the active legacy fallback for detail before best-available heuristics', () => {
+    const entity = {
+      type: 'ARTWORK',
+      mediaLinks: [
+        {
+          id: 'legacy-preview',
+          role: 'PRIMARY_LEGACY',
+          isPrimary: true,
+          media: { id: 'legacy-preview-media', url: 'https://example.com/preview.jpg' },
+        },
+        {
+          id: 'explorer',
+          role: 'EXPLORER_3D',
+          media: { id: 'explorer-media', url: 'https://example.com/explorer.jpg', width: 2400, height: 2400 },
+        },
+      ],
+    };
+
+    expect(resolveEntityMediaItem(entity, 'detail')?.id).toBe('legacy-preview-media');
+  });
+
   it('falls back to media.url when admin data carries an empty displayUrl string', () => {
     expect(mediaDisplayUrl({
       displayUrl: '',
@@ -104,5 +125,24 @@ describe('media.utils', () => {
     expect(mediaDisplayUrl({
       url: 'http://127.0.0.1:3000/uploads/media/uploaded-file.jpg',
     })).toBe('/uploads/media/uploaded-file.jpg');
+  });
+
+  it('builds a crop-first presentation model that public renderers can reuse', () => {
+    expect(resolveMediaPresentation({
+      url: 'https://example.com/detail.jpg',
+      focalX: 40,
+      focalY: 60,
+      cropX: 18,
+      cropY: 72,
+      cropZoom: 1.85,
+    }, 'detail')).toEqual(expect.objectContaining({
+      src: 'https://example.com/detail.jpg',
+      objectPosition: '18% 72%',
+      imageTransform: 'scale(1.850)',
+      transformOrigin: '18% 72%',
+      focusX: 18,
+      focusY: 72,
+      zoom: 1.85,
+    }));
   });
 });
