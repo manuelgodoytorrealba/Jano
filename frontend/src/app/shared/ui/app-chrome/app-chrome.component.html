@@ -60,23 +60,36 @@
   [style.--active-index]="activeUtilityIndex()"
 >
   <span class="app-chrome__utility-indicator" aria-hidden="true"></span>
-  @for (item of visibleUtilityItems(); track item.label) {
+  @for (item of currentUtilityItems(); track item.label) {
     @if (item.kind === 'route') {
       <a
         class="app-chrome__utility-btn"
         [class.is-active]="isUtilityActive(item)"
         [routerLink]="targetRoute(item)"
-        [attr.aria-label]="item.label"
-        [title]="item.label"
+        [attr.aria-label]="utilityAriaLabel(item)"
+        [title]="utilityAriaLabel(item)"
       >
         <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
       </a>
+    } @else if (item.kind === 'action') {
+      <button
+        type="button"
+        class="app-chrome__utility-btn"
+        [class.is-active]="isUtilityActive(item)"
+        [attr.data-action]="item.action ?? item.icon"
+        [disabled]="isUtilityDisabled(item)"
+        [attr.aria-label]="utilityAriaLabel(item)"
+        [title]="utilityAriaLabel(item)"
+        (click)="triggerUtilityAction(item, $event)"
+      >
+        <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+      </button>
     } @else {
       <button
         type="button"
         class="app-chrome__utility-btn is-placeholder"
-        [attr.aria-label]="item.label"
-        [title]="item.label"
+        [attr.aria-label]="utilityAriaLabel(item)"
+        [title]="utilityAriaLabel(item)"
         (click)="preventPlaceholderAction($event)"
       >
         <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>

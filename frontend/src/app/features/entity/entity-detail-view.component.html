@@ -43,22 +43,6 @@
           }
         </div>
 
-        @if (showActions) {
-        <div class="entity-header__actions entity-header__actions--article">
-          <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved" [disabled]="saveLoading" (click)="onSave(entity.id)">
-            @if (saveLoading) {
-            {{ isSaved ? 'Quitando...' : 'Guardando...' }}
-            } @else if (isSaved) {
-            Guardado
-            } @else {
-            Guardar
-            }
-          </button>
-          <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading" (click)="onCollections()">
-            @if (collectionsLoading) { Cargando... } @else { Añadir a colección }
-          </button>
-        </div>
-        }
       </div>
     </section>
     } @else {
@@ -124,23 +108,6 @@
               </div>
             </div>
           </div>
-
-          @if (showActions) {
-          <div class="entity-header__actions">
-            <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved" [disabled]="saveLoading" (click)="onSave(entity.id)">
-              @if (saveLoading) {
-              {{ isSaved ? 'Quitando...' : 'Guardando...' }}
-              } @else if (isSaved) {
-              Guardado
-              } @else {
-              Guardar
-              }
-            </button>
-            <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading" (click)="onCollections()">
-              @if (collectionsLoading) { Cargando... } @else { Añadir a colección }
-            </button>
-          </div>
-          }
         </div>
       </header>
 

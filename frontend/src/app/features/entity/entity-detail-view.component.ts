@@ -29,6 +29,7 @@ export class EntityDetailViewComponent {
 
   @Output() saveToggle = new EventEmitter<string>();
   @Output() collectionsToggle = new EventEmitter<void>();
+  @Output() shareToggle = new EventEmitter<void>();
 
   primaryMedia(entity: any) {
     return selectPrimaryVisualMedia(entity);
@@ -260,6 +261,10 @@ export class EntityDetailViewComponent {
 
   onCollections() {
     this.collectionsToggle.emit();
+  }
+
+  onShare() {
+    this.shareToggle.emit();
   }
 
   private compactFacts(items: Array<{ label: string; value: any }>): DetailFact[] {

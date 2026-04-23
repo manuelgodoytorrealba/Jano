@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AsyncPipe, Location } from '@angular/common';
-import { map, distinctUntilChanged, switchMap, shareReplay, tap, of, catchError } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, distinctUntilChanged, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { SavedApi } from '../../core/api/saved.api';
 import { CollectionsApi } from '../../core/api/collections.api';
@@ -9,11 +9,14 @@ import { AuthService } from '../../core/auth/auth.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { mediaDisplayUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
 import { EntityDetailViewComponent } from './entity-detail-view.component';
+import { AppChromeRailService } from '../../shared/ui/app-chrome/app-chrome-rail.service';
 
 type DetailFact = {
   label: string;
   value: string;
 };
+
+type DetailPopupKind = 'saved' | 'manage' | 'removed' | 'share' | 'error' | 'collections';
 
 @Component({
   standalone: true,
@@ -23,30 +26,188 @@ type DetailFact = {
   templateUrl: './entity-detail-shell.component.html',
   styleUrls: ['./entity.component.scss'],
 })
-export class EntityComponent {
+export class EntityComponent implements OnDestroy {
   private api = inject(EntitiesApi);
   private savedApi = inject(SavedApi);
   private collectionsApi = inject(CollectionsApi);
   private location = inject(Location);
   private readonly seo = inject(SeoService);
+  private readonly chromeRail = inject(AppChromeRailService);
+  private readonly collectionsRefresh$ = new BehaviorSubject<void>(undefined);
 
   auth = inject(AuthService);
   private route = inject(ActivatedRoute);
+  private currentEntity = signal<any | null>(null);
 
   isSaved = signal(false);
   saveLoading = signal(false);
+  saveStatusResolved = signal(false);
 
   showCollectionsPanel = signal(false);
   collectionsLoading = signal(false);
   addingToCollection = signal(false);
+  creatingCollection = signal(false);
+  collectionsChooserOpen = signal(false);
+  popupKind = signal<DetailPopupKind>('saved');
+  popupTitle = signal('');
   collectionMessage = signal('');
+  createCollectionName = signal('');
+  createCollectionDescription = signal('');
+  private readonly syncContextualRail = effect(() => {
+    const entity = this.currentEntity();
+    if (!entity) {
+      this.chromeRail.clearContextualRail();
+      return;
+    }
+
+    this.chromeRail.setContextualRail({
+      kind: 'detail',
+      isSaved: this.isSaved(),
+      saveLoading: this.saveLoading() || !this.saveStatusResolved(),
+      canSave: this.auth.isLoggedIn && this.saveStatusResolved(),
+      onSave: () => this.toggleSave(entity.id),
+      onShare: () => this.shareEntity(entity),
+      onFocus: () => this.focusTop(),
+    });
+  });
+
+  ngOnDestroy(): void {
+    this.chromeRail.clearContextualRail();
+  }
 
   goBack() {
     this.location.back();
   }
 
   toggleCollectionsPanel() {
-    this.showCollectionsPanel.update((v) => !v);
+    this.showCollectionsPanel.update((v) => {
+      const next = !v;
+      if (!next) {
+        this.collectionsChooserOpen.set(false);
+        this.collectionMessage.set('');
+      }
+      return next;
+    });
+  }
+
+  closeCollectionsPanel() {
+    this.showCollectionsPanel.set(false);
+    this.collectionsChooserOpen.set(false);
+    this.popupTitle.set('');
+    this.collectionMessage.set('');
+  }
+
+  openCollectionsChooser() {
+    this.showCollectionsPanel.set(true);
+    this.collectionsChooserOpen.set(true);
+    this.popupKind.set('collections');
+    this.popupTitle.set('Añadir a colección');
+    this.collectionMessage.set('Elige una colección para organizar esta entidad.');
+  }
+
+  removeSavedEntity(entityId: string) {
+    if (!this.auth.isLoggedIn || this.saveLoading() || !this.saveStatusResolved()) {
+      return;
+    }
+
+    this.saveLoading.set(true);
+
+    this.savedApi.remove(entityId).subscribe({
+      next: () => {
+        this.isSaved.set(false);
+        this.saveLoading.set(false);
+        this.openPopup('removed', 'Eliminada de guardados', 'Ya no aparece en My Space.');
+      },
+      error: () => {
+        this.saveLoading.set(false);
+        this.openPopup('error', 'No se pudo quitar', 'Inténtalo de nuevo en un momento.');
+      },
+    });
+  }
+
+  createCollectionAndAttach(entityId: string) {
+    const name = this.createCollectionName().trim();
+    const description = this.createCollectionDescription().trim();
+
+    if (!name || this.creatingCollection()) {
+      return;
+    }
+
+    this.creatingCollection.set(true);
+    this.popupKind.set('collections');
+    this.collectionMessage.set('');
+
+    this.collectionsApi.create({
+      name,
+      description: description || undefined,
+    }).subscribe({
+      next: (collection) => {
+        this.createCollectionName.set('');
+        this.createCollectionDescription.set('');
+        this.collectionsRefresh$.next();
+        this.creatingCollection.set(false);
+        this.addToCollection(collection.id, entityId, true);
+      },
+      error: (err) => {
+        this.creatingCollection.set(false);
+        this.popupKind.set('error');
+        this.popupTitle.set('No se pudo crear');
+        this.collectionMessage.set(err?.error?.message ?? 'No se pudo crear la colección.');
+      },
+    });
+  }
+
+  private openPopup(kind: DetailPopupKind, title: string, message: string, showChooser = false) {
+    this.showCollectionsPanel.set(true);
+    this.collectionsChooserOpen.set(showChooser);
+    this.popupKind.set(kind);
+    this.popupTitle.set(title);
+    this.collectionMessage.set(message);
+  }
+
+  shareEntity(entity: any) {
+    if (!entity) {
+      return;
+    }
+
+    const title = entity.title ?? 'Entidad';
+    const text = entity.summary ?? this.detailHeroSubtitle(entity) ?? 'Descubre esta entidad en JANO.';
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+
+    const nav = typeof navigator !== 'undefined' ? navigator : null;
+    if (!nav) {
+      return;
+    }
+
+    const payload = { title, text, url };
+
+    if (typeof nav.share === 'function') {
+      nav.share(payload).catch(() => {
+        this.openPopup('error', 'No se pudo compartir', 'No se pudo abrir el panel de compartir.');
+      });
+      return;
+    }
+
+    if (nav.clipboard?.writeText && url) {
+      nav.clipboard.writeText(url)
+        .then(() => {
+          this.openPopup('share', 'Enlace copiado', 'Ya puedes compartir esta entidad donde quieras.');
+        })
+        .catch(() => {
+          this.openPopup('error', 'No se pudo compartir', 'No se pudo copiar el enlace de esta entidad.');
+        });
+      return;
+    }
+
+    this.openPopup('error', 'No se pudo compartir', 'Compartir no está disponible en este navegador.');
+  }
+
+  focusTop() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   primaryMedia(entity: any) {
@@ -218,8 +379,8 @@ export class EntityComponent {
     distinctUntilChanged()
   );
 
-  collections$ = this.auth.user$.pipe(
-    switchMap((user) => {
+  collections$ = combineLatest([this.auth.user$, this.collectionsRefresh$]).pipe(
+    switchMap(([user]) => {
       if (!user) {
         this.collectionsLoading.set(false);
         return of([]);
@@ -241,6 +402,10 @@ export class EntityComponent {
   entity$ = this.slug$.pipe(
     switchMap((slug) => this.api.get(slug)),
     tap((entity) => {
+      this.currentEntity.set(entity);
+      this.isSaved.set(false);
+      this.saveStatusResolved.set(false);
+      this.closeCollectionsPanel();
       this.seo.setPageMeta({
         title: `${entity.title} | JANO`,
         description: entity.summary ?? `Explore ${entity.title} in JANO.`,
@@ -250,38 +415,51 @@ export class EntityComponent {
 
       if (!this.auth.isLoggedIn) {
         this.isSaved.set(false);
+        this.saveStatusResolved.set(true);
         return;
       }
 
       this.savedApi.check(entity.id).subscribe({
-        next: (res) => this.isSaved.set(res.saved),
-        error: () => this.isSaved.set(false),
+        next: (res) => {
+          this.isSaved.set(res.saved);
+          this.saveStatusResolved.set(true);
+        },
+        error: () => {
+          this.isSaved.set(false);
+          this.saveStatusResolved.set(true);
+        },
       });
     }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   toggleSave(entityId: string) {
-    if (!this.auth.isLoggedIn || this.saveLoading()) return;
+    if (!this.auth.isLoggedIn || this.saveLoading() || !this.saveStatusResolved()) return;
+
+    const wasSaved = this.isSaved();
+    if (wasSaved) {
+      this.openPopup('manage', 'Ya está guardada', 'Puedes añadirla a una colección, crear una nueva o quitarla de guardados.');
+      return;
+    }
 
     this.saveLoading.set(true);
 
-    const req$ = this.isSaved()
-      ? this.savedApi.remove(entityId)
-      : this.savedApi.save(entityId);
+    const req$ = this.savedApi.save(entityId);
 
     req$.subscribe({
       next: () => {
-        this.isSaved.update((v) => !v);
+        this.isSaved.set(true);
         this.saveLoading.set(false);
+        this.openPopup('saved', 'Entidad guardada', 'Guardada en My Space. Puedes dejarla así o añadirla a una colección.');
       },
       error: () => {
         this.saveLoading.set(false);
+        this.openPopup('error', 'No se pudo guardar', 'Inténtalo de nuevo en un momento.');
       },
     });
   }
 
-  addToCollection(collectionId: string, entityId: string) {
+  addToCollection(collectionId: string, entityId: string, createdNow = false) {
     if (this.addingToCollection()) return;
 
     this.addingToCollection.set(true);
@@ -290,10 +468,20 @@ export class EntityComponent {
     this.collectionsApi.addEntity(collectionId, entityId).subscribe({
       next: () => {
         this.addingToCollection.set(false);
-        this.collectionMessage.set('Entity añadida a la colección.');
+        this.collectionsChooserOpen.set(false);
+        this.collectionsRefresh$.next();
+        this.popupKind.set('saved');
+        this.popupTitle.set(createdNow ? 'Colección creada' : 'Añadida a colección');
+        this.collectionMessage.set(
+          createdNow
+            ? 'La colección ya está creada y esta entidad quedó añadida dentro.'
+            : 'La entidad ya está organizada dentro de tu colección.',
+        );
       },
       error: (err) => {
         this.addingToCollection.set(false);
+        this.popupKind.set('error');
+        this.popupTitle.set('No se pudo añadir');
         this.collectionMessage.set(err?.error?.message ?? 'No se pudo añadir a la colección.');
       },
     });

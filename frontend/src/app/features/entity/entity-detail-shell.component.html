@@ -7,48 +7,121 @@
     [collectionsLoading]="collectionsLoading()"
     (saveToggle)="toggleSave($event)"
     (collectionsToggle)="toggleCollectionsPanel()"
+    (shareToggle)="shareEntity(entity)"
   ></app-entity-detail-view>
 
   @if (showCollectionsPanel() && auth.isLoggedIn) {
-    <div class="entity-detail page-shell entity-detail--overlay">
-      <div class="entity-detail__layout">
-        <section class="collections-panel entity-glass">
+    <div class="entity-detail-popup-wrap" aria-live="polite">
+        <section class="collections-panel entity-glass" [class.collections-panel--notice]="!collectionsChooserOpen()">
           <div class="collections-panel__head">
-            <h2 class="title-section">Tus colecciones</h2>
-            <button class="ds-btn collections-panel__close" type="button" (click)="toggleCollectionsPanel()">
+            <div class="collections-panel__title-block">
+              <p class="section-label">
+                @switch (popupKind()) {
+                  @case ('manage') { Guardado }
+                  @case ('removed') { Eliminado }
+                  @case ('share') { Compartir }
+                  @case ('error') { Aviso }
+                  @case ('collections') { Colecciones }
+                  @default { Guardado }
+                }
+              </p>
+              <h2 class="title-section">{{ popupTitle() }}</h2>
+            </div>
+            <button class="ds-btn collections-panel__close" type="button" (click)="closeCollectionsPanel()">
               Cerrar
             </button>
           </div>
 
           @if (collectionMessage()) {
-            <div class="collections-panel__message">
+            <div class="collections-panel__message" [class.collections-panel__message--positive]="popupKind() === 'saved' || popupKind() === 'share'">
               {{ collectionMessage() }}
             </div>
           }
 
-          @if (collections$ | async; as collections) {
-            @if (collections.length) {
-              <div class="collections-panel__list">
-                @for (collection of collections; track collection.id) {
-                  <button
-                    type="button"
-                    class="collection-option entity-glass-card"
-                    [disabled]="addingToCollection()"
-                    (click)="addToCollection(collection.id, entity.id)"
-                  >
-                    <div class="collection-option__name">{{ collection.name }}</div>
-                    <div class="collection-option__meta">
-                      {{ collection.items?.length ?? 0 }} items
-                    </div>
-                  </button>
-                }
+          @if (collectionsChooserOpen()) {
+            <div class="collections-panel__create entity-glass-card">
+              <div class="collections-panel__create-head">
+                <h3 class="collections-panel__create-title">Nueva colección</h3>
+                <p class="collections-panel__create-subtitle">Créala aquí y añade esta entidad al momento.</p>
               </div>
-            } @else {
-              <p class="text-muted">No tienes colecciones todavía. Créala en My Space.</p>
+              <div class="collections-panel__create-fields">
+                <input
+                  class="ds-input collections-panel__input"
+                  type="text"
+                  placeholder="Nombre de la colección"
+                  [value]="createCollectionName()"
+                  (input)="createCollectionName.set($any($event.target).value)"
+                />
+                <input
+                  class="ds-input collections-panel__input"
+                  type="text"
+                  placeholder="Descripción opcional"
+                  [value]="createCollectionDescription()"
+                  (input)="createCollectionDescription.set($any($event.target).value)"
+                />
+              </div>
+              <button
+                class="ds-btn entity-action entity-action--primary collections-panel__create-btn"
+                type="button"
+                [disabled]="creatingCollection() || !createCollectionName().trim()"
+                (click)="createCollectionAndAttach(entity.id)"
+              >
+                @if (creatingCollection()) { Creando... } @else { Crear colección }
+              </button>
+            </div>
+
+            @if (collections$ | async; as collections) {
+              @if (collections.length) {
+                <div class="collections-panel__list">
+                  @for (collection of collections; track collection.id) {
+                    <button
+                      type="button"
+                      class="collection-option entity-glass-card"
+                      [disabled]="addingToCollection()"
+                      (click)="addToCollection(collection.id, entity.id)"
+                    >
+                      <div class="collection-option__name">{{ collection.name }}</div>
+                      <div class="collection-option__meta">
+                        {{ collection.items?.length ?? 0 }} items
+                      </div>
+                    </button>
+                  }
+                </div>
+              } @else {
+                <p class="text-muted">No tienes colecciones todavía. Créala en My Space.</p>
+              }
             }
+          } @else {
+            <div class="collections-panel__choices">
+              @if (popupKind() === 'saved' || popupKind() === 'manage') {
+                <div class="collections-panel__primary-actions">
+                  <button class="ds-btn entity-action" type="button" (click)="closeCollectionsPanel()">
+                    Seguir
+                  </button>
+                  <button class="ds-btn entity-action entity-action--primary" type="button" [disabled]="collectionsLoading()" (click)="openCollectionsChooser()">
+                    @if (collectionsLoading()) { Cargando... } @else { Añadir a colección }
+                  </button>
+                </div>
+                @if (popupKind() === 'manage') {
+                  <div class="collections-panel__secondary-actions">
+                    <button
+                      class="ds-btn entity-action entity-action--danger entity-action--quiet-danger"
+                      type="button"
+                      [disabled]="saveLoading()"
+                      (click)="removeSavedEntity(entity.id)"
+                    >
+                      @if (saveLoading()) { Quitando... } @else { Quitar de guardados }
+                    </button>
+                  </div>
+                }
+              } @else {
+                <button class="ds-btn entity-action entity-action--primary" type="button" (click)="closeCollectionsPanel()">
+                  Entendido
+                </button>
+              }
+            </div>
           }
         </section>
-      </div>
     </div>
   }
 } @else {

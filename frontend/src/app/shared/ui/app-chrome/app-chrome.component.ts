@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
 import { AuthService } from '../../../core/auth/auth.service';
+import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
 
 type HeaderNavItem = {
   label: string;
@@ -13,10 +14,11 @@ type HeaderNavItem = {
 
 type UtilityItem = {
   label: string;
-  icon: 'profile' | 'space' | 'articles' | 'admin' | 'settings';
+  icon: 'profile' | 'space' | 'articles' | 'admin' | 'settings' | 'save' | 'share' | 'focus';
   route?: string;
-  kind: 'route' | 'placeholder';
+  kind: 'route' | 'placeholder' | 'action';
   adminOnly?: boolean;
+  action?: ContextualRailAction;
 };
 
 @Component({
@@ -29,6 +31,7 @@ type UtilityItem = {
 })
 export class AppChromeComponent {
   private readonly router = inject(Router);
+  readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
 
   readonly navItems: HeaderNavItem[] = [
@@ -47,6 +50,47 @@ export class AppChromeComponent {
     { label: 'Admin', route: '/admin', icon: 'admin', kind: 'route', adminOnly: true },
     { label: 'Ajustes', route: '/settings', icon: 'settings', kind: 'route' },
   ];
+
+  isDetailRoute(): boolean {
+    return this.router.url.split('?')[0].startsWith('/entity/');
+  }
+
+  contextualUtilityItems(): UtilityItem[] {
+    const state = this.rail.contextualRail();
+    if (!this.isDetailRoute()) {
+      return [];
+    }
+
+    const items: UtilityItem[] = [];
+
+    if (!state || state.kind !== 'detail') {
+      return [
+        { label: 'Guardar', icon: 'save', kind: 'action', action: 'save' },
+        { label: 'Compartir', icon: 'share', kind: 'action', action: 'share' },
+        { label: 'Inicio', icon: 'focus', kind: 'action', action: 'focus' },
+      ];
+    }
+
+    if (state.canSave) {
+      items.push({ label: 'Guardar', icon: 'save', kind: 'action', action: 'save' });
+    }
+
+    items.push(
+      { label: 'Compartir', icon: 'share', kind: 'action', action: 'share' },
+      { label: 'Inicio', icon: 'focus', kind: 'action', action: 'focus' },
+    );
+
+    return items;
+  }
+
+  currentUtilityItems(): UtilityItem[] {
+    const contextual = this.contextualUtilityItems();
+    if (contextual.length) {
+      return contextual;
+    }
+
+    return this.visibleUtilityItems();
+  }
 
   visibleUtilityItems(): UtilityItem[] {
     return this.utilityItems.filter((item) => !item.adminOnly || this.isAdmin());
@@ -79,7 +123,7 @@ export class AppChromeComponent {
   }
 
   activeUtilityIndex(): number {
-    return this.visibleUtilityItems().findIndex((item) => this.isUtilityActive(item));
+    return this.currentUtilityItems().findIndex((item) => this.isUtilityActive(item));
   }
 
   isAdmin(): boolean {
@@ -87,6 +131,11 @@ export class AppChromeComponent {
   }
 
   isUtilityActive(item: UtilityItem): boolean {
+    const contextual = this.rail.contextualRail();
+    if (item.kind === 'action' && contextual?.kind === 'detail') {
+      return item.action === 'save' ? contextual.isSaved : false;
+    }
+
     const url = this.router.url.split('?')[0];
 
     if (item.label === 'Perfil') {
@@ -110,6 +159,49 @@ export class AppChromeComponent {
     }
 
     return false;
+  }
+
+  utilityAriaLabel(item: UtilityItem): string {
+    if (item.kind === 'action' && item.action === 'save') {
+      const contextual = this.rail.contextualRail();
+      if (contextual?.saveLoading) {
+        return contextual.isSaved ? 'Quitando guardado' : 'Guardando entidad';
+      }
+
+      return contextual?.isSaved ? 'Entidad guardada' : item.label;
+    }
+
+    if (item.kind === 'action' && item.action === 'focus') {
+      return 'Inicio';
+    }
+
+    return item.label;
+  }
+
+  isUtilityDisabled(item: UtilityItem): boolean {
+    const contextual = this.rail.contextualRail();
+    if (item.kind !== 'action') {
+      return false;
+    }
+
+    if (!contextual || contextual.kind !== 'detail') {
+      return true;
+    }
+
+    if (item.action === 'save') {
+      return contextual.saveLoading || !contextual.canSave;
+    }
+
+    return false;
+  }
+
+  triggerUtilityAction(item: UtilityItem, event: Event): void {
+    if (item.kind !== 'action' || !item.action) {
+      return;
+    }
+
+    event.preventDefault();
+    this.rail.trigger(item.action);
   }
 
   preventPlaceholderAction(event: Event): void {
