@@ -1,4 +1,22 @@
-<app-entity-deck [items]="deckItems" [backgroundImage]="'/assets/home/museum-room.jpg'" [showRail]="false"
-    [showDots]="true" [showNav]="true" [showBottomSearch]="false" [fullViewport]="false" (cardClick)="onCardClick($event)"
-    (expandClick)="onExpandClick($event)" (railClick)="onRailClick($event)" (searchSubmit)="onSearchSubmit($event)"
-    (tabChange)="onTabChange($event)" />
+<section class="admin-deck-page">
+    <div class="admin-deck-page__identity" aria-label="Selector visual admin">
+        <span>Admin</span>
+        <strong>Selector visual</strong>
+    </div>
+
+    <app-entity-deck
+        class="admin-deck-page__deck"
+        [items]="deckItems"
+        [backgroundImage]="'/assets/home/museum-room.jpg'"
+        [showRail]="false"
+        [showDots]="true"
+        [showNav]="true"
+        [showBottomSearch]="false"
+        [fullViewport]="true"
+        (cardClick)="onCardClick($event)"
+        (expandClick)="onExpandClick($event)"
+        (railClick)="onRailClick($event)"
+        (searchSubmit)="onSearchSubmit($event)"
+        (tabChange)="onTabChange($event)"
+    />
+</section>

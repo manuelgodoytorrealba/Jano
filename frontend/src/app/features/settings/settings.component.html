@@ -1,0 +1,33 @@
+<div class="page">
+  @if (auth.user$ | async; as user) {
+    <header class="settings-head">
+      <div>
+        <span class="settings-eyebrow">Ajustes</span>
+        <h1>Cuenta y preferencias</h1>
+        <p class="muted">Un punto simple para revisar tu sesión y accesos principales.</p>
+      </div>
+    </header>
+
+    <section class="settings-card">
+      <div class="settings-row">
+        <span class="settings-label">Usuario</span>
+        <strong>{{ user.name || 'Sin nombre' }}</strong>
+      </div>
+
+      <div class="settings-row">
+        <span class="settings-label">Email</span>
+        <strong>{{ user.email }}</strong>
+      </div>
+
+      <div class="settings-row">
+        <span class="settings-label">Rol</span>
+        <strong>{{ user.role }}</strong>
+      </div>
+
+      <div class="settings-actions">
+        <a class="settings-action" routerLink="/profile">Perfil</a>
+        <a class="settings-action" routerLink="/my-space">Mi espacio</a>
+      </div>
+    </section>
+  }
+</div>

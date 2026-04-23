@@ -1,0 +1,39 @@
+<div class="page">
+  @if (auth.user$ | async; as user) {
+    <header class="profile-head">
+      <div>
+        <span class="profile-eyebrow">Perfil</span>
+        <h1>{{ user.name || 'Cuenta JANO' }}</h1>
+        <p class="muted">{{ user.email }}</p>
+      </div>
+
+      <span class="profile-role">{{ roleLabel(user) }}</span>
+    </header>
+
+    <section class="profile-card">
+      <div class="profile-grid">
+        <div class="profile-item">
+          <span class="profile-label">Nombre</span>
+          <strong>{{ user.name || 'Sin nombre editorial' }}</strong>
+        </div>
+
+        <div class="profile-item">
+          <span class="profile-label">Email</span>
+          <strong>{{ user.email }}</strong>
+        </div>
+
+        <div class="profile-item">
+          <span class="profile-label">Rol</span>
+          <strong>{{ roleLabel(user) }}</strong>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <a class="profile-action" routerLink="/my-space">Ir a Mi espacio</a>
+        @if (roleLabel(user) === 'ADMIN') {
+          <a class="profile-action profile-action--primary" routerLink="/admin">Abrir admin</a>
+        }
+      </div>
+    </section>
+  }
+</div>

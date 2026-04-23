@@ -23,13 +23,23 @@
     />
   </form>
 
-  <nav class="app-chrome__nav" aria-label="Navegación principal">
+  <nav
+    class="app-chrome__nav"
+    [class.has-active]="activeNavIndex() >= 0"
+    aria-label="Navegación principal"
+    [style.--active-index]="activeNavIndex()"
+  >
+    <span class="app-chrome__nav-indicator" aria-hidden="true"></span>
     @for (item of navItems; track item.label) {
+      @if ($index === 4) {
+        <span class="app-chrome__nav-separator" aria-hidden="true"></span>
+      }
       @if (item.kind === 'route') {
         <a
           class="app-chrome__nav-link"
           [class.is-active]="isRouteActive(item)"
-          [routerLink]="item.route ?? '/'"
+          [class.app-chrome__nav-link--personal]="item.group === 'personal'"
+          [routerLink]="targetRoute(item)"
         >
           {{ item.label }}
         </a>
@@ -41,23 +51,21 @@
     }
   </nav>
 
-  <div class="app-chrome__actions">
-    <a class="app-chrome__quick app-chrome__quick--ghost" routerLink="/recommended">
-      Curated
-    </a>
-    <a class="app-chrome__quick app-chrome__quick--primary" routerLink="/my-space">
-      Mi espacio
-    </a>
-  </div>
 </header>
 
-<aside class="app-chrome__utility app-glass" aria-label="Utilidades">
-  @for (item of utilityItems; track item.label) {
+<aside
+  class="app-chrome__utility app-glass"
+  [class.has-active]="activeUtilityIndex() >= 0"
+  aria-label="Utilidades"
+  [style.--active-index]="activeUtilityIndex()"
+>
+  <span class="app-chrome__utility-indicator" aria-hidden="true"></span>
+  @for (item of visibleUtilityItems(); track item.label) {
     @if (item.kind === 'route') {
       <a
         class="app-chrome__utility-btn"
-        [class.is-active]="isRouteActive(item)"
-        [routerLink]="item.route ?? '/'"
+        [class.is-active]="isUtilityActive(item)"
+        [routerLink]="targetRoute(item)"
         [attr.aria-label]="item.label"
         [title]="item.label"
       >
