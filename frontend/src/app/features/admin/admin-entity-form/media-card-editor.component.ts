@@ -272,11 +272,11 @@ export class MediaCardEditorComponent implements OnChanges {
 
     if (fallbackChanged) {
       return this.draft.isPrimary
-        ? 'Al guardar quedará disponible como fallback legacy.'
+        ? 'Al guardar quedará como fallback legacy.'
         : 'Al guardar dejará de actuar como fallback legacy.';
     }
 
-    return 'Hay cambios pendientes en metadata o composición.';
+    return 'Hay cambios pendientes en texto o encuadre.';
   }
 
   mediaRoleLabel(role: string | null | undefined): string {
@@ -286,24 +286,24 @@ export class MediaCardEditorComponent implements OnChanges {
   mediaOriginLabel(originType: string | null | undefined): string {
     switch (originType) {
       case 'UPLOAD':
-        return 'Upload';
+        return 'Propio';
       case 'INGESTED':
-        return 'Ingested';
+        return 'Propio derivado';
       case 'EXTERNAL_URL':
       default:
-        return 'External';
+        return 'Referencia';
     }
   }
 
   mediaOriginDescription(originType: string | null | undefined): string {
     switch (originType) {
       case 'UPLOAD':
-        return 'Asset propio en storage local de JANO.';
+        return 'Asset propio listo para publicar.';
       case 'INGESTED':
-        return 'Asset propio derivado de una referencia externa.';
+        return 'Asset propio creado desde una referencia externa.';
       case 'EXTERNAL_URL':
       default:
-        return 'Referencia remota que aun no vive en JANO.';
+        return 'Referencia externa, todavía fuera de la biblioteca local.';
     }
   }
 

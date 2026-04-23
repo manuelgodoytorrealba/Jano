@@ -9,7 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, takeUntil } from 'rxjs';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   AdminAdditionalMediaItem,
@@ -28,6 +28,7 @@ import {
   AdminUploadEntityMediaPayload,
 } from '../../../core/api/admin-entities.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
+import { EntityDetailViewComponent } from '../../entity/entity-detail-view.component';
 import { MediaAddPanelComponent } from './media-add-panel.component';
 import { MediaCardEditorComponent } from './media-card-editor.component';
 import {
@@ -61,6 +62,7 @@ type VisualSlot = {
 type DashboardSectionId =
   | 'section-content'
   | 'section-media'
+  | 'section-preview'
   | 'section-sources'
   | 'section-contributors'
   | 'section-relations';
@@ -71,7 +73,7 @@ type MediaLibraryViewId = 'coverage' | 'library' | 'add';
   standalone: true,
   selector: 'app-admin-entity-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink, JanoMediaComponent, MediaAddPanelComponent, MediaCardEditorComponent],
+  imports: [FormsModule, JanoMediaComponent, EntityDetailViewComponent, MediaAddPanelComponent, MediaCardEditorComponent],
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
 })
@@ -105,13 +107,14 @@ previewContainer?: ElementRef<HTMLElement>;
   private previewRequestSlug: string | null = null;
 
   readonly dashboardSections = [
+    { id: 'section-preview', label: 'Preview Detail' },
     { id: 'section-content', label: 'Contenido' },
     { id: 'section-media', label: 'Media library' },
     { id: 'section-sources', label: 'Fuentes' },
     { id: 'section-contributors', label: 'Colaboradores' },
     { id: 'section-relations', label: 'Relaciones' },
   ] as const;
-  activeDashboardSection: DashboardSectionId = 'section-content';
+  activeDashboardSection: DashboardSectionId = 'section-preview';
   activeMediaLibraryView: MediaLibraryViewId = 'coverage';
   adminSidebarVisible = true;
   previewVisible = true;
@@ -126,6 +129,7 @@ previewContainer?: ElementRef<HTMLElement>;
   mediaWarningMessages: string[] = [];
   mediaWarningsDetailed: AdminMediaWarning[] = [];
   mediaCoverageSummary: AdminMediaCoverageSummary | null = null;
+  persistedResolvedMedia: any | null = null;
   activeMediaEditorId: string | null = null;
   mediaLoading = false;
   mediaMessage = '';
@@ -253,6 +257,7 @@ previewContainer?: ElementRef<HTMLElement>;
 
   isEdit = false;
   entityId = '';
+  adminReturnTo = '/admin';
   slugTouched = false;
 
   form: {
@@ -281,6 +286,7 @@ previewContainer?: ElementRef<HTMLElement>;
     const id = this.route.snapshot.paramMap.get('id');
     this.isEdit = !!id;
     this.entityId = id ?? '';
+    this.adminReturnTo = this.normalizeAdminReturnTo(this.route.snapshot.queryParamMap.get('returnTo'));
     this.restoreDashboardSection();
     this.restorePreviewVisibility();
     this.restoreAdminSidebarVisibility();
@@ -461,6 +467,7 @@ previewContainer?: ElementRef<HTMLElement>;
     };
 
     this.applyMediaLibraryState(entity, preserveDirtyMediaEditors, clearedEditorId);
+    this.persistedResolvedMedia = entity.resolvedMedia ?? null;
     this.detailsForm = this.extractDetailsForm(entity);
     this.sourceRefs = Array.isArray(entity.sourceRefs)
       ? entity.sourceRefs.map((ref: any) => this.normalizeSourceRef(ref))
@@ -499,13 +506,15 @@ previewContainer?: ElementRef<HTMLElement>;
 
         if (mode === 'stay') {
           if (!this.isEdit && entity?.id) {
-            this.router.navigate(['/admin/entities', entity.id, 'edit']);
+            this.router.navigate(['/admin/entities', entity.id, 'edit'], {
+              queryParams: { returnTo: this.adminReturnTo },
+            });
           }
           return;
         }
 
         setTimeout(() => {
-          this.router.navigate(['/admin']);
+          this.router.navigateByUrl(this.adminReturnTarget());
         }, 700);
       },
       error: (err) => {
@@ -514,6 +523,36 @@ previewContainer?: ElementRef<HTMLElement>;
         this.cdr.markForCheck();
       },
     });
+  }
+
+  private normalizeAdminReturnTo(value: string | null): string {
+    if (!value || !value.startsWith('/admin')) {
+      return '/admin';
+    }
+
+    if (value.startsWith('/admin/entities/') || value.includes('://')) {
+      return '/admin';
+    }
+
+    return value;
+  }
+
+  navigateToAdminReturn() {
+    this.router.navigateByUrl(this.adminReturnTarget());
+  }
+
+  adminReturnHref(): string {
+    return this.adminReturnTarget();
+  }
+
+  private adminReturnTarget(): string {
+    if (this.adminReturnTo !== '/admin') {
+      return this.adminReturnTo;
+    }
+
+    return this.isEdit && this.form.type
+      ? `/admin/entities?type=${encodeURIComponent(this.form.type)}`
+      : '/admin';
   }
 
   loadRelations() {
@@ -1592,6 +1631,221 @@ previewContainer?: ElementRef<HTMLElement>;
     };
   }
 
+  previewEntity() {
+    const mediaLinks = this.mediaEditors
+      .map((editor) => this.mediaLinkToPreview(editor.draft))
+      .filter((link): link is any => !!link);
+
+    return {
+      id: this.entityId || 'draft-preview',
+      type: this.form.type,
+      title: this.form.title || 'Título de la entity',
+      slug: this.form.slug || 'preview',
+      summary: this.form.summary || null,
+      content: this.form.content || null,
+      contentLevel: this.form.contentLevel || null,
+      status: this.form.status,
+      startYear: this.toNullableNumber(this.form.startYear),
+      endYear: this.toNullableNumber(this.form.endYear),
+      createdAt: new Date().toISOString(),
+      mediaLinks,
+      resolvedMedia: this.previewResolvedMedia(),
+      outgoing: this.relations.map((rel) => this.previewRelation(rel, 'outgoing')),
+      incoming: this.incomingRelations.map((rel) => this.previewRelation(rel, 'incoming')),
+      sourceRefs: this.sourceRefs.map((ref) => ({
+        id: ref.id ?? `${ref.sourceTitle}-${ref.page ?? ''}`,
+        page: ref.page ?? null,
+        quote: ref.quote ?? null,
+        source: {
+          type: ref.sourceType ?? 'SOURCE',
+          title: ref.sourceTitle ?? 'Fuente editorial',
+          author: ref.sourceAuthor ?? null,
+          publisher: ref.sourcePublisher ?? null,
+          year: ref.sourceYear ?? null,
+        },
+      })),
+      contributors: this.contributors,
+      artwork: this.form.type === 'ARTWORK' ? {
+        technique: this.detailsForm.technique ?? null,
+        materials: this.detailsForm.materials ?? null,
+        dimensions: this.detailsForm.dimensions ?? null,
+        location: this.detailsForm.location ?? null,
+        collection: this.detailsForm.collection ?? null,
+        state: this.detailsForm.state ?? null,
+        authorNation: this.detailsForm.authorNation ?? null,
+      } : null,
+      artist: this.form.type === 'ARTIST' ? {
+        country: this.detailsForm.country ?? null,
+        city: this.detailsForm.city ?? null,
+        birthYear: this.detailsForm.birthYear ?? null,
+        deathYear: this.detailsForm.deathYear ?? null,
+        disciplines: this.detailsForm.disciplines ?? null,
+        links: this.detailsForm.links ?? null,
+        bioShort: this.detailsForm.bioShort ?? null,
+      } : null,
+      concept: this.form.type === 'CONCEPT' ? {
+        definition: this.detailsForm.definition ?? null,
+      } : null,
+      period: this.form.type === 'PERIOD' ? {
+        definition: this.detailsForm.definition ?? null,
+      } : null,
+    };
+  }
+
+  private previewResolvedMedia() {
+    const resolved: Record<string, any> = this.persistedResolvedMedia
+      ? {
+        ...this.persistedResolvedMedia,
+        gallery: Array.isArray(this.persistedResolvedMedia.gallery)
+          ? [...this.persistedResolvedMedia.gallery]
+          : this.persistedResolvedMedia.gallery,
+      }
+      : {};
+    const slotMap: Array<{ key: MediaEditorSlotKey; usage: string }> = [
+      { key: 'explorer3d', usage: 'explorer3d' },
+      { key: 'list', usage: 'card' },
+      { key: 'detail', usage: 'detail' },
+      { key: 'preview', usage: 'thumbnail' },
+    ];
+
+    for (const slot of slotMap) {
+      const link = this.previewLinkForSlot(slot.key);
+      const editor = link ? this.editorForLink(link) : null;
+      if (link && (!this.persistedResolvedMedia || editor?.isDirty)) {
+        resolved[slot.usage] = this.mediaLinkToResolvedPreview(link, slot.key);
+      }
+    }
+
+    const primary = this.previewLinkForSlot('detail')
+      ?? this.previewLinkForSlot('list')
+      ?? this.previewLinkForSlot('preview')
+      ?? this.previewLinkForSlot('explorer3d');
+
+    const primaryEditor = primary ? this.editorForLink(primary) : null;
+    if (primary && (!this.persistedResolvedMedia || primaryEditor?.isDirty)) {
+      resolved['primary'] = this.mediaLinkToResolvedPreview(primary, 'detail');
+    }
+
+    const draftGallery = this.mediaEditors
+      .filter((editor) => !this.persistedResolvedMedia || editor.isDirty)
+      .map((editor) => editor.draft)
+      .filter((link) => link.role === 'GALLERY')
+      .map((link) => this.mediaLinkToResolvedPreview(link, 'detail'))
+      .filter(Boolean);
+
+    if (draftGallery.length) {
+      resolved['gallery'] = draftGallery;
+    }
+
+    return Object.keys(resolved).length ? resolved : null;
+  }
+
+  private previewLinkForSlot(slotKey: MediaEditorSlotKey): EditableAdminMediaLink | null {
+    const exactRoleBySlot: Record<MediaEditorSlotKey, string> = {
+      explorer3d: 'EXPLORER_3D',
+      list: 'CARD',
+      detail: 'DETAIL',
+      preview: 'THUMBNAIL',
+    };
+
+    const exact = this.mediaEditors
+      .map((editor) => editor.draft)
+      .filter((link) => link.role === exactRoleBySlot[slotKey])
+      .sort((a, b) => Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0))[0];
+
+    if (exact) {
+      return exact;
+    }
+
+    const resolvedSlot = this.resolvedVisualSlots.find((slot) => slot.key === slotKey);
+    if (resolvedSlot?.state.item?.id) {
+      const byResolvedAsset = this.mediaEditors
+        .map((editor) => editor.draft)
+        .find((link) => link.media.id === resolvedSlot.state.item?.id);
+
+      if (byResolvedAsset) {
+        return byResolvedAsset;
+      }
+    }
+
+    return this.mediaEditors
+      .map((editor) => editor.draft)
+      .find((link) => link.isPrimary)
+      ?? this.mediaEditors[0]?.draft
+      ?? null;
+  }
+
+  private mediaLinkToPreview(link: EditableAdminMediaLink | null | undefined) {
+    if (!link?.media) {
+      return null;
+    }
+    const media = link.media as any;
+
+    return {
+      id: link.id,
+      role: link.role,
+      sortOrder: this.toNullableNumber(link.sortOrder) ?? 0,
+      isPrimary: !!link.isPrimary,
+      displayMode: link.displayMode || null,
+      focalX: this.toNullableNumber(link.focalX),
+      focalY: this.toNullableNumber(link.focalY),
+      media: {
+        ...media,
+        displayMode: link.displayMode || null,
+        focalX: this.toNullableNumber(link.assetFocalX ?? media.assetFocalX ?? media.focalX),
+        focalY: this.toNullableNumber(link.assetFocalY ?? media.assetFocalY ?? media.focalY),
+      },
+    };
+  }
+
+  private mediaLinkToResolvedPreview(link: EditableAdminMediaLink, slotKey: MediaEditorSlotKey) {
+    const crop = link.slotCrops?.[slotKey];
+    const media = link.media as any;
+
+    return {
+      ...media,
+      role: link.role,
+      sortOrder: this.toNullableNumber(link.sortOrder) ?? 0,
+      isPrimary: !!link.isPrimary,
+      displayMode: link.displayMode || null,
+      focalX: this.toNullableNumber(link.focalX ?? link.assetFocalX ?? media.assetFocalX ?? media.focalX),
+      focalY: this.toNullableNumber(link.focalY ?? link.assetFocalY ?? media.assetFocalY ?? media.focalY),
+      cropX: this.toNullableNumber(crop?.x),
+      cropY: this.toNullableNumber(crop?.y),
+      cropZoom: this.toNullableNumber(crop?.zoom),
+    };
+  }
+
+  private previewRelation(rel: any, direction: 'outgoing' | 'incoming') {
+    const endpoint = direction === 'outgoing' ? rel.to : rel.from;
+    const fallbackEndpoint = {
+      id: `${rel.id ?? direction}-draft-endpoint`,
+      slug: endpoint?.slug ?? 'preview',
+      title: endpoint?.title ?? 'Entity relacionada',
+      type: endpoint?.type ?? 'ENTITY',
+    };
+
+    return {
+      ...rel,
+      id: rel.id ?? `${direction}-${rel.type ?? 'relation'}`,
+      type: rel.type ?? 'RELATED_TO',
+      justification: rel.justification ?? null,
+      weight: rel.weight ?? null,
+      from: direction === 'incoming' ? fallbackEndpoint : (rel.from ?? {
+        id: this.entityId || 'draft-preview',
+        slug: this.form.slug || 'preview',
+        title: this.form.title || 'Título de la entity',
+        type: this.form.type,
+      }),
+      to: direction === 'outgoing' ? fallbackEndpoint : (rel.to ?? {
+        id: this.entityId || 'draft-preview',
+        slug: this.form.slug || 'preview',
+        title: this.form.title || 'Título de la entity',
+        type: this.form.type,
+      }),
+    };
+  }
+
   hasOtherPersistedLegacy(linkId: string): boolean {
     return this.persistedMediaLinks.some((link) => link.isPrimary && link.id !== linkId);
   }
@@ -1606,6 +1860,8 @@ previewContainer?: ElementRef<HTMLElement>;
         return this.supportsTypedDetails() ? 'Base + ficha' : 'Base';
       case 'section-media':
         return this.isEdit ? String(this.persistedMediaLinks.length) : '—';
+      case 'section-preview':
+        return 'Detail';
       case 'section-sources':
         return this.isEdit ? String(this.sourceRefs.length) : '—';
       case 'section-contributors':
@@ -1625,6 +1881,8 @@ previewContainer?: ElementRef<HTMLElement>;
         return this.isEdit
           ? `${this.persistedMediaLinks.length} assets cargados`
           : 'Guarda la entity para habilitar media';
+      case 'section-preview':
+        return 'Vista pública compuesta';
       case 'section-sources':
         return this.isEdit
           ? `${this.sourceRefs.length} fuentes editoriales`
@@ -1660,6 +1918,8 @@ previewContainer?: ElementRef<HTMLElement>;
         if (this.addingMedia || this.uploadingMedia || this.mediaEditors.some((editor) => editor.saveState === 'saving')) {
           return 'saving';
         }
+        return 'ready';
+      case 'section-preview':
         return 'ready';
       case 'section-sources':
         if (!this.isEdit) {

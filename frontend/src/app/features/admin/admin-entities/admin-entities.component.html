@@ -8,7 +8,7 @@
     <div class="top-actions">
       <a class="btn ghost" routerLink="/admin">Selector visual</a>
       <a class="btn ghost" routerLink="/">Volver al sitio</a>
-      <a class="btn primary" routerLink="/admin/entities/new">Nueva entity</a>
+      <a class="btn primary" routerLink="/admin/entities/new" [queryParams]="{ returnTo: adminListReturnUrl() }">Nueva entity</a>
     </div>
   </header>
 
@@ -112,7 +112,7 @@
           <td>
             <div class="row-actions">
               <a class="mini" [routerLink]="['/entity', item.slug]">Ver</a>
-              <a class="mini" [routerLink]="['/admin/entities', item.id, 'edit']">Editar</a>
+              <a class="mini" [routerLink]="['/admin/entities', item.id, 'edit']" [queryParams]="{ returnTo: adminListReturnUrl() }">Editar</a>
               <button class="mini danger" type="button" [disabled]="deletingId === item.id"
                 (click)="remove(item.id, item.title)">
                 @if (deletingId === item.id) { Borrando... } @else { Borrar }

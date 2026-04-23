@@ -1,5 +1,44 @@
 .page {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100vh - 56px);
   padding: 28px;
+  background: transparent;
+}
+
+.page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page::before,
+.page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.page::before {
+  z-index: 0;
+  background-image: url('/assets/home/museum-room.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(8px) saturate(0.98) brightness(0.72);
+  opacity: .5;
+  transform: scale(1.1);
+}
+
+.page::after {
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 18%),
+    radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.18), transparent 26%),
+    linear-gradient(180deg,
+      rgba(0, 0, 0, 0.08),
+      rgba(0, 0, 0, 0.14) 18%,
+      rgba(0, 0, 0, 0.28) 54%,
+      rgba(0, 0, 0, 0.56) 100%);
 }
 
 .top {
@@ -70,7 +109,7 @@ h1 {
   padding: 0 12px;
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, .10);
-  background: #fff;
+  background: rgba(255,255,255,.82);
   color: #111;
   text-decoration: none;
   font-size: 14px;
@@ -82,20 +121,25 @@ h1 {
   padding: 0 14px;
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, .10);
-  background: #fff;
+  background: rgba(255,255,255,.82);
   cursor: pointer;
   white-space: nowrap;
 }
 
 .saved-box,
 .create-box {
-  border: 1px solid rgba(0, 0, 0, .08);
+  border: 1px solid rgba(255,255,255,.5);
   border-radius: 20px;
-  background: #fff;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.76), rgba(248,246,241,.64));
   padding: 18px;
   margin-bottom: 20px;
   display: grid;
   gap: 14px;
+  box-shadow:
+    0 18px 46px rgba(25,20,14,.07),
+    inset 0 1px 0 rgba(255,255,255,.72);
+  backdrop-filter: blur(22px) saturate(1.06);
 }
 
 .section-title {
@@ -120,7 +164,7 @@ h1 {
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, .10);
   padding: 0 12px;
-  background: #fff;
+  background: rgba(255,255,255,.76);
   outline: none;
 }
 
@@ -151,13 +195,18 @@ h1 {
 }
 
 .collection-card {
-  border: 1px solid rgba(0, 0, 0, .08);
+  border: 1px solid rgba(255,255,255,.5);
   border-radius: 20px;
-  background: #fff;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.76), rgba(248,246,241,.64));
   padding: 18px;
   display: grid;
   gap: 16px;
   margin-bottom: 18px;
+  box-shadow:
+    0 18px 46px rgba(25,20,14,.07),
+    inset 0 1px 0 rgba(255,255,255,.72);
+  backdrop-filter: blur(22px) saturate(1.06);
 }
 
 .collection-head {
@@ -207,7 +256,8 @@ h1 {
   border: 1px solid rgba(0, 0, 0, .08);
   border-radius: 18px;
   overflow: hidden;
-  background: #fff;
+  background: rgba(255,255,255,.84);
+  box-shadow: 0 14px 34px rgba(25,20,14,.06);
 }
 
 .thumb {
@@ -256,7 +306,7 @@ h1 {
   padding: 0 12px;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, .10);
-  background: #fff;
+  background: rgba(255,255,255,.82);
   cursor: pointer;
 }
 
@@ -266,10 +316,14 @@ h1 {
 }
 
 .empty {
-  border: 1px solid rgba(0, 0, 0, .08);
+  border: 1px solid rgba(255,255,255,.5);
   border-radius: 18px;
-  background: #fff;
+  background: rgba(255,255,255,.78);
   padding: 18px;
+  box-shadow:
+    0 14px 34px rgba(25,20,14,.06),
+    inset 0 1px 0 rgba(255,255,255,.72);
+  backdrop-filter: blur(18px) saturate(1.05);
 }
 
 .main-empty {

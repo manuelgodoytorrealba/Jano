@@ -1,0 +1,58 @@
+@if (entity$ | async; as entity) {
+  <app-entity-detail-view
+    [entity]="entity"
+    [showActions]="auth.isLoggedIn"
+    [isSaved]="isSaved()"
+    [saveLoading]="saveLoading()"
+    [collectionsLoading]="collectionsLoading()"
+    (saveToggle)="toggleSave($event)"
+    (collectionsToggle)="toggleCollectionsPanel()"
+  ></app-entity-detail-view>
+
+  @if (showCollectionsPanel() && auth.isLoggedIn) {
+    <div class="entity-detail page-shell entity-detail--overlay">
+      <div class="entity-detail__layout">
+        <section class="collections-panel entity-glass">
+          <div class="collections-panel__head">
+            <h2 class="title-section">Tus colecciones</h2>
+            <button class="ds-btn collections-panel__close" type="button" (click)="toggleCollectionsPanel()">
+              Cerrar
+            </button>
+          </div>
+
+          @if (collectionMessage()) {
+            <div class="collections-panel__message">
+              {{ collectionMessage() }}
+            </div>
+          }
+
+          @if (collections$ | async; as collections) {
+            @if (collections.length) {
+              <div class="collections-panel__list">
+                @for (collection of collections; track collection.id) {
+                  <button
+                    type="button"
+                    class="collection-option entity-glass-card"
+                    [disabled]="addingToCollection()"
+                    (click)="addToCollection(collection.id, entity.id)"
+                  >
+                    <div class="collection-option__name">{{ collection.name }}</div>
+                    <div class="collection-option__meta">
+                      {{ collection.items?.length ?? 0 }} items
+                    </div>
+                  </button>
+                }
+              </div>
+            } @else {
+              <p class="text-muted">No tienes colecciones todavía. Créala en My Space.</p>
+            }
+          }
+        </section>
+      </div>
+    </div>
+  }
+} @else {
+  <div class="entity-loading page-shell">
+    <div class="entity-loading__panel entity-glass">Cargando...</div>
+  </div>
+}

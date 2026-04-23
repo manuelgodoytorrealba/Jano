@@ -1,14 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { AsyncPipe, Location } from '@angular/common';
-import { map, distinctUntilChanged, switchMap, shareReplay, tap, of, catchError } from 'rxjs';
-import { EntitiesApi } from '../../core/api/entities.api';
-import { SavedApi } from '../../core/api/saved.api';
-import { CollectionsApi } from '../../core/api/collections.api';
-import { AuthService } from '../../core/auth/auth.service';
-import { SeoService } from '../../core/seo/seo.service';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { GraphComponent } from '../graph/graph.component';
+import { JanoMediaComponent } from '../../shared/media/jano-media.component';
+import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { mediaDisplayUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
-import { EntityDetailViewComponent } from './entity-detail-view.component';
 
 type DetailFact = {
   label: string;
@@ -17,37 +13,22 @@ type DetailFact = {
 
 @Component({
   standalone: true,
-  selector: 'app-entity',
+  selector: 'app-entity-detail-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, EntityDetailViewComponent],
-  templateUrl: './entity-detail-shell.component.html',
+  imports: [NgTemplateOutlet, RouterLink, GraphComponent, RichTextComponent, JanoMediaComponent],
+  templateUrl: './entity-detail-view.component.html',
   styleUrls: ['./entity.component.scss'],
 })
-export class EntityComponent {
-  private api = inject(EntitiesApi);
-  private savedApi = inject(SavedApi);
-  private collectionsApi = inject(CollectionsApi);
-  private location = inject(Location);
-  private readonly seo = inject(SeoService);
+export class EntityDetailViewComponent {
+  @Input() entity: any | null = null;
+  @Input() showActions = false;
+  @Input() isSaved = false;
+  @Input() saveLoading = false;
+  @Input() collectionsLoading = false;
+  @Input() renderGraph = true;
 
-  auth = inject(AuthService);
-  private route = inject(ActivatedRoute);
-
-  isSaved = signal(false);
-  saveLoading = signal(false);
-
-  showCollectionsPanel = signal(false);
-  collectionsLoading = signal(false);
-  addingToCollection = signal(false);
-  collectionMessage = signal('');
-
-  goBack() {
-    this.location.back();
-  }
-
-  toggleCollectionsPanel() {
-    this.showCollectionsPanel.update((v) => !v);
-  }
+  @Output() saveToggle = new EventEmitter<string>();
+  @Output() collectionsToggle = new EventEmitter<void>();
 
   primaryMedia(entity: any) {
     return selectPrimaryVisualMedia(entity);
@@ -213,92 +194,6 @@ export class EntityComponent {
     return null;
   }
 
-  private slug$ = this.route.paramMap.pipe(
-    map((p) => p.get('slug') ?? ''),
-    distinctUntilChanged()
-  );
-
-  collections$ = this.auth.user$.pipe(
-    switchMap((user) => {
-      if (!user) {
-        this.collectionsLoading.set(false);
-        return of([]);
-      }
-
-      this.collectionsLoading.set(true);
-
-      return this.collectionsApi.list().pipe(
-        tap(() => this.collectionsLoading.set(false)),
-        catchError(() => {
-          this.collectionsLoading.set(false);
-          return of([]);
-        }),
-      );
-    }),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-
-  entity$ = this.slug$.pipe(
-    switchMap((slug) => this.api.get(slug)),
-    tap((entity) => {
-      this.seo.setPageMeta({
-        title: `${entity.title} | JANO`,
-        description: entity.summary ?? `Explore ${entity.title} in JANO.`,
-        path: `/entity/${entity.slug}`,
-        image: this.visualUrl(entity),
-      });
-
-      if (!this.auth.isLoggedIn) {
-        this.isSaved.set(false);
-        return;
-      }
-
-      this.savedApi.check(entity.id).subscribe({
-        next: (res) => this.isSaved.set(res.saved),
-        error: () => this.isSaved.set(false),
-      });
-    }),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-
-  toggleSave(entityId: string) {
-    if (!this.auth.isLoggedIn || this.saveLoading()) return;
-
-    this.saveLoading.set(true);
-
-    const req$ = this.isSaved()
-      ? this.savedApi.remove(entityId)
-      : this.savedApi.save(entityId);
-
-    req$.subscribe({
-      next: () => {
-        this.isSaved.update((v) => !v);
-        this.saveLoading.set(false);
-      },
-      error: () => {
-        this.saveLoading.set(false);
-      },
-    });
-  }
-
-  addToCollection(collectionId: string, entityId: string) {
-    if (this.addingToCollection()) return;
-
-    this.addingToCollection.set(true);
-    this.collectionMessage.set('');
-
-    this.collectionsApi.addEntity(collectionId, entityId).subscribe({
-      next: () => {
-        this.addingToCollection.set(false);
-        this.collectionMessage.set('Entity añadida a la colección.');
-      },
-      error: (err) => {
-        this.addingToCollection.set(false);
-        this.collectionMessage.set(err?.error?.message ?? 'No se pudo añadir a la colección.');
-      },
-    });
-  }
-
   outgoingByType(entity: any, type: string) {
     return (entity?.outgoing ?? []).filter((r: any) => r.type === type);
   }
@@ -317,45 +212,6 @@ export class EntityComponent {
 
   firstRelated(entity: any, type: string) {
     return this.relatedOutgoing(entity, type)[0] ?? null;
-  }
-
-  allConcepts(entity: any) {
-    return this.relatedOutgoing(entity, 'ABOUT_CONCEPT');
-  }
-
-  allPlaces(entity: any) {
-    return this.relatedOutgoing(entity, 'LOCATED_IN');
-  }
-
-  allRelatedArtworks(entity: any) {
-    const outgoing = this.relatedOutgoing(entity, 'RELATED_TO').filter((e: any) => e.type === 'ARTWORK');
-    const incoming = this.relatedIncoming(entity, 'RELATED_TO').filter((e: any) => e.type === 'ARTWORK');
-
-    const map = new Map<string, any>();
-
-    for (const item of [...outgoing, ...incoming]) {
-      map.set(item.id, item);
-    }
-
-    return Array.from(map.values());
-  }
-
-  allOtherOutgoing(entity: any) {
-    const hidden = new Set([
-      'CREATED_BY',
-      'BELONGS_TO_MOVEMENT',
-      'BELONGS_TO_PERIOD',
-      'ABOUT_CONCEPT',
-      'LOCATED_IN',
-      'RELATED_TO',
-      'MENTIONS',
-    ]);
-
-    return (entity?.outgoing ?? []).filter((r: any) => !hidden.has(r.type));
-  }
-
-  allMentions(entity: any) {
-    return this.outgoingByType(entity, 'MENTIONS');
   }
 
   relationLabel(type: string): string {
@@ -396,6 +252,14 @@ export class EntityComponent {
     };
 
     return incomingLabels[type] ?? 'Relacionado con esta entidad';
+  }
+
+  onSave(entityId: string) {
+    this.saveToggle.emit(entityId);
+  }
+
+  onCollections() {
+    this.collectionsToggle.emit();
   }
 
   private compactFacts(items: Array<{ label: string; value: any }>): DetailFact[] {

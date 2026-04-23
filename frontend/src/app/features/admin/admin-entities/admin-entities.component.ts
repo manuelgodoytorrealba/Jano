@@ -125,6 +125,26 @@ export class AdminEntitiesComponent {
     return !!(this.search.trim() || this.selectedType || this.selectedStatus);
   }
 
+  adminListReturnUrl(): string {
+    const params = new URLSearchParams();
+
+    if (this.selectedType) {
+      params.set('type', this.selectedType);
+    }
+
+    if (this.selectedStatus) {
+      params.set('status', this.selectedStatus);
+    }
+
+    const q = this.search.trim();
+    if (q) {
+      params.set('q', q);
+    }
+
+    const query = params.toString();
+    return query ? `/admin/entities?${query}` : '/admin/entities';
+  }
+
   remove(id: string, title: string) {
     const ok = window.confirm(`¿Borrar "${title}"?`);
     if (!ok) return;
@@ -144,4 +164,5 @@ export class AdminEntitiesComponent {
       },
     });
   }
+
 }

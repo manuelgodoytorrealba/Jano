@@ -3,20 +3,17 @@
     <div class="error-box">{{ loadError }}</div>
   }
 
-  <section class="editor-layout" [class.editor-layout--preview-hidden]="!previewVisible">
-    <div class="admin-sidebar-layer" [style.width.px]="adminSidebarVisible ? 220 : 64">
+  <section class="editor-layout" [class.editor-layout--sidebar-open]="adminSidebarVisible">
+    <div class="admin-sidebar-layer" [style.width.px]="adminSidebarVisible ? 300 : 84">
     @if (adminSidebarVisible) {
-    <aside class="admin-sidebar" style="width:220px">
+    <aside class="admin-sidebar" style="width:300px">
       <div class="admin-sidebar__toolhead">
         <span class="admin-sidebar__tooltitle">Editor</span>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-          <button class="admin-sidebar__preview-toggle" type="button" (click)="togglePreviewPanel()">
-            @if (previewVisible) { Preview on } @else { Preview off }
-          </button>
-          <button class="admin-sidebar__preview-toggle" type="button" (click)="toggleAdminSidebar()">
+        <div class="admin-sidebar__toolbar">
+          <button class="admin-sidebar__control" type="button" (click)="toggleAdminSidebar()">
             Ocultar editor
           </button>
-          <a class="admin-sidebar__preview-toggle" routerLink="/admin">Volver</a>
+          <a class="admin-sidebar__control admin-sidebar__control--quiet" [attr.href]="adminReturnHref()">Volver</a>
         </div>
       </div>
       <nav class="admin-dashboard-nav">
@@ -45,19 +42,72 @@
       <div class="admin-sidebar__summary">
         <span class="admin-sidebar__eyebrow">Editor dashboard</span>
         <h2 class="admin-sidebar__title">{{ form.title || 'Entity sin título' }}</h2>
-        <p class="admin-sidebar__text">
-          {{ activeSectionTitle() }} · trabaja una sola sección cada vez sin perder inputs ni contexto del preview.
-        </p>
+        <div class="admin-sidebar__actions">
+          <a class="admin-sidebar__action admin-sidebar__action--ghost" [attr.href]="adminReturnHref()">Cancelar</a>
+
+          <button
+            class="admin-sidebar__action admin-sidebar__action--ghost"
+            type="button"
+            [disabled]="saving || loading"
+            (click)="submit('stay')"
+          >
+            @if (saving && submitMode === 'stay') {
+              Guardando...
+            } @else {
+              Guardar y seguir
+            }
+          </button>
+
+          <button
+            class="admin-sidebar__action admin-sidebar__action--primary"
+            type="button"
+            [disabled]="saving || loading"
+            (click)="submit('back')"
+          >
+            @if (loading) {
+              Cargando...
+            } @else if (saving && submitMode === 'back') {
+              Guardando...
+            } @else {
+              Guardar
+            }
+          </button>
+        </div>
       </div>
     </aside>
     } @else {
-    <button class="admin-sidebar__peek" type="button" (click)="toggleAdminSidebar()" style="position:sticky;top:22px;margin-left:6px;min-height:180px;padding:14px 10px;border-radius:22px;border:1px solid rgba(0,0,0,.08);background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(246,243,237,.94));color:#38322d;font-size:12px;font-weight:700;cursor:pointer;writing-mode:vertical-rl;transform:rotate(180deg);box-shadow:0 18px 44px rgba(25,20,14,.05)">
-        Mostrar editor
+      <button class="admin-sidebar__peek" type="button" (click)="toggleAdminSidebar()">
+        <span>Editor</span>
+        <strong>Mostrar</strong>
       </button>
     }
     </div>
 
     <section class="form-wrap">
+      @if (errorMessage) {
+        <div class="error-box">{{ errorMessage }}</div>
+      }
+      @if (successMessage) {
+        <div class="success-box">{{ successMessage }}</div>
+      }
+
+      <section id="section-preview" class="admin-dashboard-panel detail-live-panel" [class.admin-dashboard-panel--active]="isActiveSection('section-preview')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-preview')" [attr.aria-hidden]="!isActiveSection('section-preview')">
+        <div class="admin-dashboard-panel__head">
+          <div>
+            <h2>Preview Detail</h2>
+            <p class="muted">Render público vivo de la entity con contenido, media, fuentes, colaboradores y relaciones.</p>
+          </div>
+          <span class="admin-dashboard-panel__pill">Detail</span>
+        </div>
+
+        <div class="detail-live-embed">
+          <app-entity-detail-view
+            [entity]="previewEntity()"
+            [showActions]="false"
+            [renderGraph]="true"
+          ></app-entity-detail-view>
+        </div>
+      </section>
 
       <section id="section-content" class="admin-dashboard-panel" [class.admin-dashboard-panel--active]="isActiveSection('section-content')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-content')" [attr.aria-hidden]="!isActiveSection('section-content')">
         <div class="admin-dashboard-panel__head">
@@ -1050,178 +1100,7 @@
         </section>
       }
 
-      @if (errorMessage) {
-        <div class="error-box">{{ errorMessage }}</div>
-      }
-      @if (successMessage) {
-  <div class="success-box">{{ successMessage }}</div>
-}
-
-      <div class="actions admin-dashboard-actions">
-        <a class="btn ghost" routerLink="/admin">Cancelar</a>
-
-        <button
-          class="btn ghost"
-          type="button"
-          [disabled]="saving || loading"
-          (click)="submit('stay')"
-        >
-          @if (saving && submitMode === 'stay') {
-            Guardando...
-          } @else {
-            Guardar y seguir
-          }
-        </button>
-
-        <button
-          class="btn primary"
-          type="button"
-          [disabled]="saving || loading"
-          (click)="submit('back')"
-        >
-          @if (loading) {
-            Cargando...
-          } @else if (saving && submitMode === 'back') {
-            Guardando...
-          } @else {
-            Guardar
-          }
-        </button>
-      </div>
     </section>
-
-    <!-- RIGHT COLUMN -->
-    @if (previewVisible) {
-    <aside class="preview-wrap">
-      <div class="preview-head">
-        <h2>Preview</h2>
-        <span class="preview-pill">{{ form.type }}</span>
-      </div>
-
-      <div class="preview-card">
-        <div class="preview-media-hero">
-          <app-jano-media
-            [media]="primaryPreviewSlot?.state?.item || null"
-            usage="detail"
-            [alt]="primaryPreviewSlot?.state?.item?.alt || form.title"
-            [lazy]="false"
-          ></app-jano-media>
-        </div>
-
-        <div class="preview-media-summary">
-          @for (slot of mainVisualSlots; track slot.key) {
-            <div class="preview-media-summary__item" [class.preview-media-summary__item--empty]="slot.state.source === 'empty'">
-              <div>
-                <strong>{{ slot.label }}</strong>
-                <span>
-                  @if (slot.state.item) {
-                    {{ mediaRoleLabel(slot.state.item.role) }} · {{ mediaOriginLabel(slot.state.item.originType) }}
-                  } @else {
-                    Sin imagen
-                  }
-                </span>
-              </div>
-              <span [class]="'media-pill ' + slotStateClass(slot)">
-                {{ slotStatusLabel(slot) }}
-              </span>
-            </div>
-          }
-        </div>
-
-        <div class="preview-badges">
-          <span class="badge">{{ form.status }}</span>
-
-          @if (form.contentLevel) {
-            <span class="badge">{{ form.contentLevel }}</span>
-          }
-
-          @if (form.startYear || form.endYear) {
-            <span class="badge">
-              {{ form.startYear || '—' }}@if (form.endYear) {–{{ form.endYear }}}
-            </span>
-          }
-        </div>
-
-        <h3 class="preview-title">
-          {{ form.title || 'Título de la entity' }}
-        </h3>
-
-        <div class="preview-slug">
-          /entity/{{ form.slug || 'slug-de-la-entity' }}
-        </div>
-
-        @if (form.summary) {
-          <div
-          class="preview-summary"
-          [innerHTML]="renderContentPreview(form.summary)"
-        ></div>
-        } @else {
-          <div class="preview-empty">
-            El resumen aparecerá aquí.
-          </div>
-        }
-
-        <div class="preview-section-title">Contenido</div>
-
-        @if (form.content) {
-          <div
-          #previewContainer
-          class="preview-content"
-          [innerHTML]="renderContentPreview(form.content)">
-        </div>
-
-
-        } @else {
-          <div class="preview-empty">
-            El contenido principal aparecerá aquí.
-          </div>
-        }
-
-        @if (supportsTypedDetails()) {
-          <div class="preview-section-title">Ficha</div>
-          @if (typedDetailsSummary()) {
-            <div class="preview-summary">{{ typedDetailsSummary() }}</div>
-          } @else {
-            <div class="preview-empty">La ficha específica aparecerá aquí.</div>
-          }
-        }
-
-        @if (hasPreviewKeyConnections()) {
-        <div class="preview-section-title">Conexiones clave</div>
-          <div class="preview-chip-list">
-            @for (item of previewKeyConnections(); track item.label) {
-              <div class="preview-chip-card">
-                <strong>{{ item.label }}</strong>
-                <span>{{ item.value }}</span>
-              </div>
-            }
-          </div>
-        }
-
-        @if (sourceRefs.length) {
-          <div class="preview-section-title">Fuentes</div>
-          <div class="preview-stack">
-            @for (ref of sourceRefs; track ref.id) {
-              <div class="preview-list-card">
-                <strong>{{ ref.sourceTitle }}</strong>
-                <span>{{ ref.sourceType }}@if (ref.sourceAuthor) { · {{ ref.sourceAuthor }} }@if (ref.sourceYear) { · {{ ref.sourceYear }} }</span>
-              </div>
-            }
-          </div>
-        }
-
-        @if (contributors.length) {
-          <div class="preview-section-title">Colaboradores</div>
-          <div class="preview-stack">
-            @for (contributor of contributors; track contributor.id) {
-              <div class="preview-list-card">
-                <strong>{{ contributor.name }}</strong>
-                <span>{{ contributor.role }}@if (contributor.note) { · {{ contributor.note }} }</span>
-              </div>
-            }
-          </div>
-        }
-      </div>
 
       @if (hoveredSlug) {
   <div
@@ -1242,7 +1121,5 @@
     }
   </div>
 }
-    </aside>
-    }
   </section>
 </div>

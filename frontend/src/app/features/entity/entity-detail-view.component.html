@@ -1,4 +1,4 @@
-@if (entity$ | async; as entity) {
+@if (entity; as entity) {
 <div class="entity-detail page-shell">
   <div class="entity-detail__ambient" aria-hidden="true">
     <div class="entity-detail__ambient-bg"></div>
@@ -9,13 +9,7 @@
     @if (isArticle(entity)) {
     <section class="entity-section entity-glass entity-section--wide entity-article-hero">
       <div class="entity-article-hero__media">
-        <app-jano-media
-          [entity]="entity"
-          usage="hero"
-          [alt]="visualAlt(entity)"
-          [lazy]="false"
-          priority="high"
-        />
+        <app-jano-media [entity]="entity" usage="hero" [alt]="visualAlt(entity)" [lazy]="false" priority="high" />
         <div class="entity-article-hero__overlay"></div>
       </div>
 
@@ -37,41 +31,31 @@
             <span>{{ dateLabel }}</span>
             }
             @if (entity.startYear || entity.endYear) {
-            <span>
-              {{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}
-            </span>
+            <span>{{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}</span>
             }
           </div>
         </div>
 
         <div class="entity-article-hero__title-block">
           <h1 class="entity-article-hero__title">{{ entity.title }}</h1>
-
           @if (entity.summary) {
           <p class="entity-article-hero__summary">{{ entity.summary }}</p>
           }
         </div>
 
-        @if (auth.isLoggedIn) {
+        @if (showActions) {
         <div class="entity-header__actions entity-header__actions--article">
-          <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved()" [disabled]="saveLoading()"
-            (click)="toggleSave(entity.id)">
-            @if (saveLoading()) {
-            {{ isSaved() ? 'Quitando...' : 'Guardando...' }}
-            } @else if (isSaved()) {
-            Guardado ✓
+          <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved" [disabled]="saveLoading" (click)="onSave(entity.id)">
+            @if (saveLoading) {
+            {{ isSaved ? 'Quitando...' : 'Guardando...' }}
+            } @else if (isSaved) {
+            Guardado
             } @else {
             Guardar
             }
           </button>
-
-          <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading()"
-            (click)="toggleCollectionsPanel()">
-            @if (collectionsLoading()) {
-            Cargando...
-            } @else {
-            Añadir a colección
-            }
+          <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading" (click)="onCollections()">
+            @if (collectionsLoading) { Cargando... } @else { Añadir a colección }
           </button>
         </div>
         }
@@ -79,70 +63,41 @@
     </section>
     } @else {
     <section class="entity-explorer entity-glass">
+      @if (renderGraph) {
       @defer (on idle) {
-      <app-graph [slug]="entity.slug" [imageMedia]="detailMedia(entity)"
-        [imageAlt]="visualAlt(entity)" [entityTitle]="entity.title" [entityType]="entity.type"
+      <app-graph
+        [slug]="entity.slug"
+        [imageMedia]="detailMedia(entity)"
+        [imageAlt]="visualAlt(entity)"
+        [entityTitle]="entity.title"
+        [entityType]="entity.type"
         [imageMeta]="{
           source: detailMedia(entity)?.source ?? null,
           photoBy: detailMedia(entity)?.photoBy ?? null,
           license: detailMedia(entity)?.license ?? null
-        }" />
+        }"
+      />
       } @placeholder {
-      <div class="entity-explorer__fallback">
-        <div class="entity-explorer__fallback-media">
-          <app-jano-media
-            [entity]="entity"
-            usage="detail"
-            [alt]="visualAlt(entity)"
-            [lazy]="false"
-            priority="high"
-          />
-        </div>
-
-        <div class="entity-explorer__fallback-copy">
-          <span class="entity-explorer__fallback-kicker">Explorer</span>
-          <h2 class="entity-explorer__fallback-title">{{ entity.title }}</h2>
-          @if (detailHeroSubtitle(entity); as subtitle) {
-          <p class="entity-explorer__fallback-subtitle">{{ subtitle }}</p>
-          }
-        </div>
-      </div>
+      <ng-container *ngTemplateOutlet="explorerFallback"></ng-container>
       }
-    </section>
-    }
-
-    @if (showCollectionsPanel() && auth.isLoggedIn) {
-    <section class="collections-panel entity-glass">
-      <div class="collections-panel__head">
-        <h2 class="title-section">Tus colecciones</h2>
-        <button class="ds-btn collections-panel__close" type="button" (click)="toggleCollectionsPanel()">
-          ✕
-        </button>
-      </div>
-
-      @if (collectionMessage()) {
-      <div class="collections-panel__message">
-        {{ collectionMessage() }}
-      </div>
-      }
-
-      @if (collections$ | async; as collections) {
-      @if (collections.length) {
-      <div class="collections-panel__list">
-        @for (collection of collections; track collection.id) {
-        <button type="button" class="collection-option entity-glass-card" [disabled]="addingToCollection()"
-          (click)="addToCollection(collection.id, entity.id)">
-          <div class="collection-option__name">{{ collection.name }}</div>
-          <div class="collection-option__meta">
-            {{ collection.items?.length ?? 0 }} items
-          </div>
-        </button>
-        }
-      </div>
       } @else {
-      <p class="text-muted">No tienes colecciones todavía. Créala en My Space.</p>
+      <ng-container *ngTemplateOutlet="explorerFallback"></ng-container>
       }
-      }
+
+      <ng-template #explorerFallback>
+        <div class="entity-explorer__fallback">
+          <div class="entity-explorer__fallback-media">
+            <app-jano-media [entity]="entity" usage="detail" [alt]="visualAlt(entity)" [lazy]="false" priority="high" />
+          </div>
+          <div class="entity-explorer__fallback-copy">
+            <span class="entity-explorer__fallback-kicker">Explorer</span>
+            <h2 class="entity-explorer__fallback-title">{{ entity.title }}</h2>
+            @if (detailHeroSubtitle(entity); as subtitle) {
+            <p class="entity-explorer__fallback-subtitle">{{ subtitle }}</p>
+            }
+          </div>
+        </div>
+      </ng-template>
     </section>
     }
 
@@ -151,14 +106,10 @@
         <div class="entity-topbar__row">
           <div class="entity-topbar__lead">
             <div class="entity-topbar__title-block">
-              <h1 class="title-display entity-header__title">
-                {{ entity.title }}
-              </h1>
-
+              <h1 class="title-display entity-header__title">{{ entity.title }}</h1>
               @if (detailHeroSubtitle(entity); as subtitle) {
               <p class="entity-topbar__subtitle">{{ subtitle }}</p>
               }
-
               <div class="entity-topbar__meta">
                 <div class="entity-header__badges">
                   <span class="ds-badge entity-badge">{{ entity.status }}</span>
@@ -167,36 +118,26 @@
                   }
                   <span class="ds-badge entity-badge">{{ entity.type }}</span>
                 </div>
-
                 @if (entity.startYear || entity.endYear) {
-                <span class="ds-pill entity-pill">
-                  {{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}
-                </span>
+                <span class="ds-pill entity-pill">{{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}</span>
                 }
               </div>
             </div>
           </div>
 
-          @if (auth.isLoggedIn) {
+          @if (showActions) {
           <div class="entity-header__actions">
-            <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved()" [disabled]="saveLoading()"
-              (click)="toggleSave(entity.id)">
-              @if (saveLoading()) {
-              {{ isSaved() ? 'Quitando...' : 'Guardando...' }}
-              } @else if (isSaved()) {
-              Guardado ✓
+            <button class="ds-btn entity-action" type="button" [class.is-active]="isSaved" [disabled]="saveLoading" (click)="onSave(entity.id)">
+              @if (saveLoading) {
+              {{ isSaved ? 'Quitando...' : 'Guardando...' }}
+              } @else if (isSaved) {
+              Guardado
               } @else {
               Guardar
               }
             </button>
-
-            <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading()"
-              (click)="toggleCollectionsPanel()">
-              @if (collectionsLoading()) {
-              Cargando...
-              } @else {
-              Añadir a colección
-              }
+            <button class="ds-btn entity-action" type="button" [disabled]="collectionsLoading" (click)="onCollections()">
+              @if (collectionsLoading) { Cargando... } @else { Añadir a colección }
             </button>
           </div>
           }
@@ -207,14 +148,11 @@
       <div class="entity-section__head">
         <p class="section-label">{{ storySectionLabel(entity) }}</p>
       </div>
-
       <div class="entity-prose">
         <app-rich-text [text]="entity.content"></app-rich-text>
       </div>
       } @else if (entity.summary) {
-        <div class="entity-prose">
-          {{ entity.summary }}
-        </div>
+      <div class="entity-prose">{{ entity.summary }}</div>
       }
     </section>
 
@@ -224,25 +162,26 @@
         <div class="entity-section__head">
           <p class="section-label">Mapa de conexiones</p>
         </div>
-
+        @if (renderGraph) {
         @defer (on idle) {
-        <app-graph [slug]="entity.slug" [imageMedia]="detailMedia(entity)"
-          [imageAlt]="visualAlt(entity)" [entityTitle]="entity.title" [entityType]="entity.type"
-          [imageMeta]="{
-            source: detailMedia(entity)?.source ?? null,
-            photoBy: detailMedia(entity)?.photoBy ?? null,
-            license: detailMedia(entity)?.license ?? null
-          }" />
+        <app-graph
+          [slug]="entity.slug"
+          [imageMedia]="detailMedia(entity)"
+          [imageAlt]="visualAlt(entity)"
+          [entityTitle]="entity.title"
+          [entityType]="entity.type"
+        />
         } @placeholder {
         <div class="entity-explorer__fallback entity-explorer__fallback--compact">
           <div class="entity-explorer__fallback-media">
-            <app-jano-media
-              [entity]="entity"
-              usage="detail"
-              [alt]="visualAlt(entity)"
-              [lazy]="false"
-              priority="high"
-            />
+            <app-jano-media [entity]="entity" usage="detail" [alt]="visualAlt(entity)" [lazy]="false" priority="high" />
+          </div>
+        </div>
+        }
+        } @else {
+        <div class="entity-explorer__fallback entity-explorer__fallback--compact">
+          <div class="entity-explorer__fallback-media">
+            <app-jano-media [entity]="entity" usage="detail" [alt]="visualAlt(entity)" [lazy]="false" priority="high" />
           </div>
         </div>
         }
@@ -252,7 +191,6 @@
         <div class="entity-section__head">
           <p class="section-label">Ficha</p>
         </div>
-
         @if (detailFacts(entity).length) {
         <div class="facts-sheet">
           <div class="facts-sheet__intro">
@@ -262,7 +200,6 @@
             <p class="facts-sheet__summary">{{ summary }}</p>
             }
           </div>
-
           <div class="facts-grid">
             @for (fact of detailFacts(entity); track fact.label) {
             <article class="fact-card entity-glass-card">
@@ -271,38 +208,17 @@
             </article>
             }
           </div>
-
-          @if (entity.type === 'ARTIST' && entity.artist?.bioShort) {
-          <div class="fact-note entity-glass-card">
-            <span class="fact-note__label">Biografía breve</span>
-            <div class="entity-prose entity-prose--inline">
-              <app-rich-text [text]="entity.artist.bioShort"></app-rich-text>
-            </div>
-          </div>
-          }
         </div>
         } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
         <div class="facts-sheet facts-sheet--textual">
-          <div class="facts-sheet__intro">
-            <span class="facts-sheet__kicker">{{ detailFactKicker(entity) }}</span>
-            <h3 class="facts-sheet__title">{{ detailFactTitle(entity) }}</h3>
-          </div>
           <div class="fact-note entity-glass-card">
-            <div class="entity-prose">
-              <app-rich-text [text]="entity.concept.definition"></app-rich-text>
-            </div>
+            <div class="entity-prose"><app-rich-text [text]="entity.concept.definition"></app-rich-text></div>
           </div>
         </div>
         } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
         <div class="facts-sheet facts-sheet--textual">
-          <div class="facts-sheet__intro">
-            <span class="facts-sheet__kicker">{{ detailFactKicker(entity) }}</span>
-            <h3 class="facts-sheet__title">{{ detailFactTitle(entity) }}</h3>
-          </div>
           <div class="fact-note entity-glass-card">
-            <div class="entity-prose">
-              <app-rich-text [text]="entity.period.definition"></app-rich-text>
-            </div>
+            <div class="entity-prose"><app-rich-text [text]="entity.period.definition"></app-rich-text></div>
           </div>
         </div>
         } @else {
@@ -315,10 +231,8 @@
         <div class="entity-section__head">
           <p class="section-label">Relaciones</p>
         </div>
-
         <div class="relations-group">
           <h3 class="title-section entity-subtitle">Conecta con</h3>
-
           @if ((entity.outgoing?.length ?? 0) === 0) {
           <p class="text-muted">No hay conexiones directas desde esta entidad.</p>
           } @else {
@@ -326,23 +240,11 @@
             @for (r of entity.outgoing; track r.id) {
             <li class="relation-card entity-glass-card relation-card--friendly">
               <div class="relation-card__topline">
-                <span class="relation-card__label">
-                  {{ relationDirectionLabel(r.type, 'outgoing') }}
-                </span>
-
-                <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">
-                  {{ r.to.title }}
-                </a>
+                <span class="relation-card__label">{{ relationDirectionLabel(r.type, 'outgoing') }}</span>
+                <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">{{ r.to.title }}</a>
               </div>
-
               @if (r.justification) {
-              <div class="relation-card__text">
-                <app-rich-text [text]="r.justification"></app-rich-text>
-              </div>
-              } @else if (r.weight !== null && r.weight !== undefined) {
-              <div class="relation-card__text">
-                Intensidad de relación: {{ r.weight }}
-              </div>
+              <div class="relation-card__text"><app-rich-text [text]="r.justification"></app-rich-text></div>
               }
             </li>
             }
@@ -352,7 +254,6 @@
 
         <div class="relations-group">
           <h3 class="title-section entity-subtitle">También aparece en</h3>
-
           @if ((entity.incoming?.length ?? 0) === 0) {
           <p class="text-muted">No hay otras entidades conectando hacia esta.</p>
           } @else {
@@ -360,23 +261,11 @@
             @for (r of entity.incoming; track r.id) {
             <li class="relation-card entity-glass-card relation-card--friendly">
               <div class="relation-card__topline">
-                <span class="relation-card__label">
-                  {{ relationDirectionLabel(r.type, 'incoming') }}
-                </span>
-
-                <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">
-                  {{ r.from.title }}
-                </a>
+                <span class="relation-card__label">{{ relationDirectionLabel(r.type, 'incoming') }}</span>
+                <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">{{ r.from.title }}</a>
               </div>
-
               @if (r.justification) {
-              <div class="relation-card__text">
-                <app-rich-text [text]="r.justification"></app-rich-text>
-              </div>
-              } @else if (r.weight !== null && r.weight !== undefined) {
-              <div class="relation-card__text">
-                Intensidad de relación: {{ r.weight }}
-              </div>
+              <div class="relation-card__text"><app-rich-text [text]="r.justification"></app-rich-text></div>
               }
             </li>
             }
@@ -391,26 +280,22 @@
       <div class="entity-section__head">
         <p class="section-label">Fuentes</p>
       </div>
-
       <ul class="relations-list">
         @for (r of entity.sourceRefs; track r.id) {
         <li class="relation-source">
           <div class="relation-card entity-glass-card">
-            <span class="ds-badge entity-badge">{{ r.source.type }}</span>
+            <span class="ds-badge entity-badge">{{ r.source?.type ?? r.sourceType }}</span>
             <span class="relation-card__text">
-              <strong>{{ r.source.title }}</strong>
-              @if (r.source.author) { — {{ r.source.author }} }
-              @if (r.source.publisher || r.source.year) {
-              ({{ r.source.publisher ?? '' }}@if (r.source.year) {, {{ r.source.year }} })
+              <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
+              @if (r.source?.author || r.sourceAuthor) { — {{ r.source?.author ?? r.sourceAuthor }} }
+              @if (r.source?.publisher || r.sourcePublisher || r.source?.year || r.sourceYear) {
+              ({{ r.source?.publisher ?? r.sourcePublisher ?? '' }}@if (r.source?.year || r.sourceYear) {, {{ r.source?.year ?? r.sourceYear }} })
               }
               @if (r.page) { — p. {{ r.page }} }
             </span>
           </div>
-
           @if (r.quote) {
-          <div class="quote-block">
-            “{{ r.quote }}”
-          </div>
+          <div class="quote-block">“{{ r.quote }}”</div>
           }
         </li>
         }
@@ -418,9 +303,5 @@
     </section>
     }
   </div>
-</div>
-} @else {
-<div class="entity-loading page-shell">
-  <div class="entity-loading__panel entity-glass">Cargando…</div>
 </div>
 }
