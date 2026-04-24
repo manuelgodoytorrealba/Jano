@@ -162,7 +162,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.24),
     0 10px 24px rgba(0, 0, 0, 0.18);
   transform: translateX(calc(var(--active-index) * 100%));
-  transition: transform 420ms cubic-bezier(.22, 1, .36, 1), opacity 220ms ease;
+  transition: transform 240ms cubic-bezier(.22, 1, .36, 1), opacity 160ms ease;
   opacity: 0;
 }
 
@@ -300,6 +300,18 @@
     0 24px 64px rgba(17, 15, 12, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.36),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  transition:
+    transform 320ms cubic-bezier(.22, 1, .36, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    background 220ms ease;
+}
+
+.app-chrome__utility--contextual {
+  box-shadow:
+    0 28px 72px rgba(17, 15, 12, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .app-chrome__utility-indicator {
@@ -318,7 +330,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.24),
     0 18px 28px rgba(12, 11, 10, 0.2);
   transform: translateY(calc(var(--active-index) * 62px));
-  transition: transform 420ms cubic-bezier(.22, 1, .36, 1), opacity 220ms ease;
+  transition: transform 240ms cubic-bezier(.22, 1, .36, 1), opacity 160ms ease;
   opacity: 0;
 }
 
@@ -357,17 +369,25 @@
     transform var(--transition-fast),
     box-shadow var(--transition-fast),
     background var(--transition-fast),
-    border-color var(--transition-fast);
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
 .app-chrome__utility-btn:hover,
 .app-chrome__utility-btn.is-active {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-2px) scale(1.015);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 16px 28px rgba(48, 39, 21, 0.12);
 }
 
 .app-chrome__utility-btn.is-active {
+  transform: none;
   background: transparent;
   border-color: transparent;
   box-shadow: none;
@@ -389,10 +409,19 @@
   filter: drop-shadow(0 4px 10px rgba(240, 220, 178, 0.24));
 }
 
+.app-chrome__utility-btn.is-busy {
+  opacity: 0.92;
+}
+
+.app-chrome__utility-btn.is-busy .app-chrome__utility-icon {
+  animation: app-chrome-save-breathe 960ms ease-in-out infinite;
+}
+
 .app-chrome__utility-icon {
   position: relative;
   width: 22px;
   height: 22px;
+  transition: transform 180ms ease, filter 180ms ease, color 180ms ease;
 }
 
 .app-chrome__utility-icon::before,
@@ -535,6 +564,19 @@
   inset: 9px;
   background: currentColor;
   border-radius: 999px;
+}
+
+@keyframes app-chrome-save-breathe {
+  0%,
+  100% {
+    transform: scale(0.94);
+    filter: drop-shadow(0 0 0 rgba(255, 248, 236, 0));
+  }
+
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(255, 248, 236, 0.22));
+  }
 }
 
 @media (max-width: 1200px) {

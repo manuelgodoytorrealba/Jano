@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterLink } from '@angular/router';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
+import { filter } from 'rxjs';
 
 type HeaderNavItem = {
   label: string;
@@ -33,6 +35,8 @@ export class AppChromeComponent {
   private readonly router = inject(Router);
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
+  private readonly currentUrl = signal(this.normalizeUrl(this.router.url));
+  private readonly pendingUrl = signal<string | null>(null);
 
   readonly navItems: HeaderNavItem[] = [
     { label: 'Descubrir', route: '/', kind: 'route', group: 'public', exact: true },
@@ -51,8 +55,36 @@ export class AppChromeComponent {
     { label: 'Ajustes', route: '/settings', icon: 'settings', kind: 'route' },
   ];
 
+  constructor() {
+    this.router.events.pipe(
+      filter((event) =>
+        event instanceof NavigationStart ||
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError,
+      ),
+      takeUntilDestroyed(),
+    ).subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.pendingUrl.set(this.normalizeUrl(event.url));
+        return;
+      }
+
+      this.currentUrl.set(this.normalizeUrl(this.router.url));
+      this.pendingUrl.set(null);
+    });
+  }
+
+  private normalizeUrl(url: string): string {
+    return (url ?? '').split('?')[0] || '/';
+  }
+
+  private activeUrl(): string {
+    return this.pendingUrl() ?? this.currentUrl();
+  }
+
   isDetailRoute(): boolean {
-    return this.router.url.split('?')[0].startsWith('/entity/');
+    return this.activeUrl().startsWith('/entity/');
   }
 
   contextualUtilityItems(): UtilityItem[] {
@@ -64,11 +96,7 @@ export class AppChromeComponent {
     const items: UtilityItem[] = [];
 
     if (!state || state.kind !== 'detail') {
-      return [
-        { label: 'Guardar', icon: 'save', kind: 'action', action: 'save' },
-        { label: 'Compartir', icon: 'share', kind: 'action', action: 'share' },
-        { label: 'Inicio', icon: 'focus', kind: 'action', action: 'focus' },
-      ];
+      return [];
     }
 
     if (state.canSave) {
@@ -85,6 +113,10 @@ export class AppChromeComponent {
 
   currentUtilityItems(): UtilityItem[] {
     const contextual = this.contextualUtilityItems();
+    if (this.isDetailRoute()) {
+      return contextual;
+    }
+
     if (contextual.length) {
       return contextual;
     }
@@ -102,20 +134,21 @@ export class AppChromeComponent {
 
   isRouteActive(item: HeaderNavItem | UtilityItem): boolean {
     const route = this.targetRoute(item);
+    const activeUrl = this.activeUrl();
 
     if (!route) {
       return false;
     }
 
     if ('exact' in item && item.exact) {
-      return this.router.url.split('?')[0] === route;
+      return activeUrl === route;
     }
 
     if (route === '/') {
-      return this.router.url === '/';
+      return activeUrl === '/';
     }
 
-    return this.router.url.startsWith(route);
+    return activeUrl.startsWith(route);
   }
 
   activeNavIndex(): number {
@@ -136,7 +169,7 @@ export class AppChromeComponent {
       return item.action === 'save' ? contextual.isSaved : false;
     }
 
-    const url = this.router.url.split('?')[0];
+    const url = this.activeUrl();
 
     if (item.label === 'Perfil') {
       return url === '/profile';
@@ -159,6 +192,14 @@ export class AppChromeComponent {
     }
 
     return false;
+  }
+
+  primeRoute(item: HeaderNavItem | UtilityItem): void {
+    if (item.kind !== 'route') {
+      return;
+    }
+
+    this.pendingUrl.set(this.targetRoute(item));
   }
 
   utilityAriaLabel(item: UtilityItem): string {

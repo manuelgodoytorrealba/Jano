@@ -12,19 +12,27 @@
 
   @if (showCollectionsPanel() && auth.isLoggedIn) {
     <div class="entity-detail-popup-wrap" aria-live="polite">
-        <section class="collections-panel entity-glass" [class.collections-panel--notice]="!collectionsChooserOpen()">
+        <section
+          class="collections-panel entity-glass"
+          [class.collections-panel--notice]="!collectionsChooserOpen()"
+          [class.collections-panel--chooser]="collectionsChooserOpen()"
+          [attr.data-kind]="popupKind()"
+        >
           <div class="collections-panel__head">
             <div class="collections-panel__title-block">
-              <p class="section-label">
-                @switch (popupKind()) {
-                  @case ('manage') { Guardado }
-                  @case ('removed') { Eliminado }
-                  @case ('share') { Compartir }
-                  @case ('error') { Aviso }
-                  @case ('collections') { Colecciones }
-                  @default { Guardado }
-                }
-              </p>
+              <div class="collections-panel__eyebrow">
+                <span class="collections-panel__state-dot" aria-hidden="true"></span>
+                <p class="section-label">
+                  @switch (popupKind()) {
+                    @case ('manage') { Guardado }
+                    @case ('removed') { Eliminado }
+                    @case ('share') { Compartir }
+                    @case ('error') { Aviso }
+                    @case ('collections') { Colecciones }
+                    @default { Guardado }
+                  }
+                </p>
+              </div>
               <h2 class="title-section">{{ popupTitle() }}</h2>
             </div>
             <button class="ds-btn collections-panel__close" type="button" (click)="closeCollectionsPanel()">
@@ -34,7 +42,8 @@
 
           @if (collectionMessage()) {
             <div class="collections-panel__message" [class.collections-panel__message--positive]="popupKind() === 'saved' || popupKind() === 'share'">
-              {{ collectionMessage() }}
+              <span class="collections-panel__message-icon" aria-hidden="true"></span>
+              <p class="collections-panel__message-text">{{ collectionMessage() }}</p>
             </div>
           }
 
@@ -80,10 +89,13 @@
                       [disabled]="addingToCollection()"
                       (click)="addToCollection(collection.id, entity.id)"
                     >
-                      <div class="collection-option__name">{{ collection.name }}</div>
-                      <div class="collection-option__meta">
-                        {{ collection.items?.length ?? 0 }} items
+                      <div class="collection-option__body">
+                        <div class="collection-option__name">{{ collection.name }}</div>
+                        <div class="collection-option__meta">
+                          {{ collection.items?.length ?? 0 }} items
+                        </div>
                       </div>
+                      <span class="collection-option__cta" aria-hidden="true">Añadir</span>
                     </button>
                   }
                 </div>
@@ -125,7 +137,15 @@
     </div>
   }
 } @else {
-  <div class="entity-loading page-shell">
-    <div class="entity-loading__panel entity-glass">Cargando...</div>
+  <div class="entity-loading page-shell" aria-hidden="true">
+    <div class="entity-detail__ambient">
+      <div class="entity-detail__ambient-bg"></div>
+      <div class="entity-detail__ambient-overlay"></div>
+    </div>
+
+    <div class="entity-detail__layout entity-detail__layout--loading">
+      <section class="entity-explorer entity-glass entity-explorer--shell-loading"></section>
+      <section class="entity-section entity-glass entity-section--wide entity-section--loading"></section>
+    </div>
   </div>
 }

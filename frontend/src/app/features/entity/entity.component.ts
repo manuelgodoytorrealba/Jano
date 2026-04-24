@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AsyncPipe, Location } from '@angular/common';
-import { BehaviorSubject, catchError, combineLatest, distinctUntilChanged, map, of, shareReplay, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, distinctUntilChanged, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { SavedApi } from '../../core/api/saved.api';
 import { CollectionsApi } from '../../core/api/collections.api';
@@ -53,6 +53,7 @@ export class EntityComponent implements OnDestroy {
   collectionMessage = signal('');
   createCollectionName = signal('');
   createCollectionDescription = signal('');
+  private popupAutoCloseTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly syncContextualRail = effect(() => {
     const entity = this.currentEntity();
     if (!entity) {
@@ -72,6 +73,7 @@ export class EntityComponent implements OnDestroy {
   });
 
   ngOnDestroy(): void {
+    this.clearPopupAutoClose();
     this.chromeRail.clearContextualRail();
   }
 
@@ -80,6 +82,7 @@ export class EntityComponent implements OnDestroy {
   }
 
   toggleCollectionsPanel() {
+    this.clearPopupAutoClose();
     this.showCollectionsPanel.update((v) => {
       const next = !v;
       if (!next) {
@@ -91,6 +94,7 @@ export class EntityComponent implements OnDestroy {
   }
 
   closeCollectionsPanel() {
+    this.clearPopupAutoClose();
     this.showCollectionsPanel.set(false);
     this.collectionsChooserOpen.set(false);
     this.popupTitle.set('');
@@ -98,6 +102,7 @@ export class EntityComponent implements OnDestroy {
   }
 
   openCollectionsChooser() {
+    this.clearPopupAutoClose();
     this.showCollectionsPanel.set(true);
     this.collectionsChooserOpen.set(true);
     this.popupKind.set('collections');
@@ -116,7 +121,7 @@ export class EntityComponent implements OnDestroy {
       next: () => {
         this.isSaved.set(false);
         this.saveLoading.set(false);
-        this.openPopup('removed', 'Eliminada de guardados', 'Ya no aparece en My Space.');
+        this.openPopup('removed', 'Eliminada de guardados', 'Ya no aparece en My Space.', { autoCloseMs: 2200 });
       },
       error: () => {
         this.saveLoading.set(false);
@@ -134,6 +139,7 @@ export class EntityComponent implements OnDestroy {
     }
 
     this.creatingCollection.set(true);
+    this.clearPopupAutoClose();
     this.popupKind.set('collections');
     this.collectionMessage.set('');
 
@@ -157,12 +163,24 @@ export class EntityComponent implements OnDestroy {
     });
   }
 
-  private openPopup(kind: DetailPopupKind, title: string, message: string, showChooser = false) {
+  private openPopup(
+    kind: DetailPopupKind,
+    title: string,
+    message: string,
+    options?: { showChooser?: boolean; autoCloseMs?: number },
+  ) {
+    this.clearPopupAutoClose();
     this.showCollectionsPanel.set(true);
-    this.collectionsChooserOpen.set(showChooser);
+    this.collectionsChooserOpen.set(options?.showChooser ?? false);
     this.popupKind.set(kind);
     this.popupTitle.set(title);
     this.collectionMessage.set(message);
+
+    if (options?.autoCloseMs) {
+      this.popupAutoCloseTimer = setTimeout(() => {
+        this.closeCollectionsPanel();
+      }, options.autoCloseMs);
+    }
   }
 
   shareEntity(entity: any) {
@@ -182,16 +200,24 @@ export class EntityComponent implements OnDestroy {
     const payload = { title, text, url };
 
     if (typeof nav.share === 'function') {
-      nav.share(payload).catch(() => {
-        this.openPopup('error', 'No se pudo compartir', 'No se pudo abrir el panel de compartir.');
-      });
+      nav.share(payload)
+        .then(() => {
+          this.openPopup('share', 'Compartida', 'La entidad se compartió correctamente.', { autoCloseMs: 2000 });
+        })
+        .catch((error: any) => {
+          if (error?.name === 'AbortError') {
+            return;
+          }
+
+          this.openPopup('error', 'No se pudo compartir', 'No se pudo abrir el panel de compartir.');
+        });
       return;
     }
 
     if (nav.clipboard?.writeText && url) {
       nav.clipboard.writeText(url)
         .then(() => {
-          this.openPopup('share', 'Enlace copiado', 'Ya puedes compartir esta entidad donde quieras.');
+          this.openPopup('share', 'Enlace copiado', 'Ya puedes compartir esta entidad donde quieras.', { autoCloseMs: 2200 });
         })
         .catch(() => {
           this.openPopup('error', 'No se pudo compartir', 'No se pudo copiar el enlace de esta entidad.');
@@ -376,7 +402,17 @@ export class EntityComponent implements OnDestroy {
 
   private slug$ = this.route.paramMap.pipe(
     map((p) => p.get('slug') ?? ''),
-    distinctUntilChanged()
+    distinctUntilChanged(),
+    tap(() => {
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
+
+      this.currentEntity.set(null);
+      this.isSaved.set(false);
+      this.saveStatusResolved.set(false);
+      this.closeCollectionsPanel();
+    }),
   );
 
   collections$ = combineLatest([this.auth.user$, this.collectionsRefresh$]).pipe(
@@ -400,12 +436,13 @@ export class EntityComponent implements OnDestroy {
   );
 
   entity$ = this.slug$.pipe(
-    switchMap((slug) => this.api.get(slug)),
+    switchMap((slug) => this.api.get(slug).pipe(startWith(null))),
     tap((entity) => {
+      if (!entity) {
+        return;
+      }
+
       this.currentEntity.set(entity);
-      this.isSaved.set(false);
-      this.saveStatusResolved.set(false);
-      this.closeCollectionsPanel();
       this.seo.setPageMeta({
         title: `${entity.title} | JANO`,
         description: entity.summary ?? `Explore ${entity.title} in JANO.`,
@@ -477,6 +514,10 @@ export class EntityComponent implements OnDestroy {
             ? 'La colección ya está creada y esta entidad quedó añadida dentro.'
             : 'La entidad ya está organizada dentro de tu colección.',
         );
+        this.clearPopupAutoClose();
+        this.popupAutoCloseTimer = setTimeout(() => {
+          this.closeCollectionsPanel();
+        }, createdNow ? 2800 : 2400);
       },
       error: (err) => {
         this.addingToCollection.set(false);
@@ -606,5 +647,12 @@ export class EntityComponent implements OnDestroy {
       .split('_')
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(' ');
+  }
+
+  private clearPopupAutoClose(): void {
+    if (this.popupAutoCloseTimer !== null) {
+      clearTimeout(this.popupAutoCloseTimer);
+      this.popupAutoCloseTimer = null;
+    }
   }
 }

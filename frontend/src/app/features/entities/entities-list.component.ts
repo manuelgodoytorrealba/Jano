@@ -2,6 +2,7 @@ import { AsyncPipe, } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  HostListener,
   inject,
   signal,
 } from '@angular/core';
@@ -32,6 +33,7 @@ type Sort = 'recent' | 'title' | 'relevance';
 type Status = 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | '';
 type Level = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED' | '';
 type ViewMode = 'explore' | 'list';
+type FilterMenuKey = 'movement' | 'period' | 'institution' | 'nationality';
 
 const STATUS_LABELS: Record<Exclude<Status, ''>, string> = {
   DRAFT: 'Draft',
@@ -115,10 +117,12 @@ export class EntitiesListComponent {
 
   viewMode: ViewMode = 'explore';
   skeleton = Array.from({ length: 8 });
+  filterSkeleton = Array.from({ length: 4 });
   activeIndex = signal(0);
   advancedFiltersOpen = signal(false);
   filtersPanelOpen = signal(true);
   infoPanelOpen = signal(true);
+  openFilterMenu = signal<FilterMenuKey | null>(null);
 
   constructor() {
     combineLatest([this.typeFromUrl$, this.route.queryParamMap]).pipe(
@@ -430,11 +434,20 @@ export class EntitiesListComponent {
   );
 
   setView(mode: ViewMode) {
+    this.closeFilterMenu();
     this.viewMode = mode;
   }
 
   toggleFiltersPanel() {
-    this.filtersPanelOpen.update((value) => !value);
+    this.filtersPanelOpen.update((value) => {
+      const next = !value;
+
+      if (!next) {
+        this.closeFilterMenu();
+      }
+
+      return next;
+    });
   }
 
   openFiltersPanel() {
@@ -447,6 +460,33 @@ export class EntitiesListComponent {
 
   openInfoPanel() {
     this.infoPanelOpen.set(true);
+  }
+
+  toggleFilterMenu(key: FilterMenuKey) {
+    this.openFilterMenu.update((current) => current === key ? null : key);
+  }
+
+  closeFilterMenu() {
+    this.openFilterMenu.set(null);
+  }
+
+  selectFilterOption(key: FilterMenuKey, value: string) {
+    switch (key) {
+      case 'movement':
+        this.setMovement(value);
+        break;
+      case 'period':
+        this.setPeriod(value);
+        break;
+      case 'institution':
+        this.setInstitution(value);
+        break;
+      case 'nationality':
+        this.setNationality(value);
+        break;
+    }
+
+    this.closeFilterMenu();
   }
 
   toggleAdvancedFilters() {
@@ -708,5 +748,20 @@ export class EntitiesListComponent {
   }
   isMuted(index: number): boolean {
     return Math.abs(index - this.activeIndex()) > 3;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleDocumentClick(event: MouseEvent) {
+    const target = event.target;
+    if (!(target instanceof Element) || target.closest('.entities-filter-menu')) {
+      return;
+    }
+
+    this.closeFilterMenu();
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape() {
+    this.closeFilterMenu();
   }
 }

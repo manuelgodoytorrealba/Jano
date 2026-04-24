@@ -1,0 +1,204 @@
+:host {
+  display: block;
+}
+
+.entity-detail {
+  /* Detail sizing controls tuned for a 13-inch MacBook viewport. */
+  /* QUICK MAP
+   * Top card height: tweak --detail-topbar-padding-*
+   * Top card width balance: tweak --detail-topbar-content-width
+   * Title scale: tweak --detail-title-size / --detail-title-max-width
+   * Shared hero height (image + graph): tweak --detail-hero-min-height-*
+   * Image vs graph width split: tweak --detail-media-image-fr / --detail-media-graph-fr
+   * Shared media row height floor: tweak --detail-media-pane-min-height
+   * Inner air of each side: tweak --detail-image-pane-padding / --detail-graph-pane-padding / --detail-graph-pane-gap
+   */
+  --detail-hero-min-height-min: 620px;
+  --detail-hero-min-height-offset: 8.25rem;
+  --detail-hero-min-height-max: 820px;
+
+  --detail-topbar-padding-block-start: 0.85rem;
+  --detail-topbar-padding-inline: 1rem;
+  --detail-topbar-padding-block-end: 0.8rem;
+  --detail-topbar-radius: 34px;
+  --detail-topbar-content-width: 400px;
+
+  --detail-title-max-width: 9ch;
+  --detail-title-size: clamp(2.5rem, 1vw, 4.2rem);
+  --detail-title-line-height: 0.88;
+
+  --detail-media-image-fr: 0.8fr;
+  --detail-media-graph-fr: 1.2fr;
+  --detail-media-pane-min-height: 620px;
+  --detail-image-pane-padding: 0.16rem;
+  --detail-graph-pane-padding: 0.26rem;
+  --detail-graph-pane-gap: 0.3rem;
+
+  position: relative;
+  min-height: 100dvh;
+  padding-top: clamp(0.3rem, 0.75vw, 0.58rem);
+  padding-bottom: clamp(1rem, 1.8vw, 1.55rem);
+  isolation: isolate;
+}
+
+.entity-detail.page-shell,
+.entity-loading.page-shell {
+  width: min(100%, 1780px);
+  padding-inline: clamp(0.38rem, 1.15vw, 0.95rem);
+}
+
+.entity-detail__ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 16%, rgba(255, 255, 255, 0.12), transparent 22%),
+    radial-gradient(circle at 80% 18%, rgba(228, 195, 144, 0.1), transparent 20%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.12), rgba(10, 10, 10, 0.28));
+}
+
+.entity-detail__ambient-bg,
+.entity-detail__ambient-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.entity-detail__ambient-bg {
+  background-image: url('/assets/home/museum-room.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(10px) saturate(0.96) brightness(0.68);
+  transform: scale(1.08);
+  opacity: 0.42;
+}
+
+.entity-detail__ambient-overlay {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 18%),
+    radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.18), transparent 26%),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.14),
+      rgba(0, 0, 0, 0.18) 18%,
+      rgba(0, 0, 0, 0.3) 54%,
+      rgba(0, 0, 0, 0.58) 100%
+    );
+}
+
+.entity-detail__layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: clamp(0.42rem, 0.8vw, 0.68rem);
+  min-width: 0;
+}
+
+.entity-detail__layout--loading {
+  min-height: clamp(
+    var(--detail-hero-min-height-min),
+    calc(100dvh - var(--detail-hero-min-height-offset)),
+    var(--detail-hero-min-height-max)
+  );
+}
+
+.entity-glass,
+.entity-glass-card {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.26)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 28px 90px rgba(0, 0, 0, 0.18),
+    0 6px 18px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+
+.entity-glass {
+  border-radius: 30px;
+}
+
+.entity-glass-card {
+  border-radius: 22px;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.entity-glass-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 22px 60px rgba(56, 45, 24, 0.1),
+    0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.entity-explorer {
+  padding: 0.28rem;
+  overflow: hidden;
+  min-height: clamp(
+    var(--detail-hero-min-height-min),
+    calc(100dvh - var(--detail-hero-min-height-offset)),
+    var(--detail-hero-min-height-max)
+  );
+  border-color: rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.015));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.44),
+    0 18px 52px rgba(0, 0, 0, 0.16),
+    0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.entity-explorer--shell-loading,
+.entity-section--loading {
+  overflow: hidden;
+}
+
+.entity-section--loading {
+  min-height: 220px;
+}
+
+.entity-explorer__skeleton {
+  display: grid;
+  min-height: inherit;
+  grid-template-columns:
+    minmax(0, var(--detail-media-image-fr))
+    minmax(0, var(--detail-media-graph-fr));
+  gap: 0.34rem;
+  padding: 0.16rem;
+}
+
+.entity-explorer__skeleton-pane {
+  min-width: 0;
+  padding: 0.34rem;
+  border-radius: 22px;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.entity-explorer__skeleton-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.25rem;
+}
+
+.entity-explorer__skeleton-actions {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.entity-explorer__skeleton-actions span {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}

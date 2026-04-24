@@ -40,6 +40,7 @@
           [class.is-active]="isRouteActive(item)"
           [class.app-chrome__nav-link--personal]="item.group === 'personal'"
           [routerLink]="targetRoute(item)"
+          (click)="primeRoute(item)"
         >
           {{ item.label }}
         </a>
@@ -55,6 +56,7 @@
 
 <aside
   class="app-chrome__utility app-glass"
+  [class.app-chrome__utility--contextual]="isDetailRoute()"
   [class.has-active]="activeUtilityIndex() >= 0"
   aria-label="Utilidades"
   [style.--active-index]="activeUtilityIndex()"
@@ -68,6 +70,7 @@
         [routerLink]="targetRoute(item)"
         [attr.aria-label]="utilityAriaLabel(item)"
         [title]="utilityAriaLabel(item)"
+        (click)="primeRoute(item)"
       >
         <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
       </a>
@@ -76,8 +79,10 @@
         type="button"
         class="app-chrome__utility-btn"
         [class.is-active]="isUtilityActive(item)"
+        [class.is-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading"
         [attr.data-action]="item.action ?? item.icon"
         [disabled]="isUtilityDisabled(item)"
+        [attr.aria-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading ? 'true' : null"
         [attr.aria-label]="utilityAriaLabel(item)"
         [title]="utilityAriaLabel(item)"
         (click)="triggerUtilityAction(item, $event)"

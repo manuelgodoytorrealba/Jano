@@ -1,6 +1,4 @@
-@if (loading()) {
-  <div class="explorer-state">Cargando explorador…</div>
-} @else if (error()) {
+@if (error()) {
   <div class="explorer-state explorer-state--error">{{ error() }}</div>
 } @else if (graph(); as graphData) {
   <section class="explorer-shell">
@@ -15,11 +13,18 @@
           (pointerup)="onImagePointerUp($event)"
           (pointercancel)="onImagePointerCancel($event)"
         >
-          @if (imagePresentation().src || imageUrl) {
+          @if (hasImageSource()) {
             <div class="image-stage__backdrop" [style.background-image]="imageBackdrop()" aria-hidden="true"></div>
+            @if (imageLoading()) {
+              <div class="image-stage__loading" aria-hidden="true">
+                <div class="image-stage__loading-label"></div>
+                <div class="image-stage__loading-frame"></div>
+              </div>
+            }
             <div class="image-stage__asset" [style.transform]="imageTransform()">
               <img
                 class="image-stage__img"
+                [class.is-loading]="imageLoading()"
                 [src]="imagePresentation().src ?? imageUrl!"
                 [alt]="imageAlt || entityTitle"
                 loading="lazy"
@@ -52,8 +57,10 @@
             <div class="explorer-surface-label">Imagen</div>
 
             <div class="surface-controls surface-controls--image">
-              <button type="button" class="surface-control" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(1.14)">+</button>
-              <button type="button" class="surface-control" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(0.88)">−</button>
+              <div class="surface-controls__cluster">
+                <button type="button" class="surface-control surface-control--iconic" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(1.14)">+</button>
+                <button type="button" class="surface-control surface-control--iconic" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(0.88)">−</button>
+              </div>
               <button type="button" class="surface-control surface-control--wide" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="resetImageView()">
                 Reset
               </button>
@@ -152,5 +159,29 @@
     </div>
   </section>
 } @else {
-  <div class="explorer-state">No hay datos de exploración para esta entidad.</div>
+  <section class="explorer-shell explorer-shell--loading" aria-hidden="true">
+    <div class="explorer-canvas">
+      <section class="explorer-image-pane explorer-pane-skeleton explorer-pane-skeleton--light">
+        <div class="explorer-pane-skeleton__pill"></div>
+        <div class="explorer-pane-skeleton__stage explorer-pane-skeleton__stage--light"></div>
+        <div class="explorer-pane-skeleton__chip"></div>
+      </section>
+
+      <section class="explorer-graph-pane explorer-pane-skeleton explorer-pane-skeleton--dark">
+        <div class="explorer-pane-skeleton__toolbar">
+          <div class="explorer-pane-skeleton__line explorer-pane-skeleton__line--short"></div>
+          <div class="explorer-pane-skeleton__actions">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <div class="explorer-pane-skeleton__stage explorer-pane-skeleton__stage--dark"></div>
+        <div class="explorer-pane-skeleton__copy">
+          <div class="explorer-pane-skeleton__line explorer-pane-skeleton__line--title"></div>
+          <div class="explorer-pane-skeleton__line explorer-pane-skeleton__line--body"></div>
+        </div>
+      </section>
+    </div>
+  </section>
 }

@@ -198,6 +198,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly graphSize = signal({ width: 0, height: 0 });
   readonly imageSize = signal({ width: 0, height: 0 });
   readonly imageAsset = signal<ImageAssetSize | null>(null);
+  readonly imageLoading = signal(false);
   readonly entityTypeFilters = signal<Record<string, boolean>>({});
   readonly relationTypeFilters = signal<Record<string, boolean>>({});
   readonly renderTick = signal(0);
@@ -274,6 +275,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphViewport().scale));
   readonly imagePresentation = computed(() => resolveMediaPresentation(this.imageMedia));
+  readonly hasImageSource = computed(() => !!(this.imagePresentation().src || this.imageUrl));
 
   ngOnChanges(changes: SimpleChanges): void {
     const next = resolveGraphInputChangesRuntime({
@@ -290,6 +292,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.viewportController.clearTarget();
       this.targetImageViewport = nextState.targetImageViewport;
       this.imageAsset.set(null);
+      this.imageLoading.set(this.hasImageSource());
       this.imageViewport.set(nextState.imageViewport);
       this.layoutScratch = nextState.layoutScratch;
       this.selectedNodeSource = nextState.selectedNodeSource;
@@ -301,6 +304,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       const nextState = next.imageState;
       this.persistedState = nextState.persistedState;
       this.imageAsset.set(null);
+      this.imageLoading.set(this.hasImageSource());
       this.imageViewportReady = nextState.imageViewportReady;
       this.targetImageViewport = nextState.targetImageViewport;
       this.imageViewport.set(nextState.imageViewport);
@@ -346,7 +350,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     this.loading.set(true);
+    this.graph.set(null);
     this.error.set(null);
+    this.hoveredNodeId.set(null);
+    this.hoveredEdgeId.set(null);
     this.tooltip.set(null);
     this.loadSub?.unsubscribe();
 
@@ -589,6 +596,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       width: image.naturalWidth || image.width,
       height: image.naturalHeight || image.height,
     });
+    this.imageLoading.set(false);
     this.targetImageViewport = null;
     this.imageViewportReady = false;
     this.syncImageViewport(undefined, false, true);

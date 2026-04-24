@@ -1,0 +1,252 @@
+.entity-detail-popup-wrap {
+  position: fixed;
+  right: calc(var(--app-shell-gap) + var(--app-rail-width) + 28px);
+  bottom: calc(var(--app-shell-gap) + 20px);
+  z-index: 70;
+  width: min(420px, calc(100vw - var(--app-rail-width) - 64px));
+  pointer-events: none;
+}
+
+.collections-panel {
+  padding: 1rem;
+  display: grid;
+  gap: 0.82rem;
+  max-width: 100%;
+  margin-inline: 0;
+  pointer-events: auto;
+  border-color: rgba(255, 255, 255, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.32)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 34px 88px rgba(8, 10, 18, 0.24),
+    0 10px 28px rgba(15, 23, 42, 0.1);
+  transition:
+    transform 220ms cubic-bezier(.22, 1, .36, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    background 220ms ease;
+}
+
+.collections-panel--notice {
+  gap: 0.74rem;
+}
+
+.collections-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.collections-panel__title-block {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.collections-panel__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.44rem;
+}
+
+.collections-panel__state-dot {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: rgba(106, 116, 136, 0.46);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.22);
+}
+
+.collections-panel[data-kind='saved'] .collections-panel__state-dot,
+.collections-panel[data-kind='share'] .collections-panel__state-dot {
+  background: rgba(73, 153, 92, 0.88);
+}
+
+.collections-panel[data-kind='removed'] .collections-panel__state-dot {
+  background: rgba(186, 132, 74, 0.86);
+}
+
+.collections-panel[data-kind='error'] .collections-panel__state-dot {
+  background: rgba(188, 77, 77, 0.9);
+}
+
+.collections-panel[data-kind='collections'] .collections-panel__state-dot,
+.collections-panel[data-kind='manage'] .collections-panel__state-dot {
+  background: rgba(91, 108, 168, 0.84);
+}
+
+.collections-panel .title-section {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 1.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: rgba(17, 22, 31, 0.96);
+}
+
+.collections-panel__close {
+  min-width: 96px;
+  border-radius: 999px;
+  border-color: rgba(255, 255, 255, 0.68);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 242, 236, 0.78));
+  color: rgba(28, 33, 43, 0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 8px 18px rgba(30, 28, 24, 0.08);
+}
+
+.collections-panel__message {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.72rem;
+  padding: 0.86rem 0.96rem;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.28));
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  color: rgba(42, 50, 65, 0.86);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
+}
+
+.collections-panel__message-icon {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.18) 62%),
+    rgba(103, 113, 134, 0.22);
+}
+
+.collections-panel__message-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.collections-panel__message--positive {
+  background:
+    linear-gradient(180deg, rgba(228, 246, 233, 0.72), rgba(255, 255, 255, 0.44));
+  border-color: rgba(145, 191, 139, 0.44);
+  color: rgba(36, 74, 42, 0.92);
+}
+
+.collections-panel__primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.56rem;
+}
+
+.collections-panel__secondary-actions {
+  display: flex;
+  margin-top: 0.5rem;
+}
+
+.collections-panel__secondary-actions .entity-action {
+  width: 100%;
+}
+
+.collections-panel__create {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.86rem;
+  border-color: rgba(255, 255, 255, 0.52);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.2)),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04));
+}
+
+.collections-panel__create-title {
+  font-size: 1rem;
+}
+
+.collections-panel__create-subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: rgba(78, 86, 101, 0.8);
+}
+
+.collections-panel__create-fields {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.collections-panel__input.ds-input {
+  min-height: 44px;
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.3));
+  border-color: rgba(255, 255, 255, 0.52);
+  color: rgba(24, 30, 42, 0.92);
+}
+
+.collections-panel__list {
+  display: grid;
+  gap: 0.68rem;
+}
+
+.collection-option {
+  width: 100%;
+  padding: 0.9rem 0.96rem;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  border-color: rgba(255, 255, 255, 0.54);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.2)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+}
+
+.collection-option:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.collection-option__body {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.collection-option__name {
+  font-weight: 700;
+  color: rgba(20, 26, 38, 0.92);
+}
+
+.collection-option__meta {
+  font-size: 0.9rem;
+  color: rgba(88, 95, 109, 0.78);
+}
+
+.collection-option__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  min-height: 34px;
+  padding-inline: 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  background: rgba(255, 255, 255, 0.3);
+  color: rgba(34, 40, 52, 0.78);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.collection-option:hover .collection-option__cta {
+  background: rgba(255, 255, 255, 0.54);
+  border-color: rgba(255, 255, 255, 0.74);
+  color: rgba(20, 26, 38, 0.92);
+}

@@ -153,64 +153,176 @@
       @if (supportsMovement$ | async) {
       <div class="entities-filter-rail__section">
         <label class="entities-filter-rail__label" for="entities-filter-movement">Movimiento</label>
-        <select id="entities-filter-movement" class="ds-input entities-filter-select" aria-label="Filtrar por movimiento"
-          [value]="(movementFromUrl$ | async) ?? ''"
-          (change)="setMovement(($any($event.target)).value)">
-          <option value="">Todos los movimientos</option>
-          @if (movementOptions$ | async; as movementOptions) {
-          @for (option of movementOptions; track option.slug) {
-          <option [value]="option.slug">{{ option.title }}</option>
+        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'movement'">
+          <button id="entities-filter-movement" type="button" class="entities-filter-menu__trigger"
+            aria-label="Filtrar por movimiento" [attr.aria-expanded]="openFilterMenu() === 'movement'"
+            aria-haspopup="listbox" (click)="toggleFilterMenu('movement')">
+            <span class="entities-filter-menu__value">
+              @if (movementFromUrl$ | async; as movementSlug) {
+              @if (movementSlug) {
+              {{ (movementLabel$ | async) ?? movementSlug }}
+              }
+              } @else {
+              Todos los movimientos
+              }
+            </span>
+            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
+          </button>
+
+          @if (openFilterMenu() === 'movement') {
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de movimiento">
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="!(movementFromUrl$ | async)"
+              [attr.aria-selected]="!(movementFromUrl$ | async)" role="option"
+              (click)="selectFilterOption('movement', '')">
+              Todos los movimientos
+            </button>
+
+            @if (movementOptions$ | async; as movementOptions) {
+            @for (option of movementOptions; track option.slug) {
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="(movementFromUrl$ | async) === option.slug"
+              [attr.aria-selected]="(movementFromUrl$ | async) === option.slug" role="option"
+              (click)="selectFilterOption('movement', option.slug)">
+              {{ option.title }}
+            </button>
+            }
+            }
+          </div>
           }
-          }
-        </select>
+        </div>
       </div>
       }
 
       @if (supportsPeriod$ | async) {
       <div class="entities-filter-rail__section">
         <label class="entities-filter-rail__label" for="entities-filter-period">Periodo</label>
-        <select id="entities-filter-period" class="ds-input entities-filter-select" aria-label="Filtrar por periodo"
-          [value]="(periodFromUrl$ | async) ?? ''"
-          (change)="setPeriod(($any($event.target)).value)">
-          <option value="">Todos los periodos</option>
-          @if (periodOptions$ | async; as periodOptions) {
-          @for (option of periodOptions; track option.slug) {
-          <option [value]="option.slug">{{ option.title }}</option>
+        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'period'">
+          <button id="entities-filter-period" type="button" class="entities-filter-menu__trigger"
+            aria-label="Filtrar por periodo" [attr.aria-expanded]="openFilterMenu() === 'period'"
+            aria-haspopup="listbox" (click)="toggleFilterMenu('period')">
+            <span class="entities-filter-menu__value">
+              @if (periodFromUrl$ | async; as periodSlug) {
+              @if (periodSlug) {
+              {{ (periodLabel$ | async) ?? periodSlug }}
+              }
+              } @else {
+              Todos los periodos
+              }
+            </span>
+            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
+          </button>
+
+          @if (openFilterMenu() === 'period') {
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de periodo">
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="!(periodFromUrl$ | async)"
+              [attr.aria-selected]="!(periodFromUrl$ | async)" role="option"
+              (click)="selectFilterOption('period', '')">
+              Todos los periodos
+            </button>
+
+            @if (periodOptions$ | async; as periodOptions) {
+            @for (option of periodOptions; track option.slug) {
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="(periodFromUrl$ | async) === option.slug"
+              [attr.aria-selected]="(periodFromUrl$ | async) === option.slug" role="option"
+              (click)="selectFilterOption('period', option.slug)">
+              {{ option.title }}
+            </button>
+            }
+            }
+          </div>
           }
-          }
-        </select>
+        </div>
       </div>
       }
 
       @if (supportsInstitution$ | async) {
       <div class="entities-filter-rail__section">
         <label class="entities-filter-rail__label" for="entities-filter-institution">Institución</label>
-        <select id="entities-filter-institution" class="ds-input entities-filter-select"
-          aria-label="Filtrar por institución" [value]="(institutionFromUrl$ | async) ?? ''"
-          (change)="setInstitution(($any($event.target)).value)">
-          <option value="">Todas las instituciones</option>
-          @if (institutionOptions$ | async; as institutionOptions) {
-          @for (option of institutionOptions; track option.slug) {
-          <option [value]="option.slug">{{ option.title }}</option>
+        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'institution'">
+          <button id="entities-filter-institution" type="button" class="entities-filter-menu__trigger"
+            aria-label="Filtrar por institución" [attr.aria-expanded]="openFilterMenu() === 'institution'"
+            aria-haspopup="listbox" (click)="toggleFilterMenu('institution')">
+            <span class="entities-filter-menu__value">
+              @if (institutionFromUrl$ | async; as institution) {
+              @if (institution) {
+              {{ (institutionLabel$ | async) ?? institution }}
+              }
+              } @else {
+              Todas las instituciones
+              }
+            </span>
+            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
+          </button>
+
+          @if (openFilterMenu() === 'institution') {
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de institución">
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="!(institutionFromUrl$ | async)"
+              [attr.aria-selected]="!(institutionFromUrl$ | async)" role="option"
+              (click)="selectFilterOption('institution', '')">
+              Todas las instituciones
+            </button>
+
+            @if (institutionOptions$ | async; as institutionOptions) {
+            @for (option of institutionOptions; track option.slug) {
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="(institutionFromUrl$ | async) === option.slug"
+              [attr.aria-selected]="(institutionFromUrl$ | async) === option.slug" role="option"
+              (click)="selectFilterOption('institution', option.slug)">
+              {{ option.title }}
+            </button>
+            }
+            }
+          </div>
           }
-          }
-        </select>
+        </div>
       </div>
       }
 
       @if (supportsNationality$ | async) {
       <div class="entities-filter-rail__section">
         <label class="entities-filter-rail__label" for="entities-filter-nationality">Nacionalidad</label>
-        <select id="entities-filter-nationality" class="ds-input entities-filter-select"
-          aria-label="Filtrar por nacionalidad" [value]="(nationalityFromUrl$ | async) ?? ''"
-          (change)="setNationality(($any($event.target)).value)">
-          <option value="">Todas las nacionalidades</option>
-          @if (nationalityOptions$ | async; as nationalityOptions) {
-          @for (option of nationalityOptions; track option.slug) {
-          <option [value]="option.slug">{{ option.title }}</option>
+        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'nationality'">
+          <button id="entities-filter-nationality" type="button" class="entities-filter-menu__trigger"
+            aria-label="Filtrar por nacionalidad" [attr.aria-expanded]="openFilterMenu() === 'nationality'"
+            aria-haspopup="listbox" (click)="toggleFilterMenu('nationality')">
+            <span class="entities-filter-menu__value">
+              @if (nationalityFromUrl$ | async; as nationality) {
+              @if (nationality) {
+              {{ (nationalityLabel$ | async) ?? nationality }}
+              }
+              } @else {
+              Todas las nacionalidades
+              }
+            </span>
+            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
+          </button>
+
+          @if (openFilterMenu() === 'nationality') {
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de nacionalidad">
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="!(nationalityFromUrl$ | async)"
+              [attr.aria-selected]="!(nationalityFromUrl$ | async)" role="option"
+              (click)="selectFilterOption('nationality', '')">
+              Todas las nacionalidades
+            </button>
+
+            @if (nationalityOptions$ | async; as nationalityOptions) {
+            @for (option of nationalityOptions; track option.slug) {
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="(nationalityFromUrl$ | async) === option.slug"
+              [attr.aria-selected]="(nationalityFromUrl$ | async) === option.slug" role="option"
+              (click)="selectFilterOption('nationality', option.slug)">
+              {{ option.title }}
+            </button>
+            }
+            }
+          </div>
           }
-          }
-        </select>
+        </div>
       </div>
       }
 
@@ -322,14 +434,10 @@
     @if (viewMode === 'explore') {
     @if (vm.items.length) {
     <div class="entities-explorer-stage">
-      @defer (when viewMode === 'explore') {
       <app-entities-explorer-3d [items]="vm.items" [activeIndex]="activeIndex()"
         [infoOpen]="infoPanelOpen()" (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)"
         (requestInfoOpen)="openInfoPanel()" (requestInfoClose)="closeInfoPanel()">
       </app-entities-explorer-3d>
-      } @placeholder {
-      <div class="entities-explorer-placeholder ds-panel" aria-hidden="true"></div>
-      }
     </div>
     } @else {
     <div class="entities-stage-shell entities-stage-shell--empty">
@@ -401,8 +509,39 @@
           placeholder="Buscar…" aria-label="Buscar entidades"
           [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />
       </div>
+
+      @for (_ of filterSkeleton; track $index) {
+      <div class="entities-filter-rail__section entities-filter-rail__section--loading" aria-hidden="true">
+        <div class="skeleton-box skeleton-box--eyebrow"></div>
+        <div class="skeleton-box skeleton-box--control"></div>
+      </div>
+      }
     </aside>
 
+    @if (viewMode === 'explore') {
+    <div class="entities-explorer-stage">
+      <div class="entities-explorer-loading" aria-hidden="true">
+        <div class="entities-explorer-loading__plane entities-explorer-loading__plane--rear">
+          <div class="entities-explorer-loading__media"></div>
+        </div>
+        <div class="entities-explorer-loading__plane entities-explorer-loading__plane--mid">
+          <div class="entities-explorer-loading__media"></div>
+        </div>
+        <div class="entities-explorer-loading__plane entities-explorer-loading__plane--front">
+          <div class="entities-explorer-loading__media"></div>
+        </div>
+
+        <aside class="entities-explorer-loading__info ds-panel">
+          <div class="skeleton-box skeleton-box--eyebrow"></div>
+          <div class="skeleton-box skeleton-box--title"></div>
+          <div class="skeleton-box skeleton-box--line skeleton-box--w1"></div>
+          <div class="skeleton-box skeleton-box--line skeleton-box--w2"></div>
+          <div class="skeleton-box skeleton-box--line skeleton-box--w3"></div>
+          <div class="skeleton-box skeleton-box--cta"></div>
+        </aside>
+      </div>
+    </div>
+    } @else {
     <div class="entities-stage-shell entities-stage-shell--list">
       <section class="entities-grid">
         @for (_ of skeleton; track $index) {
@@ -420,6 +559,7 @@
         }
       </section>
     </div>
+    }
     }
   </section>
 </div>
