@@ -1,9 +1,18 @@
 @if (error()) {
   <div class="explorer-state explorer-state--error">{{ error() }}</div>
 } @else if (graph(); as graphData) {
-  <section class="explorer-shell">
+  <section
+    class="explorer-shell"
+    [class.explorer-shell--mode-split]="workspaceMode === 'split'"
+    [class.explorer-shell--mode-image]="workspaceMode === 'image'"
+    [class.explorer-shell--mode-graph]="workspaceMode === 'graph'"
+  >
     <div class="explorer-canvas">
-      <section class="explorer-image-pane">
+      <section
+        class="explorer-image-pane"
+        [class.explorer-pane--collapsed]="workspaceMode === 'graph'"
+        [attr.aria-hidden]="workspaceMode === 'graph' ? 'true' : null"
+      >
         <div
           #imageStage
           class="image-stage"
@@ -93,7 +102,12 @@
         </div>
       </section>
 
-      <section class="explorer-graph-pane" [class.explorer-graph-pane--inspector-hidden]="!inspectorVisible()">
+      <section
+        class="explorer-graph-pane"
+        [class.explorer-pane--collapsed]="workspaceMode === 'image'"
+        [class.explorer-graph-pane--inspector-hidden]="!inspectorVisible()"
+        [attr.aria-hidden]="workspaceMode === 'image' ? 'true' : null"
+      >
         <app-graph-controls-bar
           [labelsMode]="labelsMode()"
           [nodeCount]="graphDerived().filteredNodes.length"
@@ -159,7 +173,13 @@
     </div>
   </section>
 } @else {
-  <section class="explorer-shell explorer-shell--loading" aria-hidden="true">
+  <section
+    class="explorer-shell explorer-shell--loading"
+    [class.explorer-shell--mode-split]="workspaceMode === 'split'"
+    [class.explorer-shell--mode-image]="workspaceMode === 'image'"
+    [class.explorer-shell--mode-graph]="workspaceMode === 'graph'"
+    aria-hidden="true"
+  >
     <div class="explorer-canvas">
       <section class="explorer-image-pane explorer-pane-skeleton explorer-pane-skeleton--light">
         <div class="explorer-pane-skeleton__pill"></div>

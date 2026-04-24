@@ -2,15 +2,14 @@
 @use './entity-detail-content';
 @use './entity-popup';
 @use './entity-sections';
+@use './entity-workspace';
 
 .entity-topbar {
   position: relative;
   display: grid;
   gap: 0.12rem;
   padding:
-    var(--detail-topbar-padding-block-start)
-    var(--detail-topbar-padding-inline)
-    var(--detail-topbar-padding-block-end);
+    var(--detail-topbar-padding-block-start) var(--detail-topbar-padding-inline) var(--detail-topbar-padding-block-end);
   border-radius: var(--detail-topbar-radius);
   border: 1px solid rgba(255, 255, 255, 0.34);
   background:
@@ -156,17 +155,32 @@
   padding-inline: 1rem;
 }
 
+/* DETAIL WORKSPACE PRESETS
+ * Base = desktop large
+ * <= 1720px = desktop
+ * <= 1480px = macbook / desktop small
+ * <= 1180px = tablet landscape
+ */
+@media (max-width: 1720px) {
+  .entity-detail {
+    --detail-hero-shell-min: 590px;
+    --detail-hero-shell-offset: 8.35rem;
+    --detail-hero-shell-max: 830px;
+    --detail-split-image-width: 0.74fr;
+    --detail-split-graph-width: 1.26fr;
+  }
+}
+
 @media (max-width: 1480px) {
-  /* Responsive preset for laptop-ish widths.
-   * Prefer adjusting these variables instead of hardcoding the rules below.
-   */
   .entity-detail {
     --detail-title-max-width: none;
     --detail-title-size: clamp(1.5rem, 2vw, 1.5rem);
     --detail-title-line-height: 1.2;
-    --detail-hero-min-height-min: 560px;
-    --detail-hero-min-height-offset: 0.75rem;
-    --detail-hero-min-height-max: 760px;
+    --detail-hero-shell-min: 580px;
+    --detail-hero-shell-offset: 8.55rem;
+    --detail-hero-shell-max: 760px;
+    --detail-split-image-width: 0.7fr;
+    --detail-split-graph-width: 1.3fr;
   }
 
   .entity-header__actions {
@@ -177,6 +191,16 @@
     max-width: var(--detail-title-max-width);
     font-size: var(--detail-title-size);
     line-height: var(--detail-title-line-height);
+  }
+}
+
+@media (max-width: 1180px) {
+  .entity-detail {
+    --detail-hero-shell-min: 560px;
+    --detail-hero-shell-offset: 8.05rem;
+    --detail-hero-shell-max: 740px;
+    --detail-split-image-width: 0.66fr;
+    --detail-split-graph-width: 1.34fr;
   }
 }
 
@@ -991,9 +1015,9 @@
 @media (max-width: 1080px) {
   .entity-detail {
     --detail-title-max-width: none;
-    --detail-hero-min-height-min: 520px;
-    --detail-hero-min-height-offset: 9.5rem;
-    --detail-hero-min-height-max: 700px;
+    --detail-hero-shell-min: 500px;
+    --detail-hero-shell-offset: 9.75rem;
+    --detail-hero-shell-max: 640px;
   }
 
   .entity-detail__sections {
@@ -1019,6 +1043,7 @@
 }
 
 @media (max-width: 720px) {
+
   .entity-link-card,
   .entity-art-card {
     grid-template-columns: 1fr;

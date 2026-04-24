@@ -3,19 +3,19 @@
 }
 
 .entity-detail {
-  /* Detail sizing controls tuned for a 13-inch MacBook viewport. */
+  /* Detail sizing controls. Prefer touching these tokens before editing rules. */
   /* QUICK MAP
    * Top card height: tweak --detail-topbar-padding-*
    * Top card width balance: tweak --detail-topbar-content-width
    * Title scale: tweak --detail-title-size / --detail-title-max-width
-   * Shared hero height (image + graph): tweak --detail-hero-min-height-*
-   * Image vs graph width split: tweak --detail-media-image-fr / --detail-media-graph-fr
+   * Hero shell height: tweak --detail-hero-shell-*
+   * Split width balance: tweak --detail-split-*-width
    * Shared media row height floor: tweak --detail-media-pane-min-height
    * Inner air of each side: tweak --detail-image-pane-padding / --detail-graph-pane-padding / --detail-graph-pane-gap
    */
-  --detail-hero-min-height-min: 620px;
-  --detail-hero-min-height-offset: 8.25rem;
-  --detail-hero-min-height-max: 820px;
+  --detail-hero-shell-min: 600px;
+  --detail-hero-shell-offset: 8.2rem;
+  --detail-hero-shell-max: 860px;
 
   --detail-topbar-padding-block-start: 0.85rem;
   --detail-topbar-padding-inline: 1rem;
@@ -27,8 +27,9 @@
   --detail-title-size: clamp(2.5rem, 1vw, 4.2rem);
   --detail-title-line-height: 0.88;
 
-  --detail-media-image-fr: 0.8fr;
-  --detail-media-graph-fr: 1.2fr;
+  --detail-split-image-width: 0.75fr;
+  --detail-split-graph-width: 1.25fr;
+
   --detail-media-pane-min-height: 620px;
   --detail-image-pane-padding: 0.16rem;
   --detail-graph-pane-padding: 0.26rem;
@@ -43,8 +44,8 @@
 
 .entity-detail.page-shell,
 .entity-loading.page-shell {
-  width: min(100%, 1780px);
-  padding-inline: clamp(0.38rem, 1.15vw, 0.95rem);
+  width: min(100%, 1880px);
+  padding-inline: clamp(0.32rem, 1vw, 0.82rem);
 }
 
 .entity-detail__ambient {
@@ -78,13 +79,11 @@
   background:
     radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 18%),
     radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.18), transparent 26%),
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       rgba(0, 0, 0, 0.14),
       rgba(0, 0, 0, 0.18) 18%,
       rgba(0, 0, 0, 0.3) 54%,
-      rgba(0, 0, 0, 0.58) 100%
-    );
+      rgba(0, 0, 0, 0.58) 100%);
 }
 
 .entity-detail__layout {
@@ -96,11 +95,9 @@
 }
 
 .entity-detail__layout--loading {
-  min-height: clamp(
-    var(--detail-hero-min-height-min),
-    calc(100dvh - var(--detail-hero-min-height-offset)),
-    var(--detail-hero-min-height-max)
-  );
+  min-height: clamp(var(--detail-hero-shell-min),
+      calc(100dvh - var(--detail-hero-shell-offset)),
+      var(--detail-hero-shell-max));
 }
 
 .entity-glass,
@@ -143,11 +140,9 @@
 .entity-explorer {
   padding: 0.28rem;
   overflow: hidden;
-  min-height: clamp(
-    var(--detail-hero-min-height-min),
-    calc(100dvh - var(--detail-hero-min-height-offset)),
-    var(--detail-hero-min-height-max)
-  );
+  min-height: clamp(var(--detail-hero-shell-min),
+      calc(100dvh - var(--detail-hero-shell-offset)),
+      var(--detail-hero-shell-max));
   border-color: rgba(255, 255, 255, 0.18);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03)),
@@ -171,8 +166,7 @@
   display: grid;
   min-height: inherit;
   grid-template-columns:
-    minmax(0, var(--detail-media-image-fr))
-    minmax(0, var(--detail-media-graph-fr));
+    minmax(0, var(--detail-split-image-width)) minmax(0, var(--detail-split-graph-width));
   gap: 0.34rem;
   padding: 0.16rem;
 }

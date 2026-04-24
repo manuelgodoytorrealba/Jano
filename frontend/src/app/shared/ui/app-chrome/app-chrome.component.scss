@@ -338,6 +338,10 @@
   opacity: 1;
 }
 
+.app-chrome__utility--contextual .app-chrome__utility-indicator {
+  display: none;
+}
+
 .app-chrome__utility::before {
   content: '';
   position: absolute;

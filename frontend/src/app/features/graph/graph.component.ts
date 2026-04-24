@@ -148,6 +148,8 @@ type ImageMeta = {
   license?: string | null;
 };
 
+type GraphWorkspaceMode = 'split' | 'image' | 'graph';
+
 @Component({
   standalone: true,
   selector: 'app-graph',
@@ -163,6 +165,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   @Input({ required: true }) slug!: string;
+  @Input() workspaceMode: GraphWorkspaceMode = 'split';
   @Input() imageMedia: MediaLike | null = null;
   @Input() imageUrl: string | null = null;
   @Input() imageAlt = '';

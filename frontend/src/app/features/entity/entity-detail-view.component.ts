@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GraphComponent } from '../graph/graph.component';
@@ -10,6 +10,8 @@ type DetailFact = {
   label: string;
   value: string;
 };
+
+type DetailWorkspaceMode = 'split' | 'image' | 'graph';
 
 @Component({
   standalone: true,
@@ -30,6 +32,22 @@ export class EntityDetailViewComponent {
   @Output() saveToggle = new EventEmitter<string>();
   @Output() collectionsToggle = new EventEmitter<void>();
   @Output() shareToggle = new EventEmitter<void>();
+  workspaceMode: DetailWorkspaceMode = 'split';
+  readonly workspaceModes: Array<{ value: DetailWorkspaceMode; label: string }> = [
+    { value: 'split', label: 'Split View' },
+    { value: 'image', label: 'Image Focus' },
+    { value: 'graph', label: 'Graph Focus' },
+  ];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['entity'] && !changes['entity'].firstChange) {
+      this.workspaceMode = 'split';
+    }
+  }
+
+  setWorkspaceMode(mode: DetailWorkspaceMode): void {
+    this.workspaceMode = mode;
+  }
 
   primaryMedia(entity: any) {
     return selectPrimaryVisualMedia(entity);

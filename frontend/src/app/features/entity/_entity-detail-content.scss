@@ -163,9 +163,9 @@
     --detail-title-max-width: none;
     --detail-title-size: clamp(1.5rem, 2vw, 1.5rem);
     --detail-title-line-height: 1.2;
-    --detail-hero-min-height-min: 560px;
-    --detail-hero-min-height-offset: 0.75rem;
-    --detail-hero-min-height-max: 760px;
+    --detail-hero-shell-min: 560px;
+    --detail-hero-shell-offset: 0.75rem;
+    --detail-hero-shell-max: 760px;
   }
 
   .entity-header__actions {
