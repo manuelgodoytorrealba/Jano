@@ -19,7 +19,7 @@ type DetailWorkspaceMode = 'split' | 'image' | 'graph';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgTemplateOutlet, RouterLink, GraphComponent, RichTextComponent, JanoMediaComponent],
   templateUrl: './entity-detail-view.component.html',
-  styleUrls: ['./entity.component.scss'],
+  styleUrls: ['./entity-detail-view.component.scss'],
 })
 export class EntityDetailViewComponent {
   @Input() entity: any | null = null;

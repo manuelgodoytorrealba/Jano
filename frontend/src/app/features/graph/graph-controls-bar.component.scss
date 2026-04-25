@@ -6,14 +6,14 @@
    * Action buttons: tweak --graph-bar-button-*
    * Zoom/reset controls: tweak --graph-bar-control-*
    */
-  --graph-bar-gap-y: 0.24rem;
-  --graph-bar-gap-x: 0.36rem;
+  --graph-bar-gap-y: 0.22rem;
+  --graph-bar-gap-x: 0.32rem;
   --graph-bar-padding-y: 0.18rem;
   --graph-bar-padding-x: 0.24rem;
   --graph-bar-radius: 16px;
 
-  --graph-bar-chip-padding-y: 0.12rem;
-  --graph-bar-chip-padding-x: 0.32rem;
+  --graph-bar-chip-padding-y: 0.11rem;
+  --graph-bar-chip-padding-x: 0.3rem;
   --graph-bar-chip-font-size: 0.58rem;
 
   --graph-bar-label-padding-y: 0.22rem;
@@ -24,13 +24,13 @@
   --graph-bar-button-padding-y: 0.2rem;
   --graph-bar-button-padding-x: 0.46rem;
   --graph-bar-button-font-size: 0.62rem;
-  --graph-bar-button-min-width: 92px;
+  --graph-bar-button-min-width: 84px;
 
   --graph-bar-control-size: 24px;
   --graph-bar-control-padding-x: 0.46rem;
   --graph-bar-control-font-size: 0.62rem;
   --graph-bar-control-text-padding-x: 0.56rem;
-  --graph-bar-control-wide-min-width: 76px;
+  --graph-bar-control-wide-min-width: 70px;
 }
 
 .graph-panel-bar {
@@ -67,7 +67,8 @@
 .graph-panel-bar__group--actions {
   justify-self: end;
   justify-content: flex-end;
-  gap: 0.24rem;
+  gap: 0.18rem;
+  min-width: 0;
 }
 
 .explorer-surface-label {
@@ -110,7 +111,7 @@
 .graph-panel-bar__meta {
   display: flex;
   gap: 0.22rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
   min-width: 0;
 }
@@ -123,13 +124,16 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   font-size: var(--graph-bar-chip-font-size);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .graph-panel-bar__toggles,
 .surface-controls {
   display: flex;
-  gap: 0.22rem;
+  gap: 0.18rem;
   flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .surface-controls--graph {
@@ -180,33 +184,75 @@
   min-width: var(--graph-bar-control-wide-min-width);
 }
 
-@media (max-width: 1320px) {
+@media (max-width: 1480px) {
+  :host {
+    --graph-bar-gap-x: 0.24rem;
+    --graph-bar-padding-y: 0.16rem;
+    --graph-bar-padding-x: 0.2rem;
+    --graph-bar-chip-padding-x: 0.26rem;
+    --graph-bar-chip-font-size: 0.54rem;
+    --graph-bar-label-padding-x: 0.38rem;
+    --graph-bar-label-font-size: 0.55rem;
+    --graph-bar-button-padding-x: 0.4rem;
+    --graph-bar-button-font-size: 0.58rem;
+    --graph-bar-button-min-width: 72px;
+    --graph-bar-control-size: 22px;
+    --graph-bar-control-padding-x: 0.38rem;
+    --graph-bar-control-font-size: 0.58rem;
+    --graph-bar-control-text-padding-x: 0.46rem;
+    --graph-bar-control-wide-min-width: 62px;
+  }
+
   .graph-panel-bar {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--graph-bar-gap-y) var(--graph-bar-gap-x);
+    padding: var(--graph-bar-padding-y) var(--graph-bar-padding-x);
   }
 
-  .graph-panel-bar__meta {
-    justify-content: flex-start;
-    flex-wrap: wrap;
+  .graph-panel-bar__group {
+    flex-wrap: nowrap;
   }
 
-  .graph-panel-bar__group--meta,
+  .graph-panel-bar__group--meta {
+    justify-self: center;
+  }
+
   .graph-panel-bar__group--actions {
-    justify-content: flex-start;
-    justify-self: start;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 1320px) {
+  :host {
+    --graph-bar-gap-x: 0.18rem;
+    --graph-bar-chip-padding-x: 0.22rem;
+    --graph-bar-chip-font-size: 0.51rem;
+    --graph-bar-label-padding-x: 0.34rem;
+    --graph-bar-label-font-size: 0.52rem;
+    --graph-bar-button-padding-x: 0.34rem;
+    --graph-bar-button-font-size: 0.54rem;
+    --graph-bar-button-min-width: 66px;
+    --graph-bar-control-padding-x: 0.34rem;
+    --graph-bar-control-font-size: 0.54rem;
+    --graph-bar-control-text-padding-x: 0.4rem;
+    --graph-bar-control-wide-min-width: 56px;
+  }
+
+  .graph-panel-bar__group--actions {
+    gap: 0.14rem;
   }
 
   .graph-panel-bar__toggles,
   .surface-controls {
-    flex-wrap: wrap;
+    gap: 0.14rem;
   }
 }
 
-@media (max-width: 1480px) {
+@media (max-width: 1120px) {
   .graph-panel-bar {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.34rem;
-    padding: 0.34rem 0.4rem;
+    gap: 0.3rem;
+    padding: 0.32rem 0.38rem;
   }
 
   .graph-panel-bar__group {

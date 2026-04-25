@@ -208,7 +208,96 @@ erDiagram
     string id PK
     string entityId FK
     string body
+    string role
+    string note
   }
+
+  ArtworkDetails {
+    string entityId PK,FK
+    string authorNation
+    string technique
+    string materials
+    string dimensions
+    string location
+    string collection
+    string state
+  }
+
+  ArtistDetails {
+    string entityId PK,FK
+    string country
+    string city
+    int birthYear
+    int deathYear
+    string disciplines
+    string bioShort
+    string links
+  }
+
+  ConceptDetails {
+    string entityId PK,FK
+    string definition
+  }
+
+  PeriodDetails {
+    string entityId PK,FK
+    string definition
+  }
+
+  User {
+    string id PK
+    string email UK
+    string passwordHash
+    string name
+    string role
+    string plan
+  }
+
+  SavedEntity {
+    string id PK
+    string userId FK
+    string entityId FK
+  }
+
+  Collection {
+    string id PK
+    string userId FK
+    string name
+    string description
+    boolean isDefault
+  }
+
+  CollectionEntity {
+    string id PK
+    string collectionId FK
+    string entityId FK
+  }
+
+  Entity ||--o{ Relation : "from"
+  Entity ||--o{ Relation : "to"
+
+  Entity ||--o{ EntityMedia : "has"
+  Media ||--o{ EntityMedia : "used_in"
+  Media o|--o{ Media : "derived_from"
+
+  Entity ||--o{ SourceRef : "documented_by"
+  Source ||--o{ SourceRef : "referenced_in"
+
+  Entity ||--o{ CuratorNote : "has"
+  Entity ||--o{ Contributor : "has"
+
+  Entity ||--o| ArtworkDetails : "details"
+  Entity ||--o| ArtistDetails : "details"
+  Entity ||--o| ConceptDetails : "details"
+  Entity ||--o| PeriodDetails : "details"
+
+  User ||--o{ SavedEntity : "saves"
+  Entity ||--o{ SavedEntity : "saved_by"
+
+  User ||--o{ Collection : "owns"
+  Collection ||--o{ CollectionEntity : "contains"
+  Entity ||--o{ CollectionEntity : "included_in"
+```  }
 
   Contributor {
     string id PK

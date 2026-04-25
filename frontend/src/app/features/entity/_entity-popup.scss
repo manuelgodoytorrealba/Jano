@@ -250,3 +250,33 @@
   border-color: rgba(255, 255, 255, 0.74);
   color: rgba(20, 26, 38, 0.92);
 }
+
+.text-muted {
+  color: rgba(96, 103, 120, 0.76);
+}
+
+@media (max-width: 640px) {
+  .entity-detail-popup-wrap {
+    right: 16px;
+    left: 16px;
+    bottom: calc(var(--app-shell-gap) + var(--app-rail-width) + 18px);
+    width: auto;
+  }
+
+  .collections-panel__choices .entity-action {
+    width: 100%;
+  }
+
+  .collections-panel__primary-actions,
+  .collections-panel__secondary-actions {
+    display: grid;
+  }
+
+  .collection-option {
+    align-items: flex-start;
+  }
+
+  .collection-option__cta {
+    min-width: 0;
+  }
+}

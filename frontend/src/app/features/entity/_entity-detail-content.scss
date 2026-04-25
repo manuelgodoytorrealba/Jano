@@ -76,29 +76,6 @@
   flex-wrap: wrap;
 }
 
-.entity-header__back {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: rgba(88, 96, 114, 0.8);
-  text-decoration: none;
-  font-size: 0.9rem;
-  letter-spacing: 0;
-  text-transform: none;
-  cursor: pointer;
-  transition: color 160ms ease, transform 160ms ease, opacity 160ms ease;
-  opacity: 0.92;
-}
-
-.entity-header__back:hover {
-  color: rgba(18, 24, 38, 0.96);
-  transform: translateX(-2px);
-}
-
 .entity-header__title {
   max-width: var(--detail-title-max-width);
   margin: 0;
@@ -132,109 +109,6 @@
   color: rgba(32, 38, 51, 0.86);
   font-size: 0.72rem;
   padding: 0.24rem 0.64rem;
-}
-
-.entity-header__actions {
-  display: flex;
-  gap: 0.3rem;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 0 0 auto;
-  align-self: start;
-}
-
-.entity-action {
-  min-height: 44px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.26));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.65),
-    0 8px 18px rgba(17, 24, 39, 0.06);
-  color: rgba(26, 32, 44, 0.88);
-  font-size: 0.98rem;
-  padding-inline: 1rem;
-}
-
-@media (max-width: 1480px) {
-  .entity-detail {
-    --detail-title-max-width: none;
-    --detail-title-size: clamp(1.5rem, 2vw, 1.5rem);
-    --detail-title-line-height: 1.2;
-    --detail-hero-shell-min: 560px;
-    --detail-hero-shell-offset: 0.75rem;
-    --detail-hero-shell-max: 760px;
-  }
-
-  .entity-header__actions {
-    justify-content: flex-start;
-  }
-
-  .entity-header__title {
-    max-width: var(--detail-title-max-width);
-    font-size: var(--detail-title-size);
-    line-height: var(--detail-title-line-height);
-  }
-}
-
-.entity-action:hover {
-  border-color: rgba(255, 255, 255, 0.82);
-  transform: translateY(-1px);
-}
-
-.entity-header__actions .is-active {
-  border-color: rgba(194, 167, 122, 0.48);
-  background:
-    linear-gradient(180deg, rgba(232, 218, 194, 0.42), rgba(255, 255, 255, 0.24));
-  color: rgba(22, 28, 40, 0.96);
-  font-weight: 600;
-}
-
-.entity-action--primary {
-  background:
-    linear-gradient(180deg, rgba(24, 27, 38, 0.98), rgba(10, 12, 18, 0.96));
-  border-color: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 18px 30px rgba(15, 23, 42, 0.24);
-}
-
-.entity-action--primary:hover {
-  color: #fff;
-  transform: translateY(-1px);
-}
-
-.entity-action--danger {
-  border-color: rgba(216, 97, 97, 0.28);
-  background:
-    linear-gradient(180deg, rgba(255, 242, 242, 0.58), rgba(255, 255, 255, 0.24));
-  color: rgba(168, 36, 36, 0.92);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.68),
-    0 10px 24px rgba(120, 30, 30, 0.08);
-}
-
-.entity-action--danger:hover {
-  border-color: rgba(216, 97, 97, 0.42);
-  color: rgba(145, 22, 22, 0.96);
-}
-
-.entity-action--quiet-danger {
-  min-height: 40px;
-  padding-inline: 0.92rem;
-  border-color: rgba(216, 97, 97, 0.16);
-  background: rgba(255, 255, 255, 0.18);
-  color: rgba(154, 53, 53, 0.82);
-  box-shadow: none;
-}
-
-.entity-action--quiet-danger:hover {
-  background: rgba(255, 245, 245, 0.32);
-  border-color: rgba(216, 97, 97, 0.28);
-  color: rgba(133, 30, 30, 0.9);
 }
 
 .entity-section {
@@ -272,10 +146,6 @@
   gap: 1rem;
 }
 
-.entity-section__head--explorer {
-  margin-bottom: 0.8rem;
-}
-
 .section-label {
   margin: 0;
   font-size: 0.78rem;
@@ -306,11 +176,23 @@
   color: rgba(42, 47, 60, 0.94);
 }
 
-.entity-prose--summary {
-  font-size: 1.18rem;
-  line-height: 1.65;
+@media (max-width: 1080px) {
+  .entity-detail__sections {
+    grid-template-columns: 1fr;
+  }
+
+  .entity-topbar__row {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: flex-start;
+  }
 }
 
-.entity-prose--inline {
-  margin-top: 0.4rem;
+@media (max-width: 640px) {
+  .entity-topbar {
+    padding: 0.78rem 0.82rem 0.84rem;
+  }
+
+  .entity-header__title {
+    font-size: var(--detail-title-size);
+  }
 }

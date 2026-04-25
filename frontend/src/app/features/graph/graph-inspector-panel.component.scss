@@ -219,3 +219,81 @@
     border-radius: 18px;
   }
 }
+
+@media (max-width: 1280px) {
+  :host {
+    --graph-inspector-gap: 0.26rem;
+    --graph-inspector-padding-y: 0.28rem;
+    --graph-inspector-padding-x: 0.32rem;
+    --graph-inspector-radius: 16px;
+    --graph-inspector-card-padding-y: 0.44rem;
+    --graph-inspector-card-padding-x: 0.52rem;
+    --graph-inspector-card-radius: 14px;
+    --graph-inspector-filter-gap: 0.24rem;
+    --graph-inspector-filter-padding-y: 0.34rem;
+    --graph-inspector-filter-padding-x: 0.38rem;
+    --graph-inspector-chip-min-height: 26px;
+    --graph-inspector-chip-padding-x: 0.48rem;
+    --graph-inspector-chip-font-size: 0.64rem;
+  }
+
+  .selection-card {
+    gap: 0.16rem;
+  }
+
+  .selection-card__head {
+    gap: 0.5rem;
+    margin-bottom: 0.16rem;
+  }
+
+  .selection-card__type {
+    padding: 0.2rem 0.42rem;
+    font-size: 0.6rem;
+  }
+
+  .selection-card__meta {
+    font-size: 0.64rem;
+  }
+
+  .selection-card h3 {
+    font-size: 0.9rem;
+    line-height: 1.08;
+  }
+
+  .selection-card p {
+    margin-top: 0.08rem;
+    font-size: 0.68rem;
+    line-height: 1.24;
+  }
+
+  .selection-card__sync {
+    margin-top: 0.14rem;
+    font-size: 0.6rem;
+  }
+
+  .filter-group__head {
+    gap: 0.34rem;
+  }
+
+  .filter-group__label {
+    font-size: 0.6rem;
+  }
+
+  .filter-action {
+    padding: 0.18rem 0.4rem;
+    font-size: 0.6rem;
+  }
+
+  .filter-chip {
+    gap: 0.34rem;
+  }
+
+  .filter-chip__dot {
+    width: 0.58rem;
+    height: 0.58rem;
+  }
+
+  .filter-chip__line {
+    width: 0.78rem;
+  }
+}

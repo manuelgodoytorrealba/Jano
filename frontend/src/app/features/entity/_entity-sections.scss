@@ -1,13 +1,7 @@
-.facts-list,
 .relations-list {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.facts-list {
-  display: grid;
-  gap: 0.75rem;
 }
 
 .facts-sheet {
@@ -371,10 +365,6 @@
   line-height: 1.7;
 }
 
-.entity-header__actions--article {
-  justify-content: flex-start;
-}
-
 .entity-article-graph {
   min-height: 520px;
 }
@@ -386,4 +376,36 @@
 
 .text-muted {
   color: rgba(96, 103, 120, 0.76);
+}
+
+@media (max-width: 1080px) {
+  .entity-article-hero {
+    min-height: 620px;
+  }
+
+  .facts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .entity-link-card,
+  .entity-art-card {
+    grid-template-columns: 1fr;
+  }
+
+  .entity-link-card__image,
+  .entity-art-card__image {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 640px) {
+  .entity-article-hero__title {
+    font-size: clamp(2.2rem, 11vw, 3.4rem);
+  }
+
+  .entity-article-hero__summary {
+    font-size: 0.98rem;
+  }
 }
