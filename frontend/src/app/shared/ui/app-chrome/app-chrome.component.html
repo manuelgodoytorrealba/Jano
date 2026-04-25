@@ -1,4 +1,4 @@
-<header class="app-chrome__header app-glass">
+<header class="app-chrome__header app-glass" [class.app-chrome__header--collapsed]="headerCollapsed()">
   <a class="app-chrome__brand" routerLink="/" aria-label="Ir al inicio de JANO">
     <span class="app-chrome__brand-mark">J</span>
     <span class="app-chrome__brand-copy">
@@ -52,7 +52,35 @@
     }
   </nav>
 
+  @if (compactHeaderEnabled()) {
+    <button
+      type="button"
+      class="app-chrome__header-toggle app-chrome__header-toggle--close"
+      aria-label="Ocultar header"
+      title="Ocultar header"
+      (click)="collapseHeader()"
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+  }
 </header>
+
+@if (compactHeaderEnabled()) {
+  <button
+    type="button"
+    class="app-chrome__header-toggle app-chrome__header-toggle--open"
+    [class.app-chrome__header-toggle--visible]="headerCollapsed()"
+    aria-label="Mostrar header"
+    title="Mostrar header"
+    (click)="expandHeader()"
+  >
+    <span class="app-chrome__header-toggle-bars" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+  </button>
+}
 
 <aside
   class="app-chrome__utility app-glass"
@@ -62,43 +90,84 @@
   [style.--active-index]="activeUtilityIndex()"
 >
   <span class="app-chrome__utility-indicator" aria-hidden="true"></span>
-  @for (item of currentUtilityItems(); track item.label) {
-    @if (item.kind === 'route') {
-      <a
-        class="app-chrome__utility-btn"
-        [class.is-active]="isUtilityActive(item)"
-        [routerLink]="targetRoute(item)"
-        [attr.aria-label]="utilityAriaLabel(item)"
-        [title]="utilityAriaLabel(item)"
-        (click)="primeRoute(item)"
-      >
-        <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
-      </a>
-    } @else if (item.kind === 'action') {
+  @if (isDetailRoute() && rail.contextualRail()?.kind === 'detail') {
+    <button
+      type="button"
+      class="app-chrome__utility-btn"
+      data-action="share"
+      aria-label="Compartir"
+      title="Compartir"
+      (click)="rail.trigger('share')"
+    >
+      <span class="app-chrome__utility-icon" data-icon="share" aria-hidden="true"></span>
+    </button>
+
+    @if (rail.contextualRail()?.canSave) {
       <button
         type="button"
         class="app-chrome__utility-btn"
-        [class.is-active]="isUtilityActive(item)"
-        [class.is-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading"
-        [attr.data-action]="item.action ?? item.icon"
-        [disabled]="isUtilityDisabled(item)"
-        [attr.aria-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading ? 'true' : null"
-        [attr.aria-label]="utilityAriaLabel(item)"
-        [title]="utilityAriaLabel(item)"
-        (click)="triggerUtilityAction(item, $event)"
+        [class.is-active]="rail.contextualRail()?.isSaved"
+        [class.is-busy]="rail.contextualRail()?.saveLoading"
+        data-action="save"
+        [disabled]="rail.contextualRail()?.saveLoading || !rail.contextualRail()?.canSave"
+        [attr.aria-busy]="rail.contextualRail()?.saveLoading ? 'true' : null"
+        [attr.aria-label]="rail.contextualRail()?.isSaved ? 'Entidad guardada' : 'Guardar'"
+        [title]="rail.contextualRail()?.isSaved ? 'Entidad guardada' : 'Guardar'"
+        (click)="rail.trigger('save')"
       >
-        <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+        <span class="app-chrome__utility-icon" data-icon="save" aria-hidden="true"></span>
       </button>
-    } @else {
-      <button
-        type="button"
-        class="app-chrome__utility-btn is-placeholder"
-        [attr.aria-label]="utilityAriaLabel(item)"
-        [title]="utilityAriaLabel(item)"
-        (click)="preventPlaceholderAction($event)"
-      >
-        <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
-      </button>
+    }
+
+    <button
+      type="button"
+      class="app-chrome__utility-btn"
+      data-action="focus"
+      aria-label="Inicio"
+      title="Inicio"
+      (click)="rail.trigger('focus')"
+    >
+      <span class="app-chrome__utility-icon" data-icon="focus" aria-hidden="true"></span>
+    </button>
+  } @else {
+    @for (item of currentUtilityItems(); track item.label) {
+      @if (item.kind === 'route') {
+        <a
+          class="app-chrome__utility-btn"
+          [class.is-active]="isUtilityActive(item)"
+          [routerLink]="targetRoute(item)"
+          [attr.aria-label]="utilityAriaLabel(item)"
+          [title]="utilityAriaLabel(item)"
+          (click)="primeRoute(item)"
+        >
+          <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+        </a>
+      } @else if (item.kind === 'action') {
+        <button
+          type="button"
+          class="app-chrome__utility-btn"
+          [class.is-active]="isUtilityActive(item)"
+          [class.is-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading"
+          [attr.data-action]="item.action ?? item.icon"
+          [disabled]="isUtilityDisabled(item)"
+          [attr.aria-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading ? 'true' : null"
+          [attr.aria-label]="utilityAriaLabel(item)"
+          [title]="utilityAriaLabel(item)"
+          (click)="triggerUtilityAction(item, $event)"
+        >
+          <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="app-chrome__utility-btn is-placeholder"
+          [attr.aria-label]="utilityAriaLabel(item)"
+          [title]="utilityAriaLabel(item)"
+          (click)="preventPlaceholderAction($event)"
+        >
+          <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+        </button>
+      }
     }
   }
 </aside>

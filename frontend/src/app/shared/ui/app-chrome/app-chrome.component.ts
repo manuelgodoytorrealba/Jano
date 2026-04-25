@@ -4,7 +4,7 @@ import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Rout
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
-import { filter } from 'rxjs';
+import { filter, fromEvent } from 'rxjs';
 
 type HeaderNavItem = {
   label: string;
@@ -32,11 +32,14 @@ type UtilityItem = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppChromeComponent {
+  private static readonly COLLAPSIBLE_HEADER_MAX_WIDTH = 1200;
   private readonly router = inject(Router);
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
   private readonly currentUrl = signal(this.normalizeUrl(this.router.url));
   private readonly pendingUrl = signal<string | null>(null);
+  readonly compactHeaderEnabled = signal(this.readCompactHeaderEnabled());
+  readonly headerCollapsed = signal(false);
 
   readonly navItems: HeaderNavItem[] = [
     { label: 'Descubrir', route: '/', kind: 'route', group: 'public', exact: true },
@@ -73,6 +76,23 @@ export class AppChromeComponent {
       this.currentUrl.set(this.normalizeUrl(this.router.url));
       this.pendingUrl.set(null);
     });
+
+    if (typeof window !== 'undefined') {
+      fromEvent(window, 'resize').pipe(takeUntilDestroyed()).subscribe(() => {
+        const compact = this.readCompactHeaderEnabled();
+        this.compactHeaderEnabled.set(compact);
+
+        if (!compact && this.headerCollapsed()) {
+          this.headerCollapsed.set(false);
+        }
+      });
+    }
+  }
+
+  private readCompactHeaderEnabled(): boolean {
+    return typeof window !== 'undefined'
+      ? window.innerWidth <= AppChromeComponent.COLLAPSIBLE_HEADER_MAX_WIDTH
+      : false;
   }
 
   private normalizeUrl(url: string): string {
@@ -85,6 +105,18 @@ export class AppChromeComponent {
 
   isDetailRoute(): boolean {
     return this.activeUrl().startsWith('/entity/');
+  }
+
+  collapseHeader(): void {
+    if (!this.compactHeaderEnabled()) {
+      return;
+    }
+
+    this.headerCollapsed.set(true);
+  }
+
+  expandHeader(): void {
+    this.headerCollapsed.set(false);
   }
 
   contextualUtilityItems(): UtilityItem[] {
@@ -104,8 +136,8 @@ export class AppChromeComponent {
     }
 
     items.push(
-      { label: 'Compartir', icon: 'share', kind: 'action', action: 'share' },
       { label: 'Inicio', icon: 'focus', kind: 'action', action: 'focus' },
+      { label: 'Compartir', icon: 'share', kind: 'action', action: 'share' },
     );
 
     return items;
