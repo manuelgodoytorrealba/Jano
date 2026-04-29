@@ -181,6 +181,7 @@ model Media {
   derivedFromMedia Media?  @relation("MediaDerivation", fields: [derivedFromMediaId], references: [id])
   derivedAssets    Media[] @relation("MediaDerivation")
   entities EntityMedia[]
+  collectionCovers Collection[] @relation("CollectionCoverMedia")
 
   @@index([derivedFromMediaId])
 }
@@ -342,22 +343,27 @@ model Collection {
   userId      String
   name        String
   description String?
+  notes       String?
+  coverMediaId String?
   isDefault   Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items CollectionEntity[]
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coverMedia Media?             @relation("CollectionCoverMedia", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  items      CollectionEntity[]
 
   @@unique([userId, name])
   @@index([userId])
+  @@index([coverMediaId])
 }
 
 model CollectionEntity {
   id           String   @id @default(cuid())
   collectionId String
   entityId     String
+  sortOrder    Int      @default(0)
   createdAt    DateTime @default(now())
 
   collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
@@ -365,6 +371,7 @@ model CollectionEntity {
 
   @@unique([collectionId, entityId])
   @@index([collectionId])
+  @@index([collectionId, sortOrder])
   @@index([entityId])
   @@index([createdAt])
 }

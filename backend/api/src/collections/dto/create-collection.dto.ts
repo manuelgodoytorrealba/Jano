@@ -10,4 +10,12 @@ export class CreateCollectionDto {
   @IsString()
   @MaxLength(240)
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
+
+  @IsOptional()
+  @IsString()
+  coverMediaId?: string;
 }
