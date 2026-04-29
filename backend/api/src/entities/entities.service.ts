@@ -354,6 +354,14 @@ export class EntitiesService {
   }
 
   async list(query: ListEntitiesQuery) {
+    return this.listForVisibility(query, { publicOnly: true });
+  }
+
+  async adminList(query: ListEntitiesQuery) {
+    return this.listForVisibility(query, { publicOnly: false });
+  }
+
+  private async listForVisibility(query: ListEntitiesQuery, options: { publicOnly: boolean }) {
 
     const page = Number(query.page ?? 1);
     const limit = Number(query.limit ?? 24);
@@ -379,7 +387,9 @@ export class EntitiesService {
 
     if (query.type) where.type = query.type;
 
-    if (status && Object.values(EntityStatus).includes(status as EntityStatus)) {
+    if (options.publicOnly) {
+      where.status = EntityStatus.PUBLISHED;
+    } else if (status && Object.values(EntityStatus).includes(status as EntityStatus)) {
       where.status = status as EntityStatus;
     }
 
@@ -623,7 +633,10 @@ export class EntitiesService {
     const results = await Promise.all(
       this.HOME_TYPES.map((type) =>
         this.prisma.entity.findFirst({
-          where: { type },
+          where: {
+            type,
+            status: EntityStatus.PUBLISHED,
+          },
           orderBy: { createdAt: 'desc' },
           include: {
             mediaLinks: {
@@ -643,8 +656,11 @@ export class EntitiesService {
 
   async getBySlug(slug: string) {
 
-    const entity = await this.prisma.entity.findUnique({
-      where: { slug },
+    const entity = await this.prisma.entity.findFirst({
+      where: {
+        slug,
+        status: EntityStatus.PUBLISHED,
+      },
       include: {
         artwork: true,
         artist: true,
@@ -660,6 +676,11 @@ export class EntitiesService {
         contributors: true,
         sourceRefs: { include: { source: true } },
         outgoing: {
+          where: {
+            to: {
+              status: EntityStatus.PUBLISHED,
+            },
+          },
           include: {
             to: {
               include: {
@@ -675,6 +696,11 @@ export class EntitiesService {
           },
         },
         incoming: {
+          where: {
+            from: {
+              status: EntityStatus.PUBLISHED,
+            },
+          },
           include: {
             from: {
               include: {
@@ -709,8 +735,11 @@ export class EntitiesService {
 
   async graphBySlug(slug: string) {
 
-    const center = await this.prisma.entity.findUnique({
-      where: { slug },
+    const center = await this.prisma.entity.findFirst({
+      where: {
+        slug,
+        status: EntityStatus.PUBLISHED,
+      },
       include: {
         mediaLinks: {
           include: { media: true },
@@ -727,8 +756,18 @@ export class EntitiesService {
     const relations = await this.prisma.relation.findMany({
       where: {
         OR: [
-          { fromId: center.id },
-          { toId: center.id },
+          {
+            fromId: center.id,
+            to: {
+              status: EntityStatus.PUBLISHED,
+            },
+          },
+          {
+            toId: center.id,
+            from: {
+              status: EntityStatus.PUBLISHED,
+            },
+          },
         ],
       },
       include: {
@@ -825,8 +864,11 @@ export class EntitiesService {
 
   async previewBySlug(slug: string) {
 
-    const e = await this.prisma.entity.findUnique({
-      where: { slug },
+    const e = await this.prisma.entity.findFirst({
+      where: {
+        slug,
+        status: EntityStatus.PUBLISHED,
+      },
       select: {
         id: true,
         slug: true,

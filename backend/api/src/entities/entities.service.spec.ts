@@ -8,6 +8,7 @@ describe('EntitiesService.list filters', () => {
   const prisma = {
     entity: {
       count: jest.fn(),
+      findFirst: jest.fn(),
       findMany: jest.fn(),
     },
     artistDetails: {
@@ -16,17 +17,24 @@ describe('EntitiesService.list filters', () => {
     artworkDetails: {
       findMany: jest.fn(),
     },
+    relation: {
+      findMany: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
     prisma.entity.count.mockReset();
+    prisma.entity.findFirst.mockReset();
     prisma.entity.findMany.mockReset();
     prisma.artistDetails.findMany.mockReset();
     prisma.artworkDetails.findMany.mockReset();
+    prisma.relation.findMany.mockReset();
     prisma.entity.count.mockResolvedValue(0);
+    prisma.entity.findFirst.mockResolvedValue(null);
     prisma.entity.findMany.mockResolvedValue([]);
     prisma.artistDetails.findMany.mockResolvedValue([]);
     prisma.artworkDetails.findMany.mockResolvedValue([]);
+    prisma.relation.findMany.mockResolvedValue([]);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -96,6 +104,7 @@ describe('EntitiesService.list filters', () => {
 
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
+        status: 'PUBLISHED',
         AND: [
           {
             OR: [
@@ -118,6 +127,21 @@ describe('EntitiesService.list filters', () => {
             },
           },
         ],
+      },
+    });
+  });
+
+  it('keeps admin list unrestricted by default so drafts remain visible in admin workflows', async () => {
+    await service.adminList({
+      type: 'ARTWORK',
+      page: 1,
+      limit: 24,
+      sort: 'recent',
+    });
+
+    expect(prisma.entity.count).toHaveBeenCalledWith({
+      where: {
+        type: 'ARTWORK',
       },
     });
   });
@@ -170,6 +194,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTWORK',
+        status: 'PUBLISHED',
         AND: [
           {
             artwork: {
@@ -200,6 +225,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTWORK',
+        status: 'PUBLISHED',
         AND: [
           {
             outgoing: {
@@ -255,6 +281,7 @@ describe('EntitiesService.list filters', () => {
         orderBy: { title: 'asc' },
         where: {
           type: 'ARTWORK',
+          status: 'PUBLISHED',
           AND: [
             {
               OR: [
@@ -291,6 +318,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTIST',
+        status: 'PUBLISHED',
       },
     });
   });
@@ -307,6 +335,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTIST',
+        status: 'PUBLISHED',
         AND: [
           {
             artist: {
@@ -340,6 +369,7 @@ describe('EntitiesService.list filters', () => {
         orderBy: { title: 'asc' },
         where: {
           type: 'ARTIST',
+          status: 'PUBLISHED',
           AND: [
             {
               OR: [
@@ -400,6 +430,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTWORK',
+        status: 'PUBLISHED',
       },
     });
   });
@@ -434,6 +465,67 @@ describe('EntitiesService.list filters', () => {
     ]);
   });
 
+  it('loads home sections from published entities only', async () => {
+    await service.home();
+
+    expect(prisma.entity.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          type: 'ARTWORK',
+          status: 'PUBLISHED',
+        },
+      }),
+    );
+  });
+
+  it('loads public entity detail by slug from published entities only', async () => {
+    prisma.entity.findFirst.mockResolvedValue({
+      id: 'entity-1',
+      slug: 'guernica',
+      title: 'Guernica',
+      type: 'ARTWORK',
+      mediaLinks: [],
+      outgoing: [],
+      incoming: [],
+    });
+
+    await service.getBySlug('guernica');
+
+    expect(prisma.entity.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          slug: 'guernica',
+          status: 'PUBLISHED',
+        },
+      }),
+    );
+  });
+
+  it('loads graph center and preview by slug from published entities only', async () => {
+    prisma.entity.findFirst.mockResolvedValue({
+      id: 'entity-1',
+      slug: 'guernica',
+      title: 'Guernica',
+      type: 'ARTWORK',
+      mediaLinks: [],
+      summary: null,
+      startYear: null,
+      endYear: null,
+    });
+
+    await service.graphBySlug('guernica');
+    await service.previewBySlug('guernica');
+
+    expect(prisma.entity.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          slug: 'guernica',
+          status: 'PUBLISHED',
+        },
+      }),
+    );
+  });
+
   it('includes artists associated with a movement when applying the movement filter', async () => {
     await service.list({
       type: 'ARTIST',
@@ -446,6 +538,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTIST',
+        status: 'PUBLISHED',
         AND: [
           {
             outgoing: {
@@ -477,6 +570,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTIST',
+        status: 'PUBLISHED',
         AND: [
           {
             outgoing: {
@@ -508,6 +602,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTIST',
+        status: 'PUBLISHED',
         AND: [
           {
             outgoing: {
@@ -539,6 +634,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.entity.count).toHaveBeenCalledWith({
       where: {
         type: 'ARTIST',
+        status: 'PUBLISHED',
         AND: [
           {
             outgoing: {

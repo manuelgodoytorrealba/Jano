@@ -59,6 +59,13 @@ export class EntitiesController {
     return this.service.list(query);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Get('admin')
+  adminList(@Query() query: ListEntitiesQuery) {
+    return this.service.adminList(query);
+  }
+
   @Get('institutions')
   institutions() {
     return this.service.listInstitutions();

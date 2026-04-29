@@ -10,8 +10,11 @@ describe('JwtStrategy', () => {
         role: 'ADMIN',
       }),
     };
+    const configService = {
+      getOrThrow: jest.fn().mockReturnValue('test-jwt-secret'),
+    };
 
-    const strategy = new JwtStrategy(usersService as any);
+    const strategy = new JwtStrategy(usersService as any, configService as any);
 
     await expect(strategy.validate({
       sub: 'user-1',
@@ -24,5 +27,6 @@ describe('JwtStrategy', () => {
       name: 'Manuel',
       role: 'ADMIN',
     });
+    expect(configService.getOrThrow).toHaveBeenCalledWith('JWT_SECRET');
   });
 });

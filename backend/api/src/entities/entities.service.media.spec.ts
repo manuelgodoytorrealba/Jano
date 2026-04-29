@@ -24,6 +24,7 @@ describe('EntitiesService media admin workflows', () => {
 
   const prisma = {
     entity: {
+      findFirst: jest.fn(),
       findUnique: jest.fn(),
     },
     media: {
@@ -44,6 +45,7 @@ describe('EntitiesService media admin workflows', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    prisma.entity.findFirst.mockReset();
     prisma.entity.findUnique.mockReset();
     prisma.media.create.mockReset();
     prisma.media.findUnique.mockReset();
@@ -58,6 +60,7 @@ describe('EntitiesService media admin workflows', () => {
     txMediaUpdate.mockReset();
     txEntityMediaUpdate.mockReset();
     txEntityMediaUpdateMany.mockReset();
+    prisma.entity.findFirst.mockResolvedValue({ id: 'entity-1' });
     prisma.entity.findUnique.mockResolvedValue({ id: 'entity-1' });
     prisma.media.create.mockResolvedValue({ id: 'media-1' });
     prisma.media.findUnique.mockResolvedValue(null);
@@ -747,7 +750,7 @@ describe('EntitiesService media admin workflows', () => {
   });
 
   it('returns canonical resolved slots in previewBySlug so contextual previews can choose preview, list or detail', async () => {
-    prisma.entity.findUnique.mockResolvedValue({
+    prisma.entity.findFirst.mockResolvedValue({
       id: 'entity-1',
       slug: 'guernica',
       title: 'Guernica',

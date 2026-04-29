@@ -226,6 +226,7 @@ export type AdminEntityResponse = {
 export class AdminEntitiesApi {
   private http = inject(HttpClient);
   private readonly baseUrl = apiUrl('/entities');
+  private readonly adminBaseUrl = apiUrl('/entities/admin');
 
   list(params?: Record<string, string | number | undefined>) {
     let httpParams = new HttpParams();
@@ -238,11 +239,11 @@ export class AdminEntitiesApi {
       }
     }
 
-    return this.http.get<any>(this.baseUrl, { params: httpParams });
+    return this.http.get<any>(this.adminBaseUrl, { params: httpParams });
   }
 
   getById(id: string) {
-    return this.http.get<AdminEntityResponse>(`${this.baseUrl}/admin/${id}`);
+    return this.http.get<AdminEntityResponse>(`${this.adminBaseUrl}/${id}`);
   }
 
   updateDetails(id: string, data: AdminEntityDetailsPayload) {

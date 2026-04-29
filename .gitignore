@@ -11,3 +11,4 @@ frontend/dist
 frontend/node_modules
 
 docs/.DS_Store
+.vscode/
