@@ -41,6 +41,7 @@ import {
   GraphPoint,
   GraphRenderedEdge,
   GraphRenderedNode,
+  GraphResponseDto,
   GraphTooltip,
   GraphViewport,
 } from './graph.models';
@@ -164,7 +165,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  @Input({ required: true }) slug!: string;
+  @Input() slug = '';
+  @Input() graphData: GraphResponseDto | null = null;
   @Input() workspaceMode: GraphWorkspaceMode = 'split';
   @Input() imageMedia: MediaLike | null = null;
   @Input() imageUrl: string | null = null;
@@ -222,6 +224,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private persistedState: ExplorerPersistedState | null = null;
   private layoutScratch: ForceLayoutScratch | null = null;
   private pendingInitialEntityFocus = false;
+  private appliedGraphData: GraphResponseDto | null = null;
   private selectedNodeSource: GraphSelectionSource = 'center';
   private hasUserAdjustedGraphView = false;
   private graphLayoutActive = false;
@@ -313,7 +316,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.imageViewport.set(nextState.imageViewport);
     }
 
-    if (next.shouldLoadGraph) {
+    const incomingGraphData = changes['graphData']?.currentValue as GraphResponseDto | null | undefined;
+    if (incomingGraphData && incomingGraphData !== this.appliedGraphData) {
+      this.appliedGraphData = incomingGraphData;
+      this.applyGraphResponse(incomingGraphData);
+      return;
+    }
+
+    if (next.shouldLoadGraph && !this.graphData) {
       this.loadGraph();
     }
   }
@@ -361,46 +371,49 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.loadSub?.unsubscribe();
 
     this.loadSub = this.api.graph(this.slug).subscribe({
-      next: (response) => {
-        const loadedState = buildLoadedGraphRuntime({
-          initialized: initializeLoadedGraphState(response, this.persistedState?.graph),
-        });
-
-        this.graph.set(loadedState.graph);
-        this.layoutScratch = loadedState.layoutScratch;
-        this.positions = loadedState.positions;
-        this.velocities = loadedState.velocities;
-        this.pinCenterNode();
-        this.warmupGraphLayout();
-
-        this.entityTypeFilters.set(loadedState.entityTypeFilters);
-        this.relationTypeFilters.set(loadedState.relationTypeFilters);
-        this.labelsMode.set(loadedState.labelsMode);
-
-        this.selectedNodeSource = loadedState.selectedNodeSource;
-        this.selectedNodeId.set(loadedState.selectedNodeId);
-        this.hoveredNodeId.set(null);
-        this.hoveredEdgeId.set(null);
-        this.tooltip.set(null);
-
-        this.pendingInitialEntityFocus = loadedState.pendingInitialEntityFocus;
-        this.hasUserAdjustedGraphView = loadedState.hasUserAdjustedGraphView;
-        this.viewportController.clearTarget();
-        this.graphViewportReady = loadedState.graphViewportReady;
-        this.graphLayoutActive = loadedState.graphLayoutActive;
-        this.graphSettledFrames = loadedState.graphSettledFrames;
-        this.focusCurrentEntity(false);
-
-        this.loading.set(false);
-        this.startAnimationLoop();
-        this.scheduleInitialEntityFocus();
-        this.ensureInitialGraphFit();
-      },
+      next: (response) => this.applyGraphResponse(response),
       error: () => {
         this.loading.set(false);
         this.error.set('No se pudo cargar el grafo.');
       },
     });
+  }
+
+  private applyGraphResponse(response: GraphResponseDto): void {
+    const loadedState = buildLoadedGraphRuntime({
+      initialized: initializeLoadedGraphState(response, this.persistedState?.graph),
+    });
+
+    this.graph.set(loadedState.graph);
+    this.layoutScratch = loadedState.layoutScratch;
+    this.positions = loadedState.positions;
+    this.velocities = loadedState.velocities;
+    this.pinCenterNode();
+    this.warmupGraphLayout();
+
+    this.entityTypeFilters.set(loadedState.entityTypeFilters);
+    this.relationTypeFilters.set(loadedState.relationTypeFilters);
+    this.labelsMode.set(loadedState.labelsMode);
+
+    this.selectedNodeSource = loadedState.selectedNodeSource;
+    this.selectedNodeId.set(loadedState.selectedNodeId);
+    this.hoveredNodeId.set(null);
+    this.hoveredEdgeId.set(null);
+    this.tooltip.set(null);
+
+    this.pendingInitialEntityFocus = loadedState.pendingInitialEntityFocus;
+    this.hasUserAdjustedGraphView = loadedState.hasUserAdjustedGraphView;
+    this.viewportController.clearTarget();
+    this.graphViewportReady = loadedState.graphViewportReady;
+    this.graphLayoutActive = loadedState.graphLayoutActive;
+    this.graphSettledFrames = loadedState.graphSettledFrames;
+    this.focusCurrentEntity(false);
+
+    this.loading.set(false);
+    this.error.set(null);
+    this.startAnimationLoop();
+    this.scheduleInitialEntityFocus();
+    this.ensureInitialGraphFit();
   }
 
   private pinCenterNode(): void {

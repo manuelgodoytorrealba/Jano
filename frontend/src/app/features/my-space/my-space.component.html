@@ -109,11 +109,21 @@
   @if (collections.length) {
   <div class="collections">
     @for (collection of collections; track collection.id) {
-    <section class="collection-card">
+    <section
+      class="collection-card"
+      role="link"
+      tabindex="0"
+      [attr.aria-label]="'Abrir colección ' + collection.name"
+      (click)="goToCollection(collection.id)"
+      (keydown.enter)="goToCollection(collection.id)"
+      (keydown.space)="$event.preventDefault(); goToCollection(collection.id)"
+    >
       <header class="collection-head">
         <div>
           <div class="collection-title-row">
-            <h3 class="collection-title">{{ collection.name }}</h3>
+            <h3 class="collection-title">
+              {{ collection.name }}
+            </h3>
             @if (collection.isDefault) {
             <span class="pill">Default</span>
             }
@@ -125,14 +135,14 @@
         </div>
 
         <div class="count-pill">
-          {{ collection.items?.length ?? 0 }} items
+          {{ collection.itemCount }} items
         </div>
       </header>
 
-      @if ((collection.items?.length ?? 0) > 0) {
+      @if (collection.items.length > 0) {
       <section class="grid">
         @for (item of collection.items; track item.id) {
-        <article class="card">
+        <article class="card" (click)="$event.stopPropagation()">
           <div class="thumb" (click)="go(item.entity.slug)">
             <app-jano-media [entity]="item.entity" usage="card" [alt]="item.entity.title"></app-jano-media>
           </div>
@@ -147,10 +157,10 @@
             </div>
 
             <div class="actions">
-              <button type="button" class="ghost" (click)="go(item.entity.slug)">
+              <button type="button" class="ghost" (click)="$event.stopPropagation(); go(item.entity.slug)">
                 Ver
               </button>
-              <button type="button" class="danger" (click)="removeFromCollection(collection.id, item.entity.id)">
+              <button type="button" class="danger" (click)="$event.stopPropagation(); removeFromCollection(collection.id, item.entity.id)">
                 Quitar
               </button>
             </div>

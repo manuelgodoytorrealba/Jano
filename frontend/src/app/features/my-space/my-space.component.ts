@@ -100,6 +100,10 @@ export class MySpaceComponent {
     });
   }
 
+  goToCollection(collectionId: string) {
+    this.router.navigate(['/collections', collectionId]);
+  }
+
   go(slug: string) {
     this.router.navigate(['/entity', slug]);
   }

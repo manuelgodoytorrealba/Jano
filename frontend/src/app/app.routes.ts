@@ -34,6 +34,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/my-space/my-space.component').then((m) => m.MySpaceComponent),
   },
   {
+    path: 'collections/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/collection-detail/collection-detail.component').then((m) => m.CollectionDetailComponent),
+  },
+  {
     path: 'profile',
     canActivate: [authGuard],
     loadComponent: () => import('./features/profile/profile.component').then((m) => m.ProfileComponent),

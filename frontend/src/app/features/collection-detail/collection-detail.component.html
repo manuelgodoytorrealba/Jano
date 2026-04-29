@@ -1,0 +1,169 @@
+@if (collection$ | async; as collection) {
+<div class="entity-detail collection-detail page-shell">
+  <div class="entity-detail__ambient" aria-hidden="true">
+    <div class="entity-detail__ambient-bg"></div>
+    <div class="entity-detail__ambient-overlay"></div>
+  </div>
+
+  <div class="entity-detail__layout">
+    <div class="entity-explorer__workspace-deck">
+      <div class="entity-explorer__workspace-bar" role="toolbar" aria-label="Modo del workspace">
+        <div class="entity-explorer__workspace-switch">
+          @for (mode of workspaceModes; track mode.value) {
+          <button
+            type="button"
+            class="entity-explorer__workspace-btn"
+            [class.is-active]="workspaceMode === mode.value"
+            [attr.aria-pressed]="workspaceMode === mode.value"
+            (click)="setWorkspaceMode(mode.value)"
+          >
+            {{ mode.label }}
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <section class="entity-explorer entity-glass" [attr.data-workspace-mode]="workspaceMode">
+      @if (graphResponse(collection); as graphData) {
+      <app-graph
+        [slug]="'collection-' + collection.id"
+        [graphData]="graphData"
+        [workspaceMode]="workspaceMode"
+        [imageMedia]="coverMedia(collection)"
+        [imageAlt]="coverAlt(collection)"
+        [entityTitle]="collection.name"
+        entityType="COLLECTION"
+      />
+      } @else {
+      <div class="collection-hero-empty">
+        @if (coverMedia(collection); as media) {
+        <app-jano-media class="collection-hero-empty__image" [media]="media" usage="detail" [alt]="coverAlt(collection)" [lazy]="false" priority="high" />
+        }
+        <div class="collection-hero-empty__copy">
+          <span class="section-label">Colección</span>
+          <h2>Sin grafo interno todavía</h2>
+          <p>Añade entidades relacionadas para activar el mapa de conexiones de esta colección.</p>
+        </div>
+      </div>
+      }
+    </section>
+
+    <section class="entity-section entity-glass entity-section--wide entity-story collection-title-block">
+      <header class="entity-topbar entity-topbar--embedded">
+        <div class="entity-topbar__row">
+          <div class="entity-topbar__lead">
+            <div class="entity-topbar__title-block">
+              <h1 class="title-display entity-header__title">{{ collection.name }}</h1>
+              @if (collection.description) {
+              <p class="entity-topbar__subtitle">{{ collection.description }}</p>
+              }
+              <div class="entity-topbar__meta">
+                <div class="entity-header__badges">
+                  <span class="ds-badge entity-badge">COLLECTION</span>
+                  @if (collection.isDefault) {
+                  <span class="ds-badge entity-badge">DEFAULT</span>
+                  }
+                </div>
+                <span class="ds-pill entity-pill">{{ collection.itemCount }} items</span>
+                <span class="ds-pill entity-pill">Actualizada {{ collection.updatedAt | date:'mediumDate' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+    </section>
+
+    <div class="entity-detail__sections">
+      <section class="entity-section entity-glass">
+        <div class="entity-section__head">
+          <p class="section-label">Notas curatoriales</p>
+          <span class="collection-notes-status" [attr.data-status]="notesStatus">
+            @if (notesStatus === 'dirty') {
+            Escribiendo
+            } @else if (notesStatus === 'saving') {
+            Guardando
+            } @else if (notesStatus === 'saved') {
+            Guardado
+            } @else if (notesStatus === 'error') {
+            Error
+            }
+          </span>
+        </div>
+        <textarea
+          #notesEditor
+          class="collection-notes-editor"
+          name="collectionNotes"
+          [ngModel]="notesDraft"
+          (ngModelChange)="onNotesChanged($event, notesEditor)"
+          placeholder="Escribe una idea curatorial, una interpretación personal o el contexto de estudio de esta colección."
+        ></textarea>
+        @if (notesError) {
+        <p class="collection-notes-feedback collection-notes-feedback--error">{{ notesError }}</p>
+        }
+      </section>
+
+      <section class="entity-section entity-glass">
+        <div class="entity-section__head">
+          <p class="section-label">Relaciones internas</p>
+        </div>
+        <div class="collection-relations-grid">
+          <article class="fact-card entity-glass-card">
+            <span class="fact-card__label">Entidades</span>
+            <p class="fact-card__value">{{ collection.itemCount }}</p>
+          </article>
+          <article class="fact-card entity-glass-card">
+            <span class="fact-card__label">Conexiones directas</span>
+            <p class="fact-card__value">{{ graphEdgeCount(collection) }}</p>
+          </article>
+          <article class="fact-card entity-glass-card">
+            <span class="fact-card__label">Nodos sin conexión</span>
+            <p class="fact-card__value">{{ isolatedCount(collection) }}</p>
+          </article>
+        </div>
+
+        @if (entityTypeSummary(collection).length) {
+        <div class="relations-group">
+          <h3 class="title-section entity-subtitle">Tipos presentes</h3>
+          <div class="collection-chip-list">
+            @for (entry of entityTypeSummary(collection); track entry.type) {
+            <span class="collection-chip">{{ relationLabel(entry.type) }} · {{ entry.count }}</span>
+            }
+          </div>
+        </div>
+        }
+
+        @if (connectedEdges(collection).length) {
+        <div class="relations-group">
+          <h3 class="title-section entity-subtitle">Conexiones entre piezas guardadas</h3>
+          <ul class="relations-list">
+            @for (edge of connectedEdges(collection); track edge.id) {
+            <li class="relation-card entity-glass-card relation-card--friendly">
+              <div class="relation-card__topline">
+                <span class="relation-card__label">{{ relationLabel(edge.relationType) }}</span>
+                <span class="relation-card__link">{{ nodeLabel(collection, edge.source) }} → {{ nodeLabel(collection, edge.target) }}</span>
+              </div>
+              @if (edge.justification) {
+              <div class="relation-card__text">{{ edge.justification }}</div>
+              }
+            </li>
+            }
+          </ul>
+        </div>
+        } @else {
+        <p class="text-muted">Las entidades de esta colección todavía no tienen relaciones directas entre sí.</p>
+        }
+      </section>
+
+    </div>
+  </div>
+</div>
+} @else {
+<div class="entity-detail page-shell">
+  <section class="entity-section entity-glass collection-missing">
+    <p class="section-label">Colección</p>
+    <h1>No se pudo cargar la colección</h1>
+    <a class="ds-btn" routerLink="/my-space">Volver a My Space</a>
+  </section>
+</div>
+}
