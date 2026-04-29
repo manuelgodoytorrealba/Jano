@@ -4,14 +4,14 @@
   --app-background-current: var(--app-background-image, var(--app-background-fallback));
   --app-background-blur: 10px;
   --app-background-saturate: 0.96;
-  --app-background-brightness: 0.68;
+  --app-background-brightness: 0.62;
   --app-background-opacity: 0.42;
   --app-background-scale: 1.08;
   --app-background-top-light: rgba(255, 255, 255, 0.1);
   --app-background-bottom-warm: rgba(214, 183, 131, 0.18);
-  --app-background-shade-0: rgba(8, 8, 8, 0.16);
-  --app-background-shade-mid: rgba(8, 8, 8, 0.26);
-  --app-background-shade-100: rgba(8, 8, 8, 0.56);
+  --app-background-shade-0: rgba(8, 8, 8, 0.2);
+  --app-background-shade-mid: rgba(8, 8, 8, 0.34);
+  --app-background-shade-100: rgba(8, 8, 8, 0.68);
   --app-background-base:
     radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.32), transparent 24%),
     radial-gradient(circle at 78% 14%, rgba(255, 243, 223, 0.18), transparent 22%),
@@ -46,9 +46,7 @@
   background-position: center;
   background-repeat: no-repeat;
   filter:
-    blur(var(--app-background-blur))
-    saturate(var(--app-background-saturate))
-    brightness(var(--app-background-brightness));
+    blur(var(--app-background-blur)) saturate(var(--app-background-saturate)) brightness(var(--app-background-brightness));
   opacity: var(--app-background-opacity);
   transform: scale(var(--app-background-scale));
 }
@@ -63,10 +61,7 @@
   z-index: 0;
   min-height: 100svh;
   padding:
-    calc(var(--app-shell-gap) + var(--app-header-height) + 18px)
-    calc(var(--app-shell-gap) + var(--app-rail-width) + 18px)
-    var(--app-shell-gap)
-    var(--app-shell-gap);
+    calc(var(--app-shell-gap) + var(--app-header-height) + 18px) calc(var(--app-shell-gap) + var(--app-rail-width) + 18px) var(--app-shell-gap) var(--app-shell-gap);
   overflow: visible;
 }
 
@@ -89,10 +84,7 @@
 @media (max-width: 860px) {
   .app-shell__content {
     padding:
-      calc(var(--app-shell-gap) + 152px)
-      var(--app-shell-gap)
-      calc(var(--app-shell-gap) + 92px)
-      var(--app-shell-gap);
+      calc(var(--app-shell-gap) + 152px) var(--app-shell-gap) calc(var(--app-shell-gap) + 92px) var(--app-shell-gap);
   }
 
   .app-shell--immersive .app-shell__content {
