@@ -29,5 +29,73 @@
         <a class="settings-action" routerLink="/my-space">Mi espacio</a>
       </div>
     </section>
+
+    @if (user.role === 'ADMIN') {
+      <section class="settings-card settings-card--background">
+        <div class="settings-card__head">
+          <div>
+            <span class="settings-label">Admin</span>
+            <h2>Background global</h2>
+            <p class="muted">Cambia la imagen base que aparece en toda la app. Si no hay imagen activa, JANO usa el fallback por defecto.</p>
+          </div>
+        </div>
+
+        <div class="background-panel">
+          <article class="background-preview">
+            <span class="background-preview__label">Actual</span>
+            @if (appearance.backgroundImageUrl(); as currentBackgroundUrl) {
+              <img [src]="currentBackgroundUrl" alt="Background global actual" />
+            } @else {
+              <img [src]="appearance.fallbackBackgroundImageUrl" alt="Background fallback por defecto" />
+              <span class="background-preview__fallback">Fallback</span>
+            }
+          </article>
+
+          <div class="background-controls">
+            <label class="background-file">
+              <span>Seleccionar imagen</span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                (change)="onBackgroundSelected($event)"
+              />
+            </label>
+
+            @if (selectedBackgroundPreviewUrl) {
+              <article class="background-preview background-preview--candidate">
+                <span class="background-preview__label">Nueva selección</span>
+                <img [src]="selectedBackgroundPreviewUrl" alt="Preview del nuevo background" />
+              </article>
+            }
+
+            <div class="settings-actions settings-actions--background">
+              <button
+                type="button"
+                class="settings-action settings-action--primary"
+                [disabled]="!selectedBackgroundFile || backgroundSaving"
+                (click)="uploadBackground()"
+              >
+                {{ backgroundSaving ? 'Guardando...' : 'Aplicar background' }}
+              </button>
+              <button
+                type="button"
+                class="settings-action"
+                [disabled]="backgroundSaving"
+                (click)="resetBackground()"
+              >
+                Usar fallback
+              </button>
+            </div>
+
+            @if (backgroundMessage) {
+              <p class="settings-feedback settings-feedback--ok">{{ backgroundMessage }}</p>
+            }
+            @if (backgroundError) {
+              <p class="settings-feedback settings-feedback--error">{{ backgroundError }}</p>
+            }
+          </div>
+        </div>
+      </section>
+    }
   }
 </div>
