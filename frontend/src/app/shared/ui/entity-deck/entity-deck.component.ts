@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { DEFAULT_BACKGROUND_IMAGE_URL } from '../../../core/app-appearance.service';
 import { DeckItem, DeckRailAction } from './entity-deck.types';
 
 @Component({
@@ -24,7 +25,7 @@ export class EntityDeckComponent {
 
     items = input.required<DeckItem[]>();
 
-    backgroundImage = input<string>('/assets/home/museum-room.jpg');
+    backgroundImage = input<string>(DEFAULT_BACKGROUND_IMAGE_URL);
     showRail = input<boolean>(true);
     showDots = input<boolean>(true);
     showNav = input<boolean>(true);

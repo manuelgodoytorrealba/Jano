@@ -9,10 +9,7 @@
   min-height: 100dvh;
   margin: 0;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 16%, rgba(255, 255, 255, 0.18), transparent 22%),
-    radial-gradient(circle at 80% 18%, rgba(228, 195, 144, 0.12), transparent 20%),
-    linear-gradient(180deg, rgba(10, 10, 10, 0.12), rgba(10, 10, 10, 0.28));
+  background: transparent;
 }
 
 .recommended-page__deck {
@@ -33,27 +30,6 @@
   border-radius: 0;
   border: 0;
   box-shadow: none;
-  background:
-    radial-gradient(circle at 16% 14%, rgba(255, 255, 255, 0.26), transparent 20%),
-    radial-gradient(circle at 76% 18%, rgba(243, 215, 170, 0.12), transparent 18%),
-    linear-gradient(180deg, rgba(18, 17, 16, 0.94), rgba(8, 8, 8, 0.98));
-}
-
-.recommended-page__deck::ng-deep .entity-deck__bg {
-  filter: blur(8px) saturate(0.98) brightness(0.72);
-  transform: scale(1.1);
-  opacity: 0.5;
-}
-
-.recommended-page__deck::ng-deep .entity-deck__overlay {
-  background:
-    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 18%),
-    radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.18), transparent 26%),
-    linear-gradient(180deg,
-      rgba(0, 0, 0, 0.08),
-      rgba(0, 0, 0, 0.14) 18%,
-      rgba(0, 0, 0, 0.28) 54%,
-      rgba(0, 0, 0, 0.56) 100%);
 }
 
 .recommended-page__deck::ng-deep .entity-deck__stage {
@@ -159,17 +135,6 @@
   .recommended-page__deck::ng-deep .entity-deck__card {
     width: min(100%, 720px);
     height: clamp(450px, 118vw, 580px);
-  }
-
-  .recommended-page__deck::ng-deep .entity-deck__bg {
-    filter: blur(4px) saturate(0.94) brightness(0.76);
-    transform: scale(1.03);
-    opacity: 0.42;
-  }
-
-  .recommended-page__deck::ng-deep .entity-deck__overlay {
-    background:
-      linear-gradient(180deg, rgba(8, 8, 8, 0.1), rgba(8, 8, 8, 0.22) 52%, rgba(8, 8, 8, 0.5) 100%);
   }
 
   .recommended-page__deck::ng-deep .entity-deck__card,

@@ -48,44 +48,6 @@
   padding-inline: clamp(0.32rem, 1vw, 0.82rem);
 }
 
-.entity-detail__ambient {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 16%, rgba(255, 255, 255, 0.12), transparent 22%),
-    radial-gradient(circle at 80% 18%, rgba(228, 195, 144, 0.1), transparent 20%),
-    linear-gradient(180deg, rgba(10, 10, 10, 0.12), rgba(10, 10, 10, 0.28));
-}
-
-.entity-detail__ambient-bg,
-.entity-detail__ambient-overlay {
-  position: absolute;
-  inset: 0;
-}
-
-.entity-detail__ambient-bg {
-  background-image: url('/assets/home/museum-room.jpg');
-  background-size: cover;
-  background-position: center;
-  filter: blur(10px) saturate(0.96) brightness(0.68);
-  transform: scale(1.08);
-  opacity: 0.42;
-}
-
-.entity-detail__ambient-overlay {
-  background:
-    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 18%),
-    radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.18), transparent 26%),
-    linear-gradient(180deg,
-      rgba(0, 0, 0, 0.14),
-      rgba(0, 0, 0, 0.18) 18%,
-      rgba(0, 0, 0, 0.3) 54%,
-      rgba(0, 0, 0, 0.58) 100%);
-}
-
 .entity-detail__layout {
   position: relative;
   z-index: 1;

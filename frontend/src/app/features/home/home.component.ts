@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { AppAppearanceService } from '../../core/app-appearance.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { navigateToAppSearch } from '../../core/search/search-navigation';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
@@ -15,6 +16,7 @@ import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-dec
 })
 export class HomeComponent {
   private router = inject(Router);
+  private readonly appearance = inject(AppAppearanceService);
   private readonly seo = inject(SeoService);
 
   constructor() {
@@ -105,6 +107,10 @@ export class HomeComponent {
   onCardClick(item: DeckItem): void {
     if (!item.routeType) return;
     this.router.navigate(['/entities', item.routeType]);
+  }
+
+  backgroundImage(): string {
+    return this.appearance.currentBackgroundImageUrl();
   }
 
   onExpandClick(item: DeckItem): void {

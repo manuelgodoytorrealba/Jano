@@ -1,32 +1,61 @@
 .app-shell {
+  /* Global background system. Tune these tokens instead of editing route screens. */
+  --app-background-fallback: url('/assets/home/museum-room.jpg');
+  --app-background-current: var(--app-background-image, var(--app-background-fallback));
+  --app-background-blur: 10px;
+  --app-background-saturate: 0.96;
+  --app-background-brightness: 0.68;
+  --app-background-opacity: 0.42;
+  --app-background-scale: 1.08;
+  --app-background-top-light: rgba(255, 255, 255, 0.1);
+  --app-background-bottom-warm: rgba(214, 183, 131, 0.18);
+  --app-background-shade-0: rgba(8, 8, 8, 0.16);
+  --app-background-shade-mid: rgba(8, 8, 8, 0.26);
+  --app-background-shade-100: rgba(8, 8, 8, 0.56);
+  --app-background-base:
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.32), transparent 24%),
+    radial-gradient(circle at 78% 14%, rgba(255, 243, 223, 0.18), transparent 22%),
+    linear-gradient(160deg, rgba(28, 24, 20, 0.94), rgba(10, 10, 10, 0.96));
+  --app-background-overlay:
+    radial-gradient(circle at 50% 36%, var(--app-background-top-light), transparent 26%),
+    radial-gradient(circle at 50% 100%, var(--app-background-bottom-warm), transparent 24%),
+    linear-gradient(180deg,
+      var(--app-background-shade-0),
+      var(--app-background-shade-mid) 38%,
+      var(--app-background-shade-100) 100%);
   min-height: 100svh;
   position: relative;
+  isolation: isolate;
   overflow-x: hidden;
   overflow-y: auto;
+  background: var(--app-background-base);
 }
 
-.app-shell::before {
+.app-shell::before,
+.app-shell::after {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 18% 4%, rgba(255, 255, 255, 0.58), transparent 24%),
-    radial-gradient(circle at 86% 14%, rgba(235, 207, 164, 0.22), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(255, 247, 235, 0.42), transparent 36%),
-    linear-gradient(180deg, rgba(252, 248, 242, 0.94), rgba(239, 232, 222, 0.96));
-  filter: saturate(1.02);
 }
 
-.app-shell--entities::before {
-  background:
-    radial-gradient(circle at 14% 8%, rgba(255, 255, 255, 0.16), transparent 16%),
-    radial-gradient(circle at 50% 10%, rgba(116, 88, 170, 0.24), transparent 18%),
-    radial-gradient(circle at 82% 16%, rgba(225, 180, 108, 0.16), transparent 18%),
-    radial-gradient(circle at 22% 88%, rgba(43, 36, 92, 0.22), transparent 24%),
-    linear-gradient(180deg, rgba(18, 17, 22, 0.96), rgba(8, 8, 12, 0.985));
-  filter: saturate(1.08) brightness(1.02);
+.app-shell::before {
+  z-index: -2;
+  background-image: var(--app-background-current);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter:
+    blur(var(--app-background-blur))
+    saturate(var(--app-background-saturate))
+    brightness(var(--app-background-brightness));
+  opacity: var(--app-background-opacity);
+  transform: scale(var(--app-background-scale));
+}
+
+.app-shell::after {
+  z-index: -1;
+  background: var(--app-background-overlay);
 }
 
 .app-shell__content {

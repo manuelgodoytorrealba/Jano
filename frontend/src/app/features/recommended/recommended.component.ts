@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { AppAppearanceService } from '../../core/app-appearance.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
@@ -14,6 +15,7 @@ import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-dec
 })
 export class RecommendedComponent {
     private router = inject(Router);
+    private readonly appearance = inject(AppAppearanceService);
     private readonly seo = inject(SeoService);
 
     constructor() {
@@ -88,6 +90,10 @@ export class RecommendedComponent {
             routeType: 'concept',
         },
     ];
+
+    backgroundImage(): string {
+        return this.appearance.currentBackgroundImageUrl();
+    }
 
     onCardClick(item: DeckItem): void {
         if (!item.routeType) return;
