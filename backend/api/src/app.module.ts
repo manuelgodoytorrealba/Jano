@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { SavedModule } from './saved/saved.module';
 import { CollectionsModule } from './collections/collections.module';
+import { AppSettingsModule } from './app-settings/app-settings.module';
 import { validateEnv } from './config/env.validation';
 
 @Module({
@@ -21,6 +22,7 @@ import { validateEnv } from './config/env.validation';
     AuthModule,
     SavedModule,
     CollectionsModule,
+    AppSettingsModule,
   ],
 })
 export class AppModule { }

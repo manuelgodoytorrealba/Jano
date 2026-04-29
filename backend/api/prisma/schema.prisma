@@ -323,6 +323,13 @@ model User {
   collections   Collection[]
 }
 
+model AppSetting {
+  key       String   @id
+  value     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model SavedEntity {
   id        String   @id @default(cuid())
   userId    String
