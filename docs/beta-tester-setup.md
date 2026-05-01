@@ -102,6 +102,32 @@ http://<host-ip>:4200
 
 Make sure the firewall allows ports `4200` and `3000`.
 
+## Production SSR Behind Cloudflare Tunnel
+
+For the home server deployment behind Cloudflare Tunnel, keep browser traffic on
+the public JANO host and keep SSR/backend traffic inside the Docker network.
+
+Recommended frontend environment:
+
+```bash
+PORT=4200
+NG_ALLOWED_HOSTS=localhost,127.0.0.1,jano.manuelgodoy.eu
+SSR_API_ORIGIN=http://backend:3000
+API_PROXY_TARGET=http://backend:3000
+```
+
+Meaning:
+
+- Browser requests use the public origin and call `/api` through the frontend
+  Express proxy.
+- SSR requests rewrite `/api` and `/uploads` directly to
+  `http://backend:3000`.
+- Angular SSR only accepts configured hosts, including
+  `jano.manuelgodoy.eu`.
+
+Do not set the SSR API origin to `https://jano.manuelgodoy.eu`; that sends
+server-side rendering back through the public tunnel and can fail or loop.
+
 ## Not Recommended For External Beta
 
 Do not expose the local dev stack directly to the public internet. It uses

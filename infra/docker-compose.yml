@@ -52,6 +52,9 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4200
+      SSR_API_ORIGIN: ${SSR_API_ORIGIN:-http://backend:3000}
+      API_PROXY_TARGET: ${API_PROXY_TARGET:-http://backend:3000}
+      NG_ALLOWED_HOSTS: ${NG_ALLOWED_HOSTS:-localhost,127.0.0.1,jano.manuelgodoy.eu}
     ports:
       - "${FRONTEND_PORT:-4200}:4200"
 

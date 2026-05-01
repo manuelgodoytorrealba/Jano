@@ -8,13 +8,54 @@ import express from 'express';
 import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
-const backendOrigin = (process.env['SSR_API_ORIGIN'] ?? 'http://127.0.0.1:3000').replace(/\/+$/, '');
-const allowedHosts = (process.env['NG_ALLOWED_HOSTS'] ?? 'localhost,127.0.0.1')
-  .split(',')
-  .map((host) => host.trim())
-  .filter(Boolean);
+const backendOrigin = (
+  process.env['SSR_API_ORIGIN'] ??
+  process.env['API_PROXY_TARGET'] ??
+  'http://127.0.0.1:3000'
+).replace(/\/+$/, '');
+
+const defaultAllowedHosts = ['localhost', '127.0.0.1', 'jano.manuelgodoy.eu'];
+
+function normalizeHost(host: string): string {
+  return host
+    .trim()
+    .replace(/^https?:\/\//i, '')
+    .replace(/\/.*$/, '')
+    .replace(/:\d+$/, '')
+    .toLowerCase();
+}
+
+function firstHeaderValue(value: string | string[] | undefined): string | null {
+  if (!value) return null;
+  const raw = Array.isArray(value) ? value[0] : value;
+  return raw.split(',')[0]?.trim() || null;
+}
+
+const allowedHosts = Array.from(
+  new Set([
+    ...defaultAllowedHosts,
+    ...(process.env['NG_ALLOWED_HOSTS'] ?? '')
+      .split(',')
+      .map(normalizeHost)
+      .filter(Boolean),
+  ]),
+);
+
+const allowedHostSet = new Set(allowedHosts);
 
 const app = express();
+app.set('trust proxy', true);
+
+app.use((req, _res, next) => {
+  const forwardedHost = firstHeaderValue(req.headers['x-forwarded-host']);
+
+  if (forwardedHost && allowedHostSet.has(normalizeHost(forwardedHost))) {
+    req.headers.host = forwardedHost;
+  }
+
+  next();
+});
+
 const angularApp = new AngularNodeAppEngine({ allowedHosts });
 
 function hasFingerprint(assetPath: string): boolean {
