@@ -51,6 +51,7 @@ services:
       - backend
     environment:
       NODE_ENV: production
+      PORT: 4200
     ports:
       - "${FRONTEND_PORT:-4200}:4200"
 
