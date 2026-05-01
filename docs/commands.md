@@ -71,6 +71,15 @@ npm run prisma:seed
 npm run prisma:reset
 ```
 
+### Prisma Studio
+
+```bash
+docker compose -f infra/docker-compose.yml exec backend npm run studio
+ssh -L 5555:localhost:5555 user@server
+```
+
+See [prisma-studio.md](prisma-studio.md).
+
 ## Search and Taxonomy Checks
 
 ```bash

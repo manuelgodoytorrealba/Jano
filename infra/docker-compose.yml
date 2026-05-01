@@ -37,6 +37,7 @@ services:
       sh -c "if [ ! -d node_modules/.bin ]; then npm ci; fi && npx prisma generate && npx prisma migrate deploy && npm run start:dev"
     ports:
       - "${BACKEND_PORT:-3000}:3000"
+      - "127.0.0.1:${PRISMA_STUDIO_PORT:-5555}:5555"
     volumes:
       - ../backend/api:/app
       - backend_node_modules:/app/node_modules
