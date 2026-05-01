@@ -71,6 +71,15 @@ npm run prisma:seed
 npm run prisma:reset
 ```
 
+## Search and Taxonomy Checks
+
+```bash
+curl -sS "http://localhost:3000/api/search?q=picasso&limit=10"
+curl -sS "http://localhost:3000/api/search?tag=surrealism&limit=10"
+curl -sS "http://localhost:3000/api/relation-types"
+curl -sS "http://localhost:3000/api/tags"
+```
+
 ## Base de datos
 
 ```bash

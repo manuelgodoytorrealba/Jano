@@ -44,6 +44,28 @@ El stack completo en Docker también está preparado y es útil para:
 6. Corre `npm run prisma:generate` y `npm run prisma:migrate`.
 7. Continúa trabajando.
 
+### Beta testing en otra computadora
+
+Para que otra persona pruebe el producto sin tocar desarrollo, usa la opcion
+full Docker:
+
+```bash
+git clone <repo-url>
+cd Jano
+cp .env.example .env
+npm run docker:up
+```
+
+El tester puede abrir `http://localhost:4200`.
+
+Si necesita datos iniciales:
+
+```bash
+npm run prisma:seed
+```
+
+Guia completa: [beta-tester-setup.md](beta-tester-setup.md).
+
 ## Variables de entorno
 
 ### `.env` en la raíz
