@@ -68,9 +68,25 @@
                         <div class="entity-deck__topline">
                             <span class="entity-deck__eyebrow">{{ item.eyebrow }}</span>
 
-                            <button class="entity-deck__chip" type="button" (click)="onExpandClick($event, item)">
-                                Expand
-                            </button>
+                            <div class="entity-deck__top-actions">
+                                @if (showAdminEdit() && item.adminEditRoute) {
+                                <button class="entity-deck__admin-edit" type="button" aria-label="Editar deck"
+                                    title="Editar deck" (click)="onAdminEditClick($event, item)">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 8.4a3.6 3.6 0 1 1 0 7.2 3.6 3.6 0 0 1 0-7.2Z" fill="none"
+                                            stroke="currentColor" stroke-width="1.7" />
+                                        <path
+                                            d="M19.2 13.2c.06-.4.06-.8 0-1.2l1.55-1.2-1.55-2.68-1.84.74a7.2 7.2 0 0 0-1.04-.6L16.05 6.3h-3.1l-.28 1.96c-.36.16-.7.36-1.03.6L9.8 8.12 8.25 10.8 9.8 12c-.06.4-.06.8 0 1.2l-1.55 1.2 1.55 2.68 1.84-.74c.32.24.67.44 1.03.6l.28 1.96h3.1l.27-1.96c.37-.16.72-.36 1.04-.6l1.84.74 1.55-2.68-1.55-1.2Z"
+                                            fill="none" stroke="currentColor" stroke-width="1.45"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                                }
+
+                                <button class="entity-deck__chip" type="button" (click)="onExpandClick($event, item)">
+                                    Expand
+                                </button>
+                            </div>
                         </div>
 
                         <div class="entity-deck__content">

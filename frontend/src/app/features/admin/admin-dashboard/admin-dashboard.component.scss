@@ -1,0 +1,252 @@
+.admin-desk {
+  min-height: calc(100vh - 56px);
+  padding: 28px;
+  color: #151515;
+}
+
+.admin-desk__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.admin-desk__eyebrow {
+  margin: 0 0 6px;
+  color: rgba(0, 0, 0, .52);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: .95;
+}
+
+h2 {
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.admin-desk__intro,
+.panel p {
+  margin-top: 7px;
+  color: rgba(0, 0, 0, .58);
+}
+
+.admin-desk__actions,
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-btn,
+.quick-actions a,
+.panel__link {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid rgba(0, 0, 0, .12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .82);
+  color: #141414;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.admin-btn--primary {
+  background: #121212;
+  color: #fff;
+  border-color: #121212;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.metric,
+.panel {
+  border: 1px solid rgba(0, 0, 0, .10);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .78);
+  box-shadow: 0 18px 45px rgba(20, 18, 14, .08);
+  backdrop-filter: blur(18px) saturate(1.04);
+}
+
+.metric {
+  min-height: 92px;
+  padding: 14px;
+  color: inherit;
+  text-decoration: none;
+  display: grid;
+  align-content: space-between;
+}
+
+.metric span {
+  color: rgba(0, 0, 0, .55);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.metric strong {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.metric--good {
+  border-color: rgba(42, 118, 72, .22);
+}
+
+.metric--warning {
+  border-color: rgba(156, 105, 30, .28);
+}
+
+.desk-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.panel {
+  padding: 16px;
+}
+
+.panel--primary {
+  grid-row: span 2;
+}
+
+.panel__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.deck-list,
+.content-list,
+.quick-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.deck-row,
+.content-row {
+  min-height: 58px;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .66);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.content-row {
+  justify-content: space-between;
+  color: inherit;
+  text-decoration: none;
+}
+
+.deck-row__status {
+  width: 9px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .20);
+}
+
+.deck-row__status.is-active {
+  background: #2a7648;
+}
+
+.deck-row__main,
+.content-row div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.deck-row__main strong,
+.content-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deck-row__main span,
+.content-row span,
+.content-row time,
+.empty-state span {
+  color: rgba(0, 0, 0, .56);
+  font-size: 13px;
+}
+
+.deck-row__warning,
+.deck-row__ok {
+  margin-left: auto;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.deck-row__warning {
+  background: rgba(156, 105, 30, .12);
+  color: #7a4f13;
+}
+
+.deck-row__ok {
+  background: rgba(42, 118, 72, .10);
+  color: #23623c;
+}
+
+.empty-state {
+  min-height: 96px;
+  padding: 16px;
+  border: 1px dashed rgba(0, 0, 0, .16);
+  border-radius: 8px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+}
+
+@media (max-width: 1000px) {
+  .admin-desk__top,
+  .desk-grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-desk {
+    padding: 18px;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}

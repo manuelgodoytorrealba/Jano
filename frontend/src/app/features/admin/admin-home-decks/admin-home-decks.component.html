@@ -1,0 +1,186 @@
+<main class="home-decks-admin">
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Editorial</p>
+      <h1>Decks editoriales</h1>
+      <p class="intro">Gestiona bloques destacados para Home y Recommended.</p>
+    </div>
+
+    <div class="head-actions">
+      <a class="btn" routerLink="/admin">Editorial desk</a>
+      <a class="btn" routerLink="/">Ver home</a>
+      <a class="btn" routerLink="/recommended">Ver recommended</a>
+    </div>
+  </header>
+
+  @if (feedback) {
+    <div class="feedback">{{ feedback }}</div>
+  }
+
+  @if (vm$ | async; as vm) {
+    <section class="summary" aria-label="Resumen de decks editoriales">
+      <div>
+        <span>Total</span>
+        <strong>{{ vm.decks.length }}</strong>
+      </div>
+      <div>
+        <span>Activos</span>
+        <strong>{{ vm.activeCount }}</strong>
+      </div>
+      <div>
+        <span>Home</span>
+        <strong>{{ vm.homeCount }}</strong>
+      </div>
+      <div>
+        <span>Recommended</span>
+        <strong>{{ vm.recommendedCount }}</strong>
+      </div>
+      <div>
+        <span>Con avisos</span>
+        <strong>{{ vm.warningCount }}</strong>
+      </div>
+    </section>
+
+    <section class="create-panel">
+      <div class="section-title">
+        <h2>Crear deck</h2>
+        <p>Campos mínimos para poner una pieza editorial en cola.</p>
+      </div>
+
+      <form class="create-grid" (ngSubmit)="createDeck()">
+        <label>
+          <span>Visible en</span>
+          <select name="surface" [ngModel]="newDeck.surface" (ngModelChange)="onNewDeckSurfaceChange($event)">
+            <option value="HOME">Home</option>
+            <option value="RECOMMENDED">Recommended</option>
+          </select>
+          <small>{{ surfaceDescription(newDeck.surface) }}</small>
+        </label>
+
+        <label>
+          <span>Slug</span>
+          <input name="slug" [(ngModel)]="newDeck.slug" placeholder="discover" />
+        </label>
+
+        <label>
+          <span>Título</span>
+          <input name="title" [(ngModel)]="newDeck.title" placeholder="Discover" />
+        </label>
+
+        <label>
+          <span>Subtítulo</span>
+          <input name="subtitle" [(ngModel)]="newDeck.subtitle" placeholder="Visual paths" />
+        </label>
+
+        @if (showNewDeckCtaRouteControl()) {
+          <label>
+            <span>Acción al abrir</span>
+            <select name="ctaRoute" [(ngModel)]="newDeck.ctaRoute">
+              @for (option of ctaRouteOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </label>
+        } @else {
+          <div class="create-note">
+            <span>Acción al abrir</span>
+            <strong>Selección curada del deck</strong>
+            <small>Recommended abre siempre las entities que selecciones para este deck.</small>
+          </div>
+        }
+
+        <label class="create-grid__wide">
+          <span>Imagen</span>
+          <input name="imageUrl" [(ngModel)]="newDeck.imageUrl" placeholder="/assets/home/artwork.jpg" />
+        </label>
+
+        <label class="create-grid__wide">
+          <span>Descripción</span>
+          <textarea name="description" [(ngModel)]="newDeck.description" rows="3"></textarea>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" name="isActive" [(ngModel)]="newDeck.isActive" />
+          <span>{{ newDeckActiveLabel() }}</span>
+        </label>
+
+        <button class="btn btn--primary" type="submit" [disabled]="saving">Crear deck</button>
+      </form>
+    </section>
+
+    <section class="deck-table-wrap">
+      <div class="section-title">
+        <h2>Decks existentes</h2>
+        <p>Destino, orden, estado y señales de publicación.</p>
+      </div>
+
+      @if (loading) {
+        <div class="empty">Cargando decks...</div>
+      } @else if (vm.decks.length) {
+        <table class="deck-table">
+          <thead>
+            <tr>
+              <th>Orden</th>
+              <th>Deck</th>
+              <th>Estado</th>
+              <th>Entidades</th>
+              <th>Imagen</th>
+              <th>Avisos</th>
+              <th>Actualizado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (deck of vm.decks; track deck.id) {
+              <tr>
+                <td class="order-cell">{{ deck.sortOrder }}</td>
+                <td>
+                  <div class="title-cell">
+                    <strong>{{ deck.title }}</strong>
+                    <span>{{ surfaceLabel(deck.surface) }} · {{ deck.slug }}</span>
+                  </div>
+                </td>
+                <td>
+                  <button class="status" [class.is-active]="deck.isActive" type="button" (click)="toggleActive(deck)">
+                    {{ deck.isActive ? 'Activo' : 'Inactivo' }}
+                  </button>
+                </td>
+                <td>{{ deck.entities.length }}</td>
+                <td>
+                  <span class="asset-state" [class.asset-state--missing]="!deck.image">
+                    {{ deck.image ? 'OK' : 'Falta' }}
+                  </span>
+                </td>
+                <td>
+                  @if (deck.warnings.length) {
+                    <span class="warning" [class.is-strong]="hasWarnings(deck)">{{ warningLabel(deck) }}</span>
+                  } @else {
+                    <span class="ok">Listo</span>
+                  }
+                </td>
+                <td>{{ deck.updatedAt | date: 'dd/MM/yyyy' }}</td>
+                <td>
+                  <div class="row-actions">
+                    <a class="mini" [routerLink]="['/admin/home-decks', deck.id, 'edit']">Editar</a>
+                    <button class="mini" type="button" (click)="move(deck, -1, vm.decks)">Subir</button>
+                    <button class="mini" type="button" (click)="move(deck, 1, vm.decks)">Bajar</button>
+                    <button class="mini danger" type="button" (click)="remove(deck)">Borrar</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="deck-meta-row">
+                <td></td>
+                <td colspan="7">
+                  <span>{{ surfaceDescription(deck.surface) }}</span>
+                  <span>Acción: {{ deckActionLabel(deck) }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <div class="empty">No hay decks creados. Home y Recommended seguirán usando fallback visual.</div>
+      }
+    </section>
+  }
+</main>

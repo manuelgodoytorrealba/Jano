@@ -68,3 +68,4 @@ npm run docker:down
 - [docs/commands.md](docs/commands.md)
 - [docs/development-workflow.md](docs/development-workflow.md)
 - [docs/environment.md](docs/environment.md)
+- [docs/home-decks-editorial-admin-plan.md](docs/home-decks-editorial-admin-plan.md)

@@ -10,6 +10,9 @@ export type DeckItem = {
     imageHeight?: number;
     badge?: string;
     routeType?: string;
+    ctaRoute?: string;
+    ctaUrl?: string;
+    adminEditRoute?: string;
 };
 
 export type DeckRailAction = 'home' | 'picks' | 'profile';

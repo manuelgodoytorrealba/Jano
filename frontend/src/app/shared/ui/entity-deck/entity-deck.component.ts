@@ -31,11 +31,13 @@ export class EntityDeckComponent {
     showNav = input<boolean>(true);
     showBottomSearch = input<boolean>(true);
     fullViewport = input<boolean>(false);
+    showAdminEdit = input<boolean>(false);
 
     activeIndex = signal(0);
 
     cardClick = output<DeckItem>();
     expandClick = output<DeckItem>();
+    adminEditClick = output<DeckItem>();
     railClick = output<DeckRailAction>();
     activeIndexChange = output<number>();
     searchSubmit = output<string>();
@@ -72,6 +74,11 @@ export class EntityDeckComponent {
     onExpandClick(event: Event, item: DeckItem): void {
         event.stopPropagation();
         this.expandClick.emit(item);
+    }
+
+    onAdminEditClick(event: Event, item: DeckItem): void {
+        event.stopPropagation();
+        this.adminEditClick.emit(item);
     }
 
     onRailClick(action: DeckRailAction): void {

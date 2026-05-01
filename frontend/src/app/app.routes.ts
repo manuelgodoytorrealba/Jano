@@ -16,6 +16,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/search/search.component').then((m) => m.SearchComponent),
   },
   {
+    path: 'entities',
+    loadComponent: () => import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
+  },
+  {
     path: 'entities/:type',
     loadComponent: () => import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },
@@ -60,6 +64,13 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
+          import('./features/admin/admin-dashboard/admin-dashboard.component').then(
+            (m) => m.AdminDashboardComponent,
+          ),
+      },
+      {
+        path: 'visual-selector',
+        loadComponent: () =>
           import('./features/admin/admin-entities-deck/admin-entities-deck.component').then(
             (m) => m.AdminEntitiesDeckComponent,
           ),
@@ -68,6 +79,20 @@ export const routes: Routes = [
         path: 'entities',
         loadComponent: () =>
           import('./features/admin/admin-entities/admin-entities.component').then((m) => m.AdminEntitiesComponent),
+      },
+      {
+        path: 'home-decks',
+        loadComponent: () =>
+          import('./features/admin/admin-home-decks/admin-home-decks.component').then(
+            (m) => m.AdminHomeDecksComponent,
+          ),
+      },
+      {
+        path: 'home-decks/:id/edit',
+        loadComponent: () =>
+          import('./features/admin/admin-home-deck-editor/admin-home-deck-editor.component').then(
+            (m) => m.AdminHomeDeckEditorComponent,
+          ),
       },
       {
         path: 'entities/new',

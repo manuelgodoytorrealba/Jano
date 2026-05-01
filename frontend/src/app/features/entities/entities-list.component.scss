@@ -1,5 +1,22 @@
 @use './entities-base';
 @use './entities-explorer-shell';
+
+.entities-page--curated-deck {
+  --entities-explorer-inner-left: clamp(26px, 3vw, 52px);
+  --entities-explorer-inner-right: clamp(286px, 21vw, 338px);
+  --entities-explorer-info-right: clamp(34px, 4vw, 72px);
+  --entities-explorer-info-width: min(308px, calc(100% - 56px));
+}
+
+.entities-page--curated-deck .entities-explorer-stage ::ng-deep .explorer3d::after {
+  display: none;
+}
+
+.entities-page--curated-deck .entities-stage-shell--list,
+.entities-page--curated-deck .entities-stage-shell--empty {
+  padding-left: clamp(18px, 2vw, 34px);
+}
+
 @media (max-width: 1100px) {
   :host {
     --entities-shell-padding-x: 8px;
@@ -19,6 +36,12 @@
 
   .entities-filter-rail {
     max-height: calc(100dvh - var(--entities-rail-top) - 20px);
+  }
+
+  .entities-page--curated-deck {
+    --entities-explorer-inner-left: clamp(18px, 3vw, 34px);
+    --entities-explorer-inner-right: clamp(238px, 24vw, 276px);
+    --entities-explorer-info-right: 18px;
   }
 }
 

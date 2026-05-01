@@ -1,0 +1,233 @@
+<main class="deck-editor">
+  <header class="editor-head">
+    <div>
+      <p class="eyebrow">Editorial</p>
+      <h1>Editar deck</h1>
+      <p class="intro">Copy, estado, preview, destino y entidades seleccionadas.</p>
+      <div class="editor-head__meta">
+        <span>{{ publicationSummary() }}</span>
+        <span>{{ deck?.entities?.length ?? 0 }} entities</span>
+        <span>{{ form.slug || 'sin-slug' }}</span>
+      </div>
+    </div>
+
+    <div class="head-actions">
+      <a class="btn" routerLink="/admin/home-decks">Volver</a>
+      <button class="btn" type="button" (click)="openPublicHome()">{{ destinationButtonLabel() }}</button>
+      <button class="btn btn--primary" type="button" [disabled]="saving || !deck || !isDirty" (click)="save()">
+        {{ saveButtonLabel() }}
+      </button>
+    </div>
+  </header>
+
+  @if (feedback) {
+    <div
+      class="feedback"
+      [class.feedback--success]="feedbackTone === 'success'"
+      [class.feedback--error]="feedbackTone === 'error'"
+    >
+      {{ feedback }}
+    </div>
+  }
+
+  @if (vm$ | async; as deck) {
+    @if (deck) {
+      <section class="editor-layout">
+        <form class="panel form-panel" (ngSubmit)="save()">
+          <div class="section-title">
+            <h2>Campos editoriales</h2>
+            <p>{{ surfaceDescription() }}</p>
+          </div>
+
+          <div class="form-grid">
+            <label>
+              <span>Visible en</span>
+              <select name="surface" [ngModel]="form.surface" (ngModelChange)="onSurfaceChange($event)">
+                <option value="HOME">Home</option>
+                <option value="RECOMMENDED">Recommended</option>
+              </select>
+              <small>{{ surfaceDescription() }}</small>
+            </label>
+
+            <label>
+              <span>Slug</span>
+              <input name="slug" [(ngModel)]="form.slug" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            <label>
+              <span>Orden</span>
+              <input type="number" name="sortOrder" [(ngModel)]="form.sortOrder" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            <label class="form-grid__wide">
+              <span>Título</span>
+              <input name="title" [(ngModel)]="form.title" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            <label class="form-grid__wide">
+              <span>Subtítulo</span>
+              <input name="subtitle" [(ngModel)]="form.subtitle" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            <label>
+              <span>CTA label</span>
+              <input name="ctaLabel" [(ngModel)]="form.ctaLabel" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            @if (showCtaRouteControl()) {
+              <label>
+                <span>Acción al abrir</span>
+                <select name="ctaRoute" [(ngModel)]="form.ctaRoute" (ngModelChange)="onFormChanged()">
+                  @for (option of ctaRouteOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                  @if (isCustomCtaRoute()) {
+                    <option [value]="form.ctaRoute">Ruta personalizada: {{ form.ctaRoute }}</option>
+                  }
+                </select>
+                <small>{{ selectedCtaRouteDetail() }}</small>
+              </label>
+            } @else {
+              <div class="route-note">
+                <span>Acción al abrir</span>
+                <strong>Selección curada del deck</strong>
+                <small>{{ selectedCtaRouteDetail() }}</small>
+              </div>
+            }
+
+            <label class="form-grid__wide">
+              <span>Imagen URL</span>
+              <input name="imageUrl" [(ngModel)]="form.imageUrl" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            <label class="form-grid__wide">
+              <span>Subir imagen</span>
+              <input type="file" accept="image/*" (change)="uploadImage($event)" />
+            </label>
+
+            <label class="form-grid__full">
+              <span>Descripción</span>
+              <textarea name="description" [(ngModel)]="form.description" (ngModelChange)="onFormChanged()" rows="5"></textarea>
+            </label>
+
+            <label class="check">
+              <input type="checkbox" name="isActive" [(ngModel)]="form.isActive" (ngModelChange)="onFormChanged()" />
+              <span>{{ activeCheckboxLabel() }}</span>
+            </label>
+          </div>
+
+          <div class="save-row">
+            <button class="btn btn--primary" type="submit" [disabled]="saving || !isDirty">
+              {{ saveButtonLabel() }}
+            </button>
+            <span
+              class="save-status"
+              [class.save-status--dirty]="saveStatusTone() === 'dirty'"
+              [class.save-status--saved]="saveStatusTone() === 'saved'"
+              [class.save-status--saving]="saveStatusTone() === 'saving'"
+              [class.save-status--error]="saveStatusTone() === 'error'"
+            >
+              {{ saveStatusLabel() }}
+            </span>
+          </div>
+        </form>
+
+        <aside class="side-stack">
+          <section class="panel preview-panel">
+            <div class="section-title">
+              <h2>Preview</h2>
+              <p>{{ publicationSummary() }}</p>
+            </div>
+
+            <article class="deck-preview" [class.is-inactive]="!form.isActive">
+              <div class="deck-preview__status">
+                <span>{{ activeTargetLabel() }}</span>
+                <strong>{{ form.isActive ? 'Activo' : 'Inactivo' }}</strong>
+              </div>
+              @if (form.imageUrl) {
+                <img [src]="form.imageUrl" [alt]="form.title" />
+              }
+              <div>
+                <span>{{ form.subtitle || 'Editorial deck' }}</span>
+                <h3>{{ form.title || 'Sin título' }}</h3>
+                <p>{{ form.description || 'Sin descripción.' }}</p>
+                @if (form.ctaLabel) {
+                  <strong>{{ form.ctaLabel }} →</strong>
+                }
+              </div>
+            </article>
+
+            @if (deck.warnings.length) {
+              <div class="warnings">
+                @for (warning of deck.warnings; track warning.code + warning.message) {
+                  <div [class.is-warning]="warning.severity === 'warning'">
+                    <strong>{{ warning.code }}</strong>
+                    <span>{{ warning.message }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <h2>Entities mostradas</h2>
+              <p>Orden editorial dentro del deck.</p>
+            </div>
+
+            @if (deck.entities.length) {
+              <div class="selected-list">
+                @for (item of deck.entities; track item.id) {
+                  <div class="selected-row">
+                    <span class="selected-row__rank">{{ item.sortOrder + 1 }}</span>
+                    <div>
+                      <strong>{{ item.entity.title }}</strong>
+                      <span>{{ item.entity.type }} · {{ item.entity.status }} · orden {{ item.sortOrder }}</span>
+                    </div>
+                    <div class="row-actions">
+                      <button class="mini" type="button" (click)="moveEntity(item, -1, deck.entities)">Subir</button>
+                      <button class="mini" type="button" (click)="moveEntity(item, 1, deck.entities)">Bajar</button>
+                      <button class="mini danger" type="button" (click)="removeEntity(item.entity.id)">Quitar</button>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty">Este deck todavía no tiene entities seleccionadas.</div>
+            }
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <h2>Añadir entity</h2>
+              <p>Busca por título, resumen o contenido.</p>
+            </div>
+
+            <label class="search-field">
+              <span>Buscar</span>
+              <input name="entitySearch" [(ngModel)]="entitySearch" (ngModelChange)="onSearchChange($event)" />
+            </label>
+
+            @if (entityResults$ | async; as results) {
+              @if (results.length) {
+                <div class="result-list">
+                  @for (entity of results; track entity.id) {
+                    <button class="result-row" type="button" [disabled]="isSelected(entity.id)" (click)="addEntity(entity)">
+                      <div>
+                        <strong>{{ entity.title }}</strong>
+                        <span>{{ entity.type }} · {{ entity.status }}</span>
+                      </div>
+                      <span>{{ isSelected(entity.id) ? 'Añadida' : 'Añadir' }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            }
+          </section>
+        </aside>
+      </section>
+    }
+  } @else if (loading) {
+    <div class="panel empty">Cargando deck...</div>
+  }
+</main>

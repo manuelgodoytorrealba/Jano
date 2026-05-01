@@ -2,14 +2,16 @@
   <h1 class="sr-only">JANO home: immersive art discovery</h1>
   <app-entity-deck
     class="home-page__deck"
-    [items]="deckItems"
+    [items]="deckItems()"
     [backgroundImage]="backgroundImage()"
     [showRail]="false"
     [showDots]="true"
     [showNav]="true"
     [showBottomSearch]="false"
     [fullViewport]="true"
+    [showAdminEdit]="showAdminEdit()"
     (cardClick)="onCardClick($event)"
     (expandClick)="onExpandClick($event)"
+    (adminEditClick)="onAdminEditClick($event)"
   />
 </section>

@@ -24,7 +24,8 @@ export class App {
   }
 
   isEntitiesRoute(): boolean {
-    return this.router.url.split('?')[0].startsWith('/entities/');
+    const url = this.router.url.split('?')[0];
+    return url === '/entities' || url.startsWith('/entities/');
   }
 
   backgroundImageStyle(): string | null {

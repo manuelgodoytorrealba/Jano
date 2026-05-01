@@ -1,0 +1,113 @@
+<main class="admin-desk">
+  <header class="admin-desk__top">
+    <div>
+      <p class="admin-desk__eyebrow">Admin</p>
+      <h1>Editorial Desk</h1>
+      <p class="admin-desk__intro">Control de portada, contenido y señales de calidad editorial.</p>
+    </div>
+
+    <nav class="admin-desk__actions" aria-label="Acciones admin">
+      <a class="admin-btn admin-btn--primary" routerLink="/admin/home-decks">Gestionar decks</a>
+      <a class="admin-btn" routerLink="/admin/entities/new">Nueva entity</a>
+      <a class="admin-btn" routerLink="/">Ver sitio</a>
+    </nav>
+  </header>
+
+  @if (vm$ | async; as vm) {
+    <section class="metric-grid" aria-label="Resumen editorial">
+      @for (metric of vm.metrics; track metric.label) {
+        <a
+          class="metric"
+          [class.metric--good]="metric.tone === 'good'"
+          [class.metric--warning]="metric.tone === 'warning'"
+          [routerLink]="metric.route ?? '/admin'"
+          [queryParams]="metric.queryParams ?? null"
+        >
+          <span>{{ metric.label }}</span>
+          <strong>{{ metric.value }}</strong>
+        </a>
+      }
+    </section>
+
+    <section class="desk-grid">
+      <article class="panel panel--primary">
+        <div class="panel__head">
+          <div>
+            <h2>Decks editoriales</h2>
+            <p>Home y Recommended activos, orden editorial y avisos de publicación.</p>
+          </div>
+          <a class="panel__link" routerLink="/admin/home-decks">Abrir</a>
+        </div>
+
+        @if (vm.decks.length) {
+          <div class="deck-list">
+            @for (deck of vm.decks; track deck.id) {
+              <div class="deck-row">
+                <div class="deck-row__status" [class.is-active]="deck.isActive"></div>
+                <div class="deck-row__main">
+                  <strong>{{ deck.title }}</strong>
+                  <span>{{ deck.surface }} · {{ deck.isActive ? 'Activo' : 'Inactivo' }} · {{ deck.entities.length }} entidades</span>
+                </div>
+                @if (deck.warnings.length) {
+                  <span class="deck-row__warning">{{ deck.warnings.length }} avisos</span>
+                } @else {
+                  <span class="deck-row__ok">Listo</span>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <strong>No hay decks creados</strong>
+            <span>La home usa fallback visual hasta que se creen decks editoriales.</span>
+          </div>
+        }
+      </article>
+
+      <article class="panel">
+        <div class="panel__head">
+          <div>
+            <h2>Contenido reciente</h2>
+            <p>Últimas entities modificadas o creadas.</p>
+          </div>
+          <a class="panel__link" routerLink="/admin/entities">Ver todas</a>
+        </div>
+
+        @if (vm.recent.length) {
+          <div class="content-list">
+            @for (item of vm.recent; track item.id) {
+              <a class="content-row" [routerLink]="['/admin/entities', item.id, 'edit']">
+                <div>
+                  <strong>{{ item.title }}</strong>
+                  <span>{{ item.type }} · {{ item.status }}</span>
+                </div>
+                <time>{{ item.updatedAt || item.createdAt | date: 'dd/MM/yyyy' }}</time>
+              </a>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <strong>Sin contenido reciente</strong>
+            <span>Crea o edita entities para poblar este panel.</span>
+          </div>
+        }
+      </article>
+
+      <article class="panel">
+        <div class="panel__head">
+          <div>
+            <h2>Acciones rápidas</h2>
+            <p>Entradas directas a flujos editoriales frecuentes.</p>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <a routerLink="/admin/home-decks">Nuevo deck</a>
+          <a routerLink="/admin/entities/new" [queryParams]="{ type: 'ARTICLE' }">Nuevo artículo</a>
+          <a routerLink="/admin/entities" [queryParams]="{ status: 'IN_REVIEW' }">Revisar contenido</a>
+          <a routerLink="/admin/visual-selector">Selector visual</a>
+        </div>
+      </article>
+    </section>
+  }
+</main>
