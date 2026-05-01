@@ -36,7 +36,7 @@ const args = [
 ];
 
 if (mode === 'host') {
-  args.push('--host', '0.0.0.0', '--poll', '1000');
+  args.push('--host', '0.0.0.0', '--poll', '1000', '--allowed-hosts', 'all');
 }
 
 const child = spawn(process.execPath, args, {
