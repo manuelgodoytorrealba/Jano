@@ -31,6 +31,57 @@ function firstHeaderValue(value: string | string[] | undefined): string | null {
   return raw.split(',')[0]?.trim() || null;
 }
 
+function cookieValue(cookieHeader: string | undefined, name: string): string | null {
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(';').map((item) => item.trim());
+  const match = cookies.find((item) => item.startsWith(`${name}=`));
+
+  return match ? decodeURIComponent(match.slice(name.length + 1)) : null;
+}
+
+function isPublicSsrPath(pathname: string): boolean {
+  return (
+    pathname === '/login' ||
+    pathname === '/blocked' ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/uploads') ||
+    pathname.startsWith('/assets') ||
+    pathname === '/favicon.ico' ||
+    /\.[a-z0-9]{2,8}$/i.test(pathname)
+  );
+}
+
+function loginRedirectFor(req: express.Request): string {
+  const redirectTo = encodeURIComponent(req.originalUrl || '/');
+  return `/login?redirectTo=${redirectTo}`;
+}
+
+async function validateBetaSession(req: express.Request): Promise<'ok' | 'unauthorized' | 'blocked'> {
+  const authorization = firstHeaderValue(req.headers.authorization);
+  const cookieToken = cookieValue(req.headers.cookie, 'jano_access_token');
+  const headers = new Headers();
+
+  if (authorization) {
+    headers.set('authorization', authorization);
+  } else if (cookieToken) {
+    headers.set('authorization', `Bearer ${cookieToken}`);
+  }
+
+  if (!headers.has('authorization')) {
+    return 'unauthorized';
+  }
+
+  const response = await fetch(`${backendOrigin}/api/auth/me`, { headers });
+
+  if (response.status === 401) return 'unauthorized';
+  if (response.status === 403) return 'blocked';
+  if (!response.ok) return 'unauthorized';
+
+  const user = await response.json() as { isBeta?: boolean };
+  return user.isBeta === true ? 'ok' : 'blocked';
+}
+
 const allowedHosts = Array.from(
   new Set([
     ...defaultAllowedHosts,
@@ -103,6 +154,26 @@ app.use(['/api', '/uploads'], async (req, res, next) => {
 
     const body = Buffer.from(await upstream.arrayBuffer());
     res.send(body);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.use(async (req, res, next) => {
+  if (isPublicSsrPath(req.path)) {
+    next();
+    return;
+  }
+
+  try {
+    const session = await validateBetaSession(req);
+
+    if (session === 'ok') {
+      next();
+      return;
+    }
+
+    res.redirect(302, session === 'blocked' ? '/blocked' : loginRedirectFor(req));
   } catch (error) {
     next(error);
   }

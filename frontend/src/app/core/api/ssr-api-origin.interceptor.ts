@@ -1,6 +1,6 @@
 import { isPlatformServer } from '@angular/common';
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject, PLATFORM_ID } from '@angular/core';
+import { inject, PLATFORM_ID, REQUEST } from '@angular/core';
 import { SSR_API_ORIGIN } from './api-origin.token';
 
 export const ssrApiOriginInterceptor: HttpInterceptorFn = (req, next) => {
@@ -15,5 +15,21 @@ export const ssrApiOriginInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  return next(req.clone({ url: `${ssrApiOrigin}${req.url}` }));
+  const ssrRequest = inject(REQUEST, { optional: true });
+  const cookie = ssrRequest?.headers.get('cookie');
+  const authorization = ssrRequest?.headers.get('authorization');
+  const setHeaders: Record<string, string> = {};
+
+  if (cookie && !req.headers.has('cookie')) {
+    setHeaders['cookie'] = cookie;
+  }
+
+  if (authorization && !req.headers.has('authorization')) {
+    setHeaders['authorization'] = authorization;
+  }
+
+  return next(req.clone({
+    url: `${ssrApiOrigin}${req.url}`,
+    setHeaders,
+  }));
 };

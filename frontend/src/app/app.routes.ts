@@ -5,36 +5,43 @@ import { adminGuard } from './core/auth/admin.guard';
 export const routes: Routes = [
   {
     path: '',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'recommended',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/recommended/recommended.component').then((m) => m.RecommendedComponent),
   },
   {
     path: 'search',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/search/search.component').then((m) => m.SearchComponent),
   },
   {
     path: 'entities',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },
   {
     path: 'entities/:type',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },
   {
     path: 'entity/:slug',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/entity/entity.component').then((m) => m.EntityComponent),
   },
 
   {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+    data: { layout: 'auth' },
   },
   {
-    path: 'register',
-    loadComponent: () => import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+    path: 'blocked',
+    loadComponent: () => import('./features/auth/blocked/blocked.component').then((m) => m.BlockedComponent),
   },
   {
     path: 'my-space',

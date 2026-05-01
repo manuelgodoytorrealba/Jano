@@ -14,6 +14,7 @@ describe('adminGuard', () => {
         email: 'admin@test.com',
         name: null,
         role: 'ADMIN',
+        isBeta: true,
       })),
     };
     const router = {

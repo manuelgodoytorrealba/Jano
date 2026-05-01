@@ -80,6 +80,14 @@ ssh -L 5555:localhost:5555 user@server
 
 See [prisma-studio.md](prisma-studio.md).
 
+## Private Beta
+
+```bash
+docker compose -f infra/docker-compose.yml exec backend node -e "const bcrypt=require('bcrypt'); bcrypt.hash(process.argv[1],10).then(console.log)" 'plain-password'
+```
+
+See [private-beta.md](private-beta.md).
+
 ## Search and Taxonomy Checks
 
 ```bash

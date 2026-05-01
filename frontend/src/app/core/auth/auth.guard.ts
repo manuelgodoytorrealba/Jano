@@ -17,14 +17,20 @@ export const authGuard: CanActivateFn = (_route, state) => {
 
   if (auth.isAuthenticated()) {
     if (auth.currentUser) {
-      return true;
+      return auth.currentUser.isBeta
+        ? true
+        : router.createUrlTree(['/blocked']);
     }
 
     return auth.refreshSession().pipe(
-      map(() => true),
-      catchError(() => of(router.createUrlTree(['/login'], {
-        queryParams: { redirectTo: state.url },
-      }))),
+      map((user) => user.isBeta ? true : router.createUrlTree(['/blocked'])),
+      catchError((error) => of(
+        error?.status === 403
+          ? router.createUrlTree(['/blocked'])
+          : router.createUrlTree(['/login'], {
+            queryParams: { redirectTo: state.url },
+          }),
+      )),
     );
   }
 

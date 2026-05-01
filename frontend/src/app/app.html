@@ -1,13 +1,16 @@
+<ng-container *ngIf="isAuthRoute(); else appLayout">
+  <!-- 🔥 AUTH LAYOUT (LOGIN FULLSCREEN) -->
+  <router-outlet />
+</ng-container>
 
-<div
-  class="app-shell"
-  [class.app-shell--immersive]="isImmersiveRoute()"
-  [class.app-shell--entities]="isEntitiesRoute()"
-  [style.--app-background-image]="backgroundImageStyle()"
->
-  <app-app-chrome />
+<ng-template #appLayout>
+  <!-- 🔥 APP NORMAL -->
+  <div class="app-shell" [class.app-shell--immersive]="isImmersiveRoute()"
+    [class.app-shell--entities]="isEntitiesRoute()" [style.--app-background-image]="backgroundImageStyle()">
+    <app-app-chrome />
 
-  <main class="app-shell__content">
-    <router-outlet />
-  </main>
-</div>
+    <main class="app-shell__content">
+      <router-outlet />
+    </main>
+  </div>
+</ng-template>

@@ -36,15 +36,6 @@ export class AuthService {
     return !!this.token;
   }
 
-  register(data: { email: string; password: string; name?: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/register`, {
-      ...data,
-      email: data.email.trim().toLowerCase(),
-    }).pipe(
-      tap((res) => this.persistSession(res)),
-    );
-  }
-
   login(data: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, {
       ...data,
@@ -71,6 +62,8 @@ export class AuthService {
   }
 
   logout() {
+    this.http.post<void>(`${this.baseUrl}/logout`, {}).subscribe({ error: () => undefined });
+
     if (this.isBrowser) {
       localStorage.removeItem(this.tokenKey);
       localStorage.removeItem(this.userKey);
@@ -98,6 +91,7 @@ export class AuthService {
       email: user.email,
       name: user.name ?? null,
       role: user.role,
+      isBeta: user.isBeta === true,
     };
   }
 

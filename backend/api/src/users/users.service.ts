@@ -32,6 +32,7 @@ export class UsersService {
     passwordHash: string;
     name?: string;
     role?: UserRole;
+    isBeta?: boolean;
   }) {
     return this.prisma.user.create({
       data: {
@@ -39,6 +40,7 @@ export class UsersService {
         passwordHash: data.passwordHash,
         name: data.name,
         role: data.role ?? UserRole.USER,
+        isBeta: data.isBeta ?? false,
       },
     });
   }

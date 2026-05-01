@@ -4,6 +4,17 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from '../../users/users.service';
 
+function tokenFromCookie(request: { headers?: { cookie?: string } } | undefined): string | null {
+  const cookieHeader = request?.headers?.cookie;
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(';').map((item) => item.trim());
+  const tokenCookie = cookies.find((item) => item.startsWith('jano_access_token='));
+  if (!tokenCookie) return null;
+
+  return decodeURIComponent(tokenCookie.slice('jano_access_token='.length));
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -13,9 +24,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const jwtSecret = configService.getOrThrow<string>('JWT_SECRET');
 
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        tokenFromCookie,
+      ]),
       ignoreExpiration: false,
       secretOrKey: jwtSecret,
+      passReqToCallback: false,
     });
   }
 
@@ -32,6 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       name: user.name ?? null,
       role: user.role,
+      isBeta: user.isBeta,
     };
   }
 }

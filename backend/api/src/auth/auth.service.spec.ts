@@ -42,6 +42,7 @@ describe('AuthService', () => {
       email: 'manuel@test3.com',
       name: 'Manuel',
       role: 'ADMIN',
+      isBeta: true,
       passwordHash,
     });
 
@@ -55,6 +56,7 @@ describe('AuthService', () => {
         email: 'manuel@test3.com',
         name: 'Manuel',
         role: 'ADMIN',
+        isBeta: true,
       },
     });
 
@@ -62,6 +64,7 @@ describe('AuthService', () => {
       sub: 'user-1',
       email: 'manuel@test3.com',
       role: 'ADMIN',
+      isBeta: true,
     });
   });
 
@@ -72,6 +75,7 @@ describe('AuthService', () => {
       email: 'manuel@test3.com',
       name: 'Manuel',
       role: 'ADMIN',
+      isBeta: true,
       passwordHash,
     });
 
@@ -81,5 +85,22 @@ describe('AuthService', () => {
     });
 
     expect(usersService.findByEmail).toHaveBeenCalledWith('  MANUEL@TEST3.COM  ');
+  });
+
+  it('rejects valid credentials when the user is not in the private beta', async () => {
+    const passwordHash = await bcrypt.hash('secret123', 10);
+    usersService.findByEmail.mockResolvedValue({
+      id: 'user-1',
+      email: 'manuel@test3.com',
+      name: 'Manuel',
+      role: 'USER',
+      isBeta: false,
+      passwordHash,
+    });
+
+    await expect(service.login({
+      email: 'manuel@test3.com',
+      password: 'secret123',
+    })).rejects.toThrow('Private beta access required');
   });
 });

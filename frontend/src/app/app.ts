@@ -2,10 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { AppChromeComponent } from './shared/ui/app-chrome/app-chrome.component';
 import { AppAppearanceService } from './core/app-appearance.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, AppChromeComponent],
+  imports: [CommonModule, RouterOutlet, AppChromeComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -31,5 +32,8 @@ export class App {
   backgroundImageStyle(): string | null {
     const url = this.appearance.backgroundImageUrl();
     return url ? `url("${url.replace(/"/g, '%22')}")` : null;
+  }
+  isAuthRoute(): boolean {
+    return this.router.url.startsWith('/login');
   }
 }

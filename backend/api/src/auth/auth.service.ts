@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -44,6 +45,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (!user.isBeta) {
+      throw new ForbiddenException('Private beta access required');
+    }
+
     return this.buildAuthResponse(user);
   }
 
@@ -56,11 +61,13 @@ export class AuthService {
     email: string;
     name: string | null;
     role: string;
+    isBeta: boolean;
   }) {
     const payload = {
       sub: user.id,
       email: user.email,
       role: user.role,
+      isBeta: user.isBeta,
     };
 
     const accessToken = await this.jwtService.signAsync(payload);
@@ -72,6 +79,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
+        isBeta: user.isBeta,
       },
     };
   }

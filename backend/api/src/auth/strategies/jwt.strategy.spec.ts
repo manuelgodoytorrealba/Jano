@@ -8,6 +8,7 @@ describe('JwtStrategy', () => {
         email: 'manuel@test3.com',
         name: 'Manuel',
         role: 'ADMIN',
+        isBeta: true,
       }),
     };
     const configService = {
@@ -26,6 +27,7 @@ describe('JwtStrategy', () => {
       email: 'manuel@test3.com',
       name: 'Manuel',
       role: 'ADMIN',
+      isBeta: true,
     });
     expect(configService.getOrThrow).toHaveBeenCalledWith('JWT_SECRET');
   });
