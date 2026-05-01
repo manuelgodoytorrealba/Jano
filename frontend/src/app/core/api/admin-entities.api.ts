@@ -220,6 +220,7 @@ export type AdminEntityResponse = {
   period?: any;
   sourceRefs?: any[];
   contributors?: any[];
+  tags?: any[];
 };
 
 @Injectable({ providedIn: 'root' })
@@ -340,7 +341,7 @@ export class AdminEntitiesApi {
 
   createRelation(
     entityId: string,
-    data: { toId: string; type: string; justification?: string; weight?: number }
+    data: { toId: string; type?: string; relationTypeId?: string; justification?: string; weight?: number }
   ) {
     return this.http.post<any>(`${this.baseUrl}/${entityId}/relations`, data);
   }

@@ -12,6 +12,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/recommended/recommended.component').then((m) => m.RecommendedComponent),
   },
   {
+    path: 'search',
+    loadComponent: () => import('./features/search/search.component').then((m) => m.SearchComponent),
+  },
+  {
     path: 'entities/:type',
     loadComponent: () => import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },

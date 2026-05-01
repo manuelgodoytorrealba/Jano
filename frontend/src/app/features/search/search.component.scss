@@ -1,0 +1,147 @@
+.search-page {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(5.5rem, 9vw, 7rem) clamp(1rem, 4vw, 3rem) 4rem;
+}
+
+.search-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(18rem, 1fr);
+  gap: 1rem;
+  align-items: end;
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.search-eyebrow {
+  margin: 0 0 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.search-head h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 4rem);
+}
+
+.search-box input {
+  width: 100%;
+}
+
+.type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+}
+
+.type-chip {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+}
+
+.type-chip.is-active {
+  background: rgba(255, 255, 255, 0.92);
+  color: #101215;
+}
+
+.search-results {
+  padding: clamp(0.75rem, 2vw, 1rem);
+}
+
+.results-meta {
+  display: flex;
+  gap: 0.8rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.3rem 1rem;
+}
+
+.results-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: 5.4rem minmax(0, 1fr);
+  gap: 0.9rem;
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  padding: 0.65rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.result-row:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.result-row__media {
+  width: 5.4rem;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.result-row__body {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  align-content: center;
+}
+
+.result-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.result-row strong {
+  font-size: 1.05rem;
+}
+
+.result-row__summary {
+  color: var(--text-muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.empty-state {
+  display: grid;
+  gap: 0.35rem;
+  padding: 2rem 0.5rem;
+  color: var(--text-muted);
+}
+
+.empty-state strong {
+  color: var(--text-primary);
+}
+
+@media (max-width: 760px) {
+  .search-head {
+    grid-template-columns: 1fr;
+  }
+
+  .result-row {
+    grid-template-columns: 4.6rem minmax(0, 1fr);
+  }
+
+  .result-row__media {
+    width: 4.6rem;
+  }
+}

@@ -19,6 +19,7 @@ export class EntitiesApi {
  list(params: {
   type?: string;
   q?: string;
+  deck?: string;
   page?: number;
   limit?: number;
   sort?: 'recent' | 'title' | 'relevance';
@@ -28,6 +29,7 @@ export class EntitiesApi {
   period?: string;
   institution?: string;
   nationality?: string;
+  tag?: string;
 }) {
     const clean: any = {};
 

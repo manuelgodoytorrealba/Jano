@@ -273,6 +273,12 @@ export class EntityDetailViewComponent {
     return incomingLabels[type] ?? 'Relacionado con esta entidad';
   }
 
+  entityTags(entity: any): any[] {
+    return Array.isArray(entity?.tags)
+      ? entity.tags.map((item: any) => item.tag ?? item).filter(Boolean)
+      : [];
+  }
+
   onSave(entityId: string) {
     this.saveToggle.emit(entityId);
   }

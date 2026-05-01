@@ -27,6 +27,8 @@ import {
   AdminSourceRefPayload,
   AdminUploadEntityMediaPayload,
 } from '../../../core/api/admin-entities.api';
+import { RelationType, RelationTypesApi } from '../../../core/api/relation-types.api';
+import { Tag, TagsApi } from '../../../core/api/tags.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import { EntityDetailViewComponent } from '../../entity/entity-detail-view.component';
 import { MediaAddPanelComponent } from './media-add-panel.component';
@@ -69,6 +71,8 @@ type DashboardSectionId =
 
 type MediaLibraryViewId = 'coverage' | 'library' | 'add';
 
+type EntitySaveState = 'idle' | 'saving' | 'saved' | 'error';
+
 @Component({
   standalone: true,
   selector: 'app-admin-entity-form',
@@ -79,6 +83,8 @@ type MediaLibraryViewId = 'coverage' | 'library' | 'add';
 })
 export class AdminEntityFormComponent implements OnInit, OnDestroy {
   private adminApi = inject(AdminEntitiesApi);
+  private relationTypesApi = inject(RelationTypesApi);
+  private tagsApi = inject(TagsApi);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
@@ -121,6 +127,8 @@ previewContainer?: ElementRef<HTMLElement>;
 
   successMessage = '';
   submitMode: 'back' | 'stay' = 'back';
+  entitySaveState: EntitySaveState = 'idle';
+  entityLastSavedAt: Date | null = null;
 
   mediaEditors: EditableAdminMediaEditor[] = [];
   persistedMediaLinks: EditableAdminMediaLink[] = [];
@@ -170,19 +178,18 @@ previewContainer?: ElementRef<HTMLElement>;
     'PAPER',
   ];
 
-  relationTypes = [
-    'CREATED_BY',
-    'BELONGS_TO_MOVEMENT',
-    'BELONGS_TO_PERIOD',
-    'ABOUT_CONCEPT',
-    'LOCATED_IN',
-    'RELATED_TO',
-    'MENTIONS',
-    'ASSOCIATED_WITH',
-    'INSPIRED_BY',
-    'INFLUENCED_BY',
-    'PART_OF',
-  ];
+  relationTypes: RelationType[] = [];
+  relationTypesLoading = false;
+
+  availableTags: Tag[] = [];
+  entityTags: any[] = [];
+  selectedTagId = '';
+  newTagLabel = '';
+  newTagCategory = '';
+  tagsLoading = false;
+  tagsSaving = false;
+  tagsMessage = '';
+  tagsError = '';
 
   relations: any[] = [];
   relationSearch = '';
@@ -193,6 +200,7 @@ previewContainer?: ElementRef<HTMLElement>;
   newRelation = {
     toId: '',
     type: 'RELATED_TO',
+    relationTypeId: '',
     justification: '',
   };
 
@@ -290,6 +298,8 @@ previewContainer?: ElementRef<HTMLElement>;
     this.restoreDashboardSection();
     this.restorePreviewVisibility();
     this.restoreAdminSidebarVisibility();
+    this.loadRelationTypes();
+    this.loadTags();
 
     this.linkSearch$
       .pipe(
@@ -475,6 +485,42 @@ previewContainer?: ElementRef<HTMLElement>;
     this.contributors = Array.isArray(entity.contributors)
       ? entity.contributors.map((contributor: any) => this.normalizeContributor(contributor))
       : [];
+    this.entityTags = Array.isArray(entity.tags) ? entity.tags : [];
+  }
+
+  private loadRelationTypes() {
+    this.relationTypesLoading = true;
+    this.relationTypesApi.list().subscribe({
+      next: (types) => {
+        this.relationTypes = types;
+        const preferred = types.find((type) => type.key === this.newRelation.type) ?? types[0] ?? null;
+        this.newRelation.relationTypeId = preferred?.id ?? '';
+        this.newRelation.type = preferred?.key ?? this.newRelation.type;
+        this.relationTypesLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.relationTypes = [];
+        this.relationTypesLoading = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  private loadTags() {
+    this.tagsLoading = true;
+    this.tagsApi.list().subscribe({
+      next: (tags) => {
+        this.availableTags = tags;
+        this.tagsLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.availableTags = [];
+        this.tagsLoading = false;
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   submit(mode: 'back' | 'stay' = 'back') {
@@ -486,10 +532,14 @@ previewContainer?: ElementRef<HTMLElement>;
 
     if (!payload.title || !payload.slug || !payload.type) {
       this.errorMessage = 'Título, slug y tipo son obligatorios.';
+      this.entitySaveState = 'error';
       return;
     }
 
     this.saving = true;
+    this.entitySaveState = 'saving';
+    this.successMessage = 'Guardando cambios en el backend...';
+    this.cdr.markForCheck();
 
     const req$ = this.isEdit
       ? this.adminApi.update(this.entityId, payload)
@@ -498,9 +548,15 @@ previewContainer?: ElementRef<HTMLElement>;
     req$.subscribe({
       next: (entity) => {
         this.saving = false;
+        this.entitySaveState = 'saved';
+        this.entityLastSavedAt = new Date();
         this.successMessage = this.isEdit
           ? 'Entity actualizada correctamente.'
           : 'Entity creada correctamente.';
+
+        if (entity && this.isEdit) {
+          this.applyEntityResponse(entity);
+        }
 
         this.cdr.markForCheck();
 
@@ -519,10 +575,60 @@ previewContainer?: ElementRef<HTMLElement>;
       },
       error: (err) => {
         this.saving = false;
+        this.entitySaveState = 'error';
         this.errorMessage = err?.error?.message ?? 'No se pudo guardar la entity';
+        this.successMessage = '';
         this.cdr.markForCheck();
       },
     });
+  }
+
+  entitySaveButtonLabel(mode: 'back' | 'stay'): string {
+    if (this.saving && this.submitMode === mode) {
+      return 'Guardando...';
+    }
+
+    if (this.entitySaveState === 'saved') {
+      return mode === 'stay' ? 'Guardado' : 'Guardar';
+    }
+
+    return mode === 'stay' ? 'Guardar y seguir' : 'Guardar';
+  }
+
+  entitySaveStatusLabel(): string {
+    if (this.saving || this.entitySaveState === 'saving') {
+      return 'Guardando cambios...';
+    }
+
+    if (this.entitySaveState === 'saved' && this.entityLastSavedAt) {
+      return `Guardado a las ${this.entityLastSavedAt.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      })}`;
+    }
+
+    if (this.entitySaveState === 'error') {
+      return 'El último guardado falló';
+    }
+
+    return this.isEdit ? 'Listo para guardar' : 'Crea la entity para activar el resto';
+  }
+
+  entitySaveStatusClass(): string {
+    if (this.saving || this.entitySaveState === 'saving') {
+      return 'entity-save-status entity-save-status--saving';
+    }
+
+    if (this.entitySaveState === 'saved') {
+      return 'entity-save-status entity-save-status--saved';
+    }
+
+    if (this.entitySaveState === 'error') {
+      return 'entity-save-status entity-save-status--error';
+    }
+
+    return 'entity-save-status';
   }
 
   private normalizeAdminReturnTo(value: string | null): string {
@@ -631,6 +737,12 @@ previewContainer?: ElementRef<HTMLElement>;
     this.cdr.markForCheck();
   }
 
+  onRelationTypeChange(relationTypeId: string) {
+    const relationType = this.relationTypes.find((item) => item.id === relationTypeId);
+    this.newRelation.relationTypeId = relationType?.id ?? '';
+    this.newRelation.type = relationType?.key ?? this.newRelation.type;
+  }
+
   addRelation() {
     if (!this.entityId || !this.newRelation.toId || !this.newRelation.type.trim()) {
       return;
@@ -639,12 +751,15 @@ previewContainer?: ElementRef<HTMLElement>;
     this.adminApi.createRelation(this.entityId, {
       toId: this.newRelation.toId,
       type: this.newRelation.type.trim(),
+      relationTypeId: this.newRelation.relationTypeId || undefined,
       justification: this.newRelation.justification.trim() || undefined,
     }).subscribe({
       next: () => {
+        const preferred = this.relationTypes.find((type) => type.key === 'RELATED_TO') ?? this.relationTypes[0] ?? null;
         this.newRelation = {
           toId: '',
-          type: 'RELATED_TO',
+          type: preferred?.key ?? 'RELATED_TO',
+          relationTypeId: preferred?.id ?? '',
           justification: '',
         };
         this.relationSearch = '';
@@ -657,6 +772,97 @@ previewContainer?: ElementRef<HTMLElement>;
         this.cdr.markForCheck();
       },
     });
+  }
+
+  addSelectedTag() {
+    if (!this.entityId || !this.selectedTagId || this.tagsSaving) return;
+
+    this.tagsSaving = true;
+    this.tagsMessage = '';
+    this.tagsError = '';
+
+    this.tagsApi.addToEntity(this.entityId, this.selectedTagId).subscribe({
+      next: (entityTag) => {
+        this.tagsSaving = false;
+        this.selectedTagId = '';
+        this.upsertEntityTag(entityTag);
+        this.tagsMessage = 'Tag añadido.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.tagsSaving = false;
+        this.tagsError = err?.error?.message ?? 'No se pudo añadir el tag.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  createTagAndAttach() {
+    const label = this.newTagLabel.trim();
+    if (!this.entityId || !label || this.tagsSaving) return;
+
+    this.tagsSaving = true;
+    this.tagsMessage = '';
+    this.tagsError = '';
+
+    this.tagsApi.create({
+      label,
+      category: this.newTagCategory.trim() || undefined,
+    }).subscribe({
+      next: (tag) => {
+        this.availableTags = [...this.availableTags, tag].sort((a, b) => a.label.localeCompare(b.label));
+        this.newTagLabel = '';
+        this.newTagCategory = '';
+        this.tagsApi.addToEntity(this.entityId, tag.id).subscribe({
+          next: (entityTag) => {
+            this.tagsSaving = false;
+            this.upsertEntityTag(entityTag);
+            this.tagsMessage = 'Tag creado y añadido.';
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            this.tagsSaving = false;
+            this.tagsError = err?.error?.message ?? 'Tag creado, pero no se pudo añadir a la entity.';
+            this.cdr.markForCheck();
+          },
+        });
+      },
+      error: (err) => {
+        this.tagsSaving = false;
+        this.tagsError = err?.error?.message ?? 'No se pudo crear el tag.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  removeTag(tagId: string) {
+    if (!this.entityId || this.tagsSaving) return;
+
+    this.tagsSaving = true;
+    this.tagsMessage = '';
+    this.tagsError = '';
+
+    this.tagsApi.removeFromEntity(this.entityId, tagId).subscribe({
+      next: () => {
+        this.tagsSaving = false;
+        this.entityTags = this.entityTags.filter((entityTag) => entityTag.tagId !== tagId && entityTag.tag?.id !== tagId);
+        this.tagsMessage = 'Tag quitado.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.tagsSaving = false;
+        this.tagsError = err?.error?.message ?? 'No se pudo quitar el tag.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  tagAlreadySelected(tagId: string): boolean {
+    return this.entityTags.some((entityTag) => entityTag.tagId === tagId || entityTag.tag?.id === tagId);
+  }
+
+  availableTagsToAttach(): Tag[] {
+    return this.availableTags.filter((tag) => tag.isActive && !this.tagAlreadySelected(tag.id));
   }
 
   removeRelation(relationId: string) {
@@ -1650,6 +1856,7 @@ previewContainer?: ElementRef<HTMLElement>;
       createdAt: new Date().toISOString(),
       mediaLinks,
       resolvedMedia: this.previewResolvedMedia(),
+      tags: this.entityTags,
       outgoing: this.relations.map((rel) => this.previewRelation(rel, 'outgoing')),
       incoming: this.incomingRelations.map((rel) => this.previewRelation(rel, 'incoming')),
       sourceRefs: this.sourceRefs.map((ref) => ({
@@ -1829,6 +2036,9 @@ previewContainer?: ElementRef<HTMLElement>;
       ...rel,
       id: rel.id ?? `${direction}-${rel.type ?? 'relation'}`,
       type: rel.type ?? 'RELATED_TO',
+      relationType: rel.relationType ?? null,
+      relationTypeKey: rel.relationTypeKey ?? rel.relationType?.key ?? rel.type ?? 'RELATED_TO',
+      relationTypeLabel: rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type ?? 'RELATED_TO',
       justification: rel.justification ?? null,
       weight: rel.weight ?? null,
       from: direction === 'incoming' ? fallbackEndpoint : (rel.from ?? {
@@ -2201,6 +2411,21 @@ previewContainer?: ElementRef<HTMLElement>;
     }
 
     this.contributors = [...this.contributors, normalized];
+  }
+
+  private upsertEntityTag(entityTag: any) {
+    const tagId = entityTag.tagId ?? entityTag.tag?.id;
+    if (!tagId) return;
+
+    const existingIndex = this.entityTags.findIndex((item) => (item.tagId ?? item.tag?.id) === tagId);
+    if (existingIndex >= 0) {
+      const next = [...this.entityTags];
+      next[existingIndex] = entityTag;
+      this.entityTags = next;
+      return;
+    }
+
+    this.entityTags = [...this.entityTags, entityTag];
   }
 
   private compactJoin(values: Array<string | number | null | undefined>): string {

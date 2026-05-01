@@ -42,6 +42,7 @@
       <div class="admin-sidebar__summary">
         <span class="admin-sidebar__eyebrow">Editor dashboard</span>
         <h2 class="admin-sidebar__title">{{ form.title || 'Entity sin título' }}</h2>
+        <span [class]="entitySaveStatusClass()">{{ entitySaveStatusLabel() }}</span>
         <div class="admin-sidebar__actions">
           <a class="admin-sidebar__action admin-sidebar__action--ghost" [attr.href]="adminReturnHref()">Cancelar</a>
 
@@ -51,11 +52,7 @@
             [disabled]="saving || loading"
             (click)="submit('stay')"
           >
-            @if (saving && submitMode === 'stay') {
-              Guardando...
-            } @else {
-              Guardar y seguir
-            }
+            {{ entitySaveButtonLabel('stay') }}
           </button>
 
           <button
@@ -66,10 +63,8 @@
           >
             @if (loading) {
               Cargando...
-            } @else if (saving && submitMode === 'back') {
-              Guardando...
             } @else {
-              Guardar
+              {{ entitySaveButtonLabel('back') }}
             }
           </button>
         </div>
@@ -179,6 +174,45 @@
             />
             <small class="hint">URL amigable de la entity.</small>
           </label>
+
+          @if (isEdit) {
+            <div class="field full">
+              <span>Tags</span>
+              <div class="tag-admin">
+                <div class="tag-admin__current">
+                  @if (entityTags.length) {
+                    @for (entityTag of entityTags; track entityTag.tagId ?? entityTag.tag?.id) {
+                      <button type="button" class="tag-chip" (click)="removeTag(entityTag.tagId ?? entityTag.tag?.id)">
+                        {{ entityTag.tag?.label ?? entityTag.tagId }}
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    }
+                  } @else {
+                    <span class="muted">Sin tags asignados.</span>
+                  }
+                </div>
+
+                <div class="tag-admin__attach">
+                  <select [(ngModel)]="selectedTagId" name="selectedTagId">
+                    <option value="">Seleccionar tag existente</option>
+                    @for (tag of availableTagsToAttach(); track tag.id) {
+                      <option [value]="tag.id">{{ tag.label }}@if (tag.category) { · {{ tag.category }} }</option>
+                    }
+                  </select>
+                  <button class="btn" type="button" [disabled]="!selectedTagId || tagsSaving" (click)="addSelectedTag()">Añadir tag</button>
+                </div>
+
+                <div class="tag-admin__create">
+                  <input type="text" [(ngModel)]="newTagLabel" name="newTagLabel" placeholder="Nuevo tag" />
+                  <input type="text" [(ngModel)]="newTagCategory" name="newTagCategory" placeholder="Categoría" />
+                  <button class="btn" type="button" [disabled]="!newTagLabel.trim() || tagsSaving" (click)="createTagAndAttach()">Crear y añadir</button>
+                </div>
+
+                @if (tagsMessage) { <small class="success-text">{{ tagsMessage }}</small> }
+                @if (tagsError) { <small class="error-text">{{ tagsError }}</small> }
+              </div>
+            </div>
+          }
 
           <label class="field full">
             <span>Resumen</span>
@@ -1001,9 +1035,9 @@
 
             <label class="field">
               <span>Tipo de relación</span>
-              <select [(ngModel)]="newRelation.type" name="newRelationType">
-                @for (type of relationTypes; track type) {
-                  <option [value]="type">{{ type }}</option>
+              <select [ngModel]="newRelation.relationTypeId" (ngModelChange)="onRelationTypeChange($event)" name="newRelationType">
+                @for (type of relationTypes; track type.id) {
+                  <option [value]="type.id">{{ type.label }}</option>
                 }
               </select>
             </label>
@@ -1034,7 +1068,7 @@
                 @for (rel of relations; track rel.id) {
                   <article class="relation-card">
                     <div class="relation-main">
-                      <div class="relation-type">{{ rel.type }}</div>
+                      <div class="relation-type">{{ rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type }}</div>
                       <div class="relation-target">
   <span class="relation-arrow">→</span>
   {{ rel.to?.title }}
@@ -1075,7 +1109,7 @@
       @for (rel of incomingRelations; track rel.id) {
         <article class="relation-card incoming">
           <div class="relation-main">
-            <div class="relation-type">{{ rel.type }}</div>
+            <div class="relation-type">{{ rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type }}</div>
             <div class="relation-target">
   <span class="relation-arrow incoming">←</span>
   {{ rel.from?.title }}

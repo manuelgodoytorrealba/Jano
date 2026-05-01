@@ -165,6 +165,35 @@
       padding-top: 2px;
     }
 
+    .entity-save-status {
+      justify-self: start;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.68);
+      color: #5d554d;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .entity-save-status--saving {
+      border-color: rgba(191, 128, 0, .18);
+      background: rgba(191, 128, 0, .08);
+      color: #7a5600;
+    }
+
+    .entity-save-status--saved {
+      border-color: rgba(28, 116, 74, .20);
+      background: rgba(28, 116, 74, .10);
+      color: #174f35;
+    }
+
+    .entity-save-status--error {
+      border-color: rgba(176,0,32,.16);
+      background: rgba(176,0,32,.06);
+      color: #b00020;
+    }
+
     .admin-sidebar__action {
       min-height: 40px;
       display: inline-flex;
@@ -1305,3 +1334,42 @@
       }
 
     }
+.tag-admin {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.tag-admin__current,
+.tag-admin__attach,
+.tag-admin__create {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tag-admin__attach select,
+.tag-admin__create input {
+  min-width: min(16rem, 100%);
+}
+
+.tag-chip {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+}
+
+.tag-chip span {
+  margin-left: 0.35rem;
+}
+
+.success-text {
+  color: #6fd69c;
+}
+
+.error-text {
+  color: #ff9a9a;
+}

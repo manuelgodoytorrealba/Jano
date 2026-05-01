@@ -1,5 +1,6 @@
 <div class="entities-page page-shell" [class.entities-page--immersive]="viewMode === 'explore'"
-  [class.entities-page--list-shell]="viewMode === 'list'">
+  [class.entities-page--list-shell]="viewMode === 'list'"
+  [class.entities-page--curated-deck]="curatedDeckMode()">
   <h1 class="sr-only">
     @if (qFromUrl$ | async; as q) {
       @if (q) {
@@ -12,7 +13,9 @@
     }
   </h1>
   <section class="entities-explorer-layout" [class.is-list]="viewMode === 'list'"
-    [class.is-filters-collapsed]="!filtersPanelOpen()" [class.is-info-collapsed]="!infoPanelOpen()">
+    [class.is-filters-collapsed]="!filtersPanelOpen() || curatedDeckMode()"
+    [class.is-curated-deck]="curatedDeckMode()"
+    [class.is-info-collapsed]="!infoPanelOpen()">
     <header class="entities-hud" aria-label="Contexto de la vista">
       <div class="entities-mode-pill ds-panel">
         <div class="view-toggle" role="tablist" aria-label="Modo de visualización">
@@ -29,6 +32,7 @@
       </div>
     </header>
 
+    @if (!curatedDeckMode()) {
     <button type="button" class="entities-rail-handle ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
       (click)="toggleFiltersPanel()"
       [attr.aria-label]="filtersPanelOpen() ? 'Ocultar filtros' : 'Mostrar filtros'"
@@ -40,8 +44,10 @@
       </span>
       <span class="entities-rail-handle__label">Filtros</span>
     </button>
+    }
 
     @if (vm$ | async; as vm) {
+    @if (!curatedDeckMode()) {
     <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
       [attr.aria-hidden]="!filtersPanelOpen()">
       <div class="entities-filter-rail__section">
@@ -146,8 +152,62 @@
           }
           }
           }
+
+          @if (tagFromUrl$ | async; as tagSlug) {
+          @if (tagSlug) {
+          <button type="button" class="search-chip entities-active-filter" (click)="setTag('')">
+            <span class="entities-active-filter__content">
+              <span class="search-chip__label">Tag</span>
+              <span class="search-chip__value">{{ tagLabel$ | async }}</span>
+            </span>
+            <span class="entities-active-filter__clear">✕</span>
+          </button>
+          }
+          }
         </div>
         }
+      </div>
+
+      <div class="entities-filter-rail__section">
+        <label class="entities-filter-rail__label" for="entities-filter-tag">Tag</label>
+        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'tag'">
+          <button id="entities-filter-tag" type="button" class="entities-filter-menu__trigger"
+            aria-label="Filtrar por tag" [attr.aria-expanded]="openFilterMenu() === 'tag'"
+            aria-haspopup="listbox" (click)="toggleFilterMenu('tag')">
+            <span class="entities-filter-menu__value">
+              @if (tagFromUrl$ | async; as tagSlug) {
+              @if (tagSlug) {
+              {{ (tagLabel$ | async) ?? tagSlug }}
+              }
+              } @else {
+              Todos los tags
+              }
+            </span>
+            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
+          </button>
+
+          @if (openFilterMenu() === 'tag') {
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de tag">
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="!(tagFromUrl$ | async)"
+              [attr.aria-selected]="!(tagFromUrl$ | async)" role="option"
+              (click)="selectFilterOption('tag', '')">
+              Todos los tags
+            </button>
+
+            @if (tagOptions$ | async; as tagOptions) {
+            @for (option of tagOptions; track option.slug) {
+            <button type="button" class="entities-filter-menu__option"
+              [class.is-selected]="(tagFromUrl$ | async) === option.slug"
+              [attr.aria-selected]="(tagFromUrl$ | async) === option.slug" role="option"
+              (click)="selectFilterOption('tag', option.slug)">
+              {{ option.label }}
+            </button>
+            }
+            }
+          </div>
+          }
+        </div>
       </div>
 
       @if (supportsMovement$ | async) {
@@ -430,6 +490,7 @@
         <span class="ds-pill">Página {{ vm.page }} / {{ vm.totalPages }}</span>
       </div>
     </aside>
+    }
 
     @if (viewMode === 'explore') {
     @if (vm.items.length) {
@@ -501,6 +562,7 @@
     </div>
     }
     } @else {
+    @if (!curatedDeckMode()) {
     <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
       [attr.aria-hidden]="!filtersPanelOpen()">
       <div class="entities-filter-rail__section">
@@ -517,6 +579,7 @@
       </div>
       }
     </aside>
+    }
 
     @if (viewMode === 'explore') {
     <div class="entities-explorer-stage">

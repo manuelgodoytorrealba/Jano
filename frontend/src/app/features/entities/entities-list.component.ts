@@ -9,6 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
+import { Tag, TagsApi } from '../../core/api/tags.api';
 import { SeoService } from '../../core/seo/seo.service';
 import {
   Observable,
@@ -33,7 +34,8 @@ type Sort = 'recent' | 'title' | 'relevance';
 type Status = 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | '';
 type Level = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED' | '';
 type ViewMode = 'explore' | 'list';
-type FilterMenuKey = 'movement' | 'period' | 'institution' | 'nationality';
+type FilterMenuKey = 'movement' | 'period' | 'institution' | 'nationality' | 'tag';
+type TagFilterOption = Pick<Tag, 'slug' | 'label' | 'category'>;
 
 const STATUS_LABELS: Record<Exclude<Status, ''>, string> = {
   DRAFT: 'Draft',
@@ -77,6 +79,7 @@ const TYPE_ROUTE_LABELS: Record<string, string> = {
 })
 export class EntitiesListComponent {
   private api = inject(EntitiesApi);
+  private tagsApi = inject(TagsApi);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private readonly seo = inject(SeoService);
@@ -123,8 +126,24 @@ export class EntitiesListComponent {
   filtersPanelOpen = signal(true);
   infoPanelOpen = signal(true);
   openFilterMenu = signal<FilterMenuKey | null>(null);
+  curatedDeckMode = signal(false);
 
   constructor() {
+    this.route.queryParamMap.pipe(
+      map((queryParamMap) => (queryParamMap.get('deck') ?? '').trim()),
+      distinctUntilChanged(),
+      tap((deck) => {
+        const isCuratedDeck = !!deck;
+        this.curatedDeckMode.set(isCuratedDeck);
+
+        if (isCuratedDeck) {
+          this.filtersPanelOpen.set(false);
+          this.closeFilterMenu();
+        }
+      }),
+      takeUntilDestroyed(),
+    ).subscribe();
+
     combineLatest([this.typeFromUrl$, this.route.queryParamMap]).pipe(
       map(([type, queryParamMap]) => this.obsoleteQueryParamsForType(type, queryParamMap)),
       distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
@@ -182,6 +201,11 @@ export class EntitiesListComponent {
     distinctUntilChanged(),
   );
 
+  deckFromUrl$ = this.route.queryParamMap.pipe(
+    map((qpm) => (qpm.get('deck') ?? '').trim()),
+    distinctUntilChanged(),
+  );
+
   pageFromUrl$ = this.route.queryParamMap.pipe(
     map((qpm) => {
       const raw = Number(qpm.get('page') ?? 1);
@@ -217,6 +241,11 @@ export class EntitiesListComponent {
 
   nationalityFromUrl$ = this.route.queryParamMap.pipe(
     map((qpm) => (qpm.get('nationality') ?? '').trim()),
+    distinctUntilChanged(),
+  );
+
+  tagFromUrl$ = this.route.queryParamMap.pipe(
+    map((qpm) => (qpm.get('tag') ?? '').trim()),
     distinctUntilChanged(),
   );
 
@@ -278,6 +307,19 @@ export class EntitiesListComponent {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
+  tagOptions$ = this.tagsApi.list().pipe(
+    map((items) =>
+      (items ?? [])
+        .filter((item) => item.isActive !== false)
+        .map((item) => ({
+          slug: item.slug,
+          label: item.label,
+          category: item.category,
+        }) as TagFilterOption),
+    ),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
+
   filterSupport$ = this.typeFromUrl$.pipe(
     map((type) => this.filterSupportForType(type)),
     distinctUntilChanged((a, b) =>
@@ -333,25 +375,34 @@ export class EntitiesListComponent {
     distinctUntilChanged(),
   );
 
+  tagLabel$ = combineLatest([this.tagFromUrl$, this.tagOptions$]).pipe(
+    map(([slug, options]) => options.find((item) => item.slug === slug)?.label ?? slug),
+    distinctUntilChanged(),
+  );
+
   hasActiveFilters$ = combineLatest([
     this.qFromUrl$,
+    this.deckFromUrl$,
     this.statusFromUrl$,
     this.contentLevelFromUrl$,
     this.movementFromUrl$,
     this.periodFromUrl$,
     this.institutionFromUrl$,
     this.nationalityFromUrl$,
+    this.tagFromUrl$,
     this.filterSupport$,
   ]).pipe(
-    map(([q, status, contentLevel, movement, period, institution, nationality, support]) => {
+    map(([q, deck, status, contentLevel, movement, period, institution, nationality, tag, support]) => {
       const qq = (q ?? '').trim();
+      const dd = (deck ?? '').trim();
       const ss = (status ?? '').trim();
       const cc = (contentLevel ?? '').trim();
       const mm = support.movement ? (movement ?? '').trim() : '';
       const pp = support.period ? (period ?? '').trim() : '';
       const ii = support.institution ? (institution ?? '').trim() : '';
       const nn = support.nationality ? (nationality ?? '').trim() : '';
-      return !!(qq || ss || cc || mm || pp || ii || nn);
+      const tt = (tag ?? '').trim();
+      return !!(qq || dd || ss || cc || mm || pp || ii || nn || tt);
     }),
     distinctUntilChanged(),
   );
@@ -363,16 +414,18 @@ export class EntitiesListComponent {
     this.periodFromUrl$,
     this.institutionFromUrl$,
     this.nationalityFromUrl$,
+    this.tagFromUrl$,
     this.filterSupport$,
   ]).pipe(
-    map(([status, contentLevel, movement, period, institution, nationality, support]) => {
+    map(([status, contentLevel, movement, period, institution, nationality, tag, support]) => {
       const ss = (status ?? '').trim();
       const cc = (contentLevel ?? '').trim();
       const mm = support.movement ? (movement ?? '').trim() : '';
       const pp = support.period ? (period ?? '').trim() : '';
       const ii = support.institution ? (institution ?? '').trim() : '';
       const nn = support.nationality ? (nationality ?? '').trim() : '';
-      return !!(ss || cc || mm || pp || ii || nn);
+      const tt = (tag ?? '').trim();
+      return !!(ss || cc || mm || pp || ii || nn || tt);
     }),
     distinctUntilChanged(),
   );
@@ -388,6 +441,7 @@ export class EntitiesListComponent {
   vm$: Observable<EntityListVm> = combineLatest([
     this.typeFromUrl$,
     this.qFromUrl$.pipe(debounceTime(300)),
+    this.deckFromUrl$,
     this.pageFromUrl$,
     this.statusFromUrl$,
     this.contentLevelFromUrl$,
@@ -395,23 +449,27 @@ export class EntitiesListComponent {
     this.periodFromUrl$,
     this.institutionFromUrl$,
     this.nationalityFromUrl$,
+    this.tagFromUrl$,
     this.sortFromUrl$,
     this.filterSupport$,
   ]).pipe(
-    switchMap(([type, q, page, status, contentLevel, movement, period, institution, nationality, sort, support]) => {
+    switchMap(([type, q, deck, page, status, contentLevel, movement, period, institution, nationality, tag, sort, support]) => {
       const qq = (q ?? '').trim();
+      const dd = (deck ?? '').trim();
       const ss = (status ?? '').trim();
       const cc = (contentLevel ?? '').trim();
       const mm = support.movement ? (movement ?? '').trim() : '';
       const pp = support.period ? (period ?? '').trim() : '';
       const ii = support.institution ? (institution ?? '').trim() : '';
       const nn = support.nationality ? (nationality ?? '').trim() : '';
+      const tt = (tag ?? '').trim();
 
       const safeSort: Sort = sort === 'relevance' && !qq ? 'recent' : sort;
 
       return this.api.list({
         type,
         q: qq.length ? qq : undefined,
+        deck: dd.length ? dd : undefined,
         page,
         limit: this.limit,
         sort: safeSort,
@@ -421,6 +479,7 @@ export class EntitiesListComponent {
         period: pp.length ? pp : undefined,
         institution: ii.length ? ii : undefined,
         nationality: nn.length ? nn : undefined,
+        tag: tt.length ? tt : undefined,
       });
     }),
     tap((result: EntityListVm) => {
@@ -483,6 +542,9 @@ export class EntitiesListComponent {
         break;
       case 'nationality':
         this.setNationality(value);
+        break;
+      case 'tag':
+        this.setTag(value);
         break;
     }
 
@@ -711,6 +773,16 @@ export class EntitiesListComponent {
     });
   }
 
+  setTag(next: string) {
+    const value = (next ?? '').trim();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tag: value || null, page: 1 },
+      queryParamsHandling: 'merge',
+    });
+  }
+
   resetFilters() {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -722,6 +794,7 @@ export class EntitiesListComponent {
         period: null,
         institution: null,
         nationality: null,
+        tag: null,
         sort: null,
         page: 1,
       },

@@ -122,6 +122,13 @@
                   }
                   <span class="ds-badge entity-badge">{{ entity.type }}</span>
                 </div>
+                @if (entityTags(entity).length) {
+                <div class="entity-header__badges entity-header__badges--tags">
+                  @for (tag of entityTags(entity); track tag.id ?? tag.slug) {
+                  <a class="ds-badge entity-badge" [routerLink]="['/search']" [queryParams]="{ tag: tag.slug, q: tag.label }">{{ tag.label }}</a>
+                  }
+                </div>
+                }
                 @if (entity.startYear || entity.endYear) {
                 <span class="ds-pill entity-pill">{{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}</span>
                 }
@@ -228,7 +235,7 @@
             @for (r of entity.outgoing; track r.id) {
             <li class="relation-card entity-glass-card relation-card--friendly">
               <div class="relation-card__topline">
-                <span class="relation-card__label">{{ relationDirectionLabel(r.type, 'outgoing') }}</span>
+                <span class="relation-card__label">{{ r.relationTypeLabel ?? relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing') }}</span>
                 <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">{{ r.to.title }}</a>
               </div>
               @if (r.justification) {
@@ -249,7 +256,7 @@
             @for (r of entity.incoming; track r.id) {
             <li class="relation-card entity-glass-card relation-card--friendly">
               <div class="relation-card__topline">
-                <span class="relation-card__label">{{ relationDirectionLabel(r.type, 'incoming') }}</span>
+                <span class="relation-card__label">{{ r.relationType?.inverseLabel ?? r.relationTypeLabel ?? relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming') }}</span>
                 <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">{{ r.from.title }}</a>
               </div>
               @if (r.justification) {

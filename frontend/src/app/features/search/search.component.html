@@ -1,0 +1,90 @@
+<main class="search-page page-shell">
+  <section class="search-head ds-panel">
+    <div>
+      <p class="search-eyebrow">Search</p>
+      <h1>Buscar en JANO</h1>
+    </div>
+
+    <label class="search-box">
+      <span class="sr-only">Buscar</span>
+      <input
+        class="ds-input"
+        type="search"
+        [ngModel]="searchInput"
+        (ngModelChange)="onSearchInput($event)"
+        placeholder="Buscar artistas, obras, artículos, movimientos o conceptos"
+      />
+    </label>
+  </section>
+
+  @if (type$ | async; as activeType) {
+    <nav class="type-chips ds-panel" aria-label="Filtrar resultados por tipo">
+      @for (type of types; track type || 'ALL') {
+        <button
+          type="button"
+          class="type-chip"
+          [class.is-active]="activeType === type"
+          (click)="setType(type)"
+        >
+          {{ typeLabel(type) }}
+        </button>
+      }
+      @if (tag$ | async; as tag) {
+        @if (tag) {
+          <button type="button" class="type-chip type-chip--tag is-active" (click)="clearTag()">
+            Tag: {{ tag }} ×
+          </button>
+        }
+      }
+    </nav>
+  }
+
+  @if (vm$ | async; as vm) {
+    <section class="search-results ds-panel">
+      <div class="results-meta">
+        <span>{{ vm.total }} resultados</span>
+        @if (vm.query) {
+          <span>“{{ vm.query }}”</span>
+        }
+      </div>
+
+      @if (vm.items.length) {
+        <div class="results-list">
+          @for (item of vm.items; track item.id) {
+            <button type="button" class="result-row" (click)="go(item)">
+              <app-jano-media
+                class="result-row__media"
+                [media]="item.resolvedMedia?.thumbnail ?? item.resolvedMedia?.card ?? null"
+                usage="thumbnail"
+                [alt]="item.title"
+                placeholderMode="auto"
+              />
+              <span class="result-row__body">
+                <span class="result-row__meta">
+                  <span>{{ item.type }}</span>
+                  @if (item.startYear || item.endYear) {
+                    <span>{{ item.startYear ?? '' }}@if (item.endYear) {–{{ item.endYear }}}</span>
+                  }
+                </span>
+                <strong>{{ item.title }}</strong>
+                @if (item.summary) {
+                  <span class="result-row__summary">{{ cleanSummary(item.summary) }}</span>
+                }
+              </span>
+            </button>
+          }
+        </div>
+      } @else if (vm.query) {
+        <div class="empty-state">
+          <strong>No hay resultados</strong>
+          <span>Prueba con un título, artista, concepto o término más general.</span>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <strong>Empieza una búsqueda</strong>
+          <span>Busca en entidades publicadas de todo el sistema.</span>
+        </div>
+      }
+    </section>
+  }
+</main>
