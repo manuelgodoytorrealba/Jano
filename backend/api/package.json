@@ -28,7 +28,7 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "prisma db seed",
     "prisma:reset": "prisma migrate reset",
-    "studio": "prisma studio --hostname 0.0.0.0 --port 5555 --browser none"
+    "studio": "prisma studio --port 5555 --browser none"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
