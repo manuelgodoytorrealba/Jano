@@ -112,8 +112,36 @@ export class EntitiesService {
     return labels[type] ?? type.replaceAll('_', ' ').toLowerCase();
   }
 
-  private isDirectedRelation(type: string): boolean {
-    return !['RELATED_TO', 'ASSOCIATED_WITH'].includes(type);
+  private relationKey(relation: { type?: string | null; relationType?: { key?: string | null } | null }): string {
+    return relation.relationType?.key ?? relation.type ?? 'RELATED_TO';
+  }
+
+  private relationDisplayLabel(relation: { type?: string | null; relationType?: { label?: string | null; key?: string | null } | null }): string {
+    return relation.relationType?.label ?? this.relationLabel(this.relationKey(relation));
+  }
+
+  private isDirectedRelation(relation: { type?: string | null; relationType?: { key?: string | null; directed?: boolean | null } | null } | string): boolean {
+    if (typeof relation !== 'string' && relation.relationType?.directed !== null && relation.relationType?.directed !== undefined) {
+      return relation.relationType.directed;
+    }
+
+    const type = typeof relation === 'string' ? relation : this.relationKey(relation);
+    return !['RELATED_TO', 'ASSOCIATED_WITH', 'SIMILAR_TO', 'CURATED_WITH'].includes(type);
+  }
+
+  private serializeRelation<T extends { type?: string | null; relationType?: any }>(relation: T): T & {
+    relationTypeKey: string;
+    relationTypeLabel: string;
+    directed: boolean;
+  } {
+    const key = this.relationKey(relation);
+
+    return {
+      ...relation,
+      relationTypeKey: key,
+      relationTypeLabel: this.relationDisplayLabel(relation),
+      directed: this.isDirectedRelation(relation),
+    };
   }
 
   private buildPublicUploadUrl(storageKey: string): string {
@@ -381,9 +409,51 @@ export class EntitiesService {
     const supportsNationality = query.type === 'ARTIST';
     const nationality = supportsNationality ? (query.nationality ?? '').trim() : '';
     const sort = (query.sort ?? 'recent').trim();
+    const deck = (query.deck ?? '').trim();
+    const tag = (query.tag ?? '').trim();
 
     const where: any = {};
     const and: any[] = [];
+
+    let deckEntityOrder: string[] = [];
+
+    if (deck && deck !== 'undefined' && deck !== 'null') {
+      const homeDeck = await this.prisma.homeDeck.findFirst({
+        where: {
+          OR: [
+            { id: deck },
+            { slug: deck },
+          ],
+          ...(options.publicOnly ? { isActive: true } : {}),
+        },
+        include: {
+          items: {
+            where: options.publicOnly
+              ? {
+                  entity: {
+                    status: EntityStatus.PUBLISHED,
+                  },
+                }
+              : undefined,
+            orderBy: [
+              { sortOrder: 'asc' },
+              { id: 'asc' },
+            ],
+            select: {
+              entityId: true,
+            },
+          },
+        },
+      });
+
+      deckEntityOrder = homeDeck?.items.map((item) => item.entityId) ?? [];
+
+      and.push({
+        id: {
+          in: deckEntityOrder,
+        },
+      });
+    }
 
     if (query.type) where.type = query.type;
 
@@ -465,6 +535,19 @@ export class EntitiesService {
       });
     }
 
+    if (tag && tag !== 'undefined' && tag !== 'null') {
+      and.push({
+        tags: {
+          some: {
+            tag: {
+              slug: tag,
+              isActive: true,
+            },
+          },
+        },
+      });
+    }
+
     if (and.length) {
       where.AND = and;
     }
@@ -480,14 +563,20 @@ export class EntitiesService {
         ? { title: 'asc' as const }
         : { createdAt: 'desc' as const };
 
+    const useCuratedOrder = deckEntityOrder.length > 0 && sort !== 'title' && !useRelevance;
+
     if (!useRelevance) {
 
       const items = await this.prisma.entity.findMany({
         where,
-        skip,
-        take: safeLimit,
-        orderBy,
+        skip: useCuratedOrder ? undefined : skip,
+        take: useCuratedOrder ? undefined : safeLimit,
+        orderBy: useCuratedOrder ? undefined : orderBy,
         include: {
+          tags: {
+            include: { tag: true },
+            orderBy: [{ tag: { label: 'asc' } }],
+          },
           mediaLinks: {
             include: { media: true },
             orderBy: [
@@ -498,8 +587,14 @@ export class EntitiesService {
         },
       });
 
+      const orderedItems = useCuratedOrder
+        ? items
+            .sort((a, b) => deckEntityOrder.indexOf(a.id) - deckEntityOrder.indexOf(b.id))
+            .slice(skip, skip + safeLimit)
+        : items;
+
       return {
-        items: items.map((item) => this.withResolvedMedia(item)),
+        items: orderedItems.map((item) => this.withResolvedMedia(item)),
         page: safePage,
         limit: safeLimit,
         total,
@@ -514,6 +609,10 @@ export class EntitiesService {
       take: fetchSize,
       orderBy: { createdAt: 'desc' },
       include: {
+        tags: {
+          include: { tag: true },
+          orderBy: [{ tag: { label: 'asc' } }],
+        },
         mediaLinks: {
           include: { media: true },
           orderBy: [
@@ -639,6 +738,10 @@ export class EntitiesService {
           },
           orderBy: { createdAt: 'desc' },
           include: {
+            tags: {
+              include: { tag: true },
+              orderBy: [{ tag: { label: 'asc' } }],
+            },
             mediaLinks: {
               include: { media: true },
               orderBy: [
@@ -666,6 +769,10 @@ export class EntitiesService {
         artist: true,
         concept: true,
         period: true,
+        tags: {
+          include: { tag: true },
+          orderBy: [{ tag: { label: 'asc' } }],
+        },
         mediaLinks: {
           include: { media: true },
           orderBy: [
@@ -682,6 +789,7 @@ export class EntitiesService {
             },
           },
           include: {
+            relationType: true,
             to: {
               include: {
                 mediaLinks: {
@@ -702,6 +810,7 @@ export class EntitiesService {
             },
           },
           include: {
+            relationType: true,
             from: {
               include: {
                 mediaLinks: {
@@ -723,11 +832,11 @@ export class EntitiesService {
     return {
       ...this.withResolvedMedia(entity),
       outgoing: (entity.outgoing ?? []).map((relation: any) => ({
-        ...relation,
+        ...this.serializeRelation(relation),
         to: relation.to ? this.withResolvedMedia(relation.to) : relation.to,
       })),
       incoming: (entity.incoming ?? []).map((relation: any) => ({
-        ...relation,
+        ...this.serializeRelation(relation),
         from: relation.from ? this.withResolvedMedia(relation.from) : relation.from,
       })),
     };
@@ -771,6 +880,7 @@ export class EntitiesService {
         ],
       },
       include: {
+        relationType: true,
         from: {
           include: {
             mediaLinks: {
@@ -841,9 +951,9 @@ export class EntitiesService {
       id: r.id,
       source: r.fromId,
       target: r.toId,
-      relationType: r.type,
-      label: this.relationLabel(r.type),
-      directed: this.isDirectedRelation(r.type),
+      relationType: this.relationKey(r),
+      label: this.relationDisplayLabel(r),
+      directed: this.isDirectedRelation(r),
       weight: r.weight ?? 1,
       justification: r.justification ?? null,
     }));
@@ -879,6 +989,14 @@ export class EntitiesService {
         contentLevel: true,
         startYear: true,
         endYear: true,
+        tags: {
+          select: {
+            weight: true,
+            source: true,
+            tag: true,
+          },
+          orderBy: [{ tag: { label: 'asc' } }],
+        },
         mediaLinks: {
           orderBy: [
             { sortOrder: 'asc' },
@@ -962,7 +1080,7 @@ export class EntitiesService {
 
     await this.syncContentRelations(entity.id, entity.content);
 
-    return entity;
+    return this.adminGetById(entity.id);
   }
 
   async adminUpdate(id: string, dto: UpdateEntityDto) {
@@ -1005,7 +1123,7 @@ export class EntitiesService {
 
     await this.syncContentRelations(entity.id, entity.content);
 
-    return entity;
+    return this.adminGetById(entity.id);
   }
 
   async adminDelete(id: string) {
@@ -1036,6 +1154,10 @@ export class EntitiesService {
         artist: true,
         concept: true,
         period: true,
+        tags: {
+          include: { tag: true },
+          orderBy: [{ tag: { label: 'asc' } }],
+        },
         mediaLinks: {
           include: {
             media: true,
@@ -1059,6 +1181,7 @@ export class EntitiesService {
         },
         outgoing: {
           include: {
+            relationType: true,
             to: {
               select: {
                 id: true,
@@ -1076,6 +1199,7 @@ export class EntitiesService {
         },
         incoming: {
           include: {
+            relationType: true,
             from: {
               select: {
                 id: true,
@@ -1102,6 +1226,8 @@ export class EntitiesService {
 
     return {
       ...entity,
+      outgoing: (entity.outgoing ?? []).map((relation: any) => this.serializeRelation(relation)),
+      incoming: (entity.incoming ?? []).map((relation: any) => this.serializeRelation(relation)),
       resolvedMedia: resolvedEntity.resolvedMedia,
       mediaLibrary: buildAdminMediaLibrary(entity),
     };
@@ -1763,10 +1889,11 @@ export class EntitiesService {
       throw new NotFoundException('Entity not found');
     }
 
-    return this.prisma.relation.findMany({
+    const rows = await this.prisma.relation.findMany({
       where: { fromId: entityId },
       orderBy: { type: 'asc' },
       include: {
+        relationType: true,
         to: {
           select: {
             id: true,
@@ -1777,6 +1904,8 @@ export class EntitiesService {
         },
       },
     });
+
+    return rows.map((relation) => this.serializeRelation(relation));
   }
 
   async adminCreateRelation(entityId: string, dto: any) {
@@ -1799,15 +1928,32 @@ export class EntitiesService {
       throw new NotFoundException('Target entity not found');
     }
 
-    return this.prisma.relation.create({
+    const relationType = dto.relationTypeId
+      ? await this.prisma.relationType.findUnique({
+        where: { id: dto.relationTypeId },
+      })
+      : dto.type
+        ? await this.prisma.relationType.findUnique({
+          where: { key: dto.type.trim() },
+        })
+        : null;
+
+    const type = relationType?.key ?? dto.type?.trim();
+    if (!type) {
+      throw new BadRequestException('Relation type is required');
+    }
+
+    const relation = await this.prisma.relation.create({
       data: {
         fromId: entityId,
         toId: dto.toId,
-        type: dto.type.trim(),
+        type,
+        relationTypeId: relationType?.id,
         justification: dto.justification?.trim() || undefined,
         weight: dto.weight,
       },
       include: {
+        relationType: true,
         to: {
           select: {
             id: true,
@@ -1818,6 +1964,8 @@ export class EntitiesService {
         },
       },
     });
+
+    return this.serializeRelation(relation);
   }
 
   async adminDeleteRelation(entityId: string, relationId: string) {
@@ -1852,10 +2000,11 @@ export class EntitiesService {
       throw new NotFoundException('Entity not found');
     }
 
-    return this.prisma.relation.findMany({
+    const rows = await this.prisma.relation.findMany({
       where: { toId: entityId },
       orderBy: { type: 'asc' },
       include: {
+        relationType: true,
         from: {
           select: {
             id: true,
@@ -1866,6 +2015,80 @@ export class EntitiesService {
         },
       },
     });
+
+    return rows.map((relation) => this.serializeRelation(relation));
+  }
+
+  async adminAddTag(entityId: string, dto: { tagId: string; weight?: number; source?: string }) {
+    const entity = await this.prisma.entity.findUnique({
+      where: { id: entityId },
+      select: { id: true },
+    });
+
+    if (!entity) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    const tag = await this.prisma.tag.findUnique({
+      where: { id: dto.tagId },
+      select: { id: true },
+    });
+
+    if (!tag) {
+      throw new NotFoundException('Tag not found');
+    }
+
+    return this.prisma.entityTag.upsert({
+      where: {
+        entityId_tagId: {
+          entityId,
+          tagId: dto.tagId,
+        },
+      },
+      update: {
+        weight: dto.weight ?? null,
+        source: dto.source?.trim() || 'MANUAL',
+      },
+      create: {
+        entityId,
+        tagId: dto.tagId,
+        weight: dto.weight ?? null,
+        source: dto.source?.trim() || 'MANUAL',
+      },
+      include: {
+        tag: true,
+      },
+    });
+  }
+
+  async adminRemoveTag(entityId: string, tagId: string) {
+    const existing = await this.prisma.entityTag.findUnique({
+      where: {
+        entityId_tagId: {
+          entityId,
+          tagId,
+        },
+      },
+      select: {
+        entityId: true,
+        tagId: true,
+      },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Entity tag not found');
+    }
+
+    await this.prisma.entityTag.delete({
+      where: {
+        entityId_tagId: {
+          entityId,
+          tagId,
+        },
+      },
+    });
+
+    return { ok: true };
   }
 
   async adminCreateSourceRef(entityId: string, dto: CreateSourceRefDto) {
@@ -2089,6 +2312,10 @@ export class EntitiesService {
     });
 
     const existingTargetIds = new Set(existingMentions.map((r) => r.toId));
+    const mentionsRelationType = await this.prisma.relationType.findUnique({
+      where: { key: 'MENTIONS' },
+      select: { id: true },
+    });
 
     // Crear nuevas relaciones que no existían
     for (const target of targets) {
@@ -2098,6 +2325,7 @@ export class EntitiesService {
             fromId: entityId,
             toId: target.id,
             type: 'MENTIONS',
+            relationTypeId: mentionsRelationType?.id,
           },
         });
       }

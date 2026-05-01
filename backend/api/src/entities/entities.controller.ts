@@ -240,7 +240,7 @@ export class EntitiesController {
   @Post(':id/relations')
   createRelation(
     @Param('id') id: string,
-    @Body() dto: { toId: string; type: string; justification?: string; weight?: number },
+    @Body() dto: { toId: string; type?: string; relationTypeId?: string; justification?: string; weight?: number },
   ) {
     return this.service.adminCreateRelation(id, dto);
   }
@@ -260,6 +260,26 @@ export class EntitiesController {
   @Get(':id/relations/incoming')
   listIncomingRelations(@Param('id') id: string) {
     return this.service.adminListIncomingRelations(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Post(':id/tags')
+  addTag(
+    @Param('id') id: string,
+    @Body() dto: { tagId: string; weight?: number; source?: string },
+  ) {
+    return this.service.adminAddTag(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Delete(':id/tags/:tagId')
+  removeTag(
+    @Param('id') id: string,
+    @Param('tagId') tagId: string,
+  ) {
+    return this.service.adminRemoveTag(id, tagId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

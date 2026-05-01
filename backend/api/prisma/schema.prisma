@@ -88,6 +88,11 @@ enum SourceType {
   PAPER
 }
 
+enum HomeDeckSurface {
+  HOME
+  RECOMMENDED
+}
+
 model Entity {
   id           String        @id @default(cuid())
   type         EntityType
@@ -126,6 +131,12 @@ model Entity {
   // Collections
   collectionItems CollectionEntity[]
 
+  // Editorial home decks
+  homeDeckItems HomeDeckItem[]
+
+  // Taxonomy
+  tags EntityTag[]
+
   // Type-specific details (1..1, optional)
   artwork ArtworkDetails?
   artist  ArtistDetails?
@@ -138,15 +149,65 @@ model Relation {
   fromId        String
   toId          String
   type          String // "CREATED_BY", "REPRESENTS_CONCEPT", ...
+  relationTypeId String?
   weight        Float?
   justification String?
 
   from Entity @relation("outgoing", fields: [fromId], references: [id])
   to   Entity @relation("incoming", fields: [toId], references: [id])
+  relationType RelationType? @relation(fields: [relationTypeId], references: [id])
 
   @@index([fromId])
   @@index([toId])
   @@index([type])
+  @@index([relationTypeId])
+}
+
+model RelationType {
+  id           String   @id @default(cuid())
+  key          String   @unique
+  label        String
+  inverseLabel String?
+  directed     Boolean  @default(true)
+  category     String?
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  relations Relation[]
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  label       String
+  description String?
+  category    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  entities EntityTag[]
+
+  @@index([category])
+  @@index([isActive])
+}
+
+model EntityTag {
+  entityId String
+  tagId    String
+  weight   Float?
+  source   String?
+  createdAt DateTime @default(now())
+
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([entityId, tagId])
+  @@index([entityId])
+  @@index([tagId])
+  @@index([source])
 }
 
 model Media {
@@ -182,6 +243,7 @@ model Media {
   derivedAssets    Media[] @relation("MediaDerivation")
   entities EntityMedia[]
   collectionCovers Collection[] @relation("CollectionCoverMedia")
+  homeDeckCovers HomeDeck[] @relation("HomeDeckCoverMedia")
 
   @@index([derivedFromMediaId])
 }
@@ -381,4 +443,44 @@ model CollectionEntity {
   @@index([collectionId, sortOrder])
   @@index([entityId])
   @@index([createdAt])
+}
+
+model HomeDeck {
+  id           String   @id @default(cuid())
+  surface      HomeDeckSurface @default(HOME)
+  slug         String   @unique
+  title        String
+  subtitle     String?
+  description  String?
+  ctaLabel     String?
+  ctaUrl       String?
+  ctaRoute     String?
+  imageUrl     String?
+  imageMediaId String?
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  imageMedia Media?         @relation("HomeDeckCoverMedia", fields: [imageMediaId], references: [id], onDelete: SetNull)
+  items      HomeDeckItem[]
+
+  @@index([surface, isActive, sortOrder])
+  @@index([imageMediaId])
+}
+
+model HomeDeckItem {
+  id        String   @id @default(cuid())
+  deckId    String
+  entityId  String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  deck   HomeDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  entity Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([deckId, entityId])
+  @@index([deckId])
+  @@index([deckId, sortOrder])
+  @@index([entityId])
 }

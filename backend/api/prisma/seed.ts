@@ -130,8 +130,12 @@ function inferQualityTier(
 }
 
 async function resetDatabase() {
+  await prisma.homeDeckItem.deleteMany();
+  await prisma.homeDeck.deleteMany();
+
   await prisma.collectionEntity.deleteMany();
   await prisma.savedEntity.deleteMany();
+  await prisma.entityTag.deleteMany();
 
   await prisma.entityMedia.deleteMany();
   await prisma.sourceRef.deleteMany();
@@ -150,6 +154,37 @@ async function resetDatabase() {
   await prisma.source.deleteMany();
 
   await prisma.entity.deleteMany();
+  await prisma.tag.deleteMany();
+}
+
+const RELATION_TYPES = [
+  ['CREATED_BY', 'Creado por', 'Creador de', true, 'authorship', 10],
+  ['BELONGS_TO_MOVEMENT', 'Pertenece al movimiento', 'Incluye entity', true, 'taxonomy', 20],
+  ['BELONGS_TO_PERIOD', 'Pertenece al periodo', 'Incluye entity', true, 'taxonomy', 30],
+  ['ABOUT_CONCEPT', 'Explora el concepto', 'Concepto explorado por', true, 'semantic', 40],
+  ['LOCATED_IN', 'Ubicado en', 'Ubicación de', true, 'context', 50],
+  ['RELATED_TO', 'Relacionado con', 'Relacionado con', false, 'semantic', 60],
+  ['ASSOCIATED_WITH', 'Asociado con', 'Asociado con', false, 'semantic', 70],
+  ['MENTIONS', 'Menciona', 'Mencionado por', true, 'content', 80],
+  ['INSPIRED_BY', 'Inspirado por', 'Inspira a', true, 'influence', 90],
+  ['INFLUENCED_BY', 'Influenciado por', 'Influye en', true, 'influence', 100],
+  ['PART_OF', 'Forma parte de', 'Incluye', true, 'structure', 110],
+  ['DEPICTS', 'Representa', 'Representado en', true, 'semantic', 120],
+  ['SIMILAR_TO', 'Similar a', 'Similar a', false, 'semantic', 130],
+  ['USES_TECHNIQUE', 'Usa técnica', 'Técnica usada por', true, 'material', 140],
+  ['USES_MATERIAL', 'Usa material', 'Material usado por', true, 'material', 150],
+  ['HAS_SUBJECT', 'Tiene tema', 'Tema de', true, 'semantic', 160],
+  ['CURATED_WITH', 'Curado junto a', 'Curado junto a', false, 'editorial', 170],
+] as const;
+
+async function seedRelationTypes() {
+  for (const [key, label, inverseLabel, directed, category, sortOrder] of RELATION_TYPES) {
+    await prisma.relationType.upsert({
+      where: { key },
+      update: { label, inverseLabel, directed, category, sortOrder, isActive: true },
+      create: { key, label, inverseLabel, directed, category, sortOrder, isActive: true },
+    });
+  }
 }
 
 async function createEntityWithOptionalPrimaryMedia(
@@ -212,11 +247,17 @@ async function rel(
   weight?: number,
   justification?: string,
 ) {
+  const relationType = await prisma.relationType.findUnique({
+    where: { key: type },
+    select: { id: true },
+  });
+
   return prisma.relation.create({
     data: {
       fromId,
       toId,
       type,
+      relationTypeId: relationType?.id,
       weight,
       justification,
     },
@@ -226,6 +267,9 @@ async function rel(
 async function main() {
   console.log('🧹 Resetting demo data...');
   await resetDatabase();
+
+  console.log('🔗 Seeding relation types...');
+  await seedRelationTypes();
 
   console.log('📚 Creating sources...');
 
@@ -1368,6 +1412,153 @@ async function main() {
   await rel(maman.id, maternidad.id, 'MENTIONS', 0.8, 'Mención explícita en el contenido.');
   await rel(maman.id, memoria.id, 'MENTIONS', 0.8, 'Mención explícita en el contenido.');
 
+  console.log('🧭 Creating home decks...');
+
+  const homeDecks = [
+    {
+      slug: 'artwork',
+      title: 'Obras',
+      subtitle: 'Piezas clave',
+      description: 'Piezas clave para estudiar forma, técnica, simbolismo y contexto.',
+      ctaLabel: 'Explorar obras',
+      ctaRoute: '/entities/artwork',
+      imageUrl: '/assets/home/artwork.jpg',
+      sortOrder: 0,
+      entities: [guernica, persistencia, dosFridas, maman, saturno, tresDeMayo],
+    },
+    {
+      slug: 'article',
+      title: 'Artículos',
+      subtitle: 'Lecturas editoriales',
+      description: 'Lecturas editoriales, opinión y conexiones entre obras, autores e ideas.',
+      ctaLabel: 'Explorar artículos',
+      ctaRoute: '/entities/article',
+      imageUrl: '/assets/home/concept.jpg',
+      sortOrder: 1,
+      entities: [],
+    },
+    {
+      slug: 'artist',
+      title: 'Artistas',
+      subtitle: 'Trayectorias visuales',
+      description: 'Autores, trayectorias, obsesiones visuales e influencias cruzadas.',
+      ctaLabel: 'Explorar artistas',
+      ctaRoute: '/entities/artist',
+      imageUrl: '/assets/home/artist.jpg',
+      sortOrder: 2,
+      entities: [goya, picasso, dali, frida, bourgeois],
+    },
+    {
+      slug: 'movement',
+      title: 'Movimientos',
+      subtitle: 'Ideas en movimiento',
+      description: 'Corrientes estéticas e ideas que redefinieron la historia del arte.',
+      ctaLabel: 'Explorar movimientos',
+      ctaRoute: '/entities/movement',
+      imageUrl: '/assets/home/movement.jpg',
+      sortOrder: 3,
+      entities: [romanticismo, cubismo, surrealismo, arteModerno, arteContemporaneo],
+    },
+    {
+      slug: 'period',
+      title: 'Períodos',
+      subtitle: 'Contexto histórico',
+      description: 'Etapas históricas para entender cambios culturales y visuales.',
+      ctaLabel: 'Explorar períodos',
+      ctaRoute: '/entities/period',
+      imageUrl: '/assets/home/period.jpg',
+      sortOrder: 4,
+      entities: [periodXIX, periodXX, periodXXI],
+    },
+    {
+      slug: 'concept',
+      title: 'Conceptos',
+      subtitle: 'Claves de lectura',
+      description: 'Ideas fundamentales para leer obras y relaciones con más claridad.',
+      ctaLabel: 'Explorar conceptos',
+      ctaRoute: '/entities/concept',
+      imageUrl: '/assets/home/concept.jpg',
+      sortOrder: 5,
+      entities: [tiempo, memoria, guerra, identidad, cuerpo, dolor, maternidad, violencia],
+    },
+  ];
+
+  const recommendedDecks = [
+    {
+      slug: 'magia-en-el-arte',
+      title: 'La magia en el arte',
+      subtitle: 'Staff Pick',
+      description: 'Una selección curada para entrar a Jano por piezas clave y conexiones fuertes.',
+      ctaLabel: 'Ver selección',
+      imageUrl: '/assets/home/artwork.jpg',
+      sortOrder: 0,
+      entities: [persistencia, surrealismo, memoria, tiempo, identidad, cuerpo],
+    },
+    {
+      slug: 'memoria-y-trauma',
+      title: 'Memoria y trauma',
+      subtitle: 'Curated List',
+      description: 'Obras, conceptos y relaciones para leer la persistencia de la memoria histórica.',
+      ctaLabel: 'Ver recorrido',
+      imageUrl: '/assets/home/concept.jpg',
+      sortOrder: 1,
+      entities: [guernica, guerra, violencia, memoria, tresDeMayo, saturno],
+    },
+  ];
+
+  for (const deck of homeDecks) {
+    const createdDeck = await prisma.homeDeck.create({
+      data: {
+        slug: deck.slug,
+        title: deck.title,
+        subtitle: deck.subtitle,
+        description: deck.description,
+        ctaLabel: deck.ctaLabel,
+        ctaRoute: deck.ctaRoute,
+        imageUrl: deck.imageUrl,
+        surface: 'HOME',
+        sortOrder: deck.sortOrder,
+        isActive: true,
+      },
+    });
+
+    for (const [index, entity] of deck.entities.entries()) {
+      await prisma.homeDeckItem.create({
+        data: {
+          deckId: createdDeck.id,
+          entityId: entity.id,
+          sortOrder: index,
+        },
+      });
+    }
+  }
+
+  for (const deck of recommendedDecks) {
+    const createdDeck = await prisma.homeDeck.create({
+      data: {
+        slug: deck.slug,
+        title: deck.title,
+        subtitle: deck.subtitle,
+        description: deck.description,
+        ctaLabel: deck.ctaLabel,
+        imageUrl: deck.imageUrl,
+        surface: 'RECOMMENDED',
+        sortOrder: deck.sortOrder,
+        isActive: true,
+      },
+    });
+
+    for (const [index, entity] of deck.entities.entries()) {
+      await prisma.homeDeckItem.create({
+        data: {
+          deckId: createdDeck.id,
+          entityId: entity.id,
+          sortOrder: index,
+        },
+      });
+    }
+  }
+
   console.log('✅ Real art seed created successfully.');
   console.log('Entities created:');
   console.log('- 3 periods');
@@ -1376,6 +1567,8 @@ async function main() {
   console.log('- 4 places');
   console.log('- 5 artists');
   console.log('- 6 artworks');
+  console.log('- 6 home decks');
+  console.log('- 2 recommended decks');
 }
 
 main()

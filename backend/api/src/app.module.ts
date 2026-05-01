@@ -7,6 +7,10 @@ import { UsersModule } from './users/users.module';
 import { SavedModule } from './saved/saved.module';
 import { CollectionsModule } from './collections/collections.module';
 import { AppSettingsModule } from './app-settings/app-settings.module';
+import { HomeDecksModule } from './home-decks/home-decks.module';
+import { SearchModule } from './search/search.module';
+import { RelationTypesModule } from './relation-types/relation-types.module';
+import { TagsModule } from './tags/tags.module';
 import { validateEnv } from './config/env.validation';
 
 @Module({
@@ -23,6 +27,10 @@ import { validateEnv } from './config/env.validation';
     SavedModule,
     CollectionsModule,
     AppSettingsModule,
+    HomeDecksModule,
+    SearchModule,
+    RelationTypesModule,
+    TagsModule,
   ],
 })
 export class AppModule { }

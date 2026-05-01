@@ -14,6 +14,10 @@ export class ListEntitiesQuery {
   q?: string;
 
   @IsOptional()
+  @IsString()
+  deck?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
@@ -53,4 +57,8 @@ sort?: 'recent' | 'title' | 'relevance';
   @IsOptional()
   @IsString()
   nationality?: string;
+
+  @IsOptional()
+  @IsString()
+  tag?: string;
 }
