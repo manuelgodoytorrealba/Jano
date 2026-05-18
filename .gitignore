@@ -1,6 +1,9 @@
 .DS_Store
 .env
 
+node_modules
+package-lock.json
+
 backend/api/.env
 backend/api/dist
 backend/api/node_modules
