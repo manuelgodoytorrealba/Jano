@@ -66,7 +66,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8081:8080" # 🔥 cambiado para evitar conflicto con Pi-hole
+      - "8082:8080" # 🔥 cambiado para evitar conflicto con Pi-hole
 
 volumes:
   jano_pgdata:
