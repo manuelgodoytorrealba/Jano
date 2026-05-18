@@ -1,4 +1,8 @@
-<header class="app-chrome__header app-glass" [class.app-chrome__header--collapsed]="headerCollapsed()">
+<header
+  class="app-chrome__header app-glass"
+  [class.app-chrome__header--collapsed]="headerCollapsed()"
+  [class.app-chrome__header--detail]="detailHeaderMode()"
+>
   <a class="app-chrome__brand" routerLink="/" aria-label="Ir al inicio de JANO">
     <span class="app-chrome__brand-mark">J</span>
     <span class="app-chrome__brand-copy">
@@ -52,7 +56,7 @@
     }
   </nav>
 
-  @if (compactHeaderEnabled()) {
+  @if (showHeaderCloseButton()) {
     <button
       type="button"
       class="app-chrome__header-toggle app-chrome__header-toggle--close"
@@ -65,14 +69,14 @@
   }
 </header>
 
-@if (compactHeaderEnabled()) {
+@if (headerToggleVisible()) {
   <button
     type="button"
     class="app-chrome__header-toggle app-chrome__header-toggle--open"
-    [class.app-chrome__header-toggle--visible]="headerCollapsed()"
-    aria-label="Mostrar header"
-    title="Mostrar header"
-    (click)="expandHeader()"
+    [class.app-chrome__header-toggle--visible]="headerCollapsed() || detailHeaderMode()"
+    [attr.aria-label]="headerCollapsed() ? 'Mostrar header' : 'Ocultar header'"
+    [title]="headerCollapsed() ? 'Mostrar header' : 'Ocultar header'"
+    (click)="toggleDetailHeader()"
   >
     <span class="app-chrome__header-toggle-bars" aria-hidden="true">
       <span></span>

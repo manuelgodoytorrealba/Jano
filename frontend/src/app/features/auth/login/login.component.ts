@@ -3,9 +3,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  NgZone,
+  OnDestroy,
+  PLATFORM_ID,
   ViewChild,
   inject,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -28,13 +32,18 @@ type Particle = {
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements AfterViewInit {
+export class LoginComponent implements AfterViewInit, OnDestroy {
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private zone = inject(NgZone);
+  private platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private animationFrameId: number | null = null;
+  private removeCanvasListeners: (() => void) | null = null;
 
   loading = false;
   error = '';
@@ -45,11 +54,33 @@ export class LoginComponent implements AfterViewInit {
   });
 
   ngAfterViewInit() {
-    const canvas = this.canvasRef.nativeElement;
+    if (!this.isBrowser) {
+      return;
+    }
+
+    const canvas = this.canvasRef?.nativeElement;
+    if (!canvas) {
+      return;
+    }
+
     const ctx = canvas.getContext('2d');
 
     if (!ctx) return;
 
+    this.zone.runOutsideAngular(() => this.startCanvasAnimation(canvas, ctx));
+  }
+
+  ngOnDestroy(): void {
+    if (this.animationFrameId !== null && this.isBrowser) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+
+    this.removeCanvasListeners?.();
+    this.removeCanvasListeners = null;
+  }
+
+  private startCanvasAnimation(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
     let width = 0;
     let height = 0;
     let centerX = 0;
@@ -62,7 +93,8 @@ export class LoginComponent implements AfterViewInit {
       active: false,
     };
 
-    const particleCount = 220;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const particleCount = Math.min(180, Math.max(96, Math.round(window.innerWidth / 9)));
 
     const particles: Particle[] = Array.from({ length: particleCount }, () => ({
       angle: Math.random() * Math.PI * 2,
@@ -128,22 +160,34 @@ export class LoginComponent implements AfterViewInit {
         ctx.stroke();
       }
 
-      requestAnimationFrame(draw);
+      this.animationFrameId = requestAnimationFrame(draw);
     };
 
     resize();
 
-    window.addEventListener('resize', resize);
+    if (reducedMotion) {
+      return;
+    }
 
-    window.addEventListener('mousemove', (event) => {
+    const handleMouseMove = (event: MouseEvent) => {
       mouse.x = event.clientX;
       mouse.y = event.clientY;
       mouse.active = true;
-    });
+    };
 
-    window.addEventListener('mouseleave', () => {
+    const handleMouseLeave = () => {
       mouse.active = false;
-    });
+    };
+
+    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('mouseleave', handleMouseLeave, { passive: true });
+
+    this.removeCanvasListeners = () => {
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+    };
 
     draw();
   }

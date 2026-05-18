@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { GraphEdge, GraphRenderedEdge, GraphRenderedNode, GraphTooltip } from './graph.models';
 
 @Component({
@@ -17,8 +17,14 @@ export class GraphSceneComponent {
   @Input({ required: true }) renderedNodes: GraphRenderedNode[] = [];
   @Input({ required: true }) edgeLabelVisibility: Record<string, boolean> = {};
   @Input({ required: true }) nodeLabelVisibility: Record<string, boolean> = {};
+  @Input() interactionActive = false;
   @Input() tooltip: GraphTooltip | null = null;
   @Input() tooltipStyle: Record<string, string> = {};
+
+  @HostBinding('class.is-interacting')
+  get isInteracting(): boolean {
+    return this.interactionActive;
+  }
 
   @Output() nodePointerDown = new EventEmitter<{ event: PointerEvent; nodeId: string }>();
   @Output() nodePointerMove = new EventEmitter<PointerEvent>();

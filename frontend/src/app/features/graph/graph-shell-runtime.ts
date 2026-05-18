@@ -1,6 +1,7 @@
 import { Router } from '@angular/router';
 import { GraphViewportFocusPlan } from './graph-focus';
 import { createGraphWheelViewport } from './graph-stage-interactions';
+import { GraphStageRect } from './graph-interaction';
 import { GraphData, GraphNode, GraphPoint, GraphViewport } from './graph.models';
 import { ImageViewport, ImageViewportOptions } from './image-viewport';
 import {
@@ -126,7 +127,7 @@ export function runOpenSelectedEntityRuntime(options: {
 }
 
 export function runAdjustGraphZoomRuntime(options: {
-  stage: HTMLElement | null | undefined;
+  rect: GraphStageRect | null;
   currentViewport: GraphViewport;
   factor: number;
   cancelPendingInitialGraphFocus: () => void;
@@ -134,7 +135,7 @@ export function runAdjustGraphZoomRuntime(options: {
   scheduleViewport: (viewport: GraphViewport) => void;
 }): void {
   const next = createGraphZoomRuntime({
-    stage: options.stage,
+    rect: options.rect,
     currentViewport: options.currentViewport,
     factor: options.factor,
   });
@@ -181,14 +182,14 @@ export function runAdjustImageZoomRuntime(options: {
 
 export function runGraphWheelRuntime(options: {
   event: WheelEvent;
-  stage: HTMLElement | null | undefined;
+  rect: GraphStageRect | null;
   currentViewport: GraphViewport;
   cancelPendingInitialGraphFocus: () => void;
   clearViewportTarget: () => void;
   scheduleViewport: (viewport: GraphViewport) => void;
 }): void {
   options.event.preventDefault();
-  if (!options.stage) {
+  if (!options.rect) {
     return;
   }
 
@@ -201,7 +202,7 @@ export function runGraphWheelRuntime(options: {
       factor,
       clientX: options.event.clientX,
       clientY: options.event.clientY,
-      rect: options.stage.getBoundingClientRect(),
+      rect: options.rect,
     }),
   );
 }

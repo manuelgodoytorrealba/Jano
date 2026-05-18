@@ -10,7 +10,7 @@ import { ssrApiOriginInterceptor } from './core/api/ssr-api-origin.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZoneChangeDetection({ eventCoalescing: true, runCoalescing: true }),
     provideClientHydration(withEventReplay()),
     provideRouter(routes),
     provideHttpClient(withFetch(), withInterceptors([ssrApiOriginInterceptor, authInterceptor]))

@@ -29,6 +29,10 @@ export class App {
     return url === '/entities' || url.startsWith('/entities/');
   }
 
+  isEntityDetailRoute(): boolean {
+    return this.router.url.split('?')[0].startsWith('/entity/');
+  }
+
   backgroundImageStyle(): string | null {
     const url = this.appearance.backgroundImageUrl();
     return url ? `url("${url.replace(/"/g, '%22')}")` : null;

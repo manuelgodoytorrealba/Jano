@@ -1,5 +1,7 @@
 import { GraphPoint, GraphTooltip } from './graph.models';
 
+export type GraphStageRect = Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>;
+
 export type GraphPointerSession =
   | {
       kind: 'graph-pan';
@@ -14,6 +16,7 @@ export type GraphPointerSession =
       nodeId: string;
       originClient: GraphPoint;
       pointerOffset: GraphPoint;
+      stageRect: GraphStageRect;
       moved: boolean;
     }
   | {
@@ -91,6 +94,7 @@ export function createNodeDragSession(
   nodeId: string,
   client: GraphPoint,
   pointerOffset: GraphPoint,
+  stageRect: GraphStageRect,
 ): GraphPointerSession {
   return {
     kind: 'node-drag',
@@ -98,6 +102,7 @@ export function createNodeDragSession(
     nodeId,
     originClient: client,
     pointerOffset,
+    stageRect,
     moved: false,
   };
 }

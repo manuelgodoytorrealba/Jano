@@ -110,7 +110,6 @@ export function runNodePointerMoveRuntime(options: {
   pointerSession: GraphPointerSession | null;
   event: PointerEvent;
   graph: GraphData | null;
-  stage: HTMLElement | null | undefined;
   currentViewport: GraphViewport;
   pinCenterNode: () => void;
   bumpRenderTick: () => void;
@@ -121,7 +120,7 @@ export function runNodePointerMoveRuntime(options: {
     return;
   }
 
-  if (!options.graph || !options.stage) {
+  if (!options.graph) {
     return;
   }
 
@@ -129,7 +128,6 @@ export function runNodePointerMoveRuntime(options: {
     session: options.pointerSession,
     event: options.event,
     graph: options.graph,
-    rect: options.stage.getBoundingClientRect(),
     currentViewport: options.currentViewport,
   });
 

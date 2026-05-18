@@ -97,6 +97,10 @@
   overflow: hidden;
 }
 
+.app-shell--detail .app-shell__content {
+  padding-top: clamp(0.45rem, 1vw, 0.9rem);
+}
+
 @media (max-width: 860px) {
   .app-shell__content {
     padding:
@@ -105,5 +109,10 @@
 
   .app-shell--immersive .app-shell__content {
     padding: 0;
+  }
+
+  .app-shell--detail .app-shell__content {
+    padding:
+      clamp(0.45rem, 1vw, 0.9rem) var(--app-shell-gap) calc(var(--app-shell-gap) + 92px) var(--app-shell-gap);
   }
 }

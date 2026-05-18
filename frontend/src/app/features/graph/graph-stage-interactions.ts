@@ -5,6 +5,7 @@ import {
   createGraphTooltip,
   createNodeDragSession,
   didNodeDragMove,
+  GraphStageRect,
   GraphPointerSession,
   markNodeDragMoved,
   shouldSuppressHover,
@@ -18,7 +19,7 @@ export function createGraphWheelViewport(options: {
   factor: number;
   clientX: number;
   clientY: number;
-  rect: DOMRect;
+  rect: GraphStageRect;
 }): GraphViewport {
   return zoomGraphViewport(
     options.currentViewport,
@@ -32,7 +33,7 @@ export function createGraphWheelViewport(options: {
 export function createGraphZoomViewport(options: {
   currentViewport: GraphViewport;
   factor: number;
-  rect: DOMRect;
+  rect: GraphStageRect;
 }): GraphViewport {
   return zoomGraphViewport(
     options.currentViewport,
@@ -77,7 +78,7 @@ export function endGraphPointerSession(event: PointerEvent): void {
 export function graphClientToWorld(
   clientX: number,
   clientY: number,
-  rect: DOMRect,
+  rect: GraphStageRect,
   viewport: GraphViewport,
 ): GraphPoint {
   return {
@@ -110,6 +111,12 @@ export function beginNodeDragSession(options: {
       x: worldPoint.x - options.nodePoint.x,
       y: worldPoint.y - options.nodePoint.y,
     },
+    {
+      left: options.rect.left,
+      top: options.rect.top,
+      width: options.rect.width,
+      height: options.rect.height,
+    },
   ) as Extract<GraphPointerSession, { kind: 'node-drag' }>;
 }
 
@@ -117,7 +124,6 @@ export function moveNodeDragSession(options: {
   session: Extract<GraphPointerSession, { kind: 'node-drag' }>;
   event: PointerEvent;
   graph: GraphData;
-  rect: DOMRect;
   currentViewport: GraphViewport;
 }): {
   moved: boolean;
@@ -147,7 +153,7 @@ export function moveNodeDragSession(options: {
   const worldPoint = graphClientToWorld(
     options.event.clientX,
     options.event.clientY,
-    options.rect,
+    options.session.stageRect,
     options.currentViewport,
   );
 

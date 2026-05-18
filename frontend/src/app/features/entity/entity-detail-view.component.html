@@ -1,5 +1,10 @@
 @if (entity; as entity) {
-<div class="entity-detail page-shell">
+<div
+  class="entity-detail page-shell"
+  [class.entity-detail--workspace-focus]="workspaceFocused"
+  [class.entity-detail--image-focus]="workspaceMode === 'image'"
+  [class.entity-detail--graph-focus]="workspaceMode === 'graph'"
+>
   <div class="entity-detail__layout">
     @if (isArticle(entity)) {
     <section class="entity-section entity-glass entity-section--wide entity-article-hero">
@@ -57,9 +62,21 @@
           </button>
           }
         </div>
+        <button
+          type="button"
+          class="entity-explorer__workspace-btn entity-explorer__workspace-btn--focus"
+          [attr.aria-pressed]="workspaceFocused"
+          (click)="toggleWorkspaceFocus()"
+        >
+          {{ workspaceFocused ? 'Exit Focus' : 'Focus' }}
+        </button>
       </div>
     </div>
-    <section class="entity-explorer entity-glass" [attr.data-workspace-mode]="workspaceMode">
+    <section
+      class="entity-explorer entity-glass"
+      [class.entity-explorer--focused]="workspaceFocused"
+      [attr.data-workspace-mode]="workspaceMode"
+    >
       @if (renderGraph) {
       <app-graph
         [slug]="entity.slug"
@@ -68,6 +85,7 @@
         [imageAlt]="visualAlt(entity)"
         [entityTitle]="entity.title"
         [entityType]="entity.type"
+        [workspaceFocused]="workspaceFocused"
         [imageMeta]="{
           source: detailMedia(entity)?.source ?? null,
           photoBy: detailMedia(entity)?.photoBy ?? null,
@@ -232,7 +250,7 @@
           <p class="text-muted">No hay conexiones directas desde esta entidad.</p>
           } @else {
           <ul class="relations-list">
-            @for (r of entity.outgoing; track r.id) {
+            @for (r of visibleOutgoingRelations(entity); track r.id) {
             <li class="relation-card entity-glass-card relation-card--friendly">
               <div class="relation-card__topline">
                 <span class="relation-card__label">{{ r.relationTypeLabel ?? relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing') }}</span>
@@ -244,6 +262,11 @@
             </li>
             }
           </ul>
+          @if (hiddenOutgoingRelations(entity) > 0) {
+          <button type="button" class="relations-reveal" (click)="showMoreOutgoingRelations()">
+            Mostrar {{ hiddenOutgoingRelations(entity) > 48 ? 48 : hiddenOutgoingRelations(entity) }} más
+          </button>
+          }
           }
         </div>
 
@@ -253,7 +276,7 @@
           <p class="text-muted">No hay otras entidades conectando hacia esta.</p>
           } @else {
           <ul class="relations-list">
-            @for (r of entity.incoming; track r.id) {
+            @for (r of visibleIncomingRelations(entity); track r.id) {
             <li class="relation-card entity-glass-card relation-card--friendly">
               <div class="relation-card__topline">
                 <span class="relation-card__label">{{ r.relationType?.inverseLabel ?? r.relationTypeLabel ?? relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming') }}</span>
@@ -265,6 +288,11 @@
             </li>
             }
           </ul>
+          @if (hiddenIncomingRelations(entity) > 0) {
+          <button type="button" class="relations-reveal" (click)="showMoreIncomingRelations()">
+            Mostrar {{ hiddenIncomingRelations(entity) > 48 ? 48 : hiddenIncomingRelations(entity) }} más
+          </button>
+          }
           }
         </div>
       </section>

@@ -1,5 +1,6 @@
 import { GraphPoint, GraphViewport } from './graph.models';
 import { GraphBounds } from './graph-layout';
+import { GraphStageRect } from './graph-interaction';
 
 export const GRAPH_MIN_SCALE = 0.38;
 export const GRAPH_MAX_SCALE = 2.4;
@@ -27,7 +28,7 @@ export function panGraphViewport(viewport: GraphViewport, deltaX: number, deltaY
 export function clientToGraphWorld(
   clientX: number,
   clientY: number,
-  rect: DOMRect,
+  rect: GraphStageRect,
   viewport: GraphViewport,
 ): GraphPoint {
   return {
@@ -41,7 +42,7 @@ export function zoomGraphViewport(
   factor: number,
   clientX: number,
   clientY: number,
-  rect: DOMRect,
+  rect: GraphStageRect,
 ): GraphViewport {
   const worldAnchor = clientToGraphWorld(clientX, clientY, rect, viewport);
   const scale = clamp(viewport.scale * factor, GRAPH_MIN_SCALE, GRAPH_MAX_SCALE);

@@ -4,7 +4,7 @@ import {
   createNodeFocusPlan,
   GraphViewportFocusPlan,
 } from './graph-focus';
-import { GraphPointerSession } from './graph-interaction';
+import { GraphPointerSession, GraphStageRect } from './graph-interaction';
 import {
   canHandleHover,
   createEdgeHoverTooltip,
@@ -71,18 +71,18 @@ export function createNodeFocusRuntime(options: {
 }
 
 export function createGraphZoomRuntime(options: {
-  stage: HTMLElement | null | undefined;
+  rect: GraphStageRect | null;
   currentViewport: GraphViewport;
   factor: number;
 }): GraphViewport | null {
-  if (!options.stage) {
+  if (!options.rect) {
     return null;
   }
 
   return createGraphZoomViewport({
     currentViewport: options.currentViewport,
     factor: options.factor,
-    rect: options.stage.getBoundingClientRect(),
+    rect: options.rect,
   });
 }
 

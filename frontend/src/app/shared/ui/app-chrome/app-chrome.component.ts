@@ -40,6 +40,7 @@ export class AppChromeComponent {
   private readonly pendingUrl = signal<string | null>(null);
   readonly compactHeaderEnabled = signal(this.readCompactHeaderEnabled());
   readonly headerCollapsed = signal(false);
+  readonly detailHeaderRevealed = signal(false);
 
   readonly navItems: HeaderNavItem[] = [
     { label: 'Descubrir', route: '/', kind: 'route', group: 'public', exact: true },
@@ -75,6 +76,7 @@ export class AppChromeComponent {
 
       this.currentUrl.set(this.normalizeUrl(this.router.url));
       this.pendingUrl.set(null);
+      this.syncDetailHeaderState();
     });
 
     if (typeof window !== 'undefined') {
@@ -82,11 +84,19 @@ export class AppChromeComponent {
         const compact = this.readCompactHeaderEnabled();
         this.compactHeaderEnabled.set(compact);
 
-        if (!compact && this.headerCollapsed()) {
+        if (!compact && !this.isDetailRoute() && this.headerCollapsed()) {
           this.headerCollapsed.set(false);
         }
       });
+
+      fromEvent<KeyboardEvent>(window, 'keydown').pipe(takeUntilDestroyed()).subscribe((event) => {
+        if (event.key === 'Escape' && this.isDetailRoute()) {
+          this.revealDetailHeader();
+        }
+      });
     }
+
+    this.syncDetailHeaderState();
   }
 
   private readCompactHeaderEnabled(): boolean {
@@ -108,15 +118,67 @@ export class AppChromeComponent {
   }
 
   collapseHeader(): void {
-    if (!this.compactHeaderEnabled()) {
+    if (!this.compactHeaderEnabled() && !this.isDetailRoute()) {
       return;
     }
 
     this.headerCollapsed.set(true);
+    this.detailHeaderRevealed.set(false);
   }
 
   expandHeader(): void {
     this.headerCollapsed.set(false);
+    if (this.isDetailRoute()) {
+      this.detailHeaderRevealed.set(true);
+    }
+  }
+
+  toggleDetailHeader(): void {
+    if (!this.isDetailRoute()) {
+      this.expandHeader();
+      return;
+    }
+
+    if (this.headerCollapsed()) {
+      this.expandHeader();
+      return;
+    }
+
+    this.collapseHeader();
+  }
+
+  detailHeaderMode(): boolean {
+    return this.isDetailRoute();
+  }
+
+  headerToggleVisible(): boolean {
+    return this.compactHeaderEnabled() || this.detailHeaderMode();
+  }
+
+  showHeaderCloseButton(): boolean {
+    return this.compactHeaderEnabled() && !this.detailHeaderMode();
+  }
+
+  private syncDetailHeaderState(): void {
+    if (this.isDetailRoute()) {
+      this.minimizeDetailHeader();
+      return;
+    }
+
+    this.detailHeaderRevealed.set(false);
+    if (!this.compactHeaderEnabled()) {
+      this.headerCollapsed.set(false);
+    }
+  }
+
+  private revealDetailHeader(): void {
+    this.headerCollapsed.set(false);
+    this.detailHeaderRevealed.set(true);
+  }
+
+  private minimizeDetailHeader(): void {
+    this.headerCollapsed.set(true);
+    this.detailHeaderRevealed.set(false);
   }
 
   contextualUtilityItems(): UtilityItem[] {

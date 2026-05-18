@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GraphComponent } from '../graph/graph.component';
@@ -22,6 +22,9 @@ type DetailWorkspaceMode = 'split' | 'image' | 'graph';
   styleUrls: ['./entity-detail-view.component.scss'],
 })
 export class EntityDetailViewComponent {
+  private static readonly INITIAL_RELATION_LIMIT = 48;
+  private static readonly RELATION_LIMIT_STEP = 48;
+
   @Input() entity: any | null = null;
   @Input() showActions = false;
   @Input() isSaved = false;
@@ -33,6 +36,9 @@ export class EntityDetailViewComponent {
   @Output() collectionsToggle = new EventEmitter<void>();
   @Output() shareToggle = new EventEmitter<void>();
   workspaceMode: DetailWorkspaceMode = 'split';
+  workspaceFocused = false;
+  outgoingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
+  incomingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   readonly workspaceModes: Array<{ value: DetailWorkspaceMode; label: string }> = [
     { value: 'split', label: 'Split View' },
     { value: 'image', label: 'Image Focus' },
@@ -42,11 +48,24 @@ export class EntityDetailViewComponent {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['entity'] && !changes['entity'].firstChange) {
       this.workspaceMode = 'split';
+      this.workspaceFocused = false;
+      this.resetRelationLimits();
     }
   }
 
   setWorkspaceMode(mode: DetailWorkspaceMode): void {
     this.workspaceMode = mode;
+  }
+
+  toggleWorkspaceFocus(): void {
+    this.workspaceFocused = !this.workspaceFocused;
+  }
+
+  @HostListener('window:keydown.escape')
+  exitWorkspaceFocus(): void {
+    if (this.workspaceFocused) {
+      this.workspaceFocused = false;
+    }
   }
 
   primaryMedia(entity: any) {
@@ -219,6 +238,35 @@ export class EntityDetailViewComponent {
 
   incomingByType(entity: any, type: string) {
     return (entity?.incoming ?? []).filter((r: any) => r.type === type);
+  }
+
+  visibleOutgoingRelations(entity: any): any[] {
+    return (entity?.outgoing ?? []).slice(0, this.outgoingRelationLimit);
+  }
+
+  visibleIncomingRelations(entity: any): any[] {
+    return (entity?.incoming ?? []).slice(0, this.incomingRelationLimit);
+  }
+
+  hiddenOutgoingRelations(entity: any): number {
+    return Math.max(0, (entity?.outgoing?.length ?? 0) - this.outgoingRelationLimit);
+  }
+
+  hiddenIncomingRelations(entity: any): number {
+    return Math.max(0, (entity?.incoming?.length ?? 0) - this.incomingRelationLimit);
+  }
+
+  showMoreOutgoingRelations(): void {
+    this.outgoingRelationLimit += EntityDetailViewComponent.RELATION_LIMIT_STEP;
+  }
+
+  showMoreIncomingRelations(): void {
+    this.incomingRelationLimit += EntityDetailViewComponent.RELATION_LIMIT_STEP;
+  }
+
+  private resetRelationLimits(): void {
+    this.outgoingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
+    this.incomingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   }
 
   relatedOutgoing(entity: any, type: string) {

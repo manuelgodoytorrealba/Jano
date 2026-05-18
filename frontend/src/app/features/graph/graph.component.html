@@ -6,12 +6,13 @@
     [class.explorer-shell--mode-split]="workspaceMode === 'split'"
     [class.explorer-shell--mode-image]="workspaceMode === 'image'"
     [class.explorer-shell--mode-graph]="workspaceMode === 'graph'"
+    [class.explorer-shell--focused]="workspaceFocused"
   >
     <div class="explorer-canvas">
       <section
         class="explorer-image-pane"
-        [class.explorer-pane--collapsed]="workspaceMode === 'graph'"
-        [attr.aria-hidden]="workspaceMode === 'graph' ? 'true' : null"
+        [class.explorer-pane--collapsed]="workspaceMode === 'graph' && !workspaceFocused"
+        [attr.aria-hidden]="workspaceMode === 'graph' && !workspaceFocused ? 'true' : null"
       >
         <div
           #imageStage
@@ -104,9 +105,9 @@
 
       <section
         class="explorer-graph-pane"
-        [class.explorer-pane--collapsed]="workspaceMode === 'image'"
+        [class.explorer-pane--collapsed]="workspaceMode === 'image' && !workspaceFocused"
         [class.explorer-graph-pane--inspector-hidden]="!inspectorVisible()"
-        [attr.aria-hidden]="workspaceMode === 'image' ? 'true' : null"
+        [attr.aria-hidden]="workspaceMode === 'image' && !workspaceFocused ? 'true' : null"
       >
         <app-graph-controls-bar
           [labelsMode]="labelsMode()"
@@ -136,8 +137,9 @@
             [viewportTransform]="graphViewportTransform()"
             [renderedEdges]="renderedEdges()"
             [renderedNodes]="renderedNodes()"
-            [edgeLabelVisibility]="graphDerived().edgeLabelVisibility"
-            [nodeLabelVisibility]="graphDerived().nodeLabelVisibility"
+            [edgeLabelVisibility]="activeEdgeLabelVisibility()"
+            [nodeLabelVisibility]="activeNodeLabelVisibility()"
+            [interactionActive]="graphInteractionActive()"
             [tooltip]="tooltip()"
             [tooltipStyle]="tooltipStyle()"
             (nodePointerDown)="onNodePointerDown($event.event, $event.nodeId)"
@@ -178,6 +180,7 @@
     [class.explorer-shell--mode-split]="workspaceMode === 'split'"
     [class.explorer-shell--mode-image]="workspaceMode === 'image'"
     [class.explorer-shell--mode-graph]="workspaceMode === 'graph'"
+    [class.explorer-shell--focused]="workspaceFocused"
     aria-hidden="true"
   >
     <div class="explorer-canvas">

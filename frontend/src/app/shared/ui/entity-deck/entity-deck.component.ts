@@ -183,16 +183,6 @@ export class EntityDeckComponent {
         return '0';
     }
 
-    cardFilter(index: number): string {
-        const list = this.items();
-        const abs = Math.abs(this.relativeIndex(index, this.activeIndex(), list.length));
-
-        if (abs === 0) return 'blur(0px)';
-        if (abs === 1) return 'blur(0.8px) saturate(0.9)';
-        if (abs === 2) return 'blur(1.4px) saturate(0.82)';
-        return 'blur(2px)';
-    }
-
     cardZ(index: number): number {
         const list = this.items();
         const abs = Math.abs(this.relativeIndex(index, this.activeIndex(), list.length));

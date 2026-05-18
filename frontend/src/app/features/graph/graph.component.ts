@@ -20,6 +20,7 @@ import { EntitiesApi } from '../../core/api/entities.api';
 import { MediaLike, resolveMediaPresentation } from '../../shared/media/media.utils';
 import {
   currentDraggedNodeId,
+  GraphStageRect,
   GraphPointerSession,
   shouldSuppressHover,
 } from './graph-interaction';
@@ -174,6 +175,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() entityTitle = '';
   @Input() entityType = '';
   @Input() imageMeta: ImageMeta | null = null;
+  @Input() workspaceFocused = false;
 
   private graphStage?: ElementRef<HTMLDivElement>;
   private imageStage?: ElementRef<HTMLDivElement>;
@@ -210,10 +212,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly initialGraphViewportReady = signal(true);
   readonly graphViewportAnimating = signal(false);
   readonly inspectorVisible = signal(true);
+  readonly graphInteractionActive = signal(false);
 
   private loadSub?: Subscription;
   private graphResizeObserver?: ResizeObserver;
   private imageResizeObserver?: ResizeObserver;
+  private graphStageRectCache: GraphStageRect | null = null;
+  private graphInteractionSettleTimer: ReturnType<typeof setTimeout> | null = null;
   private frameId: number | null = null;
   private targetImageViewport: ImageViewport | null = null;
   private positions: Record<string, GraphPoint> = {};
@@ -282,6 +287,24 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphViewport().scale));
   readonly imagePresentation = computed(() => resolveMediaPresentation(this.imageMedia));
   readonly hasImageSource = computed(() => !!(this.imagePresentation().src || this.imageUrl));
+  readonly activeEdgeLabelVisibility = computed(() =>
+    this.graphInteractionActive() ? {} : this.graphDerived().edgeLabelVisibility,
+  );
+  readonly activeNodeLabelVisibility = computed(() => {
+    const derived = this.graphDerived();
+    if (!this.graphInteractionActive()) {
+      return derived.nodeLabelVisibility;
+    }
+
+    const visible: Record<string, boolean> = {};
+    if (derived.centerNode) {
+      visible[derived.centerNode.id] = true;
+    }
+    if (derived.selectedNode) {
+      visible[derived.selectedNode.id] = true;
+    }
+    return visible;
+  });
 
   ngOnChanges(changes: SimpleChanges): void {
     const next = resolveGraphInputChangesRuntime({
@@ -355,6 +378,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.viewportController.destroy(this.isBrowser);
     this.tooltipController.destroy(this.isBrowser);
     this.initialFocusController.destroy(this.isBrowser);
+    this.clearGraphInteractionSettleTimer();
   }
 
   private loadGraph(): void {
@@ -547,6 +571,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     this.graphSize.set(nextSize);
+    this.graphStageRectCache = null;
 
     if (!this.graph()) {
       return;
@@ -708,7 +733,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   adjustGraphZoom(factor: number): void {
     runAdjustGraphZoomRuntime({
-      stage: this.graphStage?.nativeElement,
+      rect: this.currentGraphStageRect(),
       currentViewport: this.currentGraphViewportState(),
       factor,
       cancelPendingInitialGraphFocus: () => this.cancelPendingInitialGraphFocus(true),
@@ -736,9 +761,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onGraphWheel(event: WheelEvent): void {
+    this.markGraphInteractionActive(180);
     runGraphWheelRuntime({
       event,
-      stage: this.graphStage?.nativeElement,
+      rect: this.currentGraphStageRect(),
       currentViewport: this.currentGraphViewportState(),
       cancelPendingInitialGraphFocus: () => this.cancelPendingInitialGraphFocus(true),
       clearViewportTarget: () => this.viewportController.clearTarget(),
@@ -765,6 +791,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onGraphStagePointerDown(event: PointerEvent): void {
+    this.markGraphInteractionActive(240);
     runGraphStagePointerDownRuntime({
       event,
       cancelPendingInitialGraphFocus: () => this.cancelPendingInitialGraphFocus(true),
@@ -776,6 +803,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onGraphStagePointerMove(event: PointerEvent): void {
+    if (this.pointerSession?.kind === 'graph-pan') {
+      this.markGraphInteractionActive(180);
+    }
     runGraphStagePointerMoveRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -798,9 +828,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         this.pointerSession = null;
       },
     });
+    this.markGraphInteractionActive(120);
   }
 
   onNodePointerDown(event: PointerEvent, nodeId: string): void {
+    this.markGraphInteractionActive(240);
     runNodePointerDownRuntime({
       event,
       nodeId,
@@ -821,11 +853,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onNodePointerMove(event: PointerEvent): void {
+    if (this.pointerSession?.kind === 'node-drag') {
+      this.markGraphInteractionActive(180);
+    }
     runNodePointerMoveRuntime({
       pointerSession: this.pointerSession,
       event,
       graph: this.graph(),
-      stage: this.graphStage?.nativeElement,
       currentViewport: this.currentGraphViewportState(),
       pinCenterNode: () => this.pinCenterNode(),
       bumpRenderTick: () => this.renderTick.update((value) => value + 1),
@@ -853,6 +887,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         this.pointerSession = null;
       },
     });
+    this.markGraphInteractionActive(140);
   }
 
   onNodePointerCancel(event: PointerEvent): void {
@@ -916,6 +951,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onNodeHover(event: PointerEvent, nodeId: string): void {
+    this.markGraphInteractionActive(140);
     runNodeHoverRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -928,6 +964,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onEdgeHover(event: PointerEvent, edge: GraphEdge): void {
+    this.markGraphInteractionActive(140);
     runEdgeHoverRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -940,6 +977,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onTooltipMove(event: PointerEvent): void {
+    this.markGraphInteractionActive(120);
     runTooltipMoveRuntime({
       pointerSession: this.pointerSession,
       tooltip: this.tooltip(),
@@ -1151,6 +1189,48 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   private currentGraphViewportState(): GraphViewport {
     return this.viewportController.current(this.graphViewport());
+  }
+
+  private currentGraphStageRect(): GraphStageRect | null {
+    if (this.graphStageRectCache) {
+      return this.graphStageRectCache;
+    }
+
+    const rect = this.graphStage?.nativeElement.getBoundingClientRect();
+    if (!rect) {
+      return null;
+    }
+
+    this.graphStageRectCache = {
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+    };
+    return this.graphStageRectCache;
+  }
+
+  private markGraphInteractionActive(settleMs: number): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    if (!this.graphInteractionActive()) {
+      this.graphInteractionActive.set(true);
+    }
+
+    this.clearGraphInteractionSettleTimer();
+    this.graphInteractionSettleTimer = setTimeout(() => {
+      this.graphInteractionActive.set(false);
+      this.graphInteractionSettleTimer = null;
+    }, settleMs);
+  }
+
+  private clearGraphInteractionSettleTimer(): void {
+    if (this.graphInteractionSettleTimer) {
+      clearTimeout(this.graphInteractionSettleTimer);
+      this.graphInteractionSettleTimer = null;
+    }
   }
 
   private scheduleGraphViewportUpdate(next: GraphViewport): void {

@@ -49,6 +49,15 @@
   pointer-events: none;
 }
 
+.app-chrome__header--detail {
+  transform-origin: 50% 0;
+}
+
+.app-chrome__header--detail .app-chrome__header-toggle--close,
+.app-chrome__header--detail + .app-chrome__header-toggle--open {
+  display: inline-flex;
+}
+
 .app-chrome__header-toggle {
   position: fixed;
   z-index: 81;
@@ -105,6 +114,27 @@
 .app-chrome__header-toggle--visible {
   opacity: 1;
   pointer-events: auto;
+}
+
+.app-chrome__header--detail + .app-chrome__header-toggle--open {
+  width: 84px;
+  height: 32px;
+  border-radius: 0 0 18px 18px;
+  transform: translateY(-8px);
+  opacity: 0.72;
+}
+
+.app-chrome__header--detail + .app-chrome__header-toggle--open:hover {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars {
+  gap: 4px;
+}
+
+.app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars span {
+  width: 24px;
 }
 
 .app-chrome__header-toggle-bars {
