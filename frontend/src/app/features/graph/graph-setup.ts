@@ -107,10 +107,10 @@ export function resolveGraphWarmupPasses(graph: GraphData, passes?: number): num
 
   const nodeCount = graph.nodes.length;
   const edgeCount = graph.edges.length;
-  return nodeCount >= 80 || edgeCount >= 140
-    ? 16
-    : nodeCount >= 48 || edgeCount >= 88
-      ? 22
+  return nodeCount >= 34 || edgeCount >= 52
+    ? 30
+    : nodeCount >= 20 || edgeCount >= 28
+      ? 26
       : 36;
 }
 

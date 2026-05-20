@@ -28,7 +28,6 @@
 
 .graph-edge-label {
   fill: rgba(238, 246, 255, 0.9);
-  opacity: 0;
   font-size: 10.5px;
   font-weight: 700;
   text-anchor: middle;
@@ -38,11 +37,6 @@
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   text-rendering: geometricPrecision;
-  transition: opacity 140ms ease;
-}
-
-.graph-edge-label.is-visible {
-  opacity: 1;
 }
 
 .graph-edge-label.is-muted {
@@ -84,14 +78,8 @@
 }
 
 .graph-node__label {
-  opacity: 0;
   pointer-events: none;
   text-rendering: geometricPrecision;
-  transition: opacity 140ms ease;
-}
-
-.graph-node__label.is-visible {
-  opacity: 1;
 }
 
 .graph-node__title {
@@ -117,10 +105,6 @@
   vector-effect: non-scaling-stroke;
 }
 
-:host.is-interacting .graph-edge-label,
-:host.is-interacting .graph-node__label {
-  transition: none;
-}
 
 .graph-tooltip {
   position: absolute;

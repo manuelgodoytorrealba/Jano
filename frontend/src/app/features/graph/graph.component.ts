@@ -72,6 +72,11 @@ import {
   graphTooltipStyle,
 } from './graph-render';
 import {
+  resolveEdgeLabelOcclusion,
+  resolveNodeLabelOcclusion,
+  visibleLabelBoxes,
+} from './graph-label-layout';
+import {
   createGraphFocusedViewport,
   createGraphNodePosition,
   createGraphViewportFromPoint,
@@ -283,13 +288,33 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphViewport().scale));
   readonly imagePresentation = computed(() => resolveMediaPresentation(this.imageMedia));
   readonly hasImageSource = computed(() => !!(this.imagePresentation().src || this.imageUrl));
+  readonly resolvedNodeLabelVisibility = computed(() => resolveNodeLabelOcclusion({
+    nodes: this.renderedNodes(),
+    requestedVisibility: this.graphDerived().nodeLabelVisibility,
+    centerId: this.graph()?.centerId ?? null,
+    selectedNodeId: this.selectedNodeId(),
+    hoveredNodeId: this.hoveredNodeId(),
+    scale: this.graphViewport().scale,
+  }));
+  readonly resolvedEdgeLabelVisibility = computed(() => resolveEdgeLabelOcclusion({
+    edges: this.renderedEdges(),
+    requestedVisibility: this.graphDerived().edgeLabelVisibility,
+    centerId: this.graph()?.centerId ?? null,
+    selectedNodeId: this.selectedNodeId(),
+    hoveredEdgeId: this.hoveredEdgeId(),
+    scale: this.graphViewport().scale,
+    occupiedBoxes: visibleLabelBoxes({
+      nodes: this.renderedNodes(),
+      nodeVisibility: this.resolvedNodeLabelVisibility(),
+    }),
+  }));
   readonly activeEdgeLabelVisibility = computed(() =>
-    this.graphInteractionActive() ? {} : this.graphDerived().edgeLabelVisibility,
+    this.graphInteractionActive() ? {} : this.resolvedEdgeLabelVisibility(),
   );
   readonly activeNodeLabelVisibility = computed(() => {
     const derived = this.graphDerived();
     if (!this.graphInteractionActive()) {
-      return derived.nodeLabelVisibility;
+      return this.resolvedNodeLabelVisibility();
     }
 
     const visible: Record<string, boolean> = {};

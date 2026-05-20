@@ -1,9 +1,6 @@
 import { ForceLayoutScratch, stepForceLayout } from './graph-layout';
 import { GraphData, GraphPoint } from './graph.models';
 
-const GRAPH_LAYOUT_SETTLE_MOTION_THRESHOLD = 0.28;
-const GRAPH_LAYOUT_SETTLE_FRAME_THRESHOLD = 14;
-
 export interface GraphLayoutFrameState {
   graphLayoutActive: boolean;
   graphSettledFrames: number;
@@ -27,6 +24,7 @@ export function stepGraphLayoutFrame(options: {
   state: GraphLayoutFrameState;
   pinCenterNode: () => void;
 }): GraphLayoutFrameResult {
+  const settlePolicy = resolveGraphSettlePolicy(options.graph);
   const shouldStepLayout = options.state.graphLayoutActive || options.draggingNodeId !== null;
 
   if (!shouldStepLayout) {
@@ -56,9 +54,9 @@ export function stepGraphLayoutFrame(options: {
     };
   }
 
-  if (motion < GRAPH_LAYOUT_SETTLE_MOTION_THRESHOLD) {
+  if (motion < settlePolicy.motionThreshold) {
     const nextSettledFrames = options.state.graphSettledFrames + 1;
-    const graphLayoutActive = nextSettledFrames < GRAPH_LAYOUT_SETTLE_FRAME_THRESHOLD;
+    const graphLayoutActive = nextSettledFrames < settlePolicy.frameThreshold;
 
     return {
       graphLayoutActive,
@@ -73,5 +71,29 @@ export function stepGraphLayoutFrame(options: {
     graphSettledFrames: 0,
     shouldRender: true,
     shouldContinue: true,
+  };
+}
+
+function resolveGraphSettlePolicy(graph: GraphData): { motionThreshold: number; frameThreshold: number } {
+  const nodeCount = graph.nodes.length;
+  const edgeCount = graph.edges.length;
+
+  if (nodeCount >= 34 || edgeCount >= 52) {
+    return {
+      motionThreshold: 0.46,
+      frameThreshold: 7,
+    };
+  }
+
+  if (nodeCount >= 20 || edgeCount >= 28) {
+    return {
+      motionThreshold: 0.38,
+      frameThreshold: 9,
+    };
+  }
+
+  return {
+    motionThreshold: 0.28,
+    frameThreshold: 14,
   };
 }
