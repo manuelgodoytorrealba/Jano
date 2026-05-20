@@ -24,6 +24,20 @@ export class SettingsComponent implements OnDestroy {
   backgroundError = '';
   backgroundMessage = '';
 
+  get selectedBackgroundMeta(): string {
+    if (!this.selectedBackgroundFile) {
+      return 'JPEG, PNG, WebP o AVIF';
+    }
+
+    const sizeInMb = this.selectedBackgroundFile.size / (1024 * 1024);
+    return `${this.selectedBackgroundFile.name} · ${sizeInMb.toFixed(sizeInMb >= 10 ? 0 : 1)} MB`;
+  }
+
+  get roleLabel(): string {
+    const role = this.auth.currentUser?.role ?? '';
+    return role === 'ADMIN' ? 'Administrador' : role || 'Sin rol';
+  }
+
   ngOnDestroy(): void {
     this.revokeSelectedPreview();
   }

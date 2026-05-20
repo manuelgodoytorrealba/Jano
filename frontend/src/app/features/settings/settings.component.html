@@ -1,97 +1,160 @@
-<div class="page">
+<div class="settings-page">
   @if (auth.user$ | async; as user) {
-    <header class="settings-head">
-      <div>
+    <section class="settings-hero">
+      <div class="settings-hero__copy">
         <span class="settings-eyebrow">Ajustes</span>
         <h1>Cuenta y preferencias</h1>
-        <p class="muted">Un punto simple para revisar tu sesión y accesos principales.</p>
-      </div>
-    </header>
-
-    <section class="settings-card">
-      <div class="settings-row">
-        <span class="settings-label">Usuario</span>
-        <strong>{{ user.name || 'Sin nombre' }}</strong>
+        <p class="settings-muted">
+          Un espacio sereno para revisar tu sesión, tu acceso y la atmósfera base de JANO.
+        </p>
       </div>
 
-      <div class="settings-row">
-        <span class="settings-label">Email</span>
-        <strong>{{ user.email }}</strong>
+      <div class="settings-hero__summary">
+        <div class="settings-pill">
+          <span class="settings-pill__label">Sesión</span>
+          <strong>{{ user.name || 'Sin nombre' }}</strong>
+        </div>
+        <div class="settings-pill">
+          <span class="settings-pill__label">Rol</span>
+          <strong>{{ roleLabel }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-surface settings-surface--account">
+      <div class="settings-section-head">
+        <div>
+          <span class="settings-label">Cuenta</span>
+          <h2>Identidad activa</h2>
+        </div>
+
+        <nav class="settings-shortcuts" aria-label="Accesos directos">
+          <a class="settings-shortcut" routerLink="/profile">Perfil</a>
+          <a class="settings-shortcut" routerLink="/my-space">Mi espacio</a>
+        </nav>
       </div>
 
-      <div class="settings-row">
-        <span class="settings-label">Rol</span>
-        <strong>{{ user.role }}</strong>
-      </div>
+      <div class="settings-account-grid">
+        <div class="settings-field">
+          <span class="settings-field__label">Usuario</span>
+          <strong class="settings-field__value">{{ user.name || 'Sin nombre' }}</strong>
+        </div>
 
-      <div class="settings-actions">
-        <a class="settings-action" routerLink="/profile">Perfil</a>
-        <a class="settings-action" routerLink="/my-space">Mi espacio</a>
+        <div class="settings-field">
+          <span class="settings-field__label">Email</span>
+          <strong class="settings-field__value settings-field__value--long">{{ user.email }}</strong>
+        </div>
+
+        <div class="settings-field">
+          <span class="settings-field__label">Rol</span>
+          <strong class="settings-field__value">{{ roleLabel }}</strong>
+        </div>
       </div>
     </section>
 
     @if (user.role === 'ADMIN') {
-      <section class="settings-card settings-card--background">
-        <div class="settings-card__head">
+      <section class="settings-surface settings-surface--background">
+        <div class="settings-section-head settings-section-head--admin">
           <div>
             <span class="settings-label">Admin</span>
             <h2>Background global</h2>
-            <p class="muted">Cambia la imagen base que aparece en toda la app. Si no hay imagen activa, JANO usa el fallback por defecto.</p>
+            <p class="settings-muted">
+              Ajusta la imagen ambiental que sostiene toda la app. Si no hay una activa, JANO conserva su fallback editorial.
+            </p>
+          </div>
+
+          <div class="settings-section-note">
+            <span class="settings-section-note__label">Sistema visual</span>
+            <strong>Una sola atmósfera para toda la experiencia</strong>
           </div>
         </div>
 
-        <div class="background-panel">
-          <article class="background-preview">
-            <span class="background-preview__label">Actual</span>
-            @if (appearance.backgroundImageUrl(); as currentBackgroundUrl) {
-              <img [src]="currentBackgroundUrl" alt="Background global actual" />
-            } @else {
-              <img [src]="appearance.fallbackBackgroundImageUrl" alt="Background fallback por defecto" />
-              <span class="background-preview__fallback">Fallback</span>
-            }
+        <div class="background-workspace">
+          <article class="background-stage">
+            <div class="background-stage__media">
+              <span class="background-stage__badge">
+                {{ appearance.backgroundImageUrl() ? 'Actual' : 'Fallback' }}
+              </span>
+
+              @if (appearance.backgroundImageUrl(); as currentBackgroundUrl) {
+                <img [src]="currentBackgroundUrl" alt="Background global actual" />
+              } @else {
+                <img [src]="appearance.fallbackBackgroundImageUrl" alt="Background fallback por defecto" />
+              }
+            </div>
+
+            <div class="background-stage__meta">
+              <span class="background-stage__eyebrow">Ambient system</span>
+              <strong>{{ appearance.backgroundImageUrl() ? 'Fondo activo en producción' : 'Fallback editorial activo' }}</strong>
+              <p>
+                La imagen seleccionada sostiene el tono visual del producto completo.
+              </p>
+            </div>
           </article>
 
-          <div class="background-controls">
-            <label class="background-file">
-              <span>Seleccionar imagen</span>
+          <div class="background-dock">
+            <label class="background-upload">
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/avif"
                 (change)="onBackgroundSelected($event)"
               />
+
+              <span class="background-upload__eyebrow">Nueva imagen</span>
+              <strong>Seleccionar background</strong>
+              <p>{{ selectedBackgroundMeta }}</p>
             </label>
 
-            @if (selectedBackgroundPreviewUrl) {
-              <article class="background-preview background-preview--candidate">
-                <span class="background-preview__label">Nueva selección</span>
-                <img [src]="selectedBackgroundPreviewUrl" alt="Preview del nuevo background" />
-              </article>
-            }
+            <article class="background-candidate" [class.background-candidate--empty]="!selectedBackgroundPreviewUrl">
+              <div class="background-candidate__head">
+                <span class="settings-label">Preview</span>
+                <strong>{{ selectedBackgroundPreviewUrl ? 'Selección nueva' : 'Sin selección' }}</strong>
+              </div>
 
-            <div class="settings-actions settings-actions--background">
-              <button
-                type="button"
-                class="settings-action settings-action--primary"
-                [disabled]="!selectedBackgroundFile || backgroundSaving"
-                (click)="uploadBackground()"
-              >
-                {{ backgroundSaving ? 'Guardando...' : 'Aplicar background' }}
-              </button>
-              <button
-                type="button"
-                class="settings-action"
-                [disabled]="backgroundSaving"
-                (click)="resetBackground()"
-              >
-                Usar fallback
-              </button>
+              @if (selectedBackgroundPreviewUrl) {
+                <img [src]="selectedBackgroundPreviewUrl" alt="Preview del nuevo background" />
+              } @else {
+                <div class="background-candidate__empty">
+                  <p>Cuando selecciones una imagen, aparecerá aquí una vista previa compacta antes de aplicarla.</p>
+                </div>
+              }
+            </article>
+
+            <div class="background-actions-shell">
+              <div class="background-actions">
+                <button
+                  type="button"
+                  class="settings-shortcut settings-shortcut--primary"
+                  [disabled]="!selectedBackgroundFile || backgroundSaving"
+                  (click)="uploadBackground()"
+                >
+                  {{ backgroundSaving ? 'Guardando...' : 'Aplicar background' }}
+                </button>
+
+                <button
+                  type="button"
+                  class="settings-shortcut"
+                  [disabled]="backgroundSaving"
+                  (click)="resetBackground()"
+                >
+                  Usar fallback
+                </button>
+              </div>
+
+              <p class="background-actions__hint">
+                Mantén fondos con lectura limpia, contraste bajo ruido y presencia ambiental.
+              </p>
             </div>
 
-            @if (backgroundMessage) {
-              <p class="settings-feedback settings-feedback--ok">{{ backgroundMessage }}</p>
-            }
-            @if (backgroundError) {
-              <p class="settings-feedback settings-feedback--error">{{ backgroundError }}</p>
+            @if (backgroundMessage || backgroundError) {
+              <div class="settings-feedback-shell">
+                @if (backgroundMessage) {
+                  <p class="settings-feedback settings-feedback--ok">{{ backgroundMessage }}</p>
+                }
+                @if (backgroundError) {
+                  <p class="settings-feedback settings-feedback--error">{{ backgroundError }}</p>
+                }
+              </div>
             }
           </div>
         </div>
