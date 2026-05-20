@@ -843,21 +843,22 @@ export class EntitiesService {
   }
 
   async graphBySlug(slug: string) {
+    const graphMediaInclude = {
+      mediaLinks: {
+        include: { media: true },
+        orderBy: [
+          { sortOrder: 'asc' as const },
+          { id: 'asc' as const },
+        ],
+      },
+    };
 
     const center = await this.prisma.entity.findFirst({
       where: {
         slug,
         status: EntityStatus.PUBLISHED,
       },
-      include: {
-        mediaLinks: {
-          include: { media: true },
-          orderBy: [
-            { sortOrder: 'asc' },
-            { id: 'asc' },
-          ],
-        },
-      },
+      include: graphMediaInclude,
     });
 
     if (!center) throw new NotFoundException('Entity not found');
@@ -879,34 +880,44 @@ export class EntitiesService {
           },
         ],
       },
-      include: {
-        relationType: true,
-        from: {
-          include: {
-            mediaLinks: {
-              include: { media: true },
-              orderBy: [
-                { sortOrder: 'asc' },
-                { id: 'asc' },
-              ],
-            },
-          },
-        },
-        to: {
-          include: {
-            mediaLinks: {
-              include: { media: true },
-              orderBy: [
-                { sortOrder: 'asc' },
-                { id: 'asc' },
-              ],
-            },
+      select: {
+        id: true,
+        fromId: true,
+        toId: true,
+        weight: true,
+        justification: true,
+        type: true,
+        relationType: {
+          select: {
+            key: true,
+            label: true,
+            directed: true,
           },
         },
       },
     });
 
+    const relatedNodeIds = Array.from(
+      new Set(
+        relations.flatMap((relation) => [relation.fromId, relation.toId]),
+      ),
+    ).filter((id) => id !== center.id);
+
+    const relatedNodes = relatedNodeIds.length
+      ? await this.prisma.entity.findMany({
+          where: {
+            id: { in: relatedNodeIds },
+            status: EntityStatus.PUBLISHED,
+          },
+          include: graphMediaInclude,
+        })
+      : [];
+
     const nodesMap = new Map<string, GraphNodePayload>();
+    const entityMap = new Map<string, any>([
+      [center.id, center],
+      ...relatedNodes.map((node) => [node.id, node] as const),
+    ]);
 
     const toNodePayload = (node: any): GraphNodePayload => {
       const resolvedNode = this.withResolvedMedia(node);
@@ -936,9 +947,14 @@ export class EntitiesService {
     nodesMap.set(center.id, toNodePayload(center));
 
     for (const r of relations) {
+      const fromNode = entityMap.get(r.fromId);
+      const toNode = entityMap.get(r.toId);
+      if (!fromNode || !toNode) {
+        continue;
+      }
 
-      nodesMap.set(r.from.id, toNodePayload(r.from));
-      nodesMap.set(r.to.id, toNodePayload(r.to));
+      nodesMap.set(fromNode.id, toNodePayload(fromNode));
+      nodesMap.set(toNode.id, toNodePayload(toNode));
     }
 
     const nodes = Array.from(nodesMap.values()).sort((a, b) => {
