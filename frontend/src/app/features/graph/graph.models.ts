@@ -132,6 +132,7 @@ export interface GraphRenderedNode {
   haloSize: number;
   shapePath: string;
   labelTransform: string;
+  labelTextAnchor: 'start' | 'end';
   nodeVisual: GraphEntityVisualConfig;
   titleLabel: string;
   typeLabel: string;

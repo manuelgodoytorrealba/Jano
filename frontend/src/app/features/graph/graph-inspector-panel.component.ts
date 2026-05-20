@@ -13,7 +13,6 @@ import { GraphNode, GraphTypeMeta } from './graph.models';
 export class GraphInspectorPanelComponent {
   @Input() selectedNode: GraphNode | null = null;
   @Input() selectedNodeMeta: GraphTypeMeta | null = null;
-  @Input() imageSyncActive = false;
   @Input() entityTypes: string[] = [];
   @Input() relationTypes: string[] = [];
   @Input() entityTypeFilters: Record<string, boolean> = {};

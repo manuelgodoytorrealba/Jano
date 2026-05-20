@@ -42,20 +42,6 @@
                 (load)="onImageLoaded($event)"
               />
 
-              @if (imageSyncOverlay(); as overlay) {
-                <div
-                  class="image-sync"
-                  [class.image-sync--oval]="overlay.shape === 'oval'"
-                  [class.image-sync--frame]="overlay.shape === 'frame'"
-                  [style.--sync-color]="overlay.color"
-                  [style.left.%]="overlay.x"
-                  [style.top.%]="overlay.y"
-                  [style.width.%]="overlay.width"
-                  [style.height.%]="overlay.height"
-                >
-                  <span class="image-sync__label">{{ overlay.label }}</span>
-                </div>
-              }
             </div>
           } @else {
             <div class="image-stage__empty">
@@ -157,7 +143,6 @@
           <app-graph-inspector-panel
             [selectedNode]="graphDerived().contextualNode"
             [selectedNodeMeta]="graphDerived().contextualNodeMeta"
-            [imageSyncActive]="!!imageSyncOverlay()"
             [entityTypes]="graphData.entityTypes"
             [relationTypes]="graphData.relationTypes"
             [entityTypeFilters]="entityTypeFilters()"

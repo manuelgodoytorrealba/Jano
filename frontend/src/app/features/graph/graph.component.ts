@@ -22,7 +22,6 @@ import {
   currentDraggedNodeId,
   GraphStageRect,
   GraphPointerSession,
-  shouldSuppressHover,
 } from './graph-interaction';
 import {
   ForceLayoutScratch,
@@ -50,7 +49,6 @@ import {
   ExplorerPersistedState,
   saveExplorerState,
 } from './graph-persistence';
-import { buildImageSyncOverlay } from './image-graph-sync';
 import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
 import { GraphSceneComponent } from './graph-scene.component';
@@ -176,6 +174,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() entityType = '';
   @Input() imageMeta: ImageMeta | null = null;
   @Input() workspaceFocused = false;
+  @Input() workspaceTransitioning = false;
 
   private graphStage?: ElementRef<HTMLDivElement>;
   private imageStage?: ElementRef<HTMLDivElement>;
@@ -218,7 +217,12 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private graphResizeObserver?: ResizeObserver;
   private imageResizeObserver?: ResizeObserver;
   private graphStageRectCache: GraphStageRect | null = null;
+  private hoverClearTimer: ReturnType<typeof setTimeout> | null = null;
   private graphInteractionSettleTimer: ReturnType<typeof setTimeout> | null = null;
+  private workspaceTransitionSettleTimer: ReturnType<typeof setTimeout> | null = null;
+  private workspaceResizePaused = false;
+  private pendingGraphMeasure = false;
+  private pendingImageMeasure = false;
   private frameId: number | null = null;
   private targetImageViewport: ImageViewport | null = null;
   private positions: Record<string, GraphPoint> = {};
@@ -248,14 +252,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       labelsMode: this.labelsMode(),
       labelScaleBucket: this.labelScaleBucket(),
     }),
-  );
-
-  readonly imageSyncOverlay = computed(() =>
-    buildImageSyncOverlay(
-      this.graphDerived().centerNode,
-      this.selectedNodeSource === 'explicit' ? this.graphDerived().selectedNode : null,
-      shouldSuppressHover(this.pointerSession),
-    ),
   );
 
   readonly renderedEdges = computed<GraphRenderedEdge[]>(() => {
@@ -307,6 +303,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   });
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (
+      (changes['workspaceMode'] && !changes['workspaceMode'].firstChange)
+      || (changes['workspaceFocused'] && !changes['workspaceFocused'].firstChange)
+      || changes['workspaceTransitioning']?.currentValue === true
+    ) {
+      this.beginWorkspaceTransitionSettle();
+    }
+
     const next = resolveGraphInputChangesRuntime({
       changes,
       slug: this.slug,
@@ -378,7 +382,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.viewportController.destroy(this.isBrowser);
     this.tooltipController.destroy(this.isBrowser);
     this.initialFocusController.destroy(this.isBrowser);
+    this.clearHoverClearTimer();
     this.clearGraphInteractionSettleTimer();
+    this.clearWorkspaceTransitionSettleTimer();
   }
 
   private loadGraph(): void {
@@ -389,6 +395,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.loading.set(true);
     this.graph.set(null);
     this.error.set(null);
+    this.clearHoverClearTimer();
     this.hoveredNodeId.set(null);
     this.hoveredEdgeId.set(null);
     this.tooltip.set(null);
@@ -557,7 +564,12 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       onMeasure: () => this.measureImageStage(imageStage),
     });
   }
-  private measureGraphStage(host = this.graphStage?.nativeElement): void {
+  private measureGraphStage(host = this.graphStage?.nativeElement, force = false): void {
+    if (this.workspaceResizePaused && !force) {
+      this.pendingGraphMeasure = true;
+      return;
+    }
+
     const measured = measureGraphStageRuntime({
       host,
       previousSize: this.graphSize(),
@@ -602,7 +614,12 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
   }
 
-  private measureImageStage(host = this.imageStage?.nativeElement): void {
+  private measureImageStage(host = this.imageStage?.nativeElement, force = false): void {
+    if (this.workspaceResizePaused && !force) {
+      this.pendingImageMeasure = true;
+      return;
+    }
+
     const measured = measureImageStageRuntime({
       host,
       previousSize: this.imageSize(),
@@ -629,6 +646,41 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.targetImageViewport = null;
     this.imageViewport.set(measured.nextViewport);
     this.imageViewportReady = true;
+  }
+
+  private beginWorkspaceTransitionSettle(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.workspaceResizePaused = true;
+    this.clearWorkspaceTransitionSettleTimer();
+    this.workspaceTransitionSettleTimer = setTimeout(() => {
+      this.workspaceResizePaused = false;
+      this.workspaceTransitionSettleTimer = null;
+      this.flushWorkspaceTransitionMeasurements();
+    }, 420);
+  }
+
+  private flushWorkspaceTransitionMeasurements(): void {
+    if (this.pendingGraphMeasure || this.graphStage?.nativeElement) {
+      this.pendingGraphMeasure = false;
+      this.measureGraphStage(undefined, true);
+    }
+
+    if (this.pendingImageMeasure || this.imageStage?.nativeElement) {
+      this.pendingImageMeasure = false;
+      this.measureImageStage(undefined, true);
+    }
+  }
+
+  private clearWorkspaceTransitionSettleTimer(): void {
+    if (!this.workspaceTransitionSettleTimer) {
+      return;
+    }
+
+    clearTimeout(this.workspaceTransitionSettleTimer);
+    this.workspaceTransitionSettleTimer = null;
   }
 
   onImageLoaded(event: Event): void {
@@ -951,7 +1003,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onNodeHover(event: PointerEvent, nodeId: string): void {
-    this.markGraphInteractionActive(140);
+    this.clearHoverClearTimer();
     runNodeHoverRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -964,7 +1016,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onEdgeHover(event: PointerEvent, edge: GraphEdge): void {
-    this.markGraphInteractionActive(140);
+    this.clearHoverClearTimer();
     runEdgeHoverRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -977,7 +1029,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onTooltipMove(event: PointerEvent): void {
-    this.markGraphInteractionActive(120);
+    this.clearHoverClearTimer();
     runTooltipMoveRuntime({
       pointerSession: this.pointerSession,
       tooltip: this.tooltip(),
@@ -988,13 +1040,17 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   clearHover(): void {
-    runClearHoverRuntime({
-      pointerSession: this.pointerSession,
-      clearTooltipController: () => this.tooltipController.clear(),
-      setHoveredNodeId: (value) => this.hoveredNodeId.set(value),
-      setHoveredEdgeId: (value) => this.hoveredEdgeId.set(value),
-      setTooltip: (tooltip) => this.tooltip.set(tooltip),
-    });
+    this.clearHoverClearTimer();
+    this.hoverClearTimer = setTimeout(() => {
+      this.hoverClearTimer = null;
+      runClearHoverRuntime({
+        pointerSession: this.pointerSession,
+        clearTooltipController: () => this.tooltipController.clear(),
+        setHoveredNodeId: (value) => this.hoveredNodeId.set(value),
+        setHoveredEdgeId: (value) => this.hoveredEdgeId.set(value),
+        setTooltip: (tooltip) => this.tooltip.set(tooltip),
+      });
+    }, 72);
   }
 
   tooltipStyle(): Record<string, string> {
@@ -1230,6 +1286,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     if (this.graphInteractionSettleTimer) {
       clearTimeout(this.graphInteractionSettleTimer);
       this.graphInteractionSettleTimer = null;
+    }
+  }
+
+  private clearHoverClearTimer(): void {
+    if (this.hoverClearTimer) {
+      clearTimeout(this.hoverClearTimer);
+      this.hoverClearTimer = null;
     }
   }
 

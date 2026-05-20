@@ -2,7 +2,7 @@
 @use './entities-explorer-shell';
 
 .entities-page--curated-deck {
-  --entities-explorer-inner-left: clamp(26px, 3vw, 52px);
+  --entities-explorer-inner-left: clamp(28px, 4vw, 64px);
   --entities-explorer-inner-right: clamp(286px, 21vw, 338px);
   --entities-explorer-info-right: clamp(34px, 4vw, 72px);
   --entities-explorer-info-width: min(308px, calc(100% - 56px));
@@ -20,16 +20,18 @@
 @media (max-width: 1100px) {
   :host {
     --entities-shell-padding-x: 8px;
-    --entities-shell-top-offset: 94px;
-    --entities-rail-width: 232px;
-    --entities-rail-gap: 10px;
-    --entities-rail-left: 12px;
-    --entities-rail-top: 104px;
-    --entities-stage-right-gutter: 14px;
-    --entities-stage-top-padding: 120px;
-    --entities-explorer-inner-left: clamp(156px, 15vw, 176px);
-    --entities-explorer-inner-right: clamp(238px, 24vw, 276px);
-    --entities-explorer-info-top: 72px;
+    --entities-shell-top-offset: 112px;
+    --entities-rail-width: 218px;
+    --entities-rail-gap: 16px;
+    --entities-rail-left: 14px;
+    --entities-rail-top: 116px;
+    --entities-stage-right-gutter: calc(var(--app-shell-gap) + var(--app-rail-width) + 28px);
+    --entities-stage-left-gutter: 18px;
+    --entities-stage-top-padding: 156px;
+    --entities-explorer-inner-top: 116px;
+    --entities-explorer-inner-left: clamp(34px, 4vw, 58px);
+    --entities-explorer-inner-right: clamp(228px, 24vw, 268px);
+    --entities-explorer-info-top: 120px;
     --entities-explorer-info-right: 18px;
     --entities-explorer-info-width: min(286px, calc(100% - 36px));
   }
@@ -62,7 +64,7 @@
   .entities-stage-shell--list,
   .entities-stage-shell--empty {
     padding-top: var(--entities-stage-top-padding);
-    padding-right: 14px;
+    padding-right: calc(var(--app-shell-gap) + var(--app-rail-width) + 18px);
     padding-bottom: 18px;
     padding-left: calc(164px + 22px);
   }
@@ -73,7 +75,9 @@
   }
 
   .entities-rail-handle {
-    left: calc(12px + 164px - 2px);
+    left: calc(12px + 164px + 8px);
+    width: 38px;
+    min-height: 112px;
   }
 
   .entities-explorer-layout.is-filters-collapsed .entities-rail-handle {

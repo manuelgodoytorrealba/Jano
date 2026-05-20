@@ -58,7 +58,7 @@ export function buildRenderedGraphEdges(options: {
       relationVisual,
       markerId: graphEdgeMarkerId(edge.relationType),
       dasharray: lineDasharray(relationVisual.style),
-      displayLabel: compactGraphLabel(edge.label, 24),
+      displayLabel: compactGraphLabel(edge.label, 28),
     };
   });
 }
@@ -70,10 +70,16 @@ export function buildRenderedGraphNodes(options: {
   selectedNodeId: string | null;
   selectedNeighbors: Set<string>;
 }): GraphRenderedNode[] {
+  const centerPoint = options.centerId
+    ? options.positions[options.centerId] ?? { x: 0, y: 0 }
+    : { x: 0, y: 0 };
+
   return options.nodes.map((node) => {
     const point = options.positions[node.id] ?? { x: 0, y: 0 };
     const nodeVisual = getEntityTypeConfig(node.type);
     const size = graphNodeSize(node, options.centerId, options.selectedNodeId);
+    const labelDirection = node.id === options.centerId || point.x >= centerPoint.x ? 1 : -1;
+    const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
 
     return {
       node,
@@ -87,9 +93,10 @@ export function buildRenderedGraphNodes(options: {
       size,
       haloSize: size + 12,
       shapePath: graphNodeShapePath(nodeVisual.shape, size),
-      labelTransform: `translate(${size + 18}, 0)`,
+      labelTransform: `translate(${labelDirection * (size + 18)} 0)`,
+      labelTextAnchor: labelDirection === 1 ? 'start' : 'end',
       nodeVisual,
-      titleLabel: compactGraphLabel(node.label, 28),
+      titleLabel: compactGraphLabel(node.label, isPrimaryLabel ? 34 : 30),
       typeLabel: getEntityTypeConfig(node.type).label,
     };
   });

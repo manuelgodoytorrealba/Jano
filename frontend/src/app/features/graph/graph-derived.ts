@@ -1,5 +1,10 @@
 import { getRelationTypeConfig } from './graph.config';
-import { shouldRenderGraphLabel } from './graph-labels';
+import {
+  graphEdgeLabelBudget,
+  graphNodeLabelBudget,
+  selectRankedGraphLabels,
+  shouldRenderGraphLabel,
+} from './graph-labels';
 import {
   GraphData,
   GraphEdge,
@@ -90,32 +95,26 @@ export function buildGraphDerivedState(options: {
 
   const isDenseGraph = filteredNodes.length >= 42 || filteredEdges.length >= 84;
   const edgeCount = filteredEdges.length;
+  const edgeLabelVisibility = buildEdgeLabelVisibility({
+    graph,
+    filteredEdges,
+    selectedNodeId: options.selectedNodeId,
+    hoveredEdgeId: options.hoveredEdgeId,
+    labelsMode: options.labelsMode,
+    labelScaleBucket: options.labelScaleBucket,
+    edgeCount,
+  });
 
-  const edgeLabelVisibility = filteredEdges.reduce<Record<string, boolean>>((acc, edge) => {
-    acc[edge.id] = !isDenseGraph && shouldRenderGraphLabel({
-      mode: options.labelsMode,
-      scale: options.labelScaleBucket,
-      edgeCount,
-      highlighted: options.hoveredEdgeId === edge.id,
-      connectedToSelection:
-        edge.source === options.selectedNodeId || edge.target === options.selectedNodeId,
-    });
-    return acc;
-  }, {});
-
-  const nodeLabelVisibility = filteredNodes.reduce<Record<string, boolean>>((acc, node) => {
-    acc[node.id] = shouldRenderGraphLabel({
-      mode: options.labelsMode,
-      scale: options.labelScaleBucket,
-      edgeCount,
-      highlighted: options.hoveredNodeId === node.id,
-      connectedToSelection:
-        node.id === graph.centerId ||
-        node.id === options.selectedNodeId ||
-        selectedNeighbors.has(node.id),
-    });
-    return acc;
-  }, {});
+  const nodeLabelVisibility = buildNodeLabelVisibility({
+    graph,
+    filteredNodes,
+    selectedNodeId: options.selectedNodeId,
+    hoveredNodeId: options.hoveredNodeId,
+    selectedNeighbors,
+    labelsMode: options.labelsMode,
+    labelScaleBucket: options.labelScaleBucket,
+    edgeCount,
+  });
 
   return {
     filteredNodes,
@@ -150,4 +149,124 @@ export function ensureGraphSelectionVisible(
   }
 
   return visibleNodeIds.has(selectedNodeId) ? selectedNodeId : graph.centerId;
+}
+
+function buildNodeLabelVisibility(options: {
+  graph: GraphData;
+  filteredNodes: GraphNode[];
+  selectedNodeId: string | null;
+  hoveredNodeId: string | null;
+  selectedNeighbors: Set<string>;
+  labelsMode: 'auto' | 'always' | 'hidden';
+  labelScaleBucket: number;
+  edgeCount: number;
+}): Record<string, boolean> {
+  if (options.labelsMode === 'hidden') {
+    return {};
+  }
+
+  if (options.labelsMode === 'always') {
+    return options.filteredNodes.reduce<Record<string, boolean>>((acc, node) => {
+      acc[node.id] = true;
+      return acc;
+    }, {});
+  }
+
+  const budget = graphNodeLabelBudget({
+    scale: options.labelScaleBucket,
+    nodeCount: options.filteredNodes.length,
+    edgeCount: options.edgeCount,
+  });
+
+  return selectRankedGraphLabels(
+    options.filteredNodes.map((node) => {
+      const isCenter = node.id === options.graph.centerId;
+      const isSelected = node.id === options.selectedNodeId;
+      const isHovered = node.id === options.hoveredNodeId;
+      const isNeighbor = options.selectedNeighbors.has(node.id);
+      const priority =
+        (isCenter ? 1000 : 0)
+        + (isSelected ? 840 : 0)
+        + (isHovered ? 760 : 0)
+        + (isNeighbor ? 260 : 0)
+        + Math.min(node.degree ?? 0, 8) * 28;
+
+      return {
+        id: node.id,
+        priority,
+        forced: isCenter || isSelected || isHovered,
+      };
+    }),
+    budget,
+  );
+}
+
+function buildEdgeLabelVisibility(options: {
+  graph: GraphData;
+  filteredEdges: GraphEdge[];
+  selectedNodeId: string | null;
+  hoveredEdgeId: string | null;
+  labelsMode: 'auto' | 'always' | 'hidden';
+  labelScaleBucket: number;
+  edgeCount: number;
+}): Record<string, boolean> {
+  if (options.labelsMode === 'hidden') {
+    return {};
+  }
+
+  if (options.labelsMode === 'always') {
+    return options.filteredEdges.reduce<Record<string, boolean>>((acc, edge) => {
+      acc[edge.id] = true;
+      return acc;
+    }, {});
+  }
+
+  const sparseVisibility = options.filteredEdges.reduce<Record<string, boolean>>((acc, edge) => {
+    acc[edge.id] = shouldRenderGraphLabel({
+      mode: options.labelsMode,
+      scale: options.labelScaleBucket,
+      edgeCount: options.edgeCount,
+      highlighted: options.hoveredEdgeId === edge.id,
+      connectedToSelection:
+        edge.source === options.selectedNodeId || edge.target === options.selectedNodeId,
+    });
+    return acc;
+  }, {});
+
+  if (options.filteredEdges.length <= 10) {
+    return sparseVisibility;
+  }
+
+  const budget = graphEdgeLabelBudget({
+    scale: options.labelScaleBucket,
+    edgeCount: options.edgeCount,
+  });
+
+  return selectRankedGraphLabels(
+    options.filteredEdges
+      .filter((edge) => sparseVisibility[edge.id])
+      .map((edge) => {
+        const relationVisual = getRelationTypeConfig(edge.relationType);
+        const isHovered = edge.id === options.hoveredEdgeId;
+        const connectedToSelected =
+          edge.source === options.selectedNodeId || edge.target === options.selectedNodeId;
+        const connectedToCenter =
+          edge.source === options.graph.centerId || edge.target === options.graph.centerId;
+        const hasJustification = !!edge.justification;
+        const priority =
+          (isHovered ? 1000 : 0)
+          + (connectedToSelected ? 720 : 0)
+          + (connectedToCenter ? 520 : 0)
+          + (hasJustification ? 120 : 0)
+          + Math.round((edge.weight ?? 1) * 40)
+          + Math.round(relationVisual.width * 26);
+
+        return {
+          id: edge.id,
+          priority,
+          forced: isHovered,
+        };
+      }),
+    budget,
+  );
 }

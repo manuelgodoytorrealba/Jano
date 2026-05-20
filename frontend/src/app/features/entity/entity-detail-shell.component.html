@@ -139,7 +139,38 @@
 } @else {
   <div class="entity-loading page-shell" aria-hidden="true">
     <div class="entity-detail__layout entity-detail__layout--loading">
-      <section class="entity-explorer entity-glass entity-explorer--shell-loading"></section>
+      <div class="entity-explorer__workspace-deck entity-explorer__workspace-deck--loading">
+        <div class="entity-explorer__workspace-bar">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      <section class="entity-explorer entity-glass entity-explorer--shell-loading">
+        <div class="entity-explorer__skeleton" aria-hidden="true">
+          <div class="entity-explorer__skeleton-pane entity-explorer__skeleton-pane--image">
+            <div class="entity-explorer__skeleton-pill"></div>
+            <div class="entity-explorer__skeleton-stage"></div>
+            <div class="entity-explorer__skeleton-chip"></div>
+          </div>
+          <div class="entity-explorer__skeleton-pane entity-explorer__skeleton-pane--graph">
+            <div class="entity-explorer__skeleton-toolbar">
+              <div class="entity-explorer__skeleton-line entity-explorer__skeleton-line--short"></div>
+              <div class="entity-explorer__skeleton-actions">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <div class="entity-explorer__skeleton-stage"></div>
+            <div class="entity-explorer__skeleton-copy">
+              <div class="entity-explorer__skeleton-line entity-explorer__skeleton-line--title"></div>
+              <div class="entity-explorer__skeleton-line entity-explorer__skeleton-line--body"></div>
+            </div>
+          </div>
+        </div>
+      </section>
       <section class="entity-section entity-glass entity-section--wide entity-section--loading"></section>
     </div>
   </div>

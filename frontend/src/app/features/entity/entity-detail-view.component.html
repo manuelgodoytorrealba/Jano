@@ -2,6 +2,7 @@
 <div
   class="entity-detail page-shell"
   [class.entity-detail--workspace-focus]="workspaceFocused"
+  [class.entity-detail--workspace-transitioning]="workspaceTransitioning"
   [class.entity-detail--image-focus]="workspaceMode === 'image'"
   [class.entity-detail--graph-focus]="workspaceMode === 'graph'"
 >
@@ -82,10 +83,12 @@
         [slug]="entity.slug"
         [workspaceMode]="workspaceMode"
         [imageMedia]="detailMedia(entity)"
+        [imageUrl]="visualUrl(entity)"
         [imageAlt]="visualAlt(entity)"
         [entityTitle]="entity.title"
         [entityType]="entity.type"
         [workspaceFocused]="workspaceFocused"
+        [workspaceTransitioning]="workspaceTransitioning"
         [imageMeta]="{
           source: detailMedia(entity)?.source ?? null,
           photoBy: detailMedia(entity)?.photoBy ?? null,
@@ -180,6 +183,7 @@
           [slug]="entity.slug"
           [workspaceMode]="workspaceMode"
           [imageMedia]="detailMedia(entity)"
+          [imageUrl]="visualUrl(entity)"
           [imageAlt]="visualAlt(entity)"
           [entityTitle]="entity.title"
           [entityType]="entity.type"

@@ -1,19 +1,21 @@
 :host {
   display: block;
   --entities-shell-padding-x: clamp(10px, 1vw, 18px);
-  --entities-shell-top-offset: 120px;
-  --entities-rail-width: clamp(256px, 18vw, 292px);
-  --entities-rail-gap: clamp(12px, 1vw, 18px);
-  --entities-rail-left: 16px;
-  --entities-rail-top: 120px;
-  --entities-stage-right-gutter: clamp(16px, 1.6vw, 26px);
-  --entities-stage-top-padding: 190px;
-  --entities-explorer-inner-top: 120px;
-  --entities-explorer-inner-left: clamp(176px, 13vw, 188px);
-  --entities-explorer-inner-right: clamp(120px, 10vw, 180px);
-  --entities-explorer-info-top: 130px;
-  --entities-explorer-info-right: clamp(160px, 18vw, 220px);
-  --entities-explorer-info-width: min(308px, calc(100% - 56px));
+  --entities-shell-top-offset: 132px;
+  --entities-rail-width: clamp(232px, 16vw, 266px);
+  --entities-rail-gap: clamp(18px, 1.8vw, 34px);
+  --entities-rail-left: clamp(18px, 1.6vw, 28px);
+  --entities-rail-top: 138px;
+  --entities-stage-right-gutter: calc(var(--app-shell-gap) + var(--app-rail-width) + clamp(40px, 4vw, 72px));
+  --entities-stage-left-gutter: clamp(28px, 5vw, 96px);
+  --entities-stage-top-padding: 196px;
+  --entities-list-max-width: 1280px;
+  --entities-explorer-inner-top: 132px;
+  --entities-explorer-inner-left: clamp(44px, 5vw, 96px);
+  --entities-explorer-inner-right: clamp(44px, 6vw, 104px);
+  --entities-explorer-info-top: 140px;
+  --entities-explorer-info-right: clamp(28px, 4vw, 68px);
+  --entities-explorer-info-width: min(286px, calc(100% - 56px));
 }
 
 .entities-page {
@@ -72,6 +74,11 @@
 .view-toggle__button:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
+}
+
+.view-toggle__button:focus-visible {
+  outline: 1px solid rgba(255, 247, 239, 0.34);
+  outline-offset: 2px;
 }
 
 .view-toggle__button.is-active {
@@ -185,8 +192,10 @@ mark {
 
 .entities-grid {
   display: grid;
-  gap: var(--space-3);
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  width: min(100%, var(--entities-list-max-width));
+  margin-inline: auto;
+  gap: clamp(14px, 1.2vw, 20px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 292px), 1fr));
 }
 
 .entity-card {
@@ -244,7 +253,8 @@ mark {
 }
 
 .entities-pager {
-  margin-top: var(--space-4);
+  width: min(100%, var(--entities-list-max-width));
+  margin: var(--space-4) auto 0;
   display: flex;
   justify-content: space-between;
   gap: var(--space-3);

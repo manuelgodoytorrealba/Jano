@@ -222,6 +222,7 @@ An additional optimization pass was applied after the first report:
 - Added explicit fallback image dimensions in `app-jano-media` for media records that do not carry width/height, reducing layout instability risk on external assets.
 - Added accessible labels/ids to the entities search input and filter selects to remove the remaining accessibility regression on the listing route.
 - Reduced expensive glassmorphism effects on mobile/tablet for the immersive home/recommended/deck surfaces to lower paint cost without changing the visual direction.
+- Stabilized graph explorer labels by keeping hover labels mounted, delaying hover clears slightly, and adding priority-based label budgets for dense graphs so center/selected/meaningful relations stay readable without label churn.
 
 Verification status for the second pass:
 

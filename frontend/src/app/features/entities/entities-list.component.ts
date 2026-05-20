@@ -123,8 +123,8 @@ export class EntitiesListComponent {
   filterSkeleton = Array.from({ length: 4 });
   activeIndex = signal(0);
   advancedFiltersOpen = signal(false);
-  filtersPanelOpen = signal(true);
-  infoPanelOpen = signal(true);
+  filtersPanelOpen = signal(false);
+  infoPanelOpen = signal(false);
   openFilterMenu = signal<FilterMenuKey | null>(null);
   curatedDeckMode = signal(false);
 

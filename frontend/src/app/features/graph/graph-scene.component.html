@@ -36,16 +36,15 @@
           (pointerleave)="clearHover.emit()"
         ></path>
 
-        @if (edgeLabelVisibility[renderedEdge.edge.id]) {
-          <text
-            class="graph-edge-label"
-            [class.is-muted]="renderedEdge.muted"
-            [attr.x]="renderedEdge.labelPoint.x"
-            [attr.y]="renderedEdge.labelPoint.y"
-          >
-            {{ renderedEdge.displayLabel }}
-          </text>
-        }
+        <text
+          class="graph-edge-label"
+          [class.is-muted]="renderedEdge.muted"
+          [class.is-visible]="edgeLabelVisibility[renderedEdge.edge.id]"
+          [attr.x]="renderedEdge.labelPoint.x"
+          [attr.y]="renderedEdge.labelPoint.y"
+        >
+          {{ renderedEdge.displayLabel }}
+        </text>
       </g>
     }
 
@@ -81,12 +80,15 @@
           {{ renderedNode.nodeVisual.icon }}
         </text>
 
-        @if (nodeLabelVisibility[renderedNode.node.id]) {
-          <g class="graph-node__label" [attr.transform]="renderedNode.labelTransform">
-            <text class="graph-node__title" y="-2">{{ renderedNode.titleLabel }}</text>
-            <text class="graph-node__subtitle" y="18">{{ renderedNode.typeLabel }}</text>
-          </g>
-        }
+        <g
+          class="graph-node__label"
+          [class.is-visible]="nodeLabelVisibility[renderedNode.node.id]"
+          [attr.transform]="renderedNode.labelTransform"
+          [attr.text-anchor]="renderedNode.labelTextAnchor"
+        >
+          <text class="graph-node__title" y="-2">{{ renderedNode.titleLabel }}</text>
+          <text class="graph-node__subtitle" y="18">{{ renderedNode.typeLabel }}</text>
+        </g>
       </g>
     }
   </g>

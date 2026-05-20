@@ -534,8 +534,8 @@ export class EntitiesExplorer3dComponent
         const total = this.items.length;
         if (!total) return;
 
-        const spacing = 1.72;
-        const depthSpacing = 1.28;
+        const spacing = 1.66;
+        const depthSpacing = 1.34;
 
         // Ajusta este valor para subir o bajar TODAS las cards
         const baseY = 0.2;
@@ -562,13 +562,13 @@ export class EntitiesExplorer3dComponent
                 (isActive ? 1.55 : 0) +
                 (isHovered ? 0.42 : 0);
 
-            const rotY = isActive ? 0 : offset * -0.09;
-            const rotZ = isActive ? 0 : offset * -0.022;
+            const rotY = isActive ? 0 : offset * -0.082;
+            const rotZ = isActive ? 0 : offset * -0.018;
 
-            const scaleBase = isActive ? 1.26 : Math.max(0.86, 1 - abs * 0.06);
+            const scaleBase = isActive ? 1.24 : Math.max(0.85, 1 - abs * 0.058);
             const scale = isHovered ? scaleBase + 0.045 : scaleBase;
 
-            const opacityBase = isActive ? 1 : Math.max(0.22, 0.68 - abs * 0.1);
+            const opacityBase = isActive ? 1 : Math.max(0.2, 0.66 - abs * 0.095);
             const opacity = isHovered ? Math.min(1, opacityBase + 0.1) : opacityBase;
 
             const userData = card.group.userData as CardUserData;

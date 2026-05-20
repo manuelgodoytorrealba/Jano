@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, inject } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GraphComponent } from '../graph/graph.component';
@@ -21,9 +21,11 @@ type DetailWorkspaceMode = 'split' | 'image' | 'graph';
   templateUrl: './entity-detail-view.component.html',
   styleUrls: ['./entity-detail-view.component.scss'],
 })
-export class EntityDetailViewComponent {
+export class EntityDetailViewComponent implements OnDestroy {
   private static readonly INITIAL_RELATION_LIMIT = 48;
   private static readonly RELATION_LIMIT_STEP = 48;
+  private readonly cdr = inject(ChangeDetectorRef);
+  private transitionTimer: ReturnType<typeof setTimeout> | null = null;
 
   @Input() entity: any | null = null;
   @Input() showActions = false;
@@ -37,6 +39,7 @@ export class EntityDetailViewComponent {
   @Output() shareToggle = new EventEmitter<void>();
   workspaceMode: DetailWorkspaceMode = 'split';
   workspaceFocused = false;
+  workspaceTransitioning = false;
   outgoingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   incomingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   readonly workspaceModes: Array<{ value: DetailWorkspaceMode; label: string }> = [
@@ -49,23 +52,55 @@ export class EntityDetailViewComponent {
     if (changes['entity'] && !changes['entity'].firstChange) {
       this.workspaceMode = 'split';
       this.workspaceFocused = false;
+      this.workspaceTransitioning = false;
+      this.clearTransitionTimer();
       this.resetRelationLimits();
     }
   }
 
+  ngOnDestroy(): void {
+    this.clearTransitionTimer();
+  }
+
   setWorkspaceMode(mode: DetailWorkspaceMode): void {
+    if (this.workspaceMode === mode) {
+      return;
+    }
+
+    this.beginWorkspaceTransition();
     this.workspaceMode = mode;
   }
 
   toggleWorkspaceFocus(): void {
+    this.beginWorkspaceTransition();
     this.workspaceFocused = !this.workspaceFocused;
   }
 
   @HostListener('window:keydown.escape')
   exitWorkspaceFocus(): void {
     if (this.workspaceFocused) {
+      this.beginWorkspaceTransition();
       this.workspaceFocused = false;
     }
+  }
+
+  private beginWorkspaceTransition(): void {
+    this.workspaceTransitioning = true;
+    this.clearTransitionTimer();
+    this.transitionTimer = setTimeout(() => {
+      this.workspaceTransitioning = false;
+      this.transitionTimer = null;
+      this.cdr.markForCheck();
+    }, 420);
+  }
+
+  private clearTransitionTimer(): void {
+    if (!this.transitionTimer) {
+      return;
+    }
+
+    clearTimeout(this.transitionTimer);
+    this.transitionTimer = null;
   }
 
   primaryMedia(entity: any) {

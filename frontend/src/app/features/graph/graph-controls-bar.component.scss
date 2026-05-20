@@ -59,9 +59,9 @@
 }
 
 :host-context(.explorer-shell--focused) .graph-panel-bar {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.16rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.14rem;
   border-color: rgba(255, 255, 255, 0.04);
   background: rgba(5, 8, 12, 0.2);
   box-shadow: none;
@@ -69,13 +69,9 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
-:host-context(.explorer-shell--focused) .graph-panel-bar__group--primary,
-:host-context(.explorer-shell--focused) .graph-panel-bar__group--meta {
-  display: none;
-}
-
 :host-context(.explorer-shell--focused) .graph-panel-bar__group--actions {
   gap: 0.12rem;
+  flex-wrap: wrap;
 }
 
 :host-context(.explorer-shell--focused) .graph-utility-btn,
@@ -84,12 +80,13 @@
   color: rgba(238, 247, 255, 0.78);
 }
 
-:host-context(.explorer-shell--focused) .graph-utility-btn:not(.graph-utility-btn--mode) {
-  display: none;
+:host-context(.explorer-shell--focused) .graph-panel-bar__meta {
+  justify-content: center;
 }
 
-:host-context(.explorer-shell--focused) .surface-control--wide {
-  display: none;
+:host-context(.explorer-shell--focused) .graph-panel-bar__toggles,
+:host-context(.explorer-shell--focused) .surface-controls {
+  gap: 0.12rem;
 }
 
 .graph-panel-bar__group {

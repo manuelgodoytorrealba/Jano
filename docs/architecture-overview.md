@@ -272,6 +272,14 @@ sequenceDiagram
   Api-->>C: Observable
 ```
 
+### Politica UX del graph explorer
+
+- El shell del workspace se mantiene estable entre Split, Image, Graph y Focus; cambia el enfasis, no la estructura base.
+- El modo `Etiquetas Auto` ya no funciona con un umbral unico: usa presupuestos de labels y ranking por prioridad.
+- Las labels protegidas son centro, seleccion actual y hover activo.
+- En grafos densos, los slots restantes favorecen nodos con mayor relevancia estructural y relaciones conectadas al centro o la seleccion.
+- Las labels se mantienen montadas y cambian por opacidad para evitar sensacion de rerender o parpadeo durante hover.
+
 ## Sistema de media
 
 El sistema de media ya tiene una separacion valiosa:
@@ -450,4 +458,3 @@ La direccion del repo encaja con la identidad JANO:
 - Home decks y recommended soportan curadoria editorial, no solo CRUD.
 
 Los principales riesgos no son de vision, sino de concentracion de complejidad. La prioridad deberia ser modularizar sin cambiar comportamiento, reforzar contratos tipados y ampliar pruebas sobre flujos editoriales.
-
