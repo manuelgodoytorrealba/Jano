@@ -23,6 +23,7 @@ export interface InitializedLoadedGraphState extends PreparedGraphState {
   selectedNodeId: string;
   pendingInitialEntityFocus: boolean;
   graphLayoutActive: boolean;
+  graphLayoutFrames: number;
   graphSettledFrames: number;
 }
 
@@ -77,6 +78,7 @@ export function initializeLoadedGraphState(
     selectedNodeId: graph.centerId,
     pendingInitialEntityFocus: true,
     graphLayoutActive: true,
+    graphLayoutFrames: 0,
     graphSettledFrames: 0,
   };
 }
@@ -108,9 +110,9 @@ export function resolveGraphWarmupPasses(graph: GraphData, passes?: number): num
   const nodeCount = graph.nodes.length;
   const edgeCount = graph.edges.length;
   return nodeCount >= 34 || edgeCount >= 52
-    ? 30
+    ? 52
     : nodeCount >= 20 || edgeCount >= 28
-      ? 26
+      ? 34
       : 36;
 }
 

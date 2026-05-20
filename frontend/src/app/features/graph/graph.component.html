@@ -119,6 +119,7 @@
           (pointercancel)="onGraphStagePointerUp($event)"
         >
           <app-graph-scene
+            [ambientFields]="ambientFields()"
             [markerDefs]="graphDerived().relationMarkerDefs"
             [viewportTransform]="graphViewportTransform()"
             [renderedEdges]="renderedEdges()"

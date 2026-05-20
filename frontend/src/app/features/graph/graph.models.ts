@@ -111,11 +111,22 @@ export interface GraphTooltip {
   body?: string | null;
 }
 
+export interface GraphAmbientField {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  color: string;
+  opacity: number;
+  emphasis: 'focus' | 'mid' | 'far';
+}
+
 export interface GraphRenderedEdge {
   edge: GraphEdge;
   path: string;
   labelPoint: GraphPoint;
   muted: boolean;
+  depthTier: 'focus' | 'mid' | 'far';
   relationVisual: GraphRelationVisualConfig;
   markerId: string;
   dasharray: string;
@@ -128,6 +139,7 @@ export interface GraphRenderedNode {
   transform: string;
   selected: boolean;
   muted: boolean;
+  depthTier: 'focus' | 'mid' | 'far';
   size: number;
   haloSize: number;
   shapePath: string;

@@ -69,6 +69,7 @@ export function applyLoadedGraphState(options: {
   hasUserAdjustedGraphView: boolean;
   graphViewportReady: boolean;
   graphLayoutActive: boolean;
+  graphLayoutFrames: number;
   graphSettledFrames: number;
 } {
   return {
@@ -85,6 +86,7 @@ export function applyLoadedGraphState(options: {
     hasUserAdjustedGraphView: false,
     graphViewportReady: false,
     graphLayoutActive: options.initialized.graphLayoutActive,
+    graphLayoutFrames: options.initialized.graphLayoutFrames,
     graphSettledFrames: options.initialized.graphSettledFrames,
   };
 }

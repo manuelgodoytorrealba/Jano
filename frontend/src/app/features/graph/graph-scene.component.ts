@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
-import { GraphEdge, GraphRenderedEdge, GraphRenderedNode, GraphTooltip } from './graph.models';
+import { GraphAmbientField, GraphEdge, GraphRenderedEdge, GraphRenderedNode, GraphTooltip } from './graph.models';
 
 @Component({
   standalone: true,
@@ -11,6 +11,7 @@ import { GraphEdge, GraphRenderedEdge, GraphRenderedNode, GraphTooltip } from '.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GraphSceneComponent {
+  @Input() ambientFields: GraphAmbientField[] = [];
   @Input({ required: true }) markerDefs: Array<{ id: string; color: string }> = [];
   @Input({ required: true }) viewportTransform = '';
   @Input({ required: true }) renderedEdges: GraphRenderedEdge[] = [];

@@ -8,6 +8,7 @@ import { GraphViewportController } from './graph-runtime-controllers';
 
 export interface GraphLoopState {
   graphLayoutActive: boolean;
+  graphLayoutFrames: number;
   graphSettledFrames: number;
 }
 
@@ -37,6 +38,7 @@ export function advanceExplorerLoop(options: {
   let shouldContinue = false;
   let shouldRender = false;
   let graphLayoutActive = options.loopState.graphLayoutActive;
+  let graphLayoutFrames = options.loopState.graphLayoutFrames;
   let graphSettledFrames = options.loopState.graphSettledFrames;
 
   if (options.graph) {
@@ -52,6 +54,7 @@ export function advanceExplorerLoop(options: {
     });
 
     graphLayoutActive = layoutFrame.graphLayoutActive;
+    graphLayoutFrames = layoutFrame.graphLayoutFrames;
     graphSettledFrames = layoutFrame.graphSettledFrames;
     shouldRender ||= layoutFrame.shouldRender;
     shouldContinue ||= layoutFrame.shouldContinue;
@@ -77,6 +80,7 @@ export function advanceExplorerLoop(options: {
 
   return {
     graphLayoutActive,
+    graphLayoutFrames,
     graphSettledFrames,
     shouldContinue,
     shouldRender,

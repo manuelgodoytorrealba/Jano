@@ -1,5 +1,19 @@
 <svg class="graph-svg" preserveAspectRatio="xMidYMid meet">
   <defs>
+    <radialGradient id="graph-depth-vignette" cx="50%" cy="46%" r="70%">
+      <stop offset="0%" stop-color="#16222e" stop-opacity="0" />
+      <stop offset="78%" stop-color="#070a10" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#04060a" stop-opacity="0.18" />
+    </radialGradient>
+
+    @for (field of ambientFields; track field.id) {
+      <radialGradient [attr.id]="field.id + '-gradient'" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" [attr.stop-color]="field.color" [attr.stop-opacity]="field.opacity"></stop>
+        <stop offset="58%" [attr.stop-color]="field.color" [attr.stop-opacity]="field.opacity * 0.3"></stop>
+        <stop offset="100%" [attr.stop-color]="field.color" stop-opacity="0"></stop>
+      </radialGradient>
+    }
+
     @for (markerDef of markerDefs; track markerDef.id) {
       <marker
         [attr.id]="markerDef.id"
@@ -16,8 +30,32 @@
   </defs>
 
   <g [attr.transform]="viewportTransform">
+    <rect class="graph-depth-vignette" x="-2000" y="-2000" width="4000" height="4000" fill="url(#graph-depth-vignette)"></rect>
+
+    @for (field of ambientFields; track field.id) {
+      <circle
+        class="graph-ambient-field"
+        [class.graph-ambient-field--focus]="field.emphasis === 'focus'"
+        [class.graph-ambient-field--mid]="field.emphasis === 'mid'"
+        [class.graph-ambient-field--far]="field.emphasis === 'far'"
+        [attr.cx]="field.x"
+        [attr.cy]="field.y"
+        [attr.r]="field.radius"
+        [attr.fill]="'url(#' + field.id + '-gradient)'"
+      ></circle>
+    }
+
     @for (renderedEdge of renderedEdges; track renderedEdge.edge.id) {
-      <g class="graph-edge-group">
+      <g class="graph-edge-group" [class.graph-edge-group--focus]="renderedEdge.depthTier === 'focus'" [class.graph-edge-group--mid]="renderedEdge.depthTier === 'mid'" [class.graph-edge-group--far]="renderedEdge.depthTier === 'far'">
+        <path
+          class="graph-edge graph-edge--aura"
+          [attr.d]="renderedEdge.path"
+          [attr.stroke]="renderedEdge.relationVisual.color"
+          [attr.stroke-width]="renderedEdge.relationVisual.width + 4.5"
+          [attr.stroke-dasharray]="renderedEdge.dasharray"
+          [class.is-muted]="renderedEdge.muted"
+        ></path>
+
         <path
           class="graph-edge"
           [attr.d]="renderedEdge.path"
@@ -55,6 +93,9 @@
         [attr.transform]="renderedNode.transform"
         [class.is-selected]="renderedNode.selected"
         [class.is-muted]="renderedNode.muted"
+        [class.graph-node--focus]="renderedNode.depthTier === 'focus'"
+        [class.graph-node--mid]="renderedNode.depthTier === 'mid'"
+        [class.graph-node--far]="renderedNode.depthTier === 'far'"
         (pointerdown)="nodePointerDown.emit({ event: $event, nodeId: renderedNode.node.id })"
         (pointermove)="nodePointerMove.emit($event)"
         (pointerup)="nodePointerUp.emit($event)"
@@ -70,11 +111,25 @@
           [attr.fill]="renderedNode.nodeVisual.halo"
         ></circle>
 
+        <circle
+          class="graph-node__echo"
+          cx="0"
+          cy="0"
+          [attr.r]="renderedNode.size * 1.52"
+          [attr.fill]="renderedNode.nodeVisual.halo"
+        ></circle>
+
         <path
           class="graph-node__shape"
           [attr.d]="renderedNode.shapePath"
           [attr.fill]="renderedNode.nodeVisual.color"
           [attr.stroke]="renderedNode.nodeVisual.accent"
+        ></path>
+
+        <path
+          class="graph-node__shape graph-node__shape--inner"
+          [attr.d]="renderedNode.shapePath"
+          [attr.fill]="renderedNode.nodeVisual.color"
         ></path>
 
         <text class="graph-node__icon" text-anchor="middle" dy="0.35em" [attr.fill]="renderedNode.nodeVisual.textColor">

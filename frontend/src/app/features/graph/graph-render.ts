@@ -7,6 +7,7 @@ import {
 import { compactGraphLabel } from './graph-labels';
 import { edgeCurveOffset, edgeMidpoint, edgePath } from './graph-layout';
 import {
+  GraphAmbientField,
   GraphEdge,
   GraphNode,
   GraphPoint,
@@ -38,6 +39,7 @@ export function graphNodeHaloSize(node: GraphNode, centerId: string | null, sele
 export function buildRenderedGraphEdges(options: {
   edges: GraphEdge[];
   positions: Record<string, GraphPoint>;
+  centerId: string | null;
   selectedNodeId: string | null;
 }): GraphRenderedEdge[] {
   return options.edges.map((edge) => {
@@ -51,6 +53,7 @@ export function buildRenderedGraphEdges(options: {
       edge,
       path,
       labelPoint: edgeMidpoint(source, target, curve),
+      depthTier: resolveEdgeDepthTier(edge, options.centerId, options.selectedNodeId),
       muted:
         !!options.selectedNodeId &&
         edge.source !== options.selectedNodeId &&
@@ -86,6 +89,7 @@ export function buildRenderedGraphNodes(options: {
       point,
       transform: `translate(${point.x} ${point.y})`,
       selected: options.selectedNodeId === node.id,
+      depthTier: resolveNodeDepthTier(node, point, centerPoint, options.centerId, options.selectedNodeId, options.selectedNeighbors),
       muted:
         !!options.selectedNodeId &&
         options.selectedNodeId !== node.id &&
@@ -119,6 +123,77 @@ export function contextualGraphTypeMeta(node: GraphNode | null): GraphTypeMeta |
   return { label: config.label, color: config.color };
 }
 
+export function buildGraphAmbientFields(options: {
+  nodes: GraphNode[];
+  positions: Record<string, GraphPoint>;
+  centerId: string | null;
+  selectedNodeId: string | null;
+  selectedNeighbors: Set<string>;
+}): GraphAmbientField[] {
+  const groups = new Map<string, { nodes: GraphNode[]; totalWeight: number; weightX: number; weightY: number }>();
+
+  for (const node of options.nodes) {
+    if (node.id === options.centerId) {
+      continue;
+    }
+
+    const point = options.positions[node.id];
+    if (!point) {
+      continue;
+    }
+
+    const weight = 1 + Math.min(node.degree ?? 0, 6) * 0.35;
+    const bucket = groups.get(node.type) ?? { nodes: [], totalWeight: 0, weightX: 0, weightY: 0 };
+    bucket.nodes.push(node);
+    bucket.totalWeight += weight;
+    bucket.weightX += point.x * weight;
+    bucket.weightY += point.y * weight;
+    groups.set(node.type, bucket);
+  }
+
+  return Array.from(groups.entries())
+    .map(([type, group]) => {
+      if (group.nodes.length < 2) {
+        return null;
+      }
+
+      const config = getEntityTypeConfig(type);
+      const x = group.weightX / Math.max(group.totalWeight, 1);
+      const y = group.weightY / Math.max(group.totalWeight, 1);
+      const spread = group.nodes.reduce((sum, node) => {
+        const point = options.positions[node.id] ?? { x: 0, y: 0 };
+        return sum + Math.hypot(point.x - x, point.y - y);
+      }, 0) / Math.max(group.nodes.length, 1);
+
+      const includesSelected = group.nodes.some((node) => node.id === options.selectedNodeId);
+      const includesNeighbor = group.nodes.some((node) => options.selectedNeighbors.has(node.id));
+      const emphasis = includesSelected
+        ? 'focus'
+        : includesNeighbor || group.nodes.length >= 4
+          ? 'mid'
+          : 'far';
+
+      return {
+        id: `field-${type.toLowerCase()}`,
+        x,
+        y,
+        radius: Math.max(120, Math.min(280, spread * 1.18 + 86)),
+        color: config.color,
+        opacity: includesSelected ? 0.16 : includesNeighbor ? 0.11 : 0.08,
+        emphasis,
+        priority:
+          group.nodes.length * 80
+          + group.totalWeight * 40
+          + (includesSelected ? 400 : 0)
+          + (includesNeighbor ? 180 : 0),
+      } as GraphAmbientField & { priority: number };
+    })
+    .filter((field): field is GraphAmbientField & { priority: number } => !!field)
+    .sort((left, right) => right.priority - left.priority)
+    .slice(0, 3)
+    .map(({ priority: _priority, ...field }) => field);
+}
+
 export function graphTooltipStyle(
   tooltip: GraphTooltip | null,
   host: HTMLElement | null | undefined,
@@ -132,4 +207,47 @@ export function graphTooltipStyle(
     left: `${tooltip.x - rect.left + 18}px`,
     top: `${tooltip.y - rect.top + 18}px`,
   };
+}
+
+function resolveNodeDepthTier(
+  node: GraphNode,
+  point: GraphPoint,
+  centerPoint: GraphPoint,
+  centerId: string | null,
+  selectedNodeId: string | null,
+  selectedNeighbors: Set<string>,
+): 'focus' | 'mid' | 'far' {
+  if (node.id === centerId || node.id === selectedNodeId) {
+    return 'focus';
+  }
+
+  if (selectedNodeId) {
+    return selectedNeighbors.has(node.id) ? 'mid' : 'far';
+  }
+
+  const distance = Math.hypot(point.x - centerPoint.x, point.y - centerPoint.y);
+  if (distance <= 280 || (node.degree ?? 0) >= 4) {
+    return 'mid';
+  }
+
+  return 'far';
+}
+
+function resolveEdgeDepthTier(
+  edge: GraphEdge,
+  centerId: string | null,
+  selectedNodeId: string | null,
+): 'focus' | 'mid' | 'far' {
+  if (
+    edge.source === selectedNodeId
+    || edge.target === selectedNodeId
+    || edge.source === centerId
+    || edge.target === centerId
+  ) {
+    return selectedNodeId && (edge.source === selectedNodeId || edge.target === selectedNodeId)
+      ? 'focus'
+      : 'mid';
+  }
+
+  return 'far';
 }

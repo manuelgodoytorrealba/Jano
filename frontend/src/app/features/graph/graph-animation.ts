@@ -3,6 +3,7 @@ import { GraphData, GraphPoint } from './graph.models';
 
 export interface GraphLayoutFrameState {
   graphLayoutActive: boolean;
+  graphLayoutFrames: number;
   graphSettledFrames: number;
 }
 
@@ -44,56 +45,79 @@ export function stepGraphLayoutFrame(options: {
   );
 
   options.pinCenterNode();
+  const nextLayoutFrames = options.state.graphLayoutFrames + 1;
+  const normalizedMotion = motion / Math.max(options.graph.nodes.length - 1, 1);
 
   if (options.draggingNodeId !== null) {
     return {
       graphLayoutActive: true,
+      graphLayoutFrames: 0,
       graphSettledFrames: 0,
       shouldRender: true,
       shouldContinue: true,
     };
   }
 
-  if (motion < settlePolicy.motionThreshold) {
+  if (normalizedMotion < settlePolicy.motionThreshold) {
     const nextSettledFrames = options.state.graphSettledFrames + 1;
-    const graphLayoutActive = nextSettledFrames < settlePolicy.frameThreshold;
+    const graphLayoutActive =
+      nextSettledFrames < settlePolicy.frameThreshold && nextLayoutFrames < settlePolicy.maxFrames;
 
     return {
       graphLayoutActive,
+      graphLayoutFrames: graphLayoutActive ? nextLayoutFrames : 0,
       graphSettledFrames: nextSettledFrames,
       shouldRender: true,
       shouldContinue: graphLayoutActive,
     };
   }
 
+  if (nextLayoutFrames >= settlePolicy.maxFrames) {
+    return {
+      graphLayoutActive: false,
+      graphLayoutFrames: 0,
+      graphSettledFrames: 0,
+      shouldRender: true,
+      shouldContinue: false,
+    };
+  }
+
   return {
     graphLayoutActive: true,
+    graphLayoutFrames: nextLayoutFrames,
     graphSettledFrames: 0,
     shouldRender: true,
     shouldContinue: true,
   };
 }
 
-function resolveGraphSettlePolicy(graph: GraphData): { motionThreshold: number; frameThreshold: number } {
+function resolveGraphSettlePolicy(graph: GraphData): {
+  motionThreshold: number;
+  frameThreshold: number;
+  maxFrames: number;
+} {
   const nodeCount = graph.nodes.length;
   const edgeCount = graph.edges.length;
 
   if (nodeCount >= 34 || edgeCount >= 52) {
     return {
-      motionThreshold: 0.46,
-      frameThreshold: 7,
+      motionThreshold: 0.1,
+      frameThreshold: 5,
+      maxFrames: 72,
     };
   }
 
   if (nodeCount >= 20 || edgeCount >= 28) {
     return {
-      motionThreshold: 0.38,
-      frameThreshold: 9,
+      motionThreshold: 0.08,
+      frameThreshold: 7,
+      maxFrames: 96,
     };
   }
 
   return {
-    motionThreshold: 0.28,
-    frameThreshold: 14,
+    motionThreshold: 0.06,
+    frameThreshold: 10,
+    maxFrames: 132,
   };
 }

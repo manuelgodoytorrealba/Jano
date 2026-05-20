@@ -64,6 +64,7 @@ import { GraphInitialFocusController } from './graph-initial-focus';
 import { GraphSelectionSource, GraphViewportFocusPlan } from './graph-focus';
 import { buildGraphDerivedState, ensureGraphSelectionVisible } from './graph-derived';
 import {
+  buildGraphAmbientFields,
   buildRenderedGraphEdges,
   buildRenderedGraphNodes,
   graphImageBackdrop,
@@ -242,6 +243,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private selectedNodeSource: GraphSelectionSource = 'center';
   private hasUserAdjustedGraphView = false;
   private graphLayoutActive = false;
+  private graphLayoutFrames = 0;
   private graphSettledFrames = 0;
   private readonly viewportController = new GraphViewportController();
   private readonly tooltipController = new GraphTooltipController();
@@ -264,6 +266,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     return buildRenderedGraphEdges({
       edges: this.graphDerived().filteredEdges,
       positions: this.positions,
+      centerId: this.graph()?.centerId ?? null,
       selectedNodeId: this.selectedNodeId(),
     });
   });
@@ -284,6 +287,15 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       selectedNeighbors,
     });
   });
+  readonly ambientFields = computed(() =>
+    buildGraphAmbientFields({
+      nodes: this.graphDerived().filteredNodes,
+      positions: this.positions,
+      centerId: this.graph()?.centerId ?? null,
+      selectedNodeId: this.selectedNodeId(),
+      selectedNeighbors: this.graphDerived().selectedNeighbors,
+    }),
+  );
 
   readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphViewport().scale));
   readonly imagePresentation = computed(() => resolveMediaPresentation(this.imageMedia));
@@ -462,6 +474,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.viewportController.clearTarget();
     this.graphViewportReady = loadedState.graphViewportReady;
     this.graphLayoutActive = loadedState.graphLayoutActive;
+    this.graphLayoutFrames = loadedState.graphLayoutFrames;
     this.graphSettledFrames = loadedState.graphSettledFrames;
     this.focusCurrentEntity(false);
 
@@ -516,6 +529,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         pointerSession: this.pointerSession,
         loopState: {
           graphLayoutActive: this.graphLayoutActive,
+          graphLayoutFrames: this.graphLayoutFrames,
           graphSettledFrames: this.graphSettledFrames,
         },
         pinCenterNode: () => this.pinCenterNode(),
@@ -532,6 +546,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       });
 
       this.graphLayoutActive = loop.graphLayoutActive;
+      this.graphLayoutFrames = loop.graphLayoutFrames;
       this.graphSettledFrames = loop.graphSettledFrames;
       if (loop.nextImageViewport) {
         this.imageViewport.set(loop.nextImageViewport);
@@ -922,6 +937,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       },
       activateLayout: () => {
         this.graphLayoutActive = true;
+        this.graphLayoutFrames = 0;
         this.graphSettledFrames = 0;
       },
       startAnimationLoop: () => this.startAnimationLoop(),
@@ -956,6 +972,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       focusNode: (nodeId) => this.focusNode(nodeId),
       activateLayout: () => {
         this.graphLayoutActive = true;
+        this.graphLayoutFrames = 0;
         this.graphSettledFrames = 0;
       },
       startAnimationLoop: () => this.startAnimationLoop(),

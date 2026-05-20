@@ -9,10 +9,54 @@
   contain: layout paint style;
 }
 
+.graph-depth-vignette {
+  pointer-events: none;
+}
+
+.graph-ambient-field {
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.72;
+  transform-origin: center;
+  animation: graphAmbientPulse 18s ease-in-out infinite;
+}
+
+.graph-ambient-field--focus {
+  opacity: 0.96;
+  animation-duration: 14s;
+}
+
+.graph-ambient-field--mid {
+  opacity: 0.78;
+}
+
+.graph-ambient-field--far {
+  opacity: 0.56;
+  animation-duration: 22s;
+}
+
+.graph-edge-group--focus {
+  opacity: 1;
+}
+
+.graph-edge-group--mid {
+  opacity: 0.82;
+}
+
+.graph-edge-group--far {
+  opacity: 0.58;
+}
+
 .graph-edge {
   fill: none;
-  opacity: 0.92;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
   transition: opacity 120ms ease;
+}
+
+.graph-edge--aura {
+  opacity: 0.14;
 }
 
 .graph-edge.is-muted {
@@ -58,17 +102,40 @@
   opacity: 0.18;
 }
 
+.graph-node--focus {
+  opacity: 1;
+}
+
+.graph-node--mid {
+  opacity: 0.86;
+}
+
+.graph-node--far {
+  opacity: 0.62;
+}
+
 .graph-node.is-selected .graph-node__shape,
 .graph-node:hover .graph-node__shape {
   stroke-width: 3px;
 }
 
 .graph-node__halo {
-  opacity: 0.3;
+  opacity: 0.24;
+}
+
+.graph-node__echo {
+  opacity: 0.08;
 }
 
 .graph-node__shape {
   stroke-width: 2.2px;
+}
+
+.graph-node__shape--inner {
+  opacity: 0.16;
+  transform: scale(0.82);
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .graph-node__icon {
@@ -105,6 +172,25 @@
   vector-effect: non-scaling-stroke;
 }
 
+.graph-node--far .graph-node__label,
+.graph-edge-group--far .graph-edge-label {
+  opacity: 0.86;
+}
+
+:host.is-interacting .graph-ambient-field {
+  animation-play-state: paused;
+}
+
+.graph-node--focus .graph-node__halo,
+.graph-node.is-selected .graph-node__halo {
+  opacity: 0.34;
+  animation: graphNodeBreath 12s ease-in-out infinite;
+}
+
+.graph-node--far .graph-node__echo {
+  opacity: 0.12;
+}
+
 
 .graph-tooltip {
   position: absolute;
@@ -136,4 +222,22 @@
   color: rgba(232, 242, 249, 0.78);
   line-height: 1.45;
   font-size: 0.86rem;
+}
+
+@keyframes graphAmbientPulse {
+  0%, 100% {
+    transform: scale(0.985);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+@keyframes graphNodeBreath {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.045);
+  }
 }
