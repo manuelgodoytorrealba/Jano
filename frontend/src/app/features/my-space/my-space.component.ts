@@ -57,7 +57,7 @@ export class MySpaceComponent {
   }
 
   roleLabel(user: any): string {
-    return this.isAdmin(user) ? 'ADMIN' : 'MEMBER';
+    return this.isAdmin(user) ? 'Administrador' : 'Miembro';
   }
 
   createCollection() {

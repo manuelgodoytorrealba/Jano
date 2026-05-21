@@ -1,187 +1,205 @@
-<div class="page">
+<div class="space-page">
   @if (auth.user$ | async; as user) {
-  <header class="top">
-    <div class="top-left">
-      <div class="title-row">
-        <h1>My Space</h1>
-
-        <span class="role-badge" [class.role-badge--admin]="isAdmin(user)">
-          {{ roleLabel(user) }}
-        </span>
+    <section class="space-hero">
+      <div class="space-hero__copy">
+        <span class="space-eyebrow">Mi espacio</span>
+        <h1>Biblioteca personal</h1>
+        <p class="space-muted">
+          Tu mesa de trabajo dentro de JANO para guardar obras, reunir conexiones y construir colecciones con ritmo editorial.
+        </p>
       </div>
 
-      <p class="muted">
-        Bienvenido, {{ user.name || user.email }}
-      </p>
+      <div class="space-hero__actions">
+        <nav class="space-shortcuts" aria-label="Accesos de mi espacio">
+          <a class="space-shortcut" routerLink="/profile">Perfil</a>
+          <a class="space-shortcut" routerLink="/settings">Ajustes</a>
+          @if (isAdmin(user)) {
+            <a class="space-shortcut" routerLink="/admin">Admin</a>
+          }
+        </nav>
 
-      <p class="space-description">
-        Tu espacio personal para guardar, organizar y revisar contenido dentro de JANO.
-      </p>
-
-      @if (isAdmin(user)) {
-      <div class="admin-actions">
-        <a class="admin-link" routerLink="/admin">Ir al panel admin</a>
+        <button class="space-shortcut space-shortcut--quiet" type="button" (click)="logout()">Cerrar sesión</button>
       </div>
-      }
-    </div>
+    </section>
 
-    <button class="logout" type="button" (click)="logout()">Cerrar sesión</button>
-  </header>
+    <section class="space-surface space-surface--identity">
+      <div class="space-section-head">
+        <div>
+          <span class="space-label">Cuenta</span>
+          <h2>{{ user.name || user.email }}</h2>
+          <p class="space-muted">
+            Un espacio personal para guardar, organizar y volver sobre las piezas que merecen quedarse contigo.
+          </p>
+        </div>
+
+        <div class="space-note">
+          <span class="space-note__label">Rol</span>
+          <strong>{{ roleLabel(user) }}</strong>
+        </div>
+      </div>
+    </section>
   }
 
-  <!-- SAVED -->
-  <section class="saved-box">
-    <div class="saved-head">
+  <section class="space-surface">
+    <div class="space-section-head">
       <div>
-        <h2 class="section-title">Guardados</h2>
-        <p class="section-sub">Entities guardadas rápidamente, aunque no estén en una colección.</p>
+        <span class="space-label">Guardados</span>
+        <h2>Selección rápida</h2>
+        <p class="space-muted">Obras y entidades que quieres tener a mano antes de decidir su lugar definitivo.</p>
       </div>
     </div>
 
     @if (saved$ | async; as savedItems) {
-    @if (savedItems.length) {
-    <section class="grid">
-      @for (row of savedItems; track row.id) {
-      <article class="card">
-        <div class="thumb" (click)="go(row.entity.slug)">
-          <app-jano-media [entity]="row.entity" usage="card" [alt]="row.entity.title"></app-jano-media>
+      @if (savedItems.length) {
+        <section class="space-grid">
+          @for (row of savedItems; track row.id) {
+            <article class="media-card">
+              <div class="media-card__thumb" (click)="go(row.entity.slug)">
+                <app-jano-media [entity]="row.entity" usage="card" [alt]="row.entity.title"></app-jano-media>
+              </div>
+
+              <div class="media-card__body">
+                <div class="media-card__title" (click)="go(row.entity.slug)">
+                  {{ row.entity.title }}
+                </div>
+
+                <div class="media-card__summary">
+                  {{ cleanWiki(row.entity.summary ?? '') }}
+                </div>
+
+                <div class="media-card__actions">
+                  <button type="button" class="space-button" (click)="go(row.entity.slug)">Ver</button>
+                  <button type="button" class="space-button space-button--danger" (click)="removeSaved(row.entity.id)">Quitar</button>
+                </div>
+              </div>
+            </article>
+          }
+        </section>
+      } @else {
+        <div class="space-empty">
+          <div class="space-empty__title">No tienes entidades guardadas</div>
+          <div class="space-empty__sub">Usa Guardar desde una entidad para empezar a construir tu biblioteca.</div>
         </div>
-
-        <div class="body">
-          <div class="title" (click)="go(row.entity.slug)">
-            {{ row.entity.title }}
-          </div>
-
-          <div class="summary">
-            {{ cleanWiki(row.entity.summary ?? '') }}
-          </div>
-
-          <div class="actions">
-            <button type="button" class="ghost" (click)="go(row.entity.slug)">
-              Ver
-            </button>
-            <button type="button" class="danger" (click)="removeSaved(row.entity.id)">
-              Quitar
-            </button>
-          </div>
-        </div>
-      </article>
       }
-    </section>
-    } @else {
-    <div class="empty">
-      <div class="empty-title">No tienes entities guardadas</div>
-      <div class="empty-sub">Usa el botón Guardar desde una entity para que aparezca aquí.</div>
-    </div>
-    }
     }
   </section>
 
-  <!-- CREATE COLLECTION -->
-  <section class="create-box">
-    <div class="create-head">
+  <section class="space-surface">
+    <div class="space-section-head">
       <div>
-        <h2 class="section-title">Colecciones</h2>
-        <p class="section-sub">Organiza tus entities en espacios personalizados.</p>
+        <span class="space-label">Colecciones</span>
+        <h2>Crear una nueva agrupación</h2>
+        <p class="space-muted">Organiza piezas y relaciones en espacios propios, con una lógica que puedas volver a leer después.</p>
       </div>
     </div>
 
-    <div class="create-form">
-      <input class="input" type="text" placeholder="Nombre de la colección" [value]="newCollectionName"
-        (input)="newCollectionName = $any($event.target).value" />
+    <div class="space-create-form">
+      <input
+        class="space-input"
+        type="text"
+        placeholder="Nombre de la colección"
+        [value]="newCollectionName"
+        (input)="newCollectionName = $any($event.target).value"
+      />
 
-      <input class="input" type="text" placeholder="Descripción (opcional)" [value]="newCollectionDescription"
-        (input)="newCollectionDescription = $any($event.target).value" />
+      <input
+        class="space-input"
+        type="text"
+        placeholder="Descripción opcional"
+        [value]="newCollectionDescription"
+        (input)="newCollectionDescription = $any($event.target).value"
+      />
 
-      <button class="primary" type="button" [disabled]="creating || !newCollectionName.trim()"
-        (click)="createCollection()">
+      <button
+        class="space-shortcut space-shortcut--primary"
+        type="button"
+        [disabled]="creating || !newCollectionName.trim()"
+        (click)="createCollection()"
+      >
         @if (creating) { Creando... } @else { Crear colección }
       </button>
     </div>
 
     @if (createError) {
-    <div class="error">{{ createError }}</div>
+      <div class="space-feedback space-feedback--error">{{ createError }}</div>
     }
   </section>
 
-  <!-- COLLECTIONS -->
   @if (collections$ | async; as collections) {
-  @if (collections.length) {
-  <div class="collections">
-    @for (collection of collections; track collection.id) {
-    <section
-      class="collection-card"
-      role="link"
-      tabindex="0"
-      [attr.aria-label]="'Abrir colección ' + collection.name"
-      (click)="goToCollection(collection.id)"
-      (keydown.enter)="goToCollection(collection.id)"
-      (keydown.space)="$event.preventDefault(); goToCollection(collection.id)"
-    >
-      <header class="collection-head">
-        <div>
-          <div class="collection-title-row">
-            <h3 class="collection-title">
-              {{ collection.name }}
-            </h3>
-            @if (collection.isDefault) {
-            <span class="pill">Default</span>
+    @if (collections.length) {
+      <div class="collections">
+        @for (collection of collections; track collection.id) {
+          <section
+            class="space-surface collection-surface"
+            role="link"
+            tabindex="0"
+            [attr.aria-label]="'Abrir colección ' + collection.name"
+            (click)="goToCollection(collection.id)"
+            (keydown.enter)="goToCollection(collection.id)"
+            (keydown.space)="$event.preventDefault(); goToCollection(collection.id)"
+          >
+            <header class="collection-head">
+              <div>
+                <div class="collection-title-row">
+                  <h3 class="collection-title">{{ collection.name }}</h3>
+                  @if (collection.isDefault) {
+                    <span class="collection-pill">Default</span>
+                  }
+                </div>
+
+                @if (collection.description) {
+                  <p class="collection-description">{{ collection.description }}</p>
+                }
+              </div>
+
+              <div class="collection-count">{{ collection.itemCount }} items</div>
+            </header>
+
+            @if (collection.items.length > 0) {
+              <section class="space-grid">
+                @for (item of collection.items; track item.id) {
+                  <article class="media-card" (click)="$event.stopPropagation()">
+                    <div class="media-card__thumb" (click)="go(item.entity.slug)">
+                      <app-jano-media [entity]="item.entity" usage="card" [alt]="item.entity.title"></app-jano-media>
+                    </div>
+
+                    <div class="media-card__body">
+                      <div class="media-card__title" (click)="go(item.entity.slug)">
+                        {{ item.entity.title }}
+                      </div>
+
+                      <div class="media-card__summary">
+                        {{ cleanWiki(item.entity.summary ?? '') }}
+                      </div>
+
+                      <div class="media-card__actions">
+                        <button type="button" class="space-button" (click)="$event.stopPropagation(); go(item.entity.slug)">Ver</button>
+                        <button
+                          type="button"
+                          class="space-button space-button--danger"
+                          (click)="$event.stopPropagation(); removeFromCollection(collection.id, item.entity.id)"
+                        >
+                          Quitar
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                }
+              </section>
+            } @else {
+              <div class="space-empty">
+                <div class="space-empty__title">Colección vacía</div>
+                <div class="space-empty__sub">Añade entidades desde el detalle de una obra.</div>
+              </div>
             }
-          </div>
-
-          @if (collection.description) {
-          <p class="collection-description">{{ collection.description }}</p>
-          }
-        </div>
-
-        <div class="count-pill">
-          {{ collection.itemCount }} items
-        </div>
-      </header>
-
-      @if (collection.items.length > 0) {
-      <section class="grid">
-        @for (item of collection.items; track item.id) {
-        <article class="card" (click)="$event.stopPropagation()">
-          <div class="thumb" (click)="go(item.entity.slug)">
-            <app-jano-media [entity]="item.entity" usage="card" [alt]="item.entity.title"></app-jano-media>
-          </div>
-
-          <div class="body">
-            <div class="title" (click)="go(item.entity.slug)">
-              {{ item.entity.title }}
-            </div>
-
-            <div class="summary">
-              {{ cleanWiki(item.entity.summary ?? '') }}
-            </div>
-
-            <div class="actions">
-              <button type="button" class="ghost" (click)="$event.stopPropagation(); go(item.entity.slug)">
-                Ver
-              </button>
-              <button type="button" class="danger" (click)="$event.stopPropagation(); removeFromCollection(collection.id, item.entity.id)">
-                Quitar
-              </button>
-            </div>
-          </div>
-        </article>
+          </section>
         }
-      </section>
-      } @else {
-      <div class="empty">
-        <div class="empty-title">Colección vacía</div>
-        <div class="empty-sub">Añade entities desde el detalle de una obra.</div>
       </div>
-      }
-    </section>
+    } @else {
+      <div class="space-empty space-empty--main">
+        <div class="space-empty__title">No tienes colecciones todavía</div>
+        <div class="space-empty__sub">Crea la primera para empezar a organizar tu universo personal dentro de JANO.</div>
+      </div>
     }
-  </div>
-  } @else {
-  <div class="empty main-empty">
-    <div class="empty-title">No tienes colecciones todavía</div>
-    <div class="empty-sub">Crea tu primera colección para empezar a organizar JANO.</div>
-  </div>
-  }
   }
 </div>

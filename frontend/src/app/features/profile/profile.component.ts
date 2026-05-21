@@ -14,7 +14,11 @@ import { AuthService } from '../../core/auth/auth.service';
 export class ProfileComponent {
   readonly auth = inject(AuthService);
 
+  isAdmin(user: any): boolean {
+    return String(user?.role ?? '').toUpperCase() === 'ADMIN';
+  }
+
   roleLabel(user: any): string {
-    return String(user?.role ?? 'MEMBER').toUpperCase();
+    return this.isAdmin(user) ? 'Administrador' : 'Miembro';
   }
 }

@@ -13,10 +13,7 @@
 }
 
 .settings-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
-  gap: 16px;
-  align-items: end;
+  display: block;
 }
 
 .settings-hero__copy h1 {
@@ -31,7 +28,6 @@
 .settings-label,
 .background-stage__eyebrow,
 .background-upload__eyebrow,
-.settings-pill__label,
 .settings-field__label {
   display: inline-flex;
   font-size: 0.69rem;
@@ -49,12 +45,6 @@
   line-height: 1.52;
 }
 
-.settings-hero__summary {
-  display: grid;
-  gap: 12px;
-}
-
-.settings-pill,
 .settings-surface,
 .settings-field,
 .background-upload,
@@ -67,18 +57,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(26px) saturate(1.1);
   -webkit-backdrop-filter: blur(26px) saturate(1.1);
-}
-
-.settings-pill {
-  padding: 14px 16px;
-  border-radius: 18px;
-  display: grid;
-  gap: 5px;
-}
-
-.settings-pill strong {
-  font-size: 1rem;
-  color: rgba(247, 244, 240, 0.96);
 }
 
 .settings-surface {
@@ -423,13 +401,8 @@
 
 @media (max-width: 1180px) {
   .settings-account-grid,
-  .background-workspace,
-  .settings-hero {
+  .background-workspace {
     grid-template-columns: 1fr;
-  }
-
-  .settings-hero__summary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .settings-section-note {
@@ -456,8 +429,7 @@
     flex-direction: column;
   }
 
-  .settings-account-grid,
-  .settings-hero__summary {
+  .settings-account-grid {
     grid-template-columns: 1fr;
   }
 
