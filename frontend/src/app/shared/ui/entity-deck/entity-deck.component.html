@@ -49,8 +49,8 @@
             <div class="entity-deck__stack" role="list">
                 @for (item of items(); track item.id) {
                 <article role="listitem" class="entity-deck__card" [class.is-active]="$index === activeIndex()"
-                    [style.zIndex]="cardZ($index)" [style.transform]="cardTransform($index)"
-                    [style.opacity]="cardOpacity($index)"
+                    [style.zIndex]="cardStates()[$index].zIndex" [style.transform]="cardStates()[$index].transform"
+                    [style.opacity]="cardStates()[$index].opacity"
                     (click)="onCardClick(item)">
                     <div class="entity-deck__media">
                         <img

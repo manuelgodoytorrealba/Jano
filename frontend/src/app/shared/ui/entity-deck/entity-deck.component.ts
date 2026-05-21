@@ -2,6 +2,7 @@ import {
     ChangeDetectionStrategy,
     Component,
     HostListener,
+    computed,
     inject,
     input,
     output,
@@ -11,6 +12,12 @@ import { Router } from '@angular/router';
 
 import { DEFAULT_BACKGROUND_IMAGE_URL } from '../../../core/app-appearance.service';
 import { DeckItem, DeckRailAction } from './entity-deck.types';
+
+type CardState = {
+    transform: string;
+    opacity: string;
+    zIndex: number;
+};
 
 @Component({
     standalone: true,
@@ -44,6 +51,35 @@ export class EntityDeckComponent {
     tabChange = output<'home' | 'picks' | 'my-space'>();
 
     private lastScroll = 0;
+
+    cardStates = computed<CardState[]>(() => {
+        const list = this.items();
+        const active = this.activeIndex();
+        const motionScale = this.deckMotionScale();
+
+        return list.map((_item, index) => {
+            const d = this.relativeIndex(index, active, list.length);
+            const clamped = Math.max(-2, Math.min(2, d));
+            const abs = Math.abs(clamped);
+
+            const xBase = abs === 0 ? 0 : abs === 1 ? 104 : 182;
+            const yBase = abs === 0 ? 0 : abs === 1 ? 10 : 22;
+            const zBase = abs === 0 ? 0 : abs === 1 ? -94 : -178;
+            const rotBase = abs === 0 ? 0 : abs === 1 ? -12 : -18;
+            const scale = abs === 0 ? 1 : abs === 1 ? 0.9 : 0.8;
+
+            const x = Math.sign(clamped) * xBase * motionScale;
+            const y = yBase * motionScale;
+            const z = zBase * motionScale;
+            const rotY = Math.sign(clamped) * rotBase;
+
+            return {
+                transform: `translate3d(${x}px, ${y}px, ${z}px) rotateY(${rotY}deg) scale(${scale})`,
+                opacity: abs === 0 ? '1' : abs === 1 ? '0.58' : abs === 2 ? '0.28' : '0',
+                zIndex: abs > 2 ? 0 : abs === 0 ? 30 : abs === 1 ? 20 : 10,
+            };
+        });
+    });
 
     setActive(index: number): void {
         const list = this.items();
@@ -150,47 +186,6 @@ export class EntityDeckComponent {
         if (width >= 1440) return 1;
         if (width >= 1180) return 0.93;
         return 0.88;
-    }
-
-    cardTransform(index: number): string {
-        const list = this.items();
-        const d = this.relativeIndex(index, this.activeIndex(), list.length);
-        const clamped = Math.max(-2, Math.min(2, d));
-        const abs = Math.abs(clamped);
-        const motionScale = this.deckMotionScale();
-
-        const xBase = abs === 0 ? 0 : abs === 1 ? 104 : 182;
-        const yBase = abs === 0 ? 0 : abs === 1 ? 10 : 22;
-        const zBase = abs === 0 ? 0 : abs === 1 ? -94 : -178;
-        const rotBase = abs === 0 ? 0 : abs === 1 ? -12 : -18;
-        const scale = abs === 0 ? 1 : abs === 1 ? 0.9 : 0.8;
-
-        const x = Math.sign(clamped) * xBase * motionScale;
-        const y = yBase * motionScale;
-        const z = zBase * motionScale;
-        const rotY = Math.sign(clamped) * rotBase;
-
-        return `translate3d(${x}px, ${y}px, ${z}px) rotateY(${rotY}deg) scale(${scale})`;
-    }
-
-    cardOpacity(index: number): string {
-        const list = this.items();
-        const abs = Math.abs(this.relativeIndex(index, this.activeIndex(), list.length));
-
-        if (abs === 0) return '1';
-        if (abs === 1) return '0.58';
-        if (abs === 2) return '0.28';
-        return '0';
-    }
-
-    cardZ(index: number): number {
-        const list = this.items();
-        const abs = Math.abs(this.relativeIndex(index, this.activeIndex(), list.length));
-
-        if (abs > 2) return 0;
-        if (abs === 0) return 30;
-        if (abs === 1) return 20;
-        return 10;
     }
 
     @HostListener('window:keydown', ['$event'])
