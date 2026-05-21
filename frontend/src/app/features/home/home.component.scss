@@ -18,7 +18,7 @@
   --home-deck-stack-height: clamp(520px, 58vw, 710px);
   --home-deck-nav-size: 42px;
   --home-deck-nav-bottom: 20px;
-  --home-deck-nav-offset: 150px;
+  --home-deck-nav-offset: 220px;
 
   display: block;
   width: 100%;
@@ -69,28 +69,35 @@
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) {
-  opacity: 1 !important;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
-    rgb(28, 28, 32);
-  border-color: rgba(255, 255, 255, 0.14);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
+    rgba(34, 34, 38, 0.52);
+  border-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px) saturate(1.06);
+  -webkit-backdrop-filter: blur(16px) saturate(1.06);
   box-shadow:
-    0 28px 70px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 36px 100px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active)::before {
-  opacity: 0.34;
+  opacity: 0.62;
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__media,
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__body {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
-    rgb(27, 27, 31);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.024)),
+    rgba(24, 24, 28, 0.62);
 }
 
-.home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__media img,
+.home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__media img {
+  opacity: 0.42;
+  visibility: visible;
+  filter: saturate(0.72) contrast(0.96) brightness(0.72) blur(0.4px);
+}
+
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__eyebrow,
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__content,
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__footer {
@@ -104,8 +111,10 @@
 
 .home-page__deck::ng-deep .entity-deck__card.is-active .entity-deck__body {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.02)),
-    rgb(34, 34, 38);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045)),
+    rgba(31, 31, 36, 0.86);
+  backdrop-filter: blur(22px) saturate(1.08);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__top-actions {
@@ -164,7 +173,7 @@
     --home-deck-stack-height: calc(var(--home-deck-card-height) + 78px);
     --home-deck-nav-size: 42px;
     --home-deck-nav-bottom: 22px;
-    --home-deck-nav-offset: 176px;
+    --home-deck-nav-offset: 260px;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
@@ -183,7 +192,7 @@
     --home-deck-stack-height: clamp(500px, 58vw, 650px);
     --home-deck-nav-size: 42px;
     --home-deck-nav-bottom: 18px;
-    --home-deck-nav-offset: 138px;
+    --home-deck-nav-offset: 178px;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
