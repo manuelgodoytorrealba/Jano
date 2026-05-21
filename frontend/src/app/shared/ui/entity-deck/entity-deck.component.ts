@@ -62,11 +62,11 @@ export class EntityDeckComponent {
             const clamped = Math.max(-2, Math.min(2, d));
             const abs = Math.abs(clamped);
 
-            const xBase = abs === 0 ? 0 : abs === 1 ? 104 : 182;
-            const yBase = abs === 0 ? 0 : abs === 1 ? 10 : 22;
-            const zBase = abs === 0 ? 0 : abs === 1 ? -94 : -178;
-            const rotBase = abs === 0 ? 0 : abs === 1 ? -12 : -18;
-            const scale = abs === 0 ? 1 : abs === 1 ? 0.9 : 0.8;
+            const xBase = abs === 0 ? 0 : abs === 1 ? 176 : 292;
+            const yBase = abs === 0 ? 0 : abs === 1 ? 12 : 26;
+            const zBase = abs === 0 ? 0 : abs === 1 ? -132 : -238;
+            const rotBase = abs === 0 ? 0 : abs === 1 ? -10 : -16;
+            const scale = abs === 0 ? 1 : abs === 1 ? 0.86 : 0.74;
 
             const x = Math.sign(clamped) * xBase * motionScale;
             const y = yBase * motionScale;

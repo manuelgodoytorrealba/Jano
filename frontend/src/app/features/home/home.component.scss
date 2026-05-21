@@ -70,11 +70,11 @@
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
-    rgba(34, 34, 38, 0.52);
-  border-color: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(16px) saturate(1.06);
-  -webkit-backdrop-filter: blur(16px) saturate(1.06);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04)),
+    rgba(34, 34, 38, 0.46);
+  border-color: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px) saturate(1.04);
+  -webkit-backdrop-filter: blur(12px) saturate(1.04);
   box-shadow:
     0 36px 100px rgba(0, 0, 0, 0.34),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
@@ -82,7 +82,7 @@
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active)::before {
-  opacity: 0.62;
+  opacity: 0.46;
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__media,
@@ -93,9 +93,9 @@
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__media img {
-  opacity: 0.42;
+  opacity: 0.24;
   visibility: visible;
-  filter: saturate(0.72) contrast(0.96) brightness(0.72) blur(0.4px);
+  filter: saturate(0.68) contrast(0.95) brightness(0.64) blur(0.8px);
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__eyebrow,
