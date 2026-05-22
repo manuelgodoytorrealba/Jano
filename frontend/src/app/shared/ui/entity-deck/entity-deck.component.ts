@@ -50,7 +50,11 @@ export class EntityDeckComponent {
     searchSubmit = output<string>();
     tabChange = output<'home' | 'picks' | 'my-space'>();
 
-    private lastScroll = 0;
+    private wheelIntent = 0;
+    private lastWheelEventAt = 0;
+    private lastWheelNavigationAt = 0;
+    private wheelLockedDirection: 1 | -1 | 0 = 0;
+    private wheelLockedAt = 0;
 
     cardStates = computed<CardState[]>(() => {
         const list = this.items();
@@ -208,17 +212,104 @@ export class EntityDeckComponent {
 
     @HostListener('wheel', ['$event'])
     onWheel(event: WheelEvent): void {
-        const now = Date.now();
-        if (now - this.lastScroll < 420) return;
+        event.preventDefault();
 
-        if (Math.abs(event.deltaY) < 10) return;
+        if (!this.items().length) return;
 
-        this.lastScroll = now;
+        const direction = this.trackWheelIntent(event);
+        if (!direction) return;
 
-        if (event.deltaY > 0) {
+        if (direction > 0) {
             this.next();
         } else {
             this.prev();
         }
+    }
+
+    private isTrackpadWheel(event: WheelEvent): boolean {
+        if (event.deltaMode !== WheelEvent.DOM_DELTA_PIXEL) {
+            return false;
+        }
+
+        const absX = Math.abs(event.deltaX);
+        const absY = Math.abs(event.deltaY);
+        const hasFractionalDelta = !Number.isInteger(event.deltaX) || !Number.isInteger(event.deltaY);
+
+        return hasFractionalDelta || (absX > 0 && absX < 24) || (absY > 0 && absY < 24);
+    }
+
+    private normalizeWheelDelta(event: WheelEvent): number {
+        const multiplier =
+            event.deltaMode === WheelEvent.DOM_DELTA_LINE
+                ? 16
+                : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+                    ? window.innerHeight
+                    : 1;
+
+        const scaledX = event.deltaX * multiplier * 0.65;
+        const scaledY = event.deltaY * multiplier;
+
+        return Math.abs(scaledX) > Math.abs(scaledY) ? scaledX : scaledY;
+    }
+
+    private trackWheelIntent(event: WheelEvent): 1 | -1 | null {
+        const now = performance.now();
+        const delta = this.normalizeWheelDelta(event);
+        const isTrackpad = this.isTrackpadWheel(event);
+        const threshold = isTrackpad ? 38 : 48;
+        const cooldown = isTrackpad ? 230 : 140;
+        const resetWindow = isTrackpad ? 150 : 120;
+
+        if (Math.abs(delta) < (isTrackpad ? 1.5 : 4)) {
+            return null;
+        }
+
+        const deltaDirection = delta > 0 ? 1 : -1;
+
+        if (now - this.lastWheelEventAt > resetWindow) {
+            this.wheelIntent = 0;
+            this.wheelLockedDirection = 0;
+        }
+
+        if (this.wheelIntent !== 0 && Math.sign(this.wheelIntent) !== Math.sign(delta)) {
+            this.wheelIntent = 0;
+        }
+
+        this.lastWheelEventAt = now;
+
+        if (isTrackpad && this.wheelLockedDirection === deltaDirection) {
+            if (now - this.wheelLockedAt > 520 && Math.abs(delta) >= threshold) {
+                this.wheelLockedDirection = 0;
+            } else {
+                this.lastWheelEventAt = now;
+                return null;
+            }
+        }
+
+        if (isTrackpad && this.wheelLockedDirection !== 0 && this.wheelLockedDirection !== deltaDirection) {
+            this.wheelLockedDirection = 0;
+            this.wheelIntent = 0;
+        }
+
+        this.wheelIntent += delta;
+
+        if (Math.abs(this.wheelIntent) < threshold) {
+            return null;
+        }
+
+        if (now - this.lastWheelNavigationAt < cooldown) {
+            this.wheelIntent = Math.sign(this.wheelIntent) * threshold;
+            return null;
+        }
+
+        this.lastWheelNavigationAt = now;
+
+        const direction = this.wheelIntent > 0 ? 1 : -1;
+        this.wheelIntent = 0;
+        if (isTrackpad) {
+            this.wheelLockedDirection = direction;
+            this.wheelLockedAt = now;
+        }
+        return direction;
     }
 }
