@@ -223,8 +223,8 @@ export class EntitiesExplorer3dComponent
         this.scene = new THREE.Scene();
         this.scene.background = null;
 
-        this.camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 100);
-        this.camera.position.set(0, 0.1, 11.2);
+        this.camera = new THREE.PerspectiveCamera(33, width / height, 0.1, 100);
+        this.camera.position.set(0, 0.1, 11.9);
 
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
@@ -534,8 +534,8 @@ export class EntitiesExplorer3dComponent
         const total = this.items.length;
         if (!total) return;
 
-        const spacing = 1.66;
-        const depthSpacing = 1.34;
+        const spacing = 1.4;
+        const depthSpacing = 1.2;
 
         // Ajusta este valor para subir o bajar TODAS las cards
         const baseY = 0.2;
@@ -565,8 +565,8 @@ export class EntitiesExplorer3dComponent
             const rotY = isActive ? 0 : offset * -0.082;
             const rotZ = isActive ? 0 : offset * -0.018;
 
-            const scaleBase = isActive ? 1.24 : Math.max(0.85, 1 - abs * 0.058);
-            const scale = isHovered ? scaleBase + 0.045 : scaleBase;
+            const scaleBase = isActive ? 1.16 : Math.max(0.76, 0.94 - abs * 0.05);
+            const scale = isHovered ? scaleBase + 0.04 : scaleBase;
 
             const opacityBase = isActive ? 1 : Math.max(0.2, 0.66 - abs * 0.095);
             const opacity = isHovered ? Math.min(1, opacityBase + 0.1) : opacityBase;

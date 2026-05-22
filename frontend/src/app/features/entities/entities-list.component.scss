@@ -29,8 +29,8 @@
     --entities-stage-left-gutter: 18px;
     --entities-stage-top-padding: 156px;
     --entities-explorer-inner-top: 116px;
-    --entities-explorer-inner-left: clamp(34px, 4vw, 58px);
-    --entities-explorer-inner-right: clamp(228px, 24vw, 268px);
+    --entities-explorer-inner-left: clamp(16px, 3vw, 34px);
+    --entities-explorer-inner-right: clamp(138px, 16vw, 188px);
     --entities-explorer-info-top: 120px;
     --entities-explorer-info-right: 18px;
     --entities-explorer-info-width: min(286px, calc(100% - 36px));
@@ -91,8 +91,8 @@
     --entities-rail-top: 130px;
     --entities-stage-top-padding: 148px;
     --entities-explorer-inner-top: 120px;
-    --entities-explorer-inner-left: clamp(182px, 15vw, 212px);
-    --entities-explorer-inner-right: clamp(140px, 12vw, 200px);
+    --entities-explorer-inner-left: clamp(18px, 3vw, 42px);
+    --entities-explorer-inner-right: clamp(116px, 10vw, 156px);
     --entities-explorer-info-top: 120px;
     --entities-explorer-info-right: 250px;
     --entities-explorer-info-width: min(286px, calc(100% - 40px));

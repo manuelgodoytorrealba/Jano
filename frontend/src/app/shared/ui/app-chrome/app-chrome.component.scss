@@ -140,10 +140,10 @@
 }
 
 .app-chrome__header--detail + .app-chrome__header-toggle--open {
-  top: calc(var(--app-shell-gap) + 16px);
-  left: clamp(18px, 1.8vw, 30px);
-  width: 48px;
-  height: 138px;
+  top: calc(var(--app-shell-gap) + 92px);
+  left: clamp(8px, 1vw, 16px);
+  width: 42px;
+  height: 118px;
   border-radius: 999px;
   transform: none;
   opacity: 0.68;
@@ -183,13 +183,13 @@
 }
 
 .app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars span {
-  width: 18px;
+  width: 16px;
   height: 1.5px;
   opacity: 0.78;
 }
 
 .app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars span:nth-child(2) {
-  width: 12px;
+  width: 11px;
 }
 
 .app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars span:nth-child(3) {
@@ -237,15 +237,14 @@
 }
 
 .app-chrome__header--detail .app-chrome__nav {
-  min-width: 520px;
-  width: min(650px, 44vw);
+  min-width: 568px;
+  width: min(720px, 48vw);
   background: rgba(255, 255, 255, 0.045);
 }
 
 .app-chrome__header--detail .app-chrome__nav-link {
   height: 42px;
   font-size: 0.88rem;
-  white-space: nowrap;
 }
 
 .app-chrome__brand {
@@ -338,10 +337,10 @@
   --nav-count: 6;
   --active-index: 0;
   display: grid;
-  grid-template-columns: repeat(var(--nav-count), minmax(78px, 1fr));
+  grid-template-columns: repeat(var(--nav-count), minmax(92px, 1fr));
   align-items: center;
-  width: min(650px, 44vw);
-  min-width: 520px;
+  width: min(720px, 48vw);
+  min-width: 568px;
   gap: 0;
   padding: 4px;
   border-radius: 999px;
@@ -404,6 +403,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
   cursor: pointer;
   transition:
     background var(--transition-fast),

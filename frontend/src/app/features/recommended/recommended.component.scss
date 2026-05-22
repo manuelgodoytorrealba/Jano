@@ -13,6 +13,13 @@
 }
 
 .recommended-page__deck {
+  --home-deck-card-width: min(1160px, 86vw);
+  --home-deck-card-height: clamp(520px, 38vw, 620px);
+  --home-deck-stack-height: clamp(520px, 58vw, 710px);
+  --home-deck-nav-size: 42px;
+  --home-deck-nav-bottom: 6px;
+  --home-deck-nav-offset: 220px;
+
   display: block;
   width: 100%;
   min-height: 100dvh;
@@ -41,12 +48,13 @@
 }
 
 .recommended-page__deck::ng-deep .entity-deck__stack {
-  height: clamp(520px, 58vw, 710px);
+  height: var(--home-deck-stack-height);
+  top: -34px;
 }
 
 .recommended-page__deck::ng-deep .entity-deck__card {
-  width: min(1160px, 86vw);
-  height: clamp(520px, 38vw, 620px);
+  width: var(--home-deck-card-width);
+  height: var(--home-deck-card-height);
   border-radius: 34px;
   box-shadow:
     0 34px 94px rgba(0, 0, 0, 0.32),
@@ -76,24 +84,68 @@
 
 .recommended-page__deck::ng-deep .entity-deck__nav {
   z-index: 12;
-  width: 58px;
-  height: 58px;
+  top: auto;
+  bottom: var(--home-deck-nav-bottom);
+  width: var(--home-deck-nav-size);
+  height: var(--home-deck-nav-size);
+  opacity: 0.82;
+  transform: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045)),
+    rgba(22, 22, 28, 0.22);
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.recommended-page__deck::ng-deep .entity-deck__nav:hover {
+  opacity: 1;
+  transform: translateY(-1px) scale(1.04);
 }
 
 .recommended-page__deck::ng-deep .entity-deck__nav--left {
-  left: clamp(20px, 2.2vw, 34px);
+  left: calc(50% - var(--home-deck-nav-offset));
 }
 
 .recommended-page__deck::ng-deep .entity-deck__nav--right {
-  right: calc(var(--app-shell-gap) + var(--app-rail-width) + 22px);
+  right: calc(50% - var(--home-deck-nav-offset));
 }
 
 .recommended-page__deck::ng-deep .entity-deck__dots {
   z-index: 11;
-  bottom: 24px;
+  bottom: calc(var(--home-deck-nav-bottom) + (var(--home-deck-nav-size) / 2) - 4px);
+}
+
+@media (min-width: 1500px) {
+  .recommended-page__deck {
+    --home-deck-card-width: clamp(1360px, 78vw, 1680px);
+    --home-deck-card-height: clamp(620px, 38vw, 760px);
+    --home-deck-stack-height: calc(var(--home-deck-card-height) + 78px);
+    --home-deck-nav-size: 42px;
+    --home-deck-nav-bottom: 8px;
+    --home-deck-nav-offset: 260px;
+  }
+
+  .recommended-page__deck::ng-deep .entity-deck__stage {
+    padding:
+      calc(var(--app-shell-gap) + var(--app-header-height) + 12px)
+      calc(var(--app-shell-gap) + var(--app-rail-width) + 58px)
+      clamp(50px, 6vh, 76px)
+      clamp(36px, 3vw, 60px);
+  }
 }
 
 @media (max-width: 1280px) {
+  .recommended-page__deck {
+    --home-deck-card-width: min(1040px, 90vw);
+    --home-deck-card-height: clamp(490px, 41vw, 580px);
+    --home-deck-stack-height: clamp(500px, 58vw, 650px);
+    --home-deck-nav-size: 42px;
+    --home-deck-nav-bottom: 6px;
+    --home-deck-nav-offset: 178px;
+  }
+
   .recommended-page__deck::ng-deep .entity-deck__stage {
     padding:
       calc(var(--app-shell-gap) + var(--app-header-height) + 16px)
@@ -102,13 +154,18 @@
       clamp(22px, 2.4vw, 36px);
   }
 
-  .recommended-page__deck::ng-deep .entity-deck__card {
-    width: min(1040px, 90vw);
-    height: clamp(490px, 41vw, 580px);
-  }
 }
 
 @media (max-width: 860px) {
+  .recommended-page__deck {
+    --home-deck-card-width: min(100%, 720px);
+    --home-deck-card-height: clamp(450px, 118vw, 580px);
+    --home-deck-stack-height: clamp(430px, 88vw, 580px);
+    --home-deck-nav-size: 48px;
+    --home-deck-nav-bottom: 54px;
+    --home-deck-nav-offset: 118px;
+  }
+
   .recommended-page {
     min-height: 100dvh;
   }
@@ -129,12 +186,7 @@
   }
 
   .recommended-page__deck::ng-deep .entity-deck__stack {
-    height: clamp(430px, 88vw, 580px);
-  }
-
-  .recommended-page__deck::ng-deep .entity-deck__card {
-    width: min(100%, 720px);
-    height: clamp(450px, 118vw, 580px);
+    top: -18px;
   }
 
   .recommended-page__deck::ng-deep .entity-deck__card,
@@ -145,10 +197,10 @@
   }
 
   .recommended-page__deck::ng-deep .entity-deck__nav--left {
-    left: 12px;
+    left: calc(50% - var(--home-deck-nav-offset));
   }
 
   .recommended-page__deck::ng-deep .entity-deck__nav--right {
-    right: 12px;
+    right: calc(50% - var(--home-deck-nav-offset));
   }
 }

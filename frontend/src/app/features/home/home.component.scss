@@ -17,8 +17,11 @@
   --home-deck-card-height: clamp(520px, 38vw, 620px);
   --home-deck-stack-height: clamp(520px, 58vw, 710px);
   --home-deck-nav-size: 42px;
-  --home-deck-nav-bottom: 20px;
+  --home-deck-nav-bottom: 6px;
   --home-deck-nav-offset: 220px;
+  --deck-card-transform-duration: 240ms;
+  --deck-card-opacity-duration: 160ms;
+  --deck-card-shadow-duration: 0ms;
 
   display: block;
   width: 100%;
@@ -49,21 +52,24 @@
 
 .home-page__deck::ng-deep .entity-deck__stack {
   height: var(--home-deck-stack-height);
+  top: -34px;
 }
 
 .home-page__deck::ng-deep .entity-deck__card {
   width: var(--home-deck-card-width);
   height: var(--home-deck-card-height);
   border-radius: 34px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow:
-    0 34px 94px rgba(0, 0, 0, 0.32),
+    0 28px 72px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.26),
     inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .home-page__deck::ng-deep .entity-deck__card.is-active {
   box-shadow:
-    0 76px 170px rgba(0, 0, 0, 0.46),
+    0 48px 118px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.34),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 }
@@ -73,10 +79,10 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04)),
     rgba(34, 34, 38, 0.46);
   border-color: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(12px) saturate(1.04);
-  -webkit-backdrop-filter: blur(12px) saturate(1.04);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow:
-    0 36px 100px rgba(0, 0, 0, 0.34),
+    0 24px 66px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
@@ -95,7 +101,7 @@
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__media img {
   opacity: 0.24;
   visibility: visible;
-  filter: saturate(0.68) contrast(0.95) brightness(0.64) blur(0.8px);
+  filter: saturate(0.72) contrast(0.95) brightness(0.66);
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__eyebrow,
@@ -113,8 +119,8 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045)),
     rgba(31, 31, 36, 0.86);
-  backdrop-filter: blur(22px) saturate(1.08);
-  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .home-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__top-actions {
@@ -172,7 +178,7 @@
     --home-deck-card-height: clamp(620px, 38vw, 760px);
     --home-deck-stack-height: calc(var(--home-deck-card-height) + 78px);
     --home-deck-nav-size: 42px;
-    --home-deck-nav-bottom: 22px;
+    --home-deck-nav-bottom: 8px;
     --home-deck-nav-offset: 260px;
   }
 
@@ -191,7 +197,7 @@
     --home-deck-card-height: clamp(490px, 41vw, 580px);
     --home-deck-stack-height: clamp(500px, 58vw, 650px);
     --home-deck-nav-size: 42px;
-    --home-deck-nav-bottom: 18px;
+    --home-deck-nav-bottom: 6px;
     --home-deck-nav-offset: 178px;
   }
 
@@ -232,6 +238,10 @@
       calc(var(--app-shell-gap) + 138px)
       14px
       calc(var(--app-shell-gap) + 108px);
+  }
+
+  .home-page__deck::ng-deep .entity-deck__stack {
+    top: -18px;
   }
 
   .home-page__deck::ng-deep .entity-deck__card,
