@@ -7,69 +7,11 @@ import { SeoService } from '../../core/seo/seo.service';
 import { navigateToAppSearch } from '../../core/search/search-navigation';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
+import { RECOMMENDED_FALLBACK_STARTERS, starterToDeckItem } from '../admin/home-deck-starters';
 
-const FALLBACK_RECOMMENDED_ITEMS: DeckItem[] = [
-    {
-        id: 'pick-1',
-        eyebrow: 'Staff Pick',
-        title: 'Obras esenciales',
-        description: 'Una selección curada para entrar a Jano por piezas clave y conexiones fuertes.',
-        meta: 'Curated List',
-        cta: 'Ver selección →',
-        image: '/assets/home/artwork.jpg',
-        imageWidth: 736,
-        imageHeight: 736,
-        routeType: 'artwork',
-    },
-    {
-        id: 'pick-2',
-        eyebrow: 'Staff Pick',
-        title: 'Artistas para empezar',
-        description: 'Autores fundamentales para entender estilos, rupturas e influencias.',
-        meta: 'Curated List',
-        cta: 'Explorar artistas →',
-        image: '/assets/home/artist.jpg',
-        imageWidth: 736,
-        imageHeight: 736,
-        routeType: 'artist',
-    },
-    {
-        id: 'pick-3',
-        eyebrow: 'Staff Pick',
-        title: 'Movimientos imprescindibles',
-        description: 'Corrientes que reorganizaron la mirada y cambiaron la historia del arte.',
-        meta: 'Curated List',
-        cta: 'Explorar movimientos →',
-        image: '/assets/home/movement.jpg',
-        imageWidth: 736,
-        imageHeight: 977,
-        routeType: 'movement',
-    },
-    {
-        id: 'pick-4',
-        eyebrow: 'Staff Pick',
-        title: 'Períodos clave',
-        description: 'Etapas históricas para orientarte rápido dentro del archivo.',
-        meta: 'Curated List',
-        cta: 'Explorar períodos →',
-        image: '/assets/home/period.jpg',
-        imageWidth: 600,
-        imageHeight: 800,
-        routeType: 'period',
-    },
-    {
-        id: 'pick-5',
-        eyebrow: 'Staff Pick',
-        title: 'Conceptos base',
-        description: 'Términos e ideas para leer mejor obras, artistas y relaciones.',
-        meta: 'Curated List',
-        cta: 'Explorar conceptos →',
-        image: '/assets/home/concept.jpg',
-        imageWidth: 639,
-        imageHeight: 960,
-        routeType: 'concept',
-    },
-];
+const FALLBACK_RECOMMENDED_ITEMS: DeckItem[] = RECOMMENDED_FALLBACK_STARTERS.map((starter) =>
+    starterToDeckItem(starter),
+);
 
 @Component({
     standalone: true,

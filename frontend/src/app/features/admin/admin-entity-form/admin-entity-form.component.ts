@@ -1,4 +1,5 @@
 import {
+  DoCheck,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -81,7 +82,7 @@ type EntitySaveState = 'idle' | 'saving' | 'saved' | 'error';
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
 })
-export class AdminEntityFormComponent implements OnInit, OnDestroy {
+export class AdminEntityFormComponent implements OnInit, OnDestroy, DoCheck {
   private adminApi = inject(AdminEntitiesApi);
   private relationTypesApi = inject(RelationTypesApi);
   private tagsApi = inject(TagsApi);
@@ -103,6 +104,7 @@ previewContainer?: ElementRef<HTMLElement>;
   hoveredSlug: string | null = null;
   previewData: any | null = null;
   previewLoading = false;
+  previewEntityModel: any | null = null;
 
 
 
@@ -111,6 +113,7 @@ previewContainer?: ElementRef<HTMLElement>;
   private isHoveringPreviewLink = false;
   isHoveringPreviewPopup = false;
   private previewRequestSlug: string | null = null;
+  private previewEntityStateKey = '';
 
   readonly dashboardSections = [
     { id: 'section-preview', label: 'Preview Detail' },
@@ -350,9 +353,20 @@ previewContainer?: ElementRef<HTMLElement>;
     this.loadEntity();
   }
 
+  ngDoCheck(): void {
+    if (!this.isActiveSection('section-preview')) {
+      return;
+    }
+
+    this.syncPreviewEntityModel();
+  }
+
   scrollToSection(sectionId: DashboardSectionId) {
     this.activeDashboardSection = sectionId;
     this.persistDashboardSection(sectionId);
+    if (sectionId === 'section-preview') {
+      this.schedulePreviewRefresh();
+    }
     this.cdr.markForCheck();
   }
   ngAfterViewInit() {
@@ -486,6 +500,8 @@ previewContainer?: ElementRef<HTMLElement>;
       ? entity.contributors.map((contributor: any) => this.normalizeContributor(contributor))
       : [];
     this.entityTags = Array.isArray(entity.tags) ? entity.tags : [];
+    this.syncPreviewEntityModel(true);
+    this.schedulePreviewRefresh();
   }
 
   private loadRelationTypes() {
@@ -670,6 +686,7 @@ previewContainer?: ElementRef<HTMLElement>;
       next: (rows) => {
         this.relations = rows;
         this.relationsLoading = false;
+        this.syncPreviewEntityModel(true);
         this.cdr.markForCheck();
       },
       error: () => {
@@ -689,6 +706,7 @@ previewContainer?: ElementRef<HTMLElement>;
       next: (rows) => {
         this.incomingRelations = rows;
         this.incomingRelationsLoading = false;
+        this.syncPreviewEntityModel(true);
         this.cdr.markForCheck();
       },
       error: () => {
@@ -871,12 +889,19 @@ previewContainer?: ElementRef<HTMLElement>;
     const ok = window.confirm('¿Quitar esta relación?');
     if (!ok) return;
 
+    const previousRelations = [...this.relations];
+    const previousIncomingRelations = [...this.incomingRelations];
+    this.relations = this.relations.filter((relation) => relation.id !== relationId);
+    this.incomingRelations = this.incomingRelations.filter((relation) => relation.id !== relationId);
+    this.cdr.markForCheck();
+
     this.adminApi.deleteRelation(this.entityId, relationId).subscribe({
       next: () => {
-        this.loadRelations();
-        this.loadIncomingRelations();
+        this.cdr.markForCheck();
       },
       error: () => {
+        this.relations = previousRelations;
+        this.incomingRelations = previousIncomingRelations;
         this.errorMessage = 'No se pudo borrar la relación';
         this.cdr.markForCheck();
       },
@@ -1651,15 +1676,61 @@ previewContainer?: ElementRef<HTMLElement>;
     this.mediaError = '';
     this.mediaMessage = '';
     editor.removing = true;
+    const previousPersistedMediaLinks = [...this.persistedMediaLinks];
+    const previousMediaEditors = this.mediaEditors.map((candidate) => ({
+      ...candidate,
+      persisted: this.cloneMediaLink(candidate.persisted),
+      draft: this.cloneMediaLink(candidate.draft),
+    }));
+    const previousResolvedVisualSlots = this.resolvedVisualSlots.map((slot) => ({
+      ...slot,
+      state: {
+        ...slot.state,
+        item: slot.state.item ? { ...slot.state.item } : null,
+      },
+    }));
+    const previousAdditionalMediaItems = this.additionalMediaItems.map((item) => ({
+      ...item,
+      item: item.item ? { ...item.item } : item.item,
+    }));
+    const previousWarningsDetailed = this.mediaWarningsDetailed.map((warning) => ({ ...warning }));
+    const previousWarningMessages = [...this.mediaWarningMessages];
+    const previousCoverageSummary = this.mediaCoverageSummary
+      ? {
+        ...this.mediaCoverageSummary,
+        coveredSlots: [...this.mediaCoverageSummary.coveredSlots],
+        emptySlots: [...this.mediaCoverageSummary.emptySlots],
+        fallbackSlots: [...this.mediaCoverageSummary.fallbackSlots],
+        explicitSlots: [...this.mediaCoverageSummary.explicitSlots],
+        legacySlots: [...this.mediaCoverageSummary.legacySlots],
+      }
+      : null;
+    const previousActiveMediaEditorId = this.activeMediaEditorId;
+
+    this.persistedMediaLinks = this.persistedMediaLinks.filter((candidate) => candidate.id !== link.id);
+    this.mediaEditors = this.mediaEditors.filter((candidate) => candidate.id !== link.id);
+    this.additionalMediaItems = this.additionalMediaItems.filter((item) => item.assignmentId !== link.id);
+    if (!this.activeMediaEditorId || this.activeMediaEditorId === link.id) {
+      this.activeMediaEditorId = this.mediaEditors[0]?.id ?? null;
+    }
+    this.syncPreviewEntityModel(true);
+    this.cdr.markForCheck();
 
     this.adminApi.deleteMedia(this.entityId, link.id).subscribe({
       next: () => {
-        editor.removing = false;
         this.mediaMessage = 'Asociación de media eliminada.';
         this.refreshMediaLibrary(true, editor.id);
       },
       error: (err) => {
-        editor.removing = false;
+        this.persistedMediaLinks = previousPersistedMediaLinks;
+        this.mediaEditors = previousMediaEditors;
+        this.resolvedVisualSlots = previousResolvedVisualSlots;
+        this.additionalMediaItems = previousAdditionalMediaItems;
+        this.mediaWarningsDetailed = previousWarningsDetailed;
+        this.mediaWarningMessages = previousWarningMessages;
+        this.mediaCoverageSummary = previousCoverageSummary;
+        this.activeMediaEditorId = previousActiveMediaEditorId;
+        this.syncPreviewEntityModel(true);
         this.mediaError = err?.error?.message ?? 'No se pudo quitar la media.';
         this.cdr.markForCheck();
       },
@@ -1837,7 +1908,7 @@ previewContainer?: ElementRef<HTMLElement>;
     };
   }
 
-  previewEntity() {
+  private buildPreviewEntity() {
     const mediaLinks = this.mediaEditors
       .map((editor) => this.mediaLinkToPreview(editor.draft))
       .filter((link): link is any => !!link);
@@ -1908,33 +1979,36 @@ previewContainer?: ElementRef<HTMLElement>;
           : this.persistedResolvedMedia.gallery,
       }
       : {};
-    const slotMap: Array<{ key: MediaEditorSlotKey; usage: string }> = [
-      { key: 'explorer3d', usage: 'explorer3d' },
-      { key: 'list', usage: 'card' },
-      { key: 'detail', usage: 'detail' },
-      { key: 'preview', usage: 'thumbnail' },
+    const slotMap: Array<{ usage: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d'; slotKey: MediaEditorSlotKey }> = [
+      { usage: 'hero', slotKey: 'detail' },
+      { usage: 'explorer3d', slotKey: 'explorer3d' },
+      { usage: 'card', slotKey: 'list' },
+      { usage: 'detail', slotKey: 'detail' },
+      { usage: 'thumbnail', slotKey: 'preview' },
     ];
 
     for (const slot of slotMap) {
-      const link = this.previewLinkForSlot(slot.key);
-      const editor = link ? this.editorForLink(link) : null;
-      if (link && (!this.persistedResolvedMedia || editor?.isDirty)) {
-        resolved[slot.usage] = this.mediaLinkToResolvedPreview(link, slot.key);
+      const link = this.previewLinkForUsage(slot.usage);
+      if (link) {
+        resolved[slot.usage] = this.mediaLinkToResolvedPreview(link, slot.slotKey);
+      } else if (slot.usage in resolved) {
+        delete resolved[slot.usage];
       }
     }
 
-    const primary = this.previewLinkForSlot('detail')
-      ?? this.previewLinkForSlot('list')
-      ?? this.previewLinkForSlot('preview')
-      ?? this.previewLinkForSlot('explorer3d');
+    const primary = this.previewLinkForUsage('hero')
+      ?? this.previewLinkForUsage('detail')
+      ?? this.previewLinkForUsage('card')
+      ?? this.previewLinkForUsage('thumbnail')
+      ?? this.previewLinkForUsage('explorer3d');
 
-    const primaryEditor = primary ? this.editorForLink(primary) : null;
-    if (primary && (!this.persistedResolvedMedia || primaryEditor?.isDirty)) {
+    if (primary) {
       resolved['primary'] = this.mediaLinkToResolvedPreview(primary, 'detail');
+    } else if ('primary' in resolved) {
+      delete resolved['primary'];
     }
 
     const draftGallery = this.mediaEditors
-      .filter((editor) => !this.persistedResolvedMedia || editor.isDirty)
       .map((editor) => editor.draft)
       .filter((link) => link.role === 'GALLERY')
       .map((link) => this.mediaLinkToResolvedPreview(link, 'detail'))
@@ -1942,33 +2016,123 @@ previewContainer?: ElementRef<HTMLElement>;
 
     if (draftGallery.length) {
       resolved['gallery'] = draftGallery;
+    } else if ('gallery' in resolved) {
+      delete resolved['gallery'];
     }
 
     return Object.keys(resolved).length ? resolved : null;
   }
 
+  private syncPreviewEntityModel(force = false): void {
+    const nextStateKey = this.buildPreviewEntityStateKey();
+    if (!force && nextStateKey === this.previewEntityStateKey) {
+      return;
+    }
+
+    this.previewEntityStateKey = nextStateKey;
+    this.previewEntityModel = this.buildPreviewEntity();
+  }
+
+  private schedulePreviewRefresh(): void {
+    if (!this.isActiveSection('section-preview')) {
+      return;
+    }
+
+    this.previewEntityModel = null;
+    this.cdr.markForCheck();
+
+    queueMicrotask(() => {
+      this.syncPreviewEntityModel(true);
+      this.cdr.markForCheck();
+    });
+  }
+
+  private buildPreviewEntityStateKey(): string {
+    return JSON.stringify({
+      id: this.entityId || 'draft-preview',
+      form: this.form,
+      details: this.detailsForm,
+      tags: this.entityTags.map((tag: any) => ({
+        id: tag?.id ?? tag?.tagId ?? tag?.tag?.id ?? null,
+        label: tag?.label ?? tag?.tag?.label ?? null,
+        slug: tag?.slug ?? tag?.tag?.slug ?? null,
+      })),
+      media: this.mediaEditors.map((editor) => ({
+        id: editor.id,
+        isDirty: editor.isDirty,
+        draft: editor.draft,
+      })),
+      resolvedSlots: this.resolvedVisualSlots.map((slot) => ({
+        key: slot.key,
+        itemId: slot.state.item?.id ?? null,
+        source: slot.state.source,
+        matchedRole: slot.state.matchedRole,
+      })),
+      sourceRefs: this.sourceRefs,
+      contributors: this.contributors,
+      outgoing: this.relations.map((rel) => ({
+        id: rel?.id ?? null,
+        type: rel?.type ?? null,
+        relationTypeId: rel?.relationTypeId ?? rel?.relationType?.id ?? null,
+        relationTypeKey: rel?.relationTypeKey ?? rel?.relationType?.key ?? null,
+        toId: rel?.to?.id ?? null,
+        justification: rel?.justification ?? null,
+        weight: rel?.weight ?? null,
+      })),
+      incoming: this.incomingRelations.map((rel) => ({
+        id: rel?.id ?? null,
+        type: rel?.type ?? null,
+        relationTypeId: rel?.relationTypeId ?? rel?.relationType?.id ?? null,
+        relationTypeKey: rel?.relationTypeKey ?? rel?.relationType?.key ?? null,
+        fromId: rel?.from?.id ?? null,
+        justification: rel?.justification ?? null,
+        weight: rel?.weight ?? null,
+      })),
+    });
+  }
+
   private previewLinkForSlot(slotKey: MediaEditorSlotKey): EditableAdminMediaLink | null {
-    const exactRoleBySlot: Record<MediaEditorSlotKey, string> = {
+    const usageBySlot: Record<MediaEditorSlotKey, 'card' | 'detail' | 'thumbnail' | 'explorer3d'> = {
+      explorer3d: 'explorer3d',
+      list: 'card',
+      detail: 'detail',
+      preview: 'thumbnail',
+    };
+
+    return this.previewLinkForUsage(usageBySlot[slotKey]);
+  }
+
+  private previewLinkForUsage(usage: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d'): EditableAdminMediaLink | null {
+    const exactRoleByUsage: Record<typeof usage, string> = {
+      hero: 'HERO',
       explorer3d: 'EXPLORER_3D',
-      list: 'CARD',
+      card: 'CARD',
       detail: 'DETAIL',
-      preview: 'THUMBNAIL',
+      thumbnail: 'THUMBNAIL',
     };
 
     const exact = this.mediaEditors
       .map((editor) => editor.draft)
-      .filter((link) => link.role === exactRoleBySlot[slotKey])
+      .filter((link) => link.role === exactRoleByUsage[usage])
       .sort((a, b) => Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0))[0];
 
     if (exact) {
       return exact;
     }
 
-    const resolvedSlot = this.resolvedVisualSlots.find((slot) => slot.key === slotKey);
-    if (resolvedSlot?.state.item?.id) {
+    const resolvedItemId = usage === 'hero'
+      ? this.persistedResolvedMedia?.hero?.id ?? this.persistedResolvedMedia?.detail?.id ?? null
+      : this.resolvedVisualSlots.find((slot) => slot.key === ({
+          explorer3d: 'explorer3d',
+          card: 'list',
+          detail: 'detail',
+          thumbnail: 'preview',
+        } as const)[usage])?.state.item?.id ?? null;
+
+    if (resolvedItemId) {
       const byResolvedAsset = this.mediaEditors
         .map((editor) => editor.draft)
-        .find((link) => link.media.id === resolvedSlot.state.item?.id);
+        .find((link) => link.media.id === resolvedItemId);
 
       if (byResolvedAsset) {
         return byResolvedAsset;

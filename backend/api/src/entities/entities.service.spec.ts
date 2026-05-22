@@ -6,19 +6,60 @@ describe('EntitiesService.list filters', () => {
   let service: EntitiesService;
 
   const prisma = {
+    $transaction: jest.fn(),
     entity: {
       count: jest.fn(),
       findFirst: jest.fn(),
       findMany: jest.fn(),
+      findUnique: jest.fn(),
+      delete: jest.fn(),
     },
-    artistDetails: {
+    source: {
+      deleteMany: jest.fn(),
+    },
+    sourceRef: {
       findMany: jest.fn(),
+      count: jest.fn(),
+      deleteMany: jest.fn(),
+    },
+    entityMedia: {
+      deleteMany: jest.fn(),
+    },
+    contributor: {
+      deleteMany: jest.fn(),
+    },
+    curatorNote: {
+      deleteMany: jest.fn(),
+    },
+    entityTag: {
+      deleteMany: jest.fn(),
+    },
+    homeDeckItem: {
+      deleteMany: jest.fn(),
+    },
+    collectionEntity: {
+      deleteMany: jest.fn(),
+    },
+    savedEntity: {
+      deleteMany: jest.fn(),
     },
     artworkDetails: {
       findMany: jest.fn(),
+      deleteMany: jest.fn(),
+    },
+    artistDetails: {
+      findMany: jest.fn(),
+      deleteMany: jest.fn(),
+    },
+    conceptDetails: {
+      deleteMany: jest.fn(),
+    },
+    periodDetails: {
+      deleteMany: jest.fn(),
     },
     relation: {
       findMany: jest.fn(),
+      deleteMany: jest.fn(),
     },
   };
 
@@ -26,15 +67,53 @@ describe('EntitiesService.list filters', () => {
     prisma.entity.count.mockReset();
     prisma.entity.findFirst.mockReset();
     prisma.entity.findMany.mockReset();
+    prisma.entity.findUnique.mockReset();
+    prisma.entity.delete.mockReset();
+    prisma.$transaction.mockReset();
+    prisma.source.deleteMany.mockReset();
+    prisma.sourceRef.findMany.mockReset();
+    prisma.sourceRef.count.mockReset();
+    prisma.sourceRef.deleteMany.mockReset();
+    prisma.entityMedia.deleteMany.mockReset();
+    prisma.contributor.deleteMany.mockReset();
+    prisma.curatorNote.deleteMany.mockReset();
+    prisma.entityTag.deleteMany.mockReset();
+    prisma.homeDeckItem.deleteMany.mockReset();
+    prisma.collectionEntity.deleteMany.mockReset();
+    prisma.savedEntity.deleteMany.mockReset();
     prisma.artistDetails.findMany.mockReset();
+    prisma.artistDetails.deleteMany.mockReset();
     prisma.artworkDetails.findMany.mockReset();
+    prisma.artworkDetails.deleteMany.mockReset();
+    prisma.conceptDetails.deleteMany.mockReset();
+    prisma.periodDetails.deleteMany.mockReset();
     prisma.relation.findMany.mockReset();
+    prisma.relation.deleteMany.mockReset();
     prisma.entity.count.mockResolvedValue(0);
     prisma.entity.findFirst.mockResolvedValue(null);
     prisma.entity.findMany.mockResolvedValue([]);
+    prisma.entity.findUnique.mockResolvedValue(null);
+    prisma.entity.delete.mockResolvedValue({ id: 'entity-id' });
+    prisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
+    prisma.source.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.sourceRef.findMany.mockResolvedValue([]);
+    prisma.sourceRef.count.mockResolvedValue(0);
+    prisma.sourceRef.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.entityMedia.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.contributor.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.curatorNote.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.entityTag.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.homeDeckItem.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.collectionEntity.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.savedEntity.deleteMany.mockResolvedValue({ count: 0 });
     prisma.artistDetails.findMany.mockResolvedValue([]);
+    prisma.artistDetails.deleteMany.mockResolvedValue({ count: 0 });
     prisma.artworkDetails.findMany.mockResolvedValue([]);
+    prisma.artworkDetails.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.conceptDetails.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.periodDetails.deleteMany.mockResolvedValue({ count: 0 });
     prisma.relation.findMany.mockResolvedValue([]);
+    prisma.relation.deleteMany.mockResolvedValue({ count: 0 });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -111,6 +190,7 @@ describe('EntitiesService.list filters', () => {
               { title: { contains: 'memoria', mode: 'insensitive' } },
               { summary: { contains: 'memoria', mode: 'insensitive' } },
               { content: { contains: 'memoria', mode: 'insensitive' } },
+              { slug: { contains: 'memoria', mode: 'insensitive' } },
             ],
           },
           {
@@ -127,6 +207,76 @@ describe('EntitiesService.list filters', () => {
             },
           },
         ],
+      },
+    });
+  });
+
+  it('lets admin search match article drafts by slug as well as visible text fields', async () => {
+    await service.adminList({
+      q: 'article-draft-preview',
+      type: 'ARTICLE',
+      status: 'DRAFT',
+      page: 1,
+      limit: 24,
+      sort: 'recent',
+    });
+
+    expect(prisma.entity.count).toHaveBeenCalledWith({
+      where: {
+        type: 'ARTICLE',
+        status: 'DRAFT',
+        AND: [
+          {
+            OR: [
+              { title: { contains: 'article-draft-preview', mode: 'insensitive' } },
+              { summary: { contains: 'article-draft-preview', mode: 'insensitive' } },
+              { content: { contains: 'article-draft-preview', mode: 'insensitive' } },
+              { slug: { contains: 'article-draft-preview', mode: 'insensitive' } },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  it('deletes dependent records before removing an entity in admin', async () => {
+    prisma.entity.findUnique.mockResolvedValue({ id: 'entity-1' });
+    prisma.sourceRef.findMany.mockResolvedValue([
+      { sourceId: 'source-1' },
+      { sourceId: 'source-2' },
+      { sourceId: 'source-1' },
+    ]);
+
+    await expect(service.adminDelete('entity-1')).resolves.toEqual({ ok: true });
+
+    expect(prisma.$transaction).toHaveBeenCalled();
+    expect(prisma.relation.deleteMany).toHaveBeenCalledWith({
+      where: {
+        OR: [
+          { fromId: 'entity-1' },
+          { toId: 'entity-1' },
+        ],
+      },
+    });
+    expect(prisma.entityMedia.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.sourceRef.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.contributor.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.curatorNote.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.entityTag.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.homeDeckItem.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.collectionEntity.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.savedEntity.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.artworkDetails.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.artistDetails.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.conceptDetails.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.periodDetails.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.entity.delete).toHaveBeenCalledWith({ where: { id: 'entity-1' } });
+    expect(prisma.source.deleteMany).toHaveBeenCalledWith({
+      where: {
+        id: { in: ['source-1', 'source-2'] },
+        refs: {
+          none: {},
+        },
       },
     });
   });
@@ -288,6 +438,7 @@ describe('EntitiesService.list filters', () => {
                 { title: { contains: 'maman', mode: 'insensitive' } },
                 { summary: { contains: 'maman', mode: 'insensitive' } },
                 { content: { contains: 'maman', mode: 'insensitive' } },
+                { slug: { contains: 'maman', mode: 'insensitive' } },
               ],
             },
             {
@@ -376,6 +527,7 @@ describe('EntitiesService.list filters', () => {
                 { title: { contains: 'louise', mode: 'insensitive' } },
                 { summary: { contains: 'louise', mode: 'insensitive' } },
                 { content: { contains: 'louise', mode: 'insensitive' } },
+                { slug: { contains: 'louise', mode: 'insensitive' } },
               ],
             },
             {

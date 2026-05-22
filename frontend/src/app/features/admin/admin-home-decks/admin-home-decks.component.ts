@@ -2,7 +2,7 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { BehaviorSubject, catchError, forkJoin, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, forkJoin, map, of, switchMap } from 'rxjs';
 import {
   AdminHomeDeck,
   AdminHomeDeckPayload,
@@ -14,6 +14,8 @@ import {
   homeDeckSurfaceDescription,
   homeDeckSurfaceLabel,
 } from '../home-decks-editorial-options';
+import { HOME_DECK_STARTERS, HomeDeckStarter } from '../home-deck-starters';
+import { mediaDisplayUrl, resolveEntityMediaItem } from '../../../shared/media/media.utils';
 
 @Component({
   standalone: true,
@@ -26,12 +28,15 @@ import {
 export class AdminHomeDecksComponent {
   private readonly api = inject(AdminHomeDecksApi);
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
+  private readonly removedDeckIds$ = new BehaviorSubject<Set<string>>(new Set());
 
   loading = false;
   saving = false;
   feedback = '';
 
   readonly ctaRouteOptions = HOME_DECK_CTA_ROUTE_OPTIONS;
+  readonly starterDecks = HOME_DECK_STARTERS;
+  readonly surfaces: HomeDeckSurfaceValue[] = ['HOME', 'RECOMMENDED'];
 
   newDeck: AdminHomeDeckPayload = {
     surface: 'HOME',
@@ -46,23 +51,56 @@ export class AdminHomeDecksComponent {
     isActive: false,
   };
 
-  readonly vm$ = this.refresh$.pipe(
-    switchMap(() => {
+  readonly vm$ = combineLatest([this.refresh$, this.removedDeckIds$]).pipe(
+    switchMap(([_, removedDeckIds]) => {
       this.loading = true;
       return this.api.list().pipe(
         map((decks) => {
           this.loading = false;
+          const visibleDecks = decks.filter((deck) => !removedDeckIds.has(deck.id));
+          const homeActiveDecks = visibleDecks.filter((deck) => deck.surface === 'HOME' && deck.isActive);
+          const recommendedActiveDecks = visibleDecks.filter(
+            (deck) => deck.surface === 'RECOMMENDED' && deck.isActive,
+          );
+          const starterStates = this.starterDecks.map((starter) => {
+            const deck = visibleDecks.find((candidate) => this.matchesStarter(candidate, starter)) ?? null;
+            return {
+              starter,
+              deck,
+              imported: !!deck,
+              active: deck?.isActive ?? false,
+            };
+          });
+
           return {
-            decks,
-            activeCount: decks.filter((deck) => deck.isActive).length,
-            homeCount: decks.filter((deck) => deck.surface === 'HOME').length,
-            recommendedCount: decks.filter((deck) => deck.surface === 'RECOMMENDED').length,
-            warningCount: decks.filter((deck) => this.hasWarnings(deck)).length,
+            decks: visibleDecks,
+            activeCount: visibleDecks.filter((deck) => deck.isActive).length,
+            homeCount: visibleDecks.filter((deck) => deck.surface === 'HOME').length,
+            recommendedCount: visibleDecks.filter((deck) => deck.surface === 'RECOMMENDED').length,
+            warningCount: visibleDecks.filter((deck) => this.hasWarnings(deck)).length,
+            homeActiveDecks,
+            recommendedActiveDecks,
+            usesHomeFallback: homeActiveDecks.length === 0,
+            usesRecommendedFallback: recommendedActiveDecks.length === 0,
+            starterStates,
+            missingStarterCount: starterStates.filter((state) => !state.imported).length,
           };
         }),
         catchError(() => {
           this.loading = false;
-          return of({ decks: [], activeCount: 0, homeCount: 0, recommendedCount: 0, warningCount: 0 });
+          return of({
+            decks: [],
+            activeCount: 0,
+            homeCount: 0,
+            recommendedCount: 0,
+            warningCount: 0,
+            homeActiveDecks: [],
+            recommendedActiveDecks: [],
+            usesHomeFallback: true,
+            usesRecommendedFallback: true,
+            starterStates: [],
+            missingStarterCount: 0,
+          });
         }),
       );
     }),
@@ -88,6 +126,86 @@ export class AdminHomeDecksComponent {
       error: () => {
         this.saving = false;
         this.feedback = 'No se pudo crear el deck.';
+      },
+    });
+  }
+
+  importStarter(starter: HomeDeckStarter, activeDeckCountForSurface: number): void {
+    this.saving = true;
+    this.feedback = '';
+
+    const payload = this.cleanPayload({
+      surface: starter.surface,
+      slug: starter.slug,
+      title: starter.title,
+      subtitle: starter.subtitle,
+      description: starter.description,
+      ctaLabel: starter.ctaLabel,
+      ctaRoute: starter.ctaRoute,
+      imageUrl: starter.image,
+      sortOrder: 0,
+      isActive: activeDeckCountForSurface === 0,
+    });
+
+    this.api.create(payload).subscribe({
+      next: () => {
+        this.saving = false;
+        this.feedback =
+          activeDeckCountForSurface === 0
+            ? `Deck base "${starter.title}" importado y activado en ${this.surfaceLabel(starter.surface)}.`
+            : `Deck base "${starter.title}" importado.`;
+        this.refresh();
+      },
+      error: () => {
+        this.saving = false;
+        this.feedback = `No se pudo importar "${starter.title}".`;
+      },
+    });
+  }
+
+  importMissingStarters(
+    surface: HomeDeckSurfaceValue,
+    starterStates: Array<{ starter: HomeDeckStarter; imported: boolean }>,
+    activeDeckCountForSurface: number,
+  ): void {
+    const missing = starterStates.filter((state) => state.starter.surface === surface && !state.imported);
+    if (!missing.length) {
+      this.feedback = 'No hay decks base pendientes para importar.';
+      return;
+    }
+
+    this.saving = true;
+    this.feedback = '';
+
+    forkJoin(
+      missing.map((state, index) =>
+        this.api.create(
+          this.cleanPayload({
+            surface: state.starter.surface,
+            slug: state.starter.slug,
+            title: state.starter.title,
+            subtitle: state.starter.subtitle,
+            description: state.starter.description,
+            ctaLabel: state.starter.ctaLabel,
+            ctaRoute: state.starter.ctaRoute,
+            imageUrl: state.starter.image,
+            sortOrder: index,
+            isActive: activeDeckCountForSurface === 0,
+          }),
+        ),
+      ),
+    ).subscribe({
+      next: () => {
+        this.saving = false;
+        this.feedback =
+          activeDeckCountForSurface === 0
+            ? `Decks base de ${this.surfaceLabel(surface)} importados y activados.`
+            : `Decks base de ${this.surfaceLabel(surface)} importados.`;
+        this.refresh();
+      },
+      error: () => {
+        this.saving = false;
+        this.feedback = `No se pudieron importar los decks base de ${this.surfaceLabel(surface)}.`;
       },
     });
   }
@@ -132,6 +250,7 @@ export class AdminHomeDecksComponent {
 
     this.saving = true;
     this.feedback = '';
+    this.markDeckRemoved(deck.id);
 
     this.api.remove(deck.id).subscribe({
       next: () => {
@@ -141,6 +260,7 @@ export class AdminHomeDecksComponent {
       },
       error: () => {
         this.saving = false;
+        this.restoreDeckRemoved(deck.id);
         this.feedback = 'No se pudo eliminar el deck.';
       },
     });
@@ -161,6 +281,21 @@ export class AdminHomeDecksComponent {
     if (surface === 'RECOMMENDED') {
       this.newDeck.ctaRoute = '';
     }
+  }
+
+  startFromStarter(starter: HomeDeckStarter): void {
+    this.newDeck = {
+      surface: starter.surface,
+      slug: starter.slug,
+      title: starter.title,
+      subtitle: starter.subtitle,
+      description: starter.description,
+      ctaLabel: starter.ctaLabel,
+      ctaRoute: starter.surface === 'RECOMMENDED' ? '' : starter.ctaRoute,
+      imageUrl: starter.image,
+      sortOrder: 0,
+      isActive: false,
+    };
   }
 
   showNewDeckCtaRouteControl(): boolean {
@@ -187,6 +322,67 @@ export class AdminHomeDecksComponent {
     return deck.ctaRoute ? deck.ctaRoute : 'Selección curada';
   }
 
+  activeDeckSummary(decks: AdminHomeDeck[]): string {
+    if (!decks.length) {
+      return 'Fallback editorial activo';
+    }
+
+    return decks.map((deck) => deck.title).join(' · ');
+  }
+
+  starterDeckPreviewEntities(deck: AdminHomeDeck | null): any[] {
+    if (!deck) {
+      return [];
+    }
+
+    return [...(deck.entities ?? [])]
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+      .slice(0, 3);
+  }
+
+  deckEntityImageUrl(entity: any): string | null {
+    const media = resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
+    return mediaDisplayUrl(media);
+  }
+
+  deckEntityLabel(entity: any): string {
+    return entity?.title?.trim() || entity?.name?.trim() || entity?.slug || 'Entity';
+  }
+
+  starterDecksForSurface(surface: HomeDeckSurfaceValue | undefined): HomeDeckStarter[] {
+    const safeSurface = surface ?? 'HOME';
+    return this.starterDecks.filter((starter) => starter.surface === safeSurface);
+  }
+
+  selectedCtaRouteDetail(): string {
+    if (this.newDeck.surface === 'RECOMMENDED') {
+      return 'Recommended abre la selección curada que armes dentro del deck.';
+    }
+
+    const option = this.ctaRouteOptions.find((candidate) => candidate.value === (this.newDeck.ctaRoute ?? ''));
+    return option?.detail ?? 'El deck puede abrir una selección curada o una ruta principal existente.';
+  }
+
+  newDeckSurfaceSummary(): string {
+    return this.newDeck.surface === 'RECOMMENDED'
+      ? 'Lista curada para Recommended'
+      : 'Entrada principal dentro del Home';
+  }
+
+  decksForSurface(decks: AdminHomeDeck[], surface: HomeDeckSurfaceValue): AdminHomeDeck[] {
+    return decks.filter((deck) => deck.surface === surface);
+  }
+
+  surfaceSectionTitle(surface: HomeDeckSurfaceValue): string {
+    return surface === 'RECOMMENDED' ? 'Recommended editables' : 'Home editables';
+  }
+
+  surfaceSectionIntro(surface: HomeDeckSurfaceValue): string {
+    return surface === 'RECOMMENDED'
+      ? 'Colecciones curadas que hoy alimentan Recommended.'
+      : 'Entradas editoriales que hoy pueden sustituir o acompañar el Home base.';
+  }
+
   private updateDeck(id: string, data: Partial<AdminHomeDeckPayload>, message: string): void {
     this.saving = true;
     this.feedback = '';
@@ -206,6 +402,26 @@ export class AdminHomeDecksComponent {
 
   private refresh(): void {
     this.refresh$.next();
+  }
+
+  private markDeckRemoved(id: string): void {
+    const next = new Set(this.removedDeckIds$.value);
+    next.add(id);
+    this.removedDeckIds$.next(next);
+  }
+
+  private restoreDeckRemoved(id: string): void {
+    if (!this.removedDeckIds$.value.has(id)) {
+      return;
+    }
+
+    const next = new Set(this.removedDeckIds$.value);
+    next.delete(id);
+    this.removedDeckIds$.next(next);
+  }
+
+  private matchesStarter(deck: AdminHomeDeck, starter: HomeDeckStarter): boolean {
+    return deck.surface === starter.surface && deck.slug === starter.slug;
   }
 
   private resetNewDeck(): void {

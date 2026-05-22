@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { catchError, forkJoin, map, of, startWith } from 'rxjs';
 import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
 import { AdminHomeDecksApi } from '../../../core/api/admin-home-decks.api';
+import { mediaDisplayUrl, resolveEntityMediaItem } from '../../../shared/media/media.utils';
 
 type EditorialMetric = {
   label: string;
@@ -93,6 +94,38 @@ export class AdminDashboardComponent {
       recent: [],
     }),
   );
+
+  deckStatusLabel(deck: any): string {
+    return deck.isActive ? 'Activo' : 'Inactivo';
+  }
+
+  deckMetaLabel(deck: any): string {
+    return `${deck.surface} · ${deck.entities.length} entidades`;
+  }
+
+  deckWarningsLabel(deck: any): string {
+    const count = deck.warnings?.length ?? 0;
+    return count === 1 ? '1 aviso' : `${count} avisos`;
+  }
+
+  deckImageUrl(deck: any): string | null {
+    return deck.image?.url ?? null;
+  }
+
+  deckPreviewEntities(deck: any): any[] {
+    return [...(deck.entities ?? [])]
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+      .slice(0, 3);
+  }
+
+  deckEntityImageUrl(entity: any): string | null {
+    const media = resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
+    return mediaDisplayUrl(media);
+  }
+
+  deckEntityLabel(entity: any): string {
+    return entity?.title?.trim() || entity?.name?.trim() || entity?.slug || 'Entity';
+  }
 
   private entityCount(params: { status: 'PUBLISHED' | 'DRAFT' | 'IN_REVIEW' }) {
     return this.entitiesApi.list({ page: 1, limit: 1, sort: 'recent', ...params }).pipe(

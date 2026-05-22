@@ -50,6 +50,21 @@ textarea {
   font: inherit;
 }
 
+button:not(:disabled),
+[role='button'],
+a[href],
+summary,
+label[for],
+input[type='checkbox'],
+input[type='radio'],
+select {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 a {
   color: inherit;
   text-decoration: none;

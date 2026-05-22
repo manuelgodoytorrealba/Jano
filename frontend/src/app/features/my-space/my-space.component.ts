@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, catchError, combineLatest, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { CollectionsApi } from '../../core/api/collections.api';
 import { SavedApi } from '../../core/api/saved.api';
@@ -22,27 +22,40 @@ export class MySpaceComponent {
   private router = inject(Router);
 
   private refresh$ = new BehaviorSubject<void>(undefined);
+  private removedSavedIds$ = new BehaviorSubject<Set<string>>(new Set());
+  private removedCollectionItemKeys$ = new BehaviorSubject<Set<string>>(new Set());
 
   newCollectionName = '';
   newCollectionDescription = '';
   creating = false;
   createError = '';
 
-  saved$ = combineLatest([this.auth.user$, this.refresh$]).pipe(
-    switchMap(([user]) => {
+  saved$ = combineLatest([this.auth.user$, this.refresh$, this.removedSavedIds$]).pipe(
+    switchMap(([user, _, removedSavedIds]) => {
       if (!user) return of([]);
 
       return this.savedApi.list().pipe(
+        map((items) => items.filter((item: any) => !removedSavedIds.has(item.entity?.id ?? ''))),
         catchError(() => of([])),
       );
     }),
   );
 
-  collections$ = combineLatest([this.auth.user$, this.refresh$]).pipe(
-    switchMap(([user]) => {
+  collections$ = combineLatest([this.auth.user$, this.refresh$, this.removedCollectionItemKeys$]).pipe(
+    switchMap(([user, _, removedKeys]) => {
       if (!user) return of([]);
 
       return this.collectionsApi.list().pipe(
+        map((collections) => collections.map((collection: any) => {
+          const filteredItems = (collection.items ?? []).filter((item: any) => !removedKeys.has(this.collectionItemKey(collection.id, item.entity?.id)));
+          return {
+            ...collection,
+            items: filteredItems,
+            itemCount: typeof collection.itemCount === 'number'
+              ? Math.max(filteredItems.length, collection.itemCount - ((collection.items?.length ?? 0) - filteredItems.length))
+              : filteredItems.length,
+          };
+        })),
         catchError(() => of([])),
       );
     }),
@@ -58,6 +71,14 @@ export class MySpaceComponent {
 
   roleLabel(user: any): string {
     return this.isAdmin(user) ? 'Administrador' : 'Miembro';
+  }
+
+  previewItems(items: any[] | null | undefined, limit = 4): any[] {
+    return (items ?? []).slice(0, limit);
+  }
+
+  remainingItems(total: number | null | undefined, shown: number): number {
+    return Math.max(0, Number(total ?? 0) - shown);
   }
 
   createCollection() {
@@ -87,16 +108,23 @@ export class MySpaceComponent {
   }
 
   removeSaved(entityId: string) {
+    this.markSavedRemoved(entityId);
     this.savedApi.remove(entityId).subscribe({
       next: () => this.refresh$.next(),
-      error: () => { },
+      error: () => {
+        this.restoreSavedRemoved(entityId);
+      },
     });
   }
 
   removeFromCollection(collectionId: string, entityId: string) {
+    const key = this.collectionItemKey(collectionId, entityId);
+    this.markCollectionItemRemoved(key);
     this.collectionsApi.removeEntity(collectionId, entityId).subscribe({
       next: () => this.refresh$.next(),
-      error: () => { },
+      error: () => {
+        this.restoreCollectionItemRemoved(key);
+      },
     });
   }
 
@@ -116,5 +144,41 @@ export class MySpaceComponent {
     this.auth.logout();
     this.refresh$.next();
     this.router.navigate(['/login']);
+  }
+
+  private collectionItemKey(collectionId: string, entityId: string | null | undefined): string {
+    return `${collectionId}:${entityId ?? ''}`;
+  }
+
+  private markSavedRemoved(entityId: string): void {
+    const next = new Set(this.removedSavedIds$.value);
+    next.add(entityId);
+    this.removedSavedIds$.next(next);
+  }
+
+  private restoreSavedRemoved(entityId: string): void {
+    if (!this.removedSavedIds$.value.has(entityId)) {
+      return;
+    }
+
+    const next = new Set(this.removedSavedIds$.value);
+    next.delete(entityId);
+    this.removedSavedIds$.next(next);
+  }
+
+  private markCollectionItemRemoved(key: string): void {
+    const next = new Set(this.removedCollectionItemKeys$.value);
+    next.add(key);
+    this.removedCollectionItemKeys$.next(next);
+  }
+
+  private restoreCollectionItemRemoved(key: string): void {
+    if (!this.removedCollectionItemKeys$.value.has(key)) {
+      return;
+    }
+
+    const next = new Set(this.removedCollectionItemKeys$.value);
+    next.delete(key);
+    this.removedCollectionItemKeys$.next(next);
   }
 }

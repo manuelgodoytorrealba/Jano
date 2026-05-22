@@ -502,6 +502,17 @@
       display: block;
     }
 
+    .detail-live-embed__idle {
+      display: grid;
+      place-items: center;
+      min-height: 220px;
+      padding: 28px;
+      color: rgba(34, 32, 28, 0.68);
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
     .success-box {
   border: 1px solid rgba(0,128,0,.18);
   background: rgba(0,128,0,.05);

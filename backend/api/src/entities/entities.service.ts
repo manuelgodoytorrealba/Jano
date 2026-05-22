@@ -475,6 +475,7 @@ export class EntitiesService {
         { title: { contains: q, mode: 'insensitive' } },
         { summary: { contains: q, mode: 'insensitive' } },
         { content: { contains: q, mode: 'insensitive' } },
+        { slug: { contains: q, mode: 'insensitive' } },
         ],
       });
     }
@@ -1153,8 +1154,50 @@ export class EntitiesService {
       throw new NotFoundException('Entity not found');
     }
 
-    await this.prisma.entity.delete({
-      where: { id },
+    const sourceRefs = await this.prisma.sourceRef.findMany({
+      where: { entityId: id },
+      select: { sourceId: true },
+    });
+
+    const orphanCandidateSourceIds = [...new Set(sourceRefs.map((ref) => ref.sourceId).filter(Boolean))];
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.relation.deleteMany({
+        where: {
+          OR: [
+            { fromId: id },
+            { toId: id },
+          ],
+        },
+      });
+
+      await tx.entityMedia.deleteMany({ where: { entityId: id } });
+      await tx.sourceRef.deleteMany({ where: { entityId: id } });
+      await tx.contributor.deleteMany({ where: { entityId: id } });
+      await tx.curatorNote.deleteMany({ where: { entityId: id } });
+      await tx.entityTag.deleteMany({ where: { entityId: id } });
+      await tx.homeDeckItem.deleteMany({ where: { entityId: id } });
+      await tx.collectionEntity.deleteMany({ where: { entityId: id } });
+      await tx.savedEntity.deleteMany({ where: { entityId: id } });
+      await tx.artworkDetails.deleteMany({ where: { entityId: id } });
+      await tx.artistDetails.deleteMany({ where: { entityId: id } });
+      await tx.conceptDetails.deleteMany({ where: { entityId: id } });
+      await tx.periodDetails.deleteMany({ where: { entityId: id } });
+
+      await tx.entity.delete({
+        where: { id },
+      });
+
+      if (orphanCandidateSourceIds.length) {
+        await tx.source.deleteMany({
+          where: {
+            id: { in: orphanCandidateSourceIds },
+            refs: {
+              none: {},
+            },
+          },
+        });
+      }
     });
 
     return { ok: true };

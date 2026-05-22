@@ -4,6 +4,10 @@
       <p class="admin-desk__eyebrow">Admin</p>
       <h1>Editorial Desk</h1>
       <p class="admin-desk__intro">Control de portada, contenido y señales de calidad editorial.</p>
+      <div class="admin-desk__subhead">
+        <span>Estado de producción</span>
+        <strong>Home, Recommended y contenido reciente en una sola lectura.</strong>
+      </div>
     </div>
 
     <nav class="admin-desk__actions" aria-label="Acciones admin">
@@ -34,26 +38,55 @@
         <div class="panel__head">
           <div>
             <h2>Decks editoriales</h2>
-            <p>Home y Recommended activos, orden editorial y avisos de publicación.</p>
+            <p>Home y Recommended en una lectura más compacta: estado, imagen y señales de publicación.</p>
           </div>
           <a class="panel__link" routerLink="/admin/home-decks">Abrir</a>
         </div>
 
         @if (vm.decks.length) {
-          <div class="deck-list">
+          <div class="deck-gallery">
             @for (deck of vm.decks; track deck.id) {
-              <div class="deck-row">
-                <div class="deck-row__status" [class.is-active]="deck.isActive"></div>
-                <div class="deck-row__main">
-                  <strong>{{ deck.title }}</strong>
-                  <span>{{ deck.surface }} · {{ deck.isActive ? 'Activo' : 'Inactivo' }} · {{ deck.entities.length }} entidades</span>
+              <a class="deck-card" [routerLink]="['/admin/home-decks', deck.id, 'edit']">
+                <div class="deck-card__media">
+                  @if (deckImageUrl(deck); as imageUrl) {
+                    <img [src]="imageUrl" [alt]="deck.title" />
+                  } @else {
+                    <div class="deck-card__media-empty">{{ deck.surface }}</div>
+                  }
                 </div>
-                @if (deck.warnings.length) {
-                  <span class="deck-row__warning">{{ deck.warnings.length }} avisos</span>
-                } @else {
-                  <span class="deck-row__ok">Listo</span>
+                <div class="deck-card__body">
+                  <div class="deck-card__meta">
+                    <span>{{ deck.surface }}</span>
+                    <strong [class.is-active]="deck.isActive">{{ deckStatusLabel(deck) }}</strong>
+                  </div>
+                  <strong>{{ deck.title }}</strong>
+                  <span>{{ deckMetaLabel(deck) }}</span>
+                </div>
+                @if (deckPreviewEntities(deck).length) {
+                  <div class="deck-card__entities">
+                    @for (item of deckPreviewEntities(deck); track item.id) {
+                      <div class="deck-chip">
+                        <div class="deck-chip__thumb">
+                          @if (deckEntityImageUrl(item.entity); as entityImageUrl) {
+                            <img [src]="entityImageUrl" [alt]="deckEntityLabel(item.entity)" />
+                          } @else {
+                            <span>{{ item.entity?.type || 'ENTITY' }}</span>
+                          }
+                        </div>
+                        <span>{{ deckEntityLabel(item.entity) }}</span>
+                      </div>
+                    }
+                  </div>
                 }
-              </div>
+                <div class="deck-card__footer">
+                  @if (deck.warnings.length) {
+                    <span class="deck-row__warning">{{ deckWarningsLabel(deck) }}</span>
+                  } @else {
+                    <span class="deck-row__ok">Listo</span>
+                  }
+                  <span class="deck-card__open">Editar</span>
+                </div>
+              </a>
             }
           </div>
         } @else {

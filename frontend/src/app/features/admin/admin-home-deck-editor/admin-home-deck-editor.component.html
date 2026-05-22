@@ -39,9 +39,27 @@
             <p>{{ surfaceDescription() }}</p>
           </div>
 
+          <div class="composer-intro">
+            <article class="composer-note">
+              <span>Portada actual</span>
+              <strong>{{ previewTitle() }}</strong>
+              <p>{{ previewDescription() }}</p>
+            </article>
+            <article class="composer-note">
+              <span>Destino al abrir</span>
+              <strong>{{ previewCtaLabel() }}</strong>
+              <p>{{ selectedCtaRouteDetail() }}</p>
+            </article>
+            <article class="composer-note">
+              <span>Selección viva</span>
+              <strong>{{ deck.entities.length }} entities</strong>
+              <p>{{ deck.entities.length ? 'El orden de abajo define la lectura del deck.' : 'Todavía no hay piezas seleccionadas.' }}</p>
+            </article>
+          </div>
+
           <div class="form-grid">
             <label>
-              <span>Visible en</span>
+              <span>Publicar en</span>
               <select name="surface" [ngModel]="form.surface" (ngModelChange)="onSurfaceChange($event)">
                 <option value="HOME">Home</option>
                 <option value="RECOMMENDED">Recommended</option>
@@ -50,28 +68,31 @@
             </label>
 
             <label>
-              <span>Slug</span>
+              <span>Identificador</span>
               <input name="slug" [(ngModel)]="form.slug" (ngModelChange)="onFormChanged()" />
+              <small>Sirve para identificar el deck dentro del sistema y sus rutas curatoriales.</small>
             </label>
 
             <label>
               <span>Orden</span>
               <input type="number" name="sortOrder" [(ngModel)]="form.sortOrder" (ngModelChange)="onFormChanged()" />
+              <small>El orden decide la posición relativa entre decks del mismo surface.</small>
             </label>
 
             <label class="form-grid__wide">
-              <span>Título</span>
+              <span>Título principal</span>
               <input name="title" [(ngModel)]="form.title" (ngModelChange)="onFormChanged()" />
             </label>
 
             <label class="form-grid__wide">
-              <span>Subtítulo</span>
+              <span>Eyebrow o subtítulo</span>
               <input name="subtitle" [(ngModel)]="form.subtitle" (ngModelChange)="onFormChanged()" />
             </label>
 
             <label>
-              <span>CTA label</span>
+              <span>Llamada principal</span>
               <input name="ctaLabel" [(ngModel)]="form.ctaLabel" (ngModelChange)="onFormChanged()" />
+              <small>Texto del gesto principal que invita a entrar al deck.</small>
             </label>
 
             @if (showCtaRouteControl()) {
@@ -96,8 +117,9 @@
             }
 
             <label class="form-grid__wide">
-              <span>Imagen URL</span>
+              <span>Imagen base</span>
               <input name="imageUrl" [(ngModel)]="form.imageUrl" (ngModelChange)="onFormChanged()" />
+              <small>Debe sostener la portada del bloque, no solo rellenar un fondo.</small>
             </label>
 
             <label class="form-grid__wide">
@@ -106,8 +128,9 @@
             </label>
 
             <label class="form-grid__full">
-              <span>Descripción</span>
+              <span>Descripción editorial</span>
               <textarea name="description" [(ngModel)]="form.description" (ngModelChange)="onFormChanged()" rows="5"></textarea>
+              <small>Resume con claridad qué ofrece esta selección y por qué merece ser explorada.</small>
             </label>
 
             <label class="check">
@@ -135,8 +158,8 @@
         <aside class="side-stack">
           <section class="panel preview-panel">
             <div class="section-title">
-              <h2>Preview</h2>
-              <p>{{ publicationSummary() }}</p>
+              <h2>Portada en contexto</h2>
+              <p>{{ publicationSummary() }} · {{ previewRouteSummary() }}</p>
             </div>
 
             <article class="deck-preview" [class.is-inactive]="!form.isActive">
@@ -144,16 +167,22 @@
                 <span>{{ activeTargetLabel() }}</span>
                 <strong>{{ form.isActive ? 'Activo' : 'Inactivo' }}</strong>
               </div>
-              @if (form.imageUrl) {
-                <img [src]="form.imageUrl" [alt]="form.title" />
+              @if (previewImageUrl(); as imageUrl) {
+                <img [src]="imageUrl" [alt]="previewTitle()" />
+              } @else {
+                <div class="deck-preview__placeholder">
+                  <span>Sin imagen</span>
+                  <strong>Añade una portada para sostener el tono visual del deck.</strong>
+                </div>
               }
-              <div>
-                <span>{{ form.subtitle || 'Editorial deck' }}</span>
-                <h3>{{ form.title || 'Sin título' }}</h3>
-                <p>{{ form.description || 'Sin descripción.' }}</p>
-                @if (form.ctaLabel) {
-                  <strong>{{ form.ctaLabel }} →</strong>
-                }
+              <div class="deck-preview__body">
+                <span>{{ previewEyebrow() }}</span>
+                <h3>{{ previewTitle() }}</h3>
+                <p>{{ previewDescription() }}</p>
+                <div class="deck-preview__footer">
+                  <strong>{{ previewCtaLabel() }} →</strong>
+                  <small>{{ previewRouteSummary() }}</small>
+                </div>
               </div>
             </article>
 
@@ -171,25 +200,45 @@
 
           <section class="panel">
             <div class="section-title">
-              <h2>Entities mostradas</h2>
-              <p>Orden editorial dentro del deck.</p>
+              <h2>Secuencia curatorial</h2>
+              <p>El orden de estas piezas construye la lectura y el ritmo del deck.</p>
             </div>
 
             @if (deck.entities.length) {
-              <div class="selected-list">
-                @for (item of deck.entities; track item.id) {
-                  <div class="selected-row">
-                    <span class="selected-row__rank">{{ item.sortOrder + 1 }}</span>
-                    <div>
-                      <strong>{{ item.entity.title }}</strong>
-                      <span>{{ item.entity.type }} · {{ item.entity.status }} · orden {{ item.sortOrder }}</span>
+              <div class="selected-strip">
+                @for (item of orderedEntities(deck.entities); track item.id) {
+                  <article class="selected-card">
+                    <div
+                      class="selected-card__media"
+                      draggable="true"
+                      (dragstart)="startEntityDrag(item.entity.id)"
+                      (dragend)="clearEntityDrag()"
+                      (dragover)="$event.preventDefault()"
+                      (drop)="dropEntityBefore(item.entity.id, deck.entities)">
+                      @if (entityImageUrl(item.entity); as imageUrl) {
+                        <img [src]="imageUrl" [alt]="item.entity.title" />
+                      } @else {
+                        <div class="selected-card__media-empty">{{ entityEyebrow(item.entity) }}</div>
+                      }
+                      <span class="selected-row__rank">{{ item.sortOrder + 1 }}</span>
                     </div>
-                    <div class="row-actions">
-                      <button class="mini" type="button" (click)="moveEntity(item, -1, deck.entities)">Subir</button>
-                      <button class="mini" type="button" (click)="moveEntity(item, 1, deck.entities)">Bajar</button>
+                    <div class="selected-card__body">
+                      <div class="selected-card__meta">
+                        <span>{{ entityEyebrow(item.entity) }}</span>
+                        <strong>{{ entityStatusLabel(item.entity) }}</strong>
+                      </div>
+                      <h3>{{ item.entity.title }}</h3>
+                      <p>{{ item.entity.summary || 'Sin resumen editorial todavía.' }}</p>
+                    </div>
+                    <div class="selected-card__actions">
+                      <span class="selected-card__hint">Arrastra para mover</span>
+                      <div class="row-actions">
+                        <button class="mini" type="button" (click)="moveEntity(item, -1, deck.entities)">Subir</button>
+                        <button class="mini" type="button" (click)="moveEntity(item, 1, deck.entities)">Bajar</button>
+                      </div>
                       <button class="mini danger" type="button" (click)="removeEntity(item.entity.id)">Quitar</button>
                     </div>
-                  </div>
+                  </article>
                 }
               </div>
             } @else {
@@ -200,7 +249,7 @@
           <section class="panel">
             <div class="section-title">
               <h2>Añadir entity</h2>
-              <p>Busca por título, resumen o contenido.</p>
+              <p>Busca piezas para extender la secuencia y probar nuevas lecturas curatoriales.</p>
             </div>
 
             <label class="search-field">
@@ -213,14 +262,23 @@
                 <div class="result-list">
                   @for (entity of results; track entity.id) {
                     <button class="result-row" type="button" [disabled]="isSelected(entity.id)" (click)="addEntity(entity)">
-                      <div>
+                      <div class="result-row__media">
+                        @if (entityImageUrl(entity); as imageUrl) {
+                          <img [src]="imageUrl" [alt]="entity.title" />
+                        } @else {
+                          <div class="result-row__media-empty">{{ entityEyebrow(entity) }}</div>
+                        }
+                      </div>
+                      <div class="result-row__body">
                         <strong>{{ entity.title }}</strong>
                         <span>{{ entity.type }} · {{ entity.status }}</span>
                       </div>
-                      <span>{{ isSelected(entity.id) ? 'Añadida' : 'Añadir' }}</span>
+                      <span class="result-row__action">{{ isSelected(entity.id) ? 'Añadida' : 'Añadir' }}</span>
                     </button>
                   }
                 </div>
+              } @else if (entitySearch.trim()) {
+                <div class="empty">No encontramos entities con esa búsqueda.</div>
               }
             }
           </section>

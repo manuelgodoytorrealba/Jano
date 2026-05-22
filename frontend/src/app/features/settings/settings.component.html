@@ -65,11 +65,13 @@
                 {{ appearance.backgroundImageUrl() ? 'Actual' : 'Fallback' }}
               </span>
 
-              @if (appearance.backgroundImageUrl(); as currentBackgroundUrl) {
-                <img [src]="currentBackgroundUrl" alt="Background global actual" />
-              } @else {
-                <img [src]="appearance.fallbackBackgroundImageUrl" alt="Background fallback por defecto" />
-              }
+              <div class="background-stage__frame">
+                @if (appearance.backgroundImageUrl(); as currentBackgroundUrl) {
+                  <img [src]="currentBackgroundUrl" alt="Background global actual" />
+                } @else {
+                  <img [src]="appearance.fallbackBackgroundImageUrl" alt="Background fallback por defecto" />
+                }
+              </div>
             </div>
 
             <div class="background-stage__meta">
@@ -101,7 +103,9 @@
               </div>
 
               @if (selectedBackgroundPreviewUrl) {
-                <img [src]="selectedBackgroundPreviewUrl" alt="Preview del nuevo background" />
+                <div class="background-candidate__frame">
+                  <img [src]="selectedBackgroundPreviewUrl" alt="Preview del nuevo background" />
+                </div>
               } @else {
                 <div class="background-candidate__empty">
                   <p>Cuando selecciones una imagen, aparecerá aquí una vista previa compacta antes de aplicarla.</p>

@@ -8,81 +8,9 @@ import { SeoService } from '../../core/seo/seo.service';
 import { navigateToAppSearch } from '../../core/search/search-navigation';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
+import { HOME_FALLBACK_STARTERS, starterToDeckItem } from '../admin/home-deck-starters';
 
-const FALLBACK_DECK_ITEMS: DeckItem[] = [
-  {
-    id: 'artwork',
-    eyebrow: 'Artwork',
-    title: 'Obras',
-    description: 'Piezas clave para estudiar forma, técnica, simbolismo y contexto.',
-    meta: 'Artwork',
-    cta: 'Explorar obras →',
-    image: '/assets/home/artwork.jpg',
-    imageWidth: 736,
-    imageHeight: 736,
-    routeType: 'artwork',
-  },
-  {
-    id: 'article',
-    eyebrow: 'Article',
-    title: 'Artículos',
-    description: 'Lecturas editoriales, opinión y conexiones entre obras, autores e ideas.',
-    meta: 'Article',
-    cta: 'Explorar artículos →',
-    image: '/assets/home/concept.jpg',
-    imageWidth: 639,
-    imageHeight: 960,
-    routeType: 'article',
-  },
-  {
-    id: 'artist',
-    eyebrow: 'Artist',
-    title: 'Artistas',
-    description: 'Autores, trayectorias, obsesiones visuales e influencias cruzadas.',
-    meta: 'Artist',
-    cta: 'Explorar artistas →',
-    image: '/assets/home/artist.jpg',
-    imageWidth: 736,
-    imageHeight: 736,
-    routeType: 'artist',
-  },
-  {
-    id: 'movement',
-    eyebrow: 'Movement',
-    title: 'Movimientos',
-    description: 'Corrientes estéticas e ideas que redefinieron la historia del arte.',
-    meta: 'Movement',
-    cta: 'Explorar movimientos →',
-    image: '/assets/home/movement.jpg',
-    imageWidth: 736,
-    imageHeight: 977,
-    routeType: 'movement',
-  },
-  {
-    id: 'period',
-    eyebrow: 'Period',
-    title: 'Períodos',
-    description: 'Etapas históricas para entender cambios culturales y visuales.',
-    meta: 'Period',
-    cta: 'Explorar períodos →',
-    image: '/assets/home/period.jpg',
-    imageWidth: 600,
-    imageHeight: 800,
-    routeType: 'period',
-  },
-  {
-    id: 'concept',
-    eyebrow: 'Concept',
-    title: 'Conceptos',
-    description: 'Ideas fundamentales para leer obras y relaciones con más claridad.',
-    meta: 'Concept',
-    cta: 'Explorar conceptos →',
-    image: '/assets/home/concept.jpg',
-    imageWidth: 639,
-    imageHeight: 960,
-    routeType: 'concept',
-  },
-];
+const FALLBACK_DECK_ITEMS: DeckItem[] = HOME_FALLBACK_STARTERS.map((starter) => starterToDeckItem(starter));
 
 @Component({
   standalone: true,

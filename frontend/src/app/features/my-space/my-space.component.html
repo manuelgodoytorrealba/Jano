@@ -3,9 +3,9 @@
     <section class="space-hero">
       <div class="space-hero__copy">
         <span class="space-eyebrow">Mi espacio</span>
-        <h1>Biblioteca personal</h1>
+        <h1>Archivo personal</h1>
         <p class="space-muted">
-          Tu mesa de trabajo dentro de JANO para guardar obras, reunir conexiones y construir colecciones con ritmo editorial.
+          Un lugar para guardar, agrupar y volver a leer obras y relaciones con una lógica propia. Menos panel, más mesa de trabajo.
         </p>
       </div>
 
@@ -23,12 +23,12 @@
     </section>
 
     <section class="space-surface space-surface--identity">
-      <div class="space-section-head">
+      <div class="space-section-head space-section-head--identity">
         <div>
           <span class="space-label">Cuenta</span>
           <h2>{{ user.name || user.email }}</h2>
           <p class="space-muted">
-            Un espacio personal para guardar, organizar y volver sobre las piezas que merecen quedarse contigo.
+            Este archivo acompaña tu exploración y conserva las piezas que quieres volver a mirar con contexto.
           </p>
         </div>
 
@@ -40,166 +40,164 @@
     </section>
   }
 
-  <section class="space-surface">
-    <div class="space-section-head">
-      <div>
-        <span class="space-label">Guardados</span>
-        <h2>Selección rápida</h2>
-        <p class="space-muted">Obras y entidades que quieres tener a mano antes de decidir su lugar definitivo.</p>
+  <section class="space-workbench">
+    <article class="space-surface space-surface--compose">
+      <div class="space-section-head">
+        <div>
+          <span class="space-label">Colecciones</span>
+          <h2>Crear un nuevo board</h2>
+          <p class="space-muted">Nombra una agrupación y empieza a construir un archivo con intención.</p>
+        </div>
       </div>
-    </div>
 
-    @if (saved$ | async; as savedItems) {
-      @if (savedItems.length) {
-        <section class="space-grid">
-          @for (row of savedItems; track row.id) {
-            <article class="media-card">
-              <div class="media-card__thumb" (click)="go(row.entity.slug)">
-                <app-jano-media [entity]="row.entity" usage="card" [alt]="row.entity.title"></app-jano-media>
+      <div class="space-create-form">
+        <input
+          class="space-input"
+          type="text"
+          placeholder="Nombre de la colección"
+          [value]="newCollectionName"
+          (input)="newCollectionName = $any($event.target).value"
+        />
+
+        <input
+          class="space-input"
+          type="text"
+          placeholder="Descripción opcional"
+          [value]="newCollectionDescription"
+          (input)="newCollectionDescription = $any($event.target).value"
+        />
+
+        <button
+          class="space-shortcut space-shortcut--primary"
+          type="button"
+          [disabled]="creating || !newCollectionName.trim()"
+          (click)="createCollection()"
+        >
+          @if (creating) { Creando... } @else { Crear colección }
+        </button>
+      </div>
+
+      @if (createError) {
+        <div class="space-feedback space-feedback--error">{{ createError }}</div>
+      }
+    </article>
+
+    <article class="space-surface space-surface--saved">
+      <div class="space-section-head">
+        <div>
+          <span class="space-label">Guardados</span>
+          <h2>Selección rápida</h2>
+          <p class="space-muted">Una bandeja provisional para lo que todavía no has enviado a un board.</p>
+        </div>
+      </div>
+
+      @if (saved$ | async; as savedItems) {
+        @if (savedItems.length) {
+          <div class="saved-shelf">
+            @for (row of previewItems(savedItems, 6); track row.id) {
+              <article class="saved-tile">
+                <div class="saved-tile__thumb" (click)="go(row.entity.slug)">
+                  <app-jano-media [entity]="row.entity" usage="card" [alt]="row.entity.title"></app-jano-media>
+                </div>
+
+                <div class="saved-tile__body">
+                  <button type="button" class="saved-tile__title" (click)="go(row.entity.slug)">
+                    {{ row.entity.title }}
+                  </button>
+                  <button type="button" class="saved-tile__remove" (click)="removeSaved(row.entity.id)">Quitar</button>
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="space-empty">
+            <div class="space-empty__title">No tienes entidades guardadas</div>
+            <div class="space-empty__sub">Usa Guardar desde una entidad para empezar a construir tu archivo.</div>
+          </div>
+        }
+      }
+    </article>
+  </section>
+
+  @if (collections$ | async; as collections) {
+    <section class="space-surface space-surface--boards">
+      <div class="space-section-head">
+        <div>
+          <span class="space-label">Boards</span>
+          <h2>Colecciones personales</h2>
+          <p class="space-muted">Cada board funciona como un archivo temático, una agrupación de trabajo o una intuición en progreso.</p>
+        </div>
+
+        <div class="collection-count collection-count--section">
+          {{ collections.length }} {{ collections.length === 1 ? 'board' : 'boards' }}
+        </div>
+      </div>
+
+      @if (collections.length) {
+        <div class="boards-grid">
+          @for (collection of collections; track collection.id) {
+            <article
+              class="board-card"
+              [class.board-card--empty]="!collection.items.length"
+              role="link"
+              tabindex="0"
+              [attr.aria-label]="'Abrir colección ' + collection.name"
+              (click)="goToCollection(collection.id)"
+              (keydown.enter)="goToCollection(collection.id)"
+              (keydown.space)="$event.preventDefault(); goToCollection(collection.id)"
+            >
+              <div class="board-card__mosaic" [class.board-card__mosaic--empty]="!collection.items.length">
+                @if (collection.items.length) {
+                  @for (item of previewItems(collection.items, 4); track item.id; let index = $index) {
+                    <div class="board-card__tile" [class.board-card__tile--accent]="index === 0">
+                      <app-jano-media [entity]="item.entity" usage="card" [alt]="item.entity.title"></app-jano-media>
+
+                      @if (index === 3 && remainingItems(collection.itemCount, 4) > 0) {
+                        <div class="board-card__overflow">+{{ remainingItems(collection.itemCount, 4) }}</div>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <div class="board-card__empty-state">
+                    <span class="board-card__empty-label">Vacía</span>
+                    <p>Añade piezas desde una obra para empezar a construir esta colección.</p>
+                  </div>
+                }
               </div>
 
-              <div class="media-card__body">
-                <div class="media-card__title" (click)="go(row.entity.slug)">
-                  {{ row.entity.title }}
+              <div class="board-card__body">
+                <div class="board-card__meta">
+                  <div class="board-card__title-row">
+                    <h3 class="board-card__title">{{ collection.name }}</h3>
+                    @if (collection.isDefault) {
+                      <span class="collection-pill">Default</span>
+                    }
+                  </div>
+
+                  <div class="collection-count">{{ collection.itemCount }} items</div>
                 </div>
 
-                <div class="media-card__summary">
-                  {{ cleanWiki(row.entity.summary ?? '') }}
-                </div>
+                @if (collection.description) {
+                  <p class="board-card__description">{{ collection.description }}</p>
+                } @else {
+                  <p class="board-card__description board-card__description--muted">
+                    Un board listo para seguir creciendo con nuevas conexiones y obras guardadas.
+                  </p>
+                }
 
-                <div class="media-card__actions">
-                  <button type="button" class="space-button" (click)="go(row.entity.slug)">Ver</button>
-                  <button type="button" class="space-button space-button--danger" (click)="removeSaved(row.entity.id)">Quitar</button>
+                <div class="board-card__footer">
+                  <span class="board-card__hint">Abrir board</span>
                 </div>
               </div>
             </article>
           }
-        </section>
+        </div>
       } @else {
-        <div class="space-empty">
-          <div class="space-empty__title">No tienes entidades guardadas</div>
-          <div class="space-empty__sub">Usa Guardar desde una entidad para empezar a construir tu biblioteca.</div>
+        <div class="space-empty space-empty--main">
+          <div class="space-empty__title">No tienes boards todavía</div>
+          <div class="space-empty__sub">Crea el primero para transformar tus guardados en un archivo de trabajo más claro y memorable.</div>
         </div>
       }
-    }
-  </section>
-
-  <section class="space-surface">
-    <div class="space-section-head">
-      <div>
-        <span class="space-label">Colecciones</span>
-        <h2>Crear una nueva agrupación</h2>
-        <p class="space-muted">Organiza piezas y relaciones en espacios propios, con una lógica que puedas volver a leer después.</p>
-      </div>
-    </div>
-
-    <div class="space-create-form">
-      <input
-        class="space-input"
-        type="text"
-        placeholder="Nombre de la colección"
-        [value]="newCollectionName"
-        (input)="newCollectionName = $any($event.target).value"
-      />
-
-      <input
-        class="space-input"
-        type="text"
-        placeholder="Descripción opcional"
-        [value]="newCollectionDescription"
-        (input)="newCollectionDescription = $any($event.target).value"
-      />
-
-      <button
-        class="space-shortcut space-shortcut--primary"
-        type="button"
-        [disabled]="creating || !newCollectionName.trim()"
-        (click)="createCollection()"
-      >
-        @if (creating) { Creando... } @else { Crear colección }
-      </button>
-    </div>
-
-    @if (createError) {
-      <div class="space-feedback space-feedback--error">{{ createError }}</div>
-    }
-  </section>
-
-  @if (collections$ | async; as collections) {
-    @if (collections.length) {
-      <div class="collections">
-        @for (collection of collections; track collection.id) {
-          <section
-            class="space-surface collection-surface"
-            role="link"
-            tabindex="0"
-            [attr.aria-label]="'Abrir colección ' + collection.name"
-            (click)="goToCollection(collection.id)"
-            (keydown.enter)="goToCollection(collection.id)"
-            (keydown.space)="$event.preventDefault(); goToCollection(collection.id)"
-          >
-            <header class="collection-head">
-              <div>
-                <div class="collection-title-row">
-                  <h3 class="collection-title">{{ collection.name }}</h3>
-                  @if (collection.isDefault) {
-                    <span class="collection-pill">Default</span>
-                  }
-                </div>
-
-                @if (collection.description) {
-                  <p class="collection-description">{{ collection.description }}</p>
-                }
-              </div>
-
-              <div class="collection-count">{{ collection.itemCount }} items</div>
-            </header>
-
-            @if (collection.items.length > 0) {
-              <section class="space-grid">
-                @for (item of collection.items; track item.id) {
-                  <article class="media-card" (click)="$event.stopPropagation()">
-                    <div class="media-card__thumb" (click)="go(item.entity.slug)">
-                      <app-jano-media [entity]="item.entity" usage="card" [alt]="item.entity.title"></app-jano-media>
-                    </div>
-
-                    <div class="media-card__body">
-                      <div class="media-card__title" (click)="go(item.entity.slug)">
-                        {{ item.entity.title }}
-                      </div>
-
-                      <div class="media-card__summary">
-                        {{ cleanWiki(item.entity.summary ?? '') }}
-                      </div>
-
-                      <div class="media-card__actions">
-                        <button type="button" class="space-button" (click)="$event.stopPropagation(); go(item.entity.slug)">Ver</button>
-                        <button
-                          type="button"
-                          class="space-button space-button--danger"
-                          (click)="$event.stopPropagation(); removeFromCollection(collection.id, item.entity.id)"
-                        >
-                          Quitar
-                        </button>
-                      </div>
-                    </div>
-                  </article>
-                }
-              </section>
-            } @else {
-              <div class="space-empty">
-                <div class="space-empty__title">Colección vacía</div>
-                <div class="space-empty__sub">Añade entidades desde el detalle de una obra.</div>
-              </div>
-            }
-          </section>
-        }
-      </div>
-    } @else {
-      <div class="space-empty space-empty--main">
-        <div class="space-empty__title">No tienes colecciones todavía</div>
-        <div class="space-empty__sub">Crea la primera para empezar a organizar tu universo personal dentro de JANO.</div>
-      </div>
-    }
+    </section>
   }
 </div>

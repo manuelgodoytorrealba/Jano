@@ -57,6 +57,7 @@ export class AdminEntitiesComponent {
 
   private refresh$ = new BehaviorSubject<void>(undefined);
   private search$ = new BehaviorSubject<string>('');
+  private removedIds$ = new BehaviorSubject<Set<string>>(new Set());
 
   vm$ = combineLatest([
     this.refresh$,
@@ -65,8 +66,9 @@ export class AdminEntitiesComponent {
       distinctUntilChanged(),
       startWith(''),
     ),
+    this.removedIds$,
   ]).pipe(
-    switchMap(([_, q]) => {
+    switchMap(([_, q, removedIds]) => {
       this.loading = true;
       this.feedbackMessage = '';
 
@@ -80,7 +82,12 @@ export class AdminEntitiesComponent {
       }).pipe(
         map((res) => {
           this.loading = false;
-          return res;
+          const items = (res.items ?? []).filter((item: any) => !removedIds.has(item.id));
+          return {
+            ...res,
+            items,
+            total: typeof res.total === 'number' ? Math.max(items.length, res.total - ((res.items?.length ?? 0) - items.length)) : items.length,
+          };
         }),
         catchError(() => {
           this.loading = false;
@@ -151,6 +158,7 @@ export class AdminEntitiesComponent {
 
     this.deletingId = id;
     this.feedbackMessage = '';
+    this.markRemoved(id);
 
     this.api.remove(id).subscribe({
       next: () => {
@@ -160,9 +168,26 @@ export class AdminEntitiesComponent {
       },
       error: () => {
         this.deletingId = '';
+        this.restoreRemoved(id);
         this.feedbackMessage = 'No se pudo borrar la entity';
       },
     });
+  }
+
+  private markRemoved(id: string): void {
+    const next = new Set(this.removedIds$.value);
+    next.add(id);
+    this.removedIds$.next(next);
+  }
+
+  private restoreRemoved(id: string): void {
+    if (!this.removedIds$.value.has(id)) {
+      return;
+    }
+
+    const next = new Set(this.removedIds$.value);
+    next.delete(id);
+    this.removedIds$.next(next);
   }
 
 }

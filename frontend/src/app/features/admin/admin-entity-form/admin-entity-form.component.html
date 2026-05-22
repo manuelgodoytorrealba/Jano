@@ -96,11 +96,17 @@
         </div>
 
         <div class="detail-live-embed">
+          @if (isActiveSection('section-preview') && previewEntityModel; as previewEntity) {
           <app-entity-detail-view
-            [entity]="previewEntity()"
+            [entity]="previewEntity"
             [showActions]="false"
             [renderGraph]="true"
           ></app-entity-detail-view>
+          } @else {
+          <div class="detail-live-embed__idle">
+            <span>Abre el bloque de preview para activar la vista pública compuesta.</span>
+          </div>
+          }
         </div>
       </section>
 

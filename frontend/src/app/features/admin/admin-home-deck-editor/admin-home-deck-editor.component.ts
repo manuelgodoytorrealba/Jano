@@ -16,6 +16,7 @@ import {
   homeDeckSurfaceDescription,
   homeDeckSurfaceLabel,
 } from '../home-decks-editorial-options';
+import { mediaDisplayUrl, resolveEntityMediaItem } from '../../../shared/media/media.utils';
 
 type DeckForm = AdminHomeDeckPayload & {
   imageUrl: string;
@@ -54,6 +55,7 @@ export class AdminHomeDeckEditorComponent {
   isDirty = false;
   private lastPersistedFormKey = '';
   entitySearch = '';
+  draggingEntityId: string | null = null;
 
   readonly ctaRouteOptions = HOME_DECK_CTA_ROUTE_OPTIONS;
 
@@ -219,6 +221,37 @@ export class AdminHomeDeckEditorComponent {
     });
   }
 
+  startEntityDrag(entityId: string): void {
+    this.draggingEntityId = entityId;
+  }
+
+  clearEntityDrag(): void {
+    this.draggingEntityId = null;
+  }
+
+  dropEntityBefore(targetEntityId: string, items: AdminHomeDeck['entities']): void {
+    const sourceEntityId = this.draggingEntityId;
+    this.draggingEntityId = null;
+
+    if (!this.deck || !sourceEntityId || sourceEntityId === targetEntityId) {
+      return;
+    }
+
+    const ordered = [...items].sort((a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id));
+    const sourceIndex = ordered.findIndex((item) => item.entity.id === sourceEntityId);
+    const targetIndex = ordered.findIndex((item) => item.entity.id === targetEntityId);
+
+    if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) {
+      return;
+    }
+
+    const [moved] = ordered.splice(sourceIndex, 1);
+    ordered.splice(targetIndex, 0, moved);
+
+    this.applyOptimisticOrder(ordered);
+    this.persistEntityOrder(ordered, 'Orden curatorial actualizado.');
+  }
+
   isSelected(entityId: string): boolean {
     return this.deck?.entities.some((item) => item.entity.id === entityId) ?? false;
   }
@@ -348,6 +381,56 @@ export class AdminHomeDeckEditorComponent {
     return option?.detail ?? 'Ruta personalizada guardada en este deck.';
   }
 
+  previewImageUrl(): string | null {
+    return (this.deck?.image?.url ?? this.form.imageUrl?.trim()) || null;
+  }
+
+  previewEyebrow(): string {
+    return this.form.subtitle?.trim() || (this.form.surface === 'RECOMMENDED' ? 'Curated selection' : 'Editorial deck');
+  }
+
+  previewTitle(): string {
+    return this.form.title?.trim() || 'Sin título';
+  }
+
+  previewDescription(): string {
+    return this.form.description?.trim() || 'Añade una descripción breve para explicar la promesa curatorial de este deck.';
+  }
+
+  previewCtaLabel(): string {
+    return this.form.ctaLabel?.trim() || 'Ver selección';
+  }
+
+  previewRouteSummary(): string {
+    if (this.form.surface === 'RECOMMENDED') {
+      return 'Abre la selección curada del propio deck.';
+    }
+
+    if (!this.form.ctaRoute?.trim()) {
+      return 'Abre la selección curada del propio deck.';
+    }
+
+    const option = this.ctaRouteOptions.find((item) => item.value === this.form.ctaRoute);
+    return option?.label ?? this.form.ctaRoute;
+  }
+
+  entityImageUrl(entity: any): string | null {
+    const media = resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
+    return mediaDisplayUrl(media);
+  }
+
+  entityEyebrow(entity: any): string {
+    return (entity?.type ?? 'ENTITY').toString();
+  }
+
+  entityStatusLabel(entity: any): string {
+    return (entity?.status ?? 'DRAFT').toString();
+  }
+
+  orderedEntities(items: AdminHomeDeck['entities']): AdminHomeDeck['entities'] {
+    return [...items].sort((a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id));
+  }
+
   showCtaRouteControl(): boolean {
     return this.form.surface === 'HOME';
   }
@@ -365,6 +448,61 @@ export class AdminHomeDeckEditorComponent {
     this.markPersisted(deck);
     this.setFeedback(message, 'success');
     this.cdr.markForCheck();
+  }
+
+  private applyOptimisticOrder(ordered: AdminHomeDeck['entities']): void {
+    if (!this.deck) {
+      return;
+    }
+
+    this.deck = {
+      ...this.deck,
+      entities: ordered.map((item, index) => ({
+        ...item,
+        sortOrder: index,
+      })),
+    };
+
+    this.cdr.markForCheck();
+  }
+
+  private persistEntityOrder(ordered: AdminHomeDeck['entities'], successMessage: string): void {
+    if (!this.deck) {
+      return;
+    }
+
+    const previousDeck = this.deck;
+    const updates = ordered
+      .map((item, index) => ({ item, index }))
+      .filter(({ item, index }) => item.sortOrder !== index)
+      .map(({ item, index }) => this.decksApi.reorderEntity(this.deck!.id, item.entity.id, index));
+
+    if (!updates.length) {
+      return;
+    }
+
+    this.saving = true;
+    this.saveState = 'saving';
+    this.setFeedback('Reordenando secuencia...', 'info');
+    this.cdr.markForCheck();
+
+    forkJoin(updates).subscribe({
+      next: () => {
+        this.saving = false;
+        this.saveState = 'saved';
+        this.lastSavedAt = new Date();
+        this.setFeedback(successMessage, 'success');
+        this.refresh$.next();
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.deck = previousDeck;
+        this.saving = false;
+        this.saveState = 'error';
+        this.setFeedback('No se pudo actualizar el orden curatorial.', 'error');
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   private emptyForm(): DeckForm {

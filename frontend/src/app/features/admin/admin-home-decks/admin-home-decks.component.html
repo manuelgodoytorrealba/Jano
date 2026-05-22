@@ -39,17 +39,161 @@
         <span>Con avisos</span>
         <strong>{{ vm.warningCount }}</strong>
       </div>
+      <div>
+        <span>Base pendiente</span>
+        <strong>{{ vm.missingStarterCount }}</strong>
+      </div>
+    </section>
+
+    <section class="production-status">
+      <div class="section-title">
+        <h2>Estado real en producción</h2>
+        <p>Te dice si Home y Recommended viven de decks editables o del fallback editorial base.</p>
+      </div>
+
+      <div class="production-status__grid">
+        <article class="surface-status">
+          <div class="surface-status__head">
+            <span class="surface-status__eyebrow">Home</span>
+            <strong [class.is-fallback]="vm.usesHomeFallback">
+              {{ vm.usesHomeFallback ? 'Fallback activo' : 'Decks activos' }}
+            </strong>
+          </div>
+          <div class="surface-status__summary">
+            <p>{{ activeDeckSummary(vm.homeActiveDecks) }}</p>
+            @if (vm.homeActiveDecks.length) {
+              <div class="surface-status__pills">
+                @for (deck of vm.homeActiveDecks; track deck.id) {
+                  <a class="surface-pill" [routerLink]="['/admin/home-decks', deck.id, 'edit']">{{ deck.title }}</a>
+                }
+              </div>
+            }
+          </div>
+          <div class="surface-status__actions">
+            <button
+              class="mini"
+              type="button"
+              (click)="importMissingStarters('HOME', vm.starterStates, vm.homeActiveDecks.length)"
+              [disabled]="saving">
+              Importar base Home
+            </button>
+          </div>
+        </article>
+
+        <article class="surface-status">
+          <div class="surface-status__head">
+            <span class="surface-status__eyebrow">Recommended</span>
+            <strong [class.is-fallback]="vm.usesRecommendedFallback">
+              {{ vm.usesRecommendedFallback ? 'Fallback activo' : 'Decks activos' }}
+            </strong>
+          </div>
+          <div class="surface-status__summary">
+            <p>{{ activeDeckSummary(vm.recommendedActiveDecks) }}</p>
+            @if (vm.recommendedActiveDecks.length) {
+              <div class="surface-status__pills">
+                @for (deck of vm.recommendedActiveDecks; track deck.id) {
+                  <a class="surface-pill" [routerLink]="['/admin/home-decks', deck.id, 'edit']">{{ deck.title }}</a>
+                }
+              </div>
+            }
+          </div>
+          <div class="surface-status__actions">
+            <button
+              class="mini"
+              type="button"
+              (click)="importMissingStarters('RECOMMENDED', vm.starterStates, vm.recommendedActiveDecks.length)"
+              [disabled]="saving">
+              Importar base Recommended
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="starter-library">
+      <div class="section-title">
+        <h2>Base editorial actual</h2>
+        <p>Estos son los decks base que hoy sostienen el lenguaje del Home y Recommended.</p>
+      </div>
+
+      <div class="starter-library__grid">
+        @for (state of vm.starterStates; track state.starter.id) {
+          <article class="starter-card">
+            <div class="starter-card__media" [style.background-image]="'url(' + state.starter.image + ')'"></div>
+            <div class="starter-card__body">
+              <div class="starter-card__meta">
+                <span>{{ surfaceLabel(state.starter.surface) }}</span>
+                <strong>{{ state.imported ? (state.active ? 'Editable activo' : 'Editable') : 'Fallback base' }}</strong>
+              </div>
+              <h3>{{ state.starter.title }}</h3>
+              <p>{{ state.starter.description }}</p>
+              @if (starterDeckPreviewEntities(state.deck).length) {
+                <div class="starter-card__entities">
+                  @for (item of starterDeckPreviewEntities(state.deck); track item.id) {
+                    <div class="starter-entity">
+                      <div class="starter-entity__thumb">
+                        @if (deckEntityImageUrl(item.entity); as entityImageUrl) {
+                          <img [src]="entityImageUrl" [alt]="deckEntityLabel(item.entity)" />
+                        } @else {
+                          <span>{{ item.entity?.type || 'ENTITY' }}</span>
+                        }
+                      </div>
+                      <span>{{ deckEntityLabel(item.entity) }}</span>
+                    </div>
+                  }
+                </div>
+              }
+              <div class="starter-card__actions">
+                @if (state.deck) {
+                  <a class="mini" [routerLink]="['/admin/home-decks', state.deck.id, 'edit']">Editar deck</a>
+                } @else {
+                  <button
+                    class="mini"
+                    type="button"
+                    (click)="importStarter(state.starter, state.starter.surface === 'HOME' ? vm.homeActiveDecks.length : vm.recommendedActiveDecks.length)"
+                    [disabled]="saving">
+                    Importar deck
+                  </button>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
     </section>
 
     <section class="create-panel">
       <div class="section-title">
-        <h2>Crear deck</h2>
-        <p>Campos mínimos para poner una pieza editorial en cola.</p>
+        <h2>Componer un deck nuevo</h2>
+        <p>Piensa este bloque como una portada curatorial: dónde vive, qué promete y a qué mirada conduce.</p>
+      </div>
+
+      <div class="composer-intro">
+        <article class="composer-note">
+          <span>Qué estás creando</span>
+          <strong>{{ newDeckSurfaceSummary() }}</strong>
+          <p>{{ surfaceDescription(newDeck.surface) }}</p>
+        </article>
+
+        <article class="composer-note">
+          <span>Acción actual</span>
+          <strong>{{ newDeck.ctaLabel || 'Sin llamada todavía' }}</strong>
+          <p>{{ selectedCtaRouteDetail() }}</p>
+        </article>
+
+        <article class="composer-note">
+          <span>Empezar desde una base</span>
+          <div class="starter-pills">
+            @for (starter of starterDecksForSurface(newDeck.surface); track starter.id) {
+              <button class="mini" type="button" (click)="startFromStarter(starter)">{{ starter.title }}</button>
+            }
+          </div>
+        </article>
       </div>
 
       <form class="create-grid" (ngSubmit)="createDeck()">
         <label>
-          <span>Visible en</span>
+          <span>Publicar en</span>
           <select name="surface" [ngModel]="newDeck.surface" (ngModelChange)="onNewDeckSurfaceChange($event)">
             <option value="HOME">Home</option>
             <option value="RECOMMENDED">Recommended</option>
@@ -58,18 +202,19 @@
         </label>
 
         <label>
-          <span>Slug</span>
-          <input name="slug" [(ngModel)]="newDeck.slug" placeholder="discover" />
+          <span>Identificador</span>
+          <input name="slug" [(ngModel)]="newDeck.slug" placeholder="obras" />
+          <small>Úsalo para reconocer este deck dentro del sistema y sus rutas curatoriales.</small>
         </label>
 
         <label>
-          <span>Título</span>
-          <input name="title" [(ngModel)]="newDeck.title" placeholder="Discover" />
+          <span>Título principal</span>
+          <input name="title" [(ngModel)]="newDeck.title" placeholder="Obras" />
         </label>
 
         <label>
-          <span>Subtítulo</span>
-          <input name="subtitle" [(ngModel)]="newDeck.subtitle" placeholder="Visual paths" />
+          <span>Eyebrow o subtítulo</span>
+          <input name="subtitle" [(ngModel)]="newDeck.subtitle" placeholder="Artwork" />
         </label>
 
         @if (showNewDeckCtaRouteControl()) {
@@ -80,6 +225,7 @@
                 <option [value]="option.value">{{ option.label }}</option>
               }
             </select>
+            <small>{{ selectedCtaRouteDetail() }}</small>
           </label>
         } @else {
           <div class="create-note">
@@ -90,13 +236,15 @@
         }
 
         <label class="create-grid__wide">
-          <span>Imagen</span>
+          <span>Imagen base</span>
           <input name="imageUrl" [(ngModel)]="newDeck.imageUrl" placeholder="/assets/home/artwork.jpg" />
+          <small>Usa una imagen que pueda sostenerse como portada del bloque, no solo como decoración.</small>
         </label>
 
         <label class="create-grid__wide">
-          <span>Descripción</span>
+          <span>Descripción editorial</span>
           <textarea name="description" [(ngModel)]="newDeck.description" rows="3"></textarea>
+          <small>Una frase clara sobre qué tipo de exploración o selección ofrece este deck.</small>
         </label>
 
         <label class="check">
@@ -110,74 +258,103 @@
 
     <section class="deck-table-wrap">
       <div class="section-title">
-        <h2>Decks existentes</h2>
-        <p>Destino, orden, estado y señales de publicación.</p>
+        <h2>Decks editables actuales</h2>
+        <p>Lo que ya existe como deck real en el sistema, ya en una lectura más cercana a portada, estado y secuencia.</p>
       </div>
 
       @if (loading) {
         <div class="empty">Cargando decks...</div>
       } @else if (vm.decks.length) {
-        <table class="deck-table">
-          <thead>
-            <tr>
-              <th>Orden</th>
-              <th>Deck</th>
-              <th>Estado</th>
-              <th>Entidades</th>
-              <th>Imagen</th>
-              <th>Avisos</th>
-              <th>Actualizado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (deck of vm.decks; track deck.id) {
-              <tr>
-                <td class="order-cell">{{ deck.sortOrder }}</td>
-                <td>
-                  <div class="title-cell">
-                    <strong>{{ deck.title }}</strong>
-                    <span>{{ surfaceLabel(deck.surface) }} · {{ deck.slug }}</span>
-                  </div>
-                </td>
-                <td>
-                  <button class="status" [class.is-active]="deck.isActive" type="button" (click)="toggleActive(deck)">
-                    {{ deck.isActive ? 'Activo' : 'Inactivo' }}
-                  </button>
-                </td>
-                <td>{{ deck.entities.length }}</td>
-                <td>
-                  <span class="asset-state" [class.asset-state--missing]="!deck.image">
-                    {{ deck.image ? 'OK' : 'Falta' }}
-                  </span>
-                </td>
-                <td>
-                  @if (deck.warnings.length) {
-                    <span class="warning" [class.is-strong]="hasWarnings(deck)">{{ warningLabel(deck) }}</span>
-                  } @else {
-                    <span class="ok">Listo</span>
-                  }
-                </td>
-                <td>{{ deck.updatedAt | date: 'dd/MM/yyyy' }}</td>
-                <td>
-                  <div class="row-actions">
-                    <a class="mini" [routerLink]="['/admin/home-decks', deck.id, 'edit']">Editar</a>
-                    <button class="mini" type="button" (click)="move(deck, -1, vm.decks)">Subir</button>
-                    <button class="mini" type="button" (click)="move(deck, 1, vm.decks)">Bajar</button>
-                    <button class="mini danger" type="button" (click)="remove(deck)">Borrar</button>
-                  </div>
-                </td>
-              </tr>
-              <tr class="deck-meta-row">
-                <td></td>
-                <td colspan="7">
-                  <span>{{ surfaceDescription(deck.surface) }}</span>
-                  <span>Acción: {{ deckActionLabel(deck) }}</span>
-                </td>
-              </tr>
+        @for (surface of surfaces; track surface) {
+          <section class="surface-table">
+            <div class="surface-table__head">
+              <h3>{{ surfaceSectionTitle(surface) }}</h3>
+              <p>{{ surfaceSectionIntro(surface) }}</p>
+            </div>
+
+            @if (decksForSurface(vm.decks, surface).length) {
+              <div class="editable-grid">
+                @for (deck of decksForSurface(vm.decks, surface); track deck.id) {
+                  <article class="editable-card">
+                    <div class="editable-card__media">
+                      @if (deck.image?.url; as imageUrl) {
+                        <img [src]="imageUrl" [alt]="deck.title" />
+                      } @else {
+                        <div class="editable-card__media-empty">{{ surfaceLabel(deck.surface) }}</div>
+                      }
+                    </div>
+
+                    <div class="editable-card__body">
+                      <div class="editable-card__head">
+                        <div class="editable-card__meta">
+                          <span>{{ surfaceLabel(deck.surface) }}</span>
+                          <strong>#{{ deck.sortOrder }}</strong>
+                        </div>
+                        <button class="status" [class.is-active]="deck.isActive" type="button" (click)="toggleActive(deck)">
+                          {{ deck.isActive ? 'Activo' : 'Inactivo' }}
+                        </button>
+                      </div>
+
+                      <div class="editable-card__title">
+                        <strong>{{ deck.title }}</strong>
+                        <span>{{ deck.slug }}</span>
+                      </div>
+
+                      <p class="editable-card__description">
+                        {{ deck.description || surfaceDescription(deck.surface) }}
+                      </p>
+
+                      <div class="editable-card__facts">
+                        <span>{{ deck.entities.length }} entidades</span>
+                        <span>Acción: {{ deckActionLabel(deck) }}</span>
+                        <span>{{ deck.updatedAt | date: 'dd/MM/yyyy' }}</span>
+                      </div>
+
+                      @if (starterDeckPreviewEntities(deck).length) {
+                        <div class="editable-card__entities">
+                          @for (item of starterDeckPreviewEntities(deck); track item.id) {
+                            <div class="starter-entity">
+                              <div class="starter-entity__thumb">
+                                @if (deckEntityImageUrl(item.entity); as entityImageUrl) {
+                                  <img [src]="entityImageUrl" [alt]="deckEntityLabel(item.entity)" />
+                                } @else {
+                                  <span>{{ item.entity?.type || 'ENTITY' }}</span>
+                                }
+                              </div>
+                              <span>{{ deckEntityLabel(item.entity) }}</span>
+                            </div>
+                          }
+                        </div>
+                      }
+
+                      <div class="editable-card__footer">
+                        <div class="editable-card__signals">
+                          <span class="asset-state" [class.asset-state--missing]="!deck.image">
+                            {{ deck.image ? 'Portada lista' : 'Falta portada' }}
+                          </span>
+                          @if (deck.warnings.length) {
+                            <span class="warning" [class.is-strong]="hasWarnings(deck)">{{ warningLabel(deck) }}</span>
+                          } @else {
+                            <span class="ok">Listo</span>
+                          }
+                        </div>
+
+                        <div class="row-actions">
+                          <a class="mini" [routerLink]="['/admin/home-decks', deck.id, 'edit']">Editar</a>
+                          <button class="mini" type="button" (click)="move(deck, -1, vm.decks)">Subir</button>
+                          <button class="mini" type="button" (click)="move(deck, 1, vm.decks)">Bajar</button>
+                          <button class="mini danger" type="button" (click)="remove(deck)">Borrar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="empty">Todavía no hay decks editables en {{ surfaceLabel(surface) }}.</div>
             }
-          </tbody>
-        </table>
+          </section>
+        }
       } @else {
         <div class="empty">No hay decks creados. Home y Recommended seguirán usando fallback visual.</div>
       }

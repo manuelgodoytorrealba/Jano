@@ -4,7 +4,8 @@
   min-height: calc(100vh - 56px);
   padding: 34px 28px 48px;
   display: grid;
-  gap: 20px;
+  gap: 16px;
+  align-content: start;
 }
 
 .profile-page > * {
@@ -13,10 +14,7 @@
 }
 
 .profile-hero {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 18px;
+  max-width: 620px;
 }
 
 .profile-eyebrow,
@@ -32,24 +30,21 @@
 
 .profile-hero__copy h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 3.1vw, 3.5rem);
-  line-height: 0.96;
+  font-size: clamp(2rem, 2.8vw, 3rem);
+  line-height: 0.98;
   color: rgba(24, 21, 18, 0.96);
 }
 
 .profile-muted {
-  margin: 12px 0 0;
-  max-width: 620px;
+  margin: 10px 0 0;
   color: rgba(57, 50, 44, 0.68);
-  font-size: 0.98rem;
-  line-height: 1.52;
+  font-size: 0.94rem;
+  line-height: 1.5;
 }
 
 .profile-shortcuts {
-  display: flex;
+  display: grid;
   gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
 .profile-shortcut {
@@ -85,7 +80,7 @@
 }
 
 .profile-surface,
-.profile-field {
+.profile-card {
   border: 1px solid rgba(255, 255, 255, 0.22);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
   box-shadow:
@@ -100,78 +95,85 @@
   padding: 20px;
 }
 
-.profile-section-head {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 16px;
-}
-
-.profile-section-head h2 {
-  margin: 6px 0 0;
-  font-size: clamp(1.45rem, 2vw, 2.2rem);
-  line-height: 1.02;
-  color: rgba(247, 244, 240, 0.95);
-}
-
-.profile-note {
-  max-width: 300px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+.profile-overview {
   display: grid;
-  gap: 6px;
-}
-
-.profile-note strong {
-  color: rgba(247, 244, 240, 0.9);
-  font-size: 0.92rem;
-  line-height: 1.35;
-}
-
-.profile-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.profile-field {
-  min-height: 112px;
-  border-radius: 22px;
-  padding: 16px;
-  display: grid;
-  align-content: space-between;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.72fr);
   gap: 14px;
+  align-items: start;
 }
 
-.profile-field strong {
-  font-size: 1.18rem;
-  line-height: 1.14;
+.profile-card {
+  border-radius: 22px;
+  padding: 18px;
+}
+
+.profile-card--identity {
+  display: grid;
+  gap: 12px;
+  min-height: 188px;
+  align-content: start;
+}
+
+.profile-card--identity h2 {
+  margin: 0;
+  font-size: clamp(2rem, 2.6vw, 3rem);
+  line-height: 0.96;
   color: rgba(247, 244, 240, 0.97);
 }
 
-.profile-field__value--long {
+.profile-identity__mail {
+  margin: 0;
+  color: rgba(247, 244, 240, 0.72);
+  font-size: 1rem;
+  line-height: 1.45;
   word-break: break-word;
-  font-size: 0.98rem;
+}
+
+.profile-role-pill {
+  display: inline-grid;
+  gap: 4px;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.profile-role-pill__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(189, 175, 162, 0.72);
+}
+
+.profile-role-pill strong {
+  color: rgba(247, 244, 240, 0.94);
+  font-size: 0.96rem;
+}
+
+.profile-rail {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-card--note {
+  min-height: 108px;
+  display: grid;
+  gap: 8px;
+  align-content: center;
+}
+
+.profile-card--note strong {
+  color: rgba(247, 244, 240, 0.9);
+  font-size: 0.94rem;
+  line-height: 1.4;
 }
 
 @media (max-width: 1180px) {
-  .profile-hero,
-  .profile-section-head,
-  .profile-grid {
+  .profile-overview {
     grid-template-columns: 1fr;
-  }
-
-  .profile-hero,
-  .profile-section-head {
-    display: grid;
-  }
-
-  .profile-note {
-    max-width: none;
   }
 }
 
@@ -186,7 +188,11 @@
     border-radius: 22px;
   }
 
-  .profile-grid {
+  .profile-card--identity {
+    min-height: auto;
+  }
+
+  .profile-shortcuts {
     grid-template-columns: 1fr;
   }
 }
