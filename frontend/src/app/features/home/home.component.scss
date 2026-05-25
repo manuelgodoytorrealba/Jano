@@ -13,9 +13,9 @@
 }
 
 .home-page__deck {
-  --home-deck-card-width: min(1160px, 86vw);
-  --home-deck-card-height: clamp(520px, 38vw, 620px);
-  --home-deck-stack-height: clamp(520px, 58vw, 710px);
+  --home-deck-card-width: min(1040px, 78vw);
+  --home-deck-card-height: clamp(470px, 34vw, 560px);
+  --home-deck-stack-height: clamp(480px, 52vw, 660px);
   --home-deck-nav-size: 42px;
   --home-deck-nav-bottom: 6px;
   --home-deck-nav-offset: 220px;
@@ -174,8 +174,8 @@
 
 @media (min-width: 1500px) {
   .home-page__deck {
-    --home-deck-card-width: clamp(1360px, 78vw, 1680px);
-    --home-deck-card-height: clamp(620px, 38vw, 760px);
+    --home-deck-card-width: clamp(1180px, 68vw, 1440px);
+    --home-deck-card-height: clamp(540px, 32vw, 660px);
     --home-deck-stack-height: calc(var(--home-deck-card-height) + 78px);
     --home-deck-nav-size: 42px;
     --home-deck-nav-bottom: 8px;
@@ -193,9 +193,9 @@
 
 @media (max-width: 1280px) {
   .home-page__deck {
-    --home-deck-card-width: min(1040px, 90vw);
-    --home-deck-card-height: clamp(490px, 41vw, 580px);
-    --home-deck-stack-height: clamp(500px, 58vw, 650px);
+    --home-deck-card-width: min(940px, 86vw);
+    --home-deck-card-height: clamp(450px, 38vw, 540px);
+    --home-deck-stack-height: clamp(460px, 54vw, 610px);
     --home-deck-nav-size: 42px;
     --home-deck-nav-bottom: 6px;
     --home-deck-nav-offset: 178px;

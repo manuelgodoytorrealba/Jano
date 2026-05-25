@@ -85,6 +85,12 @@
   gap: 0.85rem;
 }
 
+.relations-group .entity-subtitle {
+  color: rgba(96, 103, 120, 0.82);
+  font-weight: 800;
+}
+
+
 .relations-list {
   display: grid;
   gap: 0.75rem;
@@ -164,7 +170,7 @@
 }
 
 .relation-card__text {
-  color: rgba(88, 95, 109, 0.84);
+  color: rgba(44, 50, 64, 0.95);
   font-size: 0.98rem;
   line-height: 1.65;
 }
@@ -379,9 +385,11 @@
 
 .entity-article-hero__title {
   margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
   font-size: clamp(2.9rem, 6vw, 5rem);
   line-height: 0.9;
-  letter-spacing: -0.06em;
+  letter-spacing: var(--tracking-serif-tight);
   text-wrap: balance;
 }
 

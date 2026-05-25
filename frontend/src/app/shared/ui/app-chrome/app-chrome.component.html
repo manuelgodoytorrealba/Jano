@@ -3,8 +3,18 @@
   [class.app-chrome__header--collapsed]="headerCollapsed()"
   [class.app-chrome__header--detail]="detailHeaderMode()"
 >
-  <a class="app-chrome__brand" routerLink="/" aria-label="Ir al inicio de JANO">
-    <span class="app-chrome__brand-mark">J</span>
+  <a
+    class="app-chrome__brand"
+    routerLink="/"
+    aria-label="Ir al inicio de JANO"
+    [class.is-pressing]="brandPressing()"
+    (pointerdown)="pressBrand()"
+    (pointerup)="releaseBrand()"
+    (pointerleave)="releaseBrand()"
+    (pointercancel)="releaseBrand()"
+    (blur)="releaseBrand()"
+  >
+    <img class="app-chrome__brand-mark" src="/app-brand-mark.png" srcset="/app-brand-mark.png 2x" alt="" width="44" height="44" aria-hidden="true">
     <span class="app-chrome__brand-copy">
       <span class="app-chrome__brand-name">JANO</span>
       <span class="app-chrome__brand-tag">Art discovery system</span>

@@ -41,6 +41,7 @@ export class AppChromeComponent {
   readonly compactHeaderEnabled = signal(this.readCompactHeaderEnabled());
   readonly headerCollapsed = signal(false);
   readonly detailHeaderRevealed = signal(false);
+  readonly brandPressing = signal(false);
 
   readonly navItems: HeaderNavItem[] = [
     { label: 'Descubrir', route: '/', kind: 'route', group: 'public', exact: true },
@@ -58,6 +59,14 @@ export class AppChromeComponent {
     { label: 'Admin', route: '/admin', icon: 'admin', kind: 'route', adminOnly: true },
     { label: 'Ajustes', route: '/settings', icon: 'settings', kind: 'route' },
   ];
+
+  pressBrand(): void {
+    this.brandPressing.set(true);
+  }
+
+  releaseBrand(): void {
+    this.brandPressing.set(false);
+  }
 
   constructor() {
     this.router.events.pipe(

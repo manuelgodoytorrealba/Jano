@@ -14,21 +14,21 @@
 
   --graph-bar-chip-padding-y: 0.11rem;
   --graph-bar-chip-padding-x: 0.3rem;
-  --graph-bar-chip-font-size: 0.58rem;
+  --graph-bar-chip-font-size: 0.75rem;
 
   --graph-bar-label-padding-y: 0.22rem;
   --graph-bar-label-padding-x: 0.42rem;
-  --graph-bar-label-font-size: 0.58rem;
+  --graph-bar-label-font-size: 0.75rem;
 
   --graph-bar-button-min-height: 24px;
   --graph-bar-button-padding-y: 0.2rem;
   --graph-bar-button-padding-x: 0.46rem;
-  --graph-bar-button-font-size: 0.62rem;
+  --graph-bar-button-font-size: 0.75rem;
   --graph-bar-button-min-width: 84px;
 
   --graph-bar-control-size: 24px;
   --graph-bar-control-padding-x: 0.46rem;
-  --graph-bar-control-font-size: 0.62rem;
+  --graph-bar-control-font-size: 0.75rem;
   --graph-bar-control-text-padding-x: 0.56rem;
   --graph-bar-control-wide-min-width: 70px;
 }
@@ -116,19 +116,19 @@
   padding: var(--graph-bar-label-padding-y) var(--graph-bar-label-padding-x);
   border-radius: 999px;
   background: rgba(6, 10, 15, 0.56);
-  color: rgba(222, 237, 250, 0.72);
+  color: var(--color-text-muted);
   border: 1px solid rgba(255, 255, 255, 0.06);
   font-size: var(--graph-bar-label-font-size);
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 .graph-panel-caption {
-  color: rgba(173, 196, 214, 0.64);
-  font-size: 0.62rem;
-  font-weight: 700;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -161,7 +161,7 @@
   padding: var(--graph-bar-chip-padding-y) var(--graph-bar-chip-padding-x);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
-  color: rgba(193, 212, 226, 0.66);
+  color: var(--color-text-muted);
   border: 1px solid rgba(255, 255, 255, 0.06);
   font-size: var(--graph-bar-chip-font-size);
   white-space: nowrap;
@@ -186,7 +186,7 @@
   padding: var(--graph-bar-button-padding-y) var(--graph-bar-button-padding-x);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.045);
-  color: rgba(233, 242, 249, 0.76);
+  color: var(--color-text-soft);
   font-weight: 600;
   font-size: var(--graph-bar-button-font-size);
   white-space: nowrap;
@@ -209,8 +209,8 @@
   padding: 0 var(--graph-bar-control-padding-x);
   border-radius: 999px;
   background: rgba(8, 13, 19, 0.66);
-  color: rgba(237, 247, 255, 0.92);
-  font-weight: 700;
+  color: var(--color-text);
+  font-weight: 500;
   backdrop-filter: blur(14px);
   font-size: var(--graph-bar-control-font-size);
 }
@@ -231,15 +231,15 @@
     --graph-bar-padding-y: 0.16rem;
     --graph-bar-padding-x: 0.2rem;
     --graph-bar-chip-padding-x: 0.26rem;
-    --graph-bar-chip-font-size: 0.54rem;
+    --graph-bar-chip-font-size: 0.75rem;
     --graph-bar-label-padding-x: 0.38rem;
-    --graph-bar-label-font-size: 0.55rem;
+    --graph-bar-label-font-size: 0.75rem;
     --graph-bar-button-padding-x: 0.4rem;
-    --graph-bar-button-font-size: 0.58rem;
+    --graph-bar-button-font-size: 0.75rem;
     --graph-bar-button-min-width: 72px;
-    --graph-bar-control-size: 22px;
+    --graph-bar-control-size: 30px;
     --graph-bar-control-padding-x: 0.38rem;
-    --graph-bar-control-font-size: 0.58rem;
+    --graph-bar-control-font-size: 0.75rem;
     --graph-bar-control-text-padding-x: 0.46rem;
     --graph-bar-control-wide-min-width: 62px;
   }
@@ -267,14 +267,14 @@
   :host {
     --graph-bar-gap-x: 0.18rem;
     --graph-bar-chip-padding-x: 0.22rem;
-    --graph-bar-chip-font-size: 0.51rem;
+    --graph-bar-chip-font-size: 0.75rem;
     --graph-bar-label-padding-x: 0.34rem;
-    --graph-bar-label-font-size: 0.52rem;
+    --graph-bar-label-font-size: 0.75rem;
     --graph-bar-button-padding-x: 0.34rem;
-    --graph-bar-button-font-size: 0.54rem;
+    --graph-bar-button-font-size: 0.75rem;
     --graph-bar-button-min-width: 66px;
     --graph-bar-control-padding-x: 0.34rem;
-    --graph-bar-control-font-size: 0.54rem;
+    --graph-bar-control-font-size: 0.75rem;
     --graph-bar-control-text-padding-x: 0.4rem;
     --graph-bar-control-wide-min-width: 56px;
   }

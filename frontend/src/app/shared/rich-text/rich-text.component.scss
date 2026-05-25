@@ -3,7 +3,10 @@
   display: grid;
   gap: 1rem;
   z-index: 2;
-  line-height: 1.7;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.72;
   overflow: visible;
 }
 
@@ -18,9 +21,11 @@
 .rt-h1,
 .rt-h2,
 .rt-h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
   color: rgba(17, 21, 30, 0.96);
   line-height: 1.04;
-  letter-spacing: -0.04em;
+  letter-spacing: var(--tracking-serif-tight);
   text-wrap: balance;
 }
 
@@ -42,20 +47,20 @@
 .rt-lead {
   font-size: 1.22em;
   line-height: 1.8;
-  color: rgba(46, 52, 66, 0.92);
+  color: rgba(22, 26, 36, 0.96);
   text-wrap: pretty;
 }
 
 .rt-quote {
   padding: 1.15rem 1.2rem 1.1rem 1.35rem;
-  border-left: 3px solid rgba(177, 128, 73, 0.8);
+  border-left: 3px solid var(--color-reference-accent);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.24));
   border-radius: 20px;
   font-size: 1.14em;
   font-style: italic;
   line-height: 1.85;
-  color: rgba(42, 46, 57, 0.92);
+  color: rgba(19, 23, 32, 0.96);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.58),
     0 12px 28px rgba(17, 24, 39, 0.06);
@@ -68,7 +73,7 @@
 }
 
 .rt strong {
-  font-weight: 700;
+  font-weight: 600;
   color: rgba(24, 28, 37, 0.96);
 }
 
@@ -77,20 +82,23 @@
 }
 
 .link {
-  color: #7f4a1b;
+  color: var(--color-reference-accent);
   text-decoration: underline;
-  text-decoration-color: rgba(127, 74, 27, 0.28);
+  text-decoration-color: rgba(47, 98, 70, 0.68);
+  text-decoration-thickness: 1.5px;
+  font-weight: 500;
   text-underline-offset: 2px;
   transition: color .12s ease, text-decoration-color .12s ease;
   cursor: pointer;
 }
 
 .link:hover {
-  color: #5c320f;
-  text-decoration-color: #5c320f;
+  color: var(--color-reference-accent-hover);
+  text-decoration-color: var(--color-reference-accent-hover);
 }
 
 .tooltip {
+  font-family: var(--font-sans);
   position: absolute;
   bottom: calc(100% + 14px);
   left: 50%;
@@ -129,7 +137,7 @@
 .tt-title {
   font-size: 18px;
   line-height: 1.2;
-  font-weight: 800;
+  font-weight: 600;
   color: #111;
 }
 
@@ -158,6 +166,19 @@
   overflow: hidden;
   position: relative;
   z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .rt-h1,
+  .rt-h2,
+  .rt-h3 {
+    letter-spacing: -0.028em;
+  }
+
+  .rt {
+    font-size: max(15px, 0.96rem);
+    line-height: 1.7;
+  }
 }
 
 @media (max-width: 900px) {

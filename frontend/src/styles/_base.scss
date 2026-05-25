@@ -1,5 +1,5 @@
 html {
-  color-scheme: light;
+  color-scheme: dark;
   scrollbar-width: none;
   overscroll-behavior-y: none;
 }
@@ -9,13 +9,14 @@ body {
   min-height: 100dvh;
   overflow-y: scroll;
   background:
-    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.86), transparent 28%),
-    radial-gradient(circle at 88% 12%, rgba(255, 248, 238, 0.74), transparent 26%),
-    linear-gradient(180deg, #f7f2eb 0%, var(--color-bg) 42%, var(--color-bg-deep) 100%);
+    radial-gradient(circle at 18% -8%, rgba(242, 241, 238, 0.10), transparent 34%),
+    radial-gradient(circle at 86% 4%, rgba(198, 178, 142, 0.08), transparent 28%),
+    linear-gradient(180deg, #141414 0%, var(--color-bg) 36%, var(--color-bg-deep) 100%);
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--text-md);
   line-height: var(--lh-base);
+  letter-spacing: 0;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -77,8 +78,10 @@ h4,
 h5,
 h6 {
   margin: 0;
+  font-family: var(--font-sans);
   font-weight: 700;
-  letter-spacing: var(--tracking-soft);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.02;
 }
 
 p {
@@ -86,5 +89,5 @@ p {
 }
 
 ::selection {
-  background: rgba(154, 125, 82, 0.18);
+  background: var(--color-accent-gold-soft);
 }

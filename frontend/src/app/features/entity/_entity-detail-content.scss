@@ -80,8 +80,8 @@
   max-width: var(--detail-title-max-width);
   margin: 0;
   font-size: var(--detail-title-size);
-  line-height: var(--detail-title-line-height);
-  letter-spacing: -0.06em;
+  line-height: 0.94;
+  letter-spacing: var(--tracking-tight);
   text-wrap: balance;
   color: rgba(14, 18, 26, 0.96);
 }
@@ -94,20 +94,22 @@
 
 .entity-badge {
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.58);
-  background: rgba(255, 255, 255, 0.36);
-  color: rgba(56, 63, 79, 0.82);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   font-size: 0.72rem;
+  font-weight: 500;
   padding: 0.24rem 0.64rem;
 }
 
 .entity-pill {
-  border-color: rgba(255, 255, 255, 0.58);
-  background: rgba(255, 255, 255, 0.32);
-  color: rgba(32, 38, 51, 0.86);
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-strong);
+  color: var(--color-text-muted);
   font-size: 0.72rem;
+  font-weight: 500;
   padding: 0.24rem 0.64rem;
 }
 
@@ -151,7 +153,8 @@
   font-size: 0.78rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(96, 103, 120, 0.72);
+  color: rgba(12, 15, 22, 0.9);
+  font-weight: 800;
 }
 
 .entity-subtitle {
@@ -162,8 +165,9 @@
 .entity-prose {
   position: relative;
   max-width: 76ch;
-  color: rgba(56, 63, 78, 0.88);
-  line-height: 1.75;
+  color: rgba(20, 24, 34, 0.96);
+  font-size: 1.08rem;
+  line-height: 1.82;
   white-space: pre-wrap;
   overflow: visible;
 }
@@ -171,9 +175,10 @@
 .entity-story--article .entity-prose {
   max-width: 68ch;
   margin-inline: auto;
-  font-size: 1.05rem;
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
   line-height: 1.95;
-  color: rgba(42, 47, 60, 0.94);
+  color: rgba(18, 22, 32, 0.97);
 }
 
 @media (max-width: 1080px) {

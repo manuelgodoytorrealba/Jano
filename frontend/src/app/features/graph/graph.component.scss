@@ -5,7 +5,7 @@
   --detail-media-stage-radius: 22px;
   --detail-media-overlay-offset: 0.68rem;
   --detail-image-meta-offset: 0.68rem;
-  --detail-image-meta-toggle-min-height: 28px;
+  --detail-image-meta-toggle-min-height: 30px;
   --detail-image-meta-toggle-padding-y: 0.28rem;
   --detail-image-meta-toggle-padding-x: 0.58rem;
   --detail-image-meta-card-width: min(300px, calc(100vw - 3rem));
@@ -236,7 +236,7 @@
   background: rgba(6, 10, 15, 0.68);
   color: rgba(222, 237, 250, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -478,7 +478,7 @@
   border-radius: 999px;
   background: rgba(245, 243, 239, 0.74);
   color: rgba(46, 52, 65, 0.82);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -562,13 +562,13 @@
   padding: 0.3rem 0.58rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--node-color) 22%, rgba(255, 255, 255, 0.08));
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
 .selection-card__meta {
   color: rgba(191, 213, 230, 0.64);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
 }
 
 .selection-card h3,
@@ -586,7 +586,7 @@
 .selection-card__sync {
   margin-top: 0.28rem;
   color: rgba(176, 214, 238, 0.84);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -617,7 +617,7 @@
 
 .filter-group__label {
   color: rgba(190, 211, 228, 0.74);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -628,7 +628,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
   color: rgba(220, 237, 248, 0.74);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -644,7 +644,7 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: rgba(228, 239, 247, 0.78);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
 }
 
 .filter-chip.is-active {
@@ -964,18 +964,18 @@
     --graph-bar-padding-x: 0.14rem;
     --graph-bar-chip-padding-y: 0.08rem;
     --graph-bar-chip-padding-x: 0.18rem;
-    --graph-bar-chip-font-size: 0.44rem;
+    --graph-bar-chip-font-size: 0.78rem;
     --graph-bar-label-padding-y: 0.16rem;
     --graph-bar-label-padding-x: 0.3rem;
-    --graph-bar-label-font-size: 0.48rem;
-    --graph-bar-button-min-height: 20px;
+    --graph-bar-label-font-size: 0.75rem;
+    --graph-bar-button-min-height: 30px;
     --graph-bar-button-padding-y: 0.12rem;
     --graph-bar-button-padding-x: 0.32rem;
-    --graph-bar-button-font-size: 0.5rem;
+    --graph-bar-button-font-size: 0.75rem;
     --graph-bar-button-min-width: 0;
     --graph-bar-control-size: 20px;
     --graph-bar-control-padding-x: 0.24rem;
-    --graph-bar-control-font-size: 0.5rem;
+    --graph-bar-control-font-size: 0.75rem;
     --graph-bar-control-text-padding-x: 0.34rem;
     --graph-bar-control-wide-min-width: 0;
     min-width: 0;
@@ -992,9 +992,9 @@
     --graph-inspector-filter-gap: 0.18rem;
     --graph-inspector-filter-padding-y: 0.26rem;
     --graph-inspector-filter-padding-x: 0.28rem;
-    --graph-inspector-chip-min-height: 24px;
+    --graph-inspector-chip-min-height: 30px;
     --graph-inspector-chip-padding-x: 0.42rem;
-    --graph-inspector-chip-font-size: 0.58rem;
+    --graph-inspector-chip-font-size: 0.75rem;
     min-width: 0;
   }
 
@@ -1006,7 +1006,7 @@
   }
 
   :host ::ng-deep .graph-panel-bar__group {
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     min-width: 0;
   }
 
@@ -1024,34 +1024,34 @@
 
   :host ::ng-deep .graph-panel-bar__meta {
     gap: 0.14rem;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     min-width: 0;
     overflow: hidden;
   }
 
   :host ::ng-deep .graph-panel-bar__meta span {
     max-width: 100%;
-    font-size: 0.44rem;
+    font-size: 0.78rem;
   }
 
   :host ::ng-deep .graph-panel-bar__toggles,
   :host ::ng-deep .surface-controls {
     gap: 0.1rem;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     min-width: 0;
   }
 
   :host ::ng-deep .graph-utility-btn,
   :host ::ng-deep .filter-action,
   .surface-control {
-    min-height: 20px;
+    min-height: 30px;
     padding: 0 0.34rem;
-    font-size: 0.5rem;
+    font-size: 0.75rem;
   }
 
   :host ::ng-deep .explorer-surface-label,
   .explorer-surface-label {
-    font-size: 0.48rem;
+    font-size: 0.75rem;
   }
 
   :host ::ng-deep .selection-card {
@@ -1065,21 +1065,21 @@
 
   :host ::ng-deep .selection-card__type {
     padding: 0.16rem 0.34rem;
-    font-size: 0.52rem;
+    font-size: 0.78rem;
   }
 
   :host ::ng-deep .selection-card__meta {
-    font-size: 0.56rem;
+    font-size: 0.78rem;
   }
 
   :host ::ng-deep .selection-card h3 {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     line-height: 1.06;
   }
 
   :host ::ng-deep .selection-card p {
     margin-top: 0.06rem;
-    font-size: 0.62rem;
+    font-size: 0.78rem;
     line-height: 1.2;
   }
 
@@ -1093,19 +1093,19 @@
   }
 
   :host ::ng-deep .filter-group__label {
-    font-size: 0.54rem;
+    font-size: 0.78rem;
   }
 
   :host ::ng-deep .filter-action {
     padding: 0.14rem 0.34rem;
-    font-size: 0.54rem;
+    font-size: 0.78rem;
   }
 
   :host ::ng-deep .filter-chip {
-    min-height: 24px;
+    min-height: 30px;
     gap: 0.26rem;
     padding: 0 0.42rem;
-    font-size: 0.58rem;
+    font-size: 0.75rem;
   }
 
   :host ::ng-deep .filter-chip__dot {

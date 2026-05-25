@@ -36,6 +36,7 @@ export class RichTextComponent {
   @Input({ required: true }) text = '';
 
   openSlug = signal<string | null>(null);
+  openPreviewKey = signal<string | null>(null);
   preview = signal<any | null>(null);
   previewLoading = signal(false);
 
@@ -53,15 +54,16 @@ export class RichTextComponent {
     return this.selectPreviewImage(this.preview());
   }
 
-  onLinkEnter(slug: string) {
+  onLinkEnter(slug: string, previewKey = slug) {
     this.isHoveringLink = true;
     this.cancelClose();
 
-    if (this.openSlug() === slug && (this.previewLoading() || this.preview())) {
+    if (this.openSlug() === slug && this.openPreviewKey() === previewKey && (this.previewLoading() || this.preview())) {
       return;
     }
 
     this.openSlug.set(slug);
+    this.openPreviewKey.set(previewKey);
     this.preview.set(null);
     this.previewLoading.set(true);
 
@@ -100,8 +102,8 @@ export class RichTextComponent {
     this.scheduleClose();
   }
 
-  onLinkFocus(slug: string) {
-    this.onLinkEnter(slug);
+  onLinkFocus(slug: string, previewKey = slug) {
+    this.onLinkEnter(slug, previewKey);
   }
 
   onLinkBlur() {
@@ -117,6 +119,7 @@ export class RichTextComponent {
       }
 
       this.openSlug.set(null);
+      this.openPreviewKey.set(null);
       this.preview.set(null);
       this.previewLoading.set(false);
     }, 140);

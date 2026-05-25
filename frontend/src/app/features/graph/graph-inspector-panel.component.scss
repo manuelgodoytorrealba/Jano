@@ -19,7 +19,7 @@
   --graph-inspector-filter-padding-x: 0.48rem;
   --graph-inspector-chip-min-height: 30px;
   --graph-inspector-chip-padding-x: 0.58rem;
-  --graph-inspector-chip-font-size: 0.72rem;
+  --graph-inspector-chip-font-size: 0.75rem;
 }
 
 .graph-panel-footer {
@@ -93,13 +93,13 @@
   padding: 0.24rem 0.5rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--node-color) 22%, rgba(255, 255, 255, 0.08));
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 500;
 }
 
 .selection-card__meta {
   color: rgba(191, 213, 230, 0.58);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
 
 .selection-card h3,
@@ -117,8 +117,8 @@
 .selection-card__sync {
   margin-top: 0.2rem;
   color: rgba(176, 214, 238, 0.76);
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 500;
 }
 
 .graph-filter-tray {
@@ -147,9 +147,9 @@
 }
 
 .filter-group__label {
-  color: rgba(190, 211, 228, 0.66);
-  font-size: 0.66rem;
-  font-weight: 700;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -174,9 +174,9 @@
   padding: 0.24rem 0.48rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.05);
-  color: rgba(220, 237, 248, 0.68);
-  font-size: 0.66rem;
-  font-weight: 700;
+  color: var(--color-text-soft);
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .filter-chip {
@@ -234,7 +234,7 @@
     --graph-inspector-filter-padding-x: 0.38rem;
     --graph-inspector-chip-min-height: 26px;
     --graph-inspector-chip-padding-x: 0.48rem;
-    --graph-inspector-chip-font-size: 0.64rem;
+    --graph-inspector-chip-font-size: 0.74rem;
   }
 
   .selection-card {
@@ -248,11 +248,11 @@
 
   .selection-card__type {
     padding: 0.2rem 0.42rem;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .selection-card__meta {
-    font-size: 0.64rem;
+    font-size: 0.74rem;
   }
 
   .selection-card h3 {
@@ -262,13 +262,13 @@
 
   .selection-card p {
     margin-top: 0.08rem;
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     line-height: 1.24;
   }
 
   .selection-card__sync {
     margin-top: 0.14rem;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .filter-group__head {
@@ -276,12 +276,12 @@
   }
 
   .filter-group__label {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .filter-action {
     padding: 0.18rem 0.4rem;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .filter-chip {

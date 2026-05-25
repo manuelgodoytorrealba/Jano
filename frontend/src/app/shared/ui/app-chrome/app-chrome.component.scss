@@ -15,15 +15,15 @@
   grid-template-columns: auto minmax(260px, 1fr) minmax(520px, auto);
   align-items: center;
   gap: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid var(--color-border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
-    rgba(22, 22, 28, 0.24);
-  backdrop-filter: blur(28px) saturate(1.16);
-  -webkit-backdrop-filter: blur(28px) saturate(1.16);
+    linear-gradient(180deg, rgba(242, 241, 238, 0.08), rgba(242, 241, 238, 0.025)),
+    rgba(20, 20, 20, 0.78);
+  backdrop-filter: blur(18px) saturate(1.02);
+  -webkit-backdrop-filter: blur(18px) saturate(1.02);
   box-shadow:
-    0 24px 64px rgba(17, 15, 12, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    0 24px 64px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(242, 241, 238, 0.12),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   transition:
     transform 260ms cubic-bezier(.22, 1, .36, 1),
@@ -59,14 +59,14 @@
   border-radius: var(--radius-2xl);
   grid-template-columns: auto minmax(260px, 1fr) minmax(520px, auto);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
-    rgba(22, 22, 28, 0.17);
-  backdrop-filter: blur(18px) saturate(1.08);
-  -webkit-backdrop-filter: blur(18px) saturate(1.08);
-  border-color: rgba(255, 255, 255, 0.14);
+    linear-gradient(180deg, rgba(242, 241, 238, 0.065), rgba(242, 241, 238, 0.02)),
+    rgba(20, 20, 20, 0.68);
+  backdrop-filter: blur(16px) saturate(1.02);
+  -webkit-backdrop-filter: blur(16px) saturate(1.02);
+  border-color: var(--color-border);
   box-shadow:
-    0 16px 42px rgba(17, 15, 12, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 16px 42px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(242, 241, 238, 0.08),
     inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
@@ -167,14 +167,7 @@
 }
 
 .app-chrome__header--detail + .app-chrome__header-toggle--open::after {
-  content: 'Menú';
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 9px;
-  line-height: 1;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 700;
+  ;
   color: rgba(255, 247, 239, 0.62);
 }
 
@@ -210,10 +203,63 @@
   background: currentColor;
 }
 
-.app-chrome__header--detail .app-chrome__brand-mark {
+
+.app-chrome__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+  border-radius: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  transform: translateY(0) scale(1);
+  transition: transform 160ms ease, filter 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-chrome__brand:hover .app-chrome__brand-mark {
+  filter: brightness(1.06) contrast(1.02);
+  transform: translateY(-1px) scale(1.015);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 18px 30px rgba(23, 19, 15, 0.2);
+}
+
+.app-chrome__brand:active,
+.app-chrome__brand.is-pressing {
+  transform: translateY(1px) scale(0.985);
+}
+
+.app-chrome__brand:active .app-chrome__brand-mark,
+.app-chrome__brand.is-pressing .app-chrome__brand-mark {
+  filter: brightness(0.94) contrast(1.04);
+  transform: translateY(2px) scale(0.94);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.38),
+    0 6px 12px rgba(23, 19, 15, 0.16);
+}
+
+.app-chrome__brand:focus-visible {
+  outline: 2px solid rgba(231, 214, 177, 0.72);
+  outline-offset: 5px;
+}
+
+.app-chrome__brand-mark {
   width: 44px;
   height: 44px;
+  flex: 0 0 44px;
   border-radius: 16px;
+  display: block;
+  box-sizing: border-box;
+  object-fit: contain;
+  background: #191512;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 16px 28px rgba(23, 19, 15, 0.18);
+  transform: translateY(0) scale(1);
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
 }
 
 .app-chrome__header--detail .app-chrome__brand {
@@ -224,72 +270,23 @@
   display: grid;
 }
 
-.app-chrome__header--detail .app-chrome__brand-tag {
-  display: inline;
-}
-
-.app-chrome__header--detail .app-chrome__search-input.ds-input {
-  height: 42px;
-  border-radius: 16px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 8px 18px rgba(17, 15, 12, 0.08);
-}
-
-.app-chrome__header--detail .app-chrome__nav {
-  min-width: 568px;
-  width: min(720px, 48vw);
-  background: rgba(255, 255, 255, 0.045);
-}
-
-.app-chrome__header--detail .app-chrome__nav-link {
-  height: 42px;
-  font-size: 0.88rem;
-}
-
-.app-chrome__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.app-chrome__brand-mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  background:
-    linear-gradient(180deg, rgba(46, 41, 34, 0.96), rgba(24, 21, 18, 0.96));
-  color: #fff8ef;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 16px 28px rgba(23, 19, 15, 0.18);
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
 .app-chrome__brand-copy {
   display: grid;
   gap: 2px;
 }
 
 .app-chrome__brand-name {
-  font-size: 0.94rem;
-  line-height: 1;
+  font-size: 1.08rem;
+  line-height: 0.95;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.045em;
 }
 
 .app-chrome__brand-tag {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   line-height: 1;
   color: var(--color-text-muted);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.045em;
 }
 
 .app-chrome__search {
@@ -363,8 +360,8 @@
   width: calc((100% - 8px) / var(--nav-count));
   border-radius: 999px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08)),
-    rgba(255, 255, 255, 0.07);
+    linear-gradient(180deg, rgba(242, 241, 238, 0.22), rgba(242, 241, 238, 0.08)),
+    rgba(242, 241, 238, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.24),
@@ -396,10 +393,10 @@
   border-radius: 999px;
   border: 1px solid transparent;
   background: transparent;
-  color: rgba(255, 247, 239, 0.82);
+  color: var(--color-text-muted);
   font-size: 0.88rem;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -426,9 +423,9 @@
 .app-chrome__nav-link:hover,
 .app-chrome__quick:hover {
   transform: translateY(-1px);
-  color: rgba(255, 251, 246, 0.98);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--color-text);
+  background: rgba(242, 241, 238, 0.08);
+  border-color: var(--color-border);
 }
 
 .app-chrome__nav-link:active,
@@ -438,14 +435,14 @@
 }
 
 .app-chrome__nav-link.is-active {
-  color: rgba(255, 252, 248, 0.98);
+  color: var(--color-text);
   background: transparent;
   border-color: transparent;
   box-shadow: none;
 }
 
 .app-chrome__nav-link--personal {
-  color: rgba(255, 247, 239, 0.9);
+  color: var(--color-text-soft);
 }
 
 .app-chrome__nav-link.is-placeholder,
@@ -502,14 +499,14 @@
   position: fixed;
   justify-items: center;
   gap: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid var(--color-border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
-    rgba(22, 22, 28, 0.24);
-  backdrop-filter: blur(28px) saturate(1.16);
-  -webkit-backdrop-filter: blur(28px) saturate(1.16);
+    linear-gradient(180deg, rgba(242, 241, 238, 0.08), rgba(242, 241, 238, 0.025)),
+    rgba(20, 20, 20, 0.78);
+  backdrop-filter: blur(18px) saturate(1.02);
+  -webkit-backdrop-filter: blur(18px) saturate(1.02);
   box-shadow:
-    0 24px 64px rgba(17, 15, 12, 0.18),
+    0 24px 64px rgba(0, 0, 0, 0.26),
     inset 0 1px 0 rgba(255, 255, 255, 0.36),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   transition:
@@ -887,9 +884,16 @@
 
 @media (max-width: 620px) {
   .app-chrome__nav {
-    grid-template-columns: repeat(6, minmax(68px, 1fr));
-    overflow-x: auto;
-    scrollbar-width: none;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+    border-radius: 22px;
+  }
+
+  .app-chrome__nav-indicator,
+  .app-chrome__nav-separator {
+    display: none;
   }
 
   .app-chrome__nav::-webkit-scrollbar {
