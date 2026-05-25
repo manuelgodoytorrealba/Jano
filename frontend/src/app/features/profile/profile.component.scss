@@ -173,6 +173,45 @@
   line-height: 1.4;
 }
 
+:host-context([data-theme='light']) {
+  .profile-hero__copy h1,
+  .profile-card--identity h2,
+  .profile-role-pill strong,
+  .profile-card--note strong {
+    color: var(--color-text);
+  }
+
+  .profile-eyebrow,
+  .profile-label,
+  .profile-note__label,
+  .profile-role-pill__label {
+    color: rgba(40, 45, 52, 0.76);
+  }
+
+  .profile-muted,
+  .profile-identity__mail {
+    color: var(--color-text-muted);
+  }
+
+  .profile-surface,
+  .profile-card {
+    border-color: rgba(20, 20, 20, 0.14);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.36));
+    box-shadow: 0 18px 48px rgba(31, 28, 23, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  }
+
+  .profile-shortcut {
+    border-color: rgba(20, 20, 20, 0.12);
+    background: rgba(255, 255, 255, 0.36);
+    color: var(--color-text);
+  }
+
+  .profile-shortcut--primary {
+    background: rgba(22, 20, 18, 0.92);
+    color: rgba(247, 244, 240, 0.96);
+  }
+}
+
 @media (max-width: 1180px) {
   .profile-overview {
     grid-template-columns: 1fr;

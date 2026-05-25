@@ -2,7 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppSettingsApi } from '../../core/api/app-settings.api';
-import { AppAppearanceService } from '../../core/app-appearance.service';
+import { AppAppearanceService, type AppThemePreference } from '../../core/app-appearance.service';
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
@@ -36,6 +36,10 @@ export class SettingsComponent implements OnDestroy {
   get roleLabel(): string {
     const role = this.auth.currentUser?.role ?? '';
     return role === 'ADMIN' ? 'Administrador' : role || 'Sin rol';
+  }
+
+  setThemePreference(preference: AppThemePreference): void {
+    this.appearance.setThemePreference(preference);
   }
 
   ngOnDestroy(): void {

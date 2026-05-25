@@ -41,6 +41,25 @@
       </div>
     </section>
 
+    <section class="settings-surface settings-surface--appearance">
+      <div class="settings-section-head">
+        <div>
+          <span class="settings-label">Apariencia</span>
+          <h2>Modo visual</h2>
+          <p class="settings-muted">Cambia entre una atmósfera oscura y una lectura clara sin alterar la estructura de JANO.</p>
+        </div>
+        <div class="settings-theme-state">
+          <span class="settings-section-note__label">Tema activo</span>
+          <strong>{{ appearance.resolvedTheme() === 'light' ? 'Claro' : 'Oscuro' }}</strong>
+        </div>
+      </div>
+      <div class="settings-theme-toggle" role="radiogroup" aria-label="Modo visual">
+        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'system'" [attr.aria-checked]="appearance.themePreference() === 'system'" role="radio" (click)="setThemePreference('system')">Sistema</button>
+        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'dark'" [attr.aria-checked]="appearance.themePreference() === 'dark'" role="radio" (click)="setThemePreference('dark')">Oscuro</button>
+        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'light'" [attr.aria-checked]="appearance.themePreference() === 'light'" role="radio" (click)="setThemePreference('light')">Claro</button>
+      </div>
+    </section>
+
     @if (user.role === 'ADMIN') {
       <section class="settings-surface settings-surface--background">
         <div class="settings-section-head settings-section-head--admin">
