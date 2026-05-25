@@ -23,7 +23,7 @@
     "db:down": "docker compose -f infra/docker-compose.yml stop db adminer",
     "backend:install": "npm --prefix backend/api ci",
     "frontend:install": "npm --prefix frontend ci",
-    "setup:local": "npm run backend:install && npm run frontend:install",
+    "setup:local": "npm install && npm run backend:install && npm run frontend:install",
     "backend:dev": "npm --prefix backend/api run start:dev",
     "frontend:dev": "npm --prefix frontend run start",
     "backend:build": "npm --prefix backend/api run build",
