@@ -636,3 +636,18 @@
     width: calc(100% - 32px);
   }
 }
+
+:host-context([data-theme='light']) {
+  .settings-hero__copy h1 {
+    color: rgba(247, 244, 240, 0.96);
+    text-shadow: 0 2px 22px rgba(0, 0, 0, 0.24);
+  }
+
+  .settings-hero .settings-eyebrow {
+    color: rgba(242, 241, 238, 0.74);
+  }
+
+  .settings-hero .settings-muted {
+    color: rgba(242, 241, 238, 0.7);
+  }
+}

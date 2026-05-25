@@ -514,3 +514,18 @@
     min-height: 216px;
   }
 }
+
+:host-context([data-theme='light']) {
+  .space-hero__copy h1 {
+    color: rgba(247, 244, 240, 0.96);
+    text-shadow: 0 2px 22px rgba(0, 0, 0, 0.24);
+  }
+
+  .space-hero .space-eyebrow {
+    color: rgba(242, 241, 238, 0.74);
+  }
+
+  .space-hero .space-muted {
+    color: rgba(242, 241, 238, 0.7);
+  }
+}

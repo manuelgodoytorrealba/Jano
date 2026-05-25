@@ -269,10 +269,27 @@
     text-transform: uppercase;
 }
 
+
 .entity-deck__cta {
     font-size: 0.94rem;
     font-weight: 600;
     color: var(--color-text);
+}
+
+:host-context([data-theme='light']) {
+    .entity-deck__title,
+    .entity-deck__cta {
+        color: rgba(247, 244, 240, 0.98);
+    }
+
+    .entity-deck__description {
+        color: rgba(242, 241, 238, 0.76);
+    }
+
+    .entity-deck__eyebrow,
+    .entity-deck__meta {
+        color: rgba(242, 241, 238, 0.62);
+    }
 }
 
 .entity-deck__rail {
