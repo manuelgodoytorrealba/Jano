@@ -121,7 +121,7 @@ export class EntityComponent implements OnDestroy {
       next: () => {
         this.isSaved.set(false);
         this.saveLoading.set(false);
-        this.openPopup('removed', 'Eliminada de guardados', 'Ya no aparece en My Space.', { autoCloseMs: 2200 });
+        this.openPopup('removed', 'Fuera del archivo', 'Ya no aparece en My Space.', { autoCloseMs: 2200 });
       },
       error: () => {
         this.saveLoading.set(false);
@@ -475,7 +475,7 @@ export class EntityComponent implements OnDestroy {
 
     const wasSaved = this.isSaved();
     if (wasSaved) {
-      this.openPopup('manage', 'Ya está guardada', 'Puedes añadirla a una colección, crear una nueva o quitarla de guardados.');
+      this.openPopup('manage', 'Archivo activo', 'Ya forma parte de My Space. Puedes organizarla en una colección o retirarla del archivo.');
       return;
     }
 
@@ -487,7 +487,7 @@ export class EntityComponent implements OnDestroy {
       next: () => {
         this.isSaved.set(true);
         this.saveLoading.set(false);
-        this.openPopup('saved', 'Entidad guardada', 'Guardada en My Space. Puedes dejarla así o añadirla a una colección.');
+        this.openPopup('saved', 'Guardada en tu archivo', 'Queda disponible en My Space. Puedes organizarla ahora o volver a la lectura.');
       },
       error: () => {
         this.saveLoading.set(false);
