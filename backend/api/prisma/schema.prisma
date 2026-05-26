@@ -137,11 +137,33 @@ model Entity {
   // Taxonomy
   tags EntityTag[]
 
+  // Editorial translations
+  translations EntityTranslation[]
+
   // Type-specific details (1..1, optional)
   artwork ArtworkDetails?
   artist  ArtistDetails?
   concept ConceptDetails?
   period  PeriodDetails?
+}
+
+model EntityTranslation {
+  id               String   @id @default(cuid())
+  entityId         String
+  locale           String
+  title            String
+  shortDescription String?
+  essay            String?
+  notes            String?
+  excerpt          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([entityId, locale])
+  @@index([entityId])
+  @@index([locale])
 }
 
 model Relation {
@@ -176,6 +198,22 @@ model RelationType {
   updatedAt    DateTime @updatedAt
 
   relations Relation[]
+  translations RelationTypeTranslation[]
+}
+
+model RelationTypeTranslation {
+  id             String   @id @default(cuid())
+  relationTypeId String
+  locale         String
+  label          String
+  inverseLabel   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  relationType RelationType @relation(fields: [relationTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([relationTypeId, locale])
+  @@index([locale])
 }
 
 model Tag {
@@ -189,9 +227,25 @@ model Tag {
   updatedAt   DateTime @updatedAt
 
   entities EntityTag[]
+  translations TagTranslation[]
 
   @@index([category])
   @@index([isActive])
+}
+
+model TagTranslation {
+  id          String   @id @default(cuid())
+  tagId       String
+  locale      String
+  label       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, locale])
+  @@index([locale])
 }
 
 model EntityTag {
@@ -463,11 +517,30 @@ model HomeDeck {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  imageMedia Media?         @relation("HomeDeckCoverMedia", fields: [imageMediaId], references: [id], onDelete: SetNull)
-  items      HomeDeckItem[]
+  imageMedia   Media?                @relation("HomeDeckCoverMedia", fields: [imageMediaId], references: [id], onDelete: SetNull)
+  items        HomeDeckItem[]
+  translations HomeDeckTranslation[]
 
   @@index([surface, isActive, sortOrder])
   @@index([imageMediaId])
+}
+
+model HomeDeckTranslation {
+  id          String   @id @default(cuid())
+  homeDeckId  String
+  locale      String
+  title       String
+  subtitle    String?
+  description String?
+  ctaLabel    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  homeDeck HomeDeck @relation(fields: [homeDeckId], references: [id], onDelete: Cascade)
+
+  @@unique([homeDeckId, locale])
+  @@index([homeDeckId])
+  @@index([locale])
 }
 
 model HomeDeckItem {

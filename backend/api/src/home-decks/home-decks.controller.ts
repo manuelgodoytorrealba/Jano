@@ -50,8 +50,8 @@ export class HomeDecksController {
   constructor(private service: HomeDecksService) {}
 
   @Get()
-  listPublic(@Query('surface') surface?: HomeDeckSurface) {
-    return this.service.listPublic(surface);
+  listPublic(@Query('surface') surface?: HomeDeckSurface, @Query('locale') locale?: string) {
+    return this.service.listPublic(surface, locale);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

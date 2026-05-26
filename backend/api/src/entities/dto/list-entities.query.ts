@@ -61,4 +61,8 @@ sort?: 'recent' | 'title' | 'relevance';
   @IsOptional()
   @IsString()
   tag?: string;
+
+  @IsOptional()
+  @IsString()
+  locale?: string;
 }

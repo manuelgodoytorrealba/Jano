@@ -4,6 +4,7 @@ import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
 import { ContentLevel, EntityStatus, MediaOriginType, MediaRole } from '@prisma/client';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
+import { UpsertEntityTranslationDto } from './dto/upsert-entity-translation.dto';
 import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
 import { UploadEntityMediaDto } from './dto/upload-entity-media.dto';
@@ -17,6 +18,7 @@ import { mkdir, readFile, unlink, writeFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
 import { detectImageDimensionsFromBuffer } from './image-metadata';
+import { normalizeLocale, resolveEntityTranslation, translationStatusSummary } from './entity-translation.resolver';
 
 type GraphNodePayload = {
   id: string;
@@ -91,6 +93,17 @@ export class EntitiesService {
 
   private withResolvedMedia<T extends { mediaLinks?: any[] | null }>(entity: T): T & { resolvedMedia: ResolvedMediaPayload } {
     return attachResolvedMedia(entity);
+  }
+
+  private resolveLocalizedEntity<T extends { title: string; summary?: string | null; content?: string | null; translations?: any[] | null; mediaLinks?: any[] | null }>(entity: T, locale?: string) {
+    return this.withResolvedMedia(resolveEntityTranslation(entity, locale));
+  }
+
+  private localizedInclude(locale?: string) {
+    const requestedLocale = normalizeLocale(locale);
+    return {
+      where: { locale: { in: Array.from(new Set([requestedLocale, 'es', 'en'])) } },
+    };
   }
 
   private relationLabel(type: string): string {
@@ -411,6 +424,7 @@ export class EntitiesService {
     const sort = (query.sort ?? 'recent').trim();
     const deck = (query.deck ?? '').trim();
     const tag = (query.tag ?? '').trim();
+    const locale = normalizeLocale(query.locale);
 
     const where: any = {};
     const and: any[] = [];
@@ -574,6 +588,7 @@ export class EntitiesService {
         take: useCuratedOrder ? undefined : safeLimit,
         orderBy: useCuratedOrder ? undefined : orderBy,
         include: {
+          translations: this.localizedInclude(locale),
           tags: {
             include: { tag: true },
             orderBy: [{ tag: { label: 'asc' } }],
@@ -595,7 +610,7 @@ export class EntitiesService {
         : items;
 
       return {
-        items: orderedItems.map((item) => this.withResolvedMedia(item)),
+        items: orderedItems.map((item) => this.resolveLocalizedEntity(item, locale)),
         page: safePage,
         limit: safeLimit,
         total,
@@ -610,6 +625,7 @@ export class EntitiesService {
       take: fetchSize,
       orderBy: { createdAt: 'desc' },
       include: {
+        translations: this.localizedInclude(locale),
         tags: {
           include: { tag: true },
           orderBy: [{ tag: { label: 'asc' } }],
@@ -659,7 +675,7 @@ export class EntitiesService {
 
     const items = ranked
       .slice(skip, skip + safeLimit)
-      .map((item) => this.withResolvedMedia(item));
+      .map((item) => this.resolveLocalizedEntity(item, locale));
 
     return {
       items,
@@ -728,7 +744,7 @@ export class EntitiesService {
     ).sort((a, b) => a.localeCompare(b, 'es'));
   }
 
-  async home() {
+  async home(locale?: string) {
 
     const results = await Promise.all(
       this.HOME_TYPES.map((type) =>
@@ -739,6 +755,7 @@ export class EntitiesService {
           },
           orderBy: { createdAt: 'desc' },
           include: {
+            translations: this.localizedInclude(locale),
             tags: {
               include: { tag: true },
               orderBy: [{ tag: { label: 'asc' } }],
@@ -755,10 +772,10 @@ export class EntitiesService {
       ),
     );
 
-    return results.filter(Boolean).map((entity) => this.withResolvedMedia(entity!));
+    return results.filter(Boolean).map((entity) => this.resolveLocalizedEntity(entity!, locale));
   }
 
-  async getBySlug(slug: string) {
+  async getBySlug(slug: string, locale?: string) {
 
     const entity = await this.prisma.entity.findFirst({
       where: {
@@ -766,6 +783,7 @@ export class EntitiesService {
         status: EntityStatus.PUBLISHED,
       },
       include: {
+        translations: this.localizedInclude(locale),
         artwork: true,
         artist: true,
         concept: true,
@@ -793,6 +811,7 @@ export class EntitiesService {
             relationType: true,
             to: {
               include: {
+                translations: this.localizedInclude(locale),
                 mediaLinks: {
                   include: { media: true },
                   orderBy: [
@@ -814,6 +833,7 @@ export class EntitiesService {
             relationType: true,
             from: {
               include: {
+                translations: this.localizedInclude(locale),
                 mediaLinks: {
                   include: { media: true },
                   orderBy: [
@@ -831,20 +851,21 @@ export class EntitiesService {
     if (!entity) throw new NotFoundException('Entity not found');
 
     return {
-      ...this.withResolvedMedia(entity),
+      ...this.resolveLocalizedEntity(entity, locale),
       outgoing: (entity.outgoing ?? []).map((relation: any) => ({
         ...this.serializeRelation(relation),
-        to: relation.to ? this.withResolvedMedia(relation.to) : relation.to,
+        to: relation.to ? this.resolveLocalizedEntity(relation.to, locale) : relation.to,
       })),
       incoming: (entity.incoming ?? []).map((relation: any) => ({
         ...this.serializeRelation(relation),
-        from: relation.from ? this.withResolvedMedia(relation.from) : relation.from,
+        from: relation.from ? this.resolveLocalizedEntity(relation.from, locale) : relation.from,
       })),
     };
   }
 
-  async graphBySlug(slug: string) {
+  async graphBySlug(slug: string, locale?: string) {
     const graphMediaInclude = {
+      translations: this.localizedInclude(locale),
       mediaLinks: {
         include: { media: true },
         orderBy: [
@@ -921,7 +942,7 @@ export class EntitiesService {
     ]);
 
     const toNodePayload = (node: any): GraphNodePayload => {
-      const resolvedNode = this.withResolvedMedia(node);
+      const resolvedNode = this.resolveLocalizedEntity(node, locale);
       const image =
         resolvedMediaUrl(resolvedNode.resolvedMedia.thumbnail)
         ?? resolvedMediaUrl(resolvedNode.resolvedMedia.card)
@@ -932,13 +953,13 @@ export class EntitiesService {
 
       return {
         id: node.id,
-        label: node.title,
+        label: resolvedNode.title,
         type: node.type,
         slug: node.slug,
         image: image ?? null,
         resolvedMedia: resolvedNode.resolvedMedia,
         metadata: {
-          summary: node.summary ?? null,
+          summary: resolvedNode.summary ?? null,
           startYear: node.startYear ?? null,
           endYear: node.endYear ?? null,
         },
@@ -961,7 +982,7 @@ export class EntitiesService {
     const nodes = Array.from(nodesMap.values()).sort((a, b) => {
       if (a.id === center.id) return -1;
       if (b.id === center.id) return 1;
-      return a.label.localeCompare(b.label, 'es');
+      return a.label.localeCompare(b.label, normalizeLocale(locale));
     });
 
     const edges: GraphEdgePayload[] = relations.map((r) => ({
@@ -989,7 +1010,7 @@ export class EntitiesService {
     };
   }
 
-  async previewBySlug(slug: string) {
+  async previewBySlug(slug: string, locale?: string) {
 
     const e = await this.prisma.entity.findFirst({
       where: {
@@ -1006,6 +1027,7 @@ export class EntitiesService {
         contentLevel: true,
         startYear: true,
         endYear: true,
+        translations: this.localizedInclude(locale),
         tags: {
           select: {
             weight: true,
@@ -1065,7 +1087,7 @@ export class EntitiesService {
     if (!e) throw new NotFoundException('Entity not found');
 
     return {
-      ...this.withResolvedMedia(e),
+      ...this.resolveLocalizedEntity(e, locale),
       mediaLibrary: buildAdminMediaLibrary(e),
     };
   }
@@ -1092,6 +1114,15 @@ export class EntitiesService {
         status: dto.status ?? 'DRAFT',
         startYear: dto.startYear,
         endYear: dto.endYear,
+        translations: {
+          create: {
+            locale: 'es',
+            title: dto.title.trim(),
+            shortDescription: dto.summary?.trim() || null,
+            essay: dto.content?.trim() || null,
+            excerpt: dto.summary?.trim() || null,
+          },
+        },
       },
     });
 
@@ -1137,6 +1168,26 @@ export class EntitiesService {
         endYear: dto.endYear,
       },
     });
+
+    if (dto.title) {
+      await this.prisma.entityTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'es' } },
+        create: {
+          entityId: entity.id,
+          locale: 'es',
+          title: dto.title.trim(),
+          shortDescription: dto.summary?.trim() || entity.summary || null,
+          essay: dto.content?.trim() || entity.content || null,
+          excerpt: dto.summary?.trim() || entity.summary || null,
+        },
+        update: {
+          title: dto.title.trim(),
+          shortDescription: dto.summary?.trim() || entity.summary || null,
+          essay: dto.content?.trim() || entity.content || null,
+          excerpt: dto.summary?.trim() || entity.summary || null,
+        },
+      });
+    }
 
     await this.syncContentRelations(entity.id, entity.content);
 
@@ -1209,6 +1260,7 @@ export class EntitiesService {
     const entity = await this.prisma.entity.findUnique({
       where: { id },
       include: {
+        translations: { orderBy: { locale: 'asc' } },
         artwork: true,
         artist: true,
         concept: true,
@@ -1289,7 +1341,63 @@ export class EntitiesService {
       incoming: (entity.incoming ?? []).map((relation: any) => this.serializeRelation(relation)),
       resolvedMedia: resolvedEntity.resolvedMedia,
       mediaLibrary: buildAdminMediaLibrary(entity),
+      translationStatus: translationStatusSummary((entity as any).translations),
     };
+  }
+
+  async adminUpsertTranslation(id: string, rawLocale: string, dto: UpsertEntityTranslationDto) {
+    const locale = normalizeLocale(rawLocale);
+    const entity = await this.prisma.entity.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!entity) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    const title = dto.title?.trim();
+    if (!title) {
+      throw new BadRequestException('Translation title is required');
+    }
+
+    await this.prisma.entityTranslation.upsert({
+      where: {
+        entityId_locale: {
+          entityId: id,
+          locale,
+        },
+      },
+      create: {
+        entityId: id,
+        locale,
+        title,
+        shortDescription: dto.shortDescription?.trim() || null,
+        essay: dto.essay?.trim() || null,
+        notes: dto.notes?.trim() || null,
+        excerpt: dto.excerpt?.trim() || null,
+      },
+      update: {
+        title,
+        shortDescription: dto.shortDescription?.trim() || null,
+        essay: dto.essay?.trim() || null,
+        notes: dto.notes?.trim() || null,
+        excerpt: dto.excerpt?.trim() || null,
+      },
+    });
+
+    if (locale === 'es') {
+      await this.prisma.entity.update({
+        where: { id },
+        data: {
+          title,
+          summary: dto.shortDescription?.trim() || dto.excerpt?.trim() || null,
+          content: dto.essay?.trim() || null,
+        },
+      });
+    }
+
+    return this.adminGetById(id);
   }
 
   async adminUpdateDetails(id: string, dto: UpdateEntityDetailsDto) {

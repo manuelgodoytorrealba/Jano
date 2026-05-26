@@ -18,6 +18,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
+import { UpsertEntityTranslationDto } from './dto/upsert-entity-translation.dto';
 import { ListEntitiesQuery } from './dto/list-entities.query';
 import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
@@ -77,8 +78,8 @@ export class EntitiesController {
   }
 
   @Get('home')
-  home() {
-    return this.service.home();
+  home(@Query('locale') locale?: string) {
+    return this.service.home(locale);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -108,6 +109,17 @@ export class EntitiesController {
   getByIdForAdmin(@Param('id') id: string) {
     return this.service.adminGetById(id);
   }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id/translations/:locale')
+  upsertTranslation(
+    @Param('id') id: string,
+    @Param('locale') locale: string,
+    @Body() dto: UpsertEntityTranslationDto,
+  ) {
+    return this.service.adminUpsertTranslation(id, locale, dto);
+  }
+
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')

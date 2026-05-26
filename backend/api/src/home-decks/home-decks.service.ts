@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityStatus, HomeDeckSurface, MediaOriginType, Prisma } from '@prisma/client';
+import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
 import { readFile } from 'fs/promises';
 import { detectImageDimensionsFromBuffer } from '../entities/image-metadata';
 import { attachResolvedMedia } from '../entities/media.resolver';
@@ -38,7 +39,7 @@ export class HomeDecksService {
 
   constructor(private prisma: PrismaService) {}
 
-  async listPublic(surface: HomeDeckSurface = HomeDeckSurface.HOME) {
+  async listPublic(surface: HomeDeckSurface = HomeDeckSurface.HOME, locale?: string) {
     const safeSurface = Object.values(HomeDeckSurface).includes(surface) ? surface : HomeDeckSurface.HOME;
 
     const decks = await this.prisma.homeDeck.findMany({
@@ -46,10 +47,11 @@ export class HomeDecksService {
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
       include: this.deckInclude({
         onlyPublishedItems: true,
+        locale,
       }),
     });
 
-    return decks.map((deck) => this.serializePublicDeck(deck));
+    return decks.map((deck) => this.serializePublicDeck(deck, locale));
   }
 
   async adminList() {
@@ -215,9 +217,14 @@ export class HomeDecksService {
     return this.serializeAdminDeck(deck);
   }
 
-  private deckInclude(options: { onlyPublishedItems?: boolean } = {}) {
+  private deckInclude(options: { onlyPublishedItems?: boolean; locale?: string } = {}) {
+    const locale = normalizeLocale(options.locale);
+
     return {
       imageMedia: true,
+      translations: {
+        where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
+      },
       items: {
         where: options.onlyPublishedItems
           ? {
@@ -229,6 +236,9 @@ export class HomeDecksService {
         include: {
           entity: {
             include: {
+              translations: {
+                where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
+              },
               mediaLinks: {
                 include: { media: true },
                 orderBy: [
@@ -247,20 +257,39 @@ export class HomeDecksService {
     };
   }
 
-  private serializePublicDeck(deck: any) {
+
+  private resolveDeckTranslation(deck: any, requestedLocale?: string) {
+    const locale = normalizeLocale(requestedLocale);
+    const translations = deck.translations ?? [];
+    const resolved = translations.find((item: any) => item.locale === locale)
+      ?? translations.find((item: any) => item.locale === 'es')
+      ?? translations.find((item: any) => item.locale === 'en')
+      ?? null;
+
+    return {
+      title: resolved?.title?.trim() || deck.title,
+      subtitle: resolved?.subtitle?.trim() || deck.subtitle,
+      description: resolved?.description?.trim() || deck.description,
+      ctaLabel: resolved?.ctaLabel?.trim() || deck.ctaLabel,
+    };
+  }
+
+  private serializePublicDeck(deck: any, locale?: string) {
+    const resolved = this.resolveDeckTranslation(deck, locale);
+
     return {
       id: deck.id,
       surface: deck.surface,
       slug: deck.slug,
-      title: deck.title,
-      subtitle: deck.subtitle,
-      description: deck.description,
-      ctaLabel: deck.ctaLabel,
+      title: resolved.title,
+      subtitle: resolved.subtitle,
+      description: resolved.description,
+      ctaLabel: resolved.ctaLabel,
       ctaUrl: deck.ctaUrl,
       ctaRoute: deck.ctaRoute,
       image: this.serializeDeckImage(deck),
       sortOrder: deck.sortOrder,
-      entities: this.serializeItems(deck.items),
+      entities: this.serializeItems(deck.items, locale),
     };
   }
 
@@ -278,12 +307,16 @@ export class HomeDecksService {
     return serialized;
   }
 
-  private serializeItems(items: any[]) {
-    return (items ?? []).map((item) => ({
-      id: item.id,
-      sortOrder: item.sortOrder,
-      entity: attachResolvedMedia(item.entity),
-    }));
+  private serializeItems(items: any[], locale?: string) {
+    return (items ?? []).map((item) => {
+      const localizedEntity = item.entity ? resolveEntityTranslation(item.entity, locale) : item.entity;
+
+      return {
+        id: item.id,
+        sortOrder: item.sortOrder,
+        entity: attachResolvedMedia(localizedEntity),
+      };
+    });
   }
 
   private serializeDeckImage(deck: any) {
