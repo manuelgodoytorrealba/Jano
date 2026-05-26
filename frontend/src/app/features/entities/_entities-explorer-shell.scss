@@ -64,15 +64,19 @@
   z-index: 1;
 }
 
-.entities-stage-shell--list {
+.entities-stage-shell--list,
+.entities-stage-shell--empty {
   padding:
     var(--entities-stage-top-padding) var(--entities-stage-right-gutter) 26px calc(var(--entities-rail-left) + var(--entities-rail-width) + var(--entities-rail-gap));
+}
+
+.entities-stage-shell--list {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
 }
 
-.entities-explorer-layout.is-filters-collapsed .entities-stage-shell--list {
+.entities-explorer-layout.is-filters-collapsed :is(.entities-stage-shell--list, .entities-stage-shell--empty) {
   padding-left: var(--entities-stage-left-gutter);
 }
 
@@ -83,16 +87,9 @@
 .entities-stage-shell--empty {
   display: grid;
   place-items: center;
-  padding:
-    var(--entities-stage-top-padding) var(--entities-stage-right-gutter) 26px calc(var(--entities-rail-left) + var(--entities-rail-width) + var(--entities-rail-gap));
 }
 
-.entities-explorer-layout.is-filters-collapsed .entities-stage-shell--empty {
-  padding-left: var(--entities-stage-left-gutter);
-}
-
-.entities-stage-shell--list .empty-state,
-.entities-stage-shell--empty .empty-state {
+:is(.entities-stage-shell--list, .entities-stage-shell--empty) .empty-state {
   max-width: 560px;
 }
 
