@@ -6,7 +6,11 @@
   background: transparent;
 }
 
-.page > * {
+.table-body {
+  color: black;
+}
+
+.page>* {
   position: relative;
   z-index: 1;
 }
@@ -58,12 +62,12 @@ h1 {
   border: 1px solid rgba(255, 255, 255, .52);
   border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.76), rgba(248,246,241,.64));
+    linear-gradient(180deg, rgba(255, 255, 255, .76), rgba(248, 246, 241, .64));
   padding: 16px;
   margin-bottom: 14px;
   box-shadow:
-    0 18px 46px rgba(25,20,14,.07),
-    inset 0 1px 0 rgba(255,255,255,.72);
+    0 18px 46px rgba(25, 20, 14, .07),
+    inset 0 1px 0 rgba(255, 255, 255, .72);
   backdrop-filter: blur(22px) saturate(1.06);
 }
 
@@ -92,7 +96,7 @@ select {
   height: 42px;
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, .10);
-  background: rgba(255,255,255,.76);
+  background: rgba(255, 255, 255, .76);
   padding: 0 12px;
   font: inherit;
   outline: none;
@@ -151,9 +155,9 @@ select {
   border: 1px solid rgba(255, 255, 255, .5);
   border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.76), rgba(248,246,241,.62));
+    linear-gradient(180deg, rgba(255, 255, 255, .76), rgba(248, 246, 241, .62));
   padding: 18px;
-  box-shadow: 0 18px 46px rgba(25,20,14,.07);
+  box-shadow: 0 18px 46px rgba(25, 20, 14, .07);
   backdrop-filter: blur(22px) saturate(1.06);
 }
 
@@ -175,10 +179,10 @@ select {
   border-radius: 18px;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.78), rgba(247,245,240,.66));
+    linear-gradient(180deg, rgba(255, 255, 255, .78), rgba(247, 245, 240, .66));
   box-shadow:
-    0 22px 58px rgba(25,20,14,.08),
-    inset 0 1px 0 rgba(255,255,255,.72);
+    0 22px 58px rgba(25, 20, 14, .08),
+    inset 0 1px 0 rgba(255, 255, 255, .72);
   backdrop-filter: blur(22px) saturate(1.06);
 }
 
@@ -201,7 +205,7 @@ select {
   text-transform: uppercase;
   letter-spacing: .06em;
   color: #666;
-  background: rgba(255,255,255,.56);
+  background: rgba(255, 255, 255, .56);
 }
 
 .title-cell {

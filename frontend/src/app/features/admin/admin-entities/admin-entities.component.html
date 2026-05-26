@@ -9,7 +9,8 @@
       <a class="btn ghost" routerLink="/admin">Editorial desk</a>
       <a class="btn ghost" routerLink="/admin/visual-selector">Selector visual</a>
       <a class="btn ghost" routerLink="/">Volver al sitio</a>
-      <a class="btn primary" routerLink="/admin/entities/new" [queryParams]="{ returnTo: adminListReturnUrl() }">Nueva entity</a>
+      <a class="btn primary" routerLink="/admin/entities/new" [queryParams]="{ returnTo: adminListReturnUrl() }">Nueva
+        entity</a>
     </div>
   </header>
 
@@ -84,7 +85,7 @@
         </tr>
       </thead>
 
-      <tbody>
+      <tbody class="table-body">
         @for (item of vm.items; track item.id) {
         <tr>
           <td>
@@ -113,7 +114,8 @@
           <td>
             <div class="row-actions">
               <a class="mini" [routerLink]="['/entity', item.slug]">Ver</a>
-              <a class="mini" [routerLink]="['/admin/entities', item.id, 'edit']" [queryParams]="{ returnTo: adminListReturnUrl() }">Editar</a>
+              <a class="mini" [routerLink]="['/admin/entities', item.id, 'edit']"
+                [queryParams]="{ returnTo: adminListReturnUrl() }">Editar</a>
               <button class="mini danger" type="button" [disabled]="deletingId === item.id"
                 (click)="remove(item.id, item.title)">
                 @if (deletingId === item.id) { Borrando... } @else { Borrar }

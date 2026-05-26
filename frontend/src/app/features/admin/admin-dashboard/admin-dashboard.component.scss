@@ -12,9 +12,15 @@
   margin-bottom: 18px;
 }
 
+.admin-desk__header {
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
 .admin-desk__eyebrow {
   margin: 0 0 6px;
-  color: rgba(0, 0, 0, .52);
+
   font-size: 12px;
   font-weight: 800;
   letter-spacing: .08em;
@@ -40,7 +46,7 @@ h2 {
 .admin-desk__intro,
 .panel p {
   margin-top: 7px;
-  color: rgba(0, 0, 0, .58);
+
 }
 
 .admin-desk__subhead {
@@ -50,7 +56,7 @@ h2 {
 }
 
 .admin-desk__subhead span {
-  color: rgba(0, 0, 0, .52);
+
   font-size: 12px;
   font-weight: 800;
   letter-spacing: .07em;
@@ -59,7 +65,7 @@ h2 {
 
 .admin-desk__subhead strong {
   font-size: 15px;
-  color: rgba(0, 0, 0, .72);
+
 }
 
 .admin-desk__actions,
@@ -381,6 +387,7 @@ h2 {
 }
 
 @media (max-width: 1000px) {
+
   .admin-desk__top,
   .desk-grid {
     grid-template-columns: 1fr;

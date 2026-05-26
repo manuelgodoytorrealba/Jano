@@ -1,6 +1,6 @@
 <main class="admin-desk">
   <header class="admin-desk__top">
-    <div>
+    <div class="admin-desk__header">
       <p class="admin-desk__eyebrow">Admin</p>
       <h1>Editorial Desk</h1>
       <p class="admin-desk__intro">Control de portada, contenido y señales de calidad editorial.</p>
@@ -18,129 +18,124 @@
   </header>
 
   @if (vm$ | async; as vm) {
-    <section class="metric-grid" aria-label="Resumen editorial">
-      @for (metric of vm.metrics; track metric.label) {
-        <a
-          class="metric"
-          [class.metric--good]="metric.tone === 'good'"
-          [class.metric--warning]="metric.tone === 'warning'"
-          [routerLink]="metric.route ?? '/admin'"
-          [queryParams]="metric.queryParams ?? null"
-        >
-          <span>{{ metric.label }}</span>
-          <strong>{{ metric.value }}</strong>
-        </a>
-      }
-    </section>
+  <section class="metric-grid" aria-label="Resumen editorial">
+    @for (metric of vm.metrics; track metric.label) {
+    <a class="metric" [class.metric--good]="metric.tone === 'good'" [class.metric--warning]="metric.tone === 'warning'"
+      [routerLink]="metric.route ?? '/admin'" [queryParams]="metric.queryParams ?? null">
+      <span>{{ metric.label }}</span>
+      <strong>{{ metric.value }}</strong>
+    </a>
+    }
+  </section>
 
-    <section class="desk-grid">
-      <article class="panel panel--primary">
-        <div class="panel__head">
-          <div>
-            <h2>Decks editoriales</h2>
-            <p>Home y Recommended en una lectura más compacta: estado, imagen y señales de publicación.</p>
-          </div>
-          <a class="panel__link" routerLink="/admin/home-decks">Abrir</a>
+  <section class="desk-grid">
+    <article class="panel panel--primary">
+      <div class="panel__head">
+        <div>
+          <h2>Decks editoriales</h2>
+          <p>Home y Recommended en una lectura más compacta: estado, imagen y señales de publicación.</p>
         </div>
+        <a class="panel__link" routerLink="/admin/home-decks">Abrir</a>
+      </div>
 
-        @if (vm.decks.length) {
-          <div class="deck-gallery">
-            @for (deck of vm.decks; track deck.id) {
-              <a class="deck-card" [routerLink]="['/admin/home-decks', deck.id, 'edit']">
-                <div class="deck-card__media">
-                  @if (deckImageUrl(deck); as imageUrl) {
-                    <img [src]="imageUrl" [alt]="deck.title" />
-                  } @else {
-                    <div class="deck-card__media-empty">{{ deck.surface }}</div>
-                  }
-                </div>
-                <div class="deck-card__body">
-                  <div class="deck-card__meta">
-                    <span>{{ deck.surface }}</span>
-                    <strong [class.is-active]="deck.isActive">{{ deckStatusLabel(deck) }}</strong>
-                  </div>
-                  <strong>{{ deck.title }}</strong>
-                  <span>{{ deckMetaLabel(deck) }}</span>
-                </div>
-                @if (deckPreviewEntities(deck).length) {
-                  <div class="deck-card__entities">
-                    @for (item of deckPreviewEntities(deck); track item.id) {
-                      <div class="deck-chip">
-                        <div class="deck-chip__thumb">
-                          @if (deckEntityImageUrl(item.entity); as entityImageUrl) {
-                            <img [src]="entityImageUrl" [alt]="deckEntityLabel(item.entity)" />
-                          } @else {
-                            <span>{{ item.entity?.type || 'ENTITY' }}</span>
-                          }
-                        </div>
-                        <span>{{ deckEntityLabel(item.entity) }}</span>
-                      </div>
-                    }
-                  </div>
+      @if (vm.decks.length) {
+      <div class="deck-gallery">
+        @for (deck of vm.decks; track deck.id) {
+        <a class="deck-card" [routerLink]="['/admin/home-decks', deck.id, 'edit']">
+          <div class="deck-card__media">
+            @if (deckImageUrl(deck); as imageUrl) {
+            <img [src]="imageUrl" [alt]="deck.title" />
+            } @else {
+            <div class="deck-card__media-empty">{{ deck.surface }}</div>
+            }
+          </div>
+          <div class="deck-card__body">
+            <div class="deck-card__meta">
+              <span>{{ deck.surface }}</span>
+              <strong [class.is-active]="deck.isActive">{{ deckStatusLabel(deck) }}</strong>
+            </div>
+            <strong>{{ deck.title }}</strong>
+            <span>{{ deckMetaLabel(deck) }}</span>
+          </div>
+          @if (deckPreviewEntities(deck).length) {
+          <div class="deck-card__entities">
+            @for (item of deckPreviewEntities(deck); track item.id) {
+            <div class="deck-chip">
+              <div class="deck-chip__thumb">
+                @if (deckEntityImageUrl(item.entity); as entityImageUrl) {
+                <img [src]="entityImageUrl" [alt]="deckEntityLabel(item.entity)" />
+                } @else {
+                <span>{{ item.entity?.type || 'ENTITY' }}</span>
                 }
-                <div class="deck-card__footer">
-                  @if (deck.warnings.length) {
-                    <span class="deck-row__warning">{{ deckWarningsLabel(deck) }}</span>
-                  } @else {
-                    <span class="deck-row__ok">Listo</span>
-                  }
-                  <span class="deck-card__open">Editar</span>
-                </div>
-              </a>
+              </div>
+              <span>{{ deckEntityLabel(item.entity) }}</span>
+            </div>
             }
           </div>
-        } @else {
-          <div class="empty-state">
-            <strong>No hay decks creados</strong>
-            <span>La home usa fallback visual hasta que se creen decks editoriales.</span>
-          </div>
-        }
-      </article>
-
-      <article class="panel">
-        <div class="panel__head">
-          <div>
-            <h2>Contenido reciente</h2>
-            <p>Últimas entities modificadas o creadas.</p>
-          </div>
-          <a class="panel__link" routerLink="/admin/entities">Ver todas</a>
-        </div>
-
-        @if (vm.recent.length) {
-          <div class="content-list">
-            @for (item of vm.recent; track item.id) {
-              <a class="content-row" [routerLink]="['/admin/entities', item.id, 'edit']">
-                <div>
-                  <strong>{{ item.title }}</strong>
-                  <span>{{ item.type }} · {{ item.status }}</span>
-                </div>
-                <time>{{ item.updatedAt || item.createdAt | date: 'dd/MM/yyyy' }}</time>
-              </a>
+          }
+          <div class="deck-card__footer">
+            @if (deck.warnings.length) {
+            <span class="deck-row__warning">{{ deckWarningsLabel(deck) }}</span>
+            } @else {
+            <span class="deck-row__ok">Listo</span>
             }
+            <span class="deck-card__open">Editar</span>
           </div>
-        } @else {
-          <div class="empty-state">
-            <strong>Sin contenido reciente</strong>
-            <span>Crea o edita entities para poblar este panel.</span>
-          </div>
+        </a>
         }
-      </article>
+      </div>
+      } @else {
+      <div class="empty-state">
+        <strong>No hay decks creados</strong>
+        <span>La home usa fallback visual hasta que se creen decks editoriales.</span>
+      </div>
+      }
+    </article>
 
-      <article class="panel">
-        <div class="panel__head">
+    <article class="panel">
+      <div class="panel__head">
+        <div>
+          <h2>Contenido reciente</h2>
+          <p>Últimas entities modificadas o creadas.</p>
+        </div>
+        <a class="panel__link" routerLink="/admin/entities">Ver todas</a>
+      </div>
+
+      @if (vm.recent.length) {
+      <div class="content-list">
+        @for (item of vm.recent; track item.id) {
+        <a class="content-row" [routerLink]="['/admin/entities', item.id, 'edit']">
           <div>
-            <h2>Acciones rápidas</h2>
-            <p>Entradas directas a flujos editoriales frecuentes.</p>
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.type }} · {{ item.status }}</span>
           </div>
-        </div>
+          <time>{{ item.updatedAt || item.createdAt | date: 'dd/MM/yyyy' }}</time>
+        </a>
+        }
+      </div>
+      } @else {
+      <div class="empty-state">
+        <strong>Sin contenido reciente</strong>
+        <span>Crea o edita entities para poblar este panel.</span>
+      </div>
+      }
+    </article>
 
-        <div class="quick-actions">
-          <a routerLink="/admin/home-decks">Nuevo deck</a>
-          <a routerLink="/admin/entities/new" [queryParams]="{ type: 'ARTICLE' }">Nuevo artículo</a>
-          <a routerLink="/admin/entities" [queryParams]="{ status: 'IN_REVIEW' }">Revisar contenido</a>
-          <a routerLink="/admin/visual-selector">Selector visual</a>
+    <article class="panel">
+      <div class="panel__head">
+        <div>
+          <h2>Acciones rápidas</h2>
+          <p>Entradas directas a flujos editoriales frecuentes.</p>
         </div>
-      </article>
-    </section>
+      </div>
+
+      <div class="quick-actions">
+        <a routerLink="/admin/home-decks">Nuevo deck</a>
+        <a routerLink="/admin/entities/new" [queryParams]="{ type: 'ARTICLE' }">Nuevo artículo</a>
+        <a routerLink="/admin/entities" [queryParams]="{ status: 'IN_REVIEW' }">Revisar contenido</a>
+        <a routerLink="/admin/visual-selector">Selector visual</a>
+      </div>
+    </article>
+  </section>
   }
 </main>
