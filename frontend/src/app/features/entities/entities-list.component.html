@@ -16,17 +16,17 @@
     [class.is-filters-collapsed]="!filtersPanelOpen() || curatedDeckMode()"
     [class.is-curated-deck]="curatedDeckMode()"
     [class.is-info-collapsed]="!infoPanelOpen()">
-    <header class="entities-hud" aria-label="Contexto de la vista">
+    <header class="entities-hud" [attr.aria-label]="i18n.t('explorer.view.explorer')">
       <div class="entities-mode-pill ds-panel">
-        <div class="view-toggle" role="tablist" aria-label="Modo de visualización">
+        <div class="view-toggle" role="tablist" [attr.aria-label]="i18n.t('explorer.view.explorer')">
           <button type="button" class="view-toggle__button" [class.is-active]="viewMode === 'explore'" role="tab"
             [attr.aria-selected]="viewMode === 'explore'" (click)="setView('explore')">
-            Explorer
+            {{ i18n.t('explorer.view.explorer') }}
           </button>
 
           <button type="button" class="view-toggle__button" [class.is-active]="viewMode === 'list'" role="tab"
             [attr.aria-selected]="viewMode === 'list'" (click)="setView('list')">
-            Lista
+            {{ i18n.t('explorer.view.list') }}
           </button>
         </div>
       </div>
@@ -35,14 +35,14 @@
     @if (!curatedDeckMode()) {
     <button type="button" class="entities-rail-handle ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
       (click)="toggleFiltersPanel()"
-      [attr.aria-label]="filtersPanelOpen() ? 'Ocultar filtros' : 'Mostrar filtros'"
+      [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
       [attr.aria-expanded]="filtersPanelOpen()">
       <span class="entities-rail-handle__glyph" aria-hidden="true">
         <span></span>
         <span></span>
         <span></span>
       </span>
-      <span class="entities-rail-handle__label">Filtros</span>
+      <span class="entities-rail-handle__label">{{ i18n.t('explorer.filters') }}</span>
     </button>
     }
 
@@ -51,18 +51,18 @@
     <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
       [attr.aria-hidden]="!filtersPanelOpen()">
       <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-search-main">Buscar</label>
+        <label class="entities-filter-rail__label" for="entities-search-main">{{ i18n.t('explorer.search.label') }}</label>
         <input id="entities-search-main" class="ds-input entities-search entities-filter-rail__search" type="search"
-          placeholder="Buscar…" aria-label="Buscar entidades"
+          [placeholder]="i18n.t('explorer.search.placeholder')" [attr.aria-label]="i18n.t('explorer.search.aria')"
           [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />
 
         @if (qFromUrl$ | async; as q) {
         @if (q) {
         <div class="search-chip search-chip--rail">
-          <span class="search-chip__label">Buscando:</span>
+          <span class="search-chip__label">{{ i18n.t('explorer.searching') }}</span>
           <span class="search-chip__value">“{{ q }}”</span>
-          <button type="button" class="ds-btn search-chip__clear" (click)="clearSearch()" aria-label="Limpiar búsqueda"
-            title="Limpiar búsqueda">
+          <button type="button" class="ds-btn search-chip__clear" (click)="clearSearch()" [attr.aria-label]="i18n.t('explorer.clearSearch')"
+            [title]="i18n.t('explorer.clearSearch')">
             ✕
           </button>
         </div>
@@ -76,7 +76,7 @@
           <button type="button" class="search-chip entities-active-filter entities-active-filter--advanced"
             (click)="toggleStatus('')">
             <span class="entities-active-filter__content">
-              <span class="search-chip__label">Status</span>
+              <span class="search-chip__label">{{ i18n.t('explorer.status') }}</span>
               <span class="search-chip__value">{{ statusLabel(status) }}</span>
             </span>
             <span class="entities-active-filter__clear">✕</span>
@@ -89,7 +89,7 @@
           <button type="button" class="search-chip entities-active-filter entities-active-filter--advanced"
             (click)="toggleContentLevel('')">
             <span class="entities-active-filter__content">
-              <span class="search-chip__label">Nivel</span>
+              <span class="search-chip__label">{{ i18n.t('explorer.level') }}</span>
               <span class="search-chip__value">{{ contentLevelLabel(contentLevel) }}</span>
             </span>
             <span class="entities-active-filter__clear">✕</span>
@@ -102,7 +102,7 @@
           @if (movementSlug) {
           <button type="button" class="search-chip entities-active-filter" (click)="setMovement('')">
             <span class="entities-active-filter__content">
-              <span class="search-chip__label">Movimiento</span>
+              <span class="search-chip__label">{{ i18n.t('explorer.movement') }}</span>
               <span class="search-chip__value">{{ movementLabel$ | async }}</span>
             </span>
             <span class="entities-active-filter__clear">✕</span>
@@ -116,7 +116,7 @@
           @if (periodSlug) {
           <button type="button" class="search-chip entities-active-filter" (click)="setPeriod('')">
             <span class="entities-active-filter__content">
-              <span class="search-chip__label">Periodo</span>
+              <span class="search-chip__label">{{ i18n.t('explorer.period') }}</span>
               <span class="search-chip__value">{{ periodLabel$ | async }}</span>
             </span>
             <span class="entities-active-filter__clear">✕</span>
@@ -568,7 +568,7 @@
       <div class="entities-filter-rail__section">
         <label class="entities-filter-rail__label" for="entities-search-skeleton">Buscar</label>
         <input id="entities-search-skeleton" class="ds-input entities-search entities-filter-rail__search" type="search"
-          placeholder="Buscar…" aria-label="Buscar entidades"
+          [placeholder]="i18n.t('explorer.search.placeholder')" [attr.aria-label]="i18n.t('explorer.search.aria')"
           [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />
       </div>
 

@@ -32,7 +32,7 @@
       #searchInput
       class="ds-input app-chrome__search-input"
       type="search"
-      placeholder="Buscar artistas, obras, artículos, movimientos o conceptos"
+      placeholder="Buscar en JANO"
       aria-label="Buscar en JANO"
     />
   </form>
@@ -56,11 +56,11 @@
           [routerLink]="targetRoute(item)"
           (click)="primeRoute(item)"
         >
-          {{ item.label }}
+          {{ i18n.t(item.label) }}
         </a>
       } @else {
         <button type="button" class="app-chrome__nav-link is-placeholder" (click)="preventPlaceholderAction($event)">
-          {{ item.label }}
+          {{ i18n.t(item.label) }}
         </button>
       }
     }
@@ -109,8 +109,8 @@
       type="button"
       class="app-chrome__utility-btn"
       data-action="share"
-      aria-label="Compartir"
-      title="Compartir"
+      [attr.aria-label]="i18n.t('button.share')"
+      [title]="i18n.t('button.share')"
       (click)="rail.trigger('share')"
     >
       <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--share" viewBox="0 0 24 24" aria-hidden="true">
@@ -147,8 +147,8 @@
         data-action="save"
         [disabled]="rail.contextualRail()?.saveLoading || !rail.contextualRail()?.canSave"
         [attr.aria-busy]="rail.contextualRail()?.saveLoading ? 'true' : null"
-        [attr.aria-label]="rail.contextualRail()?.isSaved ? 'Entidad guardada' : 'Guardar'"
-        [title]="rail.contextualRail()?.isSaved ? 'Entidad guardada' : 'Guardar'"
+        [attr.aria-label]="rail.contextualRail()?.isSaved ? i18n.t('button.saved') : i18n.t('button.save')"
+        [title]="rail.contextualRail()?.isSaved ? i18n.t('button.saved') : i18n.t('button.save')"
         (click)="rail.trigger('save')"
       >
         <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--save" viewBox="0 0 24 24" aria-hidden="true">
@@ -175,8 +175,8 @@
       type="button"
       class="app-chrome__utility-btn"
       data-action="focus"
-      aria-label="Inicio"
-      title="Inicio"
+      [attr.aria-label]="i18n.t('button.focus')"
+      [title]="i18n.t('button.focus')"
       (click)="rail.trigger('focus')"
     >
       <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--focus" viewBox="0 0 24 24" aria-hidden="true">

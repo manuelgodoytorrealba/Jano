@@ -2,10 +2,10 @@
   @if (auth.user$ | async; as user) {
     <section class="settings-hero">
       <div class="settings-hero__copy">
-        <span class="settings-eyebrow">Ajustes</span>
-        <h1>Cuenta y preferencias</h1>
+        <span class="settings-eyebrow">{{ i18n.t('settings.eyebrow') }}</span>
+        <h1>{{ i18n.t('settings.title') }}</h1>
         <p class="settings-muted">
-          Un espacio sereno para revisar tu sesión, tu acceso y la atmósfera base de JANO.
+          {{ i18n.t('settings.intro') }}
         </p>
       </div>
     </section>
@@ -38,6 +38,24 @@
           <span class="settings-field__label">Rol</span>
           <strong class="settings-field__value">{{ roleLabel }}</strong>
         </div>
+      </div>
+    </section>
+
+    <section class="settings-surface settings-surface--language">
+      <div class="settings-section-head">
+        <div>
+          <span class="settings-label">{{ i18n.t('settings.language.label') }}</span>
+          <h2>{{ i18n.t('settings.language.title') }}</h2>
+          <p class="settings-muted">{{ i18n.t('settings.language.description') }}</p>
+        </div>
+        <div class="settings-theme-state">
+          <span class="settings-section-note__label">{{ i18n.t('settings.language.active') }}</span>
+          <strong>{{ i18n.localeLabel() }}</strong>
+        </div>
+      </div>
+      <div class="settings-theme-toggle" role="radiogroup" [attr.aria-label]="i18n.t('settings.language.label')">
+        <button type="button" class="settings-theme-option" [class.is-active]="i18n.locale() === 'es'" [attr.aria-checked]="i18n.locale() === 'es'" role="radio" (click)="setLocale('es')">{{ i18n.t('settings.language.es') }}</button>
+        <button type="button" class="settings-theme-option" [class.is-active]="i18n.locale() === 'en'" [attr.aria-checked]="i18n.locale() === 'en'" role="radio" (click)="setLocale('en')">{{ i18n.t('settings.language.en') }}</button>
       </div>
     </section>
 

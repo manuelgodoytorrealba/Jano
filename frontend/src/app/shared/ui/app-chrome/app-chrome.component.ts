@@ -4,6 +4,7 @@ import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Rout
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
+import { I18nService } from '../../../core/i18n/i18n.service';
 import { filter, fromEvent } from 'rxjs';
 
 type HeaderNavItem = {
@@ -36,6 +37,7 @@ export class AppChromeComponent {
   private readonly router = inject(Router);
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
+  readonly i18n = inject(I18nService);
   private readonly currentUrl = signal(this.normalizeUrl(this.router.url));
   private readonly pendingUrl = signal<string | null>(null);
   readonly compactHeaderEnabled = signal(this.readCompactHeaderEnabled());
@@ -44,20 +46,20 @@ export class AppChromeComponent {
   readonly brandPressing = signal(false);
 
   readonly navItems: HeaderNavItem[] = [
-    { label: 'Descubrir', route: '/', kind: 'route', group: 'public', exact: true },
-    { label: 'Explorar', route: '/entities/artwork', kind: 'route', group: 'public' },
-    { label: 'Artículos', route: '/entities/article', kind: 'route', group: 'public' },
-    { label: 'Curated', route: '/recommended', kind: 'route', group: 'public' },
-    { label: 'Perfil', route: '/profile', kind: 'route', group: 'personal' },
-    { label: 'Mi espacio', route: '/my-space', kind: 'route', group: 'personal' },
+    { label: 'nav.discover', route: '/', kind: 'route', group: 'public', exact: true },
+    { label: 'nav.explore', route: '/entities/artwork', kind: 'route', group: 'public' },
+    { label: 'nav.articles', route: '/entities/article', kind: 'route', group: 'public' },
+    { label: 'nav.curated', route: '/recommended', kind: 'route', group: 'public' },
+    { label: 'nav.profile', route: '/profile', kind: 'route', group: 'personal' },
+    { label: 'nav.mySpace', route: '/my-space', kind: 'route', group: 'personal' },
   ];
 
   readonly utilityItems: UtilityItem[] = [
-    { label: 'Perfil', route: '/profile', icon: 'profile', kind: 'route' },
-    { label: 'Mi espacio', route: '/my-space', icon: 'space', kind: 'route' },
-    { label: 'Artículos', route: '/entities/article', icon: 'articles', kind: 'route' },
-    { label: 'Admin', route: '/admin', icon: 'admin', kind: 'route', adminOnly: true },
-    { label: 'Ajustes', route: '/settings', icon: 'settings', kind: 'route' },
+    { label: 'nav.profile', route: '/profile', icon: 'profile', kind: 'route' },
+    { label: 'nav.mySpace', route: '/my-space', icon: 'space', kind: 'route' },
+    { label: 'nav.articles', route: '/entities/article', icon: 'articles', kind: 'route' },
+    { label: 'nav.admin', route: '/admin', icon: 'admin', kind: 'route', adminOnly: true },
+    { label: 'nav.settings', route: '/settings', icon: 'settings', kind: 'route' },
   ];
 
   pressBrand(): void {
@@ -203,12 +205,12 @@ export class AppChromeComponent {
     }
 
     if (state.canSave) {
-      items.push({ label: 'Guardar', icon: 'save', kind: 'action', action: 'save' });
+      items.push({ label: 'button.save', icon: 'save', kind: 'action', action: 'save' });
     }
 
     items.push(
-      { label: 'Inicio', icon: 'focus', kind: 'action', action: 'focus' },
-      { label: 'Compartir', icon: 'share', kind: 'action', action: 'share' },
+      { label: 'button.focus', icon: 'focus', kind: 'action', action: 'focus' },
+      { label: 'button.share', icon: 'share', kind: 'action', action: 'share' },
     );
 
     return items;
@@ -274,23 +276,23 @@ export class AppChromeComponent {
 
     const url = this.activeUrl();
 
-    if (item.label === 'Perfil') {
+    if (item.icon === 'profile') {
       return url === '/profile';
     }
 
-    if (item.label === 'Mi espacio') {
+    if (item.icon === 'space') {
       return url === '/my-space';
     }
 
-    if (item.label === 'Admin') {
+    if (item.icon === 'admin') {
       return url === '/admin' || url.startsWith('/admin/');
     }
 
-    if (item.label === 'Artículos') {
+    if (item.icon === 'articles') {
       return url.startsWith('/entities/article');
     }
 
-    if (item.label === 'Ajustes') {
+    if (item.icon === 'settings') {
       return url === '/settings';
     }
 
@@ -309,17 +311,17 @@ export class AppChromeComponent {
     if (item.kind === 'action' && item.action === 'save') {
       const contextual = this.rail.contextualRail();
       if (contextual?.saveLoading) {
-        return contextual.isSaved ? 'Quitando guardado' : 'Guardando entidad';
+        return contextual.isSaved ? this.i18n.t('button.removingSaved') : this.i18n.t('button.saving');
       }
 
-      return contextual?.isSaved ? 'Entidad guardada' : item.label;
+      return contextual?.isSaved ? this.i18n.t('button.saved') : this.i18n.t(item.label);
     }
 
     if (item.kind === 'action' && item.action === 'focus') {
-      return 'Inicio';
+      return this.i18n.t('button.focus');
     }
 
-    return item.label;
+    return this.i18n.t(item.label);
   }
 
   isUtilityDisabled(item: UtilityItem): boolean {

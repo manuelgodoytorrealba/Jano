@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AppSettingsApi } from '../../core/api/app-settings.api';
 import { AppAppearanceService, type AppThemePreference } from '../../core/app-appearance.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { I18nService, type AppLocale } from '../../core/i18n/i18n.service';
 
 @Component({
   standalone: true,
@@ -16,6 +17,7 @@ import { AuthService } from '../../core/auth/auth.service';
 export class SettingsComponent implements OnDestroy {
   readonly auth = inject(AuthService);
   readonly appearance = inject(AppAppearanceService);
+  readonly i18n = inject(I18nService);
   private readonly settingsApi = inject(AppSettingsApi);
 
   selectedBackgroundFile: File | null = null;
@@ -34,12 +36,16 @@ export class SettingsComponent implements OnDestroy {
   }
 
   get roleLabel(): string {
-    const role = this.auth.currentUser?.role ?? '';
-    return role === 'ADMIN' ? 'Administrador' : role || 'Sin rol';
+    const role = this.auth.currentUser?.role ?? "";
+    return role === "ADMIN" ? "Administrador" : role || "Sin rol";
   }
 
   setThemePreference(preference: AppThemePreference): void {
     this.appearance.setThemePreference(preference);
+  }
+
+  setLocale(locale: AppLocale): void {
+    this.i18n.setLocale(locale);
   }
 
   ngOnDestroy(): void {

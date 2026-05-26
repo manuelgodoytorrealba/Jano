@@ -2,6 +2,26 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { apiUrl } from './api-base';
 
+export type AdminLocale = 'es' | 'en';
+
+export type AdminEntityTranslationPayload = {
+  title: string;
+  shortDescription?: string | null;
+  essay?: string | null;
+  notes?: string | null;
+  excerpt?: string | null;
+};
+
+export type AdminEntityTranslation = AdminEntityTranslationPayload & {
+  id: string;
+  entityId: string;
+  locale: AdminLocale | string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type AdminTranslationStatus = Record<string, 'complete' | 'partial' | 'missing'>;
+
 export type AdminEntityPayload = {
   type: 'ARTWORK' | 'ARTIST' | 'ARTICLE' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
   title: string;
@@ -221,6 +241,8 @@ export type AdminEntityResponse = {
   sourceRefs?: any[];
   contributors?: any[];
   tags?: any[];
+  translations?: AdminEntityTranslation[];
+  translationStatus?: AdminTranslationStatus;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -258,6 +280,10 @@ export class AdminEntitiesApi {
   update(id: string, data: Partial<AdminEntityPayload>) {
     return this.http.patch<any>(`${this.baseUrl}/${id}`, data);
   }
+  upsertTranslation(id: string, locale: AdminLocale, data: AdminEntityTranslationPayload) {
+    return this.http.patch<AdminEntityResponse>(this.baseUrl + '/' + id + '/translations/' + locale, data);
+  }
+
 
   createMedia(entityId: string, data: AdminEntityMediaPayload) {
     return this.http.post<any>(`${this.baseUrl}/${entityId}/media`, data);

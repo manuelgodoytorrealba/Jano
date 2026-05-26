@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { AppAppearanceService } from '../../core/app-appearance.service';
 import { HomeDeck, HomeDecksApi } from '../../core/api/home-decks.api';
 import { AuthService } from '../../core/auth/auth.service';
 import { SeoService } from '../../core/seo/seo.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { navigateToAppSearch } from '../../core/search/search-navigation';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
@@ -26,6 +27,7 @@ export class HomeComponent {
   private readonly homeDecksApi = inject(HomeDecksApi);
   private readonly auth = inject(AuthService);
   private readonly seo = inject(SeoService);
+  private readonly i18n = inject(I18nService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly deckItems = signal<DeckItem[]>(FALLBACK_DECK_ITEMS);
@@ -39,7 +41,10 @@ export class HomeComponent {
       image: '/assets/home/artwork.jpg',
     });
 
-    this.loadHomeDecks();
+    effect(() => {
+      this.i18n.locale();
+      this.loadHomeDecks();
+    });
   }
 
   onCardClick(item: DeckItem): void {
@@ -127,8 +132,8 @@ export class HomeComponent {
       eyebrow: deck.subtitle ?? 'Discover',
       title: deck.title,
       description: deck.description ?? undefined,
-      meta: deck.entities.length ? `${deck.entities.length} entidades` : 'Editorial deck',
-      cta: `${deck.ctaLabel || 'Ver selección'} →`,
+      meta: deck.entities.length ? `${deck.entities.length} ${this.i18n.t('home.entities')}` : this.i18n.t('home.editorialDeck'),
+      cta: `${deck.ctaLabel || this.i18n.t('home.viewSelection')} →`,
       image,
       imageWidth: deck.image?.width ?? undefined,
       imageHeight: deck.image?.height ?? undefined,

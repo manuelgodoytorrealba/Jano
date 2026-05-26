@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { Tag, TagsApi } from '../../core/api/tags.api';
 import { SeoService } from '../../core/seo/seo.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 import {
   Observable,
   combineLatest,
@@ -83,6 +84,7 @@ export class EntitiesListComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private readonly seo = inject(SeoService);
+  readonly i18n = inject(I18nService);
 
   private readonly limit = 24;
   private readonly contextualFilterKeys = ['movement', 'period', 'institution', 'nationality'] as const;

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, effect, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { AsyncPipe, Location } from '@angular/common';
 import { BehaviorSubject, catchError, combineLatest, distinctUntilChanged, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
@@ -10,6 +11,7 @@ import { SeoService } from '../../core/seo/seo.service';
 import { mediaDisplayUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
 import { EntityDetailViewComponent } from './entity-detail-view.component';
 import { AppChromeRailService } from '../../shared/ui/app-chrome/app-chrome-rail.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 
 type DetailFact = {
   label: string;
@@ -33,6 +35,7 @@ export class EntityComponent implements OnDestroy {
   private location = inject(Location);
   private readonly seo = inject(SeoService);
   private readonly chromeRail = inject(AppChromeRailService);
+  readonly i18n = inject(I18nService);
   private readonly collectionsRefresh$ = new BehaviorSubject<void>(undefined);
 
   auth = inject(AuthService);
@@ -121,7 +124,7 @@ export class EntityComponent implements OnDestroy {
       next: () => {
         this.isSaved.set(false);
         this.saveLoading.set(false);
-        this.openPopup('removed', 'Fuera del archivo', 'Ya no aparece en My Space.', { autoCloseMs: 2200 });
+        this.openPopup('removed', this.i18n.t('popup.removed.title'), this.i18n.t('popup.removed.message'), { autoCloseMs: 2200 });
       },
       error: () => {
         this.saveLoading.set(false);
@@ -435,8 +438,8 @@ export class EntityComponent implements OnDestroy {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  entity$ = this.slug$.pipe(
-    switchMap((slug) => this.api.get(slug).pipe(startWith(null))),
+  entity$ = combineLatest([this.slug$, toObservable(this.i18n.locale)]).pipe(
+    switchMap(([slug]) => this.api.get(slug).pipe(startWith(null))),
     tap((entity) => {
       if (!entity) {
         return;
@@ -475,7 +478,7 @@ export class EntityComponent implements OnDestroy {
 
     const wasSaved = this.isSaved();
     if (wasSaved) {
-      this.openPopup('manage', 'Archivo activo', 'Ya forma parte de My Space. Puedes organizarla en una colección o retirarla del archivo.');
+      this.openPopup('manage', this.i18n.t('popup.manage.title'), this.i18n.t('popup.manage.message'));
       return;
     }
 
@@ -487,7 +490,7 @@ export class EntityComponent implements OnDestroy {
       next: () => {
         this.isSaved.set(true);
         this.saveLoading.set(false);
-        this.openPopup('saved', 'Guardada en tu archivo', 'Queda disponible en My Space. Puedes organizarla ahora o volver a la lectura.');
+        this.openPopup('saved', this.i18n.t('popup.saved.title'), this.i18n.t('popup.saved.message'));
       },
       error: () => {
         this.saveLoading.set(false);

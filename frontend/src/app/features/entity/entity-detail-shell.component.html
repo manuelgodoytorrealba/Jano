@@ -9,6 +9,11 @@
     (collectionsToggle)="toggleCollectionsPanel()"
     (shareToggle)="shareEntity(entity)"
   ></app-entity-detail-view>
+n  @if (entity.translationMeta?.isFallback) {
+    <div class="entity-translation-notice entity-glass">
+      {{ i18n.t('editorial.fallback.' + entity.translationMeta.resolvedLocale) }}
+    </div>
+  }
 
   @if (showCollectionsPanel() && auth.isLoggedIn) {
     <div class="entity-detail-popup-wrap" aria-live="polite">

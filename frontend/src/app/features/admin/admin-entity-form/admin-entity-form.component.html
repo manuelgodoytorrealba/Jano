@@ -113,10 +113,10 @@
       <section id="section-content" class="admin-dashboard-panel" [class.admin-dashboard-panel--active]="isActiveSection('section-content')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-content')" [attr.aria-hidden]="!isActiveSection('section-content')">
         <div class="admin-dashboard-panel__head">
           <div>
-            <h2>Contenido · Resumen</h2>
-            <p class="muted">Base editorial de la entity: identidad, metadata y cuerpo del texto.</p>
+            <h2>Global data</h2>
+            <p class="muted">Datos compartidos por todos los idiomas: tipo, estado, slug, fechas, tags, relaciones y media.</p>
           </div>
-          <span class="admin-dashboard-panel__pill">Paso 1</span>
+          <span class="admin-dashboard-panel__pill">Compartido</span>
         </div>
 
         <div class="grid">
@@ -161,7 +161,7 @@
           <div></div>
 
           <label class="field full">
-            <span>Título</span>
+            <span>Título base ES</span>
             <input
               type="text"
               [(ngModel)]="form.title"
@@ -178,8 +178,69 @@
               (ngModelChange)="onSlugChange($event)"
               name="slug"
             />
-            <small class="hint">URL amigable de la entity.</small>
+            <small class="hint">URL única y neutral para todos los idiomas.</small>
           </label>
+          @if (isEdit) {
+            <section class="field full translation-editor">
+              <div class="translation-editor__head">
+                <div>
+                  <span>Traducciones editoriales</span>
+                  <small class="hint">Contenido curatorial por idioma. Los datos globales, relaciones y tags siguen siendo únicos.</small>
+                </div>
+                <button class="btn" type="button" [disabled]="translationSaving" (click)="saveActiveTranslation()">
+                  {{ translationSaving ? 'Guardando...' : 'Guardar traducción' }}
+                </button>
+              </div>
+
+              <div class="translation-tabs" role="tablist" aria-label="Traducciones de la entity">
+                @for (item of translationLocales; track item.locale) {
+                  <button
+                    type="button"
+                    class="translation-tab"
+                    [class.is-active]="activeTranslationLocale === item.locale"
+                    [class.is-complete]="translationStatus(item.locale) === 'complete'"
+                    [class.is-partial]="translationStatus(item.locale) === 'partial'"
+                    [class.is-missing]="translationStatus(item.locale) === 'missing'"
+                    (click)="setActiveTranslationLocale(item.locale)"
+                  >
+                    <span>{{ item.label }}</span>
+                    <strong>{{ translationStatusMark(item.locale) }} {{ translationStatusLabel(item.locale) }}</strong>
+                  </button>
+                }
+              </div>
+
+              <div class="translation-fields">
+                <label class="field full">
+                  <span>Título</span>
+                  <input type="text" [(ngModel)]="activeTranslationForm().title" [name]="'translationTitle_' + activeTranslationLocale" />
+                </label>
+
+                <label class="field full">
+                  <span>Descripción corta</span>
+                  <textarea rows="4" [(ngModel)]="activeTranslationForm().shortDescription" [name]="'translationShort_' + activeTranslationLocale"></textarea>
+                </label>
+
+                <label class="field full">
+                  <span>Ensayo / contenido</span>
+                  <textarea rows="10" [(ngModel)]="activeTranslationForm().essay" [name]="'translationEssay_' + activeTranslationLocale"></textarea>
+                </label>
+
+                <label class="field full">
+                  <span>Excerpt</span>
+                  <textarea rows="3" [(ngModel)]="activeTranslationForm().excerpt" [name]="'translationExcerpt_' + activeTranslationLocale"></textarea>
+                </label>
+
+                <label class="field full">
+                  <span>Notas curatoriales</span>
+                  <textarea rows="3" [(ngModel)]="activeTranslationForm().notes" [name]="'translationNotes_' + activeTranslationLocale"></textarea>
+                </label>
+              </div>
+
+              @if (translationMessage) { <small class="success-text">{{ translationMessage }}</small> }
+              @if (translationError) { <small class="error-text">{{ translationError }}</small> }
+            </section>
+          }
+
 
           @if (isEdit) {
             <div class="field full">
@@ -220,8 +281,9 @@
             </div>
           }
 
+          @if (!isEdit) {
           <label class="field full">
-            <span>Resumen</span>
+            <span>Resumen inicial ES</span>
             <textarea
               rows="5"
               [(ngModel)]="form.summary"
@@ -305,6 +367,7 @@
               </div>
             }
           </label>
+          }
         </div>
 
         @if (supportsTypedDetails()) {

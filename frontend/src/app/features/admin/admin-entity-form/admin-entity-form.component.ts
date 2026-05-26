@@ -23,6 +23,8 @@ import {
   AdminMediaCoverageSummary,
   AdminEntityMediaPayload,
   AdminEntityPayload,
+  AdminEntityTranslationPayload,
+  AdminLocale,
   AdminMediaWarning,
   AdminResolvedSlot,
   AdminSourceRefPayload,
@@ -74,6 +76,16 @@ type MediaLibraryViewId = 'coverage' | 'library' | 'add';
 
 type EntitySaveState = 'idle' | 'saving' | 'saved' | 'error';
 
+type TranslationCompleteness = 'complete' | 'partial' | 'missing';
+
+type AdminTranslationForm = {
+  title: string;
+  shortDescription: string;
+  essay: string;
+  notes: string;
+  excerpt: string;
+};
+
 @Component({
   standalone: true,
   selector: 'app-admin-entity-form',
@@ -117,7 +129,7 @@ previewContainer?: ElementRef<HTMLElement>;
 
   readonly dashboardSections = [
     { id: 'section-preview', label: 'Preview Detail' },
-    { id: 'section-content', label: 'Contenido' },
+    { id: 'section-content', label: 'Global data' },
     { id: 'section-media', label: 'Media library' },
     { id: 'section-sources', label: 'Fuentes' },
     { id: 'section-contributors', label: 'Colaboradores' },
@@ -132,6 +144,18 @@ previewContainer?: ElementRef<HTMLElement>;
   submitMode: 'back' | 'stay' = 'back';
   entitySaveState: EntitySaveState = 'idle';
   entityLastSavedAt: Date | null = null;
+  readonly translationLocales: Array<{ locale: AdminLocale; label: string }> = [
+    { locale: 'es', label: 'Español' },
+    { locale: 'en', label: 'English' },
+  ];
+  activeTranslationLocale: AdminLocale = 'es';
+  translationForms: Record<AdminLocale, AdminTranslationForm> = {
+    es: this.createEmptyTranslationForm(),
+    en: this.createEmptyTranslationForm(),
+  };
+  translationSaving = false;
+  translationMessage = '';
+  translationError = '';
 
   mediaEditors: EditableAdminMediaEditor[] = [];
   persistedMediaLinks: EditableAdminMediaLink[] = [];
@@ -413,6 +437,7 @@ previewContainer?: ElementRef<HTMLElement>;
 
   onTitleChange(value: string) {
     this.form.title = value;
+    this.translationForms.es.title = value;
 
     if (!this.slugTouched) {
       this.form.slug = this.slugify(value);
@@ -422,6 +447,46 @@ previewContainer?: ElementRef<HTMLElement>;
   onSlugChange(value: string) {
     this.slugTouched = true;
     this.form.slug = this.slugify(value);
+  }
+
+  setActiveTranslationLocale(locale: AdminLocale): void {
+    this.activeTranslationLocale = locale;
+    this.translationMessage = '';
+    this.translationError = '';
+    this.cdr.markForCheck();
+  }
+
+  activeTranslationForm(): AdminTranslationForm {
+    return this.translationForms[this.activeTranslationLocale];
+  }
+
+  translationStatus(locale: AdminLocale): TranslationCompleteness {
+    const form = this.translationForms[locale];
+    const fields = [form.title, form.shortDescription, form.essay, form.notes, form.excerpt]
+      .map((value) => (value ?? '').trim());
+    const filled = fields.filter(Boolean).length;
+
+    if (!filled) {
+      return 'missing';
+    }
+
+    return form.title.trim() && (form.shortDescription.trim() || form.excerpt.trim()) && form.essay.trim()
+      ? 'complete'
+      : 'partial';
+  }
+
+  translationStatusLabel(locale: AdminLocale): string {
+    const status = this.translationStatus(locale);
+    if (status === 'complete') return 'Complete';
+    if (status === 'partial') return 'Partial';
+    return 'Missing';
+  }
+
+  translationStatusMark(locale: AdminLocale): string {
+    const status = this.translationStatus(locale);
+    if (status === 'complete') return '✓';
+    if (status === 'partial') return '◐';
+    return '○';
   }
 
   private slugify(value: string): string {
@@ -436,12 +501,17 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   private buildPayload(): AdminEntityPayload {
+    const spanish = this.translationForms.es;
+    const title = spanish.title.trim() || (this.form.title ?? '').trim();
+    const summary = spanish.shortDescription.trim() || spanish.excerpt.trim() || (this.form.summary ?? '').trim();
+    const content = spanish.essay.trim() || (this.form.content ?? '').trim();
+
     return {
       type: this.form.type,
-      title: (this.form.title ?? '').trim(),
+      title,
       slug: (this.form.slug ?? '').trim(),
-      summary: (this.form.summary ?? '').trim() || undefined,
-      content: (this.form.content ?? '').trim() || undefined,
+      summary: summary || undefined,
+      content: content || undefined,
       contentLevel: this.form.contentLevel || undefined,
       status: this.form.status || undefined,
       startYear:
@@ -453,6 +523,84 @@ previewContainer?: ElementRef<HTMLElement>;
           ? Number(this.form.endYear)
           : undefined,
     };
+  }
+
+  private createEmptyTranslationForm(): AdminTranslationForm {
+    return { title: '', shortDescription: '', essay: '', notes: '', excerpt: '' };
+  }
+
+  private applyTranslations(entity: AdminEntityResponse): void {
+    const next: Record<AdminLocale, AdminTranslationForm> = {
+      es: {
+        title: entity.title ?? '',
+        shortDescription: entity.summary ?? '',
+        essay: entity.content ?? '',
+        notes: '',
+        excerpt: entity.summary ?? '',
+      },
+      en: this.createEmptyTranslationForm(),
+    };
+
+    for (const translation of entity.translations ?? []) {
+      const locale = translation.locale === 'en' ? 'en' : translation.locale === 'es' ? 'es' : null;
+      if (!locale) continue;
+
+      next[locale] = {
+        title: translation.title ?? '',
+        shortDescription: translation.shortDescription ?? '',
+        essay: translation.essay ?? '',
+        notes: translation.notes ?? '',
+        excerpt: translation.excerpt ?? '',
+      };
+    }
+
+    this.translationForms = next;
+  }
+
+  private buildTranslationPayload(locale: AdminLocale): AdminEntityTranslationPayload {
+    const form = this.translationForms[locale];
+    return {
+      title: form.title.trim(),
+      shortDescription: form.shortDescription.trim() || null,
+      essay: form.essay.trim() || null,
+      notes: form.notes.trim() || null,
+      excerpt: form.excerpt.trim() || null,
+    };
+  }
+
+  saveActiveTranslation(): void {
+    if (!this.isEdit || !this.entityId) {
+      this.translationError = 'Guarda primero la entity antes de editar traducciones.';
+      return;
+    }
+
+    const locale = this.activeTranslationLocale;
+    const payload = this.buildTranslationPayload(locale);
+
+    if (!payload.title) {
+      this.translationError = 'El título de la traducción es obligatorio.';
+      return;
+    }
+
+    this.translationSaving = true;
+    this.translationMessage = 'Guardando traducción...';
+    this.translationError = '';
+    this.cdr.markForCheck();
+
+    this.adminApi.upsertTranslation(this.entityId, locale, payload).subscribe({
+      next: (entity) => {
+        this.translationSaving = false;
+        this.translationMessage = 'Traducción guardada.';
+        this.applyEntityResponse(entity);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.translationSaving = false;
+        this.translationMessage = '';
+        this.translationError = err?.error?.message ?? 'No se pudo guardar la traducción.';
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   private loadEntity() {
@@ -490,6 +638,7 @@ previewContainer?: ElementRef<HTMLElement>;
       endYear: entity.endYear ?? null,
     };
 
+    this.applyTranslations(entity);
     this.applyMediaLibraryState(entity, preserveDirtyMediaEditors, clearedEditorId);
     this.persistedResolvedMedia = entity.resolvedMedia ?? null;
     this.detailsForm = this.extractDetailsForm(entity);
