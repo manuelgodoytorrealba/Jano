@@ -119,8 +119,15 @@
   width: 34px;
   height: 34px;
   border-radius: 12px;
-  font-size: 1.3rem;
+  padding: 0;
+  font-size: 1.18rem;
   line-height: 1;
+}
+
+.app-chrome__header-toggle--close span {
+  display: block;
+  line-height: 1;
+  transform: translateY(-0.5px);
 }
 
 .app-chrome__header-toggle--open {
