@@ -230,10 +230,19 @@
         0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
-.entity-deck__admin-edit svg {
+.entity-deck__admin-edit-icon {
     width: 18px;
     height: 18px;
     display: block;
+    overflow: visible;
+    color: rgba(255, 247, 239, 0.9);
+    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.16)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.23));
+}
+
+.entity-deck__admin-edit-hole {
+    fill: rgba(34, 35, 34, 0.72);
+    stroke: rgba(255, 247, 239, 0.28);
+    stroke-width: 0.7;
 }
 
 .entity-deck__title {
