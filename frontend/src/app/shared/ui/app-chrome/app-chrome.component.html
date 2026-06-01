@@ -359,3 +359,11 @@
     }
   }
 </aside>
+
+<div class="app-chrome__orientation-lock" aria-live="polite">
+  <div class="app-chrome__orientation-lock-card app-glass" role="status" [attr.aria-label]="i18n.t('orientationLock.aria')">
+    <span class="app-chrome__orientation-lock-kicker">{{ i18n.t('orientationLock.kicker') }}</span>
+    <h2 class="app-chrome__orientation-lock-title">{{ i18n.t('orientationLock.title') }}</h2>
+    <p class="app-chrome__orientation-lock-copy">{{ i18n.t('orientationLock.copy') }}</p>
+  </div>
+</div>

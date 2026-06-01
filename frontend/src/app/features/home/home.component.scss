@@ -16,7 +16,7 @@
   --home-deck-card-width: min(1040px, 78vw);
   --home-deck-card-height: clamp(470px, 34vw, 560px);
   --home-deck-stack-height: clamp(480px, 52vw, 660px);
-  --home-deck-nav-size: 42px;
+  --home-deck-nav-size: 38px;
   --home-deck-nav-bottom: 6px;
   --home-deck-nav-offset: 220px;
   --deck-card-transform-duration: 240ms;
@@ -117,7 +117,7 @@
 
 .home-page__deck::ng-deep .entity-deck__card.is-active .entity-deck__body {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
     rgba(31, 31, 36, 0.86);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -143,13 +143,13 @@
   bottom: var(--home-deck-nav-bottom);
   width: var(--home-deck-nav-size);
   height: var(--home-deck-nav-size);
-  opacity: 0.82;
+  opacity: 0.66;
   transform: none;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
     rgba(22, 22, 28, 0.22);
   box-shadow:
-    0 12px 34px rgba(0, 0, 0, 0.24),
+    0 10px 26px rgba(0, 0, 0, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.24),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 }
@@ -177,7 +177,7 @@
     --home-deck-card-width: clamp(1180px, 68vw, 1440px);
     --home-deck-card-height: clamp(540px, 32vw, 660px);
     --home-deck-stack-height: calc(var(--home-deck-card-height) + 78px);
-    --home-deck-nav-size: 42px;
+    --home-deck-nav-size: 38px;
     --home-deck-nav-bottom: 8px;
     --home-deck-nav-offset: 260px;
   }
@@ -196,7 +196,7 @@
     --home-deck-card-width: min(940px, 86vw);
     --home-deck-card-height: clamp(450px, 38vw, 540px);
     --home-deck-stack-height: clamp(460px, 54vw, 610px);
-    --home-deck-nav-size: 42px;
+    --home-deck-nav-size: 38px;
     --home-deck-nav-bottom: 6px;
     --home-deck-nav-offset: 178px;
   }
@@ -217,7 +217,7 @@
     --home-deck-card-height: clamp(450px, 118vw, 580px);
     --home-deck-stack-height: clamp(430px, 88vw, 580px);
     --home-deck-nav-size: 48px;
-    --home-deck-nav-bottom: 54px;
+    --home-deck-nav-bottom: 98px;
     --home-deck-nav-offset: 118px;
   }
 
@@ -257,5 +257,177 @@
 
   .home-page__deck::ng-deep .entity-deck__nav--right {
     right: calc(50% - var(--home-deck-nav-offset));
+  }
+}
+@media (max-width: 430px) {
+  .home-page__deck {
+    --home-deck-card-height: clamp(402px, 108vw, 528px);
+    --home-deck-stack-height: clamp(404px, 96vw, 528px);
+    --home-deck-nav-size: 36px;
+    --home-deck-nav-bottom: 94px;
+    --home-deck-nav-offset: 104px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__body {
+    padding: 22px 22px 20px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__title {
+    font-size: clamp(2rem, 7.4vw, 2.75rem);
+  }
+
+  .home-page__deck::ng-deep .entity-deck__description {
+    font-size: 0.94rem;
+    line-height: 1.62;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__media {
+    height: 198px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__eyebrow,
+  .home-page__deck::ng-deep .entity-deck__meta {
+    font-size: 0.7rem;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__chip,
+  .home-page__deck::ng-deep .entity-deck__admin-edit {
+    height: 34px;
+  }
+}
+@media (max-width: 390px) {
+  .home-page__deck {
+    --home-deck-card-height: clamp(380px, 106vw, 470px);
+    --home-deck-stack-height: clamp(388px, 98vw, 470px);
+    --home-deck-nav-size: 38px;
+    --home-deck-nav-bottom: 88px;
+    --home-deck-nav-offset: 114px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__stage {
+    padding:
+      calc(var(--app-shell-gap) + 128px)
+      12px
+      calc(var(--app-shell-gap) + 100px);
+  }
+
+  .home-page__deck::ng-deep .entity-deck__body {
+    padding: 18px 18px 16px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__title {
+    font-size: clamp(1.82rem, 7.6vw, 2.2rem);
+  }
+
+  .home-page__deck::ng-deep .entity-deck__description {
+    font-size: 0.89rem;
+    line-height: 1.58;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__media {
+    height: 182px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__chip,
+  .home-page__deck::ng-deep .entity-deck__admin-edit {
+    height: 32px;
+  }
+}
+@media (max-width: 360px) {
+  .home-page__deck {
+    --home-deck-card-height: clamp(356px, 110vw, 428px);
+    --home-deck-stack-height: clamp(364px, 102vw, 436px);
+    --home-deck-nav-size: 34px;
+    --home-deck-nav-bottom: 80px;
+    --home-deck-nav-offset: 94px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__stage {
+    padding:
+      calc(var(--app-shell-gap) + 120px)
+      10px
+      calc(var(--app-shell-gap) + 92px);
+  }
+
+  .home-page__deck::ng-deep .entity-deck__body {
+    padding: 16px 16px 14px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__title {
+    font-size: clamp(1.64rem, 7.8vw, 2rem);
+  }
+
+  .home-page__deck::ng-deep .entity-deck__description {
+    font-size: 0.84rem;
+    line-height: 1.52;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__media {
+    height: 164px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__eyebrow,
+  .home-page__deck::ng-deep .entity-deck__meta {
+    font-size: 0.66rem;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__chip,
+  .home-page__deck::ng-deep .entity-deck__admin-edit {
+    height: 30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .home-page__deck::ng-deep .entity-deck__nav {
+    display: none;
+  }
+}
+
+@media (max-width: 340px) {
+  .home-page__deck {
+    --home-deck-card-height: clamp(320px, 104vw, 384px);
+    --home-deck-stack-height: clamp(332px, 96vw, 394px);
+    --home-deck-nav-size: 32px;
+    --home-deck-nav-bottom: 72px;
+    --home-deck-nav-offset: 88px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__stage {
+    padding:
+      calc(var(--app-shell-gap) + 110px)
+      8px
+      calc(var(--app-shell-gap) + 84px);
+  }
+
+  .home-page__deck::ng-deep .entity-deck__nav {
+    display: none;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__body {
+    padding: 14px 14px 12px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__title {
+    font-size: clamp(1.48rem, 7.4vw, 1.84rem);
+    line-height: 0.98;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__description {
+    font-size: 0.8rem;
+    line-height: 1.48;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__media {
+    height: 150px;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__eyebrow,
+  .home-page__deck::ng-deep .entity-deck__meta {
+    font-size: 0.64rem;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__chip,
+  .home-page__deck::ng-deep .entity-deck__admin-edit {
+    height: 28px;
   }
 }

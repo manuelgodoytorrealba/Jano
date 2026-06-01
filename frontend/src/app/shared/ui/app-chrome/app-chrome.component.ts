@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterLink } from '@angular/router';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
@@ -41,9 +41,15 @@ export class AppChromeComponent {
   private readonly currentUrl = signal(this.normalizeUrl(this.router.url));
   private readonly pendingUrl = signal<string | null>(null);
   readonly compactHeaderEnabled = signal(this.readCompactHeaderEnabled());
-  readonly headerCollapsed = signal(false);
+  readonly headerCollapsed = signal(this.shouldStartHeaderCollapsed());
   readonly detailHeaderRevealed = signal(false);
   readonly brandPressing = signal(false);
+  readonly orientationLockVisible = signal(this.readOrientationLockVisible());
+
+  @HostBinding('class.app-chrome--orientation-lock')
+  get orientationLockActive(): boolean {
+    return this.orientationLockVisible();
+  }
 
   readonly navItems: HeaderNavItem[] = [
     { label: 'nav.discover', route: '/', kind: 'route', group: 'public', exact: true },
@@ -87,17 +93,16 @@ export class AppChromeComponent {
 
       this.currentUrl.set(this.normalizeUrl(this.router.url));
       this.pendingUrl.set(null);
-      this.syncDetailHeaderState();
+      this.syncHeaderState();
     });
 
     if (typeof window !== 'undefined') {
       fromEvent(window, 'resize').pipe(takeUntilDestroyed()).subscribe(() => {
         const compact = this.readCompactHeaderEnabled();
+        this.orientationLockVisible.set(this.readOrientationLockVisible());
         this.compactHeaderEnabled.set(compact);
 
-        if (!compact && !this.isDetailRoute() && this.headerCollapsed()) {
-          this.headerCollapsed.set(false);
-        }
+        this.syncHeaderState();
       });
 
       fromEvent<KeyboardEvent>(window, 'keydown').pipe(takeUntilDestroyed()).subscribe((event) => {
@@ -107,7 +112,26 @@ export class AppChromeComponent {
       });
     }
 
-    this.syncDetailHeaderState();
+    this.syncHeaderState();
+  }
+
+  private shouldStartHeaderCollapsed(): boolean {
+    const url = this.normalizeUrl(this.router.url);
+    return url.startsWith('/entity/') || (url === '/' && this.readCompactHeaderEnabled());
+  }
+
+  private readOrientationLockVisible(): boolean {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    const isIpad =
+      (/iPad/i.test(window.navigator.userAgent) ||
+        (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1)) &&
+      window.innerWidth >= 768 &&
+      window.innerWidth <= 1180;
+
+    return isIpad && window.matchMedia('(orientation: portrait) and (pointer: coarse) and (hover: none)').matches;
   }
 
   private readCompactHeaderEnabled(): boolean {
@@ -170,16 +194,26 @@ export class AppChromeComponent {
     return this.compactHeaderEnabled() && !this.detailHeaderMode();
   }
 
-  private syncDetailHeaderState(): void {
+  private syncHeaderState(): void {
     if (this.isDetailRoute()) {
       this.minimizeDetailHeader();
       return;
     }
 
     this.detailHeaderRevealed.set(false);
+
+    if (this.isHomeRoute() && this.compactHeaderEnabled()) {
+      this.headerCollapsed.set(true);
+      return;
+    }
+
     if (!this.compactHeaderEnabled()) {
       this.headerCollapsed.set(false);
     }
+  }
+
+  private isHomeRoute(): boolean {
+    return this.activeUrl() === '/';
   }
 
   private revealDetailHeader(): void {

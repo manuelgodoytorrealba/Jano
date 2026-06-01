@@ -1017,13 +1017,17 @@
 
 @media (max-width: 860px) {
   .app-chrome__header {
+    left: var(--app-shell-gap);
     right: var(--app-shell-gap);
+    padding: 10px 12px 12px;
     grid-template-columns: 1fr;
     justify-items: stretch;
+    gap: 10px;
   }
 
   .app-chrome__header--detail {
     left: var(--app-shell-gap);
+    right: var(--app-shell-gap);
     top: calc(var(--app-shell-gap) + 54px);
   }
 
@@ -1042,6 +1046,14 @@
 
   .app-chrome__header--detail + .app-chrome__header-toggle--open::after {
     display: none;
+  }
+
+  .app-chrome__brand,
+  .app-chrome__search,
+  .app-chrome__nav,
+  .app-chrome__actions {
+    width: 100%;
+    justify-self: stretch;
   }
 
   .app-chrome__brand,
@@ -1067,17 +1079,56 @@
   }
 
   .app-chrome__header-toggle--close {
+    top: calc(var(--app-shell-gap) + 10px);
+    right: calc(var(--app-shell-gap) + 10px);
+  }
+}
+
+
+@media (min-width: 768px) and (max-width: 1180px) and (orientation: landscape) and (pointer: coarse) and (hover: none) {
+  .app-chrome__header-toggle--close {
+    top: calc(var(--app-shell-gap) + 12px);
     right: calc(var(--app-shell-gap) + 14px);
   }
 }
 
 @media (max-width: 620px) {
+  .app-chrome__brand-mark {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 14px;
+  }
+
+  .app-chrome__brand-tag {
+    display: none;
+  }
+
+  .app-chrome__brand-name {
+    font-size: 1rem;
+  }
+
+  .app-chrome__search-icon {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .app-chrome__search-input.ds-input {
+    height: 44px;
+    padding-left: 38px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+  }
+
   .app-chrome__nav {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
     min-width: 0;
-    overflow: visible;
-    border-radius: 22px;
+    overflow: hidden;
+    border-radius: 20px;
+    gap: 4px;
+    padding: 3px;
   }
 
   .app-chrome__nav-indicator,
@@ -1090,7 +1141,70 @@
   }
 
   .app-chrome__nav-link {
-    font-size: 0.82rem;
-    padding: 0 10px;
+    height: 38px;
+    font-size: 0.76rem;
+    padding: 0 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    overflow-wrap: normal;
+    word-break: normal;
   }
+}
+
+
+.app-chrome__orientation-lock {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  place-items: center;
+  padding: clamp(20px, 3vw, 36px);
+  background: linear-gradient(160deg, rgba(10, 10, 12, 0.96), rgba(4, 4, 5, 0.985));
+}
+
+.app-chrome__orientation-lock-card {
+  width: min(460px, 100%);
+  padding: 30px 28px 26px;
+  border-radius: 30px;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.app-chrome__orientation-lock-kicker {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: var(--tracking-ui);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.app-chrome__orientation-lock-title {
+  margin: 0;
+  font-size: clamp(2rem, 5.8vw, 2.8rem);
+  line-height: 0.98;
+  letter-spacing: var(--tracking-tight);
+}
+
+.app-chrome__orientation-lock-copy {
+  margin: 14px 0 0;
+  font-size: 1rem;
+  line-height: 1.68;
+  color: var(--color-text-soft);
+}
+
+:host(.app-chrome--orientation-lock) {
+  overflow: hidden;
+}
+
+:host(.app-chrome--orientation-lock) .app-chrome__header,
+:host(.app-chrome--orientation-lock) .app-chrome__header-toggle,
+:host(.app-chrome--orientation-lock) .app-chrome__utility {
+  display: none;
+}
+
+:host(.app-chrome--orientation-lock) .app-chrome__orientation-lock {
+  display: grid;
 }
