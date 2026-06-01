@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { I18nService } from '../../core/i18n/i18n.service';
 
 @Component({
   standalone: true,
@@ -8,6 +9,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GraphControlsBarComponent {
+  readonly i18n = inject(I18nService);
   @Input({ required: true }) labelsMode!: 'auto' | 'always' | 'hidden';
   @Input({ required: true }) nodeCount = 0;
   @Input({ required: true }) edgeCount = 0;
@@ -34,11 +36,11 @@ export class GraphControlsBarComponent {
   labelsModeLabel(): string {
     switch (this.labelsMode) {
       case 'always':
-        return 'Siempre';
+        return this.i18n.t('graph.labels.always');
       case 'hidden':
-        return 'Nunca';
+        return this.i18n.t('graph.labels.hidden');
       default:
-        return 'Auto';
+        return this.i18n.t('graph.labels.auto');
     }
   }
 

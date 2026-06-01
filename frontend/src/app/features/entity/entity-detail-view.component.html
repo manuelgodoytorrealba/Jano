@@ -17,16 +17,16 @@
       <div class="entity-article-hero__content">
         <div class="entity-article-hero__meta">
           <div class="entity-header__badges">
-            <span class="ds-badge entity-badge">{{ entity.status }}</span>
+            <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
             @if (entity.contentLevel) {
-            <span class="ds-badge entity-badge">{{ entity.contentLevel }}</span>
+            <span class="ds-badge entity-badge">{{ contentLevelLabel(entity.contentLevel) }}</span>
             }
-            <span class="ds-badge entity-badge">ARTICLE</span>
+            <span class="ds-badge entity-badge">{{ i18n.t('entity.article') }}</span>
           </div>
 
           <div class="entity-article-hero__byline">
             @if (articleByline(entity); as author) {
-            <span>Por {{ author }}</span>
+            <span>{{ i18n.t('entity.by') }} {{ author }}</span>
             }
             @if (articleDateLabel(entity); as dateLabel) {
             <span>{{ dateLabel }}</span>
@@ -48,8 +48,8 @@
     </section>
     } @else {
     <div class="entity-explorer__workspace-deck">
-      <div class="entity-explorer__workspace-bar" role="toolbar" aria-label="Modo del workspace">
-        <span class="entity-explorer__workspace-label">Workspace</span>
+      <div class="entity-explorer__workspace-bar" role="toolbar" [attr.aria-label]="i18n.t('workspace.aria')">
+        <span class="entity-explorer__workspace-label">{{ i18n.t('workspace.label') }}</span>
         <div class="entity-explorer__workspace-switch">
           @for (mode of workspaceModes; track mode.value) {
           <button
@@ -59,7 +59,7 @@
             [attr.aria-pressed]="workspaceMode === mode.value"
             (click)="setWorkspaceMode(mode.value)"
           >
-            {{ mode.label }}
+            {{ i18n.t(mode.labelKey) }}
           </button>
           }
         </div>
@@ -69,7 +69,7 @@
           [attr.aria-pressed]="workspaceFocused"
           (click)="toggleWorkspaceFocus()"
         >
-          {{ workspaceFocused ? 'Exit Focus' : 'Focus' }}
+          {{ workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus') }}
         </button>
       </div>
     </div>
@@ -137,11 +137,11 @@
               }
               <div class="entity-topbar__meta">
                 <div class="entity-header__badges">
-                  <span class="ds-badge entity-badge">{{ entity.status }}</span>
+                  <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
                   @if (entity.contentLevel) {
-                  <span class="ds-badge entity-badge">{{ entity.contentLevel }}</span>
+                  <span class="ds-badge entity-badge">{{ contentLevelLabel(entity.contentLevel) }}</span>
                   }
-                  <span class="ds-badge entity-badge">{{ entity.type }}</span>
+                  <span class="ds-badge entity-badge">{{ entityTypeLabel(entity.type) }}</span>
                 </div>
                 @if (entityTags(entity).length) {
                 <div class="entity-header__badges entity-header__badges--tags">
@@ -175,7 +175,7 @@
       @if (isArticle(entity)) {
       <section class="entity-section entity-glass entity-article-graph">
         <div class="entity-section__head">
-          <p class="section-label">Mapa de conexiones</p>
+          <p class="section-label">{{ i18n.t('entity.connectionMap') }}</p>
         </div>
         @if (renderGraph) {
         @defer (on idle) {
@@ -206,7 +206,7 @@
       } @else {
       <section class="entity-section entity-glass">
         <div class="entity-section__head">
-          <p class="section-label">Ficha</p>
+          <p class="section-label">{{ i18n.t('entity.sheet') }}</p>
         </div>
         @if (detailFacts(entity).length) {
         <div class="facts-sheet">
@@ -239,19 +239,19 @@
           </div>
         </div>
         } @else {
-        <p class="text-muted">Sin ficha específica para este tipo.</p>
+        <p class="text-muted">{{ i18n.t('entity.noSheet') }}</p>
         }
       </section>
       }
 
       <section class="entity-section entity-glass">
         <div class="entity-section__head">
-          <p class="section-label">Relaciones</p>
+          <p class="section-label">{{ i18n.t('entity.relations') }}</p>
         </div>
         <div class="relations-group">
-          <h3 class="title-section entity-subtitle">Conecta con</h3>
+          <h3 class="title-section entity-subtitle">{{ i18n.t('entity.connectsWith') }}</h3>
           @if ((entity.outgoing?.length ?? 0) === 0) {
-          <p class="text-muted">No hay conexiones directas desde esta entidad.</p>
+          <p class="text-muted">{{ i18n.t('entity.noOutgoing') }}</p>
           } @else {
           <ul class="relations-list">
             @for (r of visibleOutgoingRelations(entity); track r.id) {
@@ -268,22 +268,22 @@
           </ul>
           @if (hiddenOutgoingRelations(entity) > 0) {
           <button type="button" class="relations-reveal" (click)="showMoreOutgoingRelations()">
-            Mostrar {{ hiddenOutgoingRelations(entity) > 48 ? 48 : hiddenOutgoingRelations(entity) }} más
+            {{ i18n.t('common.show') }} {{ hiddenOutgoingRelations(entity) > 48 ? 48 : hiddenOutgoingRelations(entity) }} {{ i18n.t('common.more') }}
           </button>
           }
           }
         </div>
 
         <div class="relations-group">
-          <h3 class="title-section entity-subtitle">También aparece en</h3>
+          <h3 class="title-section entity-subtitle">{{ i18n.t('entity.alsoAppearsIn') }}</h3>
           @if ((entity.incoming?.length ?? 0) === 0) {
-          <p class="text-muted">No hay otras entidades conectando hacia esta.</p>
+          <p class="text-muted">{{ i18n.t('entity.noIncoming') }}</p>
           } @else {
           <ul class="relations-list">
             @for (r of visibleIncomingRelations(entity); track r.id) {
             <li class="relation-card entity-glass-card relation-card--friendly">
               <div class="relation-card__topline">
-                <span class="relation-card__label">{{ r.relationType?.inverseLabel ?? r.relationTypeLabel ?? relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming') }}</span>
+                <span class="relation-card__label">{{ r.relationTypeInverseLabel ?? r.relationTypeLabel ?? relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming') }}</span>
                 <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">{{ r.from.title }}</a>
               </div>
               @if (r.justification) {
@@ -294,7 +294,7 @@
           </ul>
           @if (hiddenIncomingRelations(entity) > 0) {
           <button type="button" class="relations-reveal" (click)="showMoreIncomingRelations()">
-            Mostrar {{ hiddenIncomingRelations(entity) > 48 ? 48 : hiddenIncomingRelations(entity) }} más
+            {{ i18n.t('common.show') }} {{ hiddenIncomingRelations(entity) > 48 ? 48 : hiddenIncomingRelations(entity) }} {{ i18n.t('common.more') }}
           </button>
           }
           }
@@ -305,13 +305,13 @@
     @if ((entity.sourceRefs?.length ?? 0) > 0) {
     <section class="entity-section entity-glass entity-section--wide">
       <div class="entity-section__head">
-        <p class="section-label">Fuentes</p>
+        <p class="section-label">{{ i18n.t('entity.sources') }}</p>
       </div>
       <ul class="relations-list">
         @for (r of entity.sourceRefs; track r.id) {
         <li class="relation-source">
           <div class="relation-card entity-glass-card">
-            <span class="ds-badge entity-badge">{{ r.source?.type ?? r.sourceType }}</span>
+            <span class="ds-badge entity-badge">{{ sourceTypeLabel(r.source?.type ?? r.sourceType) }}</span>
             <span class="relation-card__text">
               <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
               @if (r.source?.author || r.sourceAuthor) { — {{ r.source?.author ?? r.sourceAuthor }} }
@@ -323,6 +323,9 @@
           </div>
           @if (r.quote) {
           <div class="quote-block">“{{ r.quote }}”</div>
+          }
+          @if (r.note) {
+          <div class="relation-card__text"><app-rich-text [text]="r.note"></app-rich-text></div>
           }
         </li>
         }

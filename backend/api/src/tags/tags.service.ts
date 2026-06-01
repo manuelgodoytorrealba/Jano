@@ -6,12 +6,31 @@ import { CreateTagDto } from './dto/create-tag.dto';
 export class TagsService {
   constructor(private prisma: PrismaService) {}
 
-  list() {
-    return this.prisma.tag.findMany({
+  async list(locale?: string) {
+    const requestedLocale = (locale ?? 'es').trim().toLowerCase().split('-')[0];
+    const tags = await this.prisma.tag.findMany({
+      include: {
+        translations: {
+          where: { locale: { in: Array.from(new Set([requestedLocale, 'es', 'en'])) } },
+        },
+      },
       orderBy: [
         { category: 'asc' },
         { label: 'asc' },
       ],
+    });
+
+    return tags.map((tag: any) => {
+      const resolved = tag.translations.find((item: any) => item.locale === requestedLocale)
+        ?? tag.translations.find((item: any) => item.locale === 'es')
+        ?? tag.translations.find((item: any) => item.locale === 'en')
+        ?? null;
+
+      return {
+        ...tag,
+        label: resolved?.label?.trim() || tag.label,
+        description: resolved?.description?.trim() || tag.description,
+      };
     });
   }
 

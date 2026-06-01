@@ -1515,3 +1515,61 @@
 .translation-editor .error-text {
   color: #9f2f2f;
 }
+
+.translation-fields__subhead {
+  display: grid;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(28, 25, 23, 0.08);
+}
+
+.translation-fields__subhead strong {
+  color: #1f1c18;
+}
+
+:host-context([data-theme="dark"]) .form-wrap,
+:host-context([data-theme="dark"]) .admin-sidebar,
+:host-context([data-theme="dark"]) .admin-dashboard-panel,
+:host-context([data-theme="dark"]) .detail-live-panel,
+:host-context([data-theme="dark"]) .detail-live-embed,
+:host-context([data-theme="dark"]) .media-library-nav,
+:host-context([data-theme="dark"]) .media-coverage-card,
+:host-context([data-theme="dark"]) .preview-chip-card,
+:host-context([data-theme="dark"]) .preview-list-card,
+:host-context([data-theme="dark"]) .preview-empty,
+:host-context([data-theme="dark"]) .slot-card {
+  color: #1f1c18;
+}
+
+:host-context([data-theme="dark"]) .admin-dashboard-panel h2,
+:host-context([data-theme="dark"]) .admin-dashboard-panel h3,
+:host-context([data-theme="dark"]) .admin-dashboard-panel h4,
+:host-context([data-theme="dark"]) .admin-sidebar__title,
+:host-context([data-theme="dark"]) .preview-title,
+:host-context([data-theme="dark"]) .field span,
+:host-context([data-theme="dark"]) .muted,
+:host-context([data-theme="dark"]) .hint,
+:host-context([data-theme="dark"]) .preview-summary,
+:host-context([data-theme="dark"]) .preview-content,
+:host-context([data-theme="dark"]) .preview-section-title,
+:host-context([data-theme="dark"]) .preview-slug,
+:host-context([data-theme="dark"]) .translation-fields__subhead strong {
+  color: #3c342d;
+}
+
+:host-context([data-theme="dark"]) input,
+:host-context([data-theme="dark"]) select,
+:host-context([data-theme="dark"]) textarea,
+:host-context([data-theme="dark"]) .btn,
+:host-context([data-theme="dark"]) .admin-sidebar__control,
+:host-context([data-theme="dark"]) .admin-sidebar__action--ghost,
+:host-context([data-theme="dark"]) .translation-editor input,
+:host-context([data-theme="dark"]) .translation-editor textarea,
+:host-context([data-theme="dark"]) .translation-editor select {
+  color: #201d19;
+}
+
+:host-context([data-theme="dark"]) input::placeholder,
+:host-context([data-theme="dark"]) textarea::placeholder {
+  color: #8b8580;
+}

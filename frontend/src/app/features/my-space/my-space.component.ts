@@ -6,6 +6,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { CollectionsApi } from '../../core/api/collections.api';
 import { SavedApi } from '../../core/api/saved.api';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
+import { I18nService } from '../../core/i18n/i18n.service';
 
 @Component({
   standalone: true,
@@ -20,6 +21,7 @@ export class MySpaceComponent {
   private collectionsApi = inject(CollectionsApi);
   private savedApi = inject(SavedApi);
   private router = inject(Router);
+  readonly i18n = inject(I18nService);
 
   private refresh$ = new BehaviorSubject<void>(undefined);
   private removedSavedIds$ = new BehaviorSubject<Set<string>>(new Set());
@@ -70,7 +72,7 @@ export class MySpaceComponent {
   }
 
   roleLabel(user: any): string {
-    return this.isAdmin(user) ? 'Administrador' : 'Miembro';
+    return this.isAdmin(user) ? this.i18n.t('role.admin') : this.i18n.t('role.member');
   }
 
   previewItems(items: any[] | null | undefined, limit = 4): any[] {
@@ -102,7 +104,7 @@ export class MySpaceComponent {
       },
       error: (err) => {
         this.creating = false;
-        this.createError = err?.error?.message ?? 'No se pudo crear la colección';
+        this.createError = err?.error?.message ?? this.i18n.t('mySpace.createError');
       },
     });
   }

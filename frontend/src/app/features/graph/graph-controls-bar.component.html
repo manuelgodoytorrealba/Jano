@@ -1,29 +1,27 @@
 <div class="graph-panel-bar">
   <div class="graph-panel-bar__group graph-panel-bar__group--primary">
-    <div class="explorer-surface-label">Relaciones</div>
+    <div class="explorer-surface-label">{{ i18n.t('graph.relations') }}</div>
   </div>
 
   <div class="graph-panel-bar__group graph-panel-bar__group--meta">
     <div class="graph-panel-bar__meta">
-      <span>{{ nodeCount }} nodos · {{ edgeCount }} relaciones · {{ scalePercent }}%</span>
+      <span>{{ nodeCount }} {{ i18n.t('graph.nodes') }} · {{ edgeCount }} {{ i18n.t('graph.edges') }} · {{ scalePercent }}%</span>
     </div>
   </div>
 
   <div class="graph-panel-bar__group graph-panel-bar__group--actions">
     <div class="graph-panel-bar__toggles">
       <button type="button" class="graph-utility-btn graph-utility-btn--mode" (click)="cycleLabelsMode()">
-        Etiquetas {{ labelsModeLabel() }}
+        {{ i18n.t('graph.labels') }} {{ labelsModeLabel() }}
       </button>
-      <button type="button" class="graph-utility-btn" [disabled]="!graphReady" (click)="toggleInspector.emit()">
-        Info
-      </button>
+      <button type="button" class="graph-utility-btn" [disabled]="!graphReady" (click)="toggleInspector.emit()">{{ i18n.t('graph.info') }}</button>
     </div>
 
     <div class="surface-controls surface-controls--graph">
-      <button type="button" class="surface-control surface-control--text" [disabled]="!graphReady" (click)="centerSelection.emit()">Centrar</button>
+      <button type="button" class="surface-control surface-control--text" [disabled]="!graphReady" (click)="centerSelection.emit()">{{ i18n.t('graph.center') }}</button>
       <button type="button" class="surface-control" (click)="zoom(1.14)">+</button>
       <button type="button" class="surface-control" (click)="zoom(0.88)">−</button>
-      <button type="button" class="surface-control surface-control--text surface-control--wide" (click)="resetGraphView.emit()">Reset</button>
+      <button type="button" class="surface-control surface-control--text surface-control--wide" (click)="resetGraphView.emit()">{{ i18n.t('graph.reset') }}</button>
     </div>
   </div>
 </div>

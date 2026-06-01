@@ -2,7 +2,7 @@
 <div class="entity-detail collection-detail page-shell">
   <div class="entity-detail__layout">
     <div class="entity-explorer__workspace-deck">
-      <div class="entity-explorer__workspace-bar" role="toolbar" aria-label="Modo del workspace">
+      <div class="entity-explorer__workspace-bar" role="toolbar" [attr.aria-label]="i18n.t('workspace.aria')">
         <div class="entity-explorer__workspace-switch">
           @for (mode of workspaceModes; track mode.value) {
           <button
@@ -12,7 +12,7 @@
             [attr.aria-pressed]="workspaceMode === mode.value"
             (click)="setWorkspaceMode(mode.value)"
           >
-            {{ mode.label }}
+            {{ i18n.t(mode.labelKey) }}
           </button>
           }
         </div>

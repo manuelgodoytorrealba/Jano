@@ -74,6 +74,7 @@
     place-items: center;
     padding:
         var(--deck-top-safe-space) var(--deck-side-safe-space) var(--deck-bottom-safe-space);
+    touch-action: pan-y;
 }
 
 .entity-deck__stack {
@@ -857,4 +858,66 @@
         border-radius: 22px;
     }
 
+}
+
+
+@media (max-width: 620px) {
+    .entity-deck {
+        --deck-top-safe-space: 34px;
+        --deck-bottom-safe-space: 154px;
+        --deck-side-safe-space: 12px;
+        --deck-bottom-nav-offset: 12px;
+        --deck-dots-offset: 92px;
+    }
+
+    .entity-deck__stack {
+        height: 360px;
+    }
+
+    .entity-deck__card {
+        width: min(94vw, 520px);
+        height: 360px;
+    }
+
+    .entity-deck__media {
+        height: 180px;
+    }
+
+    .entity-deck__body {
+        padding: 18px 18px 16px;
+    }
+
+    .entity-deck__title {
+        font-size: clamp(1.85rem, 7.8vw, 2.4rem);
+    }
+
+    .entity-deck__description {
+        font-size: 0.92rem;
+        line-height: 1.56;
+    }
+
+    .entity-deck__nav {
+        width: 40px;
+        height: 40px;
+        opacity: 0.66;
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .entity-deck__nav-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .entity-deck__dots {
+        gap: 6px;
+    }
+
+    .entity-deck__dot {
+        width: 7px;
+        height: 7px;
+    }
+
+    .entity-deck__dot.is-active {
+        width: 20px;
+    }
 }

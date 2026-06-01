@@ -234,6 +234,70 @@
                   <span>Notas curatoriales</span>
                   <textarea rows="3" [(ngModel)]="activeTranslationForm().notes" [name]="'translationNotes_' + activeTranslationLocale"></textarea>
                 </label>
+                @if (supportsTypedDetails()) {
+                  <div class="translation-fields__subhead">
+                    <strong>Ficha localizada</strong>
+                    <small class="hint">Estos campos alimentan la ficha pública en el idioma activo.</small>
+                  </div>
+                  @if (form.type === 'ARTWORK') {
+                    <label class="field">
+                      <span>Técnica</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().technique" [name]="'translationTechnique_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field">
+                      <span>Materiales</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().materials" [name]="'translationMaterials_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field">
+                      <span>Dimensiones</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().dimensions" [name]="'translationDimensions_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field">
+                      <span>Ubicación</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().location" [name]="'translationLocation_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field">
+                      <span>Colección</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().collection" [name]="'translationCollection_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field">
+                      <span>Estado</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().state" [name]="'translationState_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field full">
+                      <span>Nacionalidad autor</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().authorNation" [name]="'translationAuthorNation_' + activeTranslationLocale" />
+                    </label>
+                  }
+                  @if (form.type === 'ARTIST') {
+                    <label class="field">
+                      <span>País</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().country" [name]="'translationCountry_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field">
+                      <span>Ciudad</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().city" [name]="'translationCity_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field full">
+                      <span>Disciplinas</span>
+                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().disciplines" [name]="'translationDisciplines_' + activeTranslationLocale" />
+                    </label>
+                    <label class="field full">
+                      <span>Biografía breve</span>
+                      <textarea rows="4" [(ngModel)]="activeLocalizedDetailsForm().bioShort" [name]="'translationBioShort_' + activeTranslationLocale"></textarea>
+                    </label>
+                    <label class="field full">
+                      <span>Links</span>
+                      <textarea rows="3" [(ngModel)]="activeLocalizedDetailsForm().links" [name]="'translationLinks_' + activeTranslationLocale"></textarea>
+                    </label>
+                  }
+                  @if (form.type === 'CONCEPT' || form.type === 'PERIOD') {
+                    <label class="field full">
+                      <span>Definición</span>
+                      <textarea rows="6" [(ngModel)]="activeLocalizedDetailsForm().definition" [name]="'translationDefinition_' + activeTranslationLocale"></textarea>
+                    </label>
+                  }
+                }
               </div>
 
               @if (translationMessage) { <small class="success-text">{{ translationMessage }}</small> }
@@ -863,18 +927,33 @@
               </label>
 
               <label class="field full">
-                <span>Título</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourceTitle" name="newSourceTitle" />
+                <span>Título ES</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourceTitleEs" name="newSourceTitleEs" />
+              </label>
+
+              <label class="field full">
+                <span>Title EN</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourceTitleEn" name="newSourceTitleEn" />
               </label>
 
               <label class="field">
-                <span>Autor</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourceAuthor" name="newSourceAuthor" />
+                <span>Autor ES</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourceAuthorEs" name="newSourceAuthorEs" />
               </label>
 
               <label class="field">
-                <span>Publisher</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourcePublisher" name="newSourcePublisher" />
+                <span>Author EN</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourceAuthorEn" name="newSourceAuthorEn" />
+              </label>
+
+              <label class="field">
+                <span>Publisher ES</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourcePublisherEs" name="newSourcePublisherEs" />
+              </label>
+
+              <label class="field">
+                <span>Publisher EN</span>
+                <input type="text" [(ngModel)]="newSourceRef.sourcePublisherEn" name="newSourcePublisherEn" />
               </label>
 
               <label class="field full">
@@ -888,13 +967,23 @@
               </label>
 
               <label class="field full">
-                <span>Cita</span>
-                <textarea rows="3" [(ngModel)]="newSourceRef.quote" name="newSourceQuote"></textarea>
+                <span>Cita ES</span>
+                <textarea rows="3" [(ngModel)]="newSourceRef.quoteEs" name="newSourceQuoteEs"></textarea>
               </label>
 
               <label class="field full">
-                <span>Nota</span>
-                <textarea rows="2" [(ngModel)]="newSourceRef.note" name="newSourceNote"></textarea>
+                <span>Cita EN</span>
+                <textarea rows="3" [(ngModel)]="newSourceRef.quoteEn" name="newSourceQuoteEn"></textarea>
+              </label>
+
+              <label class="field full">
+                <span>Nota ES</span>
+                <textarea rows="2" [(ngModel)]="newSourceRef.noteEs" name="newSourceNoteEs"></textarea>
+              </label>
+
+              <label class="field full">
+                <span>Nota EN</span>
+                <textarea rows="2" [(ngModel)]="newSourceRef.noteEn" name="newSourceNoteEn"></textarea>
               </label>
             </div>
 
@@ -928,18 +1017,33 @@
                       </label>
 
                       <label class="field full">
-                        <span>Título</span>
-                        <input type="text" [(ngModel)]="ref.sourceTitle" [name]="'sourceTitle-' + ref.id" />
+                        <span>Título ES</span>
+                        <input type="text" [(ngModel)]="ref.sourceTitleEs" [name]="'sourceTitleEs-' + ref.id" />
+                      </label>
+
+                      <label class="field full">
+                        <span>Title EN</span>
+                        <input type="text" [(ngModel)]="ref.sourceTitleEn" [name]="'sourceTitleEn-' + ref.id" />
                       </label>
 
                       <label class="field">
-                        <span>Autor</span>
-                        <input type="text" [(ngModel)]="ref.sourceAuthor" [name]="'sourceAuthor-' + ref.id" />
+                        <span>Autor ES</span>
+                        <input type="text" [(ngModel)]="ref.sourceAuthorEs" [name]="'sourceAuthorEs-' + ref.id" />
                       </label>
 
                       <label class="field">
-                        <span>Publisher</span>
-                        <input type="text" [(ngModel)]="ref.sourcePublisher" [name]="'sourcePublisher-' + ref.id" />
+                        <span>Author EN</span>
+                        <input type="text" [(ngModel)]="ref.sourceAuthorEn" [name]="'sourceAuthorEn-' + ref.id" />
+                      </label>
+
+                      <label class="field">
+                        <span>Publisher ES</span>
+                        <input type="text" [(ngModel)]="ref.sourcePublisherEs" [name]="'sourcePublisherEs-' + ref.id" />
+                      </label>
+
+                      <label class="field">
+                        <span>Publisher EN</span>
+                        <input type="text" [(ngModel)]="ref.sourcePublisherEn" [name]="'sourcePublisherEn-' + ref.id" />
                       </label>
 
                       <label class="field full">
@@ -953,13 +1057,23 @@
                       </label>
 
                       <label class="field full">
-                        <span>Cita</span>
-                        <textarea rows="3" [(ngModel)]="ref.quote" [name]="'sourceQuote-' + ref.id"></textarea>
+                        <span>Cita ES</span>
+                        <textarea rows="3" [(ngModel)]="ref.quoteEs" [name]="'sourceQuoteEs-' + ref.id"></textarea>
                       </label>
 
                       <label class="field full">
-                        <span>Nota</span>
-                        <textarea rows="2" [(ngModel)]="ref.note" [name]="'sourceNote-' + ref.id"></textarea>
+                        <span>Cita EN</span>
+                        <textarea rows="3" [(ngModel)]="ref.quoteEn" [name]="'sourceQuoteEn-' + ref.id"></textarea>
+                      </label>
+
+                      <label class="field full">
+                        <span>Nota ES</span>
+                        <textarea rows="2" [(ngModel)]="ref.noteEs" [name]="'sourceNoteEs-' + ref.id"></textarea>
+                      </label>
+
+                      <label class="field full">
+                        <span>Nota EN</span>
+                        <textarea rows="2" [(ngModel)]="ref.noteEn" [name]="'sourceNoteEn-' + ref.id"></textarea>
                       </label>
                     </div>
 
@@ -1112,11 +1226,20 @@
             </label>
 
             <label class="field full">
-              <span>Justificación (opcional)</span>
+              <span>Justificación ES</span>
               <textarea
                 rows="3"
-                [(ngModel)]="newRelation.justification"
-                name="newRelationJustification"
+                [(ngModel)]="newRelation.justificationEs"
+                name="newRelationJustificationEs"
+              ></textarea>
+            </label>
+
+            <label class="field full">
+              <span>Justification EN</span>
+              <textarea
+                rows="3"
+                [(ngModel)]="newRelation.justificationEn"
+                name="newRelationJustificationEn"
               ></textarea>
             </label>
 
@@ -1146,18 +1269,32 @@
   }
 </div>
 
-                      @if (rel.justification) {
-                        <div class="relation-note">{{ rel.justification }}</div>
-                      }
+                      <label class="field full">
+                        <span>Justificación ES</span>
+                        <textarea rows="2" [(ngModel)]="rel.justificationEs" [name]="'relationJustificationEs-' + rel.id"></textarea>
+                      </label>
+                      <label class="field full">
+                        <span>Justification EN</span>
+                        <textarea rows="2" [(ngModel)]="rel.justificationEn" [name]="'relationJustificationEn-' + rel.id"></textarea>
+                      </label>
                     </div>
 
-                    <button
-                      type="button"
-                      class="btn danger"
-                      (click)="removeRelation(rel.id)"
-                    >
-                      Quitar
-                    </button>
+                    <div class="source-card__actions">
+                      <button
+                        type="button"
+                        class="btn"
+                        (click)="saveRelation(rel)"
+                      >
+                        Guardar
+                      </button>
+                      <button
+                        type="button"
+                        class="btn danger"
+                        (click)="removeRelation(rel.id)"
+                      >
+                        Quitar
+                      </button>
+                    </div>
                   </article>
                 }
               </div>
@@ -1187,8 +1324,9 @@
   }
 </div>
 
-            @if (rel.justification) {
-              <div class="relation-note">{{ rel.justification }}</div>
+            @if (rel.justificationEs || rel.justificationEn || rel.justification) {
+              <div class="relation-note">ES: {{ rel.justificationEs || rel.justification || "—" }}</div>
+              <div class="relation-note">EN: {{ rel.justificationEn || "—" }}</div>
             }
           </div>
         </article>

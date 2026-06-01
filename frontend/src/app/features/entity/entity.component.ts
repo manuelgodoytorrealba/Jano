@@ -109,8 +109,8 @@ export class EntityComponent implements OnDestroy {
     this.showCollectionsPanel.set(true);
     this.collectionsChooserOpen.set(true);
     this.popupKind.set('collections');
-    this.popupTitle.set('Añadir a colección');
-    this.collectionMessage.set('Elige una colección para organizar esta entidad.');
+    this.popupTitle.set(this.i18n.t('collection.addTo'));
+    this.collectionMessage.set(this.i18n.t('collection.chooseForEntity'));
   }
 
   removeSavedEntity(entityId: string) {
@@ -128,7 +128,7 @@ export class EntityComponent implements OnDestroy {
       },
       error: () => {
         this.saveLoading.set(false);
-        this.openPopup('error', 'No se pudo quitar', 'Inténtalo de nuevo en un momento.');
+        this.openPopup('error', this.i18n.t('error.removeFailed'), this.i18n.t('error.tryAgain'));
       },
     });
   }
@@ -160,8 +160,8 @@ export class EntityComponent implements OnDestroy {
       error: (err) => {
         this.creatingCollection.set(false);
         this.popupKind.set('error');
-        this.popupTitle.set('No se pudo crear');
-        this.collectionMessage.set(err?.error?.message ?? 'No se pudo crear la colección.');
+        this.popupTitle.set(this.i18n.t('collection.createFailed'));
+        this.collectionMessage.set(err?.error?.message ?? this.i18n.t('mySpace.createError'));
       },
     });
   }
@@ -191,8 +191,8 @@ export class EntityComponent implements OnDestroy {
       return;
     }
 
-    const title = entity.title ?? 'Entidad';
-    const text = entity.summary ?? this.detailHeroSubtitle(entity) ?? 'Descubre esta entidad en JANO.';
+    const title = entity.title ?? this.i18n.t('entity.singular');
+    const text = entity.summary ?? this.detailHeroSubtitle(entity) ?? this.i18n.t('entity.shareDefault');
     const url = typeof window !== 'undefined' ? window.location.href : '';
 
     const nav = typeof navigator !== 'undefined' ? navigator : null;
@@ -205,14 +205,14 @@ export class EntityComponent implements OnDestroy {
     if (typeof nav.share === 'function') {
       nav.share(payload)
         .then(() => {
-          this.openPopup('share', 'Compartida', 'La entidad se compartió correctamente.', { autoCloseMs: 2000 });
+          this.openPopup('share', this.i18n.t('share.shared'), this.i18n.t('share.sharedMessage'), { autoCloseMs: 2000 });
         })
         .catch((error: any) => {
           if (error?.name === 'AbortError') {
             return;
           }
 
-          this.openPopup('error', 'No se pudo compartir', 'No se pudo abrir el panel de compartir.');
+          this.openPopup('error', this.i18n.t('share.failed'), this.i18n.t('share.openFailed'));
         });
       return;
     }
@@ -220,15 +220,15 @@ export class EntityComponent implements OnDestroy {
     if (nav.clipboard?.writeText && url) {
       nav.clipboard.writeText(url)
         .then(() => {
-          this.openPopup('share', 'Enlace copiado', 'Ya puedes compartir esta entidad donde quieras.', { autoCloseMs: 2200 });
+          this.openPopup('share', this.i18n.t('share.linkCopied'), this.i18n.t('share.linkCopiedMessage'), { autoCloseMs: 2200 });
         })
         .catch(() => {
-          this.openPopup('error', 'No se pudo compartir', 'No se pudo copiar el enlace de esta entidad.');
+          this.openPopup('error', this.i18n.t('share.failed'), this.i18n.t('share.copyFailed'));
         });
       return;
     }
 
-    this.openPopup('error', 'No se pudo compartir', 'Compartir no está disponible en este navegador.');
+    this.openPopup('error', this.i18n.t('share.failed'), this.i18n.t('share.notAvailable'));
   }
 
   focusTop() {
@@ -252,7 +252,7 @@ export class EntityComponent implements OnDestroy {
   }
 
   visualAlt(entity: any): string {
-    return this.detailMedia(entity)?.alt || entity?.title || 'Imagen de entidad';
+    return this.detailMedia(entity)?.alt || entity?.title || this.i18n.t('entity.imageAlt');
   }
 
   isArticle(entity: any): boolean {
@@ -280,7 +280,7 @@ export class EntityComponent implements OnDestroy {
       return null;
     }
 
-    return new Intl.DateTimeFormat('es-ES', {
+    return new Intl.DateTimeFormat(this.i18n.locale() === 'en' ? 'en-US' : 'es-ES', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -288,7 +288,7 @@ export class EntityComponent implements OnDestroy {
   }
 
   storySectionLabel(entity: any): string {
-    return this.isArticle(entity) ? 'Artículo' : 'Ensayo';
+    return this.isArticle(entity) ? this.i18n.t('entity.article') : this.i18n.t('entity.essay');
   }
 
   detailHeroSubtitle(entity: any): string | null {
@@ -317,24 +317,24 @@ export class EntityComponent implements OnDestroy {
   detailFacts(entity: any): DetailFact[] {
     if (entity?.type === 'ARTWORK' && entity.artwork) {
       return this.compactFacts([
-        { label: 'Técnica', value: entity.artwork.technique },
-        { label: 'Materiales', value: entity.artwork.materials },
-        { label: 'Dimensiones', value: entity.artwork.dimensions },
-        { label: 'Ubicación', value: entity.artwork.location },
-        { label: 'Colección', value: entity.artwork.collection },
-        { label: 'Estado', value: entity.artwork.state },
-        { label: 'Nacionalidad autor', value: entity.artwork.authorNation },
+        { label: this.i18n.t('entity.fact.technique'), value: entity.artwork.technique },
+        { label: this.i18n.t('entity.fact.materials'), value: entity.artwork.materials },
+        { label: this.i18n.t('entity.fact.dimensions'), value: entity.artwork.dimensions },
+        { label: this.i18n.t('entity.fact.location'), value: entity.artwork.location },
+        { label: this.i18n.t('entity.fact.collection'), value: entity.artwork.collection },
+        { label: this.i18n.t('common.status'), value: entity.artwork.state },
+        { label: this.i18n.t('entity.fact.authorNation'), value: entity.artwork.authorNation },
       ]);
     }
 
     if (entity?.type === 'ARTIST' && entity.artist) {
       return this.compactFacts([
-        { label: 'País', value: entity.artist.country },
-        { label: 'Ciudad', value: entity.artist.city },
-        { label: 'Nacimiento', value: entity.artist.birthYear },
-        { label: 'Muerte', value: entity.artist.deathYear },
-        { label: 'Disciplinas', value: entity.artist.disciplines },
-        { label: 'Links', value: entity.artist.links },
+        { label: this.i18n.t('entity.fact.country'), value: entity.artist.country },
+        { label: this.i18n.t('entity.fact.city'), value: entity.artist.city },
+        { label: this.i18n.t('entity.fact.birth'), value: entity.artist.birthYear },
+        { label: this.i18n.t('entity.fact.death'), value: entity.artist.deathYear },
+        { label: this.i18n.t('entity.fact.disciplines'), value: entity.artist.disciplines },
+        { label: this.i18n.t('entity.fact.links'), value: entity.artist.links },
       ]);
     }
 
@@ -344,34 +344,34 @@ export class EntityComponent implements OnDestroy {
   detailFactKicker(entity: any): string {
     switch (entity?.type) {
       case 'ARTWORK':
-        return 'Obra';
+        return this.i18n.t('entities.type.artworkSingular');
       case 'ARTIST':
-        return 'Artista';
+        return this.i18n.t('entities.type.artistSingular');
       case 'ARTICLE':
-        return 'Artículo';
+        return this.i18n.t('entity.article');
       case 'CONCEPT':
-        return 'Concepto';
+        return this.i18n.t('entities.type.conceptSingular');
       case 'PERIOD':
-        return 'Periodo';
+        return this.i18n.t('entities.type.periodSingular');
       default:
-        return 'Ficha';
+        return this.i18n.t('entity.sheet');
     }
   }
 
   detailFactTitle(entity: any): string {
     switch (entity?.type) {
       case 'ARTWORK':
-        return 'Materialidad y contexto';
+        return this.i18n.t('entity.factTitle.artwork');
       case 'ARTIST':
-        return 'Trayectoria esencial';
+        return this.i18n.t('entity.factTitle.artist');
       case 'ARTICLE':
-        return 'Contexto editorial';
+        return this.i18n.t('entity.factTitle.article');
       case 'CONCEPT':
-        return 'Definición base';
+        return this.i18n.t('entity.factTitle.concept');
       case 'PERIOD':
-        return 'Marco histórico';
+        return this.i18n.t('entity.factTitle.period');
       default:
-        return 'Información principal';
+        return this.i18n.t('entity.factTitle.default');
     }
   }
 
@@ -494,7 +494,7 @@ export class EntityComponent implements OnDestroy {
       },
       error: () => {
         this.saveLoading.set(false);
-        this.openPopup('error', 'No se pudo guardar', 'Inténtalo de nuevo en un momento.');
+        this.openPopup('error', this.i18n.t('error.saveFailed'), this.i18n.t('error.tryAgain'));
       },
     });
   }
@@ -511,11 +511,11 @@ export class EntityComponent implements OnDestroy {
         this.collectionsChooserOpen.set(false);
         this.collectionsRefresh$.next();
         this.popupKind.set('saved');
-        this.popupTitle.set(createdNow ? 'Colección creada' : 'Añadida a colección');
+        this.popupTitle.set(createdNow ? this.i18n.t('collection.created') : this.i18n.t('collection.added')); 
         this.collectionMessage.set(
           createdNow
-            ? 'La colección ya está creada y esta entidad quedó añadida dentro.'
-            : 'La entidad ya está organizada dentro de tu colección.',
+            ? this.i18n.t('collection.createdAndAdded')
+            : this.i18n.t('collection.entityAdded'),
         );
         this.clearPopupAutoClose();
         this.popupAutoCloseTimer = setTimeout(() => {
@@ -525,8 +525,8 @@ export class EntityComponent implements OnDestroy {
       error: (err) => {
         this.addingToCollection.set(false);
         this.popupKind.set('error');
-        this.popupTitle.set('No se pudo añadir');
-        this.collectionMessage.set(err?.error?.message ?? 'No se pudo añadir a la colección.');
+        this.popupTitle.set(this.i18n.t('collection.addFailed'));
+        this.collectionMessage.set(err?.error?.message ?? this.i18n.t('collection.addError'));
       },
     });
   }
@@ -592,17 +592,17 @@ export class EntityComponent implements OnDestroy {
 
   relationLabel(type: string): string {
     const labels: Record<string, string> = {
-      CREATED_BY: 'Creado por',
-      BELONGS_TO_MOVEMENT: 'Pertenece al movimiento',
-      BELONGS_TO_PERIOD: 'Pertenece al periodo',
-      ABOUT_CONCEPT: 'Explora el concepto',
-      LOCATED_IN: 'Ubicado en',
-      RELATED_TO: 'Relacionado con',
-      MENTIONS: 'Menciona',
-      ASSOCIATED_WITH: 'Asociado con',
-      INSPIRED_BY: 'Inspirado por',
-      INFLUENCED_BY: 'Influenciado por',
-      PART_OF: 'Forma parte de',
+      CREATED_BY: this.i18n.t('relation.createdBy'),
+      BELONGS_TO_MOVEMENT: this.i18n.t('relation.belongsToMovement'),
+      BELONGS_TO_PERIOD: this.i18n.t('relation.belongsToPeriod'),
+      ABOUT_CONCEPT: this.i18n.t('relation.aboutConcept'),
+      LOCATED_IN: this.i18n.t('relation.locatedIn'),
+      RELATED_TO: this.i18n.t('relation.relatedTo'),
+      MENTIONS: this.i18n.t('relation.mentions'),
+      ASSOCIATED_WITH: this.i18n.t('relation.associatedWith'),
+      INSPIRED_BY: this.i18n.t('relation.inspiredBy'),
+      INFLUENCED_BY: this.i18n.t('relation.influencedBy'),
+      PART_OF: this.i18n.t('relation.partOf'),
     };
 
     return labels[type] ?? type.replaceAll('_', ' ').toLowerCase();
@@ -614,20 +614,20 @@ export class EntityComponent implements OnDestroy {
     }
 
     const incomingLabels: Record<string, string> = {
-      CREATED_BY: 'Obra creada por esta entidad',
-      BELONGS_TO_MOVEMENT: 'Entidad dentro de este movimiento',
-      BELONGS_TO_PERIOD: 'Entidad dentro de este periodo',
-      ABOUT_CONCEPT: 'Entidad relacionada con este concepto',
-      LOCATED_IN: 'Entidad ubicada aquí',
-      RELATED_TO: 'Relacionado con esta entidad',
-      MENTIONS: 'Mencionado por',
-      ASSOCIATED_WITH: 'Asociado con esta entidad',
-      INSPIRED_BY: 'Inspira a',
-      INFLUENCED_BY: 'Influye en',
-      PART_OF: 'Incluye esta entidad',
+      CREATED_BY: this.i18n.t('relation.in.createdBy'),
+      BELONGS_TO_MOVEMENT: this.i18n.t('relation.in.belongsToMovement'),
+      BELONGS_TO_PERIOD: this.i18n.t('relation.in.belongsToPeriod'),
+      ABOUT_CONCEPT: this.i18n.t('relation.in.aboutConcept'),
+      LOCATED_IN: this.i18n.t('relation.in.locatedIn'),
+      RELATED_TO: this.i18n.t('relation.in.relatedTo'),
+      MENTIONS: this.i18n.t('relation.in.mentions'),
+      ASSOCIATED_WITH: this.i18n.t('relation.in.associatedWith'),
+      INSPIRED_BY: this.i18n.t('relation.in.inspiredBy'),
+      INFLUENCED_BY: this.i18n.t('relation.in.influencedBy'),
+      PART_OF: this.i18n.t('relation.in.partOf'),
     };
 
-    return incomingLabels[type] ?? 'Relacionado con esta entidad';
+    return incomingLabels[type] ?? this.i18n.t('relation.in.relatedTo');
   }
 
   private compactFacts(items: Array<{ label: string; value: any }>): DetailFact[] {

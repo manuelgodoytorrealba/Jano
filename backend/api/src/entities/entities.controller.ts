@@ -252,9 +252,20 @@ export class EntitiesController {
   @Post(':id/relations')
   createRelation(
     @Param('id') id: string,
-    @Body() dto: { toId: string; type?: string; relationTypeId?: string; justification?: string; weight?: number },
+    @Body() dto: { toId: string; type?: string; relationTypeId?: string; justification?: string; justificationEs?: string; justificationEn?: string; weight?: number },
   ) {
     return this.service.adminCreateRelation(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id/relations/:relationId')
+  updateRelation(
+    @Param('id') id: string,
+    @Param('relationId') relationId: string,
+    @Body() dto: { type?: string; relationTypeId?: string; justification?: string; justificationEs?: string; justificationEn?: string; weight?: number },
+  ) {
+    return this.service.adminUpdateRelation(id, relationId, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -357,17 +368,17 @@ export class EntitiesController {
   }
 
   @Get(':slug')
-  get(@Param('slug') slug: string) {
-    return this.service.getBySlug(slug);
+  get(@Param('slug') slug: string, @Query('locale') locale?: string) {
+    return this.service.getBySlug(slug, locale);
   }
 
   @Get(':slug/graph')
-  graph(@Param('slug') slug: string) {
-    return this.service.graphBySlug(slug);
+  graph(@Param('slug') slug: string, @Query('locale') locale?: string) {
+    return this.service.graphBySlug(slug, locale);
   }
 
   @Get(':slug/preview')
-  preview(@Param('slug') slug: string) {
-    return this.service.previewBySlug(slug);
+  preview(@Param('slug') slug: string, @Query('locale') locale?: string) {
+    return this.service.previewBySlug(slug, locale);
   }
 }

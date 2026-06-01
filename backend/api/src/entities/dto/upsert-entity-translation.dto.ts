@@ -1,4 +1,6 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { UpdateEntityDetailsDto } from './update-entity-details.dto';
 
 export class UpsertEntityTranslationDto {
   @IsString()
@@ -20,4 +22,9 @@ export class UpsertEntityTranslationDto {
   @IsOptional()
   @IsString()
   excerpt?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateEntityDetailsDto)
+  details?: UpdateEntityDetailsDto;
 }

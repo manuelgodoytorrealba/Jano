@@ -206,13 +206,8 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
       error: (err) => {
         this.loading = false;
 
-        if (err?.status === 403) {
-          this.router.navigateByUrl('/blocked');
-          return;
-        }
-
         this.error =
-          err?.status === 401
+          err?.status === 401 || err?.status === 403
             ? 'Credenciales incorrectas'
             : 'No se pudo iniciar sesión';
       },

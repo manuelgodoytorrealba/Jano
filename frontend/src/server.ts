@@ -57,7 +57,7 @@ function loginRedirectFor(req: express.Request): string {
   return `/login?redirectTo=${redirectTo}`;
 }
 
-async function validateBetaSession(req: express.Request): Promise<'ok' | 'unauthorized' | 'blocked'> {
+async function validateBetaSession(req: express.Request): Promise<'ok' | 'unauthorized'> {
   const authorization = firstHeaderValue(req.headers.authorization);
   const cookieToken = cookieValue(req.headers.cookie, 'jano_access_token');
   const headers = new Headers();
@@ -65,21 +65,19 @@ async function validateBetaSession(req: express.Request): Promise<'ok' | 'unauth
   if (authorization) {
     headers.set('authorization', authorization);
   } else if (cookieToken) {
-    headers.set('authorization', `Bearer ${cookieToken}`);
+    headers.set('authorization', 'Bearer ' + cookieToken);
   }
 
   if (!headers.has('authorization')) {
     return 'unauthorized';
   }
 
-  const response = await fetch(`${backendOrigin}/api/auth/me`, { headers });
+  const response = await fetch(backendOrigin + '/api/auth/me', { headers });
 
   if (response.status === 401) return 'unauthorized';
-  if (response.status === 403) return 'blocked';
   if (!response.ok) return 'unauthorized';
 
-  const user = await response.json() as { isBeta?: boolean };
-  return user.isBeta === true ? 'ok' : 'blocked';
+  return 'ok';
 }
 
 const allowedHosts = Array.from(
@@ -173,7 +171,7 @@ app.use(async (req, res, next) => {
       return;
     }
 
-    res.redirect(302, session === 'blocked' ? '/blocked' : loginRedirectFor(req));
+    res.redirect(302, loginRedirectFor(req));
   } catch (error) {
     next(error);
   }

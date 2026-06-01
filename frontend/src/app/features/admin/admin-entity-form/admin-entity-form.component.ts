@@ -32,6 +32,7 @@ import {
 } from '../../../core/api/admin-entities.api';
 import { RelationType, RelationTypesApi } from '../../../core/api/relation-types.api';
 import { Tag, TagsApi } from '../../../core/api/tags.api';
+import { I18nService } from '../../../core/i18n/i18n.service';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import { EntityDetailViewComponent } from '../../entity/entity-detail-view.component';
 import { MediaAddPanelComponent } from './media-add-panel.component';
@@ -86,6 +87,22 @@ type AdminTranslationForm = {
   excerpt: string;
 };
 
+type AdminLocalizedDetailsForm = {
+  authorNation: string;
+  technique: string;
+  materials: string;
+  dimensions: string;
+  location: string;
+  collection: string;
+  state: string;
+  country: string;
+  city: string;
+  disciplines: string;
+  bioShort: string;
+  links: string;
+  definition: string;
+};
+
 @Component({
   standalone: true,
   selector: 'app-admin-entity-form',
@@ -98,6 +115,7 @@ export class AdminEntityFormComponent implements OnInit, OnDestroy, DoCheck {
   private adminApi = inject(AdminEntitiesApi);
   private relationTypesApi = inject(RelationTypesApi);
   private tagsApi = inject(TagsApi);
+  readonly i18n = inject(I18nService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
@@ -152,6 +170,10 @@ previewContainer?: ElementRef<HTMLElement>;
   translationForms: Record<AdminLocale, AdminTranslationForm> = {
     es: this.createEmptyTranslationForm(),
     en: this.createEmptyTranslationForm(),
+  };
+  localizedDetailForms: Record<AdminLocale, AdminLocalizedDetailsForm> = {
+    es: this.createEmptyLocalizedDetailsForm(),
+    en: this.createEmptyLocalizedDetailsForm(),
   };
   translationSaving = false;
   translationMessage = '';
@@ -228,7 +250,8 @@ previewContainer?: ElementRef<HTMLElement>;
     toId: '',
     type: 'RELATED_TO',
     relationTypeId: '',
-    justification: '',
+    justificationEs: '',
+    justificationEn: '',
   };
 
   detailsSaving = false;
@@ -243,13 +266,23 @@ previewContainer?: ElementRef<HTMLElement>;
   newSourceRef: AdminSourceRefPayload = {
     sourceType: 'WEBSITE',
     sourceTitle: '',
+    sourceTitleEs: '',
+    sourceTitleEn: '',
     sourceAuthor: '',
+    sourceAuthorEs: '',
+    sourceAuthorEn: '',
     sourcePublisher: '',
+    sourcePublisherEs: '',
+    sourcePublisherEn: '',
     sourceYear: null,
     sourceUrl: '',
     page: '',
     quote: '',
+    quoteEs: '',
+    quoteEn: '',
     note: '',
+    noteEs: '',
+    noteEn: '',
   };
 
   contributors: any[] = [];
@@ -529,6 +562,32 @@ previewContainer?: ElementRef<HTMLElement>;
     return { title: '', shortDescription: '', essay: '', notes: '', excerpt: '' };
   }
 
+  private createEmptyLocalizedDetailsForm(): AdminLocalizedDetailsForm {
+    return {
+      authorNation: '',
+      technique: '',
+      materials: '',
+      dimensions: '',
+      location: '',
+      collection: '',
+      state: '',
+      country: '',
+      city: '',
+      disciplines: '',
+      bioShort: '',
+      links: '',
+      definition: '',
+    };
+  }
+
+  activeLocalizedDetailsForm(): AdminLocalizedDetailsForm {
+    if (this.activeTranslationLocale === 'es') {
+      return this.detailsForm as AdminLocalizedDetailsForm;
+    }
+
+    return this.localizedDetailForms[this.activeTranslationLocale];
+  }
+
   private applyTranslations(entity: AdminEntityResponse): void {
     const next: Record<AdminLocale, AdminTranslationForm> = {
       es: {
@@ -557,6 +616,75 @@ previewContainer?: ElementRef<HTMLElement>;
     this.translationForms = next;
   }
 
+  private applyLocalizedDetailTranslations(entity: AdminEntityResponse): void {
+    this.localizedDetailForms = {
+      es: this.extractLocalizedDetailsForm(entity, 'es'),
+      en: this.extractLocalizedDetailsForm(entity, 'en'),
+    };
+  }
+
+  private extractLocalizedDetailsForm(entity: AdminEntityResponse, locale: AdminLocale): AdminLocalizedDetailsForm {
+    if (locale === 'es') {
+      return {
+        authorNation: entity?.artwork?.authorNation ?? '',
+        technique: entity?.artwork?.technique ?? '',
+        materials: entity?.artwork?.materials ?? '',
+        dimensions: entity?.artwork?.dimensions ?? '',
+        location: entity?.artwork?.location ?? '',
+        collection: entity?.artwork?.collection ?? '',
+        state: entity?.artwork?.state ?? '',
+        country: entity?.artist?.country ?? '',
+        city: entity?.artist?.city ?? '',
+        disciplines: entity?.artist?.disciplines ?? '',
+        bioShort: entity?.artist?.bioShort ?? '',
+        links: entity?.artist?.links ?? '',
+        definition: entity?.concept?.definition ?? entity?.period?.definition ?? '',
+      };
+    }
+
+    const artworkTranslation = entity?.artwork?.translations?.find((item: any) => item?.locale === locale) ?? null;
+    const artistTranslation = entity?.artist?.translations?.find((item: any) => item?.locale === locale) ?? null;
+    const conceptTranslation = entity?.concept?.translations?.find((item: any) => item?.locale === locale) ?? null;
+    const periodTranslation = entity?.period?.translations?.find((item: any) => item?.locale === locale) ?? null;
+
+    return {
+      authorNation: artworkTranslation?.authorNation ?? '',
+      technique: artworkTranslation?.technique ?? '',
+      materials: artworkTranslation?.materials ?? '',
+      dimensions: artworkTranslation?.dimensions ?? '',
+      location: artworkTranslation?.location ?? '',
+      collection: artworkTranslation?.collection ?? '',
+      state: artworkTranslation?.state ?? '',
+      country: artistTranslation?.country ?? '',
+      city: artistTranslation?.city ?? '',
+      disciplines: artistTranslation?.disciplines ?? '',
+      bioShort: artistTranslation?.bioShort ?? '',
+      links: artistTranslation?.links ?? '',
+      definition: conceptTranslation?.definition ?? periodTranslation?.definition ?? '',
+    };
+  }
+
+  private buildLocalizedDetailsPayload(locale: AdminLocale): AdminEntityDetailsPayload | undefined {
+    const form = locale === 'es' ? (this.detailsForm as AdminLocalizedDetailsForm) : this.localizedDetailForms[locale];
+    const payload: AdminEntityDetailsPayload = {
+      authorNation: String(form.authorNation ?? '').trim() || undefined,
+      technique: String(form.technique ?? '').trim() || undefined,
+      materials: String(form.materials ?? '').trim() || undefined,
+      dimensions: String(form.dimensions ?? '').trim() || undefined,
+      location: String(form.location ?? '').trim() || undefined,
+      collection: String(form.collection ?? '').trim() || undefined,
+      state: String(form.state ?? '').trim() || undefined,
+      country: String(form.country ?? '').trim() || undefined,
+      city: String(form.city ?? '').trim() || undefined,
+      disciplines: String(form.disciplines ?? '').trim() || undefined,
+      bioShort: String(form.bioShort ?? '').trim() || undefined,
+      links: String(form.links ?? '').trim() || undefined,
+      definition: String(form.definition ?? '').trim() || undefined,
+    };
+
+    return Object.values(payload).some((value) => value !== undefined && value !== null && String(value).trim() !== '') ? payload : undefined;
+  }
+
   private buildTranslationPayload(locale: AdminLocale): AdminEntityTranslationPayload {
     const form = this.translationForms[locale];
     return {
@@ -565,6 +693,7 @@ previewContainer?: ElementRef<HTMLElement>;
       essay: form.essay.trim() || null,
       notes: form.notes.trim() || null,
       excerpt: form.excerpt.trim() || null,
+      details: this.buildLocalizedDetailsPayload(locale),
     };
   }
 
@@ -642,6 +771,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.applyMediaLibraryState(entity, preserveDirtyMediaEditors, clearedEditorId);
     this.persistedResolvedMedia = entity.resolvedMedia ?? null;
     this.detailsForm = this.extractDetailsForm(entity);
+    this.applyLocalizedDetailTranslations(entity);
     this.sourceRefs = Array.isArray(entity.sourceRefs)
       ? entity.sourceRefs.map((ref: any) => this.normalizeSourceRef(ref))
       : [];
@@ -919,7 +1049,8 @@ previewContainer?: ElementRef<HTMLElement>;
       toId: this.newRelation.toId,
       type: this.newRelation.type.trim(),
       relationTypeId: this.newRelation.relationTypeId || undefined,
-      justification: this.newRelation.justification.trim() || undefined,
+        justificationEs: this.newRelation.justificationEs.trim() || undefined,
+      justificationEn: this.newRelation.justificationEn.trim() || undefined,
     }).subscribe({
       next: () => {
         const preferred = this.relationTypes.find((type) => type.key === 'RELATED_TO') ?? this.relationTypes[0] ?? null;
@@ -927,7 +1058,8 @@ previewContainer?: ElementRef<HTMLElement>;
           toId: '',
           type: preferred?.key ?? 'RELATED_TO',
           relationTypeId: preferred?.id ?? '',
-          justification: '',
+          justificationEs: '',
+          justificationEn: '',
         };
         this.relationSearch = '';
         this.relationResults = [];
@@ -1032,6 +1164,29 @@ previewContainer?: ElementRef<HTMLElement>;
     return this.availableTags.filter((tag) => tag.isActive && !this.tagAlreadySelected(tag.id));
   }
 
+  saveRelation(rel: any) {
+    if (!this.entityId) return;
+
+    this.adminApi.updateRelation(this.entityId, rel.id, {
+      relationTypeId: rel.relationTypeId || rel.relationType?.id || undefined,
+      type: rel.type || rel.relationTypeKey || undefined,
+      justificationEs: String(rel.justificationEs ?? rel.justification ?? '').trim() || undefined,
+      justificationEn: String(rel.justificationEn ?? '').trim() || undefined,
+      weight: rel.weight ?? undefined,
+    }).subscribe({
+      next: (updated) => {
+        this.relations = this.relations.map((item) => item.id === updated.id ? updated : item);
+        this.incomingRelations = this.incomingRelations.map((item) => item.id === updated.id ? updated : item);
+        this.syncPreviewEntityModel(true);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.errorMessage = 'No se pudo actualizar la relación';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   removeRelation(relationId: string) {
     if (!this.entityId) return;
 
@@ -1070,6 +1225,7 @@ previewContainer?: ElementRef<HTMLElement>;
       next: (entity) => {
         this.detailsSaving = false;
         this.detailsForm = this.extractDetailsForm(entity);
+        this.applyLocalizedDetailTranslations(entity);
         this.detailsMessage = 'Ficha específica actualizada correctamente.';
         this.cdr.markForCheck();
       },
@@ -1108,7 +1264,11 @@ previewContainer?: ElementRef<HTMLElement>;
           sourceUrl: '',
           page: '',
           quote: '',
+          quoteEs: '',
+          quoteEn: '',
           note: '',
+          noteEs: '',
+          noteEn: '',
         };
         this.sourcesMessage = 'Fuente añadida correctamente.';
         this.cdr.markForCheck();
@@ -2061,14 +2221,19 @@ previewContainer?: ElementRef<HTMLElement>;
     const mediaLinks = this.mediaEditors
       .map((editor) => this.mediaLinkToPreview(editor.draft))
       .filter((link): link is any => !!link);
+    const locale = this.i18n.locale();
+    const translation = this.translationForms[locale];
+    const localizedDetails = locale === 'es'
+      ? (this.detailsForm as AdminLocalizedDetailsForm)
+      : this.localizedDetailForms[locale];
 
     return {
       id: this.entityId || 'draft-preview',
       type: this.form.type,
-      title: this.form.title || 'Título de la entity',
+      title: (translation.title || this.form.title || 'Título de la entity').trim(),
       slug: this.form.slug || 'preview',
-      summary: this.form.summary || null,
-      content: this.form.content || null,
+      summary: (translation.shortDescription || translation.excerpt || this.form.summary || '').trim() || null,
+      content: (translation.essay || this.form.content || '').trim() || null,
       contentLevel: this.form.contentLevel || null,
       status: this.form.status,
       startYear: this.toNullableNumber(this.form.startYear),
@@ -2082,39 +2247,40 @@ previewContainer?: ElementRef<HTMLElement>;
       sourceRefs: this.sourceRefs.map((ref) => ({
         id: ref.id ?? `${ref.sourceTitle}-${ref.page ?? ''}`,
         page: ref.page ?? null,
-        quote: ref.quote ?? null,
+        quote: (locale === 'en' ? ref.quoteEn : ref.quoteEs) ?? ref.quote ?? null,
+        note: (locale === 'en' ? ref.noteEn : ref.noteEs) ?? ref.note ?? null,
         source: {
           type: ref.sourceType ?? 'SOURCE',
-          title: ref.sourceTitle ?? 'Fuente editorial',
-          author: ref.sourceAuthor ?? null,
-          publisher: ref.sourcePublisher ?? null,
+          title: (locale === 'en' ? ref.sourceTitleEn : ref.sourceTitleEs) ?? ref.sourceTitle ?? 'Fuente editorial',
+          author: (locale === 'en' ? ref.sourceAuthorEn : ref.sourceAuthorEs) ?? ref.sourceAuthor ?? null,
+          publisher: (locale === 'en' ? ref.sourcePublisherEn : ref.sourcePublisherEs) ?? ref.sourcePublisher ?? null,
           year: ref.sourceYear ?? null,
         },
       })),
       contributors: this.contributors,
       artwork: this.form.type === 'ARTWORK' ? {
-        technique: this.detailsForm.technique ?? null,
-        materials: this.detailsForm.materials ?? null,
-        dimensions: this.detailsForm.dimensions ?? null,
-        location: this.detailsForm.location ?? null,
-        collection: this.detailsForm.collection ?? null,
-        state: this.detailsForm.state ?? null,
-        authorNation: this.detailsForm.authorNation ?? null,
+        technique: localizedDetails.technique || null,
+        materials: localizedDetails.materials || null,
+        dimensions: localizedDetails.dimensions || null,
+        location: localizedDetails.location || null,
+        collection: localizedDetails.collection || null,
+        state: localizedDetails.state || null,
+        authorNation: localizedDetails.authorNation || null,
       } : null,
       artist: this.form.type === 'ARTIST' ? {
-        country: this.detailsForm.country ?? null,
-        city: this.detailsForm.city ?? null,
+        country: localizedDetails.country || null,
+        city: localizedDetails.city || null,
         birthYear: this.detailsForm.birthYear ?? null,
         deathYear: this.detailsForm.deathYear ?? null,
-        disciplines: this.detailsForm.disciplines ?? null,
-        links: this.detailsForm.links ?? null,
-        bioShort: this.detailsForm.bioShort ?? null,
+        disciplines: localizedDetails.disciplines || null,
+        links: localizedDetails.links || null,
+        bioShort: localizedDetails.bioShort || null,
       } : null,
       concept: this.form.type === 'CONCEPT' ? {
-        definition: this.detailsForm.definition ?? null,
+        definition: localizedDetails.definition || null,
       } : null,
       period: this.form.type === 'PERIOD' ? {
-        definition: this.detailsForm.definition ?? null,
+        definition: localizedDetails.definition || null,
       } : null,
     };
   }
@@ -2199,8 +2365,11 @@ previewContainer?: ElementRef<HTMLElement>;
   private buildPreviewEntityStateKey(): string {
     return JSON.stringify({
       id: this.entityId || 'draft-preview',
+      locale: this.i18n.locale(),
       form: this.form,
+      translations: this.translationForms,
       details: this.detailsForm,
+      localizedDetails: this.localizedDetailForms,
       tags: this.entityTags.map((tag: any) => ({
         id: tag?.id ?? tag?.tagId ?? tag?.tag?.id ?? null,
         label: tag?.label ?? tag?.tag?.label ?? null,
@@ -2352,7 +2521,7 @@ previewContainer?: ElementRef<HTMLElement>;
       relationType: rel.relationType ?? null,
       relationTypeKey: rel.relationTypeKey ?? rel.relationType?.key ?? rel.type ?? 'RELATED_TO',
       relationTypeLabel: rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type ?? 'RELATED_TO',
-      justification: rel.justification ?? null,
+      justification: (this.i18n.locale() === 'en' ? rel.justificationEn : rel.justificationEs) ?? rel.justification ?? null,
       weight: rel.weight ?? null,
       from: direction === 'incoming' ? fallbackEndpoint : (rel.from ?? {
         id: this.entityId || 'draft-preview',
@@ -2641,13 +2810,23 @@ previewContainer?: ElementRef<HTMLElement>;
       id: ref.id,
       sourceType: ref.source?.type ?? 'WEBSITE',
       sourceTitle: ref.source?.title ?? '',
+      sourceTitleEs: ref.source?.titleEs ?? ref.source?.title ?? '',
+      sourceTitleEn: ref.source?.titleEn ?? '',
       sourceAuthor: ref.source?.author ?? '',
+      sourceAuthorEs: ref.source?.authorEs ?? ref.source?.author ?? '',
+      sourceAuthorEn: ref.source?.authorEn ?? '',
       sourcePublisher: ref.source?.publisher ?? '',
+      sourcePublisherEs: ref.source?.publisherEs ?? ref.source?.publisher ?? '',
+      sourcePublisherEn: ref.source?.publisherEn ?? '',
       sourceYear: ref.source?.year ?? null,
       sourceUrl: ref.source?.url ?? '',
       page: ref.page ?? '',
       quote: ref.quote ?? '',
+      quoteEs: ref.quoteEs ?? ref.quote ?? '',
+      quoteEn: ref.quoteEn ?? '',
       note: ref.note ?? '',
+      noteEs: ref.noteEs ?? ref.note ?? '',
+      noteEn: ref.noteEn ?? '',
     };
   }
 
@@ -2662,13 +2841,23 @@ previewContainer?: ElementRef<HTMLElement>;
     return {
       sourceType: source.sourceType,
       sourceTitle: title,
-      sourceAuthor: String(source.sourceAuthor ?? '').trim() || undefined,
-      sourcePublisher: String(source.sourcePublisher ?? '').trim() || undefined,
+      sourceTitleEs: String(source.sourceTitleEs ?? source.sourceTitle ?? '').trim() || undefined,
+      sourceTitleEn: String(source.sourceTitleEn ?? '').trim() || undefined,
+      sourceAuthor: String(source.sourceAuthor ?? source.sourceAuthorEs ?? '').trim() || undefined,
+      sourceAuthorEs: String(source.sourceAuthorEs ?? source.sourceAuthor ?? '').trim() || undefined,
+      sourceAuthorEn: String(source.sourceAuthorEn ?? '').trim() || undefined,
+      sourcePublisher: String(source.sourcePublisher ?? source.sourcePublisherEs ?? '').trim() || undefined,
+      sourcePublisherEs: String(source.sourcePublisherEs ?? source.sourcePublisher ?? '').trim() || undefined,
+      sourcePublisherEn: String(source.sourcePublisherEn ?? '').trim() || undefined,
       sourceYear: this.toNullableNumber(source.sourceYear),
       sourceUrl: String(source.sourceUrl ?? '').trim() || undefined,
       page: String(source.page ?? '').trim() || undefined,
-      quote: String(source.quote ?? '').trim() || undefined,
-      note: String(source.note ?? '').trim() || undefined,
+      quote: String(source.quote ?? source.quoteEs ?? '').trim() || undefined,
+      quoteEs: String(source.quoteEs ?? source.quote ?? '').trim() || undefined,
+      quoteEn: String(source.quoteEn ?? '').trim() || undefined,
+      note: String(source.note ?? source.noteEs ?? '').trim() || undefined,
+      noteEs: String(source.noteEs ?? source.note ?? '').trim() || undefined,
+      noteEn: String(source.noteEn ?? '').trim() || undefined,
     };
   }
 

@@ -21,25 +21,14 @@ export const adminGuard: CanActivateFn = (_route, state) => {
 
   const user = auth.currentUser;
 
-  if (user && !user.isBeta) {
-    return router.createUrlTree(['/blocked']);
-  }
-
   if (user?.role === 'ADMIN') {
     return true;
   }
 
   return auth.refreshSession().pipe(
-    map((freshUser) => {
-      if (!freshUser.isBeta) return router.createUrlTree(['/blocked']);
-      return freshUser.role === 'ADMIN' ? true : router.createUrlTree(['/']);
-    }),
-    catchError((error) => of(
-      error?.status === 403
-        ? router.createUrlTree(['/blocked'])
-        : router.createUrlTree(['/login'], {
-          queryParams: { redirectTo: state.url },
-        }),
-    )),
+    map((freshUser) => freshUser.role === 'ADMIN' ? true : router.createUrlTree(['/'])),
+    catchError(() => of(router.createUrlTree(['/login'], {
+      queryParams: { redirectTo: state.url },
+    }))),
   );
 };

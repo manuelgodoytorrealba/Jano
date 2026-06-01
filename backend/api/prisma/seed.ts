@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserRole } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import 'dotenv/config';
@@ -138,10 +139,17 @@ async function resetDatabase() {
   await prisma.entityTag.deleteMany();
 
   await prisma.entityMedia.deleteMany();
+  await prisma.sourceRefTranslation.deleteMany();
   await prisma.sourceRef.deleteMany();
   await prisma.contributor.deleteMany();
   await prisma.curatorNote.deleteMany();
+  await prisma.relationTranslation.deleteMany();
   await prisma.relation.deleteMany();
+
+  await prisma.artworkDetailsTranslation.deleteMany();
+  await prisma.artistDetailsTranslation.deleteMany();
+  await prisma.conceptDetailsTranslation.deleteMany();
+  await prisma.periodDetailsTranslation.deleteMany();
 
   await prisma.artworkDetails.deleteMany();
   await prisma.artistDetails.deleteMany();
@@ -151,9 +159,11 @@ async function resetDatabase() {
   await prisma.collection.deleteMany();
 
   await prisma.media.deleteMany();
+  await prisma.sourceTranslation.deleteMany();
   await prisma.source.deleteMany();
 
   await prisma.entity.deleteMany();
+  await prisma.relationTypeTranslation.deleteMany();
   await prisma.tag.deleteMany();
 }
 
@@ -178,11 +188,44 @@ const RELATION_TYPES = [
 ] as const;
 
 async function seedRelationTypes() {
+  const englishLabels: Record<string, { label: string; inverseLabel: string | null }> = {
+    CREATED_BY: { label: 'Created by', inverseLabel: 'Created' },
+    BELONGS_TO_MOVEMENT: { label: 'Belongs to movement', inverseLabel: 'Includes entity' },
+    BELONGS_TO_PERIOD: { label: 'Belongs to period', inverseLabel: 'Includes entity' },
+    ABOUT_CONCEPT: { label: 'Explores concept', inverseLabel: 'Explored by entity' },
+    LOCATED_IN: { label: 'Located in', inverseLabel: 'Location of' },
+    RELATED_TO: { label: 'Related to', inverseLabel: 'Related to' },
+    ASSOCIATED_WITH: { label: 'Associated with', inverseLabel: 'Associated with' },
+    MENTIONS: { label: 'Mentions', inverseLabel: 'Mentioned by' },
+    INSPIRED_BY: { label: 'Inspired by', inverseLabel: 'Inspires' },
+    INFLUENCED_BY: { label: 'Influenced by', inverseLabel: 'Influences' },
+    PART_OF: { label: 'Part of', inverseLabel: 'Includes' },
+    DEPICTS: { label: 'Depicts', inverseLabel: 'Depicted in' },
+    SIMILAR_TO: { label: 'Similar to', inverseLabel: 'Similar to' },
+    USES_TECHNIQUE: { label: 'Uses technique', inverseLabel: 'Technique used by' },
+    USES_MATERIAL: { label: 'Uses material', inverseLabel: 'Material used by' },
+    HAS_SUBJECT: { label: 'Has subject', inverseLabel: 'Subject of' },
+    CURATED_WITH: { label: 'Curated with', inverseLabel: 'Curated with' },
+  };
+
   for (const [key, label, inverseLabel, directed, category, sortOrder] of RELATION_TYPES) {
-    await prisma.relationType.upsert({
+    const relationType = await prisma.relationType.upsert({
       where: { key },
       update: { label, inverseLabel, directed, category, sortOrder, isActive: true },
       create: { key, label, inverseLabel, directed, category, sortOrder, isActive: true },
+    });
+
+    await prisma.relationTypeTranslation.upsert({
+      where: { relationTypeId_locale: { relationTypeId: relationType.id, locale: 'es' } },
+      update: { label, inverseLabel },
+      create: { relationTypeId: relationType.id, locale: 'es', label, inverseLabel },
+    });
+
+    const english = englishLabels[key] ?? { label, inverseLabel };
+    await prisma.relationTypeTranslation.upsert({
+      where: { relationTypeId_locale: { relationTypeId: relationType.id, locale: 'en' } },
+      update: english,
+      create: { relationTypeId: relationType.id, locale: 'en', ...english },
     });
   }
 }
@@ -262,6 +305,630 @@ async function rel(
       justification,
     },
   });
+}
+
+type ExplicitDetailTranslation = {
+  artwork?: {
+    authorNation: string | null;
+    technique: string | null;
+    materials: string | null;
+    dimensions: string | null;
+    location: string | null;
+    collection: string | null;
+    state: string | null;
+  };
+  artist?: {
+    country: string | null;
+    city: string | null;
+    disciplines: string | null;
+    bioShort: string | null;
+    links: string | null;
+  };
+  concept?: {
+    definition: string | null;
+  };
+  period?: {
+    definition: string | null;
+  };
+};
+
+type ExplicitEntityTranslation = {
+  title: string;
+  shortDescription: string | null;
+  essay: string | null;
+  excerpt?: string | null;
+} & ExplicitDetailTranslation;
+
+const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
+  'siglo-xix': {
+    title: '19th Century',
+    shortDescription: 'Historical and artistic period between 1801 and 1900.',
+    essay: 'A period shaped by political change, industrialization, Romanticism, Realism, and the rise of new modern sensibilities.',
+    period: { definition: 'Historical and cultural period spanning 1801 to 1900.' },
+  },
+  'siglo-xx': {
+    title: '20th Century',
+    shortDescription: 'A defining period for the avant-garde and modern art.',
+    essay: 'The 20th century brought together the historical avant-garde, world wars, technological transformation, and radical new forms of representation.',
+    period: { definition: 'Historical and cultural period spanning 1901 to 2000.' },
+  },
+  'siglo-xxi': {
+    title: '21st Century',
+    shortDescription: 'A global and digital contemporary period.',
+    essay: 'A period marked by networks, digitization, the global circulation of images, and new models of cultural production.',
+    period: { definition: 'Contemporary period from 2001 to the present.' },
+  },
+  romanticismo: {
+    title: 'Romanticism',
+    shortDescription: 'A movement that emphasizes emotion, subjectivity, intensity, and historical experience.',
+    essay: 'Romanticism privileges emotion, imagination, the sublime, drama, and an intense relationship between art, history, and human experience.',
+  },
+  cubismo: {
+    title: 'Cubism',
+    shortDescription: 'An avant-garde movement that fragments and reorganizes representation.',
+    essay: 'Cubism reformulates representation through the fragmentation of the picture plane and the coexistence of multiple viewpoints.',
+  },
+  surrealismo: {
+    title: 'Surrealism',
+    shortDescription: 'A movement that explores dreams, the unconscious, desire, and irrationality.',
+    essay: 'Surrealism explores free association, dream imagery, and unexpected relationships between objects, time, and memory.',
+  },
+  'arte-moderno': {
+    title: 'Modern Art',
+    shortDescription: 'A broad field of artistic practices that redefined visual modernity.',
+    essay: 'Modern art gathers processes of formal rupture, material experimentation, and new ways of seeing the world.',
+  },
+  'arte-contemporaneo': {
+    title: 'Contemporary Art',
+    shortDescription: 'Contemporary, hybrid, and conceptual artistic practices.',
+    essay: 'Contemporary art incorporates installation, performance, expanded sculpture, institutional critique, and a strong conceptual dimension.',
+  },
+  tiempo: {
+    title: 'Time',
+    shortDescription: 'Duration, change, memory, and finitude.',
+    essay: 'In art, time can appear as duration, ruin, repetition, waiting, simultaneity, or materialized memory.',
+    concept: { definition: 'A concept tied to duration, change, past, present, future, and historical experience.' },
+  },
+  memoria: {
+    title: 'Memory',
+    shortDescription: 'Individual and collective remembrance, archive, and trace.',
+    essay: 'Memory articulates identity, history, trauma, archives, and the persistence of images or experiences.',
+    concept: { definition: 'A concept linked to remembrance, identity, archives, and the construction of the past.' },
+  },
+  guerra: {
+    title: 'War',
+    shortDescription: 'Organized violence, historical conflict, and devastation.',
+    essay: 'In art, war appears as trauma, denunciation, destruction, heroism, suffering, and political memory.',
+    concept: { definition: 'A concept associated with armed conflict, violence, trauma, and historical memory.' },
+  },
+  identidad: {
+    title: 'Identity',
+    shortDescription: 'The symbolic construction of the self, the body, and belonging.',
+    essay: 'Identity runs through self-representation, gender, nation, personal memory, and the representation of the body.',
+    concept: { definition: 'A concept associated with subjectivity, self-representation, belonging, and difference.' },
+  },
+  cuerpo: {
+    title: 'Body',
+    shortDescription: 'Material presence, gesture, vulnerability, and representation.',
+    essay: 'The body is support, matter, symbol, political territory, and a form of presence in space.',
+    concept: { definition: 'A concept tied to living matter, representation, physical presence, and political dimension.' },
+  },
+  dolor: {
+    title: 'Pain',
+    shortDescription: 'Physical, emotional, and symbolic suffering.',
+    essay: 'In art, pain is linked to trauma, loss, vulnerability, illness, and resistance.',
+    concept: { definition: 'A concept that points to suffering, wounds, loss, and vulnerable experience.' },
+  },
+  maternidad: {
+    title: 'Motherhood',
+    shortDescription: 'Bond, care, origin, ambivalence, and affective memory.',
+    essay: 'Motherhood can appear as origin, protection, affective tension, a shared body, or emotional ambivalence.',
+    concept: { definition: 'A concept associated with care, origin, affective bonds, and the symbolic dimension of the maternal.' },
+  },
+  violencia: {
+    title: 'Violence',
+    shortDescription: 'Physical, symbolic, social, or historical harm.',
+    essay: 'In art, violence can manifest as aggression, trauma, imposition, rupture, or visual denunciation.',
+    concept: { definition: 'A concept associated with harm, imposition, trauma, rupture, and conflict.' },
+  },
+  'museo-del-prado': {
+    title: 'Museo del Prado',
+    shortDescription: 'A national art museum located in Madrid.',
+    essay: 'A central institution for the history of European and Spanish art, with one of the most important collections in the world.',
+  },
+  'museo-reina-sofia': {
+    title: 'Museo Reina Sofia',
+    shortDescription: 'A national museum of modern and contemporary art in Madrid.',
+    essay: 'A key institution for the study of modern and contemporary art in Spain.',
+  },
+  moma: {
+    title: 'MoMA',
+    shortDescription: 'The Museum of Modern Art in New York.',
+    essay: 'A central museum for the study of international modern and contemporary art.',
+  },
+  'guggenheim-bilbao': {
+    title: 'Guggenheim Bilbao',
+    shortDescription: 'A contemporary art museum located in Bilbao.',
+    essay: 'An internationally recognized museum known for its architecture and contemporary art collection.',
+  },
+  'francisco-de-goya': {
+    title: 'Francisco de Goya',
+    shortDescription: 'A Spanish painter and printmaker who was crucial to the transition from the Ancien Regime to modernity.',
+    essay: 'Francisco de Goya was one of the most influential artists in the history of Spanish art. His work spans portraiture, history painting, social critique, violence, and dark visions of the human condition.',
+    artist: {
+      country: 'Spain',
+      city: 'Fuendetodos',
+      disciplines: 'Painting, Printmaking',
+      bioShort: 'A key figure in Spanish painting, celebrated for his critical, expressive, and visionary power.',
+      links: 'https://www.museodelprado.es',
+    },
+  },
+  'pablo-picasso': {
+    title: 'Pablo Picasso',
+    shortDescription: 'A Spanish painter, sculptor, and maker who became a central figure of 20th-century art.',
+    essay: 'Pablo Picasso was a decisive figure in modern art. His work spans painting, sculpture, printmaking, and formal experimentation, with an essential role in Cubism.',
+    artist: {
+      country: 'Spain',
+      city: 'Malaga',
+      disciplines: 'Painting, Sculpture, Printmaking',
+      bioShort: 'A central figure of the 20th-century avant-garde and co-founder of Cubism.',
+      links: 'https://www.museoreinasofia.es',
+    },
+  },
+  'salvador-dali': {
+    title: 'Salvador Dali',
+    shortDescription: 'A Spanish artist associated with Surrealism and the exploration of dream imagery.',
+    essay: 'Salvador Dali developed a highly recognizable body of work shaped by dream images, unexpected associations, and visual reflections on time and desire.',
+    artist: {
+      country: 'Spain',
+      city: 'Figueres',
+      disciplines: 'Painting, Drawing, Sculpture, Design',
+      bioShort: 'One of the most recognizable Surrealist artists, celebrated for his dreamlike and symbolic imagery.',
+      links: 'https://www.moma.org',
+    },
+  },
+  'frida-kahlo': {
+    title: 'Frida Kahlo',
+    shortDescription: 'A Mexican painter known for her self-representations and her exploration of identity, pain, and the body.',
+    essay: 'Frida Kahlo turned personal, bodily, and emotional experience into a powerful form of artistic representation. Her work is tied to identity, pain, memory, and self-representation.',
+    artist: {
+      country: 'Mexico',
+      city: 'Coyoacan',
+      disciplines: 'Painting',
+      bioShort: 'A key 20th-century artist whose work turns personal and bodily experience into visual language.',
+      links: 'https://www.moma.org/artists/2963',
+    },
+  },
+  'louise-bourgeois': {
+    title: 'Louise Bourgeois',
+    shortDescription: 'A French-American artist essential to sculpture and contemporary art.',
+    essay: 'Louise Bourgeois developed a body of work of great psychological intensity, tied to memory, the body, motherhood, pain, and sculptural space.',
+    artist: {
+      country: 'France / United States',
+      city: 'Paris',
+      disciplines: 'Sculpture, Installation, Drawing',
+      bioShort: 'A foundational sculptor of contemporary art, associated with memory, the body, and motherhood.',
+      links: 'https://www.tate.org.uk/art/artists/louise-bourgeois-2351',
+    },
+  },
+  'saturno-devorando-a-su-hijo': {
+    title: 'Saturn Devouring His Son',
+    shortDescription: 'One of Goya\'s Black Paintings, marked by violence, darkness, and expressive force.',
+    essay: 'This work by Francisco de Goya condenses violence, time, destruction, and an extreme vision of the human condition. It can be connected to [[violence]], [[time]], and [[pain]].',
+    artwork: {
+      authorNation: 'Spanish',
+      technique: 'Oil transferred to canvas',
+      materials: 'Oil paint',
+      dimensions: '143.5 x 81.4 cm',
+      location: 'Museo del Prado, Madrid',
+      collection: 'Black Paintings',
+      state: 'Preserved',
+    },
+  },
+  'el-tres-de-mayo-de-1808': {
+    title: 'The Third of May 1808',
+    shortDescription: 'A history painting by Goya about the violence of war and execution.',
+    essay: 'A central work for thinking about [[war]], [[violence]], and historical memory. Its visual drama and political dimension make it a decisive image of modernity.',
+    artwork: {
+      authorNation: 'Spanish',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '268 x 347 cm',
+      location: 'Museo del Prado, Madrid',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  guernica: {
+    title: 'Guernica',
+    shortDescription: 'Picasso\'s monumental work on the horror of bombing and the violence of war.',
+    essay: '[[Guernica]] articulates a visual reflection on [[war]], [[violence]], and historical memory. It also connects with the formal fragmentation of [[cubism]].',
+    artwork: {
+      authorNation: 'Spanish',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '349.3 x 776.6 cm',
+      location: 'Museo Reina Sofia, Madrid',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  'la-persistencia-de-la-memoria': {
+    title: 'The Persistence of Memory',
+    shortDescription: 'Dali\'s iconic work on time, dreams, instability, and perception.',
+    essay: 'This work connects directly with [[time]] and [[memory]], and also with the imagery of [[surrealism]].',
+    artwork: {
+      authorNation: 'Spanish',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '24 x 33 cm',
+      location: 'MoMA, New York',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  'las-dos-fridas': {
+    title: 'The Two Fridas',
+    shortDescription: 'A double self-representation by Frida Kahlo tied to identity, the body, and pain.',
+    essay: 'A key work for thinking about [[identity]], [[body]], and [[pain]] through self-representation. It can also be read through affective memory and inner division.',
+    artwork: {
+      authorNation: 'Mexican',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '173 x 173 cm',
+      location: 'Museo de Arte Moderno, Mexico City',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  maman: {
+    title: 'Maman',
+    shortDescription: 'Louise Bourgeois\'s monumental sculpture associated with motherhood, memory, and affective ambivalence.',
+    essay: '[[Maman]] connects with [[motherhood]], [[memory]], and [[body]]. Its monumental scale intensifies its emotional and spatial reading.',
+    artwork: {
+      authorNation: 'French-American',
+      technique: 'Monumental sculpture',
+      materials: 'Bronze, stainless steel, and marble',
+      dimensions: 'approx. 927 x 891 x 1024 cm',
+      location: 'Guggenheim Bilbao',
+      collection: 'Installation / associated collection',
+      state: 'Preserved',
+    },
+  },
+};
+
+const SOURCE_EN_BY_KEY: Record<string, { title: string; author: string | null; publisher: string | null }> = {
+  'https://www.museodelprado.es': {
+    title: 'Museo del Prado Collection',
+    author: 'Museo Nacional del Prado',
+    publisher: 'Museo del Prado',
+  },
+  'https://www.museoreinasofia.es': {
+    title: 'Museo Reina Sofia Collection',
+    author: 'Museo Nacional Centro de Arte Reina Sofia',
+    publisher: 'Museo Reina Sofia',
+  },
+  'https://www.moma.org': {
+    title: 'MoMA Collection',
+    author: 'The Museum of Modern Art',
+    publisher: 'MoMA',
+  },
+  'https://www.moma.org/artists/2963': {
+    title: 'Frida Kahlo References',
+    author: 'Museum of Modern Art / museum references',
+    publisher: 'Museum references',
+  },
+  'https://www.tate.org.uk': {
+    title: 'Louise Bourgeois Overview',
+    author: 'Tate',
+    publisher: 'Tate',
+  },
+};
+
+const SOURCE_REF_EN_BY_KEY: Record<string, { quote: string | null; note: string | null }> = {
+  'francisco-de-goya::https://www.museodelprado.es': { quote: null, note: 'Primary institutional reference.' },
+  'saturno-devorando-a-su-hijo::https://www.museodelprado.es': { quote: null, note: 'Institutional work record.' },
+  'el-tres-de-mayo-de-1808::https://www.museodelprado.es': { quote: null, note: 'Institutional work record.' },
+  'pablo-picasso::https://www.museoreinasofia.es': { quote: null, note: 'Primary institutional reference.' },
+  'guernica::https://www.museoreinasofia.es': { quote: null, note: 'Institutional work record.' },
+  'salvador-dali::https://www.moma.org': { quote: null, note: 'Primary institutional reference.' },
+  'la-persistencia-de-la-memoria::https://www.moma.org': { quote: null, note: 'Institutional work record.' },
+  'frida-kahlo::https://www.moma.org/artists/2963': { quote: null, note: 'Museum reference.' },
+  'las-dos-fridas::https://www.moma.org/artists/2963': { quote: null, note: 'Contextual reference for the artist and the work.' },
+  'louise-bourgeois::https://www.tate.org.uk': { quote: null, note: 'Institutional and contextual reference.' },
+  'maman::https://www.tate.org.uk': { quote: null, note: 'Contextual reference on the artist and her work.' },
+};
+
+const RELATION_EN_BY_KEY: Record<string, string> = {
+  'memoria::RELATED_TO::identidad': 'Memory plays a role in the construction of identity.',
+  'tiempo::RELATED_TO::memoria': 'The experience of memory is tied to temporality.',
+  'cuerpo::RELATED_TO::identidad': 'The body is a key dimension of identity.',
+  'dolor::RELATED_TO::cuerpo': 'Pain is experienced through the body.',
+  'maternidad::RELATED_TO::memoria': 'Motherhood can articulate affective and symbolic memory.',
+  'guerra::RELATED_TO::violencia': 'War is a historical form of violence.',
+  'francisco-de-goya::ASSOCIATED_WITH::romanticismo': 'Goya is a foundational figure in the origins of modern and Romantic sensibility.',
+  'pablo-picasso::BELONGS_TO_MOVEMENT::cubismo': 'Picasso is a co-founder of Cubism.',
+  'salvador-dali::BELONGS_TO_MOVEMENT::surrealismo': 'Dali is a key figure of Surrealism.',
+  'frida-kahlo::ASSOCIATED_WITH::arte-moderno': 'Frida Kahlo is studied within the field of 20th-century modern art.',
+  'louise-bourgeois::ASSOCIATED_WITH::arte-contemporaneo': 'Louise Bourgeois is central to contemporary art.',
+  'francisco-de-goya::BELONGS_TO_PERIOD::siglo-xix': 'Goya belongs historically to the late 18th and early 19th centuries.',
+  'pablo-picasso::BELONGS_TO_PERIOD::siglo-xx': 'Picasso is central to 20th-century art.',
+  'salvador-dali::BELONGS_TO_PERIOD::siglo-xx': 'Dali belongs to the 20th century.',
+  'frida-kahlo::BELONGS_TO_PERIOD::siglo-xx': 'Frida Kahlo belongs to the 20th century.',
+  'louise-bourgeois::BELONGS_TO_PERIOD::siglo-xx': 'Bourgeois\'s career unfolds primarily in the 20th century.',
+  'frida-kahlo::ASSOCIATED_WITH::identidad': 'Identity is central to Frida Kahlo\'s work.',
+  'frida-kahlo::ASSOCIATED_WITH::cuerpo': 'The body is central to Frida Kahlo\'s work.',
+  'frida-kahlo::ASSOCIATED_WITH::dolor': 'Pain is a key axis in Frida Kahlo\'s work.',
+  'louise-bourgeois::ASSOCIATED_WITH::memoria': 'Memory is a fundamental dimension of Bourgeois\'s work.',
+  'louise-bourgeois::ASSOCIATED_WITH::maternidad': 'Motherhood is an important conceptual axis in Bourgeois.',
+  'louise-bourgeois::ASSOCIATED_WITH::cuerpo': 'The body runs through Bourgeois\'s sculptural work.',
+  'salvador-dali::ASSOCIATED_WITH::tiempo': 'Temporality is a central theme in Dali\'s work.',
+  'salvador-dali::ASSOCIATED_WITH::memoria': 'Memory and psychic imagery carry weight in Dali\'s work.',
+  'francisco-de-goya::ASSOCIATED_WITH::violencia': 'Goya addresses historical and human violence.',
+  'francisco-de-goya::ASSOCIATED_WITH::guerra': 'Goya represents war with critical intensity.',
+  'pablo-picasso::ASSOCIATED_WITH::guerra': 'War is a central axis in Guernica.',
+  'pablo-picasso::ASSOCIATED_WITH::violencia': 'Picasso thematizes political violence in key works.',
+  'saturno-devorando-a-su-hijo::CREATED_BY::francisco-de-goya': 'Direct authorship.',
+  'el-tres-de-mayo-de-1808::CREATED_BY::francisco-de-goya': 'Direct authorship.',
+  'guernica::CREATED_BY::pablo-picasso': 'Direct authorship.',
+  'la-persistencia-de-la-memoria::CREATED_BY::salvador-dali': 'Direct authorship.',
+  'las-dos-fridas::CREATED_BY::frida-kahlo': 'Direct authorship.',
+  'maman::CREATED_BY::louise-bourgeois': 'Direct authorship.',
+  'saturno-devorando-a-su-hijo::BELONGS_TO_MOVEMENT::romanticismo': 'A work associated with Romantic and premodern sensibility.',
+  'el-tres-de-mayo-de-1808::BELONGS_TO_MOVEMENT::romanticismo': 'A key work of Romantic historical drama.',
+  'guernica::BELONGS_TO_MOVEMENT::cubismo': 'Its formal fragmentation is linked to Cubist language.',
+  'la-persistencia-de-la-memoria::BELONGS_TO_MOVEMENT::surrealismo': 'An emblematic work of Surrealism.',
+  'las-dos-fridas::BELONGS_TO_MOVEMENT::arte-moderno': 'It is studied within the languages of 20th-century modern art.',
+  'maman::BELONGS_TO_MOVEMENT::arte-contemporaneo': 'A central sculpture of contemporary art.',
+  'saturno-devorando-a-su-hijo::BELONGS_TO_PERIOD::siglo-xix': 'A work from the early 19th century.',
+  'el-tres-de-mayo-de-1808::BELONGS_TO_PERIOD::siglo-xix': 'A work from 1814.',
+  'guernica::BELONGS_TO_PERIOD::siglo-xx': 'A work from 1937.',
+  'la-persistencia-de-la-memoria::BELONGS_TO_PERIOD::siglo-xx': 'A work from 1931.',
+  'las-dos-fridas::BELONGS_TO_PERIOD::siglo-xx': 'A work from 1939.',
+  'maman::BELONGS_TO_PERIOD::siglo-xx': 'A work from 1999.',
+  'saturno-devorando-a-su-hijo::ABOUT_CONCEPT::violencia': 'The work expresses radical violence.',
+  'saturno-devorando-a-su-hijo::ABOUT_CONCEPT::tiempo': 'It can be read through destruction and devouring time.',
+  'saturno-devorando-a-su-hijo::ABOUT_CONCEPT::dolor': 'Its emotional intensity points to pain.',
+  'el-tres-de-mayo-de-1808::ABOUT_CONCEPT::guerra': 'The work depicts war and execution.',
+  'el-tres-de-mayo-de-1808::ABOUT_CONCEPT::violencia': 'Violence is explicit and central.',
+  'el-tres-de-mayo-de-1808::ABOUT_CONCEPT::memoria': 'It can also be read as historical memory.',
+  'guernica::ABOUT_CONCEPT::guerra': 'War is the central axis of the work.',
+  'guernica::ABOUT_CONCEPT::violencia': 'Violence runs through the composition.',
+  'guernica::ABOUT_CONCEPT::memoria': 'The work operates as historical memory of the bombing.',
+  'la-persistencia-de-la-memoria::ABOUT_CONCEPT::tiempo': 'The work is emblematic for thinking about time.',
+  'la-persistencia-de-la-memoria::ABOUT_CONCEPT::memoria': 'Its title and imagery point to memory and persistence.',
+  'las-dos-fridas::ABOUT_CONCEPT::identidad': 'Identity is one of its most evident axes.',
+  'las-dos-fridas::ABOUT_CONCEPT::cuerpo': 'Bodily representation is central.',
+  'las-dos-fridas::ABOUT_CONCEPT::dolor': 'Wound and suffering are visible.',
+  'maman::ABOUT_CONCEPT::maternidad': 'The work is deeply tied to the maternal.',
+  'maman::ABOUT_CONCEPT::memoria': 'Affective memory is central to the reading of the work.',
+  'maman::ABOUT_CONCEPT::cuerpo': 'The sculpture\'s bodily monumentality suggests it.',
+  'saturno-devorando-a-su-hijo::LOCATED_IN::museo-del-prado': 'The work is housed at Museo del Prado.',
+  'el-tres-de-mayo-de-1808::LOCATED_IN::museo-del-prado': 'The work is housed at Museo del Prado.',
+  'guernica::LOCATED_IN::museo-reina-sofia': 'The work is housed at Museo Reina Sofia.',
+  'la-persistencia-de-la-memoria::LOCATED_IN::moma': 'The work is housed at MoMA.',
+  'maman::LOCATED_IN::guggenheim-bilbao': 'An emblematic version or installation is associated with Guggenheim Bilbao.',
+  'guernica::RELATED_TO::el-tres-de-mayo-de-1808': 'Both works invite reflection on historical violence and war.',
+  'la-persistencia-de-la-memoria::RELATED_TO::saturno-devorando-a-su-hijo': 'Both can be read through time and an unsettling dimension.',
+  'las-dos-fridas::RELATED_TO::maman': 'Both works engage with the body, affect, and personal experience.',
+  'saturno-devorando-a-su-hijo::RELATED_TO::guernica': 'Both articulate intense images of destruction and violence.',
+  'la-persistencia-de-la-memoria::MENTIONS::tiempo': 'Explicit mention in the content.',
+  'la-persistencia-de-la-memoria::MENTIONS::memoria': 'Explicit mention in the content.',
+  'las-dos-fridas::MENTIONS::identidad': 'Explicit mention in the content.',
+  'las-dos-fridas::MENTIONS::cuerpo': 'Explicit mention in the content.',
+  'las-dos-fridas::MENTIONS::dolor': 'Explicit mention in the content.',
+  'maman::MENTIONS::maternidad': 'Explicit mention in the content.',
+  'maman::MENTIONS::memoria': 'Explicit mention in the content.',
+};
+
+function requireDemoTranslation<T>(value: T | undefined, label: string): T {
+  if (value === undefined) {
+    throw new Error(`Missing English demo translation for ${label}`);
+  }
+
+  return value;
+}
+
+async function seedEntityTranslations() {
+  const entities = await prisma.entity.findMany({
+    include: {
+      artwork: true,
+      artist: true,
+      concept: true,
+      period: true,
+    },
+  });
+
+  for (const entity of entities) {
+    const english = requireDemoTranslation(ENTITY_EN_BY_SLUG[entity.slug], `entity:${entity.slug}`);
+
+    await prisma.entityTranslation.upsert({
+      where: { entityId_locale: { entityId: entity.id, locale: 'es' } },
+      update: {
+        title: entity.title,
+        shortDescription: entity.summary ?? null,
+        essay: entity.content ?? null,
+        excerpt: entity.summary ?? null,
+      },
+      create: {
+        entityId: entity.id,
+        locale: 'es',
+        title: entity.title,
+        shortDescription: entity.summary ?? null,
+        essay: entity.content ?? null,
+        excerpt: entity.summary ?? null,
+      },
+    });
+
+    await prisma.entityTranslation.upsert({
+      where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
+      update: {
+        title: english.title,
+        shortDescription: english.shortDescription,
+        essay: english.essay,
+        excerpt: english.excerpt ?? english.shortDescription,
+      },
+      create: {
+        entityId: entity.id,
+        locale: 'en',
+        title: english.title,
+        shortDescription: english.shortDescription,
+        essay: english.essay,
+        excerpt: english.excerpt ?? english.shortDescription,
+      },
+    });
+
+    if (entity.artwork) {
+      const artworkEn = requireDemoTranslation(english.artwork, `artwork:${entity.slug}`);
+      await prisma.artworkDetailsTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'es' } },
+        update: {
+          authorNation: entity.artwork.authorNation ?? null,
+          technique: entity.artwork.technique ?? null,
+          materials: entity.artwork.materials ?? null,
+          dimensions: entity.artwork.dimensions ?? null,
+          location: entity.artwork.location ?? null,
+          collection: entity.artwork.collection ?? null,
+          state: entity.artwork.state ?? null,
+        },
+        create: {
+          entityId: entity.id,
+          locale: 'es',
+          authorNation: entity.artwork.authorNation ?? null,
+          technique: entity.artwork.technique ?? null,
+          materials: entity.artwork.materials ?? null,
+          dimensions: entity.artwork.dimensions ?? null,
+          location: entity.artwork.location ?? null,
+          collection: entity.artwork.collection ?? null,
+          state: entity.artwork.state ?? null,
+        },
+      });
+      await prisma.artworkDetailsTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
+        update: artworkEn,
+        create: { entityId: entity.id, locale: 'en', ...artworkEn },
+      });
+    }
+
+    if (entity.artist) {
+      const artistEn = requireDemoTranslation(english.artist, `artist:${entity.slug}`);
+      await prisma.artistDetailsTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'es' } },
+        update: {
+          country: entity.artist.country ?? null,
+          city: entity.artist.city ?? null,
+          disciplines: entity.artist.disciplines ?? null,
+          bioShort: entity.artist.bioShort ?? null,
+          links: entity.artist.links ?? null,
+        },
+        create: {
+          entityId: entity.id,
+          locale: 'es',
+          country: entity.artist.country ?? null,
+          city: entity.artist.city ?? null,
+          disciplines: entity.artist.disciplines ?? null,
+          bioShort: entity.artist.bioShort ?? null,
+          links: entity.artist.links ?? null,
+        },
+      });
+      await prisma.artistDetailsTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
+        update: artistEn,
+        create: { entityId: entity.id, locale: 'en', ...artistEn },
+      });
+    }
+
+    if (entity.concept) {
+      const conceptEn = requireDemoTranslation(english.concept, `concept:${entity.slug}`);
+      await prisma.conceptDetailsTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'es' } },
+        update: { definition: entity.concept.definition ?? null },
+        create: { entityId: entity.id, locale: 'es', definition: entity.concept.definition ?? null },
+      });
+      await prisma.conceptDetailsTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
+        update: conceptEn,
+        create: { entityId: entity.id, locale: 'en', ...conceptEn },
+      });
+    }
+
+    if (entity.period) {
+      const periodEn = requireDemoTranslation(english.period, `period:${entity.slug}`);
+      await prisma.periodDetailsTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'es' } },
+        update: { definition: entity.period.definition ?? null },
+        create: { entityId: entity.id, locale: 'es', definition: entity.period.definition ?? null },
+      });
+      await prisma.periodDetailsTranslation.upsert({
+        where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
+        update: periodEn,
+        create: { entityId: entity.id, locale: 'en', ...periodEn },
+      });
+    }
+  }
+}
+
+async function seedSourceTranslations() {
+  const sources = await prisma.source.findMany();
+  for (const source of sources) {
+    const sourceKey = source.url?.trim() || source.title.trim();
+    const english = requireDemoTranslation(SOURCE_EN_BY_KEY[sourceKey], `source:${sourceKey}`);
+    await prisma.sourceTranslation.upsert({
+      where: { sourceId_locale: { sourceId: source.id, locale: 'es' } },
+      update: { title: source.title, author: source.author ?? null, publisher: source.publisher ?? null },
+      create: { sourceId: source.id, locale: 'es', title: source.title, author: source.author ?? null, publisher: source.publisher ?? null },
+    });
+    await prisma.sourceTranslation.upsert({
+      where: { sourceId_locale: { sourceId: source.id, locale: 'en' } },
+      update: english,
+      create: { sourceId: source.id, locale: 'en', ...english },
+    });
+  }
+}
+
+async function seedRelationAndSourceRefTranslations() {
+  const relations = await prisma.relation.findMany({
+    include: {
+      from: { select: { slug: true } },
+      to: { select: { slug: true } },
+    },
+  });
+  for (const relation of relations) {
+    const relationKey = `${relation.from.slug}::${relation.type}::${relation.to.slug}`;
+    const justificationEn = requireDemoTranslation(RELATION_EN_BY_KEY[relationKey], `relation:${relationKey}`);
+    await prisma.relationTranslation.upsert({
+      where: { relationId_locale: { relationId: relation.id, locale: 'es' } },
+      update: { justification: relation.justification ?? null },
+      create: { relationId: relation.id, locale: 'es', justification: relation.justification ?? null },
+    });
+    await prisma.relationTranslation.upsert({
+      where: { relationId_locale: { relationId: relation.id, locale: 'en' } },
+      update: { justification: justificationEn },
+      create: { relationId: relation.id, locale: 'en', justification: justificationEn },
+    });
+  }
+
+  const sourceRefs = await prisma.sourceRef.findMany({
+    include: {
+      entity: { select: { slug: true } },
+      source: { select: { url: true, title: true } },
+    },
+  });
+  for (const ref of sourceRefs) {
+    const sourceKey = ref.source.url?.trim() || ref.source.title.trim();
+    const refKey = `${ref.entity.slug}::${sourceKey}`;
+    const english = requireDemoTranslation(SOURCE_REF_EN_BY_KEY[refKey], `sourceRef:${refKey}`);
+    await prisma.sourceRefTranslation.upsert({
+      where: { sourceRefId_locale: { sourceRefId: ref.id, locale: 'es' } },
+      update: { quote: ref.quote ?? null, note: ref.note ?? null },
+      create: { sourceRefId: ref.id, locale: 'es', quote: ref.quote ?? null, note: ref.note ?? null },
+    });
+    await prisma.sourceRefTranslation.upsert({
+      where: { sourceRefId_locale: { sourceRefId: ref.id, locale: 'en' } },
+      update: english,
+      create: { sourceRefId: ref.id, locale: 'en', ...english },
+    });
+  }
 }
 
 async function main() {
@@ -1412,6 +2079,11 @@ async function main() {
   await rel(maman.id, maternidad.id, 'MENTIONS', 0.8, 'Mención explícita en el contenido.');
   await rel(maman.id, memoria.id, 'MENTIONS', 0.8, 'Mención explícita en el contenido.');
 
+  console.log('🌐 Seeding entity translations...');
+  await seedEntityTranslations();
+  await seedSourceTranslations();
+  await seedRelationAndSourceRefTranslations();
+
   console.log('🧭 Creating home decks...');
 
   const homeDecks = [
@@ -1423,6 +2095,9 @@ async function main() {
       ctaLabel: 'Explorar obras',
       ctaRoute: '/entities/artwork',
       imageUrl: '/assets/home/artwork.jpg',
+      translations: {
+        en: { title: 'Artworks', subtitle: 'Key pieces', description: 'Key pieces for studying form, technique, symbolism and context.', ctaLabel: 'Explore artworks' },
+      },
       sortOrder: 0,
       entities: [guernica, persistencia, dosFridas, maman, saturno, tresDeMayo],
     },
@@ -1434,6 +2109,9 @@ async function main() {
       ctaLabel: 'Explorar artículos',
       ctaRoute: '/entities/article',
       imageUrl: '/assets/home/concept.jpg',
+      translations: {
+        en: { title: 'Articles', subtitle: 'Editorial readings', description: 'Editorial readings, criticism and connections between works, authors and ideas.', ctaLabel: 'Explore articles' },
+      },
       sortOrder: 1,
       entities: [],
     },
@@ -1445,6 +2123,9 @@ async function main() {
       ctaLabel: 'Explorar artistas',
       ctaRoute: '/entities/artist',
       imageUrl: '/assets/home/artist.jpg',
+      translations: {
+        en: { title: 'Artists', subtitle: 'Visual trajectories', description: 'Authors, careers, visual obsessions and crossed influences.', ctaLabel: 'Explore artists' },
+      },
       sortOrder: 2,
       entities: [goya, picasso, dali, frida, bourgeois],
     },
@@ -1456,6 +2137,9 @@ async function main() {
       ctaLabel: 'Explorar movimientos',
       ctaRoute: '/entities/movement',
       imageUrl: '/assets/home/movement.jpg',
+      translations: {
+        en: { title: 'Movements', subtitle: 'Ideas in motion', description: 'Aesthetic currents and ideas that redefined art history.', ctaLabel: 'Explore movements' },
+      },
       sortOrder: 3,
       entities: [romanticismo, cubismo, surrealismo, arteModerno, arteContemporaneo],
     },
@@ -1467,6 +2151,9 @@ async function main() {
       ctaLabel: 'Explorar períodos',
       ctaRoute: '/entities/period',
       imageUrl: '/assets/home/period.jpg',
+      translations: {
+        en: { title: 'Periods', subtitle: 'Historical context', description: 'Historical stages for understanding cultural and visual change.', ctaLabel: 'Explore periods' },
+      },
       sortOrder: 4,
       entities: [periodXIX, periodXX, periodXXI],
     },
@@ -1478,6 +2165,9 @@ async function main() {
       ctaLabel: 'Explorar conceptos',
       ctaRoute: '/entities/concept',
       imageUrl: '/assets/home/concept.jpg',
+      translations: {
+        en: { title: 'Concepts', subtitle: 'Reading keys', description: 'Foundational ideas for reading works and relationships with more clarity.', ctaLabel: 'Explore concepts' },
+      },
       sortOrder: 5,
       entities: [tiempo, memoria, guerra, identidad, cuerpo, dolor, maternidad, violencia],
     },
@@ -1491,6 +2181,9 @@ async function main() {
       description: 'Una selección curada para entrar a Jano por piezas clave y conexiones fuertes.',
       ctaLabel: 'Ver selección',
       imageUrl: '/assets/home/artwork.jpg',
+      translations: {
+        en: { title: 'Magic in art', subtitle: 'Staff Pick', description: 'A curated selection to enter JANO through key works and strong connections.', ctaLabel: 'View selection' },
+      },
       sortOrder: 0,
       entities: [persistencia, surrealismo, memoria, tiempo, identidad, cuerpo],
     },
@@ -1501,6 +2194,9 @@ async function main() {
       description: 'Obras, conceptos y relaciones para leer la persistencia de la memoria histórica.',
       ctaLabel: 'Ver recorrido',
       imageUrl: '/assets/home/concept.jpg',
+      translations: {
+        en: { title: 'Memory and trauma', subtitle: 'Curated List', description: 'Works, concepts and relationships for reading the persistence of historical memory.', ctaLabel: 'View route' },
+      },
       sortOrder: 1,
       entities: [guernica, guerra, violencia, memoria, tresDeMayo, saturno],
     },
@@ -1519,6 +2215,12 @@ async function main() {
         surface: 'HOME',
         sortOrder: deck.sortOrder,
         isActive: true,
+        translations: {
+          create: [
+            { locale: 'es', title: deck.title, subtitle: deck.subtitle, description: deck.description, ctaLabel: deck.ctaLabel },
+            { locale: 'en', title: deck.translations.en.title, subtitle: deck.translations.en.subtitle, description: deck.translations.en.description, ctaLabel: deck.translations.en.ctaLabel },
+          ],
+        },
       },
     });
 
@@ -1545,6 +2247,12 @@ async function main() {
         surface: 'RECOMMENDED',
         sortOrder: deck.sortOrder,
         isActive: true,
+        translations: {
+          create: [
+            { locale: 'es', title: deck.title, subtitle: deck.subtitle, description: deck.description, ctaLabel: deck.ctaLabel },
+            { locale: 'en', title: deck.translations.en.title, subtitle: deck.translations.en.subtitle, description: deck.translations.en.description, ctaLabel: deck.translations.en.ctaLabel },
+          ],
+        },
       },
     });
 
@@ -1558,6 +2266,20 @@ async function main() {
       });
     }
   }
+
+  console.log('🔐 Creating test user...');
+
+  const testEmail = 'dev+tester@example.com';
+  const testPassword = 'Secret123!';
+  const testPasswordHash = await bcrypt.hash(testPassword, 10);
+
+  await prisma.user.upsert({
+    where: { email: testEmail },
+    update: { passwordHash: testPasswordHash, name: 'Dev Tester', role: UserRole.ADMIN, isBeta: true },
+    create: { email: testEmail, passwordHash: testPasswordHash, name: 'Dev Tester', role: UserRole.ADMIN, isBeta: true },
+  });
+
+  console.log(`Test user: ${testEmail} / ${testPassword}`);
 
   console.log('✅ Real art seed created successfully.');
   console.log('Entities created:');

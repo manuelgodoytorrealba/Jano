@@ -9,7 +9,16 @@ export type AdminHomeDeckWarning = {
   message: string;
 };
 
+export type AdminHomeDeckTranslation = {
+  locale: 'es' | 'en' | string;
+  title: string;
+  subtitle?: string | null;
+  description?: string | null;
+  ctaLabel?: string | null;
+};
+
 export type AdminHomeDeck = HomeDeck & {
+  translations: AdminHomeDeckTranslation[];
   imageUrl: string | null;
   imageMediaId: string | null;
   isActive: boolean;
@@ -31,6 +40,7 @@ export type AdminHomeDeckPayload = {
   imageMediaId?: string;
   sortOrder?: number;
   isActive?: boolean;
+  translations?: AdminHomeDeckTranslation[];
 };
 
 @Injectable({ providedIn: 'root' })

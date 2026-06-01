@@ -145,6 +145,7 @@ export class AdminHomeDecksComponent {
       imageUrl: starter.image,
       sortOrder: 0,
       isActive: activeDeckCountForSurface === 0,
+      translations: this.starterTranslations(starter),
     });
 
     this.api.create(payload).subscribe({
@@ -191,6 +192,7 @@ export class AdminHomeDecksComponent {
             imageUrl: state.starter.image,
             sortOrder: index,
             isActive: activeDeckCountForSurface === 0,
+            translations: this.starterTranslations(state.starter),
           }),
         ),
       ),
@@ -295,6 +297,7 @@ export class AdminHomeDecksComponent {
       imageUrl: starter.image,
       sortOrder: 0,
       isActive: false,
+      translations: this.starterTranslations(starter),
     };
   }
 
@@ -404,6 +407,26 @@ export class AdminHomeDecksComponent {
     this.refresh$.next();
   }
 
+
+  private starterTranslations(starter: HomeDeckStarter) {
+    return [
+      {
+        locale: 'es',
+        title: starter.title,
+        subtitle: starter.subtitle,
+        description: starter.description,
+        ctaLabel: starter.ctaLabel,
+      },
+      {
+        locale: 'en',
+        title: starter.titleEn,
+        subtitle: starter.subtitleEn,
+        description: starter.descriptionEn,
+        ctaLabel: starter.ctaLabelEn,
+      },
+    ];
+  }
+
   private markDeckRemoved(id: string): void {
     const next = new Set(this.removedDeckIds$.value);
     next.add(id);
@@ -455,6 +478,7 @@ export class AdminHomeDecksComponent {
       imageMediaId: source.imageMediaId?.trim() || undefined,
       sortOrder: source.sortOrder ?? 0,
       isActive: source.isActive ?? false,
+      translations: source.translations,
     };
   }
 }

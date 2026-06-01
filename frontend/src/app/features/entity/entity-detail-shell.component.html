@@ -9,7 +9,7 @@
     (collectionsToggle)="toggleCollectionsPanel()"
     (shareToggle)="shareEntity(entity)"
   ></app-entity-detail-view>
-n  @if (entity.translationMeta?.isFallback) {
+  @if (entity.translationMeta?.isFallback) {
     <div class="entity-translation-notice entity-glass">
       {{ i18n.t('editorial.fallback.' + entity.translationMeta.resolvedLocale) }}
     </div>
@@ -29,19 +29,19 @@ n  @if (entity.translationMeta?.isFallback) {
                 <span class="collections-panel__state-dot" aria-hidden="true"></span>
                 <p class="section-label">
                   @switch (popupKind()) {
-                    @case ('manage') { Guardado }
-                    @case ('removed') { Eliminado }
-                    @case ('share') { Compartir }
-                    @case ('error') { Aviso }
-                    @case ('collections') { Colecciones }
-                    @default { Guardado }
+                    @case ('manage') { {{ i18n.t('popup.state.saved') }} }
+                    @case ('removed') { {{ i18n.t('popup.state.removed') }} }
+                    @case ('share') { {{ i18n.t('popup.state.share') }} }
+                    @case ('error') { {{ i18n.t('popup.state.notice') }} }
+                    @case ('collections') { {{ i18n.t('mySpace.collections') }} }
+                    @default { {{ i18n.t('popup.state.saved') }} }
                   }
                 </p>
               </div>
               <h2 class="title-section">{{ popupTitle() }}</h2>
             </div>
             <button class="ds-btn collections-panel__close" type="button" (click)="closeCollectionsPanel()">
-              Cerrar
+              {{ i18n.t('button.close') }}
             </button>
           </div>
 
@@ -55,21 +55,21 @@ n  @if (entity.translationMeta?.isFallback) {
           @if (collectionsChooserOpen()) {
             <div class="collections-panel__create entity-glass-card">
               <div class="collections-panel__create-head">
-                <h3 class="collections-panel__create-title">Nueva colección</h3>
-                <p class="collections-panel__create-subtitle">Créala aquí y añade esta entidad al momento.</p>
+                <h3 class="collections-panel__create-title">{{ i18n.t('collection.new') }}</h3>
+                <p class="collections-panel__create-subtitle">{{ i18n.t('collection.createAndAttach') }}</p>
               </div>
               <div class="collections-panel__create-fields">
                 <input
                   class="ds-input collections-panel__input"
                   type="text"
-                  placeholder="Nombre de la colección"
+                  placeholder="{{ i18n.t('collection.namePlaceholder') }}"
                   [value]="createCollectionName()"
                   (input)="createCollectionName.set($any($event.target).value)"
                 />
                 <input
                   class="ds-input collections-panel__input"
                   type="text"
-                  placeholder="Descripción opcional"
+                  placeholder="{{ i18n.t('collection.descriptionPlaceholder') }}"
                   [value]="createCollectionDescription()"
                   (input)="createCollectionDescription.set($any($event.target).value)"
                 />
@@ -80,7 +80,7 @@ n  @if (entity.translationMeta?.isFallback) {
                 [disabled]="creatingCollection() || !createCollectionName().trim()"
                 (click)="createCollectionAndAttach(entity.id)"
               >
-                @if (creatingCollection()) { Creando... } @else { Crear colección }
+                @if (creatingCollection()) { {{ i18n.t('common.creating') }} } @else { {{ i18n.t('collection.create') }} }
               </button>
             </div>
 
@@ -97,15 +97,15 @@ n  @if (entity.translationMeta?.isFallback) {
                       <div class="collection-option__body">
                         <div class="collection-option__name">{{ collection.name }}</div>
                         <div class="collection-option__meta">
-                          {{ collection.itemCount }} items
+                          {{ collection.itemCount }} {{ i18n.t('common.items') }}
                         </div>
                       </div>
-                      <span class="collection-option__cta" aria-hidden="true">Añadir</span>
+                      <span class="collection-option__cta" aria-hidden="true">{{ i18n.t('button.add') }}</span>
                     </button>
                   }
                 </div>
               } @else {
-                <p class="text-muted">No tienes colecciones todavía. Créala en My Space.</p>
+                <p class="text-muted">{{ i18n.t('collection.noneYet') }}</p>
               }
             }
           } @else {
@@ -113,10 +113,10 @@ n  @if (entity.translationMeta?.isFallback) {
               @if (popupKind() === 'saved' || popupKind() === 'manage') {
                 <div class="collections-panel__primary-actions">
                   <button class="ds-btn entity-action" type="button" (click)="closeCollectionsPanel()">
-                    Seguir
+                    {{ i18n.t('button.continue') }}
                   </button>
                   <button class="ds-btn entity-action entity-action--primary" type="button" [disabled]="collectionsLoading()" (click)="openCollectionsChooser()">
-                    @if (collectionsLoading()) { Cargando... } @else { Añadir a colección }
+                    @if (collectionsLoading()) { {{ i18n.t('common.loading') }} } @else { {{ i18n.t('button.addToCollection') }} }
                   </button>
                 </div>
                 @if (popupKind() === 'manage') {
@@ -127,13 +127,13 @@ n  @if (entity.translationMeta?.isFallback) {
                       [disabled]="saveLoading()"
                       (click)="removeSavedEntity(entity.id)"
                     >
-                      @if (saveLoading()) { Quitando... } @else { Quitar de guardados }
+                      @if (saveLoading()) { {{ i18n.t('common.removing') }} } @else { {{ i18n.t('button.removeSaved') }} }
                     </button>
                   </div>
                 }
               } @else {
                 <button class="ds-btn entity-action entity-action--primary" type="button" (click)="closeCollectionsPanel()">
-                  Entendido
+                  {{ i18n.t('button.ok') }}
                 </button>
               }
             </div>

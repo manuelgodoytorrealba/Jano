@@ -9,6 +9,7 @@ import {
     signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { I18nService } from '../../../core/i18n/i18n.service';
 
 import { DEFAULT_BACKGROUND_IMAGE_URL } from '../../../core/app-appearance.service';
 import { DeckItem, DeckRailAction } from './entity-deck.types';
@@ -28,6 +29,7 @@ type CardState = {
 })
 export class EntityDeckComponent {
     private router = inject(Router);
+    readonly i18n = inject(I18nService);
     private viewportWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 1440);
 
     items = input.required<DeckItem[]>();
@@ -55,6 +57,8 @@ export class EntityDeckComponent {
     private lastWheelNavigationAt = 0;
     private wheelLockedDirection: 1 | -1 | 0 = 0;
     private wheelLockedAt = 0;
+    private swipeState: { pointerId: number; startX: number; startY: number; dragging: boolean } | null = null;
+    private swipeSuppressedUntil = 0;
 
     cardStates = computed<CardState[]>(() => {
         const list = this.items();
@@ -108,16 +112,19 @@ export class EntityDeckComponent {
     }
 
     onCardClick(item: DeckItem): void {
+        if (this.isSwipeSuppressed()) return;
         this.cardClick.emit(item);
     }
 
     onExpandClick(event: Event, item: DeckItem): void {
         event.stopPropagation();
+        if (this.isSwipeSuppressed()) return;
         this.expandClick.emit(item);
     }
 
     onAdminEditClick(event: Event, item: DeckItem): void {
         event.stopPropagation();
+        if (this.isSwipeSuppressed()) return;
         this.adminEditClick.emit(item);
     }
 
@@ -181,6 +188,86 @@ export class EntityDeckComponent {
         if (diff < -half) diff += length;
 
         return diff;
+    }
+
+    private isInteractiveTarget(target: EventTarget | null): boolean {
+        return target instanceof HTMLElement
+            ? !!target.closest('button, a, input, textarea, select, option, [role=button], [contenteditable=true]')
+            : false;
+    }
+
+    private isSwipeSuppressed(): boolean {
+        return performance.now() < this.swipeSuppressedUntil;
+    }
+
+    onPointerDown(event: PointerEvent): void {
+        if (event.pointerType === 'mouse' || !event.isPrimary || this.isInteractiveTarget(event.target)) {
+            return;
+        }
+
+        this.swipeState = {
+            pointerId: event.pointerId,
+            startX: event.clientX,
+            startY: event.clientY,
+            dragging: false,
+        };
+    }
+
+    onPointerMove(event: PointerEvent): void {
+        const state = this.swipeState;
+        if (!state || state.pointerId !== event.pointerId) {
+            return;
+        }
+
+        const deltaX = event.clientX - state.startX;
+        const deltaY = event.clientY - state.startY;
+
+        if (!state.dragging) {
+            if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+                return;
+            }
+
+            if (Math.abs(deltaX) <= Math.abs(deltaY)) {
+                this.swipeState = null;
+                return;
+            }
+
+            state.dragging = true;
+        }
+
+        event.preventDefault();
+    }
+
+    onPointerUp(event: PointerEvent): void {
+        const state = this.swipeState;
+        if (!state || state.pointerId !== event.pointerId) {
+            return;
+        }
+
+        const deltaX = event.clientX - state.startX;
+        const deltaY = event.clientY - state.startY;
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+        const swipeThreshold = 52;
+
+        if (state.dragging && absX >= swipeThreshold && absX > absY * 1.15) {
+            if (deltaX < 0) {
+                this.next();
+            } else {
+                this.prev();
+            }
+
+            this.swipeSuppressedUntil = performance.now() + 260;
+        }
+
+        this.swipeState = null;
+    }
+
+    onPointerCancel(event: PointerEvent): void {
+        const state = this.swipeState;
+        if (state?.pointerId === event.pointerId) {
+            this.swipeState = null;
+        }
     }
 
     private deckMotionScale(): number {

@@ -20,6 +20,7 @@ export class I18nService {
   readonly locale = signal<AppLocale>(this.readInitialLocale());
   readonly ready = signal(false);
   readonly supportedLocales = SUPPORTED_LOCALES;
+  private readonly missingKeys = new Set<string>();
   readonly localeLabel = computed(() => this.locale() === 'es' ? 'Español' : 'English');
 
   load() {
@@ -46,9 +47,17 @@ export class I18nService {
 
   t(key: string): string {
     const dictionaries = this.dictionaries();
-    return dictionaries[this.locale()]?.[key]
-      ?? dictionaries[FALLBACK_LOCALE]?.[key]
-      ?? key;
+    const locale = this.locale();
+    const translated = dictionaries[locale]?.[key] ?? dictionaries[FALLBACK_LOCALE]?.[key];
+
+    if (translated === undefined && !this.missingKeys.has(`${locale}:${key}`)) {
+      this.missingKeys.add(`${locale}:${key}`);
+      if (isPlatformBrowser(this.platformId)) {
+        console.warn(`[i18n] Missing translation for ${locale}:${key}`);
+      }
+    }
+
+    return translated ?? key;
   }
 
   normalizeLocale(locale: string | null | undefined): AppLocale {

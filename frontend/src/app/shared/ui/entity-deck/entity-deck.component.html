@@ -45,7 +45,7 @@
         </button>
         }
 
-        <div class="entity-deck__stage">
+        <div class="entity-deck__stage" (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)" (pointerup)="onPointerUp($event)" (pointercancel)="onPointerCancel($event)">
             <div class="entity-deck__stack" role="list">
                 @for (item of items(); track item.id) {
                 <article role="listitem" class="entity-deck__card" [class.is-active]="$index === activeIndex()"

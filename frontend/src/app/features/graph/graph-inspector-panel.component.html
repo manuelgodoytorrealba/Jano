@@ -5,7 +5,7 @@
         <span class="selection-card__type" [style.--node-color]="selectedNodeMeta.color">
           {{ selectedNodeMeta.label }}
         </span>
-        <span class="selection-card__meta">{{ selectedNode.degree }} conexiones</span>
+        <span class="selection-card__meta">{{ selectedNode.degree }} {{ i18n.t('graph.connections') }}</span>
       </div>
 
       <h3>{{ selectedNode.label }}</h3>
@@ -18,8 +18,8 @@
   <div class="graph-filter-tray">
     <div class="graph-filter-group">
       <div class="filter-group__head">
-        <span class="filter-group__label">Tipos</span>
-        <button type="button" class="filter-action" (click)="setAllEntityTypes.emit(true)">Todos</button>
+        <span class="filter-group__label">{{ i18n.t('graph.types') }}</span>
+        <button type="button" class="filter-action" (click)="setAllEntityTypes.emit(true)">{{ i18n.t('graph.allPlural') }}</button>
       </div>
       @for (type of entityTypes; track type) {
         <button
@@ -37,8 +37,8 @@
 
     <div class="graph-filter-group">
       <div class="filter-group__head">
-        <span class="filter-group__label">Relaciones</span>
-        <button type="button" class="filter-action" (click)="setAllRelationTypes.emit(true)">Todas</button>
+        <span class="filter-group__label">{{ i18n.t('graph.relations') }}</span>
+        <button type="button" class="filter-action" (click)="setAllRelationTypes.emit(true)">{{ i18n.t('graph.allFeminine') }}</button>
       </div>
       @for (type of relationTypes; track type) {
         <button

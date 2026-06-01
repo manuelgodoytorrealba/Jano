@@ -87,7 +87,7 @@ describe('AuthService', () => {
     expect(usersService.findByEmail).toHaveBeenCalledWith('  MANUEL@TEST3.COM  ');
   });
 
-  it('rejects valid credentials when the user is not in the private beta', async () => {
+  it('allows login regardless of beta flag', async () => {
     const passwordHash = await bcrypt.hash('secret123', 10);
     usersService.findByEmail.mockResolvedValue({
       id: 'user-1',
@@ -101,6 +101,13 @@ describe('AuthService', () => {
     await expect(service.login({
       email: 'manuel@test3.com',
       password: 'secret123',
-    })).rejects.toThrow('Private beta access required');
+    })).resolves.toMatchObject({
+      user: {
+        id: 'user-1',
+        email: 'manuel@test3.com',
+        role: 'USER',
+        isBeta: false,
+      },
+    });
   });
 });

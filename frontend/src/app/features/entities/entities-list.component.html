@@ -4,7 +4,7 @@
   <h1 class="sr-only">
     @if (qFromUrl$ | async; as q) {
       @if (q) {
-        Search results for {{ q }}
+        {{ i18n.t('explorer.searchResultsFor') }} {{ q }}
       } @else {
         @if (title$ | async; as title) { {{ title }} }
       }
@@ -130,7 +130,7 @@
           @if (institution) {
           <button type="button" class="search-chip entities-active-filter" (click)="setInstitution('')">
             <span class="entities-active-filter__content">
-              <span class="search-chip__label">Institución</span>
+              <span class="search-chip__label">{{ i18n.t('explorer.institution') }}</span>
               <span class="search-chip__value">{{ institutionLabel$ | async }}</span>
             </span>
             <span class="entities-active-filter__clear">✕</span>
@@ -144,7 +144,7 @@
           @if (nationality) {
           <button type="button" class="search-chip entities-active-filter" (click)="setNationality('')">
             <span class="entities-active-filter__content">
-              <span class="search-chip__label">Nacionalidad</span>
+              <span class="search-chip__label">{{ i18n.t('explorer.nationality') }}</span>
               <span class="search-chip__value">{{ nationalityLabel$ | async }}</span>
             </span>
             <span class="entities-active-filter__clear">✕</span>
@@ -157,7 +157,7 @@
           @if (tagSlug) {
           <button type="button" class="search-chip entities-active-filter" (click)="setTag('')">
             <span class="entities-active-filter__content">
-              <span class="search-chip__label">Tag</span>
+              <span class="search-chip__label">{{ i18n.t('explorer.tag') }}</span>
               <span class="search-chip__value">{{ tagLabel$ | async }}</span>
             </span>
             <span class="entities-active-filter__clear">✕</span>
@@ -169,10 +169,10 @@
       </div>
 
       <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-tag">Tag</label>
+        <label class="entities-filter-rail__label" for="entities-filter-tag">{{ i18n.t('explorer.tag') }}</label>
         <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'tag'">
           <button id="entities-filter-tag" type="button" class="entities-filter-menu__trigger"
-            aria-label="Filtrar por tag" [attr.aria-expanded]="openFilterMenu() === 'tag'"
+            [attr.aria-label]="i18n.t('explorer.filterByTag')" [attr.aria-expanded]="openFilterMenu() === 'tag'"
             aria-haspopup="listbox" (click)="toggleFilterMenu('tag')">
             <span class="entities-filter-menu__value">
               @if (tagFromUrl$ | async; as tagSlug) {
@@ -180,19 +180,19 @@
               {{ (tagLabel$ | async) ?? tagSlug }}
               }
               } @else {
-              Todos los tags
+              {{ i18n.t('explorer.allTags') }}
               }
             </span>
             <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
           </button>
 
           @if (openFilterMenu() === 'tag') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de tag">
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.tagOptions')">
             <button type="button" class="entities-filter-menu__option"
               [class.is-selected]="!(tagFromUrl$ | async)"
               [attr.aria-selected]="!(tagFromUrl$ | async)" role="option"
               (click)="selectFilterOption('tag', '')">
-              Todos los tags
+              {{ i18n.t('explorer.allTags') }}
             </button>
 
             @if (tagOptions$ | async; as tagOptions) {
@@ -212,10 +212,10 @@
 
       @if (supportsMovement$ | async) {
       <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-movement">Movimiento</label>
+        <label class="entities-filter-rail__label" for="entities-filter-movement">{{ i18n.t('explorer.movement') }}</label>
         <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'movement'">
           <button id="entities-filter-movement" type="button" class="entities-filter-menu__trigger"
-            aria-label="Filtrar por movimiento" [attr.aria-expanded]="openFilterMenu() === 'movement'"
+            [attr.aria-label]="i18n.t('explorer.filterByMovement')" [attr.aria-expanded]="openFilterMenu() === 'movement'"
             aria-haspopup="listbox" (click)="toggleFilterMenu('movement')">
             <span class="entities-filter-menu__value">
               @if (movementFromUrl$ | async; as movementSlug) {
@@ -223,19 +223,19 @@
               {{ (movementLabel$ | async) ?? movementSlug }}
               }
               } @else {
-              Todos los movimientos
+              {{ i18n.t('explorer.allMovements') }}
               }
             </span>
             <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
           </button>
 
           @if (openFilterMenu() === 'movement') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de movimiento">
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.movementOptions')">
             <button type="button" class="entities-filter-menu__option"
               [class.is-selected]="!(movementFromUrl$ | async)"
               [attr.aria-selected]="!(movementFromUrl$ | async)" role="option"
               (click)="selectFilterOption('movement', '')">
-              Todos los movimientos
+              {{ i18n.t('explorer.allMovements') }}
             </button>
 
             @if (movementOptions$ | async; as movementOptions) {
@@ -256,10 +256,10 @@
 
       @if (supportsPeriod$ | async) {
       <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-period">Periodo</label>
+        <label class="entities-filter-rail__label" for="entities-filter-period">{{ i18n.t('explorer.period') }}</label>
         <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'period'">
           <button id="entities-filter-period" type="button" class="entities-filter-menu__trigger"
-            aria-label="Filtrar por periodo" [attr.aria-expanded]="openFilterMenu() === 'period'"
+            [attr.aria-label]="i18n.t('explorer.filterByPeriod')" [attr.aria-expanded]="openFilterMenu() === 'period'"
             aria-haspopup="listbox" (click)="toggleFilterMenu('period')">
             <span class="entities-filter-menu__value">
               @if (periodFromUrl$ | async; as periodSlug) {
@@ -267,19 +267,19 @@
               {{ (periodLabel$ | async) ?? periodSlug }}
               }
               } @else {
-              Todos los periodos
+              {{ i18n.t('explorer.allPeriods') }}
               }
             </span>
             <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
           </button>
 
           @if (openFilterMenu() === 'period') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de periodo">
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.periodOptions')">
             <button type="button" class="entities-filter-menu__option"
               [class.is-selected]="!(periodFromUrl$ | async)"
               [attr.aria-selected]="!(periodFromUrl$ | async)" role="option"
               (click)="selectFilterOption('period', '')">
-              Todos los periodos
+              {{ i18n.t('explorer.allPeriods') }}
             </button>
 
             @if (periodOptions$ | async; as periodOptions) {
@@ -300,10 +300,10 @@
 
       @if (supportsInstitution$ | async) {
       <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-institution">Institución</label>
+        <label class="entities-filter-rail__label" for="entities-filter-institution">{{ i18n.t('explorer.institution') }}</label>
         <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'institution'">
           <button id="entities-filter-institution" type="button" class="entities-filter-menu__trigger"
-            aria-label="Filtrar por institución" [attr.aria-expanded]="openFilterMenu() === 'institution'"
+            [attr.aria-label]="i18n.t('explorer.filterByInstitution')" [attr.aria-expanded]="openFilterMenu() === 'institution'"
             aria-haspopup="listbox" (click)="toggleFilterMenu('institution')">
             <span class="entities-filter-menu__value">
               @if (institutionFromUrl$ | async; as institution) {
@@ -311,19 +311,19 @@
               {{ (institutionLabel$ | async) ?? institution }}
               }
               } @else {
-              Todas las instituciones
+              {{ i18n.t('explorer.allInstitutions') }}
               }
             </span>
             <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
           </button>
 
           @if (openFilterMenu() === 'institution') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de institución">
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.institutionOptions')">
             <button type="button" class="entities-filter-menu__option"
               [class.is-selected]="!(institutionFromUrl$ | async)"
               [attr.aria-selected]="!(institutionFromUrl$ | async)" role="option"
               (click)="selectFilterOption('institution', '')">
-              Todas las instituciones
+              {{ i18n.t('explorer.allInstitutions') }}
             </button>
 
             @if (institutionOptions$ | async; as institutionOptions) {
@@ -344,10 +344,10 @@
 
       @if (supportsNationality$ | async) {
       <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-nationality">Nacionalidad</label>
+        <label class="entities-filter-rail__label" for="entities-filter-nationality">{{ i18n.t('explorer.nationality') }}</label>
         <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'nationality'">
           <button id="entities-filter-nationality" type="button" class="entities-filter-menu__trigger"
-            aria-label="Filtrar por nacionalidad" [attr.aria-expanded]="openFilterMenu() === 'nationality'"
+            [attr.aria-label]="i18n.t('explorer.filterByNationality')" [attr.aria-expanded]="openFilterMenu() === 'nationality'"
             aria-haspopup="listbox" (click)="toggleFilterMenu('nationality')">
             <span class="entities-filter-menu__value">
               @if (nationalityFromUrl$ | async; as nationality) {
@@ -355,19 +355,19 @@
               {{ (nationalityLabel$ | async) ?? nationality }}
               }
               } @else {
-              Todas las nacionalidades
+              {{ i18n.t('explorer.allNationalities') }}
               }
             </span>
             <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
           </button>
 
           @if (openFilterMenu() === 'nationality') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" aria-label="Opciones de nacionalidad">
+          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.nationalityOptions')">
             <button type="button" class="entities-filter-menu__option"
               [class.is-selected]="!(nationalityFromUrl$ | async)"
               [attr.aria-selected]="!(nationalityFromUrl$ | async)" role="option"
               (click)="selectFilterOption('nationality', '')">
-              Todas las nacionalidades
+              {{ i18n.t('explorer.allNationalities') }}
             </button>
 
             @if (nationalityOptions$ | async; as nationalityOptions) {
@@ -387,22 +387,22 @@
       }
 
       <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">Orden</div>
+        <div class="entities-filter-rail__label">{{ i18n.t('explorer.sort') }}</div>
         <div class="entities-filter-rail__chips entities-filter-rail__chips--compact">
           <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'recent'"
             (click)="toggleSort('recent')">
-            Recientes
+            {{ i18n.t('explorer.sort.recent') }}
           </button>
 
           <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'title'"
             (click)="toggleSort('title')">
-            Título A–Z
+            {{ i18n.t('explorer.sort.title') }}
           </button>
 
           <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'relevance'"
             [disabled]="!(qFromUrl$ | async)" (click)="toggleSort('relevance')"
-            title="Activa una búsqueda para ordenar por relevancia">
-            Relevancia
+            [title]="i18n.t('explorer.sort.relevanceHint')">
+            {{ i18n.t('explorer.sort.relevance') }}
           </button>
         </div>
       </div>
@@ -411,12 +411,12 @@
         [class.is-open]="advancedFiltersOpen() || (hasAdvancedFilters$ | async)">
         <button type="button" class="entities-advanced-toggle" (click)="toggleAdvancedFilters()"
           [attr.aria-expanded]="advancedFiltersOpen() || (hasAdvancedFilters$ | async)">
-          <span class="entities-filter-rail__label">Filtros avanzados</span>
+          <span class="entities-filter-rail__label">{{ i18n.t('explorer.advancedFilters') }}</span>
           <span class="entities-advanced-toggle__meta">
             @if (hasAdvancedFilters$ | async) {
-            Activos
+            {{ i18n.t('explorer.active') }}
             } @else {
-            Opcional
+            {{ i18n.t('explorer.optional') }}
             }
           </span>
         </button>
@@ -424,52 +424,52 @@
         @if (advancedFiltersOpen() || (hasAdvancedFilters$ | async)) {
         <div class="entities-advanced-panel">
           <div class="entities-filter-rail__group">
-            <div class="entities-filter-rail__sublabel">Status editorial</div>
+            <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.editorialStatus') }}</div>
             <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
               <button type="button" class="filter-chip filter-chip--secondary"
                 [class.is-active]="(statusFromUrl$ | async) === 'DRAFT'" (click)="toggleStatus('DRAFT')">
-                Draft
+                {{ i18n.t('status.draft') }}
               </button>
 
               <button type="button" class="filter-chip filter-chip--secondary"
                 [class.is-active]="(statusFromUrl$ | async) === 'IN_REVIEW'" (click)="toggleStatus('IN_REVIEW')">
-                In review
+                {{ i18n.t('status.inReview') }}
               </button>
 
               <button type="button" class="filter-chip filter-chip--secondary"
                 [class.is-active]="(statusFromUrl$ | async) === 'PUBLISHED'" (click)="toggleStatus('PUBLISHED')">
-                Published
+                {{ i18n.t('status.published') }}
               </button>
 
               <button type="button" class="filter-chip filter-chip--ghost filter-chip--secondary"
                 [class.is-active]="!(statusFromUrl$ | async)" (click)="toggleStatus('')">
-                Todos
+                {{ i18n.t('common.all') }}
               </button>
             </div>
           </div>
 
           <div class="entities-filter-rail__group">
-            <div class="entities-filter-rail__sublabel">Nivel de lectura</div>
+            <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.readingLevel') }}</div>
             <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
               <button type="button" class="filter-chip filter-chip--secondary"
                 [class.is-active]="(contentLevelFromUrl$ | async) === 'BASIC'" (click)="toggleContentLevel('BASIC')">
-                Basic
+                {{ i18n.t('level.basic') }}
               </button>
 
               <button type="button" class="filter-chip filter-chip--secondary"
                 [class.is-active]="(contentLevelFromUrl$ | async) === 'INTERMEDIATE'"
                 (click)="toggleContentLevel('INTERMEDIATE')">
-                Intermediate
+                {{ i18n.t('level.intermediate') }}
               </button>
 
               <button type="button" class="filter-chip filter-chip--secondary"
                 [class.is-active]="(contentLevelFromUrl$ | async) === 'ADVANCED'" (click)="toggleContentLevel('ADVANCED')">
-                Advanced
+                {{ i18n.t('level.advanced') }}
               </button>
 
               <button type="button" class="filter-chip filter-chip--ghost filter-chip--secondary"
                 [class.is-active]="!(contentLevelFromUrl$ | async)" (click)="toggleContentLevel('')">
-                Todos
+                {{ i18n.t('common.all') }}
               </button>
             </div>
           </div>
@@ -480,14 +480,14 @@
       @if (hasActiveFilters$ | async) {
       <div class="entities-filter-rail__section entities-filter-rail__section--actions">
         <button type="button" class="ds-btn entities-filter-rail__reset" (click)="resetFilters()">
-          Reset filtros
+          {{ i18n.t('explorer.resetFilters') }}
         </button>
       </div>
       }
 
       <div class="entities-filter-rail__meta">
-        <span class="ds-pill">{{ vm.total }} resultados</span>
-        <span class="ds-pill">Página {{ vm.page }} / {{ vm.totalPages }}</span>
+        <span class="ds-pill">{{ vm.total }} {{ i18n.t('explorer.results') }}</span>
+        <span class="ds-pill">{{ i18n.t('explorer.page') }} {{ vm.page }} / {{ vm.totalPages }}</span>
       </div>
     </aside>
     }
@@ -503,9 +503,9 @@
     } @else {
     <div class="entities-stage-shell entities-stage-shell--empty">
       <div class="empty-state ds-panel">
-        <div class="empty-state__title">Sin resultados</div>
+        <div class="empty-state__title">Sin {{ i18n.t('explorer.results') }}</div>
         <div class="empty-state__text">
-          Prueba con otra búsqueda o ajusta los filtros.
+          {{ i18n.t('explorer.noResultsHint') }}
         </div>
       </div>
     </div>
@@ -544,18 +544,18 @@
 
       <section class="entities-pager entities-pager--in-shell">
         <button class="ds-btn" type="button" (click)="prevPage()" [disabled]="vm.page <= 1">
-          Anterior
+          {{ i18n.t('pager.prev') }}
         </button>
 
         <button class="ds-btn" type="button" (click)="nextPage(vm.totalPages)" [disabled]="vm.page >= vm.totalPages">
-          Siguiente
+          {{ i18n.t('pager.next') }}
         </button>
       </section>
       } @else {
       <div class="empty-state ds-panel">
-        <div class="empty-state__title">Sin resultados</div>
+        <div class="empty-state__title">Sin {{ i18n.t('explorer.results') }}</div>
         <div class="empty-state__text">
-          Prueba con otra búsqueda o ajusta los filtros.
+          {{ i18n.t('explorer.noResultsHint') }}
         </div>
       </div>
       }
@@ -566,7 +566,7 @@
     <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
       [attr.aria-hidden]="!filtersPanelOpen()">
       <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-search-skeleton">Buscar</label>
+        <label class="entities-filter-rail__label" for="entities-search-skeleton">{{ i18n.t('explorer.search.label') }}</label>
         <input id="entities-search-skeleton" class="ds-input entities-search entities-filter-rail__search" type="search"
           [placeholder]="i18n.t('explorer.search.placeholder')" [attr.aria-label]="i18n.t('explorer.search.aria')"
           [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />

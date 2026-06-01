@@ -1,7 +1,5 @@
 import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
+  ConflictException,  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -44,11 +42,6 @@ export class AuthService {
     if (!ok) {
       throw new UnauthorizedException('Invalid credentials');
     }
-
-    if (!user.isBeta) {
-      throw new ForbiddenException('Private beta access required');
-    }
-
     return this.buildAuthResponse(user);
   }
 

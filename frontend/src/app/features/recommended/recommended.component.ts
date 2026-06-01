@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { AppAppearanceService } from '../../core/app-appearance.service';
 import { HomeDeck, HomeDecksApi } from '../../core/api/home-decks.api';
 import { SeoService } from '../../core/seo/seo.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { navigateToAppSearch } from '../../core/search/search-navigation';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
@@ -26,6 +27,7 @@ export class RecommendedComponent {
     private readonly appearance = inject(AppAppearanceService);
     private readonly homeDecksApi = inject(HomeDecksApi);
     private readonly seo = inject(SeoService);
+    private readonly i18n = inject(I18nService);
     private readonly destroyRef = inject(DestroyRef);
 
     readonly deckItems = signal<DeckItem[]>(FALLBACK_RECOMMENDED_ITEMS);
@@ -39,7 +41,10 @@ export class RecommendedComponent {
             image: '/assets/home/artwork.jpg',
         });
 
-        this.loadRecommendedDecks();
+        effect(() => {
+            this.i18n.locale();
+            this.loadRecommendedDecks();
+        });
     }
 
     backgroundImage(): string {
@@ -115,11 +120,11 @@ export class RecommendedComponent {
 
         return {
             id: deck.id,
-            eyebrow: deck.subtitle ?? 'Curated',
+            eyebrow: deck.subtitle ?? this.i18n.t('nav.curated'),
             title: deck.title,
             description: deck.description ?? undefined,
-            meta: deck.entities.length ? `${deck.entities.length} entidades` : 'Curated List',
-            cta: `${deck.ctaLabel || 'Ver selección'} →`,
+            meta: deck.entities.length ? `${deck.entities.length} ${this.i18n.t('home.entities')}` : this.i18n.t('home.editorialDeck'),
+            cta: `${deck.ctaLabel || this.i18n.t('home.viewSelection')} →`,
             image,
             imageWidth: deck.image?.width ?? undefined,
             imageHeight: deck.image?.height ?? undefined,

@@ -10,6 +10,7 @@ export type AdminEntityTranslationPayload = {
   essay?: string | null;
   notes?: string | null;
   excerpt?: string | null;
+  details?: AdminEntityDetailsPayload;
 };
 
 export type AdminEntityTranslation = AdminEntityTranslationPayload & {
@@ -55,13 +56,23 @@ export type AdminEntityDetailsPayload = {
 export type AdminSourceRefPayload = {
   sourceType: 'BOOK' | 'ARTICLE' | 'WEBSITE' | 'CATALOG' | 'PAPER';
   sourceTitle: string;
+  sourceTitleEs?: string;
+  sourceTitleEn?: string;
   sourceAuthor?: string;
+  sourceAuthorEs?: string;
+  sourceAuthorEn?: string;
   sourcePublisher?: string;
+  sourcePublisherEs?: string;
+  sourcePublisherEn?: string;
   sourceYear?: number | null;
   sourceUrl?: string;
   page?: string;
   quote?: string;
+  quoteEs?: string;
+  quoteEn?: string;
   note?: string;
+  noteEs?: string;
+  noteEn?: string;
 };
 
 export type AdminContributorPayload = {
@@ -367,9 +378,13 @@ export class AdminEntitiesApi {
 
   createRelation(
     entityId: string,
-    data: { toId: string; type?: string; relationTypeId?: string; justification?: string; weight?: number }
+    data: { toId: string; type?: string; relationTypeId?: string; justification?: string; justificationEs?: string; justificationEn?: string; weight?: number }
   ) {
     return this.http.post<any>(`${this.baseUrl}/${entityId}/relations`, data);
+  }
+
+  updateRelation(entityId: string, relationId: string, data: { type?: string; relationTypeId?: string; justification?: string; justificationEs?: string; justificationEn?: string; weight?: number }) {
+    return this.http.patch<any>(`${this.baseUrl}/${entityId}/relations/${relationId}`, data);
   }
 
   deleteRelation(entityId: string, relationId: string) {

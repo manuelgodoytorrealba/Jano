@@ -36,7 +36,7 @@
         <form class="panel form-panel" (ngSubmit)="save()">
           <div class="section-title">
             <h2>Campos editoriales</h2>
-            <p>{{ surfaceDescription() }}</p>
+            <p>{{ surfaceDescription() }} · {{ translationSummary() }}</p>
           </div>
 
           <div class="composer-intro">
@@ -131,6 +131,32 @@
               <span>Descripción editorial</span>
               <textarea name="description" [(ngModel)]="form.description" (ngModelChange)="onFormChanged()" rows="5"></textarea>
               <small>Resume con claridad qué ofrece esta selección y por qué merece ser explorada.</small>
+            </label>
+
+            <div class="form-grid__full section-title">
+              <h2>Traducción inglesa</h2>
+              <p>Estos campos alimentan el Home y Curated cuando el idioma activo es English.</p>
+            </div>
+
+            <label class="form-grid__wide">
+              <span>Title EN</span>
+              <input name="titleEn" [(ngModel)]="form.titleEn" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            <label class="form-grid__wide">
+              <span>Subtitle EN</span>
+              <input name="subtitleEn" [(ngModel)]="form.subtitleEn" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            <label>
+              <span>CTA label EN</span>
+              <input name="ctaLabelEn" [(ngModel)]="form.ctaLabelEn" (ngModelChange)="onFormChanged()" />
+            </label>
+
+            <label class="form-grid__full">
+              <span>Description EN</span>
+              <textarea name="descriptionEn" [(ngModel)]="form.descriptionEn" (ngModelChange)="onFormChanged()" rows="5"></textarea>
+              <small>Usa texto real cuando exista; mientras tanto, un placeholder inglés claro permite detectar cobertura i18n.</small>
             </label>
 
             <label class="check">

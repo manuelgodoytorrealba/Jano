@@ -2,10 +2,10 @@
   @if (auth.user$ | async; as user) {
     <section class="profile-hero">
       <div class="profile-hero__copy">
-        <span class="profile-eyebrow">Perfil</span>
-        <h1>Cuenta personal</h1>
+        <span class="profile-eyebrow">{{ i18n.t('profile.eyebrow') }}</span>
+        <h1>{{ i18n.t('profile.title') }}</h1>
         <p class="profile-muted">
-          Un retrato breve y calmado de tu presencia en JANO, con lo esencial para continuar tu recorrido sin ruido.
+          {{ i18n.t('profile.intro') }}
         </p>
       </div>
     </section>
@@ -13,27 +13,27 @@
     <section class="profile-surface">
       <div class="profile-overview">
         <article class="profile-card profile-card--identity">
-          <span class="profile-label">Identidad activa</span>
-          <h2>{{ user.name || 'Sin nombre editorial' }}</h2>
+          <span class="profile-label">{{ i18n.t('profile.identity') }}</span>
+          <h2>{{ user.name || i18n.t('profile.noName') }}</h2>
           <p class="profile-identity__mail">{{ user.email }}</p>
 
           <div class="profile-role-pill">
-            <span class="profile-role-pill__label">Rol</span>
+            <span class="profile-role-pill__label">{{ i18n.t('common.role') }}</span>
             <strong>{{ roleLabel(user) }}</strong>
           </div>
         </article>
 
         <div class="profile-rail">
           <article class="profile-card profile-card--note">
-            <span class="profile-note__label">Estado</span>
-            <strong>Tu sesión está lista para descubrir, guardar y organizar.</strong>
+            <span class="profile-note__label">{{ i18n.t('common.status') }}</span>
+            <strong>{{ i18n.t('profile.statusReady') }}</strong>
           </article>
 
-          <nav class="profile-shortcuts" aria-label="Accesos del perfil">
-            <a class="profile-shortcut" routerLink="/settings">Ajustes</a>
-            <a class="profile-shortcut" routerLink="/my-space">Mi espacio</a>
+          <nav class="profile-shortcuts" aria-label="{{ i18n.t('profile.shortcuts') }}">
+            <a class="profile-shortcut" routerLink="/settings">{{ i18n.t('nav.settings') }}</a>
+            <a class="profile-shortcut" routerLink="/my-space">{{ i18n.t('nav.mySpace') }}</a>
             @if (isAdmin(user)) {
-              <a class="profile-shortcut profile-shortcut--primary" routerLink="/admin">Abrir admin</a>
+              <a class="profile-shortcut profile-shortcut--primary" routerLink="/admin">{{ i18n.t('profile.openAdmin') }}</a>
             }
           </nav>
         </div>

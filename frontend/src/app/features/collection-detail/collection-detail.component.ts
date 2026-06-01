@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EMPTY, Subject, catchError, debounceTime, distinctUntilChanged, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { CollectionsApi, Collection } from '../../core/api/collections.api';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { GraphResponseDto } from '../graph/graph.models';
 import { GraphComponent } from '../graph/graph.component';
@@ -25,6 +26,7 @@ export class CollectionDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(SeoService);
   private readonly cdr = inject(ChangeDetectorRef);
+  readonly i18n = inject(I18nService);
   private readonly graphResponseCache = new Map<string, GraphResponseDto | null>();
   private readonly notesInput$ = new Subject<string | null>();
   private currentCollectionId = '';
@@ -43,10 +45,10 @@ export class CollectionDetailComponent {
   notesDraft = '';
   notesStatus: 'idle' | 'dirty' | 'saving' | 'saved' | 'error' = 'idle';
   notesError = '';
-  readonly workspaceModes: Array<{ value: WorkspaceMode; label: string }> = [
-    { value: 'split', label: 'Split View' },
-    { value: 'image', label: 'Cover Focus' },
-    { value: 'graph', label: 'Graph Focus' },
+  readonly workspaceModes: Array<{ value: WorkspaceMode; labelKey: string }> = [
+    { value: 'split', labelKey: 'workspace.split' },
+    { value: 'image', labelKey: 'workspace.image' },
+    { value: 'graph', labelKey: 'workspace.graph' },
   ];
 
   private readonly notesSaveSub = this.notesInput$.pipe(

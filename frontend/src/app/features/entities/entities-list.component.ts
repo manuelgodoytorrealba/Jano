@@ -38,16 +38,16 @@ type ViewMode = 'explore' | 'list';
 type FilterMenuKey = 'movement' | 'period' | 'institution' | 'nationality' | 'tag';
 type TagFilterOption = Pick<Tag, 'slug' | 'label' | 'category'>;
 
-const STATUS_LABELS: Record<Exclude<Status, ''>, string> = {
-  DRAFT: 'Draft',
-  IN_REVIEW: 'In review',
-  PUBLISHED: 'Published',
+const STATUS_KEYS: Record<Exclude<Status, ''>, string> = {
+  DRAFT: 'status.draft',
+  IN_REVIEW: 'status.inReview',
+  PUBLISHED: 'status.published',
 };
 
-const CONTENT_LEVEL_LABELS: Record<Exclude<Level, ''>, string> = {
-  BASIC: 'Basic',
-  INTERMEDIATE: 'Intermediate',
-  ADVANCED: 'Advanced',
+const CONTENT_LEVEL_KEYS: Record<Exclude<Level, ''>, string> = {
+  BASIC: 'level.basic',
+  INTERMEDIATE: 'level.intermediate',
+  ADVANCED: 'level.advanced',
 };
 
 const FILTER_SUPPORT_BY_TYPE: Record<string, FilterSupport> = {
@@ -60,14 +60,14 @@ const FILTER_SUPPORT_BY_TYPE: Record<string, FilterSupport> = {
 };
 
 const TYPE_ROUTE_LABELS: Record<string, string> = {
-  artwork: 'Artworks',
-  article: 'Articles',
-  artist: 'Artists',
-  movement: 'Movements',
-  period: 'Periods',
-  concept: 'Concepts',
-  place: 'Places',
-  text: 'Texts',
+  artwork: 'entities.type.artwork',
+  article: 'entities.type.article',
+  artist: 'entities.type.artist',
+  movement: 'entities.type.movement',
+  period: 'entities.type.period',
+  concept: 'entities.type.concept',
+  place: 'entities.type.place',
+  text: 'entities.type.text',
 };
 
 @Component({
@@ -189,7 +189,7 @@ export class EntitiesListComponent {
 
   title$ = this.route.paramMap.pipe(
     map((pm) => (pm.get('type') ?? 'entities').toLowerCase()),
-    map((t) => TYPE_ROUTE_LABELS[t] ?? (t.charAt(0).toUpperCase() + t.slice(1))),
+    map((t) => TYPE_ROUTE_LABELS[t] ? this.i18n.t(TYPE_ROUTE_LABELS[t]) : (t.charAt(0).toUpperCase() + t.slice(1))),
     distinctUntilChanged(),
   );
 
@@ -559,12 +559,12 @@ export class EntitiesListComponent {
 
   statusLabel(value: string | null | undefined): string {
     const key = (value ?? '').trim() as Exclude<Status, ''>;
-    return STATUS_LABELS[key] ?? key;
+    return STATUS_KEYS[key] ? this.i18n.t(STATUS_KEYS[key]) : key;
   }
 
   contentLevelLabel(value: string | null | undefined): string {
     const key = (value ?? '').trim() as Exclude<Level, ''>;
-    return CONTENT_LEVEL_LABELS[key] ?? key;
+    return CONTENT_LEVEL_KEYS[key] ? this.i18n.t(CONTENT_LEVEL_KEYS[key]) : key;
   }
 
   moveActive(dir: -1 | 1, total: number) {

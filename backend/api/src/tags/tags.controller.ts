@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { Roles } from '../auth/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -10,8 +10,8 @@ export class TagsController {
   constructor(private service: TagsService) {}
 
   @Get()
-  list() {
-    return this.service.list();
+  list(@Query('locale') locale?: string) {
+    return this.service.list(locale);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

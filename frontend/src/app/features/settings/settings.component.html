@@ -13,20 +13,20 @@
     <section class="settings-surface settings-surface--account">
       <div class="settings-section-head">
         <div>
-          <span class="settings-label">Cuenta</span>
-          <h2>Identidad activa</h2>
+          <span class="settings-label">{{ i18n.t('common.account') }}</span>
+          <h2>{{ i18n.t('settings.account.identity') }}</h2>
         </div>
 
-        <nav class="settings-shortcuts" aria-label="Accesos directos">
-          <a class="settings-shortcut" routerLink="/profile">Perfil</a>
-          <a class="settings-shortcut" routerLink="/my-space">Mi espacio</a>
+        <nav class="settings-shortcuts" aria-label="{{ i18n.t('settings.shortcuts') }}">
+          <a class="settings-shortcut" routerLink="/profile">{{ i18n.t('nav.profile') }}</a>
+          <a class="settings-shortcut" routerLink="/my-space">{{ i18n.t('nav.mySpace') }}</a>
         </nav>
       </div>
 
       <div class="settings-account-grid">
         <div class="settings-field">
-          <span class="settings-field__label">Usuario</span>
-          <strong class="settings-field__value">{{ user.name || 'Sin nombre' }}</strong>
+          <span class="settings-field__label">{{ i18n.t('settings.account.user') }}</span>
+          <strong class="settings-field__value">{{ user.name || i18n.t('profile.noNameShort') }}</strong>
         </div>
 
         <div class="settings-field">
@@ -35,7 +35,7 @@
         </div>
 
         <div class="settings-field">
-          <span class="settings-field__label">Rol</span>
+          <span class="settings-field__label">{{ i18n.t('common.role') }}</span>
           <strong class="settings-field__value">{{ roleLabel }}</strong>
         </div>
       </div>
@@ -62,19 +62,19 @@
     <section class="settings-surface settings-surface--appearance">
       <div class="settings-section-head">
         <div>
-          <span class="settings-label">Apariencia</span>
-          <h2>Modo visual</h2>
-          <p class="settings-muted">Cambia entre una atmósfera oscura y una lectura clara sin alterar la estructura de JANO.</p>
+          <span class="settings-label">{{ i18n.t('settings.appearance.label') }}</span>
+          <h2>{{ i18n.t('settings.appearance.title') }}</h2>
+          <p class="settings-muted">{{ i18n.t('settings.appearance.description') }}</p>
         </div>
         <div class="settings-theme-state">
-          <span class="settings-section-note__label">Tema activo</span>
-          <strong>{{ appearance.resolvedTheme() === 'light' ? 'Claro' : 'Oscuro' }}</strong>
+          <span class="settings-section-note__label">{{ i18n.t('settings.appearance.active') }}</span>
+          <strong>{{ appearance.resolvedTheme() === 'light' ? i18n.t('settings.theme.light') : i18n.t('settings.theme.dark') }}</strong>
         </div>
       </div>
-      <div class="settings-theme-toggle" role="radiogroup" aria-label="Modo visual">
-        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'system'" [attr.aria-checked]="appearance.themePreference() === 'system'" role="radio" (click)="setThemePreference('system')">Sistema</button>
-        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'dark'" [attr.aria-checked]="appearance.themePreference() === 'dark'" role="radio" (click)="setThemePreference('dark')">Oscuro</button>
-        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'light'" [attr.aria-checked]="appearance.themePreference() === 'light'" role="radio" (click)="setThemePreference('light')">Claro</button>
+      <div class="settings-theme-toggle" role="radiogroup" aria-label="{{ i18n.t('settings.appearance.title') }}">
+        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'system'" [attr.aria-checked]="appearance.themePreference() === 'system'" role="radio" (click)="setThemePreference('system')">{{ i18n.t('settings.theme.system') }}</button>
+        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'dark'" [attr.aria-checked]="appearance.themePreference() === 'dark'" role="radio" (click)="setThemePreference('dark')">{{ i18n.t('settings.theme.dark') }}</button>
+        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'light'" [attr.aria-checked]="appearance.themePreference() === 'light'" role="radio" (click)="setThemePreference('light')">{{ i18n.t('settings.theme.light') }}</button>
       </div>
     </section>
 
@@ -83,15 +83,15 @@
         <div class="settings-section-head settings-section-head--admin">
           <div>
             <span class="settings-label">Admin</span>
-            <h2>Background global</h2>
+            <h2>{{ i18n.t('settings.background.title') }}</h2>
             <p class="settings-muted">
-              Ajusta la imagen ambiental que sostiene toda la app. Si no hay una activa, JANO conserva su fallback editorial.
+              {{ i18n.t('settings.background.description') }}
             </p>
           </div>
 
           <div class="settings-section-note">
-            <span class="settings-section-note__label">Sistema visual</span>
-            <strong>Una sola atmósfera para toda la experiencia</strong>
+            <span class="settings-section-note__label">{{ i18n.t('settings.background.systemLabel') }}</span>
+            <strong>{{ i18n.t('settings.background.systemValue') }}</strong>
           </div>
         </div>
 
@@ -99,23 +99,23 @@
           <article class="background-stage">
             <div class="background-stage__media">
               <span class="background-stage__badge">
-                {{ appearance.backgroundImageUrl() ? 'Actual' : 'Fallback' }}
+                {{ appearance.backgroundImageUrl() ? i18n.t('settings.background.current') : i18n.t('settings.background.fallback') }}
               </span>
 
               <div class="background-stage__frame">
                 @if (appearance.backgroundImageUrl(); as currentBackgroundUrl) {
-                  <img [src]="currentBackgroundUrl" alt="Background global actual" />
+                  <img [src]="currentBackgroundUrl" alt="{{ i18n.t('settings.background.currentAlt') }}" />
                 } @else {
-                  <img [src]="appearance.fallbackBackgroundImageUrl" alt="Background fallback por defecto" />
+                  <img [src]="appearance.fallbackBackgroundImageUrl" alt="{{ i18n.t('settings.background.fallbackAlt') }}" />
                 }
               </div>
             </div>
 
             <div class="background-stage__meta">
-              <span class="background-stage__eyebrow">Ambient system</span>
-              <strong>{{ appearance.backgroundImageUrl() ? 'Fondo activo en producción' : 'Fallback editorial activo' }}</strong>
+              <span class="background-stage__eyebrow">{{ i18n.t('settings.background.ambient') }}</span>
+              <strong>{{ appearance.backgroundImageUrl() ? i18n.t('settings.background.activeProd') : i18n.t('settings.background.fallbackActive') }}</strong>
               <p>
-                La imagen seleccionada sostiene el tono visual del producto completo.
+                {{ i18n.t('settings.background.meta') }}
               </p>
             </div>
           </article>
@@ -128,24 +128,24 @@
                 (change)="onBackgroundSelected($event)"
               />
 
-              <span class="background-upload__eyebrow">Nueva imagen</span>
-              <strong>Seleccionar background</strong>
+              <span class="background-upload__eyebrow">{{ i18n.t('settings.background.newImage') }}</span>
+              <strong>{{ i18n.t('settings.background.select') }}</strong>
               <p>{{ selectedBackgroundMeta }}</p>
             </label>
 
             <article class="background-candidate" [class.background-candidate--empty]="!selectedBackgroundPreviewUrl">
               <div class="background-candidate__head">
-                <span class="settings-label">Preview</span>
-                <strong>{{ selectedBackgroundPreviewUrl ? 'Selección nueva' : 'Sin selección' }}</strong>
+                <span class="settings-label">{{ i18n.t('settings.background.preview') }}</span>
+                <strong>{{ selectedBackgroundPreviewUrl ? i18n.t('settings.background.newSelection') : i18n.t('settings.background.noSelection') }}</strong>
               </div>
 
               @if (selectedBackgroundPreviewUrl) {
                 <div class="background-candidate__frame">
-                  <img [src]="selectedBackgroundPreviewUrl" alt="Preview del nuevo background" />
+                  <img [src]="selectedBackgroundPreviewUrl" alt="{{ i18n.t('settings.background.previewAlt') }}" />
                 </div>
               } @else {
                 <div class="background-candidate__empty">
-                  <p>Cuando selecciones una imagen, aparecerá aquí una vista previa compacta antes de aplicarla.</p>
+                  <p>{{ i18n.t('settings.background.previewHelp') }}</p>
                 </div>
               }
             </article>
@@ -158,7 +158,7 @@
                   [disabled]="!selectedBackgroundFile || backgroundSaving"
                   (click)="uploadBackground()"
                 >
-                  {{ backgroundSaving ? 'Guardando...' : 'Aplicar background' }}
+                  {{ backgroundSaving ? i18n.t('common.saving') : i18n.t('settings.background.apply') }}
                 </button>
 
                 <button
@@ -167,12 +167,12 @@
                   [disabled]="backgroundSaving"
                   (click)="resetBackground()"
                 >
-                  Usar fallback
+                  {{ i18n.t('settings.background.useFallback') }}
                 </button>
               </div>
 
               <p class="background-actions__hint">
-                Mantén fondos con lectura limpia, contraste bajo ruido y presencia ambiental.
+                {{ i18n.t('settings.background.hint') }}
               </p>
             </div>
 

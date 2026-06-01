@@ -2,38 +2,38 @@
   @if (auth.user$ | async; as user) {
     <section class="space-hero">
       <div class="space-hero__copy">
-        <span class="space-eyebrow">Mi espacio</span>
-        <h1>Archivo personal</h1>
+        <span class="space-eyebrow">{{ i18n.t('mySpace.eyebrow') }}</span>
+        <h1>{{ i18n.t('mySpace.title') }}</h1>
         <p class="space-muted">
-          Un lugar para guardar, agrupar y volver a leer obras y relaciones con una lógica propia. Menos panel, más mesa de trabajo.
+          {{ i18n.t('mySpace.intro') }}
         </p>
       </div>
 
       <div class="space-hero__actions">
-        <nav class="space-shortcuts" aria-label="Accesos de mi espacio">
-          <a class="space-shortcut" routerLink="/profile">Perfil</a>
-          <a class="space-shortcut" routerLink="/settings">Ajustes</a>
+        <nav class="space-shortcuts" aria-label="{{ i18n.t('mySpace.shortcuts') }}">
+          <a class="space-shortcut" routerLink="/profile">{{ i18n.t('nav.profile') }}</a>
+          <a class="space-shortcut" routerLink="/settings">{{ i18n.t('nav.settings') }}</a>
           @if (isAdmin(user)) {
             <a class="space-shortcut" routerLink="/admin">Admin</a>
           }
         </nav>
 
-        <button class="space-shortcut space-shortcut--quiet" type="button" (click)="logout()">Cerrar sesión</button>
+        <button class="space-shortcut space-shortcut--quiet" type="button" (click)="logout()">{{ i18n.t('auth.logout') }}</button>
       </div>
     </section>
 
     <section class="space-surface space-surface--identity">
       <div class="space-section-head space-section-head--identity">
         <div>
-          <span class="space-label">Cuenta</span>
+          <span class="space-label">{{ i18n.t('common.account') }}</span>
           <h2>{{ user.name || user.email }}</h2>
           <p class="space-muted">
-            Este archivo acompaña tu exploración y conserva las piezas que quieres volver a mirar con contexto.
+            {{ i18n.t('mySpace.accountIntro') }}
           </p>
         </div>
 
         <div class="space-note">
-          <span class="space-note__label">Rol</span>
+          <span class="space-note__label">{{ i18n.t('common.role') }}</span>
           <strong>{{ roleLabel(user) }}</strong>
         </div>
       </div>
@@ -44,9 +44,9 @@
     <article class="space-surface space-surface--compose">
       <div class="space-section-head">
         <div>
-          <span class="space-label">Colecciones</span>
-          <h2>Crear un nuevo board</h2>
-          <p class="space-muted">Nombra una agrupación y empieza a construir un archivo con intención.</p>
+          <span class="space-label">{{ i18n.t('mySpace.collections') }}</span>
+          <h2>{{ i18n.t('mySpace.createBoard') }}</h2>
+          <p class="space-muted">{{ i18n.t('mySpace.createIntro') }}</p>
         </div>
       </div>
 
@@ -54,7 +54,7 @@
         <input
           class="space-input"
           type="text"
-          placeholder="Nombre de la colección"
+          placeholder="{{ i18n.t('collection.namePlaceholder') }}"
           [value]="newCollectionName"
           (input)="newCollectionName = $any($event.target).value"
         />
@@ -62,7 +62,7 @@
         <input
           class="space-input"
           type="text"
-          placeholder="Descripción opcional"
+          placeholder="{{ i18n.t('collection.descriptionPlaceholder') }}"
           [value]="newCollectionDescription"
           (input)="newCollectionDescription = $any($event.target).value"
         />
@@ -73,7 +73,7 @@
           [disabled]="creating || !newCollectionName.trim()"
           (click)="createCollection()"
         >
-          @if (creating) { Creando... } @else { Crear colección }
+          @if (creating) { {{ i18n.t('common.creating') }} } @else { {{ i18n.t('collection.create') }} }
         </button>
       </div>
 
@@ -85,9 +85,9 @@
     <article class="space-surface space-surface--saved">
       <div class="space-section-head">
         <div>
-          <span class="space-label">Guardados</span>
-          <h2>Selección rápida</h2>
-          <p class="space-muted">Una bandeja provisional para lo que todavía no has enviado a un board.</p>
+          <span class="space-label">{{ i18n.t('mySpace.saved') }}</span>
+          <h2>{{ i18n.t('mySpace.quickSelection') }}</h2>
+          <p class="space-muted">{{ i18n.t('mySpace.savedIntro') }}</p>
         </div>
       </div>
 
@@ -104,15 +104,15 @@
                   <button type="button" class="saved-tile__title" (click)="go(row.entity.slug)">
                     {{ row.entity.title }}
                   </button>
-                  <button type="button" class="saved-tile__remove" (click)="removeSaved(row.entity.id)">Quitar</button>
+                  <button type="button" class="saved-tile__remove" (click)="removeSaved(row.entity.id)">{{ i18n.t('button.remove') }}</button>
                 </div>
               </article>
             }
           </div>
         } @else {
           <div class="space-empty">
-            <div class="space-empty__title">No tienes entidades guardadas</div>
-            <div class="space-empty__sub">Usa Guardar desde una entidad para empezar a construir tu archivo.</div>
+            <div class="space-empty__title">{{ i18n.t('mySpace.noSaved') }}</div>
+            <div class="space-empty__sub">{{ i18n.t('mySpace.noSavedSub') }}</div>
           </div>
         }
       }
@@ -123,9 +123,9 @@
     <section class="space-surface space-surface--boards">
       <div class="space-section-head">
         <div>
-          <span class="space-label">Boards</span>
-          <h2>Colecciones personales</h2>
-          <p class="space-muted">Cada board funciona como un archivo temático, una agrupación de trabajo o una intuición en progreso.</p>
+          <span class="space-label">{{ i18n.t('mySpace.boards') }}</span>
+          <h2>{{ i18n.t('mySpace.collections') }} personales</h2>
+          <p class="space-muted">{{ i18n.t('mySpace.boardsIntro') }}</p>
         </div>
 
         <div class="collection-count collection-count--section">
@@ -141,7 +141,7 @@
               [class.board-card--empty]="!collection.items.length"
               role="link"
               tabindex="0"
-              [attr.aria-label]="'Abrir colección ' + collection.name"
+              [attr.aria-label]="i18n.t('collection.openAria') + ' ' + collection.name"
               (click)="goToCollection(collection.id)"
               (keydown.enter)="goToCollection(collection.id)"
               (keydown.space)="$event.preventDefault(); goToCollection(collection.id)"
@@ -159,8 +159,8 @@
                   }
                 } @else {
                   <div class="board-card__empty-state">
-                    <span class="board-card__empty-label">Vacía</span>
-                    <p>Añade piezas desde una obra para empezar a construir esta colección.</p>
+                    <span class="board-card__empty-label">{{ i18n.t('collection.empty') }}</span>
+                    <p>{{ i18n.t('collection.emptyHelp') }}</p>
                   </div>
                 }
               </div>
@@ -170,7 +170,7 @@
                   <div class="board-card__title-row">
                     <h3 class="board-card__title">{{ collection.name }}</h3>
                     @if (collection.isDefault) {
-                      <span class="collection-pill">Default</span>
+                      <span class="collection-pill">{{ i18n.t('common.default') }}</span>
                     }
                   </div>
 
@@ -181,12 +181,12 @@
                   <p class="board-card__description">{{ collection.description }}</p>
                 } @else {
                   <p class="board-card__description board-card__description--muted">
-                    Un board listo para seguir creciendo con nuevas conexiones y obras guardadas.
+                    {{ i18n.t('collection.defaultDescription') }}
                   </p>
                 }
 
                 <div class="board-card__footer">
-                  <span class="board-card__hint">Abrir board</span>
+                  <span class="board-card__hint">{{ i18n.t('collection.openBoard') }}</span>
                 </div>
               </div>
             </article>
@@ -194,8 +194,8 @@
         </div>
       } @else {
         <div class="space-empty space-empty--main">
-          <div class="space-empty__title">No tienes boards todavía</div>
-          <div class="space-empty__sub">Crea el primero para transformar tus guardados en un archivo de trabajo más claro y memorable.</div>
+          <div class="space-empty__title">{{ i18n.t('mySpace.noBoards') }}</div>
+          <div class="space-empty__sub">{{ i18n.t('mySpace.noBoardsSub') }}</div>
         </div>
       }
     </section>

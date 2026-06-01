@@ -15,7 +15,9 @@ import {
     ViewChild,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { inject } from '@angular/core';
 import * as THREE from 'three';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { MediaPresentation, resolveEntityMediaItem, resolveMediaPresentation } from '../../shared/media/media.utils';
 
 type Entity = any;
@@ -62,6 +64,7 @@ export class EntitiesExplorer3dComponent
     rootRef!: ElementRef<HTMLDivElement>;
 
     private readonly isBrowser: boolean;
+    readonly i18n = inject(I18nService);
 
     private scene!: THREE.Scene;
     private camera!: THREE.PerspectiveCamera;

@@ -178,11 +178,26 @@ model Relation {
   from Entity @relation("outgoing", fields: [fromId], references: [id])
   to   Entity @relation("incoming", fields: [toId], references: [id])
   relationType RelationType? @relation(fields: [relationTypeId], references: [id])
+  translations RelationTranslation[]
 
   @@index([fromId])
   @@index([toId])
   @@index([type])
   @@index([relationTypeId])
+}
+
+model RelationTranslation {
+  id            String   @id @default(cuid())
+  relationId    String
+  locale        String
+  justification String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  relation Relation @relation(fields: [relationId], references: [id], onDelete: Cascade)
+
+  @@unique([relationId, locale])
+  @@index([locale])
 }
 
 model RelationType {
@@ -338,6 +353,23 @@ model Source {
   createdAt DateTime @default(now())
 
   refs SourceRef[]
+  translations SourceTranslation[]
+}
+
+model SourceTranslation {
+  id          String   @id @default(cuid())
+  sourceId    String
+  locale      String
+  title       String
+  author      String?
+  publisher   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, locale])
+  @@index([locale])
 }
 
 model SourceRef {
@@ -351,9 +383,25 @@ model SourceRef {
 
   entity Entity @relation(fields: [entityId], references: [id])
   source Source @relation(fields: [sourceId], references: [id])
+  translations SourceRefTranslation[]
 
   @@index([entityId])
   @@index([sourceId])
+}
+
+model SourceRefTranslation {
+  id          String   @id @default(cuid())
+  sourceRefId String
+  locale      String
+  quote       String?
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sourceRef SourceRef @relation(fields: [sourceRefId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceRefId, locale])
+  @@index([locale])
 }
 
 model CuratorNote {
@@ -393,6 +441,7 @@ model ArtworkDetails {
   state      String? // restored, destroyed, unfinished...
 
   entity Entity @relation(fields: [entityId], references: [id])
+  translations ArtworkDetailsTranslation[]
 }
 
 model ArtistDetails {
@@ -408,6 +457,7 @@ model ArtistDetails {
   links       String? // simple string list for now
 
   entity Entity @relation(fields: [entityId], references: [id])
+  translations ArtistDetailsTranslation[]
 }
 
 model ConceptDetails {
@@ -415,6 +465,7 @@ model ConceptDetails {
   definition String?
 
   entity Entity @relation(fields: [entityId], references: [id])
+  translations ConceptDetailsTranslation[]
 }
 
 model PeriodDetails {
@@ -422,6 +473,73 @@ model PeriodDetails {
   definition String?
 
   entity Entity @relation(fields: [entityId], references: [id])
+  translations PeriodDetailsTranslation[]
+}
+
+model ArtworkDetailsTranslation {
+  id          String   @id @default(cuid())
+  entityId    String
+  locale      String
+  authorNation String?
+  technique   String?
+  materials   String?
+  dimensions  String?
+  location    String?
+  collection  String?
+  state       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  details ArtworkDetails @relation(fields: [entityId], references: [entityId], onDelete: Cascade)
+
+  @@unique([entityId, locale])
+  @@index([locale])
+}
+
+model ArtistDetailsTranslation {
+  id          String   @id @default(cuid())
+  entityId    String
+  locale      String
+  country     String?
+  city        String?
+  disciplines String?
+  bioShort    String?
+  links       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  details ArtistDetails @relation(fields: [entityId], references: [entityId], onDelete: Cascade)
+
+  @@unique([entityId, locale])
+  @@index([locale])
+}
+
+model ConceptDetailsTranslation {
+  id         String   @id @default(cuid())
+  entityId   String
+  locale     String
+  definition String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  details ConceptDetails @relation(fields: [entityId], references: [entityId], onDelete: Cascade)
+
+  @@unique([entityId, locale])
+  @@index([locale])
+}
+
+model PeriodDetailsTranslation {
+  id         String   @id @default(cuid())
+  entityId   String
+  locale     String
+  definition String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  details PeriodDetails @relation(fields: [entityId], references: [entityId], onDelete: Cascade)
+
+  @@unique([entityId, locale])
+  @@index([locale])
 }
 
 model User {

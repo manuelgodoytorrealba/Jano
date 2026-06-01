@@ -1,5 +1,32 @@
 import { HomeDeckSurface } from '@prisma/client';
-import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
+
+class HomeDeckTranslationDto {
+  @IsString()
+  @MinLength(2)
+  @MaxLength(8)
+  locale!: string;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(180)
+  title!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(220)
+  subtitle?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(600)
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  ctaLabel?: string;
+}
 
 export class CreateHomeDeckDto {
   @IsOptional()
@@ -57,4 +84,8 @@ export class CreateHomeDeckDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  translations?: HomeDeckTranslationDto[];
 }

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { GraphNode, GraphTypeMeta } from './graph.models';
 
 @Component({
@@ -11,6 +12,7 @@ import { GraphNode, GraphTypeMeta } from './graph.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GraphInspectorPanelComponent {
+  readonly i18n = inject(I18nService);
   @Input() selectedNode: GraphNode | null = null;
   @Input() selectedNodeMeta: GraphTypeMeta | null = null;
   @Input() entityTypes: string[] = [];

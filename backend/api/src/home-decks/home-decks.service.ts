@@ -84,20 +84,24 @@ export class HomeDecksService {
       include: this.deckInclude(),
     });
 
-    return this.serializeAdminDeck(deck);
+    await this.upsertDeckTranslations(deck.id, dto);
+
+    return this.adminGetById(deck.id);
   }
 
   async update(id: string, dto: UpdateHomeDeckDto) {
     await this.ensureDeck(id);
     this.assertCtaTarget(dto);
 
-    const deck = await this.prisma.homeDeck.update({
+    await this.prisma.homeDeck.update({
       where: { id },
       data: this.buildUpdateDeckData(dto),
       include: this.deckInclude(),
     });
 
-    return this.serializeAdminDeck(deck);
+    await this.upsertDeckTranslations(id, dto);
+
+    return this.adminGetById(id);
   }
 
   async remove(id: string) {
@@ -296,6 +300,7 @@ export class HomeDecksService {
   private serializeAdminDeck(deck: any) {
     const serialized = {
       ...this.serializePublicDeck(deck),
+      translations: this.serializeDeckTranslations(deck),
       imageUrl: deck.imageUrl,
       imageMediaId: deck.imageMediaId,
       isActive: deck.isActive,
@@ -343,6 +348,76 @@ export class HomeDecksService {
     }
 
     return null;
+  }
+
+
+  private serializeDeckTranslations(deck: any) {
+    return (deck.translations ?? [])
+      .map((translation: any) => ({
+        locale: translation.locale,
+        title: translation.title,
+        subtitle: translation.subtitle,
+        description: translation.description,
+        ctaLabel: translation.ctaLabel,
+      }))
+      .sort((a: any, b: any) => a.locale.localeCompare(b.locale));
+  }
+
+  private async upsertDeckTranslations(deckId: string, dto: CreateHomeDeckDto | UpdateHomeDeckDto) {
+    const translations = this.normalizeDeckTranslations(dto);
+
+    for (const translation of translations) {
+      await this.prisma.homeDeckTranslation.upsert({
+        where: {
+          homeDeckId_locale: {
+            homeDeckId: deckId,
+            locale: translation.locale,
+          },
+        },
+        update: {
+          title: translation.title,
+          subtitle: translation.subtitle,
+          description: translation.description,
+          ctaLabel: translation.ctaLabel,
+        },
+        create: {
+          homeDeckId: deckId,
+          locale: translation.locale,
+          title: translation.title,
+          subtitle: translation.subtitle,
+          description: translation.description,
+          ctaLabel: translation.ctaLabel,
+        },
+      });
+    }
+  }
+
+  private normalizeDeckTranslations(dto: CreateHomeDeckDto | UpdateHomeDeckDto) {
+    const incoming = (dto.translations ?? [])
+      .map((item: any) => ({
+        locale: normalizeLocale(item?.locale),
+        title: item?.title?.trim(),
+        subtitle: this.optionalTrim(item?.subtitle),
+        description: this.optionalTrim(item?.description),
+        ctaLabel: this.optionalTrim(item?.ctaLabel),
+      }))
+      .filter((item: any) => item.title);
+
+    const hasSpanish = incoming.some((item: any) => item.locale === 'es');
+    if (!hasSpanish && dto.title !== undefined) {
+      const title = this.optionalRequiredTrim(dto.title);
+      if (title) {
+        incoming.push({
+          locale: 'es',
+          title,
+          subtitle: this.optionalTrim(dto.subtitle),
+          description: this.optionalTrim(dto.description),
+          ctaLabel: this.optionalTrim(dto.ctaLabel),
+        });
+      }
+    }
+
+    return incoming;
   }
 
   private buildWarnings(deck: any): HomeDeckWarning[] {

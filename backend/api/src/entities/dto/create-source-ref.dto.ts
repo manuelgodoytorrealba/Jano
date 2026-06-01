@@ -12,12 +12,42 @@ export class CreateSourceRefDto {
   @IsOptional()
   @IsString()
   @MaxLength(240)
+  sourceTitleEs?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
+  sourceTitleEn?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
   sourceAuthor?: string;
 
   @IsOptional()
   @IsString()
   @MaxLength(240)
+  sourceAuthorEs?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
+  sourceAuthorEn?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
   sourcePublisher?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
+  sourcePublisherEs?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
+  sourcePublisherEn?: string;
 
   @IsOptional()
   @IsInt()
@@ -38,5 +68,21 @@ export class CreateSourceRefDto {
 
   @IsOptional()
   @IsString()
+  quoteEs?: string;
+
+  @IsOptional()
+  @IsString()
+  quoteEn?: string;
+
+  @IsOptional()
+  @IsString()
   note?: string;
+
+  @IsOptional()
+  @IsString()
+  noteEs?: string;
+
+  @IsOptional()
+  @IsString()
+  noteEn?: string;
 }

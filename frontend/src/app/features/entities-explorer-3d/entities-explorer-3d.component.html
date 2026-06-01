@@ -3,7 +3,7 @@
     class="explorer3d"
     [style.padding-right]="'var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px))'"
     role="region"
-    aria-label="Explorer 3D de entidades"
+    [attr.aria-label]="i18n.t('explorer3d.aria')"
     (mouseenter)="onMouseEnter()"
     (mouseleave)="onMouseLeave()"
 >
@@ -15,7 +15,7 @@
         [class.is-visible]="!infoOpen"
         type="button"
         (click)="openInfoPanel()"
-        [attr.aria-label]="'Mostrar información de ' + active.title"
+        [attr.aria-label]="i18n.t('explorer3d.showInfo') + ' ' + active.title"
     >
         <span aria-hidden="true">i</span>
     </button>
@@ -25,7 +25,7 @@
             class="explorer3d__info-close"
             type="button"
             (click)="closeInfoPanel()"
-            aria-label="Cerrar información"
+            [attr.aria-label]="i18n.t('button.close')"
         >
             <span aria-hidden="true">×</span>
         </button>
@@ -45,7 +45,7 @@
         }
 
         <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
-            Abrir entidad
+            {{ i18n.t('entity.open') }}
         </button>
     </aside>
     }

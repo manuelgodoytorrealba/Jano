@@ -4,6 +4,55 @@ import {
   GraphRelationVisualConfig,
 } from './graph.models';
 
+function graphLocale(): 'es' | 'en' {
+  if (typeof document === 'undefined') {
+    return 'es';
+  }
+
+  return document.documentElement.lang?.toLowerCase().startsWith('en') ? 'en' : 'es';
+}
+
+function localizedEntityTypeLabel(type: string): string | null {
+  const locale = graphLocale();
+  const labels: Record<string, { es: string; en: string }> = {
+    ARTIST: { es: 'Artista', en: 'Artist' },
+    ARTWORK: { es: 'Obra', en: 'Artwork' },
+    ARTICLE: { es: 'Artículo', en: 'Article' },
+    MOVEMENT: { es: 'Movimiento', en: 'Movement' },
+    CONCEPT: { es: 'Concepto', en: 'Concept' },
+    PERIOD: { es: 'Periodo', en: 'Period' },
+    PLACE: { es: 'Lugar', en: 'Place' },
+    TEXT: { es: 'Texto', en: 'Text' },
+  };
+
+  return labels[type]?.[locale] ?? null;
+}
+
+function localizedRelationTypeLabel(type: string): string | null {
+  const locale = graphLocale();
+  const labels: Record<string, { es: string; en: string }> = {
+    CREATED_BY: { es: 'Creado por', en: 'Created by' },
+    BELONGS_TO_MOVEMENT: { es: 'Pertenece al movimiento', en: 'Belongs to movement' },
+    BELONGS_TO_PERIOD: { es: 'Pertenece al periodo', en: 'Belongs to period' },
+    ABOUT_CONCEPT: { es: 'Explora el concepto', en: 'Explores concept' },
+    LOCATED_IN: { es: 'Ubicado en', en: 'Located in' },
+    RELATED_TO: { es: 'Relacionado con', en: 'Related to' },
+    MENTIONS: { es: 'Menciona', en: 'Mentions' },
+    ASSOCIATED_WITH: { es: 'Asociado con', en: 'Associated with' },
+    INSPIRED_BY: { es: 'Inspirado por', en: 'Inspired by' },
+    INFLUENCED_BY: { es: 'Influenciado por', en: 'Influenced by' },
+    PART_OF: { es: 'Forma parte de', en: 'Part of' },
+    DEPICTS: { es: 'Representa', en: 'Depicts' },
+    SIMILAR_TO: { es: 'Similar a', en: 'Similar to' },
+    USES_TECHNIQUE: { es: 'Usa técnica', en: 'Uses technique' },
+    USES_MATERIAL: { es: 'Usa material', en: 'Uses material' },
+    HAS_SUBJECT: { es: 'Tiene tema', en: 'Has subject' },
+    CURATED_WITH: { es: 'Curado junto a', en: 'Curated with' },
+  };
+
+  return labels[type]?.[locale] ?? null;
+}
+
 const DEFAULT_ENTITY_STYLE: GraphEntityVisualConfig = {
   label: 'Entidad',
   color: '#94a3b8',
@@ -185,16 +234,26 @@ export const GRAPH_RELATION_TYPE_CONFIG: Record<string, GraphRelationVisualConfi
 };
 
 export function getEntityTypeConfig(type: string): GraphEntityVisualConfig {
-  return GRAPH_ENTITY_TYPE_CONFIG[type] ?? {
+  const config = GRAPH_ENTITY_TYPE_CONFIG[type] ?? {
     ...DEFAULT_ENTITY_STYLE,
     label: humanizeGraphKey(type),
+  };
+
+  return {
+    ...config,
+    label: localizedEntityTypeLabel(type) ?? config.label,
   };
 }
 
 export function getRelationTypeConfig(type: string): GraphRelationVisualConfig {
-  return GRAPH_RELATION_TYPE_CONFIG[type] ?? {
+  const config = GRAPH_RELATION_TYPE_CONFIG[type] ?? {
     ...DEFAULT_RELATION_STYLE,
     label: humanizeGraphKey(type),
+  };
+
+  return {
+    ...config,
+    label: localizedRelationTypeLabel(type) ?? config.label,
   };
 }
 

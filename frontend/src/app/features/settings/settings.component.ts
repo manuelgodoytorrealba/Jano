@@ -28,7 +28,7 @@ export class SettingsComponent implements OnDestroy {
 
   get selectedBackgroundMeta(): string {
     if (!this.selectedBackgroundFile) {
-      return 'JPEG, PNG, WebP o AVIF';
+      return this.i18n.t('settings.background.fileTypes');
     }
 
     const sizeInMb = this.selectedBackgroundFile.size / (1024 * 1024);
@@ -37,7 +37,7 @@ export class SettingsComponent implements OnDestroy {
 
   get roleLabel(): string {
     const role = this.auth.currentUser?.role ?? "";
-    return role === "ADMIN" ? "Administrador" : role || "Sin rol";
+    return role === "ADMIN" ? this.i18n.t('role.admin') : role || this.i18n.t('role.none');
   }
 
   setThemePreference(preference: AppThemePreference): void {
@@ -66,7 +66,7 @@ export class SettingsComponent implements OnDestroy {
     }
 
     if (!file.type.startsWith('image/')) {
-      this.backgroundError = 'Selecciona una imagen válida.';
+      this.backgroundError = this.i18n.t('settings.background.invalidImage');
       input.value = '';
       return;
     }
@@ -87,14 +87,14 @@ export class SettingsComponent implements OnDestroy {
     this.settingsApi.uploadBackground(this.selectedBackgroundFile).subscribe({
       next: (settings) => {
         this.backgroundSaving = false;
-        this.backgroundMessage = 'Background actualizado';
+        this.backgroundMessage = this.i18n.t('settings.background.updated');
         this.appearance.setBackgroundImageUrl(settings.backgroundImageUrl ?? null);
         this.selectedBackgroundFile = null;
         this.revokeSelectedPreview();
       },
       error: () => {
         this.backgroundSaving = false;
-        this.backgroundError = 'No se pudo guardar el background. Revisa formato y tamaño.';
+        this.backgroundError = this.i18n.t('settings.background.saveError');
       },
     });
   }
@@ -111,14 +111,14 @@ export class SettingsComponent implements OnDestroy {
     this.settingsApi.resetBackground().subscribe({
       next: (settings) => {
         this.backgroundSaving = false;
-        this.backgroundMessage = 'Fallback restaurado';
+        this.backgroundMessage = this.i18n.t('settings.background.fallbackRestored');
         this.appearance.setBackgroundImageUrl(settings.backgroundImageUrl ?? null);
         this.selectedBackgroundFile = null;
         this.revokeSelectedPreview();
       },
       error: () => {
         this.backgroundSaving = false;
-        this.backgroundError = 'No se pudo restaurar el fallback.';
+        this.backgroundError = this.i18n.t('settings.background.restoreError');
       },
     });
   }

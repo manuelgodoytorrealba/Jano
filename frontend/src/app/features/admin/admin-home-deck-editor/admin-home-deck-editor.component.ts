@@ -22,6 +22,10 @@ type DeckForm = AdminHomeDeckPayload & {
   imageUrl: string;
   ctaUrl: string;
   ctaRoute: string;
+  titleEn: string;
+  subtitleEn: string;
+  descriptionEn: string;
+  ctaLabelEn: string;
 };
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
@@ -389,6 +393,11 @@ export class AdminHomeDeckEditorComponent {
     return this.form.subtitle?.trim() || (this.form.surface === 'RECOMMENDED' ? 'Curated selection' : 'Editorial deck');
   }
 
+  translationSummary(): string {
+    const hasEnglish = !!this.form.titleEn.trim();
+    return hasEnglish ? 'ES y EN configurados' : 'Falta traducción EN';
+  }
+
   previewTitle(): string {
     return this.form.title?.trim() || 'Sin título';
   }
@@ -518,10 +527,16 @@ export class AdminHomeDeckEditorComponent {
       imageUrl: '',
       sortOrder: 0,
       isActive: false,
+      titleEn: '',
+      subtitleEn: '',
+      descriptionEn: '',
+      ctaLabelEn: '',
     };
   }
 
   private deckToForm(deck: AdminHomeDeck): DeckForm {
+    const en = deck.translations?.find((item) => item.locale === 'en');
+
     return {
       surface: deck.surface,
       slug: deck.slug,
@@ -535,6 +550,10 @@ export class AdminHomeDeckEditorComponent {
       imageMediaId: deck.imageMediaId ?? undefined,
       sortOrder: deck.sortOrder,
       isActive: deck.isActive,
+      titleEn: en?.title ?? '',
+      subtitleEn: en?.subtitle ?? '',
+      descriptionEn: en?.description ?? '',
+      ctaLabelEn: en?.ctaLabel ?? '',
     };
   }
 
@@ -554,6 +573,22 @@ export class AdminHomeDeckEditorComponent {
       imageMediaId: source.imageMediaId?.trim() || undefined,
       sortOrder: Number(source.sortOrder ?? 0),
       isActive: !!source.isActive,
+      translations: [
+        {
+          locale: 'es',
+          title: source.title.trim(),
+          subtitle: source.subtitle?.trim() ?? '',
+          description: source.description?.trim() ?? '',
+          ctaLabel: source.ctaLabel?.trim() ?? '',
+        },
+        {
+          locale: 'en',
+          title: source.titleEn.trim(),
+          subtitle: source.subtitleEn?.trim() ?? '',
+          description: source.descriptionEn?.trim() ?? '',
+          ctaLabel: source.ctaLabelEn?.trim() ?? '',
+        },
+      ].filter((item) => item.title),
     };
   }
 
