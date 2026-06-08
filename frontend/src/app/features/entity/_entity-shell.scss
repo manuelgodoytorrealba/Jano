@@ -36,7 +36,7 @@
   --detail-graph-pane-gap: 0.3rem;
 
   position: relative;
-  min-height: 100dvh;
+  min-height: var(--app-viewport-block);
   padding-top: clamp(0.62rem, 1vw, 0.92rem);
   padding-bottom: clamp(1rem, 1.8vw, 1.55rem);
   isolation: isolate;
@@ -58,7 +58,7 @@
 
 .entity-detail__layout--loading {
   min-height: clamp(var(--detail-hero-shell-min),
-      calc(100dvh - var(--detail-hero-shell-offset)),
+      calc(var(--app-viewport-block) - var(--detail-hero-shell-offset)),
       var(--detail-hero-shell-max));
 }
 
@@ -103,7 +103,7 @@
   padding: 0.28rem;
   overflow: hidden;
   min-height: clamp(var(--detail-hero-shell-min),
-      calc(100dvh - var(--detail-hero-shell-offset)),
+      calc(var(--app-viewport-block) - var(--detail-hero-shell-offset)),
       var(--detail-hero-shell-max));
   border-color: rgba(255, 255, 255, 0.18);
   background:
@@ -191,7 +191,7 @@
 
 .entity-explorer__skeleton-stage {
   min-height: clamp(calc(var(--detail-hero-shell-min) - 0.9rem),
-      calc(100dvh - var(--detail-hero-shell-offset) - 0.9rem),
+      calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.9rem),
       calc(var(--detail-hero-shell-max) - 0.9rem));
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.12);
@@ -323,10 +323,10 @@
 }
 
 .entity-detail--workspace-focus {
-  --detail-hero-shell-min: calc(100dvh - 5.1rem);
+  --detail-hero-shell-min: calc(var(--app-viewport-block) - 5.1rem);
   --detail-hero-shell-offset: 4.45rem;
-  --detail-hero-shell-max: calc(100dvh - 1rem);
-  --detail-media-pane-min-height: calc(100dvh - 5.8rem);
+  --detail-hero-shell-max: calc(var(--app-viewport-block) - 1rem);
+  --detail-media-pane-min-height: calc(var(--app-viewport-block) - 5.8rem);
   padding-top: 0;
 }
 

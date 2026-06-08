@@ -1,0 +1,247 @@
+:host {
+    display: block;
+    height: 100%;
+    min-height: 100%;
+}
+
+.explorer-totem {
+    position: relative;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+    padding: calc(var(--entities-explorer-inner-top, 12px) + var(--app-safe-top)) calc(var(--entities-explorer-inner-right, 12px) + var(--app-safe-right)) calc(var(--app-safe-bottom) + 72px) calc(var(--entities-explorer-inner-left, 12px) + var(--app-safe-left));
+    box-sizing: border-box;
+    border-radius: 0;
+    background:
+        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.05), transparent 18%),
+        radial-gradient(circle at 50% 10%, rgba(110, 86, 156, 0.10), transparent 18%),
+        radial-gradient(circle at 82% 18%, rgba(226, 183, 111, 0.08), transparent 16%);
+    touch-action: none;
+    user-select: none;
+}
+
+.explorer-totem::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
+        radial-gradient(circle at 50% 52%, rgba(255, 255, 255, 0.045), transparent 58%);
+    opacity: 0.5;
+}
+
+.explorer-totem__stack {
+    position: absolute;
+    inset: 0;
+}
+
+.explorer-totem__card {
+    position: absolute;
+    left: 50%;
+    width: min(78vw, 332px);
+    height: min(50svh, 468px);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transform-origin: center center;
+    transition:
+        transform 420ms cubic-bezier(.2, .72, .2, 1),
+        opacity 360ms ease,
+        filter 360ms ease,
+        top 420ms cubic-bezier(.2, .72, .2, 1);
+    will-change: transform, top, opacity;
+}
+
+.explorer-totem.is-dragging .explorer-totem__card {
+    transition: none;
+}
+
+.explorer-totem__card--previous,
+.explorer-totem__card--next {
+    pointer-events: none;
+}
+
+.explorer-totem__card--active {
+    cursor: pointer;
+    z-index: 3;
+}
+
+.explorer-totem__card-shell {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)),
+        rgba(17, 17, 24, 0.22);
+    box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(12px) saturate(1.05);
+    -webkit-backdrop-filter: blur(12px) saturate(1.05);
+    transition:
+        box-shadow 420ms cubic-bezier(.2, .72, .2, 1),
+        border-color 320ms ease,
+        transform 420ms cubic-bezier(.2, .72, .2, 1);
+}
+
+.explorer-totem__card--active .explorer-totem__card-shell {
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow:
+        0 32px 78px rgba(0, 0, 0, 0.36),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.explorer-totem.is-settling .explorer-totem__card--active .explorer-totem__card-shell {
+    box-shadow:
+        0 40px 90px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.explorer-totem.is-info-open .explorer-totem__card--active .explorer-totem__card-shell {
+    box-shadow:
+        0 26px 64px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.explorer-totem__info-toggle {
+    position: absolute;
+    top: calc(var(--app-safe-top) + 226px);
+    right: calc(var(--app-safe-right) + 16px);
+    z-index: 96;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+        rgba(21, 21, 28, 0.24);
+    color: rgba(255, 248, 241, 0.92);
+    box-shadow:
+        0 16px 30px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(6px) scale(0.96);
+    transition: opacity 240ms ease, visibility 240ms ease, transform 240ms cubic-bezier(.2, .72, .2, 1);
+}
+
+.explorer-totem__info-toggle.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.explorer-totem__info {
+    position: absolute;
+    left: calc(var(--app-safe-left) + 12px);
+    right: calc(var(--app-safe-right) + 12px);
+    bottom: calc(var(--app-safe-bottom) + 88px);
+    z-index: 96;
+    display: grid;
+    gap: 7px;
+    padding: 14px 14px 16px;
+    border-radius: 20px 20px 16px 16px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+        rgba(21, 21, 28, 0.34);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+        0 16px 34px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(16px) saturate(1.04);
+    -webkit-backdrop-filter: blur(16px) saturate(1.04);
+    transition: opacity 260ms ease, transform 320ms cubic-bezier(.2, .72, .2, 1), visibility 260ms ease;
+}
+
+.explorer-totem__info.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(16px) scale(0.985);
+}
+
+.explorer-totem__info-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 245, 237, 0.72);
+}
+
+.explorer-totem__eyebrow {
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 245, 235, 0.48);
+}
+
+.explorer-totem__title {
+    margin: 0;
+    font-size: clamp(1.34rem, 4.6vw, 1.8rem);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+    color: rgba(255, 248, 241, 0.96);
+    text-wrap: balance;
+    max-width: 10ch;
+}
+
+.explorer-totem__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.explorer-totem__meta span {
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 240, 228, 0.42);
+}
+
+.explorer-totem__summary {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: rgba(255, 244, 235, 0.68);
+}
+
+.explorer-totem__cta {
+    width: 100%;
+    min-height: 40px;
+    border-radius: 13px;
+}
+
+
+.explorer-totem::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 28%;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(11, 11, 16, 0), rgba(11, 11, 16, 0.26) 38%, rgba(11, 11, 16, 0.58));
+    opacity: 0.7;
+}
+
+.explorer-totem.is-info-open::after {
+    opacity: 0.92;
+}

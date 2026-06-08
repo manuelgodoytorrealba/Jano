@@ -24,7 +24,7 @@
       var(--app-background-shade-mid) 38%,
       var(--app-background-shade-100) 100%);
 
-  min-height: 100svh;
+  min-height: var(--app-viewport-block);
   position: relative;
   isolation: isolate;
   overflow-x: hidden;
@@ -63,9 +63,12 @@
 .app-shell__content {
   position: relative;
   z-index: 0;
-  min-height: 100svh;
+  min-height: var(--app-viewport-block);
   padding:
-    calc(var(--app-shell-gap) + var(--app-header-height) + 18px) calc(var(--app-shell-gap) + var(--app-rail-width) + 18px) var(--app-shell-gap) var(--app-shell-gap);
+    calc(var(--app-safe-top) + var(--app-shell-gap) + var(--app-header-height) + 18px)
+    calc(var(--app-safe-right) + var(--app-shell-gap) + var(--app-rail-width) + 18px)
+    calc(var(--app-safe-bottom) + var(--app-shell-gap))
+    calc(var(--app-safe-left) + var(--app-shell-gap));
   overflow: visible;
 }
 
@@ -83,7 +86,7 @@
 
 .app-shell--immersive,
 .app-shell--entities {
-  height: 100svh;
+  height: var(--app-viewport-block);
   overflow: hidden;
 }
 
@@ -101,10 +104,32 @@
   padding-top: clamp(0.45rem, 1vw, 0.9rem);
 }
 
+@supports (-webkit-touch-callout: none) {
+  .app-shell {
+    min-height: var(--app-viewport-stable-block);
+  }
+
+  .app-shell--immersive,
+  .app-shell--entities {
+    height: var(--app-viewport-stable-block);
+    min-height: var(--app-viewport-stable-block);
+  }
+
+  .app-shell::before,
+  .app-shell::after {
+    top: -24px;
+    bottom: -24px;
+    min-height: calc(var(--app-viewport-stable-block) + 48px);
+  }
+}
+
 @media (max-width: 860px) {
   .app-shell__content {
     padding:
-      calc(var(--app-shell-gap) + 152px) var(--app-shell-gap) calc(var(--app-shell-gap) + 92px) var(--app-shell-gap);
+      calc(var(--app-safe-top) + 122px)
+      calc(var(--app-safe-right) + var(--app-shell-gap))
+      calc(var(--app-safe-bottom) + 88px)
+      calc(var(--app-safe-left) + var(--app-shell-gap));
   }
 
   .app-shell--immersive .app-shell__content {
@@ -113,6 +138,9 @@
 
   .app-shell--detail .app-shell__content {
     padding:
-      clamp(0.45rem, 1vw, 0.9rem) var(--app-shell-gap) calc(var(--app-shell-gap) + 92px) var(--app-shell-gap);
+      calc(var(--app-safe-top) + 0.45rem)
+      calc(var(--app-safe-right) + var(--app-shell-gap))
+      calc(var(--app-safe-bottom) + 88px)
+      calc(var(--app-safe-left) + var(--app-shell-gap));
   }
 }

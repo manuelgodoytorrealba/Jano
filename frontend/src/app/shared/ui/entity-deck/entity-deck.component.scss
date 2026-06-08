@@ -13,17 +13,17 @@
 }
 
 .entity-deck--viewport {
-    min-height: 100dvh;
+    min-height: var(--app-viewport-block);
     display: flex;
 }
 
 .entity-deck--viewport .entity-deck__shell {
-    min-height: 100dvh;
+    min-height: var(--app-viewport-block);
     border-radius: 0;
 }
 
 .entity-deck--viewport .entity-deck__stage {
-    min-height: 100dvh;
+    min-height: var(--app-viewport-block);
 }
 
 .entity-deck--viewport {
@@ -785,12 +785,12 @@
     }
 
     .entity-deck__shell {
-        min-height: 100dvh;
+        min-height: var(--app-viewport-block);
         border-radius: 0;
     }
 
     .entity-deck__stage {
-        min-height: 100dvh;
+        min-height: var(--app-viewport-block);
     }
 
     .entity-deck__stack {

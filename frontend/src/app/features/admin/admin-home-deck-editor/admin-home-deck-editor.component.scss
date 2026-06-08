@@ -1,5 +1,5 @@
 .deck-editor {
-  min-height: calc(100vh - 56px);
+  min-height: calc(var(--app-viewport-block) - 56px);
   padding: 28px;
   color: #141414;
 }

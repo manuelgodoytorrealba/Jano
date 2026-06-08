@@ -89,11 +89,27 @@
   --app-shell-gap: clamp(14px, 1.6vw, 24px);
   --app-header-height: 74px;
   --app-rail-width: 72px;
+  --app-safe-top: env(safe-area-inset-top, 0px);
+  --app-safe-right: env(safe-area-inset-right, 0px);
+  --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --app-safe-left: env(safe-area-inset-left, 0px);
+  --app-real-viewport-height: 100dvh;
+  --app-real-viewport-width: 100vw;
+  --app-viewport-block: var(--app-real-viewport-height, 100dvh);
+  --app-viewport-stable-block: var(--app-real-viewport-height, 100svh);
 
   /* Motion */
   --ease-standard: cubic-bezier(.2, .8, .2, 1);
   --transition-fast: 140ms var(--ease-standard);
   --transition-base: 220ms var(--ease-standard);
+}
+
+@supports (-webkit-touch-callout: none) {
+  :root {
+    --app-real-viewport-height: 100dvh;
+    --app-viewport-block: var(--app-real-viewport-height, 100dvh);
+    --app-viewport-stable-block: var(--app-real-viewport-height, 100dvh);
+  }
 }
 
 :root[data-theme="light"] {
@@ -126,6 +142,8 @@
     --text-display: clamp(2.2rem, 12vw, 3.5rem);
     --text-hero: clamp(2rem, 10vw, 3.25rem);
     --tracking-serif-tight: -0.032em;
-    --app-shell-gap: 12px;
+    --app-shell-gap: 10px;
+    --app-header-height: 68px;
+    --app-rail-width: 64px;
   }
 }

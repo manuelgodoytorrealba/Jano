@@ -12,7 +12,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:jano-web-app": "node dist/jano-web-app/server/server.mjs"
+    "serve:ssr:jano-web-app": "node dist/jano-web-app/server/server.mjs",
+    "start:mobile": "node scripts/dev-server.mjs mobile"
   },
   "private": true,
   "packageManager": "npm@10.9.4",

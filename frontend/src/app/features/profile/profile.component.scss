@@ -1,7 +1,7 @@
 .profile-page {
   position: relative;
   isolation: isolate;
-  min-height: calc(100vh - 56px);
+  min-height: calc(var(--app-viewport-block) - 56px);
   padding: 34px 28px 48px;
   display: grid;
   gap: 16px;

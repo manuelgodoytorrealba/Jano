@@ -5,9 +5,9 @@
 .app-chrome__header {
   position: fixed;
   z-index: 80;
-  top: var(--app-shell-gap);
-  left: var(--app-shell-gap);
-  right: calc(var(--app-shell-gap) + var(--app-rail-width) + 14px);
+  top: calc(var(--app-safe-top) + var(--app-shell-gap));
+  left: calc(var(--app-safe-left) + var(--app-shell-gap));
+  right: calc(var(--app-safe-right) + var(--app-shell-gap) + var(--app-rail-width) + 14px);
   min-height: var(--app-header-height);
   padding: 12px 16px;
   border-radius: var(--radius-2xl);
@@ -51,9 +51,9 @@
 
 .app-chrome__header--detail {
   transform-origin: 50% 0;
-  top: var(--app-shell-gap);
-  left: calc(var(--app-shell-gap) + 88px);
-  right: calc(var(--app-shell-gap) + var(--app-rail-width) + 14px);
+  top: calc(var(--app-safe-top) + var(--app-shell-gap));
+  left: calc(var(--app-safe-left) + var(--app-shell-gap) + 88px);
+  right: calc(var(--app-safe-right) + var(--app-shell-gap) + var(--app-rail-width) + 14px);
   min-height: var(--app-header-height);
   padding: 12px 16px;
   border-radius: var(--radius-2xl);
@@ -114,8 +114,8 @@
 }
 
 .app-chrome__header-toggle--close {
-  top: calc(var(--app-shell-gap) + 14px);
-  right: calc(var(--app-shell-gap) + var(--app-rail-width) + 30px);
+  top: calc(var(--app-safe-top) + var(--app-shell-gap) + 14px);
+  right: calc(var(--app-safe-right) + var(--app-shell-gap) + var(--app-rail-width) + 30px);
   width: 34px;
   height: 34px;
   border-radius: 12px;
@@ -131,8 +131,8 @@
 }
 
 .app-chrome__header-toggle--open {
-  top: var(--app-shell-gap);
-  left: var(--app-shell-gap);
+  top: calc(var(--app-safe-top) + var(--app-shell-gap));
+  left: calc(var(--app-safe-left) + var(--app-shell-gap));
   width: 76px;
   height: 76px;
   border-radius: 28px;
@@ -497,7 +497,7 @@
   position: fixed;
   z-index: 79;
   top: 50dvh;
-  right: var(--app-shell-gap);
+  right: calc(var(--app-safe-right) + var(--app-shell-gap));
   transform: translateY(-50%);
   width: var(--app-rail-width);
   padding: 10px 0;
@@ -1024,24 +1024,24 @@
 
 @media (max-width: 860px) {
   .app-chrome__header {
-    left: var(--app-shell-gap);
-    right: var(--app-shell-gap);
-    padding: 10px 12px 12px;
+    left: calc(var(--app-safe-left) + var(--app-shell-gap));
+    right: calc(var(--app-safe-right) + var(--app-shell-gap));
+    padding: 8px 10px 10px;
     grid-template-columns: 1fr;
     justify-items: stretch;
-    gap: 10px;
+    gap: 8px;
   }
 
   .app-chrome__header--detail {
-    left: var(--app-shell-gap);
-    right: var(--app-shell-gap);
-    top: calc(var(--app-shell-gap) + 54px);
+    left: calc(var(--app-safe-left) + var(--app-shell-gap));
+    right: calc(var(--app-safe-right) + var(--app-shell-gap));
+    top: calc(var(--app-safe-top) + var(--app-shell-gap) + 46px);
   }
 
   .app-chrome__header--detail + .app-chrome__header-toggle--open {
-    top: var(--app-shell-gap);
-    left: var(--app-shell-gap);
-    width: 92px;
+    top: calc(var(--app-safe-top) + var(--app-shell-gap));
+    left: calc(var(--app-safe-left) + var(--app-shell-gap));
+    width: 88px;
     height: 34px;
     border-radius: 999px;
     gap: 0;
@@ -1070,24 +1070,35 @@
 
   .app-chrome__utility {
     top: auto;
-    bottom: var(--app-shell-gap);
+    bottom: calc(var(--app-safe-bottom) + var(--app-shell-gap) + 8px);
     left: 50%;
     right: auto;
     transform: translateX(-50%);
     width: auto;
-    padding: 8px;
+    padding: 6px;
+    gap: 8px;
     grid-auto-flow: column;
   }
 
+  .app-chrome__utility-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  .app-chrome__utility-icon {
+    width: 20px;
+    height: 20px;
+  }
+
   .app-chrome__utility-indicator {
-    top: 8px;
-    left: 8px;
-    transform: translateX(calc(var(--active-index) * 62px));
+    top: 6px;
+    left: 6px;
+    transform: translateX(calc(var(--active-index) * 56px));
   }
 
   .app-chrome__header-toggle--close {
-    top: calc(var(--app-shell-gap) + 10px);
-    right: calc(var(--app-shell-gap) + 10px);
+    top: calc(var(--app-safe-top) + var(--app-shell-gap) + 8px);
+    right: calc(var(--app-safe-right) + var(--app-shell-gap) + 8px);
   }
 }
 
@@ -1100,6 +1111,10 @@
 }
 
 @media (max-width: 620px) {
+  .app-chrome__header {
+    padding: 8px 9px 9px;
+  }
+
   .app-chrome__brand-mark {
     width: 40px;
     height: 40px;
@@ -1122,7 +1137,7 @@
   }
 
   .app-chrome__search-input.ds-input {
-    height: 44px;
+    height: 42px;
     padding-left: 38px;
     border-radius: 16px;
     font-size: 0.95rem;

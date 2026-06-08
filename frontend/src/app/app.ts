@@ -3,6 +3,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { AppChromeComponent } from './shared/ui/app-chrome/app-chrome.component';
 import { AppAppearanceService } from './core/app-appearance.service';
 import { CommonModule } from '@angular/common';
+import { ViewportService } from './core/viewport.service';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +14,11 @@ import { CommonModule } from '@angular/common';
 export class App {
   private readonly router = inject(Router);
   private readonly appearance = inject(AppAppearanceService);
+  private readonly viewport = inject(ViewportService);
   protected readonly title = signal('jano-web-app');
 
   constructor() {
+    this.viewport.start();
     this.appearance.load().subscribe();
   }
 

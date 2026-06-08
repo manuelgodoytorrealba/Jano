@@ -6,7 +6,7 @@
   position: relative;
   z-index: 0;
   width: 100%;
-  min-height: 100dvh;
+  min-height: var(--app-viewport-block);
   margin: 0;
   overflow: hidden;
   background: transparent;
@@ -22,15 +22,15 @@
 
   display: block;
   width: 100%;
-  min-height: 100dvh;
+  min-height: var(--app-viewport-block);
 }
 
 .recommended-page__deck::ng-deep .entity-deck,
 .recommended-page__deck::ng-deep .entity-deck__shell,
 .recommended-page__deck::ng-deep .entity-deck__stage {
   width: 100%;
-  min-height: 100dvh;
-  height: 100dvh;
+  min-height: var(--app-viewport-block);
+  height: var(--app-viewport-block);
 }
 
 .recommended-page__deck::ng-deep .entity-deck__shell {
@@ -167,15 +167,15 @@
   }
 
   .recommended-page {
-    min-height: 100dvh;
+    min-height: var(--app-viewport-block);
   }
 
   .recommended-page__deck,
   .recommended-page__deck::ng-deep .entity-deck,
   .recommended-page__deck::ng-deep .entity-deck__shell,
   .recommended-page__deck::ng-deep .entity-deck__stage {
-    min-height: 100dvh;
-    height: 100dvh;
+    min-height: var(--app-viewport-block);
+    height: var(--app-viewport-block);
   }
 
   .recommended-page__deck::ng-deep .entity-deck__stage {

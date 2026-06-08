@@ -1,6 +1,6 @@
 :host {
   display: block;
-  height: 100vh;
+  height: var(--app-viewport-block);
 }
 
 /* 🔥 FONDO */
@@ -32,7 +32,7 @@ canvas {
   --auth-radius: 18px;
   --auth-spacing: 28px;
 
-  min-height: 100vh;
+  min-height: var(--app-viewport-block);
   display: grid;
   place-items: center;
   padding: 24px;

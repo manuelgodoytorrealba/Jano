@@ -15,7 +15,8 @@
   <section class="entities-explorer-layout" [class.is-list]="viewMode === 'list'"
     [class.is-filters-collapsed]="!filtersPanelOpen() || curatedDeckMode()"
     [class.is-curated-deck]="curatedDeckMode()"
-    [class.is-info-collapsed]="!infoPanelOpen()">
+    [class.is-info-collapsed]="!infoPanelOpen()"
+    [class.is-mobile-portrait-totem]="isMobilePortraitTotemActive()">
     <header class="entities-hud" [attr.aria-label]="i18n.t('explorer.view.explorer')">
       <div class="entities-mode-pill ds-panel">
         <div class="view-toggle" role="tablist" [attr.aria-label]="i18n.t('explorer.view.explorer')">
@@ -495,10 +496,17 @@
     @if (viewMode === 'explore') {
     @if (vm.items.length) {
     <div class="entities-explorer-stage">
+      @if (isMobilePortraitTotem()) {
+      <app-entities-explorer-totem [items]="vm.items" [activeIndex]="activeIndex()"
+        [infoOpen]="infoPanelOpen()" (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)"
+        (requestInfoOpen)="openInfoPanel()" (requestInfoClose)="closeInfoPanel()">
+      </app-entities-explorer-totem>
+      } @else {
       <app-entities-explorer-3d [items]="vm.items" [activeIndex]="activeIndex()"
         [infoOpen]="infoPanelOpen()" (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)"
         (requestInfoOpen)="openInfoPanel()" (requestInfoClose)="closeInfoPanel()">
       </app-entities-explorer-3d>
+      }
     </div>
     } @else {
     <div class="entities-stage-shell entities-stage-shell--empty">

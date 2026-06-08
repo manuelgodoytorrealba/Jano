@@ -24,6 +24,7 @@ import {
 } from 'rxjs';
 
 import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
+import { EntitiesExplorerTotemComponent } from '../entities-explorer-totem/entities-explorer-totem.component';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 type Entity = any;
@@ -74,7 +75,7 @@ const TYPE_ROUTE_LABELS: Record<string, string> = {
   standalone: true,
   selector: 'app-entities-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, EntitiesExplorer3dComponent, JanoMediaComponent],
+  imports: [AsyncPipe, EntitiesExplorer3dComponent, EntitiesExplorerTotemComponent, JanoMediaComponent],
   templateUrl: './entities-list.component.html',
   styleUrls: ['./entities-list.component.scss'],
 })
@@ -88,6 +89,8 @@ export class EntitiesListComponent {
 
   private readonly limit = 24;
   private readonly contextualFilterKeys = ['movement', 'period', 'institution', 'nationality'] as const;
+  private readonly viewportWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 0);
+  private readonly viewportHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 0);
 
   private filterSupportForType(type: string | null | undefined): FilterSupport {
     return FILTER_SUPPORT_BY_TYPE[(type ?? '').trim().toUpperCase()] ?? {
@@ -494,6 +497,24 @@ export class EntitiesListComponent {
     }),
   );
 
+  isMobilePortraitTotem(): boolean {
+    return this.viewportWidth() <= 720 && this.viewportHeight() > this.viewportWidth();
+  }
+
+  isMobilePortraitTotemActive(): boolean {
+    return this.viewMode === 'explore' && this.isMobilePortraitTotem();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    this.viewportWidth.set(window.innerWidth);
+    this.viewportHeight.set(window.innerHeight);
+  }
+
   setView(mode: ViewMode) {
     this.closeFilterMenu();
     this.viewMode = mode;
@@ -507,11 +528,19 @@ export class EntitiesListComponent {
         this.closeFilterMenu();
       }
 
+      if (next && this.isMobilePortraitTotemActive()) {
+        this.infoPanelOpen.set(false);
+      }
+
       return next;
     });
   }
 
   openFiltersPanel() {
+    if (this.isMobilePortraitTotemActive()) {
+      this.infoPanelOpen.set(false);
+    }
+
     this.filtersPanelOpen.set(true);
   }
 
@@ -520,6 +549,11 @@ export class EntitiesListComponent {
   }
 
   openInfoPanel() {
+    if (this.isMobilePortraitTotemActive()) {
+      this.filtersPanelOpen.set(false);
+      this.closeFilterMenu();
+    }
+
     this.infoPanelOpen.set(true);
   }
 

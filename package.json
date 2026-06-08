@@ -32,7 +32,8 @@
     "prisma:migrate": "npm --prefix backend/api run prisma:migrate",
     "prisma:deploy": "npm --prefix backend/api run prisma:deploy",
     "prisma:seed": "npm --prefix backend/api run prisma:seed",
-    "prisma:reset": "npm --prefix backend/api run prisma:reset"
+    "prisma:reset": "npm --prefix backend/api run prisma:reset",
+    "mobile": "node scripts/mobile-dev.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

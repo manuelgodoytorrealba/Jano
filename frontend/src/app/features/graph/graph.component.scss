@@ -15,12 +15,12 @@
   /* Mode heights */
   --detail-split-height: clamp(
     var(--detail-hero-shell-min),
-    calc(100dvh - var(--detail-hero-shell-offset) - 0.35rem),
+    calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.35rem),
     var(--detail-hero-shell-max)
   );
   --detail-focus-height: clamp(
     var(--detail-hero-shell-min),
-    calc(100dvh - var(--detail-hero-shell-offset) - 0.35rem),
+    calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.35rem),
     var(--detail-hero-shell-max)
   );
 }
@@ -914,12 +914,12 @@
   :host {
     --detail-split-height: clamp(
       var(--detail-hero-shell-min),
-      calc(100dvh - var(--detail-hero-shell-offset) - 0.28rem),
+      calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.28rem),
       var(--detail-hero-shell-max)
     );
     --detail-focus-height: clamp(
       var(--detail-hero-shell-min),
-      calc(100dvh - var(--detail-hero-shell-offset) - 0.28rem),
+      calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.28rem),
       var(--detail-hero-shell-max)
     );
   }
@@ -938,12 +938,12 @@
   :host {
     --detail-split-height: clamp(
       var(--detail-hero-shell-min),
-      calc(100dvh - var(--detail-hero-shell-offset) - 0.22rem),
+      calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.22rem),
       var(--detail-hero-shell-max)
     );
     --detail-focus-height: clamp(
       var(--detail-hero-shell-min),
-      calc(100dvh - var(--detail-hero-shell-offset) - 0.22rem),
+      calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.22rem),
       var(--detail-hero-shell-max)
     );
   }
@@ -1166,8 +1166,8 @@
 
 @media (max-width: 760px) {
   :host {
-    --detail-split-height: clamp(400px, calc(100dvh - var(--detail-hero-shell-offset) - 4.75rem), 500px);
-    --detail-focus-height: clamp(440px, calc(100dvh - var(--detail-hero-shell-offset) - 3rem), 560px);
+    --detail-split-height: clamp(400px, calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 4.75rem), 500px);
+    --detail-focus-height: clamp(440px, calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 3rem), 560px);
   }
 
   .explorer-toolbar {
