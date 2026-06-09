@@ -25,9 +25,11 @@ export class ViewportService {
 
       window.addEventListener('resize', scheduleApply, { passive: true });
       window.addEventListener('orientationchange', scheduleApply, { passive: true });
+      window.addEventListener('pageshow', scheduleApply, { passive: true });
       this.cleanupCallbacks.push(() => {
         window.removeEventListener('resize', scheduleApply);
         window.removeEventListener('orientationchange', scheduleApply);
+        window.removeEventListener('pageshow', scheduleApply);
       });
 
       if (viewport) {
@@ -71,18 +73,13 @@ export class ViewportService {
   private applyViewport(): void {
     const viewport = window.visualViewport;
     const root = this.document.documentElement;
-    const height = Math.max(
-      window.innerHeight,
-      root.clientHeight,
-      viewport?.height ?? 0,
-    );
-    const width = Math.max(
-      window.innerWidth,
-      root.clientWidth,
-      viewport?.width ?? 0,
-    );
+    const layoutHeight = window.innerHeight || root.clientHeight;
+    const visualHeight = viewport?.height || layoutHeight;
+    const width = viewport?.width || window.innerWidth || root.clientWidth;
 
-    root.style.setProperty('--app-real-viewport-height', `${Math.round(height)}px`);
+    root.style.setProperty('--app-visual-viewport-height', `${Math.round(visualHeight)}px`);
+    root.style.setProperty('--app-layout-viewport-height', `${Math.round(layoutHeight)}px`);
+    root.style.setProperty('--app-real-viewport-height', `${Math.round(visualHeight)}px`);
     root.style.setProperty('--app-real-viewport-width', `${Math.round(width)}px`);
   }
 }

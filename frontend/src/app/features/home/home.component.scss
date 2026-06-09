@@ -6,17 +6,19 @@
   position: relative;
   z-index: 0;
   width: 100%;
-  min-height: var(--app-viewport-block);
+  min-height: var(--app-immersive-height);
   margin: 0;
   overflow: hidden;
   background: transparent;
 }
 
 .home-page__deck {
-  --home-deck-card-width: min(1040px, 78vw);
-  --home-deck-card-height: clamp(470px, 34vw, 560px);
-  --home-deck-stack-height: clamp(480px, 52vw, 660px);
-  --home-deck-nav-size: 38px;
+  --deck-viewport-height: var(--app-immersive-height);
+  --deck-content-height: var(--deck-viewport-height);
+  --deck-card-width: min(1040px, 78vw);
+  --deck-card-height: 720px;
+  --deck-stack-height: clamp(480px, 52vw, 660px);
+  --deck-nav-size: 38px;
   --home-deck-nav-bottom: 6px;
   --home-deck-nav-offset: 220px;
   --deck-card-transform-duration: 240ms;
@@ -25,15 +27,7 @@
 
   display: block;
   width: 100%;
-  min-height: var(--app-viewport-block);
-}
-
-.home-page__deck::ng-deep .entity-deck,
-.home-page__deck::ng-deep .entity-deck__shell,
-.home-page__deck::ng-deep .entity-deck__stage {
-  width: 100%;
-  min-height: var(--app-viewport-block);
-  height: var(--app-viewport-block);
+  min-height: var(--deck-viewport-height);
 }
 
 .home-page__deck::ng-deep .entity-deck__shell {
@@ -46,18 +40,15 @@
   padding:
     calc(var(--app-shell-gap) + var(--app-header-height) + 18px)
     calc(var(--app-shell-gap) + var(--app-rail-width) + 54px)
-    clamp(52px, 7vh, 82px)
+    64px
     clamp(34px, 3.4vw, 58px);
 }
 
 .home-page__deck::ng-deep .entity-deck__stack {
-  height: var(--home-deck-stack-height);
   top: -34px;
 }
 
 .home-page__deck::ng-deep .entity-deck__card {
-  width: var(--home-deck-card-width);
-  height: var(--home-deck-card-height);
   border-radius: 34px;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -141,8 +132,8 @@
   z-index: 12;
   top: auto;
   bottom: var(--home-deck-nav-bottom);
-  width: var(--home-deck-nav-size);
-  height: var(--home-deck-nav-size);
+  width: var(--deck-nav-size);
+  height: var(--deck-nav-size);
   opacity: 0.66;
   transform: none;
   background:
@@ -169,15 +160,15 @@
 
 .home-page__deck::ng-deep .entity-deck__dots {
   z-index: 11;
-  bottom: calc(var(--home-deck-nav-bottom) + (var(--home-deck-nav-size) / 2) - 4px);
+  bottom: calc(var(--home-deck-nav-bottom) + (var(--deck-nav-size) / 2) - 4px);
 }
 
 @media (min-width: 1500px) {
   .home-page__deck {
-    --home-deck-card-width: clamp(1180px, 68vw, 1440px);
-    --home-deck-card-height: clamp(540px, 32vw, 660px);
-    --home-deck-stack-height: calc(var(--home-deck-card-height) + 78px);
-    --home-deck-nav-size: 38px;
+    --deck-card-width: clamp(1180px, 68vw, 1440px);
+    --deck-card-height: clamp(540px, 32vw, 660px);
+    --deck-stack-height: calc(var(--deck-card-height) + 78px);
+    --deck-nav-size: 38px;
     --home-deck-nav-bottom: 8px;
     --home-deck-nav-offset: 260px;
   }
@@ -186,17 +177,17 @@
     padding:
       calc(var(--app-shell-gap) + var(--app-header-height) + 12px)
       calc(var(--app-shell-gap) + var(--app-rail-width) + 58px)
-      clamp(50px, 6vh, 76px)
+      62px
       clamp(36px, 3vw, 60px);
   }
 }
 
 @media (max-width: 1280px) {
   .home-page__deck {
-    --home-deck-card-width: min(940px, 86vw);
-    --home-deck-card-height: clamp(450px, 38vw, 540px);
-    --home-deck-stack-height: clamp(460px, 54vw, 610px);
-    --home-deck-nav-size: 38px;
+    --deck-card-width: min(940px, 86vw);
+    --deck-card-height: clamp(450px, 38vw, 540px);
+    --deck-stack-height: clamp(460px, 54vw, 610px);
+    --deck-nav-size: 38px;
     --home-deck-nav-bottom: 6px;
     --home-deck-nav-offset: 178px;
   }
@@ -205,7 +196,7 @@
     padding:
       calc(var(--app-shell-gap) + var(--app-header-height) + 16px)
       calc(var(--app-shell-gap) + var(--app-rail-width) + 38px)
-      clamp(48px, 6vh, 72px)
+      58px
       clamp(22px, 2.4vw, 36px);
   }
 
@@ -213,29 +204,26 @@
 
 @media (max-width: 860px) {
   .home-page__deck {
-    --home-deck-card-width: min(100%, 720px);
-    --home-deck-card-height: clamp(356px, 68svh, 430px);
-    --home-deck-stack-height: clamp(372px, 70svh, 456px);
-    --home-deck-nav-size: 42px;
+    --deck-card-width: min(100%, 720px);
+    --deck-card-height: clamp(560px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 42px), 680px);
+    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-nav-size: 42px;
     --home-deck-nav-bottom: calc(var(--app-safe-bottom) + 92px);
     --home-deck-nav-offset: 106px;
   }
 
   .home-page {
-    min-height: var(--app-viewport-block);
+    min-height: var(--app-immersive-height);
   }
 
-  .home-page__deck,
-  .home-page__deck::ng-deep .entity-deck,
-  .home-page__deck::ng-deep .entity-deck__shell,
-  .home-page__deck::ng-deep .entity-deck__stage {
-    min-height: var(--app-viewport-block);
-    height: var(--app-viewport-block);
+  .home-page__deck {
+    min-height: var(--deck-viewport-height);
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
+    align-items: start;
     padding:
-      calc(var(--app-safe-top) + 104px)
+      calc(var(--app-safe-top) + 18px)
       12px
       calc(var(--app-safe-bottom) + 118px);
   }
@@ -261,15 +249,6 @@
 }
 @media (max-width: 860px) {
   @supports (-webkit-touch-callout: none) {
-    .home-page,
-    .home-page__deck,
-    .home-page__deck::ng-deep .entity-deck,
-    .home-page__deck::ng-deep .entity-deck__shell,
-    .home-page__deck::ng-deep .entity-deck__stage {
-      min-height: var(--app-viewport-stable-block);
-      height: var(--app-viewport-stable-block);
-    }
-
     .home-page__deck::ng-deep .entity-deck__bg,
     .home-page__deck::ng-deep .entity-deck__overlay {
       top: -24px;
@@ -280,9 +259,9 @@
 
 @media (max-width: 430px) {
   .home-page__deck {
-    --home-deck-card-height: clamp(402px, 108vw, 528px);
-    --home-deck-stack-height: clamp(404px, 96vw, 528px);
-    --home-deck-nav-size: 36px;
+    --deck-card-height: clamp(500px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 214px), 700px);
+    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-nav-size: 36px;
     --home-deck-nav-bottom: 94px;
     --home-deck-nav-offset: 104px;
   }
@@ -316,18 +295,18 @@
 }
 @media (max-width: 390px) {
   .home-page__deck {
-    --home-deck-card-height: clamp(380px, 106vw, 470px);
-    --home-deck-stack-height: clamp(388px, 98vw, 470px);
-    --home-deck-nav-size: 38px;
+    --deck-card-height: clamp(480px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 210px), 670px);
+    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-nav-size: 38px;
     --home-deck-nav-bottom: 88px;
     --home-deck-nav-offset: 114px;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
     padding:
-      calc(var(--app-shell-gap) + 128px)
+      calc(var(--app-safe-top) + 16px)
       12px
-      calc(var(--app-shell-gap) + 100px);
+      calc(var(--app-safe-bottom) + 106px);
   }
 
   .home-page__deck::ng-deep .entity-deck__body {
@@ -354,18 +333,18 @@
 }
 @media (max-width: 360px) {
   .home-page__deck {
-    --home-deck-card-height: clamp(356px, 110vw, 428px);
-    --home-deck-stack-height: clamp(364px, 102vw, 436px);
-    --home-deck-nav-size: 34px;
+    --deck-card-height: clamp(450px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 204px), 620px);
+    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-nav-size: 34px;
     --home-deck-nav-bottom: 80px;
     --home-deck-nav-offset: 94px;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
     padding:
-      calc(var(--app-shell-gap) + 120px)
+      calc(var(--app-safe-top) + 14px)
       10px
-      calc(var(--app-shell-gap) + 92px);
+      calc(var(--app-safe-bottom) + 98px);
   }
 
   .home-page__deck::ng-deep .entity-deck__body {
@@ -404,18 +383,18 @@
 
 @media (max-width: 340px) {
   .home-page__deck {
-    --home-deck-card-height: clamp(320px, 104vw, 384px);
-    --home-deck-stack-height: clamp(332px, 96vw, 394px);
-    --home-deck-nav-size: 32px;
+    --deck-card-height: clamp(420px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 198px), 570px);
+    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-nav-size: 32px;
     --home-deck-nav-bottom: 72px;
     --home-deck-nav-offset: 88px;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
     padding:
-      calc(var(--app-shell-gap) + 110px)
+      calc(var(--app-safe-top) + 12px)
       8px
-      calc(var(--app-shell-gap) + 84px);
+      calc(var(--app-safe-bottom) + 90px);
   }
 
   .home-page__deck::ng-deep .entity-deck__nav {

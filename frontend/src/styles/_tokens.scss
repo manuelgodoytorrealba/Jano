@@ -93,10 +93,23 @@
   --app-safe-right: env(safe-area-inset-right, 0px);
   --app-safe-bottom: env(safe-area-inset-bottom, 0px);
   --app-safe-left: env(safe-area-inset-left, 0px);
-  --app-real-viewport-height: 100dvh;
+
+  /* Raw viewport measurements. ViewportService owns these at runtime. */
+  --app-visual-viewport-height: 100dvh;
+  --app-layout-viewport-height: 100dvh;
+  --app-real-viewport-height: var(--app-visual-viewport-height);
   --app-real-viewport-width: 100vw;
-  --app-viewport-block: var(--app-real-viewport-height, 100dvh);
-  --app-viewport-stable-block: var(--app-real-viewport-height, 100svh);
+
+  /* Semantic viewport contract. New pages should consume these first. */
+  --app-viewport-height: var(--app-visual-viewport-height);
+  --app-chrome-top: calc(var(--app-safe-top) + var(--app-shell-gap) + var(--app-header-height) + 18px);
+  --app-chrome-bottom: calc(var(--app-safe-bottom) + var(--app-shell-gap));
+  --app-content-height: calc(var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom));
+  --app-immersive-height: var(--app-viewport-height);
+
+  /* Compatibility aliases. Keep until every page migrates to the semantic contract. */
+  --app-viewport-block: var(--app-viewport-height);
+  --app-viewport-stable-block: 100svh;
 
   /* Motion */
   --ease-standard: cubic-bezier(.2, .8, .2, 1);
@@ -106,9 +119,11 @@
 
 @supports (-webkit-touch-callout: none) {
   :root {
-    --app-real-viewport-height: 100dvh;
-    --app-viewport-block: var(--app-real-viewport-height, 100dvh);
-    --app-viewport-stable-block: var(--app-real-viewport-height, 100dvh);
+    --app-viewport-height: var(--app-visual-viewport-height);
+    --app-immersive-height: var(--app-viewport-height);
+    --app-content-height: calc(var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom));
+    --app-viewport-block: var(--app-viewport-height);
+    --app-viewport-stable-block: 100svh;
   }
 }
 

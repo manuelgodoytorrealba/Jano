@@ -330,13 +330,32 @@ export class EntityDeckComponent {
             event.deltaMode === WheelEvent.DOM_DELTA_LINE
                 ? 16
                 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
-                    ? window.innerHeight
+                    ? this.viewportPageDeltaHeight()
                     : 1;
 
         const scaledX = event.deltaX * multiplier * 0.65;
         const scaledY = event.deltaY * multiplier;
 
         return Math.abs(scaledX) > Math.abs(scaledY) ? scaledX : scaledY;
+    }
+
+    private viewportPageDeltaHeight(): number {
+        if (typeof window === 'undefined') {
+            return 720;
+        }
+
+        const root = document.documentElement;
+        const styles = window.getComputedStyle(root);
+        const fromContract = this.readCssPixelValue(styles.getPropertyValue('--app-visual-viewport-height'))
+            ?? this.readCssPixelValue(styles.getPropertyValue('--app-viewport-height'))
+            ?? this.readCssPixelValue(styles.getPropertyValue('--app-real-viewport-height'));
+
+        return fromContract ?? window.visualViewport?.height ?? root.clientHeight ?? 720;
+    }
+
+    private readCssPixelValue(value: string): number | null {
+        const numeric = Number.parseFloat(value);
+        return Number.isFinite(numeric) && numeric > 0 ? numeric : null;
     }
 
     private trackWheelIntent(event: WheelEvent): 1 | -1 | null {

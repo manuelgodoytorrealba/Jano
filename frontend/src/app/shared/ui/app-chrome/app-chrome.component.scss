@@ -497,6 +497,7 @@
   position: fixed;
   z-index: 79;
   top: 50dvh;
+  top: calc(var(--app-viewport-height) / 2);
   right: calc(var(--app-safe-right) + var(--app-shell-gap));
   transform: translateY(-50%);
   width: var(--app-rail-width);
@@ -1140,7 +1141,7 @@
     height: 42px;
     padding-left: 38px;
     border-radius: 16px;
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .app-chrome__nav {

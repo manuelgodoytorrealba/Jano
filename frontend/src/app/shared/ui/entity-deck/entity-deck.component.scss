@@ -1,41 +1,54 @@
-.entity-deck {
-    width: 100%;
+:host {
+    display: block;
+    --deck-viewport-height: var(--app-immersive-height, var(--app-viewport-height, var(--app-real-viewport-height, 100%)));
+    --deck-content-height: var(--deck-viewport-height);
+    --deck-card-width: min(760px, 68vw);
+    --deck-card-height: clamp(350px, 26vw, 400px);
+    --deck-stack-height: clamp(330px, 35vw, 430px);
     --deck-card-transform-duration: 300ms;
     --deck-card-opacity-duration: 220ms;
     --deck-card-shadow-duration: 220ms;
     --deck-rail-safe-zone: clamp(92px, 8vw, 118px);
     --deck-nav-edge-gap: clamp(26px, 2.4vw, 40px);
-    --deck-top-safe-space: clamp(74px, 9vh, 104px);
-    --deck-bottom-safe-space: clamp(88px, 11vh, 116px);
+    --deck-top-safe-space: 92px;
+    --deck-bottom-safe-space: 104px;
     --deck-side-safe-space: clamp(48px, 5vw, 80px);
+    --deck-nav-size: 56px;
     --deck-bottom-nav-offset: 18px;
     --deck-dots-offset: 72px;
 }
 
+.entity-deck {
+    width: 100%;
+}
+
 .entity-deck--viewport {
-    min-height: var(--app-viewport-block);
+    min-height: var(--deck-viewport-height);
+    height: var(--deck-viewport-height);
     display: flex;
 }
 
 .entity-deck--viewport .entity-deck__shell {
-    min-height: var(--app-viewport-block);
+    min-height: var(--deck-viewport-height);
+    height: var(--deck-viewport-height);
     border-radius: 0;
 }
 
 .entity-deck--viewport .entity-deck__stage {
-    min-height: var(--app-viewport-block);
+    min-height: var(--deck-content-height);
+    height: var(--deck-content-height);
 }
 
 .entity-deck--viewport {
-    --deck-top-safe-space: clamp(78px, 10vh, 110px);
-    --deck-bottom-safe-space: clamp(104px, 11.5vh, 124px);
+    --deck-top-safe-space: 96px;
+    --deck-bottom-safe-space: 116px;
     --deck-bottom-nav-offset: 18px;
     --deck-dots-offset: 112px;
 }
 
 .entity-deck__shell {
     position: relative;
-    min-height: clamp(660px, 78vh, 840px);
+    min-height: clamp(660px, var(--deck-content-height), 840px);
     width: 100%;
     border-radius: 36px;
     overflow: hidden;
@@ -69,7 +82,7 @@
 .entity-deck__stage {
     position: relative;
     z-index: 2;
-    min-height: clamp(600px, 72vh, 680px);
+    min-height: clamp(600px, var(--deck-content-height), 680px);
     display: grid;
     place-items: center;
     padding:
@@ -80,7 +93,7 @@
 .entity-deck__stack {
     position: relative;
     width: 100%;
-    height: clamp(330px, 35vw, 430px);
+    height: var(--deck-stack-height);
     display: grid;
     place-items: center;
     perspective: 1600px;
@@ -89,8 +102,8 @@
 
 .entity-deck__card {
     position: absolute;
-    width: min(760px, 68vw);
-    height: clamp(350px, 26vw, 400px);
+    width: var(--deck-card-width);
+    height: var(--deck-card-height);
     display: grid;
     grid-template-columns: 1.06fr 0.94fr;
     border-radius: 32px;
@@ -367,8 +380,8 @@
     z-index: 4;
     top: 50%;
     transform: translateY(-50%);
-    width: 56px;
-    height: 56px;
+    width: var(--deck-nav-size);
+    height: var(--deck-nav-size);
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.22);
     contain: layout paint style;
@@ -553,7 +566,7 @@
 }
 
 @media (min-width: 1500px) {
-    .entity-deck {
+    :host {
         --deck-rail-safe-zone: 112px;
         --deck-nav-edge-gap: 44px;
         --deck-top-safe-space: 96px;
@@ -561,52 +574,40 @@
         --deck-side-safe-space: 100px;
         --deck-bottom-nav-offset: 20px;
         --deck-dots-offset: 114px;
+        --deck-card-width: min(780px, 58vw);
+        --deck-card-height: 384px;
+        --deck-stack-height: 412px;
     }
 
     .entity-deck__shell {
-        min-height: clamp(660px, 78vh, 740px);
+        min-height: clamp(660px, var(--deck-content-height), 740px);
     }
 
     .entity-deck__stage {
-        min-height: clamp(660px, 78vh, 740px);
-    }
-
-    .entity-deck__stack {
-        height: 412px;
-    }
-
-    .entity-deck__card {
-        width: min(780px, 58vw);
-        height: 384px;
+        min-height: clamp(660px, var(--deck-content-height), 740px);
     }
 }
 
 @media (max-width: 1280px) {
-    .entity-deck {
+    :host {
         --deck-rail-safe-zone: 94px;
         --deck-nav-edge-gap: 24px;
-        --deck-top-safe-space: clamp(68px, 8.5vh, 88px);
+        --deck-top-safe-space: 78px;
         --deck-bottom-safe-space: 116px;
         --deck-side-safe-space: 62px;
         --deck-bottom-nav-offset: 18px;
         --deck-dots-offset: 108px;
+        --deck-card-width: min(680px, 72vw);
+        --deck-card-height: 354px;
+        --deck-stack-height: 372px;
     }
 
     .entity-deck__shell {
-        min-height: clamp(600px, 74vh, 660px);
+        min-height: clamp(600px, var(--deck-content-height), 660px);
     }
 
     .entity-deck__stage {
-        min-height: clamp(600px, 74vh, 660px);
-    }
-
-    .entity-deck__stack {
-        height: 372px;
-    }
-
-    .entity-deck__card {
-        width: min(680px, 72vw);
-        height: 354px;
+        min-height: clamp(600px, var(--deck-content-height), 660px);
     }
 
     .entity-deck__bottom-nav {
@@ -615,31 +616,26 @@
 }
 
 @media (max-width: 1100px) {
-    .entity-deck {
+    :host {
         --deck-rail-safe-zone: 88px;
         --deck-nav-edge-gap: 18px;
-        --deck-top-safe-space: clamp(60px, 7vh, 76px);
+        --deck-top-safe-space: 68px;
         --deck-bottom-safe-space: 106px;
         --deck-side-safe-space: 50px;
         --deck-bottom-nav-offset: 16px;
         --deck-dots-offset: 98px;
+        --deck-card-width: min(620px, 76vw);
+        --deck-card-height: 332px;
+        --deck-stack-height: 346px;
+        --deck-nav-size: 48px;
     }
 
     .entity-deck__shell {
-        min-height: clamp(560px, 72vh, 620px);
+        min-height: clamp(560px, var(--deck-content-height), 620px);
     }
 
     .entity-deck__stage {
-        min-height: clamp(560px, 72vh, 620px);
-    }
-
-    .entity-deck__stack {
-        height: 346px;
-    }
-
-    .entity-deck__card {
-        width: min(620px, 76vw);
-        height: 332px;
+        min-height: clamp(560px, var(--deck-content-height), 620px);
     }
 
     .entity-deck__body {
@@ -648,11 +644,6 @@
 
     .entity-deck__title {
         font-size: clamp(1.65rem, 2vw, 2.35rem);
-    }
-
-    .entity-deck__nav {
-        width: 48px;
-        height: 48px;
     }
 
     .entity-deck__bottom-nav {
@@ -776,30 +767,30 @@
 }
 
 @media (max-width: 860px) {
-    .entity-deck {
+    :host {
         --deck-top-safe-space: 42px;
         --deck-bottom-safe-space: 170px;
         --deck-side-safe-space: 20px;
         --deck-bottom-nav-offset: 16px;
         --deck-dots-offset: 112px;
+        --deck-card-width: min(92vw, 520px);
+        --deck-card-height: 400px;
+        --deck-stack-height: 400px;
+        --deck-nav-size: 46px;
     }
 
     .entity-deck__shell {
-        min-height: var(--app-viewport-block);
+        min-height: var(--deck-viewport-height);
+        height: var(--deck-viewport-height);
         border-radius: 0;
     }
 
     .entity-deck__stage {
-        min-height: var(--app-viewport-block);
-    }
-
-    .entity-deck__stack {
-        height: 400px;
+        min-height: var(--deck-content-height);
+        height: var(--deck-content-height);
     }
 
     .entity-deck__card {
-        width: min(92vw, 520px);
-        height: 400px;
         grid-template-columns: 1fr;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
@@ -816,8 +807,6 @@
     }
 
     .entity-deck__nav {
-        width: 46px;
-        height: 46px;
         font-size: 28px;
         top: auto;
         bottom: 136px;
@@ -862,21 +851,16 @@
 
 
 @media (max-width: 620px) {
-    .entity-deck {
+    :host {
         --deck-top-safe-space: 34px;
         --deck-bottom-safe-space: 154px;
         --deck-side-safe-space: 12px;
         --deck-bottom-nav-offset: 12px;
         --deck-dots-offset: 92px;
-    }
-
-    .entity-deck__stack {
-        height: 360px;
-    }
-
-    .entity-deck__card {
-        width: min(94vw, 520px);
-        height: 360px;
+        --deck-card-width: min(94vw, 520px);
+        --deck-card-height: 360px;
+        --deck-stack-height: 360px;
+        --deck-nav-size: 40px;
     }
 
     .entity-deck__media {
@@ -897,8 +881,6 @@
     }
 
     .entity-deck__nav {
-        width: 40px;
-        height: 40px;
         opacity: 0.66;
         border-color: rgba(255, 255, 255, 0.16);
     }

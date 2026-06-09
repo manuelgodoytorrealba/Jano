@@ -6,31 +6,25 @@
   position: relative;
   z-index: 0;
   width: 100%;
-  min-height: var(--app-viewport-block);
+  min-height: var(--app-immersive-height);
   margin: 0;
   overflow: hidden;
   background: transparent;
 }
 
 .recommended-page__deck {
-  --home-deck-card-width: min(1160px, 86vw);
-  --home-deck-card-height: clamp(520px, 38vw, 620px);
-  --home-deck-stack-height: clamp(520px, 58vw, 710px);
-  --home-deck-nav-size: 42px;
+  --deck-viewport-height: var(--app-immersive-height);
+  --deck-content-height: var(--deck-viewport-height);
+  --deck-card-width: min(1160px, 86vw);
+  --deck-card-height: clamp(520px, 38vw, 620px);
+  --deck-stack-height: clamp(520px, 58vw, 710px);
+  --deck-nav-size: 42px;
   --home-deck-nav-bottom: 6px;
   --home-deck-nav-offset: 220px;
 
   display: block;
   width: 100%;
-  min-height: var(--app-viewport-block);
-}
-
-.recommended-page__deck::ng-deep .entity-deck,
-.recommended-page__deck::ng-deep .entity-deck__shell,
-.recommended-page__deck::ng-deep .entity-deck__stage {
-  width: 100%;
-  min-height: var(--app-viewport-block);
-  height: var(--app-viewport-block);
+  min-height: var(--deck-viewport-height);
 }
 
 .recommended-page__deck::ng-deep .entity-deck__shell {
@@ -43,18 +37,15 @@
   padding:
     calc(var(--app-shell-gap) + var(--app-header-height) + 18px)
     calc(var(--app-shell-gap) + var(--app-rail-width) + 54px)
-    clamp(52px, 7vh, 82px)
+    64px
     clamp(34px, 3.4vw, 58px);
 }
 
 .recommended-page__deck::ng-deep .entity-deck__stack {
-  height: var(--home-deck-stack-height);
   top: -34px;
 }
 
 .recommended-page__deck::ng-deep .entity-deck__card {
-  width: var(--home-deck-card-width);
-  height: var(--home-deck-card-height);
   border-radius: 34px;
   box-shadow:
     0 34px 94px rgba(0, 0, 0, 0.32),
@@ -67,6 +58,14 @@
     0 76px 170px rgba(0, 0, 0, 0.46),
     inset 0 1px 0 rgba(255, 255, 255, 0.34),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.recommended-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__eyebrow,
+.recommended-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__content,
+.recommended-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__footer,
+.recommended-page__deck::ng-deep .entity-deck__card:not(.is-active) .entity-deck__top-actions {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .recommended-page__deck::ng-deep .entity-deck__body {
@@ -86,8 +85,8 @@
   z-index: 12;
   top: auto;
   bottom: var(--home-deck-nav-bottom);
-  width: var(--home-deck-nav-size);
-  height: var(--home-deck-nav-size);
+  width: var(--deck-nav-size);
+  height: var(--deck-nav-size);
   opacity: 0.82;
   transform: none;
   background:
@@ -114,15 +113,15 @@
 
 .recommended-page__deck::ng-deep .entity-deck__dots {
   z-index: 11;
-  bottom: calc(var(--home-deck-nav-bottom) + (var(--home-deck-nav-size) / 2) - 4px);
+  bottom: calc(var(--home-deck-nav-bottom) + (var(--deck-nav-size) / 2) - 4px);
 }
 
 @media (min-width: 1500px) {
   .recommended-page__deck {
-    --home-deck-card-width: clamp(1360px, 78vw, 1680px);
-    --home-deck-card-height: clamp(620px, 38vw, 760px);
-    --home-deck-stack-height: calc(var(--home-deck-card-height) + 78px);
-    --home-deck-nav-size: 42px;
+    --deck-card-width: clamp(1360px, 78vw, 1680px);
+    --deck-card-height: clamp(620px, 38vw, 760px);
+    --deck-stack-height: calc(var(--deck-card-height) + 78px);
+    --deck-nav-size: 42px;
     --home-deck-nav-bottom: 8px;
     --home-deck-nav-offset: 260px;
   }
@@ -131,17 +130,17 @@
     padding:
       calc(var(--app-shell-gap) + var(--app-header-height) + 12px)
       calc(var(--app-shell-gap) + var(--app-rail-width) + 58px)
-      clamp(50px, 6vh, 76px)
+      62px
       clamp(36px, 3vw, 60px);
   }
 }
 
 @media (max-width: 1280px) {
   .recommended-page__deck {
-    --home-deck-card-width: min(1040px, 90vw);
-    --home-deck-card-height: clamp(490px, 41vw, 580px);
-    --home-deck-stack-height: clamp(500px, 58vw, 650px);
-    --home-deck-nav-size: 42px;
+    --deck-card-width: min(1040px, 90vw);
+    --deck-card-height: clamp(490px, 41vw, 580px);
+    --deck-stack-height: clamp(500px, 58vw, 650px);
+    --deck-nav-size: 42px;
     --home-deck-nav-bottom: 6px;
     --home-deck-nav-offset: 178px;
   }
@@ -150,7 +149,7 @@
     padding:
       calc(var(--app-shell-gap) + var(--app-header-height) + 16px)
       calc(var(--app-shell-gap) + var(--app-rail-width) + 38px)
-      clamp(48px, 6vh, 72px)
+      58px
       clamp(22px, 2.4vw, 36px);
   }
 
@@ -158,35 +157,32 @@
 
 @media (max-width: 860px) {
   .recommended-page__deck {
-    --home-deck-card-width: min(100%, 720px);
-    --home-deck-card-height: clamp(450px, 118vw, 580px);
-    --home-deck-stack-height: clamp(430px, 88vw, 580px);
-    --home-deck-nav-size: 48px;
+    --deck-card-width: min(100%, 720px);
+    --deck-card-height: clamp(500px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 214px), 700px);
+    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-nav-size: 48px;
     --home-deck-nav-bottom: 54px;
     --home-deck-nav-offset: 118px;
   }
 
   .recommended-page {
-    min-height: var(--app-viewport-block);
+    min-height: var(--app-immersive-height);
   }
 
-  .recommended-page__deck,
-  .recommended-page__deck::ng-deep .entity-deck,
-  .recommended-page__deck::ng-deep .entity-deck__shell,
-  .recommended-page__deck::ng-deep .entity-deck__stage {
-    min-height: var(--app-viewport-block);
-    height: var(--app-viewport-block);
+  .recommended-page__deck {
+    min-height: var(--deck-viewport-height);
   }
 
   .recommended-page__deck::ng-deep .entity-deck__stage {
+    align-items: start;
     padding:
-      calc(var(--app-shell-gap) + 138px)
+      calc(var(--app-safe-top) + 18px)
       14px
-      calc(var(--app-shell-gap) + 108px);
+      calc(var(--app-safe-bottom) + 112px);
   }
 
   .recommended-page__deck::ng-deep .entity-deck__stack {
-    top: -18px;
+    top: -8px;
   }
 
   .recommended-page__deck::ng-deep .entity-deck__card,
@@ -202,5 +198,11 @@
 
   .recommended-page__deck::ng-deep .entity-deck__nav--right {
     right: calc(50% - var(--home-deck-nav-offset));
+  }
+}
+
+@media (max-width: 767px) {
+  .recommended-page__deck::ng-deep .entity-deck__nav {
+    display: none;
   }
 }

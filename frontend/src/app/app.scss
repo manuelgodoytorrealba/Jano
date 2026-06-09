@@ -24,7 +24,7 @@
       var(--app-background-shade-mid) 38%,
       var(--app-background-shade-100) 100%);
 
-  min-height: var(--app-viewport-block);
+  min-height: var(--app-viewport-height);
   position: relative;
   isolation: isolate;
   overflow-x: hidden;
@@ -63,11 +63,11 @@
 .app-shell__content {
   position: relative;
   z-index: 0;
-  min-height: var(--app-viewport-block);
+  min-height: var(--app-viewport-height);
   padding:
-    calc(var(--app-safe-top) + var(--app-shell-gap) + var(--app-header-height) + 18px)
+    var(--app-chrome-top)
     calc(var(--app-safe-right) + var(--app-shell-gap) + var(--app-rail-width) + 18px)
-    calc(var(--app-safe-bottom) + var(--app-shell-gap))
+    var(--app-chrome-bottom)
     calc(var(--app-safe-left) + var(--app-shell-gap));
   overflow: visible;
 }
@@ -86,7 +86,11 @@
 
 .app-shell--immersive,
 .app-shell--entities {
-  height: var(--app-viewport-block);
+  --app-chrome-top: 0px;
+  --app-chrome-bottom: 0px;
+  --app-content-height: var(--app-immersive-height);
+
+  height: var(--app-immersive-height);
   overflow: hidden;
 }
 
@@ -105,30 +109,26 @@
 }
 
 @supports (-webkit-touch-callout: none) {
-  .app-shell {
-    min-height: var(--app-viewport-stable-block);
-  }
-
-  .app-shell--immersive,
-  .app-shell--entities {
-    height: var(--app-viewport-stable-block);
-    min-height: var(--app-viewport-stable-block);
-  }
-
   .app-shell::before,
   .app-shell::after {
     top: -24px;
     bottom: -24px;
-    min-height: calc(var(--app-viewport-stable-block) + 48px);
+    min-height: calc(var(--app-viewport-height) + 48px);
   }
 }
 
 @media (max-width: 860px) {
+  .app-shell {
+    --app-chrome-top: calc(var(--app-safe-top) + 122px);
+    --app-chrome-bottom: calc(var(--app-safe-bottom) + 88px);
+    --app-content-height: calc(var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom));
+  }
+
   .app-shell__content {
     padding:
-      calc(var(--app-safe-top) + 122px)
+      var(--app-chrome-top)
       calc(var(--app-safe-right) + var(--app-shell-gap))
-      calc(var(--app-safe-bottom) + 88px)
+      var(--app-chrome-bottom)
       calc(var(--app-safe-left) + var(--app-shell-gap));
   }
 
