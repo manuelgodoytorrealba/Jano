@@ -163,10 +163,18 @@
   bottom: calc(var(--home-deck-nav-bottom) + (var(--deck-nav-size) / 2) - 4px);
 }
 
+@media (max-width: 1499px) {
+  .home-page__deck {
+    --deck-card-width: min(820px, 68vw);
+    --deck-card-height: 500px;
+    --deck-stack-height: 540px;
+  }
+}
+
 @media (min-width: 1500px) {
   .home-page__deck {
     --deck-card-width: clamp(1180px, 68vw, 1440px);
-    --deck-card-height: clamp(540px, 32vw, 660px);
+    --deck-card-height: clamp(480px, 28vw, 580px);
     --deck-stack-height: calc(var(--deck-card-height) + 78px);
     --deck-nav-size: 38px;
     --home-deck-nav-bottom: 8px;

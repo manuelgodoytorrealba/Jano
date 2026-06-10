@@ -1,5 +1,5 @@
 .admin-desk {
-  min-height: calc(var(--app-viewport-block) - 56px);
+  min-height: var(--app-content-height);
   padding: 28px;
   color: #151515;
 }

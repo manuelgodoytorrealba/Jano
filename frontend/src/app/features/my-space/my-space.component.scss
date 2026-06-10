@@ -1,7 +1,7 @@
 .space-page {
   position: relative;
   isolation: isolate;
-  min-height: calc(var(--app-viewport-block) - 56px);
+  min-height: var(--app-content-height);
   padding: 34px 28px 48px;
   display: grid;
   gap: 18px;
