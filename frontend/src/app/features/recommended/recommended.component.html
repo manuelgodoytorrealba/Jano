@@ -1,7 +1,18 @@
 <section class="recommended-page">
   <h1 class="sr-only">Recommended art picks</h1>
-  <app-entity-deck class="recommended-page__deck" [items]="deckItems()" [backgroundImage]="backgroundImage()"
-    [showRail]="false" [showDots]="true" [showNav]="true" [showBottomSearch]="false" [fullViewport]="true"
-    (cardClick)="onCardClick($event)" (expandClick)="onExpandClick($event)" (railClick)="onRailClick($event)"
-    (searchSubmit)="onSearchSubmit($event)" (tabChange)="onTabChange($event)" />
+  <app-entity-deck
+    class="recommended-page__deck"
+    [items]="deckItems()"
+    [backgroundImage]="backgroundImage()"
+    [showRail]="false"
+    [showDots]="true"
+    [showNav]="false"
+    [showBottomSearch]="false"
+    [fullViewport]="true"
+    (cardClick)="onCardClick($event)"
+    (expandClick)="onExpandClick($event)"
+    (railClick)="onRailClick($event)"
+    (searchSubmit)="onSearchSubmit($event)"
+    (tabChange)="onTabChange($event)"
+  />
 </section>
