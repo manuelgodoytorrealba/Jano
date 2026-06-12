@@ -122,6 +122,14 @@
     --app-chrome-top: calc(var(--app-safe-top) + 122px);
     --app-chrome-bottom: calc(var(--app-safe-bottom) + 88px);
     --app-content-height: calc(var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom));
+    height: var(--app-viewport-height);
+    overflow: hidden;
+    --app-background-top-light: rgba(255, 255, 255, 0.08);
+    --app-background-bottom-warm: rgba(214, 183, 131, 0.12);
+    --app-background-shade-0: rgba(8, 8, 8, 0.12);
+    --app-background-shade-mid: rgba(8, 8, 8, 0.24);
+    --app-background-shade-100: rgba(8, 8, 8, 0.52);
+    --app-background-opacity: 0.38;
   }
 
   .app-shell__content {
@@ -130,6 +138,9 @@
       calc(var(--app-safe-right) + var(--app-shell-gap))
       var(--app-chrome-bottom)
       calc(var(--app-safe-left) + var(--app-shell-gap));
+    min-height: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   .app-shell--immersive .app-shell__content {

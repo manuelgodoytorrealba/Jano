@@ -211,13 +211,23 @@
 }
 
 @media (max-width: 860px) {
+  .home-page {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: var(--app-viewport-height);
+    max-height: var(--app-viewport-height);
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   .home-page__deck {
-    --deck-card-width: min(100%, 720px);
-    --deck-card-height: clamp(560px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 42px), 680px);
-    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-card-width: min(100%, 432px);
+    --deck-card-height: clamp(336px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 42px), 408px);
+    --deck-stack-height: calc(var(--deck-card-height) + 10px);
     --deck-nav-size: 42px;
-    --home-deck-nav-bottom: calc(var(--app-safe-bottom) + 92px);
-    --home-deck-nav-offset: 106px;
+    --home-deck-nav-bottom: calc(var(--app-safe-bottom) + 56px);
+    --home-deck-nav-offset: 64px;
   }
 
   .home-page {
@@ -226,18 +236,19 @@
 
   .home-page__deck {
     min-height: var(--deck-viewport-height);
+    height: 100%;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
     align-items: start;
     padding:
-      calc(var(--app-safe-top) + 18px)
+      calc(var(--app-safe-top) + 100px)
       12px
-      calc(var(--app-safe-bottom) + 118px);
+      calc(var(--app-safe-bottom) + 84px);
   }
 
   .home-page__deck::ng-deep .entity-deck__stack {
-    top: -8px;
+    top: 18px;
   }
 
   .home-page__deck::ng-deep .entity-deck__card,
@@ -254,6 +265,14 @@
   .home-page__deck::ng-deep .entity-deck__nav--right {
     right: calc(50% - var(--home-deck-nav-offset));
   }
+
+  .home-page__deck::ng-deep .entity-deck__dots {
+    display: none;
+  }
+
+  .home-page__deck::ng-deep .entity-deck__nav {
+    display: none;
+  }
 }
 @media (max-width: 860px) {
   @supports (-webkit-touch-callout: none) {
@@ -267,10 +286,10 @@
 
 @media (max-width: 430px) {
   .home-page__deck {
-    --deck-card-height: clamp(500px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 214px), 700px);
-    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-card-height: clamp(300px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 128px), 420px);
+    --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 36px;
-    --home-deck-nav-bottom: 94px;
+    --home-deck-nav-bottom: 38px;
     --home-deck-nav-offset: 104px;
   }
 
@@ -288,7 +307,8 @@
   }
 
   .home-page__deck::ng-deep .entity-deck__media {
-    height: 198px;
+    height: 100%;
+    min-height: 100%;
   }
 
   .home-page__deck::ng-deep .entity-deck__eyebrow,
@@ -303,18 +323,18 @@
 }
 @media (max-width: 390px) {
   .home-page__deck {
-    --deck-card-height: clamp(480px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 210px), 670px);
-    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-card-height: clamp(282px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 120px), 390px);
+    --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 38px;
-    --home-deck-nav-bottom: 88px;
+    --home-deck-nav-bottom: 34px;
     --home-deck-nav-offset: 114px;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
     padding:
-      calc(var(--app-safe-top) + 16px)
+      calc(var(--app-safe-top) + 22px)
       12px
-      calc(var(--app-safe-bottom) + 106px);
+      calc(var(--app-safe-bottom) + 76px);
   }
 
   .home-page__deck::ng-deep .entity-deck__body {
@@ -331,7 +351,8 @@
   }
 
   .home-page__deck::ng-deep .entity-deck__media {
-    height: 182px;
+    height: 100%;
+    min-height: 100%;
   }
 
   .home-page__deck::ng-deep .entity-deck__chip,
@@ -341,18 +362,18 @@
 }
 @media (max-width: 360px) {
   .home-page__deck {
-    --deck-card-height: clamp(450px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 204px), 620px);
-    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-card-height: clamp(264px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 112px), 366px);
+    --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 34px;
-    --home-deck-nav-bottom: 80px;
+    --home-deck-nav-bottom: 30px;
     --home-deck-nav-offset: 94px;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
     padding:
-      calc(var(--app-safe-top) + 14px)
+      calc(var(--app-safe-top) + 20px)
       10px
-      calc(var(--app-safe-bottom) + 98px);
+      calc(var(--app-safe-bottom) + 70px);
   }
 
   .home-page__deck::ng-deep .entity-deck__body {
@@ -369,7 +390,8 @@
   }
 
   .home-page__deck::ng-deep .entity-deck__media {
-    height: 164px;
+    height: 100%;
+    min-height: 100%;
   }
 
   .home-page__deck::ng-deep .entity-deck__eyebrow,
@@ -391,18 +413,18 @@
 
 @media (max-width: 340px) {
   .home-page__deck {
-    --deck-card-height: clamp(420px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 198px), 570px);
-    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-card-height: clamp(248px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 104px), 342px);
+    --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 32px;
-    --home-deck-nav-bottom: 72px;
+    --home-deck-nav-bottom: 26px;
     --home-deck-nav-offset: 88px;
   }
 
   .home-page__deck::ng-deep .entity-deck__stage {
     padding:
-      calc(var(--app-safe-top) + 12px)
+      calc(var(--app-safe-top) + 18px)
       8px
-      calc(var(--app-safe-bottom) + 90px);
+      calc(var(--app-safe-bottom) + 64px);
   }
 
   .home-page__deck::ng-deep .entity-deck__nav {
@@ -424,7 +446,8 @@
   }
 
   .home-page__deck::ng-deep .entity-deck__media {
-    height: 150px;
+    height: 100%;
+    min-height: 100%;
   }
 
   .home-page__deck::ng-deep .entity-deck__eyebrow,
