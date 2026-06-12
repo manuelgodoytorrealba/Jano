@@ -124,12 +124,12 @@
     --app-content-height: calc(var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom));
     height: var(--app-viewport-height);
     overflow: hidden;
-    --app-background-top-light: rgba(255, 255, 255, 0.08);
-    --app-background-bottom-warm: rgba(214, 183, 131, 0.12);
-    --app-background-shade-0: rgba(8, 8, 8, 0.12);
-    --app-background-shade-mid: rgba(8, 8, 8, 0.24);
-    --app-background-shade-100: rgba(8, 8, 8, 0.52);
-    --app-background-opacity: 0.38;
+    --app-background-top-light: rgba(255, 255, 255, 0.018);
+    --app-background-bottom-warm: rgba(214, 183, 131, 0.05);
+    --app-background-shade-0: rgba(8, 8, 8, 0.02);
+    --app-background-shade-mid: rgba(8, 8, 8, 0.08);
+    --app-background-shade-100: rgba(8, 8, 8, 0.2);
+    --app-background-opacity: 0.2;
   }
 
   .app-shell__content {
@@ -140,7 +140,10 @@
       calc(var(--app-safe-left) + var(--app-shell-gap));
     min-height: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
   }
 
   .app-shell--immersive .app-shell__content {
@@ -153,5 +156,21 @@
       calc(var(--app-safe-right) + var(--app-shell-gap))
       calc(var(--app-safe-bottom) + 88px)
       calc(var(--app-safe-left) + var(--app-shell-gap));
+  }
+
+  .app-shell::after {
+    background:
+      radial-gradient(ellipse at 50% 52%, transparent 54%, rgba(10, 10, 10, 0.06) 100%),
+      linear-gradient(180deg,
+        rgba(10, 10, 10, 0.06) 0%,
+        transparent 12%,
+        transparent 88%,
+        rgba(10, 10, 10, 0.08) 100%),
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.012), transparent 24%),
+      radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.04), transparent 28%),
+      linear-gradient(180deg,
+        var(--app-background-shade-0),
+        var(--app-background-shade-mid) 38%,
+        var(--app-background-shade-100) 100%);
   }
 }

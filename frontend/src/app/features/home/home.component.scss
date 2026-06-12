@@ -222,12 +222,14 @@
   }
 
   .home-page__deck {
-    --deck-card-width: min(100%, 432px);
-    --deck-card-height: clamp(336px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 42px), 408px);
-    --deck-stack-height: calc(var(--deck-card-height) + 10px);
+    --deck-card-width: min(100%, 448px);
+    --deck-card-height: clamp(422px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) + 18px), 526px);
+    --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 42px;
-    --home-deck-nav-bottom: calc(var(--app-safe-bottom) + 56px);
+    --home-deck-nav-bottom: calc(var(--app-safe-bottom) + 44px);
     --home-deck-nav-offset: 64px;
+    --deck-mobile-editorial-title-lift: -34px;
+    --deck-mobile-editorial-title-gap: -10px;
   }
 
   .home-page {
@@ -237,41 +239,6 @@
   .home-page__deck {
     min-height: var(--deck-viewport-height);
     height: 100%;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__stage {
-    align-items: start;
-    padding:
-      calc(var(--app-safe-top) + 100px)
-      12px
-      calc(var(--app-safe-bottom) + 84px);
-  }
-
-  .home-page__deck::ng-deep .entity-deck__stack {
-    top: 18px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__card,
-  .home-page__deck::ng-deep .entity-deck__card.is-active,
-  .home-page__deck::ng-deep .entity-deck__nav,
-  .home-page__deck::ng-deep .entity-deck__rail {
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
-  }
-
-  .home-page__deck::ng-deep .entity-deck__nav--left {
-    left: calc(50% - var(--home-deck-nav-offset));
-  }
-
-  .home-page__deck::ng-deep .entity-deck__nav--right {
-    right: calc(50% - var(--home-deck-nav-offset));
-  }
-
-  .home-page__deck::ng-deep .entity-deck__dots {
-    display: none;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__nav {
-    display: none;
   }
 }
 @media (max-width: 860px) {
@@ -286,34 +253,11 @@
 
 @media (max-width: 430px) {
   .home-page__deck {
-    --deck-card-height: clamp(300px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 128px), 420px);
+    --deck-card-height: clamp(372px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 52px), 488px);
     --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 36px;
-    --home-deck-nav-bottom: 38px;
+    --home-deck-nav-bottom: 34px;
     --home-deck-nav-offset: 104px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__body {
-    padding: 22px 22px 20px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__title {
-    font-size: clamp(2rem, 7.4vw, 2.75rem);
-  }
-
-  .home-page__deck::ng-deep .entity-deck__description {
-    font-size: 0.94rem;
-    line-height: 1.62;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__media {
-    height: 100%;
-    min-height: 100%;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__eyebrow,
-  .home-page__deck::ng-deep .entity-deck__meta {
-    font-size: 0.7rem;
   }
 
   .home-page__deck::ng-deep .entity-deck__chip,
@@ -323,36 +267,11 @@
 }
 @media (max-width: 390px) {
   .home-page__deck {
-    --deck-card-height: clamp(282px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 120px), 390px);
+    --deck-card-height: clamp(344px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 44px), 458px);
     --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 38px;
-    --home-deck-nav-bottom: 34px;
+    --home-deck-nav-bottom: 32px;
     --home-deck-nav-offset: 114px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__stage {
-    padding:
-      calc(var(--app-safe-top) + 22px)
-      12px
-      calc(var(--app-safe-bottom) + 76px);
-  }
-
-  .home-page__deck::ng-deep .entity-deck__body {
-    padding: 18px 18px 16px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__title {
-    font-size: clamp(1.82rem, 7.6vw, 2.2rem);
-  }
-
-  .home-page__deck::ng-deep .entity-deck__description {
-    font-size: 0.89rem;
-    line-height: 1.58;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__media {
-    height: 100%;
-    min-height: 100%;
   }
 
   .home-page__deck::ng-deep .entity-deck__chip,
@@ -362,41 +281,11 @@
 }
 @media (max-width: 360px) {
   .home-page__deck {
-    --deck-card-height: clamp(264px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 112px), 366px);
+    --deck-card-height: clamp(320px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 40px), 426px);
     --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 34px;
-    --home-deck-nav-bottom: 30px;
+    --home-deck-nav-bottom: 28px;
     --home-deck-nav-offset: 94px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__stage {
-    padding:
-      calc(var(--app-safe-top) + 20px)
-      10px
-      calc(var(--app-safe-bottom) + 70px);
-  }
-
-  .home-page__deck::ng-deep .entity-deck__body {
-    padding: 16px 16px 14px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__title {
-    font-size: clamp(1.64rem, 7.8vw, 2rem);
-  }
-
-  .home-page__deck::ng-deep .entity-deck__description {
-    font-size: 0.84rem;
-    line-height: 1.52;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__media {
-    height: 100%;
-    min-height: 100%;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__eyebrow,
-  .home-page__deck::ng-deep .entity-deck__meta {
-    font-size: 0.66rem;
   }
 
   .home-page__deck::ng-deep .entity-deck__chip,
@@ -405,54 +294,13 @@
   }
 }
 
-@media (max-width: 767px) {
-  .home-page__deck::ng-deep .entity-deck__nav {
-    display: none;
-  }
-}
-
 @media (max-width: 340px) {
   .home-page__deck {
-    --deck-card-height: clamp(248px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 104px), 342px);
+    --deck-card-height: clamp(298px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 36px), 396px);
     --deck-stack-height: calc(var(--deck-card-height) + 8px);
     --deck-nav-size: 32px;
-    --home-deck-nav-bottom: 26px;
+    --home-deck-nav-bottom: 24px;
     --home-deck-nav-offset: 88px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__stage {
-    padding:
-      calc(var(--app-safe-top) + 18px)
-      8px
-      calc(var(--app-safe-bottom) + 64px);
-  }
-
-  .home-page__deck::ng-deep .entity-deck__nav {
-    display: none;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__body {
-    padding: 14px 14px 12px;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__title {
-    font-size: clamp(1.48rem, 7.4vw, 1.84rem);
-    line-height: 0.98;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__description {
-    font-size: 0.8rem;
-    line-height: 1.48;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__media {
-    height: 100%;
-    min-height: 100%;
-  }
-
-  .home-page__deck::ng-deep .entity-deck__eyebrow,
-  .home-page__deck::ng-deep .entity-deck__meta {
-    font-size: 0.64rem;
   }
 
   .home-page__deck::ng-deep .entity-deck__chip,

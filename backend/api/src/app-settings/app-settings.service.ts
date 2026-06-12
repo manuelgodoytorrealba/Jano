@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { buildPublicUploadUrl, normalizeStoredUploadUrl, resolveMediaPublicBaseUrl } from '../common/media-url.util';
 
 type UploadedBackgroundFile = {
   filename: string;
@@ -12,7 +13,7 @@ const BACKGROUND_IMAGE_KEY = 'global.backgroundImageUrl';
 
 @Injectable()
 export class AppSettingsService {
-  private readonly mediaPublicBaseUrl = (process.env.MEDIA_PUBLIC_BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
+  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(process.env.MEDIA_PUBLIC_BASE_URL);
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -22,7 +23,7 @@ export class AppSettingsService {
     });
 
     return {
-      backgroundImageUrl: setting?.value ?? null,
+      backgroundImageUrl: normalizeStoredUploadUrl(setting?.value),
     };
   }
 
@@ -31,7 +32,7 @@ export class AppSettingsService {
       throw new BadRequestException('Background image is required.');
     }
 
-    const backgroundImageUrl = `${this.mediaPublicBaseUrl}/uploads/app-backgrounds/${file.filename}`;
+    const backgroundImageUrl = buildPublicUploadUrl(`app-backgrounds/${file.filename}`, this.mediaPublicBaseUrl);
 
     await this.prisma.appSetting.upsert({
       where: { key: BACKGROUND_IMAGE_KEY },

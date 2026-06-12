@@ -19,6 +19,7 @@ import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
 import { detectImageDimensionsFromBuffer } from './image-metadata';
 import { normalizeLocale, resolveEntityTranslation, translationStatusSummary } from './entity-translation.resolver';
+import { buildPublicUploadUrl, resolveMediaPublicBaseUrl } from '../common/media-url.util';
 
 type GraphNodePayload = {
   id: string;
@@ -78,7 +79,7 @@ type SlotCropInput = {
 
 @Injectable()
 export class EntitiesService {
-  private readonly mediaPublicBaseUrl = (process.env.MEDIA_PUBLIC_BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
+  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(process.env.MEDIA_PUBLIC_BASE_URL);
 
   private readonly HOME_TYPES: EntityType[] = [
     'ARTWORK',
@@ -289,7 +290,7 @@ export class EntitiesService {
   }
 
   private buildPublicUploadUrl(storageKey: string): string {
-    return `${this.mediaPublicBaseUrl}/uploads/${storageKey}`;
+    return buildPublicUploadUrl(storageKey, this.mediaPublicBaseUrl);
   }
 
   private normalizeMimeType(value: string | null | undefined): string | null {

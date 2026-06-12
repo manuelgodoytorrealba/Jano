@@ -20,6 +20,8 @@ type CardState = {
     zIndex: number;
 };
 
+type MobileDeckVariant = 'default' | 'editorial';
+
 @Component({
     standalone: true,
     selector: 'app-entity-deck',
@@ -41,6 +43,7 @@ export class EntityDeckComponent {
     showBottomSearch = input<boolean>(true);
     fullViewport = input<boolean>(false);
     showAdminEdit = input<boolean>(false);
+    mobileVariant = input<MobileDeckVariant>('default');
 
     activeIndex = signal(0);
 
@@ -160,6 +163,10 @@ export class EntityDeckComponent {
 
     imgHeight(item: DeckItem): number | null {
         return item.imageHeight ?? null;
+    }
+
+    isMobileEditorial(): boolean {
+        return this.mobileVariant?.() === 'editorial';
     }
 
     isRailActive(action: DeckRailAction): boolean {

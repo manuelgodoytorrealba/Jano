@@ -1079,6 +1079,9 @@
     padding: 6px;
     gap: 8px;
     grid-auto-flow: column;
+    grid-auto-columns: 48px;
+    align-items: center;
+    justify-content: center;
   }
 
   .app-chrome__utility-btn {
@@ -1094,7 +1097,15 @@
   .app-chrome__utility-indicator {
     top: 6px;
     left: 6px;
+    width: 48px;
+    height: 48px;
     transform: translateX(calc(var(--active-index) * 56px));
+  }
+
+  .app-chrome__utility-btn.is-active {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
   }
 
   .app-chrome__header-toggle--close {

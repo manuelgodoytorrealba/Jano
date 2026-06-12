@@ -5,6 +5,7 @@ import { readFile } from 'fs/promises';
 import { detectImageDimensionsFromBuffer } from '../entities/image-metadata';
 import { attachResolvedMedia } from '../entities/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
+import { buildPublicUploadUrl, normalizeStoredUploadUrl, resolveMediaPublicBaseUrl } from '../common/media-url.util';
 import { AddHomeDeckEntityDto } from './dto/add-home-deck-entity.dto';
 import { CreateHomeDeckDto } from './dto/create-home-deck.dto';
 import { ReorderHomeDeckEntityDto } from './dto/reorder-home-deck-entity.dto';
@@ -35,7 +36,7 @@ type HomeDeckWarning = {
 
 @Injectable()
 export class HomeDecksService {
-  private readonly mediaPublicBaseUrl = (process.env.MEDIA_PUBLIC_BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
+  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(process.env.MEDIA_PUBLIC_BASE_URL);
 
   constructor(private prisma: PrismaService) {}
 
@@ -301,7 +302,7 @@ export class HomeDecksService {
     const serialized = {
       ...this.serializePublicDeck(deck),
       translations: this.serializeDeckTranslations(deck),
-      imageUrl: deck.imageUrl,
+      imageUrl: normalizeStoredUploadUrl(deck.imageUrl),
       imageMediaId: deck.imageMediaId,
       isActive: deck.isActive,
       createdAt: deck.createdAt,
@@ -328,7 +329,7 @@ export class HomeDecksService {
     if (deck.imageMedia) {
       return {
         id: deck.imageMedia.id,
-        url: deck.imageMedia.displayUrl ?? deck.imageMedia.url,
+        url: normalizeStoredUploadUrl(deck.imageMedia.displayUrl ?? deck.imageMedia.url),
         width: deck.imageMedia.width ?? null,
         height: deck.imageMedia.height ?? null,
         alt: deck.imageMedia.alt ?? deck.title,
@@ -339,7 +340,7 @@ export class HomeDecksService {
     if (deck.imageUrl) {
       return {
         id: null,
-        url: deck.imageUrl,
+        url: normalizeStoredUploadUrl(deck.imageUrl),
         width: null,
         height: null,
         alt: deck.title,
@@ -576,6 +577,6 @@ export class HomeDecksService {
   }
 
   private buildPublicUploadUrl(storageKey: string): string {
-    return `${this.mediaPublicBaseUrl}/uploads/${storageKey}`;
+    return buildPublicUploadUrl(storageKey, this.mediaPublicBaseUrl);
   }
 }

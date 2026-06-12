@@ -165,11 +165,11 @@
 
 @media (max-width: 860px) {
   .recommended-page__deck {
-    --deck-card-width: min(100%, 720px);
-    --deck-card-height: clamp(500px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 214px), 700px);
-    --deck-stack-height: calc(var(--deck-card-height) + 18px);
+    --deck-card-width: min(100%, 448px);
+    --deck-card-height: clamp(360px, calc(var(--deck-content-height) - var(--app-safe-top) - var(--app-safe-bottom) - 132px), 446px);
+    --deck-stack-height: calc(var(--deck-card-height) + 10px);
     --deck-nav-size: 48px;
-    --home-deck-nav-bottom: 54px;
+    --home-deck-nav-bottom: 36px;
     --home-deck-nav-offset: 118px;
   }
 
@@ -179,33 +179,6 @@
 
   .recommended-page__deck {
     min-height: var(--deck-viewport-height);
-  }
-
-  .recommended-page__deck::ng-deep .entity-deck__stage {
-    align-items: start;
-    padding:
-      calc(var(--app-safe-top) + 18px)
-      14px
-      calc(var(--app-safe-bottom) + 112px);
-  }
-
-  .recommended-page__deck::ng-deep .entity-deck__stack {
-    top: -8px;
-  }
-
-  .recommended-page__deck::ng-deep .entity-deck__card,
-  .recommended-page__deck::ng-deep .entity-deck__card.is-active,
-  .recommended-page__deck::ng-deep .entity-deck__nav,
-  .recommended-page__deck::ng-deep .entity-deck__rail {
-    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
-  }
-
-  .recommended-page__deck::ng-deep .entity-deck__nav--left {
-    left: calc(50% - var(--home-deck-nav-offset));
-  }
-
-  .recommended-page__deck::ng-deep .entity-deck__nav--right {
-    right: calc(50% - var(--home-deck-nav-offset));
   }
 }
 

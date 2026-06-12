@@ -78,8 +78,119 @@
       </div>
     </section>
 
+    <section class="settings-surface settings-surface--personal">
+      <div class="settings-section-head">
+        <div>
+          <span class="settings-label">{{ i18n.t('settings.personalBackground.label') }}</span>
+          <h2>{{ i18n.t('settings.personalBackground.title') }}</h2>
+          <p class="settings-muted">
+            {{ i18n.t('settings.personalBackground.description') }}
+          </p>
+        </div>
+
+        <div class="settings-section-note">
+          <span class="settings-section-note__label">{{ i18n.t('settings.personalBackground.scopeLabel') }}</span>
+          <strong>{{ i18n.t('settings.personalBackground.scopeValue') }}</strong>
+        </div>
+      </div>
+
+      <div class="background-workspace">
+        <article class="background-stage">
+          <div class="background-stage__media">
+            <span class="background-stage__badge">
+              {{ appearance.personalBackgroundImageUrl() ? i18n.t('settings.personalBackground.current') : i18n.t('settings.personalBackground.fallback') }}
+            </span>
+
+            <div class="background-stage__frame">
+              @if (appearance.personalBackgroundImageUrl(); as currentPersonalBackgroundUrl) {
+                <img [src]="currentPersonalBackgroundUrl" alt="{{ i18n.t('settings.personalBackground.currentAlt') }}" />
+              } @else {
+                <img [src]="appearance.fallbackBackgroundImageUrl" alt="{{ i18n.t('settings.background.fallbackAlt') }}" />
+              }
+            </div>
+          </div>
+
+          <div class="background-stage__meta">
+            <span class="background-stage__eyebrow">{{ i18n.t('settings.personalBackground.ambient') }}</span>
+            <strong>{{ appearance.personalBackgroundImageUrl() ? i18n.t('settings.personalBackground.activeLocal') : i18n.t('settings.personalBackground.fallbackActive') }}</strong>
+            <p>
+              {{ i18n.t('settings.personalBackground.meta') }}
+            </p>
+          </div>
+        </article>
+
+        <div class="background-dock">
+          <label class="background-upload">
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              (change)="onPersonalBackgroundSelected($event)"
+            />
+
+            <span class="background-upload__eyebrow">{{ i18n.t('settings.personalBackground.newImage') }}</span>
+            <strong>{{ i18n.t('settings.personalBackground.select') }}</strong>
+            <p>{{ selectedPersonalBackgroundFile ? selectedPersonalBackgroundFile.name : i18n.t('settings.background.fileTypes') }}</p>
+          </label>
+
+          <article class="background-candidate" [class.background-candidate--empty]="!selectedPersonalBackgroundPreviewUrl">
+            <div class="background-candidate__head">
+              <span class="settings-label">{{ i18n.t('settings.personalBackground.preview') }}</span>
+              <strong>{{ selectedPersonalBackgroundPreviewUrl ? i18n.t('settings.personalBackground.newSelection') : i18n.t('settings.personalBackground.noSelection') }}</strong>
+            </div>
+
+            @if (selectedPersonalBackgroundPreviewUrl) {
+              <div class="background-candidate__frame">
+                <img [src]="selectedPersonalBackgroundPreviewUrl" alt="{{ i18n.t('settings.personalBackground.previewAlt') }}" />
+              </div>
+            } @else {
+              <div class="background-candidate__empty">
+                <p>{{ i18n.t('settings.personalBackground.previewHelp') }}</p>
+              </div>
+            }
+          </article>
+
+          <div class="background-actions-shell">
+            <div class="background-actions">
+              <button
+                type="button"
+                class="settings-shortcut settings-shortcut--primary"
+                [disabled]="!selectedPersonalBackgroundFile || personalBackgroundSaving"
+                (click)="applyPersonalBackground()"
+              >
+                {{ personalBackgroundSaving ? i18n.t('common.saving') : i18n.t('settings.personalBackground.apply') }}
+              </button>
+
+              <button
+                type="button"
+                class="settings-shortcut"
+                [disabled]="personalBackgroundSaving"
+                (click)="clearPersonalBackground()"
+              >
+                {{ i18n.t('settings.personalBackground.clear') }}
+              </button>
+            </div>
+
+            <p class="background-actions__hint">
+              {{ i18n.t('settings.personalBackground.hint') }}
+            </p>
+          </div>
+
+          @if (personalBackgroundMessage || personalBackgroundError) {
+            <div class="settings-feedback-shell">
+              @if (personalBackgroundMessage) {
+                <p class="settings-feedback settings-feedback--ok">{{ personalBackgroundMessage }}</p>
+              }
+              @if (personalBackgroundError) {
+                <p class="settings-feedback settings-feedback--error">{{ personalBackgroundError }}</p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
     @if (user.role === 'ADMIN') {
-      <section class="settings-surface settings-surface--background">
+    <section class="settings-surface settings-surface--background">
         <div class="settings-section-head settings-section-head--admin">
           <div>
             <span class="settings-label">Admin</span>

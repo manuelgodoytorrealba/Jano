@@ -22,9 +22,14 @@ export class SettingsComponent implements OnDestroy {
 
   selectedBackgroundFile: File | null = null;
   selectedBackgroundPreviewUrl: string | null = null;
+  selectedPersonalBackgroundFile: File | null = null;
+  selectedPersonalBackgroundPreviewUrl: string | null = null;
   backgroundSaving = false;
+  personalBackgroundSaving = false;
   backgroundError = '';
   backgroundMessage = '';
+  personalBackgroundError = '';
+  personalBackgroundMessage = '';
 
   get selectedBackgroundMeta(): string {
     if (!this.selectedBackgroundFile) {
@@ -50,6 +55,7 @@ export class SettingsComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.revokeSelectedPreview();
+    this.revokeSelectedPersonalPreview();
   }
 
   onBackgroundSelected(event: Event): void {
@@ -123,10 +129,82 @@ export class SettingsComponent implements OnDestroy {
     });
   }
 
+  onPersonalBackgroundSelected(event: Event): void {
+    this.personalBackgroundError = '';
+    this.personalBackgroundMessage = '';
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+
+    this.revokeSelectedPersonalPreview();
+    this.selectedPersonalBackgroundFile = null;
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.personalBackgroundError = this.i18n.t('settings.background.invalidImage');
+      input.value = '';
+      return;
+    }
+
+    this.selectedPersonalBackgroundFile = file;
+    this.selectedPersonalBackgroundPreviewUrl = URL.createObjectURL(file);
+  }
+
+  async applyPersonalBackground(): Promise<void> {
+    if (!this.selectedPersonalBackgroundFile || this.personalBackgroundSaving) {
+      return;
+    }
+
+    this.personalBackgroundSaving = true;
+    this.personalBackgroundError = '';
+    this.personalBackgroundMessage = '';
+
+    try {
+      await this.appearance.setPersonalBackground(this.selectedPersonalBackgroundFile);
+      this.personalBackgroundMessage = this.i18n.t('settings.personalBackground.updated');
+      this.selectedPersonalBackgroundFile = null;
+      this.revokeSelectedPersonalPreview();
+    } catch {
+      this.personalBackgroundError = this.i18n.t('settings.personalBackground.saveError');
+    } finally {
+      this.personalBackgroundSaving = false;
+    }
+  }
+
+  async clearPersonalBackground(): Promise<void> {
+    if (this.personalBackgroundSaving) {
+      return;
+    }
+
+    this.personalBackgroundSaving = true;
+    this.personalBackgroundError = '';
+    this.personalBackgroundMessage = '';
+
+    try {
+      await this.appearance.clearPersonalBackground();
+      this.personalBackgroundMessage = this.i18n.t('settings.personalBackground.reset');
+      this.selectedPersonalBackgroundFile = null;
+      this.revokeSelectedPersonalPreview();
+    } catch {
+      this.personalBackgroundError = this.i18n.t('settings.personalBackground.resetError');
+    } finally {
+      this.personalBackgroundSaving = false;
+    }
+  }
+
   private revokeSelectedPreview(): void {
     if (this.selectedBackgroundPreviewUrl) {
       URL.revokeObjectURL(this.selectedBackgroundPreviewUrl);
       this.selectedBackgroundPreviewUrl = null;
+    }
+  }
+
+  private revokeSelectedPersonalPreview(): void {
+    if (this.selectedPersonalBackgroundPreviewUrl) {
+      URL.revokeObjectURL(this.selectedPersonalBackgroundPreviewUrl);
+      this.selectedPersonalBackgroundPreviewUrl = null;
     }
   }
 }

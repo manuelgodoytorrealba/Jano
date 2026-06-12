@@ -1,4 +1,7 @@
-<section class="entity-deck" [class.entity-deck--viewport]="fullViewport()">
+<section
+    class="entity-deck"
+    [class.entity-deck--viewport]="fullViewport()"
+    [class.entity-deck--mobile-editorial]="isMobileEditorial()">
     <div class="entity-deck__shell">
         <div class="entity-deck__bg" [style.backgroundImage]="'url(' + backgroundImage() + ')'"></div>
 

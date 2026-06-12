@@ -84,6 +84,22 @@
   max-width: 640px;
 }
 
+.settings-surface--personal {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.settings-surface--personal .settings-section-note {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.settings-surface--personal .settings-section-note__label {
+  color: rgba(189, 175, 162, 0.64);
+}
+
+.settings-surface--personal .settings-section-note strong {
+  color: rgba(247, 244, 240, 0.86);
+}
+
 .settings-section-note {
   max-width: 280px;
   padding: 14px 16px;

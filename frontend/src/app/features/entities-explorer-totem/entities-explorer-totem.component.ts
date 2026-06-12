@@ -293,7 +293,13 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     }
 
     private measureStage(): void {
-        this.stageHeight.set(this.stageRef.nativeElement.clientHeight || window.innerHeight || 932);
+        const rectHeight = this.stageRef.nativeElement.getBoundingClientRect().height;
+        const clientHeight = this.stageRef.nativeElement.clientHeight;
+        const viewportHeight = window.visualViewport?.height || window.innerHeight || 932;
+        const measuredHeight = Math.max(0, rectHeight || clientHeight || viewportHeight);
+        const stableHeight = Math.min(measuredHeight || viewportHeight, viewportHeight);
+
+        this.stageHeight.set(stableHeight || 932);
     }
 
     private clearTimers(): void {
