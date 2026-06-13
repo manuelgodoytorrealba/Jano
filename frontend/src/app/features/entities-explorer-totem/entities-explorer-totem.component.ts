@@ -259,6 +259,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         const dragLimit = height * 0.32 || 180;
         const normalizedDrag = Math.max(-dragLimit, Math.min(dragLimit, drag));
         const dragProgress = Math.abs(normalizedDrag) / Math.max(dragLimit, 1);
+        const emphasisProgress = 1 - Math.pow(1 - dragProgress, 2.2);
         const direction = normalizedDrag < 0 ? 1 : -1;
         const tapeTravel = normalizedDrag;
 
@@ -270,16 +271,19 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
         const base = basePositions[role];
         const incoming = (role === -1 && direction === -1) || (role === 1 && direction === 1);
-        const neighborGain = incoming ? dragProgress * 0.16 : 0;
-        const neighborFade = incoming ? dragProgress * 0.18 : 0;
-        const activeFade = role === 0 ? dragProgress * 0.10 : 0;
+        const neighborGain = incoming ? emphasisProgress * 0.23 : 0;
+        const neighborFade = incoming ? emphasisProgress * 0.26 : 0;
+        const neighborClarity = incoming ? emphasisProgress * 0.65 : 0;
+        const activeScale = role === 0 ? emphasisProgress * 0.07 : 0;
+        const activeFade = role === 0 ? emphasisProgress * 0.16 : 0;
+        const activeSoftness = role === 0 ? emphasisProgress * 0.28 : 0;
         const roleOffset = base.top * height;
 
         return {
             top: `calc(50% + ${roleOffset.toFixed(2)}px)`,
-            transform: `translate3d(calc(-50% + ${base.x}px), calc(-50% + ${tapeTravel.toFixed(2)}px), 0) scale(${base.scale + neighborGain})`,
+            transform: `translate3d(calc(-50% + ${base.x}px), calc(-50% + ${tapeTravel.toFixed(2)}px), 0) scale(${base.scale + neighborGain - activeScale})`,
             opacity: `${Math.max(0, Math.min(1, base.opacity + neighborFade - activeFade))}`,
-            filter: `blur(${Math.max(0, base.blur - neighborFade * 0.35)}px)`,
+            filter: `blur(${Math.max(0, base.blur - neighborClarity + activeSoftness)}px)`,
             zIndex: `${base.zIndex + (role === 0 ? 3 : 0)}`,
         };
     }
