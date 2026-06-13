@@ -1,6 +1,7 @@
 <div
     #root
     class="explorer3d"
+    [class.is-info-open]="infoOpen"
     [style.padding-right]="'var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px))'"
     role="region"
     [attr.aria-label]="i18n.t('explorer3d.aria')"
@@ -20,17 +21,43 @@
         <span aria-hidden="true">i</span>
     </button>
 
-    <aside class="explorer3d__info" [class.is-hidden]="!infoOpen" [attr.aria-hidden]="!infoOpen">
+    <button
+        class="explorer3d__info-backdrop"
+        [class.is-hidden]="!infoOpen"
+        type="button"
+        (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
+        (wheel)="$event.preventDefault(); $event.stopPropagation()"
+        [attr.aria-hidden]="!infoOpen"
+        tabindex="-1"
+    ></button>
+
+    <aside
+        class="explorer3d__info"
+        [class.is-hidden]="!infoOpen"
+        [attr.aria-hidden]="!infoOpen"
+        (click)="$event.stopPropagation()"
+        (pointerdown)="$event.stopPropagation()"
+        (pointermove)="$event.stopPropagation()"
+        (pointerup)="$event.stopPropagation()"
+        (wheel)="$event.preventDefault(); $event.stopPropagation()"
+    >
+        <div class="explorer3d__info-head">
+        <button
+            class="explorer3d__info-close-hit"
+            type="button"
+            (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
+            [attr.aria-label]="i18n.t('button.close')"
+        ></button>
         <button
             class="explorer3d__info-close"
             type="button"
-            (click)="closeInfoPanel()"
+            (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
             [attr.aria-label]="i18n.t('button.close')"
         >
             <span aria-hidden="true">×</span>
         </button>
-
         <div class="explorer3d__eyebrow">JANO Explorer</div>
+        </div>
 
         <h2 class="explorer3d__title">{{ active.title }}</h2>
 

@@ -47,6 +47,13 @@
   }
 }
 
+@media (min-width: 1101px) and (max-width: 1500px) {
+  :host {
+    --entities-explorer-info-right: clamp(136px, 12vw, 196px);
+    --entities-explorer-info-width: min(308px, calc(100% - 56px));
+  }
+}
+
 @media (max-width: 980px) {
   :host {
     --entities-shell-top-offset: 72px;
@@ -168,9 +175,13 @@
     top: calc(var(--app-safe-top) + 12px);
     left: 50%;
     right: auto;
-    display: flex;
-    gap: 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    width: calc(100% - 24px);
     transform: translateX(-50%);
+    pointer-events: none;
   }
 
   .entities-explorer-layout:not(.is-list) .entities-mode-pill {
@@ -179,15 +190,37 @@
     left: auto;
     right: auto;
     margin: 0;
+    grid-column: 2;
+    justify-self: center;
+    pointer-events: auto;
+  }
+
+  .entities-hud__filters {
+    grid-column: 3;
+    justify-self: end;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+  }
+
+  .entities-hud__filters-icon {
+    width: 20px;
+    height: 20px;
+    overflow: visible;
+    fill: none;
+    stroke: rgba(247, 240, 233, 0.9);
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .entities-explorer-layout:not(.is-list) .entities-rail-handle {
-    position: absolute;
-    top: calc(var(--app-safe-top) + 78px);
-    left: calc(var(--app-safe-left) + 10px);
-    margin: 0;
-    width: 38px;
-    min-height: 112px;
+    display: none;
   }
 
   .entities-explorer-layout:not(.is-list).is-filters-collapsed .entities-rail-handle {
@@ -268,15 +301,12 @@
     z-index: 90;
   }
 
-  .entities-explorer-layout.is-mobile-portrait-totem {
-    --entities-mobile-control-top: calc(var(--app-safe-top) + 226px);
+  .entities-explorer-layout.is-mobile-portrait-totem:not(.is-info-collapsed) .entities-hud {
+    z-index: 97;
   }
 
-  .entities-explorer-layout.is-mobile-portrait-totem .entities-rail-handle {
-    top: var(--entities-mobile-control-top);
-    width: 34px;
-    min-height: 34px;
-    padding: 0;
+  .entities-explorer-layout.is-mobile-portrait-totem {
+    --entities-mobile-control-top: calc(var(--app-safe-top) + 226px);
   }
 
   .entities-explorer-layout.is-mobile-portrait-totem .entities-rail-handle__label {
@@ -285,6 +315,25 @@
 
   .entities-explorer-layout.is-mobile-portrait-totem:not(.is-info-collapsed) .entities-rail-handle {
     opacity: 0;
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem .entities-hud {
+    top: calc(var(--app-safe-top) + 12px);
+    width: calc(100% - 24px);
+    pointer-events: none;
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem .entities-hud__filters {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    border-radius: 999px;
+    pointer-events: auto;
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem .entities-rail-handle {
+    display: none;
   }
 
   .entities-explorer-layout.is-mobile-portrait-totem .entities-filter-rail {
@@ -306,10 +355,7 @@
 }
 
 @media (max-width: 640px) {
-  .entities-page {
-    padding-top: var(--space-4);
-    padding-bottom: var(--space-6);
-  }
+ 
 
   .entity-card {
     grid-template-columns: 1fr;

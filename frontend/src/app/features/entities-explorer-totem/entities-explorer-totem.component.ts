@@ -21,9 +21,16 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 type Entity = any;
-type TotemRole = 'previous' | 'active' | 'next';
+type TotemWindowRole = -1 | 0 | 1;
 
 type TotemCardStyle = Record<string, string>;
+
+type RibbonCard = {
+    item: Entity;
+    index: number;
+    role: TotemWindowRole;
+    active: boolean;
+};
 
 @Component({
     standalone: true,
@@ -85,6 +92,29 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         return this.settling();
     }
 
+    ribbonCards(): RibbonCard[] {
+        const total = this.items.length;
+        if (!total) {
+            return [];
+        }
+
+        return ([-1, 0, 1] as TotemWindowRole[])
+            .map((role) => {
+                const index = this.wrapIndex(this.activeIndex + role, total);
+                const item = this.items[index];
+
+                return item
+                    ? {
+                        item,
+                        index,
+                        role,
+                        active: role === 0,
+                    }
+                    : null;
+            })
+            .filter((card): card is RibbonCard => !!card);
+    }
+
     ngAfterViewInit(): void {
         if (!this.isBrowser) return;
         this.measureStage();
@@ -121,7 +151,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     }
 
     onActiveClick(): void {
-        if (this.isDragging || this.settling() || performance.now() < this.clickSuppressedUntil) {
+        if (this.infoOpen || this.isDragging || this.settling() || performance.now() < this.clickSuppressedUntil) {
             return;
         }
 
@@ -129,10 +159,16 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     }
 
     onPointerDown(event: PointerEvent): void {
+        if (this.infoOpen) {
+            this.cancelStageInteraction(event.pointerId);
+            return;
+        }
+
         if (!event.isPrimary || this.isInteractiveTarget(event.target)) {
             return;
         }
 
+        this.clearTimers();
         this.pointerId = event.pointerId;
         this.startY = event.clientY;
         this.dragOffset.set(0);
@@ -141,6 +177,11 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     }
 
     onPointerMove(event: PointerEvent): void {
+        if (this.infoOpen) {
+            this.cancelStageInteraction(event.pointerId);
+            return;
+        }
+
         if (this.pointerId !== event.pointerId || !this.dragging()) {
             return;
         }
@@ -152,6 +193,11 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     }
 
     onPointerUp(event: PointerEvent): void {
+        if (this.infoOpen) {
+            this.cancelStageInteraction(event.pointerId);
+            return;
+        }
+
         if (this.pointerId !== event.pointerId) {
             return;
         }
@@ -161,22 +207,32 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         const delta = this.dragOffset();
         const height = this.stageHeight() || 720;
         const threshold = Math.max(72, height * 0.12);
-
         if (delta <= -threshold && this.items.length > 1) {
-            this.animateToDirection(1);
+            this.animateToEditorialMove(1);
             return;
         }
 
         if (delta >= threshold && this.items.length > 1) {
-            this.animateToDirection(-1);
+            this.animateToEditorialMove(-1);
             return;
         }
 
-        this.dragOffset.set(0);
+        this.clearTimers();
+        this.settling.set(true);
         this.dragging.set(false);
+        this.dragOffset.set(0);
+        this.settleResetTimer = window.setTimeout(() => {
+            this.settling.set(false);
+            this.settleResetTimer = null;
+        }, 70);
     }
 
     onPointerCancel(event: PointerEvent): void {
+        if (this.infoOpen) {
+            this.cancelStageInteraction(event.pointerId);
+            return;
+        }
+
         if (this.pointerId !== event.pointerId) {
             return;
         }
@@ -186,55 +242,75 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         this.dragging.set(false);
     }
 
-    cardStyle(role: TotemRole): TotemCardStyle {
+    private cancelStageInteraction(pointerId?: number): void {
+        if (typeof pointerId === 'number' && this.stageRef.nativeElement.hasPointerCapture(pointerId)) {
+            this.stageRef.nativeElement.releasePointerCapture(pointerId);
+        }
+
+        this.pointerId = null;
+        this.dragOffset.set(0);
+        this.dragging.set(false);
+        this.settling.set(false);
+    }
+
+    cardStyle(role: TotemWindowRole): TotemCardStyle {
         const height = this.stageHeight() || 932;
         const drag = this.dragOffset();
-        const progress = Math.min(Math.abs(drag) / Math.max(height * 0.34, 1), 1);
-        const movingUp = drag < 0;
-        const movingDown = drag > 0;
+        const dragLimit = height * 0.32 || 180;
+        const normalizedDrag = Math.max(-dragLimit, Math.min(dragLimit, drag));
+        const dragProgress = Math.abs(normalizedDrag) / Math.max(dragLimit, 1);
+        const direction = normalizedDrag < 0 ? 1 : -1;
+        const tapeTravel = normalizedDrag;
 
-        let centerY = height * 0.52;
-        let scale = 1;
-        let opacity = 1;
-        let blur = 0;
-        let zIndex = 3;
+        const basePositions = {
+            [-1]: { top: -0.34, scale: 0.70, opacity: 0.34, blur: 1.1, x: -5, zIndex: 1 },
+            [0]: { top: 0, scale: 0.94, opacity: 1, blur: 0, x: 0, zIndex: 4 },
+            [1]: { top: 0.34, scale: 0.70, opacity: 0.36, blur: 1.0, x: 5, zIndex: 1 },
+        } as const;
 
-        if (role === 'previous') {
-            centerY = height * 0.105 + drag * 0.52;
-            scale = 0.68 + (movingDown ? progress * 0.2 : 0);
-            opacity = 0.3 + (movingDown ? progress * 0.34 : 0);
-            blur = movingDown ? 0.4 : 1.6;
-            zIndex = 1;
-        }
-
-        if (role === 'active') {
-            centerY = height * 0.515 + drag * 0.94;
-            scale = 1 - progress * 0.045;
-            opacity = 0.98 + (1 - progress) * 0.02;
-            blur = progress * 0.12;
-            zIndex = 3;
-        }
-
-        if (role === 'next') {
-            centerY = height * 0.918 + drag * 0.7;
-            scale = 0.72 + (movingUp ? progress * 0.18 : 0);
-            opacity = 0.4 + (movingUp ? progress * 0.34 : 0);
-            blur = movingUp ? 0.4 : 1.3;
-            zIndex = 2;
-        }
+        const base = basePositions[role];
+        const incoming = (role === -1 && direction === -1) || (role === 1 && direction === 1);
+        const neighborGain = incoming ? dragProgress * 0.16 : 0;
+        const neighborFade = incoming ? dragProgress * 0.18 : 0;
+        const activeFade = role === 0 ? dragProgress * 0.10 : 0;
+        const roleOffset = base.top * height;
 
         return {
-            top: `${centerY}px`,
-            transform: `translate3d(-50%, -50%, 0) scale(${scale})`,
-            opacity: `${opacity}`,
-            filter: `blur(${blur}px)`,
-            zIndex: `${zIndex}`,
+            top: `calc(50% + ${roleOffset.toFixed(2)}px)`,
+            transform: `translate3d(calc(-50% + ${base.x}px), calc(-50% + ${tapeTravel.toFixed(2)}px), 0) scale(${base.scale + neighborGain})`,
+            opacity: `${Math.max(0, Math.min(1, base.opacity + neighborFade - activeFade))}`,
+            filter: `blur(${Math.max(0, base.blur - neighborFade * 0.35)}px)`,
+            zIndex: `${base.zIndex + (role === 0 ? 3 : 0)}`,
         };
     }
 
     cleanWiki(text: string): string {
         if (!text) return '';
         return text.replace(/\[\[(.*?)\|(.*?)\]\]/g, '$2');
+    }
+
+    formatPeriod(item: Entity | null): string {
+        if (!item) return '';
+
+        const start = item.startYear ?? item.birthYear ?? null;
+        const end = item.endYear ?? item.deathYear ?? null;
+
+        if (start && end) return `${start}–${end}`;
+        if (start) return `${start}`;
+        if (end) return `${end}`;
+
+        return '';
+    }
+
+    formatPrimaryMeta(item: Entity | null): string {
+        if (!item) return '';
+
+        return item.authorName
+            ?? item.artistName
+            ?? item.sourceAuthor
+            ?? item.creator
+            ?? item.type
+            ?? '';
     }
 
     private resolveItem(offset: -1 | 1): Entity | null {
@@ -250,27 +326,39 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         return ((index % total) + total) % total;
     }
 
-    private animateToDirection(direction: -1 | 1): void {
+    private animateToEditorialMove(direction: -1 | 1): void {
         const height = this.stageHeight() || 932;
+        const transitDistance = height * 0.11;
+
         this.clearTimers();
         this.settling.set(true);
         this.dragging.set(false);
-        this.clickSuppressedUntil = performance.now() + 520;
-        this.dragOffset.set(direction === 1 ? -height * 0.48 : height * 0.48);
+        this.clickSuppressedUntil = performance.now() + 120;
+
+        this.dragOffset.set(direction === 1 ? -transitDistance : transitDistance);
 
         this.animationTimer = window.setTimeout(() => {
             this.activeIndexChange.emit(this.wrapIndex(this.activeIndex + direction, this.items.length));
-            this.dragOffset.set(direction === 1 ? height * 0.12 : -height * 0.12);
-            window.requestAnimationFrame(() => {
-                this.dragOffset.set(0);
-            });
+            this.dragOffset.set(0);
             this.animationTimer = null;
-        }, 180);
 
-        this.settleResetTimer = window.setTimeout(() => {
-            this.settling.set(false);
+            this.settleResetTimer = window.setTimeout(() => {
+                this.settling.set(false);
+                this.settleResetTimer = null;
+            }, 70);
+        }, 86);
+    }
+
+    private clearTimers(): void {
+        if (this.animationTimer !== null) {
+            window.clearTimeout(this.animationTimer);
+            this.animationTimer = null;
+        }
+
+        if (this.settleResetTimer !== null) {
+            window.clearTimeout(this.settleResetTimer);
             this.settleResetTimer = null;
-        }, 440);
+        }
     }
 
     private releasePointer(pointerId: number): void {
@@ -302,15 +390,4 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         this.stageHeight.set(stableHeight || 932);
     }
 
-    private clearTimers(): void {
-        if (this.animationTimer !== null) {
-            window.clearTimeout(this.animationTimer);
-            this.animationTimer = null;
-        }
-
-        if (this.settleResetTimer !== null) {
-            window.clearTimeout(this.settleResetTimer);
-            this.settleResetTimer = null;
-        }
-    }
 }

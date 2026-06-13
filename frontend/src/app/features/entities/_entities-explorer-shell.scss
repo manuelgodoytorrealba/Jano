@@ -106,6 +106,10 @@
   pointer-events: none;
 }
 
+.entities-hud__filters {
+  display: none;
+}
+
 .entities-rail-handle {
   position: absolute;
   top: calc(var(--entities-rail-top) + 3px);

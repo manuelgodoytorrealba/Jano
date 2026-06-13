@@ -31,6 +31,25 @@
           </button>
         </div>
       </div>
+
+      @if (!curatedDeckMode()) {
+      <button
+        type="button"
+        class="entities-hud__filters ds-panel"
+        [class.is-collapsed]="!filtersPanelOpen()"
+        (click)="toggleFiltersPanel()"
+        [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
+        [attr.aria-expanded]="filtersPanelOpen()">
+        <svg class="entities-hud__filters-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          <path d="M4 6h16" />
+          <circle cx="9" cy="6" r="1.9" />
+          <path d="M4 12h16" />
+          <circle cx="15" cy="12" r="1.9" />
+          <path d="M4 18h16" />
+          <circle cx="11" cy="18" r="1.9" />
+        </svg>
+      </button>
+      }
     </header>
 
     @if (!curatedDeckMode()) {

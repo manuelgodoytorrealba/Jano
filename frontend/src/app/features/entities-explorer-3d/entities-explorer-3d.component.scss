@@ -67,6 +67,10 @@
     z-index: 0;
 }
 
+.explorer3d.is-info-open .explorer3d__canvas {
+    pointer-events: none;
+}
+
 .explorer3d__canvas canvas {
     display: block;
     width: 100%;
@@ -138,6 +142,27 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
+.explorer3d__info-backdrop {
+    appearance: none;
+    -webkit-appearance: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: default;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.explorer3d__info-backdrop.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 .explorer3d__info {
     position: absolute;
     top: clamp(74px, 11svh, 104px);
@@ -155,7 +180,8 @@
     box-shadow:
         0 16px 34px rgba(0, 0, 0, 0.12),
         inset 0 1px 0 rgba(255, 255, 255, 0.14);
-    z-index: 3;
+    z-index: 4;
+    isolation: isolate;
     display: grid;
     gap: 9px;
     opacity: 1;
@@ -167,6 +193,28 @@
         visibility 180ms ease;
 }
 
+.explorer3d__info-head {
+    position: relative;
+    padding: 2px 96px 10px 0;
+    min-height: 68px;
+    z-index: 2;
+}
+
+.explorer3d__info-close-hit {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 104px;
+    height: 76px;
+    z-index: 4;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
 .explorer3d__info.is-hidden {
     opacity: 0;
     visibility: hidden;
@@ -176,31 +224,59 @@
 
 .explorer3d__info-close {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 30px;
-    height: 30px;
+    top: -2px;
+    right: -2px;
+    z-index: 5;
+    width: 60px;
+    height: 60px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 245, 237, 0.72);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07)),
+        rgba(22, 22, 30, 0.42);
+    color: rgba(255, 248, 241, 0.88);
+    touch-action: manipulation;
+    pointer-events: auto;
     cursor: pointer;
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
     transition:
         transform var(--transition-fast),
         background var(--transition-fast),
-        color var(--transition-fast);
+        color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.explorer3d__info-close span {
+    display: block;
+    font-size: 26px;
+    line-height: 1;
+    transform: translateY(-1px);
 }
 
 .explorer3d__info-close:hover {
     transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.12);
-    color: rgba(255, 252, 246, 0.92);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
+        rgba(22, 22, 30, 0.48);
+    color: rgba(255, 252, 246, 0.96);
+    box-shadow:
+        0 16px 30px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.explorer3d__info-close:focus-visible {
+    outline: 1px solid rgba(255, 247, 239, 0.38);
+    outline-offset: 3px;
 }
 
 .explorer3d__eyebrow {
+    position: relative;
+    z-index: 1;
     font-size: 10px;
     line-height: 1;
     letter-spacing: 0.18em;

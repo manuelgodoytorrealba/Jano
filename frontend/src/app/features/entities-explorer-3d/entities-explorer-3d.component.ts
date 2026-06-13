@@ -74,6 +74,7 @@ export class EntitiesExplorer3dComponent
 
     private animationFrameId = 0;
     private resizeObserver?: ResizeObserver;
+    private canvasInteractionsAttached = false;
 
     private cards: Card3D[] = [];
     private raycastTargets: THREE.Mesh[] = [];
@@ -124,6 +125,14 @@ export class EntitiesExplorer3dComponent
         if (changes['activeIndex'] && this.scene) {
             this.updateCardTargets();
         }
+
+        if (changes['infoOpen'] && this.renderer?.domElement) {
+            if (changes['infoOpen'].currentValue) {
+                this.cancelCanvasInteraction();
+            }
+
+            this.syncCanvasInteractionState();
+        }
     }
 
     ngOnDestroy(): void {
@@ -135,13 +144,7 @@ export class EntitiesExplorer3dComponent
 
         this.resizeObserver?.disconnect();
 
-        if (this.renderer?.domElement) {
-            this.renderer.domElement.removeEventListener('pointerdown', this.onPointerDown);
-            this.renderer.domElement.removeEventListener('pointermove', this.onPointerMove);
-            this.renderer.domElement.removeEventListener('pointerup', this.onPointerUp);
-            this.renderer.domElement.removeEventListener('pointerleave', this.onPointerLeave);
-            this.renderer.domElement.removeEventListener('wheel', this.onWheel as EventListener);
-        }
+        this.detachCanvasInteractions();
 
         this.disposeCards();
         this.renderer?.dispose();
@@ -157,6 +160,16 @@ export class EntitiesExplorer3dComponent
 
     closeInfoPanel(): void {
         this.requestInfoClose.emit();
+    }
+
+    private cancelCanvasInteraction(): void {
+        this.isDragging = false;
+        this.dragMoved = false;
+        this.dragAccumulatedX = 0;
+        this.wheelIntent = 0;
+        this.hoveredIndex = null;
+        this.renderer?.domElement?.classList.remove('is-dragging');
+        this.updateCardTargets();
     }
 
     cleanWiki(text: string): string {
@@ -177,6 +190,12 @@ export class EntitiesExplorer3dComponent
 
     @HostListener('window:keydown', ['$event'])
     onWindowKeyDown(event: KeyboardEvent): void {
+        if (event.key === 'Escape' && this.infoOpen) {
+            event.preventDefault();
+            this.closeInfoPanel();
+            return;
+        }
+
         if (!this.keyboardNavigationActive) return;
         if (this.shouldIgnoreKeyboardEvent(event)) return;
 
@@ -241,6 +260,24 @@ export class EntitiesExplorer3dComponent
 
         host.innerHTML = '';
         host.appendChild(this.renderer.domElement);
+        this.syncCanvasInteractionState();
+    }
+
+    private syncCanvasInteractionState(): void {
+        if (!this.renderer?.domElement) return;
+
+        this.renderer.domElement.style.pointerEvents = this.infoOpen ? 'none' : 'auto';
+
+        if (this.infoOpen) {
+            this.detachCanvasInteractions();
+            return;
+        }
+
+        this.attachCanvasInteractions();
+    }
+
+    private attachCanvasInteractions(): void {
+        if (!this.renderer?.domElement || this.canvasInteractionsAttached) return;
 
         this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown);
         this.renderer.domElement.addEventListener('pointermove', this.onPointerMove);
@@ -249,6 +286,18 @@ export class EntitiesExplorer3dComponent
         this.renderer.domElement.addEventListener('wheel', this.onWheel as EventListener, {
             passive: false,
         });
+        this.canvasInteractionsAttached = true;
+    }
+
+    private detachCanvasInteractions(): void {
+        if (!this.renderer?.domElement || !this.canvasInteractionsAttached) return;
+
+        this.renderer.domElement.removeEventListener('pointerdown', this.onPointerDown);
+        this.renderer.domElement.removeEventListener('pointermove', this.onPointerMove);
+        this.renderer.domElement.removeEventListener('pointerup', this.onPointerUp);
+        this.renderer.domElement.removeEventListener('pointerleave', this.onPointerLeave);
+        this.renderer.domElement.removeEventListener('wheel', this.onWheel as EventListener);
+        this.canvasInteractionsAttached = false;
     }
 
     private disposeCards(): void {
@@ -867,6 +916,11 @@ export class EntitiesExplorer3dComponent
     }
 
     private onWheel = (event: WheelEvent) => {
+        if (this.infoOpen) {
+            event.preventDefault();
+            return;
+        }
+
         event.preventDefault();
 
         if (!this.items.length) return;
@@ -879,6 +933,12 @@ export class EntitiesExplorer3dComponent
     };
 
     private onPointerDown = (event: PointerEvent) => {
+        if (this.infoOpen) {
+            event.preventDefault();
+            this.cancelCanvasInteraction();
+            return;
+        }
+
         this.activateExplorerFocus('pointer');
         this.isDragging = true;
         this.dragMoved = false;
@@ -888,6 +948,11 @@ export class EntitiesExplorer3dComponent
     };
 
     private onPointerMove = (event: PointerEvent) => {
+        if (this.infoOpen) {
+            this.cancelCanvasInteraction();
+            return;
+        }
+
         const hits = this.pickPlane(event.clientX, event.clientY);
         const first = hits[0];
         this.hoveredIndex = first ? (first.object.userData as CardUserData).index : null;
@@ -910,6 +975,11 @@ export class EntitiesExplorer3dComponent
     };
 
     private onPointerUp = (event: PointerEvent) => {
+        if (this.infoOpen) {
+            this.cancelCanvasInteraction();
+            return;
+        }
+
         if (!this.isDragging) return;
         this.isDragging = false;
         this.renderer.domElement.classList.remove('is-dragging');
@@ -934,6 +1004,11 @@ export class EntitiesExplorer3dComponent
     };
 
     private onPointerLeave = () => {
+        if (this.infoOpen) {
+            this.cancelCanvasInteraction();
+            return;
+        }
+
         this.isDragging = false;
         this.dragMoved = false;
         this.hoveredIndex = null;
