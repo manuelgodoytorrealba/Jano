@@ -140,6 +140,7 @@ describe('media.utils', () => {
       objectPosition: '18% 72%',
       imageTransform: 'scale(1.850)',
       transformOrigin: '18% 72%',
+      imageFilter: 'saturate(1.035) contrast(1.03) brightness(1.015)',
       focusX: 18,
       focusY: 72,
       zoom: 1.85,

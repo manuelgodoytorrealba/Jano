@@ -56,14 +56,12 @@
                     [style.opacity]="cardStates()[$index].opacity"
                     (click)="onCardClick(item)">
                     <div class="entity-deck__media">
-                        <img
-                            [src]="item.image"
+                        <app-jano-media
+                            [media]="deckMedia(item)"
                             [alt]="item.title"
-                            [attr.loading]="imgLoading($index)"
-                            [attr.fetchpriority]="imgFetchPriority($index)"
-                            [attr.decoding]="imgDecoding($index)"
-                            [attr.width]="imgWidth(item)"
-                            [attr.height]="imgHeight(item)"
+                            usage="card"
+                            [lazy]="imgLoading($index) === 'lazy'"
+                            [priority]="imgFetchPriority($index)"
                         />
                     </div>
 

@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { I18nService } from '../../../core/i18n/i18n.service';
+import { JanoMediaComponent } from '../../media/jano-media.component';
 
 import { DEFAULT_BACKGROUND_IMAGE_URL } from '../../../core/app-appearance.service';
 import { DeckItem, DeckRailAction } from './entity-deck.types';
@@ -25,6 +26,7 @@ type MobileDeckVariant = 'default' | 'editorial';
 @Component({
     standalone: true,
     selector: 'app-entity-deck',
+    imports: [JanoMediaComponent],
     templateUrl: './entity-deck.component.html',
     styleUrl: './entity-deck.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -153,16 +155,12 @@ export class EntityDeckComponent {
         return index === this.activeIndex() ? 'high' : 'low';
     }
 
-    imgDecoding(index: number): 'sync' | 'async' {
-        return index === this.activeIndex() ? 'sync' : 'async';
-    }
-
-    imgWidth(item: DeckItem): number | null {
-        return item.imageWidth ?? null;
-    }
-
-    imgHeight(item: DeckItem): number | null {
-        return item.imageHeight ?? null;
+    deckMedia(item: DeckItem): { url: string; width?: number; height?: number } {
+        return {
+            url: item.image,
+            width: item.imageWidth ?? undefined,
+            height: item.imageHeight ?? undefined,
+        };
     }
 
     isMobileEditorial(): boolean {

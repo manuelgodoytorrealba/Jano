@@ -164,6 +164,10 @@
     inset: 0;
   }
 
+  .entities-explorer-loading--desktop {
+    display: none;
+  }
+
   .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card {
     width: min(76vw, 324px);
     height: min(46svh, 430px);
@@ -183,6 +187,7 @@
 
   .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card--active {
     top: 50%;
+    height: min(52.9svh, 494.5px);
     opacity: 0.86;
     transform: translate3d(-50%, -50%, 0) scale(1.19);
   }

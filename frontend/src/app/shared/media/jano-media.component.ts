@@ -70,6 +70,10 @@ export class JanoMediaComponent {
     return this.mediaPresentation.transformOrigin;
   }
 
+  get imageFilter(): string {
+    return this.mediaPresentation.imageFilter;
+  }
+
   get loadingAttr(): 'lazy' | 'eager' {
     return this.lazy ? 'lazy' : 'eager';
   }

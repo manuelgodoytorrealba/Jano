@@ -89,8 +89,8 @@ export class EntitiesListComponent {
 
   private readonly limit = 24;
   private readonly contextualFilterKeys = ['movement', 'period', 'institution', 'nationality'] as const;
-  private readonly viewportWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 0);
-  private readonly viewportHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 0);
+  readonly viewportWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 0);
+  readonly viewportHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 0);
 
   private filterSupportForType(type: string | null | undefined): FilterSupport {
     return FILTER_SUPPORT_BY_TYPE[(type ?? '').trim().toUpperCase()] ?? {

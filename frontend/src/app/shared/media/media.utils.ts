@@ -129,6 +129,7 @@ export type MediaPresentation = {
   objectPosition: string;
   imageTransform: string;
   transformOrigin: string;
+  imageFilter: string;
   focusX: number;
   focusY: number;
   zoom: number;
@@ -350,10 +351,29 @@ export function resolveMediaPresentation(
     objectPosition: `${focusX}% ${focusY}%`,
     imageTransform: zoom <= 1 ? 'scale(1)' : `scale(${zoom.toFixed(3)})`,
     transformOrigin: `${focusX}% ${focusY}%`,
+    imageFilter: editorialImageFilter(usage),
     focusX,
     focusY,
     zoom,
   };
+}
+
+export function editorialImageFilter(usage: MediaUsage = 'card'): string {
+  switch (usage) {
+    case 'hero':
+      return 'saturate(1.04) contrast(1.035) brightness(1.02)';
+    case 'detail':
+    case 'gallery':
+      return 'saturate(1.035) contrast(1.03) brightness(1.015)';
+    case 'thumbnail':
+      return 'saturate(1.025) contrast(1.02) brightness(1.01)';
+    case 'explorer3d':
+      return 'saturate(1.03) contrast(1.025) brightness(1.015)';
+    case 'primary':
+    case 'card':
+    default:
+      return 'saturate(1.035) contrast(1.03) brightness(1.015)';
+  }
 }
 
 function selectResolvedMediaItem(

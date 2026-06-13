@@ -610,6 +610,26 @@
 
     @if (viewMode === 'explore') {
     <div class="entities-explorer-stage">
+      @if (viewportWidth() > 640) {
+      <div class="entities-explorer-loading entities-explorer-loading--desktop" aria-hidden="true">
+        <div class="entities-explorer-loading__main">
+          <div class="entities-explorer-loading__hud">
+            <div class="entities-explorer-loading__pill"></div>
+            <div class="entities-explorer-loading__mode">
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+
+          <div class="entities-explorer-loading__hero">
+            <div class="entities-explorer-loading__card entities-explorer-loading__card--active">
+              <div class="entities-explorer-loading__art"></div>
+              <div class="entities-explorer-loading__card-foot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      } @else {
       <div class="entities-explorer-loading" aria-hidden="true">
         <div class="entities-explorer-loading__ribbon">
           <div class="entities-explorer-loading__card entities-explorer-loading__card--prev">
@@ -625,6 +645,7 @@
           </div>
         </div>
       </div>
+      }
     </div>
     } @else {
     <div class="entities-stage-shell entities-stage-shell--list">

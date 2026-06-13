@@ -66,6 +66,7 @@
 }
 
 .explorer-totem__card--active {
+    height: min(52.9svh, 494.5px);
     cursor: pointer;
     z-index: 3;
 }
