@@ -611,24 +611,19 @@
     @if (viewMode === 'explore') {
     <div class="entities-explorer-stage">
       <div class="entities-explorer-loading" aria-hidden="true">
-        <div class="entities-explorer-loading__plane entities-explorer-loading__plane--rear">
-          <div class="entities-explorer-loading__media"></div>
-        </div>
-        <div class="entities-explorer-loading__plane entities-explorer-loading__plane--mid">
-          <div class="entities-explorer-loading__media"></div>
-        </div>
-        <div class="entities-explorer-loading__plane entities-explorer-loading__plane--front">
-          <div class="entities-explorer-loading__media"></div>
-        </div>
+        <div class="entities-explorer-loading__ribbon">
+          <div class="entities-explorer-loading__card entities-explorer-loading__card--prev">
+            <div class="entities-explorer-loading__art"></div>
+          </div>
 
-        <aside class="entities-explorer-loading__info ds-panel">
-          <div class="skeleton-box skeleton-box--eyebrow"></div>
-          <div class="skeleton-box skeleton-box--title"></div>
-          <div class="skeleton-box skeleton-box--line skeleton-box--w1"></div>
-          <div class="skeleton-box skeleton-box--line skeleton-box--w2"></div>
-          <div class="skeleton-box skeleton-box--line skeleton-box--w3"></div>
-          <div class="skeleton-box skeleton-box--cta"></div>
-        </aside>
+          <div class="entities-explorer-loading__card entities-explorer-loading__card--active">
+            <div class="entities-explorer-loading__art"></div>
+          </div>
+
+          <div class="entities-explorer-loading__card entities-explorer-loading__card--next">
+            <div class="entities-explorer-loading__art"></div>
+          </div>
+        </div>
       </div>
     </div>
     } @else {

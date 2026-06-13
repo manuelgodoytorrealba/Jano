@@ -59,14 +59,18 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     private resizeObserver?: ResizeObserver;
     private pointerId: number | null = null;
     private startY = 0;
+    private pendingDragOffset = 0;
+    private dragFrame: number | null = null;
     private clickSuppressedUntil = 0;
     private animationTimer: number | null = null;
     private settleResetTimer: number | null = null;
+    private panelUpdateTimer: number | null = null;
 
     private readonly stageHeight = signal(0);
     private readonly dragOffset = signal(0);
     private readonly dragging = signal(false);
     private readonly settling = signal(false);
+    private readonly panelIndex = signal(0);
 
     constructor(@Inject(PLATFORM_ID) platformId: object) {
         this.isBrowser = isPlatformBrowser(platformId);
@@ -74,6 +78,10 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
     get activeItem(): Entity | null {
         return this.items[this.activeIndex] ?? null;
+    }
+
+    get panelItem(): Entity | null {
+        return this.items[this.panelIndex()] ?? this.activeItem;
     }
 
     get previousItem(): Entity | null {
@@ -123,15 +131,22 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!this.isBrowser) return;
-        if (changes['items'] || changes['activeIndex']) {
+        if (changes['items']) {
             this.dragOffset.set(0);
             this.settling.set(false);
+            this.syncPanelIndex(false);
+            return;
+        }
+
+        if (changes['activeIndex']) {
+            this.dragOffset.set(0);
+            this.syncPanelIndex(this.isBrowser && this.settling());
         }
     }
 
     ngOnDestroy(): void {
         this.clearTimers();
+        this.cancelDragFrame();
         this.resizeObserver?.disconnect();
     }
 
@@ -145,6 +160,13 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
     openActive(): void {
         const item = this.activeItem;
+        if (item?.slug) {
+            this.openEntity.emit(item.slug);
+        }
+    }
+
+    openPanelItem(): void {
+        const item = this.panelItem;
         if (item?.slug) {
             this.openEntity.emit(item.slug);
         }
@@ -169,8 +191,11 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         }
 
         this.clearTimers();
+        this.cancelDragFrame();
+        this.syncPanelIndex(false);
         this.pointerId = event.pointerId;
         this.startY = event.clientY;
+        this.pendingDragOffset = 0;
         this.dragOffset.set(0);
         this.dragging.set(true);
         this.stageRef.nativeElement.setPointerCapture(event.pointerId);
@@ -188,7 +213,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
         const limit = this.stageHeight() * 0.32 || 180;
         const delta = Math.max(-limit, Math.min(limit, event.clientY - this.startY));
-        this.dragOffset.set(delta);
+        this.scheduleDragOffset(delta);
         event.preventDefault();
     }
 
@@ -203,17 +228,18 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         }
 
         this.releasePointer(event.pointerId);
+        this.flushDragOffset();
 
         const delta = this.dragOffset();
         const height = this.stageHeight() || 720;
         const threshold = Math.max(72, height * 0.12);
         if (delta <= -threshold && this.items.length > 1) {
-            this.animateToEditorialMove(1);
+            this.animateToEditorialMove(1, Math.abs(delta), threshold);
             return;
         }
 
         if (delta >= threshold && this.items.length > 1) {
-            this.animateToEditorialMove(-1);
+            this.animateToEditorialMove(-1, Math.abs(delta), threshold);
             return;
         }
 
@@ -238,6 +264,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         }
 
         this.releasePointer(event.pointerId);
+        this.cancelDragFrame();
         this.dragOffset.set(0);
         this.dragging.set(false);
     }
@@ -248,6 +275,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         }
 
         this.pointerId = null;
+        this.cancelDragFrame();
         this.dragOffset.set(0);
         this.dragging.set(false);
         this.settling.set(false);
@@ -265,26 +293,30 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
         const basePositions = {
             [-1]: { top: -0.34, scale: 0.70, opacity: 0.34, blur: 1.1, x: -5, zIndex: 1 },
-            [0]: { top: 0, scale: 0.94, opacity: 1, blur: 0, x: 0, zIndex: 4 },
+            [0]: { top: 0, scale: 1.19, opacity: 1, blur: 0, x: 0, zIndex: 4 },
             [1]: { top: 0.34, scale: 0.70, opacity: 0.36, blur: 1.0, x: 5, zIndex: 1 },
         } as const;
 
         const base = basePositions[role];
         const incoming = (role === -1 && direction === -1) || (role === 1 && direction === 1);
-        const neighborGain = incoming ? emphasisProgress * 0.23 : 0;
-        const neighborFade = incoming ? emphasisProgress * 0.26 : 0;
-        const neighborClarity = incoming ? emphasisProgress * 0.65 : 0;
-        const activeScale = role === 0 ? emphasisProgress * 0.07 : 0;
-        const activeFade = role === 0 ? emphasisProgress * 0.16 : 0;
-        const activeSoftness = role === 0 ? emphasisProgress * 0.28 : 0;
+        const incomingFocus = incoming ? Math.min(1, emphasisProgress * 1.18) : 0;
+        const neighborGain = incomingFocus * 0.28;
+        const neighborFade = incomingFocus * 0.38;
+        const neighborClarity = incomingFocus * 0.88;
+        const activeScale = role === 0 ? emphasisProgress * 0.10 : 0;
+        const activeFade = role === 0 ? emphasisProgress * 0.24 : 0;
+        const activeSoftness = role === 0 ? emphasisProgress * 0.36 : 0;
         const roleOffset = base.top * height;
+        const blur = this.dragging()
+            ? base.blur
+            : Math.max(0, base.blur - neighborClarity + activeSoftness);
 
         return {
             top: `calc(50% + ${roleOffset.toFixed(2)}px)`,
             transform: `translate3d(calc(-50% + ${base.x}px), calc(-50% + ${tapeTravel.toFixed(2)}px), 0) scale(${base.scale + neighborGain - activeScale})`,
             opacity: `${Math.max(0, Math.min(1, base.opacity + neighborFade - activeFade))}`,
-            filter: `blur(${Math.max(0, base.blur - neighborClarity + activeSoftness)}px)`,
-            zIndex: `${base.zIndex + (role === 0 ? 3 : 0)}`,
+            filter: `blur(${blur}px)`,
+            zIndex: `${base.zIndex + (role === 0 ? 3 : incomingFocus > 0.62 ? 4 : 0)}`,
         };
     }
 
@@ -330,16 +362,21 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         return ((index % total) + total) % total;
     }
 
-    private animateToEditorialMove(direction: -1 | 1): void {
+    private animateToEditorialMove(direction: -1 | 1, gestureMagnitude: number, threshold: number): void {
         const height = this.stageHeight() || 932;
         const transitDistance = height * 0.11;
+        const currentOffset = this.dragOffset();
+        const currentMagnitude = Math.abs(currentOffset);
+        const settleMagnitude = Math.max(currentMagnitude, transitDistance);
+        const overThresholdRatio = gestureMagnitude / Math.max(threshold, 1);
+        const commitDelay = overThresholdRatio < 1.16 ? 118 : 86;
 
         this.clearTimers();
         this.settling.set(true);
         this.dragging.set(false);
-        this.clickSuppressedUntil = performance.now() + 120;
+        this.clickSuppressedUntil = performance.now() + commitDelay + 34;
 
-        this.dragOffset.set(direction === 1 ? -transitDistance : transitDistance);
+        this.dragOffset.set(direction === 1 ? -settleMagnitude : settleMagnitude);
 
         this.animationTimer = window.setTimeout(() => {
             this.activeIndexChange.emit(this.wrapIndex(this.activeIndex + direction, this.items.length));
@@ -349,8 +386,31 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
             this.settleResetTimer = window.setTimeout(() => {
                 this.settling.set(false);
                 this.settleResetTimer = null;
-            }, 70);
-        }, 86);
+            }, 56);
+        }, commitDelay);
+    }
+
+    private syncPanelIndex(defer: boolean): void {
+        if (!this.items.length) {
+            this.panelIndex.set(0);
+            return;
+        }
+
+        if (this.panelUpdateTimer !== null) {
+            window.clearTimeout(this.panelUpdateTimer);
+            this.panelUpdateTimer = null;
+        }
+
+        const nextIndex = this.wrapIndex(this.activeIndex, this.items.length);
+        if (!defer || !this.isBrowser) {
+            this.panelIndex.set(nextIndex);
+            return;
+        }
+
+        this.panelUpdateTimer = window.setTimeout(() => {
+            this.panelIndex.set(nextIndex);
+            this.panelUpdateTimer = null;
+        }, 60);
     }
 
     private clearTimers(): void {
@@ -362,6 +422,39 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         if (this.settleResetTimer !== null) {
             window.clearTimeout(this.settleResetTimer);
             this.settleResetTimer = null;
+        }
+
+        if (this.panelUpdateTimer !== null) {
+            window.clearTimeout(this.panelUpdateTimer);
+            this.panelUpdateTimer = null;
+        }
+    }
+
+    private scheduleDragOffset(offset: number): void {
+        this.pendingDragOffset = offset;
+        if (this.dragFrame !== null) {
+            return;
+        }
+
+        this.dragFrame = window.requestAnimationFrame(() => {
+            this.dragFrame = null;
+            this.dragOffset.set(this.pendingDragOffset);
+        });
+    }
+
+    private flushDragOffset(): void {
+        if (this.dragFrame !== null) {
+            window.cancelAnimationFrame(this.dragFrame);
+            this.dragFrame = null;
+        }
+
+        this.dragOffset.set(this.pendingDragOffset);
+    }
+
+    private cancelDragFrame(): void {
+        if (this.dragFrame !== null) {
+            window.cancelAnimationFrame(this.dragFrame);
+            this.dragFrame = null;
         }
     }
 
@@ -377,11 +470,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
             return false;
         }
 
-        if (target.closest('.explorer-totem__card--active')) {
-            return false;
-        }
-
-        return !!target.closest('button, a, input, textarea, select, option, [role=button], [contenteditable=true]');
+        return !!target.closest('button, a, input, textarea, select, option, [contenteditable=true]');
     }
 
     private measureStage(): void {

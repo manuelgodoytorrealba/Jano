@@ -37,8 +37,9 @@
                 @if (card.active) {
                 <button
                     class="explorer-totem__info-toggle"
-                    [class.is-visible]="!infoOpen"
+                    [class.is-visible]="!infoOpen && !isDragging && !isSettling"
                     type="button"
+                    (pointerdown)="$event.stopPropagation()"
                     (click)="openInfoPanel(); $event.stopPropagation()"
                     [attr.aria-label]="i18n.t('explorer3d.showInfo') + ' ' + card.item.title"
                 >
@@ -50,7 +51,7 @@
         }
     </div>
 
-    @if (activeItem; as active) {
+    @if (panelItem; as active) {
     <aside
         class="explorer-totem__info"
         [class.is-hidden]="!infoOpen"
@@ -86,7 +87,7 @@
             <p class="explorer-totem__summary">{{ cleanWiki(active.summary) }}</p>
             }
 
-            <button class="ds-btn explorer-totem__cta" type="button" (click)="openActive()">
+            <button class="ds-btn explorer-totem__cta" type="button" (click)="openPanelItem()">
                 {{ i18n.t('entity.open') }}
             </button>
         </div>
