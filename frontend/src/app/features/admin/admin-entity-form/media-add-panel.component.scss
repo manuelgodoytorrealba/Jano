@@ -215,6 +215,19 @@
   border-color: #111;
 }
 
+.btn.primary,
+.btn.primary strong,
+.btn.primary span {
+  color: #fff;
+}
+
+.btn.primary:disabled {
+  background: #2a2a2a;
+  border-color: #2a2a2a;
+  color: rgba(255, 255, 255, 0.78);
+  opacity: 1;
+}
+
 .btn.ghost {
   background: rgba(255,255,255,.9);
 }

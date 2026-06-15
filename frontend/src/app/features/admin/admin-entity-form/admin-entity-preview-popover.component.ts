@@ -5,6 +5,7 @@ import { PublicEntityPreview } from '../../../core/api/entities.models';
   standalone: true,
   selector: 'app-admin-entity-preview-popover',
   templateUrl: './admin-entity-preview-popover.component.html',
+  styleUrls: ['./admin-entity-preview-popover.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminEntityPreviewPopoverComponent {

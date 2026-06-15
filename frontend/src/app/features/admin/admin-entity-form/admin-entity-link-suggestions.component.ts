@@ -5,6 +5,7 @@ import { AdminEntitySearchListItem } from '../../../core/api/admin-entities.api'
   standalone: true,
   selector: 'app-admin-entity-link-suggestions',
   templateUrl: './admin-entity-link-suggestions.component.html',
+  styleUrls: ['./admin-entity-link-suggestions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminEntityLinkSuggestionsComponent {

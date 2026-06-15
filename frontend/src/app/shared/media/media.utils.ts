@@ -488,12 +488,37 @@ function normalizeMediaUrlValue(value: string | null | undefined): string | null
     return null;
   }
 
-  if (/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?\/uploads\//i.test(trimmed)) {
-    const normalized = trimmed.replace(/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?/i, '');
-    return normalized.startsWith('/') ? normalized : `/${normalized}`;
+  const absoluteUrlMatch = /^https?:\/\//i.test(trimmed);
+  if (absoluteUrlMatch) {
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.pathname.startsWith('/uploads/') && isLocalUploadHost(parsed.hostname)) {
+        return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+      }
+    } catch {
+      return trimmed;
+    }
   }
 
   return trimmed;
+}
+
+function isLocalUploadHost(hostname: string): boolean {
+  const normalized = hostname.trim().toLowerCase();
+  if (!normalized) {
+    return false;
+  }
+
+  if (normalized === 'localhost' || normalized === '127.0.0.1' || normalized === '0.0.0.0') {
+    return true;
+  }
+
+  if (normalized.startsWith('192.168.') || normalized.startsWith('10.')) {
+    return true;
+  }
+
+  const private172 = /^172\.(1[6-9]|2\d|3[0-1])\./.test(normalized);
+  return private172;
 }
 
 function exactRoleForUsage(usage: Exclude<MediaUsage, 'gallery'>): string {

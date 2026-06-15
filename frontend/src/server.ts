@@ -113,8 +113,8 @@ function hasFingerprint(assetPath: string): boolean {
 
 app.use(['/api', '/uploads'], express.raw({ type: '*/*', limit: '25mb' }));
 
-app.use(['/api', '/uploads'], async (req, res, next) => {
-  try {
+app.use(['/api', '/uploads'], (req, res, next) => {
+  void (async () => {
     const targetUrl = `${backendOrigin}${req.originalUrl}`;
     const headers = new Headers();
 
@@ -152,29 +152,25 @@ app.use(['/api', '/uploads'], async (req, res, next) => {
 
     const body = Buffer.from(await upstream.arrayBuffer());
     res.send(body);
-  } catch (error) {
-    next(error);
-  }
+  })().catch(next);
 });
 
-app.use(async (req, res, next) => {
+app.use((req, res, next) => {
   if (isPublicSsrPath(req.path)) {
     next();
     return;
   }
 
-  try {
-    const session = await validateBetaSession(req);
+  void validateBetaSession(req)
+    .then((session) => {
+      if (session === 'ok') {
+        next();
+        return;
+      }
 
-    if (session === 'ok') {
-      next();
-      return;
-    }
-
-    res.redirect(302, loginRedirectFor(req));
-  } catch (error) {
-    next(error);
-  }
+      res.redirect(302, loginRedirectFor(req));
+    })
+    .catch(next);
 });
 
 /**

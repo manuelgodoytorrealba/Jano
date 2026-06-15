@@ -28,6 +28,13 @@ export interface InitializedLoadedGraphState extends PreparedGraphState {
 }
 
 export function toGraphData(response: GraphResponseDto): GraphData {
+  const entityTypes = normalizeGraphFilterValues(
+    response.filters?.entityTypes ?? response.nodes.map((node) => node.type),
+  );
+  const relationTypes = normalizeGraphFilterValues(
+    response.filters?.relationTypes ?? response.edges.map((edge) => edge.relationType),
+  );
+
   return normalizeGraphData({
     centerId: response.centerId,
     nodes: response.nodes.map((node) => ({ ...node, degree: 0 })),
@@ -39,9 +46,8 @@ export function toGraphData(response: GraphResponseDto): GraphData {
       parallelIndex: 0,
       parallelTotal: 1,
     })),
-    entityTypes: response.filters?.entityTypes ?? Array.from(new Set(response.nodes.map((node) => node.type))),
-    relationTypes:
-      response.filters?.relationTypes ?? Array.from(new Set(response.edges.map((edge) => edge.relationType))),
+    entityTypes,
+    relationTypes,
   });
 }
 
@@ -114,6 +120,16 @@ export function resolveGraphWarmupPasses(graph: GraphData, passes?: number): num
     : nodeCount >= 20 || edgeCount >= 28
       ? 34
       : 36;
+}
+
+function normalizeGraphFilterValues(values: Array<string | null | undefined>): string[] {
+  return Array.from(
+    new Set(
+      values
+        .map((value) => `${value ?? ''}`.trim())
+        .filter((value) => value.length > 0),
+    ),
+  );
 }
 
 export function warmupPreparedGraphLayout(

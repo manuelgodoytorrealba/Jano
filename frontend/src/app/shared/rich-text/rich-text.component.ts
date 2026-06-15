@@ -185,14 +185,18 @@ function parseBlocks(input: string): Block[] {
       continue;
     }
 
-    const headingMatch = /^(#{1,3})\s+(.*)$/.exec(line);
+    const headingMatch = /^(#{1,3})\s*(.+?)\s*#*\s*$/.exec(line);
     if (headingMatch) {
       flushParagraph();
       const level = headingMatch[1].length as 1 | 2 | 3;
+      const headingText = (headingMatch[2] ?? '').trim();
+      if (!headingText) {
+        continue;
+      }
       blocks.push({
         kind: 'heading',
         level,
-        tokens: parseWikilinks((headingMatch[2] ?? '').trim()),
+        tokens: parseWikilinks(headingText),
       });
       continue;
     }
@@ -275,7 +279,7 @@ function parseWikilinks(input: string): InlineToken[] {
 
 function parseInlineMarks(input: string): InlineToken[] {
   const tokens: InlineToken[] = [];
-  const re = /(\*\*([^*]+)\*\*)|(\*([^*]+)\*)/g;
+  const re = /(\*\*([^*]+)\*\*)|(__([^_]+)__)|(\*([^*]+)\*)|(_([^_]+)_)/g;
 
   let last = 0;
   let match: RegExpExecArray | null;
@@ -285,8 +289,8 @@ function parseInlineMarks(input: string): InlineToken[] {
       tokens.push({ kind: 'text', value: input.slice(last, match.index) });
     }
 
-    const strongValue = (match[2] ?? '').trim();
-    const emValue = (match[4] ?? '').trim();
+    const strongValue = (match[2] ?? match[4] ?? '').trim();
+    const emValue = (match[6] ?? match[8] ?? '').trim();
 
     if (strongValue) {
       tokens.push({ kind: 'strong', value: strongValue });

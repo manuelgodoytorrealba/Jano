@@ -97,9 +97,14 @@ select {
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, .10);
   background: rgba(255, 255, 255, .76);
+  color: #15120f;
   padding: 0 12px;
   font: inherit;
   outline: none;
+}
+
+select option {
+  color: #15120f;
 }
 
 .filters-actions {

@@ -5,6 +5,7 @@ import { AdminEntitySidebarSectionItem, DashboardSectionId } from './admin-entit
   standalone: true,
   selector: 'app-admin-entity-sidebar',
   templateUrl: './admin-entity-sidebar.component.html',
+  styleUrls: ['./admin-entity-sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminEntitySidebarComponent {

@@ -609,7 +609,12 @@
       padding: 12px;
       font: inherit;
       background: #fff;
+      color: #15120f;
       outline: none;
+    }
+
+    select option {
+      color: #15120f;
     }
 
     textarea {
@@ -644,6 +649,19 @@
       background: #111;
       color: #fff;
       border-color: #111;
+    }
+
+    .btn.primary,
+    .btn.primary strong,
+    .btn.primary span {
+      color: #fff;
+    }
+
+    .btn.primary:disabled {
+      background: #2a2a2a;
+      border-color: #2a2a2a;
+      color: rgba(255, 255, 255, 0.78);
+      opacity: 1;
     }
 
     .error-box {
@@ -1025,16 +1043,18 @@
       gap: 14px;
     }
 
-    .relation-target {
+.relation-target {
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 600;
+  color: #111;
 }
 
 .relation-arrow {
   font-size: 14px;
   opacity: 0.7;
+  color: #666;
 }
 
 .relation-arrow.incoming {
@@ -1051,6 +1071,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  color: #111;
 }
 
 .relations-list {
@@ -1099,6 +1120,14 @@
   background: rgba(0,0,0,.03);
 }
 
+.relation-type {
+  color: #666;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
     .search-results {
       display: grid;
       gap: 8px;
@@ -1115,6 +1144,7 @@
       text-align: left;
       border: 1px solid rgba(0,0,0,.08);
       background: #fff;
+      color: #111;
       border-radius: 10px;
       padding: 10px 12px;
       cursor: pointer;
@@ -1122,9 +1152,20 @@
       gap: 4px;
     }
 
+    .search-item strong {
+      color: #111;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
     .search-item span {
       font-size: 12px;
       color: #666;
+    }
+
+    .search-item:hover {
+      background: rgba(0,0,0,.03);
+      border-color: rgba(0,0,0,.14);
     }
 
     .relations-actions {
@@ -1544,9 +1585,7 @@
 :host-context([data-theme="dark"]) .admin-dashboard-panel h2,
 :host-context([data-theme="dark"]) .admin-dashboard-panel h3,
 :host-context([data-theme="dark"]) .admin-dashboard-panel h4,
-:host-context([data-theme="dark"]) .admin-sidebar__title,
 :host-context([data-theme="dark"]) .preview-title,
-:host-context([data-theme="dark"]) .field span,
 :host-context([data-theme="dark"]) .muted,
 :host-context([data-theme="dark"]) .hint,
 :host-context([data-theme="dark"]) .preview-summary,
@@ -1560,13 +1599,32 @@
 :host-context([data-theme="dark"]) input,
 :host-context([data-theme="dark"]) select,
 :host-context([data-theme="dark"]) textarea,
-:host-context([data-theme="dark"]) .btn,
 :host-context([data-theme="dark"]) .admin-sidebar__control,
-:host-context([data-theme="dark"]) .admin-sidebar__action--ghost,
 :host-context([data-theme="dark"]) .translation-editor input,
 :host-context([data-theme="dark"]) .translation-editor textarea,
 :host-context([data-theme="dark"]) .translation-editor select {
   color: #201d19;
+}
+
+:host-context([data-theme="dark"]) .admin-sidebar__title,
+:host-context([data-theme="dark"]) .admin-sidebar__summary,
+:host-context([data-theme="dark"]) .admin-sidebar__section-title,
+:host-context([data-theme="dark"]) .admin-sidebar__action--ghost,
+:host-context([data-theme="dark"]) .field span,
+:host-context([data-theme="dark"]) .relation-card,
+:host-context([data-theme="dark"]) .search-item,
+:host-context([data-theme="dark"]) .search-item strong,
+:host-context([data-theme="dark"]) .search-item span {
+  color: #201d19;
+}
+
+:host-context([data-theme="dark"]) .btn.primary,
+:host-context([data-theme="dark"]) .btn.primary:visited,
+:host-context([data-theme="dark"]) .admin-sidebar__action--primary,
+:host-context([data-theme="dark"]) .admin-sidebar__action--primary:visited,
+:host-context([data-theme="dark"]) .relations-actions .btn,
+:host-context([data-theme="dark"]) .relations-actions .btn:visited {
+  color: #fff;
 }
 
 :host-context([data-theme="dark"]) input::placeholder,

@@ -195,7 +195,17 @@ export class EntitiesService {
   }
 
   private relationKey(relation: { type?: string | null; relationType?: { key?: string | null } | null }): string {
-    return relation.relationType?.key ?? relation.type ?? 'RELATED_TO';
+    const relationTypeKey = relation.relationType?.key?.trim();
+    if (relationTypeKey) {
+      return relationTypeKey;
+    }
+
+    const relationType = relation.type?.trim();
+    if (relationType) {
+      return relationType;
+    }
+
+    return 'RELATED_TO';
   }
 
   private relationDisplayLabel(relation: { type?: string | null; relationType?: { label?: string | null; key?: string | null; translations?: any[] | null } | null }, locale?: string): string {

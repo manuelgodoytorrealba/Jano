@@ -54,6 +54,7 @@ const args = [
   'serve',
   '--proxy-config',
   'proxy.conf.js',
+  '--no-hmr',
 ];
 
 if (mode === 'host' || mode === 'mobile') {

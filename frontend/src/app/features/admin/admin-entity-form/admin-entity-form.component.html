@@ -39,7 +39,7 @@
         </div>
 
         <div class="detail-live-embed">
-          @if (isActiveSection('section-preview') && previewEntityModel; as previewEntity) {
+          @if (isActiveSection('section-preview') && (!isEdit || initialEntityHydrated) && previewEntityModel; as previewEntity) {
           <app-entity-detail-view
             [entity]="previewEntity"
             [showActions]="false"

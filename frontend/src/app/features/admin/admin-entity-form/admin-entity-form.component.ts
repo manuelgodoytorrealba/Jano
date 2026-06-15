@@ -323,6 +323,7 @@ previewContainer?: ElementRef<HTMLElement>;
 
   saving = false;
   loading = false;
+  initialEntityHydrated = false;
   errorMessage = '';
   loadError = '';
 
@@ -404,6 +405,7 @@ previewContainer?: ElementRef<HTMLElement>;
       });
 
     if (!this.isEdit || !this.entityId) {
+      this.initialEntityHydrated = true;
       return;
     }
 
@@ -415,6 +417,10 @@ previewContainer?: ElementRef<HTMLElement>;
 
   ngDoCheck(): void {
     if (!this.isActiveSection('section-preview')) {
+      return;
+    }
+
+    if (this.isEdit && !this.initialEntityHydrated) {
       return;
     }
 
@@ -630,6 +636,8 @@ previewContainer?: ElementRef<HTMLElement>;
         this.applyEntityResponse(entity, false);
         this.slugTouched = true;
         this.loading = false;
+        this.initialEntityHydrated = true;
+        this.schedulePreviewRefresh();
         this.loadRelations();
         this.loadIncomingRelations();
         this.cdr.markForCheck();
@@ -637,6 +645,7 @@ previewContainer?: ElementRef<HTMLElement>;
       error: (err) => {
         this.loadError = err?.error?.message ?? 'No se pudo cargar la entity';
         this.loading = false;
+        this.initialEntityHydrated = true;
         this.cdr.markForCheck();
       },
     });

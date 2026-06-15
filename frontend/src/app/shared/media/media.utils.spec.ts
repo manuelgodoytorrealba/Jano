@@ -125,6 +125,10 @@ describe('media.utils', () => {
     expect(mediaDisplayUrl({
       url: 'http://127.0.0.1:3000/uploads/media/uploaded-file.jpg',
     })).toBe('/uploads/media/uploaded-file.jpg');
+
+    expect(mediaDisplayUrl({
+      url: 'http://192.168.1.38:4200/uploads/media/uploaded-file.jpg?size=large',
+    })).toBe('/uploads/media/uploaded-file.jpg?size=large');
   });
 
   it('builds a crop-first presentation model that public renderers can reuse', () => {
