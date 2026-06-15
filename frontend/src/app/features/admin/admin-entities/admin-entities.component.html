@@ -53,7 +53,7 @@
   @if (vm$ | async; as vm) {
   <section class="meta">
     <div class="meta-left">
-      <span class="pill">{{ vm.total ?? 0 }} entities</span>
+      <span class="pill">{{ vm.total }} entities</span>
 
       @if (hasActiveFilters()) {
       <span class="pill subtle">Filtros activos</span>
@@ -71,7 +71,7 @@
 
   @if (loading) {
   <div class="loading-box">Cargando entities…</div>
-  } @else if ((vm.items?.length ?? 0) > 0) {
+  } @else if (vm.items.length > 0) {
   <section class="table-wrap">
     <table class="table">
       <thead>

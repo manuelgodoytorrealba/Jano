@@ -1,0 +1,40 @@
+<section class="media-library-group">
+  <div class="media-library-group__head">
+    <h5>{{ title }}</h5>
+    <span>{{ editors.length }}</span>
+  </div>
+
+  @if (editors.length) {
+    <div class="media-list">
+      @for (editor of editors; track editor.id) {
+        <app-media-card-editor
+          [editor]="editor"
+          [compact]="true"
+          [selected]="activeEditorId === editor.id"
+          [entityTitle]="entityTitle"
+          [activeSlotLabels]="presentation(editor.persisted).activeSlotLabels"
+          [canIngest]="presentation(editor.persisted).canIngest"
+          [canPromote]="presentation(editor.persisted).canPromote"
+          [canRestore]="presentation(editor.persisted).canRestore"
+          [hasAnyPersistedLegacy]="hasAnyPersistedLegacyForEditor(editor.id)"
+          [hasPromotedReplacement]="presentation(editor.persisted).hasPromotedReplacement"
+          [replacementTargetLabel]="presentation(editor.persisted).replacementTargetLabel"
+          [replacementIngestedLabel]="presentation(editor.persisted).replacementIngestedLabel"
+          [ingestedSourceLabel]="presentation(editor.persisted).ingestedSourceLabel"
+          [slotWarnings]="presentation(editor.persisted).slotWarnings"
+          (editRequested)="editRequested.emit($event)"
+          (assignRole)="assignRole.emit($event)"
+          (toggleLegacy)="toggleLegacy.emit($event)"
+          (save)="save.emit($event)"
+          (discard)="discard.emit($event)"
+          (remove)="remove.emit($event)"
+          (ingest)="ingest.emit($event)"
+          (promote)="promote.emit($event)"
+          (restore)="restore.emit($event)"
+        ></app-media-card-editor>
+      }
+    </div>
+  } @else {
+    <div class="preview-empty">{{ emptyMessage }}</div>
+  }
+</section>

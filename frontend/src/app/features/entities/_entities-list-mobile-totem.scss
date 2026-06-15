@@ -1,0 +1,41 @@
+@media (max-width: 720px) {
+  .entities-explorer-layout.is-mobile-portrait-totem {
+    --entities-mobile-control-top: calc(var(--app-safe-top) + 226px);
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem .entities-rail-handle,
+  .entities-explorer-layout.is-mobile-portrait-totem .entities-filter-rail {
+    z-index: 96;
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem:not(.is-info-collapsed) .entities-explorer-stage {
+    z-index: 90;
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem:not(.is-info-collapsed) .entities-hud {
+    z-index: 97;
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem .entities-rail-handle__label {
+    display: none;
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem:not(.is-info-collapsed) .entities-rail-handle {
+    opacity: 0;
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem .entities-filter-rail {
+    top: auto;
+    left: calc(var(--app-safe-left) + 12px);
+    right: calc(var(--app-safe-right) + 12px);
+    bottom: calc(var(--app-safe-bottom) + 102px);
+    width: auto;
+    max-height: min(50svh, 380px);
+  }
+
+  .entities-explorer-layout.is-mobile-portrait-totem .entities-filter-rail.is-collapsed {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(18px);
+  }
+}

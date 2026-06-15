@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { apiUrl } from './api-base';
+import { AdminEntityTagRecord } from './admin-entities.api';
 
 export type Tag = {
   id: string;
@@ -24,7 +25,7 @@ export class TagsApi {
   }
 
   addToEntity(entityId: string, tagId: string) {
-    return this.http.post<any>(apiUrl(`/entities/${entityId}/tags`), { tagId, source: 'MANUAL' });
+    return this.http.post<AdminEntityTagRecord>(apiUrl(`/entities/${entityId}/tags`), { tagId, source: 'MANUAL' });
   }
 
   removeFromEntity(entityId: string, tagId: string) {

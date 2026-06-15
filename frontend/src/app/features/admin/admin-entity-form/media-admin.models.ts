@@ -58,6 +58,10 @@ export type EditableAdminMediaLink = {
     qualityTier?: string | null;
     width?: number | null;
     height?: number | null;
+    focalX?: number | null;
+    focalY?: number | null;
+    assetFocalX?: number | null;
+    assetFocalY?: number | null;
     originType?: string | null;
     storageKey?: string | null;
     originalFilename?: string | null;

@@ -70,6 +70,106 @@
     var(--app-chrome-bottom)
     calc(var(--app-safe-left) + var(--app-shell-gap));
   overflow: visible;
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.app-route-artwork-overlay {
+  position: fixed;
+  z-index: 95;
+  overflow: hidden;
+  border-radius: 26px;
+  box-shadow:
+    0 24px 72px rgba(0, 0, 0, 0.28),
+    0 8px 20px rgba(0, 0, 0, 0.16);
+  background: rgba(18, 18, 22, 0.22);
+  pointer-events: none;
+  transition:
+    left 460ms cubic-bezier(.22, 1, .36, 1),
+    top 460ms cubic-bezier(.22, 1, .36, 1),
+    width 460ms cubic-bezier(.22, 1, .36, 1),
+    height 460ms cubic-bezier(.22, 1, .36, 1),
+    opacity 220ms ease;
+}
+
+.app-route-artwork-overlay--fading {
+  opacity: 0;
+}
+
+.app-route-artwork-overlay__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.96) contrast(1.02);
+}
+
+body.jano-artwork-route-active .entity-header__title,
+body.jano-artwork-route-active .entity-topbar__subtitle,
+body.jano-artwork-route-active .entity-topbar__meta {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+}
+
+body.jano-artwork-route-title .entity-header__title,
+body.jano-artwork-route-title .entity-topbar__subtitle,
+body.jano-artwork-route-meta .entity-topbar__meta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.jano-artwork-route-active .entity-explorer__workspace-deck {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 260ms ease, transform 320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+body.jano-artwork-route-controls .entity-explorer__workspace-deck {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.jano-artwork-route-active #imageStage .image-stage__asset,
+body.jano-artwork-route-active #imageStage .image-stage__backdrop,
+body.jano-artwork-route-active #imageStage .image-overlay-bar,
+body.jano-artwork-route-active #imageStage .image-meta-dock,
+body.jano-artwork-route-active .explorer-graph-pane {
+  opacity: 0;
+  transition: opacity 240ms ease, transform 320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+body.jano-artwork-route-active .explorer-graph-pane {
+  transform: translateX(18px);
+}
+
+body.jano-artwork-route-artwork #imageStage .image-stage__asset,
+body.jano-artwork-route-artwork #imageStage .image-stage__backdrop {
+  opacity: 1;
+}
+
+body.jano-artwork-route-controls #imageStage .image-overlay-bar,
+body.jano-artwork-route-meta #imageStage .image-meta-dock {
+  opacity: 1;
+}
+
+body.jano-artwork-route-graph .explorer-graph-pane {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.app-shell__content--transitioning {
+  opacity: 0.82;
+  transform: translateY(8px);
+}
+
+.app-auth-shell {
+  min-height: var(--app-viewport-height);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.app-auth-shell.is-transitioning {
+  opacity: 0.88;
+  transform: translateY(6px);
 }
 
 /* =========================

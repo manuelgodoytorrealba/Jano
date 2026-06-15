@@ -4,79 +4,22 @@
   }
 
   <section class="editor-layout" [class.editor-layout--sidebar-open]="adminSidebarVisible">
-    <div class="admin-sidebar-layer" [style.width.px]="adminSidebarVisible ? 300 : 84">
-    @if (adminSidebarVisible) {
-    <aside class="admin-sidebar" style="width:300px">
-      <div class="admin-sidebar__toolhead">
-        <span class="admin-sidebar__tooltitle">Editor</span>
-        <div class="admin-sidebar__toolbar">
-          <button class="admin-sidebar__control" type="button" (click)="toggleAdminSidebar()">
-            Ocultar editor
-          </button>
-          <a class="admin-sidebar__control admin-sidebar__control--quiet" [attr.href]="adminReturnHref()">Volver</a>
-        </div>
-      </div>
-      <nav class="admin-dashboard-nav">
-        @for (section of dashboardSections; track section.id) {
-          <button
-            type="button"
-            class="admin-dashboard-nav__item"
-            [class.is-active]="activeDashboardSection === section.id"
-            (click)="scrollToSection(section.id)"
-          >
-            <span class="admin-dashboard-nav__item-main">
-              <span class="admin-dashboard-nav__item-label">{{ section.label }}</span>
-              @if (sectionCount(section.id)) {
-                <span class="admin-dashboard-nav__item-count">{{ sectionCount(section.id) }}</span>
-              }
-            </span>
-            <span class="admin-dashboard-nav__item-meta">
-              <span>{{ sectionMeta(section.id) }}</span>
-              @if (sectionStatusLabel(section.id)) {
-                <span [class]="sectionStatusClass(section.id)">{{ sectionStatusLabel(section.id) }}</span>
-              }
-            </span>
-          </button>
-        }
-      </nav>
-      <div class="admin-sidebar__summary">
-        <span class="admin-sidebar__eyebrow">Editor dashboard</span>
-        <h2 class="admin-sidebar__title">{{ form.title || 'Entity sin título' }}</h2>
-        <span [class]="entitySaveStatusClass()">{{ entitySaveStatusLabel() }}</span>
-        <div class="admin-sidebar__actions">
-          <a class="admin-sidebar__action admin-sidebar__action--ghost" [attr.href]="adminReturnHref()">Cancelar</a>
-
-          <button
-            class="admin-sidebar__action admin-sidebar__action--ghost"
-            type="button"
-            [disabled]="saving || loading"
-            (click)="submit('stay')"
-          >
-            {{ entitySaveButtonLabel('stay') }}
-          </button>
-
-          <button
-            class="admin-sidebar__action admin-sidebar__action--primary"
-            type="button"
-            [disabled]="saving || loading"
-            (click)="submit('back')"
-          >
-            @if (loading) {
-              Cargando...
-            } @else {
-              {{ entitySaveButtonLabel('back') }}
-            }
-          </button>
-        </div>
-      </div>
-    </aside>
-    } @else {
-      <button class="admin-sidebar__peek" type="button" (click)="toggleAdminSidebar()">
-        <span>Editor</span>
-        <strong>Mostrar</strong>
-      </button>
-    }
-    </div>
+    <app-admin-entity-sidebar
+      [visible]="adminSidebarVisible"
+      [title]="form.title"
+      [saveStatusLabel]="entitySaveStatus.label"
+      [saveStatusClass]="entitySaveStatus.className"
+      [cancelHref]="adminReturnHref()"
+      [saveStayLabel]="entitySaveButtonLabel('stay')"
+      [saveBackLabel]="entitySaveButtonLabel('back')"
+      [saveDisabled]="saving || loading"
+      [loading]="loading"
+      [navItems]="sidebarSections"
+      (toggleSidebar)="toggleAdminSidebar()"
+      (saveStay)="submit('stay')"
+      (saveBack)="submit('back')"
+      (selectSection)="scrollToSection($event)"
+    ></app-admin-entity-sidebar>
 
     <section class="form-wrap">
       @if (errorMessage) {
@@ -313,10 +256,12 @@
                 <div class="tag-admin__current">
                   @if (entityTags.length) {
                     @for (entityTag of entityTags; track entityTag.tagId ?? entityTag.tag?.id) {
-                      <button type="button" class="tag-chip" (click)="removeTag(entityTag.tagId ?? entityTag.tag?.id)">
-                        {{ entityTag.tag?.label ?? entityTag.tagId }}
-                        <span aria-hidden="true">×</span>
-                      </button>
+                      @if (entityTagId(entityTag); as tagId) {
+                        <button type="button" class="tag-chip" (click)="removeTag(tagId)">
+                          {{ entityTag.tag?.label ?? entityTag.tagId }}
+                          <span aria-hidden="true">×</span>
+                        </button>
+                      }
                     }
                   } @else {
                     <span class="muted">Sin tags asignados.</span>
@@ -408,28 +353,13 @@
               </div>
             }
 
-            @if (showLinkSuggestions) {
-              <div class="link-suggestions" (mousedown)="$event.preventDefault()">
-                @if (linkLoading) {
-                  <div class="link-suggestion muted">Buscando entities…</div>
-                } @else if (linkSuggestions.length) {
-                  @for (item of linkSuggestions; track item.id) {
-                    <button
-                      type="button"
-                      class="link-suggestion"
-                      (click)="insertEntityLink(item)"
-                    >
-                      <strong>{{ item.title }}</strong>
-                      <span>{{ item.type }} · {{ item.slug }}</span>
-                    </button>
-                  }
-                } @else {
-                  <div class="link-suggestion muted">
-                    No se encontraron entities para "{{ linkSearch }}"
-                  </div>
-                }
-              </div>
-            }
+            <app-admin-entity-link-suggestions
+              [visible]="showLinkSuggestions"
+              [loading]="linkLoading"
+              [query]="linkSearch"
+              [items]="linkSuggestions"
+              (selectItem)="insertEntityLink($event)"
+            ></app-admin-entity-link-suggestions>
           </label>
           }
         </div>
@@ -667,125 +597,62 @@
                   </div>
 
                   <div class="media-library-sections">
-                    <section class="media-library-group">
-                      <div class="media-library-group__head">
-                        <h5>En uso</h5>
-                        <span>{{ mainUsedEditors.length }}</span>
-                      </div>
-                      @if (mainUsedEditors.length) {
-                        <div class="media-list">
-                          @for (editor of mainUsedEditors; track editor.id) {
-                            <app-media-card-editor
-                              [editor]="editor"
-                              [compact]="true"
-                              [selected]="activeMediaEditor?.id === editor.id"
-                              [entityTitle]="form.title"
-                              [activeSlotLabels]="activeSlotLabels(editor.persisted)"
-                              [canIngest]="canIngestMedia(editor.persisted)"
-                              [canPromote]="canPromoteIngestedMedia(editor.persisted)"
-                              [canRestore]="canRestoreExternalMedia(editor.persisted)"
-                              [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
-                              [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
-                              [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
-                              [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
-                              [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
-                              [slotWarnings]="slotWarningsForEditor(editor.persisted)"
-                              (editRequested)="selectMediaEditor($event)"
-                              (assignRole)="assignRole($event.link, $event.role)"
-                              (toggleLegacy)="toggleLegacyFallback($event)"
-                              (save)="saveMedia($event)"
-                              (discard)="discardMediaChanges($event)"
-                              (remove)="removeMedia($event)"
-                              (ingest)="ingestMedia($event)"
-                              (promote)="promoteIngestedMedia($event)"
-                              (restore)="restoreExternalMedia($event)"
-                            ></app-media-card-editor>
-                          }
-                        </div>
-                      } @else {
-                        <div class="preview-empty">Todavía no hay assets cubriendo los slots principales.</div>
-                      }
-                    </section>
+                    <app-admin-entity-media-group
+                      title="En uso"
+                      emptyMessage="Todavía no hay assets cubriendo los slots principales."
+                      [editors]="mainUsedEditors"
+                      [activeEditorId]="activeMediaEditor?.id ?? null"
+                      [entityTitle]="form.title"
+                      [editorPresentationFor]="mediaEditorPresentationFor"
+                      [hasAnyPersistedLegacyForEditor]="hasAnyPersistedLegacyForEditor"
+                      (editRequested)="selectMediaEditor($event)"
+                      (assignRole)="assignRole($event.link, $event.role)"
+                      (toggleLegacy)="toggleLegacyFallback($event)"
+                      (save)="saveMedia($event)"
+                      (discard)="discardMediaChanges($event)"
+                      (remove)="removeMedia($event)"
+                      (ingest)="ingestMedia($event)"
+                      (promote)="promoteIngestedMedia($event)"
+                      (restore)="restoreExternalMedia($event)"
+                    ></app-admin-entity-media-group>
 
-                    <section class="media-library-group">
-                      <div class="media-library-group__head">
-                        <h5>Derivados / reemplazos</h5>
-                        <span>{{ derivedEditors.length }}</span>
-                      </div>
-                      @if (derivedEditors.length) {
-                        <div class="media-list">
-                          @for (editor of derivedEditors; track editor.id) {
-                            <app-media-card-editor
-                              [editor]="editor"
-                              [compact]="true"
-                              [selected]="activeMediaEditor?.id === editor.id"
-                              [entityTitle]="form.title"
-                              [activeSlotLabels]="activeSlotLabels(editor.persisted)"
-                              [canIngest]="canIngestMedia(editor.persisted)"
-                              [canPromote]="canPromoteIngestedMedia(editor.persisted)"
-                              [canRestore]="canRestoreExternalMedia(editor.persisted)"
-                              [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
-                              [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
-                              [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
-                              [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
-                              [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
-                              [slotWarnings]="slotWarningsForEditor(editor.persisted)"
-                              (editRequested)="selectMediaEditor($event)"
-                              (assignRole)="assignRole($event.link, $event.role)"
-                              (toggleLegacy)="toggleLegacyFallback($event)"
-                              (save)="saveMedia($event)"
-                              (discard)="discardMediaChanges($event)"
-                              (remove)="removeMedia($event)"
-                              (ingest)="ingestMedia($event)"
-                              (promote)="promoteIngestedMedia($event)"
-                              (restore)="restoreExternalMedia($event)"
-                            ></app-media-card-editor>
-                          }
-                        </div>
-                      } @else {
-                        <div class="preview-empty">No hay derivados o reemplazos fuera del uso principal.</div>
-                      }
-                    </section>
+                    <app-admin-entity-media-group
+                      title="Derivados / reemplazos"
+                      emptyMessage="No hay derivados o reemplazos fuera del uso principal."
+                      [editors]="derivedEditors"
+                      [activeEditorId]="activeMediaEditor?.id ?? null"
+                      [entityTitle]="form.title"
+                      [editorPresentationFor]="mediaEditorPresentationFor"
+                      [hasAnyPersistedLegacyForEditor]="hasAnyPersistedLegacyForEditor"
+                      (editRequested)="selectMediaEditor($event)"
+                      (assignRole)="assignRole($event.link, $event.role)"
+                      (toggleLegacy)="toggleLegacyFallback($event)"
+                      (save)="saveMedia($event)"
+                      (discard)="discardMediaChanges($event)"
+                      (remove)="removeMedia($event)"
+                      (ingest)="ingestMedia($event)"
+                      (promote)="promoteIngestedMedia($event)"
+                      (restore)="restoreExternalMedia($event)"
+                    ></app-admin-entity-media-group>
 
-                    <section class="media-library-group">
-                      <div class="media-library-group__head">
-                        <h5>Sin uso</h5>
-                        <span>{{ unusedEditors.length }}</span>
-                      </div>
-                      @if (unusedEditors.length) {
-                        <div class="media-list">
-                          @for (editor of unusedEditors; track editor.id) {
-                            <app-media-card-editor
-                              [editor]="editor"
-                              [compact]="true"
-                              [selected]="activeMediaEditor?.id === editor.id"
-                              [entityTitle]="form.title"
-                              [activeSlotLabels]="activeSlotLabels(editor.persisted)"
-                              [canIngest]="canIngestMedia(editor.persisted)"
-                              [canPromote]="canPromoteIngestedMedia(editor.persisted)"
-                              [canRestore]="canRestoreExternalMedia(editor.persisted)"
-                              [hasAnyPersistedLegacy]="hasOtherPersistedLegacy(editor.id)"
-                              [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
-                              [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
-                              [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
-                              [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
-                              [slotWarnings]="slotWarningsForEditor(editor.persisted)"
-                              (editRequested)="selectMediaEditor($event)"
-                              (assignRole)="assignRole($event.link, $event.role)"
-                              (toggleLegacy)="toggleLegacyFallback($event)"
-                              (save)="saveMedia($event)"
-                              (discard)="discardMediaChanges($event)"
-                              (remove)="removeMedia($event)"
-                              (ingest)="ingestMedia($event)"
-                              (promote)="promoteIngestedMedia($event)"
-                              (restore)="restoreExternalMedia($event)"
-                            ></app-media-card-editor>
-                          }
-                        </div>
-                      } @else {
-                        <div class="preview-empty">No hay assets huérfanos fuera de uso principal.</div>
-                      }
-                    </section>
+                    <app-admin-entity-media-group
+                      title="Sin uso"
+                      emptyMessage="No hay assets huérfanos fuera de uso principal."
+                      [editors]="unusedEditors"
+                      [activeEditorId]="activeMediaEditor?.id ?? null"
+                      [entityTitle]="form.title"
+                      [editorPresentationFor]="mediaEditorPresentationFor"
+                      [hasAnyPersistedLegacyForEditor]="hasAnyPersistedLegacyForEditor"
+                      (editRequested)="selectMediaEditor($event)"
+                      (assignRole)="assignRole($event.link, $event.role)"
+                      (toggleLegacy)="toggleLegacyFallback($event)"
+                      (save)="saveMedia($event)"
+                      (discard)="discardMediaChanges($event)"
+                      (remove)="removeMedia($event)"
+                      (ingest)="ingestMedia($event)"
+                      (promote)="promoteIngestedMedia($event)"
+                      (restore)="restoreExternalMedia($event)"
+                    ></app-admin-entity-media-group>
                   </div>
                 </section>
 
@@ -795,37 +662,22 @@
                     <p class="muted">Material documental, extra o de apoyo. No compite con los slots principales.</p>
                   </div>
 
-                  @if (additionalMediaEditors.length) {
-                    <div class="media-list">
-                      @for (editor of additionalMediaEditors; track editor.id) {
-                        <app-media-card-editor
-                          [editor]="editor"
-                          [compact]="true"
-                          [selected]="activeMediaEditor?.id === editor.id"
-                          [entityTitle]="form.title"
-                          [activeSlotLabels]="activeSlotLabels(editor.persisted)"
-                          [canIngest]="canIngestMedia(editor.persisted)"
-                          [canPromote]="canPromoteIngestedMedia(editor.persisted)"
-                          [canRestore]="canRestoreExternalMedia(editor.persisted)"
-                          [hasPromotedReplacement]="hasPromotedVisualReplacement(editor.persisted)"
-                          [replacementTargetLabel]="replacementTargetLabel(editor.persisted)"
-                          [replacementIngestedLabel]="replacementIngestedLabel(editor.persisted)"
-                          [ingestedSourceLabel]="ingestedSourceLabel(editor.persisted)"
-                          [slotWarnings]="slotWarningsForEditor(editor.persisted)"
-                          (editRequested)="selectMediaEditor($event)"
-                          (assignRole)="assignRole($event.link, $event.role)"
-                          (save)="saveMedia($event)"
-                          (discard)="discardMediaChanges($event)"
-                          (remove)="removeMedia($event)"
-                          (ingest)="ingestMedia($event)"
-                          (promote)="promoteIngestedMedia($event)"
-                          (restore)="restoreExternalMedia($event)"
-                        ></app-media-card-editor>
-                      }
-                    </div>
-                  } @else {
-                    <div class="preview-empty">No hay material adicional definido todavía.</div>
-                  }
+                  <app-admin-entity-media-group
+                    title="Additional Media"
+                    emptyMessage="No hay material adicional definido todavía."
+                    [editors]="additionalMediaEditors"
+                    [activeEditorId]="activeMediaEditor?.id ?? null"
+                    [entityTitle]="form.title"
+                    [editorPresentationFor]="mediaEditorPresentationFor"
+                    (editRequested)="selectMediaEditor($event)"
+                    (assignRole)="assignRole($event.link, $event.role)"
+                    (save)="saveMedia($event)"
+                    (discard)="discardMediaChanges($event)"
+                    (remove)="removeMedia($event)"
+                    (ingest)="ingestMedia($event)"
+                    (promote)="promoteIngestedMedia($event)"
+                    (restore)="restoreExternalMedia($event)"
+                  ></app-admin-entity-media-group>
                 </section>
               </div>
 
@@ -1265,7 +1117,7 @@
   <span class="relation-arrow">→</span>
   {{ rel.to?.title }}
   @if (rel.to?.type) {
-    <span class="relation-meta">· {{ rel.to.type }}</span>
+    <span class="relation-meta">· {{ rel.to?.type }}</span>
   }
 </div>
 
@@ -1320,7 +1172,7 @@
   <span class="relation-arrow incoming">←</span>
   {{ rel.from?.title }}
   @if (rel.from?.type) {
-    <span class="relation-meta">· {{ rel.from.type }}</span>
+    <span class="relation-meta">· {{ rel.from?.type }}</span>
   }
 </div>
 
@@ -1344,23 +1196,16 @@
     </section>
 
       @if (hoveredSlug) {
-  <div
-    class="entity-preview-popover"
-    (mouseenter)="isHoveringPreviewPopup = true; cancelClosePreview()"
-    (mouseleave)="isHoveringPreviewPopup = false; scheduleClosePreview()"
-  >
-    @if (previewLoading) {
-      <div class="muted">Cargando preview…</div>
-    }
-
-    @if (!previewLoading && previewData) {
-      <h4>{{ previewData.title }}</h4>
-
-      @if (previewData.summary) {
-        <p>{{ previewData.summary }}</p>
+        <div
+          (mouseenter)="isHoveringPreviewPopup = true; cancelClosePreview()"
+          (mouseleave)="isHoveringPreviewPopup = false; scheduleClosePreview()"
+        >
+          <app-admin-entity-preview-popover
+            [visible]="true"
+            [loading]="previewLoading"
+            [previewData]="previewData"
+          ></app-admin-entity-preview-popover>
+        </div>
       }
-    }
-  </div>
-}
   </section>
 </div>

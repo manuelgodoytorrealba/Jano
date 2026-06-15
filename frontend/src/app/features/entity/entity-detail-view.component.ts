@@ -2,15 +2,35 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Ho
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GraphComponent } from '../graph/graph.component';
+import { PublicEntity, PublicEntityRelation, PublicEntityRelationEndpoint, PublicEntityTagItem } from '../../core/api/entities.models';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
-import { mediaDisplayUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
+import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
-
-type DetailFact = {
-  label: string;
-  value: string;
-};
+import {
+  articleByline,
+  articleDateLabel,
+  detailFactKicker,
+  detailFactSummary,
+  detailFacts,
+  detailFactTitle,
+  detailHeroSubtitle,
+  detailMedia,
+  entityTags,
+  entityTypeLabel,
+  firstRelated,
+  incomingByType,
+  isArticle,
+  outgoingByType,
+  primaryMedia,
+  relatedIncoming,
+  relatedOutgoing,
+  relationDirectionLabel,
+  relationLabel,
+  storySectionLabel,
+  visualAlt,
+  visualUrl,
+} from './entity-detail.presenter';
 
 type DetailWorkspaceMode = 'split' | 'image' | 'graph';
 
@@ -26,10 +46,11 @@ export class EntityDetailViewComponent implements OnDestroy {
   private static readonly INITIAL_RELATION_LIMIT = 48;
   private static readonly RELATION_LIMIT_STEP = 48;
   private readonly cdr = inject(ChangeDetectorRef);
+  readonly artworkTransition = inject(EntityRouteArtworkTransitionService);
   readonly i18n = inject(I18nService);
   private transitionTimer: ReturnType<typeof setTimeout> | null = null;
 
-  @Input() entity: any | null = null;
+  @Input() entity: PublicEntity | null = null;
   @Input() showActions = false;
   @Input() isSaved = false;
   @Input() saveLoading = false;
@@ -105,56 +126,52 @@ export class EntityDetailViewComponent implements OnDestroy {
     this.transitionTimer = null;
   }
 
-  primaryMedia(entity: any) {
-    return selectPrimaryVisualMedia(entity);
+  artworkArrivalActive(entity: PublicEntity | null): boolean {
+    return this.artworkTransition.isForSlug(entity?.slug ?? null);
   }
 
-  detailMedia(entity: any) {
-    return resolveEntityMediaItem(entity, 'detail') ?? this.primaryMedia(entity);
+  revealArrivalTitle(entity: PublicEntity | null): boolean {
+    return this.artworkTransition.shouldRevealTitle(entity?.slug ?? null);
   }
 
-  visualUrl(entity: any) {
-    return mediaDisplayUrl(this.detailMedia(entity));
+  revealArrivalMeta(entity: PublicEntity | null): boolean {
+    return this.artworkTransition.shouldRevealMeta(entity?.slug ?? null);
   }
 
-  visualAlt(entity: any): string {
-    return this.detailMedia(entity)?.alt || entity?.title || this.i18n.t('entity.imageAlt');
+  revealArrivalControls(entity: PublicEntity | null): boolean {
+    return this.artworkTransition.shouldRevealControls(entity?.slug ?? null);
   }
 
-  isArticle(entity: any): boolean {
-    return entity?.type === 'ARTICLE';
+  primaryMedia(entity: PublicEntity | null) {
+    return primaryMedia(entity);
   }
 
-  articleByline(entity: any): string | null {
-    const contributors = Array.isArray(entity?.contributors) ? entity.contributors : [];
-    const authorish =
-      contributors.find((item: any) => ['author', 'autor', 'writer', 'editor'].includes(`${item?.role ?? ''}`.trim().toLowerCase()))
-      ?? contributors[0]
-      ?? null;
-
-    return authorish?.name?.trim() || null;
+  detailMedia(entity: PublicEntity | null) {
+    return detailMedia(entity);
   }
 
-  articleDateLabel(entity: any): string | null {
-    const value = entity?.createdAt ?? null;
-    if (!value) {
-      return null;
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return null;
-    }
-
-    return new Intl.DateTimeFormat(this.i18n.locale() === 'en' ? 'en-US' : 'es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(date);
+  visualUrl(entity: PublicEntity | null) {
+    return visualUrl(entity);
   }
 
-  storySectionLabel(entity: any): string {
-    return this.isArticle(entity) ? this.i18n.t('entity.article') : this.i18n.t('entity.essay');
+  visualAlt(entity: PublicEntity | null): string {
+    return visualAlt(entity, (key) => this.i18n.t(key));
+  }
+
+  isArticle(entity: PublicEntity | null): boolean {
+    return isArticle(entity);
+  }
+
+  articleByline(entity: PublicEntity | null): string | null {
+    return articleByline(entity);
+  }
+
+  articleDateLabel(entity: PublicEntity | null): string | null {
+    return articleDateLabel(entity, this.i18n.locale());
+  }
+
+  storySectionLabel(entity: PublicEntity | null): string {
+    return storySectionLabel(entity, (key) => this.i18n.t(key));
   }
 
   statusLabel(status: string | null | undefined): string {
@@ -200,139 +217,47 @@ export class EntityDetailViewComponent implements OnDestroy {
     }
   }
 
-  detailHeroSubtitle(entity: any): string | null {
-    const parts: string[] = [];
-    const author = entity?.type === 'ARTWORK' ? this.firstRelated(entity, 'CREATED_BY')?.title : null;
-
-    if (author) {
-      parts.push(author);
-    }
-
-    if (entity?.startYear || entity?.endYear) {
-      parts.push(
-        entity.startYear && entity.endYear && entity.startYear !== entity.endYear
-          ? `${entity.startYear}-${entity.endYear}`
-          : `${entity.startYear ?? entity.endYear}`,
-      );
-    }
-
-    if (entity?.type) {
-      parts.push(this.entityTypeLabel(entity.type));
-    }
-
-    return parts.length ? parts.join(' · ') : null;
+  detailHeroSubtitle(entity: PublicEntity | null): string | null {
+    return detailHeroSubtitle(entity, { locale: this.i18n.locale(), t: (key) => this.i18n.t(key) });
   }
 
-  detailFacts(entity: any): DetailFact[] {
-    if (entity?.type === 'ARTWORK' && entity.artwork) {
-      return this.compactFacts([
-        { label: this.i18n.t('entity.fact.technique'), value: entity.artwork.technique },
-        { label: this.i18n.t('entity.fact.materials'), value: entity.artwork.materials },
-        { label: this.i18n.t('entity.fact.dimensions'), value: entity.artwork.dimensions },
-        { label: this.i18n.t('entity.fact.location'), value: entity.artwork.location },
-        { label: this.i18n.t('entity.fact.collection'), value: entity.artwork.collection },
-        { label: this.i18n.t('common.status'), value: entity.artwork.state },
-        { label: this.i18n.t('entity.fact.authorNation'), value: entity.artwork.authorNation },
-      ]);
-    }
-
-    if (entity?.type === 'ARTIST' && entity.artist) {
-      return this.compactFacts([
-        { label: this.i18n.t('entity.fact.country'), value: entity.artist.country },
-        { label: this.i18n.t('entity.fact.city'), value: entity.artist.city },
-        { label: this.i18n.t('entity.fact.birth'), value: entity.artist.birthYear },
-        { label: this.i18n.t('entity.fact.death'), value: entity.artist.deathYear },
-        { label: this.i18n.t('entity.fact.disciplines'), value: entity.artist.disciplines },
-        { label: this.i18n.t('entity.fact.links'), value: entity.artist.links },
-      ]);
-    }
-
-    return [];
+  detailFacts(entity: PublicEntity | null) {
+    return detailFacts(entity, { locale: this.i18n.locale(), t: (key) => this.i18n.t(key) });
   }
 
-  detailFactKicker(entity: any): string {
-    switch (entity?.type) {
-      case 'ARTWORK':
-        return this.i18n.t('entities.type.artworkSingular');
-      case 'ARTIST':
-        return this.i18n.t('entities.type.artistSingular');
-      case 'ARTICLE':
-        return this.i18n.t('entity.article');
-      case 'CONCEPT':
-        return this.i18n.t('entities.type.conceptSingular');
-      case 'PERIOD':
-        return this.i18n.t('entities.type.periodSingular');
-      default:
-        return this.i18n.t('entity.sheet');
-    }
+  detailFactKicker(entity: PublicEntity | null): string {
+    return detailFactKicker(entity, (key) => this.i18n.t(key));
   }
 
-  detailFactTitle(entity: any): string {
-    switch (entity?.type) {
-      case 'ARTWORK':
-        return this.i18n.t('entity.factTitle.artwork');
-      case 'ARTIST':
-        return this.i18n.t('entity.factTitle.artist');
-      case 'ARTICLE':
-        return this.i18n.t('entity.factTitle.article');
-      case 'CONCEPT':
-        return this.i18n.t('entity.factTitle.concept');
-      case 'PERIOD':
-        return this.i18n.t('entity.factTitle.period');
-      default:
-        return this.i18n.t('entity.factTitle.default');
-    }
+  detailFactTitle(entity: PublicEntity | null): string {
+    return detailFactTitle(entity, (key) => this.i18n.t(key));
   }
 
-  detailFactSummary(entity: any): string | null {
-    if (entity?.type === 'ARTICLE') {
-      return this.joinFactSummary([
-        this.articleByline(entity),
-        entity.summary,
-      ]);
-    }
-
-    if (entity?.type === 'ARTWORK' && entity.artwork) {
-      return this.joinFactSummary([
-        entity.artwork.technique,
-        entity.artwork.materials,
-        entity.artwork.dimensions,
-        entity.artwork.location,
-      ]);
-    }
-
-    if (entity?.type === 'ARTIST' && entity.artist) {
-      return this.joinFactSummary([
-        entity.artist.country,
-        entity.artist.city,
-        entity.artist.disciplines,
-      ]);
-    }
-
-    return null;
+  detailFactSummary(entity: PublicEntity | null): string | null {
+    return detailFactSummary(entity);
   }
 
-  outgoingByType(entity: any, type: string) {
-    return (entity?.outgoing ?? []).filter((r: any) => r.type === type);
+  outgoingByType(entity: PublicEntity | null, type: string): PublicEntityRelation[] {
+    return outgoingByType(entity, type);
   }
 
-  incomingByType(entity: any, type: string) {
-    return (entity?.incoming ?? []).filter((r: any) => r.type === type);
+  incomingByType(entity: PublicEntity | null, type: string): PublicEntityRelation[] {
+    return incomingByType(entity, type);
   }
 
-  visibleOutgoingRelations(entity: any): any[] {
+  visibleOutgoingRelations(entity: PublicEntity | null): PublicEntityRelation[] {
     return (entity?.outgoing ?? []).slice(0, this.outgoingRelationLimit);
   }
 
-  visibleIncomingRelations(entity: any): any[] {
+  visibleIncomingRelations(entity: PublicEntity | null): PublicEntityRelation[] {
     return (entity?.incoming ?? []).slice(0, this.incomingRelationLimit);
   }
 
-  hiddenOutgoingRelations(entity: any): number {
+  hiddenOutgoingRelations(entity: PublicEntity | null): number {
     return Math.max(0, (entity?.outgoing?.length ?? 0) - this.outgoingRelationLimit);
   }
 
-  hiddenIncomingRelations(entity: any): number {
+  hiddenIncomingRelations(entity: PublicEntity | null): number {
     return Math.max(0, (entity?.incoming?.length ?? 0) - this.incomingRelationLimit);
   }
 
@@ -349,74 +274,28 @@ export class EntityDetailViewComponent implements OnDestroy {
     this.incomingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   }
 
-  relatedOutgoing(entity: any, type: string) {
-    return this.outgoingByType(entity, type).map((r: any) => r.to);
+  relatedOutgoing(entity: PublicEntity | null, type: string): PublicEntityRelationEndpoint[] {
+    return relatedOutgoing(entity, type);
   }
 
-  relatedIncoming(entity: any, type: string) {
-    return this.incomingByType(entity, type).map((r: any) => r.from);
+  relatedIncoming(entity: PublicEntity | null, type: string): PublicEntityRelationEndpoint[] {
+    return relatedIncoming(entity, type);
   }
 
-  firstRelated(entity: any, type: string) {
-    return this.relatedOutgoing(entity, type)[0] ?? null;
+  firstRelated(entity: PublicEntity | null, type: string): PublicEntityRelationEndpoint | null {
+    return firstRelated(entity, type);
   }
 
   relationLabel(type: string): string {
-    const labels: Record<string, string> = {
-      CREATED_BY: this.i18n.t('relation.createdBy'),
-      BELONGS_TO_MOVEMENT: this.i18n.t('relation.belongsToMovement'),
-      BELONGS_TO_PERIOD: this.i18n.t('relation.belongsToPeriod'),
-      ABOUT_CONCEPT: this.i18n.t('relation.aboutConcept'),
-      LOCATED_IN: this.i18n.t('relation.locatedIn'),
-      RELATED_TO: this.i18n.t('relation.relatedTo'),
-      MENTIONS: this.i18n.t('relation.mentions'),
-      ASSOCIATED_WITH: this.i18n.t('relation.associatedWith'),
-      INSPIRED_BY: this.i18n.t('relation.inspiredBy'),
-      INFLUENCED_BY: this.i18n.t('relation.influencedBy'),
-      PART_OF: this.i18n.t('relation.partOf'),
-      DEPICTS: this.i18n.t('relation.depicts'),
-      SIMILAR_TO: this.i18n.t('relation.similarTo'),
-      USES_TECHNIQUE: this.i18n.t('relation.usesTechnique'),
-      USES_MATERIAL: this.i18n.t('relation.usesMaterial'),
-      HAS_SUBJECT: this.i18n.t('relation.hasSubject'),
-      CURATED_WITH: this.i18n.t('relation.curatedWith'),
-    };
-
-    return labels[type] ?? type.replaceAll('_', ' ').toLowerCase();
+    return relationLabel(type, (key) => this.i18n.t(key));
   }
 
   relationDirectionLabel(type: string, direction: 'outgoing' | 'incoming'): string {
-    if (direction === 'outgoing') {
-      return this.relationLabel(type);
-    }
-
-    const incomingLabels: Record<string, string> = {
-      CREATED_BY: this.i18n.t('relation.in.createdBy'),
-      BELONGS_TO_MOVEMENT: this.i18n.t('relation.in.belongsToMovement'),
-      BELONGS_TO_PERIOD: this.i18n.t('relation.in.belongsToPeriod'),
-      ABOUT_CONCEPT: this.i18n.t('relation.in.aboutConcept'),
-      LOCATED_IN: this.i18n.t('relation.in.locatedIn'),
-      RELATED_TO: this.i18n.t('relation.in.relatedTo'),
-      MENTIONS: this.i18n.t('relation.in.mentions'),
-      ASSOCIATED_WITH: this.i18n.t('relation.in.associatedWith'),
-      INSPIRED_BY: this.i18n.t('relation.in.inspiredBy'),
-      INFLUENCED_BY: this.i18n.t('relation.in.influencedBy'),
-      PART_OF: this.i18n.t('relation.in.partOf'),
-      DEPICTS: this.i18n.t('relation.in.depicts'),
-      SIMILAR_TO: this.i18n.t('relation.in.similarTo'),
-      USES_TECHNIQUE: this.i18n.t('relation.in.usesTechnique'),
-      USES_MATERIAL: this.i18n.t('relation.in.usesMaterial'),
-      HAS_SUBJECT: this.i18n.t('relation.in.hasSubject'),
-      CURATED_WITH: this.i18n.t('relation.in.curatedWith'),
-    };
-
-    return incomingLabels[type] ?? this.i18n.t('relation.in.relatedTo');
+    return relationDirectionLabel(type, direction, (key) => this.i18n.t(key));
   }
 
-  entityTags(entity: any): any[] {
-    return Array.isArray(entity?.tags)
-      ? entity.tags.map((item: any) => item.tag ?? item).filter(Boolean)
-      : [];
+  entityTags(entity: PublicEntity | null): PublicEntityTagItem[] {
+    return entityTags(entity);
   }
 
   onSave(entityId: string) {
@@ -431,44 +310,7 @@ export class EntityDetailViewComponent implements OnDestroy {
     this.shareToggle.emit();
   }
 
-  private compactFacts(items: Array<{ label: string; value: any }>): DetailFact[] {
-    return items
-      .filter((item) => item.value !== null && item.value !== undefined && `${item.value}`.trim().length > 0)
-      .map((item) => ({ label: item.label, value: `${item.value}` }));
-  }
-
-  private joinFactSummary(values: Array<any>): string | null {
-    const parts = values
-      .filter((value) => value !== null && value !== undefined && `${value}`.trim().length > 0)
-      .map((value) => `${value}`.trim());
-
-    return parts.length ? parts.join(' · ') : null;
-  }
-
   entityTypeLabel(type: string): string {
-    switch (type) {
-      case 'ARTWORK':
-        return this.i18n.t('entities.type.artworkSingular');
-      case 'ARTIST':
-        return this.i18n.t('entities.type.artistSingular');
-      case 'ARTICLE':
-        return this.i18n.t('entity.article');
-      case 'CONCEPT':
-        return this.i18n.t('entities.type.conceptSingular');
-      case 'PERIOD':
-        return this.i18n.t('entities.type.periodSingular');
-      case 'MOVEMENT':
-        return this.i18n.t('entities.type.movementSingular');
-      case 'PLACE':
-        return this.i18n.t('entities.type.placeSingular');
-      case 'TEXT':
-        return this.i18n.t('entities.type.textSingular');
-      default:
-        return type
-          .toLowerCase()
-          .split('_')
-          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-          .join(' ');
-    }
+    return entityTypeLabel(type, (key) => this.i18n.t(key));
   }
 }

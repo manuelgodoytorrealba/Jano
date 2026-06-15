@@ -18,6 +18,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { inject } from '@angular/core';
 import * as THREE from 'three';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { ArtworkTransitionRect, EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { MediaPresentation, resolveEntityMediaItem, resolveMediaPresentation } from '../../shared/media/media.utils';
 
 type Entity = any;
@@ -53,7 +54,7 @@ export class EntitiesExplorer3dComponent
     @Input() infoOpen = true;
 
     @Output() activeIndexChange = new EventEmitter<number>();
-    @Output() openEntity = new EventEmitter<string>();
+    @Output() openEntity = new EventEmitter<EntityArtworkTransitionPayload>();
     @Output() requestInfoOpen = new EventEmitter<void>();
     @Output() requestInfoClose = new EventEmitter<void>();
 
@@ -160,6 +161,15 @@ export class EntitiesExplorer3dComponent
 
     closeInfoPanel(): void {
         this.requestInfoClose.emit();
+    }
+
+    onInfoBackdropWheel(event: WheelEvent): void {
+        if (!this.infoOpen) {
+            return;
+        }
+
+        this.onWheel(event);
+        event.stopPropagation();
     }
 
     private cancelCanvasInteraction(): void {
@@ -805,9 +815,88 @@ export class EntitiesExplorer3dComponent
 
     private openIndex(index: number): void {
         const item = this.items[index];
-        if (item?.slug) {
-            this.openEntity.emit(item.slug);
+        const sourceBounds = this.activeCardBounds();
+        const imageUrl = item ? this.thumb(item) : null;
+
+        if (item?.slug && sourceBounds && imageUrl) {
+            this.openEntity.emit({
+                slug: item.slug,
+                title: item.title ?? '',
+                imageUrl,
+                sourceBounds,
+                sourceSurface: 'explorer3d',
+            });
+            return;
         }
+
+        if (item?.slug && imageUrl) {
+            this.openEntity.emit({
+                slug: item.slug,
+                title: item.title ?? '',
+                imageUrl,
+                sourceBounds: this.fallbackCanvasBounds(),
+                sourceSurface: 'explorer3d',
+            });
+        }
+    }
+
+    private activeCardBounds(): ArtworkTransitionRect | null {
+        const card = this.cards[this.activeIndex];
+        const canvas = this.renderer?.domElement;
+        if (!card || !canvas) {
+            return null;
+        }
+
+        const imageMesh = card.image;
+        imageMesh.updateWorldMatrix(true, false);
+        const rect = canvas.getBoundingClientRect();
+        const halfWidth = 1.32;
+        const halfHeight = 1.45;
+        const corners = [
+            new THREE.Vector3(-halfWidth, halfHeight, 0),
+            new THREE.Vector3(halfWidth, halfHeight, 0),
+            new THREE.Vector3(halfWidth, -halfHeight, 0),
+            new THREE.Vector3(-halfWidth, -halfHeight, 0),
+        ];
+
+        const projected = corners.map((corner) => {
+            const point = corner.clone().applyMatrix4(imageMesh.matrixWorld).project(this.camera);
+            return {
+                x: ((point.x + 1) / 2) * rect.width + rect.left,
+                y: ((1 - point.y) / 2) * rect.height + rect.top,
+            };
+        });
+
+        const xs = projected.map((point) => point.x);
+        const ys = projected.map((point) => point.y);
+        const left = Math.min(...xs);
+        const right = Math.max(...xs);
+        const top = Math.min(...ys);
+        const bottom = Math.max(...ys);
+
+        if (!Number.isFinite(left) || !Number.isFinite(top) || right <= left || bottom <= top) {
+            return null;
+        }
+
+        return {
+            left,
+            top,
+            width: right - left,
+            height: bottom - top,
+        };
+    }
+
+    private fallbackCanvasBounds(): ArtworkTransitionRect {
+        const rect = this.renderer.domElement.getBoundingClientRect();
+        const width = Math.min(rect.width * 0.28, 320);
+        const height = width * 1.08;
+
+        return {
+            left: rect.left + (rect.width - width) / 2,
+            top: rect.top + (rect.height - height) / 2,
+            width,
+            height,
+        };
     }
 
     private activateExplorerFocus(source: 'hover' | 'pointer' | 'wheel'): void {
@@ -916,11 +1005,6 @@ export class EntitiesExplorer3dComponent
     }
 
     private onWheel = (event: WheelEvent) => {
-        if (this.infoOpen) {
-            event.preventDefault();
-            return;
-        }
-
         event.preventDefault();
 
         if (!this.items.length) return;

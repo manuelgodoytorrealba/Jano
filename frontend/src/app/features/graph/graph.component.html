@@ -7,6 +7,10 @@
     [class.explorer-shell--mode-image]="workspaceMode === 'image'"
     [class.explorer-shell--mode-graph]="workspaceMode === 'graph'"
     [class.explorer-shell--focused]="workspaceFocused"
+    [class.explorer-shell--artwork-arrival]="artworkRouteArrivalActive()"
+    [class.explorer-shell--artwork-arrival-complete]="!artworkTransition.shouldMaskDestinationArtwork(slug)"
+    [class.explorer-shell--artwork-arrival-controls]="artworkTransition.shouldRevealControls(slug)"
+    [class.explorer-shell--artwork-arrival-graph]="artworkTransition.shouldRevealGraph(slug)"
   >
     <div class="explorer-canvas">
       <section
@@ -17,6 +21,7 @@
         <div
           #imageStage
           class="image-stage"
+          [class.image-stage--arrival-masked]="artworkTransition.shouldMaskDestinationArtwork(slug)"
           (wheel)="onImageWheel($event)"
           (pointerdown)="onImagePointerDown($event)"
           (pointermove)="onImagePointerMove($event)"
@@ -37,7 +42,8 @@
                 [class.is-loading]="imageLoading()"
                 [src]="imagePresentation().src ?? imageUrl!"
                 [alt]="imageAlt || entityTitle"
-                loading="lazy"
+                loading="eager"
+                decoding="async"
                 draggable="false"
                 (load)="onImageLoaded($event)"
               />
@@ -91,6 +97,7 @@
 
       <section
         class="explorer-graph-pane"
+        [class.explorer-graph-pane--arrival-hidden]="!artworkTransition.shouldRevealGraph(slug)"
         [class.explorer-pane--collapsed]="workspaceMode === 'image' && !workspaceFocused"
         [class.explorer-graph-pane--inspector-hidden]="!inspectorVisible()"
         [attr.aria-hidden]="workspaceMode === 'image' && !workspaceFocused ? 'true' : null"

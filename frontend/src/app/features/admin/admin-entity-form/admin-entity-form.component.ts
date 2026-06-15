@@ -14,7 +14,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   AdminAdditionalMediaItem,
+  AdminCreateRelationPayload,
+  AdminEntityContributorRecord,
   AdminEntityResponse,
+  AdminEntityRelationRecord,
+  AdminEntitySearchListItem,
+  AdminEntitySourceRefRecord,
+  AdminEntityTagRecord,
   AdminEntitiesApi,
   AdminContributorPayload,
   AdminEntityDetailsPayload,
@@ -35,8 +41,105 @@ import { Tag, TagsApi } from '../../../core/api/tags.api';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import { EntityDetailViewComponent } from '../../entity/entity-detail-view.component';
+import { PublicEntityPreview } from '../../../core/api/entities.models';
+import { AdminEntityMediaGroupComponent } from './admin-entity-media-group.component';
+import { AdminEntityLinkSuggestionsComponent } from './admin-entity-link-suggestions.component';
+import { AdminEntityPreviewPopoverComponent } from './admin-entity-preview-popover.component';
+import {
+  beginAdminEntityPreviewRequest,
+  closeAdminEntityPreview,
+  createAdminEntityPreviewHoverState,
+  resolveAdminEntityPreviewRequest,
+  setAdminEntityPreviewLinkHover,
+  setAdminEntityPreviewPopupHover,
+  shouldKeepAdminEntityPreviewOpen,
+} from './admin-entity-preview-hover.presenter';
+import { AdminEntitySidebarComponent } from './admin-entity-sidebar.component';
+import {
+  detectAdminEntityLinkMatch,
+  insertAdminEntityLink,
+  renderAdminEntityLinkedContentPreview,
+} from './admin-entity-content-linking.presenter';
 import { MediaAddPanelComponent } from './media-add-panel.component';
 import { MediaCardEditorComponent } from './media-card-editor.component';
+import {
+  ADMIN_ENTITY_DASHBOARD_SECTIONS,
+  AdminEntitySaveStatusViewModel,
+  AdminEntitySidebarSectionItem,
+  buildAdminEntitySaveStatusViewModel,
+  buildAdminEntitySidebarSections,
+  DashboardSectionId,
+} from './admin-entity-shell.presenter';
+import {
+  AdminEntityPreviewBuildInput,
+  AdminEntityPreviewConnection,
+  AdminEntityPreviewLocalizedDetailsForm,
+  AdminEntityPreviewRelation,
+  AdminEntityPreviewSourceRef,
+  AdminEntityPreviewTranslationForm,
+  buildAdminEntityPreviewModel,
+  buildAdminEntityPreviewStateKey,
+  buildAdminPreviewKeyConnections,
+} from './admin-entity-preview.presenter';
+import {
+  applyTranslations as applyContentTranslations,
+  buildEntityPayload,
+  buildTranslationPayload,
+  contentFieldHint as contentFieldHintFromPresenter,
+  contentFieldLabel as contentFieldLabelFromPresenter,
+  createEmptyLocalizedDetailsForm,
+  createEmptyTranslationForm,
+  extractLocalizedDetailsForm,
+  summaryFieldHint as summaryFieldHintFromPresenter,
+  translationStatus as translationStatusFromPresenter,
+  translationStatusLabel as translationStatusLabelFromPresenter,
+  translationStatusMark as translationStatusMarkFromPresenter,
+  TranslationCompleteness,
+  typedDetailsSummary as typedDetailsSummaryFromPresenter,
+} from './admin-entity-content.presenter';
+import {
+  AdminEntityRelationDraft,
+  buildCreateRelationPayload,
+  buildSelectedRelationSearchLabel,
+  buildUpdateRelationPayload,
+  canSubmitRelationDraft,
+  createEmptyRelationDraft,
+  filterRelationSearchResults,
+  resolveRelationTypeSelection,
+  shouldSearchRelationTargets,
+} from './admin-entity-relations.presenter';
+import {
+  AdminEditableContributor,
+  AdminEditableSourceRef,
+  buildContributorPayload,
+  buildSourceRefPayload,
+  createEmptyContributorDraft,
+  createEmptySourceRefDraft,
+  normalizeContributor,
+  normalizeSourceRef,
+  upsertContributor,
+  upsertSourceRef,
+} from './admin-entity-metadata.presenter';
+import {
+  AdminEntityMediaLibraryViewModel,
+  buildAdminEntityMediaLibraryViewModel,
+  MediaLibraryViewId,
+  mediaSlotResolutionLabel,
+  mediaSlotStateClass,
+  mediaSlotStatusLabel,
+  VisualSlot,
+} from './admin-entity-media.presenter';
+import {
+  AdminEntityMediaLibraryState,
+  buildAdminEntityMediaLibraryState,
+  buildMediaPayload as buildAdminMediaPayload,
+  buildMediaUpdatePayload as buildAdminMediaUpdatePayload,
+  buildUploadPayload as buildAdminUploadPayload,
+  cloneMediaLink as cloneAdminMediaLink,
+  cloneMediaLibraryState,
+  mediaLinksEqual,
+  removeMediaFromLibraryState,
+} from './admin-entity-media.helpers';
 import {
   EditableAdminMediaEditor,
   EditableAdminMediaLink,
@@ -44,70 +147,15 @@ import {
   MediaAddExternalSubmit,
   MediaAddUploadSubmit,
   MediaEditorSlotKey,
-  MediaSlotCropMap,
-  UploadPreviewDimensions,
 } from './media-admin.models';
 
-type ResolvedMediaSlotState = {
-  item: AdminMediaAsset | null;
-  source: 'explicit' | 'fallback' | 'legacy' | 'empty';
-  matchedRole: string | null;
-  explanation: string;
-  reasonCode: string;
-};
-
-type VisualSlot = {
-  key: 'explorer3d' | 'list' | 'detail' | 'preview';
-  label: string;
-  description: string;
-  previewUsage: 'explorer3d' | 'card' | 'detail' | 'thumbnail';
-  previewClass: string;
-  state: ResolvedMediaSlotState;
-};
-
-type DashboardSectionId =
-  | 'section-content'
-  | 'section-media'
-  | 'section-preview'
-  | 'section-sources'
-  | 'section-contributors'
-  | 'section-relations';
-
-type MediaLibraryViewId = 'coverage' | 'library' | 'add';
-
 type EntitySaveState = 'idle' | 'saving' | 'saved' | 'error';
-
-type TranslationCompleteness = 'complete' | 'partial' | 'missing';
-
-type AdminTranslationForm = {
-  title: string;
-  shortDescription: string;
-  essay: string;
-  notes: string;
-  excerpt: string;
-};
-
-type AdminLocalizedDetailsForm = {
-  authorNation: string;
-  technique: string;
-  materials: string;
-  dimensions: string;
-  location: string;
-  collection: string;
-  state: string;
-  country: string;
-  city: string;
-  disciplines: string;
-  bioShort: string;
-  links: string;
-  definition: string;
-};
 
 @Component({
   standalone: true,
   selector: 'app-admin-entity-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, JanoMediaComponent, EntityDetailViewComponent, MediaAddPanelComponent, MediaCardEditorComponent],
+  imports: [FormsModule, JanoMediaComponent, EntityDetailViewComponent, MediaAddPanelComponent, MediaCardEditorComponent, AdminEntityMediaGroupComponent, AdminEntitySidebarComponent, AdminEntityLinkSuggestionsComponent, AdminEntityPreviewPopoverComponent],
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
 })
@@ -126,33 +174,17 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
 @ViewChild('previewContainer')
 previewContainer?: ElementRef<HTMLElement>;
 
-  linkSuggestions: any[] = [];
+  linkSuggestions: AdminEntitySearchListItem[] = [];
   linkSearch = '';
   linkLoading = false;
   showLinkSuggestions = false;
   linkStartIndex = -1;
-  hoveredSlug: string | null = null;
-  previewData: any | null = null;
-  previewLoading = false;
-  previewEntityModel: any | null = null;
-
-
-
+  previewEntityModel: PublicEntityPreview | null = null;
   private closePreviewTimer: ReturnType<typeof setTimeout> | null = null;
-  private previewRequestId = 0;
-  private isHoveringPreviewLink = false;
-  isHoveringPreviewPopup = false;
-  private previewRequestSlug: string | null = null;
+  private previewHoverState = createAdminEntityPreviewHoverState();
   private previewEntityStateKey = '';
 
-  readonly dashboardSections = [
-    { id: 'section-preview', label: 'Preview Detail' },
-    { id: 'section-content', label: 'Global data' },
-    { id: 'section-media', label: 'Media library' },
-    { id: 'section-sources', label: 'Fuentes' },
-    { id: 'section-contributors', label: 'Colaboradores' },
-    { id: 'section-relations', label: 'Relaciones' },
-  ] as const;
+  readonly dashboardSections = ADMIN_ENTITY_DASHBOARD_SECTIONS;
   activeDashboardSection: DashboardSectionId = 'section-preview';
   activeMediaLibraryView: MediaLibraryViewId = 'coverage';
   adminSidebarVisible = true;
@@ -167,11 +199,11 @@ previewContainer?: ElementRef<HTMLElement>;
     { locale: 'en', label: 'English' },
   ];
   activeTranslationLocale: AdminLocale = 'es';
-  translationForms: Record<AdminLocale, AdminTranslationForm> = {
+  translationForms: Record<AdminLocale, AdminEntityPreviewTranslationForm> = {
     es: this.createEmptyTranslationForm(),
     en: this.createEmptyTranslationForm(),
   };
-  localizedDetailForms: Record<AdminLocale, AdminLocalizedDetailsForm> = {
+  localizedDetailForms: Record<AdminLocale, AdminEntityPreviewLocalizedDetailsForm> = {
     es: this.createEmptyLocalizedDetailsForm(),
     en: this.createEmptyLocalizedDetailsForm(),
   };
@@ -186,7 +218,7 @@ previewContainer?: ElementRef<HTMLElement>;
   mediaWarningMessages: string[] = [];
   mediaWarningsDetailed: AdminMediaWarning[] = [];
   mediaCoverageSummary: AdminMediaCoverageSummary | null = null;
-  persistedResolvedMedia: any | null = null;
+  persistedResolvedMedia: Record<string, unknown> | null = null;
   activeMediaEditorId: string | null = null;
   mediaLoading = false;
   mediaMessage = '';
@@ -212,11 +244,12 @@ previewContainer?: ElementRef<HTMLElement>;
       description: 'Incorpora nuevo material sin mezclarlo con la edición actual.',
     },
   ];
+  mediaLibraryModel: AdminEntityMediaLibraryViewModel = this.buildMediaLibraryModel();
 
   private linkSearch$ = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  incomingRelations: any[] = [];
+  incomingRelations: AdminEntityRelationRecord[] = [];
   incomingRelationsLoading = false;
 
   sourceTypes: AdminSourceRefPayload['sourceType'][] = [
@@ -231,7 +264,7 @@ previewContainer?: ElementRef<HTMLElement>;
   relationTypesLoading = false;
 
   availableTags: Tag[] = [];
-  entityTags: any[] = [];
+  entityTags: AdminEntityTagRecord[] = [];
   selectedTagId = '';
   newTagLabel = '';
   newTagCategory = '';
@@ -240,60 +273,30 @@ previewContainer?: ElementRef<HTMLElement>;
   tagsMessage = '';
   tagsError = '';
 
-  relations: any[] = [];
+  relations: AdminEntityRelationRecord[] = [];
   relationSearch = '';
-  relationResults: any[] = [];
+  relationResults: AdminEntitySearchListItem[] = [];
   relationLoading = false;
   relationsLoading = false;
 
-  newRelation = {
-    toId: '',
-    type: 'RELATED_TO',
-    relationTypeId: '',
-    justificationEs: '',
-    justificationEn: '',
-  };
+  newRelation: AdminEntityRelationDraft = createEmptyRelationDraft([]);
 
   detailsSaving = false;
   detailsMessage = '';
   detailsError = '';
   detailsForm: AdminEntityDetailsPayload = {};
 
-  sourceRefs: any[] = [];
+  sourceRefs: AdminEditableSourceRef[] = [];
   sourcesSaving = false;
   sourcesMessage = '';
   sourcesError = '';
-  newSourceRef: AdminSourceRefPayload = {
-    sourceType: 'WEBSITE',
-    sourceTitle: '',
-    sourceTitleEs: '',
-    sourceTitleEn: '',
-    sourceAuthor: '',
-    sourceAuthorEs: '',
-    sourceAuthorEn: '',
-    sourcePublisher: '',
-    sourcePublisherEs: '',
-    sourcePublisherEn: '',
-    sourceYear: null,
-    sourceUrl: '',
-    page: '',
-    quote: '',
-    quoteEs: '',
-    quoteEn: '',
-    note: '',
-    noteEs: '',
-    noteEn: '',
-  };
+  newSourceRef: AdminSourceRefPayload = createEmptySourceRefDraft();
 
-  contributors: any[] = [];
+  contributors: AdminEditableContributor[] = [];
   contributorsSaving = false;
   contributorsMessage = '';
   contributorsError = '';
-  newContributor: AdminContributorPayload = {
-    name: '',
-    role: '',
-    note: '',
-  };
+  newContributor: AdminContributorPayload = createEmptyContributorDraft();
 
   types: AdminEntityPayload['type'][] = [
     'ARTWORK',
@@ -385,7 +388,7 @@ previewContainer?: ElementRef<HTMLElement>;
         takeUntil(this.destroy$),
       )
       .subscribe({
-        next: (res: any) => {
+        next: (res) => {
           const items = Array.isArray(res?.items) ? res.items : [];
           this.linkSuggestions = items;
           this.linkLoading = false;
@@ -439,7 +442,7 @@ previewContainer?: ElementRef<HTMLElement>;
     const slug = link.dataset['slug'];
     if (!slug) return;
 
-    this.isHoveringPreviewLink = true;
+    this.previewHoverState = setAdminEntityPreviewLinkHover(this.previewHoverState, true);
     this.cancelClosePreview();
     this.openPreview(slug);
   });
@@ -459,11 +462,11 @@ previewContainer?: ElementRef<HTMLElement>;
 
     // Si vas hacia el popup, no cierres
     if (related?.closest('.entity-preview-popover')) {
-      this.isHoveringPreviewLink = false;
+      this.previewHoverState = setAdminEntityPreviewLinkHover(this.previewHoverState, false);
       return;
     }
 
-    this.isHoveringPreviewLink = false;
+    this.previewHoverState = setAdminEntityPreviewLinkHover(this.previewHoverState, false);
     this.scheduleClosePreview();
   });
 }
@@ -489,37 +492,20 @@ previewContainer?: ElementRef<HTMLElement>;
     this.cdr.markForCheck();
   }
 
-  activeTranslationForm(): AdminTranslationForm {
+  activeTranslationForm(): AdminEntityPreviewTranslationForm {
     return this.translationForms[this.activeTranslationLocale];
   }
 
   translationStatus(locale: AdminLocale): TranslationCompleteness {
-    const form = this.translationForms[locale];
-    const fields = [form.title, form.shortDescription, form.essay, form.notes, form.excerpt]
-      .map((value) => (value ?? '').trim());
-    const filled = fields.filter(Boolean).length;
-
-    if (!filled) {
-      return 'missing';
-    }
-
-    return form.title.trim() && (form.shortDescription.trim() || form.excerpt.trim()) && form.essay.trim()
-      ? 'complete'
-      : 'partial';
+    return translationStatusFromPresenter(this.translationForms, locale);
   }
 
   translationStatusLabel(locale: AdminLocale): string {
-    const status = this.translationStatus(locale);
-    if (status === 'complete') return 'Complete';
-    if (status === 'partial') return 'Partial';
-    return 'Missing';
+    return translationStatusLabelFromPresenter(this.translationStatus(locale));
   }
 
   translationStatusMark(locale: AdminLocale): string {
-    const status = this.translationStatus(locale);
-    if (status === 'complete') return '✓';
-    if (status === 'partial') return '◐';
-    return '○';
+    return translationStatusMarkFromPresenter(this.translationStatus(locale));
   }
 
   private slugify(value: string): string {
@@ -534,86 +520,27 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   private buildPayload(): AdminEntityPayload {
-    const spanish = this.translationForms.es;
-    const title = spanish.title.trim() || (this.form.title ?? '').trim();
-    const summary = spanish.shortDescription.trim() || spanish.excerpt.trim() || (this.form.summary ?? '').trim();
-    const content = spanish.essay.trim() || (this.form.content ?? '').trim();
-
-    return {
-      type: this.form.type,
-      title,
-      slug: (this.form.slug ?? '').trim(),
-      summary: summary || undefined,
-      content: content || undefined,
-      contentLevel: this.form.contentLevel || undefined,
-      status: this.form.status || undefined,
-      startYear:
-        this.form.startYear !== null && this.form.startYear !== ''
-          ? Number(this.form.startYear)
-          : undefined,
-      endYear:
-        this.form.endYear !== null && this.form.endYear !== ''
-          ? Number(this.form.endYear)
-          : undefined,
-    };
+    return buildEntityPayload(this.form, this.translationForms);
   }
 
-  private createEmptyTranslationForm(): AdminTranslationForm {
-    return { title: '', shortDescription: '', essay: '', notes: '', excerpt: '' };
+  private createEmptyTranslationForm(): AdminEntityPreviewTranslationForm {
+    return createEmptyTranslationForm();
   }
 
-  private createEmptyLocalizedDetailsForm(): AdminLocalizedDetailsForm {
-    return {
-      authorNation: '',
-      technique: '',
-      materials: '',
-      dimensions: '',
-      location: '',
-      collection: '',
-      state: '',
-      country: '',
-      city: '',
-      disciplines: '',
-      bioShort: '',
-      links: '',
-      definition: '',
-    };
+  private createEmptyLocalizedDetailsForm(): AdminEntityPreviewLocalizedDetailsForm {
+    return createEmptyLocalizedDetailsForm();
   }
 
-  activeLocalizedDetailsForm(): AdminLocalizedDetailsForm {
+  activeLocalizedDetailsForm(): AdminEntityPreviewLocalizedDetailsForm {
     if (this.activeTranslationLocale === 'es') {
-      return this.detailsForm as AdminLocalizedDetailsForm;
+      return this.detailsForm as AdminEntityPreviewLocalizedDetailsForm;
     }
 
     return this.localizedDetailForms[this.activeTranslationLocale];
   }
 
   private applyTranslations(entity: AdminEntityResponse): void {
-    const next: Record<AdminLocale, AdminTranslationForm> = {
-      es: {
-        title: entity.title ?? '',
-        shortDescription: entity.summary ?? '',
-        essay: entity.content ?? '',
-        notes: '',
-        excerpt: entity.summary ?? '',
-      },
-      en: this.createEmptyTranslationForm(),
-    };
-
-    for (const translation of entity.translations ?? []) {
-      const locale = translation.locale === 'en' ? 'en' : translation.locale === 'es' ? 'es' : null;
-      if (!locale) continue;
-
-      next[locale] = {
-        title: translation.title ?? '',
-        shortDescription: translation.shortDescription ?? '',
-        essay: translation.essay ?? '',
-        notes: translation.notes ?? '',
-        excerpt: translation.excerpt ?? '',
-      };
-    }
-
-    this.translationForms = next;
+    this.translationForms = applyContentTranslations(entity);
   }
 
   private applyLocalizedDetailTranslations(entity: AdminEntityResponse): void {
@@ -623,49 +550,12 @@ previewContainer?: ElementRef<HTMLElement>;
     };
   }
 
-  private extractLocalizedDetailsForm(entity: AdminEntityResponse, locale: AdminLocale): AdminLocalizedDetailsForm {
-    if (locale === 'es') {
-      return {
-        authorNation: entity?.artwork?.authorNation ?? '',
-        technique: entity?.artwork?.technique ?? '',
-        materials: entity?.artwork?.materials ?? '',
-        dimensions: entity?.artwork?.dimensions ?? '',
-        location: entity?.artwork?.location ?? '',
-        collection: entity?.artwork?.collection ?? '',
-        state: entity?.artwork?.state ?? '',
-        country: entity?.artist?.country ?? '',
-        city: entity?.artist?.city ?? '',
-        disciplines: entity?.artist?.disciplines ?? '',
-        bioShort: entity?.artist?.bioShort ?? '',
-        links: entity?.artist?.links ?? '',
-        definition: entity?.concept?.definition ?? entity?.period?.definition ?? '',
-      };
-    }
-
-    const artworkTranslation = entity?.artwork?.translations?.find((item: any) => item?.locale === locale) ?? null;
-    const artistTranslation = entity?.artist?.translations?.find((item: any) => item?.locale === locale) ?? null;
-    const conceptTranslation = entity?.concept?.translations?.find((item: any) => item?.locale === locale) ?? null;
-    const periodTranslation = entity?.period?.translations?.find((item: any) => item?.locale === locale) ?? null;
-
-    return {
-      authorNation: artworkTranslation?.authorNation ?? '',
-      technique: artworkTranslation?.technique ?? '',
-      materials: artworkTranslation?.materials ?? '',
-      dimensions: artworkTranslation?.dimensions ?? '',
-      location: artworkTranslation?.location ?? '',
-      collection: artworkTranslation?.collection ?? '',
-      state: artworkTranslation?.state ?? '',
-      country: artistTranslation?.country ?? '',
-      city: artistTranslation?.city ?? '',
-      disciplines: artistTranslation?.disciplines ?? '',
-      bioShort: artistTranslation?.bioShort ?? '',
-      links: artistTranslation?.links ?? '',
-      definition: conceptTranslation?.definition ?? periodTranslation?.definition ?? '',
-    };
+  private extractLocalizedDetailsForm(entity: AdminEntityResponse, locale: AdminLocale): AdminEntityPreviewLocalizedDetailsForm {
+    return extractLocalizedDetailsForm(entity, locale);
   }
 
   private buildLocalizedDetailsPayload(locale: AdminLocale): AdminEntityDetailsPayload | undefined {
-    const form = locale === 'es' ? (this.detailsForm as AdminLocalizedDetailsForm) : this.localizedDetailForms[locale];
+    const form = locale === 'es' ? (this.detailsForm as AdminEntityPreviewLocalizedDetailsForm) : this.localizedDetailForms[locale];
     const payload: AdminEntityDetailsPayload = {
       authorNation: String(form.authorNation ?? '').trim() || undefined,
       technique: String(form.technique ?? '').trim() || undefined,
@@ -686,15 +576,13 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   private buildTranslationPayload(locale: AdminLocale): AdminEntityTranslationPayload {
-    const form = this.translationForms[locale];
-    return {
-      title: form.title.trim(),
-      shortDescription: form.shortDescription.trim() || null,
-      essay: form.essay.trim() || null,
-      notes: form.notes.trim() || null,
-      excerpt: form.excerpt.trim() || null,
-      details: this.buildLocalizedDetailsPayload(locale),
-    };
+    return buildTranslationPayload(
+      locale,
+      this.translationForms,
+      this.detailsForm,
+      this.localizedDetailForms,
+      (value) => this.toNullableNumber(value),
+    );
   }
 
   saveActiveTranslation(): void {
@@ -773,10 +661,10 @@ previewContainer?: ElementRef<HTMLElement>;
     this.detailsForm = this.extractDetailsForm(entity);
     this.applyLocalizedDetailTranslations(entity);
     this.sourceRefs = Array.isArray(entity.sourceRefs)
-      ? entity.sourceRefs.map((ref: any) => this.normalizeSourceRef(ref))
+      ? entity.sourceRefs.map((ref) => normalizeSourceRef(ref))
       : [];
     this.contributors = Array.isArray(entity.contributors)
-      ? entity.contributors.map((contributor: any) => this.normalizeContributor(contributor))
+      ? entity.contributors.map((contributor) => normalizeContributor(contributor))
       : [];
     this.entityTags = Array.isArray(entity.tags) ? entity.tags : [];
     this.syncPreviewEntityModel(true);
@@ -788,9 +676,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.relationTypesApi.list().subscribe({
       next: (types) => {
         this.relationTypes = types;
-        const preferred = types.find((type) => type.key === this.newRelation.type) ?? types[0] ?? null;
-        this.newRelation.relationTypeId = preferred?.id ?? '';
-        this.newRelation.type = preferred?.key ?? this.newRelation.type;
+        this.newRelation = createEmptyRelationDraft(types);
         this.relationTypesLoading = false;
         this.cdr.markForCheck();
       },
@@ -890,42 +776,6 @@ previewContainer?: ElementRef<HTMLElement>;
     return mode === 'stay' ? 'Guardar y seguir' : 'Guardar';
   }
 
-  entitySaveStatusLabel(): string {
-    if (this.saving || this.entitySaveState === 'saving') {
-      return 'Guardando cambios...';
-    }
-
-    if (this.entitySaveState === 'saved' && this.entityLastSavedAt) {
-      return `Guardado a las ${this.entityLastSavedAt.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })}`;
-    }
-
-    if (this.entitySaveState === 'error') {
-      return 'El último guardado falló';
-    }
-
-    return this.isEdit ? 'Listo para guardar' : 'Crea la entity para activar el resto';
-  }
-
-  entitySaveStatusClass(): string {
-    if (this.saving || this.entitySaveState === 'saving') {
-      return 'entity-save-status entity-save-status--saving';
-    }
-
-    if (this.entitySaveState === 'saved') {
-      return 'entity-save-status entity-save-status--saved';
-    }
-
-    if (this.entitySaveState === 'error') {
-      return 'entity-save-status entity-save-status--error';
-    }
-
-    return 'entity-save-status';
-  }
-
   private normalizeAdminReturnTo(value: string | null): string {
     if (!value || !value.startsWith('/admin')) {
       return '/admin';
@@ -999,7 +849,7 @@ previewContainer?: ElementRef<HTMLElement>;
   searchRelationTargets() {
     const q = this.relationSearch.trim();
 
-    if (!q || q.length < 2) {
+    if (!shouldSearchRelationTargets(q)) {
       this.relationResults = [];
       this.cdr.markForCheck();
       return;
@@ -1013,9 +863,9 @@ previewContainer?: ElementRef<HTMLElement>;
       page: 1,
       sort: 'title',
     }).subscribe({
-      next: (res: any) => {
+      next: (res) => {
         const items = Array.isArray(res?.items) ? res.items : [];
-        this.relationResults = items.filter((item: any) => item.id !== this.entityId);
+        this.relationResults = filterRelationSearchResults(items, this.entityId);
         this.relationLoading = false;
         this.cdr.markForCheck();
       },
@@ -1027,40 +877,27 @@ previewContainer?: ElementRef<HTMLElement>;
     });
   }
 
-  selectRelationTarget(entity: any) {
+  selectRelationTarget(entity: AdminEntitySearchListItem) {
     this.newRelation.toId = entity.id;
-    this.relationSearch = `${entity.title} (${entity.type})`;
+    this.relationSearch = buildSelectedRelationSearchLabel(entity);
     this.relationResults = [];
     this.cdr.markForCheck();
   }
 
   onRelationTypeChange(relationTypeId: string) {
-    const relationType = this.relationTypes.find((item) => item.id === relationTypeId);
-    this.newRelation.relationTypeId = relationType?.id ?? '';
-    this.newRelation.type = relationType?.key ?? this.newRelation.type;
+    this.newRelation = resolveRelationTypeSelection(this.relationTypes, relationTypeId, this.newRelation);
   }
 
   addRelation() {
-    if (!this.entityId || !this.newRelation.toId || !this.newRelation.type.trim()) {
+    if (!canSubmitRelationDraft(this.entityId, this.newRelation)) {
       return;
     }
 
-    this.adminApi.createRelation(this.entityId, {
-      toId: this.newRelation.toId,
-      type: this.newRelation.type.trim(),
-      relationTypeId: this.newRelation.relationTypeId || undefined,
-        justificationEs: this.newRelation.justificationEs.trim() || undefined,
-      justificationEn: this.newRelation.justificationEn.trim() || undefined,
-    }).subscribe({
+    const payload: AdminCreateRelationPayload = buildCreateRelationPayload(this.newRelation);
+
+    this.adminApi.createRelation(this.entityId, payload).subscribe({
       next: () => {
-        const preferred = this.relationTypes.find((type) => type.key === 'RELATED_TO') ?? this.relationTypes[0] ?? null;
-        this.newRelation = {
-          toId: '',
-          type: preferred?.key ?? 'RELATED_TO',
-          relationTypeId: preferred?.id ?? '',
-          justificationEs: '',
-          justificationEn: '',
-        };
+        this.newRelation = createEmptyRelationDraft(this.relationTypes);
         this.relationSearch = '';
         this.relationResults = [];
         this.loadRelations();
@@ -1164,16 +1001,10 @@ previewContainer?: ElementRef<HTMLElement>;
     return this.availableTags.filter((tag) => tag.isActive && !this.tagAlreadySelected(tag.id));
   }
 
-  saveRelation(rel: any) {
+  saveRelation(rel: AdminEntityRelationRecord) {
     if (!this.entityId) return;
 
-    this.adminApi.updateRelation(this.entityId, rel.id, {
-      relationTypeId: rel.relationTypeId || rel.relationType?.id || undefined,
-      type: rel.type || rel.relationTypeKey || undefined,
-      justificationEs: String(rel.justificationEs ?? rel.justification ?? '').trim() || undefined,
-      justificationEn: String(rel.justificationEn ?? '').trim() || undefined,
-      weight: rel.weight ?? undefined,
-    }).subscribe({
+    this.adminApi.updateRelation(this.entityId, rel.id, buildUpdateRelationPayload(rel)).subscribe({
       next: (updated) => {
         this.relations = this.relations.map((item) => item.id === updated.id ? updated : item);
         this.incomingRelations = this.incomingRelations.map((item) => item.id === updated.id ? updated : item);
@@ -1242,8 +1073,10 @@ previewContainer?: ElementRef<HTMLElement>;
       return;
     }
 
-    const payload = this.buildSourceRefPayload(this.newSourceRef);
-    if (!payload) {
+    const result = buildSourceRefPayload(this.newSourceRef, (value) => this.toNullableNumber(value));
+    if (!result.payload) {
+      this.sourcesError = result.error ?? 'No se pudo preparar la fuente.';
+      this.cdr.markForCheck();
       return;
     }
 
@@ -1251,25 +1084,11 @@ previewContainer?: ElementRef<HTMLElement>;
     this.sourcesMessage = '';
     this.sourcesSaving = true;
 
-    this.adminApi.createSourceRef(this.entityId, payload).subscribe({
+    this.adminApi.createSourceRef(this.entityId, result.payload).subscribe({
       next: (ref) => {
         this.sourcesSaving = false;
-        this.sourceRefs = [...this.sourceRefs, this.normalizeSourceRef(ref)];
-        this.newSourceRef = {
-          sourceType: 'WEBSITE',
-          sourceTitle: '',
-          sourceAuthor: '',
-          sourcePublisher: '',
-          sourceYear: null,
-          sourceUrl: '',
-          page: '',
-          quote: '',
-          quoteEs: '',
-          quoteEn: '',
-          note: '',
-          noteEs: '',
-          noteEn: '',
-        };
+        this.sourceRefs = [...this.sourceRefs, normalizeSourceRef(ref)];
+        this.newSourceRef = createEmptySourceRefDraft();
         this.sourcesMessage = 'Fuente añadida correctamente.';
         this.cdr.markForCheck();
       },
@@ -1281,13 +1100,15 @@ previewContainer?: ElementRef<HTMLElement>;
     });
   }
 
-  saveSourceRef(ref: any) {
+  saveSourceRef(ref: AdminEditableSourceRef) {
     if (!this.entityId || this.sourcesSaving) {
       return;
     }
 
-    const payload = this.buildSourceRefPayload(ref);
-    if (!payload) {
+    const result = buildSourceRefPayload(ref, (value) => this.toNullableNumber(value));
+    if (!result.payload) {
+      this.sourcesError = result.error ?? 'No se pudo preparar la fuente.';
+      this.cdr.markForCheck();
       return;
     }
 
@@ -1295,7 +1116,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.sourcesMessage = '';
     this.sourcesSaving = true;
 
-    this.adminApi.updateSourceRef(this.entityId, ref.id, payload).subscribe({
+    this.adminApi.updateSourceRef(this.entityId, ref.id, result.payload).subscribe({
       next: (updated) => {
         this.sourcesSaving = false;
         this.upsertSourceRef(updated);
@@ -1344,8 +1165,10 @@ previewContainer?: ElementRef<HTMLElement>;
       return;
     }
 
-    const payload = this.buildContributorPayload(this.newContributor);
-    if (!payload) {
+    const result = buildContributorPayload(this.newContributor);
+    if (!result.payload) {
+      this.contributorsError = result.error ?? 'No se pudo preparar el colaborador.';
+      this.cdr.markForCheck();
       return;
     }
 
@@ -1353,11 +1176,11 @@ previewContainer?: ElementRef<HTMLElement>;
     this.contributorsMessage = '';
     this.contributorsSaving = true;
 
-    this.adminApi.createContributor(this.entityId, payload).subscribe({
+    this.adminApi.createContributor(this.entityId, result.payload).subscribe({
       next: (contributor) => {
         this.contributorsSaving = false;
-        this.contributors = [...this.contributors, this.normalizeContributor(contributor)];
-        this.newContributor = { name: '', role: '', note: '' };
+        this.contributors = [...this.contributors, normalizeContributor(contributor)];
+        this.newContributor = createEmptyContributorDraft();
         this.contributorsMessage = 'Colaborador añadido correctamente.';
         this.cdr.markForCheck();
       },
@@ -1369,13 +1192,15 @@ previewContainer?: ElementRef<HTMLElement>;
     });
   }
 
-  saveContributor(contributor: any) {
+  saveContributor(contributor: AdminEditableContributor) {
     if (!this.entityId || this.contributorsSaving) {
       return;
     }
 
-    const payload = this.buildContributorPayload(contributor);
-    if (!payload) {
+    const result = buildContributorPayload(contributor);
+    if (!result.payload) {
+      this.contributorsError = result.error ?? 'No se pudo preparar el colaborador.';
+      this.cdr.markForCheck();
       return;
     }
 
@@ -1383,7 +1208,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.contributorsMessage = '';
     this.contributorsSaving = true;
 
-    this.adminApi.updateContributor(this.entityId, contributor.id, payload).subscribe({
+    this.adminApi.updateContributor(this.entityId, contributor.id, result.payload).subscribe({
       next: (updated) => {
         this.contributorsSaving = false;
         this.upsertContributor(updated);
@@ -1447,76 +1272,26 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   contentFieldLabel(): string {
-    return this.form.type === 'ARTICLE' ? 'Cuerpo del artículo' : 'Contenido';
+    return contentFieldLabelFromPresenter(this.form.type);
   }
 
   contentFieldHint(): string {
-    return this.form.type === 'ARTICLE'
-      ? 'Usa #, ## y ### para títulos, > para citas, :::lead ... ::: para texto grande, y [[slug]] o [[slug|texto]] para enlazar entidades.'
-      : 'Texto principal de la entidad. Puedes usar [[slug]] o [[slug|texto]] para enlazar.';
+    return contentFieldHintFromPresenter(this.form.type);
   }
 
   summaryFieldHint(): string {
-    return this.form.type === 'ARTICLE'
-      ? 'Entradilla breve para la portada y el hero del artículo.'
-      : 'Resumen breve de la entidad.';
+    return summaryFieldHintFromPresenter(this.form.type);
   }
 
   typedDetailsSummary(): string {
-    switch (this.form.type) {
-      case 'ARTWORK':
-        return this.compactJoin([
-          this.detailsForm.technique,
-          this.detailsForm.materials,
-          this.detailsForm.dimensions,
-          this.detailsForm.location,
-        ]);
-      case 'ARTIST':
-        return this.compactJoin([
-          this.detailsForm.country,
-          this.detailsForm.city,
-          this.detailsForm.disciplines,
-        ]);
-      case 'CONCEPT':
-      case 'PERIOD':
-        return String(this.detailsForm.definition ?? '').trim();
-      default:
-        return '';
-    }
+    return typedDetailsSummaryFromPresenter(this.form.type, this.detailsForm);
   }
 
-  previewKeyConnections(): Array<{ label: string; value: string }> {
-    const groups: Array<{ label: string; value: string }> = [];
-    const outgoing = Array.isArray(this.relations) ? this.relations : [];
-    const incoming = Array.isArray(this.incomingRelations) ? this.incomingRelations : [];
-
-    const first = (type: string) => outgoing.find((rel) => rel.type === type);
-    const collectTargets = (type: string) => outgoing.filter((rel) => rel.type === type).map((rel) => rel.to?.title).filter(Boolean);
-
-    const author = first('CREATED_BY')?.to?.title;
-    if (author) groups.push({ label: 'Autor', value: author });
-
-    const movement = first('BELONGS_TO_MOVEMENT')?.to?.title;
-    if (movement) groups.push({ label: 'Movimiento', value: movement });
-
-    const period = first('BELONGS_TO_PERIOD')?.to?.title;
-    if (period) groups.push({ label: 'Periodo', value: period });
-
-    const concepts = collectTargets('ABOUT_CONCEPT');
-    if (concepts.length) groups.push({ label: 'Conceptos', value: concepts.join(' · ') });
-
-    const places = collectTargets('LOCATED_IN');
-    if (places.length) groups.push({ label: 'Ubicación', value: places.join(' · ') });
-
-    const relatedArtworks = [
-      ...outgoing.filter((rel) => rel.type === 'RELATED_TO' && rel.to?.type === 'ARTWORK').map((rel) => rel.to?.title),
-      ...incoming.filter((rel) => rel.type === 'RELATED_TO' && rel.from?.type === 'ARTWORK').map((rel) => rel.from?.title),
-    ].filter(Boolean);
-    if (relatedArtworks.length) {
-      groups.push({ label: 'Obras relacionadas', value: Array.from(new Set(relatedArtworks)).join(' · ') });
-    }
-
-    return groups;
+  previewKeyConnections(): AdminEntityPreviewConnection[] {
+    return buildAdminPreviewKeyConnections(
+      this.relations as AdminEntityPreviewRelation[],
+      this.incomingRelations as AdminEntityPreviewRelation[],
+    );
   }
 
   hasPreviewKeyConnections(): boolean {
@@ -1564,257 +1339,79 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   get mainVisualSlots(): VisualSlot[] {
-    return this.visualSlots;
-  }
-
-  get coverageCards() {
-    return this.mainVisualSlots.map((slot) => ({
-      ...slot,
-      countLabel: this.mediaCoverageSummary?.coveredSlots.includes(slot.key)
-        ? 'Cubierto'
-        : 'Pendiente',
-    }));
+    return this.mediaLibraryModel.mainVisualSlots;
   }
 
   get coverageSummaryCards(): Array<{ label: string; value: string; tone?: 'warning' | 'ok' | 'neutral' }> {
-    const summary = this.mediaCoverageSummary;
-    if (!summary) {
-      return [];
-    }
-
-    return [
-      {
-        label: 'Slots cubiertos',
-        value: `${summary.coveredSlots.length}/4`,
-        tone: summary.emptySlots.length ? 'warning' : 'ok',
-      },
-      {
-        label: 'Fallbacks activos',
-        value: String(summary.fallbackSlots.length),
-        tone: summary.fallbackSlots.length ? 'neutral' : 'ok',
-      },
-      {
-        label: 'Assets en biblioteca',
-        value: String(summary.assetCount),
-        tone: 'neutral',
-      },
-      {
-        label: 'Sin uso',
-        value: String(summary.unusedAssetCount),
-        tone: summary.unusedAssetCount ? 'neutral' : 'ok',
-      },
-    ];
-  }
-
-  get coverageHealthLabel(): string {
-    if (this.mediaCoverageSummary?.emptySlots.length) {
-      return 'Cobertura incompleta';
-    }
-
-    if (this.mediaWarnings.length) {
-      return 'Cobertura revisable';
-    }
-
-    return 'Cobertura lista';
-  }
-
-  get coverageHealthTone(): 'warning' | 'ok' {
-    return this.mediaCoverageSummary?.emptySlots.length || this.mediaWarnings.length ? 'warning' : 'ok';
-  }
-
-  get primaryPreviewSlot(): VisualSlot | null {
-    return this.mainVisualSlots.find((slot) => slot.key === 'detail')
-      ?? this.mainVisualSlots.find((slot) => slot.key === 'list')
-      ?? this.mainVisualSlots[0]
-      ?? null;
+    return this.mediaLibraryModel.coverageSummaryCards;
   }
 
   get mainUsedEditors(): EditableAdminMediaEditor[] {
-    return this.mediaEditors.filter((editor) => this.activeSlotLabels(editor.persisted).length > 0);
+    return this.mediaLibraryModel.mainUsedEditors;
   }
 
   get additionalMediaEditors(): EditableAdminMediaEditor[] {
-    const assignmentIds = new Set(this.additionalMediaItems.map((item) => item.assignmentId));
-    return this.mediaEditors.filter((editor) => assignmentIds.has(editor.id));
+    return this.mediaLibraryModel.additionalMediaEditors;
   }
 
   get derivedEditors(): EditableAdminMediaEditor[] {
-    const activeIds = new Set(this.mainUsedEditors.map((editor) => editor.id));
-    const additionalIds = new Set(this.additionalMediaEditors.map((editor) => editor.id));
-
-    return this.mediaEditors.filter((editor) => {
-      if (activeIds.has(editor.id) || additionalIds.has(editor.id)) {
-        return false;
-      }
-
-      return editor.persisted.media.originType === 'INGESTED'
-        || !!editor.persisted.media.derivedFromMediaId
-        || this.hasPromotedVisualReplacement(editor.persisted)
-        || !!this.replacementIngestedLink(editor.persisted);
-    });
+    return this.mediaLibraryModel.derivedEditors;
   }
 
   get unusedEditors(): EditableAdminMediaEditor[] {
-    const excludedIds = new Set([
-      ...this.mainUsedEditors.map((editor) => editor.id),
-      ...this.additionalMediaEditors.map((editor) => editor.id),
-      ...this.derivedEditors.map((editor) => editor.id),
-    ]);
-
-    return this.mediaEditors.filter((editor) => !excludedIds.has(editor.id));
+    return this.mediaLibraryModel.unusedEditors;
   }
 
   get libraryManagedCount(): number {
-    return this.mainUsedEditors.length
-      + this.derivedEditors.length
-      + this.unusedEditors.length
-      + this.additionalMediaEditors.length;
+    return this.mediaLibraryModel.libraryManagedCount;
   }
 
   canIngestMedia(link: EditableAdminMediaLink): boolean {
-    return link.media.originType === 'EXTERNAL_URL';
+    return this.editorPresentation(link).canIngest;
   }
 
   sourceExternalLink(link: EditableAdminMediaLink): EditableAdminMediaLink | null {
-    if (link.media.originType !== 'INGESTED') {
-      return null;
-    }
-
-    if (link.media.derivedFromMediaId) {
-      const direct = this.persistedMediaLinks.find((candidate) => candidate.media.id === link.media.derivedFromMediaId);
-      if (direct?.media.originType === 'EXTERNAL_URL') {
-        return direct;
-      }
-    }
-
-    const canonical = String(link.media.canonicalUrl ?? '').trim().replace(/\/+$/, '');
-    if (!canonical) {
-      return null;
-    }
-
-    return this.persistedMediaLinks.find((candidate) => {
-      if (candidate.id === link.id || candidate.media.originType !== 'EXTERNAL_URL') {
-        return false;
-      }
-
-      const values = [
-        candidate.media.canonicalUrl,
-        candidate.media.displayUrl,
-        candidate.media.url,
-      ]
-        .map((value) => String(value ?? '').trim().replace(/\/+$/, ''))
-        .filter(Boolean);
-
-      return values.includes(canonical);
-    }) ?? null;
+    return this.mediaLibraryModel.sourceExternalLinkById[link.id] ?? null;
   }
 
   canPromoteIngestedMedia(link: EditableAdminMediaLink): boolean {
-    return link.media.originType === 'INGESTED'
-      && !!this.sourceExternalLink(link)
-      ;
+    return this.editorPresentation(link).canPromote;
   }
 
   canRestoreExternalMedia(link: EditableAdminMediaLink): boolean {
-    return link.media.originType === 'EXTERNAL_URL'
-      && !!this.replacementIngestedLink(link);
+    return this.editorPresentation(link).canRestore;
   }
 
   ingestedSourceLabel(link: EditableAdminMediaLink): string | null {
-    if (link.media.originType !== 'INGESTED') {
-      return null;
-    }
-
-    return link.media.canonicalUrl || link.media.sourcePageUrl || null;
+    return this.editorPresentation(link).ingestedSourceLabel;
   }
 
   replacementTargetLabel(link: EditableAdminMediaLink): string | null {
-    const source = this.sourceExternalLink(link);
-    if (!source) {
-      return null;
-    }
-
-    return `${this.mediaRoleLabel(source.role)} · asset ${source.media.id}`;
+    return this.editorPresentation(link).replacementTargetLabel;
   }
 
   replacementIngestedLabel(link: EditableAdminMediaLink): string | null {
-    const ingested = this.replacementIngestedLink(link);
-    return ingested ? `asset INGESTED ${ingested.media.id}` : null;
+    return this.editorPresentation(link).replacementIngestedLabel;
   }
 
   hasPromotedVisualReplacement(link: EditableAdminMediaLink): boolean {
-    const source = this.sourceExternalLink(link);
-    if (!source || link.media.originType !== 'INGESTED') {
-      return false;
-    }
-
-    return source.role === 'GALLERY'
-      && (link.role !== 'GALLERY' || link.isPrimary);
+    return this.editorPresentation(link).hasPromotedReplacement;
   }
 
   replacementIngestedLink(link: EditableAdminMediaLink): EditableAdminMediaLink | null {
-    if (link.media.originType !== 'EXTERNAL_URL') {
-      return null;
-    }
-
-    const externalCandidates = [
-      link.media.canonicalUrl,
-      link.media.displayUrl,
-      link.media.url,
-    ]
-      .map((value) => String(value ?? '').trim().replace(/\/+$/, ''))
-      .filter(Boolean);
-
-    if (!externalCandidates.length) {
-      return this.persistedMediaLinks.find((candidate) =>
-        candidate.media.originType === 'INGESTED'
-        && candidate.media.derivedFromMediaId === link.media.id
-        && this.hasPromotedVisualReplacement(candidate),
-      ) ?? null;
-    }
-
-    const byDerivedFrom = this.persistedMediaLinks.find((candidate) =>
-      candidate.media.originType === 'INGESTED'
-      && candidate.media.derivedFromMediaId === link.media.id
-      && this.hasPromotedVisualReplacement(candidate),
-    );
-
-    if (byDerivedFrom) {
-      return byDerivedFrom;
-    }
-
-    return this.persistedMediaLinks.find((candidate) =>
-      candidate.media.originType === 'INGESTED'
-      && this.hasPromotedVisualReplacement(candidate)
-      && externalCandidates.includes(String(candidate.media.canonicalUrl ?? '').trim().replace(/\/+$/, '')),
-    ) ?? null;
-  }
-
-  get visualSlots(): VisualSlot[] {
-    return this.resolvedVisualSlots;
+    return this.mediaLibraryModel.replacementIngestedLinkById[link.id] ?? null;
   }
 
   get mediaWarnings(): string[] {
-    return this.mediaWarningMessages;
+    return this.mediaLibraryModel.mediaWarnings;
   }
 
   get activeMediaEditor(): EditableAdminMediaEditor | null {
-    if (!this.mediaEditors.length) {
-      return null;
-    }
-
-    return this.mediaEditors.find((editor) => editor.id === this.activeMediaEditorId) ?? this.mediaEditors[0] ?? null;
+    return this.mediaLibraryModel.activeMediaEditor;
   }
 
   mediaLibraryViewCount(viewId: MediaLibraryViewId): string {
-    switch (viewId) {
-      case 'coverage':
-        return `${this.mediaCoverageSummary?.coveredSlots.length ?? 0}/4`;
-      case 'library':
-        return String(this.libraryManagedCount);
-      case 'add':
-        return this.mediaEditors.length ? 'Listo' : 'Vacío';
-    }
+    return this.mediaLibraryModel.viewCounts[viewId];
   }
 
   mediaLibraryViewClass(viewId: MediaLibraryViewId): string {
@@ -1823,63 +1420,16 @@ previewContainer?: ElementRef<HTMLElement>;
 
   setMediaLibraryView(viewId: MediaLibraryViewId) {
     this.activeMediaLibraryView = viewId;
+    this.syncMediaLibraryModel();
     this.cdr.markForCheck();
   }
 
   slotResolutionLabel(slot: VisualSlot): string {
-    if (slot.state.source === 'explicit') {
-      return slot.state.explanation;
-    }
-
-    if (slot.state.source === 'fallback') {
-      return slot.state.explanation;
-    }
-
-    if (slot.state.source === 'legacy') {
-      return slot.state.explanation;
-    }
-
-    return 'No hay media resuelta para este contexto';
+    return mediaSlotResolutionLabel(slot);
   }
 
   slotStateClass(slot: VisualSlot): string {
-    switch (slot.state.source) {
-      case 'explicit':
-        return 'media-pill--slot-explicit';
-      case 'fallback':
-        return 'media-pill--slot-fallback';
-      case 'legacy':
-        return 'media-pill--legacy';
-      default:
-        return 'media-pill--slot-empty';
-    }
-  }
-
-  slotPreviewEyebrow(slot: VisualSlot): string {
-    switch (slot.key) {
-      case 'explorer3d':
-        return 'Inmersivo';
-      case 'list':
-        return 'Lista y grids';
-      case 'detail':
-        return 'Detalle';
-      case 'preview':
-        return 'Preview contextual';
-      default:
-        return 'Media';
-    }
-  }
-
-  formatFileSize(value: number | null | undefined): string {
-    if (!value || value <= 0) {
-      return '—';
-    }
-
-    if (value >= 1024 * 1024) {
-      return `${(value / 1024 / 1024).toFixed(2)} MB`;
-    }
-
-    return `${Math.max(1, Math.round(value / 1024))} KB`;
+    return mediaSlotStateClass(slot);
   }
 
   addExternalMedia(event: MediaAddExternalSubmit) {
@@ -1890,14 +1440,16 @@ previewContainer?: ElementRef<HTMLElement>;
     this.mediaError = '';
     this.mediaMessage = '';
 
-    const payload = this.buildMediaPayload(event.draft);
-    if (!payload) {
+    const result = buildAdminMediaPayload(event.draft, (value) => this.toNullableNumber(value));
+    if ('error' in result) {
+      this.mediaError = result.error;
+      this.cdr.markForCheck();
       return;
     }
 
     this.addingMedia = true;
 
-    this.adminApi.createMedia(this.entityId, payload).subscribe({
+    this.adminApi.createMedia(this.entityId, result.payload).subscribe({
       next: () => {
         this.mediaAddResetVersion += 1;
         this.addingMedia = false;
@@ -1920,7 +1472,7 @@ previewContainer?: ElementRef<HTMLElement>;
     this.mediaError = '';
     this.mediaMessage = '';
 
-    const payload = this.buildUploadPayload(event.draft, event.dimensions);
+    const payload = buildAdminUploadPayload(event.draft, event.dimensions, (value) => this.toNullableNumber(value));
     this.uploadingMedia = true;
 
     this.adminApi.uploadMedia(this.entityId, event.file, payload).subscribe({
@@ -1948,16 +1500,17 @@ previewContainer?: ElementRef<HTMLElement>;
     this.mediaMessage = '';
     this.markEditorDirty(editor);
 
-    const payload = this.buildMediaUpdatePayload(editor.draft);
-
-    if (!payload) {
+    const result = buildAdminMediaUpdatePayload(editor.draft, (value) => this.toNullableNumber(value));
+    if ('error' in result) {
+      this.mediaError = result.error;
+      this.cdr.markForCheck();
       return;
     }
 
     editor.saveState = 'saving';
     editor.errorMessage = '';
 
-    this.adminApi.updateMedia(this.entityId, link.id, payload).subscribe({
+    this.adminApi.updateMedia(this.entityId, link.id, result.payload).subscribe({
       next: () => {
         this.mediaMessage = 'Media actualizada correctamente.';
         this.refreshMediaLibrary(true, editor.id);
@@ -1985,43 +1538,8 @@ previewContainer?: ElementRef<HTMLElement>;
     this.mediaError = '';
     this.mediaMessage = '';
     editor.removing = true;
-    const previousPersistedMediaLinks = [...this.persistedMediaLinks];
-    const previousMediaEditors = this.mediaEditors.map((candidate) => ({
-      ...candidate,
-      persisted: this.cloneMediaLink(candidate.persisted),
-      draft: this.cloneMediaLink(candidate.draft),
-    }));
-    const previousResolvedVisualSlots = this.resolvedVisualSlots.map((slot) => ({
-      ...slot,
-      state: {
-        ...slot.state,
-        item: slot.state.item ? { ...slot.state.item } : null,
-      },
-    }));
-    const previousAdditionalMediaItems = this.additionalMediaItems.map((item) => ({
-      ...item,
-      item: item.item ? { ...item.item } : item.item,
-    }));
-    const previousWarningsDetailed = this.mediaWarningsDetailed.map((warning) => ({ ...warning }));
-    const previousWarningMessages = [...this.mediaWarningMessages];
-    const previousCoverageSummary = this.mediaCoverageSummary
-      ? {
-        ...this.mediaCoverageSummary,
-        coveredSlots: [...this.mediaCoverageSummary.coveredSlots],
-        emptySlots: [...this.mediaCoverageSummary.emptySlots],
-        fallbackSlots: [...this.mediaCoverageSummary.fallbackSlots],
-        explicitSlots: [...this.mediaCoverageSummary.explicitSlots],
-        legacySlots: [...this.mediaCoverageSummary.legacySlots],
-      }
-      : null;
-    const previousActiveMediaEditorId = this.activeMediaEditorId;
-
-    this.persistedMediaLinks = this.persistedMediaLinks.filter((candidate) => candidate.id !== link.id);
-    this.mediaEditors = this.mediaEditors.filter((candidate) => candidate.id !== link.id);
-    this.additionalMediaItems = this.additionalMediaItems.filter((item) => item.assignmentId !== link.id);
-    if (!this.activeMediaEditorId || this.activeMediaEditorId === link.id) {
-      this.activeMediaEditorId = this.mediaEditors[0]?.id ?? null;
-    }
+    const previousMediaState = cloneMediaLibraryState(this.currentMediaLibraryState(), (value) => this.toNullableNumber(value));
+    this.applyMediaLibraryStateSnapshot(removeMediaFromLibraryState(previousMediaState, link.id));
     this.syncPreviewEntityModel(true);
     this.cdr.markForCheck();
 
@@ -2031,14 +1549,7 @@ previewContainer?: ElementRef<HTMLElement>;
         this.refreshMediaLibrary(true, editor.id);
       },
       error: (err) => {
-        this.persistedMediaLinks = previousPersistedMediaLinks;
-        this.mediaEditors = previousMediaEditors;
-        this.resolvedVisualSlots = previousResolvedVisualSlots;
-        this.additionalMediaItems = previousAdditionalMediaItems;
-        this.mediaWarningsDetailed = previousWarningsDetailed;
-        this.mediaWarningMessages = previousWarningMessages;
-        this.mediaCoverageSummary = previousCoverageSummary;
-        this.activeMediaEditorId = previousActiveMediaEditorId;
+        this.applyMediaLibraryStateSnapshot(previousMediaState);
         this.syncPreviewEntityModel(true);
         this.mediaError = err?.error?.message ?? 'No se pudo quitar la media.';
         this.cdr.markForCheck();
@@ -2196,156 +1707,17 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   slotStatusLabel(slot: VisualSlot): string {
-    switch (slot.state.source) {
-      case 'explicit':
-        return 'Explícito';
-      case 'fallback':
-        return `Fallback${slot.state.matchedRole ? ` · ${this.mediaRoleLabel(slot.state.matchedRole)}` : ''}`;
-      case 'legacy':
-        return 'Legacy';
-      default:
-        return 'Vacío';
-    }
-  }
-
-  mediaPreview(link: EditableAdminMediaLink) {
-    return {
-      ...link.media,
-      displayMode: link.displayMode || null,
-      focalX: this.toNullableNumber(link.focalX),
-      focalY: this.toNullableNumber(link.focalY),
-    };
-  }
-
-  private buildPreviewEntity() {
-    const mediaLinks = this.mediaEditors
-      .map((editor) => this.mediaLinkToPreview(editor.draft))
-      .filter((link): link is any => !!link);
-    const locale = this.i18n.locale();
-    const translation = this.translationForms[locale];
-    const localizedDetails = locale === 'es'
-      ? (this.detailsForm as AdminLocalizedDetailsForm)
-      : this.localizedDetailForms[locale];
-
-    return {
-      id: this.entityId || 'draft-preview',
-      type: this.form.type,
-      title: (translation.title || this.form.title || 'Título de la entity').trim(),
-      slug: this.form.slug || 'preview',
-      summary: (translation.shortDescription || translation.excerpt || this.form.summary || '').trim() || null,
-      content: (translation.essay || this.form.content || '').trim() || null,
-      contentLevel: this.form.contentLevel || null,
-      status: this.form.status,
-      startYear: this.toNullableNumber(this.form.startYear),
-      endYear: this.toNullableNumber(this.form.endYear),
-      createdAt: new Date().toISOString(),
-      mediaLinks,
-      resolvedMedia: this.previewResolvedMedia(),
-      tags: this.entityTags,
-      outgoing: this.relations.map((rel) => this.previewRelation(rel, 'outgoing')),
-      incoming: this.incomingRelations.map((rel) => this.previewRelation(rel, 'incoming')),
-      sourceRefs: this.sourceRefs.map((ref) => ({
-        id: ref.id ?? `${ref.sourceTitle}-${ref.page ?? ''}`,
-        page: ref.page ?? null,
-        quote: (locale === 'en' ? ref.quoteEn : ref.quoteEs) ?? ref.quote ?? null,
-        note: (locale === 'en' ? ref.noteEn : ref.noteEs) ?? ref.note ?? null,
-        source: {
-          type: ref.sourceType ?? 'SOURCE',
-          title: (locale === 'en' ? ref.sourceTitleEn : ref.sourceTitleEs) ?? ref.sourceTitle ?? 'Fuente editorial',
-          author: (locale === 'en' ? ref.sourceAuthorEn : ref.sourceAuthorEs) ?? ref.sourceAuthor ?? null,
-          publisher: (locale === 'en' ? ref.sourcePublisherEn : ref.sourcePublisherEs) ?? ref.sourcePublisher ?? null,
-          year: ref.sourceYear ?? null,
-        },
-      })),
-      contributors: this.contributors,
-      artwork: this.form.type === 'ARTWORK' ? {
-        technique: localizedDetails.technique || null,
-        materials: localizedDetails.materials || null,
-        dimensions: localizedDetails.dimensions || null,
-        location: localizedDetails.location || null,
-        collection: localizedDetails.collection || null,
-        state: localizedDetails.state || null,
-        authorNation: localizedDetails.authorNation || null,
-      } : null,
-      artist: this.form.type === 'ARTIST' ? {
-        country: localizedDetails.country || null,
-        city: localizedDetails.city || null,
-        birthYear: this.detailsForm.birthYear ?? null,
-        deathYear: this.detailsForm.deathYear ?? null,
-        disciplines: localizedDetails.disciplines || null,
-        links: localizedDetails.links || null,
-        bioShort: localizedDetails.bioShort || null,
-      } : null,
-      concept: this.form.type === 'CONCEPT' ? {
-        definition: localizedDetails.definition || null,
-      } : null,
-      period: this.form.type === 'PERIOD' ? {
-        definition: localizedDetails.definition || null,
-      } : null,
-    };
-  }
-
-  private previewResolvedMedia() {
-    const resolved: Record<string, any> = this.persistedResolvedMedia
-      ? {
-        ...this.persistedResolvedMedia,
-        gallery: Array.isArray(this.persistedResolvedMedia.gallery)
-          ? [...this.persistedResolvedMedia.gallery]
-          : this.persistedResolvedMedia.gallery,
-      }
-      : {};
-    const slotMap: Array<{ usage: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d'; slotKey: MediaEditorSlotKey }> = [
-      { usage: 'hero', slotKey: 'detail' },
-      { usage: 'explorer3d', slotKey: 'explorer3d' },
-      { usage: 'card', slotKey: 'list' },
-      { usage: 'detail', slotKey: 'detail' },
-      { usage: 'thumbnail', slotKey: 'preview' },
-    ];
-
-    for (const slot of slotMap) {
-      const link = this.previewLinkForUsage(slot.usage);
-      if (link) {
-        resolved[slot.usage] = this.mediaLinkToResolvedPreview(link, slot.slotKey);
-      } else if (slot.usage in resolved) {
-        delete resolved[slot.usage];
-      }
-    }
-
-    const primary = this.previewLinkForUsage('hero')
-      ?? this.previewLinkForUsage('detail')
-      ?? this.previewLinkForUsage('card')
-      ?? this.previewLinkForUsage('thumbnail')
-      ?? this.previewLinkForUsage('explorer3d');
-
-    if (primary) {
-      resolved['primary'] = this.mediaLinkToResolvedPreview(primary, 'detail');
-    } else if ('primary' in resolved) {
-      delete resolved['primary'];
-    }
-
-    const draftGallery = this.mediaEditors
-      .map((editor) => editor.draft)
-      .filter((link) => link.role === 'GALLERY')
-      .map((link) => this.mediaLinkToResolvedPreview(link, 'detail'))
-      .filter(Boolean);
-
-    if (draftGallery.length) {
-      resolved['gallery'] = draftGallery;
-    } else if ('gallery' in resolved) {
-      delete resolved['gallery'];
-    }
-
-    return Object.keys(resolved).length ? resolved : null;
+    return mediaSlotStatusLabel(slot, (role) => this.mediaRoleLabel(role));
   }
 
   private syncPreviewEntityModel(force = false): void {
-    const nextStateKey = this.buildPreviewEntityStateKey();
+    const nextStateKey = buildAdminEntityPreviewStateKey(this.previewPresenterInput());
     if (!force && nextStateKey === this.previewEntityStateKey) {
       return;
     }
 
     this.previewEntityStateKey = nextStateKey;
-    this.previewEntityModel = this.buildPreviewEntity();
+    this.previewEntityModel = buildAdminEntityPreviewModel(this.previewPresenterInput());
   }
 
   private schedulePreviewRefresh(): void {
@@ -2362,179 +1734,23 @@ previewContainer?: ElementRef<HTMLElement>;
     });
   }
 
-  private buildPreviewEntityStateKey(): string {
-    return JSON.stringify({
-      id: this.entityId || 'draft-preview',
+  private previewPresenterInput(): AdminEntityPreviewBuildInput {
+    return {
+      entityId: this.entityId,
       locale: this.i18n.locale(),
       form: this.form,
       translations: this.translationForms,
-      details: this.detailsForm,
+      details: this.detailsForm as Record<string, unknown>,
       localizedDetails: this.localizedDetailForms,
-      tags: this.entityTags.map((tag: any) => ({
-        id: tag?.id ?? tag?.tagId ?? tag?.tag?.id ?? null,
-        label: tag?.label ?? tag?.tag?.label ?? null,
-        slug: tag?.slug ?? tag?.tag?.slug ?? null,
-      })),
-      media: this.mediaEditors.map((editor) => ({
-        id: editor.id,
-        isDirty: editor.isDirty,
-        draft: editor.draft,
-      })),
-      resolvedSlots: this.resolvedVisualSlots.map((slot) => ({
-        key: slot.key,
-        itemId: slot.state.item?.id ?? null,
-        source: slot.state.source,
-        matchedRole: slot.state.matchedRole,
-      })),
-      sourceRefs: this.sourceRefs,
+      entityTags: this.entityTags,
+      relations: this.relations as AdminEntityPreviewRelation[],
+      incomingRelations: this.incomingRelations as AdminEntityPreviewRelation[],
+      sourceRefs: this.sourceRefs as AdminEntityPreviewSourceRef[],
       contributors: this.contributors,
-      outgoing: this.relations.map((rel) => ({
-        id: rel?.id ?? null,
-        type: rel?.type ?? null,
-        relationTypeId: rel?.relationTypeId ?? rel?.relationType?.id ?? null,
-        relationTypeKey: rel?.relationTypeKey ?? rel?.relationType?.key ?? null,
-        toId: rel?.to?.id ?? null,
-        justification: rel?.justification ?? null,
-        weight: rel?.weight ?? null,
-      })),
-      incoming: this.incomingRelations.map((rel) => ({
-        id: rel?.id ?? null,
-        type: rel?.type ?? null,
-        relationTypeId: rel?.relationTypeId ?? rel?.relationType?.id ?? null,
-        relationTypeKey: rel?.relationTypeKey ?? rel?.relationType?.key ?? null,
-        fromId: rel?.from?.id ?? null,
-        justification: rel?.justification ?? null,
-        weight: rel?.weight ?? null,
-      })),
-    });
-  }
-
-  private previewLinkForSlot(slotKey: MediaEditorSlotKey): EditableAdminMediaLink | null {
-    const usageBySlot: Record<MediaEditorSlotKey, 'card' | 'detail' | 'thumbnail' | 'explorer3d'> = {
-      explorer3d: 'explorer3d',
-      list: 'card',
-      detail: 'detail',
-      preview: 'thumbnail',
-    };
-
-    return this.previewLinkForUsage(usageBySlot[slotKey]);
-  }
-
-  private previewLinkForUsage(usage: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d'): EditableAdminMediaLink | null {
-    const exactRoleByUsage: Record<typeof usage, string> = {
-      hero: 'HERO',
-      explorer3d: 'EXPLORER_3D',
-      card: 'CARD',
-      detail: 'DETAIL',
-      thumbnail: 'THUMBNAIL',
-    };
-
-    const exact = this.mediaEditors
-      .map((editor) => editor.draft)
-      .filter((link) => link.role === exactRoleByUsage[usage])
-      .sort((a, b) => Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0))[0];
-
-    if (exact) {
-      return exact;
-    }
-
-    const resolvedItemId = usage === 'hero'
-      ? this.persistedResolvedMedia?.hero?.id ?? this.persistedResolvedMedia?.detail?.id ?? null
-      : this.resolvedVisualSlots.find((slot) => slot.key === ({
-          explorer3d: 'explorer3d',
-          card: 'list',
-          detail: 'detail',
-          thumbnail: 'preview',
-        } as const)[usage])?.state.item?.id ?? null;
-
-    if (resolvedItemId) {
-      const byResolvedAsset = this.mediaEditors
-        .map((editor) => editor.draft)
-        .find((link) => link.media.id === resolvedItemId);
-
-      if (byResolvedAsset) {
-        return byResolvedAsset;
-      }
-    }
-
-    return this.mediaEditors
-      .map((editor) => editor.draft)
-      .find((link) => link.isPrimary)
-      ?? this.mediaEditors[0]?.draft
-      ?? null;
-  }
-
-  private mediaLinkToPreview(link: EditableAdminMediaLink | null | undefined) {
-    if (!link?.media) {
-      return null;
-    }
-    const media = link.media as any;
-
-    return {
-      id: link.id,
-      role: link.role,
-      sortOrder: this.toNullableNumber(link.sortOrder) ?? 0,
-      isPrimary: !!link.isPrimary,
-      displayMode: link.displayMode || null,
-      focalX: this.toNullableNumber(link.focalX),
-      focalY: this.toNullableNumber(link.focalY),
-      media: {
-        ...media,
-        displayMode: link.displayMode || null,
-        focalX: this.toNullableNumber(link.assetFocalX ?? media.assetFocalX ?? media.focalX),
-        focalY: this.toNullableNumber(link.assetFocalY ?? media.assetFocalY ?? media.focalY),
-      },
-    };
-  }
-
-  private mediaLinkToResolvedPreview(link: EditableAdminMediaLink, slotKey: MediaEditorSlotKey) {
-    const crop = link.slotCrops?.[slotKey];
-    const media = link.media as any;
-
-    return {
-      ...media,
-      role: link.role,
-      sortOrder: this.toNullableNumber(link.sortOrder) ?? 0,
-      isPrimary: !!link.isPrimary,
-      displayMode: link.displayMode || null,
-      focalX: this.toNullableNumber(link.focalX ?? link.assetFocalX ?? media.assetFocalX ?? media.focalX),
-      focalY: this.toNullableNumber(link.focalY ?? link.assetFocalY ?? media.assetFocalY ?? media.focalY),
-      cropX: this.toNullableNumber(crop?.x),
-      cropY: this.toNullableNumber(crop?.y),
-      cropZoom: this.toNullableNumber(crop?.zoom),
-    };
-  }
-
-  private previewRelation(rel: any, direction: 'outgoing' | 'incoming') {
-    const endpoint = direction === 'outgoing' ? rel.to : rel.from;
-    const fallbackEndpoint = {
-      id: `${rel.id ?? direction}-draft-endpoint`,
-      slug: endpoint?.slug ?? 'preview',
-      title: endpoint?.title ?? 'Entity relacionada',
-      type: endpoint?.type ?? 'ENTITY',
-    };
-
-    return {
-      ...rel,
-      id: rel.id ?? `${direction}-${rel.type ?? 'relation'}`,
-      type: rel.type ?? 'RELATED_TO',
-      relationType: rel.relationType ?? null,
-      relationTypeKey: rel.relationTypeKey ?? rel.relationType?.key ?? rel.type ?? 'RELATED_TO',
-      relationTypeLabel: rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type ?? 'RELATED_TO',
-      justification: (this.i18n.locale() === 'en' ? rel.justificationEn : rel.justificationEs) ?? rel.justification ?? null,
-      weight: rel.weight ?? null,
-      from: direction === 'incoming' ? fallbackEndpoint : (rel.from ?? {
-        id: this.entityId || 'draft-preview',
-        slug: this.form.slug || 'preview',
-        title: this.form.title || 'Título de la entity',
-        type: this.form.type,
-      }),
-      to: direction === 'outgoing' ? fallbackEndpoint : (rel.to ?? {
-        id: this.entityId || 'draft-preview',
-        slug: this.form.slug || 'preview',
-        title: this.form.title || 'Título de la entity',
-        type: this.form.type,
-      }),
+      mediaEditors: this.mediaEditors,
+      persistedResolvedMedia: this.persistedResolvedMedia as Record<string, unknown> | null,
+      resolvedVisualSlots: this.resolvedVisualSlots,
+      toNullableNumber: (value) => this.toNullableNumber(value),
     };
   }
 
@@ -2544,136 +1760,6 @@ previewContainer?: ElementRef<HTMLElement>;
 
   isActiveSection(sectionId: DashboardSectionId): boolean {
     return this.activeDashboardSection === sectionId;
-  }
-
-  sectionCount(sectionId: DashboardSectionId): string | null {
-    switch (sectionId) {
-      case 'section-content':
-        return this.supportsTypedDetails() ? 'Base + ficha' : 'Base';
-      case 'section-media':
-        return this.isEdit ? String(this.persistedMediaLinks.length) : '—';
-      case 'section-preview':
-        return 'Detail';
-      case 'section-sources':
-        return this.isEdit ? String(this.sourceRefs.length) : '—';
-      case 'section-contributors':
-        return this.isEdit ? String(this.contributors.length) : '—';
-      case 'section-relations':
-        return this.isEdit ? String(this.relations.length + this.incomingRelations.length) : '—';
-    }
-  }
-
-  sectionMeta(sectionId: DashboardSectionId): string {
-    switch (sectionId) {
-      case 'section-content':
-        return this.supportsTypedDetails()
-          ? 'Contenido principal y ficha específica'
-          : 'Contenido principal de la entity';
-      case 'section-media':
-        return this.isEdit
-          ? `${this.persistedMediaLinks.length} assets cargados`
-          : 'Guarda la entity para habilitar media';
-      case 'section-preview':
-        return 'Vista pública compuesta';
-      case 'section-sources':
-        return this.isEdit
-          ? `${this.sourceRefs.length} fuentes editoriales`
-          : 'Disponible tras guardar';
-      case 'section-contributors':
-        return this.isEdit
-          ? `${this.contributors.length} créditos y participantes`
-          : 'Disponible tras guardar';
-      case 'section-relations':
-        return this.isEdit
-          ? `${this.relations.length + this.incomingRelations.length} conexiones registradas`
-          : 'Disponible tras guardar';
-    }
-  }
-
-  sectionStatus(sectionId: DashboardSectionId): 'error' | 'saving' | 'ready' | 'locked' | null {
-    switch (sectionId) {
-      case 'section-content':
-        if (this.errorMessage || this.detailsError) {
-          return 'error';
-        }
-        if (this.saving || this.detailsSaving) {
-          return 'saving';
-        }
-        return 'ready';
-      case 'section-media':
-        if (!this.isEdit) {
-          return 'locked';
-        }
-        if (this.mediaError) {
-          return 'error';
-        }
-        if (this.addingMedia || this.uploadingMedia || this.mediaEditors.some((editor) => editor.saveState === 'saving')) {
-          return 'saving';
-        }
-        return 'ready';
-      case 'section-preview':
-        return 'ready';
-      case 'section-sources':
-        if (!this.isEdit) {
-          return 'locked';
-        }
-        if (this.sourcesError) {
-          return 'error';
-        }
-        return this.sourcesSaving ? 'saving' : 'ready';
-      case 'section-contributors':
-        if (!this.isEdit) {
-          return 'locked';
-        }
-        if (this.contributorsError) {
-          return 'error';
-        }
-        return this.contributorsSaving ? 'saving' : 'ready';
-      case 'section-relations':
-        if (!this.isEdit) {
-          return 'locked';
-        }
-        if (this.errorMessage) {
-          return 'error';
-        }
-        return this.relationsLoading || this.incomingRelationsLoading ? 'saving' : 'ready';
-    }
-  }
-
-  sectionStatusLabel(sectionId: DashboardSectionId): string | null {
-    switch (this.sectionStatus(sectionId)) {
-      case 'error':
-        return 'Error';
-      case 'saving':
-        return 'Activo';
-      case 'locked':
-        return 'Bloqueado';
-      case 'ready':
-        return 'Listo';
-      default:
-        return null;
-    }
-  }
-
-  sectionStatusClass(sectionId: DashboardSectionId): string {
-    switch (this.sectionStatus(sectionId)) {
-      case 'error':
-        return 'admin-section-pill admin-section-pill--error';
-      case 'saving':
-        return 'admin-section-pill admin-section-pill--saving';
-      case 'locked':
-        return 'admin-section-pill admin-section-pill--locked';
-      default:
-        return 'admin-section-pill';
-    }
-  }
-
-  activeSectionTitle(): string {
-    return this.dashboardSections.find((section) => section.id === this.activeDashboardSection)?.label ?? 'Contenido';
-  }
-
-  get sidebarToggleLabel(): string {
-    return this.adminSidebarVisible ? 'Ocultar editor' : 'Mostrar editor';
   }
 
   togglePreviewPanel() {
@@ -2765,7 +1851,7 @@ previewContainer?: ElementRef<HTMLElement>;
     window.localStorage.setItem(this.adminSidebarStorageKey(), this.adminSidebarVisible ? 'visible' : 'hidden');
   }
 
-  private extractDetailsForm(entity: any): AdminEntityDetailsPayload {
+  private extractDetailsForm(entity: AdminEntityResponse): AdminEntityDetailsPayload {
     return {
       authorNation: entity?.artwork?.authorNation ?? '',
       technique: entity?.artwork?.technique ?? '',
@@ -2805,117 +1891,15 @@ previewContainer?: ElementRef<HTMLElement>;
     };
   }
 
-  private normalizeSourceRef(ref: any) {
-    return {
-      id: ref.id,
-      sourceType: ref.source?.type ?? 'WEBSITE',
-      sourceTitle: ref.source?.title ?? '',
-      sourceTitleEs: ref.source?.titleEs ?? ref.source?.title ?? '',
-      sourceTitleEn: ref.source?.titleEn ?? '',
-      sourceAuthor: ref.source?.author ?? '',
-      sourceAuthorEs: ref.source?.authorEs ?? ref.source?.author ?? '',
-      sourceAuthorEn: ref.source?.authorEn ?? '',
-      sourcePublisher: ref.source?.publisher ?? '',
-      sourcePublisherEs: ref.source?.publisherEs ?? ref.source?.publisher ?? '',
-      sourcePublisherEn: ref.source?.publisherEn ?? '',
-      sourceYear: ref.source?.year ?? null,
-      sourceUrl: ref.source?.url ?? '',
-      page: ref.page ?? '',
-      quote: ref.quote ?? '',
-      quoteEs: ref.quoteEs ?? ref.quote ?? '',
-      quoteEn: ref.quoteEn ?? '',
-      note: ref.note ?? '',
-      noteEs: ref.noteEs ?? ref.note ?? '',
-      noteEn: ref.noteEn ?? '',
-    };
+  private upsertSourceRef(ref: AdminEntitySourceRefRecord) {
+    this.sourceRefs = upsertSourceRef(this.sourceRefs, normalizeSourceRef(ref));
   }
 
-  private buildSourceRefPayload(source: any): AdminSourceRefPayload | null {
-    const title = String(source.sourceTitle ?? '').trim();
-    if (!title) {
-      this.sourcesError = 'El título de la fuente es obligatorio.';
-      this.cdr.markForCheck();
-      return null;
-    }
-
-    return {
-      sourceType: source.sourceType,
-      sourceTitle: title,
-      sourceTitleEs: String(source.sourceTitleEs ?? source.sourceTitle ?? '').trim() || undefined,
-      sourceTitleEn: String(source.sourceTitleEn ?? '').trim() || undefined,
-      sourceAuthor: String(source.sourceAuthor ?? source.sourceAuthorEs ?? '').trim() || undefined,
-      sourceAuthorEs: String(source.sourceAuthorEs ?? source.sourceAuthor ?? '').trim() || undefined,
-      sourceAuthorEn: String(source.sourceAuthorEn ?? '').trim() || undefined,
-      sourcePublisher: String(source.sourcePublisher ?? source.sourcePublisherEs ?? '').trim() || undefined,
-      sourcePublisherEs: String(source.sourcePublisherEs ?? source.sourcePublisher ?? '').trim() || undefined,
-      sourcePublisherEn: String(source.sourcePublisherEn ?? '').trim() || undefined,
-      sourceYear: this.toNullableNumber(source.sourceYear),
-      sourceUrl: String(source.sourceUrl ?? '').trim() || undefined,
-      page: String(source.page ?? '').trim() || undefined,
-      quote: String(source.quote ?? source.quoteEs ?? '').trim() || undefined,
-      quoteEs: String(source.quoteEs ?? source.quote ?? '').trim() || undefined,
-      quoteEn: String(source.quoteEn ?? '').trim() || undefined,
-      note: String(source.note ?? source.noteEs ?? '').trim() || undefined,
-      noteEs: String(source.noteEs ?? source.note ?? '').trim() || undefined,
-      noteEn: String(source.noteEn ?? '').trim() || undefined,
-    };
+  private upsertContributor(contributor: AdminEntityContributorRecord) {
+    this.contributors = upsertContributor(this.contributors, normalizeContributor(contributor));
   }
 
-  private upsertSourceRef(ref: any) {
-    const normalized = this.normalizeSourceRef(ref);
-    const existingIndex = this.sourceRefs.findIndex((item) => item.id === normalized.id);
-
-    if (existingIndex >= 0) {
-      const next = [...this.sourceRefs];
-      next[existingIndex] = normalized;
-      this.sourceRefs = next;
-      return;
-    }
-
-    this.sourceRefs = [...this.sourceRefs, normalized];
-  }
-
-  private normalizeContributor(contributor: any) {
-    return {
-      id: contributor.id,
-      name: contributor.name ?? '',
-      role: contributor.role ?? '',
-      note: contributor.note ?? '',
-    };
-  }
-
-  private buildContributorPayload(source: any): AdminContributorPayload | null {
-    const name = String(source.name ?? '').trim();
-    const role = String(source.role ?? '').trim();
-
-    if (!name || !role) {
-      this.contributorsError = 'Nombre y rol del colaborador son obligatorios.';
-      this.cdr.markForCheck();
-      return null;
-    }
-
-    return {
-      name,
-      role,
-      note: String(source.note ?? '').trim() || undefined,
-    };
-  }
-
-  private upsertContributor(contributor: any) {
-    const normalized = this.normalizeContributor(contributor);
-    const existingIndex = this.contributors.findIndex((item) => item.id === normalized.id);
-
-    if (existingIndex >= 0) {
-      const next = [...this.contributors];
-      next[existingIndex] = normalized;
-      this.contributors = next;
-      return;
-    }
-
-    this.contributors = [...this.contributors, normalized];
-  }
-
-  private upsertEntityTag(entityTag: any) {
+  private upsertEntityTag(entityTag: AdminEntityTagRecord) {
     const tagId = entityTag.tagId ?? entityTag.tag?.id;
     if (!tagId) return;
 
@@ -2930,6 +1914,10 @@ previewContainer?: ElementRef<HTMLElement>;
     this.entityTags = [...this.entityTags, entityTag];
   }
 
+  entityTagId(entityTag: AdminEntityTagRecord): string | null {
+    return entityTag.tagId ?? entityTag.tag?.id ?? null;
+  }
+
   private compactJoin(values: Array<string | number | null | undefined>): string {
     return values
       .map((value) => String(value ?? '').trim())
@@ -2938,171 +1926,29 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   private applyMediaLibraryState(entity: AdminEntityResponse, preserveDirtyEditors = true, clearedEditorId?: string) {
-    const library = entity.mediaLibrary;
-    const assetMap = new Map<string, AdminMediaAsset>();
-
-    for (const asset of library?.assets ?? []) {
-      assetMap.set(asset.assetId, asset);
-    }
-
-    const assignments = library?.assignments ?? this.legacyAssignmentsFromEntity(entity);
-    const nextPersisted = assignments
-      .map((assignment) => this.normalizeMediaAssignment(assignment, assetMap.get(assignment.assetId)))
-      .filter((assignment): assignment is EditableAdminMediaLink => !!assignment);
-
-    const existingEditors = new Map(this.mediaEditors.map((editor) => [editor.id, editor]));
-
-    this.persistedMediaLinks = this.sortMediaLinks(nextPersisted);
-    this.mediaEditors = this.persistedMediaLinks.map((persisted) => {
-      const existing = existingEditors.get(persisted.id);
-      const preserveDraft = preserveDirtyEditors && existing?.isDirty && existing.id !== clearedEditorId;
-
-      if (existing && preserveDraft) {
-        return {
-          ...existing,
-          persisted,
-        };
-      }
-
-      return {
-        id: persisted.id,
-        persisted,
-        draft: this.cloneMediaLink(persisted),
-        isDirty: false,
-        saveState: clearedEditorId === persisted.id ? 'saved' : 'idle',
-        errorMessage: '',
-        removing: false,
-        ingesting: false,
-        promoting: false,
-        restoring: false,
-      };
-    });
-
-    if (!this.activeMediaEditorId || !this.mediaEditors.some((editor) => editor.id === this.activeMediaEditorId)) {
-      this.activeMediaEditorId = this.mediaEditors[0]?.id ?? null;
-    }
-
-    this.resolvedVisualSlots = (library?.resolvedSlots ?? []).map((slot) => this.normalizeResolvedSlot(slot));
-    this.additionalMediaItems = library?.additionalMedia ?? [];
-    this.mediaWarningsDetailed = library?.warnings ?? [];
-    this.mediaWarningMessages = this.mediaWarningsDetailed.map((warning) => warning.message);
-    this.mediaCoverageSummary = library?.coverageSummary ?? null;
-
-    if (!this.mediaEditors.length && !this.additionalMediaItems.length) {
-      this.activeMediaLibraryView = 'add';
-    } else if (!this.activeMediaLibraryView) {
-      this.activeMediaLibraryView = 'coverage';
-    }
+    this.applyMediaLibraryStateSnapshot(buildAdminEntityMediaLibraryState({
+      entity,
+      mediaEditors: this.mediaEditors,
+      activeMediaEditorId: this.activeMediaEditorId,
+      activeMediaLibraryView: this.activeMediaLibraryView,
+      preserveDirtyEditors,
+      clearedEditorId,
+      toNullableNumber: (value) => this.toNullableNumber(value),
+    }));
   }
 
   slotWarningsForEditor(link: EditableAdminMediaLink): Partial<Record<MediaEditorSlotKey, string[]>> {
-    const record: Partial<Record<MediaEditorSlotKey, string[]>> = {};
-
-    for (const slot of this.resolvedVisualSlots) {
-      if (slot.state.item?.id !== link.media.id) {
-        continue;
-      }
-
-      const matches = this.mediaWarningsDetailed
-        .filter((warning) => warning.code.startsWith(`media.${slot.key}_`))
-        .map((warning) => warning.message);
-
-      if (matches.length) {
-        record[slot.key] = matches;
-      }
-    }
-
-    return record;
+    return this.editorPresentation(link).slotWarnings;
   }
 
   selectMediaEditor(linkOrId: EditableAdminMediaLink | string | null | undefined) {
     this.activeMediaEditorId = typeof linkOrId === 'string' ? linkOrId : linkOrId?.id ?? null;
+    this.syncMediaLibraryModel();
     this.cdr.markForCheck();
   }
 
-  private normalizeMediaAssignment(assignment: AdminMediaAssignment, asset?: AdminMediaAsset): EditableAdminMediaLink | null {
-    if (!assignment?.assignmentId || !asset) {
-      return null;
-    }
-
-    return {
-      id: assignment.assignmentId,
-      role: assignment.role ?? 'CARD',
-      sortOrder: assignment.sortOrder ?? 0,
-      isPrimary: !!assignment.isPrimary,
-      displayMode: assignment.displayMode ?? '',
-      focalX: assignment.focalX ?? null,
-      focalY: assignment.focalY ?? null,
-      assetFocalX: assignment.assetFocalX ?? asset.assetFocalX ?? asset.focalX ?? null,
-      assetFocalY: assignment.assetFocalY ?? asset.assetFocalY ?? asset.focalY ?? null,
-      slotCrops: this.normalizeSlotCrops(assignment.slotCrops),
-      media: {
-        id: asset.id ?? asset.assetId,
-        url: asset.url ?? '',
-        derivedFromMediaId: asset.derivedFromMediaId ?? null,
-        canonicalUrl: asset.canonicalUrl ?? '',
-        displayUrl: asset.displayUrl ?? '',
-        sourcePageUrl: asset.sourcePageUrl ?? '',
-        alt: asset.alt ?? '',
-        source: asset.source ?? '',
-        photoBy: asset.photoBy ?? '',
-        license: asset.license ?? '',
-        provider: asset.provider ?? null,
-        qualityTier: asset.qualityTier ?? null,
-        width: asset.width ?? null,
-        height: asset.height ?? null,
-        originType: asset.originType ?? 'EXTERNAL_URL',
-        storageKey: asset.storageKey ?? null,
-        originalFilename: asset.originalFilename ?? null,
-        fileSize: asset.fileSize ?? null,
-      },
-    };
-  }
-
-  private legacyAssignmentsFromEntity(entity: AdminEntityResponse): AdminMediaAssignment[] {
-    return (entity.mediaLinks ?? []).map((link: any) => ({
-      assignmentId: link.id,
-      assetId: link.media?.id,
-      role: link.role ?? 'CARD',
-      sortOrder: link.sortOrder ?? 0,
-      isPrimary: !!link.isPrimary,
-      displayMode: link.displayMode ?? null,
-      focalX: link.focalX ?? null,
-      focalY: link.focalY ?? null,
-      assetFocalX: link.media?.focalX ?? null,
-      assetFocalY: link.media?.focalY ?? null,
-      slotCrops: this.emptySlotCropMap(),
-    }));
-  }
-
-  private normalizeResolvedSlot(slot: AdminResolvedSlot): VisualSlot {
-    const definitions: Record<VisualSlot['key'], Omit<VisualSlot, 'state'>> = {
-      explorer3d: { key: 'explorer3d', label: 'Explorer 3D', description: 'Imagen para la vista inmersiva.', previewUsage: 'explorer3d', previewClass: 'slot-preview--explorer' },
-      list: { key: 'list', label: 'List', description: 'Imagen para listas, grids y railes.', previewUsage: 'card', previewClass: 'slot-preview--card' },
-      detail: { key: 'detail', label: 'Detail', description: 'Imagen principal de la entidad.', previewUsage: 'detail', previewClass: 'slot-preview--detail' },
-      preview: { key: 'preview', label: 'Preview', description: 'Imagen para previews contextuales.', previewUsage: 'thumbnail', previewClass: 'slot-preview--thumbnail' },
-    };
-
-    return {
-      ...definitions[slot.slotKey],
-      state: {
-        item: slot.item,
-        source: slot.source,
-        matchedRole: slot.matchedRole,
-        explanation: slot.explanation,
-        reasonCode: slot.reasonCode,
-      },
-    };
-  }
-
   private cloneMediaLink(link: EditableAdminMediaLink): EditableAdminMediaLink {
-    return {
-      ...link,
-      slotCrops: this.cloneSlotCrops(link.slotCrops),
-      media: {
-        ...link.media,
-      },
-    };
+    return cloneAdminMediaLink(link, (value: unknown) => this.toNullableNumber(value));
   }
 
   private editorForLink(link: EditableAdminMediaLink): EditableAdminMediaEditor | null {
@@ -3110,7 +1956,7 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   private markEditorDirty(editor: EditableAdminMediaEditor) {
-    editor.isDirty = !this.mediaLinksEqual(editor.persisted, editor.draft);
+    editor.isDirty = !mediaLinksEqual(editor.persisted, editor.draft);
     if (!editor.isDirty && editor.saveState !== 'saving') {
       editor.saveState = 'idle';
       editor.errorMessage = '';
@@ -3127,11 +1973,6 @@ previewContainer?: ElementRef<HTMLElement>;
       this.markEditorDirty(editor);
     }
   }
-
-  private mediaLinksEqual(a: EditableAdminMediaLink, b: EditableAdminMediaLink): boolean {
-    return JSON.stringify(a) === JSON.stringify(b);
-  }
-
   private refreshMediaLibrary(preserveDirtyEditors = true, clearedEditorId?: string) {
     if (!this.entityId) {
       return;
@@ -3151,189 +1992,6 @@ previewContainer?: ElementRef<HTMLElement>;
     });
   }
 
-  private normalizeMediaLink(link: any): EditableAdminMediaLink {
-    return {
-      id: link.id,
-      role: link.role ?? 'CARD',
-      sortOrder: link.sortOrder ?? 0,
-      isPrimary: !!link.isPrimary,
-      displayMode: link.displayMode ?? '',
-      focalX: link.focalX ?? null,
-      focalY: link.focalY ?? null,
-      assetFocalX: link.media?.focalX ?? null,
-      assetFocalY: link.media?.focalY ?? null,
-      slotCrops: this.emptySlotCropMap(),
-      media: {
-        id: link.media?.id ?? '',
-        url: link.media?.url ?? '',
-        derivedFromMediaId: link.media?.derivedFromMediaId ?? null,
-        canonicalUrl: link.media?.canonicalUrl ?? '',
-        displayUrl: link.media?.displayUrl ?? '',
-        sourcePageUrl: link.media?.sourcePageUrl ?? '',
-        alt: link.media?.alt ?? '',
-        source: link.media?.source ?? '',
-        photoBy: link.media?.photoBy ?? '',
-        license: link.media?.license ?? '',
-        provider: link.media?.provider ?? null,
-        qualityTier: link.media?.qualityTier ?? null,
-        width: link.media?.width ?? null,
-        height: link.media?.height ?? null,
-        originType: link.media?.originType ?? 'EXTERNAL_URL',
-        storageKey: link.media?.storageKey ?? null,
-        originalFilename: link.media?.originalFilename ?? null,
-        fileSize: link.media?.fileSize ?? null,
-      },
-    };
-  }
-
-  private sortMediaLinks(items: EditableAdminMediaLink[]) {
-    return [...items].sort((a, b) => {
-      const orderDiff = Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0);
-      if (orderDiff !== 0) {
-        return orderDiff;
-      }
-
-      return (a.id ?? '').localeCompare(b.id ?? '', 'en');
-    });
-  }
-
-  private buildMediaPayload(source: any): AdminEntityMediaPayload | null {
-    const url = String(source.url ?? '').trim();
-
-    if (!url) {
-      this.mediaError = 'La URL de media es obligatoria.';
-      this.cdr.markForCheck();
-      return null;
-    }
-
-    return {
-      url,
-      displayUrl: String(source.displayUrl ?? '').trim() || undefined,
-      sourcePageUrl: String(source.sourcePageUrl ?? '').trim() || undefined,
-      alt: String(source.alt ?? '').trim() || undefined,
-      source: String(source.source ?? '').trim() || undefined,
-      photoBy: String(source.photoBy ?? '').trim() || undefined,
-      license: String(source.license ?? '').trim() || undefined,
-      role: source.role,
-      sortOrder: Number(source.sortOrder ?? 0),
-      isPrimary: !!source.isPrimary,
-      displayMode: source.displayMode || null,
-      focalX: this.toNullableNumber(source.focalX),
-      focalY: this.toNullableNumber(source.focalY),
-      assetFocalX: this.toNullableNumber(source.assetFocalX),
-      assetFocalY: this.toNullableNumber(source.assetFocalY),
-      slotCrops: this.buildSlotCropPayload(source.slotCrops),
-    };
-  }
-
-  private buildUploadPayload(source: any, dimensions: UploadPreviewDimensions | null): AdminUploadEntityMediaPayload {
-    return {
-      alt: String(source.alt ?? '').trim() || undefined,
-      source: String(source.source ?? '').trim() || undefined,
-      photoBy: String(source.photoBy ?? '').trim() || undefined,
-      license: String(source.license ?? '').trim() || undefined,
-      width: dimensions?.width,
-      height: dimensions?.height,
-      role: source.role,
-      sortOrder: Number(source.sortOrder ?? 0),
-      isPrimary: !!source.isPrimary,
-      displayMode: source.displayMode || null,
-      focalX: this.toNullableNumber(source.focalX),
-      focalY: this.toNullableNumber(source.focalY),
-      assetFocalX: this.toNullableNumber(source.assetFocalX),
-      assetFocalY: this.toNullableNumber(source.assetFocalY),
-      slotCrops: this.buildSlotCropPayload(source.slotCrops),
-    };
-  }
-
-  private buildMediaUpdatePayload(source: EditableAdminMediaLink): Partial<AdminEntityMediaPayload> | null {
-    const payload: Partial<AdminEntityMediaPayload> = {
-      alt: String(source.media.alt ?? '').trim() || undefined,
-      source: String(source.media.source ?? '').trim() || undefined,
-      photoBy: String(source.media.photoBy ?? '').trim() || undefined,
-      license: String(source.media.license ?? '').trim() || undefined,
-      role: source.role as AdminEntityMediaPayload['role'],
-      sortOrder: Number(source.sortOrder ?? 0),
-      isPrimary: !!source.isPrimary,
-      displayMode: (source.displayMode || null) as AdminEntityMediaPayload['displayMode'],
-      focalX: this.toNullableNumber(source.focalX),
-      focalY: this.toNullableNumber(source.focalY),
-      assetFocalX: this.toNullableNumber(source.assetFocalX),
-      assetFocalY: this.toNullableNumber(source.assetFocalY),
-      slotCrops: this.buildSlotCropPayload(source.slotCrops),
-    };
-
-    if (source.media.originType === 'EXTERNAL_URL') {
-      const url = String(source.media.url ?? '').trim();
-      if (!url) {
-        this.mediaError = 'La URL de media es obligatoria.';
-        this.cdr.markForCheck();
-        return null;
-      }
-
-      payload.url = url;
-      payload.displayUrl = String(source.media.displayUrl ?? '').trim() || undefined;
-      payload.sourcePageUrl = String(source.media.sourcePageUrl ?? '').trim() || undefined;
-    } else if (source.media.sourcePageUrl) {
-      payload.sourcePageUrl = String(source.media.sourcePageUrl ?? '').trim() || undefined;
-    }
-
-    if (source.media.originType !== 'EXTERNAL_URL') {
-      delete payload.url;
-      delete payload.displayUrl;
-    }
-
-    return payload;
-  }
-
-  private normalizeSlotCrops(value: any): MediaSlotCropMap {
-    return {
-      explorer3d: this.normalizeCropValue(value?.explorer3d),
-      list: this.normalizeCropValue(value?.list),
-      detail: this.normalizeCropValue(value?.detail),
-      preview: this.normalizeCropValue(value?.preview),
-    };
-  }
-
-  private normalizeCropValue(value: any) {
-    return {
-      x: this.toNullableNumber(value?.x),
-      y: this.toNullableNumber(value?.y),
-      zoom: this.toNullableNumber(value?.zoom),
-    };
-  }
-
-  private emptySlotCropMap(): MediaSlotCropMap {
-    return {
-      explorer3d: { x: null, y: null, zoom: null },
-      list: { x: null, y: null, zoom: null },
-      detail: { x: null, y: null, zoom: null },
-      preview: { x: null, y: null, zoom: null },
-    };
-  }
-
-  private cloneSlotCrops(slotCrops: MediaSlotCropMap | null | undefined): MediaSlotCropMap {
-    return this.normalizeSlotCrops(slotCrops ?? this.emptySlotCropMap());
-  }
-
-  private buildSlotCropPayload(slotCrops: MediaSlotCropMap | null | undefined) {
-    if (!slotCrops) {
-      return undefined;
-    }
-
-    const keys: MediaEditorSlotKey[] = ['explorer3d', 'list', 'detail', 'preview'];
-    const payload = keys.reduce((acc, key) => {
-      const crop = slotCrops[key];
-      const x = this.toNullableNumber(crop?.x);
-      const y = this.toNullableNumber(crop?.y);
-      const zoom = this.toNullableNumber(crop?.zoom);
-      acc[key] = x === null && y === null && zoom === null ? null : { x, y, zoom };
-      return acc;
-    }, {} as Record<MediaEditorSlotKey, { x: number | null; y: number | null; zoom: number | null } | null>);
-
-    return payload;
-  }
-
   private toNullableNumber(value: unknown): number | null {
     if (value === '' || value === null || value === undefined) {
       return null;
@@ -3344,9 +2002,121 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   activeSlotLabels(link: EditableAdminMediaLink): string[] {
-    return this.visualSlots
-      .filter((slot) => slot.state.item?.id === link.media.id)
-      .map((slot) => slot.label);
+    return this.editorPresentation(link).activeSlotLabels;
+  }
+
+  readonly mediaEditorPresentationFor = (link: EditableAdminMediaLink) => this.editorPresentation(link);
+  readonly hasAnyPersistedLegacyForEditor = (editorId: string) => this.hasOtherPersistedLegacy(editorId);
+
+  get sidebarSections(): AdminEntitySidebarSectionItem[] {
+    return buildAdminEntitySidebarSections({
+      activeDashboardSection: this.activeDashboardSection,
+      supportsTypedDetails: this.supportsTypedDetails(),
+      isEdit: this.isEdit,
+      persistedMediaLinksCount: this.persistedMediaLinks.length,
+      sourceRefsCount: this.sourceRefs.length,
+      contributorsCount: this.contributors.length,
+      relationsCount: this.relations.length,
+      incomingRelationsCount: this.incomingRelations.length,
+      contentHasError: !!(this.errorMessage || this.detailsError),
+      contentSaving: !!(this.saving || this.detailsSaving),
+      mediaHasError: !!this.mediaError,
+      mediaSaving: !!(this.addingMedia || this.uploadingMedia || this.mediaEditors.some((editor) => editor.saveState === 'saving')),
+      sourcesHasError: !!this.sourcesError,
+      sourcesSaving: !!this.sourcesSaving,
+      contributorsHasError: !!this.contributorsError,
+      contributorsSaving: !!this.contributorsSaving,
+      relationsHasError: !!this.errorMessage,
+      relationsSaving: !!(this.relationsLoading || this.incomingRelationsLoading),
+    });
+  }
+
+  get entitySaveStatus(): AdminEntitySaveStatusViewModel {
+    return buildAdminEntitySaveStatusViewModel({
+      saving: this.saving,
+      entitySaveState: this.entitySaveState,
+      entityLastSavedAt: this.entityLastSavedAt,
+      isEdit: this.isEdit,
+    });
+  }
+
+  get hoveredSlug(): string | null {
+    return this.previewHoverState.hoveredSlug;
+  }
+
+  get previewData(): PublicEntityPreview | null {
+    return this.previewHoverState.previewData;
+  }
+
+  get previewLoading(): boolean {
+    return this.previewHoverState.previewLoading;
+  }
+
+  get isHoveringPreviewPopup(): boolean {
+    return this.previewHoverState.isHoveringPreviewPopup;
+  }
+
+  set isHoveringPreviewPopup(value: boolean) {
+    this.previewHoverState = setAdminEntityPreviewPopupHover(this.previewHoverState, value);
+  }
+
+  private editorPresentation(link: EditableAdminMediaLink) {
+    return this.mediaLibraryModel.editorMetaById[link.id] ?? {
+      activeSlotLabels: [],
+      canIngest: false,
+      canPromote: false,
+      canRestore: false,
+      hasPromotedReplacement: false,
+      replacementTargetLabel: null,
+      replacementIngestedLabel: null,
+      ingestedSourceLabel: null,
+      slotWarnings: {},
+    };
+  }
+
+  private buildMediaLibraryModel(): AdminEntityMediaLibraryViewModel {
+    return buildAdminEntityMediaLibraryViewModel({
+      mediaEditors: this.mediaEditors,
+      persistedMediaLinks: this.persistedMediaLinks,
+      resolvedVisualSlots: this.resolvedVisualSlots,
+      additionalMediaItems: this.additionalMediaItems,
+      mediaWarningsDetailed: this.mediaWarningsDetailed,
+      mediaWarningMessages: this.mediaWarningMessages,
+      mediaCoverageSummary: this.mediaCoverageSummary,
+      activeMediaEditorId: this.activeMediaEditorId,
+      mediaRoleLabel: (role) => this.mediaRoleLabel(role),
+    });
+  }
+
+  private syncMediaLibraryModel() {
+    this.mediaLibraryModel = this.buildMediaLibraryModel();
+  }
+
+  private currentMediaLibraryState(): AdminEntityMediaLibraryState {
+    return {
+      persistedMediaLinks: this.persistedMediaLinks,
+      mediaEditors: this.mediaEditors,
+      resolvedVisualSlots: this.resolvedVisualSlots,
+      additionalMediaItems: this.additionalMediaItems,
+      mediaWarningsDetailed: this.mediaWarningsDetailed,
+      mediaWarningMessages: this.mediaWarningMessages,
+      mediaCoverageSummary: this.mediaCoverageSummary,
+      activeMediaEditorId: this.activeMediaEditorId,
+      activeMediaLibraryView: this.activeMediaLibraryView,
+    };
+  }
+
+  private applyMediaLibraryStateSnapshot(state: AdminEntityMediaLibraryState) {
+    this.persistedMediaLinks = state.persistedMediaLinks;
+    this.mediaEditors = state.mediaEditors;
+    this.resolvedVisualSlots = state.resolvedVisualSlots;
+    this.additionalMediaItems = state.additionalMediaItems;
+    this.mediaWarningsDetailed = state.mediaWarningsDetailed;
+    this.mediaWarningMessages = state.mediaWarningMessages;
+    this.mediaCoverageSummary = state.mediaCoverageSummary;
+    this.activeMediaEditorId = state.activeMediaEditorId;
+    this.activeMediaLibraryView = state.activeMediaLibraryView;
+    this.syncMediaLibraryModel();
   }
 
   onContentInput() {
@@ -3359,38 +2129,27 @@ previewContainer?: ElementRef<HTMLElement>;
     }
 
     const cursor = textarea.selectionStart ?? value.length;
-    const beforeCursor = value.slice(0, cursor);
-
-    const match = beforeCursor.match(/\[\[([^[\]]*)$/);
-
-    if (!match) {
+    const linkMatch = detectAdminEntityLinkMatch(value, cursor);
+    if (!linkMatch) {
       this.closeLinkSuggestions();
       return;
     }
 
-    const query = (match[1] ?? '').trim();
-    const startIndex = beforeCursor.lastIndexOf('[[');
-
-    if (query.includes(']]')) {
-      this.closeLinkSuggestions();
-      return;
-    }
-
-    this.linkStartIndex = startIndex;
-    this.linkSearch = query;
+    this.linkStartIndex = linkMatch.startIndex;
+    this.linkSearch = linkMatch.query;
     this.showLinkSuggestions = true;
 
-    if (query.length < 1) {
+    if (linkMatch.query.length < 1) {
       this.linkSuggestions = [];
       this.linkLoading = false;
       this.cdr.markForCheck();
       return;
     }
 
-    this.linkSearch$.next(query);
+    this.linkSearch$.next(linkMatch.query);
   }
 
-  insertEntityLink(entity: any) {
+  insertEntityLink(entity: AdminEntitySearchListItem) {
     const textarea = this.contentTextarea?.nativeElement;
     const value = this.form.content ?? '';
 
@@ -3399,22 +2158,15 @@ previewContainer?: ElementRef<HTMLElement>;
     }
 
     const cursor = textarea.selectionStart ?? value.length;
-    const before = value.slice(0, this.linkStartIndex);
-    const after = value.slice(cursor);
-
-    const inserted = `[[${entity.slug}|${entity.title}]]`;
-    const nextValue = `${before}${inserted}${after}`;
-
-    this.form.content = nextValue;
+    const inserted = insertAdminEntityLink(value, this.linkStartIndex, cursor, entity);
+    this.form.content = inserted.value;
     this.closeLinkSuggestions();
     this.cdr.markForCheck();
 
     queueMicrotask(() => {
       if (!textarea) return;
       textarea.focus();
-
-      const nextCursor = before.length + inserted.length;
-      textarea.setSelectionRange(nextCursor, nextCursor);
+      textarea.setSelectionRange(inserted.cursor, inserted.cursor);
     });
   }
 
@@ -3428,27 +2180,11 @@ previewContainer?: ElementRef<HTMLElement>;
   }
 
   renderContentPreview(text: string | null | undefined): string {
-  if (!text) return '';
-
-  const escaped = text
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
-
-  const withLinks = escaped.replace(
-    /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,
-    (_match, slug, label) => {
-      const safeSlug = String(slug).trim();
-      const safeLabel = String(label ?? slug).trim();
-
-      return `<a class="entity-link" data-slug="${safeSlug}">${safeLabel}</a>`;
-    }
-  );
-
-  return withLinks.replace(/\n/g, '<br>');
-}
+    return renderAdminEntityLinkedContentPreview(text);
+  }
 
   ngOnDestroy() {
+    this.cancelClosePreview();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -3456,34 +2192,30 @@ previewContainer?: ElementRef<HTMLElement>;
  openPreview(slug: string) {
   this.cancelClosePreview();
 
-  if (this.hoveredSlug === slug && (this.previewLoading || this.previewData)) {
+  const previewRequest = beginAdminEntityPreviewRequest(this.previewHoverState, slug);
+  this.previewHoverState = previewRequest.nextState;
+
+  if (!previewRequest.shouldFetch) {
     return;
   }
 
-  this.hoveredSlug = slug;
-  this.previewLoading = true;
-  this.previewData = null;
-
-  const requestId = ++this.previewRequestId;
+  const requestId = previewRequest.requestId;
 
   this.adminApi.previewBySlug(slug).subscribe({
-    next: (data: any) => {
-      // Ignora respuestas viejas
-      if (requestId !== this.previewRequestId) return;
-
-      // Si ya cambió el slug activo, ignora
-      if (this.hoveredSlug !== slug) return;
-
-      this.previewData = data;
-      this.previewLoading = false;
+    next: (data) => {
+      this.previewHoverState = resolveAdminEntityPreviewRequest(this.previewHoverState, {
+        requestId,
+        slug,
+        previewData: data,
+      });
       this.cdr.markForCheck();
     },
     error: () => {
-      if (requestId !== this.previewRequestId) return;
-      if (this.hoveredSlug !== slug) return;
-
-      this.previewData = null;
-      this.previewLoading = false;
+      this.previewHoverState = resolveAdminEntityPreviewRequest(this.previewHoverState, {
+        requestId,
+        slug,
+        previewData: null,
+      });
       this.cdr.markForCheck();
     },
   });
@@ -3493,13 +2225,11 @@ scheduleClosePreview() {
   this.cancelClosePreview();
 
   this.closePreviewTimer = setTimeout(() => {
-    if (this.isHoveringPreviewLink || this.isHoveringPreviewPopup) {
+    if (shouldKeepAdminEntityPreviewOpen(this.previewHoverState)) {
       return;
     }
 
-    this.hoveredSlug = null;
-    this.previewData = null;
-    this.previewLoading = false;
+    this.previewHoverState = closeAdminEntityPreview(this.previewHoverState);
     this.cdr.markForCheck();
   }, 120);
 }

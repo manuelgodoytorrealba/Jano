@@ -28,7 +28,14 @@
   transition:
     transform 260ms cubic-bezier(.22, 1, .36, 1),
     opacity 180ms ease,
-    box-shadow 220ms ease;
+    box-shadow 220ms ease,
+    top 260ms cubic-bezier(.22, 1, .36, 1),
+    left 260ms cubic-bezier(.22, 1, .36, 1),
+    right 260ms cubic-bezier(.22, 1, .36, 1),
+    background 220ms ease,
+    border-color 220ms ease,
+    backdrop-filter 220ms ease,
+    -webkit-backdrop-filter 220ms ease;
 }
 
 .app-chrome__header::before {

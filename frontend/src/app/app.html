@@ -1,17 +1,18 @@
 <ng-container *ngIf="isAuthRoute(); else appLayout">
-  <!-- 🔥 AUTH LAYOUT (LOGIN FULLSCREEN) -->
-  <router-outlet />
+  <main class="app-auth-shell" [class.is-transitioning]="routeTransitioning()">
+    <router-outlet />
+  </main>
 </ng-container>
 
 <ng-template #appLayout>
-  <!-- 🔥 APP NORMAL -->
   <div class="app-shell" [class.app-shell--immersive]="isImmersiveRoute()"
     [class.app-shell--entities]="isEntitiesRoute()"
     [class.app-shell--detail]="isEntityDetailRoute()"
     [style.--app-background-image]="backgroundImageStyle()">
     <app-app-chrome />
 
-    <main class="app-shell__content">
+    <main class="app-shell__content"
+      [class.app-shell__content--transitioning]="routeTransitioning() && !artworkTransition.isActive()">
       <router-outlet />
     </main>
   </div>

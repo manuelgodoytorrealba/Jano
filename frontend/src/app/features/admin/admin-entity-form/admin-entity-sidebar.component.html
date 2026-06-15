@@ -1,0 +1,71 @@
+<div class="admin-sidebar-layer" [style.width.px]="visible ? 300 : 84">
+  @if (visible) {
+    <aside class="admin-sidebar" style="width:300px">
+      <div class="admin-sidebar__toolhead">
+        <span class="admin-sidebar__tooltitle">Editor</span>
+        <div class="admin-sidebar__toolbar">
+          <button class="admin-sidebar__control" type="button" (click)="toggleSidebar.emit()">
+            Ocultar editor
+          </button>
+          <a class="admin-sidebar__control admin-sidebar__control--quiet" [attr.href]="cancelHref">Volver</a>
+        </div>
+      </div>
+      <nav class="admin-dashboard-nav">
+        @for (section of navItems; track section.id) {
+          <button
+            type="button"
+            class="admin-dashboard-nav__item"
+            [class.is-active]="section.isActive"
+            (click)="selectSection.emit(section.id)"
+          >
+            <span class="admin-dashboard-nav__item-main">
+              <span class="admin-dashboard-nav__item-label">{{ section.label }}</span>
+              @if (section.count) {
+                <span class="admin-dashboard-nav__item-count">{{ section.count }}</span>
+              }
+            </span>
+            <span class="admin-dashboard-nav__item-meta">
+              <span>{{ section.meta }}</span>
+              @if (section.statusLabel) {
+                <span [class]="section.statusClass">{{ section.statusLabel }}</span>
+              }
+            </span>
+          </button>
+        }
+      </nav>
+      <div class="admin-sidebar__summary">
+        <span class="admin-sidebar__eyebrow">Editor dashboard</span>
+        <h2 class="admin-sidebar__title">{{ title || 'Entity sin título' }}</h2>
+        <span [class]="saveStatusClass">{{ saveStatusLabel }}</span>
+        <div class="admin-sidebar__actions">
+          <a class="admin-sidebar__action admin-sidebar__action--ghost" [attr.href]="cancelHref">Cancelar</a>
+          <button
+            class="admin-sidebar__action admin-sidebar__action--ghost"
+            type="button"
+            [disabled]="saveDisabled"
+            (click)="saveStay.emit()"
+          >
+            {{ saveStayLabel }}
+          </button>
+          <button
+            class="admin-sidebar__action admin-sidebar__action--primary"
+            type="button"
+            [disabled]="saveDisabled"
+            (click)="saveBack.emit()"
+          >
+            @if (loading) {
+              Cargando...
+            } @else {
+              {{ saveBackLabel }}
+            }
+          </button>
+        </div>
+      </div>
+    </aside>
+  } @else {
+    <button class="admin-sidebar__peek" type="button" (click)="toggleSidebar.emit()">
+      <span>Editor</span>
+      <strong>Mostrar</strong>
+    </button>
+  }
+</div>

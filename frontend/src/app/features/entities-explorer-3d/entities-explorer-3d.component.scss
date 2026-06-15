@@ -97,7 +97,7 @@
 .explorer3d__info-toggle {
     position: absolute;
     top: clamp(134px, 16svh, 168px);
-    right: clamp(72px, 11vw, 132px);
+    right: var(--entities-explorer-info-toggle-right, clamp(72px, 11vw, 132px));
     z-index: 4;
     width: 32px;
     height: 32px;
@@ -382,6 +382,12 @@
     .explorer3d__info-toggle {
         top: clamp(162px, 20svh, 198px);
         right: clamp(56px, 10vw, 96px);
+    }
+}
+
+@media (min-width: 1280px) {
+    .explorer3d__info-toggle {
+        right: var(--entities-explorer-info-toggle-right, clamp(248px, 23vw, 304px));
     }
 }
 

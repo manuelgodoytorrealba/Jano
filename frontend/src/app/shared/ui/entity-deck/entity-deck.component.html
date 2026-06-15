@@ -71,8 +71,8 @@
 
                             <div class="entity-deck__top-actions">
                                 @if (showAdminEdit() && item.adminEditRoute) {
-                                <button class="entity-deck__admin-edit" type="button" aria-label="Editar deck"
-                                    title="Editar deck" (click)="onAdminEditClick($event, item)">
+                                <button class="entity-deck__admin-edit" type="button" [attr.aria-label]="i18n.t('deck.editCollection')"
+                                    [title]="i18n.t('deck.editCollection')" (click)="onAdminEditClick($event, item)">
                                     <svg class="entity-deck__admin-edit-icon" viewBox="0 0 24 24" aria-hidden="true">
                                         <path d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z" fill="currentColor" opacity="0.92" />
                                         <path d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z" fill="none" stroke="currentColor" stroke-opacity="0.24" stroke-width="0.72" />
@@ -82,7 +82,7 @@
                                 }
 
                                 <button class="entity-deck__chip" type="button" (click)="onExpandClick($event, item)">
-                                    Expand
+                                    {{ i18n.t('deck.enter') }}
                                 </button>
                             </div>
                         </div>

@@ -2,3 +2,29 @@
 @use './entity-detail-content';
 @use './entity-popup';
 @use './entity-actions';
+
+.entity-detail--artwork-arrival .entity-explorer__workspace-deck {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 240ms ease;
+}
+
+.entity-detail--artwork-arrival .entity-explorer__workspace-deck--arrival-revealed {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.entity-detail--artwork-arrival .entity-header__title,
+.entity-detail--artwork-arrival .entity-topbar__subtitle,
+.entity-detail--artwork-arrival .entity-topbar__meta {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.entity-detail--artwork-arrival .entity-arrival-copy--visible {
+  opacity: 1;
+  transform: translateY(0);
+}

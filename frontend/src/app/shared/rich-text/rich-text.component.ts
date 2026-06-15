@@ -8,6 +8,7 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
+import { PublicEntityMediaAsset, PublicEntityPreview } from '../../core/api/entities.models';
 import { JanoMediaComponent } from '../media/jano-media.component';
 
 type InlineToken =
@@ -37,7 +38,7 @@ export class RichTextComponent {
 
   openSlug = signal<string | null>(null);
   openPreviewKey = signal<string | null>(null);
-  preview = signal<any | null>(null);
+  preview = signal<PublicEntityPreview | null>(null);
   previewLoading = signal(false);
 
   private closeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -50,7 +51,7 @@ export class RichTextComponent {
     return parseBlocks(this.text ?? '');
   }
 
-  get previewImageMedia(): any | null {
+  get previewImageMedia(): PublicEntityMediaAsset | null {
     return this.selectPreviewImage(this.preview());
   }
 
@@ -70,7 +71,7 @@ export class RichTextComponent {
     const currentRequest = ++this.requestId;
 
     this.api.preview(slug).subscribe({
-      next: (p: any) => {
+      next: (p: PublicEntityPreview) => {
         if (currentRequest !== this.requestId) return;
         if (this.openSlug() !== slug) return;
 
@@ -132,13 +133,13 @@ export class RichTextComponent {
     }
   }
 
-  private selectPreviewImage(entity: any): any | null {
+  private selectPreviewImage(entity: PublicEntityPreview | null): PublicEntityMediaAsset | null {
     const resolvedSlots = Array.isArray(entity?.mediaLibrary?.resolvedSlots)
       ? entity.mediaLibrary.resolvedSlots
       : [];
 
     for (const slotKey of ['preview', 'list', 'detail']) {
-      const slot = resolvedSlots.find((candidate: any) => candidate?.slotKey === slotKey);
+      const slot = resolvedSlots.find((candidate) => candidate?.slotKey === slotKey);
       if (slot?.item) {
         return slot.item;
       }

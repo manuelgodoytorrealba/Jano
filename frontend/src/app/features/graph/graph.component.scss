@@ -45,6 +45,13 @@
   min-height: var(--detail-active-workspace-height);
 }
 
+.explorer-graph-pane--arrival-hidden {
+  opacity: 0;
+  transform: translateY(18px) scale(0.985);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
 .explorer-btn,
 .surface-control,
 .filter-chip,
@@ -264,19 +271,35 @@
   cursor: grab;
 }
 
+.image-stage--arrival-masked .image-stage__asset {
+  opacity: 0;
+}
+
+.image-stage--arrival-masked .image-stage__backdrop {
+  opacity: 0.18;
+}
+
+.image-stage--arrival-masked .image-overlay-bar,
+.image-stage--arrival-masked .image-meta-dock {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
 .image-stage__loading {
   position: absolute;
   inset: 0;
   z-index: 2;
   display: grid;
-  align-content: start;
-  gap: 1rem;
+  align-content: end;
+  gap: 0.75rem;
   padding: 1rem;
   pointer-events: none;
+  opacity: 0;
   background:
-    radial-gradient(circle at top left, rgba(242, 211, 169, 0.16), transparent 28%),
-    linear-gradient(180deg, rgba(246, 242, 236, 0.74), rgba(226, 221, 214, 0.54));
-  backdrop-filter: blur(2px);
+    radial-gradient(circle at top left, rgba(242, 211, 169, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(246, 242, 236, 0.12), rgba(226, 221, 214, 0.06));
+  backdrop-filter: blur(1px);
+  transition: opacity 240ms ease;
 }
 
 .image-stage__loading-label,
@@ -292,11 +315,11 @@
 }
 
 .image-stage__loading-frame {
-  min-height: 100%;
+  min-height: 44%;
   border-radius: 24px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08)),
-    rgba(255, 255, 255, 0.24);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.12);
 }
 
 .image-stage__backdrop {
@@ -307,7 +330,8 @@
   background-size: cover;
   filter: blur(14px) saturate(0.9) brightness(0.82);
   transform: scale(1.08);
-  opacity: 0.32;
+  opacity: 0.42;
+  transition: opacity 260ms ease, filter 260ms ease;
 }
 
 .graph-stage {
@@ -331,10 +355,12 @@
   top: 0;
   left: 0;
   z-index: 1;
+  opacity: 1;
   transform-origin: top left;
   will-change: transform;
   isolation: isolate;
   contain: layout paint;
+  transition: opacity 220ms ease;
 }
 
 .image-stage__img {
@@ -346,11 +372,21 @@
   pointer-events: none;
   -webkit-user-drag: none;
   backface-visibility: hidden;
-  transition: opacity 180ms ease;
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+  transition: opacity 220ms ease, filter 320ms ease, transform 320ms ease;
 }
 
 .image-stage__img.is-loading {
-  opacity: 0;
+  opacity: 0.18;
+  filter: blur(16px) saturate(0.8);
+  transform: scale(1.015);
+}
+
+.image-stage__img.is-loading + .image-stage__loading,
+.image-stage:has(.image-stage__img.is-loading) .image-stage__loading {
+  opacity: 1;
 }
 
 .image-stage__empty {
@@ -373,6 +409,7 @@
   justify-content: space-between;
   gap: 0.75rem;
   flex-wrap: wrap;
+  transition: opacity 220ms ease, transform 240ms ease;
 }
 
 .explorer-shell--focused .image-overlay-bar {
@@ -468,6 +505,7 @@
   justify-items: end;
   gap: 0.36rem;
   pointer-events: auto;
+  transition: opacity 220ms ease, transform 240ms ease;
 }
 
 .image-meta-dock__toggle {

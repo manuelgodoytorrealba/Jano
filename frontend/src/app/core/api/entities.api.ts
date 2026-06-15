@@ -2,36 +2,32 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { GraphResponseDto } from '../../features/graph/graph.models';
 import { apiUrl } from './api-base';
-
-type Entity = any;
+import { PublicEntity, PublicEntityListResponse, PublicEntityPreview } from './entities.models';
 
 @Injectable({ providedIn: 'root' })
 export class EntitiesApi {
   private http = inject(HttpClient);
 
-  // ✅ NUEVO: home (5 cards)
   home() {
-    return this.http.get<Entity[]>(apiUrl('/entities/home'));
+    return this.http.get<PublicEntity[]>(apiUrl('/entities/home'));
   }
 
-  // ✅ EXISTENTE (mantén firma): listado simple para pantallas antiguas (si lo usas en algún lado)
-  // Si ya no lo usas, igual lo dejamos para no romper.
- list(params: {
-  type?: string;
-  q?: string;
-  deck?: string;
-  page?: number;
-  limit?: number;
-  sort?: 'recent' | 'title' | 'relevance';
-  status?: string;
-  contentLevel?: string;
-  movement?: string;
-  period?: string;
-  institution?: string;
-  nationality?: string;
-  tag?: string;
-}) {
-    const clean: any = {};
+  list(params: {
+    type?: string;
+    q?: string;
+    deck?: string;
+    page?: number;
+    limit?: number;
+    sort?: 'recent' | 'title' | 'relevance';
+    status?: string;
+    contentLevel?: string;
+    movement?: string;
+    period?: string;
+    institution?: string;
+    nationality?: string;
+    tag?: string;
+  }) {
+    const clean: Record<string, string | number> = {};
 
     for (const [k, v] of Object.entries(params ?? {})) {
       if (v === undefined || v === null) continue;
@@ -44,7 +40,7 @@ export class EntitiesApi {
       }
     }
 
-    return this.http.get<{ items: any[]; page: number; limit: number; total: number; totalPages: number }>(
+    return this.http.get<PublicEntityListResponse>(
       apiUrl('/entities'),
       { params: clean },
     );
@@ -58,18 +54,15 @@ export class EntitiesApi {
     return this.http.get<string[]>(apiUrl('/entities/nationalities'));
   }
 
-  // ✅ ALIAS para no romper entity.component.ts
   get(slug: string) {
-    return this.http.get<Entity>(apiUrl(`/entities/${slug}`));
+    return this.http.get<PublicEntity>(apiUrl(`/entities/${slug}`));
   }
 
-  // ✅ ALIAS para graph.component.ts
   graph(slug: string) {
     return this.http.get<GraphResponseDto>(apiUrl(`/entities/${slug}/graph`));
   }
 
-  // ✅ ALIAS para rich-text.component.ts
   preview(slug: string) {
-    return this.http.get<any>(apiUrl(`/entities/${slug}/preview`));
+    return this.http.get<PublicEntityPreview>(apiUrl(`/entities/${slug}/preview`));
   }
 }

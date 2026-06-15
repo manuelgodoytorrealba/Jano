@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { apiUrl } from './api-base';
+import { PublicEntityPreview } from './entities.models';
 
 export type AdminLocale = 'es' | 'en';
 
@@ -79,6 +80,173 @@ export type AdminContributorPayload = {
   name: string;
   role: string;
   note?: string;
+};
+
+export type AdminEntitySourceRecord = {
+  type?: AdminSourceRefPayload['sourceType'] | null;
+  title?: string | null;
+  titleEs?: string | null;
+  titleEn?: string | null;
+  author?: string | null;
+  authorEs?: string | null;
+  authorEn?: string | null;
+  publisher?: string | null;
+  publisherEs?: string | null;
+  publisherEn?: string | null;
+  year?: number | null;
+  url?: string | null;
+};
+
+export type AdminEntitySourceRefRecord = {
+  id: string;
+  page?: string | null;
+  quote?: string | null;
+  quoteEs?: string | null;
+  quoteEn?: string | null;
+  note?: string | null;
+  noteEs?: string | null;
+  noteEn?: string | null;
+  source?: AdminEntitySourceRecord | null;
+};
+
+export type AdminEntityContributorRecord = {
+  id: string;
+  name?: string | null;
+  role?: string | null;
+  note?: string | null;
+};
+
+export type AdminEntityTagRecord = {
+  id?: string | null;
+  tagId?: string | null;
+  source?: string | null;
+  tag?: {
+    id?: string | null;
+    slug?: string | null;
+    label?: string | null;
+    category?: string | null;
+    description?: string | null;
+    isActive?: boolean | null;
+  } | null;
+};
+
+export type AdminEntityArtworkRecord = {
+  authorNation?: string | null;
+  technique?: string | null;
+  materials?: string | null;
+  dimensions?: string | null;
+  location?: string | null;
+  collection?: string | null;
+  state?: string | null;
+  translations?: Array<{
+    locale?: string | null;
+    authorNation?: string | null;
+    technique?: string | null;
+    materials?: string | null;
+    dimensions?: string | null;
+    location?: string | null;
+    collection?: string | null;
+    state?: string | null;
+  }> | null;
+};
+
+export type AdminEntityArtistRecord = {
+  country?: string | null;
+  city?: string | null;
+  birthYear?: number | null;
+  deathYear?: number | null;
+  disciplines?: string | null;
+  bioShort?: string | null;
+  links?: string | null;
+  translations?: Array<{
+    locale?: string | null;
+    country?: string | null;
+    city?: string | null;
+    disciplines?: string | null;
+    bioShort?: string | null;
+    links?: string | null;
+  }> | null;
+};
+
+export type AdminEntityConceptRecord = {
+  definition?: string | null;
+  translations?: Array<{
+    locale?: string | null;
+    definition?: string | null;
+  }> | null;
+};
+
+export type AdminEntityPeriodRecord = {
+  definition?: string | null;
+  translations?: Array<{
+    locale?: string | null;
+    definition?: string | null;
+  }> | null;
+};
+
+export type AdminEntitySearchListItem = {
+  id: string;
+  slug: string;
+  title: string;
+  type: string;
+  summary?: string | null;
+  status?: string | null;
+  contentLevel?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+
+export type AdminEntityListResponse = {
+  items: AdminEntitySearchListItem[];
+  total: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+};
+
+export type AdminEntityRelationEndpoint = {
+  id: string;
+  slug: string;
+  title: string;
+  type: string;
+};
+
+export type AdminEntityRelationRecord = {
+  id: string;
+  type: string;
+  relationTypeId?: string | null;
+  relationTypeKey?: string | null;
+  relationTypeLabel?: string | null;
+  relationType?: {
+    id?: string | null;
+    key?: string | null;
+    label?: string | null;
+  } | null;
+  justification?: string | null;
+  justificationEs?: string | null;
+  justificationEn?: string | null;
+  weight?: number | null;
+  from?: AdminEntityRelationEndpoint | null;
+  to?: AdminEntityRelationEndpoint | null;
+};
+
+export type AdminCreateRelationPayload = {
+  toId: string;
+  type?: string;
+  relationTypeId?: string;
+  justification?: string;
+  justificationEs?: string;
+  justificationEn?: string;
+  weight?: number;
+};
+
+export type AdminUpdateRelationPayload = {
+  type?: string;
+  relationTypeId?: string;
+  justification?: string;
+  justificationEs?: string;
+  justificationEn?: string;
+  weight?: number;
 };
 
 export type AdminMediaRole =
@@ -242,16 +410,16 @@ export type AdminEntityResponse = {
   status?: AdminEntityPayload['status'] | null;
   startYear?: number | null;
   endYear?: number | null;
-  mediaLinks?: any[];
+  mediaLinks?: Array<Record<string, unknown>>;
   mediaLibrary?: AdminMediaLibraryPayload;
-  resolvedMedia?: any;
-  artwork?: any;
-  artist?: any;
-  concept?: any;
-  period?: any;
-  sourceRefs?: any[];
-  contributors?: any[];
-  tags?: any[];
+  resolvedMedia?: Record<string, unknown> | null;
+  artwork?: AdminEntityArtworkRecord | null;
+  artist?: AdminEntityArtistRecord | null;
+  concept?: AdminEntityConceptRecord | null;
+  period?: AdminEntityPeriodRecord | null;
+  sourceRefs?: AdminEntitySourceRefRecord[];
+  contributors?: AdminEntityContributorRecord[];
+  tags?: AdminEntityTagRecord[];
   translations?: AdminEntityTranslation[];
   translationStatus?: AdminTranslationStatus;
 };
@@ -273,7 +441,7 @@ export class AdminEntitiesApi {
       }
     }
 
-    return this.http.get<any>(this.adminBaseUrl, { params: httpParams });
+    return this.http.get<AdminEntityListResponse>(this.adminBaseUrl, { params: httpParams });
   }
 
   getById(id: string) {
@@ -281,15 +449,15 @@ export class AdminEntitiesApi {
   }
 
   updateDetails(id: string, data: AdminEntityDetailsPayload) {
-    return this.http.patch<any>(`${this.baseUrl}/${id}/details`, data);
+    return this.http.patch<AdminEntityResponse>(`${this.baseUrl}/${id}/details`, data);
   }
 
   create(data: AdminEntityPayload) {
-    return this.http.post<any>(this.baseUrl, data);
+    return this.http.post<AdminEntityResponse>(this.baseUrl, data);
   }
 
   update(id: string, data: Partial<AdminEntityPayload>) {
-    return this.http.patch<any>(`${this.baseUrl}/${id}`, data);
+    return this.http.patch<AdminEntityResponse>(`${this.baseUrl}/${id}`, data);
   }
   upsertTranslation(id: string, locale: AdminLocale, data: AdminEntityTranslationPayload) {
     return this.http.patch<AdminEntityResponse>(this.baseUrl + '/' + id + '/translations/' + locale, data);
@@ -297,7 +465,7 @@ export class AdminEntitiesApi {
 
 
   createMedia(entityId: string, data: AdminEntityMediaPayload) {
-    return this.http.post<any>(`${this.baseUrl}/${entityId}/media`, data);
+    return this.http.post<AdminEntityResponse>(`${this.baseUrl}/${entityId}/media`, data);
   }
 
   uploadMedia(entityId: string, file: File, data: AdminUploadEntityMediaPayload) {
@@ -317,23 +485,23 @@ export class AdminEntitiesApi {
       formData.set(key, String(value));
     }
 
-    return this.http.post<any>(`${this.baseUrl}/${entityId}/media/upload`, formData);
+    return this.http.post<AdminEntityResponse>(`${this.baseUrl}/${entityId}/media/upload`, formData);
   }
 
   updateMedia(entityId: string, linkId: string, data: Partial<AdminEntityMediaPayload>) {
-    return this.http.patch<any>(`${this.baseUrl}/${entityId}/media/${linkId}`, data);
+    return this.http.patch<AdminEntityResponse>(`${this.baseUrl}/${entityId}/media/${linkId}`, data);
   }
 
   ingestMedia(entityId: string, linkId: string) {
-    return this.http.post<any>(`${this.baseUrl}/${entityId}/media/${linkId}/ingest`, {});
+    return this.http.post<{ alreadyExisted?: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}/ingest`, {});
   }
 
   promoteIngestedMedia(entityId: string, linkId: string) {
-    return this.http.post<any>(`${this.baseUrl}/${entityId}/media/${linkId}/promote`, {});
+    return this.http.post<{ ok: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}/promote`, {});
   }
 
   restoreExternalMedia(entityId: string, linkId: string) {
-    return this.http.post<any>(`${this.baseUrl}/${entityId}/media/${linkId}/restore-external`, {});
+    return this.http.post<{ ok: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}/restore-external`, {});
   }
 
   deleteMedia(entityId: string, linkId: string) {
@@ -345,19 +513,19 @@ export class AdminEntitiesApi {
   }
 
   listRelations(entityId: string) {
-    return this.http.get<any[]>(`${this.baseUrl}/${entityId}/relations`);
+    return this.http.get<AdminEntityRelationRecord[]>(`${this.baseUrl}/${entityId}/relations`);
   }
 
   listIncomingRelations(entityId: string) {
-    return this.http.get<any[]>(`${this.baseUrl}/${entityId}/relations/incoming`);
+    return this.http.get<AdminEntityRelationRecord[]>(`${this.baseUrl}/${entityId}/relations/incoming`);
   }
 
   createSourceRef(entityId: string, data: AdminSourceRefPayload) {
-    return this.http.post<any>(`${this.baseUrl}/${entityId}/source-refs`, data);
+    return this.http.post<AdminEntitySourceRefRecord>(`${this.baseUrl}/${entityId}/source-refs`, data);
   }
 
   updateSourceRef(entityId: string, refId: string, data: Partial<AdminSourceRefPayload>) {
-    return this.http.patch<any>(`${this.baseUrl}/${entityId}/source-refs/${refId}`, data);
+    return this.http.patch<AdminEntitySourceRefRecord>(`${this.baseUrl}/${entityId}/source-refs/${refId}`, data);
   }
 
   deleteSourceRef(entityId: string, refId: string) {
@@ -365,11 +533,11 @@ export class AdminEntitiesApi {
   }
 
   createContributor(entityId: string, data: AdminContributorPayload) {
-    return this.http.post<any>(`${this.baseUrl}/${entityId}/contributors`, data);
+    return this.http.post<AdminEntityContributorRecord>(`${this.baseUrl}/${entityId}/contributors`, data);
   }
 
   updateContributor(entityId: string, contributorId: string, data: Partial<AdminContributorPayload>) {
-    return this.http.patch<any>(`${this.baseUrl}/${entityId}/contributors/${contributorId}`, data);
+    return this.http.patch<AdminEntityContributorRecord>(`${this.baseUrl}/${entityId}/contributors/${contributorId}`, data);
   }
 
   deleteContributor(entityId: string, contributorId: string) {
@@ -378,19 +546,19 @@ export class AdminEntitiesApi {
 
   createRelation(
     entityId: string,
-    data: { toId: string; type?: string; relationTypeId?: string; justification?: string; justificationEs?: string; justificationEn?: string; weight?: number }
+    data: AdminCreateRelationPayload,
   ) {
-    return this.http.post<any>(`${this.baseUrl}/${entityId}/relations`, data);
+    return this.http.post<AdminEntityRelationRecord>(`${this.baseUrl}/${entityId}/relations`, data);
   }
 
-  updateRelation(entityId: string, relationId: string, data: { type?: string; relationTypeId?: string; justification?: string; justificationEs?: string; justificationEn?: string; weight?: number }) {
-    return this.http.patch<any>(`${this.baseUrl}/${entityId}/relations/${relationId}`, data);
+  updateRelation(entityId: string, relationId: string, data: AdminUpdateRelationPayload) {
+    return this.http.patch<AdminEntityRelationRecord>(`${this.baseUrl}/${entityId}/relations/${relationId}`, data);
   }
 
   deleteRelation(entityId: string, relationId: string) {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/relations/${relationId}`);
   }
   previewBySlug(slug: string) {
-    return this.http.get<any>(`${this.baseUrl}/${slug}/preview`);
+    return this.http.get<PublicEntityPreview>(`${this.baseUrl}/${slug}/preview`);
   }
 }

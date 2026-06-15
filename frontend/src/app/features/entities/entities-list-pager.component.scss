@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  width: min(100%, var(--entities-list-max-width));
+  margin: var(--space-4) auto 0;
+}
+
+.entities-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.entities-pager--in-shell {
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 640px) {
+  .entities-pager {
+    flex-direction: column;
+  }
+
+  .entities-pager .ds-btn {
+    width: 100%;
+  }
+}

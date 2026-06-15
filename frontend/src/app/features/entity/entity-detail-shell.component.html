@@ -11,7 +11,7 @@
   ></app-entity-detail-view>
   @if (entity.translationMeta?.isFallback) {
     <div class="entity-translation-notice entity-glass">
-      {{ i18n.t('editorial.fallback.' + entity.translationMeta.resolvedLocale) }}
+      {{ i18n.t('editorial.fallback.' + (entity.translationMeta?.resolvedLocale ?? 'es')) }}
     </div>
   }
 

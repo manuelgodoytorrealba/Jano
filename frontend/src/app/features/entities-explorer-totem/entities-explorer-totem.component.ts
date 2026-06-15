@@ -18,6 +18,8 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
+import { mediaDisplayUrl, resolveEntityMediaItem } from '../../shared/media/media.utils';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 type Entity = any;
@@ -46,7 +48,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     @Input() infoOpen = false;
 
     @Output() activeIndexChange = new EventEmitter<number>();
-    @Output() openEntity = new EventEmitter<string>();
+    @Output() openEntity = new EventEmitter<EntityArtworkTransitionPayload>();
     @Output() requestInfoOpen = new EventEmitter<void>();
     @Output() requestInfoClose = new EventEmitter<void>();
 
@@ -160,24 +162,18 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
     openActive(): void {
         const item = this.activeItem;
-        if (item?.slug) {
-            this.openEntity.emit(item.slug);
+        const payload = item ? this.buildPayload(item) : null;
+        if (payload) {
+            this.openEntity.emit(payload);
         }
     }
 
     openPanelItem(): void {
         const item = this.panelItem;
-        if (item?.slug) {
-            this.openEntity.emit(item.slug);
+        const payload = item ? this.buildPayload(item) : null;
+        if (payload) {
+            this.openEntity.emit(payload);
         }
-    }
-
-    onActiveClick(): void {
-        if (this.infoOpen || this.isDragging || this.settling() || performance.now() < this.clickSuppressedUntil) {
-            return;
-        }
-
-        this.openActive();
     }
 
     onPointerDown(event: PointerEvent): void {
@@ -231,8 +227,20 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         this.flushDragOffset();
 
         const delta = this.dragOffset();
+        const tapThreshold = 12;
         const height = this.stageHeight() || 720;
         const threshold = Math.max(72, height * 0.12);
+        const isTap = Math.abs(delta) < tapThreshold && performance.now() >= this.clickSuppressedUntil;
+
+        if (isTap && !this.isInteractiveTarget(event.target)) {
+            this.clearTimers();
+            this.dragging.set(false);
+            this.settling.set(false);
+            this.dragOffset.set(0);
+            this.openActive();
+            return;
+        }
+
         if (delta <= -threshold && this.items.length > 1) {
             this.animateToEditorialMove(1, Math.abs(delta), threshold);
             return;
@@ -481,6 +489,32 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
         const stableHeight = Math.min(measuredHeight || viewportHeight, viewportHeight);
 
         this.stageHeight.set(stableHeight || 932);
+    }
+
+    private buildPayload(item: Entity): EntityArtworkTransitionPayload | null {
+        if (!item?.slug) {
+            return null;
+        }
+
+        const host = this.stageRef.nativeElement.querySelector('.explorer-totem__card--active .explorer-totem__card-shell');
+        const imageUrl = mediaDisplayUrl(resolveEntityMediaItem(item, 'explorer3d'));
+        if (!(host instanceof HTMLElement) || !imageUrl) {
+            return null;
+        }
+
+        const rect = host.getBoundingClientRect();
+        return {
+            slug: item.slug,
+            title: item.title ?? '',
+            imageUrl,
+            sourceBounds: {
+                left: rect.left,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height,
+            },
+            sourceSurface: 'explorer-totem',
+        };
     }
 
 }

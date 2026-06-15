@@ -1,0 +1,32 @@
+@media (max-width: 720px) {
+  .entities-explorer-loading--desktop {
+    display: none;
+  }
+
+  .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card {
+    padding: 10px;
+    border-radius: 30px;
+  }
+
+  .entities-explorer-layout:not(.is-list) .entities-explorer-loading__art {
+    border-radius: 22px;
+  }
+
+  .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card--prev {
+    top: calc(50% - 34svh);
+    opacity: 0.34;
+    transform: translate3d(calc(-50% - 5px), -50%, 0) scale(0.70);
+  }
+
+  .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card--active {
+    top: 50%;
+    opacity: 0.86;
+    transform: translate3d(-50%, -50%, 0) scale(1.19);
+  }
+
+  .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card--next {
+    top: calc(50% + 34svh);
+    opacity: 0.34;
+    transform: translate3d(calc(-50% + 5px), -50%, 0) scale(0.70);
+  }
+}

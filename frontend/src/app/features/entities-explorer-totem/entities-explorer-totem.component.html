@@ -21,7 +21,6 @@
             [attr.aria-hidden]="!card.active"
             [attr.tabindex]="card.active ? 0 : -1"
             [attr.role]="card.active ? 'button' : 'presentation'"
-            (click)="card.active && onActiveClick()"
             (keydown.enter)="card.active && openActive()"
             (keydown.space)="card.active && openActive()"
             [attr.aria-label]="card.active ? i18n.t('entity.open') + ' ' + card.item.title : null"

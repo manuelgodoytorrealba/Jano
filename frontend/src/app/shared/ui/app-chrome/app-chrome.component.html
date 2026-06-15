@@ -6,7 +6,7 @@
   <a
     class="app-chrome__brand"
     routerLink="/"
-    aria-label="Ir al inicio de JANO"
+    [attr.aria-label]="i18n.t('chrome.goHome')"
     [class.is-pressing]="brandPressing()"
     (pointerdown)="pressBrand()"
     (pointerup)="releaseBrand()"
@@ -17,7 +17,7 @@
     <img class="app-chrome__brand-mark" src="/app-brand-mark.png" srcset="/app-brand-mark.png 2x" alt="" width="44" height="44" aria-hidden="true">
     <span class="app-chrome__brand-copy">
       <span class="app-chrome__brand-name">JANO</span>
-      <span class="app-chrome__brand-tag">Art discovery system</span>
+      <span class="app-chrome__brand-tag">{{ i18n.t('chrome.brandTagline') }}</span>
     </span>
   </a>
 
@@ -40,7 +40,7 @@
   <nav
     class="app-chrome__nav"
     [class.has-active]="activeNavIndex() >= 0"
-    aria-label="Navegación principal"
+    [attr.aria-label]="i18n.t('chrome.primaryNav')"
     [style.--active-index]="activeNavIndex()"
   >
     <span class="app-chrome__nav-indicator" aria-hidden="true"></span>
@@ -70,8 +70,8 @@
     <button
       type="button"
       class="app-chrome__header-toggle app-chrome__header-toggle--close"
-      aria-label="Ocultar header"
-      title="Ocultar header"
+      [attr.aria-label]="i18n.t('chrome.hideHeader')"
+      [title]="i18n.t('chrome.hideHeader')"
       (click)="collapseHeader()"
     >
       <span aria-hidden="true">×</span>
@@ -84,8 +84,8 @@
     type="button"
     class="app-chrome__header-toggle app-chrome__header-toggle--open"
     [class.app-chrome__header-toggle--visible]="headerCollapsed() || detailHeaderMode()"
-    [attr.aria-label]="headerCollapsed() ? 'Mostrar header' : 'Ocultar header'"
-    [title]="headerCollapsed() ? 'Mostrar header' : 'Ocultar header'"
+    [attr.aria-label]="headerCollapsed() ? i18n.t('chrome.showHeader') : i18n.t('chrome.hideHeader')"
+    [title]="headerCollapsed() ? i18n.t('chrome.showHeader') : i18n.t('chrome.hideHeader')"
     (click)="toggleDetailHeader()"
   >
     <span class="app-chrome__header-toggle-bars" aria-hidden="true">
@@ -100,7 +100,7 @@
   class="app-chrome__utility app-glass"
   [class.app-chrome__utility--contextual]="isDetailRoute()"
   [class.has-active]="activeUtilityIndex() >= 0"
-  aria-label="Utilidades"
+  [attr.aria-label]="i18n.t('chrome.utilities')"
   [style.--active-index]="activeUtilityIndex()"
 >
   <span class="app-chrome__utility-indicator" aria-hidden="true"></span>

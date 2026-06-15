@@ -1,4 +1,4 @@
-import { AsyncPipe, } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,37 +7,38 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
-import { EntitiesApi } from '../../core/api/entities.api';
-import { Tag, TagsApi } from '../../core/api/tags.api';
-import { SeoService } from '../../core/seo/seo.service';
+import { distinctUntilChanged, map, tap } from 'rxjs';
+import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
-import {
-  Observable,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  shareReplay,
-  switchMap,
-  tap,
-} from 'rxjs';
-
+import { PublicEntityListItem } from '../../core/api/entities.models';
+import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
 import { EntitiesExplorerTotemComponent } from '../entities-explorer-totem/entities-explorer-totem.component';
-import { JanoMediaComponent } from '../../shared/media/jano-media.component';
+import {
+  EntitiesListActiveFilterKey,
+  EntitiesListFacade,
+  EntityListVm,
+  FilterMenuKey,
+  Level,
+  Sort,
+  Status,
+} from './entities-list.facade';
+import { EntitiesListEmptyStateComponent } from './entities-list-empty-state.component';
+import { EntitiesListFilterRailComponent } from './entities-list-filter-rail.component';
+import { EntitiesListPagerComponent } from './entities-list-pager.component';
 
-type Entity = any;
-type FilterOption = { slug: string; title: string };
-type EntityListVm = { items: Entity[]; page: number; limit: number; total: number; totalPages: number };
-type FilterSupport = { movement: boolean; period: boolean; institution: boolean; nationality: boolean };
-
-type Sort = 'recent' | 'title' | 'relevance';
-type Status = 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | '';
-type Level = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED' | '';
 type ViewMode = 'explore' | 'list';
-type FilterMenuKey = 'movement' | 'period' | 'institution' | 'nationality' | 'tag';
-type TagFilterOption = Pick<Tag, 'slug' | 'label' | 'category'>;
+
+const ENTITY_TYPE_LABEL_KEYS: Record<string, string> = {
+  ARTWORK: 'entities.type.artworkSingular',
+  ARTICLE: 'entity.article',
+  ARTIST: 'entities.type.artistSingular',
+  MOVEMENT: 'entities.type.movementSingular',
+  PERIOD: 'entities.type.periodSingular',
+  CONCEPT: 'entities.type.conceptSingular',
+  PLACE: 'entities.type.placeSingular',
+  TEXT: 'entities.type.textSingular',
+};
 
 const STATUS_KEYS: Record<Exclude<Status, ''>, string> = {
   DRAFT: 'status.draft',
@@ -51,94 +52,46 @@ const CONTENT_LEVEL_KEYS: Record<Exclude<Level, ''>, string> = {
   ADVANCED: 'level.advanced',
 };
 
-const FILTER_SUPPORT_BY_TYPE: Record<string, FilterSupport> = {
-  ARTIST: { movement: true, period: true, institution: false, nationality: true },
-  ARTICLE: { movement: false, period: false, institution: false, nationality: false },
-  ARTWORK: { movement: true, period: true, institution: true, nationality: false },
-  MOVEMENT: { movement: false, period: false, institution: false, nationality: false },
-  PERIOD: { movement: false, period: false, institution: false, nationality: false },
-  CONCEPT: { movement: false, period: false, institution: false, nationality: false },
-};
-
-const TYPE_ROUTE_LABELS: Record<string, string> = {
-  artwork: 'entities.type.artwork',
-  article: 'entities.type.article',
-  artist: 'entities.type.artist',
-  movement: 'entities.type.movement',
-  period: 'entities.type.period',
-  concept: 'entities.type.concept',
-  place: 'entities.type.place',
-  text: 'entities.type.text',
-};
-
 @Component({
   standalone: true,
   selector: 'app-entities-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, EntitiesExplorer3dComponent, EntitiesExplorerTotemComponent, JanoMediaComponent],
+  providers: [EntitiesListFacade],
+  imports: [
+    AsyncPipe,
+    EntitiesExplorer3dComponent,
+    EntitiesExplorerTotemComponent,
+    JanoMediaComponent,
+    EntitiesListFilterRailComponent,
+    EntitiesListPagerComponent,
+    EntitiesListEmptyStateComponent,
+  ],
   templateUrl: './entities-list.component.html',
   styleUrls: ['./entities-list.component.scss'],
 })
 export class EntitiesListComponent {
-  private api = inject(EntitiesApi);
-  private tagsApi = inject(TagsApi);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private readonly seo = inject(SeoService);
+  private readonly facade = inject(EntitiesListFacade);
   readonly i18n = inject(I18nService);
 
-  private readonly limit = 24;
-  private readonly contextualFilterKeys = ['movement', 'period', 'institution', 'nationality'] as const;
+  readonly pageVm$ = this.facade.pageVm$;
+  readonly skeleton = Array.from({ length: 8 });
+  readonly filterSkeleton = Array.from({ length: 4 });
   readonly viewportWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 0);
   readonly viewportHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 0);
-
-  private filterSupportForType(type: string | null | undefined): FilterSupport {
-    return FILTER_SUPPORT_BY_TYPE[(type ?? '').trim().toUpperCase()] ?? {
-      movement: false,
-      period: false,
-      institution: false,
-      nationality: false,
-    };
-  }
-
-  private obsoleteQueryParamsForType(type: string, queryParamMap: { get(key: string): string | null }) {
-    const support = this.filterSupportForType(type);
-    const obsolete: Record<string, null> = {};
-
-    for (const key of this.contextualFilterKeys) {
-      const value = (queryParamMap.get(key) ?? '').trim();
-      if (!value) continue;
-
-      const isSupported =
-        key === 'movement' ? support.movement :
-          key === 'period' ? support.period :
-            key === 'institution' ? support.institution :
-              support.nationality;
-
-      if (!isSupported) {
-        obsolete[key] = null;
-      }
-    }
-
-    return Object.keys(obsolete).length ? obsolete : null;
-  }
+  readonly activeIndex = signal(0);
+  readonly advancedFiltersOpen = signal(false);
+  readonly filtersPanelOpen = signal(false);
+  readonly infoPanelOpen = signal(false);
+  readonly openFilterMenu = signal<FilterMenuKey | null>(null);
+  readonly curatedDeckMode = signal(false);
 
   viewMode: ViewMode = 'explore';
-  skeleton = Array.from({ length: 8 });
-  filterSkeleton = Array.from({ length: 4 });
-  activeIndex = signal(0);
-  advancedFiltersOpen = signal(false);
-  filtersPanelOpen = signal(false);
-  infoPanelOpen = signal(false);
-  openFilterMenu = signal<FilterMenuKey | null>(null);
-  curatedDeckMode = signal(false);
 
   constructor() {
-    this.route.queryParamMap.pipe(
-      map((queryParamMap) => (queryParamMap.get('deck') ?? '').trim()),
+    this.pageVm$.pipe(
+      map((pageVm) => pageVm.curatedDeckMode),
       distinctUntilChanged(),
-      tap((deck) => {
-        const isCuratedDeck = !!deck;
+      tap((isCuratedDeck) => {
         this.curatedDeckMode.set(isCuratedDeck);
 
         if (isCuratedDeck) {
@@ -149,353 +102,18 @@ export class EntitiesListComponent {
       takeUntilDestroyed(),
     ).subscribe();
 
-    combineLatest([this.typeFromUrl$, this.route.queryParamMap]).pipe(
-      map(([type, queryParamMap]) => this.obsoleteQueryParamsForType(type, queryParamMap)),
-      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-      tap((obsolete) => {
-        if (!obsolete) return;
-
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: obsolete,
-          queryParamsHandling: 'merge',
-          replaceUrl: true,
-        });
-      }),
-      takeUntilDestroyed(),
-    ).subscribe();
-
-    combineLatest([this.title$, this.typeFromUrl$, this.qFromUrl$]).pipe(
-      tap(([title, type, query]) => {
-        const normalizedTitle = title || 'Entities';
-        const normalizedQuery = query.trim();
-        const pageTitle = normalizedQuery
-          ? `Search ${normalizedTitle} for "${normalizedQuery}" | JANO`
-          : `${normalizedTitle} | JANO`;
-        const description = normalizedQuery
-          ? `Browse JANO results for "${normalizedQuery}" inside ${normalizedTitle.toLowerCase()}.`
-          : `Explore ${normalizedTitle.toLowerCase()} in JANO with visual browsing and editorial filters.`;
-        const typeSlug = (type ?? '').trim().toLowerCase() || 'entities';
-        const path = normalizedQuery
-          ? `/entities/${typeSlug}?q=${encodeURIComponent(normalizedQuery)}`
-          : `/entities/${typeSlug}`;
-
-        this.seo.setPageMeta({
-          title: pageTitle,
-          description,
-          path,
-        });
+    this.pageVm$.pipe(
+      map((pageVm) => pageVm.results.items.length),
+      distinctUntilChanged(),
+      tap((total) => {
+        const nextIndex = total > 0 ? Math.floor((total - 1) / 2) : 0;
+        if (this.activeIndex() !== nextIndex) {
+          this.activeIndex.set(nextIndex);
+        }
       }),
       takeUntilDestroyed(),
     ).subscribe();
   }
-
-  title$ = this.route.paramMap.pipe(
-    map((pm) => (pm.get('type') ?? 'entities').toLowerCase()),
-    map((t) => TYPE_ROUTE_LABELS[t] ? this.i18n.t(TYPE_ROUTE_LABELS[t]) : (t.charAt(0).toUpperCase() + t.slice(1))),
-    distinctUntilChanged(),
-  );
-
-  typeFromUrl$ = this.route.paramMap.pipe(
-    map((pm) => (pm.get('type') ?? '').toUpperCase()),
-    distinctUntilChanged(),
-  );
-
-  qFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('q') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  deckFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('deck') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  pageFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => {
-      const raw = Number(qpm.get('page') ?? 1);
-      return Number.isFinite(raw) && raw > 0 ? raw : 1;
-    }),
-    distinctUntilChanged(),
-  );
-
-  statusFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('status') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  contentLevelFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('contentLevel') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  movementFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('movement') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  periodFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('period') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  institutionFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('institution') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  nationalityFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('nationality') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  tagFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('tag') ?? '').trim()),
-    distinctUntilChanged(),
-  );
-
-  sortFromUrl$ = this.route.queryParamMap.pipe(
-    map((qpm) => (qpm.get('sort') ?? 'recent').trim()),
-    map((s) => (s === 'title' || s === 'relevance' ? s : 'recent') as Sort),
-    distinctUntilChanged(),
-  );
-
-  movementOptions$ = this.api.list({
-    type: 'MOVEMENT',
-    limit: 60,
-    page: 1,
-    sort: 'title',
-    status: 'PUBLISHED',
-  }).pipe(
-    map((result) =>
-      (result.items ?? []).map((item) => ({
-        slug: item.slug,
-        title: item.title,
-      }) as FilterOption),
-    ),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  periodOptions$ = this.api.list({
-    type: 'PERIOD',
-    limit: 60,
-    page: 1,
-    sort: 'title',
-    status: 'PUBLISHED',
-  }).pipe(
-    map((result) =>
-      (result.items ?? []).map((item) => ({
-        slug: item.slug,
-        title: item.title,
-      }) as FilterOption),
-    ),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  institutionOptions$ = this.api.institutions().pipe(
-    map((items) =>
-      (items ?? []).map((item) => ({
-        slug: item,
-        title: item,
-      }) as FilterOption),
-    ),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  nationalityOptions$ = this.api.nationalities().pipe(
-    map((items) =>
-      (items ?? []).map((item) => ({
-        slug: item,
-        title: item,
-      }) as FilterOption),
-    ),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  tagOptions$ = this.tagsApi.list().pipe(
-    map((items) =>
-      (items ?? [])
-        .filter((item) => item.isActive !== false)
-        .map((item) => ({
-          slug: item.slug,
-          label: item.label,
-          category: item.category,
-        }) as TagFilterOption),
-    ),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  filterSupport$ = this.typeFromUrl$.pipe(
-    map((type) => this.filterSupportForType(type)),
-    distinctUntilChanged((a, b) =>
-      a.movement === b.movement &&
-      a.period === b.period &&
-      a.institution === b.institution &&
-      a.nationality === b.nationality,
-    ),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  supportsMovement$ = this.filterSupport$.pipe(
-    map((support) => support.movement),
-    distinctUntilChanged(),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  supportsPeriod$ = this.filterSupport$.pipe(
-    map((support) => support.period),
-    distinctUntilChanged(),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  supportsInstitution$ = this.filterSupport$.pipe(
-    map((support) => support.institution),
-    distinctUntilChanged(),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  supportsNationality$ = this.filterSupport$.pipe(
-    map((support) => support.nationality),
-    distinctUntilChanged(),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
-
-  movementLabel$ = combineLatest([this.movementFromUrl$, this.movementOptions$]).pipe(
-    map(([slug, options]) => options.find((item) => item.slug === slug)?.title ?? slug),
-    distinctUntilChanged(),
-  );
-
-  periodLabel$ = combineLatest([this.periodFromUrl$, this.periodOptions$]).pipe(
-    map(([slug, options]) => options.find((item) => item.slug === slug)?.title ?? slug),
-    distinctUntilChanged(),
-  );
-
-  institutionLabel$ = combineLatest([this.institutionFromUrl$, this.institutionOptions$]).pipe(
-    map(([value, options]) => options.find((item) => item.slug === value)?.title ?? value),
-    distinctUntilChanged(),
-  );
-
-  nationalityLabel$ = combineLatest([this.nationalityFromUrl$, this.nationalityOptions$]).pipe(
-    map(([value, options]) => options.find((item) => item.slug === value)?.title ?? value),
-    distinctUntilChanged(),
-  );
-
-  tagLabel$ = combineLatest([this.tagFromUrl$, this.tagOptions$]).pipe(
-    map(([slug, options]) => options.find((item) => item.slug === slug)?.label ?? slug),
-    distinctUntilChanged(),
-  );
-
-  hasActiveFilters$ = combineLatest([
-    this.qFromUrl$,
-    this.deckFromUrl$,
-    this.statusFromUrl$,
-    this.contentLevelFromUrl$,
-    this.movementFromUrl$,
-    this.periodFromUrl$,
-    this.institutionFromUrl$,
-    this.nationalityFromUrl$,
-    this.tagFromUrl$,
-    this.filterSupport$,
-  ]).pipe(
-    map(([q, deck, status, contentLevel, movement, period, institution, nationality, tag, support]) => {
-      const qq = (q ?? '').trim();
-      const dd = (deck ?? '').trim();
-      const ss = (status ?? '').trim();
-      const cc = (contentLevel ?? '').trim();
-      const mm = support.movement ? (movement ?? '').trim() : '';
-      const pp = support.period ? (period ?? '').trim() : '';
-      const ii = support.institution ? (institution ?? '').trim() : '';
-      const nn = support.nationality ? (nationality ?? '').trim() : '';
-      const tt = (tag ?? '').trim();
-      return !!(qq || dd || ss || cc || mm || pp || ii || nn || tt);
-    }),
-    distinctUntilChanged(),
-  );
-
-  hasVisibleFilterChips$ = combineLatest([
-    this.statusFromUrl$,
-    this.contentLevelFromUrl$,
-    this.movementFromUrl$,
-    this.periodFromUrl$,
-    this.institutionFromUrl$,
-    this.nationalityFromUrl$,
-    this.tagFromUrl$,
-    this.filterSupport$,
-  ]).pipe(
-    map(([status, contentLevel, movement, period, institution, nationality, tag, support]) => {
-      const ss = (status ?? '').trim();
-      const cc = (contentLevel ?? '').trim();
-      const mm = support.movement ? (movement ?? '').trim() : '';
-      const pp = support.period ? (period ?? '').trim() : '';
-      const ii = support.institution ? (institution ?? '').trim() : '';
-      const nn = support.nationality ? (nationality ?? '').trim() : '';
-      const tt = (tag ?? '').trim();
-      return !!(ss || cc || mm || pp || ii || nn || tt);
-    }),
-    distinctUntilChanged(),
-  );
-
-  hasAdvancedFilters$ = combineLatest([
-    this.statusFromUrl$,
-    this.contentLevelFromUrl$,
-  ]).pipe(
-    map(([status, contentLevel]) => !!((status ?? '').trim() || (contentLevel ?? '').trim())),
-    distinctUntilChanged(),
-  );
-
-  vm$: Observable<EntityListVm> = combineLatest([
-    this.typeFromUrl$,
-    this.qFromUrl$.pipe(debounceTime(300)),
-    this.deckFromUrl$,
-    this.pageFromUrl$,
-    this.statusFromUrl$,
-    this.contentLevelFromUrl$,
-    this.movementFromUrl$,
-    this.periodFromUrl$,
-    this.institutionFromUrl$,
-    this.nationalityFromUrl$,
-    this.tagFromUrl$,
-    this.sortFromUrl$,
-    this.filterSupport$,
-  ]).pipe(
-    switchMap(([type, q, deck, page, status, contentLevel, movement, period, institution, nationality, tag, sort, support]) => {
-      const qq = (q ?? '').trim();
-      const dd = (deck ?? '').trim();
-      const ss = (status ?? '').trim();
-      const cc = (contentLevel ?? '').trim();
-      const mm = support.movement ? (movement ?? '').trim() : '';
-      const pp = support.period ? (period ?? '').trim() : '';
-      const ii = support.institution ? (institution ?? '').trim() : '';
-      const nn = support.nationality ? (nationality ?? '').trim() : '';
-      const tt = (tag ?? '').trim();
-
-      const safeSort: Sort = sort === 'relevance' && !qq ? 'recent' : sort;
-
-      return this.api.list({
-        type,
-        q: qq.length ? qq : undefined,
-        deck: dd.length ? dd : undefined,
-        page,
-        limit: this.limit,
-        sort: safeSort,
-        status: ss.length ? ss : undefined,
-        contentLevel: cc.length ? cc : undefined,
-        movement: mm.length ? mm : undefined,
-        period: pp.length ? pp : undefined,
-        institution: ii.length ? ii : undefined,
-        nationality: nn.length ? nn : undefined,
-        tag: tt.length ? tt : undefined,
-      });
-    }),
-    tap((result: EntityListVm) => {
-      const total = result.items?.length ?? 0;
-      const nextIndex = total > 0 ? Math.floor((total - 1) / 2) : 0;
-
-      if (this.activeIndex() !== nextIndex) {
-        this.activeIndex.set(nextIndex);
-      }
-    }),
-  );
 
   isMobilePortraitTotem(): boolean {
     return this.viewportWidth() <= 720 && this.viewportHeight() > this.viewportWidth();
@@ -534,14 +152,6 @@ export class EntitiesListComponent {
 
       return next;
     });
-  }
-
-  openFiltersPanel() {
-    if (this.isMobilePortraitTotemActive()) {
-      this.infoPanelOpen.set(false);
-    }
-
-    this.filtersPanelOpen.set(true);
   }
 
   closeInfoPanel() {
@@ -587,6 +197,32 @@ export class EntitiesListComponent {
     this.closeFilterMenu();
   }
 
+  clearActiveFilter(key: EntitiesListActiveFilterKey) {
+    switch (key) {
+      case 'status':
+        this.toggleStatus('');
+        break;
+      case 'contentLevel':
+        this.toggleContentLevel('');
+        break;
+      case 'movement':
+        this.setMovement('');
+        break;
+      case 'period':
+        this.setPeriod('');
+        break;
+      case 'institution':
+        this.setInstitution('');
+        break;
+      case 'nationality':
+        this.setNationality('');
+        break;
+      case 'tag':
+        this.setTag('');
+        break;
+    }
+  }
+
   toggleAdvancedFilters() {
     this.advancedFiltersOpen.update((value) => !value);
   }
@@ -601,58 +237,16 @@ export class EntitiesListComponent {
     return CONTENT_LEVEL_KEYS[key] ? this.i18n.t(CONTENT_LEVEL_KEYS[key]) : key;
   }
 
-  moveActive(dir: -1 | 1, total: number) {
-    if (!total) return;
-    const next = Math.max(0, Math.min(total - 1, this.activeIndex() + dir));
-    this.activeIndex.set(next);
-  }
-
-  planeStyle(index: number, total: number) {
-    const active = this.activeIndex();
-    const delta = index - active;
-    const abs = Math.abs(delta);
-
-    if (abs > 4) {
-      return {
-        opacity: '0',
-        pointerEvents: 'none',
-        transform: 'translate3d(-50%, -50%, -600px) rotateZ(-8deg) scale(0.82)',
-        zIndex: '0',
-      };
-    }
-
-    const slots = [
-      { x: 8, y: 84, r: -10, s: 0.82, o: 0.30 },
-      { x: 24, y: 66, r: -7, s: 0.88, o: 0.46 },
-      { x: 42, y: 48, r: -4, s: 0.96, o: 0.72 },
-      { x: 60, y: 30, r: -1, s: 1.06, o: 1.00 },
-      { x: 77, y: 13, r: 3, s: 0.94, o: 0.64 },
-      { x: 91, y: -1, r: 5, s: 0.86, o: 0.34 },
-    ];
-
-    const slotIndex = Math.max(0, Math.min(slots.length - 1, delta + 3));
-    const slot = slots[slotIndex];
-
-    const depth = delta === 0 ? 0 : -abs * 110;
-    const blur = delta === 0 ? 0 : Math.min(abs * 1.4, 4);
-    const opacity = delta === 0 ? 1 : slot.o;
-
-    return {
-      left: `${slot.x}%`,
-      top: `${slot.y}%`,
-      zIndex: `${100 - abs}`,
-      opacity: `${opacity}`,
-      filter: `blur(${blur}px)`,
-      transform: `
-      translate3d(-50%, -50%, ${depth}px)
-      rotateZ(${slot.r}deg)
-      scale(${slot.s})
-    `,
-    };
+  typeLabel(value: string | null | undefined): string {
+    const key = (value ?? '').trim().toUpperCase();
+    return ENTITY_TYPE_LABEL_KEYS[key] ? this.i18n.t(ENTITY_TYPE_LABEL_KEYS[key]) : key;
   }
 
   cleanWiki(text: string): string {
-    if (!text) return '';
+    if (!text) {
+      return '';
+    }
+
     return text.replace(/\[\[(.*?)\|(.*?)\]\]/g, '$2');
   }
 
@@ -667,196 +261,102 @@ export class EntitiesListComponent {
   }
 
   highlight(text: string, query: string): string {
-    const t = (text ?? '').toString();
-    const q = (query ?? '').trim();
-    if (!q) return this.escapeHtml(t);
-
-    const escapedQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const re = new RegExp(escapedQ, 'ig');
-
-    const parts = t.split(re);
-    const matches = t.match(re);
-    if (!matches) return this.escapeHtml(t);
-
-    let out = '';
-    for (let i = 0; i < parts.length; i++) {
-      out += this.escapeHtml(parts[i]);
-      if (i < matches.length) out += `<mark>${this.escapeHtml(matches[i])}</mark>`;
+    const normalizedText = (text ?? '').toString();
+    const normalizedQuery = (query ?? '').trim();
+    if (!normalizedQuery) {
+      return this.escapeHtml(normalizedText);
     }
-    return out;
+
+    const escapedQuery = normalizedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escapedQuery, 'ig');
+    const parts = normalizedText.split(regex);
+    const matches = normalizedText.match(regex);
+
+    if (!matches) {
+      return this.escapeHtml(normalizedText);
+    }
+
+    let output = '';
+    for (let i = 0; i < parts.length; i += 1) {
+      output += this.escapeHtml(parts[i]);
+      if (i < matches.length) {
+        output += `<mark>${this.escapeHtml(matches[i])}</mark>`;
+      }
+    }
+
+    return output;
   }
 
   clearSearch() {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { q: null, page: 1, sort: null },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.clearSearch();
+  }
+
+  returnToDiscovery() {
+    void this.facade.navigateHome();
   }
 
   setQ(value: string) {
-    const v = (value ?? '').trim();
-    const currentSort = (this.route.snapshot.queryParamMap.get('sort') ?? '').trim();
-    const keepTitle = currentSort === 'title';
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        q: v || null,
-        page: 1,
-        sort: v ? (keepTitle ? 'title' : 'relevance') : null,
-      },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.setQuery(value);
   }
 
   toggleSort(next: Sort) {
-    const current = (this.route.snapshot.queryParamMap.get('sort') ?? 'recent').trim();
-    const q = (this.route.snapshot.queryParamMap.get('q') ?? '').trim();
-
-    if (next === 'relevance' && !q) next = 'recent';
-
-    const value = next === current ? 'recent' : next;
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { sort: value === 'recent' ? null : value, page: 1 },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.toggleSort(next);
   }
 
   prevPage() {
-    const current = Number(this.route.snapshot.queryParamMap.get('page') ?? 1);
-    const next = Math.max(1, current - 1);
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page: next },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.goToPreviousPage();
   }
 
   nextPage(totalPages: number) {
-    const current = Number(this.route.snapshot.queryParamMap.get('page') ?? 1);
-    const next = Math.min(totalPages, current + 1);
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page: next },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.goToNextPage(totalPages);
   }
 
   toggleStatus(next: Status) {
-    const current = (this.route.snapshot.queryParamMap.get('status') ?? '').trim();
-    const value = next && next === current ? '' : next;
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { status: value || null, page: 1 },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.toggleStatus(next);
   }
 
   toggleContentLevel(next: Level) {
-    const current = (this.route.snapshot.queryParamMap.get('contentLevel') ?? '').trim();
-    const value = next && next === current ? '' : next;
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { contentLevel: value || null, page: 1 },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.toggleContentLevel(next);
   }
 
   setMovement(next: string) {
-    const value = (next ?? '').trim();
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { movement: value || null, page: 1 },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.setMovement(next);
   }
 
   setPeriod(next: string) {
-    const value = (next ?? '').trim();
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { period: value || null, page: 1 },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.setPeriod(next);
   }
 
   setInstitution(next: string) {
-    const value = (next ?? '').trim();
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { institution: value || null, page: 1 },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.setInstitution(next);
   }
 
   setNationality(next: string) {
-    const value = (next ?? '').trim();
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { nationality: value || null, page: 1 },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.setNationality(next);
   }
 
   setTag(next: string) {
-    const value = (next ?? '').trim();
-
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { tag: value || null, page: 1 },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.setTag(next);
   }
 
   resetFilters() {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        q: null,
-        status: null,
-        contentLevel: null,
-        movement: null,
-        period: null,
-        institution: null,
-        nationality: null,
-        tag: null,
-        sort: null,
-        page: 1,
-      },
-      queryParamsHandling: 'merge',
-    });
+    void this.facade.resetFilters();
   }
 
-  go(slug: string) {
-    this.router.navigate(['/entity', slug]);
+  go(request: string | EntityArtworkTransitionPayload) {
+    void this.facade.navigateToEntity(request);
   }
 
-  back() {
-    this.router.navigate(['/']);
-  }
-
-  onExploreClick(items: Entity[], index: number) {
+  onExploreClick(items: PublicEntityListItem[], index: number) {
     if (index !== this.activeIndex()) {
       this.activeIndex.set(index);
       return;
     }
 
-    const e = items[index];
-    if (e?.slug) this.go(e.slug);
-  }
-  isMuted(index: number): boolean {
-    return Math.abs(index - this.activeIndex()) > 3;
+    const entity = items[index];
+    if (entity?.slug) {
+      this.go(entity.slug);
+    }
   }
 
   @HostListener('document:click', ['$event'])

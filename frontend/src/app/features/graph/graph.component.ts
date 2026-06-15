@@ -17,6 +17,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
+import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { MediaLike, resolveMediaPresentation } from '../../shared/media/media.utils';
 import {
   currentDraggedNodeId,
@@ -166,6 +167,7 @@ type GraphWorkspaceMode = 'split' | 'image' | 'graph';
 })
 export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private readonly api = inject(EntitiesApi);
+  readonly artworkTransition = inject(EntityRouteArtworkTransitionService);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -218,6 +220,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly graphViewportAnimating = signal(false);
   readonly inspectorVisible = signal(true);
   readonly graphInteractionActive = signal(false);
+  readonly artworkRouteArrivalActive = computed(() => this.artworkTransition.isForSlug(this.slug));
 
   private loadSub?: Subscription;
   private graphResizeObserver?: ResizeObserver;
@@ -603,6 +606,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       host: imageStage,
       onMeasure: () => this.measureImageStage(imageStage),
     });
+
+    if (imageStage) {
+      this.reportArtworkTransitionTarget(imageStage);
+    }
   }
   private measureGraphStage(host = this.graphStage?.nativeElement, force = false): void {
     if (this.workspaceResizePaused && !force) {
@@ -674,6 +681,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     this.imageSize.set(nextSize);
+    if (host) {
+      this.reportArtworkTransitionTarget(host);
+    }
     if (measured.shouldSyncViewport) {
       this.syncImageViewport(undefined, false);
       return;
@@ -730,9 +740,26 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       height: image.naturalHeight || image.height,
     });
     this.imageLoading.set(false);
+    if (this.imageStage?.nativeElement) {
+      this.reportArtworkTransitionTarget(this.imageStage.nativeElement);
+    }
     this.targetImageViewport = null;
     this.imageViewportReady = false;
     this.syncImageViewport(undefined, false, true);
+  }
+
+  private reportArtworkTransitionTarget(host: HTMLDivElement): void {
+    if (!this.artworkTransition.isForSlug(this.slug)) {
+      return;
+    }
+
+    const rect = host.getBoundingClientRect();
+    this.artworkTransition.reportDestinationFrame(this.slug, {
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+    });
   }
 
   graphViewportTransform(): string {

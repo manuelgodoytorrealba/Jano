@@ -26,7 +26,7 @@
         [class.is-hidden]="!infoOpen"
         type="button"
         (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
-        (wheel)="$event.preventDefault(); $event.stopPropagation()"
+        (wheel)="onInfoBackdropWheel($event)"
         [attr.aria-hidden]="!infoOpen"
         tabindex="-1"
     ></button>

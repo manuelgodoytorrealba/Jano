@@ -13,6 +13,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { I18nService } from '../../../core/i18n/i18n.service';
 
 type Particle = {
   angle: number;
@@ -39,6 +40,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   private auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  readonly i18n = inject(I18nService);
   private zone = inject(NgZone);
   private platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -208,8 +210,8 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
 
         this.error =
           err?.status === 401 || err?.status === 403
-            ? 'Credenciales incorrectas'
-            : 'No se pudo iniciar sesión';
+            ? this.i18n.t('auth.invalidCredentials')
+            : this.i18n.t('auth.loginError');
       },
     });
   }

@@ -1,18 +1,21 @@
-<div class="entities-page page-shell" [class.entities-page--immersive]="viewMode === 'explore'"
+<div
+  class="entities-page page-shell"
+  [class.entities-page--immersive]="viewMode === 'explore'"
   [class.entities-page--list-shell]="viewMode === 'list'"
   [class.entities-page--curated-deck]="curatedDeckMode()">
   <h1 class="sr-only">
-    @if (qFromUrl$ | async; as q) {
-      @if (q) {
-        {{ i18n.t('explorer.searchResultsFor') }} {{ q }}
+    @if (pageVm$ | async; as pageVm) {
+      @if (pageVm.query) {
+        {{ i18n.t('explorer.searchResultsFor') }} {{ pageVm.query }}
       } @else {
-        @if (title$ | async; as title) { {{ title }} }
+        {{ pageVm.title }}
       }
-    } @else {
-      @if (title$ | async; as title) { {{ title }} }
     }
   </h1>
-  <section class="entities-explorer-layout" [class.is-list]="viewMode === 'list'"
+
+  <section
+    class="entities-explorer-layout"
+    [class.is-list]="viewMode === 'list'"
     [class.is-filters-collapsed]="!filtersPanelOpen() || curatedDeckMode()"
     [class.is-curated-deck]="curatedDeckMode()"
     [class.is-info-collapsed]="!infoPanelOpen()"
@@ -20,652 +23,251 @@
     <header class="entities-hud" [attr.aria-label]="i18n.t('explorer.view.explorer')">
       <div class="entities-mode-pill ds-panel">
         <div class="view-toggle" role="tablist" [attr.aria-label]="i18n.t('explorer.view.explorer')">
-          <button type="button" class="view-toggle__button" [class.is-active]="viewMode === 'explore'" role="tab"
-            [attr.aria-selected]="viewMode === 'explore'" (click)="setView('explore')">
+          <button
+            type="button"
+            class="view-toggle__button"
+            [class.is-active]="viewMode === 'explore'"
+            role="tab"
+            [attr.aria-selected]="viewMode === 'explore'"
+            (click)="setView('explore')">
             {{ i18n.t('explorer.view.explorer') }}
           </button>
 
-          <button type="button" class="view-toggle__button" [class.is-active]="viewMode === 'list'" role="tab"
-            [attr.aria-selected]="viewMode === 'list'" (click)="setView('list')">
+          <button
+            type="button"
+            class="view-toggle__button"
+            [class.is-active]="viewMode === 'list'"
+            role="tab"
+            [attr.aria-selected]="viewMode === 'list'"
+            (click)="setView('list')">
             {{ i18n.t('explorer.view.list') }}
           </button>
         </div>
       </div>
 
       @if (!curatedDeckMode()) {
-      <button
-        type="button"
-        class="entities-hud__filters ds-panel"
-        [class.is-collapsed]="!filtersPanelOpen()"
-        (click)="toggleFiltersPanel()"
-        [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
-        [attr.aria-expanded]="filtersPanelOpen()">
-        <svg class="entities-hud__filters-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-          <path d="M4 6h16" />
-          <circle cx="9" cy="6" r="1.9" />
-          <path d="M4 12h16" />
-          <circle cx="15" cy="12" r="1.9" />
-          <path d="M4 18h16" />
-          <circle cx="11" cy="18" r="1.9" />
-        </svg>
-      </button>
+        <button
+          type="button"
+          class="entities-hud__filters ds-panel"
+          [class.is-collapsed]="!filtersPanelOpen()"
+          (click)="toggleFiltersPanel()"
+          [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
+          [attr.aria-expanded]="filtersPanelOpen()">
+          <svg class="entities-hud__filters-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+            <path d="M4 6h16" />
+            <circle cx="9" cy="6" r="1.9" />
+            <path d="M4 12h16" />
+            <circle cx="15" cy="12" r="1.9" />
+            <path d="M4 18h16" />
+            <circle cx="11" cy="18" r="1.9" />
+          </svg>
+        </button>
       }
     </header>
 
     @if (!curatedDeckMode()) {
-    <button type="button" class="entities-rail-handle ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
-      (click)="toggleFiltersPanel()"
-      [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
-      [attr.aria-expanded]="filtersPanelOpen()">
-      <span class="entities-rail-handle__glyph" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-      <span class="entities-rail-handle__label">{{ i18n.t('explorer.filters') }}</span>
-    </button>
+      <button
+        type="button"
+        class="entities-rail-handle ds-panel"
+        [class.is-collapsed]="!filtersPanelOpen()"
+        (click)="toggleFiltersPanel()"
+        [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
+        [attr.aria-expanded]="filtersPanelOpen()">
+        <span class="entities-rail-handle__glyph" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="entities-rail-handle__label">{{ i18n.t('explorer.filters') }}</span>
+      </button>
     }
 
-    @if (vm$ | async; as vm) {
-    @if (!curatedDeckMode()) {
-    <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
-      [attr.aria-hidden]="!filtersPanelOpen()">
-      <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-search-main">{{ i18n.t('explorer.search.label') }}</label>
-        <input id="entities-search-main" class="ds-input entities-search entities-filter-rail__search" type="search"
-          [placeholder]="i18n.t('explorer.search.placeholder')" [attr.aria-label]="i18n.t('explorer.search.aria')"
-          [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />
-
-        @if (qFromUrl$ | async; as q) {
-        @if (q) {
-        <div class="search-chip search-chip--rail">
-          <span class="search-chip__label">{{ i18n.t('explorer.searching') }}</span>
-          <span class="search-chip__value">“{{ q }}”</span>
-          <button type="button" class="ds-btn search-chip__clear" (click)="clearSearch()" [attr.aria-label]="i18n.t('explorer.clearSearch')"
-            [title]="i18n.t('explorer.clearSearch')">
-            ✕
-          </button>
-        </div>
-        }
-        }
-
-        @if (hasVisibleFilterChips$ | async) {
-        <div class="entities-active-filters">
-          @if (statusFromUrl$ | async; as status) {
-          @if (status) {
-          <button type="button" class="search-chip entities-active-filter entities-active-filter--advanced"
-            (click)="toggleStatus('')">
-            <span class="entities-active-filter__content">
-              <span class="search-chip__label">{{ i18n.t('explorer.status') }}</span>
-              <span class="search-chip__value">{{ statusLabel(status) }}</span>
-            </span>
-            <span class="entities-active-filter__clear">✕</span>
-          </button>
-          }
-          }
-
-          @if (contentLevelFromUrl$ | async; as contentLevel) {
-          @if (contentLevel) {
-          <button type="button" class="search-chip entities-active-filter entities-active-filter--advanced"
-            (click)="toggleContentLevel('')">
-            <span class="entities-active-filter__content">
-              <span class="search-chip__label">{{ i18n.t('explorer.level') }}</span>
-              <span class="search-chip__value">{{ contentLevelLabel(contentLevel) }}</span>
-            </span>
-            <span class="entities-active-filter__clear">✕</span>
-          </button>
-          }
-          }
-
-          @if (supportsMovement$ | async) {
-          @if (movementFromUrl$ | async; as movementSlug) {
-          @if (movementSlug) {
-          <button type="button" class="search-chip entities-active-filter" (click)="setMovement('')">
-            <span class="entities-active-filter__content">
-              <span class="search-chip__label">{{ i18n.t('explorer.movement') }}</span>
-              <span class="search-chip__value">{{ movementLabel$ | async }}</span>
-            </span>
-            <span class="entities-active-filter__clear">✕</span>
-          </button>
-          }
-          }
-          }
-
-          @if (supportsPeriod$ | async) {
-          @if (periodFromUrl$ | async; as periodSlug) {
-          @if (periodSlug) {
-          <button type="button" class="search-chip entities-active-filter" (click)="setPeriod('')">
-            <span class="entities-active-filter__content">
-              <span class="search-chip__label">{{ i18n.t('explorer.period') }}</span>
-              <span class="search-chip__value">{{ periodLabel$ | async }}</span>
-            </span>
-            <span class="entities-active-filter__clear">✕</span>
-          </button>
-          }
-          }
-          }
-
-          @if (supportsInstitution$ | async) {
-          @if (institutionFromUrl$ | async; as institution) {
-          @if (institution) {
-          <button type="button" class="search-chip entities-active-filter" (click)="setInstitution('')">
-            <span class="entities-active-filter__content">
-              <span class="search-chip__label">{{ i18n.t('explorer.institution') }}</span>
-              <span class="search-chip__value">{{ institutionLabel$ | async }}</span>
-            </span>
-            <span class="entities-active-filter__clear">✕</span>
-          </button>
-          }
-          }
-          }
-
-          @if (supportsNationality$ | async) {
-          @if (nationalityFromUrl$ | async; as nationality) {
-          @if (nationality) {
-          <button type="button" class="search-chip entities-active-filter" (click)="setNationality('')">
-            <span class="entities-active-filter__content">
-              <span class="search-chip__label">{{ i18n.t('explorer.nationality') }}</span>
-              <span class="search-chip__value">{{ nationalityLabel$ | async }}</span>
-            </span>
-            <span class="entities-active-filter__clear">✕</span>
-          </button>
-          }
-          }
-          }
-
-          @if (tagFromUrl$ | async; as tagSlug) {
-          @if (tagSlug) {
-          <button type="button" class="search-chip entities-active-filter" (click)="setTag('')">
-            <span class="entities-active-filter__content">
-              <span class="search-chip__label">{{ i18n.t('explorer.tag') }}</span>
-              <span class="search-chip__value">{{ tagLabel$ | async }}</span>
-            </span>
-            <span class="entities-active-filter__clear">✕</span>
-          </button>
-          }
-          }
-        </div>
-        }
-      </div>
-
-      <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-tag">{{ i18n.t('explorer.tag') }}</label>
-        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'tag'">
-          <button id="entities-filter-tag" type="button" class="entities-filter-menu__trigger"
-            [attr.aria-label]="i18n.t('explorer.filterByTag')" [attr.aria-expanded]="openFilterMenu() === 'tag'"
-            aria-haspopup="listbox" (click)="toggleFilterMenu('tag')">
-            <span class="entities-filter-menu__value">
-              @if (tagFromUrl$ | async; as tagSlug) {
-              @if (tagSlug) {
-              {{ (tagLabel$ | async) ?? tagSlug }}
-              }
-              } @else {
-              {{ i18n.t('explorer.allTags') }}
-              }
-            </span>
-            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
-          </button>
-
-          @if (openFilterMenu() === 'tag') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.tagOptions')">
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="!(tagFromUrl$ | async)"
-              [attr.aria-selected]="!(tagFromUrl$ | async)" role="option"
-              (click)="selectFilterOption('tag', '')">
-              {{ i18n.t('explorer.allTags') }}
-            </button>
-
-            @if (tagOptions$ | async; as tagOptions) {
-            @for (option of tagOptions; track option.slug) {
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="(tagFromUrl$ | async) === option.slug"
-              [attr.aria-selected]="(tagFromUrl$ | async) === option.slug" role="option"
-              (click)="selectFilterOption('tag', option.slug)">
-              {{ option.label }}
-            </button>
-            }
-            }
-          </div>
-          }
-        </div>
-      </div>
-
-      @if (supportsMovement$ | async) {
-      <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-movement">{{ i18n.t('explorer.movement') }}</label>
-        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'movement'">
-          <button id="entities-filter-movement" type="button" class="entities-filter-menu__trigger"
-            [attr.aria-label]="i18n.t('explorer.filterByMovement')" [attr.aria-expanded]="openFilterMenu() === 'movement'"
-            aria-haspopup="listbox" (click)="toggleFilterMenu('movement')">
-            <span class="entities-filter-menu__value">
-              @if (movementFromUrl$ | async; as movementSlug) {
-              @if (movementSlug) {
-              {{ (movementLabel$ | async) ?? movementSlug }}
-              }
-              } @else {
-              {{ i18n.t('explorer.allMovements') }}
-              }
-            </span>
-            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
-          </button>
-
-          @if (openFilterMenu() === 'movement') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.movementOptions')">
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="!(movementFromUrl$ | async)"
-              [attr.aria-selected]="!(movementFromUrl$ | async)" role="option"
-              (click)="selectFilterOption('movement', '')">
-              {{ i18n.t('explorer.allMovements') }}
-            </button>
-
-            @if (movementOptions$ | async; as movementOptions) {
-            @for (option of movementOptions; track option.slug) {
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="(movementFromUrl$ | async) === option.slug"
-              [attr.aria-selected]="(movementFromUrl$ | async) === option.slug" role="option"
-              (click)="selectFilterOption('movement', option.slug)">
-              {{ option.title }}
-            </button>
-            }
-            }
-          </div>
-          }
-        </div>
-      </div>
+    @if (pageVm$ | async; as pageVm) {
+      @if (!curatedDeckMode()) {
+        <app-entities-list-filter-rail
+          [vm]="pageVm.filterRail"
+          [collapsed]="!filtersPanelOpen()"
+          [openFilterMenu]="openFilterMenu()"
+          [advancedFiltersOpen]="advancedFiltersOpen()"
+          (searchChange)="setQ($event)"
+          (clearSearch)="clearSearch()"
+          (clearChip)="clearActiveFilter($event)"
+          (toggleMenu)="toggleFilterMenu($event)"
+          (selectOption)="selectFilterOption($event.key, $event.value)"
+          (sortChange)="toggleSort($event)"
+          (statusChange)="toggleStatus($event)"
+          (contentLevelChange)="toggleContentLevel($event)"
+          (toggleAdvancedFilters)="toggleAdvancedFilters()"
+          (resetFilters)="resetFilters()">
+        </app-entities-list-filter-rail>
       }
 
-      @if (supportsPeriod$ | async) {
-      <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-period">{{ i18n.t('explorer.period') }}</label>
-        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'period'">
-          <button id="entities-filter-period" type="button" class="entities-filter-menu__trigger"
-            [attr.aria-label]="i18n.t('explorer.filterByPeriod')" [attr.aria-expanded]="openFilterMenu() === 'period'"
-            aria-haspopup="listbox" (click)="toggleFilterMenu('period')">
-            <span class="entities-filter-menu__value">
-              @if (periodFromUrl$ | async; as periodSlug) {
-              @if (periodSlug) {
-              {{ (periodLabel$ | async) ?? periodSlug }}
-              }
-              } @else {
-              {{ i18n.t('explorer.allPeriods') }}
-              }
-            </span>
-            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
-          </button>
-
-          @if (openFilterMenu() === 'period') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.periodOptions')">
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="!(periodFromUrl$ | async)"
-              [attr.aria-selected]="!(periodFromUrl$ | async)" role="option"
-              (click)="selectFilterOption('period', '')">
-              {{ i18n.t('explorer.allPeriods') }}
-            </button>
-
-            @if (periodOptions$ | async; as periodOptions) {
-            @for (option of periodOptions; track option.slug) {
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="(periodFromUrl$ | async) === option.slug"
-              [attr.aria-selected]="(periodFromUrl$ | async) === option.slug" role="option"
-              (click)="selectFilterOption('period', option.slug)">
-              {{ option.title }}
-            </button>
-            }
-            }
-          </div>
-          }
-        </div>
-      </div>
-      }
-
-      @if (supportsInstitution$ | async) {
-      <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-institution">{{ i18n.t('explorer.institution') }}</label>
-        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'institution'">
-          <button id="entities-filter-institution" type="button" class="entities-filter-menu__trigger"
-            [attr.aria-label]="i18n.t('explorer.filterByInstitution')" [attr.aria-expanded]="openFilterMenu() === 'institution'"
-            aria-haspopup="listbox" (click)="toggleFilterMenu('institution')">
-            <span class="entities-filter-menu__value">
-              @if (institutionFromUrl$ | async; as institution) {
-              @if (institution) {
-              {{ (institutionLabel$ | async) ?? institution }}
-              }
-              } @else {
-              {{ i18n.t('explorer.allInstitutions') }}
-              }
-            </span>
-            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
-          </button>
-
-          @if (openFilterMenu() === 'institution') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.institutionOptions')">
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="!(institutionFromUrl$ | async)"
-              [attr.aria-selected]="!(institutionFromUrl$ | async)" role="option"
-              (click)="selectFilterOption('institution', '')">
-              {{ i18n.t('explorer.allInstitutions') }}
-            </button>
-
-            @if (institutionOptions$ | async; as institutionOptions) {
-            @for (option of institutionOptions; track option.slug) {
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="(institutionFromUrl$ | async) === option.slug"
-              [attr.aria-selected]="(institutionFromUrl$ | async) === option.slug" role="option"
-              (click)="selectFilterOption('institution', option.slug)">
-              {{ option.title }}
-            </button>
-            }
-            }
-          </div>
-          }
-        </div>
-      </div>
-      }
-
-      @if (supportsNationality$ | async) {
-      <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-filter-nationality">{{ i18n.t('explorer.nationality') }}</label>
-        <div class="entities-filter-menu" [class.is-open]="openFilterMenu() === 'nationality'">
-          <button id="entities-filter-nationality" type="button" class="entities-filter-menu__trigger"
-            [attr.aria-label]="i18n.t('explorer.filterByNationality')" [attr.aria-expanded]="openFilterMenu() === 'nationality'"
-            aria-haspopup="listbox" (click)="toggleFilterMenu('nationality')">
-            <span class="entities-filter-menu__value">
-              @if (nationalityFromUrl$ | async; as nationality) {
-              @if (nationality) {
-              {{ (nationalityLabel$ | async) ?? nationality }}
-              }
-              } @else {
-              {{ i18n.t('explorer.allNationalities') }}
-              }
-            </span>
-            <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
-          </button>
-
-          @if (openFilterMenu() === 'nationality') {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="i18n.t('explorer.nationalityOptions')">
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="!(nationalityFromUrl$ | async)"
-              [attr.aria-selected]="!(nationalityFromUrl$ | async)" role="option"
-              (click)="selectFilterOption('nationality', '')">
-              {{ i18n.t('explorer.allNationalities') }}
-            </button>
-
-            @if (nationalityOptions$ | async; as nationalityOptions) {
-            @for (option of nationalityOptions; track option.slug) {
-            <button type="button" class="entities-filter-menu__option"
-              [class.is-selected]="(nationalityFromUrl$ | async) === option.slug"
-              [attr.aria-selected]="(nationalityFromUrl$ | async) === option.slug" role="option"
-              (click)="selectFilterOption('nationality', option.slug)">
-              {{ option.title }}
-            </button>
-            }
-            }
-          </div>
-          }
-        </div>
-      </div>
-      }
-
-      <div class="entities-filter-rail__section">
-        <div class="entities-filter-rail__label">{{ i18n.t('explorer.sort') }}</div>
-        <div class="entities-filter-rail__chips entities-filter-rail__chips--compact">
-          <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'recent'"
-            (click)="toggleSort('recent')">
-            {{ i18n.t('explorer.sort.recent') }}
-          </button>
-
-          <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'title'"
-            (click)="toggleSort('title')">
-            {{ i18n.t('explorer.sort.title') }}
-          </button>
-
-          <button type="button" class="filter-chip" [class.is-active]="(sortFromUrl$ | async) === 'relevance'"
-            [disabled]="!(qFromUrl$ | async)" (click)="toggleSort('relevance')"
-            [title]="i18n.t('explorer.sort.relevanceHint')">
-            {{ i18n.t('explorer.sort.relevance') }}
-          </button>
-        </div>
-      </div>
-
-      <div class="entities-filter-rail__section entities-filter-rail__section--advanced"
-        [class.is-open]="advancedFiltersOpen() || (hasAdvancedFilters$ | async)">
-        <button type="button" class="entities-advanced-toggle" (click)="toggleAdvancedFilters()"
-          [attr.aria-expanded]="advancedFiltersOpen() || (hasAdvancedFilters$ | async)">
-          <span class="entities-filter-rail__label">{{ i18n.t('explorer.advancedFilters') }}</span>
-          <span class="entities-advanced-toggle__meta">
-            @if (hasAdvancedFilters$ | async) {
-            {{ i18n.t('explorer.active') }}
+      @if (viewMode === 'explore') {
+        @if (pageVm.results.items.length) {
+          <div class="entities-explorer-stage">
+            @if (isMobilePortraitTotem()) {
+              <app-entities-explorer-totem
+                [items]="pageVm.results.items"
+                [activeIndex]="activeIndex()"
+                [infoOpen]="infoPanelOpen()"
+                (activeIndexChange)="activeIndex.set($event)"
+                (openEntity)="go($event)"
+                (requestInfoOpen)="openInfoPanel()"
+                (requestInfoClose)="closeInfoPanel()">
+              </app-entities-explorer-totem>
             } @else {
-            {{ i18n.t('explorer.optional') }}
-            }
-          </span>
-        </button>
-
-        @if (advancedFiltersOpen() || (hasAdvancedFilters$ | async)) {
-        <div class="entities-advanced-panel">
-          <div class="entities-filter-rail__group">
-            <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.editorialStatus') }}</div>
-            <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
-              <button type="button" class="filter-chip filter-chip--secondary"
-                [class.is-active]="(statusFromUrl$ | async) === 'DRAFT'" (click)="toggleStatus('DRAFT')">
-                {{ i18n.t('status.draft') }}
-              </button>
-
-              <button type="button" class="filter-chip filter-chip--secondary"
-                [class.is-active]="(statusFromUrl$ | async) === 'IN_REVIEW'" (click)="toggleStatus('IN_REVIEW')">
-                {{ i18n.t('status.inReview') }}
-              </button>
-
-              <button type="button" class="filter-chip filter-chip--secondary"
-                [class.is-active]="(statusFromUrl$ | async) === 'PUBLISHED'" (click)="toggleStatus('PUBLISHED')">
-                {{ i18n.t('status.published') }}
-              </button>
-
-              <button type="button" class="filter-chip filter-chip--ghost filter-chip--secondary"
-                [class.is-active]="!(statusFromUrl$ | async)" (click)="toggleStatus('')">
-                {{ i18n.t('common.all') }}
-              </button>
-            </div>
-          </div>
-
-          <div class="entities-filter-rail__group">
-            <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.readingLevel') }}</div>
-            <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
-              <button type="button" class="filter-chip filter-chip--secondary"
-                [class.is-active]="(contentLevelFromUrl$ | async) === 'BASIC'" (click)="toggleContentLevel('BASIC')">
-                {{ i18n.t('level.basic') }}
-              </button>
-
-              <button type="button" class="filter-chip filter-chip--secondary"
-                [class.is-active]="(contentLevelFromUrl$ | async) === 'INTERMEDIATE'"
-                (click)="toggleContentLevel('INTERMEDIATE')">
-                {{ i18n.t('level.intermediate') }}
-              </button>
-
-              <button type="button" class="filter-chip filter-chip--secondary"
-                [class.is-active]="(contentLevelFromUrl$ | async) === 'ADVANCED'" (click)="toggleContentLevel('ADVANCED')">
-                {{ i18n.t('level.advanced') }}
-              </button>
-
-              <button type="button" class="filter-chip filter-chip--ghost filter-chip--secondary"
-                [class.is-active]="!(contentLevelFromUrl$ | async)" (click)="toggleContentLevel('')">
-                {{ i18n.t('common.all') }}
-              </button>
-            </div>
-          </div>
-        </div>
-        }
-      </div>
-
-      @if (hasActiveFilters$ | async) {
-      <div class="entities-filter-rail__section entities-filter-rail__section--actions">
-        <button type="button" class="ds-btn entities-filter-rail__reset" (click)="resetFilters()">
-          {{ i18n.t('explorer.resetFilters') }}
-        </button>
-      </div>
-      }
-
-      <div class="entities-filter-rail__meta">
-        <span class="ds-pill">{{ vm.total }} {{ i18n.t('explorer.results') }}</span>
-        <span class="ds-pill">{{ i18n.t('explorer.page') }} {{ vm.page }} / {{ vm.totalPages }}</span>
-      </div>
-    </aside>
-    }
-
-    @if (viewMode === 'explore') {
-    @if (vm.items.length) {
-    <div class="entities-explorer-stage">
-      @if (isMobilePortraitTotem()) {
-      <app-entities-explorer-totem [items]="vm.items" [activeIndex]="activeIndex()"
-        [infoOpen]="infoPanelOpen()" (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)"
-        (requestInfoOpen)="openInfoPanel()" (requestInfoClose)="closeInfoPanel()">
-      </app-entities-explorer-totem>
-      } @else {
-      <app-entities-explorer-3d [items]="vm.items" [activeIndex]="activeIndex()"
-        [infoOpen]="infoPanelOpen()" (activeIndexChange)="activeIndex.set($event)" (openEntity)="go($event)"
-        (requestInfoOpen)="openInfoPanel()" (requestInfoClose)="closeInfoPanel()">
-      </app-entities-explorer-3d>
-      }
-    </div>
-    } @else {
-    <div class="entities-stage-shell entities-stage-shell--empty">
-      <div class="empty-state ds-panel">
-        <div class="empty-state__title">Sin {{ i18n.t('explorer.results') }}</div>
-        <div class="empty-state__text">
-          {{ i18n.t('explorer.noResultsHint') }}
-        </div>
-      </div>
-    </div>
-    }
-    } @else {
-    <div class="entities-stage-shell entities-stage-shell--list">
-      @if (vm.items.length) {
-      <section class="entities-grid">
-        @for (e of vm.items; track e.slug) {
-        <article class="entity-card ds-card" (click)="go(e.slug)">
-          <div class="entity-card__thumb">
-            <app-jano-media [entity]="e" usage="card" [alt]="e.title"></app-jano-media>
-          </div>
-
-          <div class="entity-card__body">
-            <div class="entity-card__badges">
-              <span class="ds-badge">{{ e.type }}</span>
-              @if (e.status) {
-              <span class="ds-badge">{{ e.status }}</span>
-              }
-              @if (e.contentLevel) {
-              <span class="ds-badge">{{ e.contentLevel }}</span>
-              }
-            </div>
-
-            <div class="entity-card__title" [innerHTML]="highlight(e.title ?? '', (qFromUrl$ | async) ?? '')"></div>
-
-            @if (e.summary) {
-            <div class="entity-card__summary"
-              [innerHTML]="highlight(cleanWiki(e.summary ?? ''), (qFromUrl$ | async) ?? '')"></div>
+              <app-entities-explorer-3d
+                [items]="pageVm.results.items"
+                [activeIndex]="activeIndex()"
+                [infoOpen]="infoPanelOpen()"
+                (activeIndexChange)="activeIndex.set($event)"
+                (openEntity)="go($event)"
+                (requestInfoOpen)="openInfoPanel()"
+                (requestInfoClose)="closeInfoPanel()">
+              </app-entities-explorer-3d>
             }
           </div>
-        </article>
+        } @else {
+          <div class="entities-stage-shell entities-stage-shell--empty">
+            <app-entities-list-empty-state (returnToDiscovery)="returnToDiscovery()"></app-entities-list-empty-state>
+          </div>
         }
-      </section>
-
-      <section class="entities-pager entities-pager--in-shell">
-        <button class="ds-btn" type="button" (click)="prevPage()" [disabled]="vm.page <= 1">
-          {{ i18n.t('pager.prev') }}
-        </button>
-
-        <button class="ds-btn" type="button" (click)="nextPage(vm.totalPages)" [disabled]="vm.page >= vm.totalPages">
-          {{ i18n.t('pager.next') }}
-        </button>
-      </section>
       } @else {
-      <div class="empty-state ds-panel">
-        <div class="empty-state__title">Sin {{ i18n.t('explorer.results') }}</div>
-        <div class="empty-state__text">
-          {{ i18n.t('explorer.noResultsHint') }}
+        <div class="entities-stage-shell entities-stage-shell--list">
+          @if (pageVm.results.items.length) {
+            <section class="entities-grid">
+              @for (entity of pageVm.results.items; track entity.slug) {
+                <article class="entity-card ds-card" (click)="go(entity.slug)">
+                  <div class="entity-card__thumb">
+                    <app-jano-media [entity]="entity" usage="card" [alt]="entity.title"></app-jano-media>
+                  </div>
+
+                  <div class="entity-card__body">
+                    <div class="entity-card__badges">
+                      <span class="ds-badge">{{ typeLabel(entity.type) }}</span>
+                      @if (entity.status) {
+                        <span class="ds-badge">{{ statusLabel(entity.status) }}</span>
+                      }
+                      @if (entity.contentLevel) {
+                        <span class="ds-badge">{{ contentLevelLabel(entity.contentLevel) }}</span>
+                      }
+                    </div>
+
+                    <div class="entity-card__title" [innerHTML]="highlight(entity.title, pageVm.query)"></div>
+
+                    @if (entity.summary) {
+                      <div
+                        class="entity-card__summary"
+                        [innerHTML]="highlight(cleanWiki(entity.summary || ''), pageVm.query)">
+                      </div>
+                    }
+                  </div>
+                </article>
+              }
+            </section>
+
+            <app-entities-list-pager
+              [page]="pageVm.results.page"
+              [totalPages]="pageVm.results.totalPages"
+              (previous)="prevPage()"
+              (next)="nextPage(pageVm.results.totalPages)">
+            </app-entities-list-pager>
+          } @else {
+            <app-entities-list-empty-state (returnToDiscovery)="returnToDiscovery()"></app-entities-list-empty-state>
+          }
         </div>
-      </div>
       }
-    </div>
-    }
     } @else {
-    @if (!curatedDeckMode()) {
-    <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()"
-      [attr.aria-hidden]="!filtersPanelOpen()">
-      <div class="entities-filter-rail__section">
-        <label class="entities-filter-rail__label" for="entities-search-skeleton">{{ i18n.t('explorer.search.label') }}</label>
-        <input id="entities-search-skeleton" class="ds-input entities-search entities-filter-rail__search" type="search"
-          [placeholder]="i18n.t('explorer.search.placeholder')" [attr.aria-label]="i18n.t('explorer.search.aria')"
-          [value]="qFromUrl$ | async" (input)="setQ(($any($event.target)).value)" />
-      </div>
+      @if (!curatedDeckMode()) {
+        <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()" [attr.aria-hidden]="!filtersPanelOpen()">
+          <div class="entities-filter-rail__section">
+            <label class="entities-filter-rail__label" for="entities-search-skeleton">{{ i18n.t('explorer.search.label') }}</label>
+            <input
+              id="entities-search-skeleton"
+              class="ds-input entities-search entities-filter-rail__search"
+              type="search"
+              [placeholder]="i18n.t('explorer.search.placeholder')"
+              [attr.aria-label]="i18n.t('explorer.search.aria')" />
+          </div>
 
-      @for (_ of filterSkeleton; track $index) {
-      <div class="entities-filter-rail__section entities-filter-rail__section--loading" aria-hidden="true">
-        <div class="skeleton-box skeleton-box--eyebrow"></div>
-        <div class="skeleton-box skeleton-box--control"></div>
-      </div>
+          @for (_ of filterSkeleton; track $index) {
+            <div class="entities-filter-rail__section entities-filter-rail__section--loading" aria-hidden="true">
+              <div class="skeleton-box skeleton-box--eyebrow"></div>
+              <div class="skeleton-box skeleton-box--control"></div>
+            </div>
+          }
+        </aside>
       }
-    </aside>
-    }
 
-    @if (viewMode === 'explore') {
-    <div class="entities-explorer-stage">
-      @if (viewportWidth() > 640) {
-      <div class="entities-explorer-loading entities-explorer-loading--desktop" aria-hidden="true">
-        <div class="entities-explorer-loading__main">
-          <div class="entities-explorer-loading__hud">
-            <div class="entities-explorer-loading__pill"></div>
-            <div class="entities-explorer-loading__mode">
-              <span></span>
-              <span></span>
-            </div>
-          </div>
+      @if (viewMode === 'explore') {
+        <div class="entities-explorer-stage">
+          @if (viewportWidth() > 640) {
+            <div class="entities-explorer-loading entities-explorer-loading--desktop" aria-hidden="true">
+              <div class="entities-explorer-loading__hud">
+                <div class="entities-explorer-loading__mode">
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
 
-          <div class="entities-explorer-loading__hero">
-            <div class="entities-explorer-loading__card entities-explorer-loading__card--active">
-              <div class="entities-explorer-loading__art"></div>
-              <div class="entities-explorer-loading__card-foot"></div>
+              <div class="entities-explorer-loading__hero">
+                <div class="entities-explorer-loading__card entities-explorer-loading__card--prev">
+                  <div class="entities-explorer-loading__art"></div>
+                  <div class="entities-explorer-loading__card-foot"></div>
+                </div>
+
+                <div class="entities-explorer-loading__card entities-explorer-loading__card--active">
+                  <div class="entities-explorer-loading__art"></div>
+                  <div class="entities-explorer-loading__card-meta">
+                    <div class="entities-explorer-loading__line entities-explorer-loading__line--eyebrow"></div>
+                    <div class="entities-explorer-loading__line entities-explorer-loading__line--title"></div>
+                    <div class="entities-explorer-loading__line entities-explorer-loading__line--summary"></div>
+                  </div>
+                </div>
+
+                <div class="entities-explorer-loading__card entities-explorer-loading__card--next">
+                  <div class="entities-explorer-loading__art"></div>
+                  <div class="entities-explorer-loading__card-foot"></div>
+                </div>
+              </div>
             </div>
-          </div>
+          } @else {
+            <div class="entities-explorer-loading" aria-hidden="true">
+              <div class="entities-explorer-loading__ribbon">
+                <div class="entities-explorer-loading__card entities-explorer-loading__card--prev">
+                  <div class="entities-explorer-loading__art"></div>
+                </div>
+
+                <div class="entities-explorer-loading__card entities-explorer-loading__card--active">
+                  <div class="entities-explorer-loading__art"></div>
+                </div>
+
+                <div class="entities-explorer-loading__card entities-explorer-loading__card--next">
+                  <div class="entities-explorer-loading__art"></div>
+                </div>
+              </div>
+            </div>
+          }
         </div>
-      </div>
       } @else {
-      <div class="entities-explorer-loading" aria-hidden="true">
-        <div class="entities-explorer-loading__ribbon">
-          <div class="entities-explorer-loading__card entities-explorer-loading__card--prev">
-            <div class="entities-explorer-loading__art"></div>
-          </div>
+        <div class="entities-stage-shell entities-stage-shell--list">
+          <section class="entities-grid">
+            @for (_ of skeleton; track $index) {
+              <article class="entity-card entity-card--skeleton ds-card">
+                <div class="entity-card__thumb">
+                  <div class="skeleton-box skeleton-box--media"></div>
+                </div>
 
-          <div class="entities-explorer-loading__card entities-explorer-loading__card--active">
-            <div class="entities-explorer-loading__art"></div>
-          </div>
-
-          <div class="entities-explorer-loading__card entities-explorer-loading__card--next">
-            <div class="entities-explorer-loading__art"></div>
-          </div>
+                <div class="entity-card__body">
+                  <div class="skeleton-box skeleton-box--line skeleton-box--w1"></div>
+                  <div class="skeleton-box skeleton-box--line skeleton-box--w2"></div>
+                  <div class="skeleton-box skeleton-box--line skeleton-box--w3"></div>
+                </div>
+              </article>
+            }
+          </section>
         </div>
-      </div>
       }
-    </div>
-    } @else {
-    <div class="entities-stage-shell entities-stage-shell--list">
-      <section class="entities-grid">
-        @for (_ of skeleton; track $index) {
-        <article class="entity-card entity-card--skeleton ds-card">
-          <div class="entity-card__thumb">
-            <div class="skeleton-box skeleton-box--media"></div>
-          </div>
-
-          <div class="entity-card__body">
-            <div class="skeleton-box skeleton-box--line skeleton-box--w1"></div>
-            <div class="skeleton-box skeleton-box--line skeleton-box--w2"></div>
-            <div class="skeleton-box skeleton-box--line skeleton-box--w3"></div>
-          </div>
-        </article>
-        }
-      </section>
-    </div>
-    }
     }
   </section>
 </div>

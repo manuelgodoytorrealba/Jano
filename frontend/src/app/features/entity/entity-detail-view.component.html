@@ -5,6 +5,7 @@
   [class.entity-detail--workspace-transitioning]="workspaceTransitioning"
   [class.entity-detail--image-focus]="workspaceMode === 'image'"
   [class.entity-detail--graph-focus]="workspaceMode === 'graph'"
+  [class.entity-detail--artwork-arrival]="artworkArrivalActive(entity)"
 >
   <div class="entity-detail__layout">
     @if (isArticle(entity)) {
@@ -47,7 +48,7 @@
       </div>
     </section>
     } @else {
-    <div class="entity-explorer__workspace-deck">
+    <div class="entity-explorer__workspace-deck" [class.entity-explorer__workspace-deck--arrival-revealed]="revealArrivalControls(entity)">
       <div class="entity-explorer__workspace-bar" role="toolbar" [attr.aria-label]="i18n.t('workspace.aria')">
         <span class="entity-explorer__workspace-label">{{ i18n.t('workspace.label') }}</span>
         <div class="entity-explorer__workspace-switch">
@@ -131,11 +132,13 @@
         <div class="entity-topbar__row">
           <div class="entity-topbar__lead">
             <div class="entity-topbar__title-block">
-              <h1 class="title-display entity-header__title">{{ entity.title }}</h1>
+              <h1 class="title-display entity-header__title"
+                [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)">{{ entity.title }}</h1>
               @if (detailHeroSubtitle(entity); as subtitle) {
-              <p class="entity-topbar__subtitle">{{ subtitle }}</p>
+              <p class="entity-topbar__subtitle" [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)">{{ subtitle }}</p>
               }
-              <div class="entity-topbar__meta">
+              <div class="entity-topbar__meta"
+                [class.entity-arrival-copy--visible]="revealArrivalMeta(entity)">
                 <div class="entity-header__badges">
                   <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
                   @if (entity.contentLevel) {
@@ -229,13 +232,13 @@
         } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
         <div class="facts-sheet facts-sheet--textual">
           <div class="fact-note entity-glass-card">
-            <div class="entity-prose"><app-rich-text [text]="entity.concept.definition"></app-rich-text></div>
+            <div class="entity-prose"><app-rich-text [text]="entity.concept?.definition ?? ''"></app-rich-text></div>
           </div>
         </div>
         } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
         <div class="facts-sheet facts-sheet--textual">
           <div class="fact-note entity-glass-card">
-            <div class="entity-prose"><app-rich-text [text]="entity.period.definition"></app-rich-text></div>
+            <div class="entity-prose"><app-rich-text [text]="entity.period?.definition ?? ''"></app-rich-text></div>
           </div>
         </div>
         } @else {
