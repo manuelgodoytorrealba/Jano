@@ -218,7 +218,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly renderTick = signal(0);
   readonly initialGraphViewportReady = signal(true);
   readonly graphViewportAnimating = signal(false);
-  readonly inspectorVisible = signal(true);
+  readonly inspectorVisible = signal(false);
   readonly graphInteractionActive = signal(false);
   readonly artworkRouteArrivalActive = computed(() => this.artworkTransition.isForSlug(this.slug));
 
