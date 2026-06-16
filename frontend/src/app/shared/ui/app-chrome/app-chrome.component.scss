@@ -2,6 +2,18 @@
   display: contents;
 }
 
+:host-context(.app-stage-immersive) .app-chrome__header,
+:host-context(.app-stage-immersive) .app-chrome__header-toggle,
+:host-context(.app-stage-immersive) .app-chrome__utility,
+:host-context(body.app-stage-immersive) .app-chrome__header,
+:host-context(body.app-stage-immersive) .app-chrome__header-toggle,
+:host-context(body.app-stage-immersive) .app-chrome__utility {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+
 .app-chrome__header {
   position: fixed;
   z-index: 80;
@@ -1057,18 +1069,25 @@
   .app-chrome__header--detail + .app-chrome__header-toggle--open {
     top: calc(var(--app-safe-top) + var(--app-shell-gap));
     left: calc(var(--app-safe-left) + var(--app-shell-gap));
-    width: 88px;
-    height: 34px;
-    border-radius: 999px;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 16px;
     gap: 0;
+    justify-content: center;
+    align-items: center;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+      rgba(18, 18, 24, 0.18);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow:
+      0 14px 28px rgba(0, 0, 0, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16);
   }
 
   .app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars {
-    grid-auto-flow: column;
-  }
-
-  .app-chrome__header--detail + .app-chrome__header-toggle--open::after {
-    display: none;
+    gap: 5px;
   }
 
   .app-chrome__brand,
@@ -1086,7 +1105,7 @@
 
   .app-chrome__utility {
     top: auto;
-    bottom: calc(var(--app-safe-bottom) + var(--app-shell-gap) + 8px);
+    bottom: calc(var(--app-safe-bottom) + 2px);
     left: 50%;
     right: auto;
     transform: translateX(-50%);
@@ -1143,12 +1162,28 @@
     height: 1.8px;
   }
 
+  .app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars span {
+    width: 22px;
+    height: 1.8px;
+    border-radius: 999px;
+    opacity: 0.88;
+  }
+
   .app-chrome__header-toggle-bars span:nth-child(2) {
     width: 22px;
   }
 
   .app-chrome__header-toggle-bars span:nth-child(3) {
     width: 22px;
+  }
+
+  .app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars span:nth-child(2),
+  .app-chrome__header--detail + .app-chrome__header-toggle--open .app-chrome__header-toggle-bars span:nth-child(3) {
+    width: 22px;
+  }
+
+  .app-chrome__utility--contextual .app-chrome__utility-btn[data-action='focus'] {
+    display: none;
   }
 }
 

@@ -16,6 +16,8 @@ export function createGraphFocusedViewport(options: {
   positions: Record<string, GraphPoint>;
   filteredNodeIds: string[];
   haloSizeForNode: (nodeId: string) => number;
+  preferBoundsCenter?: boolean;
+  padding?: number;
 }): GraphViewport | null {
   const { graph, size, positions, filteredNodeIds, haloSizeForNode } = options;
   if (!graph || !size.width || !size.height) {
@@ -23,7 +25,14 @@ export function createGraphFocusedViewport(options: {
   }
 
   const bounds = measureGraphBounds(filteredNodeIds, positions, (nodeId) => haloSizeForNode(nodeId) + 56);
-  const fitted = bounds ? fitGraphBounds(bounds, size, 108) : createGraphViewport(size.width, size.height, 0.82);
+  const fitted = bounds
+    ? fitGraphBounds(bounds, size, options.padding ?? 108)
+    : createGraphViewport(size.width, size.height, 0.82);
+
+  if (options.preferBoundsCenter) {
+    return fitted;
+  }
+
   const centerPoint = positions[graph.centerId] ?? { x: 0, y: 0 };
 
   return createCenteredGraphViewport(centerPoint, size, fitted.scale);

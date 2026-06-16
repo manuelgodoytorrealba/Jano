@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, PLATFORM_ID, Renderer2, SimpleChanges, inject } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GraphComponent } from '../graph/graph.component';
 import { PublicEntity, PublicEntityRelation, PublicEntityRelationEndpoint, PublicEntityTagItem } from '../../core/api/entities.models';
@@ -32,7 +33,14 @@ import {
   visualUrl,
 } from './entity-detail.presenter';
 
-type DetailWorkspaceMode = 'split' | 'image' | 'graph';
+type DetailWorkspaceMode = 'split' | 'image' | 'graph' | 'info';
+type GraphWorkspaceMode = 'split' | 'image' | 'graph';
+type GraphEntityInfo = {
+  title: string;
+  subtitle: string | null;
+  summary: string | null;
+  badges: string[];
+};
 
 @Component({
   standalone: true,
@@ -43,9 +51,15 @@ type DetailWorkspaceMode = 'split' | 'image' | 'graph';
   styleUrls: ['./entity-detail-view.component.scss'],
 })
 export class EntityDetailViewComponent implements OnDestroy {
+  private static readonly MOBILE_BREAKPOINT = 760;
   private static readonly INITIAL_RELATION_LIMIT = 48;
   private static readonly RELATION_LIMIT_STEP = 48;
+  private static readonly WORKSPACE_TRANSITION_MS = 320;
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private readonly document = inject(DOCUMENT);
+  private readonly renderer = inject(Renderer2);
   readonly artworkTransition = inject(EntityRouteArtworkTransitionService);
   readonly i18n = inject(I18nService);
   private transitionTimer: ReturnType<typeof setTimeout> | null = null;
@@ -60,29 +74,81 @@ export class EntityDetailViewComponent implements OnDestroy {
   @Output() saveToggle = new EventEmitter<string>();
   @Output() collectionsToggle = new EventEmitter<void>();
   @Output() shareToggle = new EventEmitter<void>();
+  isMobileViewport = false;
   workspaceMode: DetailWorkspaceMode = 'split';
   workspaceFocused = false;
   workspaceTransitioning = false;
   outgoingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   incomingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
-  readonly workspaceModes: Array<{ value: DetailWorkspaceMode; labelKey: string }> = [
+  private readonly desktopWorkspaceModes: Array<{ value: DetailWorkspaceMode; labelKey: string }> = [
     { value: 'split', labelKey: 'workspace.split' },
     { value: 'image', labelKey: 'workspace.image' },
     { value: 'graph', labelKey: 'workspace.graph' },
   ];
+  private readonly mobileWorkspaceModes: Array<{ value: DetailWorkspaceMode; labelKey: string }> = [
+    { value: 'image', labelKey: 'workspace.image' },
+    { value: 'graph', labelKey: 'workspace.graph' },
+    { value: 'info', labelKey: 'graph.info' },
+  ];
+
+  constructor() {
+    this.syncViewportState();
+    this.workspaceMode = this.defaultWorkspaceMode();
+  }
+
+  get workspaceModes(): Array<{ value: DetailWorkspaceMode; labelKey: string }> {
+    return this.isMobileViewport ? this.mobileWorkspaceModes : this.desktopWorkspaceModes;
+  }
+
+  get graphWorkspaceMode(): GraphWorkspaceMode {
+    if (this.workspaceMode === 'split' || this.workspaceMode === 'image' || this.workspaceMode === 'graph') {
+      return this.workspaceMode;
+    }
+
+    return 'image';
+  }
+
+  mobileGraphEntityInfo(entity: PublicEntity | null): GraphEntityInfo | null {
+    if (!entity || this.isArticle(entity)) {
+      return null;
+    }
+
+    const badges = [
+      this.statusLabel(entity.status),
+      entity.contentLevel ? this.contentLevelLabel(entity.contentLevel) : null,
+      entityTypeLabel(entity.type, (key) => this.i18n.t(key)),
+      entity.startYear || entity.endYear
+        ? `${entity.startYear ?? ''}${entity.endYear ? `–${entity.endYear}` : ''}`
+        : null,
+    ].filter((value): value is string => !!value);
+
+    return {
+      title: entity.title,
+      subtitle: this.detailHeroSubtitle(entity),
+      summary: entity.summary ?? null,
+      badges,
+    };
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['entity'] && !changes['entity'].firstChange) {
-      this.workspaceMode = 'split';
+      this.workspaceMode = this.defaultWorkspaceMode();
       this.workspaceFocused = false;
       this.workspaceTransitioning = false;
       this.clearTransitionTimer();
       this.resetRelationLimits();
+      this.syncImmersiveBodyState(false);
     }
   }
 
   ngOnDestroy(): void {
     this.clearTransitionTimer();
+    this.syncImmersiveBodyState(false);
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.syncViewportState();
   }
 
   setWorkspaceMode(mode: DetailWorkspaceMode): void {
@@ -97,6 +163,7 @@ export class EntityDetailViewComponent implements OnDestroy {
   toggleWorkspaceFocus(): void {
     this.beginWorkspaceTransition();
     this.workspaceFocused = !this.workspaceFocused;
+    this.syncImmersiveBodyState();
   }
 
   @HostListener('window:keydown.escape')
@@ -104,6 +171,7 @@ export class EntityDetailViewComponent implements OnDestroy {
     if (this.workspaceFocused) {
       this.beginWorkspaceTransition();
       this.workspaceFocused = false;
+      this.syncImmersiveBodyState();
     }
   }
 
@@ -114,7 +182,7 @@ export class EntityDetailViewComponent implements OnDestroy {
       this.workspaceTransitioning = false;
       this.transitionTimer = null;
       this.cdr.markForCheck();
-    }, 420);
+    }, EntityDetailViewComponent.WORKSPACE_TRANSITION_MS);
   }
 
   private clearTransitionTimer(): void {
@@ -126,8 +194,30 @@ export class EntityDetailViewComponent implements OnDestroy {
     this.transitionTimer = null;
   }
 
+  private syncImmersiveBodyState(forceValue?: boolean): void {
+    if (!this.isBrowser || !this.document?.body) {
+      return;
+    }
+
+    const active = forceValue ?? (this.isMobileViewport && this.workspaceFocused);
+    if (active) {
+      this.renderer.addClass(this.document.body, 'app-stage-immersive');
+      return;
+    }
+
+    this.renderer.removeClass(this.document.body, 'app-stage-immersive');
+  }
+
   artworkArrivalActive(entity: PublicEntity | null): boolean {
     return this.artworkTransition.isForSlug(entity?.slug ?? null);
+  }
+
+  showWorkspace(entity: PublicEntity | null): boolean {
+    return !this.isArticle(entity) && (!this.isMobileViewport || this.workspaceMode !== 'info');
+  }
+
+  showEditorialFlow(entity: PublicEntity | null): boolean {
+    return this.isArticle(entity) || !this.isMobileViewport || this.workspaceMode === 'info';
   }
 
   revealArrivalTitle(entity: PublicEntity | null): boolean {
@@ -312,5 +402,38 @@ export class EntityDetailViewComponent implements OnDestroy {
 
   entityTypeLabel(type: string): string {
     return entityTypeLabel(type, (key) => this.i18n.t(key));
+  }
+
+  private defaultWorkspaceMode(): DetailWorkspaceMode {
+    return this.isMobileViewport ? 'graph' : 'split';
+  }
+
+  private syncViewportState(): void {
+    const nextIsMobile = this.isBrowser
+      ? window.innerWidth <= EntityDetailViewComponent.MOBILE_BREAKPOINT
+      : false;
+
+    if (nextIsMobile === this.isMobileViewport) {
+      return;
+    }
+
+    this.isMobileViewport = nextIsMobile;
+
+    if (this.isMobileViewport) {
+      if (this.workspaceMode === 'split') {
+        this.workspaceMode = 'graph';
+      }
+    } else {
+      if (this.workspaceFocused) {
+        this.workspaceFocused = false;
+      }
+      this.syncImmersiveBodyState(false);
+      if (this.workspaceMode === 'info') {
+        this.workspaceMode = 'split';
+      }
+    }
+
+    this.syncImmersiveBodyState();
+    this.cdr.markForCheck();
   }
 }

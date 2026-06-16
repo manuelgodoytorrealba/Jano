@@ -18,7 +18,7 @@ export const FAST_GRAPH_VIEWPORT_ANIMATION: GraphViewportAnimationConfig = {
 
 export const INITIAL_GRAPH_FOCUS_TARGET_PASSES = 3;
 export const INITIAL_GRAPH_FIT_MAX_ATTEMPTS = 18;
-export const INITIAL_GRAPH_FIT_MIN_SCALE = 0.8;
+export const INITIAL_GRAPH_FIT_MIN_SCALE = 0.18;
 
 export function graphLabelScaleBucket(scale: number): number {
   if (scale < 0.56) {

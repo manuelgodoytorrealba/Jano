@@ -319,6 +319,84 @@
 }
 
 @media (max-width: 760px) {
+  :host {
+    --graph-bar-gap-y: 0.18rem;
+    --graph-bar-gap-x: 0.28rem;
+    --graph-bar-padding-y: 0.22rem;
+    --graph-bar-padding-x: 0.28rem;
+    --graph-bar-radius: 18px;
+    --graph-bar-chip-padding-y: 0.1rem;
+    --graph-bar-chip-padding-x: 0.28rem;
+    --graph-bar-chip-font-size: 0.7rem;
+    --graph-bar-label-padding-y: 0.18rem;
+    --graph-bar-label-padding-x: 0.38rem;
+    --graph-bar-label-font-size: 0.72rem;
+    --graph-bar-button-min-height: 28px;
+    --graph-bar-button-padding-y: 0.16rem;
+    --graph-bar-button-padding-x: 0.5rem;
+    --graph-bar-button-font-size: 0.74rem;
+    --graph-bar-button-min-width: 0;
+  }
+
+  .graph-panel-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.22rem 0.34rem;
+    padding: var(--graph-bar-padding-y) var(--graph-bar-padding-x);
+  }
+
+  .graph-panel-bar__group--primary {
+    display: none;
+  }
+
+  .graph-panel-bar__group--actions {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .graph-panel-bar__group--meta {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: stretch;
+    min-width: 0;
+  }
+
+  .graph-panel-bar__meta {
+    width: 100%;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  .graph-panel-bar__meta span {
+    max-width: 100%;
+    font-size: var(--graph-bar-chip-font-size);
+  }
+
+  .graph-panel-bar__toggles {
+    justify-content: flex-end;
+    gap: 0.16rem;
+    flex-wrap: nowrap;
+  }
+
+  .graph-utility-btn {
+    min-width: 0;
+    padding-inline: 0.46rem;
+    font-size: var(--graph-bar-button-font-size);
+  }
+
+  .graph-utility-btn--mode {
+    max-width: 8.4rem;
+  }
+
+  .explorer-surface-label {
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (max-width: 760px) {
   .graph-panel-bar {
     padding: 0.72rem 0.74rem;
     border-radius: 18px;

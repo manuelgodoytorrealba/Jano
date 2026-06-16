@@ -5,6 +5,7 @@
   [class.entity-detail--workspace-transitioning]="workspaceTransitioning"
   [class.entity-detail--image-focus]="workspaceMode === 'image'"
   [class.entity-detail--graph-focus]="workspaceMode === 'graph'"
+  [class.entity-detail--info-focus]="workspaceMode === 'info'"
   [class.entity-detail--artwork-arrival]="artworkArrivalActive(entity)"
 >
   <div class="entity-detail__layout">
@@ -64,6 +65,7 @@
           </button>
           }
         </div>
+        @if (!isMobileViewport) {
         <button
           type="button"
           class="entity-explorer__workspace-btn entity-explorer__workspace-btn--focus"
@@ -72,8 +74,10 @@
         >
           {{ workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus') }}
         </button>
+        }
       </div>
     </div>
+    @if (showWorkspace(entity)) {
     <section
       class="entity-explorer entity-glass"
       [class.entity-explorer--focused]="workspaceFocused"
@@ -82,7 +86,7 @@
       @if (renderGraph) {
       <app-graph
         [slug]="entity.slug"
-        [workspaceMode]="workspaceMode"
+        [workspaceMode]="graphWorkspaceMode"
         [imageMedia]="detailMedia(entity)"
         [imageUrl]="visualUrl(entity)"
         [imageAlt]="visualAlt(entity)"
@@ -90,11 +94,14 @@
         [entityType]="entity.type"
         [workspaceFocused]="workspaceFocused"
         [workspaceTransitioning]="workspaceTransitioning"
+        [isMobileViewport]="isMobileViewport"
+        [entityInfo]="mobileGraphEntityInfo(entity)"
         [imageMeta]="{
           source: detailMedia(entity)?.source ?? null,
           photoBy: detailMedia(entity)?.photoBy ?? null,
           license: detailMedia(entity)?.license ?? null
         }"
+        (workspaceFocusToggle)="toggleWorkspaceFocus()"
       />
       } @else {
       <ng-container *ngTemplateOutlet="explorerFallback"></ng-container>
@@ -126,40 +133,12 @@
       </ng-template>
     </section>
     }
+    }
 
+    @if (showEditorialFlow(entity)) {
     <section class="entity-section entity-glass entity-section--wide entity-story" [class.entity-story--article]="isArticle(entity)">
       <header class="entity-topbar entity-topbar--embedded">
-        <div class="entity-topbar__row">
-          <div class="entity-topbar__lead">
-            <div class="entity-topbar__title-block">
-              <h1 class="title-display entity-header__title"
-                [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)">{{ entity.title }}</h1>
-              @if (detailHeroSubtitle(entity); as subtitle) {
-              <p class="entity-topbar__subtitle" [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)">{{ subtitle }}</p>
-              }
-              <div class="entity-topbar__meta"
-                [class.entity-arrival-copy--visible]="revealArrivalMeta(entity)">
-                <div class="entity-header__badges">
-                  <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
-                  @if (entity.contentLevel) {
-                  <span class="ds-badge entity-badge">{{ contentLevelLabel(entity.contentLevel) }}</span>
-                  }
-                  <span class="ds-badge entity-badge">{{ entityTypeLabel(entity.type) }}</span>
-                </div>
-                @if (entityTags(entity).length) {
-                <div class="entity-header__badges entity-header__badges--tags">
-                  @for (tag of entityTags(entity); track tag.id ?? tag.slug) {
-                  <a class="ds-badge entity-badge" [routerLink]="['/search']" [queryParams]="{ tag: tag.slug, q: tag.label }">{{ tag.label }}</a>
-                  }
-                </div>
-                }
-                @if (entity.startYear || entity.endYear) {
-                <span class="ds-pill entity-pill">{{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}</span>
-                }
-              </div>
-            </div>
-          </div>
-        </div>
+        <ng-container *ngTemplateOutlet="detailHeaderBlock; context: { $implicit: entity, mobile: false }"></ng-container>
       </header>
 
       @if (entity.content) {
@@ -184,7 +163,7 @@
         @defer (on idle) {
         <app-graph
           [slug]="entity.slug"
-          [workspaceMode]="workspaceMode"
+          [workspaceMode]="graphWorkspaceMode"
           [imageMedia]="detailMedia(entity)"
           [imageUrl]="visualUrl(entity)"
           [imageAlt]="visualAlt(entity)"
@@ -335,6 +314,41 @@
       </ul>
     </section>
     }
+    }
   </div>
 </div>
+
+<ng-template #detailHeaderBlock let-entity let-mobile="mobile">
+  <div class="entity-topbar__row" [class.entity-topbar__row--mobile]="mobile">
+    <div class="entity-topbar__lead">
+      <div class="entity-topbar__title-block">
+        <h1 class="title-display entity-header__title"
+          [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)">{{ entity.title }}</h1>
+        @if (detailHeroSubtitle(entity); as subtitle) {
+        <p class="entity-topbar__subtitle" [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)">{{ subtitle }}</p>
+        }
+        <div class="entity-topbar__meta"
+          [class.entity-arrival-copy--visible]="revealArrivalMeta(entity)">
+          <div class="entity-header__badges">
+            <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
+            @if (entity.contentLevel) {
+            <span class="ds-badge entity-badge">{{ contentLevelLabel(entity.contentLevel) }}</span>
+            }
+            <span class="ds-badge entity-badge">{{ entityTypeLabel(entity.type) }}</span>
+          </div>
+          @if (entityTags(entity).length) {
+          <div class="entity-header__badges entity-header__badges--tags">
+            @for (tag of entityTags(entity); track tag.id ?? tag.slug) {
+            <a class="ds-badge entity-badge" [routerLink]="['/search']" [queryParams]="{ tag: tag.slug, q: tag.label }">{{ tag.label }}</a>
+            }
+          </div>
+          }
+          @if (entity.startYear || entity.endYear) {
+          <span class="ds-pill entity-pill">{{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
 }

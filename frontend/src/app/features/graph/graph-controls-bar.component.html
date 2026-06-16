@@ -1,11 +1,17 @@
 <div class="graph-panel-bar">
   <div class="graph-panel-bar__group graph-panel-bar__group--primary">
+    @if (!isMobileViewport) {
     <div class="explorer-surface-label">{{ i18n.t('graph.relations') }}</div>
+    }
   </div>
 
   <div class="graph-panel-bar__group graph-panel-bar__group--meta">
     <div class="graph-panel-bar__meta">
+      @if (isMobileViewport) {
+      <span>{{ nodeCount }} {{ i18n.t('graph.nodes') }} · {{ edgeCount }} {{ i18n.t('graph.edges') }}</span>
+      } @else {
       <span>{{ nodeCount }} {{ i18n.t('graph.nodes') }} · {{ edgeCount }} {{ i18n.t('graph.edges') }} · {{ scalePercent }}%</span>
+      }
     </div>
   </div>
 
@@ -17,11 +23,13 @@
       <button type="button" class="graph-utility-btn" [disabled]="!graphReady" (click)="toggleInspector.emit()">{{ i18n.t('graph.info') }}</button>
     </div>
 
+    @if (!isMobileViewport) {
     <div class="surface-controls surface-controls--graph">
       <button type="button" class="surface-control surface-control--text" [disabled]="!graphReady" (click)="centerSelection.emit()">{{ i18n.t('graph.center') }}</button>
       <button type="button" class="surface-control" (click)="zoom(1.14)">+</button>
       <button type="button" class="surface-control" (click)="zoom(0.88)">−</button>
       <button type="button" class="surface-control surface-control--text surface-control--wide" (click)="resetGraphView.emit()">{{ i18n.t('graph.reset') }}</button>
     </div>
+    }
   </div>
 </div>

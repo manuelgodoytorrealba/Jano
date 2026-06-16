@@ -16,6 +16,7 @@ export class GraphControlsBarComponent {
   @Input({ required: true }) scalePercent = 100;
   @Input() graphReady = false;
   @Input() inspectorVisible = true;
+  @Input() isMobileViewport = false;
 
   @Output() labelsModeChange = new EventEmitter<'auto' | 'always' | 'hidden'>();
   @Output() centerSelection = new EventEmitter<void>();

@@ -4,9 +4,11 @@ import {
   Component,
   PLATFORM_ID,
   ElementRef,
+  EventEmitter,
   Input,
   OnChanges,
   OnDestroy,
+  Output,
   SimpleChanges,
   ViewChild,
   computed,
@@ -18,6 +20,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { MediaLike, resolveMediaPresentation } from '../../shared/media/media.utils';
 import {
   currentDraggedNodeId,
@@ -29,12 +32,16 @@ import {
 } from './graph-layout';
 import {
   graphViewportTransform,
+  panGraphViewport,
+  zoomGraphViewport,
 } from './graph-viewport';
 import {
   imageViewportTransform,
   ImageAssetSize,
   ImageViewport,
   interpolateImageViewport,
+  panImageViewport,
+  zoomImageViewport,
 } from './image-viewport';
 import {
   GraphData,
@@ -156,6 +163,12 @@ type ImageMeta = {
 };
 
 type GraphWorkspaceMode = 'split' | 'image' | 'graph';
+type GraphEntityInfo = {
+  title: string;
+  subtitle: string | null;
+  summary: string | null;
+  badges: string[];
+};
 
 @Component({
   standalone: true,
@@ -168,6 +181,7 @@ type GraphWorkspaceMode = 'split' | 'image' | 'graph';
 export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private readonly api = inject(EntitiesApi);
   readonly artworkTransition = inject(EntityRouteArtworkTransitionService);
+  readonly i18n = inject(I18nService);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -183,6 +197,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() imageMeta: ImageMeta | null = null;
   @Input() workspaceFocused = false;
   @Input() workspaceTransitioning = false;
+  @Input() isMobileViewport = false;
+  @Input() entityInfo: GraphEntityInfo | null = null;
+  @Output() workspaceFocusToggle = new EventEmitter<void>();
 
   private graphStage?: ElementRef<HTMLDivElement>;
   private imageStage?: ElementRef<HTMLDivElement>;
@@ -219,6 +236,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly initialGraphViewportReady = signal(true);
   readonly graphViewportAnimating = signal(false);
   readonly inspectorVisible = signal(false);
+  readonly imageInfoOpen = signal(false);
   readonly graphInteractionActive = signal(false);
   readonly artworkRouteArrivalActive = computed(() => this.artworkTransition.isForSlug(this.slug));
 
@@ -237,6 +255,19 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private positions: Record<string, GraphPoint> = {};
   private velocities: Record<string, GraphPoint> = {};
   private pointerSession: GraphPointerSession | null = null;
+  private graphPointers = new Map<number, GraphPoint>();
+  private graphPinchGesture: {
+    startDistance: number;
+    startCenter: GraphPoint;
+    startViewport: GraphViewport;
+  } | null = null;
+  private imagePointers = new Map<number, GraphPoint>();
+  private imagePinchGesture: {
+    startDistance: number;
+    startCenter: GraphPoint;
+    startAnchor: GraphPoint;
+    startViewport: ImageViewport;
+  } | null = null;
   private imageViewportReady = false;
   private graphViewportReady = false;
   private persistedState: ExplorerPersistedState | null = null;
@@ -344,6 +375,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
+      (changes['workspaceMode'] && changes['workspaceMode'].currentValue !== 'image')
+      || (changes['isMobileViewport'] && changes['isMobileViewport'].currentValue === false)
+    ) {
+      this.imageInfoOpen.set(false);
+    }
+
+    if (
       (changes['workspaceMode'] && !changes['workspaceMode'].firstChange)
       || (changes['workspaceFocused'] && !changes['workspaceFocused'].firstChange)
       || changes['workspaceTransitioning']?.currentValue === true
@@ -433,6 +471,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     this.loading.set(true);
+    this.initialGraphViewportReady.set(false);
     this.graph.set(null);
     this.error.set(null);
     this.clearHoverClearTimer();
@@ -476,6 +515,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.hasUserAdjustedGraphView = loadedState.hasUserAdjustedGraphView;
     this.viewportController.clearTarget();
     this.graphViewportReady = loadedState.graphViewportReady;
+    this.initialGraphViewportReady.set(false);
     this.graphLayoutActive = loadedState.graphLayoutActive;
     this.graphLayoutFrames = loadedState.graphLayoutFrames;
     this.graphSettledFrames = loadedState.graphSettledFrames;
@@ -703,13 +743,24 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    if (this.isMobileViewport) {
+      this.workspaceResizePaused = false;
+      this.clearWorkspaceTransitionSettleTimer();
+      requestAnimationFrame(() => this.flushWorkspaceTransitionMeasurements());
+      this.workspaceTransitionSettleTimer = setTimeout(() => {
+        this.workspaceTransitionSettleTimer = null;
+        this.flushWorkspaceTransitionMeasurements();
+      }, 240);
+      return;
+    }
+
     this.workspaceResizePaused = true;
     this.clearWorkspaceTransitionSettleTimer();
     this.workspaceTransitionSettleTimer = setTimeout(() => {
       this.workspaceResizePaused = false;
       this.workspaceTransitionSettleTimer = null;
       this.flushWorkspaceTransitionMeasurements();
-    }, 420);
+    }, 320);
   }
 
   private flushWorkspaceTransitionMeasurements(): void {
@@ -910,6 +961,12 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onGraphStagePointerDown(event: PointerEvent): void {
+    this.trackGraphPointer(event);
+    if (this.tryStartOrUpdateGraphPinch(event)) {
+      this.markGraphInteractionActive(240);
+      return;
+    }
+
     this.markGraphInteractionActive(240);
     runGraphStagePointerDownRuntime({
       event,
@@ -922,6 +979,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onGraphStagePointerMove(event: PointerEvent): void {
+    if (this.updateGraphPinch(event)) {
+      this.markGraphInteractionActive(180);
+      return;
+    }
+
     if (this.pointerSession?.kind === 'graph-pan') {
       this.markGraphInteractionActive(180);
     }
@@ -938,6 +1000,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onGraphStagePointerUp(event: PointerEvent): void {
+    if (this.finishGraphPinch(event)) {
+      this.markGraphInteractionActive(120);
+      return;
+    }
+
     runGraphStagePointerUpRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -947,6 +1014,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         this.pointerSession = null;
       },
     });
+    this.untrackGraphPointer(event);
     this.markGraphInteractionActive(120);
   }
 
@@ -1023,6 +1091,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onImagePointerDown(event: PointerEvent): void {
+    this.trackImagePointer(event);
+    if (this.tryStartOrUpdateImagePinch(event)) {
+      return;
+    }
+
     runImagePointerDownRuntime({
       event,
       asset: this.imageAsset(),
@@ -1033,6 +1106,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onImagePointerMove(event: PointerEvent): void {
+    if (this.updateImagePinch(event)) {
+      return;
+    }
+
     runImagePointerMoveRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -1050,6 +1127,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onImagePointerUp(event: PointerEvent): void {
+    if (this.finishImagePinch(event)) {
+      return;
+    }
+
     runImagePointerUpRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -1061,6 +1142,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onImagePointerCancel(event: PointerEvent): void {
+    if (this.finishImagePinch(event)) {
+      return;
+    }
+
     runImagePointerCancelRuntime({
       pointerSession: this.pointerSession,
       event,
@@ -1167,6 +1252,26 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.inspectorVisible.update((value) => !value);
   }
 
+  openImageInfo(): void {
+    if (!this.isMobileViewport || !this.entityInfo) {
+      return;
+    }
+
+    this.imageInfoOpen.set(true);
+  }
+
+  closeImageInfo(): void {
+    this.imageInfoOpen.set(false);
+  }
+
+  toggleWorkspaceFocusStage(): void {
+    if (!this.isMobileViewport) {
+      return;
+    }
+
+    this.workspaceFocusToggle.emit();
+  }
+
   private ensureSelectionVisible(): void {
     const nextSelectedNodeId = ensureGraphSelectionVisible(
       this.graph(),
@@ -1188,7 +1293,215 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       positions: this.positions,
       filteredNodeIds: this.graphDerived().filteredNodes.map((node) => node.id),
       haloSizeForNode: (nodeId) => this.nodeHaloSize(nodeId),
+      preferBoundsCenter: this.isMobileViewport,
+      padding: this.isMobileViewport ? 76 : 108,
     });
+  }
+
+  private trackGraphPointer(event: PointerEvent): void {
+    if (!this.isMobileViewport) {
+      return;
+    }
+
+    const currentTarget = event.currentTarget as HTMLElement | null;
+    currentTarget?.setPointerCapture?.(event.pointerId);
+    this.graphPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  }
+
+  private tryStartOrUpdateGraphPinch(event: PointerEvent): boolean {
+    if (!this.isMobileViewport || this.graphPointers.size < 2 || !this.graphStage?.nativeElement) {
+      return false;
+    }
+
+    const pointers = Array.from(this.graphPointers.values());
+    const rect = this.graphStage.nativeElement.getBoundingClientRect();
+    const centerClient = {
+      x: (pointers[0].x + pointers[1].x) / 2,
+      y: (pointers[0].y + pointers[1].y) / 2,
+    };
+
+    this.pointerSession = null;
+    this.viewportController.clearTarget();
+    this.graphPinchGesture = {
+      startDistance: Math.hypot(pointers[1].x - pointers[0].x, pointers[1].y - pointers[0].y),
+      startCenter: {
+        x: centerClient.x - rect.left,
+        y: centerClient.y - rect.top,
+      },
+      startViewport: this.currentGraphViewportState(),
+    };
+    event.preventDefault();
+    return true;
+  }
+
+  private updateGraphPinch(event: PointerEvent): boolean {
+    if (!this.graphPointers.has(event.pointerId)) {
+      return false;
+    }
+
+    this.graphPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (!this.graphPinchGesture || !this.graphStage?.nativeElement || this.graphPointers.size < 2) {
+      return false;
+    }
+
+    const pointers = Array.from(this.graphPointers.values());
+    const rect = this.graphStage.nativeElement.getBoundingClientRect();
+    const currentDistance = Math.hypot(pointers[1].x - pointers[0].x, pointers[1].y - pointers[0].y);
+    const currentCenter = {
+      x: (pointers[0].x + pointers[1].x) / 2 - rect.left,
+      y: (pointers[0].y + pointers[1].y) / 2 - rect.top,
+    };
+    const anchorClientX = rect.left + this.graphPinchGesture.startCenter.x;
+    const anchorClientY = rect.top + this.graphPinchGesture.startCenter.y;
+    const zoomed = zoomGraphViewport(
+      this.graphPinchGesture.startViewport,
+      currentDistance / Math.max(this.graphPinchGesture.startDistance, 1),
+      anchorClientX,
+      anchorClientY,
+      rect,
+    );
+
+    this.viewportController.clearTarget();
+    this.graphViewport.set(
+      panGraphViewport(
+        zoomed,
+        currentCenter.x - this.graphPinchGesture.startCenter.x,
+        currentCenter.y - this.graphPinchGesture.startCenter.y,
+      ),
+    );
+    this.graphViewportReady = true;
+    this.initialGraphViewportReady.set(true);
+    this.hasUserAdjustedGraphView = true;
+    event.preventDefault();
+    return true;
+  }
+
+  private finishGraphPinch(event: PointerEvent): boolean {
+    if (!this.graphPointers.has(event.pointerId)) {
+      return false;
+    }
+
+    this.untrackGraphPointer(event);
+    if (!this.graphPinchGesture) {
+      return false;
+    }
+
+    if (this.graphPointers.size < 2) {
+      this.graphPinchGesture = null;
+      this.persistExplorerState();
+    }
+
+    return true;
+  }
+
+  private untrackGraphPointer(event: PointerEvent): void {
+    this.graphPointers.delete(event.pointerId);
+    const currentTarget = event.currentTarget as HTMLElement | null;
+    if (currentTarget?.hasPointerCapture?.(event.pointerId)) {
+      currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  private trackImagePointer(event: PointerEvent): void {
+    const currentTarget = event.currentTarget as HTMLElement | null;
+    currentTarget?.setPointerCapture?.(event.pointerId);
+    this.imagePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  }
+
+  private tryStartOrUpdateImagePinch(event: PointerEvent): boolean {
+    if (this.imagePointers.size < 2 || !this.imageStage?.nativeElement || !this.imageAsset()) {
+      return false;
+    }
+
+    const pointers = Array.from(this.imagePointers.values());
+    const centerClient = {
+      x: (pointers[0].x + pointers[1].x) / 2,
+      y: (pointers[0].y + pointers[1].y) / 2,
+    };
+    const rect = this.imageStage.nativeElement.getBoundingClientRect();
+
+    this.pointerSession = null;
+    this.targetImageViewport = null;
+    this.imagePinchGesture = {
+      startDistance: Math.hypot(pointers[1].x - pointers[0].x, pointers[1].y - pointers[0].y),
+      startCenter: {
+        x: centerClient.x - rect.left,
+        y: centerClient.y - rect.top,
+      },
+      startAnchor: {
+        x: centerClient.x - rect.left,
+        y: centerClient.y - rect.top,
+      },
+      startViewport: this.imageViewport(),
+    };
+    event.preventDefault();
+    return true;
+  }
+
+  private updateImagePinch(event: PointerEvent): boolean {
+    if (!this.imagePointers.has(event.pointerId)) {
+      return false;
+    }
+
+    this.imagePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (!this.imagePinchGesture || !this.imageStage?.nativeElement || !this.imageAsset() || this.imagePointers.size < 2) {
+      return false;
+    }
+
+    const pointers = Array.from(this.imagePointers.values());
+    const currentDistance = Math.hypot(pointers[1].x - pointers[0].x, pointers[1].y - pointers[0].y);
+    const rect = this.imageStage.nativeElement.getBoundingClientRect();
+    const currentCenter = {
+      x: (pointers[0].x + pointers[1].x) / 2 - rect.left,
+      y: (pointers[0].y + pointers[1].y) / 2 - rect.top,
+    };
+
+    const zoomed = zoomImageViewport(
+      this.imagePinchGesture.startViewport,
+      currentDistance / Math.max(this.imagePinchGesture.startDistance, 1),
+      this.imagePinchGesture.startAnchor,
+      this.currentImageStageSize(),
+      this.imageAsset(),
+    );
+    if (!zoomed) {
+      return true;
+    }
+
+    this.imageViewport.set(
+      panImageViewport(
+        zoomed,
+        currentCenter.x - this.imagePinchGesture.startCenter.x,
+        currentCenter.y - this.imagePinchGesture.startCenter.y,
+        this.currentImageStageSize(),
+        this.imageAsset(),
+      ),
+    );
+    this.imageViewportReady = true;
+    event.preventDefault();
+    return true;
+  }
+
+  private finishImagePinch(event: PointerEvent): boolean {
+    if (!this.imagePointers.has(event.pointerId)) {
+      return false;
+    }
+
+    this.imagePointers.delete(event.pointerId);
+    const currentTarget = event.currentTarget as HTMLElement | null;
+    if (currentTarget?.hasPointerCapture?.(event.pointerId)) {
+      currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    if (!this.imagePinchGesture) {
+      return false;
+    }
+
+    if (this.imagePointers.size < 2) {
+      this.imagePinchGesture = null;
+      this.persistExplorerState();
+    }
+
+    return true;
   }
 
   private createViewportCenteredOnPoint(point: GraphPoint, scale: number): GraphViewport | null {

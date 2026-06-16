@@ -7,6 +7,7 @@
     [class.explorer-shell--mode-image]="workspaceMode === 'image'"
     [class.explorer-shell--mode-graph]="workspaceMode === 'graph'"
     [class.explorer-shell--focused]="workspaceFocused"
+    [class.explorer-shell--transitioning]="workspaceTransitioning"
     [class.explorer-shell--artwork-arrival]="artworkRouteArrivalActive()"
     [class.explorer-shell--artwork-arrival-complete]="!artworkTransition.shouldMaskDestinationArtwork(slug)"
     [class.explorer-shell--artwork-arrival-controls]="artworkTransition.shouldRevealControls(slug)"
@@ -55,9 +56,92 @@
             </div>
           }
 
-          <div class="image-overlay-bar">
-            <div class="explorer-surface-label">Imagen</div>
+          @if (isMobileViewport && entityInfo) {
+          <button
+            type="button"
+            class="image-info-toggle"
+            (pointerdown)="$event.stopPropagation()"
+            (click)="openImageInfo()"
+            [attr.aria-label]="i18n.t('graph.info') + ' ' + entityInfo.title"
+          >
+            <span aria-hidden="true">i</span>
+          </button>
 
+          <button
+            type="button"
+            class="image-info-backdrop"
+            [class.is-hidden]="!imageInfoOpen()"
+            (pointerdown)="closeImageInfo(); $event.preventDefault(); $event.stopPropagation()"
+            [attr.aria-hidden]="!imageInfoOpen()"
+            tabindex="-1"
+          ></button>
+
+          <aside
+            class="image-info-sheet"
+            [class.is-hidden]="!imageInfoOpen()"
+            [attr.aria-hidden]="!imageInfoOpen()"
+            (click)="$event.stopPropagation()"
+            (pointerdown)="$event.stopPropagation()"
+            (pointermove)="$event.stopPropagation()"
+            (pointerup)="$event.stopPropagation()"
+            (wheel)="$event.preventDefault(); $event.stopPropagation()"
+          >
+            <div class="image-info-sheet__head">
+              <div class="image-info-sheet__eyebrow">{{ i18n.t('graph.info') }}</div>
+              <button
+                type="button"
+                class="image-info-sheet__close"
+                (pointerdown)="closeImageInfo(); $event.preventDefault(); $event.stopPropagation()"
+                [attr.aria-label]="i18n.t('button.close')"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+
+            <h2 class="image-info-sheet__title">{{ entityInfo.title }}</h2>
+            @if (entityInfo.subtitle) {
+            <p class="image-info-sheet__subtitle">{{ entityInfo.subtitle }}</p>
+            }
+            @if (entityInfo.badges.length) {
+            <div class="image-info-sheet__meta">
+              @for (badge of entityInfo.badges; track badge) {
+              <span>{{ badge }}</span>
+              }
+            </div>
+            }
+            @if (entityInfo.summary) {
+            <p class="image-info-sheet__summary">{{ entityInfo.summary }}</p>
+            }
+          </aside>
+          }
+
+          @if (isMobileViewport) {
+          <button
+            type="button"
+            class="stage-focus-toggle"
+            [class.is-active]="workspaceFocused"
+            (pointerdown)="$event.stopPropagation()"
+            (click)="toggleWorkspaceFocusStage()"
+            [attr.aria-label]="workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus')"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              @if (workspaceFocused) {
+              <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
+              <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
+              } @else {
+              <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+              <path d="M10 10 4 4M14 10l6-6M10 14l-6 6M14 14l6 6" />
+              }
+            </svg>
+          </button>
+          }
+
+          <div class="image-overlay-bar">
+            @if (!isMobileViewport) {
+            <div class="explorer-surface-label">Imagen</div>
+            }
+
+            @if (!isMobileViewport) {
             <div class="surface-controls surface-controls--image">
               <div class="surface-controls__cluster">
                 <button type="button" class="surface-control surface-control--iconic" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(1.14)">+</button>
@@ -67,6 +151,7 @@
                 Reset
               </button>
             </div>
+            }
           </div>
 
           @if (imageMeta?.source || imageMeta?.photoBy || imageMeta?.license) {
@@ -109,6 +194,7 @@
           [scalePercent]="+(graphViewport().scale * 100).toFixed(0)"
           [graphReady]="!!graphData"
           [inspectorVisible]="inspectorVisible()"
+          [isMobileViewport]="isMobileViewport"
           (labelsModeChange)="setLabelsMode($event)"
           (centerSelection)="centerSelection()"
           (graphZoom)="adjustGraphZoom($event)"
@@ -119,12 +205,34 @@
         <div
           #graphStage
           class="graph-stage"
+          [class.graph-stage--initializing]="isMobileViewport && !initialGraphViewportReady()"
           (wheel)="onGraphWheel($event)"
           (pointerdown)="onGraphStagePointerDown($event)"
           (pointermove)="onGraphStagePointerMove($event)"
           (pointerup)="onGraphStagePointerUp($event)"
           (pointercancel)="onGraphStagePointerUp($event)"
         >
+          @if (isMobileViewport) {
+          <button
+            type="button"
+            class="stage-focus-toggle"
+            [class.is-active]="workspaceFocused"
+            (pointerdown)="$event.stopPropagation()"
+            (click)="toggleWorkspaceFocusStage()"
+            [attr.aria-label]="workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus')"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              @if (workspaceFocused) {
+              <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
+              <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
+              } @else {
+              <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+              <path d="M10 10 4 4M14 10l6-6M10 14l-6 6M14 14l6 6" />
+              }
+            </svg>
+          </button>
+          }
+
           <app-graph-scene
             [ambientFields]="ambientFields()"
             [markerDefs]="graphDerived().relationMarkerDefs"
