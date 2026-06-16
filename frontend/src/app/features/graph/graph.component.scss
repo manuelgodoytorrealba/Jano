@@ -183,8 +183,11 @@
 .graph-inspector-sheet {
   position: absolute;
   inset-inline: var(--graph-mobile-overlay-inset);
+  top: calc(var(--app-safe-top) + var(--graph-mobile-overlay-inset));
   bottom: var(--graph-mobile-overlay-inset);
   z-index: var(--graph-mobile-overlay-sheet-z);
+  display: flex;
+  min-height: 0;
   pointer-events: auto;
 }
 
@@ -1468,9 +1471,10 @@
 
   .explorer-shell--focused.explorer-shell--mode-graph .explorer-graph-pane > app-graph-controls-bar {
     position: absolute;
-    top: 0.7rem;
-    left: 4rem;
+    top: calc(var(--app-safe-top) + 0.7rem);
+    left: 0.7rem;
     right: 0.7rem;
+    z-index: 5;
   }
 
   .explorer-shell--focused.explorer-shell--mode-image .explorer-canvas,

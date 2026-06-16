@@ -33,7 +33,7 @@
   :host {
     --entities-shell-top-offset: 122px;
     --entities-stage-top-padding: 180px;
-    --entities-explorer-inner-top: 114px;
+    --entities-explorer-inner-top: 142px;
     --entities-explorer-inner-left: clamp(28px, 3vw, 52px);
     --entities-explorer-inner-right: clamp(28px, 3.4vw, 60px);
     --entities-explorer-info-top: 132px;
@@ -46,6 +46,7 @@
 
 @media (min-width: 1501px) {
   :host {
+    --entities-explorer-inner-top: 150px;
     --entities-explorer-info-right: clamp(200px, 20vw, 432px);
     --entities-explorer-info-width: min(308px, calc(100% - 56px));
     --entities-explorer-info-toggle-top: calc(var(--entities-explorer-info-top) + 18px);

@@ -38,6 +38,12 @@
 }
 
 .graph-panel-footer--mobile {
+  width: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   gap: 0.72rem;
   position: relative;
   padding: 1.16rem 0.72rem 0.78rem;
@@ -65,9 +71,16 @@
 
 .graph-panel-footer__mobile-head {
   display: flex;
+  position: sticky;
+  top: -0.04rem;
+  z-index: 2;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.8rem;
+  margin: -0.16rem -0.12rem 0;
+  padding: 0.08rem 0.12rem 0.32rem;
+  background:
+    linear-gradient(180deg, rgba(11, 16, 24, 0.98), rgba(11, 16, 24, 0.88) 78%, rgba(11, 16, 24, 0));
 }
 
 .graph-panel-footer__mobile-intro {
@@ -92,6 +105,7 @@
 }
 
 .graph-panel-footer__close {
+  flex: 0 0 auto;
   width: 2rem;
   height: 2rem;
   border: 0;
@@ -100,6 +114,11 @@
   color: #eef7ff;
   font-size: 1.3rem;
   line-height: 1;
+}
+
+.graph-panel-footer--mobile::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .graph-panel-footer__mobile-summary {
