@@ -34,7 +34,7 @@
   min-height: 100%;
 }
 
-.entities-explorer-stage ::ng-deep .explorer3d {
+.entities-explorer-stage .explorer3d {
   height: 100%;
   min-height: 100%;
   border-radius: 0;
@@ -43,18 +43,18 @@
   padding-right: var(--entities-explorer-inner-right);
 }
 
-.entities-explorer-stage ::ng-deep .explorer3d__canvas {
+.entities-explorer-stage .explorer3d__canvas {
   height: 100%;
   min-height: 100%;
 }
 
-.entities-explorer-stage ::ng-deep .explorer3d__info {
+.entities-explorer-stage .explorer3d__info {
   top: var(--entities-explorer-info-top);
   right: var(--entities-explorer-info-right);
   width: var(--entities-explorer-info-width);
 }
 
-.entities-explorer-layout .entities-explorer-stage ::ng-deep .explorer3d {
+.entities-explorer-layout .entities-explorer-stage .explorer3d {
   padding-right: var(--entities-explorer-inner-right) !important;
 }
 
