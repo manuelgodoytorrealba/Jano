@@ -286,7 +286,6 @@
           ></button>
 
           <aside class="graph-inspector-sheet" (click)="$event.stopPropagation()">
-            <div class="graph-inspector-sheet__handle" aria-hidden="true"></div>
             <app-graph-inspector-panel
               [isMobileViewport]="true"
               [nodeCount]="graphDerived().filteredNodes.length"
