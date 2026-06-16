@@ -353,7 +353,6 @@
 }
 
 .graph-stage {
-  position: relative;
   background:
     radial-gradient(circle at top left, rgba(79, 143, 186, 0.18), transparent 36%),
     radial-gradient(circle at 85% 18%, rgba(143, 110, 213, 0.18), transparent 30%),
@@ -592,8 +591,6 @@
   border: 0;
   padding: 0;
   background: transparent;
-  opacity: 1;
-  visibility: visible;
   pointer-events: auto;
 }
 
@@ -623,8 +620,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(18px) saturate(1.04);
   -webkit-backdrop-filter: blur(18px) saturate(1.04);
-  opacity: 1;
-  visibility: visible;
   transform: translate3d(0, 0, 0);
   transform-origin: left bottom;
   transition:
@@ -758,11 +753,6 @@
     rgba(22, 22, 28, 0.42);
 }
 
-.explorer-shell--focused .stage-focus-toggle {
-  right: 0.8rem;
-  bottom: 0.8rem;
-}
-
 .image-meta-dock__toggle {
   min-height: var(--detail-image-meta-toggle-min-height);
   padding:
@@ -827,7 +817,6 @@
 
 .image-meta-card strong {
   flex: 0 0 auto;
-  margin-right: 0;
   color: rgba(34, 39, 51, 0.9);
 }
 

@@ -8,14 +8,6 @@
     --entities-explorer-info-width: min(286px, calc(100% - 24px));
   }
 
-  .entities-page--immersive,
-  .entities-page--list-shell {
-    height: var(--app-viewport-block);
-    min-height: var(--app-viewport-block);
-    max-height: var(--app-viewport-block);
-    overflow: hidden;
-  }
-
   .entities-stage-shell--list,
   .entities-stage-shell--empty {
     min-height: var(--app-viewport-block);
@@ -185,11 +177,4 @@
     height: 160px;
   }
 
-  .entities-pager {
-    flex-direction: column;
-  }
-
-  .entities-pager .ds-btn {
-    width: 100%;
-  }
 }

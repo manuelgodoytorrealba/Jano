@@ -254,18 +254,6 @@ mark {
   color: var(--color-text-muted);
 }
 
-.entities-pager {
-  width: min(100%, var(--entities-list-max-width));
-  margin: var(--space-4) auto 0;
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.entities-pager--in-shell {
-  margin-top: var(--space-2);
-}
-
 .empty-state {
   padding: clamp(1.35rem, 2vw, 2rem);
   display: grid;
