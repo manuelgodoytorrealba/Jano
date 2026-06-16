@@ -31,9 +31,16 @@
 
 @media (min-width: 1101px) and (max-width: 1500px) {
   :host {
-    --entities-explorer-info-right: clamp(136px, 12vw, 196px);
-    --entities-explorer-info-width: min(308px, calc(100% - 56px));
-    --entities-explorer-info-toggle-right: calc(var(--entities-explorer-info-right) + 108px);
+    --entities-shell-top-offset: 122px;
+    --entities-stage-top-padding: 180px;
+    --entities-explorer-inner-top: 114px;
+    --entities-explorer-inner-left: clamp(28px, 3vw, 52px);
+    --entities-explorer-inner-right: clamp(28px, 3.4vw, 60px);
+    --entities-explorer-info-top: 132px;
+    --entities-explorer-info-right: clamp(24px, 2.4vw, 40px);
+    --entities-explorer-info-width: min(296px, calc(100% - 48px));
+    --entities-explorer-info-toggle-top: calc(var(--entities-explorer-info-top) + 14px);
+    --entities-explorer-info-toggle-right: clamp(28px, 2.6vw, 44px);
   }
 }
 
@@ -41,6 +48,7 @@
   :host {
     --entities-explorer-info-right: clamp(200px, 20vw, 432px);
     --entities-explorer-info-width: min(308px, calc(100% - 56px));
+    --entities-explorer-info-toggle-top: calc(var(--entities-explorer-info-top) + 18px);
     --entities-explorer-info-toggle-right: calc(var(--entities-explorer-info-right) + 108px);
   }
 }
@@ -93,6 +101,7 @@
     --entities-explorer-info-top: 120px;
     --entities-explorer-info-right: 250px;
     --entities-explorer-info-width: min(286px, calc(100% - 40px));
+    --entities-explorer-info-toggle-top: 138px;
     --entities-explorer-info-toggle-right: 334px;
   }
 }
