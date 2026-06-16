@@ -179,6 +179,9 @@ type GraphEntityInfo = {
   styleUrls: ['./graph.component.scss'],
 })
 export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
+  private static readonly NODE_DOUBLE_ACTIVATION_MS = 320;
+  private static readonly EDGE_DOUBLE_ACTIVATION_MS = 320;
+
   private readonly api = inject(EntitiesApi);
   readonly artworkTransition = inject(EntityRouteArtworkTransitionService);
   readonly i18n = inject(I18nService);
@@ -255,6 +258,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private positions: Record<string, GraphPoint> = {};
   private velocities: Record<string, GraphPoint> = {};
   private pointerSession: GraphPointerSession | null = null;
+  private lastNodeActivation: { nodeId: string; at: number } | null = null;
+  private lastEdgeActivation: { edgeId: string; at: number } | null = null;
   private graphPointers = new Map<number, GraphPoint>();
   private graphPinchGesture: {
     startDistance: number;
@@ -354,10 +359,21 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       nodeVisibility: this.resolvedNodeLabelVisibility(),
     }),
   }));
-  readonly activeEdgeLabelVisibility = computed(() =>
-    this.graphInteractionActive() ? {} : this.resolvedEdgeLabelVisibility(),
-  );
+  readonly activeEdgeLabelVisibility = computed(() => {
+    if (this.isMobileViewport) {
+      return {};
+    }
+
+    return this.graphInteractionActive() ? {} : this.resolvedEdgeLabelVisibility();
+  });
   readonly activeNodeLabelVisibility = computed(() => {
+    if (this.isMobileViewport) {
+      return this.graphDerived().filteredNodes.reduce<Record<string, boolean>>((visible, node) => {
+        visible[node.id] = true;
+        return visible;
+      }, {});
+    }
+
     const derived = this.graphDerived();
     if (!this.graphInteractionActive()) {
       return this.resolvedNodeLabelVisibility();
@@ -1060,11 +1076,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     });
   }
 
-  onNodePointerUp(event: PointerEvent): void {
+  onNodePointerUp(event: PointerEvent, nodeId: string): void {
     runNodePointerUpRuntime({
       pointerSession: this.pointerSession,
       event,
-      focusNode: (nodeId) => this.focusNode(nodeId),
+      focusNode: () => this.handleNodeActivation(nodeId),
       activateLayout: () => {
         this.graphLayoutActive = true;
         this.graphLayoutFrames = 0;
@@ -1182,6 +1198,34 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     });
   }
 
+  onEdgeActivate(event: PointerEvent, edge: GraphEdge): void {
+    if (!this.isMobileViewport || event.pointerType === 'mouse') {
+      return;
+    }
+
+    const now = Date.now();
+    const isDoubleActivation =
+      this.lastEdgeActivation?.edgeId === edge.id
+      && now - this.lastEdgeActivation.at <= GraphComponent.EDGE_DOUBLE_ACTIVATION_MS;
+
+    if (!isDoubleActivation) {
+      this.lastEdgeActivation = { edgeId: edge.id, at: now };
+      return;
+    }
+
+    this.lastEdgeActivation = null;
+    this.clearHoverClearTimer();
+    runEdgeHoverRuntime({
+      pointerSession: this.pointerSession,
+      event,
+      edge,
+      interruptGraphViewportAutomation: () => this.interruptGraphViewportAutomation(),
+      setHoveredNodeId: (value) => this.hoveredNodeId.set(value),
+      setHoveredEdgeId: (value) => this.hoveredEdgeId.set(value),
+      setTooltip: (tooltip) => this.tooltip.set(tooltip),
+    });
+  }
+
   onTooltipMove(event: PointerEvent): void {
     this.clearHoverClearTimer();
     runTooltipMoveRuntime({
@@ -1284,6 +1328,32 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     this.selectedNodeSource = 'center';
     this.selectedNodeId.set(nextSelectedNodeId);
+  }
+
+  private handleNodeActivation(nodeId: string): void {
+    const now = Date.now();
+    const isDoubleActivation =
+      this.lastNodeActivation?.nodeId === nodeId
+      && now - this.lastNodeActivation.at <= GraphComponent.NODE_DOUBLE_ACTIVATION_MS;
+
+    this.focusNode(nodeId);
+
+    if (isDoubleActivation) {
+      this.lastNodeActivation = null;
+      this.openNodeEntity(nodeId);
+      return;
+    }
+
+    this.lastNodeActivation = { nodeId, at: now };
+  }
+
+  private openNodeEntity(nodeId: string): void {
+    const node = this.graphDerived().nodeMap.get(nodeId) ?? null;
+    if (!node) {
+      return;
+    }
+
+    void this.router.navigate(['/entity', node.slug]);
   }
 
   private createFittedGraphViewport(): GraphViewport | null {

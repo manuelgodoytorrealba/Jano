@@ -71,6 +71,7 @@
           [attr.d]="renderedEdge.path"
           (pointerenter)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
           (pointermove)="tooltipMove.emit($event)"
+          (pointerup)="edgeActivate.emit({ event: $event, edge: renderedEdge.edge })"
           (pointerleave)="clearHover.emit()"
         ></path>
 
@@ -98,7 +99,7 @@
         [class.graph-node--far]="renderedNode.depthTier === 'far'"
         (pointerdown)="nodePointerDown.emit({ event: $event, nodeId: renderedNode.node.id })"
         (pointermove)="nodePointerMove.emit($event)"
-        (pointerup)="nodePointerUp.emit($event)"
+        (pointerup)="nodePointerUp.emit({ event: $event, nodeId: renderedNode.node.id })"
         (pointercancel)="nodePointerCancel.emit($event)"
         (pointerenter)="nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })"
         (pointerleave)="clearHover.emit()"

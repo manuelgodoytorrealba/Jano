@@ -191,7 +191,7 @@ export class AppChromeComponent {
   }
 
   showHeaderCloseButton(): boolean {
-    return this.compactHeaderEnabled() && !this.detailHeaderMode();
+    return this.compactHeaderEnabled();
   }
 
   private syncHeaderState(): void {

@@ -13,6 +13,9 @@ import { GraphNode, GraphTypeMeta } from './graph.models';
 })
 export class GraphInspectorPanelComponent {
   readonly i18n = inject(I18nService);
+  @Input() isMobileViewport = false;
+  @Input() nodeCount = 0;
+  @Input() edgeCount = 0;
   @Input() selectedNode: GraphNode | null = null;
   @Input() selectedNodeMeta: GraphTypeMeta | null = null;
   @Input() entityTypes: string[] = [];
@@ -27,4 +30,13 @@ export class GraphInspectorPanelComponent {
   @Output() toggleEntityType = new EventEmitter<string>();
   @Output() setAllRelationTypes = new EventEmitter<boolean>();
   @Output() toggleRelationType = new EventEmitter<string>();
+  @Output() close = new EventEmitter<void>();
+
+  activeEntityTypesCount(): number {
+    return this.entityTypes.filter((type) => this.entityTypeFilters[type] !== false).length;
+  }
+
+  activeRelationTypesCount(): number {
+    return this.relationTypes.filter((type) => this.relationTypeFilters[type] !== false).length;
+  }
 }

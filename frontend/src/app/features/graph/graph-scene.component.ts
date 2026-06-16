@@ -29,10 +29,11 @@ export class GraphSceneComponent {
 
   @Output() nodePointerDown = new EventEmitter<{ event: PointerEvent; nodeId: string }>();
   @Output() nodePointerMove = new EventEmitter<PointerEvent>();
-  @Output() nodePointerUp = new EventEmitter<PointerEvent>();
+  @Output() nodePointerUp = new EventEmitter<{ event: PointerEvent; nodeId: string }>();
   @Output() nodePointerCancel = new EventEmitter<PointerEvent>();
   @Output() nodeHover = new EventEmitter<{ event: PointerEvent; nodeId: string }>();
   @Output() edgeHover = new EventEmitter<{ event: PointerEvent; edge: GraphEdge }>();
+  @Output() edgeActivate = new EventEmitter<{ event: PointerEvent; edge: GraphEdge }>();
   @Output() tooltipMove = new EventEmitter<PointerEvent>();
   @Output() clearHover = new EventEmitter<void>();
 }

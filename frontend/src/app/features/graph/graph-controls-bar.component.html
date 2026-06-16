@@ -17,9 +17,11 @@
 
   <div class="graph-panel-bar__group graph-panel-bar__group--actions">
     <div class="graph-panel-bar__toggles">
+      @if (!isMobileViewport) {
       <button type="button" class="graph-utility-btn graph-utility-btn--mode" (click)="cycleLabelsMode()">
         {{ i18n.t('graph.labels') }} {{ labelsModeLabel() }}
       </button>
+      }
       <button type="button" class="graph-utility-btn" [disabled]="!graphReady" (click)="toggleInspector.emit()">{{ i18n.t('graph.info') }}</button>
     </div>
 

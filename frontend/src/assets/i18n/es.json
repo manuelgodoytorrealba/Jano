@@ -1,10 +1,10 @@
 {
-  "nav.discover": "Descubrir",
-  "nav.explore": "Explorar",
+  "nav.discover": "Inicio",
+  "nav.explore": "Archivo",
   "nav.articles": "Artículos",
   "nav.curated": "Curaciones",
   "nav.profile": "Perfil",
-  "nav.mySpace": "Mi espacio",
+  "nav.mySpace": "Mi Espacio",
   "nav.admin": "Admin",
   "nav.settings": "Ajustes",
   "chrome.goHome": "Ir al inicio de JANO",

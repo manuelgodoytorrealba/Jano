@@ -152,6 +152,7 @@
 }
 
 .explorer-graph-pane {
+  position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: var(--detail-graph-pane-gap);
@@ -165,6 +166,44 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 18px 42px rgba(4, 7, 12, 0.18);
+}
+
+.graph-inspector-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border: 0;
+  background: rgba(3, 6, 10, 0.26);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.graph-inspector-sheet {
+  position: absolute;
+  inset-inline: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 4;
+  display: grid;
+  gap: 0.56rem;
+  padding: 0.68rem 0.72rem 0.78rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(circle at top right, rgba(86, 109, 191, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(11, 16, 24, 0.96), rgba(5, 8, 12, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 20px 40px rgba(0, 0, 0, 0.34);
+  max-height: min(68vh, 560px);
+  overflow: auto;
+}
+
+.graph-inspector-sheet__handle {
+  justify-self: center;
+  width: 2.8rem;
+  height: 0.26rem;
+  border-radius: 999px;
+  background: rgba(203, 222, 236, 0.32);
 }
 
 .explorer-shell--mode-image .explorer-canvas {
@@ -1569,6 +1608,14 @@
     left: 4rem;
     right: 0.7rem;
     z-index: 5;
+  }
+
+  .graph-inspector-sheet {
+    inset-inline: 0.4rem;
+    bottom: 0.4rem;
+    padding: 0.56rem 0.58rem 0.68rem;
+    border-radius: 22px;
+    max-height: min(72vh, 620px);
   }
 
   .explorer-shell--focused.explorer-shell--mode-image .explorer-canvas,

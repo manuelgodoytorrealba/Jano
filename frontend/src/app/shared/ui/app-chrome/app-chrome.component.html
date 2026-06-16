@@ -79,11 +79,11 @@
   }
 </header>
 
-@if (headerToggleVisible()) {
+@if (headerToggleVisible() && headerCollapsed()) {
   <button
     type="button"
     class="app-chrome__header-toggle app-chrome__header-toggle--open"
-    [class.app-chrome__header-toggle--visible]="headerCollapsed() || detailHeaderMode()"
+    [class.app-chrome__header-toggle--visible]="true"
     [attr.aria-label]="headerCollapsed() ? i18n.t('chrome.showHeader') : i18n.t('chrome.hideHeader')"
     [title]="headerCollapsed() ? i18n.t('chrome.showHeader') : i18n.t('chrome.hideHeader')"
     (click)="toggleDetailHeader()"

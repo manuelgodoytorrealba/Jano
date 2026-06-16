@@ -246,17 +246,21 @@
             [tooltipStyle]="tooltipStyle()"
             (nodePointerDown)="onNodePointerDown($event.event, $event.nodeId)"
             (nodePointerMove)="onNodePointerMove($event)"
-            (nodePointerUp)="onNodePointerUp($event)"
+            (nodePointerUp)="onNodePointerUp($event.event, $event.nodeId)"
             (nodePointerCancel)="onNodePointerCancel($event)"
             (nodeHover)="onNodeHover($event.event, $event.nodeId)"
             (edgeHover)="onEdgeHover($event.event, $event.edge)"
+            (edgeActivate)="onEdgeActivate($event.event, $event.edge)"
             (tooltipMove)="onTooltipMove($event)"
             (clearHover)="clearHover()"
           />
         </div>
 
-        @if (inspectorVisible()) {
+        @if (inspectorVisible() && !isMobileViewport) {
           <app-graph-inspector-panel
+            [isMobileViewport]="false"
+            [nodeCount]="graphDerived().filteredNodes.length"
+            [edgeCount]="graphDerived().filteredEdges.length"
             [selectedNode]="graphDerived().contextualNode"
             [selectedNodeMeta]="graphDerived().contextualNodeMeta"
             [entityTypes]="graphData.entityTypes"
@@ -271,6 +275,38 @@
             (setAllRelationTypes)="setAllRelationTypes($event)"
             (toggleRelationType)="toggleRelationType($event)"
           />
+        }
+
+        @if (inspectorVisible() && isMobileViewport) {
+          <button
+            type="button"
+            class="graph-inspector-backdrop"
+            (click)="toggleInspector()"
+            [attr.aria-label]="i18n.t('button.close')"
+          ></button>
+
+          <aside class="graph-inspector-sheet" (click)="$event.stopPropagation()">
+            <div class="graph-inspector-sheet__handle" aria-hidden="true"></div>
+            <app-graph-inspector-panel
+              [isMobileViewport]="true"
+              [nodeCount]="graphDerived().filteredNodes.length"
+              [edgeCount]="graphDerived().filteredEdges.length"
+              [selectedNode]="graphDerived().contextualNode"
+              [selectedNodeMeta]="graphDerived().contextualNodeMeta"
+              [entityTypes]="graphData.entityTypes"
+              [relationTypes]="graphData.relationTypes"
+              [entityTypeFilters]="entityTypeFilters()"
+              [relationTypeFilters]="relationTypeFilters()"
+              [entityTypeMeta]="graphDerived().entityTypeMeta"
+              [relationTypeMeta]="graphDerived().relationTypeMeta"
+              (close)="toggleInspector()"
+              (openSelectedEntity)="openSelectedEntity()"
+              (setAllEntityTypes)="setAllEntityTypes($event)"
+              (toggleEntityType)="toggleEntityType($event)"
+              (setAllRelationTypes)="setAllRelationTypes($event)"
+              (toggleRelationType)="toggleRelationType($event)"
+            />
+          </aside>
         }
       </section>
     </div>

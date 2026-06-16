@@ -1,4 +1,36 @@
-<div class="graph-panel-footer">
+<div class="graph-panel-footer" [class.graph-panel-footer--mobile]="isMobileViewport">
+  @if (isMobileViewport) {
+    <div class="graph-panel-footer__mobile-head">
+      <div class="graph-panel-footer__mobile-intro">
+        <span class="graph-panel-footer__eyebrow">{{ i18n.t('graph.info') }}</span>
+        <h2>Mapa y filtros</h2>
+      </div>
+
+      <button type="button" class="graph-panel-footer__close" (click)="close.emit()" [attr.aria-label]="i18n.t('button.close')">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+
+    <div class="graph-panel-footer__mobile-summary">
+      <div class="graph-stat-card">
+        <span class="graph-stat-card__value">{{ nodeCount }}</span>
+        <span class="graph-stat-card__label">{{ i18n.t('graph.nodes') }}</span>
+      </div>
+      <div class="graph-stat-card">
+        <span class="graph-stat-card__value">{{ edgeCount }}</span>
+        <span class="graph-stat-card__label">{{ i18n.t('graph.edges') }}</span>
+      </div>
+      <div class="graph-stat-card">
+        <span class="graph-stat-card__value">{{ activeEntityTypesCount() }}</span>
+        <span class="graph-stat-card__label">{{ i18n.t('graph.types') }}</span>
+      </div>
+      <div class="graph-stat-card">
+        <span class="graph-stat-card__value">{{ activeRelationTypesCount() }}</span>
+        <span class="graph-stat-card__label">{{ i18n.t('graph.relations') }}</span>
+      </div>
+    </div>
+  }
+
   @if (selectedNode && selectedNodeMeta) {
     <button type="button" class="selection-card selection-card--interactive" (click)="openSelectedEntity.emit()">
       <div class="selection-card__head">
@@ -8,6 +40,9 @@
         <span class="selection-card__meta">{{ selectedNode.degree }} {{ i18n.t('graph.connections') }}</span>
       </div>
 
+      @if (isMobileViewport) {
+        <div class="selection-card__eyebrow">Entidad activa</div>
+      }
       <h3>{{ selectedNode.label }}</h3>
       @if (selectedNode.metadata?.summary) {
         <p>{{ selectedNode.metadata?.summary }}</p>
@@ -21,6 +56,9 @@
         <span class="filter-group__label">{{ i18n.t('graph.types') }}</span>
         <button type="button" class="filter-action" (click)="setAllEntityTypes.emit(true)">{{ i18n.t('graph.allPlural') }}</button>
       </div>
+      @if (isMobileViewport) {
+        <p class="filter-group__summary">{{ activeEntityTypesCount() }} activas</p>
+      }
       @for (type of entityTypes; track type) {
         <button
           type="button"
@@ -40,6 +78,9 @@
         <span class="filter-group__label">{{ i18n.t('graph.relations') }}</span>
         <button type="button" class="filter-action" (click)="setAllRelationTypes.emit(true)">{{ i18n.t('graph.allFeminine') }}</button>
       </div>
+      @if (isMobileViewport) {
+        <p class="filter-group__summary">{{ activeRelationTypesCount() }} activas</p>
+      }
       @for (type of relationTypes; track type) {
         <button
           type="button"
