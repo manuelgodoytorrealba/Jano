@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, HostBinding, inject, signal } from 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterLink } from '@angular/router';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
+import { SearchApi, SearchResult } from '../../../core/api/search.api';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
 import { I18nService } from '../../../core/i18n/i18n.service';
-import { filter, fromEvent } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, fromEvent, map, of, Subject, switchMap } from 'rxjs';
 
 type HeaderNavItem = {
   label: string;
@@ -35,6 +36,7 @@ type UtilityItem = {
 export class AppChromeComponent {
   private static readonly COLLAPSIBLE_HEADER_MAX_WIDTH = 1200;
   private readonly router = inject(Router);
+  private readonly searchApi = inject(SearchApi);
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
   readonly i18n = inject(I18nService);
@@ -45,6 +47,12 @@ export class AppChromeComponent {
   readonly detailHeaderRevealed = signal(false);
   readonly brandPressing = signal(false);
   readonly orientationLockVisible = signal(this.readOrientationLockVisible());
+  readonly searchDraft = signal('');
+  readonly searchSuggestions = signal<SearchResult[]>([]);
+  readonly searchFocused = signal(false);
+  readonly searchLoading = signal(false);
+  readonly activeSuggestionIndex = signal(-1);
+  private readonly searchInput$ = new Subject<string>();
 
   @HostBinding('class.app-chrome--orientation-lock')
   get orientationLockActive(): boolean {
@@ -77,6 +85,29 @@ export class AppChromeComponent {
   }
 
   constructor() {
+    this.searchInput$.pipe(
+      debounceTime(180),
+      distinctUntilChanged(),
+      switchMap((value) => {
+        const q = value.trim();
+        if (q.length < 2) {
+          this.searchLoading.set(false);
+          return of([]);
+        }
+
+        this.searchLoading.set(true);
+        return this.searchApi.search({ q, limit: 6 }).pipe(
+          map((response) => response.items.slice(0, 6)),
+          catchError(() => of([])),
+        );
+      }),
+      takeUntilDestroyed(),
+    ).subscribe((items) => {
+      this.searchSuggestions.set(items);
+      this.activeSuggestionIndex.set(items.length ? 0 : -1);
+      this.searchLoading.set(false);
+    });
+
     this.router.events.pipe(
       filter((event) =>
         event instanceof NavigationStart ||
@@ -388,8 +419,91 @@ export class AppChromeComponent {
     event.preventDefault();
   }
 
-  onSearchSubmit(event: Event, rawQuery: string): void {
+  onSearchInput(value: string): void {
+    this.searchDraft.set(value);
+    this.searchFocused.set(true);
+    this.activeSuggestionIndex.set(-1);
+    this.searchInput$.next(value);
+  }
+
+  onSearchFocus(value: string): void {
+    this.searchFocused.set(true);
+    if (value.trim().length >= 2 && !this.searchSuggestions().length) {
+      this.searchInput$.next(value);
+    }
+  }
+
+  onSearchBlur(): void {
+    window.setTimeout(() => this.searchFocused.set(false), 120);
+  }
+
+  closeSearchSuggestions(): void {
+    this.searchFocused.set(false);
+    this.activeSuggestionIndex.set(-1);
+  }
+
+  moveSearchSuggestion(delta: number): void {
+    const total = this.searchSuggestions().length;
+    if (!total) return;
+    const current = this.activeSuggestionIndex();
+    this.activeSuggestionIndex.set((current + delta + total) % total);
+  }
+
+  onSearchKeydown(event: KeyboardEvent, input: HTMLInputElement): void {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.moveSearchSuggestion(1);
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.moveSearchSuggestion(-1);
+      return;
+    }
+
+  }
+
+  onSearchSuggestionsWheel(event: WheelEvent): void {
+    if (!this.searchSuggestions().length) return;
     event.preventDefault();
+    this.moveSearchSuggestion(event.deltaY > 0 ? 1 : -1);
+  }
+
+  setActiveSearchSuggestion(index: number): void {
+    this.activeSuggestionIndex.set(index);
+  }
+
+  showSearchSuggestions(): boolean {
+    return this.searchFocused() && this.searchDraft().trim().length >= 2;
+  }
+
+  chooseSearchSuggestion(input: HTMLInputElement, item: SearchResult): void {
+    input.value = '';
+    this.searchDraft.set('');
+    this.searchSuggestions.set([]);
+    this.activeSuggestionIndex.set(-1);
+    this.searchFocused.set(false);
+    void navigateToAppSearch(this.router, item.title);
+  }
+
+  clearSearchInput(input: HTMLInputElement): void {
+    input.value = '';
+    this.searchDraft.set('');
+    this.searchSuggestions.set([]);
+    this.activeSuggestionIndex.set(-1);
+    this.searchLoading.set(false);
+    input.focus();
+  }
+
+  onSearchSubmit(event: Event, input: HTMLInputElement): void {
+    event.preventDefault();
+    const rawQuery = input.value;
+    input.value = '';
+    this.searchDraft.set('');
+    this.searchSuggestions.set([]);
+    this.activeSuggestionIndex.set(-1);
+    this.searchFocused.set(false);
     void navigateToAppSearch(this.router, rawQuery);
   }
 }

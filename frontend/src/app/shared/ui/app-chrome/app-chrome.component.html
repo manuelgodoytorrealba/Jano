@@ -21,7 +21,7 @@
     </span>
   </a>
 
-  <form class="app-chrome__search" role="search" (submit)="onSearchSubmit($event, searchInput.value)">
+  <form class="app-chrome__search" role="search" (submit)="onSearchSubmit($event, searchInput)">
     <span class="app-chrome__search-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24">
         <path d="M10.5 5.5a5 5 0 1 0 0 10a5 5 0 0 0 0-10Z" fill="none" stroke="currentColor" stroke-width="1.8" />
@@ -32,9 +32,55 @@
       #searchInput
       class="ds-input app-chrome__search-input"
       type="search"
+      autocomplete="off"
       [placeholder]="i18n.t('search.headerPlaceholder')"
       [attr.aria-label]="i18n.t('search.headerPlaceholder')"
+      [attr.aria-expanded]="showSearchSuggestions()"
+      (input)="onSearchInput(searchInput.value)"
+      (focus)="onSearchFocus(searchInput.value)"
+      (blur)="onSearchBlur()"
+      (keydown)="onSearchKeydown($event, searchInput)"
+      (keydown.escape)="closeSearchSuggestions()"
     />
+    @if (searchDraft()) {
+      <button
+        type="button"
+        class="app-chrome__search-clear"
+        aria-label="Limpiar búsqueda"
+        title="Limpiar búsqueda"
+        (click)="clearSearchInput(searchInput)"
+      >
+        ×
+      </button>
+    }
+
+    @if (showSearchSuggestions()) {
+      <div class="app-chrome__search-suggestions app-glass" (wheel)="onSearchSuggestionsWheel($event)">
+        @if (searchLoading()) {
+          <div class="app-chrome__search-state">Buscando…</div>
+        } @else if (searchSuggestions().length) {
+          @for (item of searchSuggestions(); track item.id; let i = $index) {
+            <button
+              type="button"
+              class="app-chrome__suggestion"
+              [class.is-active]="activeSuggestionIndex() === i"
+              (mouseenter)="setActiveSearchSuggestion(i)"
+              (mousedown)="chooseSearchSuggestion(searchInput, item)"
+            >
+              <span class="app-chrome__suggestion-type">{{ item.type }}</span>
+              <span class="app-chrome__suggestion-title">{{ item.title }}</span>
+            </button>
+          }
+          <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
+            Ver todos los resultados para “{{ searchDraft() }}”
+          </button>
+        } @else {
+          <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
+            Buscar “{{ searchDraft() }}”
+          </button>
+        }
+      </div>
+    }
   </form>
 
   <nav

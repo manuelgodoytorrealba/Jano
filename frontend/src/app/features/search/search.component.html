@@ -1,24 +1,6 @@
 <main class="search-page page-shell">
-  <section class="search-head ds-panel">
-    <div>
-      <p class="search-eyebrow">Search</p>
-      <h1>Buscar en JANO</h1>
-    </div>
-
-    <label class="search-box">
-      <span class="sr-only">Buscar</span>
-      <input
-        class="ds-input"
-        type="search"
-        [ngModel]="searchInput"
-        (ngModelChange)="onSearchInput($event)"
-        placeholder="Buscar artistas, obras, artículos, movimientos o conceptos"
-      />
-    </label>
-  </section>
-
   @if (type$ | async; as activeType) {
-    <nav class="type-chips ds-panel" aria-label="Filtrar resultados por tipo">
+    <nav class="type-chips ds-panel" [attr.aria-label]="i18n.t('search.filterAria')">
       @for (type of types; track type || 'ALL') {
         <button
           type="button"
@@ -32,7 +14,7 @@
       @if (tag$ | async; as tag) {
         @if (tag) {
           <button type="button" class="type-chip type-chip--tag is-active" (click)="clearTag()">
-            Tag: {{ tag }} ×
+            {{ i18n.t('search.tag') }}: {{ tag }} ×
           </button>
         }
       }
@@ -40,51 +22,136 @@
   }
 
   @if (vm$ | async; as vm) {
-    <section class="search-results ds-panel">
-      <div class="results-meta">
-        <span>{{ vm.total }} resultados</span>
-        @if (vm.query) {
-          <span>“{{ vm.query }}”</span>
-        }
-      </div>
-
-      @if (vm.items.length) {
-        <div class="results-list">
-          @for (item of vm.items; track item.id) {
-            <button type="button" class="result-row" (click)="go(item)">
-              <app-jano-media
-                class="result-row__media"
-                [media]="item.resolvedMedia?.thumbnail ?? item.resolvedMedia?.card ?? null"
-                usage="thumbnail"
-                [alt]="item.title"
-                placeholderMode="auto"
-              />
-              <span class="result-row__body">
-                <span class="result-row__meta">
-                  <span>{{ item.type }}</span>
-                  @if (item.startYear || item.endYear) {
-                    <span>{{ item.startYear ?? '' }}@if (item.endYear) {–{{ item.endYear }}}</span>
-                  }
-                </span>
-                <strong>{{ item.title }}</strong>
-                @if (item.summary) {
-                  <span class="result-row__summary">{{ cleanSummary(item.summary) }}</span>
-                }
-              </span>
-            </button>
-          }
-        </div>
-      } @else if (vm.query) {
-        <div class="empty-state">
-          <strong>No hay resultados</strong>
-          <span>Prueba con un título, artista, concepto o término más general.</span>
-        </div>
-      } @else {
-        <div class="empty-state">
-          <strong>Empieza una búsqueda</strong>
-          <span>Busca en entidades publicadas de todo el sistema.</span>
-        </div>
+    <section class="results-meta">
+      <span>{{ vm.total }} {{ i18n.t('search.directEntries') }}</span>
+      @if (vm.query) {
+        <span>“{{ vm.query }}”</span>
       }
     </section>
+
+    @if (vm.items.length) {
+      <div class="search-sections">
+        @for (section of displaySections(vm); track section.key) {
+          @if (hasSectionContent(section)) {
+            <section class="search-section" [class.search-section--routes]="section.routes?.length" [class.search-section--decks]="section.decks?.length">
+              <header class="section-head">
+                <p class="search-eyebrow">{{ i18n.t('search.discovery') }}</p>
+                <h2>{{ sectionTitle(section.key, section.title) }}</h2>
+              </header>
+
+              @if (section.items?.length) {
+                <div class="result-grid" [class.result-grid--compact]="section.key === 'main'">
+                  @for (item of section.items; track item.id) {
+                    <button type="button" class="result-card" (click)="go(item)">
+                      <app-jano-media
+                        class="result-card__media"
+                        [media]="item.resolvedMedia?.card ?? item.resolvedMedia?.thumbnail ?? null"
+                        usage="card"
+                        [alt]="item.title"
+                        placeholderMode="auto"
+                      />
+                      <span class="result-card__body">
+                        <span class="result-card__meta">
+                          <span>{{ typeLabel(item.type) }}</span>
+                          @if (item.startYear || item.endYear) {
+                            <span>{{ item.startYear ?? '' }}@if (item.endYear) {–{{ item.endYear }}}</span>
+                          }
+                        </span>
+                        <strong>{{ item.title }}</strong>
+                        @if (section.key === 'relatedWorks' && item.relationReason) {
+                          <span class="result-card__reason-card">
+                            @if (item.relationWithTitle) {
+                              <small class="result-card__relation-line">
+                                <span class="result-card__work-pill">{{ item.title }}</span>
+                                <span>{{ i18n.t('search.relatedWith') }}</span>
+                                <span class="result-card__work-pill">{{ item.relationWithTitle }}</span>
+                              </small>
+                            } @else {
+                              <small>{{ i18n.t('search.whyRelated') }}</small>
+                            }
+                            <span>{{ cleanSummary(item.relationReason) }}</span>
+                          </span>
+                        } @else if (item.relationReason) {
+                          <span class="result-card__relation">{{ item.relationType || i18n.t('relation.relatedTo') }}</span>
+                          <span class="result-card__reason">{{ cleanSummary(item.relationReason) }}</span>
+                        } @else if (item.summary) {
+                          <span class="result-card__summary">{{ cleanSummary(item.summary) }}</span>
+                        }
+                      </span>
+                    </button>
+                  }
+                </div>
+              }
+
+              @if (section.routes?.length) {
+                <div class="route-list">
+                  @for (route of section.routes; track route.id) {
+                    <div class="route-card">
+                      <div class="route-card__nodes">
+                        @for (item of route.items; track item.id) {
+                          <button type="button" class="route-node" (click)="go(item)">
+                            <app-jano-media
+                              class="route-node__media"
+                              [media]="item.resolvedMedia?.thumbnail ?? item.resolvedMedia?.card ?? null"
+                              usage="thumbnail"
+                              [alt]="item.title"
+                              placeholderMode="auto"
+                            />
+                            <span>
+                              <small>{{ typeLabel(item.type) }}</small>
+                              <strong>{{ item.title }}</strong>
+                            </span>
+                          </button>
+                        }
+                      </div>
+                      <span class="route-card__relation">{{ route.relationType }}</span>
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (section.decks?.length) {
+                <div class="deck-list">
+                  @for (deck of section.decks; track deck.id) {
+                    <button type="button" class="deck-card" (click)="goDeck(deck)">
+                      <span class="deck-card__copy">
+                        <small>{{ deck.subtitle || i18n.t('search.editorialRoute') }}</small>
+                        <strong>{{ deck.title }}</strong>
+                        @if (deck.description) {
+                          <span>{{ deck.description }}</span>
+                        }
+                      </span>
+                      <span class="deck-card__thumbs">
+                        @for (entry of deck.entities; track entry.id) {
+                          @if (entry.entity) {
+                            <app-jano-media
+                              class="deck-card__thumb"
+                              [media]="entry.entity.resolvedMedia?.thumbnail ?? entry.entity.resolvedMedia?.card ?? null"
+                              usage="thumbnail"
+                              [alt]="entry.entity.title"
+                              placeholderMode="auto"
+                            />
+                          }
+                        }
+                      </span>
+                    </button>
+                  }
+                </div>
+              }
+            </section>
+          }
+        }
+      </div>
+    } @else if (vm.query) {
+      <section class="empty-state ds-panel">
+        <strong>{{ i18n.t('search.noResults') }}</strong>
+        <span>{{ i18n.t('search.noResultsHint') }}</span>
+      </section>
+    } @else {
+      <section class="empty-state ds-panel">
+        <strong>{{ i18n.t('search.emptyTitle') }}</strong>
+        <span>{{ i18n.t('search.emptyHint') }}</span>
+      </section>
+    }
   }
 </main>

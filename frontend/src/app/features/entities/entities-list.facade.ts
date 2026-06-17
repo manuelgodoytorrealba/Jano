@@ -118,6 +118,7 @@ const TYPE_ROUTE_LABELS: Record<string, string> = {
   place: 'entities.type.place',
   text: 'entities.type.text',
 };
+const VALID_TYPE_ROUTE_SLUGS = new Set(Object.keys(TYPE_ROUTE_LABELS));
 
 @Injectable()
 export class EntitiesListFacade {
@@ -180,12 +181,10 @@ export class EntitiesListFacade {
   readonly queryState$ = combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(
     map(([paramMap, queryParamMap]) => {
       const typeSlug = (paramMap.get('type') ?? 'entities').toLowerCase();
-      const type = typeSlug.toUpperCase();
+      const type = VALID_TYPE_ROUTE_SLUGS.has(typeSlug) ? typeSlug.toUpperCase() : '';
 
       return {
-        title: TYPE_ROUTE_LABELS[typeSlug]
-          ? this.i18n.t(TYPE_ROUTE_LABELS[typeSlug])
-          : (typeSlug.charAt(0).toUpperCase() + typeSlug.slice(1)),
+        title: type ? this.i18n.t(TYPE_ROUTE_LABELS[typeSlug]) : 'Explorar',
         type,
         q: (queryParamMap.get('q') ?? '').trim(),
         deck: (queryParamMap.get('deck') ?? '').trim(),
@@ -215,7 +214,7 @@ export class EntitiesListFacade {
   ]).pipe(
     switchMap(([debouncedQuery, state]) =>
       this.api.list({
-        type: state.type,
+        type: state.type || undefined,
         q: debouncedQuery || undefined,
         deck: state.deck || undefined,
         page: state.page,
@@ -420,10 +419,11 @@ export class EntitiesListFacade {
         const description = normalizedQuery
           ? `Browse JANO results for "${normalizedQuery}" inside ${normalizedTitle.toLowerCase()}.`
           : `Explore ${normalizedTitle.toLowerCase()} in JANO with visual browsing and editorial filters.`;
-        const typeSlug = (state.type ?? '').trim().toLowerCase() || 'entities';
+        const typeSlug = (state.type ?? '').trim().toLowerCase();
+        const basePath = typeSlug ? `/entities/${typeSlug}` : '/entities';
         const path = normalizedQuery
-          ? `/entities/${typeSlug}?q=${encodeURIComponent(normalizedQuery)}`
-          : `/entities/${typeSlug}`;
+          ? `${basePath}?q=${encodeURIComponent(normalizedQuery)}`
+          : basePath;
 
         this.seo.setPageMeta({ title: pageTitle, description, path });
       }),

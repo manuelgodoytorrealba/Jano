@@ -47,7 +47,9 @@
 @media (min-width: 1501px) {
   :host {
     --entities-explorer-inner-top: 150px;
-    --entities-explorer-info-right: clamp(200px, 20vw, 432px);
+    --entities-explorer-inner-left: clamp(84px, 7vw, 140px);
+    --entities-explorer-inner-right: clamp(84px, 7vw, 140px);
+    --entities-explorer-info-right: clamp(48px, 5vw, 120px);
     --entities-explorer-info-width: min(308px, calc(100% - 56px));
     --entities-explorer-info-toggle-top: calc(var(--entities-explorer-info-top) + 18px);
     --entities-explorer-info-toggle-right: calc(var(--entities-explorer-info-right) + 108px);

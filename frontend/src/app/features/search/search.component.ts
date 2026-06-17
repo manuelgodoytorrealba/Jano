@@ -1,20 +1,16 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Subject,
   combineLatest,
-  debounceTime,
   distinctUntilChanged,
   map,
   shareReplay,
-  startWith,
   switchMap,
 } from 'rxjs';
-import { SearchApi, SearchResult } from '../../core/api/search.api';
+import { SearchApi, SearchDeck, SearchResult, SearchSection } from '../../core/api/search.api';
 import { SeoService } from '../../core/seo/seo.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
 type SearchType = '' | 'ARTWORK' | 'ARTIST' | 'ARTICLE' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'PLACE' | 'TEXT';
@@ -22,7 +18,7 @@ type SearchType = '' | 'ARTWORK' | 'ARTIST' | 'ARTICLE' | 'CONCEPT' | 'MOVEMENT'
 @Component({
   standalone: true,
   selector: 'app-search',
-  imports: [AsyncPipe, FormsModule, JanoMediaComponent],
+  imports: [AsyncPipe, JanoMediaComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,9 +28,8 @@ export class SearchComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
-  private readonly queryInput$ = new Subject<string>();
-
-  readonly types: SearchType[] = ['', 'ARTWORK', 'ARTIST', 'ARTICLE', 'CONCEPT', 'MOVEMENT', 'PERIOD', 'PLACE', 'TEXT'];
+  readonly i18n = inject(I18nService);
+  readonly types: SearchType[] = ['', 'ARTIST', 'ARTWORK', 'MOVEMENT', 'CONCEPT', 'ARTICLE'];
   searchInput = this.route.snapshot.queryParamMap.get('q') ?? '';
 
   readonly q$ = this.route.queryParamMap.pipe(
@@ -72,28 +67,6 @@ export class SearchComponent {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  constructor() {
-    this.queryInput$.pipe(
-      debounceTime(260),
-      distinctUntilChanged(),
-      startWith(this.searchInput),
-      takeUntilDestroyed(),
-    ).subscribe((value) => {
-      this.router.navigate(['/search'], {
-        queryParams: {
-          q: value.trim() || null,
-          type: this.route.snapshot.queryParamMap.get('type') || null,
-          tag: this.route.snapshot.queryParamMap.get('tag') || null,
-        },
-      });
-    });
-  }
-
-  onSearchInput(value: string): void {
-    this.searchInput = value;
-    this.queryInput$.next(value);
-  }
-
   setType(type: SearchType): void {
     this.router.navigate(['/search'], {
       queryParams: {
@@ -118,8 +91,39 @@ export class SearchComponent {
     this.router.navigate(['/entity', result.slug]);
   }
 
+  goDeck(deck: SearchDeck): void {
+    this.router.navigate(['/entities'], { queryParams: { deck: deck.slug } });
+  }
+
+  displaySections(vm: { items: SearchResult[]; sections?: SearchSection[] }): SearchSection[] {
+    return vm.sections?.length ? vm.sections : [{ key: 'main', title: this.sectionTitle('main'), items: vm.items }];
+  }
+
+  hasSectionContent(section: SearchSection): boolean {
+    return !!section.items?.length || !!section.routes?.length || !!section.decks?.length;
+  }
+
   typeLabel(type: SearchType | string): string {
-    return type ? String(type).toLowerCase().replace(/^\w/, (char) => char.toUpperCase()) : 'All';
+    const labels: Record<string, string> = {
+      '': this.i18n.t('search.type.all'),
+      ARTIST: this.i18n.t('search.type.artists'),
+      ARTWORK: this.i18n.t('search.type.artworks'),
+      MOVEMENT: this.i18n.t('search.type.movements'),
+      CONCEPT: this.i18n.t('search.type.concepts'),
+      ARTICLE: this.i18n.t('search.type.articles'),
+    };
+    return labels[String(type)] ?? String(type).toLowerCase().replace(/^\w/, (char) => char.toUpperCase());
+  }
+
+
+  sectionTitle(key: string, fallback = ''): string {
+    return this.i18n.t('search.section.' + key) || fallback;
+  }
+
+  relationLine(item: SearchResult): string {
+    return item.relationWithTitle
+      ? this.i18n.t('search.relatedLine').replace('{from}', item.title).replace('{to}', item.relationWithTitle)
+      : this.i18n.t('search.whyRelated');
   }
 
   cleanSummary(value: string | null | undefined): string {

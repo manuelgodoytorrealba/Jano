@@ -19,6 +19,33 @@ export type SearchResult = {
   tags?: any[];
   score: number;
   matchedFields: string[];
+  relationType?: string | null;
+  relationReason?: string | null;
+  relationWithTitle?: string | null;
+};
+
+export type SearchRoute = {
+  id: string;
+  label: string;
+  relationType: string;
+  items: SearchResult[];
+};
+
+export type SearchDeck = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  entities: Array<{ id: string; sortOrder: number; entity: SearchResult | null }>;
+};
+
+export type SearchSection = {
+  key: string;
+  title: string;
+  items?: SearchResult[];
+  routes?: SearchRoute[];
+  decks?: SearchDeck[];
 };
 
 export type SearchResponse = {
@@ -26,6 +53,7 @@ export type SearchResponse = {
   total: number;
   items: SearchResult[];
   groups: Record<string, SearchResult[]>;
+  sections?: SearchSection[];
 };
 
 @Injectable({ providedIn: 'root' })

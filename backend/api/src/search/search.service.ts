@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { HomeDeckSurface, Prisma } from '@prisma/client';
 import { attachResolvedMedia } from '../entities/media.resolver';
 import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +13,18 @@ type RawSearchRow = {
   matched_content: boolean;
   matched_slug: boolean;
 };
+
+type SearchItem = { id: string; slug: string; type: string; title: string; summary: string | null; [key: string]: any };
+
+const DISCOVERY_RELATION_TYPES = [
+  'ABOUT_CONCEPT',
+  'CREATED_BY',
+  'BELONGS_TO_MOVEMENT',
+  'BELONGS_TO_PERIOD',
+  'RELATED_TO',
+  'ASSOCIATED_WITH',
+  'MENTIONS',
+];
 
 @Injectable()
 export class SearchService {
@@ -31,10 +43,11 @@ export class SearchService {
         total: 0,
         items: [],
         groups: {},
+        sections: [],
       };
     }
 
-    const rows = await this.searchRows(q, {
+    let rows = await this.searchRows(q, {
       limit,
       types,
       tag,
@@ -42,12 +55,27 @@ export class SearchService {
       includeDrafts: options.includeDrafts,
     });
 
+    // ponytail: term fallback, replace with proper query-intent parsing if this grows.
+    if (!rows.length && q) {
+      const fallbackQuery = this.significantTerms(q).join(' ');
+      if (fallbackQuery && fallbackQuery !== q) {
+        rows = await this.searchRows(fallbackQuery, {
+          limit,
+          types,
+          tag,
+          locale,
+          includeDrafts: options.includeDrafts,
+        });
+      }
+    }
+
     if (!rows.length) {
       return {
         query: q,
         total: 0,
         items: [],
         groups: {},
+        sections: [],
       };
     }
 
@@ -70,50 +98,19 @@ export class SearchService {
           in: rows.map((row) => row.id),
         },
       },
-      include: {
-        tags: {
-          include: { tag: true },
-          orderBy: [{ tag: { label: 'asc' } }],
-        },
-        mediaLinks: {
-          include: { media: true },
-          orderBy: [
-            { sortOrder: 'asc' },
-            { id: 'asc' },
-          ],
-        },
-        translations: {
-          where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
-        },
-      },
+      include: this.entityInclude(locale),
     });
 
     const entityById = new Map(entities.map((entity) => [entity.id, entity]));
     const items = rows
       .map((row) => entityById.get(row.id))
       .filter((entity): entity is NonNullable<typeof entity> => !!entity)
-      .map((entity) => {
-        const resolvedEntity = attachResolvedMedia(resolveEntityTranslation(entity, locale));
-
-        return {
-          id: entity.id,
-          slug: entity.slug,
-          type: resolvedEntity.type,
-          title: resolvedEntity.title,
-          summary: resolvedEntity.summary,
-          status: resolvedEntity.status,
-          contentLevel: resolvedEntity.contentLevel,
-          startYear: resolvedEntity.startYear,
-          endYear: resolvedEntity.endYear,
-          resolvedMedia: {
-            thumbnail: resolvedEntity.resolvedMedia.thumbnail,
-            card: resolvedEntity.resolvedMedia.card,
-          },
-          tags: (entity.tags ?? []).map((entityTag) => entityTag.tag),
-          score: scoreById.get(entity.id) ?? 0,
-          matchedFields: matchedFieldsById.get(entity.id) ?? [],
-        };
-      });
+      .map((entity) => this.serializeSearchEntity(
+        entity,
+        locale,
+        scoreById.get(entity.id) ?? 0,
+        matchedFieldsById.get(entity.id) ?? [],
+      ));
 
     const groups = items.reduce<Record<string, typeof items>>((acc, item) => {
       acc[item.type] ??= [];
@@ -121,12 +118,274 @@ export class SearchService {
       return acc;
     }, {});
 
+    const sections = await this.buildSections(q, items, locale, options.includeDrafts);
+
     return {
       query: q,
       total: items.length,
       items,
       groups,
+      sections,
     };
+  }
+
+  private entityInclude(locale: string) {
+    return {
+      tags: {
+        include: { tag: true },
+        orderBy: [{ tag: { label: 'asc' as const } }],
+      },
+      mediaLinks: {
+        include: { media: true },
+        orderBy: [
+          { sortOrder: 'asc' as const },
+          { id: 'asc' as const },
+        ],
+      },
+      translations: {
+        where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
+      },
+    };
+  }
+
+  private serializeSearchEntity(entity: any, locale: string, score = 0, matchedFields: string[] = []) {
+    const resolvedEntity = attachResolvedMedia(resolveEntityTranslation(entity, locale));
+
+    return {
+      id: entity.id,
+      slug: entity.slug,
+      type: resolvedEntity.type,
+      title: resolvedEntity.title,
+      summary: resolvedEntity.summary,
+      status: resolvedEntity.status,
+      contentLevel: resolvedEntity.contentLevel,
+      startYear: resolvedEntity.startYear,
+      endYear: resolvedEntity.endYear,
+      resolvedMedia: {
+        thumbnail: resolvedEntity.resolvedMedia.thumbnail,
+        card: resolvedEntity.resolvedMedia.card,
+      },
+      tags: (entity.tags ?? []).map((entityTag: any) => entityTag.tag),
+      score,
+      matchedFields,
+    };
+  }
+
+  private async buildSections(query: string, directItems: SearchItem[], locale: string, includeDrafts: boolean) {
+    const seedIds = directItems.slice(0, 12).map((item) => item.id);
+    const entityById = new Map<string, SearchItem>(directItems.map((item) => [item.id, item]));
+
+    if (seedIds.length) {
+      const relations = await this.prisma.relation.findMany({
+        where: {
+          type: { in: DISCOVERY_RELATION_TYPES },
+          OR: [
+            { fromId: { in: seedIds }, to: includeDrafts ? undefined : { status: 'PUBLISHED' } },
+            { toId: { in: seedIds }, from: includeDrafts ? undefined : { status: 'PUBLISHED' } },
+          ],
+        },
+        include: {
+          from: { include: this.entityInclude(locale) },
+          to: { include: this.entityInclude(locale) },
+          relationType: {
+            include: {
+              translations: { where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } } },
+            },
+          },
+          translations: { where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } } },
+        },
+        orderBy: [{ weight: 'desc' }, { id: 'asc' }],
+        take: 90,
+      });
+
+      for (const relation of relations) {
+        for (const entity of [relation.from, relation.to]) {
+          if (entity && !entityById.has(entity.id)) {
+            entityById.set(entity.id, this.serializeSearchEntity(entity, locale, relation.weight ?? 0, ['relation']));
+          }
+        }
+      }
+
+      const allItems = Array.from(entityById.values());
+      const relatedOnly = allItems.filter((item) => !seedIds.includes(item.id));
+      const primaryArtists = directItems.filter((item) => item.type === 'ARTIST').slice(0, 3);
+      const authoredWorks = primaryArtists.length
+        ? this.artworksCreatedBy(relations, new Set(primaryArtists.map((item) => item.id)), locale)
+        : [];
+      const keyWorks = authoredWorks.length
+        ? authoredWorks
+        : this.byType([...directItems, ...relatedOnly], ['ARTWORK'], 12);
+      const relatedWorks = authoredWorks.length
+        ? this.relatedArtworks(relations, new Set(keyWorks.map((item) => item.id)), locale)
+        : [];
+      const routes = this.buildRoutes(relations, locale).slice(0, 6);
+      const decks = await this.findSuggestedDecks(query, allItems, locale);
+
+      return [
+        this.itemSection('main', 'Resultados principales', directItems.slice(0, 12)),
+        this.itemSection('keyWorks', 'Obras clave', keyWorks),
+        this.itemSection('relatedWorks', 'Obras relacionadas', relatedWorks),
+        this.itemSection('concepts', 'Conceptos relacionados', this.byType([...directItems, ...relatedOnly], ['CONCEPT'], 12)),
+        this.itemSection('context', 'Artistas y movimientos', this.byType([...directItems, ...relatedOnly], ['ARTIST', 'MOVEMENT', 'PERIOD'], 12)),
+        this.itemSection('articles', 'Artículos', this.byType([...directItems, ...relatedOnly], ['ARTICLE', 'TEXT'], 8)),
+        { key: 'routes', title: 'Relaciones para explorar', routes },
+        { key: 'decks', title: 'Colecciones sugeridas', decks },
+      ].filter((section: any) => section.items?.length || section.routes?.length || section.decks?.length);
+    }
+
+    return [this.itemSection('main', 'Resultados principales', directItems.slice(0, 12))];
+  }
+
+  private itemSection(key: string, title: string, items: SearchItem[]) {
+    return { key, title, items: this.dedupeItems(items) };
+  }
+
+  private byType(items: SearchItem[], types: string[], limit: number) {
+    return this.dedupeItems(items.filter((item) => types.includes(item.type))).slice(0, limit);
+  }
+
+  private artworksCreatedBy(
+    relations: Array<{ type: string; weight: number | null; from: any; to: any }>,
+    artistIds: Set<string>,
+    locale: string,
+  ) {
+    return this.dedupeItems(relations
+      .filter((relation) => relation.type === 'CREATED_BY')
+      .map((relation) => {
+        if (artistIds.has(relation.to?.id) && relation.from?.type === 'ARTWORK') return relation.from;
+        if (artistIds.has(relation.from?.id) && relation.to?.type === 'ARTWORK') return relation.to;
+        return null;
+      })
+      .filter((entity): entity is NonNullable<typeof entity> => !!entity)
+      .map((entity) => this.serializeSearchEntity(entity, locale, 1, ['relation'])))
+      .slice(0, 12);
+  }
+
+  private relatedArtworks(
+    relations: Array<{ type: string; weight: number | null; from: any; to: any; justification?: string | null; translations?: any[] | null; relationType?: any }>,
+    excludedIds: Set<string>,
+    locale: string,
+  ) {
+    return this.dedupeItems(relations
+      .filter((relation) => relation.type === 'RELATED_TO')
+      .flatMap((relation) => [
+        relation.from?.type === 'ARTWORK' ? { entity: relation.from, relation } : null,
+        relation.to?.type === 'ARTWORK' ? { entity: relation.to, relation } : null,
+      ])
+      .filter((entry): entry is { entity: any; relation: any } => !!entry && !excludedIds.has(entry.entity.id))
+      .map(({ entity, relation }) => {
+        const counterpart = relation.from?.id === entity.id ? relation.to : relation.from;
+        return {
+          ...this.serializeSearchEntity(entity, locale, 0.5, ['relation']),
+          relationType: this.relationDisplayLabel(relation, locale),
+          relationReason: this.relationJustification(relation, locale),
+          relationWithTitle: counterpart ? this.serializeSearchEntity(counterpart, locale).title : null,
+        };
+      }))
+      .slice(0, 12);
+  }
+
+  private dedupeItems(items: SearchItem[]) {
+    const seen = new Set<string>();
+    return items.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
+  }
+
+  private buildRoutes(relations: Array<{ type: string; weight: number | null; from: any; to: any; relationType?: any }>, locale: string) {
+    const seen = new Set<string>();
+    return relations
+      .map((relation) => {
+        const from = this.serializeSearchEntity(relation.from, locale, relation.weight ?? 0, ['route']);
+        const to = this.serializeSearchEntity(relation.to, locale, relation.weight ?? 0, ['route']);
+        const key = `${from.id}:${to.id}`;
+        if (seen.has(key)) return null;
+        seen.add(key);
+        return {
+          id: key,
+          label: `${from.title} → ${to.title}`,
+          relationType: this.relationDisplayLabel(relation, locale),
+          items: [from, to],
+        };
+      })
+      .filter(Boolean);
+  }
+
+  private relationDisplayLabel(relation: { type: string; relationType?: any }, locale: string) {
+    const translation = relation.relationType?.translations?.find((item: any) => item.locale === locale)
+      ?? relation.relationType?.translations?.find((item: any) => item.locale === 'es')
+      ?? relation.relationType?.translations?.find((item: any) => item.locale === 'en')
+      ?? null;
+    return translation?.label?.trim()
+      ?? relation.relationType?.label?.trim()
+      ?? relation.type.toLowerCase().replaceAll('_', ' ');
+  }
+
+  private relationJustification(relation: { justification?: string | null; translations?: any[] | null }, locale: string) {
+    const translation = relation.translations?.find((item: any) => item.locale === locale)
+      ?? relation.translations?.find((item: any) => item.locale === 'es')
+      ?? relation.translations?.find((item: any) => item.locale === 'en')
+      ?? null;
+    return translation?.justification?.trim() || relation.justification?.trim() || null;
+  }
+
+  private async findSuggestedDecks(query: string, items: SearchItem[], locale: string) {
+    const terms = this.significantTerms(query);
+    const itemIds = new Set(items.map((item) => item.id));
+    const decks = await this.prisma.homeDeck.findMany({
+      where: { isActive: true, surface: HomeDeckSurface.RECOMMENDED },
+      include: {
+        translations: { where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } } },
+        items: {
+          orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+          include: { entity: { include: this.entityInclude(locale) } },
+        },
+      },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+      take: 20,
+    });
+
+    return decks
+      .map((deck: any) => {
+        const translation = deck.translations.find((item: any) => item.locale === locale)
+          ?? deck.translations.find((item: any) => item.locale === 'es')
+          ?? deck.translations.find((item: any) => item.locale === 'en')
+          ?? null;
+        const title = translation?.title ?? deck.title;
+        const description = translation?.description ?? deck.description;
+        const haystack = `${title} ${description ?? ''} ${deck.items.map((item: any) => item.entity?.title ?? '').join(' ')}`.toLowerCase();
+        const textScore = terms.filter((term) => haystack.includes(term)).length;
+        const graphScore = deck.items.filter((item: any) => itemIds.has(item.entityId)).length;
+        return {
+          id: deck.id,
+          slug: deck.slug,
+          title,
+          subtitle: translation?.subtitle ?? deck.subtitle,
+          description,
+          score: textScore + graphScore,
+          entities: deck.items.slice(0, 6).map((item: any) => ({
+            id: item.id,
+            sortOrder: item.sortOrder,
+            entity: item.entity ? this.serializeSearchEntity(item.entity, locale) : null,
+          })),
+        };
+      })
+      .filter((deck) => deck.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4);
+  }
+
+  private significantTerms(query: string) {
+    const stopwords = new Set(['a', 'al', 'and', 'arte', 'art', 'de', 'del', 'el', 'en', 'la', 'las', 'los', 'of', 'para', 'por', 'sobre', 'the', 'un', 'una', 'y']);
+    return query
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .split(/[^a-z0-9]+/)
+      .map((term) => term.trim())
+      .filter((term) => term.length > 2 && !stopwords.has(term));
   }
 
   private searchRows(
