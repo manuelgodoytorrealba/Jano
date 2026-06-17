@@ -239,6 +239,140 @@
   font-weight: 500;
 }
 
+.graph-context-block {
+  display: grid;
+  gap: 0.56rem;
+  padding: 0.82rem 0.84rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.012)),
+    rgba(8, 12, 18, 0.84);
+}
+
+.graph-context-block__head {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.graph-context-block__label {
+  color: rgba(173, 203, 222, 0.72);
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.graph-context-block__summary,
+.graph-context-block__empty {
+  margin: 0;
+  color: rgba(220, 234, 244, 0.72);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.graph-context-block__empty {
+  color: rgba(189, 212, 228, 0.58);
+}
+
+.graph-connection-groups,
+.graph-connection-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.graph-connection-group {
+  display: grid;
+  gap: 0.48rem;
+  padding: 0.68rem 0.72rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.024);
+}
+
+.graph-connection-group__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.graph-connection-group__type {
+  --group-color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.24rem 0.52rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--group-color) 18%, rgba(255, 255, 255, 0.06));
+  color: #eff8ff;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.graph-connection-group__count {
+  color: rgba(189, 212, 228, 0.66);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.graph-connection-item {
+  --relation-color: #7dd3fc;
+  display: grid;
+  gap: 0.12rem;
+  padding-left: 0.82rem;
+  position: relative;
+}
+
+.graph-connection-item::before {
+  content: '';
+  position: absolute;
+  top: 0.56rem;
+  left: 0;
+  width: 0.5rem;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--relation-color);
+}
+
+.graph-connection-item--stacked {
+  padding: 0.18rem 0 0.18rem 0.82rem;
+}
+
+.graph-connection-item--muted {
+  color: rgba(189, 212, 228, 0.56);
+  font-size: 0.76rem;
+}
+
+.graph-connection-item__relation {
+  color: rgba(228, 239, 247, 0.92);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.graph-connection-item__node,
+.graph-connection-item__meta {
+  color: rgba(205, 224, 236, 0.72);
+  font-size: 0.78rem;
+  line-height: 1.28;
+}
+
+.graph-connection-item__node {
+  color: #f2f8fd;
+}
+
+.graph-connection-item__meta {
+  color: rgba(173, 203, 222, 0.62);
+}
+
+.graph-connection-item__body {
+  margin: 0.08rem 0 0;
+  color: rgba(224, 237, 248, 0.7);
+  font-size: 0.79rem;
+  line-height: 1.42;
+  text-wrap: pretty;
+}
+
 .graph-filter-tray {
   display: grid;
   gap: var(--graph-inspector-gap);

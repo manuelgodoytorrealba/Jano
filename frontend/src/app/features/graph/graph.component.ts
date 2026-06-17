@@ -338,6 +338,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphViewport().scale));
   readonly imagePresentation = computed(() => resolveMediaPresentation(this.imageMedia));
+  readonly inspectorFocusedNodeIsCenter = computed(() => {
+    const derived = this.graphDerived();
+    const centerId = this.graph()?.centerId ?? null;
+    return !derived.selectedNode || derived.selectedNode.id === centerId;
+  });
   readonly hasImageSource = computed(() => !!(this.imagePresentation().src || this.imageUrl));
   readonly resolvedNodeLabelVisibility = computed(() => resolveNodeLabelOcclusion({
     nodes: this.renderedNodes(),

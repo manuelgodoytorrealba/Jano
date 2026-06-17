@@ -17,6 +17,7 @@ export interface GraphDerivedState {
   filteredNodes: GraphNode[];
   visibleNodeIds: Set<string>;
   filteredEdges: GraphEdge[];
+  contextualEdges: GraphEdge[];
   nodeMap: Map<string, GraphNode>;
   selectedNode: GraphNode | null;
   centerNode: GraphNode | null;
@@ -50,6 +51,7 @@ export function buildGraphDerivedState(options: {
       filteredNodes: [],
       visibleNodeIds: new Set<string>(),
       filteredEdges: [],
+      contextualEdges: [],
       nodeMap,
       selectedNode: null,
       centerNode: null,
@@ -80,6 +82,13 @@ export function buildGraphDerivedState(options: {
   const selectedNode = options.selectedNodeId ? nodeMap.get(options.selectedNodeId) ?? null : null;
   const centerNode = nodeMap.get(graph.centerId) ?? null;
   const contextualNode = selectedNode ?? centerNode;
+  const contextualNodeId = contextualNode ? normalizeGraphNodeId(contextualNode.id) : null;
+  const contextualEdges = contextualNodeId
+    ? filteredEdges.filter(
+        (edge) =>
+          normalizeGraphNodeId(edge.source) === contextualNodeId || normalizeGraphNodeId(edge.target) === contextualNodeId,
+      )
+    : [];
 
   const selectedNeighbors = new Set<string>();
   if (options.selectedNodeId) {
@@ -120,6 +129,7 @@ export function buildGraphDerivedState(options: {
     filteredNodes,
     visibleNodeIds,
     filteredEdges,
+    contextualEdges,
     nodeMap,
     selectedNode,
     centerNode,
@@ -137,6 +147,10 @@ export function buildGraphDerivedState(options: {
     isDenseGraph,
     hasVisibleSelection: options.selectedNodeId ? visibleNodeIds.has(options.selectedNodeId) : false,
   };
+}
+
+function normalizeGraphNodeId(value: unknown): string {
+  return String(value ?? '').trim();
 }
 
 export function ensureGraphSelectionVisible(
