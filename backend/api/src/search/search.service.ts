@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { attachResolvedMedia } from '../entities/media.resolver';
+import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import { SearchQuery } from './dto/search.query';
 
@@ -20,6 +21,7 @@ export class SearchService {
   async search(query: SearchQuery, options: { includeDrafts: boolean }) {
     const q = (query.q ?? '').trim();
     const tag = (query.tag ?? '').trim();
+    const locale = normalizeLocale(query.locale);
     const limit = Math.min(60, Math.max(1, Number(query.limit ?? 20)));
     const types = Array.isArray(query.type) ? query.type.filter(Boolean) : [];
 
@@ -36,6 +38,7 @@ export class SearchService {
       limit,
       types,
       tag,
+      locale,
       includeDrafts: options.includeDrafts,
     });
 
@@ -79,6 +82,9 @@ export class SearchService {
             { id: 'asc' },
           ],
         },
+        translations: {
+          where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
+        },
       },
     });
 
@@ -87,18 +93,18 @@ export class SearchService {
       .map((row) => entityById.get(row.id))
       .filter((entity): entity is NonNullable<typeof entity> => !!entity)
       .map((entity) => {
-        const resolvedEntity = attachResolvedMedia(entity);
+        const resolvedEntity = attachResolvedMedia(resolveEntityTranslation(entity, locale));
 
         return {
           id: entity.id,
           slug: entity.slug,
-          type: entity.type,
-          title: entity.title,
-          summary: entity.summary,
-          status: entity.status,
-          contentLevel: entity.contentLevel,
-          startYear: entity.startYear,
-          endYear: entity.endYear,
+          type: resolvedEntity.type,
+          title: resolvedEntity.title,
+          summary: resolvedEntity.summary,
+          status: resolvedEntity.status,
+          contentLevel: resolvedEntity.contentLevel,
+          startYear: resolvedEntity.startYear,
+          endYear: resolvedEntity.endYear,
           resolvedMedia: {
             thumbnail: resolvedEntity.resolvedMedia.thumbnail,
             card: resolvedEntity.resolvedMedia.card,
@@ -125,13 +131,13 @@ export class SearchService {
 
   private searchRows(
     q: string,
-    options: { limit: number; types: string[]; tag?: string; includeDrafts: boolean },
+    options: { limit: number; types: string[]; tag?: string; locale: string; includeDrafts: boolean },
   ) {
     const normalized = q.toLowerCase();
     const like = `%${q}%`;
     const startsWith = `${q}%`;
-    const exact = q;
     const useFullText = q.length >= 3;
+    const translationLocales = Array.from(new Set([options.locale, 'es', 'en']));
 
     const typeFilter = options.types.length
       ? Prisma.sql`AND e."type"::text IN (${Prisma.join(options.types)})`
@@ -166,22 +172,42 @@ export class SearchService {
         (
           ${fullTextRank} * 100
           + CASE WHEN lower(e."title") = ${normalized} THEN 100 ELSE 0 END
+          + CASE WHEN lower(coalesce(translated.title_text, '')) = ${normalized} THEN 100 ELSE 0 END
           + CASE WHEN e."title" ILIKE ${startsWith} THEN 50 ELSE 0 END
+          + CASE WHEN coalesce(translated.title_text, '') ILIKE ${startsWith} THEN 50 ELSE 0 END
           + CASE WHEN e."title" ILIKE ${like} THEN 25 ELSE 0 END
+          + CASE WHEN coalesce(translated.title_text, '') ILIKE ${like} THEN 25 ELSE 0 END
           + CASE WHEN e."summary" ILIKE ${like} THEN 8 ELSE 0 END
+          + CASE WHEN coalesce(translated.summary_text, '') ILIKE ${like} THEN 8 ELSE 0 END
           + CASE WHEN e."content" ILIKE ${like} THEN 2 ELSE 0 END
+          + CASE WHEN coalesce(translated.content_text, '') ILIKE ${like} THEN 2 ELSE 0 END
           + CASE WHEN e."slug" ILIKE ${startsWith} THEN 12 ELSE 0 END
         )::double precision AS "score",
-        (e."title" ILIKE ${like}) AS "matched_title",
-        (e."summary" ILIKE ${like}) AS "matched_summary",
-        (e."content" ILIKE ${like}) AS "matched_content",
+        (e."title" ILIKE ${like} OR coalesce(translated.title_text, '') ILIKE ${like}) AS "matched_title",
+        (e."summary" ILIKE ${like} OR coalesce(translated.summary_text, '') ILIKE ${like}) AS "matched_summary",
+        (e."content" ILIKE ${like} OR coalesce(translated.content_text, '') ILIKE ${like}) AS "matched_content",
         (e."slug" ILIKE ${like}) AS "matched_slug"
       FROM "Entity" e
       CROSS JOIN LATERAL (
         SELECT
-          setweight(to_tsvector('simple', coalesce(e."title", '')), 'A') ||
-          setweight(to_tsvector('simple', coalesce(e."summary", '')), 'B') ||
-          setweight(to_tsvector('simple', coalesce(e."content", '')), 'C') AS document
+          coalesce(string_agg(t."title", ' '), '') AS title_text,
+          coalesce(
+            string_agg(
+              concat_ws(' ', nullif(t."shortDescription", ''), nullif(t."excerpt", '')),
+              ' '
+            ),
+            ''
+          ) AS summary_text,
+          coalesce(string_agg(t."essay", ' '), '') AS content_text
+        FROM "EntityTranslation" t
+        WHERE t."entityId" = e."id"
+          AND t."locale" IN (${Prisma.join(translationLocales)})
+      ) translated
+      CROSS JOIN LATERAL (
+        SELECT
+          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."title", ''), translated.title_text)), 'A') ||
+          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."summary", ''), translated.summary_text)), 'B') ||
+          setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."content", ''), translated.content_text)), 'C') AS document
       ) weighted
       WHERE 1 = 1
         ${visibilityFilter}
@@ -190,8 +216,11 @@ export class SearchService {
         AND (
           ${fullTextPredicate}
           e."title" ILIKE ${like}
+          OR coalesce(translated.title_text, '') ILIKE ${like}
           OR e."summary" ILIKE ${like}
+          OR coalesce(translated.summary_text, '') ILIKE ${like}
           OR e."content" ILIKE ${like}
+          OR coalesce(translated.content_text, '') ILIKE ${like}
           OR e."slug" ILIKE ${like}
         )
       ORDER BY

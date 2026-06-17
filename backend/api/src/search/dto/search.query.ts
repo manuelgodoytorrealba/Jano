@@ -10,6 +10,10 @@ export class SearchQuery {
   q?: string;
 
   @IsOptional()
+  @IsString()
+  locale?: string;
+
+  @IsOptional()
   @Transform(({ value }) => Array.isArray(value) ? value : value ? [value] : undefined)
   @IsIn(TYPES, { each: true })
   type?: SearchEntityType[];
