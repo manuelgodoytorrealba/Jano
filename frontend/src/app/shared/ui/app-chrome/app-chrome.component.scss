@@ -1239,6 +1239,16 @@
     font-size: 1rem;
   }
 
+  .app-chrome__header:has(.app-chrome__search-suggestions) .app-chrome__nav {
+    display: none;
+  }
+
+  .app-chrome__search-suggestions {
+    max-height: min(42dvh, 19rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   .app-chrome__nav {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
