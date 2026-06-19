@@ -42,6 +42,8 @@ export function buildGraphDerivedState(options: {
   hoveredEdgeId: string | null;
   labelsMode: 'auto' | 'always' | 'hidden';
   labelScaleBucket: number;
+  viewportScale: number;
+  overviewMode: boolean;
 }): GraphDerivedState {
   const graph = options.graph;
   const nodeMap = new Map(graph?.nodes.map((node) => [node.id, node]) ?? []);
@@ -68,16 +70,37 @@ export function buildGraphDerivedState(options: {
     };
   }
 
-  const filteredNodes = graph.nodes.filter(
+  const baseFilteredNodes = graph.nodes.filter(
     (node) => node.id === graph.centerId || options.entityTypeFilters[node.type] !== false,
   );
-  const visibleNodeIds = new Set(filteredNodes.map((node) => node.id));
-  const filteredEdges = graph.edges.filter(
+  const baseVisibleNodeIds = new Set(baseFilteredNodes.map((node) => node.id));
+  const baseFilteredEdges = graph.edges.filter(
     (edge) =>
       options.relationTypeFilters[edge.relationType] !== false &&
-      visibleNodeIds.has(edge.source) &&
-      visibleNodeIds.has(edge.target),
+      baseVisibleNodeIds.has(edge.source) &&
+      baseVisibleNodeIds.has(edge.target),
   );
+  const overviewVisibleNodeIds = resolveOverviewVisibleNodeIds({
+    graph,
+    nodes: baseFilteredNodes,
+    edges: baseFilteredEdges,
+    selectedNodeId: options.selectedNodeId,
+    hoveredNodeId: options.hoveredNodeId,
+    viewportScale: options.viewportScale,
+    overviewMode: options.overviewMode,
+  });
+  const filteredNodes = baseFilteredNodes.filter((node) => overviewVisibleNodeIds.has(node.id));
+  const visibleNodeIds = new Set(filteredNodes.map((node) => node.id));
+  const filteredEdges = resolveOverviewVisibleEdges({
+    graph,
+    edges: baseFilteredEdges,
+    visibleNodeIds,
+    selectedNodeId: options.selectedNodeId,
+    hoveredEdgeId: options.hoveredEdgeId,
+    hoveredNodeId: options.hoveredNodeId,
+    viewportScale: options.viewportScale,
+    overviewMode: options.overviewMode,
+  });
 
   const selectedNode = options.selectedNodeId ? nodeMap.get(options.selectedNodeId) ?? null : null;
   const centerNode = nodeMap.get(graph.centerId) ?? null;
@@ -123,6 +146,7 @@ export function buildGraphDerivedState(options: {
     labelsMode: options.labelsMode,
     labelScaleBucket: options.labelScaleBucket,
     edgeCount,
+    overviewMode: options.overviewMode,
   });
 
   return {
@@ -147,6 +171,144 @@ export function buildGraphDerivedState(options: {
     isDenseGraph,
     hasVisibleSelection: options.selectedNodeId ? visibleNodeIds.has(options.selectedNodeId) : false,
   };
+}
+
+function resolveOverviewVisibleNodeIds(options: {
+  graph: GraphData;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  selectedNodeId: string | null;
+  hoveredNodeId: string | null;
+  viewportScale: number;
+  overviewMode: boolean;
+}): Set<string> {
+  const allNodeIds = new Set(options.nodes.map((node) => node.id));
+  if (!options.overviewMode || options.nodes.length < 26) {
+    return allNodeIds;
+  }
+
+  if (options.viewportScale >= 1.18) {
+    return allNodeIds;
+  }
+
+  const nodeMap = new Map(options.nodes.map((node) => [node.id, node]));
+  const adjacency = new Map<string, Set<string>>();
+  for (const node of options.nodes) {
+    adjacency.set(node.id, new Set<string>());
+  }
+  for (const edge of options.edges) {
+    adjacency.get(edge.source)?.add(edge.target);
+    adjacency.get(edge.target)?.add(edge.source);
+  }
+
+  const visible = new Set<string>([options.graph.centerId]);
+  const hubNodes = options.nodes
+    .filter((node) => isOverviewHubNode(node.id))
+    .sort((left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'));
+
+  for (const hub of hubNodes) {
+    visible.add(hub.id);
+  }
+
+  const selectedNodeId = options.selectedNodeId;
+  const selectedIsExplicit = !!selectedNodeId && selectedNodeId !== options.graph.centerId;
+
+  if (selectedIsExplicit) {
+    visible.add(selectedNodeId!);
+    for (const neighborId of adjacency.get(selectedNodeId!) ?? []) {
+      visible.add(neighborId);
+      if (options.viewportScale >= 1.04) {
+        for (const secondNeighborId of adjacency.get(neighborId) ?? []) {
+          visible.add(secondNeighborId);
+        }
+      }
+    }
+    return visible;
+  }
+
+  const nodesPerHub = options.viewportScale >= 1.1
+    ? 6
+    : options.viewportScale >= 0.96
+      ? 4
+      : 2;
+
+  for (const hub of hubNodes) {
+    const clusterNodes = [...(adjacency.get(hub.id) ?? [])]
+      .map((nodeId) => nodeMap.get(nodeId))
+      .filter((node): node is GraphNode => !!node && !isOverviewHubNode(node.id) && node.id !== options.graph.centerId)
+      .sort((left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'))
+      .slice(0, nodesPerHub);
+
+    for (const node of clusterNodes) {
+      visible.add(node.id);
+    }
+  }
+
+  const overflowBudget = options.viewportScale >= 1.04 ? 10 : 4;
+  const topPeripheralNodes = options.nodes
+    .filter((node) => !visible.has(node.id))
+    .filter((node) => node.degree >= (options.viewportScale >= 1.04 ? 4 : 6) || node.id === options.hoveredNodeId)
+    .sort((left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'))
+    .slice(0, overflowBudget);
+
+  for (const node of topPeripheralNodes) {
+    visible.add(node.id);
+  }
+
+  if (options.hoveredNodeId) {
+    visible.add(options.hoveredNodeId);
+  }
+
+  return visible;
+}
+
+function resolveOverviewVisibleEdges(options: {
+  graph: GraphData;
+  edges: GraphEdge[];
+  visibleNodeIds: Set<string>;
+  selectedNodeId: string | null;
+  hoveredEdgeId: string | null;
+  hoveredNodeId: string | null;
+  viewportScale: number;
+  overviewMode: boolean;
+}): GraphEdge[] {
+  const visibleEdges = options.edges.filter(
+    (edge) => options.visibleNodeIds.has(edge.source) && options.visibleNodeIds.has(edge.target),
+  );
+
+  if (!options.overviewMode || options.viewportScale >= 1.18) {
+    return visibleEdges;
+  }
+
+  const selectedIsExplicit = !!options.selectedNodeId && options.selectedNodeId !== options.graph.centerId;
+
+  if (selectedIsExplicit) {
+    return visibleEdges;
+  }
+
+  return visibleEdges.filter((edge) => {
+    if (edge.id === options.hoveredEdgeId) {
+      return true;
+    }
+
+    if (options.hoveredNodeId && (edge.source === options.hoveredNodeId || edge.target === options.hoveredNodeId)) {
+      return true;
+    }
+
+    if (edge.relationType === 'ASSOCIATED_WITH' || edge.relationType === 'PART_OF') {
+      return true;
+    }
+
+    if (options.viewportScale >= 1.06) {
+      return (edge.weight ?? 1) >= 1.2;
+    }
+
+    return false;
+  });
+}
+
+function isOverviewHubNode(nodeId: string): boolean {
+  return nodeId.startsWith('workspace-type-');
 }
 
 function normalizeGraphNodeId(value: unknown): string {
@@ -174,6 +336,7 @@ function buildNodeLabelVisibility(options: {
   labelsMode: 'auto' | 'always' | 'hidden';
   labelScaleBucket: number;
   edgeCount: number;
+  overviewMode: boolean;
 }): Record<string, boolean> {
   if (options.labelsMode === 'hidden') {
     return {};
@@ -198,17 +361,19 @@ function buildNodeLabelVisibility(options: {
       const isSelected = node.id === options.selectedNodeId;
       const isHovered = node.id === options.hoveredNodeId;
       const isNeighbor = options.selectedNeighbors.has(node.id);
+      const isHub = options.overviewMode && isOverviewHubNode(node.id);
       const priority =
         (isCenter ? 1000 : 0)
         + (isSelected ? 840 : 0)
         + (isHovered ? 760 : 0)
+        + (isHub ? 520 : 0)
         + (isNeighbor ? 260 : 0)
         + Math.min(node.degree ?? 0, 8) * 28;
 
       return {
         id: node.id,
         priority,
-        forced: isCenter || isSelected || isHovered,
+        forced: isCenter || isSelected || isHovered || isHub,
       };
     }),
     budget,

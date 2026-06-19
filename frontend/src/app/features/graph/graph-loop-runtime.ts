@@ -5,6 +5,7 @@ import { ImageViewport } from './image-viewport';
 import { advanceImageViewportAnimation } from './graph-state';
 import { stepGraphLayoutFrame } from './graph-animation';
 import { GraphViewportController } from './graph-runtime-controllers';
+import { applyAmbientGraphDrift } from './graph-layout';
 
 export interface GraphLoopState {
   graphLayoutActive: boolean;
@@ -26,6 +27,8 @@ export function advanceExplorerLoop(options: {
   velocities: Record<string, { x: number; y: number }>;
   layoutScratch?: ForceLayoutScratch | null;
   pointerSession: GraphPointerSession | null;
+  ambientMotion: boolean;
+  selectedNodeId: string | null;
   loopState: GraphLoopState;
   pinCenterNode: () => void;
   viewportController: GraphViewportController;
@@ -58,6 +61,22 @@ export function advanceExplorerLoop(options: {
     graphSettledFrames = layoutFrame.graphSettledFrames;
     shouldRender ||= layoutFrame.shouldRender;
     shouldContinue ||= layoutFrame.shouldContinue;
+
+    if (
+      options.ambientMotion
+      && draggingNodeId === null
+      && options.selectedNodeId === options.graph.centerId
+      && !layoutFrame.graphLayoutActive
+    ) {
+      applyAmbientGraphDrift({
+        graph: options.graph,
+        positions: options.positions,
+        layoutScratch: options.layoutScratch ?? undefined,
+        timestampMs: Date.now(),
+      });
+      shouldRender = true;
+      shouldContinue = true;
+    }
   }
 
   if (options.viewportController.target) {

@@ -216,6 +216,21 @@ export class EntitiesService {
     return labels[type] ?? type.replaceAll('_', ' ').toLowerCase();
   }
 
+  private adminEntityTypeLabel(type: string): string {
+    const labels: Record<string, string> = {
+      ARTIST: 'Artists',
+      ARTWORK: 'Artworks',
+      ARTICLE: 'Articles',
+      TEXT: 'Articles',
+      CONCEPT: 'Concepts',
+      MOVEMENT: 'Movements',
+      PERIOD: 'Periods',
+      PLACE: 'Places',
+    };
+
+    return labels[type] ?? type;
+  }
+
   private relationKey(relation: { type?: string | null; relationType?: { key?: string | null } | null }): string {
     const relationTypeKey = relation.relationType?.key?.trim();
     if (relationTypeKey) {
@@ -238,6 +253,44 @@ export class EntitiesService {
       ?? null;
 
     return translation?.label?.trim() ?? relation.relationType?.label ?? this.relationLabel(this.relationKey(relation));
+  }
+
+  private graphMediaInclude(locale?: string) {
+    return {
+      translations: this.localizedInclude(locale),
+      mediaLinks: {
+        include: { media: true },
+        orderBy: [
+          { sortOrder: 'asc' as const },
+          { id: 'asc' as const },
+        ],
+      },
+    };
+  }
+
+  private toGraphNodePayload(node: any, locale?: string): GraphNodePayload {
+    const resolvedNode = this.resolveLocalizedEntity(node, locale);
+    const image =
+      resolvedMediaUrl(resolvedNode.resolvedMedia.thumbnail)
+      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.card)
+      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.detail)
+      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.hero)
+      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.explorer3d)
+      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.primary);
+
+    return {
+      id: node.id,
+      label: resolvedNode.title,
+      type: node.type,
+      slug: node.slug,
+      image: image ?? null,
+      resolvedMedia: resolvedNode.resolvedMedia,
+      metadata: {
+        summary: resolvedNode.summary ?? null,
+        startYear: node.startYear ?? null,
+        endYear: node.endYear ?? null,
+      },
+    };
   }
 
   private relationInverseDisplayLabel(relation: { type?: string | null; relationType?: { inverseLabel?: string | null; key?: string | null; translations?: any[] | null } | null }, locale?: string): string {
@@ -1031,16 +1084,7 @@ export class EntitiesService {
   }
 
   async graphBySlug(slug: string, locale?: string) {
-    const graphMediaInclude = {
-      translations: this.localizedInclude(locale),
-      mediaLinks: {
-        include: { media: true },
-        orderBy: [
-          { sortOrder: 'asc' as const },
-          { id: 'asc' as const },
-        ],
-      },
-    };
+    const graphMediaInclude = this.graphMediaInclude(locale);
 
     const center = await this.prisma.entity.findFirst({
       where: {
@@ -1111,32 +1155,7 @@ export class EntitiesService {
       ...relatedNodes.map((node) => [node.id, node] as const),
     ]);
 
-    const toNodePayload = (node: any): GraphNodePayload => {
-      const resolvedNode = this.resolveLocalizedEntity(node, locale);
-      const image =
-        resolvedMediaUrl(resolvedNode.resolvedMedia.thumbnail)
-        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.card)
-        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.detail)
-        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.hero)
-        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.explorer3d)
-        ?? resolvedMediaUrl(resolvedNode.resolvedMedia.primary);
-
-      return {
-        id: node.id,
-        label: resolvedNode.title,
-        type: node.type,
-        slug: node.slug,
-        image: image ?? null,
-        resolvedMedia: resolvedNode.resolvedMedia,
-        metadata: {
-          summary: resolvedNode.summary ?? null,
-          startYear: node.startYear ?? null,
-          endYear: node.endYear ?? null,
-        },
-      };
-    };
-
-    nodesMap.set(center.id, toNodePayload(center));
+    nodesMap.set(center.id, this.toGraphNodePayload(center, locale));
 
     for (const r of relations) {
       const fromNode = entityMap.get(r.fromId);
@@ -1145,8 +1164,8 @@ export class EntitiesService {
         continue;
       }
 
-      nodesMap.set(fromNode.id, toNodePayload(fromNode));
-      nodesMap.set(toNode.id, toNodePayload(toNode));
+      nodesMap.set(fromNode.id, this.toGraphNodePayload(fromNode, locale));
+      nodesMap.set(toNode.id, this.toGraphNodePayload(toNode, locale));
     }
 
     const nodes = Array.from(nodesMap.values()).sort((a, b) => {
@@ -1175,6 +1194,138 @@ export class EntitiesService {
       edges,
       filters: {
         entityTypes,
+        relationTypes,
+      },
+    };
+  }
+
+  async adminWorkspaceGraph(locale?: string) {
+    const graphMediaInclude = this.graphMediaInclude(locale);
+    const entities = await this.prisma.entity.findMany({
+      orderBy: [
+        { updatedAt: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      include: graphMediaInclude,
+    });
+
+    const entityIds = entities.map((entity) => entity.id);
+    const entityIdSet = new Set(entityIds);
+
+    const relations = entityIds.length
+      ? await this.prisma.relation.findMany({
+          where: {
+            fromId: { in: entityIds },
+            toId: { in: entityIds },
+          },
+          select: {
+            id: true,
+            fromId: true,
+            toId: true,
+            weight: true,
+            justification: true,
+            type: true,
+            relationType: {
+              select: {
+                key: true,
+                label: true,
+                inverseLabel: true,
+                directed: true,
+                translations: this.localizedInclude(locale),
+              },
+            },
+            translations: this.localizedInclude(locale),
+          },
+        })
+      : [];
+
+    const entityTypes = Array.from(
+      new Set(entities.map((entity) => String(entity.type ?? 'ENTITY').trim().toUpperCase()).filter(Boolean)),
+    ).sort();
+
+    const nodes: GraphNodePayload[] = [
+      {
+        id: 'workspace-center-jano',
+        label: 'JANO',
+        type: 'CONCEPT',
+        slug: 'workspace-jano',
+        image: null,
+        metadata: {
+          summary: 'Centro editorial del mapa global de conocimiento de JANO.',
+          startYear: null,
+          endYear: null,
+        },
+      },
+      ...entityTypes.map((type) => ({
+        id: `workspace-type-${type}`,
+        label: this.adminEntityTypeLabel(type),
+        type,
+        slug: `workspace-type-${type.toLowerCase()}`,
+        image: null,
+        metadata: {
+          summary: `Cluster editorial de ${this.adminEntityTypeLabel(type)} en JANO.`,
+          startYear: null,
+          endYear: null,
+        },
+      })),
+      ...entities.map((entity) => this.toGraphNodePayload(entity, locale)),
+    ];
+
+    const edgesMap = new Map<string, GraphEdgePayload>();
+
+    for (const type of entityTypes) {
+      edgesMap.set(`workspace-center-${type}`, {
+        id: `workspace-center-${type}`,
+        source: 'workspace-center-jano',
+        target: `workspace-type-${type}`,
+        relationType: 'ASSOCIATED_WITH',
+        label: this.relationLabel('ASSOCIATED_WITH'),
+        directed: this.isDirectedRelation('ASSOCIATED_WITH'),
+        weight: 0.8,
+        justification: 'Cluster editorial de JANO.',
+      });
+    }
+
+    for (const entity of entities) {
+      const type = String(entity.type ?? 'ENTITY').trim().toUpperCase() || 'ENTITY';
+      edgesMap.set(`workspace-hub-${entity.id}`, {
+        id: `workspace-hub-${entity.id}`,
+        source: `workspace-type-${type}`,
+        target: entity.id,
+        relationType: 'PART_OF',
+        label: this.relationLabel('PART_OF'),
+        directed: this.isDirectedRelation('PART_OF'),
+        weight: 0.7,
+        justification: `${entity.title} pertenece al cluster ${this.adminEntityTypeLabel(type)}.`,
+      });
+    }
+
+    for (const relation of relations) {
+      if (!entityIdSet.has(relation.fromId) || !entityIdSet.has(relation.toId)) {
+        continue;
+      }
+
+      edgesMap.set(relation.id, {
+        id: relation.id,
+        source: relation.fromId,
+        target: relation.toId,
+        relationType: this.relationKey(relation),
+        label: this.relationDisplayLabel(relation, locale),
+        directed: this.isDirectedRelation(relation),
+        weight: relation.weight ?? 1,
+        justification: this.translationField(relation, locale, 'justification') ?? relation.justification ?? null,
+      });
+    }
+
+    const edges = Array.from(edgesMap.values());
+    const relationTypes = Array.from(new Set(edges.map((edge) => edge.relationType))).sort();
+
+    return {
+      centerId: 'workspace-center-jano',
+      nodes,
+      edges,
+      filters: {
+        entityTypes: Array.from(new Set(nodes.map((node) => node.type))).sort(),
         relationTypes,
       },
     };

@@ -65,7 +65,7 @@ export function prepareGraphState(graph: GraphData): PreparedGraphState {
     graph,
     positions,
     velocities: {},
-    layoutScratch: createForceLayoutScratch(graph),
+    layoutScratch: createForceLayoutScratch(graph, seededPositions),
   };
 }
 
@@ -115,11 +115,13 @@ export function resolveGraphWarmupPasses(graph: GraphData, passes?: number): num
 
   const nodeCount = graph.nodes.length;
   const edgeCount = graph.edges.length;
-  return nodeCount >= 34 || edgeCount >= 52
-    ? 52
-    : nodeCount >= 20 || edgeCount >= 28
-      ? 34
-      : 36;
+  return nodeCount >= 60 || edgeCount >= 120
+    ? 16
+    : nodeCount >= 34 || edgeCount >= 52
+      ? 22
+      : nodeCount >= 20 || edgeCount >= 28
+        ? 26
+        : 32;
 }
 
 function normalizeGraphFilterValues(values: Array<string | null | undefined>): string[] {

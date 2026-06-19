@@ -202,6 +202,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() workspaceTransitioning = false;
   @Input() isMobileViewport = false;
   @Input() entityInfo: GraphEntityInfo | null = null;
+  @Input() overviewMode = false;
+  @Input() ambientMotion = false;
   @Output() workspaceFocusToggle = new EventEmitter<void>();
 
   private graphStage?: ElementRef<HTMLDivElement>;
@@ -297,6 +299,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       hoveredEdgeId: this.hoveredEdgeId(),
       labelsMode: this.labelsMode(),
       labelScaleBucket: this.labelScaleBucket(),
+      viewportScale: this.graphViewport().scale,
+      overviewMode: this.overviewMode,
     }),
   );
 
@@ -591,6 +595,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         velocities: this.velocities,
         layoutScratch: this.layoutScratch,
         pointerSession: this.pointerSession,
+        ambientMotion: this.ambientMotion,
+        selectedNodeId: this.selectedNodeId(),
         loopState: {
           graphLayoutActive: this.graphLayoutActive,
           graphLayoutFrames: this.graphLayoutFrames,
@@ -1341,6 +1347,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.lastNodeActivation?.nodeId === nodeId
       && now - this.lastNodeActivation.at <= GraphComponent.NODE_DOUBLE_ACTIVATION_MS;
 
+    this.stabilizeGraphLayout();
     this.focusNode(nodeId);
 
     if (isDoubleActivation) {
@@ -1361,16 +1368,40 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     void this.router.navigate(['/entity', node.slug]);
   }
 
+  private stabilizeGraphLayout(): void {
+    this.graphLayoutActive = false;
+    this.graphLayoutFrames = 0;
+    this.graphSettledFrames = 0;
+
+    for (const nodeId of Object.keys(this.velocities)) {
+      const velocity = this.velocities[nodeId];
+      if (!velocity) {
+        continue;
+      }
+
+      velocity.x = 0;
+      velocity.y = 0;
+    }
+
+    this.pinCenterNode();
+  }
+
   private createFittedGraphViewport(): GraphViewport | null {
     return createGraphFocusedViewport({
       graph: this.graph(),
       size: this.currentGraphStageSize(),
       positions: this.positions,
       filteredNodeIds: this.graphDerived().filteredNodes.map((node) => node.id),
-      haloSizeForNode: (nodeId) => this.nodeHaloSize(nodeId),
-      preferBoundsCenter: this.isMobileViewport,
-      padding: this.isMobileViewport ? 76 : 108,
+      haloSizeForNode: (nodeId) => this.nodeHaloSize(nodeId) + (this.overviewMode ? 92 : 56),
+      preferBoundsCenter: this.isMobileViewport || this.overviewMode,
+      padding: this.isMobileViewport ? 76 : this.overviewMode ? this.overviewViewportPadding() : 108,
     });
+  }
+
+  private overviewViewportPadding(): number {
+    const size = this.currentGraphStageSize();
+    const shortestSide = Math.max(0, Math.min(size.width, size.height));
+    return Math.max(112, Math.min(168, Math.round(shortestSide * 0.18)));
   }
 
   private trackGraphPointer(event: PointerEvent): void {

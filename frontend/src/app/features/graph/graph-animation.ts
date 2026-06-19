@@ -99,19 +99,27 @@ function resolveGraphSettlePolicy(graph: GraphData): {
   const nodeCount = graph.nodes.length;
   const edgeCount = graph.edges.length;
 
+  if (nodeCount >= 60 || edgeCount >= 120) {
+    return {
+      motionThreshold: 0.2,
+      frameThreshold: 3,
+      maxFrames: 24,
+    };
+  }
+
   if (nodeCount >= 34 || edgeCount >= 52) {
     return {
-      motionThreshold: 0.1,
-      frameThreshold: 5,
-      maxFrames: 72,
+      motionThreshold: 0.15,
+      frameThreshold: 4,
+      maxFrames: 36,
     };
   }
 
   if (nodeCount >= 20 || edgeCount >= 28) {
     return {
-      motionThreshold: 0.08,
-      frameThreshold: 7,
-      maxFrames: 96,
+      motionThreshold: 0.11,
+      frameThreshold: 5,
+      maxFrames: 56,
     };
   }
 

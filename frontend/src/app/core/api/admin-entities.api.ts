@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { apiUrl } from './api-base';
 import { PublicEntityPreview } from './entities.models';
+import { GraphResponseDto } from '../../features/graph/graph.models';
 
 export type AdminLocale = 'es' | 'en';
 
@@ -559,6 +560,15 @@ export class AdminEntitiesApi {
 
   listIncomingRelations(entityId: string) {
     return this.http.get<AdminEntityRelationRecord[]>(`${this.baseUrl}/${entityId}/relations/incoming`);
+  }
+
+  workspaceGraph(locale?: AdminLocale | string) {
+    let params = new HttpParams();
+    if (locale?.trim()) {
+      params = params.set('locale', locale.trim());
+    }
+
+    return this.http.get<GraphResponseDto>(`${this.adminBaseUrl}/workspace/graph`, { params });
   }
 
   createSourceRef(entityId: string, data: AdminSourceRefPayload) {

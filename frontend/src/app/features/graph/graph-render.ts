@@ -26,7 +26,7 @@ export function graphEdgeMarkerId(type: string): string {
 }
 
 export function graphNodeSize(node: GraphNode, centerId: string | null, selectedNodeId: string | null): number {
-  const base = node.id === centerId ? 28 : 22;
+  const base = node.id === centerId ? 28 : isWorkspaceTypeHub(node.id) ? 26 : 22;
   const degreeBoost = Math.min(node.degree ?? 0, 5) * 1.25;
   const selectedBoost = selectedNodeId === node.id ? 6 : 0;
   return base + degreeBoost + selectedBoost;
@@ -221,6 +221,10 @@ function resolveNodeDepthTier(
     return 'focus';
   }
 
+  if (isWorkspaceTypeHub(node.id)) {
+    return selectedNodeId ? 'mid' : 'focus';
+  }
+
   if (selectedNodeId) {
     return selectedNeighbors.has(node.id) ? 'mid' : 'far';
   }
@@ -231,6 +235,10 @@ function resolveNodeDepthTier(
   }
 
   return 'far';
+}
+
+function isWorkspaceTypeHub(nodeId: string): boolean {
+  return nodeId.startsWith('workspace-type-');
 }
 
 function resolveEdgeDepthTier(

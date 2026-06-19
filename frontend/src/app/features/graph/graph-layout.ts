@@ -17,6 +17,7 @@ export interface GraphBounds {
 export interface ForceLayoutScratch {
   nodeIds: string[];
   forces: Record<string, GraphPoint>;
+  anchors: Record<string, GraphPoint>;
 }
 
 export function buildGraphData(raw: GraphData): GraphData {
@@ -85,17 +86,64 @@ export function createInitialPositions(graph: GraphData): Record<string, GraphPo
   const positions: Record<string, GraphPoint> = {
     [graph.centerId]: center,
   };
+  const adjacency = buildAdjacency(graph);
+  const nodeMap = new Map(graph.nodes.map((node) => [node.id, node]));
+  const placedNodeIds = new Set<string>([graph.centerId]);
+  const centerNeighbors = [...(adjacency.get(graph.centerId) ?? [])]
+    .map((nodeId) => nodeMap.get(nodeId))
+    .filter((node): node is GraphData['nodes'][number] => !!node)
+    .sort((a, b) => b.degree - a.degree || a.label.localeCompare(b.label, 'es'));
+
+  centerNeighbors.forEach((node, index) => {
+    const angle = (index / Math.max(centerNeighbors.length, 1)) * TWO_PI - Math.PI / 2;
+    const radius = 250 + (index % 2) * 26;
+
+    positions[node.id] = {
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
+    };
+    placedNodeIds.add(node.id);
+  });
+
+  centerNeighbors.forEach((hubNode, hubIndex) => {
+    const hubPoint = positions[hubNode.id];
+    if (!hubPoint) {
+      return;
+    }
+
+    const secondRing = [...(adjacency.get(hubNode.id) ?? [])]
+      .filter((nodeId) => nodeId !== graph.centerId && !placedNodeIds.has(nodeId))
+      .map((nodeId) => nodeMap.get(nodeId))
+      .filter((node): node is GraphData['nodes'][number] => !!node)
+      .sort((a, b) => b.degree - a.degree || a.label.localeCompare(b.label, 'es'));
+
+    const parentAngle = Math.atan2(hubPoint.y, hubPoint.x);
+    const spread = Math.min(Math.PI * 1.2, 0.7 + secondRing.length * 0.22);
+    const startAngle = parentAngle - spread / 2;
+
+    secondRing.forEach((node, index) => {
+      const ratio = secondRing.length <= 1 ? 0.5 : index / (secondRing.length - 1);
+      const angle = startAngle + spread * ratio;
+      const radius = 148 + Math.floor(index / 5) * 44 + (hubIndex % 2) * 10;
+
+      positions[node.id] = {
+        x: hubPoint.x + Math.cos(angle) * radius,
+        y: hubPoint.y + Math.sin(angle) * radius,
+      };
+      placedNodeIds.add(node.id);
+    });
+  });
 
   const nodes = graph.nodes
-    .filter((node) => node.id !== graph.centerId)
+    .filter((node) => !placedNodeIds.has(node.id))
     .sort((a, b) => b.degree - a.degree || a.label.localeCompare(b.label, 'es'));
 
   nodes.forEach((node, index) => {
-    const ring = Math.floor(index / 8);
-    const ringIndex = index % 8;
-    const itemsInRing = Math.min(8, nodes.length - ring * 8);
+    const ring = Math.floor(index / 10);
+    const ringIndex = index % 10;
+    const itemsInRing = Math.min(10, nodes.length - ring * 10);
     const angle = (ringIndex / Math.max(itemsInRing, 1)) * TWO_PI - Math.PI / 2;
-    const radius = 260 + ring * 150 + (ringIndex % 2) * 22;
+    const radius = 560 + ring * 170 + (ringIndex % 2) * 26;
 
     positions[node.id] = {
       x: Math.cos(angle) * radius,
@@ -106,14 +154,17 @@ export function createInitialPositions(graph: GraphData): Record<string, GraphPo
   return positions;
 }
 
-export function createForceLayoutScratch(graph: GraphData): ForceLayoutScratch {
+export function createForceLayoutScratch(
+  graph: GraphData,
+  anchors: Record<string, GraphPoint> = {},
+): ForceLayoutScratch {
   const nodeIds = graph.nodes.map((node) => node.id);
   const forces = nodeIds.reduce<Record<string, GraphPoint>>((acc, nodeId) => {
     acc[nodeId] = { x: 0, y: 0 };
     return acc;
   }, {});
 
-  return { nodeIds, forces };
+  return { nodeIds, forces, anchors };
 }
 
 export function stepForceLayout(
@@ -123,15 +174,11 @@ export function stepForceLayout(
   draggingNodeId: string | null,
   scratch?: ForceLayoutScratch,
 ): number {
-  const repulsion = 54000;
-  const springLength = 180;
-  const springStrength = 0.0018;
-  const centeringStrength = 0.0022;
-  const damping = 0.84;
-  const maxSpeed = 8;
+  const profile = resolveGraphLayoutProfile(graph);
 
   const nodeIds = scratch?.nodeIds ?? graph.nodes.map((node) => node.id);
   const forces = scratch?.forces ?? {};
+  const anchors = scratch?.anchors ?? {};
 
   for (let index = 0; index < nodeIds.length; index += 1) {
     const id = nodeIds[index];
@@ -151,7 +198,7 @@ export function stepForceLayout(
       const dy = positions[b].y - positions[a].y;
       const distSq = Math.max(dx * dx + dy * dy, 1);
       const dist = Math.sqrt(distSq);
-      const force = repulsion / distSq;
+      const force = profile.repulsion / distSq;
       const fx = (dx / dist) * force;
       const fy = (dy / dist) * force;
 
@@ -173,8 +220,8 @@ export function stepForceLayout(
     const dx = target.x - source.x;
     const dy = target.y - source.y;
     const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
-    const stretch = dist - springLength;
-    const strength = springStrength * Math.max(0.8, edge.weight);
+    const stretch = dist - profile.springLength;
+    const strength = profile.springStrength * Math.max(0.8, edge.weight);
     const fx = (dx / dist) * stretch * strength;
     const fy = (dy / dist) * stretch * strength;
 
@@ -193,8 +240,14 @@ export function stepForceLayout(
 
     const targetX = node.id === graph.centerId ? 0 : point.x * 0.08;
     const targetY = node.id === graph.centerId ? 0 : point.y * 0.08;
-    forces[node.id].x -= targetX * centeringStrength;
-    forces[node.id].y -= targetY * centeringStrength;
+    forces[node.id].x -= targetX * profile.centeringStrength;
+    forces[node.id].y -= targetY * profile.centeringStrength;
+
+    const anchor = anchors[node.id];
+    if (anchor && node.id !== graph.centerId) {
+      forces[node.id].x += (anchor.x - point.x) * profile.anchorStrength;
+      forces[node.id].y += (anchor.y - point.y) * profile.anchorStrength;
+    }
   }
 
   for (let nodeIndex = 0; nodeIndex < graph.nodes.length; nodeIndex += 1) {
@@ -217,13 +270,13 @@ export function stepForceLayout(
     }
 
     const velocity = velocities[node.id];
-    velocity.x = (velocity.x + forces[node.id].x) * damping;
-    velocity.y = (velocity.y + forces[node.id].y) * damping;
+    velocity.x = (velocity.x + forces[node.id].x) * profile.damping;
+    velocity.y = (velocity.y + forces[node.id].y) * profile.damping;
 
     const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-    if (speed > maxSpeed) {
-      velocity.x = (velocity.x / speed) * maxSpeed;
-      velocity.y = (velocity.y / speed) * maxSpeed;
+    if (speed > profile.maxSpeed) {
+      velocity.x = (velocity.x / speed) * profile.maxSpeed;
+      velocity.y = (velocity.y / speed) * profile.maxSpeed;
     }
 
     positions[node.id].x += velocity.x;
@@ -248,6 +301,111 @@ export function stepForceLayout(
   }
 
   return totalMotion;
+}
+
+export function applyAmbientGraphDrift(options: {
+  graph: GraphData;
+  positions: Record<string, GraphPoint>;
+  layoutScratch?: ForceLayoutScratch;
+  timestampMs: number;
+}): void {
+  const anchors = options.layoutScratch?.anchors ?? {};
+  const time = options.timestampMs / 1000;
+
+  for (const node of options.graph.nodes) {
+    if (node.id === options.graph.centerId) {
+      options.positions[node.id] = { x: 0, y: 0 };
+      continue;
+    }
+
+    const anchor = anchors[node.id] ?? options.positions[node.id];
+    if (!anchor) {
+      continue;
+    }
+
+    const seed = hashGraphNodeId(node.id);
+    const amplitude = node.id.startsWith('workspace-type-')
+      ? 4.5
+      : Math.max(2.8, 6.2 - Math.min(node.degree ?? 0, 6) * 0.42);
+    const speed = 0.22 + (seed % 7) * 0.018;
+    const offsetX = Math.sin(time * speed + seed * 0.13) * amplitude;
+    const offsetY = Math.cos(time * (speed * 0.92) + seed * 0.17) * amplitude * 0.82;
+
+    options.positions[node.id] = {
+      x: anchor.x + offsetX,
+      y: anchor.y + offsetY,
+    };
+  }
+}
+
+function buildAdjacency(graph: GraphData): Map<string, Set<string>> {
+  const adjacency = new Map<string, Set<string>>();
+
+  for (const node of graph.nodes) {
+    adjacency.set(node.id, new Set<string>());
+  }
+
+  for (const edge of graph.edges) {
+    adjacency.get(edge.source)?.add(edge.target);
+    adjacency.get(edge.target)?.add(edge.source);
+  }
+
+  return adjacency;
+}
+
+function resolveGraphLayoutProfile(graph: GraphData): {
+  repulsion: number;
+  springLength: number;
+  springStrength: number;
+  centeringStrength: number;
+  anchorStrength: number;
+  damping: number;
+  maxSpeed: number;
+} {
+  const nodeCount = graph.nodes.length;
+  const edgeCount = graph.edges.length;
+
+  if (nodeCount >= 60 || edgeCount >= 120) {
+    return {
+      repulsion: 24000,
+      springLength: 150,
+      springStrength: 0.0024,
+      centeringStrength: 0.0032,
+      anchorStrength: 0.0085,
+      damping: 0.76,
+      maxSpeed: 5.2,
+    };
+  }
+
+  if (nodeCount >= 34 || edgeCount >= 52) {
+    return {
+      repulsion: 34000,
+      springLength: 162,
+      springStrength: 0.0021,
+      centeringStrength: 0.0028,
+      anchorStrength: 0.0062,
+      damping: 0.79,
+      maxSpeed: 6.2,
+    };
+  }
+
+  return {
+    repulsion: 54000,
+    springLength: 180,
+    springStrength: 0.0018,
+    centeringStrength: 0.0022,
+    anchorStrength: 0.0034,
+    damping: 0.84,
+    maxSpeed: 8,
+  };
+}
+
+function hashGraphNodeId(value: string): number {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = ((hash << 5) - hash + value.charCodeAt(index)) | 0;
+  }
+  return Math.abs(hash);
 }
 
 export function edgeCurveOffset(edge: GraphEdge): number {

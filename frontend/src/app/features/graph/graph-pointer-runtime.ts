@@ -166,9 +166,10 @@ export function runNodePointerUpRuntime(options: {
   endGraphPointerSession(options.event);
   if (!options.pointerSession.moved) {
     options.focusNode(options.pointerSession.nodeId);
+  } else {
+    options.activateLayout();
+    options.startAnimationLoop();
   }
-  options.activateLayout();
-  options.startAnimationLoop();
   options.persist();
   options.clearPointerSession();
 }

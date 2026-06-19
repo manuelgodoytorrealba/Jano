@@ -69,6 +69,13 @@ export class EntitiesController {
     return this.service.adminList(query);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Get('admin/workspace/graph')
+  adminWorkspaceGraph(@Query('locale') locale?: string) {
+    return this.service.adminWorkspaceGraph(locale);
+  }
+
   @Get('institutions')
   institutions() {
     return this.service.listInstitutions();

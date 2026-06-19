@@ -95,6 +95,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'curations',
+        loadComponent: () =>
+          import('./features/admin/admin-curations/admin-curations.component').then(
+            (m) => m.AdminCurationsComponent,
+          ),
+      },
+      {
+        path: 'curations/new',
+        loadComponent: () =>
+          import('./features/admin/admin-curations/admin-curations.component').then(
+            (m) => m.AdminCurationsComponent,
+          ),
+      },
+      {
         path: 'home-decks/:id/edit',
         loadComponent: () =>
           import('./features/admin/admin-home-deck-editor/admin-home-deck-editor.component').then(
