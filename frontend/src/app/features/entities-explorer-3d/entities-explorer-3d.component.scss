@@ -8,7 +8,7 @@
     height: 100%;
     display: grid;
     border-radius: 24px;
-    padding-top: clamp(0px, 1.5svh, 12px);
+    padding-top: 0;
     padding-left: var(--entities-explorer-inner-left, clamp(44px, 5vw, 96px));
     padding-right: var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px));
     box-sizing: border-box;
@@ -326,24 +326,34 @@
 }
 
 @media (min-width: 1101px) and (max-width: 1500px) {
-  :host {
-    --entities-explorer-info-toggle-right: 290px;
-  }
+    .explorer3d {
+        min-height: calc(var(--app-viewport-block, 100vh) - var(--entities-explorer-inner-top, 118px) - 12px);
+        padding-top: clamp(10px, 1.2svh, 16px);
+    }
 
-   :host {
+    .explorer3d__info {
+        padding: 12px 12px 14px;
+        border-radius: 16px;
+        gap: 8px;
+    }
 
-    --entities-explorer-info-right: 240px;
+    .explorer3d__title {
+        font-size: clamp(1.18rem, 1.25vw, 1.48rem);
+        line-height: 1.02;
+    }
 
-    --entities-explorer-info-toggle-right: 350px;
-
-  }
+    .explorer3d__summary {
+        font-size: 11px;
+        line-height: 1.48;
+        max-width: 24ch;
+    }
 }
 
 /* desktop grande */
 @media (min-width: 1280px) {
     .explorer3d {
-        min-height: calc(var(--app-viewport-block, 100vh) - var(--entities-explorer-inner-top, 150px) - 24px);
-        padding-top: clamp(4px, 1svh, 14px);
+        min-height: calc(var(--app-viewport-block, 100vh) - var(--entities-explorer-inner-top, 118px) - 8px);
+        padding-top: clamp(10px, 1svh, 14px);
         padding-left: var(--entities-explorer-inner-left, clamp(44px, 5vw, 96px));
         padding-right: var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px));
     }
@@ -356,25 +366,25 @@
 
 @media (min-width: 981px) and (max-height: 920px) {
     .explorer3d {
-        padding-top: clamp(10px, 1.8svh, 20px);
-        padding-left: var(--entities-explorer-inner-left, clamp(44px, 5vw, 96px));
-        padding-right: var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px));
-    }
-
-    .explorer3d__info {
-        width: var(--entities-explorer-info-width, min(292px, calc(100% - 40px)));
-    }
-}
-
-@media (min-width: 981px) and (max-height: 840px) {
-    .explorer3d {
-        padding-top: clamp(14px, 2.4svh, 28px);
+        padding-top: 0;
         padding-left: var(--entities-explorer-inner-left, clamp(44px, 5vw, 96px));
         padding-right: var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px));
     }
 
     .explorer3d__info {
         width: var(--entities-explorer-info-width, min(278px, calc(100% - 36px)));
+    }
+}
+
+@media (min-width: 981px) and (max-height: 840px) {
+    .explorer3d {
+        padding-top: 0;
+        padding-left: var(--entities-explorer-inner-left, clamp(44px, 5vw, 96px));
+        padding-right: var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px));
+    }
+
+    .explorer3d__info {
+        width: var(--entities-explorer-info-width, min(264px, calc(100% - 32px)));
     }
 }
 

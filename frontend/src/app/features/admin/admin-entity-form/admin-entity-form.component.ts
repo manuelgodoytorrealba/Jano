@@ -15,6 +15,8 @@ import { FormsModule } from '@angular/forms';
 import {
   AdminAdditionalMediaItem,
   AdminCreateRelationPayload,
+  AdminEntityAliasKind,
+  AdminEntityAliasRecord,
   AdminEntityContributorRecord,
   AdminEntityResponse,
   AdminEntityRelationRecord,
@@ -55,6 +57,7 @@ import {
   shouldKeepAdminEntityPreviewOpen,
 } from './admin-entity-preview-hover.presenter';
 import { AdminEntitySidebarComponent } from './admin-entity-sidebar.component';
+import type { AdminEntityDiscoverabilityItem } from './admin-entity-sidebar.component';
 import {
   detectAdminEntityLinkMatch,
   insertAdminEntityLink,
@@ -265,6 +268,7 @@ previewContainer?: ElementRef<HTMLElement>;
 
   availableTags: Tag[] = [];
   entityTags: AdminEntityTagRecord[] = [];
+  entityAliases: AdminEntityAliasRecord[] = [];
   selectedTagId = '';
   newTagLabel = '';
   newTagCategory = '';
@@ -272,6 +276,20 @@ previewContainer?: ElementRef<HTMLElement>;
   tagsSaving = false;
   tagsMessage = '';
   tagsError = '';
+  aliasesSaving = false;
+  aliasesMessage = '';
+  aliasesError = '';
+  newAliasValue = '';
+  newAliasLocale: AdminLocale | 'und' = 'und';
+  newAliasKind: AdminEntityAliasKind = 'COMMON_NAME';
+  readonly aliasKinds: Array<{ value: AdminEntityAliasKind; label: string }> = [
+    { value: 'COMMON_NAME', label: 'Nombre comun' },
+    { value: 'ALTERNATE_TITLE', label: 'Titulo alternativo' },
+    { value: 'TRANSLITERATION', label: 'Transliteracion' },
+    { value: 'MISSPELLING', label: 'Error comun' },
+    { value: 'NICKNAME', label: 'Apodo' },
+    { value: 'SEARCH_HINT', label: 'Pista de busqueda' },
+  ];
 
   relations: AdminEntityRelationRecord[] = [];
   relationSearch = '';
@@ -676,6 +694,7 @@ previewContainer?: ElementRef<HTMLElement>;
       ? entity.contributors.map((contributor) => normalizeContributor(contributor))
       : [];
     this.entityTags = Array.isArray(entity.tags) ? entity.tags : [];
+    this.entityAliases = Array.isArray(entity.aliases) ? entity.aliases : [];
     this.syncPreviewEntityModel(true);
     this.schedulePreviewRefresh();
   }
@@ -724,6 +743,16 @@ previewContainer?: ElementRef<HTMLElement>;
       this.errorMessage = 'Título, slug y tipo son obligatorios.';
       this.entitySaveState = 'error';
       return;
+    }
+
+    if (payload.status === 'PUBLISHED' && this.shouldWarnBeforePublish()) {
+      const proceed = window.confirm(
+        'Esta entity se va a publicar con señales de discoverability incompletas. Puedes continuar, pero el search abstracto será más débil. ¿Quieres publicarla igualmente?',
+      );
+
+      if (!proceed) {
+        return;
+      }
     }
 
     this.saving = true;
@@ -1004,6 +1033,78 @@ previewContainer?: ElementRef<HTMLElement>;
 
   tagAlreadySelected(tagId: string): boolean {
     return this.entityTags.some((entityTag) => entityTag.tagId === tagId || entityTag.tag?.id === tagId);
+  }
+
+  aliasLocaleLabel(locale?: string | null): string {
+    if (!locale || locale === 'und') {
+      return 'Global';
+    }
+
+    if (locale === 'es') {
+      return 'ES';
+    }
+
+    if (locale === 'en') {
+      return 'EN';
+    }
+
+    return locale.toUpperCase();
+  }
+
+  aliasKindLabel(kind?: string | null): string {
+    return this.aliasKinds.find((entry) => entry.value === kind)?.label ?? kind ?? 'Alias';
+  }
+
+  addAlias() {
+    const value = this.newAliasValue.trim();
+    if (!this.entityId || !value || this.aliasesSaving) return;
+
+    this.aliasesSaving = true;
+    this.aliasesMessage = '';
+    this.aliasesError = '';
+
+    this.adminApi.createAlias(this.entityId, {
+      value,
+      locale: this.newAliasLocale,
+      kind: this.newAliasKind,
+    }).subscribe({
+      next: (entity) => {
+        this.aliasesSaving = false;
+        this.entityAliases = Array.isArray(entity.aliases) ? entity.aliases : [];
+        this.newAliasValue = '';
+        this.newAliasLocale = 'und';
+        this.newAliasKind = 'COMMON_NAME';
+        this.aliasesMessage = 'Alias anadido.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.aliasesSaving = false;
+        this.aliasesError = err?.error?.message ?? 'No se pudo anadir el alias.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  removeAlias(aliasId: string) {
+    if (!this.entityId || this.aliasesSaving) return;
+
+    this.aliasesSaving = true;
+    this.aliasesMessage = '';
+    this.aliasesError = '';
+
+    this.adminApi.deleteAlias(this.entityId, aliasId).subscribe({
+      next: (entity) => {
+        this.aliasesSaving = false;
+        this.entityAliases = Array.isArray(entity.aliases) ? entity.aliases : [];
+        this.aliasesMessage = 'Alias eliminado.';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.aliasesSaving = false;
+        this.aliasesError = err?.error?.message ?? 'No se pudo eliminar el alias.';
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   availableTagsToAttach(): Tag[] {
@@ -2047,6 +2148,112 @@ previewContainer?: ElementRef<HTMLElement>;
       entityLastSavedAt: this.entityLastSavedAt,
       isEdit: this.isEdit,
     });
+  }
+
+  get discoverabilityItems(): AdminEntityDiscoverabilityItem[] {
+    const aliasesCount = this.entityAliases.length;
+    const tagsCount = this.entityTags.length;
+    const translationCoverage = this.translationLocales.every((entry) => this.translationStatus(entry.locale) !== 'missing');
+    const structuredFieldCount = this.structuredSearchSignalCount();
+    const contextCount = this.relations.length + this.incomingRelations.length + this.sourceRefs.length;
+
+    return [
+      {
+        label: 'Lenguaje base',
+        detail: this.form.summary?.trim() || this.form.content?.trim()
+          ? 'La entity tiene resumen o contenido explicativo.'
+          : 'Añade al menos resumen o contenido para describirla mejor.',
+        done: !!(this.form.summary?.trim() || this.form.content?.trim()),
+      },
+      {
+        label: 'Aliases de búsqueda',
+        detail: aliasesCount
+          ? `${aliasesCount} alias registrados para memoria incompleta o nombres alternativos.`
+          : 'Añade 2-6 aliases útiles: nombre común, error frecuente o pista de búsqueda.',
+        done: aliasesCount > 0,
+      },
+      {
+        label: 'Taxonomía',
+        detail: tagsCount
+          ? `${tagsCount} tags conectan esta entity con rutas de descubrimiento.`
+          : 'Añade 1-3 tags para materiales, temas, cultura o tipo de objeto.',
+        done: tagsCount > 0,
+      },
+      {
+        label: 'Detalles estructurados',
+        detail: structuredFieldCount
+          ? `${structuredFieldCount} señales estructuradas alimentan el search.`
+          : 'Completa materiales, técnica, definición, disciplinas o ubicación según el tipo.',
+        done: structuredFieldCount > 0,
+      },
+      {
+        label: 'Contexto editorial',
+        detail: contextCount
+          ? `${contextCount} conexiones entre relaciones y fuentes refuerzan el contexto.`
+          : 'Añade al menos una relación o una fuente para reforzar el contexto.',
+        done: contextCount > 0,
+      },
+      {
+        label: 'Cobertura bilingüe',
+        detail: translationCoverage
+          ? 'Las traducciones principales ya están presentes.'
+          : 'Completa ES y EN para mejorar recall y presentación multilenguaje.',
+        done: translationCoverage,
+      },
+    ];
+  }
+
+  get discoverabilityCompletedCount(): number {
+    return this.discoverabilityItems.filter((item) => item.done).length;
+  }
+
+  get discoverabilityScoreLabel(): string {
+    return `${this.discoverabilityCompletedCount}/${this.discoverabilityItems.length} listo`;
+  }
+
+  get discoverabilityTone(): 'strong' | 'partial' | 'weak' {
+    const ratio = this.discoverabilityCompletedCount / this.discoverabilityItems.length;
+    if (ratio >= 0.84) return 'strong';
+    if (ratio >= 0.5) return 'partial';
+    return 'weak';
+  }
+
+  get discoverabilitySummary(): string {
+    switch (this.discoverabilityTone) {
+      case 'strong':
+        return 'La entity ya tiene buenas señales para search literal, conceptual y discovery editorial.';
+      case 'partial':
+        return 'La base está bien, pero aún faltan algunas señales para búsquedas abstractas y recuperación borrosa.';
+      default:
+        return 'La entity todavía depende demasiado del título exacto. Conviene enriquecerla antes de confiar en el search abstracto.';
+    }
+  }
+
+  get publishDiscoverabilityWarning(): string | null {
+    if (this.form.status !== 'PUBLISHED') {
+      return null;
+    }
+
+    if (!this.shouldWarnBeforePublish()) {
+      return null;
+    }
+
+    return 'Publicada así seguirá visible, pero su rendimiento en búsquedas vagas o recordadas a medias será limitado.';
+  }
+
+  private shouldWarnBeforePublish(): boolean {
+    return this.discoverabilityCompletedCount < 4;
+  }
+
+  private structuredSearchSignalCount(): number {
+    const values = Object.values(this.detailsForm ?? {});
+    return values.filter((value) => {
+      if (typeof value === 'number') {
+        return Number.isFinite(value);
+      }
+
+      return typeof value === 'string' && value.trim().length > 0;
+    }).length;
   }
 
   get hoveredSlug(): string | null {

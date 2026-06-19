@@ -164,6 +164,23 @@ export class AdminHomeDecksComponent {
     });
   }
 
+  materializeStarter(starter: HomeDeckStarter): void {
+    this.saving = true;
+    this.feedback = '';
+
+    this.api.materializeVirtualDeck(starter.slug).subscribe({
+      next: (deck) => {
+        this.saving = false;
+        this.feedback = `Deck base "${deck.title}" materializado con sus entidades iniciales.`;
+        this.refresh();
+      },
+      error: () => {
+        this.saving = false;
+        this.feedback = `No se pudo materializar "${starter.title}".`;
+      },
+    });
+  }
+
   importMissingStarters(
     surface: HomeDeckSurfaceValue,
     starterStates: Array<{ starter: HomeDeckStarter; imported: boolean }>,
@@ -355,6 +372,10 @@ export class AdminHomeDecksComponent {
   starterDecksForSurface(surface: HomeDeckSurfaceValue | undefined): HomeDeckStarter[] {
     const safeSurface = surface ?? 'HOME';
     return this.starterDecks.filter((starter) => starter.surface === safeSurface);
+  }
+
+  canMaterializeStarter(starter: HomeDeckStarter): boolean {
+    return starter.surface === 'HOME' && starter.slug === 'place';
   }
 
   selectedCtaRouteDetail(): string {

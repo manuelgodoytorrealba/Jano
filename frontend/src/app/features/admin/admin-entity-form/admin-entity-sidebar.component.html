@@ -37,6 +37,27 @@
         <span class="admin-sidebar__eyebrow">Editor dashboard</span>
         <h2 class="admin-sidebar__title">{{ title || 'Entity sin título' }}</h2>
         <span [class]="saveStatusClass">{{ saveStatusLabel }}</span>
+        <section class="admin-discovery-card" [class.admin-discovery-card--strong]="discoverabilityTone === 'strong'" [class.admin-discovery-card--partial]="discoverabilityTone === 'partial'">
+          <div class="admin-discovery-card__head">
+            <span class="admin-discovery-card__eyebrow">Search discoverability</span>
+            <span class="admin-discovery-card__score">{{ discoverabilityScoreLabel }}</span>
+          </div>
+          <p class="admin-discovery-card__summary">{{ discoverabilitySummary }}</p>
+          <div class="admin-discovery-card__list">
+            @for (item of discoverabilityItems; track item.label) {
+              <div class="admin-discovery-card__item" [class.is-done]="item.done">
+                <span class="admin-discovery-card__mark">{{ item.done ? 'OK' : 'TODO' }}</span>
+                <div class="admin-discovery-card__copy">
+                  <strong>{{ item.label }}</strong>
+                  <span>{{ item.detail }}</span>
+                </div>
+              </div>
+            }
+          </div>
+          @if (publishWarning) {
+            <div class="admin-discovery-card__warning">{{ publishWarning }}</div>
+          }
+        </section>
         <div class="admin-sidebar__actions">
           <a class="admin-sidebar__action admin-sidebar__action--ghost" [attr.href]="cancelHref">Cancelar</a>
           <button

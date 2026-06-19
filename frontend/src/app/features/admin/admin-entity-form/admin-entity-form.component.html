@@ -15,6 +15,11 @@
       [saveDisabled]="saving || loading"
       [loading]="loading"
       [navItems]="sidebarSections"
+      [discoverabilityScoreLabel]="discoverabilityScoreLabel"
+      [discoverabilityTone]="discoverabilityTone"
+      [discoverabilitySummary]="discoverabilitySummary"
+      [discoverabilityItems]="discoverabilityItems"
+      [publishWarning]="publishDiscoverabilityWarning"
       (toggleSidebar)="toggleAdminSidebar()"
       (saveStay)="submit('stay')"
       (saveBack)="submit('back')"
@@ -286,6 +291,43 @@
 
                 @if (tagsMessage) { <small class="success-text">{{ tagsMessage }}</small> }
                 @if (tagsError) { <small class="error-text">{{ tagsError }}</small> }
+              </div>
+            </div>
+
+            <div class="field full">
+              <span>Aliases de busqueda</span>
+              <div class="tag-admin">
+                <div class="tag-admin__current">
+                  @if (entityAliases.length) {
+                    @for (alias of entityAliases; track alias.id) {
+                      <button type="button" class="tag-chip tag-chip--alias" (click)="removeAlias(alias.id)">
+                        {{ alias.value }}
+                        <small>{{ aliasLocaleLabel(alias.locale) }} · {{ aliasKindLabel(alias.kind) }}</small>
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    }
+                  } @else {
+                    <span class="muted">Sin aliases definidos.</span>
+                  }
+                </div>
+
+                <div class="tag-admin__create tag-admin__create--alias">
+                  <input type="text" [(ngModel)]="newAliasValue" name="newAliasValue" placeholder="Ej. caja japonesa secreta" />
+                  <select [(ngModel)]="newAliasLocale" name="newAliasLocale">
+                    <option value="und">Global</option>
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                  </select>
+                  <select [(ngModel)]="newAliasKind" name="newAliasKind">
+                    @for (aliasKind of aliasKinds; track aliasKind.value) {
+                      <option [value]="aliasKind.value">{{ aliasKind.label }}</option>
+                    }
+                  </select>
+                  <button class="btn" type="button" [disabled]="!newAliasValue.trim() || aliasesSaving" (click)="addAlias()">Añadir alias</button>
+                </div>
+
+                @if (aliasesMessage) { <small class="success-text">{{ aliasesMessage }}</small> }
+                @if (aliasesError) { <small class="error-text">{{ aliasesError }}</small> }
               </div>
             </div>
           }

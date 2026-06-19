@@ -1,0 +1,21 @@
+<section class="recommended-section recommended-section--related">
+  <div class="recommended-section__head recommended-section__head--split">
+    <div>
+      <div class="recommended-section__titleline">
+        <span class="recommended-section__number">6</span>
+        <p class="recommended-section__eyebrow">Related Entities</p>
+      </div>
+      <h2>Direct graph neighbors</h2>
+    </div>
+    <span class="recommended-card__meta">See all connections →</span>
+  </div>
+
+  <div class="recommended-chip-grid">
+    @for (item of items(); track item.id) {
+      <a class="recommended-chip" [routerLink]="['/recommended']" [queryParams]="{ entity: item.slug }">
+        <strong>{{ item.title }}</strong>
+        <p>{{ item.summary ?? typeLabel(item.type) }}</p>
+      </a>
+    }
+  </div>
+</section>

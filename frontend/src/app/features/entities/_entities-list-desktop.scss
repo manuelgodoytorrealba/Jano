@@ -31,16 +31,16 @@
 
 @media (min-width: 1101px) and (max-width: 1500px) {
   :host {
-    --entities-shell-top-offset: 122px;
-    --entities-stage-top-padding: 180px;
-    --entities-explorer-inner-top: 142px;
-    --entities-explorer-inner-left: clamp(28px, 3vw, 52px);
-    --entities-explorer-inner-right: clamp(28px, 3.4vw, 60px);
-    --entities-explorer-info-top: 132px;
-    --entities-explorer-info-right: clamp(24px, 2.4vw, 40px);
-    --entities-explorer-info-width: min(296px, calc(100% - 48px));
-    --entities-explorer-info-toggle-top: calc(var(--entities-explorer-info-top) + 14px);
-    --entities-explorer-info-toggle-right: clamp(28px, 2.6vw, 44px);
+    --entities-shell-top-offset: 112px;
+    --entities-stage-top-padding: 156px;
+    --entities-explorer-inner-top: 136px;
+    --entities-explorer-inner-left: clamp(22px, 2.8vw, 44px);
+    --entities-explorer-inner-right: clamp(22px, 3vw, 48px);
+    --entities-explorer-info-top: 136px;
+    --entities-explorer-info-right: clamp(18px, 2vw, 30px);
+    --entities-explorer-info-width: min(278px, calc(100% - 40px));
+    --entities-explorer-info-toggle-top: calc(var(--entities-explorer-info-top) + 12px);
+    --entities-explorer-info-toggle-right: clamp(18px, 2vw, 30px);
   }
 }
 
@@ -95,16 +95,16 @@
 
 @media (min-width: 981px) and (max-height: 820px) {
   :host {
-    --entities-shell-top-offset: 118px;
-    --entities-rail-top: 130px;
-    --entities-stage-top-padding: 148px;
-    --entities-explorer-inner-top: 120px;
-    --entities-explorer-inner-left: clamp(18px, 3vw, 42px);
-    --entities-explorer-inner-right: clamp(116px, 10vw, 156px);
-    --entities-explorer-info-top: 120px;
-    --entities-explorer-info-right: 250px;
-    --entities-explorer-info-width: min(286px, calc(100% - 40px));
-    --entities-explorer-info-toggle-top: 138px;
-    --entities-explorer-info-toggle-right: 334px;
+    --entities-shell-top-offset: 108px;
+    --entities-rail-top: 122px;
+    --entities-stage-top-padding: 138px;
+    --entities-explorer-inner-top: 126px;
+    --entities-explorer-inner-left: clamp(18px, 2.6vw, 36px);
+    --entities-explorer-inner-right: clamp(18px, 3vw, 42px);
+    --entities-explorer-info-top: 128px;
+    --entities-explorer-info-right: 18px;
+    --entities-explorer-info-width: min(270px, calc(100% - 36px));
+    --entities-explorer-info-toggle-top: 122px;
+    --entities-explorer-info-toggle-right: 18px;
   }
 }

@@ -1,19 +1,42 @@
 <section class="recommended-page">
-  <h1 class="sr-only">Recommended art picks</h1>
-  <app-entity-deck
-    class="recommended-page__deck"
-    [items]="deckItems()"
-    [backgroundImage]="backgroundImage()"
-    [mobileVariant]="'editorial'"
-    [showRail]="false"
-    [showDots]="false"
-    [showNav]="false"
-    [showBottomSearch]="false"
-    [fullViewport]="true"
-    (cardClick)="onCardClick($event)"
-    (expandClick)="onExpandClick($event)"
-    (railClick)="onRailClick($event)"
-    (searchSubmit)="onSearchSubmit($event)"
-    (tabChange)="onTabChange($event)"
-  />
+  <h1 class="sr-only">Curated discovery</h1>
+
+  @if (page(); as page) {
+    <div class="recommended-page__layout">
+      <div class="recommended-page__fold">
+        <div class="recommended-page__row recommended-page__row--top">
+          <app-recommended-staff-picks class="recommended-page__staff" [picks]="page.staffPicks"></app-recommended-staff-picks>
+
+          <app-recommended-discovery-map
+            class="recommended-page__map"
+            [entities]="page.discoveryEntities"
+            [selectedEntityId]="page.selectedEntity.id"
+            [visibleEntityIds]="visibleDiscoveryIds()"
+            (selectEntity)="selectEntity($event)"
+            (addEntity)="onAddEntity($event)"
+            (removeEntity)="onRemoveEntity($event)">
+          </app-recommended-discovery-map>
+        </div>
+
+        <app-recommended-entity-panel
+          class="recommended-page__panel"
+          [entity]="page.selectedEntity"
+          [selectedTab]="selectedTab()"
+          [tabGroups]="page.tabGroups"
+          (selectedTabChange)="selectedTab.set($event)">
+        </app-recommended-entity-panel>
+      </div>
+
+      <div class="recommended-page__row recommended-page__row--middle">
+        <app-recommended-key-entities class="recommended-page__key" [items]="page.keyEntities"></app-recommended-key-entities>
+        <app-recommended-related-entities class="recommended-page__related" [items]="page.relatedEntities"></app-recommended-related-entities>
+      </div>
+
+      <app-recommended-recently-added class="recommended-page__recent" [items]="page.recentlyAdded"></app-recommended-recently-added>
+    </div>
+  } @else if (loading()) {
+    <div class="recommended-page__loading">Loading curated discovery…</div>
+  } @else {
+    <div class="recommended-page__loading">Curated discovery is not available yet.</div>
+  }
 </section>

@@ -130,6 +130,34 @@ export type AdminEntityTagRecord = {
   } | null;
 };
 
+export type AdminEntityAliasKind =
+  | 'ALTERNATE_TITLE'
+  | 'COMMON_NAME'
+  | 'MISSPELLING'
+  | 'TRANSLITERATION'
+  | 'NICKNAME'
+  | 'SEARCH_HINT';
+
+export type AdminEntityAliasPayload = {
+  locale?: AdminLocale | 'und';
+  value: string;
+  kind?: AdminEntityAliasKind;
+  weight?: number | null;
+  source?: string | null;
+};
+
+export type AdminEntityAliasRecord = {
+  id: string;
+  entityId?: string | null;
+  locale?: AdminLocale | 'und' | string | null;
+  value: string;
+  kind: AdminEntityAliasKind | string;
+  weight?: number | null;
+  source?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type AdminEntityArtworkRecord = {
   authorNation?: string | null;
   technique?: string | null;
@@ -420,6 +448,7 @@ export type AdminEntityResponse = {
   sourceRefs?: AdminEntitySourceRefRecord[];
   contributors?: AdminEntityContributorRecord[];
   tags?: AdminEntityTagRecord[];
+  aliases?: AdminEntityAliasRecord[];
   translations?: AdminEntityTranslation[];
   translationStatus?: AdminTranslationStatus;
 };
@@ -461,6 +490,18 @@ export class AdminEntitiesApi {
   }
   upsertTranslation(id: string, locale: AdminLocale, data: AdminEntityTranslationPayload) {
     return this.http.patch<AdminEntityResponse>(this.baseUrl + '/' + id + '/translations/' + locale, data);
+  }
+
+  createAlias(id: string, data: AdminEntityAliasPayload) {
+    return this.http.post<AdminEntityResponse>(`${this.baseUrl}/${id}/aliases`, data);
+  }
+
+  updateAlias(id: string, aliasId: string, data: Partial<AdminEntityAliasPayload>) {
+    return this.http.patch<AdminEntityResponse>(`${this.baseUrl}/${id}/aliases/${aliasId}`, data);
+  }
+
+  deleteAlias(id: string, aliasId: string) {
+    return this.http.delete<AdminEntityResponse>(`${this.baseUrl}/${id}/aliases/${aliasId}`);
   }
 
 

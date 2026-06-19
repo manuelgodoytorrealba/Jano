@@ -1,0 +1,51 @@
+@if (entity(); as entity) {
+  <section class="recommended-section recommended-section--panel recommended-panel">
+    <div class="recommended-panel__top">
+      <div class="recommended-panel__summary">
+        <div class="recommended-section__titleline">
+          <span class="recommended-section__number">3</span>
+          <p class="recommended-section__eyebrow">Selected Entity</p>
+        </div>
+        <h2>{{ entity.title }}</h2>
+        <div class="recommended-panel__meta">
+          <span class="recommended-pill">{{ typeLabel(entity.type) }}</span>
+          @if (meta(entity); as meta) {
+            <span>{{ meta }}</span>
+          }
+        </div>
+        @if (description(entity); as description) {
+          <div class="recommended-panel__description">
+            <app-rich-text [text]="description"></app-rich-text>
+          </div>
+        }
+        <a class="recommended-panel__cta" [routerLink]="['/entity', entity.slug]">View entity page →</a>
+      </div>
+
+      <div class="recommended-panel__content">
+        <div class="recommended-panel__tabs" role="tablist" aria-label="Selected entity shelves">
+          @for (tab of tabs; track tab) {
+            <button
+              type="button"
+              class="recommended-panel__tab"
+              [class.is-active]="selectedTab() === tab"
+              (click)="selectedTabChange.emit(tab)">
+              {{ tabLabel(tab) }}
+            </button>
+          }
+        </div>
+
+        <div class="recommended-panel__shelf">
+          <div class="recommended-section__titleline recommended-panel__shelf-title">
+            <span class="recommended-section__number">4</span>
+            <p class="recommended-section__eyebrow">Entity Shelf</p>
+          </div>
+          <app-recommended-entity-shelf
+            layout="shelf"
+            [kind]="selectedTab() === 'curations' ? 'curations' : 'entities'"
+            [items]="itemsForTab(selectedTab())">
+          </app-recommended-entity-shelf>
+        </div>
+      </div>
+    </div>
+  </section>
+}

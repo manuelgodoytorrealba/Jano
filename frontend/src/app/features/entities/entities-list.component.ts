@@ -95,7 +95,7 @@ export class EntitiesListComponent {
         this.curatedDeckMode.set(isCuratedDeck);
 
         if (isCuratedDeck) {
-          this.filtersPanelOpen.set(false);
+          this.filtersPanelOpen.set(true);
           this.closeFilterMenu();
         }
       }),

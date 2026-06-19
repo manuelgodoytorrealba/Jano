@@ -77,6 +77,13 @@ export class HomeDecksController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
+  @Post('materialize/:slug')
+  materializeVirtualDeck(@Param('slug') slug: string) {
+    return this.service.materializeVirtualDeck(slug);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateHomeDeckDto) {
     return this.service.update(id, dto);

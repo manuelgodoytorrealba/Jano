@@ -137,6 +137,7 @@ async function resetDatabase() {
   await prisma.collectionEntity.deleteMany();
   await prisma.savedEntity.deleteMany();
   await prisma.entityTag.deleteMany();
+  await prisma.entityAlias.deleteMany();
 
   await prisma.entityMedia.deleteMany();
   await prisma.sourceRefTranslation.deleteMany();
@@ -431,6 +432,72 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
     essay: 'In art, violence can manifest as aggression, trauma, imposition, rupture, or visual denunciation.',
     concept: { definition: 'A concept associated with harm, imposition, trauma, rupture, and conflict.' },
   },
+  muerte: {
+    title: 'Death',
+    shortDescription: 'Finitude, mourning, loss, ritual, and symbolic passage.',
+    essay: 'Death in art can appear as mourning, memory, ritual, vanitas, historical catastrophe, or spiritual transition.',
+    concept: { definition: 'A concept tied to finitude, mourning, loss, ritual, and the representation of disappearance.' },
+  },
+  poder: {
+    title: 'Power',
+    shortDescription: 'Authority, domination, prestige, and political representation.',
+    essay: 'Power is represented through portraiture, institutions, architecture, the disciplined body, spectacle, and symbolic authority.',
+    concept: { definition: 'A concept associated with authority, domination, legitimacy, prestige, and political representation.' },
+  },
+  religion: {
+    title: 'Religion',
+    shortDescription: 'Belief, ritual, iconography, and spiritual experience.',
+    essay: 'Religion organizes images of devotion, sacrifice, community, transcendence, mystery, and symbolic order.',
+    concept: { definition: 'A concept linked to belief, ritual, devotion, transcendence, and sacred representation.' },
+  },
+  naturaleza: {
+    title: 'Nature',
+    shortDescription: 'Landscape, living matter, climate, and the more-than-human world.',
+    essay: 'Nature may appear as landscape, refuge, threat, matter, symbol, environment, or a field of transformation.',
+    concept: { definition: 'A concept associated with landscape, living matter, environment, climate, and the natural world.' },
+  },
+  ciudad: {
+    title: 'City',
+    shortDescription: 'Urban modernity, architecture, crowds, and solitude.',
+    essay: 'The city condenses modern experience through architecture, labor, crowds, spectacle, anonymity, and new ways of seeing.',
+    concept: { definition: 'A concept tied to urban life, architecture, crowds, infrastructure, and modern experience.' },
+  },
+  deporte: {
+    title: 'Sport',
+    shortDescription: 'Competition, movement, spectacle, and the social body.',
+    essay: 'Sport connects movement, discipline, competition, media, mass culture, collective identity, and the aesthetics of performance.',
+    concept: { definition: 'A concept linked to competition, movement, spectacle, discipline, and collective identity.' },
+  },
+  futbol: {
+    title: 'Football',
+    shortDescription: 'A collective game shaped by ritual, spectacle, and identity.',
+    essay: 'Football can be read through the body, movement, ritual, city, mass media, collective identity, and popular culture.',
+    concept: { definition: 'A concept connected to football as ritual, spectacle, movement, collective identity, and popular culture.' },
+  },
+  genero: {
+    title: 'Gender',
+    shortDescription: 'Identity, social roles, the body, and representation.',
+    essay: 'Gender helps interpret how images construct femininity, masculinity, desire, norm, difference, and embodied identity.',
+    concept: { definition: 'A concept associated with gender identity, social roles, representation, norm, and difference.' },
+  },
+  vejez: {
+    title: 'Old Age',
+    shortDescription: 'Aging, fragility, memory, and the time-marked body.',
+    essay: 'Old age appears in art as trace, dignity, vulnerability, wisdom, decline, and an acute awareness of mortality.',
+    concept: { definition: 'A concept tied to aging, fragility, experience, memory, and the time-marked body.' },
+  },
+  juventud: {
+    title: 'Youth',
+    shortDescription: 'Vitality, promise, beauty, rebellion, and formation.',
+    essay: 'Youth can appear as idealization, physical energy, desire, rebellion, apprenticeship, style, and social projection.',
+    concept: { definition: 'A concept associated with vitality, formation, beauty, desire, rebellion, and becoming.' },
+  },
+  himitsubako: {
+    title: 'Himitsubako',
+    shortDescription: 'A Japanese wooden puzzle box associated with yosegi marquetry, secrecy, and manual ingenuity.',
+    essay: 'Himitsubako names a Japanese wooden puzzle box opened through a hidden sequence of movements. It can be read through craft, wood, object memory, dexterity, and Japanese visual culture.',
+    concept: { definition: 'A concept associated with Japanese wooden puzzle boxes, hidden mechanisms, craft tradition, and yosegi marquetry.' },
+  },
   'museo-del-prado': {
     title: 'Museo del Prado',
     shortDescription: 'A national art museum located in Madrid.',
@@ -509,6 +576,78 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
       disciplines: 'Sculpture, Installation, Drawing',
       bioShort: 'A foundational sculptor of contemporary art, associated with memory, the body, and motherhood.',
       links: 'https://www.tate.org.uk/art/artists/louise-bourgeois-2351',
+    },
+  },
+  'joan-miro': {
+    title: 'Joan Miro',
+    shortDescription: 'A Catalan artist associated with Surrealism, signs, play, and poetic abstraction.',
+    essay: 'Joan Miro developed a visual language of signs, stars, bodies, and open space between Surrealism, play, and modern abstraction.',
+    artist: {
+      country: 'Spain',
+      city: 'Barcelona',
+      disciplines: 'Painting, Drawing, Sculpture, Ceramics',
+      bioShort: 'A major 20th-century artist known for his poetic signs, playful forms, and dreamlike visual language.',
+      links: 'https://www.fmirobcn.org/en/',
+    },
+  },
+  'diego-velazquez': {
+    title: 'Diego Velazquez',
+    shortDescription: 'A Spanish Baroque painter essential for thinking about power, looking, and representation.',
+    essay: 'Diego Velazquez transformed court portraiture into a subtle investigation of power, presence, vision, and pictorial artifice.',
+    artist: {
+      country: 'Spain',
+      city: 'Seville',
+      disciplines: 'Painting',
+      bioShort: 'A central Baroque painter whose work reshaped portraiture, space, and the politics of looking.',
+      links: 'https://www.museodelprado.es',
+    },
+  },
+  'edward-hopper': {
+    title: 'Edward Hopper',
+    shortDescription: 'An American painter of urban solitude, waiting, light, and modern life.',
+    essay: 'Edward Hopper turned architecture, artificial light, and everyday scenes into images of isolation and urban modernity.',
+    artist: {
+      country: 'United States',
+      city: 'Nyack',
+      disciplines: 'Painting, Printmaking',
+      bioShort: 'A defining painter of urban solitude and quiet psychological tension in 20th-century America.',
+      links: 'https://www.moma.org',
+    },
+  },
+  'francis-bacon': {
+    title: 'Francis Bacon',
+    shortDescription: 'A painter of the body, violence, flesh, enclosure, and modern anguish.',
+    essay: 'Francis Bacon treated the human figure as vulnerable matter under pressure, producing intense images of bodily and psychological violence.',
+    artist: {
+      country: 'Ireland / United Kingdom',
+      city: 'Dublin',
+      disciplines: 'Painting',
+      bioShort: 'A major 20th-century painter known for distorted figures, existential intensity, and violent psychological space.',
+      links: 'https://www.tate.org.uk',
+    },
+  },
+  'marcel-duchamp': {
+    title: 'Marcel Duchamp',
+    shortDescription: 'An artist who transformed authorship, the object, play, and the definition of art.',
+    essay: 'Marcel Duchamp shifted art toward choice, irony, language, and conceptual play, radically challenging the museum object.',
+    artist: {
+      country: 'France / United States',
+      city: 'Blainville-Crevon',
+      disciplines: 'Conceptual art, Sculpture, Painting',
+      bioShort: 'A foundational modern artist whose readymades redefined authorship, objecthood, and artistic intention.',
+      links: 'https://www.moma.org',
+    },
+  },
+  'andy-warhol': {
+    title: 'Andy Warhol',
+    shortDescription: 'A Pop artist associated with consumption, celebrity, repetition, and media imagery.',
+    essay: 'Andy Warhol read modern visual culture through advertising, fame, mechanical repetition, surface, and mass media circulation.',
+    artist: {
+      country: 'United States',
+      city: 'Pittsburgh',
+      disciplines: 'Painting, Printmaking, Film',
+      bioShort: 'A central Pop artist who transformed celebrity, repetition, and media culture into artistic material.',
+      links: 'https://www.moma.org',
     },
   },
   'saturno-devorando-a-su-hijo': {
@@ -595,6 +734,146 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
       state: 'Preserved',
     },
   },
+  'las-meninas': {
+    title: 'Las Meninas',
+    shortDescription: 'Velazquez\'s landmark work on power, looking, representation, and courtly space.',
+    essay: '[[Las Meninas]] opens a rich reading of [[power]], vision, childhood, spatial construction, and the politics of representation in the Baroque.',
+    artwork: {
+      authorNation: 'Spanish',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '318 x 276 cm',
+      location: 'Museo del Prado, Madrid',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  'el-viejo-guitarrista': {
+    title: 'The Old Guitarist',
+    shortDescription: 'A Blue Period work by Picasso on old age, poverty, the body, and melancholy.',
+    essay: 'This work can be read through [[old age]], vulnerability, poverty, the body, and music as a visual image of modern suffering.',
+    artwork: {
+      authorNation: 'Spanish',
+      technique: 'Oil on panel',
+      materials: 'Oil paint',
+      dimensions: '122.9 x 82.6 cm',
+      location: 'Art Institute of Chicago',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  'las-senoritas-de-avignon': {
+    title: 'Les Demoiselles d\'Avignon',
+    shortDescription: 'A key Picasso work for Cubism, the body, gender, and modern rupture.',
+    essay: '[[Les Demoiselles d\'Avignon]] opens readings around [[body]], [[gender]], visual violence, masking, and the emergence of [[cubism]].',
+    artwork: {
+      authorNation: 'Spanish',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '243.9 x 233.7 cm',
+      location: 'MoMA, New York',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  'el-carnaval-de-arlequin': {
+    title: 'Harlequin\'s Carnival',
+    shortDescription: 'A Miro work about play, signs, bodies, and surrealist space.',
+    essay: 'This work connects [[surrealism]], youthful play, bodily fragmentation, fantasy, and poetic visual freedom.',
+    artwork: {
+      authorNation: 'Spanish',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '66 x 93 cm',
+      location: 'Albright-Knox Art Gallery, Buffalo',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  nighthawks: {
+    title: 'Nighthawks',
+    shortDescription: 'A Hopper city scene about night, isolation, and modern urban life.',
+    essay: '[[Nighthawks]] condenses [[city]], solitude, artificial light, waiting, and the emotional atmosphere of modernity.',
+    artwork: {
+      authorNation: 'American',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '84.1 x 152.4 cm',
+      location: 'Art Institute of Chicago',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  'estudio-papa-inocencio-x': {
+    title: 'Study after Velazquez\'s Portrait of Pope Innocent X',
+    shortDescription: 'Bacon reinterprets power, the body, the scream, and psychological violence.',
+    essay: 'This work crosses [[power]], [[religion]], the body, fear, enclosure, and the violence of modern representation.',
+    artwork: {
+      authorNation: 'Irish-British',
+      technique: 'Oil on canvas',
+      materials: 'Oil paint',
+      dimensions: '153 x 118 cm',
+      location: 'Des Moines Art Center',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  fountain: {
+    title: 'Fountain',
+    shortDescription: 'Duchamp\'s readymade that questions authorship, the object, and the museum.',
+    essay: '[[Fountain]] transforms an everyday object into a question about art, institutional power, conceptual play, and modern culture.',
+    artwork: {
+      authorNation: 'French-American',
+      technique: 'Readymade',
+      materials: 'Porcelain urinal',
+      dimensions: 'Variable / edition-based',
+      location: 'Multiple collections',
+      collection: 'Readymade / replica editions',
+      state: 'Preserved',
+    },
+  },
+  'marilyn-diptych': {
+    title: 'Marilyn Diptych',
+    shortDescription: 'A Warhol work about celebrity, repetition, death, and media image culture.',
+    essay: '[[Marilyn Diptych]] connects [[death]], fame, repetition, mechanical image circulation, and the visual logic of Pop Art.',
+    artwork: {
+      authorNation: 'American',
+      technique: 'Acrylic and silkscreen ink on canvas',
+      materials: 'Synthetic polymer paint and silkscreen ink',
+      dimensions: '205.44 x 289.56 cm',
+      location: 'Tate Modern, London',
+      collection: 'Permanent collection',
+      state: 'Preserved',
+    },
+  },
+  'bottle-rack': {
+    title: 'Bottle Rack',
+    shortDescription: 'A Duchamp readymade about the found object, choice, and conceptual gesture.',
+    essay: '[[Bottle Rack]] helps frame the found object, urban modernity, anti-art, irony, and conceptual displacement.',
+    artwork: {
+      authorNation: 'French-American',
+      technique: 'Readymade',
+      materials: 'Galvanized iron bottle rack',
+      dimensions: 'Variable / edition-based',
+      location: 'Multiple collections',
+      collection: 'Readymade / replica editions',
+      state: 'Preserved',
+    },
+  },
+  futbolistas: {
+    title: 'Footballers',
+    shortDescription: 'A demo editorial work connecting art, sport, the body, and the crowd.',
+    essay: '[[Footballers]] works as a discovery node for reading football through the body, movement, competition, city, youth, and collective identity.',
+    artwork: {
+      authorNation: 'Unknown / editorial demo',
+      technique: 'Editorial demo artwork',
+      materials: 'Mixed media / placeholder',
+      dimensions: 'Variable',
+      location: 'JANO demo dataset',
+      collection: 'Demo editorial collection',
+      state: 'Preserved',
+    },
+  },
 };
 
 const SOURCE_EN_BY_KEY: Record<string, { title: string; author: string | null; publisher: string | null }> = {
@@ -637,6 +916,30 @@ const SOURCE_REF_EN_BY_KEY: Record<string, { quote: string | null; note: string 
   'las-dos-fridas::https://www.moma.org/artists/2963': { quote: null, note: 'Contextual reference for the artist and the work.' },
   'louise-bourgeois::https://www.tate.org.uk': { quote: null, note: 'Institutional and contextual reference.' },
   'maman::https://www.tate.org.uk': { quote: null, note: 'Contextual reference on the artist and her work.' },
+};
+
+const ENTITY_ALIASES_BY_SLUG: Record<string, Array<{
+  locale: 'es' | 'en' | 'und';
+  kind: 'ALTERNATE_TITLE' | 'COMMON_NAME' | 'MISSPELLING' | 'TRANSLITERATION' | 'NICKNAME' | 'SEARCH_HINT';
+  value: string;
+  weight?: number;
+  source?: string;
+}>> = {
+  himitsubako: [
+    { locale: 'und', kind: 'COMMON_NAME', value: 'himitsubako', weight: 1, source: 'SEED' },
+    { locale: 'und', kind: 'MISSPELLING', value: 'jimikubako', weight: 0.85, source: 'SEED' },
+    { locale: 'es', kind: 'SEARCH_HINT', value: 'caja japonesa secreta', weight: 1, source: 'SEED' },
+    { locale: 'es', kind: 'SEARCH_HINT', value: 'caja japonesa de madera', weight: 0.95, source: 'SEED' },
+    { locale: 'es', kind: 'SEARCH_HINT', value: 'caja japonesa rompecabezas', weight: 0.95, source: 'SEED' },
+    { locale: 'en', kind: 'COMMON_NAME', value: 'japanese puzzle box', weight: 1, source: 'SEED' },
+    { locale: 'en', kind: 'SEARCH_HINT', value: 'japanese secret box', weight: 0.95, source: 'SEED' },
+    { locale: 'en', kind: 'TRANSLITERATION', value: 'secret japanese wooden box', weight: 0.8, source: 'SEED' },
+  ],
+  fountain: [
+    { locale: 'en', kind: 'SEARCH_HINT', value: 'porcelain urinal artwork', weight: 0.95, source: 'SEED' },
+    { locale: 'en', kind: 'SEARCH_HINT', value: 'museum object duchamp urinal', weight: 0.95, source: 'SEED' },
+    { locale: 'es', kind: 'SEARCH_HINT', value: 'urinario de porcelana de duchamp', weight: 0.95, source: 'SEED' },
+  ],
 };
 
 const RELATION_EN_BY_KEY: Record<string, string> = {
@@ -868,6 +1171,40 @@ async function seedEntityTranslations() {
         where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
         update: periodEn,
         create: { entityId: entity.id, locale: 'en', ...periodEn },
+      });
+    }
+  }
+}
+
+async function seedEntityAliases() {
+  const entities = await prisma.entity.findMany({
+    select: { id: true, slug: true },
+  });
+
+  for (const entity of entities) {
+    const aliases = ENTITY_ALIASES_BY_SLUG[entity.slug] ?? [];
+    for (const alias of aliases) {
+      await prisma.entityAlias.upsert({
+        where: {
+          entityId_locale_kind_value: {
+            entityId: entity.id,
+            locale: alias.locale,
+            kind: alias.kind,
+            value: alias.value,
+          },
+        },
+        update: {
+          weight: alias.weight ?? null,
+          source: alias.source ?? 'SEED',
+        },
+        create: {
+          entityId: entity.id,
+          locale: alias.locale,
+          kind: alias.kind,
+          value: alias.value,
+          weight: alias.weight ?? null,
+          source: alias.source ?? 'SEED',
+        },
       });
     }
   }
@@ -1489,6 +1826,20 @@ async function main() {
 
   const juventud = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Juventud', slug: 'juventud', summary: 'Energía, formación, belleza, rebeldía y promesa.', content: 'La juventud aparece como ideal, potencia física, aprendizaje, deseo, moda, rebeldía y construcción social.' });
   await prisma.conceptDetails.create({ data: { entityId: juventud.id, definition: 'Concepto asociado a energía vital, promesa, cuerpo joven e identidad en formación.' } });
+  const himitsubako = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Himitsubako',
+    slug: 'himitsubako',
+    summary: 'Caja japonesa de madera con mecanismo oculto y apertura secuencial.',
+    content: 'Himitsubako designa una caja japonesa de rompecabezas hecha en madera, ligada a la marquetería yosegi, al secreto, al gesto manual y al ingenio artesanal. Sirve como caso fuerte para búsquedas como caja japonesa secreta, caja de madera con truco o japanese puzzle box.',
+    contentLevel: 'INTERMEDIATE',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: himitsubako.id,
+      definition: 'Concepto asociado a cajas japonesas de rompecabezas en madera, apertura oculta, secuencias manuales y tradición artesanal.',
+    },
+  });
 
   console.log('📍 Creating places...');
 
@@ -2265,6 +2616,10 @@ async function main() {
     ['genero', 'Género', [genero, frida, dosFridas, demoiselles, articleBody]],
     ['ciudad', 'Ciudad', [ciudad, nighthawks, warhol, marilynDiptych, futbolistas]],
     ['vanguardias', 'Vanguardias', [cubismo, surrealismo, dadaismo, popArt, picasso, dali, miro, duchamp, warhol, articleAvant]],
+    ['japon', 'Japón', [himitsubako]],
+    ['madera', 'Madera', [himitsubako, fountain, bottleRack]],
+    ['artesania', 'Artesanía', [himitsubako]],
+    ['objeto', 'Objeto', [himitsubako, fountain, bottleRack, duchamp]],
   ] as const;
 
   for (const [slug, label, entities] of discoveryTags) {
@@ -2276,6 +2631,7 @@ async function main() {
 
   console.log('🌐 Seeding entity translations...');
   await seedEntityTranslations();
+  await seedEntityAliases();
   await seedSourceTranslations();
   await seedRelationAndSourceRefTranslations();
 
@@ -2366,9 +2722,28 @@ async function main() {
       sortOrder: 5,
       entities: [tiempo, memoria, guerra, identidad, cuerpo, dolor, maternidad, violencia],
     },
+    {
+      slug: 'place',
+      title: 'Lugares',
+      subtitle: 'Contexto institucional',
+      description: 'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
+      ctaLabel: 'Explorar lugares',
+      ctaRoute: '/entities/place',
+      imageUrl: '/assets/home/museum-room.jpg',
+      translations: {
+        en: {
+          title: 'Places',
+          subtitle: 'Institutional context',
+          description: 'Museums, collections and spaces that anchor works, movements and public memory.',
+          ctaLabel: 'Explore places',
+        },
+      },
+      sortOrder: 6,
+      entities: [prado, reinaSofia, moma, guggenheimBilbao],
+    },
   ];
 
-  const recommendedDecks = [
+  const baseRecommendedDecks = [
     {
       slug: 'magia-en-el-arte',
       title: 'La magia en el arte',
@@ -2379,7 +2754,6 @@ async function main() {
       translations: {
         en: { title: 'Magic in art', subtitle: 'Staff Pick', description: 'A curated selection to enter JANO through key works and strong connections.', ctaLabel: 'View selection' },
       },
-      sortOrder: 0,
       entities: [persistencia, surrealismo, memoria, tiempo, identidad, cuerpo],
     },
     {
@@ -2392,7 +2766,6 @@ async function main() {
       translations: {
         en: { title: 'Memory and trauma', subtitle: 'Curated List', description: 'Works, concepts and relationships for reading the persistence of historical memory.', ctaLabel: 'View route' },
       },
-      sortOrder: 1,
       entities: [guernica, guerra, violencia, memoria, tresDeMayo, saturno],
     },
     {
@@ -2403,7 +2776,6 @@ async function main() {
       ctaLabel: 'Explorar ruta',
       imageUrl: '/assets/home/artwork.jpg',
       translations: { en: { title: 'Art and war', subtitle: 'Editorial route', description: 'From Goya to Picasso: images for thinking violence, power and memory.', ctaLabel: 'Explore route' } },
-      sortOrder: 2,
       entities: [guernica, tresDeMayo, saturno, guerra, violencia, memoria, articleWar],
     },
     {
@@ -2414,7 +2786,6 @@ async function main() {
       ctaLabel: 'Explorar cuerpos',
       imageUrl: '/assets/home/concept.jpg',
       translations: { en: { title: 'The body in the 20th century', subtitle: 'Concept route', description: 'Body, pain, gender and vulnerability in modern art.', ctaLabel: 'Explore bodies' } },
-      sortOrder: 3,
       entities: [dosFridas, demoiselles, studyVelazquez, maman, cuerpo, dolor, genero, articleBody],
     },
     {
@@ -2425,7 +2796,6 @@ async function main() {
       ctaLabel: 'Ver recorrido',
       imageUrl: '/assets/home/movement.jpg',
       translations: { en: { title: 'Art and sport', subtitle: 'Visual culture', description: 'Football, body, city and popular spectacle as a discovery route.', ctaLabel: 'View route' } },
-      sortOrder: 4,
       entities: [futbolistas, futbol, deporte, cuerpo, ciudad, juventud, articleFootball],
     },
     {
@@ -2436,7 +2806,6 @@ async function main() {
       ctaLabel: 'Explorar memoria',
       imageUrl: '/assets/home/period.jpg',
       translations: { en: { title: 'Death and memory', subtitle: 'Symbolic reading', description: 'Finitude, mourning, religion and visual persistence.', ctaLabel: 'Explore memory' } },
-      sortOrder: 5,
       entities: [muerte, memoria, religion, saturno, marilynDiptych, articleDeath],
     },
     {
@@ -2447,10 +2816,228 @@ async function main() {
       ctaLabel: 'Explorar vanguardias',
       imageUrl: '/assets/home/movement.jpg',
       translations: { en: { title: 'Modern avant-gardes', subtitle: 'Entry map', description: 'Cubism, Surrealism, Dada and Pop Art connected through artists and works.', ctaLabel: 'Explore avant-gardes' } },
-      sortOrder: 6,
       entities: [picasso, guernica, demoiselles, dali, persistencia, miro, carnivalHarlequin, duchamp, fountain, warhol, marilynDiptych, articleAvant],
     },
   ];
+
+  const additionalRecommendedDecks = [
+    {
+      slug: 'archivo-y-silencio',
+      title: 'Archivo y silencio',
+      subtitle: 'Ensayo visual',
+      description: 'Memoria, archivo y huella material entre documentos, ruina y persistencia.',
+      ctaLabel: 'Ver curación',
+      imageUrl: '/assets/home/concept.jpg',
+      translations: { en: { title: 'Archive and silence', subtitle: 'Visual essay', description: 'Memory, archives and material trace through documents, ruin and persistence.', ctaLabel: 'View curation' } },
+      entities: [memoria, persistencia, articleDeath, ciudad, maman, violencia],
+    },
+    {
+      slug: 'imagen-y-testimonio',
+      title: 'Imagen y testimonio',
+      subtitle: 'Ruta editorial',
+      description: 'La imagen como prueba, memoria y narración de la violencia histórica.',
+      ctaLabel: 'Explorar',
+      imageUrl: '/assets/home/artwork.jpg',
+      translations: { en: { title: 'Image and testimony', subtitle: 'Editorial route', description: 'The image as proof, memory and narration of historical violence.', ctaLabel: 'Explore' } },
+      entities: [guernica, tresDeMayo, memoria, guerra, violencia, articleWar],
+    },
+    {
+      slug: 'surrealismo-y-deseo',
+      title: 'Surrealismo y deseo',
+      subtitle: 'Staff Note',
+      description: 'Sueño, tiempo, cuerpo e imagen psíquica en la sensibilidad surrealista.',
+      ctaLabel: 'Ver recorrido',
+      imageUrl: '/assets/home/movement.jpg',
+      translations: { en: { title: 'Surrealism and desire', subtitle: 'Staff Note', description: 'Dream, time, body and psychic image inside the surrealist imagination.', ctaLabel: 'View route' } },
+      entities: [surrealismo, persistencia, dali, tiempo, memoria, cuerpo, carnivalHarlequin],
+    },
+    {
+      slug: 'rostro-y-autorrepresentacion',
+      title: 'Rostro y autorrepresentación',
+      subtitle: 'Curated List',
+      description: 'Identidad, género y memoria personal a través del rostro y la figura.',
+      ctaLabel: 'Explorar rostros',
+      imageUrl: '/assets/home/artist.jpg',
+      translations: { en: { title: 'Face and self-representation', subtitle: 'Curated List', description: 'Identity, gender and personal memory through face and figure.', ctaLabel: 'Explore faces' } },
+      entities: [frida, dosFridas, identidad, genero, cuerpo, dolor],
+    },
+    {
+      slug: 'ciudad-y-soledad',
+      title: 'Ciudad y soledad',
+      subtitle: 'Lectura urbana',
+      description: 'Arquitectura, noche y experiencia moderna entre aislamiento y mirada.',
+      ctaLabel: 'Ver selección',
+      imageUrl: '/assets/home/artist.jpg',
+      translations: { en: { title: 'City and solitude', subtitle: 'Urban reading', description: 'Architecture, night and modern experience between isolation and observation.', ctaLabel: 'View selection' } },
+      entities: [ciudad, nighthawks, hopper, warhol, marilynDiptych, futbolistas],
+    },
+    {
+      slug: 'madres-y-monumentos',
+      title: 'Madres y monumentos',
+      subtitle: 'Ruta escultórica',
+      description: 'Maternidad, memoria y cuerpo en escalas íntimas y monumentales.',
+      ctaLabel: 'Explorar esculturas',
+      imageUrl: '/assets/home/artwork.jpg',
+      translations: { en: { title: 'Mothers and monuments', subtitle: 'Sculptural route', description: 'Motherhood, memory and the body across intimate and monumental scales.', ctaLabel: 'Explore sculptures' } },
+      entities: [maternidad, maman, bourgeois, memoria, cuerpo, articleBody],
+    },
+    {
+      slug: 'mirar-el-poder',
+      title: 'Mirar el poder',
+      subtitle: 'Curación temática',
+      description: 'Retrato, autoridad, institución y violencia simbólica desde el Barroco hasta hoy.',
+      ctaLabel: 'Ver curación',
+      imageUrl: '/assets/home/period.jpg',
+      translations: { en: { title: 'Looking at power', subtitle: 'Thematic curation', description: 'Portrait, authority, institution and symbolic violence from the Baroque to today.', ctaLabel: 'View curation' } },
+      entities: [poder, lasMeninas, velazquez, studyVelazquez, fountain, warhol],
+    },
+    {
+      slug: 'cubismo-y-fragmentacion',
+      title: 'Cubismo y fragmentación',
+      subtitle: 'Mapa formal',
+      description: 'La fragmentación del cuerpo y del espacio como nueva mirada moderna.',
+      ctaLabel: 'Explorar cubismo',
+      imageUrl: '/assets/home/movement.jpg',
+      translations: { en: { title: 'Cubism and fragmentation', subtitle: 'Formal map', description: 'The fragmentation of body and space as a new modern gaze.', ctaLabel: 'Explore cubism' } },
+      entities: [cubismo, demoiselles, guernica, picasso, cuerpo, identidad],
+    },
+    {
+      slug: 'tiempo-en-ruinas',
+      title: 'Tiempo en ruinas',
+      subtitle: 'Ensayo curado',
+      description: 'Duración, pérdida y resto visual para pensar la historia desde las imágenes.',
+      ctaLabel: 'Ver ensayo',
+      imageUrl: '/assets/home/period.jpg',
+      translations: { en: { title: 'Time in ruins', subtitle: 'Curated essay', description: 'Duration, loss and visual remains for thinking history through images.', ctaLabel: 'View essay' } },
+      entities: [tiempo, memoria, persistencia, saturno, muerte, articleDeath],
+    },
+    {
+      slug: 'infancia-y-juventud',
+      title: 'Infancia y juventud',
+      subtitle: 'Entrada sensible',
+      description: 'Promesa, energía y construcción del yo en escenas modernas y cortesanas.',
+      ctaLabel: 'Explorar',
+      imageUrl: '/assets/home/artist.jpg',
+      translations: { en: { title: 'Childhood and youth', subtitle: 'Sensitive entry', description: 'Promise, energy and self-construction in modern and courtly scenes.', ctaLabel: 'Explore' } },
+      entities: [juventud, carnivalHarlequin, lasMeninas, ciudad, futbolistas, identidad],
+    },
+    {
+      slug: 'dolor-y-resistencia',
+      title: 'Dolor y resistencia',
+      subtitle: 'Ruta corporal',
+      description: 'Cuerpo herido, dolor y persistencia afectiva en pintura y escultura.',
+      ctaLabel: 'Ver recorrido',
+      imageUrl: '/assets/home/concept.jpg',
+      translations: { en: { title: 'Pain and resistance', subtitle: 'Embodied route', description: 'Wounded body, pain and affective persistence in painting and sculpture.', ctaLabel: 'View route' } },
+      entities: [dolor, dosFridas, studyVelazquez, maman, cuerpo, articleBody],
+    },
+    {
+      slug: 'religion-y-teatralidad',
+      title: 'Religión y teatralidad',
+      subtitle: 'Lectura histórica',
+      description: 'Iconografía, autoridad y escena religiosa entre barroco y violencia moderna.',
+      ctaLabel: 'Explorar',
+      imageUrl: '/assets/home/period.jpg',
+      translations: { en: { title: 'Religion and theatricality', subtitle: 'Historical reading', description: 'Iconography, authority and religious staging between the Baroque and modern violence.', ctaLabel: 'Explore' } },
+      entities: [religion, barroco, velazquez, studyVelazquez, poder, muerte],
+    },
+    {
+      slug: 'objeto-y-museo',
+      title: 'Objeto y museo',
+      subtitle: 'Curated List',
+      description: 'Objeto encontrado, institución y definición de arte desde Duchamp.',
+      ctaLabel: 'Ver objetos',
+      imageUrl: '/assets/home/artwork.jpg',
+      translations: { en: { title: 'Object and museum', subtitle: 'Curated List', description: 'Found object, institution and the definition of art through Duchamp.', ctaLabel: 'View objects' } },
+      entities: [duchamp, fountain, bottleRack, dadaismo, poder, ciudad],
+    },
+    {
+      slug: 'celebridad-y-repeticion',
+      title: 'Celebridad y repetición',
+      subtitle: 'Visual culture',
+      description: 'Fama, reproducción técnica y superficie mediática en el Pop Art.',
+      ctaLabel: 'Explorar cultura visual',
+      imageUrl: '/assets/home/movement.jpg',
+      translations: { en: { title: 'Celebrity and repetition', subtitle: 'Visual culture', description: 'Fame, technical reproduction and media surface in Pop Art.', ctaLabel: 'Explore visual culture' } },
+      entities: [warhol, marilynDiptych, popArt, ciudad, muerte, articleAvant],
+    },
+    {
+      slug: 'paisaje-psiquico',
+      title: 'Paisaje psíquico',
+      subtitle: 'Entrada conceptual',
+      description: 'Sueño, deseo y tiempo en imágenes que desestabilizan la realidad visible.',
+      ctaLabel: 'Ver selección',
+      imageUrl: '/assets/home/concept.jpg',
+      translations: { en: { title: 'Psychic landscape', subtitle: 'Conceptual entry', description: 'Dream, desire and time in images that destabilize visible reality.', ctaLabel: 'View selection' } },
+      entities: [surrealismo, persistencia, tiempo, memoria, dali, miro],
+    },
+    {
+      slug: 'archivo-muerte-y-duelo',
+      title: 'Archivo, muerte y duelo',
+      subtitle: 'Ruta editorial',
+      description: 'Cómo las imágenes sostienen pérdida, archivo y memoria ritual.',
+      ctaLabel: 'Ver ruta',
+      imageUrl: '/assets/home/period.jpg',
+      translations: { en: { title: 'Archive, death and mourning', subtitle: 'Editorial route', description: 'How images sustain loss, archive and ritual memory.', ctaLabel: 'View route' } },
+      entities: [muerte, memoria, articleDeath, saturno, marilynDiptych, religion],
+    },
+    {
+      slug: 'modernidad-nocturna',
+      title: 'Modernidad nocturna',
+      subtitle: 'Scene study',
+      description: 'Luz artificial, ciudad y alienación en escenas de la vida moderna.',
+      ctaLabel: 'Explorar noche',
+      imageUrl: '/assets/home/artist.jpg',
+      translations: { en: { title: 'Nocturnal modernity', subtitle: 'Scene study', description: 'Artificial light, city and alienation in scenes of modern life.', ctaLabel: 'Explore night' } },
+      entities: [nighthawks, ciudad, hopper, memoria, warhol, articleAvant],
+    },
+    {
+      slug: 'goya-y-la-crisis-moderna',
+      title: 'Goya y la crisis moderna',
+      subtitle: 'Editorial route',
+      description: 'Violencia, poder y descomposición de la experiencia histórica en Goya.',
+      ctaLabel: 'Ver Goya',
+      imageUrl: '/assets/home/artwork.jpg',
+      translations: { en: { title: 'Goya and the modern crisis', subtitle: 'Editorial route', description: 'Violence, power and the breakdown of historical experience in Goya.', ctaLabel: 'See Goya' } },
+      entities: [goya, saturno, tresDeMayo, violencia, guerra, romanticismo],
+    },
+    {
+      slug: 'futbol-y-multitud',
+      title: 'Fútbol y multitud',
+      subtitle: 'Cultura popular',
+      description: 'Ritual colectivo, cuerpo y ciudad en la imaginación del fútbol.',
+      ctaLabel: 'Ver cultura popular',
+      imageUrl: '/assets/home/movement.jpg',
+      translations: { en: { title: 'Football and crowd', subtitle: 'Popular culture', description: 'Collective ritual, body and city in the visual imagination of football.', ctaLabel: 'See popular culture' } },
+      entities: [futbol, deporte, futbolistas, ciudad, juventud, articleFootball],
+    },
+    {
+      slug: 'feminidad-y-escision',
+      title: 'Feminidad y escisión',
+      subtitle: 'Curación sensible',
+      description: 'Representación de lo femenino entre autorretrato, herida y construcción identitaria.',
+      ctaLabel: 'Explorar',
+      imageUrl: '/assets/home/concept.jpg',
+      translations: { en: { title: 'Femininity and split self', subtitle: 'Sensitive curation', description: 'Representations of femininity between self-portrait, wound and identity construction.', ctaLabel: 'Explore' } },
+      entities: [frida, dosFridas, genero, identidad, dolor, cuerpo],
+    },
+    {
+      slug: 'obra-y-contexto-historico',
+      title: 'Obra y contexto histórico',
+      subtitle: 'Entry map',
+      description: 'Períodos, movimientos y obras como lectura cruzada de la historia visual.',
+      ctaLabel: 'Ver mapa',
+      imageUrl: '/assets/home/period.jpg',
+      translations: { en: { title: 'Work and historical context', subtitle: 'Entry map', description: 'Periods, movements and artworks as a cross-reading of visual history.', ctaLabel: 'See map' } },
+      entities: [periodXIX, periodXX, cubismo, surrealismo, guernica, persistencia, lasMeninas],
+    },
+  ];
+
+  const recommendedDecks = [...baseRecommendedDecks, ...additionalRecommendedDecks]
+    .map((deck, index) => ({
+      ...deck,
+      sortOrder: index,
+    }));
 
   for (const deck of homeDecks) {
     const createdDeck = await prisma.homeDeck.create({
@@ -2539,8 +3126,8 @@ async function main() {
   console.log('- 4 places');
   console.log('- 5 artists');
   console.log('- 6 artworks');
-  console.log('- 6 home decks');
-  console.log('- 2 recommended decks');
+  console.log(`- ${homeDecks.length} home decks`);
+  console.log(`- ${recommendedDecks.length} recommended decks`);
 }
 
 main()

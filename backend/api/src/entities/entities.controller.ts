@@ -24,6 +24,8 @@ import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
 import { UploadEntityMediaDto } from './dto/upload-entity-media.dto';
 import { UpdateEntityDetailsDto } from './dto/update-entity-details.dto';
+import { CreateEntityAliasDto } from './dto/create-entity-alias.dto';
+import { UpdateEntityAliasDto } from './dto/update-entity-alias.dto';
 import { CreateSourceRefDto } from './dto/create-source-ref.dto';
 import { UpdateSourceRefDto } from './dto/update-source-ref.dto';
 import { CreateContributorDto } from './dto/create-contributor.dto';
@@ -118,6 +120,37 @@ export class EntitiesController {
     @Body() dto: UpsertEntityTranslationDto,
   ) {
     return this.service.adminUpsertTranslation(id, locale, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Post(':id/aliases')
+  createAlias(
+    @Param('id') id: string,
+    @Body() dto: CreateEntityAliasDto,
+  ) {
+    return this.service.adminCreateAlias(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Patch(':id/aliases/:aliasId')
+  updateAlias(
+    @Param('id') id: string,
+    @Param('aliasId') aliasId: string,
+    @Body() dto: UpdateEntityAliasDto,
+  ) {
+    return this.service.adminUpdateAlias(id, aliasId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Delete(':id/aliases/:aliasId')
+  deleteAlias(
+    @Param('id') id: string,
+    @Param('aliasId') aliasId: string,
+  ) {
+    return this.service.adminDeleteAlias(id, aliasId);
   }
 
 

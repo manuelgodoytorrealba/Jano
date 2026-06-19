@@ -4,6 +4,7 @@ import { attachResolvedMedia } from '../entities/media.resolver';
 import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import { SearchQuery } from './dto/search.query';
+import { SearchIntentService, type SearchQueryVariant } from './search-intent.service';
 
 type RawSearchRow = {
   id: string;
@@ -12,6 +13,11 @@ type RawSearchRow = {
   matched_summary: boolean;
   matched_content: boolean;
   matched_slug: boolean;
+  matched_alias: boolean;
+  matched_tag: boolean;
+  matched_detail: boolean;
+  matched_relation: boolean;
+  trigram_score: number | string;
 };
 
 type SearchItem = { id: string; slug: string; type: string; title: string; summary: string | null; [key: string]: any };
@@ -28,7 +34,10 @@ const DISCOVERY_RELATION_TYPES = [
 
 @Injectable()
 export class SearchService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private searchIntent: SearchIntentService,
+  ) {}
 
   async search(query: SearchQuery, options: { includeDrafts: boolean }) {
     const q = (query.q ?? '').trim();
@@ -47,27 +56,17 @@ export class SearchService {
       };
     }
 
-    let rows = await this.searchRows(q, {
+    const intent = this.searchIntent.interpret(q, locale);
+    const variants = intent.variants.length
+      ? intent.variants
+      : [{ query: q, reason: 'raw query', weight: 1 }];
+    const rows = await this.searchVariantRows(variants, {
       limit,
       types,
       tag,
       locale,
       includeDrafts: options.includeDrafts,
     });
-
-    // ponytail: term fallback, replace with proper query-intent parsing if this grows.
-    if (!rows.length && q) {
-      const fallbackQuery = this.significantTerms(q).join(' ');
-      if (fallbackQuery && fallbackQuery !== q) {
-        rows = await this.searchRows(fallbackQuery, {
-          limit,
-          types,
-          tag,
-          locale,
-          includeDrafts: options.includeDrafts,
-        });
-      }
-    }
 
     if (!rows.length) {
       return {
@@ -76,6 +75,12 @@ export class SearchService {
         items: [],
         groups: {},
         sections: [],
+        interpretation: {
+          normalizedQuery: intent.normalizedQuery,
+          significantTerms: intent.significantTerms,
+          signals: intent.signals,
+          variantsTried: variants.map((variant) => ({ query: variant.query, reason: variant.reason })),
+        },
       };
     }
 
@@ -88,6 +93,10 @@ export class SearchService {
           row.matched_summary ? 'summary' : null,
           row.matched_content ? 'content' : null,
           row.matched_slug ? 'slug' : null,
+          row.matched_alias ? 'alias' : null,
+          row.matched_tag ? 'tag' : null,
+          row.matched_detail ? 'detail' : null,
+          row.matched_relation ? 'relation_text' : null,
         ].filter((field): field is string => !!field),
       ]),
     );
@@ -126,14 +135,27 @@ export class SearchService {
       items,
       groups,
       sections,
+      interpretation: {
+        normalizedQuery: intent.normalizedQuery,
+        significantTerms: intent.significantTerms,
+        signals: intent.signals,
+        variantsTried: variants.map((variant) => ({ query: variant.query, reason: variant.reason })),
+      },
     };
   }
 
   private entityInclude(locale: string) {
     return {
       tags: {
-        include: { tag: true },
+        include: { tag: { include: { translations: true } } },
         orderBy: [{ tag: { label: 'asc' as const } }],
+      },
+      aliases: {
+        orderBy: [
+          { locale: 'asc' as const },
+          { kind: 'asc' as const },
+          { value: 'asc' as const },
+        ],
       },
       mediaLinks: {
         include: { media: true },
@@ -150,6 +172,32 @@ export class SearchService {
 
   private serializeSearchEntity(entity: any, locale: string, score = 0, matchedFields: string[] = []) {
     const resolvedEntity = attachResolvedMedia(resolveEntityTranslation(entity, locale));
+    const matchReasons = matchedFields.map((field) => {
+      switch (field) {
+        case 'alias':
+          return 'Matched via alternate name';
+        case 'tag':
+          return 'Matched via taxonomy';
+        case 'title':
+          return 'Matched via title';
+        case 'summary':
+          return 'Matched via summary';
+        case 'content':
+          return 'Matched via content';
+        case 'slug':
+          return 'Matched via slug';
+        case 'detail':
+          return 'Matched via structured detail';
+        case 'relation_text':
+          return 'Matched via graph context';
+        case 'relation':
+          return 'Matched via relation';
+        case 'route':
+          return 'Matched via discovery route';
+        default:
+          return 'Matched via search';
+      }
+    });
 
     return {
       id: entity.id,
@@ -166,8 +214,16 @@ export class SearchService {
         card: resolvedEntity.resolvedMedia.card,
       },
       tags: (entity.tags ?? []).map((entityTag: any) => entityTag.tag),
+      aliases: (entity.aliases ?? []).map((alias: any) => ({
+        id: alias.id,
+        locale: alias.locale,
+        value: alias.value,
+        kind: alias.kind,
+        weight: alias.weight,
+      })),
       score,
       matchedFields,
+      matchReasons,
     };
   }
 
@@ -332,7 +388,7 @@ export class SearchService {
   }
 
   private async findSuggestedDecks(query: string, items: SearchItem[], locale: string) {
-    const terms = this.significantTerms(query);
+    const terms = this.searchIntent.interpret(query, locale).significantTerms;
     const itemIds = new Set(items.map((item) => item.id));
     const decks = await this.prisma.homeDeck.findMany({
       where: { isActive: true, surface: HomeDeckSurface.RECOMMENDED },
@@ -377,15 +433,49 @@ export class SearchService {
       .slice(0, 4);
   }
 
-  private significantTerms(query: string) {
-    const stopwords = new Set(['a', 'al', 'and', 'arte', 'art', 'de', 'del', 'el', 'en', 'la', 'las', 'los', 'of', 'para', 'por', 'sobre', 'the', 'un', 'una', 'y']);
-    return query
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .split(/[^a-z0-9]+/)
-      .map((term) => term.trim())
-      .filter((term) => term.length > 2 && !stopwords.has(term));
+  private async searchVariantRows(
+    variants: SearchQueryVariant[],
+    options: { limit: number; types: string[]; tag?: string; locale: string; includeDrafts: boolean },
+  ) {
+    const merged = new Map<string, RawSearchRow>();
+
+    for (const variant of variants) {
+      const rows = await this.searchRows(variant.query, options);
+      for (const row of rows) {
+        const weightedScore = Number(row.score ?? 0) * variant.weight;
+        const previous = merged.get(row.id);
+
+        if (!previous) {
+          merged.set(row.id, {
+            ...row,
+            score: weightedScore,
+          });
+          continue;
+        }
+
+        merged.set(row.id, {
+          ...previous,
+          score: Math.max(Number(previous.score ?? 0), weightedScore),
+          matched_title: previous.matched_title || row.matched_title,
+          matched_summary: previous.matched_summary || row.matched_summary,
+          matched_content: previous.matched_content || row.matched_content,
+          matched_slug: previous.matched_slug || row.matched_slug,
+          matched_alias: previous.matched_alias || row.matched_alias,
+          matched_tag: previous.matched_tag || row.matched_tag,
+          matched_detail: previous.matched_detail || row.matched_detail,
+          matched_relation: previous.matched_relation || row.matched_relation,
+          trigram_score: Math.max(Number(previous.trigram_score ?? 0), Number(row.trigram_score ?? 0)),
+        });
+      }
+    }
+
+    return Array.from(merged.values())
+      .sort((a, b) => {
+        const scoreDiff = Number(b.score ?? 0) - Number(a.score ?? 0);
+        if (scoreDiff !== 0) return scoreDiff;
+        return Number(b.trigram_score ?? 0) - Number(a.trigram_score ?? 0);
+      })
+      .slice(0, options.limit);
   }
 
   private searchRows(
@@ -396,7 +486,8 @@ export class SearchService {
     const like = `%${q}%`;
     const startsWith = `${q}%`;
     const useFullText = q.length >= 3;
-    const translationLocales = Array.from(new Set([options.locale, 'es', 'en']));
+    const trigramThreshold = q.length >= 4 ? 0.24 : 0.36;
+    const translationLocales = Array.from(new Set([options.locale, 'es', 'en', 'und']));
 
     const typeFilter = options.types.length
       ? Prisma.sql`AND e."type"::text IN (${Prisma.join(options.types)})`
@@ -436,16 +527,41 @@ export class SearchService {
           + CASE WHEN coalesce(translated.title_text, '') ILIKE ${startsWith} THEN 50 ELSE 0 END
           + CASE WHEN e."title" ILIKE ${like} THEN 25 ELSE 0 END
           + CASE WHEN coalesce(translated.title_text, '') ILIKE ${like} THEN 25 ELSE 0 END
+          + CASE WHEN coalesce(alias_data.alias_text, '') ILIKE ${startsWith} THEN 45 ELSE 0 END
+          + CASE WHEN coalesce(alias_data.alias_text, '') ILIKE ${like} THEN 22 ELSE 0 END
+          + CASE WHEN coalesce(tag_data.tag_text, '') ILIKE ${startsWith} THEN 20 ELSE 0 END
+          + CASE WHEN coalesce(tag_data.tag_text, '') ILIKE ${like} THEN 10 ELSE 0 END
+          + CASE WHEN coalesce(detail_data.detail_text, '') ILIKE ${startsWith} THEN 18 ELSE 0 END
+          + CASE WHEN coalesce(detail_data.detail_text, '') ILIKE ${like} THEN 9 ELSE 0 END
           + CASE WHEN e."summary" ILIKE ${like} THEN 8 ELSE 0 END
           + CASE WHEN coalesce(translated.summary_text, '') ILIKE ${like} THEN 8 ELSE 0 END
           + CASE WHEN e."content" ILIKE ${like} THEN 2 ELSE 0 END
           + CASE WHEN coalesce(translated.content_text, '') ILIKE ${like} THEN 2 ELSE 0 END
+          + CASE WHEN coalesce(relation_data.relation_text, '') ILIKE ${like} THEN 6 ELSE 0 END
           + CASE WHEN e."slug" ILIKE ${startsWith} THEN 12 ELSE 0 END
+          + GREATEST(
+              similarity(lower(e."title"), ${normalized}),
+              similarity(lower(coalesce(translated.title_text, '')), ${normalized}),
+              similarity(lower(coalesce(alias_data.alias_text, '')), ${normalized}),
+              similarity(lower(coalesce(tag_data.tag_text, '')), ${normalized}),
+              similarity(lower(coalesce(detail_data.detail_text, '')), ${normalized})
+            ) * 18
         )::double precision AS "score",
         (e."title" ILIKE ${like} OR coalesce(translated.title_text, '') ILIKE ${like}) AS "matched_title",
         (e."summary" ILIKE ${like} OR coalesce(translated.summary_text, '') ILIKE ${like}) AS "matched_summary",
         (e."content" ILIKE ${like} OR coalesce(translated.content_text, '') ILIKE ${like}) AS "matched_content",
-        (e."slug" ILIKE ${like}) AS "matched_slug"
+        (e."slug" ILIKE ${like}) AS "matched_slug",
+        (coalesce(alias_data.alias_text, '') ILIKE ${like}) AS "matched_alias",
+        (coalesce(tag_data.tag_text, '') ILIKE ${like}) AS "matched_tag",
+        (coalesce(detail_data.detail_text, '') ILIKE ${like}) AS "matched_detail",
+        (coalesce(relation_data.relation_text, '') ILIKE ${like}) AS "matched_relation",
+        GREATEST(
+          similarity(lower(e."title"), ${normalized}),
+          similarity(lower(coalesce(translated.title_text, '')), ${normalized}),
+          similarity(lower(coalesce(alias_data.alias_text, '')), ${normalized}),
+          similarity(lower(coalesce(tag_data.tag_text, '')), ${normalized}),
+          similarity(lower(coalesce(detail_data.detail_text, '')), ${normalized})
+        )::double precision AS "trigram_score"
       FROM "Entity" e
       CROSS JOIN LATERAL (
         SELECT
@@ -464,8 +580,112 @@ export class SearchService {
       ) translated
       CROSS JOIN LATERAL (
         SELECT
+          coalesce(string_agg(a."value", ' '), '') AS alias_text
+        FROM "EntityAlias" a
+        WHERE a."entityId" = e."id"
+          AND a."locale" IN (${Prisma.join(translationLocales)})
+      ) alias_data
+      CROSS JOIN LATERAL (
+        SELECT
+          coalesce(
+            string_agg(
+              DISTINCT trim(concat_ws(' ', tg."label", tt."label")),
+              ' '
+            ),
+            ''
+          ) AS tag_text
+        FROM "EntityTag" et
+        JOIN "Tag" tg ON tg."id" = et."tagId"
+        LEFT JOIN "TagTranslation" tt ON tt."tagId" = tg."id"
+          AND tt."locale" IN (${Prisma.join(translationLocales)})
+        WHERE et."entityId" = e."id"
+          AND tg."isActive" = true
+      ) tag_data
+      CROSS JOIN LATERAL (
+        SELECT concat_ws(
+          ' ',
+          coalesce(artwork_data.detail_text, ''),
+          coalesce(artist_data.detail_text, ''),
+          coalesce(concept_data.detail_text, ''),
+          coalesce(period_data.detail_text, '')
+        ) AS detail_text
+        FROM (
+          SELECT coalesce(string_agg(value_text, ' '), '') AS detail_text
+          FROM (
+            SELECT concat_ws(' ', ad."authorNation", ad."technique", ad."materials", ad."dimensions", ad."location", ad."collection", ad."state") AS value_text
+            FROM "ArtworkDetails" ad
+            WHERE ad."entityId" = e."id"
+            UNION ALL
+            SELECT concat_ws(' ', adt."authorNation", adt."technique", adt."materials", adt."dimensions", adt."location", adt."collection", adt."state") AS value_text
+            FROM "ArtworkDetailsTranslation" adt
+            WHERE adt."entityId" = e."id"
+              AND adt."locale" IN (${Prisma.join(translationLocales)})
+          ) artwork_values
+        ) artwork_data,
+        (
+          SELECT coalesce(string_agg(value_text, ' '), '') AS detail_text
+          FROM (
+            SELECT concat_ws(' ', ard."country", ard."city", ard."disciplines", ard."bioShort", ard."links") AS value_text
+            FROM "ArtistDetails" ard
+            WHERE ard."entityId" = e."id"
+            UNION ALL
+            SELECT concat_ws(' ', ardt."country", ardt."city", ardt."disciplines", ardt."bioShort", ardt."links") AS value_text
+            FROM "ArtistDetailsTranslation" ardt
+            WHERE ardt."entityId" = e."id"
+              AND ardt."locale" IN (${Prisma.join(translationLocales)})
+          ) artist_values
+        ) artist_data,
+        (
+          SELECT coalesce(string_agg(value_text, ' '), '') AS detail_text
+          FROM (
+            SELECT cd."definition" AS value_text
+            FROM "ConceptDetails" cd
+            WHERE cd."entityId" = e."id"
+            UNION ALL
+            SELECT cdt."definition" AS value_text
+            FROM "ConceptDetailsTranslation" cdt
+            WHERE cdt."entityId" = e."id"
+              AND cdt."locale" IN (${Prisma.join(translationLocales)})
+          ) concept_values
+        ) concept_data,
+        (
+          SELECT coalesce(string_agg(value_text, ' '), '') AS detail_text
+          FROM (
+            SELECT pd."definition" AS value_text
+            FROM "PeriodDetails" pd
+            WHERE pd."entityId" = e."id"
+            UNION ALL
+            SELECT pdt."definition" AS value_text
+            FROM "PeriodDetailsTranslation" pdt
+            WHERE pdt."entityId" = e."id"
+              AND pdt."locale" IN (${Prisma.join(translationLocales)})
+          ) period_values
+        ) period_data
+      ) detail_data
+      CROSS JOIN LATERAL (
+        SELECT coalesce(string_agg(rel_text, ' '), '') AS relation_text
+        FROM (
+          SELECT r."justification" AS rel_text
+          FROM "Relation" r
+          WHERE (r."fromId" = e."id" OR r."toId" = e."id")
+            AND r."justification" IS NOT NULL
+          UNION ALL
+          SELECT rt."justification" AS rel_text
+          FROM "Relation" r
+          JOIN "RelationTranslation" rt ON rt."relationId" = r."id"
+          WHERE (r."fromId" = e."id" OR r."toId" = e."id")
+            AND rt."locale" IN (${Prisma.join(translationLocales)})
+            AND rt."justification" IS NOT NULL
+        ) relation_values
+      ) relation_data
+      CROSS JOIN LATERAL (
+        SELECT
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."title", ''), translated.title_text)), 'A') ||
+          setweight(to_tsvector('simple', alias_data.alias_text), 'A') ||
+          setweight(to_tsvector('simple', tag_data.tag_text), 'B') ||
+          setweight(to_tsvector('simple', detail_data.detail_text), 'B') ||
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."summary", ''), translated.summary_text)), 'B') ||
+          setweight(to_tsvector('simple', relation_data.relation_text), 'C') ||
           setweight(to_tsvector('simple', concat_ws(' ', coalesce(e."content", ''), translated.content_text)), 'C') AS document
       ) weighted
       WHERE 1 = 1
@@ -476,16 +696,29 @@ export class SearchService {
           ${fullTextPredicate}
           e."title" ILIKE ${like}
           OR coalesce(translated.title_text, '') ILIKE ${like}
+          OR coalesce(alias_data.alias_text, '') ILIKE ${like}
+          OR coalesce(tag_data.tag_text, '') ILIKE ${like}
+          OR coalesce(detail_data.detail_text, '') ILIKE ${like}
           OR e."summary" ILIKE ${like}
           OR coalesce(translated.summary_text, '') ILIKE ${like}
           OR e."content" ILIKE ${like}
           OR coalesce(translated.content_text, '') ILIKE ${like}
+          OR coalesce(relation_data.relation_text, '') ILIKE ${like}
           OR e."slug" ILIKE ${like}
+          OR GREATEST(
+            similarity(lower(e."title"), ${normalized}),
+            similarity(lower(coalesce(translated.title_text, '')), ${normalized}),
+            similarity(lower(coalesce(alias_data.alias_text, '')), ${normalized}),
+            similarity(lower(coalesce(tag_data.tag_text, '')), ${normalized}),
+            similarity(lower(coalesce(detail_data.detail_text, '')), ${normalized})
+          ) >= ${trigramThreshold}
         )
       ORDER BY
         CASE WHEN lower(e."title") = ${normalized} THEN 1 ELSE 0 END DESC,
+        CASE WHEN coalesce(alias_data.alias_text, '') ILIKE ${startsWith} THEN 1 ELSE 0 END DESC,
         CASE WHEN e."title" ILIKE ${startsWith} THEN 1 ELSE 0 END DESC,
         "score" DESC,
+        "trigram_score" DESC,
         e."updatedAt" DESC
       LIMIT ${options.limit};
     `;

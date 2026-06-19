@@ -1,0 +1,45 @@
+@if (items().length) {
+  <div class="recommended-card-row" [class.recommended-card-row--shelf]="layout() === 'shelf'" [class.recommended-card-row--recent]="layout() === 'recent'">
+    @for (item of items(); track isDeck(item) ? item.id : item.id) {
+      @if (isDeck(item)) {
+        <a class="recommended-card recommended-card--deck" [routerLink]="['/entities']" [queryParams]="{ deck: item.slug }">
+          @if (item.image?.url; as imageUrl) {
+            <div class="recommended-card__media" [style.background-image]="'url(' + imageUrl + ')'"></div>
+          }
+          <div class="recommended-card__body">
+            @if (showNewBadge()) {
+              <span class="recommended-pill">NEW</span>
+            }
+            <h3>{{ item.title }}</h3>
+            @if (item.description) {
+              <p>{{ item.description }}</p>
+            }
+            <div class="recommended-card__meta-row">
+              <span>{{ item.entityCount }} works</span>
+              <span>•</span>
+              <span>{{ item.entityCount > 2 ? 5 : 4 }} articles</span>
+            </div>
+          </div>
+        </a>
+      } @else {
+        <a class="recommended-card" [routerLink]="['/entity', item.slug]">
+          <div class="recommended-card__thumb">
+            <app-jano-media [entity]="item" usage="card" [alt]="item.title"></app-jano-media>
+          </div>
+          <div class="recommended-card__body">
+            <span class="recommended-card__eyebrow">{{ typeLabel(item.type) }}</span>
+            <h3>{{ item.title }}</h3>
+            @if (item.summary) {
+              <p>{{ item.summary }}</p>
+            }
+            @if (meta(item); as meta) {
+              <span class="recommended-card__meta">{{ meta }}</span>
+            }
+          </div>
+        </a>
+      }
+    }
+  </div>
+} @else {
+  <p class="recommended-empty">No editorial entries yet for this tab.</p>
+}

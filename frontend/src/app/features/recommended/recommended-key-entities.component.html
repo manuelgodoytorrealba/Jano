@@ -1,0 +1,39 @@
+<section class="recommended-section recommended-section--key">
+  <div class="recommended-section__head recommended-section__head--split">
+    <div>
+      <div class="recommended-section__titleline">
+        <span class="recommended-section__number">5</span>
+        <p class="recommended-section__eyebrow">Key Entities</p>
+      </div>
+      <h2>Essential entities</h2>
+    </div>
+    <span class="recommended-card__meta">View all →</span>
+  </div>
+
+  <div class="recommended-card-row recommended-card-row--five">
+    @for (item of items(); track item.id) {
+      <a class="recommended-card" [routerLink]="['/entity', item.slug]">
+        <div class="recommended-card__thumb">
+          <app-jano-media [entity]="item" usage="card" [alt]="item.title"></app-jano-media>
+        </div>
+        <div class="recommended-card__body">
+          <span class="recommended-card__eyebrow">{{ typeLabel(item.type) }}</span>
+          <h3>{{ item.title }}</h3>
+          <div class="recommended-card__meta-row">
+            @if (item.startYear) {
+              <span>{{ item.startYear }}</span>
+            }
+            @if (item.artwork?.location) {
+              <span>{{ item.artwork?.location }}</span>
+            } @else if (item.artist?.country) {
+              <span>{{ item.artist?.country }}</span>
+            }
+          </div>
+          @if (item.artist?.bioShort || item.summary) {
+            <p>{{ item.artist?.bioShort ?? item.summary }}</p>
+          }
+        </div>
+      </a>
+    }
+  </div>
+</section>

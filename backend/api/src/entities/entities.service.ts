@@ -5,6 +5,8 @@ import { ContentLevel, EntityStatus, MediaOriginType, MediaRole } from '@prisma/
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { UpsertEntityTranslationDto } from './dto/upsert-entity-translation.dto';
+import { CreateEntityAliasDto, type EntityAliasKindValue } from './dto/create-entity-alias.dto';
+import { UpdateEntityAliasDto } from './dto/update-entity-alias.dto';
 import { CreateEntityMediaDto } from './dto/create-entity-media.dto';
 import { UpdateEntityMediaDto } from './dto/update-entity-media.dto';
 import { UploadEntityMediaDto } from './dto/upload-entity-media.dto';
@@ -69,6 +71,8 @@ const MIME_EXTENSION_MAP: Record<string, string> = {
   'image/gif': '.gif',
   'image/avif': '.avif',
 };
+
+const DEFAULT_ENTITY_ALIAS_KIND: EntityAliasKindValue = 'COMMON_NAME';
 
 type SlotCropInput = {
   explorer3d?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
@@ -173,6 +177,24 @@ export class EntitiesService {
     const match = translations.find((item: any) => item?.locale === locale);
     const value = match?.[field];
     return typeof value === 'string' && value.trim() ? value.trim() : null;
+  }
+
+  private normalizeAliasLocale(rawLocale?: string | null): string {
+    const trimmed = rawLocale?.trim().toLowerCase();
+    if (!trimmed) {
+      return 'und';
+    }
+
+    if (trimmed === 'und') {
+      return 'und';
+    }
+
+    return normalizeLocale(trimmed);
+  }
+
+  private sanitizeAliasValue(value?: string | null): string | null {
+    const trimmed = value?.trim();
+    return trimmed ? trimmed : null;
   }
 
   private relationLabel(type: string): string {
@@ -1375,6 +1397,7 @@ export class EntitiesService {
       await tx.contributor.deleteMany({ where: { entityId: id } });
       await tx.curatorNote.deleteMany({ where: { entityId: id } });
       await tx.entityTag.deleteMany({ where: { entityId: id } });
+      await (tx as any).entityAlias.deleteMany({ where: { entityId: id } });
       await tx.homeDeckItem.deleteMany({ where: { entityId: id } });
       await tx.collectionEntity.deleteMany({ where: { entityId: id } });
       await tx.savedEntity.deleteMany({ where: { entityId: id } });
@@ -1598,10 +1621,17 @@ export class EntitiesService {
   async adminGetById(id: string) {
     await this.normalizeEntityLegacyPrimary(id);
 
-    const entity = await this.prisma.entity.findUnique({
+    const entity = await (this.prisma as any).entity.findUnique({
       where: { id },
       include: {
         translations: { orderBy: { locale: 'asc' } },
+        aliases: {
+          orderBy: [
+            { locale: 'asc' },
+            { kind: 'asc' },
+            { value: 'asc' },
+          ],
+        },
         artwork: { include: { translations: { orderBy: { locale: 'asc' } } } },
         artist: { include: { translations: { orderBy: { locale: 'asc' } } } },
         concept: { include: { translations: { orderBy: { locale: 'asc' } } } },
@@ -1670,7 +1700,7 @@ export class EntitiesService {
           ],
         },
       },
-    });
+    }) as any;
 
     if (!entity) {
       throw new NotFoundException('Entity not found');
@@ -1749,6 +1779,97 @@ export class EntitiesService {
     }
 
     return this.adminGetById(id);
+  }
+
+  async adminCreateAlias(id: string, dto: CreateEntityAliasDto) {
+    const entity = await this.prisma.entity.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!entity) {
+      throw new NotFoundException('Entity not found');
+    }
+
+    const value = this.sanitizeAliasValue(dto.value);
+    if (!value) {
+      throw new BadRequestException('Alias value is required');
+    }
+
+    try {
+      await (this.prisma as any).entityAlias.create({
+        data: {
+          entityId: id,
+          locale: this.normalizeAliasLocale(dto.locale),
+          value,
+          kind: dto.kind ?? DEFAULT_ENTITY_ALIAS_KIND,
+          weight: dto.weight ?? null,
+          source: dto.source?.trim() || null,
+        },
+      });
+    } catch (error: any) {
+      if (error?.code === 'P2002') {
+        throw new ConflictException('Alias already exists for this entity');
+      }
+
+      throw error;
+    }
+
+    return this.adminGetById(id);
+  }
+
+  async adminUpdateAlias(entityId: string, aliasId: string, dto: UpdateEntityAliasDto) {
+    const alias = await (this.prisma as any).entityAlias.findUnique({
+      where: { id: aliasId },
+      select: { id: true, entityId: true, value: true, locale: true, kind: true },
+    });
+
+    if (!alias || alias.entityId !== entityId) {
+      throw new NotFoundException('Alias not found');
+    }
+
+    const nextValue = dto.value !== undefined ? this.sanitizeAliasValue(dto.value) : alias.value;
+    if (!nextValue) {
+      throw new BadRequestException('Alias value is required');
+    }
+
+    try {
+      await (this.prisma as any).entityAlias.update({
+        where: { id: aliasId },
+        data: {
+          value: nextValue,
+          locale: dto.locale !== undefined ? this.normalizeAliasLocale(dto.locale) : alias.locale,
+          kind: dto.kind ?? alias.kind,
+          weight: dto.weight !== undefined ? dto.weight ?? null : undefined,
+          source: dto.source !== undefined ? dto.source?.trim() || null : undefined,
+        },
+      });
+    } catch (error: any) {
+      if (error?.code === 'P2002') {
+        throw new ConflictException('Alias already exists for this entity');
+      }
+
+      throw error;
+    }
+
+    return this.adminGetById(entityId);
+  }
+
+  async adminDeleteAlias(entityId: string, aliasId: string) {
+    const alias = await (this.prisma as any).entityAlias.findUnique({
+      where: { id: aliasId },
+      select: { id: true, entityId: true },
+    });
+
+    if (!alias || alias.entityId !== entityId) {
+      throw new NotFoundException('Alias not found');
+    }
+
+    await (this.prisma as any).entityAlias.delete({
+      where: { id: aliasId },
+    });
+
+    return this.adminGetById(entityId);
   }
 
   async adminUpdateDetails(id: string, dto: UpdateEntityDetailsDto) {

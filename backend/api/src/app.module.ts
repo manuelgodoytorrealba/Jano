@@ -11,6 +11,7 @@ import { HomeDecksModule } from './home-decks/home-decks.module';
 import { SearchModule } from './search/search.module';
 import { RelationTypesModule } from './relation-types/relation-types.module';
 import { TagsModule } from './tags/tags.module';
+import { CuratedModule } from './curated/curated.module';
 import { validateEnv } from './config/env.validation';
 
 @Module({
@@ -31,6 +32,7 @@ import { validateEnv } from './config/env.validation';
     SearchModule,
     RelationTypesModule,
     TagsModule,
+    CuratedModule,
   ],
 })
 export class AppModule { }

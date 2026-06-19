@@ -1401,7 +1401,8 @@
 }
 
 .tag-admin__attach select,
-.tag-admin__create input {
+.tag-admin__create input,
+.tag-admin__create select {
   min-width: min(16rem, 100%);
 }
 
@@ -1412,6 +1413,16 @@
   color: inherit;
   padding: 0.45rem 0.7rem;
   cursor: pointer;
+}
+
+.tag-chip--alias {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tag-chip--alias small {
+  opacity: 0.72;
 }
 
 .tag-chip span {

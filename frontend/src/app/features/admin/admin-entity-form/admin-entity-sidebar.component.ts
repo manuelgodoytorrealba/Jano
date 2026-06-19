@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { AdminEntitySidebarSectionItem, DashboardSectionId } from './admin-entity-shell.presenter';
 
+export type AdminEntityDiscoverabilityItem = {
+  label: string;
+  detail: string;
+  done: boolean;
+};
+
 @Component({
   standalone: true,
   selector: 'app-admin-entity-sidebar',
@@ -19,6 +25,11 @@ export class AdminEntitySidebarComponent {
   @Input() saveDisabled = false;
   @Input() loading = false;
   @Input() navItems: AdminEntitySidebarSectionItem[] = [];
+  @Input() discoverabilityScoreLabel = '';
+  @Input() discoverabilityTone: 'strong' | 'partial' | 'weak' = 'weak';
+  @Input() discoverabilitySummary = '';
+  @Input() discoverabilityItems: AdminEntityDiscoverabilityItem[] = [];
+  @Input() publishWarning: string | null = null;
 
   @Output() toggleSidebar = new EventEmitter<void>();
   @Output() saveStay = new EventEmitter<void>();

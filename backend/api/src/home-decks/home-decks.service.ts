@@ -34,6 +34,53 @@ type HomeDeckWarning = {
   message: string;
 };
 
+type VirtualHomeDeckDefinition = {
+  slug: string;
+  ctaRoute: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  ctaLabel: string;
+  imageUrl: string;
+  entitySlugs: string[];
+  translations: {
+    locale: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    ctaLabel: string;
+  }[];
+};
+
+const VIRTUAL_HOME_DECKS: VirtualHomeDeckDefinition[] = [
+  {
+    slug: 'place',
+    ctaRoute: '/entities/place',
+    title: 'Lugares',
+    subtitle: 'Contexto institucional',
+    description: 'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
+    ctaLabel: 'Explorar lugares',
+    imageUrl: '/assets/home/museum-room.jpg',
+    entitySlugs: ['museo-del-prado', 'museo-reina-sofia', 'moma', 'guggenheim-bilbao'],
+    translations: [
+      {
+        locale: 'es',
+        title: 'Lugares',
+        subtitle: 'Contexto institucional',
+        description: 'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
+        ctaLabel: 'Explorar lugares',
+      },
+      {
+        locale: 'en',
+        title: 'Places',
+        subtitle: 'Institutional context',
+        description: 'Museums, collections and spaces that anchor works, movements and public memory.',
+        ctaLabel: 'Explore places',
+      },
+    ],
+  },
+];
+
 @Injectable()
 export class HomeDecksService {
   private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(process.env.MEDIA_PUBLIC_BASE_URL);
@@ -52,7 +99,8 @@ export class HomeDecksService {
       }),
     });
 
-    return decks.map((deck) => this.serializePublicDeck(deck, locale));
+    const resolvedDecks = await this.appendVirtualHomeDecksIfMissing(decks, safeSurface, locale);
+    return resolvedDecks.map((deck) => this.serializePublicDeck(deck, locale));
   }
 
   async adminList() {
@@ -88,6 +136,82 @@ export class HomeDecksService {
     await this.upsertDeckTranslations(deck.id, dto);
 
     return this.adminGetById(deck.id);
+  }
+
+  async materializeVirtualDeck(slug: string) {
+    const normalizedSlug = (slug ?? '').trim().toLowerCase();
+    const definition = VIRTUAL_HOME_DECKS.find((candidate) => candidate.slug === normalizedSlug);
+
+    if (!definition) {
+      throw new NotFoundException('Virtual home deck not found');
+    }
+
+    const existing = await this.prisma.homeDeck.findFirst({
+      where: {
+        surface: HomeDeckSurface.HOME,
+        OR: [
+          { slug: definition.slug },
+          { ctaRoute: definition.ctaRoute },
+        ],
+      },
+      select: { id: true },
+    });
+
+    if (existing) {
+      throw new ConflictException('Home deck already exists');
+    }
+
+    const entities = await this.prisma.entity.findMany({
+      where: {
+        status: EntityStatus.PUBLISHED,
+        slug: { in: definition.entitySlugs },
+      },
+      select: { id: true, slug: true },
+    });
+
+    const entitiesBySlug = new Map(entities.map((entity) => [entity.slug, entity]));
+    const orderedEntities = definition.entitySlugs
+      .map((entitySlug) => entitiesBySlug.get(entitySlug))
+      .filter((entity): entity is { id: string; slug: string } => !!entity);
+
+    const latestDeck = await this.prisma.homeDeck.findFirst({
+      where: { surface: HomeDeckSurface.HOME },
+      orderBy: [{ sortOrder: 'desc' }, { createdAt: 'desc' }],
+      select: { sortOrder: true },
+    });
+
+    const deck = await this.prisma.homeDeck.create({
+      data: {
+        slug: definition.slug,
+        surface: HomeDeckSurface.HOME,
+        title: definition.title,
+        subtitle: definition.subtitle,
+        description: definition.description,
+        ctaLabel: definition.ctaLabel,
+        ctaRoute: definition.ctaRoute,
+        imageUrl: definition.imageUrl,
+        sortOrder: (latestDeck?.sortOrder ?? -1) + 1,
+        isActive: true,
+        translations: {
+          create: definition.translations.map((translation) => ({
+            locale: translation.locale,
+            title: translation.title,
+            subtitle: translation.subtitle,
+            description: translation.description,
+            ctaLabel: translation.ctaLabel,
+          })),
+        },
+        items: {
+          create: orderedEntities.map((entity, index) => ({
+            entityId: entity.id,
+            sortOrder: index,
+          })),
+        },
+      },
+      include: this.deckInclude(),
+    });
+
+    return this.serializeAdminDeck(deck);
   }
 
   async update(id: string, dto: UpdateHomeDeckDto) {
@@ -240,18 +364,7 @@ export class HomeDecksService {
           : undefined,
         include: {
           entity: {
-            include: {
-              translations: {
-                where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
-              },
-              mediaLinks: {
-                include: { media: true },
-                orderBy: [
-                  { sortOrder: 'asc' as const },
-                  { id: 'asc' as const },
-                ],
-              },
-            },
+            include: this.entityInclude(locale),
           },
         },
         orderBy: [
@@ -259,6 +372,90 @@ export class HomeDecksService {
           { id: 'asc' as const },
         ],
       },
+    };
+  }
+
+  private entityInclude(locale: string) {
+    return {
+      translations: {
+        where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
+      },
+      mediaLinks: {
+        include: { media: true },
+        orderBy: [
+          { sortOrder: 'asc' as const },
+          { id: 'asc' as const },
+        ],
+      },
+    };
+  }
+
+  private async appendVirtualHomeDecksIfMissing(decks: any[], surface: HomeDeckSurface, locale?: string) {
+    if (surface !== HomeDeckSurface.HOME) {
+      return decks;
+    }
+
+    const missingDefinitions = VIRTUAL_HOME_DECKS.filter((definition) => !this.hasDeckCoverage(decks, definition));
+    if (!missingDefinitions.length) {
+      return decks;
+    }
+
+    const baseSortOrder = decks.reduce((max, deck) => Math.max(max, deck.sortOrder ?? 0), -1);
+    const virtualDecks = await Promise.all(
+      missingDefinitions.map((definition, index) =>
+        this.buildVirtualHomeDeck(definition, baseSortOrder + index + 1, locale),
+      ),
+    );
+
+    return [...decks, ...virtualDecks].sort((a, b) => (a.sortOrder - b.sortOrder) || a.slug.localeCompare(b.slug));
+  }
+
+  private hasDeckCoverage(decks: any[], definition: VirtualHomeDeckDefinition) {
+    return decks.some((deck) => deck.slug === definition.slug || deck.ctaRoute === definition.ctaRoute);
+  }
+
+  private async buildVirtualHomeDeck(definition: VirtualHomeDeckDefinition, sortOrder: number, locale?: string) {
+    const entities = await this.prisma.entity.findMany({
+      where: {
+        status: EntityStatus.PUBLISHED,
+        slug: { in: definition.entitySlugs },
+      },
+      include: this.entityInclude(normalizeLocale(locale)),
+    });
+
+    const entitiesBySlug = new Map(entities.map((entity) => [entity.slug, entity]));
+    const items = definition.entitySlugs
+      .map((slug, index) => {
+        const entity = entitiesBySlug.get(slug);
+        if (!entity) {
+          return null;
+        }
+
+        return {
+          id: `virtual-${definition.slug}-${entity.id}`,
+          sortOrder: index,
+          entity,
+        };
+      })
+      .filter(Boolean);
+
+    return {
+      id: `virtual-home-${definition.slug}`,
+      slug: definition.slug,
+      surface: HomeDeckSurface.HOME,
+      title: definition.title,
+      subtitle: definition.subtitle,
+      description: definition.description,
+      ctaLabel: definition.ctaLabel,
+      ctaUrl: null,
+      ctaRoute: definition.ctaRoute,
+      imageUrl: definition.imageUrl,
+      imageMediaId: null,
+      imageMedia: null,
+      sortOrder,
+      isVirtual: true,
+      translations: definition.translations,
+      items,
     };
   }
 
@@ -284,6 +481,7 @@ export class HomeDecksService {
 
     return {
       id: deck.id,
+      isVirtual: !!deck.isVirtual,
       surface: deck.surface,
       slug: deck.slug,
       title: resolved.title,

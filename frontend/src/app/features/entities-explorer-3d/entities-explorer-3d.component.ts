@@ -91,6 +91,8 @@ export class EntitiesExplorer3dComponent
     private lastWheelEventAt = 0;
     private lastWheelNavigationAt = 0;
     private keyboardNavigationActive = false;
+    private viewportWidth = 1200;
+    private viewportHeight = 700;
 
     constructor(@Inject(PLATFORM_ID) platformId: object) {
         this.isBrowser = isPlatformBrowser(platformId);
@@ -251,12 +253,14 @@ export class EntitiesExplorer3dComponent
         const host = this.canvasHostRef.nativeElement;
         const width = host.clientWidth || 1200;
         const height = host.clientHeight || 700;
+        this.viewportWidth = width;
+        this.viewportHeight = height;
 
         this.scene = new THREE.Scene();
         this.scene.background = null;
 
         this.camera = new THREE.PerspectiveCamera(33, width / height, 0.1, 100);
-        this.camera.position.set(0, 0.1, 11.9);
+        this.applyViewportCamera(width, height);
 
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
@@ -461,6 +465,97 @@ export class EntitiesExplorer3dComponent
         return texture;
     }
 
+    private createFallbackImageTexture(
+        item: Entity,
+        width: number,
+        height: number,
+        radius: number,
+    ): THREE.CanvasTexture {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error('No se pudo crear canvas 2D');
+        }
+
+        ctx.clearRect(0, 0, width, height);
+        this.drawRoundedRect(ctx, 0, 0, width, height, radius);
+        ctx.clip();
+
+        const background = ctx.createLinearGradient(0, 0, 0, height);
+        background.addColorStop(0, '#26221e');
+        background.addColorStop(0.48, '#1a1715');
+        background.addColorStop(1, '#100f10');
+        ctx.fillStyle = background;
+        ctx.fillRect(0, 0, width, height);
+
+        const glow = ctx.createRadialGradient(width * 0.52, height * 0.24, 0, width * 0.52, height * 0.24, width * 0.7);
+        glow.addColorStop(0, 'rgba(214, 184, 138, 0.16)');
+        glow.addColorStop(0.4, 'rgba(214, 184, 138, 0.06)');
+        glow.addColorStop(1, 'rgba(214, 184, 138, 0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.strokeStyle = 'rgba(244, 235, 223, 0.16)';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(28, 28, width - 56, height - 56);
+
+        const typeLabel = String(item?.type ?? 'Entity').replaceAll('_', ' ');
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(239, 227, 210, 0.52)';
+        ctx.font = '600 36px system-ui';
+        ctx.letterSpacing = '0.12em';
+        ctx.fillText(typeLabel, width / 2, height * 0.24);
+
+        ctx.fillStyle = 'rgba(248, 241, 232, 0.94)';
+        ctx.font = '700 76px system-ui';
+        this.drawCenteredWrappedText(ctx, item?.title ?? 'JANO', width / 2, height * 0.48, width * 0.66, 92);
+
+        ctx.fillStyle = 'rgba(214, 184, 138, 0.7)';
+        ctx.fillRect(width * 0.28, height * 0.77, width * 0.44, 2);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.needsUpdate = true;
+        return texture;
+    }
+
+    private drawCenteredWrappedText(
+        ctx: CanvasRenderingContext2D,
+        text: string,
+        centerX: number,
+        startY: number,
+        maxWidth: number,
+        lineHeight: number,
+    ): void {
+        const words = text.split(/\s+/).filter(Boolean);
+        const lines: string[] = [];
+        let current = '';
+
+        for (const word of words) {
+            const next = current ? `${current} ${word}` : word;
+            if (ctx.measureText(next).width <= maxWidth || !current) {
+                current = next;
+            } else {
+                lines.push(current);
+                current = word;
+            }
+        }
+
+        if (current) {
+            lines.push(current);
+        }
+
+        const limitedLines = lines.slice(0, 3);
+        const offsetY = ((limitedLines.length - 1) * lineHeight) / 2;
+
+        limitedLines.forEach((line, index) => {
+            ctx.fillText(line, centerX, startY - offsetY + index * lineHeight);
+        });
+    }
+
     private drawRoundedRect(
         ctx: CanvasRenderingContext2D,
         x: number,
@@ -487,10 +582,19 @@ export class EntitiesExplorer3dComponent
     private buildCards(): void {
         this.disposeCards();
 
+        const profile = this.getViewportProfile();
+        const frameWidth = profile.cardWidth;
+        const frameHeight = profile.cardHeight;
+        const imageInset = profile.imageInset;
+        const imageWidth = frameWidth - imageInset * 2;
+        const imageHeight = frameHeight - imageInset * 2.35;
+        const glassWidth = frameWidth - imageInset;
+        const glassHeight = frameHeight - imageInset * 1.55;
+
         this.items.forEach((item, index) => {
-            const frameGeometry = new THREE.PlaneGeometry(2.84, 3.08, 1, 1);
-            const imageGeometry = new THREE.PlaneGeometry(2.64, 2.90, 1, 1);
-            const glassGeometry = new THREE.PlaneGeometry(2.74, 2.98, 1, 1);
+            const frameGeometry = new THREE.PlaneGeometry(frameWidth, frameHeight, 1, 1);
+            const imageGeometry = new THREE.PlaneGeometry(imageWidth, imageHeight, 1, 1);
+            const glassGeometry = new THREE.PlaneGeometry(glassWidth, glassHeight, 1, 1);
 
             const frameTexture = this.createRoundedRectTexture(
                 1100,
@@ -550,9 +654,15 @@ export class EntitiesExplorer3dComponent
                     imageMaterial.map = roundedTexture;
                     imageMaterial.needsUpdate = true;
                 };
+                img.onerror = () => {
+                    imageMaterial.map = this.createFallbackImageTexture(item, 1100, 1200, 48);
+                    imageMaterial.needsUpdate = true;
+                };
                 img.src = textureUrl;
             } else {
-                imageMaterial.color = new THREE.Color('#ecece8');
+                imageMaterial.color = new THREE.Color('#f2f2ef');
+                imageMaterial.map = this.createFallbackImageTexture(item, 1100, 1200, 48);
+                imageMaterial.needsUpdate = true;
             }
 
             group.userData = {
@@ -596,14 +706,11 @@ export class EntitiesExplorer3dComponent
         const total = this.items.length;
         if (!total) return;
 
-        const spacing = 1.4;
-        const depthSpacing = 1.2;
-
-        // Ajusta este valor para subir o bajar TODAS las cards
-        const baseY = 0.2;
-
-        // Déjalo en 0 para mantenerlas alineadas y ordenadas
-        const sideYOffset = 0;
+        const profile = this.getViewportProfile();
+        const spacing = profile.spacing;
+        const depthSpacing = profile.depthSpacing;
+        const baseY = profile.baseY;
+        const sideYOffset = profile.sideYOffset;
 
         this.cards.forEach((card, i) => {
             const offset = this.getCircularOffset(i, this.activeIndex, total);
@@ -627,10 +734,12 @@ export class EntitiesExplorer3dComponent
             const rotY = isActive ? 0 : offset * -0.082;
             const rotZ = isActive ? 0 : offset * -0.018;
 
-            const scaleBase = isActive ? 1.16 : Math.max(0.76, 0.94 - abs * 0.05);
+            const scaleBase = isActive
+                ? profile.activeScale
+                : Math.max(profile.sideScaleFloor, profile.sideScaleStart - abs * profile.sideScaleDecay);
             const scale = isHovered ? scaleBase + 0.04 : scaleBase;
 
-            const opacityBase = isActive ? 1 : Math.max(0.2, 0.66 - abs * 0.095);
+            const opacityBase = isActive ? 1 : Math.max(profile.sideOpacityFloor, profile.sideOpacityStart - abs * profile.sideOpacityDecay);
             const opacity = isHovered ? Math.min(1, opacityBase + 0.1) : opacityBase;
 
             const userData = card.group.userData as CardUserData;
@@ -713,11 +822,16 @@ export class EntitiesExplorer3dComponent
             const host = this.canvasHostRef.nativeElement;
             const width = host.clientWidth || 1200;
             const height = host.clientHeight || 700;
+            this.viewportWidth = width;
+            this.viewportHeight = height;
 
+            this.applyViewportCamera(width, height);
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(width, height);
             this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            this.buildCards();
+            this.updateCardTargets();
         });
 
         this.resizeObserver.observe(this.canvasHostRef.nativeElement);
@@ -732,6 +846,73 @@ export class EntitiesExplorer3dComponent
             resolveEntityMediaItem(entity, 'explorer3d'),
             'explorer3d',
         );
+    }
+
+    private applyViewportCamera(width: number, height: number): void {
+        const compactDesktop = width >= 1100 && width <= 1500;
+        const shortDesktop = compactDesktop && height <= 940;
+
+        this.camera.fov = compactDesktop ? 31.6 : 33;
+        this.camera.position.set(0, compactDesktop ? (shortDesktop ? 0.34 : 0.26) : 0.1, compactDesktop ? 11.3 : 11.9);
+        this.camera.updateProjectionMatrix();
+    }
+
+    private getViewportProfile(): {
+        cardWidth: number;
+        cardHeight: number;
+        imageInset: number;
+        spacing: number;
+        depthSpacing: number;
+        baseY: number;
+        sideYOffset: number;
+        activeScale: number;
+        sideScaleStart: number;
+        sideScaleFloor: number;
+        sideScaleDecay: number;
+        sideOpacityStart: number;
+        sideOpacityFloor: number;
+        sideOpacityDecay: number;
+    } {
+        const width = this.viewportWidth;
+        const height = this.viewportHeight;
+        const compactDesktop = width >= 1100 && width <= 1500;
+        const shortDesktop = compactDesktop && height <= 940;
+
+        if (compactDesktop) {
+            return {
+                cardWidth: shortDesktop ? 2.68 : 2.82,
+                cardHeight: shortDesktop ? 3.04 : 3.18,
+                imageInset: shortDesktop ? 0.12 : 0.13,
+                spacing: shortDesktop ? 1.14 : 1.2,
+                depthSpacing: shortDesktop ? 0.95 : 1.01,
+                baseY: shortDesktop ? -0.06 : -0.02,
+                sideYOffset: 0,
+                activeScale: shortDesktop ? 1.14 : 1.18,
+                sideScaleStart: 0.89,
+                sideScaleFloor: 0.7,
+                sideScaleDecay: 0.058,
+                sideOpacityStart: 0.58,
+                sideOpacityFloor: 0.16,
+                sideOpacityDecay: 0.108,
+            };
+        }
+
+        return {
+            cardWidth: 2.84,
+            cardHeight: 3.08,
+            imageInset: 0.1,
+            spacing: 1.4,
+            depthSpacing: 1.2,
+            baseY: 0.2,
+            sideYOffset: 0,
+            activeScale: 1.16,
+            sideScaleStart: 0.94,
+            sideScaleFloor: 0.76,
+            sideScaleDecay: 0.05,
+            sideOpacityStart: 0.66,
+            sideOpacityFloor: 0.2,
+            sideOpacityDecay: 0.095,
+        };
     }
 
     private resolveImagePlacement(options: {

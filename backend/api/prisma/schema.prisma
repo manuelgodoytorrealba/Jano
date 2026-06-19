@@ -39,6 +39,15 @@ enum ContentLevel {
   ADVANCED
 }
 
+enum EntityAliasKind {
+  ALTERNATE_TITLE
+  COMMON_NAME
+  MISSPELLING
+  TRANSLITERATION
+  NICKNAME
+  SEARCH_HINT
+}
+
 enum MediaKind {
   IMAGE
 }
@@ -139,6 +148,7 @@ model Entity {
 
   // Editorial translations
   translations EntityTranslation[]
+  aliases      EntityAlias[]
 
   // Type-specific details (1..1, optional)
   artwork ArtworkDetails?
@@ -164,6 +174,25 @@ model EntityTranslation {
   @@unique([entityId, locale])
   @@index([entityId])
   @@index([locale])
+}
+
+model EntityAlias {
+  id        String          @id @default(cuid())
+  entityId  String
+  locale    String          @default("und")
+  value     String
+  kind      EntityAliasKind @default(COMMON_NAME)
+  weight    Float?
+  source    String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([entityId, locale, kind, value])
+  @@index([entityId])
+  @@index([locale])
+  @@index([kind])
 }
 
 model Relation {

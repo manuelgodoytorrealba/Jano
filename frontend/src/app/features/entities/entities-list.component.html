@@ -16,7 +16,7 @@
   <section
     class="entities-explorer-layout"
     [class.is-list]="viewMode === 'list'"
-    [class.is-filters-collapsed]="!filtersPanelOpen() || curatedDeckMode()"
+    [class.is-filters-collapsed]="!filtersPanelOpen()"
     [class.is-curated-deck]="curatedDeckMode()"
     [class.is-info-collapsed]="!infoPanelOpen()"
     [class.is-mobile-portrait-totem]="isMobilePortraitTotemActive()">
@@ -45,62 +45,56 @@
         </div>
       </div>
 
-      @if (!curatedDeckMode()) {
-        <button
-          type="button"
-          class="entities-hud__filters ds-panel"
-          [class.is-collapsed]="!filtersPanelOpen()"
-          (click)="toggleFiltersPanel()"
-          [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
-          [attr.aria-expanded]="filtersPanelOpen()">
-          <svg class="entities-hud__filters-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-            <path d="M4 6h16" />
-            <circle cx="9" cy="6" r="1.9" />
-            <path d="M4 12h16" />
-            <circle cx="15" cy="12" r="1.9" />
-            <path d="M4 18h16" />
-            <circle cx="11" cy="18" r="1.9" />
-          </svg>
-        </button>
-      }
-    </header>
-
-    @if (!curatedDeckMode()) {
       <button
         type="button"
-        class="entities-rail-handle ds-panel"
+        class="entities-hud__filters ds-panel"
         [class.is-collapsed]="!filtersPanelOpen()"
         (click)="toggleFiltersPanel()"
         [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
         [attr.aria-expanded]="filtersPanelOpen()">
-        <span class="entities-rail-handle__glyph" aria-hidden="true">
-          <span></span>
-          <span></span>
-          <span></span>
-        </span>
-        <span class="entities-rail-handle__label">{{ i18n.t('explorer.filters') }}</span>
+        <svg class="entities-hud__filters-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          <path d="M4 6h16" />
+          <circle cx="9" cy="6" r="1.9" />
+          <path d="M4 12h16" />
+          <circle cx="15" cy="12" r="1.9" />
+          <path d="M4 18h16" />
+          <circle cx="11" cy="18" r="1.9" />
+        </svg>
       </button>
-    }
+    </header>
+
+    <button
+      type="button"
+      class="entities-rail-handle ds-panel"
+      [class.is-collapsed]="!filtersPanelOpen()"
+      (click)="toggleFiltersPanel()"
+      [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
+      [attr.aria-expanded]="filtersPanelOpen()">
+      <span class="entities-rail-handle__glyph" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+      <span class="entities-rail-handle__label">{{ i18n.t('explorer.filters') }}</span>
+    </button>
 
     @if (pageVm$ | async; as pageVm) {
-      @if (!curatedDeckMode()) {
-        <app-entities-list-filter-rail
-          [vm]="pageVm.filterRail"
-          [collapsed]="!filtersPanelOpen()"
-          [openFilterMenu]="openFilterMenu()"
-          [advancedFiltersOpen]="advancedFiltersOpen()"
-          (searchChange)="setQ($event)"
-          (clearSearch)="clearSearch()"
-          (clearChip)="clearActiveFilter($event)"
-          (toggleMenu)="toggleFilterMenu($event)"
-          (selectOption)="selectFilterOption($event.key, $event.value)"
-          (sortChange)="toggleSort($event)"
-          (statusChange)="toggleStatus($event)"
-          (contentLevelChange)="toggleContentLevel($event)"
-          (toggleAdvancedFilters)="toggleAdvancedFilters()"
-          (resetFilters)="resetFilters()">
-        </app-entities-list-filter-rail>
-      }
+      <app-entities-list-filter-rail
+        [vm]="pageVm.filterRail"
+        [collapsed]="!filtersPanelOpen()"
+        [openFilterMenu]="openFilterMenu()"
+        [advancedFiltersOpen]="advancedFiltersOpen()"
+        (searchChange)="setQ($event)"
+        (clearSearch)="clearSearch()"
+        (clearChip)="clearActiveFilter($event)"
+        (toggleMenu)="toggleFilterMenu($event)"
+        (selectOption)="selectFilterOption($event.key, $event.value)"
+        (sortChange)="toggleSort($event)"
+        (statusChange)="toggleStatus($event)"
+        (contentLevelChange)="toggleContentLevel($event)"
+        (toggleAdvancedFilters)="toggleAdvancedFilters()"
+        (resetFilters)="resetFilters()">
+      </app-entities-list-filter-rail>
 
       @if (viewMode === 'explore') {
         @if (pageVm.results.items.length) {

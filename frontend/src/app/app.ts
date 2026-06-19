@@ -67,7 +67,7 @@ export class App {
 
   isImmersiveRoute(): boolean {
     const url = this.router.url.split('?')[0];
-    return url === '/' || url === '/recommended';
+    return url === '/';
   }
 
   isEntitiesRoute(): boolean {

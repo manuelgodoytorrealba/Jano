@@ -140,7 +140,7 @@ export class HomeComponent {
       routeType: this.routeTypeFromDeck(deck),
       ctaRoute: deck.ctaRoute ?? `/entities?deck=${encodeURIComponent(deck.slug)}`,
       ctaUrl: deck.ctaUrl ?? undefined,
-      adminEditRoute: `/admin/home-decks/${deck.id}/edit?returnTo=/`,
+      adminEditRoute: deck.isVirtual ? undefined : `/admin/home-decks/${deck.id}/edit?returnTo=/`,
     };
   }
 

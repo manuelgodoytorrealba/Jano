@@ -147,13 +147,23 @@
                 @if (state.deck) {
                   <a class="mini" [routerLink]="['/admin/home-decks', state.deck.id, 'edit']">Editar deck</a>
                 } @else {
-                  <button
-                    class="mini"
-                    type="button"
-                    (click)="importStarter(state.starter, state.starter.surface === 'HOME' ? vm.homeActiveDecks.length : vm.recommendedActiveDecks.length)"
-                    [disabled]="saving">
-                    Importar deck
-                  </button>
+                  @if (canMaterializeStarter(state.starter)) {
+                    <button
+                      class="mini"
+                      type="button"
+                      (click)="materializeStarter(state.starter)"
+                      [disabled]="saving">
+                      Materializar deck
+                    </button>
+                  } @else {
+                    <button
+                      class="mini"
+                      type="button"
+                      (click)="importStarter(state.starter, state.starter.surface === 'HOME' ? vm.homeActiveDecks.length : vm.recommendedActiveDecks.length)"
+                      [disabled]="saving">
+                      Importar deck
+                    </button>
+                  }
                 }
               </div>
             </div>

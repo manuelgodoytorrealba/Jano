@@ -17,8 +17,16 @@ export type SearchResult = {
     card?: any | null;
   };
   tags?: any[];
+  aliases?: Array<{
+    id: string;
+    locale: string;
+    value: string;
+    kind: string;
+    weight?: number | null;
+  }>;
   score: number;
   matchedFields: string[];
+  matchReasons?: string[];
   relationType?: string | null;
   relationReason?: string | null;
   relationWithTitle?: string | null;
@@ -54,6 +62,12 @@ export type SearchResponse = {
   items: SearchResult[];
   groups: Record<string, SearchResult[]>;
   sections?: SearchSection[];
+  interpretation?: {
+    normalizedQuery: string;
+    significantTerms: string[];
+    signals: Array<{ kind: string; value: string }>;
+    variantsTried: Array<{ query: string; reason: string }>;
+  };
 };
 
 @Injectable({ providedIn: 'root' })
