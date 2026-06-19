@@ -8,11 +8,10 @@ import {
   AdminEntitySearchListItem,
 } from '../../../core/api/admin-entities.api';
 import { AdminHomeDeck, AdminHomeDecksApi } from '../../../core/api/admin-home-decks.api';
-import { Collection, CollectionsApi } from '../../../core/api/collections.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
-import { MediaLike, selectPrimaryVisualMedia } from '../../../shared/media/media.utils';
-import { GraphComponent } from '../../graph/graph.component';
-import { GraphResponseDto } from '../../graph/graph.models';
+import { getEntityTypeConfig, getRelationTypeConfig } from '../../graph/graph.config';
+import { GraphNodeDto, GraphResponseDto } from '../../graph/graph.models';
+import { AdminGlobalGraphComponent } from './admin-global-graph.component';
 
 type SidebarItem = {
   label: string;
@@ -21,6 +20,7 @@ type SidebarItem = {
   disabled?: boolean;
   note?: string;
   count?: number | null;
+  entityType?: string;
 };
 
 type SidebarGroup = {
@@ -60,13 +60,13 @@ type WorkspaceActivityItem = {
   route: string;
 };
 
-type FeaturedCollectionCard = {
-  id: string;
-  name: string;
-  description: string | null;
-  itemCount: number;
-  updatedAt: string;
-  coverMedia: MediaLike | null;
+type WorkspaceGraphRelation = {
+  edgeId: string;
+  relationLabel: string;
+  relationColor: string;
+  node: GraphNodeDto;
+  nodeTypeLabel: string;
+  nodeColor: string;
 };
 
 type WorkspaceGraphCard = {
@@ -75,14 +75,12 @@ type WorkspaceGraphCard = {
   route: string;
   ctaLabel: string;
   graphData: GraphResponseDto;
-  slug: string;
 };
 
 type WorkspaceVm = {
   sidebarGroups: SidebarGroup[];
   recentEntities: RecentEntityCard[];
   featuredDecks: AdminHomeDeck[];
-  featuredCollections: FeaturedCollectionCard[];
   activity: WorkspaceActivityItem[];
   graphCard: WorkspaceGraphCard | null;
   quickFilterGroups: QuickFilterGroup[];
@@ -97,13 +95,12 @@ type SidebarCounts = {
   PLACE: number;
   ARTICLE: number;
   CURATIONS: number;
-  DECKS: number;
 };
 
 @Component({
   standalone: true,
   selector: 'app-admin-dashboard',
-  imports: [AsyncPipe, DatePipe, RouterLink, JanoMediaComponent, GraphComponent],
+  imports: [AsyncPipe, DatePipe, RouterLink, JanoMediaComponent, AdminGlobalGraphComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -111,21 +108,20 @@ type SidebarCounts = {
 export class AdminDashboardComponent {
   private readonly adminEntitiesApi = inject(AdminEntitiesApi);
   private readonly homeDecksApi = inject(AdminHomeDecksApi);
-  private readonly collectionsApi = inject(CollectionsApi);
   readonly graphExpanded = signal(true);
   readonly leftSidebarVisible = signal(true);
   readonly rightSidebarVisible = signal(true);
+  readonly selectedGraphNode = signal<GraphNodeDto | null>(null);
   readonly vm$ = forkJoin({
     decks: this.homeDecksApi.list().pipe(catchError(() => of([]))),
     recent: this.adminEntitiesApi.list({ page: 1, limit: 5, sort: 'recent' }).pipe(
       map((res) => res.items ?? []),
       catchError(() => of([])),
     ),
-    collections: this.collectionsApi.list().pipe(catchError(() => of([]))),
     workspaceGraph: this.adminEntitiesApi.workspaceGraph().pipe(catchError(() => of(null))),
     sidebarCounts: this.sidebarCounts().pipe(catchError(() => of(this.emptySidebarCounts()))),
   }).pipe(
-    switchMap(({ decks, recent, collections, workspaceGraph, sidebarCounts }) =>
+    switchMap(({ decks, recent, workspaceGraph, sidebarCounts }) =>
       forkJoin({
         recentEntities: this.buildRecentEntityCards(recent),
         graphCard: this.buildGraphCard(workspaceGraph),
@@ -134,8 +130,7 @@ export class AdminDashboardComponent {
           sidebarGroups: this.sidebarGroups(sidebarCounts),
           recentEntities,
           featuredDecks: this.featuredDecks(decks),
-          featuredCollections: this.featuredCollections(collections),
-          activity: this.buildActivity(recentEntities, decks, collections),
+          activity: this.buildActivity(recentEntities, decks),
           graphCard,
           quickFilterGroups: this.quickFilterGroups(),
         })),
@@ -145,12 +140,41 @@ export class AdminDashboardComponent {
       sidebarGroups: this.sidebarGroups(this.emptySidebarCounts()),
       recentEntities: [],
       featuredDecks: [],
-      featuredCollections: [],
       activity: [],
       graphCard: null,
       quickFilterGroups: this.quickFilterGroups(),
     } satisfies WorkspaceVm),
   );
+
+  selectGraphNode(node: GraphNodeDto | null): void {
+    this.selectedGraphNode.set(node);
+  }
+
+  entityTypeColor(type: string): string {
+    return getEntityTypeConfig(type).color;
+  }
+
+  selectedGraphRelations(graph: GraphResponseDto): WorkspaceGraphRelation[] {
+    const selected = this.selectedGraphNode();
+    if (!selected) return [];
+    const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
+    return graph.edges
+      .filter((edge) => edge.source === selected.id || edge.target === selected.id)
+      .map((edge) => {
+        const node = nodes.get(edge.source === selected.id ? edge.target : edge.source);
+        if (!node) return null;
+        return {
+          edgeId: edge.id,
+          relationLabel: getRelationTypeConfig(edge.relationType).label,
+          relationColor: getRelationTypeConfig(edge.relationType).color,
+          node,
+          nodeTypeLabel: getEntityTypeConfig(node.type).label,
+          nodeColor: getEntityTypeConfig(node.type).color,
+        };
+      })
+      .filter((relation): relation is WorkspaceGraphRelation => relation !== null)
+      .sort((left, right) => left.node.label.localeCompare(right.node.label));
+  }
 
   typeLabel(type: string | null | undefined): string {
     switch ((type ?? '').toUpperCase()) {
@@ -202,10 +226,6 @@ export class AdminDashboardComponent {
     }
   }
 
-  collectionCoverMedia(collection: FeaturedCollectionCard): MediaLike | null {
-    return collection.coverMedia;
-  }
-
   deckPreviewEntities(deck: AdminHomeDeck) {
     return [...(deck.entities ?? [])]
       .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
@@ -229,21 +249,60 @@ export class AdminDashboardComponent {
       {
         label: 'Archive',
         items: [
-          { label: 'Artists', route: '/admin/entities', queryParams: { type: 'ARTIST' }, count: counts['ARTIST'] },
-          { label: 'Artworks', route: '/admin/entities', queryParams: { type: 'ARTWORK' }, count: counts['ARTWORK'] },
-          { label: 'Concepts', route: '/admin/entities', queryParams: { type: 'CONCEPT' }, count: counts['CONCEPT'] },
-          { label: 'Movements', route: '/admin/entities', queryParams: { type: 'MOVEMENT' }, count: counts['MOVEMENT'] },
-          { label: 'Periods', route: '/admin/entities', queryParams: { type: 'PERIOD' }, count: counts['PERIOD'] },
-          { label: 'Places', route: '/admin/entities', queryParams: { type: 'PLACE' }, count: counts['PLACE'] },
-          { label: 'Articles', route: '/admin/entities', queryParams: { type: 'ARTICLE' }, count: counts['ARTICLE'] },
+          {
+            label: 'Artists',
+            route: '/admin/entities',
+            entityType: 'ARTIST',
+            queryParams: { type: 'ARTIST' },
+            count: counts['ARTIST'],
+          },
+          {
+            label: 'Artworks',
+            route: '/admin/entities',
+            entityType: 'ARTWORK',
+            queryParams: { type: 'ARTWORK' },
+            count: counts['ARTWORK'],
+          },
+          {
+            label: 'Concepts',
+            route: '/admin/entities',
+            entityType: 'CONCEPT',
+            queryParams: { type: 'CONCEPT' },
+            count: counts['CONCEPT'],
+          },
+          {
+            label: 'Movements',
+            route: '/admin/entities',
+            entityType: 'MOVEMENT',
+            queryParams: { type: 'MOVEMENT' },
+            count: counts['MOVEMENT'],
+          },
+          {
+            label: 'Periods',
+            route: '/admin/entities',
+            entityType: 'PERIOD',
+            queryParams: { type: 'PERIOD' },
+            count: counts['PERIOD'],
+          },
+          {
+            label: 'Places',
+            route: '/admin/entities',
+            entityType: 'PLACE',
+            queryParams: { type: 'PLACE' },
+            count: counts['PLACE'],
+          },
+          {
+            label: 'Articles',
+            route: '/admin/entities',
+            entityType: 'ARTICLE',
+            queryParams: { type: 'ARTICLE' },
+            count: counts['ARTICLE'],
+          },
         ],
       },
       {
         label: 'Curated',
-        items: [
-          { label: 'Curations', route: '/admin/curations', count: counts['CURATIONS'] },
-          { label: 'Decks', route: '/admin/home-decks', count: counts['DECKS'] },
-        ],
+        items: [{ label: 'Curations', route: '/admin/curations', count: counts['CURATIONS'] }],
       },
       {
         label: 'System',
@@ -314,32 +373,15 @@ export class AdminDashboardComponent {
   }
 
   private featuredDecks(decks: AdminHomeDeck[]): AdminHomeDeck[] {
-    return [...decks]
+    return decks
+      .filter((deck) => deck.surface === 'RECOMMENDED')
       .sort((left, right) => this.sortByRecent(right.updatedAt, left.updatedAt))
       .slice(0, 3);
-  }
-
-  private featuredCollections(collections: Collection[]): FeaturedCollectionCard[] {
-    return [...collections]
-      .sort((left, right) => this.sortByRecent(right.updatedAt, left.updatedAt))
-      .slice(0, 3)
-      .map((collection) => ({
-        id: collection.id,
-        name: collection.name,
-        description: collection.description ?? null,
-        itemCount: collection.itemCount,
-        updatedAt: collection.updatedAt,
-        coverMedia:
-          collection.coverMedia
-          ?? selectPrimaryVisualMedia(collection.items[0]?.entity)
-          ?? null,
-      }));
   }
 
   private buildActivity(
     recentEntities: RecentEntityCard[],
     decks: AdminHomeDeck[],
-    collections: Collection[],
   ): WorkspaceActivityItem[] {
     const entityItems: WorkspaceActivityItem[] = recentEntities.map((entity) => ({
       id: `entity-${entity.id}`,
@@ -350,30 +392,25 @@ export class AdminDashboardComponent {
       route: `/admin/entities/${entity.id}/edit`,
     }));
 
-    const deckItems: WorkspaceActivityItem[] = decks.map((deck) => ({
-      id: `deck-${deck.id}`,
-      kind: 'deck',
-      title: deck.title,
-      detail: `${deck.surface} · ${deck.isActive ? 'Activo' : 'Inactivo'}`,
-      date: deck.updatedAt,
-      route: `/admin/home-decks/${deck.id}/edit`,
-    }));
+    const curationItems: WorkspaceActivityItem[] = decks
+      .filter((deck) => deck.surface === 'RECOMMENDED')
+      .map((deck) => ({
+        id: 'curation-' + deck.id,
+        kind: 'curation',
+        title: deck.title,
+        detail: deck.entities.length + ' entidades · ' + (deck.isActive ? 'Publicada' : 'Borrador'),
+        date: deck.updatedAt,
+        route: '/admin/home-decks/' + deck.id + '/edit?returnTo=%2Fadmin%2Fcurations',
+      }));
 
-    const collectionItems: WorkspaceActivityItem[] = collections.map((collection) => ({
-      id: `collection-${collection.id}`,
-      kind: 'curation',
-      title: collection.name,
-      detail: `${collection.itemCount} piezas conectadas`,
-      date: collection.updatedAt,
-      route: '/admin/curations',
-    }));
-
-    return [...entityItems, ...deckItems, ...collectionItems]
+    return [...entityItems, ...curationItems]
       .sort((left, right) => this.sortByRecent(right.date, left.date))
       .slice(0, 6);
   }
 
-  private buildGraphCard(graphData: GraphResponseDto | null): Observable<WorkspaceGraphCard | null> {
+  private buildGraphCard(
+    graphData: GraphResponseDto | null,
+  ): Observable<WorkspaceGraphCard | null> {
     if (!graphData?.nodes?.length) {
       return of<WorkspaceGraphCard | null>(null);
     }
@@ -384,7 +421,6 @@ export class AdminDashboardComponent {
       route: '/admin/entities',
       ctaLabel: 'Explorar archivo',
       graphData,
-      slug: 'workspace-jano',
     } satisfies WorkspaceGraphCard);
   }
 
@@ -400,8 +436,10 @@ export class AdminDashboardComponent {
         this.entityCount({ type: 'ARTICLE' }),
         this.entityCount({ type: 'TEXT' }),
       ]).pipe(map(([article, text]) => article + text)),
-      CURATIONS: this.collectionsApi.list().pipe(map((collections) => collections.length), catchError(() => of(0))),
-      DECKS: this.homeDecksApi.list().pipe(map((decks) => decks.length), catchError(() => of(0))),
+      CURATIONS: this.homeDecksApi.list().pipe(
+        map((decks) => decks.filter((deck) => deck.surface === 'RECOMMENDED').length),
+        catchError(() => of(0)),
+      ),
     });
   }
 
@@ -415,7 +453,6 @@ export class AdminDashboardComponent {
       PLACE: 0,
       ARTICLE: 0,
       CURATIONS: 0,
-      DECKS: 0,
     };
   }
 

@@ -4,129 +4,165 @@
       <p class="admin-curations__eyebrow">Curated</p>
       <h1>Curations</h1>
       <p class="admin-curations__intro">
-        Superficie editorial para las curaciones de JANO, separada de las colecciones personales del usuario.
+        Superficie editorial para las curaciones de JANO, separada de las colecciones personales del
+        usuario.
       </p>
     </div>
 
     <div class="admin-curations__actions">
       <a class="admin-curations__btn" routerLink="/admin">Volver al workspace</a>
-      <button class="admin-curations__btn admin-curations__btn--primary" type="button" (click)="openCreateRoute()">
+      <button
+        class="admin-curations__btn admin-curations__btn--primary"
+        type="button"
+        (click)="openCreateRoute()"
+      >
         Nueva curación
       </button>
     </div>
   </header>
 
   @if (vm$ | async; as vm) {
-  <section class="admin-curations__summary">
-    <article>
-      <span>Total</span>
-      <strong>{{ vm.total }}</strong>
-    </article>
-    <article>
-      <span>Con contexto</span>
-      <strong>{{ vm.connectedCount }}</strong>
-    </article>
-    <article>
-      <span>Vacías</span>
-      <strong>{{ vm.emptyCount }}</strong>
-    </article>
-  </section>
+    <section class="admin-curations__summary">
+      <article>
+        <span>Total</span>
+        <strong>{{ vm.total }}</strong>
+      </article>
+      <article>
+        <span>Con contexto</span>
+        <strong>{{ vm.connectedCount }}</strong>
+      </article>
+      <article>
+        <span>Vacías</span>
+        <strong>{{ vm.emptyCount }}</strong>
+      </article>
+    </section>
 
-  <section class="admin-curations__layout">
-    <article class="admin-curations__panel admin-curations__panel--compose">
-      <div class="admin-curations__panel-head">
-        <div>
-          <p class="admin-curations__eyebrow">Crear</p>
-          <h2>Nueva curación editorial</h2>
-        </div>
-      </div>
-
-      <p class="admin-curations__panel-copy">
-        Crea primero la curación como contenedor editorial. Después podrás enriquecerla desde su vista propia con notas, relaciones y selección.
-      </p>
-
-      <form class="admin-curations__form" (ngSubmit)="createCuration()">
-        <label class="admin-curations__field">
-          <span>Nombre</span>
-          <input #nameInput type="text" name="name" [(ngModel)]="name" placeholder="Arte y guerra" />
-        </label>
-
-        <label class="admin-curations__field">
-          <span>Descripción</span>
-          <textarea
-            name="description"
-            [(ngModel)]="description"
-            rows="5"
-            placeholder="Describe la lectura editorial, el tono o la hipótesis curatorial."
-          ></textarea>
-        </label>
-
-        @if (feedback) {
-        <div class="admin-curations__feedback admin-curations__feedback--success">{{ feedback }}</div>
-        }
-
-        @if (error) {
-        <div class="admin-curations__feedback admin-curations__feedback--error">{{ error }}</div>
-        }
-
-        <button class="admin-curations__submit" type="submit" [disabled]="creating || !name.trim()">
-          @if (creating) { Creando... } @else { Crear curación }
-        </button>
-      </form>
-    </article>
-
-    <article class="admin-curations__panel">
-      <div class="admin-curations__panel-head">
-        <div>
-          <p class="admin-curations__eyebrow">Biblioteca</p>
-          <h2>Curaciones existentes</h2>
-        </div>
-      </div>
-
-      @if (vm.collections.length) {
-      <div class="admin-curations__grid">
-        @for (collection of vm.collections; track collection.id) {
-        <article class="curation-card">
-          <a class="curation-card__media" [routerLink]="['/collections', collection.id]">
-            <app-jano-media [media]="coverMedia(collection)" usage="card" [alt]="collection.name"></app-jano-media>
-          </a>
-
-          <div class="curation-card__body">
-            <div class="curation-card__meta">
-              <span>{{ collection.itemCount }} piezas</span>
-              @if (collection.isDefault) {
-              <strong>Default</strong>
-              } @else {
-              <strong>Editorial</strong>
-              }
-            </div>
-
-            <h3>{{ collection.name }}</h3>
-
-            @if (collection.description) {
-            <p>{{ collection.description }}</p>
-            } @else {
-            <p class="is-muted">Todavía sin descripción editorial.</p>
-            }
-
-            <div class="curation-card__footer">
-              <span>Actualizada {{ collection.updatedAt | date: 'dd MMM yyyy' }}</span>
-              <div class="curation-card__actions">
-                <a [routerLink]="['/collections', collection.id]">Abrir</a>
-                <a routerLink="/my-space">My Space</a>
-              </div>
-            </div>
+    <section class="admin-curations__layout">
+      <article class="admin-curations__panel admin-curations__panel--compose">
+        <div class="admin-curations__panel-head">
+          <div>
+            <p class="admin-curations__eyebrow">Crear</p>
+            <h2>Nueva curación editorial</h2>
           </div>
-        </article>
+        </div>
+
+        <p class="admin-curations__panel-copy">
+          Crea primero la curación como contenedor editorial. Después podrás enriquecerla desde su
+          vista propia con notas, relaciones y selección.
+        </p>
+
+        <form class="admin-curations__form" (ngSubmit)="createCuration()">
+          <label class="admin-curations__field">
+            <span>Nombre</span>
+            <input
+              #nameInput
+              type="text"
+              name="name"
+              [(ngModel)]="name"
+              placeholder="Arte y guerra"
+            />
+          </label>
+
+          <label class="admin-curations__field">
+            <span>Descripción</span>
+            <textarea
+              name="description"
+              [(ngModel)]="description"
+              rows="5"
+              placeholder="Describe la lectura editorial, el tono o la hipótesis curatorial."
+            ></textarea>
+          </label>
+
+          @if (feedback) {
+            <div class="admin-curations__feedback admin-curations__feedback--success">
+              {{ feedback }}
+            </div>
+          }
+
+          @if (error) {
+            <div class="admin-curations__feedback admin-curations__feedback--error">
+              {{ error }}
+            </div>
+          }
+
+          <button
+            class="admin-curations__submit"
+            type="submit"
+            [disabled]="creating || !name.trim()"
+          >
+            @if (creating) {
+              Creando...
+            } @else {
+              Crear curación
+            }
+          </button>
+        </form>
+      </article>
+
+      <article class="admin-curations__panel">
+        <div class="admin-curations__panel-head">
+          <div>
+            <p class="admin-curations__eyebrow">Biblioteca</p>
+            <h2>Curaciones existentes</h2>
+          </div>
+        </div>
+
+        @if (vm.curations.length) {
+          <div class="admin-curations__grid">
+            @for (curation of vm.curations; track curation.id) {
+              <article class="curation-card">
+                <a
+                  class="curation-card__media"
+                  [routerLink]="['/admin/home-decks', curation.id, 'edit']"
+                  [queryParams]="{ returnTo: '/admin/curations' }"
+                >
+                  <app-jano-media
+                    [media]="coverMedia(curation)"
+                    usage="card"
+                    [alt]="curation.title"
+                  ></app-jano-media>
+                </a>
+
+                <div class="curation-card__body">
+                  <div class="curation-card__meta">
+                    <span>{{ curation.entityCount }} piezas</span>
+                    @if (curation.isActive) {
+                      <strong>Publicada</strong>
+                    } @else {
+                      <strong>Borrador</strong>
+                    }
+                  </div>
+
+                  <h3>{{ curation.title }}</h3>
+
+                  @if (curation.description) {
+                    <p>{{ curation.description }}</p>
+                  } @else {
+                    <p class="is-muted">Todavía sin descripción editorial.</p>
+                  }
+
+                  <div class="curation-card__footer">
+                    <span>Actualizada {{ curation.updatedAt | date: 'dd MMM yyyy' }}</span>
+                    <div class="curation-card__actions">
+                      <a
+                        [routerLink]="['/admin/home-decks', curation.id, 'edit']"
+                        [queryParams]="{ returnTo: '/admin/curations' }"
+                        >Editar</a
+                      >
+                      <a routerLink="/recommended">Ver en Recommended</a>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="admin-curations__empty">
+            <strong>Aún no hay curaciones</strong>
+            <span>Empieza creando la primera curación editorial desde este panel.</span>
+          </div>
         }
-      </div>
-      } @else {
-      <div class="admin-curations__empty">
-        <strong>Aún no hay curaciones</strong>
-        <span>Empieza creando la primera curación editorial desde este panel.</span>
-      </div>
-      }
-    </article>
-  </section>
+      </article>
+    </section>
   }
 </main>

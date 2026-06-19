@@ -48,7 +48,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     @Input() infoOpen = false;
 
     @Output() activeIndexChange = new EventEmitter<number>();
-    @Output() openEntity = new EventEmitter<EntityArtworkTransitionPayload>();
+    @Output() openEntity = new EventEmitter<string | EntityArtworkTransitionPayload>();
     @Output() requestInfoOpen = new EventEmitter<void>();
     @Output() requestInfoClose = new EventEmitter<void>();
 
@@ -163,17 +163,15 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     openActive(): void {
         const item = this.activeItem;
         const payload = item ? this.buildPayload(item) : null;
-        if (payload) {
-            this.openEntity.emit(payload);
-        }
+        if (payload) this.openEntity.emit(payload);
+        else if (item?.slug) this.openEntity.emit(item.slug);
     }
 
     openPanelItem(): void {
         const item = this.panelItem;
         const payload = item ? this.buildPayload(item) : null;
-        if (payload) {
-            this.openEntity.emit(payload);
-        }
+        if (payload) this.openEntity.emit(payload);
+        else if (item?.slug) this.openEntity.emit(item.slug);
     }
 
     onPointerDown(event: PointerEvent): void {

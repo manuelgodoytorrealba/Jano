@@ -1,143 +1,247 @@
 <section
-    class="entity-deck"
-    [class.entity-deck--viewport]="fullViewport()"
-    [class.entity-deck--mobile-editorial]="isMobileEditorial()">
-    <div class="entity-deck__shell">
-        <div class="entity-deck__bg" [style.backgroundImage]="'url(' + backgroundImage() + ')'"></div>
+  class="entity-deck"
+  [class.entity-deck--viewport]="fullViewport()"
+  [class.entity-deck--mobile-editorial]="isMobileEditorial()"
+>
+  <div class="entity-deck__shell">
+    <div class="entity-deck__bg" [style.backgroundImage]="'url(' + backgroundImage() + ')'"></div>
 
-        <div class="entity-deck__overlay"></div>
+    <div class="entity-deck__overlay"></div>
 
-        @if (showRail()) {
-        <aside class="entity-deck__rail" aria-label="Navegación principal">
-            <button class="entity-deck__rail-btn" [class.is-active]="isRailActive('home')" type="button"
-                aria-label="Home" (click)="onRailClick('home')">
-                <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9-1.9 4.6-1.9-4.6-4.6-1.9 4.6-1.9L12 3.5z"
-                        fill="currentColor" />
-                </svg>
-            </button>
-
-            <button class="entity-deck__rail-btn" [class.is-active]="isRailActive('picks')" type="button"
-                aria-label="Recommended" (click)="onRailClick('picks')">
-                <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path
-                        d="M12 19.25c-.17 0-.33-.06-.46-.16-.95-.76-1.86-1.46-2.73-2.13C5.86 14.69 4 13.23 4 10.88 4 8.98 5.47 7.5 7.27 7.5c1.22 0 2.33.58 3.03 1.54A3.8 3.8 0 0 1 13.33 7.5c1.8 0 3.27 1.48 3.27 3.38 0 2.35-1.86 3.81-4.81 6.08-.87.67-1.78 1.37-2.73 2.13-.13.1-.29.16-.46.16Z"
-                        fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"
-                        stroke-linejoin="round" vector-effect="non-scaling-stroke" />
-                </svg>
-            </button>
-
-            <button class="entity-deck__rail-btn" [class.is-active]="isRailActive('profile')" type="button"
-                aria-label="Profile" (click)="onRailClick('profile')">
-                <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 12a3.75 3.75 0 1 0 0-7.5A3.75 3.75 0 0 0 12 12z" fill="none" stroke="currentColor"
-                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M5 19.25c1.45-2.56 4.04-4 7-4s5.55 1.44 7 4" fill="none" stroke="currentColor"
-                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </button>
-        </aside>
-        }
-
-        @if (showNav()) {
-        <button class="entity-deck__nav entity-deck__nav--left" type="button" (click)="prev()" aria-label="Anterior">
-            <svg class="entity-deck__nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M14.5 6.5L9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9"
-                    stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+    @if (showRail()) {
+      <aside class="entity-deck__rail" aria-label="Navegación principal">
+        <button
+          class="entity-deck__rail-btn"
+          [class.is-active]="isRailActive('home')"
+          type="button"
+          aria-label="Home"
+          (click)="onRailClick('home')"
+        >
+          <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9-1.9 4.6-1.9-4.6-4.6-1.9 4.6-1.9L12 3.5z"
+              fill="currentColor"
+            />
+          </svg>
         </button>
-        }
 
-        <div class="entity-deck__stage" (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)" (pointerup)="onPointerUp($event)" (pointercancel)="onPointerCancel($event)">
-            <div class="entity-deck__stack" role="list">
-                @for (item of items(); track item.id) {
-                <article role="listitem" class="entity-deck__card" [class.is-active]="$index === activeIndex()"
-                    [style.zIndex]="cardStates()[$index].zIndex" [style.transform]="cardStates()[$index].transform"
-                    [style.opacity]="cardStates()[$index].opacity"
-                    (click)="onCardClick(item)">
-                    <div class="entity-deck__media">
-                        <app-jano-media
-                            [media]="deckMedia(item)"
-                            [alt]="item.title"
-                            usage="card"
-                            [lazy]="imgLoading($index) === 'lazy'"
-                            [priority]="imgFetchPriority($index)"
+        <button
+          class="entity-deck__rail-btn"
+          [class.is-active]="isRailActive('picks')"
+          type="button"
+          aria-label="Recommended"
+          (click)="onRailClick('picks')"
+        >
+          <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 19.25c-.17 0-.33-.06-.46-.16-.95-.76-1.86-1.46-2.73-2.13C5.86 14.69 4 13.23 4 10.88 4 8.98 5.47 7.5 7.27 7.5c1.22 0 2.33.58 3.03 1.54A3.8 3.8 0 0 1 13.33 7.5c1.8 0 3.27 1.48 3.27 3.38 0 2.35-1.86 3.81-4.81 6.08-.87.67-1.78 1.37-2.73 2.13-.13.1-.29.16-.46.16Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.65"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
+        </button>
+
+        <button
+          class="entity-deck__rail-btn"
+          [class.is-active]="isRailActive('profile')"
+          type="button"
+          aria-label="Profile"
+          (click)="onRailClick('profile')"
+        >
+          <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 12a3.75 3.75 0 1 0 0-7.5A3.75 3.75 0 0 0 12 12z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M5 19.25c1.45-2.56 4.04-4 7-4s5.55 1.44 7 4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </aside>
+    }
+
+    @if (showNav()) {
+      <button
+        class="entity-deck__nav entity-deck__nav--left"
+        type="button"
+        (click)="prev()"
+        aria-label="Anterior"
+      >
+        <svg class="entity-deck__nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M14.5 6.5L9 12l5.5 5.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    }
+
+    <div
+      class="entity-deck__stage"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerUp($event)"
+      (pointercancel)="onPointerCancel($event)"
+    >
+      <div class="entity-deck__stack" role="list">
+        @for (item of items(); track item.id) {
+          <article
+            role="listitem"
+            class="entity-deck__card"
+            [class.is-active]="$index === activeIndex()"
+            [style.zIndex]="cardStates()[$index].zIndex"
+            [style.transform]="cardStates()[$index].transform"
+            [style.opacity]="cardStates()[$index].opacity"
+            (click)="onCardClick(item)"
+          >
+            <div class="entity-deck__media">
+              <app-jano-media
+                [media]="deckMedia(item)"
+                [alt]="item.title"
+                usage="card"
+                [lazy]="imgLoading($index) === 'lazy'"
+                [priority]="imgFetchPriority($index)"
+              />
+            </div>
+
+            <div class="entity-deck__body">
+              <div class="entity-deck__topline">
+                <span class="entity-deck__eyebrow">{{ item.eyebrow }}</span>
+
+                <div class="entity-deck__top-actions">
+                  @if (showAdminEdit() && (item.adminEditRoute || item.adminMaterializeSlug)) {
+                    <button
+                      class="entity-deck__admin-edit"
+                      type="button"
+                      [attr.aria-label]="i18n.t('deck.editCollection')"
+                      [title]="i18n.t('deck.editCollection')"
+                      (click)="onAdminEditClick($event, item)"
+                    >
+                      <svg
+                        class="entity-deck__admin-edit-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z"
+                          fill="currentColor"
+                          opacity="0.92"
                         />
-                    </div>
+                        <path
+                          d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-opacity="0.24"
+                          stroke-width="0.72"
+                        />
+                        <circle cx="12" cy="12" r="3.15" class="entity-deck__admin-edit-hole" />
+                      </svg>
+                    </button>
+                  }
 
-                    <div class="entity-deck__body">
-                        <div class="entity-deck__topline">
-                            <span class="entity-deck__eyebrow">{{ item.eyebrow }}</span>
+                  <button
+                    class="entity-deck__chip"
+                    type="button"
+                    (click)="onExpandClick($event, item)"
+                  >
+                    {{ i18n.t('deck.enter') }}
+                  </button>
+                </div>
+              </div>
 
-                            <div class="entity-deck__top-actions">
-                                @if (showAdminEdit() && item.adminEditRoute) {
-                                <button class="entity-deck__admin-edit" type="button" [attr.aria-label]="i18n.t('deck.editCollection')"
-                                    [title]="i18n.t('deck.editCollection')" (click)="onAdminEditClick($event, item)">
-                                    <svg class="entity-deck__admin-edit-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z" fill="currentColor" opacity="0.92" />
-                                        <path d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z" fill="none" stroke="currentColor" stroke-opacity="0.24" stroke-width="0.72" />
-                                        <circle cx="12" cy="12" r="3.15" class="entity-deck__admin-edit-hole" />
-                                    </svg>
-                                </button>
-                                }
+              <div class="entity-deck__content">
+                <h2 class="entity-deck__title">{{ item.title }}</h2>
 
-                                <button class="entity-deck__chip" type="button" (click)="onExpandClick($event, item)">
-                                    {{ i18n.t('deck.enter') }}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="entity-deck__content">
-                            <h2 class="entity-deck__title">{{ item.title }}</h2>
-
-                            @if (item.description) {
-                            <p class="entity-deck__description">{{ item.description }}</p>
-                            }
-                        </div>
-
-                        <div class="entity-deck__footer">
-                            @if (item.meta) {
-                            <div class="entity-deck__meta">{{ item.meta }}</div>
-                            }
-
-                            @if (item.cta) {
-                            <div class="entity-deck__cta">{{ item.cta }}</div>
-                            }
-                        </div>
-                    </div>
-                </article>
+                @if (item.description) {
+                  <p class="entity-deck__description">{{ item.description }}</p>
                 }
+              </div>
+
+              <div class="entity-deck__footer">
+                @if (item.meta) {
+                  <div class="entity-deck__meta">{{ item.meta }}</div>
+                }
+
+                @if (item.cta) {
+                  <div class="entity-deck__cta">{{ item.cta }}</div>
+                }
+              </div>
             </div>
-        </div>
-
-        @if (showNav()) {
-        <button class="entity-deck__nav entity-deck__nav--right" type="button" (click)="next()" aria-label="Siguiente">
-            <svg class="entity-deck__nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9.5 6.5L15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9"
-                    stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-        </button>
+          </article>
         }
-
-        @if (showBottomSearch()) {
-        <div class="entity-deck__bottom-nav">
-            <div class="entity-deck__bottom-glass">
-                <form class="entity-deck__search" (submit)="onSearchSubmit(searchInput.value); searchInput.blur()">
-                    <span class="entity-deck__search-icon">⌕</span>
-                    <input #searchInput type="text" name="search" placeholder="Buscar artistas, obras, artículos, movimientos..."
-                        autocomplete="off" />
-                </form>
-            </div>
-        </div>
-        }
-
-        @if (showDots()) {
-        <div class="entity-deck__dots" aria-label="Paginación">
-            @for (item of items(); track item.id) {
-            <button type="button" class="entity-deck__dot" [class.is-active]="$index === activeIndex()"
-                (click)="setActive($index)" [attr.aria-label]="'Ir a ' + item.title"></button>
-            }
-        </div>
-        }
+      </div>
     </div>
+
+    @if (showNav()) {
+      <button
+        class="entity-deck__nav entity-deck__nav--right"
+        type="button"
+        (click)="next()"
+        aria-label="Siguiente"
+      >
+        <svg class="entity-deck__nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M9.5 6.5L15 12l-5.5 5.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    }
+
+    @if (showBottomSearch()) {
+      <div class="entity-deck__bottom-nav">
+        <div class="entity-deck__bottom-glass">
+          <form
+            class="entity-deck__search"
+            (submit)="onSearchSubmit(searchInput.value); searchInput.blur()"
+          >
+            <span class="entity-deck__search-icon">⌕</span>
+            <input
+              #searchInput
+              type="text"
+              name="search"
+              placeholder="Buscar artistas, obras, artículos, movimientos..."
+              autocomplete="off"
+            />
+          </form>
+        </div>
+      </div>
+    }
+
+    @if (showDots()) {
+      <div class="entity-deck__dots" aria-label="Paginación">
+        @for (item of items(); track item.id) {
+          <button
+            type="button"
+            class="entity-deck__dot"
+            [class.is-active]="$index === activeIndex()"
+            (click)="setActive($index)"
+            [attr.aria-label]="'Ir a ' + item.title"
+          ></button>
+        }
+      </div>
+    }
+  </div>
 </section>

@@ -293,6 +293,23 @@ export class EntitiesService {
     };
   }
 
+  private toWorkspaceGraphNodePayload(node: any, locale?: string): GraphNodePayload {
+    const resolvedNode = resolveEntityTranslation(node, locale);
+
+    return {
+      id: node.id,
+      label: resolvedNode.title,
+      type: node.type,
+      slug: node.slug,
+      image: null,
+      metadata: {
+        summary: resolvedNode.summary ?? null,
+        startYear: node.startYear ?? null,
+        endYear: node.endYear ?? null,
+      },
+    };
+  }
+
   private relationInverseDisplayLabel(relation: { type?: string | null; relationType?: { inverseLabel?: string | null; key?: string | null; translations?: any[] | null } | null }, locale?: string): string {
     const requestedLocale = normalizeLocale(locale);
     const translation = relation.relationType?.translations?.find((item: any) => item.locale === requestedLocale)
@@ -1200,13 +1217,21 @@ export class EntitiesService {
   }
 
   async adminWorkspaceGraph(locale?: string) {
-    const graphMediaInclude = this.graphMediaInclude(locale);
     const entities = await this.prisma.entity.findMany({
       orderBy: [
         { updatedAt: 'desc' },
         { createdAt: 'desc' },
       ],
-      include: graphMediaInclude,
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        slug: true,
+        summary: true,
+        startYear: true,
+        endYear: true,
+        translations: this.localizedInclude(locale),
+      },
     });
 
     const entityIds = entities.map((entity) => entity.id);
@@ -1268,7 +1293,7 @@ export class EntitiesService {
           endYear: null,
         },
       })),
-      ...entities.map((entity) => this.toGraphNodePayload(entity, locale)),
+      ...entities.map((entity) => this.toWorkspaceGraphNodePayload(entity, locale)),
     ];
 
     const edgesMap = new Map<string, GraphEdgePayload>();

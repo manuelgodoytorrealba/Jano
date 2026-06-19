@@ -1,7 +1,15 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { AppAppearanceService } from '../../core/app-appearance.service';
+import { AdminHomeDecksApi } from '../../core/api/admin-home-decks.api';
 import { HomeDeck, HomeDecksApi } from '../../core/api/home-decks.api';
 import { AuthService } from '../../core/auth/auth.service';
 import { SeoService } from '../../core/seo/seo.service';
@@ -11,7 +19,9 @@ import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.com
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
 import { HOME_FALLBACK_STARTERS, starterToDeckItem } from '../admin/home-deck-starters';
 
-const FALLBACK_DECK_ITEMS: DeckItem[] = HOME_FALLBACK_STARTERS.map((starter) => starterToDeckItem(starter));
+const FALLBACK_DECK_ITEMS: DeckItem[] = HOME_FALLBACK_STARTERS.map((starter) =>
+  starterToDeckItem(starter),
+);
 
 @Component({
   standalone: true,
@@ -25,6 +35,7 @@ export class HomeComponent {
   private router = inject(Router);
   private readonly appearance = inject(AppAppearanceService);
   private readonly homeDecksApi = inject(HomeDecksApi);
+  private readonly adminDecksApi = inject(AdminHomeDecksApi);
   private readonly auth = inject(AuthService);
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
@@ -64,8 +75,20 @@ export class HomeComponent {
   }
 
   onAdminEditClick(item: DeckItem): void {
-    if (!item.adminEditRoute) return;
-    this.router.navigateByUrl(item.adminEditRoute);
+    if (item.adminEditRoute) {
+      void this.router.navigateByUrl(item.adminEditRoute);
+      return;
+    }
+    if (!item.adminMaterializeSlug) return;
+    this.adminDecksApi
+      .materializeVirtualDeck(item.adminMaterializeSlug)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(
+        (deck) =>
+          void this.router.navigate(['/admin/home-decks', deck.id, 'edit'], {
+            queryParams: { returnTo: '/' },
+          }),
+      );
   }
 
   onRailClick(action: DeckRailAction): void {
@@ -132,7 +155,9 @@ export class HomeComponent {
       eyebrow: deck.subtitle ?? 'Discover',
       title: deck.title,
       description: deck.description ?? undefined,
-      meta: deck.entities.length ? `${deck.entities.length} ${this.i18n.t('home.entities')}` : this.i18n.t('home.editorialDeck'),
+      meta: deck.entities.length
+        ? `${deck.entities.length} ${this.i18n.t('home.entities')}`
+        : this.i18n.t('home.editorialDeck'),
       cta: `${deck.ctaLabel || this.i18n.t('home.viewSelection')} →`,
       image,
       imageWidth: deck.image?.width ?? undefined,
@@ -140,7 +165,10 @@ export class HomeComponent {
       routeType: this.routeTypeFromDeck(deck),
       ctaRoute: deck.ctaRoute ?? `/entities?deck=${encodeURIComponent(deck.slug)}`,
       ctaUrl: deck.ctaUrl ?? undefined,
-      adminEditRoute: deck.isVirtual ? undefined : `/admin/home-decks/${deck.id}/edit?returnTo=/`,
+      adminEditRoute: deck.isVirtual
+        ? undefined
+        : '/admin/home-decks/' + deck.id + '/edit?returnTo=/',
+      adminMaterializeSlug: deck.isVirtual ? deck.slug : undefined,
     };
   }
 

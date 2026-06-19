@@ -11,57 +11,70 @@ export const routes: Routes = [
   {
     path: 'recommended',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/recommended/recommended.component').then((m) => m.RecommendedComponent),
+    loadComponent: () =>
+      import('./features/recommended/recommended.component').then((m) => m.RecommendedComponent),
   },
   {
     path: 'search',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/search/search.component').then((m) => m.SearchComponent),
+    loadComponent: () =>
+      import('./features/search/search.component').then((m) => m.SearchComponent),
   },
   {
     path: 'entities',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
+    loadComponent: () =>
+      import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },
   {
     path: 'entities/:type',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
+    loadComponent: () =>
+      import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },
   {
     path: 'entity/:slug',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/entity/entity.component').then((m) => m.EntityComponent),
+    loadComponent: () =>
+      import('./features/entity/entity.component').then((m) => m.EntityComponent),
   },
 
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+    loadComponent: () =>
+      import('./features/auth/login/login.component').then((m) => m.LoginComponent),
     data: { layout: 'auth' },
   },
   {
     path: 'blocked',
-    loadComponent: () => import('./features/auth/blocked/blocked.component').then((m) => m.BlockedComponent),
+    loadComponent: () =>
+      import('./features/auth/blocked/blocked.component').then((m) => m.BlockedComponent),
   },
   {
     path: 'my-space',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/my-space/my-space.component').then((m) => m.MySpaceComponent),
+    loadComponent: () =>
+      import('./features/my-space/my-space.component').then((m) => m.MySpaceComponent),
   },
   {
     path: 'collections/:id',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/collection-detail/collection-detail.component').then((m) => m.CollectionDetailComponent),
+    loadComponent: () =>
+      import('./features/collection-detail/collection-detail.component').then(
+        (m) => m.CollectionDetailComponent,
+      ),
   },
   {
     path: 'profile',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/profile/profile.component').then((m) => m.ProfileComponent),
+    loadComponent: () =>
+      import('./features/profile/profile.component').then((m) => m.ProfileComponent),
   },
   {
     path: 'settings',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/settings/settings.component').then((m) => m.SettingsComponent),
+    loadComponent: () =>
+      import('./features/settings/settings.component').then((m) => m.SettingsComponent),
   },
 
   {
@@ -85,14 +98,14 @@ export const routes: Routes = [
       {
         path: 'entities',
         loadComponent: () =>
-          import('./features/admin/admin-entities/admin-entities.component').then((m) => m.AdminEntitiesComponent),
+          import('./features/admin/admin-entities/admin-entities.component').then(
+            (m) => m.AdminEntitiesComponent,
+          ),
       },
       {
         path: 'home-decks',
-        loadComponent: () =>
-          import('./features/admin/admin-home-decks/admin-home-decks.component').then(
-            (m) => m.AdminHomeDecksComponent,
-          ),
+        redirectTo: 'curations',
+        pathMatch: 'full',
       },
       {
         path: 'curations',

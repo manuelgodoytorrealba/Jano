@@ -54,7 +54,7 @@ export class EntitiesExplorer3dComponent
     @Input() infoOpen = true;
 
     @Output() activeIndexChange = new EventEmitter<number>();
-    @Output() openEntity = new EventEmitter<EntityArtworkTransitionPayload>();
+    @Output() openEntity = new EventEmitter<string | EntityArtworkTransitionPayload>();
     @Output() requestInfoOpen = new EventEmitter<void>();
     @Output() requestInfoClose = new EventEmitter<void>();
 
@@ -1018,7 +1018,10 @@ export class EntitiesExplorer3dComponent
                 sourceBounds: this.fallbackCanvasBounds(),
                 sourceSurface: 'explorer3d',
             });
+            return;
         }
+
+        if (item?.slug) this.openEntity.emit(item.slug);
     }
 
     private activeCardBounds(): ArtworkTransitionRect | null {

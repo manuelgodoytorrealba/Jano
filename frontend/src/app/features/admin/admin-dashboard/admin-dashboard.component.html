@@ -1,352 +1,450 @@
 <main class="workspace-page">
   @if (vm$ | async; as vm) {
-  <div
-    class="workspace-shell"
-    [class.workspace-shell--left-collapsed]="!leftSidebarVisible()"
-    [class.workspace-shell--right-collapsed]="!rightSidebarVisible()"
-    [class.workspace-shell--focus-mode]="!leftSidebarVisible() || !rightSidebarVisible()"
-    [class.workspace-shell--graph-mode]="!leftSidebarVisible() && !rightSidebarVisible()"
-  >
-    <div class="workspace-rail workspace-rail--left">
-      <button
-        type="button"
-        class="workspace-rail__toggle"
-        [class.is-active]="leftSidebarVisible()"
-        (click)="toggleLeftSidebar()"
-        [attr.aria-expanded]="leftSidebarVisible()"
-        [attr.aria-label]="leftSidebarVisible() ? 'Ocultar columna izquierda' : 'Mostrar columna izquierda'"
-      >
-        <span class="workspace-rail__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            @if (leftSidebarVisible()) {
-            <path d="M15 6 9 12l6 6" />
-            } @else {
-            <path d="m9 6 6 6-6 6" />
+    <div
+      class="workspace-shell"
+      [class.workspace-shell--left-collapsed]="!leftSidebarVisible()"
+      [class.workspace-shell--right-collapsed]="!rightSidebarVisible()"
+      [class.workspace-shell--focus-mode]="!leftSidebarVisible() || !rightSidebarVisible()"
+      [class.workspace-shell--graph-mode]="!leftSidebarVisible() && !rightSidebarVisible()"
+    >
+      @if (!leftSidebarVisible()) {
+        <div class="workspace-rail workspace-rail--left">
+          <button
+            type="button"
+            class="workspace-rail__toggle"
+            (click)="toggleLeftSidebar()"
+            [attr.aria-expanded]="leftSidebarVisible()"
+            aria-label="Mostrar archivo"
+          >
+            <span class="workspace-rail__icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg
+            ></span>
+            <span>Mostrar archivo</span>
+          </button>
+        </div>
+      }
+
+      @if (leftSidebarVisible()) {
+        <aside class="workspace-sidebar">
+          <div class="workspace-brand">
+            <div class="workspace-column-head">
+              <p class="workspace-brand__eyebrow">Admin home</p>
+              <button
+                type="button"
+                class="workspace-column-toggle"
+                (click)="toggleLeftSidebar()"
+                aria-label="Ocultar archivo"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" /></svg>
+                <span>Ocultar</span>
+              </button>
+            </div>
+            <h2>Workspace</h2>
+            @if (vm.graphCard; as graphCard) {
+              <p class="workspace-brand__summary">
+                <strong>{{ graphCard.title }}</strong> {{ graphCard.subtitle }}
+              </p>
             }
-          </svg>
-        </span>
-        <span>{{ leftSidebarVisible() ? 'Ocultar archivo' : 'Mostrar archivo' }}</span>
-      </button>
-    </div>
+          </div>
 
-    @if (leftSidebarVisible()) {
-    <aside class="workspace-sidebar">
-      <div class="workspace-brand">
-        <p class="workspace-brand__eyebrow">Admin home</p>
-        <h2>Workspace</h2>
-        <p>Una entrada editorial al sistema de conocimiento de JANO.</p>
-      </div>
-
-      <nav class="workspace-nav" aria-label="Navegación editorial">
-        @for (group of vm.sidebarGroups; track group.label) {
-        <section class="workspace-nav__group">
-          <p class="workspace-nav__label">{{ group.label }}</p>
-          <div class="workspace-nav__items">
-            @for (item of group.items; track item.label) {
-              @if (item.disabled) {
-              <span class="workspace-nav__item workspace-nav__item--muted">
-                <span>{{ item.label }}</span>
-                @if (item.note) {
-                <small>{{ item.note }}</small>
-                }
-              </span>
-              } @else {
-              <a class="workspace-nav__item" [routerLink]="item.route!" [queryParams]="item.queryParams ?? null">
-                <span class="workspace-nav__item-row">
-                  <span>{{ item.label }}</span>
-                  @if (item.count !== null && item.count !== undefined) {
-                  <strong class="workspace-nav__count">{{ item.count }}</strong>
+          <nav class="workspace-nav" aria-label="Navegación editorial">
+            @for (group of vm.sidebarGroups; track group.label) {
+              <section class="workspace-nav__group">
+                <p class="workspace-nav__label">{{ group.label }}</p>
+                <div class="workspace-nav__items">
+                  @for (item of group.items; track item.label) {
+                    @if (item.disabled) {
+                      <span class="workspace-nav__item workspace-nav__item--muted">
+                        <span class="workspace-nav__item-label">
+                          @if (item.entityType) {
+                            <span
+                              class="workspace-nav__type-dot"
+                              [style.--type-color]="entityTypeColor(item.entityType)"
+                            ></span>
+                          }
+                          {{ item.label }}
+                        </span>
+                        @if (item.note) {
+                          <small>{{ item.note }}</small>
+                        }
+                      </span>
+                    } @else {
+                      <a
+                        class="workspace-nav__item"
+                        [routerLink]="item.route!"
+                        [queryParams]="item.queryParams ?? null"
+                      >
+                        <span class="workspace-nav__item-row">
+                          <span class="workspace-nav__item-label">
+                            @if (item.entityType) {
+                              <span
+                                class="workspace-nav__type-dot"
+                                [style.--type-color]="entityTypeColor(item.entityType)"
+                              ></span>
+                            }
+                            {{ item.label }}
+                          </span>
+                          @if (item.count !== null && item.count !== undefined) {
+                            <strong class="workspace-nav__count">{{ item.count }}</strong>
+                          }
+                        </span>
+                        @if (item.note) {
+                          <small>{{ item.note }}</small>
+                        }
+                      </a>
+                    }
                   }
+                </div>
+              </section>
+            }
+          </nav>
+        </aside>
+      }
+
+      <section class="workspace-main">
+        <section class="workspace-card workspace-card--graph workspace-card--graph-priority">
+          <div class="workspace-card__head">
+            <div class="workspace-card__head-main">
+              <button
+                type="button"
+                class="workspace-card__title-toggle"
+                (click)="toggleGraphExpanded()"
+                [attr.aria-expanded]="graphExpanded()"
+                aria-controls="workspace-knowledge-graph"
+              >
+                <span class="workspace-card__title-copy">
+                  <p class="workspace-card__eyebrow">Mapa de relaciones</p>
+                  <h2>Estado visual del conocimiento</h2>
                 </span>
-                @if (item.note) {
-                <small>{{ item.note }}</small>
-                }
-              </a>
+                <span
+                  class="workspace-card__chevron"
+                  [class.is-collapsed]="!graphExpanded()"
+                  aria-hidden="true"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </span>
+              </button>
+            </div>
+
+            <div class="workspace-card__head-actions workspace-card__head-actions--graph">
+              @if (vm.graphCard) {
+                <a class="workspace-card__link" [routerLink]="vm.graphCard.route">{{
+                  vm.graphCard.ctaLabel
+                }}</a>
               }
-            }
+            </div>
           </div>
+
+          @if (vm.graphCard; as graphCard) {
+            <div id="workspace-knowledge-graph">
+              <div
+                class="workspace-graph__canvas workspace-graph__canvas--expanded"
+                [class.is-collapsed]="!graphExpanded()"
+              >
+                <app-admin-global-graph
+                  class="workspace-global-graph"
+                  [graphData]="graphCard.graphData"
+                  (selectionChange)="selectGraphNode($event)"
+                />
+              </div>
+            </div>
+          } @else {
+            <div class="workspace-empty workspace-empty--graph">
+              <strong>El grafo aún no tiene una curación destacada</strong>
+              <span
+                >Cuando haya colecciones conectadas o entidades con contexto reciente, aparecerá
+                aquí una miniatura viva del conocimiento.</span
+              >
+            </div>
+          }
         </section>
-        }
-      </nav>
-    </aside>
-    }
 
-    <section class="workspace-main">
-      <header class="workspace-hero">
-        <div class="workspace-hero__copy">
-          <p class="workspace-hero__eyebrow">Admin</p>
-          <h1>Workspace</h1>
-          <p class="workspace-hero__intro">Explora, conecta y organiza el conocimiento de JANO.</p>
-        </div>
-
-        <div class="workspace-hero__actions">
-          <a class="workspace-btn workspace-btn--primary" routerLink="/admin/entities/new">+ Nueva entidad</a>
-          <a class="workspace-btn" routerLink="/admin/entities/new" [queryParams]="{ type: 'ARTICLE' }">Nuevo artículo</a>
-          <a class="workspace-btn" routerLink="/admin/curations/new">Nueva curación</a>
-          <a class="workspace-btn" routerLink="/admin/home-decks">Nuevo deck</a>
-        </div>
-      </header>
-
-      <section class="workspace-card workspace-card--graph workspace-card--graph-priority">
-        <div class="workspace-card__head">
-          <div class="workspace-card__head-main">
-            <button
-              type="button"
-              class="workspace-card__title-toggle"
-              (click)="toggleGraphExpanded()"
-              [attr.aria-expanded]="graphExpanded()"
-              aria-controls="workspace-knowledge-graph"
-            >
-              <span class="workspace-card__title-copy">
-                <p class="workspace-card__eyebrow">Mapa de relaciones</p>
-                <h2>Estado visual del conocimiento</h2>
-              </span>
-              <span class="workspace-card__chevron" [class.is-collapsed]="!graphExpanded()" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </span>
-            </button>
-          </div>
-
-          <div class="workspace-card__head-actions workspace-card__head-actions--graph">
-            @if (vm.graphCard) {
-            <a class="workspace-card__link" [routerLink]="vm.graphCard.route">{{ vm.graphCard.ctaLabel }}</a>
-            }
-          </div>
-        </div>
-
-        @if (vm.graphCard; as graphCard) {
-        <div class="workspace-graph" id="workspace-knowledge-graph" [class.is-collapsed]="!graphExpanded()">
-          <div class="workspace-graph__meta">
-            <strong>{{ graphCard.title }}</strong>
-            <span>{{ graphCard.subtitle }}</span>
-          </div>
-
-          <div class="workspace-graph__canvas workspace-graph__canvas--expanded" [class.is-collapsed]="!graphExpanded()">
-            <app-graph
-              class="workspace-graph__embed"
-              [slug]="graphCard.slug"
-              [graphData]="graphCard.graphData"
-              workspaceMode="graph"
-              [overviewMode]="true"
-              [ambientMotion]="true"
-              [entityTitle]="graphCard.title"
-              entityType="WORKSPACE"
-            />
-          </div>
-        </div>
-        } @else {
-        <div class="workspace-empty workspace-empty--graph">
-          <strong>El grafo aún no tiene una curación destacada</strong>
-          <span>Cuando haya colecciones conectadas o entidades con contexto reciente, aparecerá aquí una miniatura viva del conocimiento.</span>
-        </div>
-        }
-      </section>
-
-      <section class="workspace-card workspace-card--recent">
-        <div class="workspace-card__head">
-          <div>
-            <p class="workspace-card__eyebrow">Entidades recientes</p>
-            <h2>Últimas piezas editadas</h2>
-          </div>
-          <a class="workspace-card__link" routerLink="/admin/entities">Ver todas</a>
-        </div>
-
-        @if (vm.recentEntities.length) {
-        <div class="recent-entities">
-          @for (entity of vm.recentEntities; track entity.id) {
-          <a class="recent-entity-card" [routerLink]="['/admin/entities', entity.id, 'edit']">
-            <div class="recent-entity-card__media">
-              <app-jano-media [entity]="entity.entity" usage="card" [alt]="entity.title" [lazy]="false"></app-jano-media>
+        <section class="workspace-card workspace-card--recent">
+          <div class="workspace-card__head">
+            <div>
+              <p class="workspace-card__eyebrow">Entidades recientes</p>
+              <h2>Últimas piezas editadas</h2>
             </div>
-
-            <div class="recent-entity-card__body">
-              <div class="recent-entity-card__meta">
-                <span>{{ typeLabel(entity.type) }}</span>
-                <span>{{ statusLabel(entity.status) }}</span>
-              </div>
-              <strong>{{ entity.title }}</strong>
-              <div class="recent-entity-card__footer">
-                <span>{{ relationLabel(entity.relationsCount) }}</span>
-                <time>{{ entity.updatedAt || entity.createdAt | date: 'dd MMM · HH:mm' }}</time>
-              </div>
-            </div>
-          </a>
-          }
-        </div>
-        } @else {
-        <div class="workspace-empty">
-          <strong>Sin entidades recientes</strong>
-          <span>En cuanto edites contenido, este carril se poblará con las últimas piezas activas.</span>
-        </div>
-        }
-      </section>
-
-      <section class="workspace-card workspace-card--activity">
-        <div class="workspace-card__head">
-          <div>
-            <p class="workspace-card__eyebrow">Actividad reciente</p>
-            <h2>Lectura rápida del trabajo editorial</h2>
+            <a class="workspace-card__link" routerLink="/admin/entities">Ver todas</a>
           </div>
-        </div>
 
-        @if (vm.activity.length) {
-        <div class="activity-list">
-          @for (item of vm.activity; track item.id) {
-          <a class="activity-row" [routerLink]="item.route">
-            <div class="activity-row__dot" [attr.data-kind]="item.kind"></div>
-            <div class="activity-row__body">
-              <div class="activity-row__top">
-                <strong>{{ item.title }}</strong>
-                <span>{{ activityKindLabel(item.kind) }}</span>
-              </div>
-              <div class="activity-row__bottom">
-                <span>{{ item.detail }}</span>
-                <time>{{ item.date | date: 'dd MMM · HH:mm' }}</time>
-              </div>
-            </div>
-          </a>
-          }
-        </div>
-        } @else {
-        <div class="workspace-empty">
-          <strong>Sin actividad reciente</strong>
-          <span>Esta sección mostrará entidades, decks y curaciones actualizadas.</span>
-        </div>
-        }
-      </section>
-    </section>
+          @if (vm.recentEntities.length) {
+            <div class="recent-entities">
+              @for (entity of vm.recentEntities; track entity.id) {
+                <a class="recent-entity-card" [routerLink]="['/admin/entities', entity.id, 'edit']">
+                  <div class="recent-entity-card__media">
+                    <app-jano-media
+                      [entity]="entity.entity"
+                      usage="card"
+                      [alt]="entity.title"
+                      [lazy]="false"
+                    ></app-jano-media>
+                  </div>
 
-    <div class="workspace-rail workspace-rail--right">
-      <button
-        type="button"
-        class="workspace-rail__toggle workspace-rail__toggle--right"
-        [class.is-active]="rightSidebarVisible()"
-        (click)="toggleRightSidebar()"
-        [attr.aria-expanded]="rightSidebarVisible()"
-        [attr.aria-label]="rightSidebarVisible() ? 'Ocultar columna derecha' : 'Mostrar columna derecha'"
-      >
-        <span>{{ rightSidebarVisible() ? 'Ocultar recortes' : 'Mostrar recortes' }}</span>
-        <span class="workspace-rail__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            @if (rightSidebarVisible()) {
-            <path d="m9 6 6 6-6 6" />
-            } @else {
-            <path d="M15 6 9 12l6 6" />
-            }
-          </svg>
-        </span>
-      </button>
-    </div>
-
-    @if (rightSidebarVisible()) {
-    <aside class="workspace-panel">
-      <section class="workspace-card workspace-card--panel">
-        <div class="workspace-card__head">
-          <div>
-            <p class="workspace-card__eyebrow">Filtros rápidos</p>
-            <h2>Recortes editoriales</h2>
-          </div>
-        </div>
-
-        <div class="filter-groups">
-          @for (group of vm.quickFilterGroups; track group.label) {
-          <div class="filter-group">
-            <p>{{ group.label }}</p>
-            <div class="filter-group__chips">
-              @for (item of group.items; track item.label) {
-              <a class="filter-chip" [routerLink]="item.route" [queryParams]="item.queryParams ?? null">{{ item.label }}</a>
+                  <div class="recent-entity-card__body">
+                    <div class="recent-entity-card__meta">
+                      <span>{{ typeLabel(entity.type) }}</span>
+                      <span>{{ statusLabel(entity.status) }}</span>
+                    </div>
+                    <strong>{{ entity.title }}</strong>
+                    <div class="recent-entity-card__footer">
+                      <span>{{ relationLabel(entity.relationsCount) }}</span>
+                      <time>{{
+                        entity.updatedAt || entity.createdAt | date: 'dd MMM · HH:mm'
+                      }}</time>
+                    </div>
+                  </div>
+                </a>
               }
             </div>
-          </div>
+          } @else {
+            <div class="workspace-empty">
+              <strong>Sin entidades recientes</strong>
+              <span
+                >En cuanto edites contenido, este carril se poblará con las últimas piezas
+                activas.</span
+              >
+            </div>
           }
-        </div>
+        </section>
+
+        <section class="workspace-card workspace-card--activity">
+          <div class="workspace-card__head">
+            <div>
+              <p class="workspace-card__eyebrow">Actividad reciente</p>
+              <h2>Lectura rápida del trabajo editorial</h2>
+            </div>
+          </div>
+
+          @if (vm.activity.length) {
+            <div class="activity-list">
+              @for (item of vm.activity; track item.id) {
+                <a class="activity-row" [routerLink]="item.route">
+                  <div class="activity-row__dot" [attr.data-kind]="item.kind"></div>
+                  <div class="activity-row__body">
+                    <div class="activity-row__top">
+                      <strong>{{ item.title }}</strong>
+                      <span>{{ activityKindLabel(item.kind) }}</span>
+                    </div>
+                    <div class="activity-row__bottom">
+                      <span>{{ item.detail }}</span>
+                      <time>{{ item.date | date: 'dd MMM · HH:mm' }}</time>
+                    </div>
+                  </div>
+                </a>
+              }
+            </div>
+          } @else {
+            <div class="workspace-empty">
+              <strong>Sin actividad reciente</strong>
+              <span>Esta sección mostrará entidades y curaciones actualizadas.</span>
+            </div>
+          }
+        </section>
       </section>
 
-      <section class="workspace-card workspace-card--panel">
-        <div class="workspace-card__head">
-          <div>
-            <p class="workspace-card__eyebrow">Decks destacados</p>
-            <h2>Lecturas editoriales activas</h2>
-          </div>
-          <a class="workspace-card__link" routerLink="/admin/home-decks">Gestionar</a>
+      @if (!rightSidebarVisible()) {
+        <div class="workspace-rail workspace-rail--right">
+          <button
+            type="button"
+            class="workspace-rail__toggle workspace-rail__toggle--right"
+            (click)="toggleRightSidebar()"
+            [attr.aria-expanded]="rightSidebarVisible()"
+            aria-label="Mostrar recortes"
+          >
+            <span>Mostrar recortes</span>
+            <span class="workspace-rail__icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24"><path d="M15 6 9 12l6 6" /></svg
+            ></span>
+          </button>
         </div>
+      }
 
-        @if (vm.featuredDecks.length) {
-        <div class="panel-list">
-          @for (deck of vm.featuredDecks; track deck.id) {
-          <a class="panel-entry" [routerLink]="['/admin/home-decks', deck.id, 'edit']">
-            <div class="panel-entry__media">
-              @if (deckPreviewEntities(deck).length) {
-              <app-jano-media [entity]="deckPreviewEntities(deck)[0].entity" usage="card" [alt]="deck.title"></app-jano-media>
+      @if (rightSidebarVisible()) {
+        <aside class="workspace-panel">
+          <section class="workspace-card workspace-card--panel workspace-card--create">
+            <div class="workspace-card__head">
+              <div>
+                <p class="workspace-card__eyebrow">Crear</p>
+                <h2>Nueva pieza</h2>
+              </div>
+              <button
+                type="button"
+                class="workspace-column-toggle"
+                (click)="toggleRightSidebar()"
+                aria-label="Ocultar recortes"
+              >
+                <span>Ocultar</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+              </button>
+            </div>
+            <div class="workspace-create-actions">
+              <a class="workspace-btn workspace-btn--primary" routerLink="/admin/entities/new"
+                >+ Nueva entidad</a
+              >
+              <a
+                class="workspace-btn"
+                routerLink="/admin/entities/new"
+                [queryParams]="{ type: 'ARTICLE' }"
+                >Nuevo artículo</a
+              >
+              <a class="workspace-btn" routerLink="/admin/curations/new">Nueva curación</a>
+            </div>
+          </section>
+
+          <section class="workspace-card workspace-card--panel workspace-card--relations">
+            <div class="workspace-card__head">
+              <div>
+                <p class="workspace-card__eyebrow">Nodo seleccionado</p>
+                <h2>{{ selectedGraphNode()?.label ?? 'Relaciones' }}</h2>
+              </div>
+            </div>
+
+            @if (vm.graphCard; as graphCard) {
+              @if (selectedGraphNode(); as selected) {
+                @if (selectedGraphRelations(graphCard.graphData); as relations) {
+                  <p class="workspace-relations__summary">
+                    {{ relations.length }}
+                    {{ relations.length === 1 ? 'relación visible' : 'relaciones visibles' }}
+                  </p>
+                  @if (relations.length) {
+                    <div class="workspace-relations">
+                      @for (relation of relations; track relation.edgeId) {
+                        @if (!relation.node.id.startsWith('workspace-')) {
+                          <a
+                            class="workspace-relation"
+                            [routerLink]="['/admin/entities', relation.node.id, 'edit']"
+                          >
+                            <span
+                              class="workspace-relation__type"
+                              [style.--relation-color]="relation.relationColor"
+                              >{{ relation.relationLabel }}</span
+                            >
+                            <strong>{{ relation.node.label }}</strong>
+                            <small [style.--node-color]="relation.nodeColor">{{
+                              relation.nodeTypeLabel
+                            }}</small>
+                          </a>
+                        } @else {
+                          <div class="workspace-relation">
+                            <span
+                              class="workspace-relation__type"
+                              [style.--relation-color]="relation.relationColor"
+                              >{{ relation.relationLabel }}</span
+                            >
+                            <strong>{{ relation.node.label }}</strong>
+                            <small [style.--node-color]="relation.nodeColor">{{
+                              relation.nodeTypeLabel
+                            }}</small>
+                          </div>
+                        }
+                      }
+                    </div>
+                  } @else {
+                    <div class="workspace-empty workspace-empty--tight">
+                      <span>Este nodo no tiene relaciones visibles.</span>
+                    </div>
+                  }
+                }
               } @else {
-              <div class="panel-entry__placeholder">{{ deck.surface }}</div>
+                <div class="workspace-empty workspace-empty--tight">
+                  <span>Selecciona un nodo del mapa para explorar sus conexiones.</span>
+                </div>
+              }
+            }
+          </section>
+
+          <section class="workspace-card workspace-card--panel">
+            <div class="workspace-card__head">
+              <div>
+                <p class="workspace-card__eyebrow">Filtros rápidos</p>
+                <h2>Recortes editoriales</h2>
+              </div>
+            </div>
+
+            <div class="filter-groups">
+              @for (group of vm.quickFilterGroups; track group.label) {
+                <div class="filter-group">
+                  <p>{{ group.label }}</p>
+                  <div class="filter-group__chips">
+                    @for (item of group.items; track item.label) {
+                      <a
+                        class="filter-chip"
+                        [routerLink]="item.route"
+                        [queryParams]="item.queryParams ?? null"
+                        >{{ item.label }}</a
+                      >
+                    }
+                  </div>
+                </div>
               }
             </div>
-            <div class="panel-entry__body">
-              <strong>{{ deck.title }}</strong>
-              <span>{{ deck.surface }} · {{ deck.entities.length }} entidades</span>
+          </section>
+
+          <section class="workspace-card workspace-card--panel">
+            <div class="workspace-card__head">
+              <div>
+                <p class="workspace-card__eyebrow">Curaciones editoriales</p>
+                <h2>Selecciones publicadas</h2>
+              </div>
+              <a class="workspace-card__link" routerLink="/admin/curations">Gestionar</a>
             </div>
-          </a>
-          }
-        </div>
-        } @else {
-        <div class="workspace-empty workspace-empty--tight">
-          <strong>No hay decks listos</strong>
-          <span>Los decks activos aparecerán aquí como accesos editoriales rápidos.</span>
-        </div>
-        }
-      </section>
 
-      <section class="workspace-card workspace-card--panel">
-        <div class="workspace-card__head">
-          <div>
-            <p class="workspace-card__eyebrow">Curaciones destacadas</p>
-            <h2>Boards con contexto</h2>
-          </div>
-          <a class="workspace-card__link" routerLink="/admin/curations">Abrir curations</a>
-        </div>
+            @if (vm.featuredDecks.length) {
+              <div class="panel-list">
+                @for (deck of vm.featuredDecks; track deck.id) {
+                  <a
+                    class="panel-entry"
+                    [routerLink]="['/admin/home-decks', deck.id, 'edit']"
+                    [queryParams]="{ returnTo: '/admin/curations' }"
+                  >
+                    <div class="panel-entry__media">
+                      @if (deckPreviewEntities(deck).length) {
+                        <app-jano-media
+                          [entity]="deckPreviewEntities(deck)[0].entity"
+                          usage="card"
+                          [alt]="deck.title"
+                        ></app-jano-media>
+                      } @else {
+                        <div class="panel-entry__placeholder">Curación</div>
+                      }
+                    </div>
+                    <div class="panel-entry__body">
+                      <strong>{{ deck.title }}</strong>
+                      <span
+                        >{{ deck.entities.length }} entidades ·
+                        {{ deck.isActive ? 'Publicada' : 'Borrador' }}</span
+                      >
+                    </div>
+                  </a>
+                }
+              </div>
+            } @else {
+              <div class="workspace-empty workspace-empty--tight">
+                <strong>No hay curaciones todavía</strong>
+                <span>Las curaciones publicadas aparecerán aquí como selecciones editoriales.</span>
+              </div>
+            }
+          </section>
 
-        @if (vm.featuredCollections.length) {
-        <div class="panel-list">
-          @for (collection of vm.featuredCollections; track collection.id) {
-          <a class="panel-entry" [routerLink]="['/collections', collection.id]">
-            <div class="panel-entry__media">
-              <app-jano-media [media]="collectionCoverMedia(collection)" usage="card" [alt]="collection.name"></app-jano-media>
+          <section class="workspace-card workspace-card--panel">
+            <div class="workspace-card__head">
+              <div>
+                <p class="workspace-card__eyebrow">Accesos rápidos</p>
+                <h2>Flujos de trabajo</h2>
+              </div>
             </div>
-            <div class="panel-entry__body">
-              <strong>{{ collection.name }}</strong>
-              <span>{{ collection.itemCount }} piezas · {{ collection.updatedAt | date: 'dd MMM' }}</span>
+
+            <div class="shortcut-list">
+              <a class="shortcut-link" routerLink="/admin/entities">Gestionar entidades</a>
+              <a class="shortcut-link" routerLink="/admin/entities/new">Abrir editor de entidad</a>
+              <a class="shortcut-link" routerLink="/admin/curations">Entrar a Curations</a>
             </div>
-          </a>
-          }
-        </div>
-        } @else {
-        <div class="workspace-empty workspace-empty--tight">
-          <strong>Sin curaciones todavía</strong>
-          <span>Las colecciones conectadas aparecerán aquí como referencia curatorial.</span>
-        </div>
-        }
-      </section>
-
-      <section class="workspace-card workspace-card--panel">
-        <div class="workspace-card__head">
-          <div>
-            <p class="workspace-card__eyebrow">Accesos rápidos</p>
-            <h2>Flujos de trabajo</h2>
-          </div>
-        </div>
-
-        <div class="shortcut-list">
-          <a class="shortcut-link" routerLink="/admin/entities">Gestionar entidades</a>
-          <a class="shortcut-link" routerLink="/admin/entities/new">Abrir editor de entidad</a>
-          <a class="shortcut-link" routerLink="/admin/home-decks">Revisar decks editoriales</a>
-          <a class="shortcut-link" routerLink="/admin/curations">Entrar a Curations</a>
-        </div>
-      </section>
-    </aside>
-    }
-  </div>
+          </section>
+        </aside>
+      }
+    </div>
   }
 </main>

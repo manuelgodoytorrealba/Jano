@@ -1,0 +1,108 @@
+<div class="global-graph" role="application" aria-label="Mapa global de entidades de JANO">
+  <div #canvasHost class="global-graph__canvas"></div>
+
+  <div class="global-graph__stats" aria-live="polite">
+    <strong>{{ nodeCount() }} nodos</strong>
+    <span>{{ relationCount() }} relaciones reales</span>
+    <span>{{ visiblePercent() }}% visible</span>
+  </div>
+
+  <div class="global-graph__controls">
+    <button type="button" (click)="zoomBy(1.25)" aria-label="Acercar">+</button>
+    <button type="button" (click)="zoomBy(0.8)" aria-label="Alejar">−</button>
+    <button type="button" (click)="resetView()"><span aria-hidden="true">◎</span>Centrar</button>
+    <button type="button" (click)="resetGraph()"><span aria-hidden="true">↺</span>Reset</button>
+    <button
+      type="button"
+      (click)="toggleInfo()"
+      [attr.aria-expanded]="infoOpen()"
+      aria-controls="global-graph-info"
+    >
+      <span aria-hidden="true">i</span>
+      Info
+    </button>
+  </div>
+
+  @if (infoOpen()) {
+    <aside
+      id="global-graph-info"
+      class="global-graph__info"
+      aria-label="Leyenda y filtros del grafo"
+    >
+      <div class="global-graph__info-head">
+        <div>
+          <small>Leyenda</small>
+          <strong>Visibilidad del mapa</strong>
+        </div>
+        <button type="button" (click)="toggleInfo()" aria-label="Cerrar información">×</button>
+      </div>
+
+      <section>
+        <div class="global-graph__filter-head">
+          <span>Tipos de entidad</span>
+          <button type="button" (click)="enableAllEntityTypes()">Todas</button>
+        </div>
+        <div class="global-graph__filter-list">
+          @for (type of entityTypes(); track type) {
+            <button
+              type="button"
+              class="global-graph__filter"
+              [class.is-active]="entityTypeFilters()[type] !== false"
+              [style.--filter-color]="entityTypeColor(type)"
+              [attr.aria-pressed]="entityTypeFilters()[type] !== false"
+              (click)="toggleEntityType(type)"
+            >
+              <span class="global-graph__filter-dot"></span>
+              {{ entityTypeLabel(type) }}
+            </button>
+          }
+        </div>
+      </section>
+
+      <section>
+        <div class="global-graph__filter-head">
+          <span>Tipos de relación</span>
+          <button type="button" (click)="enableAllRelationTypes()">Todas</button>
+        </div>
+        <div class="global-graph__filter-list">
+          @for (type of relationTypes(); track type) {
+            <button
+              type="button"
+              class="global-graph__filter"
+              [class.is-active]="relationTypeFilters()[type] !== false"
+              [style.--filter-color]="relationTypeColor(type)"
+              [attr.aria-pressed]="relationTypeFilters()[type] !== false"
+              (click)="toggleRelationType(type)"
+            >
+              <span class="global-graph__filter-line"></span>
+              {{ relationTypeLabel(type) }}
+            </button>
+          }
+        </div>
+      </section>
+    </aside>
+  }
+
+  @if (tooltip(); as activeTooltip) {
+    <div
+      class="global-graph__tooltip"
+      [style.left.px]="activeTooltip.x"
+      [style.top.px]="activeTooltip.y"
+    >
+      <strong>{{ activeTooltip.node.label }}</strong>
+      <span>{{ activeTooltip.node.type }}</span>
+    </div>
+  }
+
+  @if (selectedNode(); as node) {
+    <button
+      class="global-graph__selection"
+      type="button"
+      (click)="openSelected()"
+      [disabled]="node.id.startsWith('workspace-')"
+    >
+      <span>{{ node.label }}</span>
+      <small>{{ node.type }}</small>
+    </button>
+  }
+</div>

@@ -46,7 +46,8 @@ const STARTERS: HomeDeckStarter[] = [
     subtitle: 'Article',
     titleEn: 'Articles',
     subtitleEn: 'Editorial readings',
-    descriptionEn: 'Editorial readings, criticism and connections between works, authors and ideas.',
+    descriptionEn:
+      'Editorial readings, criticism and connections between works, authors and ideas.',
     description: 'Lecturas editoriales, opinión y conexiones entre obras, autores e ideas.',
     meta: 'Article',
     ctaLabelEn: 'Explore articles',
@@ -136,7 +137,8 @@ const STARTERS: HomeDeckStarter[] = [
     subtitle: 'Place',
     titleEn: 'Places',
     subtitleEn: 'Institutional context',
-    descriptionEn: 'Museums, collections and spaces that anchor works, movements and public memory.',
+    descriptionEn:
+      'Museums, collections and spaces that anchor works, movements and public memory.',
     description: 'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
     meta: 'Place',
     ctaLabelEn: 'Explore places',
@@ -240,7 +242,9 @@ const STARTERS: HomeDeckStarter[] = [
 
 export const HOME_DECK_STARTERS = STARTERS;
 export const HOME_FALLBACK_STARTERS = STARTERS.filter((starter) => starter.surface === 'HOME');
-export const RECOMMENDED_FALLBACK_STARTERS = STARTERS.filter((starter) => starter.surface === 'RECOMMENDED');
+export const RECOMMENDED_FALLBACK_STARTERS = STARTERS.filter(
+  (starter) => starter.surface === 'RECOMMENDED',
+);
 
 export function starterToDeckItem(starter: HomeDeckStarter): DeckItem {
   return {
@@ -254,5 +258,6 @@ export function starterToDeckItem(starter: HomeDeckStarter): DeckItem {
     imageWidth: starter.imageWidth,
     imageHeight: starter.imageHeight,
     ctaRoute: starter.ctaRoute,
+    adminMaterializeSlug: starter.slug,
   };
 }

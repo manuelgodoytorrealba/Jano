@@ -3,17 +3,17 @@ import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, inject } fro
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
-import { Collection, CollectionsApi } from '../../../core/api/collections.api';
+import { AdminHomeDeck, AdminHomeDecksApi } from '../../../core/api/admin-home-decks.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
-import { MediaLike, selectPrimaryVisualMedia } from '../../../shared/media/media.utils';
+import { MediaLike } from '../../../shared/media/media.utils';
 
 type AdminCurationCard = {
   id: string;
-  name: string;
+  title: string;
   description: string | null;
-  itemCount: number;
+  entityCount: number;
   updatedAt: string;
-  isDefault: boolean;
+  isActive: boolean;
   coverMedia: MediaLike | null;
 };
 
@@ -26,7 +26,7 @@ type AdminCurationCard = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminCurationsComponent {
-  private readonly collectionsApi = inject(CollectionsApi);
+  private readonly curationsApi = inject(AdminHomeDecksApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -52,16 +52,19 @@ export class AdminCurationsComponent {
     switchMap(([segments]) => {
       this.autoFocusCreate = segments.some((segment) => segment.path === 'new');
 
-      return this.collectionsApi.list().pipe(
-        map((collections) => ({
-          collections: this.toCards(collections),
-          total: collections.length,
-          connectedCount: collections.filter((collection) => collection.itemCount > 1).length,
-          emptyCount: collections.filter((collection) => collection.itemCount === 0).length,
-        })),
+      return this.curationsApi.list().pipe(
+        map((decks) => {
+          const curations = decks.filter((deck) => deck.surface === 'RECOMMENDED');
+          return {
+            curations: this.toCards(curations),
+            total: curations.length,
+            connectedCount: curations.filter((curation) => curation.entities.length > 1).length,
+            emptyCount: curations.filter((curation) => curation.entities.length === 0).length,
+          };
+        }),
         catchError(() =>
           of({
-            collections: [],
+            curations: [],
             total: 0,
             connectedCount: 0,
             emptyCount: 0,
@@ -83,48 +86,64 @@ export class AdminCurationsComponent {
     this.feedback = '';
     this.error = '';
 
-    this.collectionsApi.create({
-      name,
-      description: description || undefined,
-    }).subscribe({
-      next: (collection) => {
-        this.creating = false;
-        this.feedback = `Curación "${collection.name}" creada.`;
-        this.name = '';
-        this.description = '';
-        this.refresh$.next();
-        void this.router.navigate(['/admin/curations'], {
-          queryParams: { created: collection.id },
-          replaceUrl: true,
-        });
-      },
-      error: (err) => {
-        this.creating = false;
-        this.error = err?.error?.message ?? 'No se pudo crear la curación.';
-      },
-    });
+    this.curationsApi
+      .create({
+        surface: 'RECOMMENDED',
+        slug: this.slugify(name),
+        title: name,
+        subtitle: 'Curación editorial',
+        description: description || undefined,
+        ctaLabel: 'Explorar curación',
+        isActive: true,
+      })
+      .subscribe({
+        next: (curation) => {
+          this.creating = false;
+          this.feedback = 'Curación "' + curation.title + '" creada.';
+          this.name = '';
+          this.description = '';
+          this.refresh$.next();
+          void this.router.navigate(['/admin/home-decks', curation.id, 'edit'], {
+            queryParams: { returnTo: '/admin/curations' },
+          });
+        },
+        error: (err) => {
+          this.creating = false;
+          this.error = err?.error?.message ?? 'No se pudo crear la curación.';
+        },
+      });
   }
 
   openCreateRoute(): void {
     void this.router.navigate(['/admin/curations/new']);
   }
 
-  coverMedia(collection: AdminCurationCard): MediaLike | null {
-    return collection.coverMedia;
+  coverMedia(curation: AdminCurationCard): MediaLike | null {
+    return curation.coverMedia;
   }
 
-  private toCards(collections: Collection[]): AdminCurationCard[] {
-    return [...collections]
+  private toCards(decks: AdminHomeDeck[]): AdminCurationCard[] {
+    return [...decks]
       .sort((left, right) => this.toTimestamp(right.updatedAt) - this.toTimestamp(left.updatedAt))
-      .map((collection) => ({
-        id: collection.id,
-        name: collection.name,
-        description: collection.description ?? null,
-        itemCount: collection.itemCount,
-        updatedAt: collection.updatedAt,
-        isDefault: collection.isDefault,
-        coverMedia: collection.coverMedia ?? selectPrimaryVisualMedia(collection.items[0]?.entity) ?? null,
+      .map((deck) => ({
+        id: deck.id,
+        title: deck.title,
+        description: deck.description ?? null,
+        entityCount: deck.entities.length,
+        updatedAt: deck.updatedAt,
+        isActive: deck.isActive,
+        coverMedia: deck.image ?? null,
       }));
+  }
+
+  private slugify(value: string): string {
+    const slug = value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-/, '');
+    return slug.endsWith('-') ? slug.slice(0, -1) : slug;
   }
 
   private toTimestamp(value: string | null | undefined): number {

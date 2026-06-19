@@ -2,7 +2,16 @@ import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, catchError, debounceTime, distinctUntilChanged, forkJoin, map, of, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 import {
   AdminHomeDeck,
   AdminHomeDeckPayload,
@@ -63,6 +72,20 @@ export class AdminHomeDeckEditorComponent {
 
   readonly ctaRouteOptions = HOME_DECK_CTA_ROUTE_OPTIONS;
 
+  editorNoun(): string {
+    return this.form.surface === 'RECOMMENDED' ? 'curación' : 'cartel de inicio';
+  }
+
+  editorTitle(): string {
+    return this.form.surface === 'RECOMMENDED' ? 'Editar curación' : 'Editar cartel de inicio';
+  }
+
+  backRoute(): string {
+    const requested = this.route.snapshot.queryParamMap.get('returnTo');
+    if (requested?.startsWith('/')) return requested;
+    return this.form.surface === 'RECOMMENDED' ? '/admin/curations' : '/';
+  }
+
   readonly vm$ = this.refresh$.pipe(
     switchMap(() => {
       if (!this.deckId) {
@@ -81,7 +104,7 @@ export class AdminHomeDeckEditorComponent {
         }),
         catchError(() => {
           this.loading = false;
-          this.setFeedback('No se pudo cargar el deck.', 'error');
+          this.setFeedback('No se pudo cargar la pieza editorial.', 'error');
           this.cdr.markForCheck();
           return of(null);
         }),
@@ -119,7 +142,7 @@ export class AdminHomeDeckEditorComponent {
     }
 
     if (!this.isDirty) {
-      this.setFeedback('No hay cambios pendientes en este deck.', 'info');
+      this.setFeedback('No hay cambios pendientes.', 'info');
       return;
     }
 
@@ -140,7 +163,7 @@ export class AdminHomeDeckEditorComponent {
       error: () => {
         this.saving = false;
         this.saveState = 'error';
-        this.setFeedback('No se pudo guardar el deck. Revisa campos y vuelve a intentar.', 'error');
+        this.setFeedback('No se pudo guardar. Revisa los campos y vuelve a intentar.', 'error');
         this.cdr.markForCheck();
       },
     });
@@ -188,10 +211,16 @@ export class AdminHomeDeckEditorComponent {
     });
   }
 
-  moveEntity(item: AdminHomeDeck['entities'][number], direction: -1 | 1, items: AdminHomeDeck['entities']): void {
+  moveEntity(
+    item: AdminHomeDeck['entities'][number],
+    direction: -1 | 1,
+    items: AdminHomeDeck['entities'],
+  ): void {
     if (!this.deck) return;
 
-    const ordered = [...items].sort((a, b) => a.sortOrder - b.sortOrder || a.entity.title.localeCompare(b.entity.title));
+    const ordered = [...items].sort(
+      (a, b) => a.sortOrder - b.sortOrder || a.entity.title.localeCompare(b.entity.title),
+    );
     const index = ordered.findIndex((candidate) => candidate.id === item.id);
     const target = ordered[index + direction];
 
@@ -241,7 +270,9 @@ export class AdminHomeDeckEditorComponent {
       return;
     }
 
-    const ordered = [...items].sort((a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id));
+    const ordered = [...items].sort(
+      (a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id),
+    );
     const sourceIndex = ordered.findIndex((item) => item.entity.id === sourceEntityId);
     const targetIndex = ordered.findIndex((item) => item.entity.id === targetEntityId);
 
@@ -378,11 +409,11 @@ export class AdminHomeDeckEditorComponent {
 
   selectedCtaRouteDetail(): string {
     if (this.form.surface === 'RECOMMENDED') {
-      return 'Recommended abre siempre las entities seleccionadas en este deck.';
+      return 'Recommended abre siempre las entidades seleccionadas en esta curación.';
     }
 
     const option = this.ctaRouteOptions.find((item) => item.value === this.form.ctaRoute);
-    return option?.detail ?? 'Ruta personalizada guardada en este deck.';
+    return option?.detail ?? 'Ruta personalizada guardada en esta pieza editorial.';
   }
 
   previewImageUrl(): string | null {
@@ -390,7 +421,10 @@ export class AdminHomeDeckEditorComponent {
   }
 
   previewEyebrow(): string {
-    return this.form.subtitle?.trim() || (this.form.surface === 'RECOMMENDED' ? 'Curated selection' : 'Editorial deck');
+    return (
+      this.form.subtitle?.trim() ||
+      (this.form.surface === 'RECOMMENDED' ? 'Curated selection' : 'Cartel editorial')
+    );
   }
 
   translationSummary(): string {
@@ -403,7 +437,10 @@ export class AdminHomeDeckEditorComponent {
   }
 
   previewDescription(): string {
-    return this.form.description?.trim() || 'Añade una descripción breve para explicar la promesa curatorial de este deck.';
+    return (
+      this.form.description?.trim() ||
+      'Añade una descripción breve para explicar la promesa editorial.'
+    );
   }
 
   previewCtaLabel(): string {
@@ -412,11 +449,11 @@ export class AdminHomeDeckEditorComponent {
 
   previewRouteSummary(): string {
     if (this.form.surface === 'RECOMMENDED') {
-      return 'Abre la selección curada del propio deck.';
+      return 'Abre la selección de la curación.';
     }
 
     if (!this.form.ctaRoute?.trim()) {
-      return 'Abre la selección curada del propio deck.';
+      return 'Abre la selección de la curación.';
     }
 
     const option = this.ctaRouteOptions.find((item) => item.value === this.form.ctaRoute);
@@ -424,7 +461,8 @@ export class AdminHomeDeckEditorComponent {
   }
 
   entityImageUrl(entity: any): string | null {
-    const media = resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
+    const media =
+      resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
     return mediaDisplayUrl(media);
   }
 
@@ -568,7 +606,7 @@ export class AdminHomeDeckEditorComponent {
       description: source.description?.trim() ?? '',
       ctaLabel: source.ctaLabel?.trim() ?? '',
       ctaUrl: source.ctaUrl?.trim() ?? '',
-      ctaRoute: surface === 'RECOMMENDED' ? '' : source.ctaRoute?.trim() ?? '',
+      ctaRoute: surface === 'RECOMMENDED' ? '' : (source.ctaRoute?.trim() ?? ''),
       imageUrl: source.imageUrl?.trim() ?? '',
       imageMediaId: source.imageMediaId?.trim() || undefined,
       sortOrder: Number(source.sortOrder ?? 0),

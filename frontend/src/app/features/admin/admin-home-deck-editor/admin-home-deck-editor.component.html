@@ -2,8 +2,8 @@
   <header class="editor-head">
     <div>
       <p class="eyebrow">Editorial</p>
-      <h1>Editar deck</h1>
-      <p class="intro">Copy, estado, preview, destino y entidades seleccionadas.</p>
+      <h1>{{ editorTitle() }}</h1>
+      <p class="intro">Contenido, estado, portada, destino y entidades seleccionadas.</p>
       <div class="editor-head__meta">
         <span>{{ publicationSummary() }}</span>
         <span>{{ deck?.entities?.length ?? 0 }} entities</span>
@@ -12,9 +12,16 @@
     </div>
 
     <div class="head-actions">
-      <a class="btn" routerLink="/admin/home-decks">Volver</a>
-      <button class="btn" type="button" (click)="openPublicHome()">{{ destinationButtonLabel() }}</button>
-      <button class="btn btn--primary" type="button" [disabled]="saving || !deck || !isDirty" (click)="save()">
+      <a class="btn" [routerLink]="backRoute()">Volver</a>
+      <button class="btn" type="button" (click)="openPublicHome()">
+        {{ destinationButtonLabel() }}
+      </button>
+      <button
+        class="btn btn--primary"
+        type="button"
+        [disabled]="saving || !deck || !isDirty"
+        (click)="save()"
+      >
         {{ saveButtonLabel() }}
       </button>
     </div>
@@ -53,30 +60,40 @@
             <article class="composer-note">
               <span>Selección viva</span>
               <strong>{{ deck.entities.length }} entities</strong>
-              <p>{{ deck.entities.length ? 'El orden de abajo define la lectura del deck.' : 'Todavía no hay piezas seleccionadas.' }}</p>
+              <p>
+                {{
+                  deck.entities.length
+                    ? 'El orden de abajo define la lectura de esta pieza editorial.'
+                    : 'Todavía no hay piezas seleccionadas.'
+                }}
+              </p>
             </article>
           </div>
 
           <div class="form-grid">
-            <label>
-              <span>Publicar en</span>
-              <select name="surface" [ngModel]="form.surface" (ngModelChange)="onSurfaceChange($event)">
-                <option value="HOME">Home</option>
-                <option value="RECOMMENDED">Recommended</option>
-              </select>
+            <div class="route-note">
+              <span>Tipo editorial</span>
+              <strong>{{
+                form.surface === 'RECOMMENDED' ? 'Curación' : 'Cartel de inicio'
+              }}</strong>
               <small>{{ surfaceDescription() }}</small>
-            </label>
+            </div>
 
             <label>
               <span>Identificador</span>
               <input name="slug" [(ngModel)]="form.slug" (ngModelChange)="onFormChanged()" />
-              <small>Sirve para identificar el deck dentro del sistema y sus rutas curatoriales.</small>
+              <small>Identifica esta pieza editorial dentro del sistema y sus rutas.</small>
             </label>
 
             <label>
               <span>Orden</span>
-              <input type="number" name="sortOrder" [(ngModel)]="form.sortOrder" (ngModelChange)="onFormChanged()" />
-              <small>El orden decide la posición relativa entre decks del mismo surface.</small>
+              <input
+                type="number"
+                name="sortOrder"
+                [(ngModel)]="form.sortOrder"
+                (ngModelChange)="onFormChanged()"
+              />
+              <small>El orden decide su posición en la superficie publicada.</small>
             </label>
 
             <label class="form-grid__wide">
@@ -86,19 +103,31 @@
 
             <label class="form-grid__wide">
               <span>Eyebrow o subtítulo</span>
-              <input name="subtitle" [(ngModel)]="form.subtitle" (ngModelChange)="onFormChanged()" />
+              <input
+                name="subtitle"
+                [(ngModel)]="form.subtitle"
+                (ngModelChange)="onFormChanged()"
+              />
             </label>
 
             <label>
               <span>Llamada principal</span>
-              <input name="ctaLabel" [(ngModel)]="form.ctaLabel" (ngModelChange)="onFormChanged()" />
-              <small>Texto del gesto principal que invita a entrar al deck.</small>
+              <input
+                name="ctaLabel"
+                [(ngModel)]="form.ctaLabel"
+                (ngModelChange)="onFormChanged()"
+              />
+              <small>Texto de la acción principal que invita a entrar.</small>
             </label>
 
             @if (showCtaRouteControl()) {
               <label>
                 <span>Acción al abrir</span>
-                <select name="ctaRoute" [(ngModel)]="form.ctaRoute" (ngModelChange)="onFormChanged()">
+                <select
+                  name="ctaRoute"
+                  [(ngModel)]="form.ctaRoute"
+                  (ngModelChange)="onFormChanged()"
+                >
                   @for (option of ctaRouteOptions; track option.value) {
                     <option [value]="option.value">{{ option.label }}</option>
                   }
@@ -111,14 +140,18 @@
             } @else {
               <div class="route-note">
                 <span>Acción al abrir</span>
-                <strong>Selección curada del deck</strong>
+                <strong>Selección de la curación</strong>
                 <small>{{ selectedCtaRouteDetail() }}</small>
               </div>
             }
 
             <label class="form-grid__wide">
               <span>Imagen base</span>
-              <input name="imageUrl" [(ngModel)]="form.imageUrl" (ngModelChange)="onFormChanged()" />
+              <input
+                name="imageUrl"
+                [(ngModel)]="form.imageUrl"
+                (ngModelChange)="onFormChanged()"
+              />
               <small>Debe sostener la portada del bloque, no solo rellenar un fondo.</small>
             </label>
 
@@ -129,8 +162,16 @@
 
             <label class="form-grid__full">
               <span>Descripción editorial</span>
-              <textarea name="description" [(ngModel)]="form.description" (ngModelChange)="onFormChanged()" rows="5"></textarea>
-              <small>Resume con claridad qué ofrece esta selección y por qué merece ser explorada.</small>
+              <textarea
+                name="description"
+                [(ngModel)]="form.description"
+                (ngModelChange)="onFormChanged()"
+                rows="5"
+              ></textarea>
+              <small
+                >Resume con claridad qué ofrece esta selección y por qué merece ser
+                explorada.</small
+              >
             </label>
 
             <div class="form-grid__full section-title">
@@ -145,22 +186,43 @@
 
             <label class="form-grid__wide">
               <span>Subtitle EN</span>
-              <input name="subtitleEn" [(ngModel)]="form.subtitleEn" (ngModelChange)="onFormChanged()" />
+              <input
+                name="subtitleEn"
+                [(ngModel)]="form.subtitleEn"
+                (ngModelChange)="onFormChanged()"
+              />
             </label>
 
             <label>
               <span>CTA label EN</span>
-              <input name="ctaLabelEn" [(ngModel)]="form.ctaLabelEn" (ngModelChange)="onFormChanged()" />
+              <input
+                name="ctaLabelEn"
+                [(ngModel)]="form.ctaLabelEn"
+                (ngModelChange)="onFormChanged()"
+              />
             </label>
 
             <label class="form-grid__full">
               <span>Description EN</span>
-              <textarea name="descriptionEn" [(ngModel)]="form.descriptionEn" (ngModelChange)="onFormChanged()" rows="5"></textarea>
-              <small>Usa texto real cuando exista; mientras tanto, un placeholder inglés claro permite detectar cobertura i18n.</small>
+              <textarea
+                name="descriptionEn"
+                [(ngModel)]="form.descriptionEn"
+                (ngModelChange)="onFormChanged()"
+                rows="5"
+              ></textarea>
+              <small
+                >Usa texto real cuando exista; mientras tanto, un placeholder inglés claro permite
+                detectar cobertura i18n.</small
+              >
             </label>
 
             <label class="check">
-              <input type="checkbox" name="isActive" [(ngModel)]="form.isActive" (ngModelChange)="onFormChanged()" />
+              <input
+                type="checkbox"
+                name="isActive"
+                [(ngModel)]="form.isActive"
+                (ngModelChange)="onFormChanged()"
+              />
               <span>{{ activeCheckboxLabel() }}</span>
             </label>
           </div>
@@ -198,7 +260,9 @@
               } @else {
                 <div class="deck-preview__placeholder">
                   <span>Sin imagen</span>
-                  <strong>Añade una portada para sostener el tono visual del deck.</strong>
+                  <strong
+                    >Añade una portada para sostener el tono visual de esta pieza editorial.</strong
+                  >
                 </div>
               }
               <div class="deck-preview__body">
@@ -227,7 +291,7 @@
           <section class="panel">
             <div class="section-title">
               <h2>Secuencia curatorial</h2>
-              <p>El orden de estas piezas construye la lectura y el ritmo del deck.</p>
+              <p>El orden de estas piezas construye la lectura y el ritmo de la curación.</p>
             </div>
 
             @if (deck.entities.length) {
@@ -240,11 +304,14 @@
                       (dragstart)="startEntityDrag(item.entity.id)"
                       (dragend)="clearEntityDrag()"
                       (dragover)="$event.preventDefault()"
-                      (drop)="dropEntityBefore(item.entity.id, deck.entities)">
+                      (drop)="dropEntityBefore(item.entity.id, deck.entities)"
+                    >
                       @if (entityImageUrl(item.entity); as imageUrl) {
                         <img [src]="imageUrl" [alt]="item.entity.title" />
                       } @else {
-                        <div class="selected-card__media-empty">{{ entityEyebrow(item.entity) }}</div>
+                        <div class="selected-card__media-empty">
+                          {{ entityEyebrow(item.entity) }}
+                        </div>
                       }
                       <span class="selected-row__rank">{{ item.sortOrder + 1 }}</span>
                     </div>
@@ -259,16 +326,36 @@
                     <div class="selected-card__actions">
                       <span class="selected-card__hint">Arrastra para mover</span>
                       <div class="row-actions">
-                        <button class="mini" type="button" (click)="moveEntity(item, -1, deck.entities)">Subir</button>
-                        <button class="mini" type="button" (click)="moveEntity(item, 1, deck.entities)">Bajar</button>
+                        <button
+                          class="mini"
+                          type="button"
+                          (click)="moveEntity(item, -1, deck.entities)"
+                        >
+                          Subir
+                        </button>
+                        <button
+                          class="mini"
+                          type="button"
+                          (click)="moveEntity(item, 1, deck.entities)"
+                        >
+                          Bajar
+                        </button>
                       </div>
-                      <button class="mini danger" type="button" (click)="removeEntity(item.entity.id)">Quitar</button>
+                      <button
+                        class="mini danger"
+                        type="button"
+                        (click)="removeEntity(item.entity.id)"
+                      >
+                        Quitar
+                      </button>
                     </div>
                   </article>
                 }
               </div>
             } @else {
-              <div class="empty">Este deck todavía no tiene entities seleccionadas.</div>
+              <div class="empty">
+                Esta pieza editorial todavía no tiene entidades seleccionadas.
+              </div>
             }
           </section>
 
@@ -280,14 +367,23 @@
 
             <label class="search-field">
               <span>Buscar</span>
-              <input name="entitySearch" [(ngModel)]="entitySearch" (ngModelChange)="onSearchChange($event)" />
+              <input
+                name="entitySearch"
+                [(ngModel)]="entitySearch"
+                (ngModelChange)="onSearchChange($event)"
+              />
             </label>
 
             @if (entityResults$ | async; as results) {
               @if (results.length) {
                 <div class="result-list">
                   @for (entity of results; track entity.id) {
-                    <button class="result-row" type="button" [disabled]="isSelected(entity.id)" (click)="addEntity(entity)">
+                    <button
+                      class="result-row"
+                      type="button"
+                      [disabled]="isSelected(entity.id)"
+                      (click)="addEntity(entity)"
+                    >
                       <div class="result-row__media">
                         @if (entityImageUrl(entity); as imageUrl) {
                           <img [src]="imageUrl" [alt]="entity.title" />
@@ -299,7 +395,9 @@
                         <strong>{{ entity.title }}</strong>
                         <span>{{ entity.type }} · {{ entity.status }}</span>
                       </div>
-                      <span class="result-row__action">{{ isSelected(entity.id) ? 'Añadida' : 'Añadir' }}</span>
+                      <span class="result-row__action">{{
+                        isSelected(entity.id) ? 'Añadida' : 'Añadir'
+                      }}</span>
                     </button>
                   }
                 </div>
@@ -312,6 +410,6 @@
       </section>
     }
   } @else if (loading) {
-    <div class="panel empty">Cargando deck...</div>
+    <div class="panel empty">Cargando editor...</div>
   }
 </main>
