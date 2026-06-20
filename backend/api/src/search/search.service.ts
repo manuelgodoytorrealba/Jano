@@ -570,42 +570,38 @@ export class SearchService {
       relationType?: any;
     }>,
     locale: string,
-  ) {
+  ): Array<{
+    id: string;
+    label: string;
+    relationType: string;
+    items: SearchItem[];
+  }> {
     const seen = new Set<string>();
-    return relations
-      .map((relation) => {
-        const from = this.serializeSearchEntity(
-          relation.from,
-          locale,
-          relation.weight ?? 0,
-          ['route'],
-        );
-        const to = this.serializeSearchEntity(
-          relation.to,
-          locale,
-          relation.weight ?? 0,
-          ['route'],
-        );
-        const key = `${from.id}:${to.id}`;
-        if (seen.has(key)) return null;
-        seen.add(key);
-        return {
+    return relations.flatMap((relation) => {
+      const from = this.serializeSearchEntity(
+        relation.from,
+        locale,
+        relation.weight ?? 0,
+        ['route'],
+      );
+      const to = this.serializeSearchEntity(
+        relation.to,
+        locale,
+        relation.weight ?? 0,
+        ['route'],
+      );
+      const key = `${from.id}:${to.id}`;
+      if (seen.has(key)) return [];
+      seen.add(key);
+      return [
+        {
           id: key,
           label: `${from.title} → ${to.title}`,
           relationType: this.relationDisplayLabel(relation, locale),
           items: [from, to],
-        };
-      })
-      .filter(
-        (
-          entry,
-        ): entry is {
-          id: string;
-          label: string;
-          relationType: string;
-          items: SearchItem[];
-        } => !!entry,
-      );
+        },
+      ];
+    });
   }
 
   private relationDisplayLabel(
