@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CuratedDeck } from '../../core/api/curated.api';
 import { PublicEntity } from '../../core/api/entities.models';
@@ -19,6 +19,8 @@ export class RecommendedEntityShelfComponent {
   showNewBadge = input(false);
   layout = input<'shelf' | 'recent'>('shelf');
 
+  @ViewChild('viewport') private viewport?: ElementRef<HTMLDivElement>;
+
   isDeck(item: CuratedDeck | PublicEntity): item is CuratedDeck {
     return 'entityCount' in item;
   }
@@ -29,5 +31,19 @@ export class RecommendedEntityShelfComponent {
 
   meta(item: PublicEntity): string | null {
     return recommendedEntityMeta(item);
+  }
+
+  showShelfControls(): boolean {
+    return this.layout() === 'shelf' && this.items().length > 5;
+  }
+
+  scrollShelf(direction: 'prev' | 'next'): void {
+    const viewport = this.viewport?.nativeElement;
+    if (!viewport) {
+      return;
+    }
+
+    const delta = viewport.clientWidth * 0.88 * (direction === 'next' ? 1 : -1);
+    viewport.scrollBy({ left: delta, behavior: 'smooth' });
   }
 }

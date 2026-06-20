@@ -10,30 +10,59 @@
     <span class="recommended-card__meta">View all →</span>
   </div>
 
-  <div class="recommended-card-row recommended-card-row--five">
-    @for (item of items(); track item.id) {
-      <a class="recommended-card" [routerLink]="['/entity', item.slug]">
-        <div class="recommended-card__thumb">
-          <app-jano-media [entity]="item" usage="card" [alt]="item.title"></app-jano-media>
-        </div>
-        <div class="recommended-card__body">
-          <span class="recommended-card__eyebrow">{{ typeLabel(item.type) }}</span>
-          <h3>{{ item.title }}</h3>
-          <div class="recommended-card__meta-row">
-            @if (item.startYear) {
-              <span>{{ item.startYear }}</span>
-            }
-            @if (item.artwork?.location) {
-              <span>{{ item.artwork?.location }}</span>
-            } @else if (item.artist?.country) {
-              <span>{{ item.artist?.country }}</span>
-            }
-          </div>
-          @if (item.artist?.bioShort || item.summary) {
-            <p>{{ item.artist?.bioShort ?? item.summary }}</p>
-          }
-        </div>
-      </a>
+  <div class="recommended-key-shelf" [class.is-carousel]="showControls()">
+    @if (showControls()) {
+      <button
+        type="button"
+        class="recommended-key-shelf__arrow recommended-key-shelf__arrow--prev"
+        aria-label="Previous entities"
+        (click)="scroll('prev')"
+      >
+        ←
+      </button>
+    }
+
+    <div #viewport class="recommended-key-shelf__viewport" [class.is-carousel]="showControls()">
+      <div
+        class="recommended-card-row recommended-key-shelf__row"
+        [class.is-carousel]="showControls()"
+      >
+        @for (item of items(); track item.id) {
+          <a class="recommended-card" [routerLink]="['/entity', item.slug]">
+            <div class="recommended-card__thumb">
+              <app-jano-media [entity]="item" usage="card" [alt]="item.title"></app-jano-media>
+            </div>
+            <div class="recommended-card__body">
+              <span class="recommended-card__eyebrow">{{ typeLabel(item.type) }}</span>
+              <h3>{{ item.title }}</h3>
+              <div class="recommended-card__meta-row">
+                @if (item.startYear) {
+                  <span>{{ item.startYear }}</span>
+                }
+                @if (item.artwork?.location) {
+                  <span>{{ item.artwork?.location }}</span>
+                } @else if (item.artist?.country) {
+                  <span>{{ item.artist?.country }}</span>
+                }
+              </div>
+              @if (item.artist?.bioShort || item.summary) {
+                <p>{{ item.artist?.bioShort ?? item.summary }}</p>
+              }
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+
+    @if (showControls()) {
+      <button
+        type="button"
+        class="recommended-key-shelf__arrow recommended-key-shelf__arrow--next"
+        aria-label="Next entities"
+        (click)="scroll('next')"
+      >
+        →
+      </button>
     }
   </div>
 </section>

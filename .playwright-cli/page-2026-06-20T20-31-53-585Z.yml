@@ -1,0 +1,42 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - banner:
+      - link "Go to JANO home":
+        - /url: /
+        - img
+        - generic:
+          - generic: JANO
+      - search:
+        - generic:
+          - img
+        - searchbox "Search artists, artworks, concepts, places, or periods..."
+      - navigation "Primary navigation":
+        - link "Home":
+          - /url: /
+        - link "Archive":
+          - /url: /entities/artwork
+        - link "Articles":
+          - /url: /entities/article
+        - link "Curated":
+          - /url: /curated
+        - link "Profile":
+          - /url: /profile
+        - link "My Space":
+          - /url: /my-space
+      - button "Hide header":
+        - generic: ×
+    - button "Show header" [ref=e5] [cursor=pointer]
+    - complementary "Utilities" [ref=e10]:
+      - link "Profile" [ref=e12] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=e13]
+      - link "My Space" [ref=e18] [cursor=pointer]:
+        - /url: /my-space
+        - img [ref=e19]
+      - link "Articles" [ref=e34] [cursor=pointer]:
+        - /url: /entities/article
+        - img [ref=e35]
+      - link "Settings" [ref=e42] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e43]
+  - main [ref=e48]

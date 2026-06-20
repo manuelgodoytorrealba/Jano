@@ -1,1 +1,25 @@
 @use './recommended-shared';
+
+.recommended-related__list {
+  gap: 0;
+}
+
+.recommended-related__item {
+  position: relative;
+  padding-right: 2.2rem;
+}
+
+.recommended-related__item::after {
+  content: '→';
+  position: absolute;
+  top: 1rem;
+  right: 0;
+  color: var(--curated-text-muted);
+}
+
+.recommended-related__type {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--curated-text-muted);
+}

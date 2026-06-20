@@ -1,4 +1,4 @@
-<section class="recommended-section recommended-section--staff">
+<section class="recommended-section recommended-section--staff recommended-staff">
   <div class="recommended-section__head">
     <div class="recommended-section__titleline">
       <span class="recommended-section__number">1</span>
@@ -7,24 +7,46 @@
     <h2>Staff picks for the selected entity</h2>
   </div>
 
-  <div class="recommended-card-row recommended-card-row--three">
-    @for (pick of picks(); track pick.id) {
-      <a class="recommended-card recommended-card--deck" [routerLink]="['/entities']" [queryParams]="{ deck: pick.slug }">
-        @if (pick.image?.url; as imageUrl) {
-          <div class="recommended-card__media" [style.background-image]="'url(' + imageUrl + ')'"></div>
+  @if (featuredPick(); as pick) {
+    <a
+      class="recommended-card recommended-card--deck recommended-staff__hero"
+      [routerLink]="['/entities']"
+      [queryParams]="{ deck: pick.slug }"
+    >
+      @if (pick.image?.url; as imageUrl) {
+        <div
+          class="recommended-card__media recommended-staff__media"
+          [style.background-image]="'url(' + imageUrl + ')'"
+        ></div>
+      }
+
+      <div class="recommended-staff__overlay"></div>
+
+      <div class="recommended-card__body recommended-staff__body">
+        <span class="recommended-staff__kicker">Featured curation</span>
+        <h3>{{ pick.title }}</h3>
+        @if (pick.description) {
+          <p>{{ pick.description }}</p>
         }
-        <div class="recommended-card__body">
-          <h3>{{ pick.title }}</h3>
-          @if (pick.description) {
-            <p>{{ pick.description }}</p>
+        <span class="recommended-staff__cta">Enter curation →</span>
+      </div>
+
+      @if (picks().length > 1) {
+        <div
+          class="recommended-staff__pagination"
+          (click)="$event.preventDefault(); $event.stopPropagation()"
+        >
+          @for (staffPick of picks(); track staffPick.id; let index = $index) {
+            <button
+              type="button"
+              class="recommended-staff__dot"
+              [class.is-active]="index === selectedIndex()"
+              [attr.aria-label]="'Show curation ' + staffPick.title"
+              (click)="selectPick(index)"
+            ></button>
           }
-          <div class="recommended-card__meta-row">
-            <span>{{ pick.entityCount }} works</span>
-            <span>•</span>
-            <span>{{ pick.entityCount > 2 ? 6 : 4 }} articles</span>
-          </div>
         </div>
-      </a>
-    }
-  </div>
+      }
+    </a>
+  }
 </section>

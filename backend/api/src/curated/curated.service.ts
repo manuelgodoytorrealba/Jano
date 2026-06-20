@@ -142,8 +142,11 @@ export class CuratedService {
         toId: { in: discoveryIds },
       },
       select: {
+        id: true,
         fromId: true,
         toId: true,
+        type: true,
+        weight: true,
         relationType: {
           select: {
             directed: true,
@@ -180,6 +183,47 @@ export class CuratedService {
       };
     });
 
+    const graphNodes = discoveryEntities
+      .slice()
+      .sort((a, b) => {
+        if (a.id === selectedEntity.id) return -1;
+        if (b.id === selectedEntity.id) return 1;
+        return a.title.localeCompare(b.title);
+      })
+      .map((entity) => ({
+        id: entity.id,
+        label: entity.title,
+        type: entity.type,
+        slug: entity.slug,
+        image:
+          entity.resolvedMedia?.thumbnail?.url
+          ?? entity.resolvedMedia?.card?.url
+          ?? entity.resolvedMedia?.primary?.url
+          ?? null,
+        metadata: {
+          summary: entity.summary ?? null,
+          startYear: entity.startYear ?? null,
+          endYear: entity.endYear ?? null,
+        },
+      }));
+    const graphEdges = discoveryConnections.map((relation) => ({
+      id: relation.id,
+      source: relation.fromId,
+      target: relation.toId,
+      relationType: relation.relationType?.key ?? relation.type,
+      directed: relation.relationType?.directed ?? false,
+      weight: relation.weight ?? 1,
+    }));
+    const graph = {
+      centerId: selectedEntity.id,
+      nodes: graphNodes,
+      edges: graphEdges,
+      filters: {
+        entityTypes: Array.from(new Set(graphNodes.map((node) => node.type))).sort(),
+        relationTypes: Array.from(new Set(graphEdges.map((edge) => edge.relationType))).sort(),
+      },
+    };
+
     const staffPickIds = new Set(selectedDecks.slice(0, 3).map((deck) => deck.id));
     const recentlyAdded = recommendedDecks
       .slice()
@@ -191,6 +235,7 @@ export class CuratedService {
     return {
       selectedEntity,
       discoveryEntities,
+      graph,
       staffPicks: selectedDecks.slice(0, 3),
       tabGroups: {
         curations: selectedDecks,

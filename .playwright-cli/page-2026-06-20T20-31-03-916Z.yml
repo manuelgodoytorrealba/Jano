@@ -1,0 +1,415 @@
+- generic [ref=e67]:
+  - generic [ref=e68]:
+    - banner [ref=e69]:
+      - link "Go to JANO home" [ref=e70] [cursor=pointer]:
+        - /url: /
+        - img [ref=e71]
+        - generic [ref=e73]: JANO
+      - search [ref=e74]:
+        - generic:
+          - img
+        - searchbox "Search artists, artworks, concepts, places, or periods..." [ref=e75]
+      - navigation "Primary navigation" [ref=e76]:
+        - link "Home" [ref=e78] [cursor=pointer]:
+          - /url: /
+        - link "Archive" [ref=e79] [cursor=pointer]:
+          - /url: /entities/artwork
+        - link "Articles" [ref=e80] [cursor=pointer]:
+          - /url: /entities/article
+        - link "Curated" [ref=e81] [cursor=pointer]:
+          - /url: /curated
+        - link "Profile" [ref=e82] [cursor=pointer]:
+          - /url: /profile
+        - link "My Space" [ref=e83] [cursor=pointer]:
+          - /url: /my-space
+      - button "Hide header" [ref=e84] [cursor=pointer]:
+        - generic [ref=e85]: ×
+    - complementary "Utilities" [ref=e86]:
+      - link "Profile" [ref=e88] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=e89]
+      - link "My Space" [ref=e94] [cursor=pointer]:
+        - /url: /my-space
+        - img [ref=e95]
+      - link "Articles" [ref=e110] [cursor=pointer]:
+        - /url: /entities/article
+        - img [ref=e111]
+      - link "Admin" [ref=e118] [cursor=pointer]:
+        - /url: /admin
+        - img [ref=e119]
+      - link "Settings" [ref=e124] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e125]
+  - main [ref=e130]:
+    - generic [ref=e132]:
+      - heading "Curated discovery" [level=1] [ref=e133]
+      - generic [ref=e134]:
+        - generic [ref=e135]:
+          - generic [ref=e136]:
+            - generic [ref=e138]:
+              - generic [ref=e139]:
+                - generic [ref=e140]:
+                  - generic [ref=e141]: "1"
+                  - paragraph [ref=e142]: Staff Picks
+                - heading "Staff picks for the selected entity" [level=2] [ref=e143]
+              - generic [ref=e144]:
+                - link "Magic in art A curated selection to enter JANO through key works and strong connections. 6 works • 6 articles" [ref=e145] [cursor=pointer]:
+                  - /url: /entities?deck=magia-en-el-arte
+                  - generic [ref=e147]:
+                    - heading "Magic in art" [level=3] [ref=e148]
+                    - paragraph [ref=e149]: A curated selection to enter JANO through key works and strong connections.
+                    - generic [ref=e150]:
+                      - generic [ref=e151]: 6 works
+                      - generic [ref=e152]: •
+                      - generic [ref=e153]: 6 articles
+                - link "Modern avant-gardes Cubism, Surrealism, Dada and Pop Art connected through artists and works. 12 works • 6 articles" [ref=e154] [cursor=pointer]:
+                  - /url: /entities?deck=vanguardias-modernas
+                  - generic [ref=e156]:
+                    - heading "Modern avant-gardes" [level=3] [ref=e157]
+                    - paragraph [ref=e158]: Cubism, Surrealism, Dada and Pop Art connected through artists and works.
+                    - generic [ref=e159]:
+                      - generic [ref=e160]: 12 works
+                      - generic [ref=e161]: •
+                      - generic [ref=e162]: 6 articles
+                - link "Archive and silence Memory, archives and material trace through documents, ruin and persistence. 6 works • 6 articles" [ref=e163] [cursor=pointer]:
+                  - /url: /entities?deck=archivo-y-silencio
+                  - generic [ref=e165]:
+                    - heading "Archive and silence" [level=3] [ref=e166]
+                    - paragraph [ref=e167]: Memory, archives and material trace through documents, ruin and persistence.
+                    - generic [ref=e168]:
+                      - generic [ref=e169]: 6 works
+                      - generic [ref=e170]: •
+                      - generic [ref=e171]: 6 articles
+            - generic [ref=e173]:
+              - generic [ref=e174]:
+                - generic [ref=e175]:
+                  - generic [ref=e176]:
+                    - generic [ref=e177]: "2"
+                    - paragraph [ref=e178]: Explore Entities
+                  - heading "Discovery map" [level=2] [ref=e179]
+                - button "+ Add Entity" [ref=e181] [cursor=pointer]
+              - generic [ref=e182]:
+                - generic [ref=e183]:
+                  - button "The Persistence of Memory Artwork" [ref=e184] [cursor=pointer]:
+                    - strong [ref=e185]: The Persistence of Memory
+                    - generic [ref=e186]: Artwork
+                  - button "×" [disabled] [ref=e187]
+                - generic [ref=e188]:
+                  - button "Memory Concept" [ref=e189] [cursor=pointer]:
+                    - strong [ref=e190]: Memory
+                    - generic [ref=e191]: Concept
+                  - button "×" [ref=e192] [cursor=pointer]
+                - generic [ref=e193]:
+                  - button "Saturn Devouring His Son Artwork" [ref=e194] [cursor=pointer]:
+                    - strong [ref=e195]: Saturn Devouring His Son
+                    - generic [ref=e196]: Artwork
+                  - button "×" [ref=e197] [cursor=pointer]
+                - generic [ref=e198]:
+                  - button "Surrealism Movement" [ref=e199] [cursor=pointer]:
+                    - strong [ref=e200]: Surrealism
+                    - generic [ref=e201]: Movement
+                  - button "×" [ref=e202] [cursor=pointer]
+                - generic [ref=e203]:
+                  - button "Time Concept" [ref=e204] [cursor=pointer]:
+                    - strong [ref=e205]: Time
+                    - generic [ref=e206]: Concept
+                  - button "×" [ref=e207] [cursor=pointer]
+              - img [ref=e215]:
+                - generic [ref=e216]:
+                  - generic [ref=e217] [cursor=pointer]:
+                    - generic: O
+                    - generic:
+                      - generic: The Persistence of Memory
+                      - generic: Artwork
+                  - generic [ref=e222] [cursor=pointer]:
+                    - generic: C
+                    - generic:
+                      - generic: Memory
+                      - generic: Concept
+                  - generic [ref=e227] [cursor=pointer]:
+                    - generic: O
+                    - generic:
+                      - generic: Saturn Devouring His Son
+                      - generic: Artwork
+                  - generic [ref=e232] [cursor=pointer]:
+                    - generic: M
+                    - generic:
+                      - generic: Surrealism
+                      - generic: Movement
+                  - generic [ref=e237] [cursor=pointer]:
+                    - generic: C
+                    - generic:
+                      - generic: Time
+                      - generic: Concept
+              - paragraph [ref=e242]: Click a node to update the curated context. Add Entity only expands the current curated pool in this first iteration.
+          - generic [ref=e245]:
+            - generic [ref=e246]:
+              - generic [ref=e247]:
+                - generic [ref=e248]: "3"
+                - paragraph [ref=e249]: Selected Entity
+              - heading "The Persistence of Memory" [level=2] [ref=e250]
+              - generic [ref=e251]:
+                - generic [ref=e252]: Artwork
+                - generic [ref=e253]: MoMA, New York • 1931
+              - paragraph [ref=e257]:
+                - text: This work connects directly with
+                - link "time" [ref=e259] [cursor=pointer]:
+                  - /url: /entity/time
+                - text: and
+                - link "memory" [ref=e261] [cursor=pointer]:
+                  - /url: /entity/memory
+                - text: ", and also with the imagery of"
+                - link "surrealism" [ref=e263] [cursor=pointer]:
+                  - /url: /entity/surrealism
+                - text: .
+              - link "View entity page →" [ref=e264] [cursor=pointer]:
+                - /url: /entity/la-persistencia-de-la-memoria
+            - generic [ref=e265]:
+              - tablist "Selected entity shelves" [ref=e266]:
+                - button "Curations" [ref=e267] [cursor=pointer]
+                - button "Articles" [ref=e268] [cursor=pointer]
+                - button "Artists" [ref=e269] [cursor=pointer]
+                - button "Artworks" [ref=e270] [cursor=pointer]
+                - button "Concepts" [ref=e271] [cursor=pointer]
+              - generic [ref=e272]:
+                - paragraph [ref=e274]: Entity Shelf
+                - generic [ref=e276]:
+                  - link "Magic in art A curated selection to enter JANO through key works and strong connections. 6 works • 5 articles" [ref=e277] [cursor=pointer]:
+                    - /url: /entities?deck=magia-en-el-arte
+                    - generic [ref=e279]:
+                      - heading "Magic in art" [level=3] [ref=e280]
+                      - paragraph [ref=e281]: A curated selection to enter JANO through key works and strong connections.
+                      - generic [ref=e282]:
+                        - generic [ref=e283]: 6 works
+                        - generic [ref=e284]: •
+                        - generic [ref=e285]: 5 articles
+                  - link "Modern avant-gardes Cubism, Surrealism, Dada and Pop Art connected through artists and works. 12 works • 5 articles" [ref=e286] [cursor=pointer]:
+                    - /url: /entities?deck=vanguardias-modernas
+                    - generic [ref=e288]:
+                      - heading "Modern avant-gardes" [level=3] [ref=e289]
+                      - paragraph [ref=e290]: Cubism, Surrealism, Dada and Pop Art connected through artists and works.
+                      - generic [ref=e291]:
+                        - generic [ref=e292]: 12 works
+                        - generic [ref=e293]: •
+                        - generic [ref=e294]: 5 articles
+                  - link "Archive and silence Memory, archives and material trace through documents, ruin and persistence. 6 works • 5 articles" [ref=e295] [cursor=pointer]:
+                    - /url: /entities?deck=archivo-y-silencio
+                    - generic [ref=e297]:
+                      - heading "Archive and silence" [level=3] [ref=e298]
+                      - paragraph [ref=e299]: Memory, archives and material trace through documents, ruin and persistence.
+                      - generic [ref=e300]:
+                        - generic [ref=e301]: 6 works
+                        - generic [ref=e302]: •
+                        - generic [ref=e303]: 5 articles
+                  - link "Surrealism and desire Dream, time, body and psychic image inside the surrealist imagination. 7 works • 5 articles" [ref=e304] [cursor=pointer]:
+                    - /url: /entities?deck=surrealismo-y-deseo
+                    - generic [ref=e306]:
+                      - heading "Surrealism and desire" [level=3] [ref=e307]
+                      - paragraph [ref=e308]: Dream, time, body and psychic image inside the surrealist imagination.
+                      - generic [ref=e309]:
+                        - generic [ref=e310]: 7 works
+                        - generic [ref=e311]: •
+                        - generic [ref=e312]: 5 articles
+                  - link "Time in ruins Duration, loss and visual remains for thinking history through images. 6 works • 5 articles" [ref=e313] [cursor=pointer]:
+                    - /url: /entities?deck=tiempo-en-ruinas
+                    - generic [ref=e315]:
+                      - heading "Time in ruins" [level=3] [ref=e316]
+                      - paragraph [ref=e317]: Duration, loss and visual remains for thinking history through images.
+                      - generic [ref=e318]:
+                        - generic [ref=e319]: 6 works
+                        - generic [ref=e320]: •
+                        - generic [ref=e321]: 5 articles
+                  - link "Psychic landscape Dream, desire and time in images that destabilize visible reality. 6 works • 5 articles" [ref=e322] [cursor=pointer]:
+                    - /url: /entities?deck=paisaje-psiquico
+                    - generic [ref=e324]:
+                      - heading "Psychic landscape" [level=3] [ref=e325]
+                      - paragraph [ref=e326]: Dream, desire and time in images that destabilize visible reality.
+                      - generic [ref=e327]:
+                        - generic [ref=e328]: 6 works
+                        - generic [ref=e329]: •
+                        - generic [ref=e330]: 5 articles
+                  - link "Work and historical context Periods, movements and artworks as a cross-reading of visual history. 7 works • 5 articles" [ref=e331] [cursor=pointer]:
+                    - /url: /entities?deck=obra-y-contexto-historico
+                    - generic [ref=e333]:
+                      - heading "Work and historical context" [level=3] [ref=e334]
+                      - paragraph [ref=e335]: Periods, movements and artworks as a cross-reading of visual history.
+                      - generic [ref=e336]:
+                        - generic [ref=e337]: 7 works
+                        - generic [ref=e338]: •
+                        - generic [ref=e339]: 5 articles
+        - generic [ref=e340]:
+          - generic [ref=e342]:
+            - generic [ref=e343]:
+              - generic [ref=e344]:
+                - generic [ref=e345]:
+                  - generic [ref=e346]: "5"
+                  - paragraph [ref=e347]: Key Entities
+                - heading "Essential entities" [level=2] [ref=e348]
+              - generic [ref=e349]: View all →
+            - generic [ref=e350]:
+              - link "Time Concept Time Duration, change, memory, and finitude." [ref=e351] [cursor=pointer]:
+                - /url: /entity/tiempo
+                - img "Time" [ref=e355]
+                - generic [ref=e356]:
+                  - generic [ref=e357]: Concept
+                  - heading "Time" [level=3] [ref=e358]
+                  - paragraph [ref=e360]: Duration, change, memory, and finitude.
+              - link "Maman Artwork Maman 1999 Guggenheim Bilbao Louise Bourgeois's monumental sculpture associated with motherhood, memory, and affective ambivalence." [ref=e361] [cursor=pointer]:
+                - /url: /entity/maman
+                - img "Maman" [ref=e365]
+                - generic [ref=e366]:
+                  - generic [ref=e367]: Artwork
+                  - heading "Maman" [level=3] [ref=e368]
+                  - generic [ref=e369]:
+                    - generic [ref=e370]: "1999"
+                    - generic [ref=e371]: Guggenheim Bilbao
+                  - paragraph [ref=e372]: Louise Bourgeois's monumental sculpture associated with motherhood, memory, and affective ambivalence.
+              - link "Louise Bourgeois Artist Louise Bourgeois 1911 France / United States A foundational sculptor of contemporary art, associated with memory, the body, and motherhood." [ref=e373] [cursor=pointer]:
+                - /url: /entity/louise-bourgeois
+                - img "Louise Bourgeois" [ref=e377]
+                - generic [ref=e378]:
+                  - generic [ref=e379]: Artist
+                  - heading "Louise Bourgeois" [level=3] [ref=e380]
+                  - generic [ref=e381]:
+                    - generic [ref=e382]: "1911"
+                    - generic [ref=e383]: France / United States
+                  - paragraph [ref=e384]: A foundational sculptor of contemporary art, associated with memory, the body, and motherhood.
+              - link "20th Century Period 20th Century 1901 A defining period for the avant-garde and modern art." [ref=e385] [cursor=pointer]:
+                - /url: /entity/siglo-xx
+                - img "20th Century" [ref=e389]
+                - generic [ref=e390]:
+                  - generic [ref=e391]: Period
+                  - heading "20th Century" [level=3] [ref=e392]
+                  - generic [ref=e394]: "1901"
+                  - paragraph [ref=e395]: A defining period for the avant-garde and modern art.
+              - link "Surrealism Movement Surrealism A movement that explores dreams, the unconscious, desire, and irrationality." [ref=e396] [cursor=pointer]:
+                - /url: /entity/surrealismo
+                - img "Surrealism" [ref=e400]
+                - generic [ref=e401]:
+                  - generic [ref=e402]: Movement
+                  - heading "Surrealism" [level=3] [ref=e403]
+                  - paragraph [ref=e405]: A movement that explores dreams, the unconscious, desire, and irrationality.
+              - link "Francisco de Goya Artist Francisco de Goya 1746 Spain A key figure in Spanish painting, celebrated for his critical, expressive, and visionary power." [ref=e406] [cursor=pointer]:
+                - /url: /entity/francisco-de-goya
+                - img "Francisco de Goya" [ref=e410]
+                - generic [ref=e411]:
+                  - generic [ref=e412]: Artist
+                  - heading "Francisco de Goya" [level=3] [ref=e413]
+                  - generic [ref=e414]:
+                    - generic [ref=e415]: "1746"
+                    - generic [ref=e416]: Spain
+                  - paragraph [ref=e417]: A key figure in Spanish painting, celebrated for his critical, expressive, and visionary power.
+          - generic [ref=e419]:
+            - generic [ref=e420]:
+              - generic [ref=e421]:
+                - generic [ref=e422]:
+                  - generic [ref=e423]: "6"
+                  - paragraph [ref=e424]: Related Entities
+                - heading "Direct graph neighbors" [level=2] [ref=e425]
+              - generic [ref=e426]: See all connections →
+            - generic [ref=e427]:
+              - link "Concept Time Duration, change, memory, and finitude. →" [ref=e428] [cursor=pointer]:
+                - /url: /curated?entity=tiempo
+                - generic [ref=e429]: Concept
+                - strong [ref=e430]: Time
+                - paragraph [ref=e431]: Duration, change, memory, and finitude.
+                - text: →
+              - link "Concept Memory Individual and collective remembrance, archive, and trace. →" [ref=e432] [cursor=pointer]:
+                - /url: /curated?entity=memoria
+                - generic [ref=e433]: Concept
+                - strong [ref=e434]: Memory
+                - paragraph [ref=e435]: Individual and collective remembrance, archive, and trace.
+                - text: →
+              - link "Artist Salvador Dali A Spanish artist associated with Surrealism and the exploration of dream imagery. →" [ref=e436] [cursor=pointer]:
+                - /url: /curated?entity=salvador-dali
+                - generic [ref=e437]: Artist
+                - strong [ref=e438]: Salvador Dali
+                - paragraph [ref=e439]: A Spanish artist associated with Surrealism and the exploration of dream imagery.
+                - text: →
+              - link "Period 20th Century A defining period for the avant-garde and modern art. →" [ref=e440] [cursor=pointer]:
+                - /url: /curated?entity=siglo-xx
+                - generic [ref=e441]: Period
+                - strong [ref=e442]: 20th Century
+                - paragraph [ref=e443]: A defining period for the avant-garde and modern art.
+                - text: →
+              - link "Movement Surrealism A movement that explores dreams, the unconscious, desire, and irrationality. →" [ref=e444] [cursor=pointer]:
+                - /url: /curated?entity=surrealismo
+                - generic [ref=e445]: Movement
+                - strong [ref=e446]: Surrealism
+                - paragraph [ref=e447]: A movement that explores dreams, the unconscious, desire, and irrationality.
+                - text: →
+              - link "Artwork Saturn Devouring His Son One of Goya's Black Paintings, marked by violence, darkness, and expressive force. →" [ref=e448] [cursor=pointer]:
+                - /url: /curated?entity=saturno-devorando-a-su-hijo
+                - generic [ref=e449]: Artwork
+                - strong [ref=e450]: Saturn Devouring His Son
+                - paragraph [ref=e451]: One of Goya's Black Paintings, marked by violence, darkness, and expressive force.
+                - text: →
+        - generic [ref=e453]:
+          - generic [ref=e454]:
+            - generic [ref=e455]:
+              - generic [ref=e456]:
+                - generic [ref=e457]: "7"
+                - paragraph [ref=e458]: Recently Added
+              - heading "Newest editorial curations" [level=2] [ref=e459]
+            - generic [ref=e460]: View all →
+          - generic [ref=e462]:
+            - link "NEW test resrs 0 works • 4 articles" [ref=e463] [cursor=pointer]:
+              - /url: /entities?deck=test
+              - generic [ref=e464]:
+                - generic [ref=e465]: NEW
+                - heading "test" [level=3] [ref=e466]
+                - paragraph [ref=e467]: resrs
+                - generic [ref=e468]:
+                  - generic [ref=e469]: 0 works
+                  - generic [ref=e470]: •
+                  - generic [ref=e471]: 4 articles
+            - link "NEW Work and historical context Periods, movements and artworks as a cross-reading of visual history. 7 works • 5 articles" [ref=e472] [cursor=pointer]:
+              - /url: /entities?deck=obra-y-contexto-historico
+              - generic [ref=e474]:
+                - generic [ref=e475]: NEW
+                - heading "Work and historical context" [level=3] [ref=e476]
+                - paragraph [ref=e477]: Periods, movements and artworks as a cross-reading of visual history.
+                - generic [ref=e478]:
+                  - generic [ref=e479]: 7 works
+                  - generic [ref=e480]: •
+                  - generic [ref=e481]: 5 articles
+            - link "NEW Femininity and split self Representations of femininity between self-portrait, wound and identity construction. 6 works • 5 articles" [ref=e482] [cursor=pointer]:
+              - /url: /entities?deck=feminidad-y-escision
+              - generic [ref=e484]:
+                - generic [ref=e485]: NEW
+                - heading "Femininity and split self" [level=3] [ref=e486]
+                - paragraph [ref=e487]: Representations of femininity between self-portrait, wound and identity construction.
+                - generic [ref=e488]:
+                  - generic [ref=e489]: 6 works
+                  - generic [ref=e490]: •
+                  - generic [ref=e491]: 5 articles
+            - link "NEW Football and crowd Collective ritual, body and city in the visual imagination of football. 6 works • 5 articles" [ref=e492] [cursor=pointer]:
+              - /url: /entities?deck=futbol-y-multitud
+              - generic [ref=e494]:
+                - generic [ref=e495]: NEW
+                - heading "Football and crowd" [level=3] [ref=e496]
+                - paragraph [ref=e497]: Collective ritual, body and city in the visual imagination of football.
+                - generic [ref=e498]:
+                  - generic [ref=e499]: 6 works
+                  - generic [ref=e500]: •
+                  - generic [ref=e501]: 5 articles
+            - link "NEW Goya and the modern crisis Violence, power and the breakdown of historical experience in Goya. 6 works • 5 articles" [ref=e502] [cursor=pointer]:
+              - /url: /entities?deck=goya-y-la-crisis-moderna
+              - generic [ref=e504]:
+                - generic [ref=e505]: NEW
+                - heading "Goya and the modern crisis" [level=3] [ref=e506]
+                - paragraph [ref=e507]: Violence, power and the breakdown of historical experience in Goya.
+                - generic [ref=e508]:
+                  - generic [ref=e509]: 6 works
+                  - generic [ref=e510]: •
+                  - generic [ref=e511]: 5 articles
+            - link "NEW Nocturnal modernity Artificial light, city and alienation in scenes of modern life. 6 works • 5 articles" [ref=e512] [cursor=pointer]:
+              - /url: /entities?deck=modernidad-nocturna
+              - generic [ref=e514]:
+                - generic [ref=e515]: NEW
+                - heading "Nocturnal modernity" [level=3] [ref=e516]
+                - paragraph [ref=e517]: Artificial light, city and alienation in scenes of modern life.
+                - generic [ref=e518]:
+                  - generic [ref=e519]: 6 works
+                  - generic [ref=e520]: •
+                  - generic [ref=e521]: 5 articles

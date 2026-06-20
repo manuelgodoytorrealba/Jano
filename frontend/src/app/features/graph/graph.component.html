@@ -187,6 +187,7 @@
         [class.explorer-graph-pane--inspector-hidden]="!inspectorVisible()"
         [attr.aria-hidden]="workspaceMode === 'image' && !workspaceFocused ? 'true' : null"
       >
+        @if (showControls) {
         <app-graph-controls-bar
           [labelsMode]="labelsMode()"
           [nodeCount]="graphDerived().filteredNodes.length"
@@ -201,6 +202,7 @@
           (resetGraphView)="resetGraphView()"
           (toggleInspector)="toggleInspector()"
         />
+        }
 
         <div
           #graphStage
@@ -256,7 +258,7 @@
           />
         </div>
 
-        @if (inspectorVisible() && !isMobileViewport) {
+        @if (showInspector && inspectorVisible() && !isMobileViewport) {
           <app-graph-inspector-panel
             [isMobileViewport]="false"
             [nodeCount]="graphDerived().filteredNodes.length"
@@ -281,7 +283,7 @@
           />
         }
 
-        @if (inspectorVisible() && isMobileViewport) {
+        @if (showInspector && inspectorVisible() && isMobileViewport) {
           <button
             type="button"
             class="graph-inspector-backdrop"

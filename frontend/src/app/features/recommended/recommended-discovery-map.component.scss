@@ -1,7 +1,22 @@
 @use './recommended-shared';
 
+:host {
+  --recommended-map-stage:
+    radial-gradient(circle at 10% 14%, rgba(79, 143, 186, 0.12), transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(143, 110, 213, 0.1), transparent 24%),
+    linear-gradient(180deg, rgba(10, 14, 20, 0.72), rgba(7, 10, 16, 0.9));
+}
+
+:host-context([data-theme='light']) {
+  --recommended-map-stage:
+    radial-gradient(circle at 10% 14%, rgba(79, 143, 186, 0.08), transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(143, 110, 213, 0.06), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(242, 240, 236, 0.9));
+}
+
 .recommended-map {
-  min-height: 336px;
+  min-height: 100%;
+  align-content: start;
 }
 
 .recommended-map__head {
@@ -17,34 +32,18 @@
   gap: 0.55rem;
 }
 
-.recommended-map__action-icon {
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(214, 185, 136, 0.22);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at center, rgba(255, 220, 160, 0.26) 0, rgba(255, 220, 160, 0.18) 32%, transparent 34%),
-    rgba(255, 255, 255, 0.02);
-}
-
-.recommended-map__action-icon--list {
-  background:
-    linear-gradient(rgba(255, 220, 160, 0.72), rgba(255, 220, 160, 0.72)) center 10px / 12px 1px no-repeat,
-    linear-gradient(rgba(255, 220, 160, 0.72), rgba(255, 220, 160, 0.72)) center 16px / 12px 1px no-repeat,
-    linear-gradient(rgba(255, 220, 160, 0.72), rgba(255, 220, 160, 0.72)) center 22px / 12px 1px no-repeat,
-    rgba(255, 255, 255, 0.02);
-}
-
 .recommended-map__search {
   display: grid;
   gap: 0.75rem;
   padding: 0.95rem;
   border: 1px solid var(--curated-border);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--curated-card);
 }
 
-.recommended-map__search-note {
+.recommended-map__search-note,
+.recommended-map__legend,
+.recommended-map__empty {
   margin: 0;
   color: var(--curated-text-muted);
 }
@@ -61,181 +60,161 @@
   padding: 0.75rem 0.85rem;
   border: 1px solid var(--curated-border);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--curated-surface-2);
   color: var(--curated-text);
   text-align: left;
 }
 
-.recommended-map__canvas {
-  position: relative;
-  min-height: 252px;
-  border: 1px solid rgba(117, 150, 191, 0.14);
-  border-radius: 24px;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at center, rgba(200, 164, 106, 0.12), transparent 22%),
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px) center / 25% 25%,
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px) center / 25% 25%,
-    rgba(12, 17, 24, 0.8);
+.recommended-map__active {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+  align-items: flex-start;
+  padding-bottom: 0.2rem;
 }
 
-.recommended-map__lines {
-  position: absolute;
-  inset: 0;
-  width: 100%;
+.recommended-map__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+  max-width: min(100%, 248px);
+  border: 1px solid var(--curated-border);
+  border-radius: 14px;
+  background: var(--curated-card);
+  box-shadow: none;
+}
+
+.recommended-map__chip.is-selected {
+  border-color: var(--curated-border-strong);
+  background: var(--curated-surface-2);
+}
+
+.recommended-map__chip-main,
+.recommended-map__chip-remove {
+  border: 0;
+  background: transparent;
+  color: var(--curated-text);
+}
+
+.recommended-map__chip-main {
+  display: grid;
+  gap: 0.06rem;
+  min-width: 0;
+  padding: 0.28rem 0.48rem 0.3rem 0.54rem;
+  text-align: left;
+}
+
+.recommended-map__chip-main strong,
+.recommended-map__chip-remove {
+  font-size: 0.68rem;
+}
+
+.recommended-map__chip-main span {
+  color: var(--curated-text-muted);
+  font-size: 0.52rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.recommended-map__chip-remove {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  margin-right: 0.14rem;
+  color: var(--curated-text-muted);
+}
+
+.recommended-map__chip-remove:disabled {
+  opacity: 0.28;
+}
+
+.recommended-map__chip-main strong {
+  font-weight: 600;
+  line-height: 1.14;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recommended-map__canvas {
+  position: relative;
+  min-height: clamp(320px, 42vh, 520px);
+  border: 1px solid var(--curated-border);
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--curated-surface-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.recommended-map__canvas--graph {
+  flex: 1 1 auto;
+}
+
+.recommended-map__graph {
+  display: block;
+  min-height: clamp(320px, 42vh, 520px);
   height: 100%;
 }
 
-.recommended-map__line {
-  stroke: rgba(219, 183, 111, 0.34);
-  stroke-width: 0.35;
+:host ::ng-deep app-graph.recommended-map__graph,
+:host ::ng-deep app-graph.recommended-map__graph .explorer-shell,
+:host ::ng-deep app-graph.recommended-map__graph .explorer-canvas,
+:host ::ng-deep app-graph.recommended-map__graph .explorer-graph-pane,
+:host ::ng-deep app-graph.recommended-map__graph .graph-stage,
+:host ::ng-deep app-graph.recommended-map__graph app-graph-scene,
+:host ::ng-deep app-graph.recommended-map__graph .graph-svg {
+  min-height: clamp(320px, 42vh, 520px);
+  height: 100%;
 }
 
-.recommended-map__line--strong {
-  stroke: rgba(255, 212, 122, 0.86);
+:host ::ng-deep app-graph.recommended-map__graph .explorer-shell,
+:host ::ng-deep app-graph.recommended-map__graph .explorer-graph-pane,
+:host ::ng-deep app-graph.recommended-map__graph .graph-stage {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
-.recommended-map__line--related {
-  stroke: rgba(192, 156, 92, 0.54);
-  stroke-dasharray: 1.2 1.2;
+:host ::ng-deep app-graph.recommended-map__graph .explorer-canvas,
+:host ::ng-deep app-graph.recommended-map__graph .explorer-shell--mode-graph .explorer-canvas,
+:host
+  ::ng-deep
+  app-graph.recommended-map__graph
+  .explorer-shell--focused.explorer-shell--mode-graph
+  .explorer-canvas {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  min-height: clamp(320px, 42vh, 520px);
+  height: 100%;
 }
 
-.recommended-map__line--weak {
-  stroke: rgba(132, 114, 80, 0.34);
-  stroke-dasharray: 0.7 1.5;
+:host ::ng-deep app-graph.recommended-map__graph .explorer-image-pane,
+:host ::ng-deep app-graph.recommended-map__graph .stage-focus-toggle,
+:host ::ng-deep app-graph.recommended-map__graph .graph-inspector-backdrop,
+:host ::ng-deep app-graph.recommended-map__graph .graph-inspector-sheet {
+  display: none;
 }
 
-.recommended-map__node {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  display: grid;
-  gap: 0.15rem;
-  min-width: 124px;
-  padding: 0.8rem 0.85rem;
-  border: 1px solid rgba(201, 178, 142, 0.18);
-  border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)),
-    rgba(19, 24, 31, 0.97);
-  color: var(--curated-text);
-  cursor: pointer;
-  text-align: center;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02);
+:host ::ng-deep app-graph.recommended-map__graph .explorer-graph-pane {
+  grid-template-rows: minmax(0, 1fr);
+  padding: 0;
 }
 
-.recommended-map__node strong,
-.recommended-map__node span {
-  font-size: 0.69rem;
-  line-height: 1.2;
-}
-
-.recommended-map__node .recommended-map__type {
-  font-size: 1rem;
-  color: #fff6e7;
-}
-
-.recommended-map__node.is-selected {
-  min-width: 158px;
-  padding: 1.25rem 1.1rem;
-  border-color: rgba(224, 194, 132, 0.72);
-  background:
-    radial-gradient(circle at center, rgba(200, 164, 106, 0.22), rgba(18, 22, 28, 0.98) 68%),
-    rgba(18, 22, 28, 0.98);
-  box-shadow:
-    0 0 0 1px rgba(224, 194, 132, 0.24),
-    0 0 34px rgba(200, 164, 106, 0.22);
-}
-
-.recommended-map__node.is-connected:not(.is-selected) {
-  border-color: rgba(255, 212, 122, 0.5);
-}
-
-.recommended-map__remove {
-  position: absolute;
-  top: -7px;
-  right: -7px;
-  width: 24px;
-  height: 24px;
-  border: 1px solid rgba(232, 220, 201, 0.44);
-  border-radius: 999px;
-  background: rgba(11, 16, 22, 0.96);
-  color: #f5ebd8;
-}
-
-.recommended-map__remove:disabled {
-  opacity: 0.3;
-}
-
-.recommended-map__legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 1.2rem;
-  color: var(--curated-text-muted);
-  font-size: 0.74rem;
-}
-
-.recommended-map__legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.recommended-map__legend-line {
-  width: 16px;
-  height: 1px;
-  display: inline-block;
-  background: rgba(255, 212, 122, 0.8);
-}
-
-.recommended-map__legend-line--related {
-  background: linear-gradient(90deg, rgba(192, 156, 92, 0.54) 0 45%, transparent 45% 60%, rgba(192, 156, 92, 0.54) 60% 100%);
-}
-
-.recommended-map__legend-line--weak {
-  background: linear-gradient(90deg, rgba(132, 114, 80, 0.34) 0 25%, transparent 25% 50%, rgba(132, 114, 80, 0.34) 50% 75%, transparent 75% 100%);
-}
-
-@media (min-width: 1200px) {
-  .recommended-map {
-    min-height: 300px;
-  }
-
-  .recommended-map__head {
-    gap: 0.75rem;
-  }
-
-  .recommended-map__canvas {
-    min-height: 222px;
-    border-radius: 20px;
-  }
-
-  .recommended-map__node {
-    min-width: 114px;
-    padding: 0.68rem 0.74rem;
-  }
-
-  .recommended-map__node strong,
-  .recommended-map__node span {
-    font-size: 0.64rem;
-  }
-
-  .recommended-map__node .recommended-map__type {
-    font-size: 0.88rem;
-  }
-
-  .recommended-map__node.is-selected {
-    min-width: 146px;
-    padding: 1rem 0.95rem;
-  }
+:host ::ng-deep app-graph.recommended-map__graph .graph-stage {
+  background: var(--recommended-map-stage);
 }
 
 @media (max-width: 860px) {
-  .recommended-map__canvas {
-    min-height: 320px;
-  }
-
-  .recommended-map__node {
-    min-width: 104px;
-    padding: 0.7rem 0.75rem;
+  .recommended-map__canvas,
+  .recommended-map__graph,
+  :host ::ng-deep app-graph.recommended-map__graph,
+  :host ::ng-deep app-graph.recommended-map__graph .explorer-shell,
+  :host ::ng-deep app-graph.recommended-map__graph .explorer-canvas,
+  :host ::ng-deep app-graph.recommended-map__graph .explorer-graph-pane,
+  :host ::ng-deep app-graph.recommended-map__graph .graph-stage,
+  :host ::ng-deep app-graph.recommended-map__graph app-graph-scene,
+  :host ::ng-deep app-graph.recommended-map__graph .graph-svg {
+    min-height: 300px;
   }
 }

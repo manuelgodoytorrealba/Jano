@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { GraphResponseDto } from '../../features/graph/graph.models';
 import { apiUrl } from './api-base';
 import { PublicEntity } from './entities.models';
 
@@ -26,6 +27,7 @@ export type CuratedMapEntity = PublicEntity & {
 export type CuratedPageResponse = {
   selectedEntity: PublicEntity;
   discoveryEntities: CuratedMapEntity[];
+  graph: GraphResponseDto;
   staffPicks: CuratedDeck[];
   tabGroups: {
     curations: CuratedDeck[];

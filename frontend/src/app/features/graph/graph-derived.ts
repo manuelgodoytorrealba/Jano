@@ -5,12 +5,7 @@ import {
   selectRankedGraphLabels,
   shouldRenderGraphLabel,
 } from './graph-labels';
-import {
-  GraphData,
-  GraphEdge,
-  GraphNode,
-  GraphTypeMeta,
-} from './graph.models';
+import { GraphData, GraphEdge, GraphNode, GraphTypeMeta } from './graph.models';
 import { buildGraphTypeMeta, contextualGraphTypeMeta, graphEdgeMarkerId } from './graph-render';
 
 export interface GraphDerivedState {
@@ -44,6 +39,7 @@ export function buildGraphDerivedState(options: {
   labelScaleBucket: number;
   viewportScale: number;
   overviewMode: boolean;
+  showAllOverviewRelations: boolean;
 }): GraphDerivedState {
   const graph = options.graph;
   const nodeMap = new Map(graph?.nodes.map((node) => [node.id, node]) ?? []);
@@ -100,16 +96,20 @@ export function buildGraphDerivedState(options: {
     hoveredNodeId: options.hoveredNodeId,
     viewportScale: options.viewportScale,
     overviewMode: options.overviewMode,
+    showAllOverviewRelations: options.showAllOverviewRelations,
   });
 
-  const selectedNode = options.selectedNodeId ? nodeMap.get(options.selectedNodeId) ?? null : null;
+  const selectedNode = options.selectedNodeId
+    ? (nodeMap.get(options.selectedNodeId) ?? null)
+    : null;
   const centerNode = nodeMap.get(graph.centerId) ?? null;
   const contextualNode = selectedNode ?? centerNode;
   const contextualNodeId = contextualNode ? normalizeGraphNodeId(contextualNode.id) : null;
   const contextualEdges = contextualNodeId
     ? filteredEdges.filter(
         (edge) =>
-          normalizeGraphNodeId(edge.source) === contextualNodeId || normalizeGraphNodeId(edge.target) === contextualNodeId,
+          normalizeGraphNodeId(edge.source) === contextualNodeId ||
+          normalizeGraphNodeId(edge.target) === contextualNodeId,
       )
     : [];
 
@@ -169,7 +169,9 @@ export function buildGraphDerivedState(options: {
       color: getRelationTypeConfig(type).color,
     })),
     isDenseGraph,
-    hasVisibleSelection: options.selectedNodeId ? visibleNodeIds.has(options.selectedNodeId) : false,
+    hasVisibleSelection: options.selectedNodeId
+      ? visibleNodeIds.has(options.selectedNodeId)
+      : false,
   };
 }
 
@@ -204,7 +206,9 @@ function resolveOverviewVisibleNodeIds(options: {
   const visible = new Set<string>([options.graph.centerId]);
   const hubNodes = options.nodes
     .filter((node) => isOverviewHubNode(node.id))
-    .sort((left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'));
+    .sort(
+      (left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'),
+    );
 
   for (const hub of hubNodes) {
     visible.add(hub.id);
@@ -226,17 +230,18 @@ function resolveOverviewVisibleNodeIds(options: {
     return visible;
   }
 
-  const nodesPerHub = options.viewportScale >= 1.1
-    ? 6
-    : options.viewportScale >= 0.96
-      ? 4
-      : 2;
+  const nodesPerHub = options.viewportScale >= 1.1 ? 6 : options.viewportScale >= 0.96 ? 4 : 2;
 
   for (const hub of hubNodes) {
     const clusterNodes = [...(adjacency.get(hub.id) ?? [])]
       .map((nodeId) => nodeMap.get(nodeId))
-      .filter((node): node is GraphNode => !!node && !isOverviewHubNode(node.id) && node.id !== options.graph.centerId)
-      .sort((left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'))
+      .filter(
+        (node): node is GraphNode =>
+          !!node && !isOverviewHubNode(node.id) && node.id !== options.graph.centerId,
+      )
+      .sort(
+        (left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'),
+      )
       .slice(0, nodesPerHub);
 
     for (const node of clusterNodes) {
@@ -247,8 +252,13 @@ function resolveOverviewVisibleNodeIds(options: {
   const overflowBudget = options.viewportScale >= 1.04 ? 10 : 4;
   const topPeripheralNodes = options.nodes
     .filter((node) => !visible.has(node.id))
-    .filter((node) => node.degree >= (options.viewportScale >= 1.04 ? 4 : 6) || node.id === options.hoveredNodeId)
-    .sort((left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'))
+    .filter(
+      (node) =>
+        node.degree >= (options.viewportScale >= 1.04 ? 4 : 6) || node.id === options.hoveredNodeId,
+    )
+    .sort(
+      (left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'),
+    )
     .slice(0, overflowBudget);
 
   for (const node of topPeripheralNodes) {
@@ -271,16 +281,18 @@ function resolveOverviewVisibleEdges(options: {
   hoveredNodeId: string | null;
   viewportScale: number;
   overviewMode: boolean;
+  showAllOverviewRelations: boolean;
 }): GraphEdge[] {
   const visibleEdges = options.edges.filter(
     (edge) => options.visibleNodeIds.has(edge.source) && options.visibleNodeIds.has(edge.target),
   );
 
-  if (!options.overviewMode || options.viewportScale >= 1.18) {
+  if (options.showAllOverviewRelations || !options.overviewMode || options.viewportScale >= 1.18) {
     return visibleEdges;
   }
 
-  const selectedIsExplicit = !!options.selectedNodeId && options.selectedNodeId !== options.graph.centerId;
+  const selectedIsExplicit =
+    !!options.selectedNodeId && options.selectedNodeId !== options.graph.centerId;
 
   if (selectedIsExplicit) {
     return visibleEdges;
@@ -291,7 +303,10 @@ function resolveOverviewVisibleEdges(options: {
       return true;
     }
 
-    if (options.hoveredNodeId && (edge.source === options.hoveredNodeId || edge.target === options.hoveredNodeId)) {
+    if (
+      options.hoveredNodeId &&
+      (edge.source === options.hoveredNodeId || edge.target === options.hoveredNodeId)
+    ) {
       return true;
     }
 
@@ -363,12 +378,12 @@ function buildNodeLabelVisibility(options: {
       const isNeighbor = options.selectedNeighbors.has(node.id);
       const isHub = options.overviewMode && isOverviewHubNode(node.id);
       const priority =
-        (isCenter ? 1000 : 0)
-        + (isSelected ? 840 : 0)
-        + (isHovered ? 760 : 0)
-        + (isHub ? 520 : 0)
-        + (isNeighbor ? 260 : 0)
-        + Math.min(node.degree ?? 0, 8) * 28;
+        (isCenter ? 1000 : 0) +
+        (isSelected ? 840 : 0) +
+        (isHovered ? 760 : 0) +
+        (isHub ? 520 : 0) +
+        (isNeighbor ? 260 : 0) +
+        Math.min(node.degree ?? 0, 8) * 28;
 
       return {
         id: node.id,
@@ -433,12 +448,12 @@ function buildEdgeLabelVisibility(options: {
           edge.source === options.graph.centerId || edge.target === options.graph.centerId;
         const hasJustification = !!edge.justification;
         const priority =
-          (isHovered ? 1000 : 0)
-          + (connectedToSelected ? 720 : 0)
-          + (connectedToCenter ? 520 : 0)
-          + (hasJustification ? 120 : 0)
-          + Math.round((edge.weight ?? 1) * 40)
-          + Math.round(relationVisual.width * 26);
+          (isHovered ? 1000 : 0) +
+          (connectedToSelected ? 720 : 0) +
+          (connectedToCenter ? 520 : 0) +
+          (hasJustification ? 120 : 0) +
+          Math.round((edge.weight ?? 1) * 40) +
+          Math.round(relationVisual.width * 26);
 
         return {
           id: edge.id,

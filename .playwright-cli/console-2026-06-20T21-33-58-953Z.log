@@ -1,0 +1,9 @@
+[     296ms] [LOG] Angular is running in development mode. @ http://127.0.0.1:4200/@fs/home/manuel/Desarrollos/Jano/frontend/.angular/cache/21.2.0/jano-web-app/vite/deps/chunk-DWVZG3F2.js?v=6be70e3a:11129
+[     311ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://127.0.0.1:4200/api/app-settings?locale=en:0
+[     354ms] [LOG] Angular hydrated 1 component(s) and 5 node(s), 0 component(s) were skipped. Learn more at https://v21.angular.dev/guide/hydration. @ http://127.0.0.1:4200/@fs/home/manuel/Desarrollos/Jano/frontend/.angular/cache/21.2.0/jano-web-app/vite/deps/chunk-DWVZG3F2.js?v=6be70e3a:11129
+[  612232ms] [LOG] Angular is running in development mode. @ http://127.0.0.1:4200/@fs/home/manuel/Desarrollos/Jano/frontend/.angular/cache/21.2.0/jano-web-app/vite/deps/chunk-DWVZG3F2.js?v=6be70e3a:11129
+[  612237ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://127.0.0.1:4200/api/app-settings?locale=en:0
+[  612254ms] [LOG] Angular hydrated 1 component(s) and 5 node(s), 0 component(s) were skipped. Learn more at https://v21.angular.dev/guide/hydration. @ http://127.0.0.1:4200/@fs/home/manuel/Desarrollos/Jano/frontend/.angular/cache/21.2.0/jano-web-app/vite/deps/chunk-DWVZG3F2.js?v=6be70e3a:11129
+[  774618ms] [LOG] Angular is running in development mode. @ http://127.0.0.1:4200/@fs/home/manuel/Desarrollos/Jano/frontend/.angular/cache/21.2.0/jano-web-app/vite/deps/chunk-DWVZG3F2.js?v=6be70e3a:11129
+[  774625ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://127.0.0.1:4200/api/app-settings?locale=en:0
+[  774639ms] [LOG] Angular hydrated 1 component(s) and 5 node(s), 0 component(s) were skipped. Learn more at https://v21.angular.dev/guide/hydration. @ http://127.0.0.1:4200/@fs/home/manuel/Desarrollos/Jano/frontend/.angular/cache/21.2.0/jano-web-app/vite/deps/chunk-DWVZG3F2.js?v=6be70e3a:11129

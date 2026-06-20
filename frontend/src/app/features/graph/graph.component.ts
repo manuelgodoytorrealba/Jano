@@ -22,19 +22,9 @@ import { EntitiesApi } from '../../core/api/entities.api';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { MediaLike, resolveMediaPresentation } from '../../shared/media/media.utils';
-import {
-  currentDraggedNodeId,
-  GraphStageRect,
-  GraphPointerSession,
-} from './graph-interaction';
-import {
-  ForceLayoutScratch,
-} from './graph-layout';
-import {
-  graphViewportTransform,
-  panGraphViewport,
-  zoomGraphViewport,
-} from './graph-viewport';
+import { currentDraggedNodeId, GraphStageRect, GraphPointerSession } from './graph-interaction';
+import { ForceLayoutScratch } from './graph-layout';
+import { graphViewportTransform, panGraphViewport, zoomGraphViewport } from './graph-viewport';
 import {
   imageViewportTransform,
   ImageAssetSize,
@@ -53,10 +43,7 @@ import {
   GraphTooltip,
   GraphViewport,
 } from './graph.models';
-import {
-  ExplorerPersistedState,
-  saveExplorerState,
-} from './graph-persistence';
+import { ExplorerPersistedState, saveExplorerState } from './graph-persistence';
 import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
 import { GraphSceneComponent } from './graph-scene.component';
@@ -92,14 +79,9 @@ import {
 } from './graph-geometry';
 import { GraphTooltipController, GraphViewportController } from './graph-runtime-controllers';
 import { initializeLoadedGraphState, warmupPreparedGraphLayout } from './graph-setup';
-import {
-  createExplorerPersistedState,
-  resolveLiveStageSize,
-} from './graph-state';
+import { createExplorerPersistedState, resolveLiveStageSize } from './graph-state';
 import { advanceExplorerLoop } from './graph-loop-runtime';
-import {
-  syncImageViewportRuntime,
-} from './graph-image-runtime';
+import { syncImageViewportRuntime } from './graph-image-runtime';
 import {
   buildLoadedGraphRuntime,
   resetGraphRuntimeState,
@@ -174,7 +156,12 @@ type GraphEntityInfo = {
   standalone: true,
   selector: 'app-graph',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, GraphControlsBarComponent, GraphSceneComponent, GraphInspectorPanelComponent],
+  imports: [
+    CommonModule,
+    GraphControlsBarComponent,
+    GraphSceneComponent,
+    GraphInspectorPanelComponent,
+  ],
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss'],
 })
@@ -204,7 +191,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() entityInfo: GraphEntityInfo | null = null;
   @Input() overviewMode = false;
   @Input() ambientMotion = false;
+  @Input() allowNodeOpen = true;
+  @Input() showControls = true;
+  @Input() showInspector = true;
+  @Input() disableSelectionZoom = true;
+  @Input() preserveRuntimeOnGraphChange = false;
+  @Input() showAllOverviewRelations = false;
   @Output() workspaceFocusToggle = new EventEmitter<void>();
+  @Output() nodeSelect = new EventEmitter<string>();
 
   private graphStage?: ElementRef<HTMLDivElement>;
   private imageStage?: ElementRef<HTMLDivElement>;
@@ -301,6 +295,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       labelScaleBucket: this.labelScaleBucket(),
       viewportScale: this.graphViewport().scale,
       overviewMode: this.overviewMode,
+      showAllOverviewRelations: this.showAllOverviewRelations,
     }),
   );
 
@@ -348,26 +343,30 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     return !derived.selectedNode || derived.selectedNode.id === centerId;
   });
   readonly hasImageSource = computed(() => !!(this.imagePresentation().src || this.imageUrl));
-  readonly resolvedNodeLabelVisibility = computed(() => resolveNodeLabelOcclusion({
-    nodes: this.renderedNodes(),
-    requestedVisibility: this.graphDerived().nodeLabelVisibility,
-    centerId: this.graph()?.centerId ?? null,
-    selectedNodeId: this.selectedNodeId(),
-    hoveredNodeId: this.hoveredNodeId(),
-    scale: this.graphViewport().scale,
-  }));
-  readonly resolvedEdgeLabelVisibility = computed(() => resolveEdgeLabelOcclusion({
-    edges: this.renderedEdges(),
-    requestedVisibility: this.graphDerived().edgeLabelVisibility,
-    centerId: this.graph()?.centerId ?? null,
-    selectedNodeId: this.selectedNodeId(),
-    hoveredEdgeId: this.hoveredEdgeId(),
-    scale: this.graphViewport().scale,
-    occupiedBoxes: visibleLabelBoxes({
+  readonly resolvedNodeLabelVisibility = computed(() =>
+    resolveNodeLabelOcclusion({
       nodes: this.renderedNodes(),
-      nodeVisibility: this.resolvedNodeLabelVisibility(),
+      requestedVisibility: this.graphDerived().nodeLabelVisibility,
+      centerId: this.graph()?.centerId ?? null,
+      selectedNodeId: this.selectedNodeId(),
+      hoveredNodeId: this.hoveredNodeId(),
+      scale: this.graphViewport().scale,
     }),
-  }));
+  );
+  readonly resolvedEdgeLabelVisibility = computed(() =>
+    resolveEdgeLabelOcclusion({
+      edges: this.renderedEdges(),
+      requestedVisibility: this.graphDerived().edgeLabelVisibility,
+      centerId: this.graph()?.centerId ?? null,
+      selectedNodeId: this.selectedNodeId(),
+      hoveredEdgeId: this.hoveredEdgeId(),
+      scale: this.graphViewport().scale,
+      occupiedBoxes: visibleLabelBoxes({
+        nodes: this.renderedNodes(),
+        nodeVisibility: this.resolvedNodeLabelVisibility(),
+      }),
+    }),
+  );
   readonly activeEdgeLabelVisibility = computed(() => {
     if (this.isMobileViewport) {
       return {};
@@ -400,16 +399,16 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      (changes['workspaceMode'] && changes['workspaceMode'].currentValue !== 'image')
-      || (changes['isMobileViewport'] && changes['isMobileViewport'].currentValue === false)
+      (changes['workspaceMode'] && changes['workspaceMode'].currentValue !== 'image') ||
+      (changes['isMobileViewport'] && changes['isMobileViewport'].currentValue === false)
     ) {
       this.imageInfoOpen.set(false);
     }
 
     if (
-      (changes['workspaceMode'] && !changes['workspaceMode'].firstChange)
-      || (changes['workspaceFocused'] && !changes['workspaceFocused'].firstChange)
-      || changes['workspaceTransitioning']?.currentValue === true
+      (changes['workspaceMode'] && !changes['workspaceMode'].firstChange) ||
+      (changes['workspaceFocused'] && !changes['workspaceFocused'].firstChange) ||
+      changes['workspaceTransitioning']?.currentValue === true
     ) {
       this.beginWorkspaceTransitionSettle();
     }
@@ -446,7 +445,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.imageViewport.set(nextState.imageViewport);
     }
 
-    const incomingGraphData = changes['graphData']?.currentValue as GraphResponseDto | null | undefined;
+    const incomingGraphData = changes['graphData']?.currentValue as
+      | GraphResponseDto
+      | null
+      | undefined;
     if (incomingGraphData && incomingGraphData !== this.appliedGraphData) {
       this.appliedGraphData = incomingGraphData;
       this.applyGraphResponse(incomingGraphData);
@@ -515,40 +517,77 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private applyGraphResponse(response: GraphResponseDto): void {
+    const previousGraph = this.graph();
+    const previousSelectedNodeId = this.selectedNodeId();
+    const shouldPreserveRuntime = this.preserveRuntimeOnGraphChange && !!previousGraph;
     const loadedState = buildLoadedGraphRuntime({
       initialized: initializeLoadedGraphState(response, this.persistedState?.graph),
     });
 
     this.graph.set(loadedState.graph);
     this.layoutScratch = loadedState.layoutScratch;
-    this.positions = loadedState.positions;
-    this.velocities = loadedState.velocities;
+    this.positions = shouldPreserveRuntime
+      ? this.reuseGraphPositions(loadedState.graph, loadedState.positions)
+      : loadedState.positions;
+    this.velocities = {};
     this.pinCenterNode();
-    this.warmupGraphLayout();
+    this.warmupGraphLayout(shouldPreserveRuntime ? 10 : undefined);
 
-    this.entityTypeFilters.set(loadedState.entityTypeFilters);
-    this.relationTypeFilters.set(loadedState.relationTypeFilters);
+    this.entityTypeFilters.set(
+      shouldPreserveRuntime
+        ? this.reconcileGraphFilters(loadedState.graph.entityTypes, this.entityTypeFilters())
+        : loadedState.entityTypeFilters,
+    );
+    this.relationTypeFilters.set(
+      shouldPreserveRuntime
+        ? this.reconcileGraphFilters(loadedState.graph.relationTypes, this.relationTypeFilters())
+        : loadedState.relationTypeFilters,
+    );
     this.labelsMode.set(loadedState.labelsMode);
 
-    this.selectedNodeSource = loadedState.selectedNodeSource;
-    this.selectedNodeId.set(loadedState.selectedNodeId);
+    const nextSelectedNodeId =
+      shouldPreserveRuntime &&
+      previousSelectedNodeId &&
+      loadedState.graph.nodes.some((node) => node.id === previousSelectedNodeId)
+        ? previousSelectedNodeId
+        : loadedState.selectedNodeId;
+
+    this.selectedNodeSource =
+      nextSelectedNodeId === loadedState.graph.centerId ? 'center' : 'explicit';
+    this.selectedNodeId.set(nextSelectedNodeId);
     this.hoveredNodeId.set(null);
     this.hoveredEdgeId.set(null);
     this.tooltip.set(null);
 
-    this.pendingInitialEntityFocus = loadedState.pendingInitialEntityFocus;
-    this.hasUserAdjustedGraphView = loadedState.hasUserAdjustedGraphView;
+    this.pendingInitialEntityFocus = shouldPreserveRuntime
+      ? false
+      : loadedState.pendingInitialEntityFocus;
+    this.hasUserAdjustedGraphView = shouldPreserveRuntime
+      ? true
+      : loadedState.hasUserAdjustedGraphView;
     this.viewportController.clearTarget();
-    this.graphViewportReady = loadedState.graphViewportReady;
-    this.initialGraphViewportReady.set(false);
+    this.graphViewportReady = shouldPreserveRuntime
+      ? this.graphViewportReady
+      : loadedState.graphViewportReady;
+    this.initialGraphViewportReady.set(shouldPreserveRuntime);
     this.graphLayoutActive = loadedState.graphLayoutActive;
     this.graphLayoutFrames = loadedState.graphLayoutFrames;
     this.graphSettledFrames = loadedState.graphSettledFrames;
-    this.focusCurrentEntity(false);
+
+    if (!shouldPreserveRuntime) {
+      this.focusCurrentEntity(false);
+    }
 
     this.loading.set(false);
     this.error.set(null);
     this.startAnimationLoop();
+
+    if (shouldPreserveRuntime) {
+      this.renderTick.update((value) => value + 1);
+      this.persistExplorerState();
+      return;
+    }
+
     this.scheduleInitialEntityFocus();
     this.ensureInitialGraphFit();
   }
@@ -655,10 +694,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    if (shouldEnsureInitialGraphFit({
-      isBrowser: this.isBrowser,
-      hasUserAdjustedGraphView: this.hasUserAdjustedGraphView,
-    }) && this.graph()) {
+    if (
+      shouldEnsureInitialGraphFit({
+        isBrowser: this.isBrowser,
+        hasUserAdjustedGraphView: this.hasUserAdjustedGraphView,
+      }) &&
+      this.graph()
+    ) {
       this.pendingInitialEntityFocus = true;
       this.scheduleInitialEntityFocus();
       this.ensureInitialGraphFit();
@@ -864,7 +906,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   nodeHaloSize(nodeId: string): number {
     const node = this.graphDerived().nodeMap.get(nodeId);
-    return node ? graphNodeHaloSize(node, this.graph()?.centerId ?? null, this.selectedNodeId()) : 34;
+    return node
+      ? graphNodeHaloSize(node, this.graph()?.centerId ?? null, this.selectedNodeId())
+      : 34;
   }
 
   resetGraphView(animate = true): void {
@@ -894,7 +938,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       graph: this.graph(),
       currentScale: this.currentGraphViewportState().scale,
       getNodePoint: (nodeId) => this.nodePosition(nodeId),
-      createViewportCenteredOnPoint: (point, scale) => this.createViewportCenteredOnPoint(point, scale),
+      createViewportCenteredOnPoint: (point, scale) =>
+        this.createViewportCenteredOnPoint(point, scale),
       applyPlan: (plan) => this.applyGraphViewportFocusPlan(plan),
     });
   }
@@ -916,7 +961,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       nodeId,
       currentScale: this.currentGraphViewportState().scale,
       getNodePoint: (targetNodeId) => this.nodePosition(targetNodeId),
-      createViewportCenteredOnPoint: (point, scale) => this.createViewportCenteredOnPoint(point, scale),
+      createViewportCenteredOnPoint: (point, scale) =>
+        this.createViewportCenteredOnPoint(point, scale),
       applyPlan: (plan) => this.applyGraphViewportFocusPlan(plan),
     });
   }
@@ -1216,8 +1262,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     const now = Date.now();
     const isDoubleActivation =
-      this.lastEdgeActivation?.edgeId === edge.id
-      && now - this.lastEdgeActivation.at <= GraphComponent.EDGE_DOUBLE_ACTIVATION_MS;
+      this.lastEdgeActivation?.edgeId === edge.id &&
+      now - this.lastEdgeActivation.at <= GraphComponent.EDGE_DOUBLE_ACTIVATION_MS;
 
     if (!isDoubleActivation) {
       this.lastEdgeActivation = { edgeId: edge.id, at: now };
@@ -1304,6 +1350,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   toggleInspector(): void {
+    if (!this.showInspector) {
+      return;
+    }
+
     this.inspectorVisible.update((value) => !value);
   }
 
@@ -1344,19 +1394,46 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private handleNodeActivation(nodeId: string): void {
     const now = Date.now();
     const isDoubleActivation =
-      this.lastNodeActivation?.nodeId === nodeId
-      && now - this.lastNodeActivation.at <= GraphComponent.NODE_DOUBLE_ACTIVATION_MS;
+      this.lastNodeActivation?.nodeId === nodeId &&
+      now - this.lastNodeActivation.at <= GraphComponent.NODE_DOUBLE_ACTIVATION_MS;
 
     this.stabilizeGraphLayout();
-    this.focusNode(nodeId);
+    if (this.disableSelectionZoom) {
+      this.selectNodeWithoutViewportChange(nodeId);
+    } else {
+      this.focusNode(nodeId);
+    }
+    this.emitNodeSelection(nodeId);
 
     if (isDoubleActivation) {
       this.lastNodeActivation = null;
-      this.openNodeEntity(nodeId);
+      if (this.allowNodeOpen) {
+        this.openNodeEntity(nodeId);
+      }
       return;
     }
 
     this.lastNodeActivation = { nodeId, at: now };
+  }
+
+  private emitNodeSelection(nodeId: string): void {
+    const node = this.graphDerived().nodeMap.get(nodeId) ?? null;
+    if (!node?.slug) {
+      return;
+    }
+
+    this.nodeSelect.emit(node.slug);
+  }
+
+  private selectNodeWithoutViewportChange(nodeId: string): void {
+    const graph = this.graph();
+    if (!graph) {
+      return;
+    }
+
+    this.selectedNodeSource = nodeId === graph.centerId ? 'center' : 'explicit';
+    this.selectedNodeId.set(nodeId);
+    this.renderTick.update((value) => value + 1);
   }
 
   private openNodeEntity(nodeId: string): void {
@@ -1394,7 +1471,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       filteredNodeIds: this.graphDerived().filteredNodes.map((node) => node.id),
       haloSizeForNode: (nodeId) => this.nodeHaloSize(nodeId) + (this.overviewMode ? 92 : 56),
       preferBoundsCenter: this.isMobileViewport || this.overviewMode,
-      padding: this.isMobileViewport ? 76 : this.overviewMode ? this.overviewViewportPadding() : 108,
+      padding: this.isMobileViewport
+        ? 76
+        : this.overviewMode
+          ? this.overviewViewportPadding()
+          : 108,
     });
   }
 
@@ -1452,7 +1533,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     const pointers = Array.from(this.graphPointers.values());
     const rect = this.graphStage.nativeElement.getBoundingClientRect();
-    const currentDistance = Math.hypot(pointers[1].x - pointers[0].x, pointers[1].y - pointers[0].y);
+    const currentDistance = Math.hypot(
+      pointers[1].x - pointers[0].x,
+      pointers[1].y - pointers[0].y,
+    );
     const currentCenter = {
       x: (pointers[0].x + pointers[1].x) / 2 - rect.left,
       y: (pointers[0].y + pointers[1].y) / 2 - rect.top,
@@ -1550,12 +1634,20 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     this.imagePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    if (!this.imagePinchGesture || !this.imageStage?.nativeElement || !this.imageAsset() || this.imagePointers.size < 2) {
+    if (
+      !this.imagePinchGesture ||
+      !this.imageStage?.nativeElement ||
+      !this.imageAsset() ||
+      this.imagePointers.size < 2
+    ) {
       return false;
     }
 
     const pointers = Array.from(this.imagePointers.values());
-    const currentDistance = Math.hypot(pointers[1].x - pointers[0].x, pointers[1].y - pointers[0].y);
+    const currentDistance = Math.hypot(
+      pointers[1].x - pointers[0].x,
+      pointers[1].y - pointers[0].y,
+    );
     const rect = this.imageStage.nativeElement.getBoundingClientRect();
     const currentCenter = {
       x: (pointers[0].x + pointers[1].x) / 2 - rect.left,
@@ -1608,6 +1700,38 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     return true;
+  }
+
+  private reconcileGraphFilters(
+    values: string[],
+    current: Record<string, boolean>,
+  ): Record<string, boolean> {
+    return values.reduce<Record<string, boolean>>((acc, value) => {
+      acc[value] = current[value] !== false;
+      return acc;
+    }, {});
+  }
+
+  private reuseGraphPositions(
+    nextGraph: GraphData,
+    fallbackPositions: Record<string, GraphPoint>,
+  ): Record<string, GraphPoint> {
+    const nextCenterPoint = this.positions[nextGraph.centerId] ??
+      fallbackPositions[nextGraph.centerId] ?? { x: 0, y: 0 };
+
+    return nextGraph.nodes.reduce<Record<string, GraphPoint>>((acc, node) => {
+      const previousPoint = this.positions[node.id];
+      if (previousPoint) {
+        acc[node.id] = {
+          x: previousPoint.x - nextCenterPoint.x,
+          y: previousPoint.y - nextCenterPoint.y,
+        };
+        return acc;
+      }
+
+      acc[node.id] = fallbackPositions[node.id] ?? { x: 0, y: 0 };
+      return acc;
+    }, {});
   }
 
   private createViewportCenteredOnPoint(point: GraphPoint, scale: number): GraphViewport | null {

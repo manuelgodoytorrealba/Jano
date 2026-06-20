@@ -11,8 +11,6 @@
       <button type="button" class="recommended-button" (click)="toggleSearch()">
         {{ searchOpen() ? 'Close' : '+ Add Entity' }}
       </button>
-      <div class="recommended-map__action-icon" aria-hidden="true"></div>
-      <div class="recommended-map__action-icon recommended-map__action-icon--list" aria-hidden="true"></div>
     </div>
   </div>
 
@@ -23,7 +21,8 @@
         class="ds-input"
         [ngModel]="query()"
         (ngModelChange)="query.set($event)"
-        placeholder="Search an entity to add" />
+        placeholder="Search an entity to add"
+      />
 
       @if (loading()) {
         <p class="recommended-map__search-note">Searching…</p>
@@ -42,44 +41,55 @@
     </div>
   }
 
-  <div class="recommended-map__canvas">
-    <svg class="recommended-map__lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      @for (line of mapLines(); track $index) {
-        <line
-          [attr.x1]="line.x1"
-          [attr.y1]="line.y1"
-          [attr.x2]="line.x2"
-          [attr.y2]="line.y2"
-          [attr.class]="'recommended-map__line recommended-map__line--' + line.strength">
-        </line>
+  @if (visibleEntities().length) {
+    <div class="recommended-map__active">
+      @for (entity of visibleEntities(); track entity.id) {
+        <div class="recommended-map__chip" [class.is-selected]="entity.id === selectedEntityId()">
+          <button
+            type="button"
+            class="recommended-map__chip-main"
+            (click)="selectEntity.emit(entity.slug)"
+          >
+            <strong>{{ entity.title }}</strong>
+            <span>{{ typeLabel(entity.type) }}</span>
+          </button>
+          <button
+            type="button"
+            class="recommended-map__chip-remove"
+            [disabled]="!canRemove(entity.id)"
+            (click)="removeEntity.emit(entity.id)"
+          >
+            ×
+          </button>
+        </div>
       }
-    </svg>
+    </div>
+  }
 
-    @for (node of mapNodes(); track node.entity.id) {
-      <article
-        class="recommended-map__node"
-        [class.is-selected]="node.selected"
-        [class.is-connected]="node.connected"
-        [style.left.%]="node.x"
-        [style.top.%]="node.y"
-        (click)="selectEntity.emit(node.entity.slug)">
-        <button
-          type="button"
-          class="recommended-map__remove"
-          [disabled]="!canRemove(node.entity.id)"
-          (click)="$event.stopPropagation(); removeEntity.emit(node.entity.id)">
-          -
-        </button>
-        <span class="recommended-map__type">{{ node.entity.title }}</span>
-        <strong>{{ node.entity.curationCount }} curations</strong>
-        <span>{{ node.entity.relatedCount }} entities</span>
-      </article>
+  <div class="recommended-map__canvas recommended-map__canvas--graph">
+    @if (graphData(); as graphData) {
+      <app-graph
+        class="recommended-map__graph"
+        [slug]="graphSlug()"
+        [graphData]="graphData"
+        [workspaceMode]="'graph'"
+        [overviewMode]="true"
+        [allowNodeOpen]="false"
+        [showControls]="false"
+        [showInspector]="false"
+        [disableSelectionZoom]="true"
+        [preserveRuntimeOnGraphChange]="true"
+        [showAllOverviewRelations]="true"
+        (nodeSelect)="selectEntity.emit($event)"
+      >
+      </app-graph>
+    } @else {
+      <p class="recommended-map__empty">No discovery map available yet.</p>
     }
   </div>
 
-  <div class="recommended-map__legend">
-    <span><i class="recommended-map__legend-line recommended-map__legend-line--strong"></i> Strong connection</span>
-    <span><i class="recommended-map__legend-line recommended-map__legend-line--related"></i> Related connection</span>
-    <span><i class="recommended-map__legend-line recommended-map__legend-line--weak"></i> Weak connection</span>
-  </div>
+  <p class="recommended-map__legend">
+    Click a node to update the curated context. Add Entity only expands the current curated pool in
+    this first iteration.
+  </p>
 </section>

@@ -12,6 +12,7 @@
             [entities]="page.discoveryEntities"
             [selectedEntityId]="page.selectedEntity.id"
             [visibleEntityIds]="visibleDiscoveryIds()"
+            [graphData]="graphData()"
             (selectEntity)="selectEntity($event)"
             (addEntity)="onAddEntity($event)"
             (removeEntity)="onRemoveEntity($event)">

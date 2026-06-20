@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PublicEntity } from '../../core/api/entities.models';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
@@ -15,7 +15,23 @@ import { recommendedTypeLabel } from './recommended-presenter';
 export class RecommendedKeyEntitiesComponent {
   items = input<PublicEntity[]>([]);
 
+  @ViewChild('viewport') private viewport?: ElementRef<HTMLDivElement>;
+
   typeLabel(type: string): string {
     return recommendedTypeLabel(type);
+  }
+
+  showControls(): boolean {
+    return this.items().length > 5;
+  }
+
+  scroll(direction: 'prev' | 'next'): void {
+    const viewport = this.viewport?.nativeElement;
+    if (!viewport) {
+      return;
+    }
+
+    const delta = viewport.clientWidth * 0.88 * (direction === 'next' ? 1 : -1);
+    viewport.scrollBy({ left: delta, behavior: 'smooth' });
   }
 }

@@ -44,7 +44,14 @@ describe('CuratedService', () => {
         buildRelation('r3', guernica, picasso, 'CREATED_BY', 1),
       ])
       .mockResolvedValueOnce([
-        { fromId: memoria.id, toId: guerra.id, relationType: { directed: false, key: 'RELATED_TO' } },
+        {
+          id: 'r4',
+          fromId: memoria.id,
+          toId: guerra.id,
+          type: 'RELATED_TO',
+          weight: 1,
+          relationType: { directed: false, key: 'RELATED_TO' },
+        },
       ]);
     prisma.entity.findMany.mockResolvedValue([guernica, picasso]);
 
@@ -59,6 +66,9 @@ describe('CuratedService', () => {
     ]);
     expect(result.relatedEntities.some((item: any) => item.slug === 'guerra')).toBe(true);
     expect(result.tabGroups.artworks.some((item: any) => item.slug === 'guernica')).toBe(true);
+    expect(result.graph.centerId).toBe(memoria.id);
+    expect(result.graph.nodes.some((item: any) => item.slug === 'guerra')).toBe(true);
+    expect(result.graph.edges.some((item: any) => item.relationType === 'RELATED_TO')).toBe(true);
   });
 });
 
