@@ -57,6 +57,22 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Production database reset
+
+To empty production and create the initial admin user in one command:
+
+```bash
+cd backend/api
+CONFIRM_EMPTY_DB=YES \
+ADMIN_EMAIL="email-de-mi-hermana" \
+ADMIN_PASSWORD="contraseña-segura" \
+ADMIN_NAME="nombre-de-mi-hermana" \
+ADMIN_ROLE="ADMIN" \
+npm run db:empty:prod
+```
+
+The script prints the masked database URL and the resolved server target before it truncates anything.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
