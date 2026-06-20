@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { HomeDeckSurface, Prisma } from '@prisma/client';
 import { attachResolvedMedia } from '../entities/media.resolver';
-import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
+import {
+  normalizeLocale,
+  resolveEntityTranslation,
+} from '../entities/entity-translation.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import { SearchQuery } from './dto/search.query';
-import { SearchIntentService, type SearchQueryVariant } from './search-intent.service';
+import {
+  SearchIntentService,
+  type SearchQueryVariant,
+} from './search-intent.service';
 
 type RawSearchRow = {
   id: string;
@@ -20,7 +26,38 @@ type RawSearchRow = {
   trigram_score: number | string;
 };
 
-type SearchItem = { id: string; slug: string; type: string; title: string; summary: string | null; [key: string]: any };
+type SearchItem = {
+  id: string;
+  slug: string;
+  type: string;
+  title: string;
+  summary: string | null;
+  [key: string]: any;
+};
+type SearchSectionPayload = {
+  key: string;
+  title: string;
+  total: number;
+  items?: SearchItem[];
+  routes?: Array<{
+    id: string;
+    label: string;
+    relationType: string;
+    items: SearchItem[];
+  }>;
+  decks?: Array<{
+    id: string;
+    slug: string;
+    title: string;
+    subtitle: string | null;
+    description: string | null;
+    entities: Array<{
+      id: string;
+      sortOrder: number;
+      entity: SearchItem | null;
+    }>;
+  }>;
+};
 
 const DISCOVERY_RELATION_TYPES = [
   'ABOUT_CONCEPT',
@@ -79,12 +116,17 @@ export class SearchService {
           normalizedQuery: intent.normalizedQuery,
           significantTerms: intent.significantTerms,
           signals: intent.signals,
-          variantsTried: variants.map((variant) => ({ query: variant.query, reason: variant.reason })),
+          variantsTried: variants.map((variant) => ({
+            query: variant.query,
+            reason: variant.reason,
+          })),
         },
       };
     }
 
-    const scoreById = new Map(rows.map((row) => [row.id, Number(row.score ?? 0)]));
+    const scoreById = new Map(
+      rows.map((row) => [row.id, Number(row.score ?? 0)]),
+    );
     const matchedFieldsById = new Map(
       rows.map((row) => [
         row.id,
@@ -114,12 +156,14 @@ export class SearchService {
     const items = rows
       .map((row) => entityById.get(row.id))
       .filter((entity): entity is NonNullable<typeof entity> => !!entity)
-      .map((entity) => this.serializeSearchEntity(
-        entity,
-        locale,
-        scoreById.get(entity.id) ?? 0,
-        matchedFieldsById.get(entity.id) ?? [],
-      ));
+      .map((entity) =>
+        this.serializeSearchEntity(
+          entity,
+          locale,
+          scoreById.get(entity.id) ?? 0,
+          matchedFieldsById.get(entity.id) ?? [],
+        ),
+      );
 
     const groups = items.reduce<Record<string, typeof items>>((acc, item) => {
       acc[item.type] ??= [];
@@ -127,7 +171,12 @@ export class SearchService {
       return acc;
     }, {});
 
-    const sections = await this.buildSections(q, items, locale, options.includeDrafts);
+    const sections = await this.buildSections(
+      q,
+      items,
+      locale,
+      options.includeDrafts,
+    );
 
     return {
       query: q,
@@ -139,7 +188,10 @@ export class SearchService {
         normalizedQuery: intent.normalizedQuery,
         significantTerms: intent.significantTerms,
         signals: intent.signals,
-        variantsTried: variants.map((variant) => ({ query: variant.query, reason: variant.reason })),
+        variantsTried: variants.map((variant) => ({
+          query: variant.query,
+          reason: variant.reason,
+        })),
       },
     };
   }
@@ -159,10 +211,7 @@ export class SearchService {
       },
       mediaLinks: {
         include: { media: true },
-        orderBy: [
-          { sortOrder: 'asc' as const },
-          { id: 'asc' as const },
-        ],
+        orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }],
       },
       translations: {
         where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
@@ -170,8 +219,15 @@ export class SearchService {
     };
   }
 
-  private serializeSearchEntity(entity: any, locale: string, score = 0, matchedFields: string[] = []) {
-    const resolvedEntity = attachResolvedMedia(resolveEntityTranslation(entity, locale));
+  private serializeSearchEntity(
+    entity: any,
+    locale: string,
+    score = 0,
+    matchedFields: string[] = [],
+  ) {
+    const resolvedEntity = attachResolvedMedia(
+      resolveEntityTranslation(entity, locale),
+    );
     const matchReasons = matchedFields.map((field) => {
       switch (field) {
         case 'alias':
@@ -227,17 +283,30 @@ export class SearchService {
     };
   }
 
-  private async buildSections(query: string, directItems: SearchItem[], locale: string, includeDrafts: boolean) {
+  private async buildSections(
+    query: string,
+    directItems: SearchItem[],
+    locale: string,
+    includeDrafts: boolean,
+  ) {
     const seedIds = directItems.slice(0, 12).map((item) => item.id);
-    const entityById = new Map<string, SearchItem>(directItems.map((item) => [item.id, item]));
+    const entityById = new Map<string, SearchItem>(
+      directItems.map((item) => [item.id, item]),
+    );
 
     if (seedIds.length) {
       const relations = await this.prisma.relation.findMany({
         where: {
           type: { in: DISCOVERY_RELATION_TYPES },
           OR: [
-            { fromId: { in: seedIds }, to: includeDrafts ? undefined : { status: 'PUBLISHED' } },
-            { toId: { in: seedIds }, from: includeDrafts ? undefined : { status: 'PUBLISHED' } },
+            {
+              fromId: { in: seedIds },
+              to: includeDrafts ? undefined : { status: 'PUBLISHED' },
+            },
+            {
+              toId: { in: seedIds },
+              from: includeDrafts ? undefined : { status: 'PUBLISHED' },
+            },
           ],
         },
         include: {
@@ -245,10 +314,18 @@ export class SearchService {
           to: { include: this.entityInclude(locale) },
           relationType: {
             include: {
-              translations: { where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } } },
+              translations: {
+                where: {
+                  locale: { in: Array.from(new Set([locale, 'es', 'en'])) },
+                },
+              },
             },
           },
-          translations: { where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } } },
+          translations: {
+            where: {
+              locale: { in: Array.from(new Set([locale, 'es', 'en'])) },
+            },
+          },
         },
         orderBy: [{ weight: 'desc' }, { id: 'asc' }],
         take: 90,
@@ -257,88 +334,222 @@ export class SearchService {
       for (const relation of relations) {
         for (const entity of [relation.from, relation.to]) {
           if (entity && !entityById.has(entity.id)) {
-            entityById.set(entity.id, this.serializeSearchEntity(entity, locale, relation.weight ?? 0, ['relation']));
+            entityById.set(
+              entity.id,
+              this.serializeSearchEntity(entity, locale, relation.weight ?? 0, [
+                'relation',
+              ]),
+            );
           }
         }
       }
 
       const allItems = Array.from(entityById.values());
       const relatedOnly = allItems.filter((item) => !seedIds.includes(item.id));
-      const primaryArtists = directItems.filter((item) => item.type === 'ARTIST').slice(0, 3);
+      const primaryArtists = directItems
+        .filter((item) => item.type === 'ARTIST')
+        .slice(0, 3);
       const authoredWorks = primaryArtists.length
-        ? this.artworksCreatedBy(relations, new Set(primaryArtists.map((item) => item.id)), locale)
+        ? this.artworksCreatedBy(
+            relations,
+            new Set(primaryArtists.map((item) => item.id)),
+            locale,
+          )
         : [];
       const keyWorks = authoredWorks.length
         ? authoredWorks
-        : this.byType([...directItems, ...relatedOnly], ['ARTWORK'], 12);
+        : this.byType([...directItems, ...relatedOnly], ['ARTWORK']);
       const relatedWorks = authoredWorks.length
-        ? this.relatedArtworks(relations, new Set(keyWorks.map((item) => item.id)), locale)
+        ? this.relatedArtworks(
+            relations,
+            new Set(keyWorks.map((item) => item.id)),
+            locale,
+          )
         : [];
-      const routes = this.buildRoutes(relations, locale).slice(0, 6);
+      const conceptItems = this.byType(
+        [...directItems, ...relatedOnly],
+        ['CONCEPT'],
+      );
+      const contextItems = this.byType(
+        [...directItems, ...relatedOnly],
+        ['ARTIST', 'MOVEMENT', 'PERIOD'],
+      );
+      const articleItems = this.byType(
+        [...directItems, ...relatedOnly],
+        ['ARTICLE', 'TEXT'],
+      );
+      const routes = this.buildRoutes(relations, locale);
       const decks = await this.findSuggestedDecks(query, allItems, locale);
 
       return [
-        this.itemSection('main', 'Resultados principales', directItems.slice(0, 12)),
-        this.itemSection('keyWorks', 'Obras clave', keyWorks),
-        this.itemSection('relatedWorks', 'Obras relacionadas', relatedWorks),
-        this.itemSection('concepts', 'Conceptos relacionados', this.byType([...directItems, ...relatedOnly], ['CONCEPT'], 12)),
-        this.itemSection('context', 'Artistas y movimientos', this.byType([...directItems, ...relatedOnly], ['ARTIST', 'MOVEMENT', 'PERIOD'], 12)),
-        this.itemSection('articles', 'Artículos', this.byType([...directItems, ...relatedOnly], ['ARTICLE', 'TEXT'], 8)),
-        { key: 'routes', title: 'Relaciones para explorar', routes },
-        { key: 'decks', title: 'Colecciones sugeridas', decks },
-      ].filter((section: any) => section.items?.length || section.routes?.length || section.decks?.length);
+        this.itemSection('main', 'Resultados principales', directItems, 12),
+        this.itemSection('keyWorks', 'Obras clave', keyWorks, 12),
+        this.itemSection(
+          'relatedWorks',
+          'Obras relacionadas',
+          relatedWorks,
+          12,
+        ),
+        this.itemSection(
+          'concepts',
+          'Conceptos relacionados',
+          conceptItems,
+          12,
+        ),
+        this.itemSection('context', 'Artistas y movimientos', contextItems, 12),
+        this.itemSection('articles', 'Artículos', articleItems, 8),
+        this.routeSection('routes', 'Relaciones para explorar', routes, 6),
+        this.deckSection('decks', 'Colecciones sugeridas', decks, 4),
+      ].filter(
+        (section: any) =>
+          section.items?.length ||
+          section.routes?.length ||
+          section.decks?.length,
+      );
     }
 
-    return [this.itemSection('main', 'Resultados principales', directItems.slice(0, 12))];
+    return [
+      this.itemSection('main', 'Resultados principales', directItems, 12),
+    ];
   }
 
-  private itemSection(key: string, title: string, items: SearchItem[]) {
-    return { key, title, items: this.dedupeItems(items) };
+  private itemSection(
+    key: string,
+    title: string,
+    items: SearchItem[],
+    visibleLimit = items.length,
+  ): SearchSectionPayload {
+    const deduped = this.dedupeItems(items);
+    return {
+      key,
+      title,
+      total: deduped.length,
+      items: deduped.slice(0, visibleLimit),
+    };
   }
 
-  private byType(items: SearchItem[], types: string[], limit: number) {
-    return this.dedupeItems(items.filter((item) => types.includes(item.type))).slice(0, limit);
+  private routeSection(
+    key: string,
+    title: string,
+    routes: Array<{
+      id: string;
+      label: string;
+      relationType: string;
+      items: SearchItem[];
+    }>,
+    visibleLimit = routes.length,
+  ): SearchSectionPayload {
+    return {
+      key,
+      title,
+      total: routes.length,
+      routes: routes.slice(0, visibleLimit),
+    };
+  }
+
+  private deckSection(
+    key: string,
+    title: string,
+    decks: Array<{
+      id: string;
+      slug: string;
+      title: string;
+      subtitle: string | null;
+      description: string | null;
+      entities: Array<{
+        id: string;
+        sortOrder: number;
+        entity: SearchItem | null;
+      }>;
+    }>,
+    visibleLimit = decks.length,
+  ): SearchSectionPayload {
+    return {
+      key,
+      title,
+      total: decks.length,
+      decks: decks.slice(0, visibleLimit),
+    };
+  }
+
+  private byType(items: SearchItem[], types: string[]) {
+    return this.dedupeItems(items.filter((item) => types.includes(item.type)));
   }
 
   private artworksCreatedBy(
-    relations: Array<{ type: string; weight: number | null; from: any; to: any }>,
+    relations: Array<{
+      type: string;
+      weight: number | null;
+      from: any;
+      to: any;
+    }>,
     artistIds: Set<string>,
     locale: string,
   ) {
-    return this.dedupeItems(relations
-      .filter((relation) => relation.type === 'CREATED_BY')
-      .map((relation) => {
-        if (artistIds.has(relation.to?.id) && relation.from?.type === 'ARTWORK') return relation.from;
-        if (artistIds.has(relation.from?.id) && relation.to?.type === 'ARTWORK') return relation.to;
-        return null;
-      })
-      .filter((entity): entity is NonNullable<typeof entity> => !!entity)
-      .map((entity) => this.serializeSearchEntity(entity, locale, 1, ['relation'])))
-      .slice(0, 12);
+    return this.dedupeItems(
+      relations
+        .filter((relation) => relation.type === 'CREATED_BY')
+        .map((relation) => {
+          if (
+            artistIds.has(relation.to?.id) &&
+            relation.from?.type === 'ARTWORK'
+          )
+            return relation.from;
+          if (
+            artistIds.has(relation.from?.id) &&
+            relation.to?.type === 'ARTWORK'
+          )
+            return relation.to;
+          return null;
+        })
+        .filter((entity): entity is NonNullable<typeof entity> => !!entity)
+        .map((entity) =>
+          this.serializeSearchEntity(entity, locale, 1, ['relation']),
+        ),
+    );
   }
 
   private relatedArtworks(
-    relations: Array<{ type: string; weight: number | null; from: any; to: any; justification?: string | null; translations?: any[] | null; relationType?: any }>,
+    relations: Array<{
+      type: string;
+      weight: number | null;
+      from: any;
+      to: any;
+      justification?: string | null;
+      translations?: any[] | null;
+      relationType?: any;
+    }>,
     excludedIds: Set<string>,
     locale: string,
   ) {
-    return this.dedupeItems(relations
-      .filter((relation) => relation.type === 'RELATED_TO')
-      .flatMap((relation) => [
-        relation.from?.type === 'ARTWORK' ? { entity: relation.from, relation } : null,
-        relation.to?.type === 'ARTWORK' ? { entity: relation.to, relation } : null,
-      ])
-      .filter((entry): entry is { entity: any; relation: any } => !!entry && !excludedIds.has(entry.entity.id))
-      .map(({ entity, relation }) => {
-        const counterpart = relation.from?.id === entity.id ? relation.to : relation.from;
-        return {
-          ...this.serializeSearchEntity(entity, locale, 0.5, ['relation']),
-          relationType: this.relationDisplayLabel(relation, locale),
-          relationReason: this.relationJustification(relation, locale),
-          relationWithTitle: counterpart ? this.serializeSearchEntity(counterpart, locale).title : null,
-        };
-      }))
-      .slice(0, 12);
+    return this.dedupeItems(
+      relations
+        .filter((relation) => relation.type === 'RELATED_TO')
+        .flatMap((relation) => [
+          relation.from?.type === 'ARTWORK'
+            ? { entity: relation.from, relation }
+            : null,
+          relation.to?.type === 'ARTWORK'
+            ? { entity: relation.to, relation }
+            : null,
+        ])
+        .filter(
+          (entry): entry is { entity: any; relation: any } =>
+            !!entry && !excludedIds.has(entry.entity.id),
+        )
+        .map(({ entity, relation }) => {
+          const counterpart =
+            relation.from?.id === entity.id ? relation.to : relation.from;
+          return {
+            ...this.serializeSearchEntity(entity, locale, 0.5, ['relation']),
+            relationType: this.relationDisplayLabel(relation, locale),
+            relationReason: this.relationJustification(relation, locale),
+            relationWithTitle: counterpart
+              ? this.serializeSearchEntity(counterpart, locale).title
+              : null,
+          };
+        }),
+    );
   }
 
   private dedupeItems(items: SearchItem[]) {
@@ -350,12 +561,31 @@ export class SearchService {
     });
   }
 
-  private buildRoutes(relations: Array<{ type: string; weight: number | null; from: any; to: any; relationType?: any }>, locale: string) {
+  private buildRoutes(
+    relations: Array<{
+      type: string;
+      weight: number | null;
+      from: any;
+      to: any;
+      relationType?: any;
+    }>,
+    locale: string,
+  ) {
     const seen = new Set<string>();
     return relations
       .map((relation) => {
-        const from = this.serializeSearchEntity(relation.from, locale, relation.weight ?? 0, ['route']);
-        const to = this.serializeSearchEntity(relation.to, locale, relation.weight ?? 0, ['route']);
+        const from = this.serializeSearchEntity(
+          relation.from,
+          locale,
+          relation.weight ?? 0,
+          ['route'],
+        );
+        const to = this.serializeSearchEntity(
+          relation.to,
+          locale,
+          relation.weight ?? 0,
+          ['route'],
+        );
         const key = `${from.id}:${to.id}`;
         if (seen.has(key)) return null;
         seen.add(key);
@@ -366,34 +596,69 @@ export class SearchService {
           items: [from, to],
         };
       })
-      .filter(Boolean);
+      .filter(
+        (
+          entry,
+        ): entry is {
+          id: string;
+          label: string;
+          relationType: string;
+          items: SearchItem[];
+        } => !!entry,
+      );
   }
 
-  private relationDisplayLabel(relation: { type: string; relationType?: any }, locale: string) {
-    const translation = relation.relationType?.translations?.find((item: any) => item.locale === locale)
-      ?? relation.relationType?.translations?.find((item: any) => item.locale === 'es')
-      ?? relation.relationType?.translations?.find((item: any) => item.locale === 'en')
-      ?? null;
-    return translation?.label?.trim()
-      ?? relation.relationType?.label?.trim()
-      ?? relation.type.toLowerCase().replaceAll('_', ' ');
+  private relationDisplayLabel(
+    relation: { type: string; relationType?: any },
+    locale: string,
+  ) {
+    const translation =
+      relation.relationType?.translations?.find(
+        (item: any) => item.locale === locale,
+      ) ??
+      relation.relationType?.translations?.find(
+        (item: any) => item.locale === 'es',
+      ) ??
+      relation.relationType?.translations?.find(
+        (item: any) => item.locale === 'en',
+      ) ??
+      null;
+    return (
+      translation?.label?.trim() ??
+      relation.relationType?.label?.trim() ??
+      relation.type.toLowerCase().replaceAll('_', ' ')
+    );
   }
 
-  private relationJustification(relation: { justification?: string | null; translations?: any[] | null }, locale: string) {
-    const translation = relation.translations?.find((item: any) => item.locale === locale)
-      ?? relation.translations?.find((item: any) => item.locale === 'es')
-      ?? relation.translations?.find((item: any) => item.locale === 'en')
-      ?? null;
-    return translation?.justification?.trim() || relation.justification?.trim() || null;
+  private relationJustification(
+    relation: { justification?: string | null; translations?: any[] | null },
+    locale: string,
+  ) {
+    const translation =
+      relation.translations?.find((item: any) => item.locale === locale) ??
+      relation.translations?.find((item: any) => item.locale === 'es') ??
+      relation.translations?.find((item: any) => item.locale === 'en') ??
+      null;
+    return (
+      translation?.justification?.trim() ||
+      relation.justification?.trim() ||
+      null
+    );
   }
 
-  private async findSuggestedDecks(query: string, items: SearchItem[], locale: string) {
+  private async findSuggestedDecks(
+    query: string,
+    items: SearchItem[],
+    locale: string,
+  ) {
     const terms = this.searchIntent.interpret(query, locale).significantTerms;
     const itemIds = new Set(items.map((item) => item.id));
     const decks = await this.prisma.homeDeck.findMany({
       where: { isActive: true, surface: HomeDeckSurface.RECOMMENDED },
       include: {
-        translations: { where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } } },
+        translations: {
+          where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
+        },
         items: {
           orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
           include: { entity: { include: this.entityInclude(locale) } },
@@ -405,15 +670,21 @@ export class SearchService {
 
     return decks
       .map((deck: any) => {
-        const translation = deck.translations.find((item: any) => item.locale === locale)
-          ?? deck.translations.find((item: any) => item.locale === 'es')
-          ?? deck.translations.find((item: any) => item.locale === 'en')
-          ?? null;
+        const translation =
+          deck.translations.find((item: any) => item.locale === locale) ??
+          deck.translations.find((item: any) => item.locale === 'es') ??
+          deck.translations.find((item: any) => item.locale === 'en') ??
+          null;
         const title = translation?.title ?? deck.title;
         const description = translation?.description ?? deck.description;
-        const haystack = `${title} ${description ?? ''} ${deck.items.map((item: any) => item.entity?.title ?? '').join(' ')}`.toLowerCase();
-        const textScore = terms.filter((term) => haystack.includes(term)).length;
-        const graphScore = deck.items.filter((item: any) => itemIds.has(item.entityId)).length;
+        const haystack =
+          `${title} ${description ?? ''} ${deck.items.map((item: any) => item.entity?.title ?? '').join(' ')}`.toLowerCase();
+        const textScore = terms.filter((term) =>
+          haystack.includes(term),
+        ).length;
+        const graphScore = deck.items.filter((item: any) =>
+          itemIds.has(item.entityId),
+        ).length;
         return {
           id: deck.id,
           slug: deck.slug,
@@ -424,18 +695,25 @@ export class SearchService {
           entities: deck.items.slice(0, 6).map((item: any) => ({
             id: item.id,
             sortOrder: item.sortOrder,
-            entity: item.entity ? this.serializeSearchEntity(item.entity, locale) : null,
+            entity: item.entity
+              ? this.serializeSearchEntity(item.entity, locale)
+              : null,
           })),
         };
       })
       .filter((deck) => deck.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 4);
+      .sort((a, b) => b.score - a.score);
   }
 
   private async searchVariantRows(
     variants: SearchQueryVariant[],
-    options: { limit: number; types: string[]; tag?: string; locale: string; includeDrafts: boolean },
+    options: {
+      limit: number;
+      types: string[];
+      tag?: string;
+      locale: string;
+      includeDrafts: boolean;
+    },
   ) {
     const merged = new Map<string, RawSearchRow>();
 
@@ -464,7 +742,10 @@ export class SearchService {
           matched_tag: previous.matched_tag || row.matched_tag,
           matched_detail: previous.matched_detail || row.matched_detail,
           matched_relation: previous.matched_relation || row.matched_relation,
-          trigram_score: Math.max(Number(previous.trigram_score ?? 0), Number(row.trigram_score ?? 0)),
+          trigram_score: Math.max(
+            Number(previous.trigram_score ?? 0),
+            Number(row.trigram_score ?? 0),
+          ),
         });
       }
     }
@@ -480,14 +761,22 @@ export class SearchService {
 
   private searchRows(
     q: string,
-    options: { limit: number; types: string[]; tag?: string; locale: string; includeDrafts: boolean },
+    options: {
+      limit: number;
+      types: string[];
+      tag?: string;
+      locale: string;
+      includeDrafts: boolean;
+    },
   ) {
     const normalized = q.toLowerCase();
     const like = `%${q}%`;
     const startsWith = `${q}%`;
     const useFullText = q.length >= 3;
     const trigramThreshold = q.length >= 4 ? 0.24 : 0.36;
-    const translationLocales = Array.from(new Set([options.locale, 'es', 'en', 'und']));
+    const translationLocales = Array.from(
+      new Set([options.locale, 'es', 'en', 'und']),
+    );
 
     const typeFilter = options.types.length
       ? Prisma.sql`AND e."type"::text IN (${Prisma.join(options.types)})`

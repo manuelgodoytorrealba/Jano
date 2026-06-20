@@ -119,15 +119,21 @@ describe('SearchService', () => {
         matchReasons: ['Matched via title'],
       }),
     ]);
-    expect(result.sections).toEqual(expect.arrayContaining([
-      expect.objectContaining({ key: 'main', title: 'Resultados principales' }),
-    ]));
-    expect(result.interpretation).toEqual(expect.objectContaining({
-      normalizedQuery: 'english',
-      variantsTried: [{ query: 'english', reason: 'raw query' }],
-    }));
+    expect(result.sections).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          key: 'main',
+          title: 'Resultados principales',
+        }),
+      ]),
+    );
+    expect(result.interpretation).toEqual(
+      expect.objectContaining({
+        normalizedQuery: 'english',
+        variantsTried: [{ query: 'english', reason: 'raw query' }],
+      }),
+    );
   });
-
 
   it('keeps artist key works to authored artworks and moves related artworks to related section', async () => {
     const picasso = {
@@ -180,13 +186,51 @@ describe('SearchService', () => {
     };
 
     prisma.$queryRaw.mockResolvedValue([
-      { id: 'artist-1', score: 20, matched_title: true, matched_summary: false, matched_content: false, matched_slug: true, matched_alias: false, matched_tag: false, matched_detail: false, matched_relation: false, trigram_score: 0.8 },
-      { id: 'artwork-1', score: 10, matched_title: false, matched_summary: true, matched_content: false, matched_slug: false, matched_alias: false, matched_tag: false, matched_detail: false, matched_relation: false, trigram_score: 0.2 },
+      {
+        id: 'artist-1',
+        score: 20,
+        matched_title: true,
+        matched_summary: false,
+        matched_content: false,
+        matched_slug: true,
+        matched_alias: false,
+        matched_tag: false,
+        matched_detail: false,
+        matched_relation: false,
+        trigram_score: 0.8,
+      },
+      {
+        id: 'artwork-1',
+        score: 10,
+        matched_title: false,
+        matched_summary: true,
+        matched_content: false,
+        matched_slug: false,
+        matched_alias: false,
+        matched_tag: false,
+        matched_detail: false,
+        matched_relation: false,
+        trigram_score: 0.2,
+      },
     ]);
     prisma.entity.findMany.mockResolvedValue([picasso, guernica]);
     prisma.relation.findMany.mockResolvedValue([
-      { type: 'CREATED_BY', weight: 1, from: guernica, to: picasso, relationType: { translations: [] } },
-      { type: 'RELATED_TO', weight: 0.7, from: guernica, to: goyaWork, justification: 'Both works address war violence.', translations: [], relationType: { translations: [] } },
+      {
+        type: 'CREATED_BY',
+        weight: 1,
+        from: guernica,
+        to: picasso,
+        relationType: { translations: [] },
+      },
+      {
+        type: 'RELATED_TO',
+        weight: 0.7,
+        from: guernica,
+        to: goyaWork,
+        justification: 'Both works address war violence.',
+        translations: [],
+        relationType: { translations: [] },
+      },
     ]);
 
     const result = await service.search(
@@ -194,13 +238,23 @@ describe('SearchService', () => {
       { includeDrafts: false },
     );
 
-    const keyWorks = result.sections.find((section: any) => section.key === 'keyWorks');
-    const relatedWorks = result.sections.find((section: any) => section.key === 'relatedWorks');
+    const keyWorks = result.sections.find(
+      (section: any) => section.key === 'keyWorks',
+    );
+    const relatedWorks = result.sections.find(
+      (section: any) => section.key === 'relatedWorks',
+    );
 
+    expect(keyWorks?.total).toBe(1);
     expect(keyWorks?.items.map((item: any) => item.id)).toEqual(['artwork-1']);
     expect(relatedWorks?.title).toBe('Obras relacionadas');
-    expect(relatedWorks?.items.map((item: any) => item.id)).toEqual(['artwork-2']);
-    expect(relatedWorks?.items[0].relationReason).toBe('Both works address war violence.');
+    expect(relatedWorks?.total).toBe(1);
+    expect(relatedWorks?.items.map((item: any) => item.id)).toEqual([
+      'artwork-2',
+    ]);
+    expect(relatedWorks?.items[0].relationReason).toBe(
+      'Both works address war violence.',
+    );
     expect(relatedWorks?.items[0].relationWithTitle).toBe('Guernica');
   });
 
@@ -259,7 +313,13 @@ describe('SearchService', () => {
         endYear: null,
         tags: [{ tag: { id: 'tag-1', label: 'Japan', translations: [] } }],
         aliases: [
-          { id: 'alias-1', locale: 'es', value: 'caja japonesa secreta', kind: 'SEARCH_HINT', weight: 1 },
+          {
+            id: 'alias-1',
+            locale: 'es',
+            value: 'caja japonesa secreta',
+            kind: 'SEARCH_HINT',
+            weight: 1,
+          },
         ],
         mediaLinks: [],
         translations: [],
@@ -271,10 +331,12 @@ describe('SearchService', () => {
       { includeDrafts: false },
     );
 
-    expect(result.items[0]).toEqual(expect.objectContaining({
-      matchedFields: ['alias', 'tag'],
-      matchReasons: ['Matched via alternate name', 'Matched via taxonomy'],
-    }));
+    expect(result.items[0]).toEqual(
+      expect.objectContaining({
+        matchedFields: ['alias', 'tag'],
+        matchReasons: ['Matched via alternate name', 'Matched via taxonomy'],
+      }),
+    );
   });
 
   it('returns structured detail matches as explicit reasons', async () => {
@@ -318,10 +380,15 @@ describe('SearchService', () => {
       { includeDrafts: false },
     );
 
-    expect(result.items[0]).toEqual(expect.objectContaining({
-      matchedFields: ['detail', 'relation_text'],
-      matchReasons: ['Matched via structured detail', 'Matched via graph context'],
-    }));
+    expect(result.items[0]).toEqual(
+      expect.objectContaining({
+        matchedFields: ['detail', 'relation_text'],
+        matchReasons: [
+          'Matched via structured detail',
+          'Matched via graph context',
+        ],
+      }),
+    );
   });
 
   it('tries interpreted variants and merges the strongest result', async () => {
@@ -333,27 +400,29 @@ describe('SearchService', () => {
       signals: [{ kind: 'culture', value: 'japan' }],
       variants: [
         { query: 'caja japonesa secreta', reason: 'raw query', weight: 1 },
-        { query: 'himitsubako japanese puzzle box', reason: 'common misspelling rewrite', weight: 0.96 },
+        {
+          query: 'himitsubako japanese puzzle box',
+          reason: 'common misspelling rewrite',
+          weight: 0.96,
+        },
       ],
     });
 
-    prisma.$queryRaw
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([
-        {
-          id: 'entity-3',
-          score: 50,
-          matched_title: false,
-          matched_summary: false,
-          matched_content: false,
-          matched_slug: false,
-          matched_alias: true,
-          matched_tag: true,
-          matched_detail: true,
-          matched_relation: false,
-          trigram_score: 0.67,
-        },
-      ]);
+    prisma.$queryRaw.mockResolvedValueOnce([]).mockResolvedValueOnce([
+      {
+        id: 'entity-3',
+        score: 50,
+        matched_title: false,
+        matched_summary: false,
+        matched_content: false,
+        matched_slug: false,
+        matched_alias: true,
+        matched_tag: true,
+        matched_detail: true,
+        matched_relation: false,
+        trigram_score: 0.67,
+      },
+    ]);
 
     prisma.entity.findMany.mockResolvedValue([
       {
@@ -380,17 +449,24 @@ describe('SearchService', () => {
     );
 
     expect(prisma.$queryRaw).toHaveBeenCalledTimes(2);
-    expect(result.items[0]).toEqual(expect.objectContaining({
-      slug: 'himitsubako',
-      matchedFields: ['alias', 'tag', 'detail'],
-    }));
-    expect(result.interpretation).toEqual(expect.objectContaining({
-      normalizedQuery: 'caja japonesa secreta',
-      signals: [{ kind: 'culture', value: 'japan' }],
-      variantsTried: [
-        { query: 'caja japonesa secreta', reason: 'raw query' },
-        { query: 'himitsubako japanese puzzle box', reason: 'common misspelling rewrite' },
-      ],
-    }));
+    expect(result.items[0]).toEqual(
+      expect.objectContaining({
+        slug: 'himitsubako',
+        matchedFields: ['alias', 'tag', 'detail'],
+      }),
+    );
+    expect(result.interpretation).toEqual(
+      expect.objectContaining({
+        normalizedQuery: 'caja japonesa secreta',
+        signals: [{ kind: 'culture', value: 'japan' }],
+        variantsTried: [
+          { query: 'caja japonesa secreta', reason: 'raw query' },
+          {
+            query: 'himitsubako japanese puzzle box',
+            reason: 'common misspelling rewrite',
+          },
+        ],
+      }),
+    );
   });
 });

@@ -388,41 +388,49 @@
   "collection.createdAndAdded": "The collection has been created and this entity was added to it.",
   "collection.entityAdded": "The entity is now organized inside your collection.",
   "collection.addFailed": "Could not add",
-  "collection.addError": "Could not add to the collection."
-  ,"search.title": "Search"
-  ,"search.titleWithQuery": "Search \"{query}\""
-  ,"search.metaDescription": "Search JANO across artworks, artists, articles, movements, periods and concepts for \"{query}\"."
-  ,"search.metaDescriptionEmpty": "Search JANO across artworks, artists, articles, movements, periods and concepts."
-  ,"search.filterAria": "Filter results by type"
-  ,"search.tag": "Tag"
-  ,"search.directEntries": "direct entries"
-  ,"search.discovery": "Discovery"
-  ,"search.relatedWith": "is related to"
-  ,"search.whyRelated": "Why it is related"
-  ,"search.editorialRoute": "Editorial route"
-  ,"search.noResults": "No results"
-  ,"search.noResultsHint": "Try a title, artist, concept, or broader term."
-  ,"search.emptyTitle": "Start a search"
-  ,"search.emptyHint": "Search published entities across the system."
-  ,"search.type.all": "All"
-  ,"search.type.artists": "Artists"
-  ,"search.type.artworks": "Artworks"
-  ,"search.type.movements": "Movements"
-  ,"search.type.concepts": "Concepts"
-  ,"search.type.articles": "Articles"
-  ,"search.type.places": "Places"
-  ,"search.type.periods": "Periods"
-  ,"search.prep.trending": "Trending Now"
-  ,"search.prep.staffPicks": "Staff Picks"
-  ,"search.prep.categories": "Explore by Category"
-  ,"search.prep.filtering": "Filtering suggestions by {type}"
-  ,"search.prep.contents": "entries"
-  ,"search.section.main": "Main results"
-  ,"search.section.keyWorks": "Key artworks"
-  ,"search.section.relatedWorks": "Related artworks"
-  ,"search.section.concepts": "Related concepts"
-  ,"search.section.context": "Artists and movements"
-  ,"search.section.articles": "Articles"
-  ,"search.section.routes": "Relations to explore"
-  ,"search.section.decks": "Suggested collections"
+  "collection.addError": "Could not add to the collection.",
+  "search.title": "Search",
+  "search.titleWithQuery": "Search \"{query}\"",
+  "search.metaDescription": "Search JANO across artworks, artists, articles, movements, periods and concepts for \"{query}\".",
+  "search.metaDescriptionEmpty": "Search JANO across artworks, artists, articles, movements, periods and concepts.",
+  "search.filterAria": "Filter results by type",
+  "search.tag": "Tag",
+  "search.directEntries": "direct entries",
+  "search.discovery": "Discovery",
+  "search.resultsFor": "Results for",
+  "search.viewGraph": "View in graph",
+  "search.openRelationsMap": "Open relations map",
+  "search.exploreFullGraph": "Jump into the main relationship context without leaving search.",
+  "search.relatedWith": "is related to",
+  "search.whyRelated": "Why it is related",
+  "search.editorialRoute": "Editorial route",
+  "search.noResults": "No results",
+  "search.noResultsHint": "Try a title, artist, concept, or broader term.",
+  "search.emptyTitle": "Start a search",
+  "search.emptyHint": "Search published entities across the system.",
+  "search.viewAll": "View all",
+  "search.viewAllArtworks": "View artworks",
+  "search.viewAllConcepts": "View concepts",
+  "search.viewAllArticles": "View articles",
+  "search.type.all": "All",
+  "search.type.artists": "Artists",
+  "search.type.artworks": "Artworks",
+  "search.type.movements": "Movements",
+  "search.type.concepts": "Concepts",
+  "search.type.articles": "Articles",
+  "search.type.places": "Places",
+  "search.type.periods": "Periods",
+  "search.prep.trending": "Trending Now",
+  "search.prep.staffPicks": "Staff Picks",
+  "search.prep.categories": "Explore by Category",
+  "search.prep.filtering": "Filtering suggestions by {type}",
+  "search.prep.contents": "entries",
+  "search.section.main": "Main results",
+  "search.section.keyWorks": "Key artworks",
+  "search.section.relatedWorks": "Related artworks",
+  "search.section.concepts": "Related concepts",
+  "search.section.context": "Artists and movements",
+  "search.section.articles": "Articles",
+  "search.section.routes": "Relations to explore",
+  "search.section.decks": "Suggested collections"
 }

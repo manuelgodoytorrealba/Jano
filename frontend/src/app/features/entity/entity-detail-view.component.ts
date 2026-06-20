@@ -1,9 +1,28 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, PLATFORM_ID, Renderer2, SimpleChanges, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  PLATFORM_ID,
+  Renderer2,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GraphComponent } from '../graph/graph.component';
-import { PublicEntity, PublicEntityRelation, PublicEntityRelationEndpoint, PublicEntityTagItem } from '../../core/api/entities.models';
+import {
+  PublicEntity,
+  PublicEntityRelation,
+  PublicEntityRelationEndpoint,
+  PublicEntityTagItem,
+} from '../../core/api/entities.models';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
@@ -70,6 +89,7 @@ export class EntityDetailViewComponent implements OnDestroy {
   @Input() saveLoading = false;
   @Input() collectionsLoading = false;
   @Input() renderGraph = true;
+  @Input() preferredWorkspaceMode: DetailWorkspaceMode | null = null;
 
   @Output() saveToggle = new EventEmitter<string>();
   @Output() collectionsToggle = new EventEmitter<void>();
@@ -80,11 +100,12 @@ export class EntityDetailViewComponent implements OnDestroy {
   workspaceTransitioning = false;
   outgoingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   incomingRelationLimit = EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
-  private readonly desktopWorkspaceModes: Array<{ value: DetailWorkspaceMode; labelKey: string }> = [
-    { value: 'split', labelKey: 'workspace.split' },
-    { value: 'image', labelKey: 'workspace.image' },
-    { value: 'graph', labelKey: 'workspace.graph' },
-  ];
+  private readonly desktopWorkspaceModes: Array<{ value: DetailWorkspaceMode; labelKey: string }> =
+    [
+      { value: 'split', labelKey: 'workspace.split' },
+      { value: 'image', labelKey: 'workspace.image' },
+      { value: 'graph', labelKey: 'workspace.graph' },
+    ];
   private readonly mobileWorkspaceModes: Array<{ value: DetailWorkspaceMode; labelKey: string }> = [
     { value: 'image', labelKey: 'workspace.image' },
     { value: 'graph', labelKey: 'workspace.graph' },
@@ -101,7 +122,11 @@ export class EntityDetailViewComponent implements OnDestroy {
   }
 
   get graphWorkspaceMode(): GraphWorkspaceMode {
-    if (this.workspaceMode === 'split' || this.workspaceMode === 'image' || this.workspaceMode === 'graph') {
+    if (
+      this.workspaceMode === 'split' ||
+      this.workspaceMode === 'image' ||
+      this.workspaceMode === 'graph'
+    ) {
       return this.workspaceMode;
     }
 
@@ -131,7 +156,10 @@ export class EntityDetailViewComponent implements OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['entity'] && !changes['entity'].firstChange) {
+    if (
+      (changes['entity'] && !changes['entity'].firstChange) ||
+      (changes['preferredWorkspaceMode'] && !changes['preferredWorkspaceMode'].firstChange)
+    ) {
       this.workspaceMode = this.defaultWorkspaceMode();
       this.workspaceFocused = false;
       this.workspaceTransitioning = false;
@@ -405,6 +433,18 @@ export class EntityDetailViewComponent implements OnDestroy {
   }
 
   private defaultWorkspaceMode(): DetailWorkspaceMode {
+    if (this.preferredWorkspaceMode) {
+      if (this.isMobileViewport && this.preferredWorkspaceMode === 'split') {
+        return 'graph';
+      }
+
+      if (!this.isMobileViewport && this.preferredWorkspaceMode === 'info') {
+        return 'split';
+      }
+
+      return this.preferredWorkspaceMode;
+    }
+
     return this.isMobileViewport ? 'graph' : 'split';
   }
 

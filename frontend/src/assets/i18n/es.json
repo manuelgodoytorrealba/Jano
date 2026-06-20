@@ -388,41 +388,49 @@
   "collection.createdAndAdded": "La colección ya está creada y esta entidad quedó añadida dentro.",
   "collection.entityAdded": "La entidad ya está organizada dentro de tu colección.",
   "collection.addFailed": "No se pudo añadir",
-  "collection.addError": "No se pudo añadir a la colección."
-  ,"search.title": "Buscar"
-  ,"search.titleWithQuery": "Buscar \"{query}\""
-  ,"search.metaDescription": "Busca en JANO obras, artistas, artículos, movimientos, periodos y conceptos para \"{query}\"."
-  ,"search.metaDescriptionEmpty": "Busca en JANO obras, artistas, artículos, movimientos, periodos y conceptos."
-  ,"search.filterAria": "Filtrar resultados por tipo"
-  ,"search.tag": "Tag"
-  ,"search.directEntries": "entradas directas"
-  ,"search.discovery": "Discovery"
-  ,"search.relatedWith": "está relacionada con"
-  ,"search.whyRelated": "Por qué está relacionado"
-  ,"search.editorialRoute": "Ruta editorial"
-  ,"search.noResults": "No hay resultados"
-  ,"search.noResultsHint": "Prueba con un título, artista, concepto o término más general."
-  ,"search.emptyTitle": "Empieza una búsqueda"
-  ,"search.emptyHint": "Busca en entidades publicadas de todo el sistema."
-  ,"search.type.all": "Todo"
-  ,"search.type.artists": "Artistas"
-  ,"search.type.artworks": "Obras"
-  ,"search.type.movements": "Movimientos"
-  ,"search.type.concepts": "Conceptos"
-  ,"search.type.articles": "Artículos"
-  ,"search.type.places": "Lugares"
-  ,"search.type.periods": "Periodos"
-  ,"search.prep.trending": "Tendencias Ahora"
-  ,"search.prep.staffPicks": "Selección del equipo"
-  ,"search.prep.categories": "Explora por categorías"
-  ,"search.prep.filtering": "Filtrando las sugerencias por {type}"
-  ,"search.prep.contents": "contenidos"
-  ,"search.section.main": "Resultados principales"
-  ,"search.section.keyWorks": "Obras clave"
-  ,"search.section.relatedWorks": "Obras relacionadas"
-  ,"search.section.concepts": "Conceptos relacionados"
-  ,"search.section.context": "Artistas y movimientos"
-  ,"search.section.articles": "Artículos"
-  ,"search.section.routes": "Relaciones para explorar"
-  ,"search.section.decks": "Colecciones sugeridas"
+  "collection.addError": "No se pudo añadir a la colección.",
+  "search.title": "Buscar",
+  "search.titleWithQuery": "Buscar \"{query}\"",
+  "search.metaDescription": "Busca en JANO obras, artistas, artículos, movimientos, periodos y conceptos para \"{query}\".",
+  "search.metaDescriptionEmpty": "Busca en JANO obras, artistas, artículos, movimientos, periodos y conceptos.",
+  "search.filterAria": "Filtrar resultados por tipo",
+  "search.tag": "Tag",
+  "search.directEntries": "entradas directas",
+  "search.discovery": "Discovery",
+  "search.resultsFor": "Resultados para",
+  "search.viewGraph": "Ver en grafo",
+  "search.openRelationsMap": "Abrir mapa de relaciones",
+  "search.exploreFullGraph": "Explora el contexto relacional principal sin salir de la búsqueda.",
+  "search.relatedWith": "está relacionada con",
+  "search.whyRelated": "Por qué está relacionado",
+  "search.editorialRoute": "Ruta editorial",
+  "search.noResults": "No hay resultados",
+  "search.noResultsHint": "Prueba con un título, artista, concepto o término más general.",
+  "search.emptyTitle": "Empieza una búsqueda",
+  "search.emptyHint": "Busca en entidades publicadas de todo el sistema.",
+  "search.viewAll": "Ver todo",
+  "search.viewAllArtworks": "Ver obras",
+  "search.viewAllConcepts": "Ver conceptos",
+  "search.viewAllArticles": "Ver artículos",
+  "search.type.all": "Todo",
+  "search.type.artists": "Artistas",
+  "search.type.artworks": "Obras",
+  "search.type.movements": "Movimientos",
+  "search.type.concepts": "Conceptos",
+  "search.type.articles": "Artículos",
+  "search.type.places": "Lugares",
+  "search.type.periods": "Periodos",
+  "search.prep.trending": "Tendencias Ahora",
+  "search.prep.staffPicks": "Selección del equipo",
+  "search.prep.categories": "Explora por categorías",
+  "search.prep.filtering": "Filtrando las sugerencias por {type}",
+  "search.prep.contents": "contenidos",
+  "search.section.main": "Resultados principales",
+  "search.section.keyWorks": "Obras clave",
+  "search.section.relatedWorks": "Obras relacionadas",
+  "search.section.concepts": "Conceptos relacionados",
+  "search.section.context": "Artistas y movimientos",
+  "search.section.articles": "Artículos",
+  "search.section.routes": "Relaciones para explorar",
+  "search.section.decks": "Colecciones sugeridas"
 }

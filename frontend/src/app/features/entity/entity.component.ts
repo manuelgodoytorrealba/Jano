@@ -1,10 +1,32 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AsyncPipe, Location } from '@angular/common';
-import { BehaviorSubject, catchError, combineLatest, distinctUntilChanged, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  of,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
-import { PublicEntity, PublicEntityRelation, PublicEntityRelationEndpoint } from '../../core/api/entities.models';
+import {
+  PublicEntity,
+  PublicEntityRelation,
+  PublicEntityRelationEndpoint,
+} from '../../core/api/entities.models';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { SavedApi } from '../../core/api/saved.api';
 import { CollectionsApi } from '../../core/api/collections.api';
@@ -43,6 +65,7 @@ import {
 } from './entity-detail.presenter';
 
 type DetailPopupKind = 'saved' | 'manage' | 'removed' | 'share' | 'error' | 'collections';
+type DetailWorkspaceMode = 'split' | 'image' | 'graph' | 'info';
 
 @Component({
   standalone: true,
@@ -67,6 +90,9 @@ export class EntityComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private currentEntity = signal<PublicEntity | null>(null);
+  readonly preferredWorkspaceMode: DetailWorkspaceMode | null = this.normalizeWorkspaceMode(
+    this.route.snapshot.queryParamMap.get('workspace'),
+  );
 
   isSaved = signal(false);
   saveLoading = signal(false);
@@ -150,7 +176,12 @@ export class EntityComponent implements OnDestroy {
       next: () => {
         this.isSaved.set(false);
         this.saveLoading.set(false);
-        this.openPopup('removed', this.i18n.t('popup.removed.title'), this.i18n.t('popup.removed.message'), { autoCloseMs: 2200 });
+        this.openPopup(
+          'removed',
+          this.i18n.t('popup.removed.title'),
+          this.i18n.t('popup.removed.message'),
+          { autoCloseMs: 2200 },
+        );
       },
       error: () => {
         this.saveLoading.set(false);
@@ -172,24 +203,26 @@ export class EntityComponent implements OnDestroy {
     this.popupKind.set('collections');
     this.collectionMessage.set('');
 
-    this.collectionsApi.create({
-      name,
-      description: description || undefined,
-    }).subscribe({
-      next: (collection) => {
-        this.createCollectionName.set('');
-        this.createCollectionDescription.set('');
-        this.collectionsRefresh$.next();
-        this.creatingCollection.set(false);
-        this.addToCollection(collection.id, entityId, true);
-      },
-      error: (err) => {
-        this.creatingCollection.set(false);
-        this.popupKind.set('error');
-        this.popupTitle.set(this.i18n.t('collection.createFailed'));
-        this.collectionMessage.set(err?.error?.message ?? this.i18n.t('mySpace.createError'));
-      },
-    });
+    this.collectionsApi
+      .create({
+        name,
+        description: description || undefined,
+      })
+      .subscribe({
+        next: (collection) => {
+          this.createCollectionName.set('');
+          this.createCollectionDescription.set('');
+          this.collectionsRefresh$.next();
+          this.creatingCollection.set(false);
+          this.addToCollection(collection.id, entityId, true);
+        },
+        error: (err) => {
+          this.creatingCollection.set(false);
+          this.popupKind.set('error');
+          this.popupTitle.set(this.i18n.t('collection.createFailed'));
+          this.collectionMessage.set(err?.error?.message ?? this.i18n.t('mySpace.createError'));
+        },
+      });
   }
 
   private openPopup(
@@ -218,7 +251,8 @@ export class EntityComponent implements OnDestroy {
     }
 
     const title = entity.title ?? this.i18n.t('entity.singular');
-    const text = entity.summary ?? this.detailHeroSubtitle(entity) ?? this.i18n.t('entity.shareDefault');
+    const text =
+      entity.summary ?? this.detailHeroSubtitle(entity) ?? this.i18n.t('entity.shareDefault');
     const url = typeof window !== 'undefined' ? window.location.href : '';
 
     const nav = typeof navigator !== 'undefined' ? navigator : null;
@@ -229,9 +263,12 @@ export class EntityComponent implements OnDestroy {
     const payload = { title, text, url };
 
     if (typeof nav.share === 'function') {
-      nav.share(payload)
+      nav
+        .share(payload)
         .then(() => {
-          this.openPopup('share', this.i18n.t('share.shared'), this.i18n.t('share.sharedMessage'), { autoCloseMs: 2000 });
+          this.openPopup('share', this.i18n.t('share.shared'), this.i18n.t('share.sharedMessage'), {
+            autoCloseMs: 2000,
+          });
         })
         .catch((error: any) => {
           if (error?.name === 'AbortError') {
@@ -244,9 +281,15 @@ export class EntityComponent implements OnDestroy {
     }
 
     if (nav.clipboard?.writeText && url) {
-      nav.clipboard.writeText(url)
+      nav.clipboard
+        .writeText(url)
         .then(() => {
-          this.openPopup('share', this.i18n.t('share.linkCopied'), this.i18n.t('share.linkCopiedMessage'), { autoCloseMs: 2200 });
+          this.openPopup(
+            'share',
+            this.i18n.t('share.linkCopied'),
+            this.i18n.t('share.linkCopiedMessage'),
+            { autoCloseMs: 2200 },
+          );
         })
         .catch(() => {
           this.openPopup('error', this.i18n.t('share.failed'), this.i18n.t('share.copyFailed'));
@@ -255,6 +298,18 @@ export class EntityComponent implements OnDestroy {
     }
 
     this.openPopup('error', this.i18n.t('share.failed'), this.i18n.t('share.notAvailable'));
+  }
+
+  private normalizeWorkspaceMode(value: string | null): DetailWorkspaceMode | null {
+    switch ((value ?? '').trim()) {
+      case 'split':
+      case 'image':
+      case 'graph':
+      case 'info':
+        return value as DetailWorkspaceMode;
+      default:
+        return null;
+    }
   }
 
   focusTop() {
@@ -360,7 +415,7 @@ export class EntityComponent implements OnDestroy {
         }),
       );
     }),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   entity$ = combineLatest([this.slug$, toObservable(this.i18n.locale)]).pipe(
@@ -395,7 +450,7 @@ export class EntityComponent implements OnDestroy {
         },
       });
     }),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   toggleSave(entityId: string) {
@@ -403,7 +458,11 @@ export class EntityComponent implements OnDestroy {
 
     const wasSaved = this.isSaved();
     if (wasSaved) {
-      this.openPopup('manage', this.i18n.t('popup.manage.title'), this.i18n.t('popup.manage.message'));
+      this.openPopup(
+        'manage',
+        this.i18n.t('popup.manage.title'),
+        this.i18n.t('popup.manage.message'),
+      );
       return;
     }
 
@@ -415,7 +474,11 @@ export class EntityComponent implements OnDestroy {
       next: () => {
         this.isSaved.set(true);
         this.saveLoading.set(false);
-        this.openPopup('saved', this.i18n.t('popup.saved.title'), this.i18n.t('popup.saved.message'));
+        this.openPopup(
+          'saved',
+          this.i18n.t('popup.saved.title'),
+          this.i18n.t('popup.saved.message'),
+        );
       },
       error: () => {
         this.saveLoading.set(false);
@@ -436,16 +499,21 @@ export class EntityComponent implements OnDestroy {
         this.collectionsChooserOpen.set(false);
         this.collectionsRefresh$.next();
         this.popupKind.set('saved');
-        this.popupTitle.set(createdNow ? this.i18n.t('collection.created') : this.i18n.t('collection.added')); 
+        this.popupTitle.set(
+          createdNow ? this.i18n.t('collection.created') : this.i18n.t('collection.added'),
+        );
         this.collectionMessage.set(
           createdNow
             ? this.i18n.t('collection.createdAndAdded')
             : this.i18n.t('collection.entityAdded'),
         );
         this.clearPopupAutoClose();
-        this.popupAutoCloseTimer = setTimeout(() => {
-          this.closeCollectionsPanel();
-        }, createdNow ? 2800 : 2400);
+        this.popupAutoCloseTimer = setTimeout(
+          () => {
+            this.closeCollectionsPanel();
+          },
+          createdNow ? 2800 : 2400,
+        );
       },
       error: (err) => {
         this.addingToCollection.set(false);

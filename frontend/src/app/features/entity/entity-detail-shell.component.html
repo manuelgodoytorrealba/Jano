@@ -5,6 +5,7 @@
     [isSaved]="isSaved()"
     [saveLoading]="saveLoading()"
     [collectionsLoading]="collectionsLoading()"
+    [preferredWorkspaceMode]="preferredWorkspaceMode"
     (saveToggle)="toggleSave($event)"
     (collectionsToggle)="toggleCollectionsPanel()"
     (shareToggle)="shareEntity(entity)"
@@ -17,128 +18,178 @@
 
   @if (showCollectionsPanel() && auth.isLoggedIn) {
     <div class="entity-detail-popup-wrap" aria-live="polite">
-        <section
-          class="collections-panel entity-glass"
-          [class.collections-panel--notice]="!collectionsChooserOpen()"
-          [class.collections-panel--chooser]="collectionsChooserOpen()"
-          [attr.data-kind]="popupKind()"
-        >
-          <div class="collections-panel__head">
-            <div class="collections-panel__title-block">
-              <div class="collections-panel__eyebrow">
-                <span class="collections-panel__state-dot" aria-hidden="true"></span>
-                <p class="section-label">
-                  @switch (popupKind()) {
-                    @case ('manage') { {{ i18n.t('popup.state.saved') }} }
-                    @case ('removed') { {{ i18n.t('popup.state.removed') }} }
-                    @case ('share') { {{ i18n.t('popup.state.share') }} }
-                    @case ('error') { {{ i18n.t('popup.state.notice') }} }
-                    @case ('collections') { {{ i18n.t('mySpace.collections') }} }
-                    @default { {{ i18n.t('popup.state.saved') }} }
+      <section
+        class="collections-panel entity-glass"
+        [class.collections-panel--notice]="!collectionsChooserOpen()"
+        [class.collections-panel--chooser]="collectionsChooserOpen()"
+        [attr.data-kind]="popupKind()"
+      >
+        <div class="collections-panel__head">
+          <div class="collections-panel__title-block">
+            <div class="collections-panel__eyebrow">
+              <span class="collections-panel__state-dot" aria-hidden="true"></span>
+              <p class="section-label">
+                @switch (popupKind()) {
+                  @case ('manage') {
+                    {{ i18n.t('popup.state.saved') }}
                   }
-                </p>
-              </div>
-              <h2 class="title-section">{{ popupTitle() }}</h2>
+                  @case ('removed') {
+                    {{ i18n.t('popup.state.removed') }}
+                  }
+                  @case ('share') {
+                    {{ i18n.t('popup.state.share') }}
+                  }
+                  @case ('error') {
+                    {{ i18n.t('popup.state.notice') }}
+                  }
+                  @case ('collections') {
+                    {{ i18n.t('mySpace.collections') }}
+                  }
+                  @default {
+                    {{ i18n.t('popup.state.saved') }}
+                  }
+                }
+              </p>
             </div>
-            <button class="ds-btn collections-panel__close" type="button" (click)="closeCollectionsPanel()">
-              {{ i18n.t('button.close') }}
+            <h2 class="title-section">{{ popupTitle() }}</h2>
+          </div>
+          <button
+            class="ds-btn collections-panel__close"
+            type="button"
+            (click)="closeCollectionsPanel()"
+          >
+            {{ i18n.t('button.close') }}
+          </button>
+        </div>
+
+        @if (collectionMessage()) {
+          <div
+            class="collections-panel__message"
+            [class.collections-panel__message--positive]="
+              popupKind() === 'saved' || popupKind() === 'share'
+            "
+          >
+            <span class="collections-panel__message-icon" aria-hidden="true"></span>
+            <p class="collections-panel__message-text">{{ collectionMessage() }}</p>
+          </div>
+        }
+
+        @if (collectionsChooserOpen()) {
+          <div class="collections-panel__create entity-glass-card">
+            <div class="collections-panel__create-head">
+              <h3 class="collections-panel__create-title">{{ i18n.t('collection.new') }}</h3>
+              <p class="collections-panel__create-subtitle">
+                {{ i18n.t('collection.createAndAttach') }}
+              </p>
+            </div>
+            <div class="collections-panel__create-fields">
+              <input
+                class="ds-input collections-panel__input"
+                type="text"
+                placeholder="{{ i18n.t('collection.namePlaceholder') }}"
+                [value]="createCollectionName()"
+                (input)="createCollectionName.set($any($event.target).value)"
+              />
+              <input
+                class="ds-input collections-panel__input"
+                type="text"
+                placeholder="{{ i18n.t('collection.descriptionPlaceholder') }}"
+                [value]="createCollectionDescription()"
+                (input)="createCollectionDescription.set($any($event.target).value)"
+              />
+            </div>
+            <button
+              class="ds-btn entity-action entity-action--primary collections-panel__create-btn"
+              type="button"
+              [disabled]="creatingCollection() || !createCollectionName().trim()"
+              (click)="createCollectionAndAttach(entity.id)"
+            >
+              @if (creatingCollection()) {
+                {{ i18n.t('common.creating') }}
+              } @else {
+                {{ i18n.t('collection.create') }}
+              }
             </button>
           </div>
 
-          @if (collectionMessage()) {
-            <div class="collections-panel__message" [class.collections-panel__message--positive]="popupKind() === 'saved' || popupKind() === 'share'">
-              <span class="collections-panel__message-icon" aria-hidden="true"></span>
-              <p class="collections-panel__message-text">{{ collectionMessage() }}</p>
-            </div>
-          }
-
-          @if (collectionsChooserOpen()) {
-            <div class="collections-panel__create entity-glass-card">
-              <div class="collections-panel__create-head">
-                <h3 class="collections-panel__create-title">{{ i18n.t('collection.new') }}</h3>
-                <p class="collections-panel__create-subtitle">{{ i18n.t('collection.createAndAttach') }}</p>
-              </div>
-              <div class="collections-panel__create-fields">
-                <input
-                  class="ds-input collections-panel__input"
-                  type="text"
-                  placeholder="{{ i18n.t('collection.namePlaceholder') }}"
-                  [value]="createCollectionName()"
-                  (input)="createCollectionName.set($any($event.target).value)"
-                />
-                <input
-                  class="ds-input collections-panel__input"
-                  type="text"
-                  placeholder="{{ i18n.t('collection.descriptionPlaceholder') }}"
-                  [value]="createCollectionDescription()"
-                  (input)="createCollectionDescription.set($any($event.target).value)"
-                />
-              </div>
-              <button
-                class="ds-btn entity-action entity-action--primary collections-panel__create-btn"
-                type="button"
-                [disabled]="creatingCollection() || !createCollectionName().trim()"
-                (click)="createCollectionAndAttach(entity.id)"
-              >
-                @if (creatingCollection()) { {{ i18n.t('common.creating') }} } @else { {{ i18n.t('collection.create') }} }
-              </button>
-            </div>
-
-            @if (collections$ | async; as collections) {
-              @if (collections.length) {
-                <div class="collections-panel__list">
-                  @for (collection of collections; track collection.id) {
-                    <button
-                      type="button"
-                      class="collection-option entity-glass-card"
-                      [disabled]="addingToCollection()"
-                      (click)="addToCollection(collection.id, entity.id)"
-                    >
-                      <div class="collection-option__body">
-                        <div class="collection-option__name">{{ collection.name }}</div>
-                        <div class="collection-option__meta">
-                          {{ collection.itemCount }} {{ i18n.t('common.items') }}
-                        </div>
+          @if (collections$ | async; as collections) {
+            @if (collections.length) {
+              <div class="collections-panel__list">
+                @for (collection of collections; track collection.id) {
+                  <button
+                    type="button"
+                    class="collection-option entity-glass-card"
+                    [disabled]="addingToCollection()"
+                    (click)="addToCollection(collection.id, entity.id)"
+                  >
+                    <div class="collection-option__body">
+                      <div class="collection-option__name">{{ collection.name }}</div>
+                      <div class="collection-option__meta">
+                        {{ collection.itemCount }} {{ i18n.t('common.items') }}
                       </div>
-                      <span class="collection-option__cta" aria-hidden="true">{{ i18n.t('button.add') }}</span>
-                    </button>
-                  }
-                </div>
-              } @else {
-                <p class="text-muted">{{ i18n.t('collection.noneYet') }}</p>
-              }
-            }
-          } @else {
-            <div class="collections-panel__choices">
-              @if (popupKind() === 'saved' || popupKind() === 'manage') {
-                <div class="collections-panel__primary-actions">
-                  <button class="ds-btn entity-action" type="button" (click)="closeCollectionsPanel()">
-                    {{ i18n.t('button.continue') }}
+                    </div>
+                    <span class="collection-option__cta" aria-hidden="true">{{
+                      i18n.t('button.add')
+                    }}</span>
                   </button>
-                  <button class="ds-btn entity-action entity-action--primary" type="button" [disabled]="collectionsLoading()" (click)="openCollectionsChooser()">
-                    @if (collectionsLoading()) { {{ i18n.t('common.loading') }} } @else { {{ i18n.t('button.addToCollection') }} }
-                  </button>
-                </div>
-                @if (popupKind() === 'manage') {
-                  <div class="collections-panel__secondary-actions">
-                    <button
-                      class="ds-btn entity-action entity-action--danger entity-action--quiet-danger"
-                      type="button"
-                      [disabled]="saveLoading()"
-                      (click)="removeSavedEntity(entity.id)"
-                    >
-                      @if (saveLoading()) { {{ i18n.t('common.removing') }} } @else { {{ i18n.t('button.removeSaved') }} }
-                    </button>
-                  </div>
                 }
-              } @else {
-                <button class="ds-btn entity-action entity-action--primary" type="button" (click)="closeCollectionsPanel()">
-                  {{ i18n.t('button.ok') }}
-                </button>
-              }
-            </div>
+              </div>
+            } @else {
+              <p class="text-muted">{{ i18n.t('collection.noneYet') }}</p>
+            }
           }
-        </section>
+        } @else {
+          <div class="collections-panel__choices">
+            @if (popupKind() === 'saved' || popupKind() === 'manage') {
+              <div class="collections-panel__primary-actions">
+                <button
+                  class="ds-btn entity-action"
+                  type="button"
+                  (click)="closeCollectionsPanel()"
+                >
+                  {{ i18n.t('button.continue') }}
+                </button>
+                <button
+                  class="ds-btn entity-action entity-action--primary"
+                  type="button"
+                  [disabled]="collectionsLoading()"
+                  (click)="openCollectionsChooser()"
+                >
+                  @if (collectionsLoading()) {
+                    {{ i18n.t('common.loading') }}
+                  } @else {
+                    {{ i18n.t('button.addToCollection') }}
+                  }
+                </button>
+              </div>
+              @if (popupKind() === 'manage') {
+                <div class="collections-panel__secondary-actions">
+                  <button
+                    class="ds-btn entity-action entity-action--danger entity-action--quiet-danger"
+                    type="button"
+                    [disabled]="saveLoading()"
+                    (click)="removeSavedEntity(entity.id)"
+                  >
+                    @if (saveLoading()) {
+                      {{ i18n.t('common.removing') }}
+                    } @else {
+                      {{ i18n.t('button.removeSaved') }}
+                    }
+                  </button>
+                </div>
+              }
+            } @else {
+              <button
+                class="ds-btn entity-action entity-action--primary"
+                type="button"
+                (click)="closeCollectionsPanel()"
+              >
+                {{ i18n.t('button.ok') }}
+              </button>
+            }
+          </div>
+        }
+      </section>
     </div>
   }
 } @else {
@@ -161,7 +212,9 @@
           </div>
           <div class="entity-explorer__skeleton-pane entity-explorer__skeleton-pane--graph">
             <div class="entity-explorer__skeleton-toolbar">
-              <div class="entity-explorer__skeleton-line entity-explorer__skeleton-line--short"></div>
+              <div
+                class="entity-explorer__skeleton-line entity-explorer__skeleton-line--short"
+              ></div>
               <div class="entity-explorer__skeleton-actions">
                 <span></span>
                 <span></span>
@@ -170,13 +223,19 @@
             </div>
             <div class="entity-explorer__skeleton-stage"></div>
             <div class="entity-explorer__skeleton-copy">
-              <div class="entity-explorer__skeleton-line entity-explorer__skeleton-line--title"></div>
-              <div class="entity-explorer__skeleton-line entity-explorer__skeleton-line--body"></div>
+              <div
+                class="entity-explorer__skeleton-line entity-explorer__skeleton-line--title"
+              ></div>
+              <div
+                class="entity-explorer__skeleton-line entity-explorer__skeleton-line--body"
+              ></div>
             </div>
           </div>
         </div>
       </section>
-      <section class="entity-section entity-glass entity-section--wide entity-section--loading"></section>
+      <section
+        class="entity-section entity-glass entity-section--wide entity-section--loading"
+      ></section>
     </div>
   </div>
 }

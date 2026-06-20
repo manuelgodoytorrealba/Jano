@@ -51,6 +51,7 @@ export type SearchDeck = {
 export type SearchSection = {
   key: string;
   title: string;
+  total?: number;
   items?: SearchResult[];
   routes?: SearchRoute[];
   decks?: SearchDeck[];
@@ -74,7 +75,13 @@ export type SearchResponse = {
 export class SearchApi {
   private http = inject(HttpClient);
 
-  search(params: { q: string; type?: string; tag?: string; limit?: number; includeDrafts?: boolean }) {
+  search(params: {
+    q: string;
+    type?: string;
+    tag?: string;
+    limit?: number;
+    includeDrafts?: boolean;
+  }) {
     let httpParams = new HttpParams().set('q', params.q ?? '');
 
     if (params.type) {
