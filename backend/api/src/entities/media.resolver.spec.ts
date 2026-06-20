@@ -43,6 +43,17 @@ describe('media.resolver', () => {
     expect(resolved.primary?.id).toBe('legacy-media');
   });
 
+  it('uses the global entity image without marking empty editorial slots as covered', () => {
+    const entity = { type: 'ARTWORK', mediaLinks: [] };
+
+    const resolved = buildResolvedMedia(entity);
+    const library = buildAdminMediaLibrary(entity);
+
+    expect(resolved.detail?.url).toBe('/assets/home/museum-room.jpg');
+    expect(resolved.explorer3d?.id).toBe('jano-default-entity-image');
+    expect(library.coverageSummary.coveredSlots).toEqual([]);
+  });
+
   it('falls back to legacy primary when no explicit usage role exists', () => {
     const entity = {
       type: 'ARTWORK',

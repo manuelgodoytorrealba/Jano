@@ -6,9 +6,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, map, tap } from 'rxjs';
+import { distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
+import { HomeDecksApi } from '../../core/api/home-decks.api';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { PublicEntityListItem } from '../../core/api/entities.models';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
@@ -59,6 +61,7 @@ const CONTENT_LEVEL_KEYS: Record<Exclude<Level, ''>, string> = {
   providers: [EntitiesListFacade],
   imports: [
     AsyncPipe,
+    RouterLink,
     EntitiesExplorer3dComponent,
     EntitiesExplorerTotemComponent,
     JanoMediaComponent,
@@ -71,6 +74,8 @@ const CONTENT_LEVEL_KEYS: Record<Exclude<Level, ''>, string> = {
 })
 export class EntitiesListComponent {
   private readonly facade = inject(EntitiesListFacade);
+  private readonly route = inject(ActivatedRoute);
+  private readonly homeDecksApi = inject(HomeDecksApi);
   readonly i18n = inject(I18nService);
 
   readonly pageVm$ = this.facade.pageVm$;
@@ -81,9 +86,10 @@ export class EntitiesListComponent {
   readonly activeIndex = signal(0);
   readonly advancedFiltersOpen = signal(false);
   readonly filtersPanelOpen = signal(false);
-  readonly infoPanelOpen = signal(false);
+  readonly infoPanelOpen = signal(typeof window !== 'undefined' ? !(window.innerWidth <= 720 && window.innerHeight > window.innerWidth) : true);
   readonly openFilterMenu = signal<FilterMenuKey | null>(null);
-  readonly curatedDeckMode = signal(false);
+  readonly curatedDeckMode = signal(!!(this.route.snapshot.queryParamMap.get('deck') ?? '').trim());
+  readonly curatedDeckTitle = signal('');
 
   viewMode: ViewMode = 'explore';
 
@@ -93,14 +99,25 @@ export class EntitiesListComponent {
       distinctUntilChanged(),
       tap((isCuratedDeck) => {
         this.curatedDeckMode.set(isCuratedDeck);
-
-        if (isCuratedDeck) {
-          this.filtersPanelOpen.set(true);
-          this.closeFilterMenu();
-        }
       }),
       takeUntilDestroyed(),
     ).subscribe();
+    this.route.queryParamMap.pipe(
+      map((queryParamMap) => (queryParamMap.get('deck') ?? '').trim()),
+      distinctUntilChanged(),
+      switchMap((deckSlug) => {
+        if (!deckSlug) {
+          return of('');
+        }
+
+        return this.homeDecksApi.listPublic('RECOMMENDED').pipe(
+          map((decks) => decks.find((deck) => deck.slug === deckSlug)?.title?.trim() || ''),
+        );
+      }),
+      tap((title) => this.curatedDeckTitle.set(title)),
+      takeUntilDestroyed(),
+    ).subscribe();
+
 
     this.pageVm$.pipe(
       map((pageVm) => pageVm.results.items.length),
@@ -131,11 +148,41 @@ export class EntitiesListComponent {
 
     this.viewportWidth.set(window.innerWidth);
     this.viewportHeight.set(window.innerHeight);
+
+    if (this.isMobilePortraitTotem()) {
+      this.infoPanelOpen.set(false);
+      return;
+    }
+
+    this.infoPanelOpen.set(true);
   }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.filtersPanelOpen()) {
+      return;
+    }
+
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    if (target.closest('.entities-filter-rail, .entities-hud__filters')) {
+      return;
+    }
+
+    this.filtersPanelOpen.set(false);
+    this.closeFilterMenu();
+  }
+
 
   setView(mode: ViewMode) {
     this.closeFilterMenu();
     this.viewMode = mode;
+
+    if (mode === 'explore' && !this.isMobilePortraitTotem()) {
+      this.infoPanelOpen.set(true);
+    }
   }
 
   toggleFiltersPanel() {
@@ -157,6 +204,43 @@ export class EntitiesListComponent {
   closeInfoPanel() {
     this.infoPanelOpen.set(false);
   }
+
+  breadcrumbSectionLabel(pageVm: { title: string; type: string; curatedDeckMode: boolean }): string {
+    if (this.curatedDeckMode()) {
+      return this.i18n.t('nav.curated');
+    }
+
+    if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
+      return this.i18n.t('nav.articles');
+    }
+
+    return this.i18n.t('nav.explore');
+  }
+
+  breadcrumbSectionRoute(pageVm: { title: string; type: string; curatedDeckMode: boolean }): string {
+    if (this.curatedDeckMode()) {
+      return '/curated';
+    }
+
+    if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
+      return '/entities/article';
+    }
+
+    return '/entities/artwork';
+  }
+
+  breadcrumbCurrentLabel(pageVm: { title: string; type: string; curatedDeckMode: boolean }): string {
+    if (this.curatedDeckMode()) {
+      return this.curatedDeckTitle() || this.i18n.t('nav.curated');
+    }
+
+    if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
+      return '';
+    }
+
+    return pageVm.title;
+  }
+
 
   openInfoPanel() {
     if (this.isMobilePortraitTotemActive()) {

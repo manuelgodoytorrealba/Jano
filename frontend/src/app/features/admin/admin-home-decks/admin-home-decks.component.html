@@ -3,13 +3,13 @@
     <div>
       <p class="eyebrow">Editorial</p>
       <h1>Decks editoriales</h1>
-      <p class="intro">Gestiona bloques destacados para Home y Recommended.</p>
+      <p class="intro">Gestiona bloques destacados para Home y Curated.</p>
     </div>
 
     <div class="head-actions">
       <a class="btn" routerLink="/admin">Editorial desk</a>
       <a class="btn" routerLink="/">Ver home</a>
-      <a class="btn" routerLink="/recommended">Ver recommended</a>
+      <a class="btn" routerLink="/curated">Ver curated</a>
     </div>
   </header>
 
@@ -32,7 +32,7 @@
         <strong>{{ vm.homeCount }}</strong>
       </div>
       <div>
-        <span>Recommended</span>
+        <span>Curated</span>
         <strong>{{ vm.recommendedCount }}</strong>
       </div>
       <div>
@@ -48,7 +48,7 @@
     <section class="production-status">
       <div class="section-title">
         <h2>Estado real en producción</h2>
-        <p>Te dice si Home y Recommended viven de decks editables o del fallback editorial base.</p>
+        <p>Te dice si Home y Curated viven de decks editables o del fallback editorial base.</p>
       </div>
 
       <div class="production-status__grid">
@@ -82,7 +82,7 @@
 
         <article class="surface-status">
           <div class="surface-status__head">
-            <span class="surface-status__eyebrow">Recommended</span>
+            <span class="surface-status__eyebrow">Curated</span>
             <strong [class.is-fallback]="vm.usesRecommendedFallback">
               {{ vm.usesRecommendedFallback ? 'Fallback activo' : 'Decks activos' }}
             </strong>
@@ -103,7 +103,7 @@
               type="button"
               (click)="importMissingStarters('RECOMMENDED', vm.starterStates, vm.recommendedActiveDecks.length)"
               [disabled]="saving">
-              Importar base Recommended
+              Importar base Curated
             </button>
           </div>
         </article>
@@ -113,7 +113,7 @@
     <section class="starter-library">
       <div class="section-title">
         <h2>Base editorial actual</h2>
-        <p>Estos son los decks base que hoy sostienen el lenguaje del Home y Recommended.</p>
+        <p>Estos son los decks base que hoy sostienen el lenguaje del Home y Curated.</p>
       </div>
 
       <div class="starter-library__grid">
@@ -206,7 +206,7 @@
           <span>Publicar en</span>
           <select name="surface" [ngModel]="newDeck.surface" (ngModelChange)="onNewDeckSurfaceChange($event)">
             <option value="HOME">Home</option>
-            <option value="RECOMMENDED">Recommended</option>
+            <option value="RECOMMENDED">Curated</option>
           </select>
           <small>{{ surfaceDescription(newDeck.surface) }}</small>
         </label>
@@ -241,7 +241,7 @@
           <div class="create-note">
             <span>Acción al abrir</span>
             <strong>Selección curada del deck</strong>
-            <small>Recommended abre siempre las entities que selecciones para este deck.</small>
+            <small>Curated abre siempre las entities que selecciones para este deck.</small>
           </div>
         }
 
@@ -366,7 +366,7 @@
           </section>
         }
       } @else {
-        <div class="empty">No hay decks creados. Home y Recommended seguirán usando fallback visual.</div>
+        <div class="empty">No hay decks creados. Home y Curated seguirán usando fallback visual.</div>
       }
     </section>
   }

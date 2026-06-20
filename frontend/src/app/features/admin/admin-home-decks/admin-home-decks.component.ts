@@ -380,7 +380,7 @@ export class AdminHomeDecksComponent {
 
   selectedCtaRouteDetail(): string {
     if (this.newDeck.surface === 'RECOMMENDED') {
-      return 'Recommended abre la selección curada que armes dentro del deck.';
+      return 'Curated abre la selección curada que armes dentro del deck.';
     }
 
     const option = this.ctaRouteOptions.find((candidate) => candidate.value === (this.newDeck.ctaRoute ?? ''));
@@ -389,7 +389,7 @@ export class AdminHomeDecksComponent {
 
   newDeckSurfaceSummary(): string {
     return this.newDeck.surface === 'RECOMMENDED'
-      ? 'Lista curada para Recommended'
+      ? 'Lista curada para Curated'
       : 'Entrada principal dentro del Home';
   }
 
@@ -398,12 +398,12 @@ export class AdminHomeDecksComponent {
   }
 
   surfaceSectionTitle(surface: HomeDeckSurfaceValue): string {
-    return surface === 'RECOMMENDED' ? 'Recommended editables' : 'Home editables';
+    return surface === 'RECOMMENDED' ? 'Curated editables' : 'Home editables';
   }
 
   surfaceSectionIntro(surface: HomeDeckSurfaceValue): string {
     return surface === 'RECOMMENDED'
-      ? 'Colecciones curadas que hoy alimentan Recommended.'
+      ? 'Colecciones curadas que hoy alimentan Curated.'
       : 'Entradas editoriales que hoy pueden sustituir o acompañar el Home base.';
   }
 

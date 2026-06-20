@@ -52,6 +52,8 @@ export class EntitiesExplorer3dComponent
     @Input() items: Entity[] = [];
     @Input() activeIndex = 0;
     @Input() infoOpen = true;
+    @Input() infoClosable = false;
+    @Input() infoModal = false;
 
     @Output() activeIndexChange = new EventEmitter<number>();
     @Output() openEntity = new EventEmitter<string | EntityArtworkTransitionPayload>();
@@ -85,8 +87,6 @@ export class EntitiesExplorer3dComponent
     private dragAccumulatedX = 0;
     private dragMoved = false;
     private hoveredIndex: number | null = null;
-
-    private hasInitializedCenter = false;
     private wheelIntent = 0;
     private lastWheelEventAt = 0;
     private lastWheelNavigationAt = 0;
@@ -106,7 +106,6 @@ export class EntitiesExplorer3dComponent
         if (!this.isBrowser) return;
 
         this.initScene();
-        this.ensureCenteredStart();
         this.buildCards();
         this.updateCardTargets();
         this.startRenderLoop();
@@ -117,7 +116,6 @@ export class EntitiesExplorer3dComponent
         if (!this.isBrowser) return;
 
         if (changes['items']) {
-            this.ensureCenteredStart();
 
             if (this.scene) {
                 this.buildCards();
@@ -189,16 +187,6 @@ export class EntitiesExplorer3dComponent
         return text.replace(/\[\[(.*?)\|(.*?)\]\]/g, '$2');
     }
 
-    private ensureCenteredStart(): void {
-        if (this.hasInitializedCenter || !this.items.length) return;
-
-        const middle = Math.floor(this.items.length / 2);
-        if (this.activeIndex !== middle) {
-            this.activeIndexChange.emit(middle);
-        }
-
-        this.hasInitializedCenter = true;
-    }
 
     @HostListener('window:keydown', ['$event'])
     onWindowKeyDown(event: KeyboardEvent): void {

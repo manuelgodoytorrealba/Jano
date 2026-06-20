@@ -21,8 +21,28 @@
     [class.is-info-collapsed]="!infoPanelOpen()"
     [class.is-mobile-portrait-totem]="isMobilePortraitTotemActive()">
     <header class="entities-hud" [attr.aria-label]="i18n.t('explorer.view.explorer')">
-      <div class="entities-mode-pill ds-panel">
-        <div class="view-toggle" role="tablist" [attr.aria-label]="i18n.t('explorer.view.explorer')">
+      @if (pageVm$ | async; as pageVm) {
+        <nav class="entities-breadcrumbs ds-panel" aria-label="Breadcrumb">
+          <a class="entities-breadcrumbs__link" routerLink="/">{{ i18n.t('nav.discover') }}</a>
+          <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
+          @if (curatedDeckMode()) {
+            <a class="entities-breadcrumbs__link" routerLink="/curated">{{ i18n.t('nav.curated') }}</a>
+            @if (breadcrumbCurrentLabel(pageVm)) {
+              <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
+              <span class="entities-breadcrumbs__current">{{ breadcrumbCurrentLabel(pageVm) }}</span>
+            }
+          } @else {
+            <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{ breadcrumbSectionLabel(pageVm) }}</a>
+            @if (breadcrumbCurrentLabel(pageVm)) {
+              <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
+              <span class="entities-breadcrumbs__current">{{ breadcrumbCurrentLabel(pageVm) }}</span>
+            }
+          }
+        </nav>
+      }
+      <div class="entities-hud__controls">
+        <div class="entities-mode-pill ds-panel">
+          <div class="view-toggle" role="tablist" [attr.aria-label]="i18n.t('explorer.view.explorer')">
           <button
             type="button"
             class="view-toggle__button"
@@ -43,42 +63,29 @@
             {{ i18n.t('explorer.view.list') }}
           </button>
         </div>
-      </div>
+        </div>
 
-      <button
-        type="button"
-        class="entities-hud__filters ds-panel"
-        [class.is-collapsed]="!filtersPanelOpen()"
-        (click)="toggleFiltersPanel()"
-        [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
-        [attr.aria-expanded]="filtersPanelOpen()">
-        <svg class="entities-hud__filters-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-          <path d="M4 6h16" />
-          <circle cx="9" cy="6" r="1.9" />
-          <path d="M4 12h16" />
-          <circle cx="15" cy="12" r="1.9" />
-          <path d="M4 18h16" />
-          <circle cx="11" cy="18" r="1.9" />
-        </svg>
-      </button>
+        <button
+          type="button"
+          class="entities-hud__filters ds-panel"
+          [class.is-collapsed]="!filtersPanelOpen()"
+          (click)="toggleFiltersPanel()"
+          [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
+          [attr.aria-expanded]="filtersPanelOpen()">
+          <svg class="entities-hud__filters-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+            <path d="M4 6h16" />
+            <circle cx="9" cy="6" r="1.9" />
+            <path d="M4 12h16" />
+            <circle cx="15" cy="12" r="1.9" />
+            <path d="M4 18h16" />
+            <circle cx="11" cy="18" r="1.9" />
+          </svg>
+        </button>
+      </div>
     </header>
 
-    <button
-      type="button"
-      class="entities-rail-handle ds-panel"
-      [class.is-collapsed]="!filtersPanelOpen()"
-      (click)="toggleFiltersPanel()"
-      [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
-      [attr.aria-expanded]="filtersPanelOpen()">
-      <span class="entities-rail-handle__glyph" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-      <span class="entities-rail-handle__label">{{ i18n.t('explorer.filters') }}</span>
-    </button>
-
     @if (pageVm$ | async; as pageVm) {
+      @if (filtersPanelOpen()) {
       <app-entities-list-filter-rail
         [vm]="pageVm.filterRail"
         [collapsed]="!filtersPanelOpen()"
@@ -95,6 +102,7 @@
         (toggleAdvancedFilters)="toggleAdvancedFilters()"
         (resetFilters)="resetFilters()">
       </app-entities-list-filter-rail>
+      }
 
       @if (viewMode === 'explore') {
         @if (pageVm.results.items.length) {
@@ -114,6 +122,8 @@
                 [items]="pageVm.results.items"
                 [activeIndex]="activeIndex()"
                 [infoOpen]="infoPanelOpen()"
+                [infoClosable]="true"
+                [infoModal]="isMobilePortraitTotem()"
                 (activeIndexChange)="activeIndex.set($event)"
                 (openEntity)="go($event)"
                 (requestInfoOpen)="openInfoPanel()"
@@ -172,7 +182,7 @@
         </div>
       }
     } @else {
-      @if (!curatedDeckMode()) {
+      @if (filtersPanelOpen()) {
         <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()" [attr.aria-hidden]="!filtersPanelOpen()">
           <div class="entities-filter-rail__section">
             <label class="entities-filter-rail__label" for="entities-search-skeleton">{{ i18n.t('explorer.search.label') }}</label>

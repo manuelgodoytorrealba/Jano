@@ -29,7 +29,7 @@ export class SearchComponent {
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
   readonly i18n = inject(I18nService);
-  readonly types: SearchType[] = ['', 'ARTIST', 'ARTWORK', 'MOVEMENT', 'CONCEPT', 'ARTICLE'];
+  readonly types: SearchType[] = ['', 'ARTIST', 'ARTWORK', 'MOVEMENT', 'CONCEPT', 'ARTICLE', 'PLACE', 'PERIOD'];
   searchInput = this.route.snapshot.queryParamMap.get('q') ?? '';
 
   readonly q$ = this.route.queryParamMap.pipe(
@@ -111,6 +111,8 @@ export class SearchComponent {
       MOVEMENT: this.i18n.t('search.type.movements'),
       CONCEPT: this.i18n.t('search.type.concepts'),
       ARTICLE: this.i18n.t('search.type.articles'),
+      PLACE: this.i18n.t('search.type.places'),
+      PERIOD: this.i18n.t('search.type.periods'),
     };
     return labels[String(type)] ?? String(type).toLowerCase().replace(/^\w/, (char) => char.toUpperCase());
   }

@@ -1,23 +1,13 @@
-<header
-  class="app-chrome__header app-glass"
-  [class.app-chrome__header--collapsed]="headerCollapsed()"
-  [class.app-chrome__header--detail]="detailHeaderMode()"
->
-  <a
-    class="app-chrome__brand"
-    routerLink="/"
-    [attr.aria-label]="i18n.t('chrome.goHome')"
-    [class.is-pressing]="brandPressing()"
-    (pointerdown)="pressBrand()"
-    (pointerup)="releaseBrand()"
-    (pointerleave)="releaseBrand()"
-    (pointercancel)="releaseBrand()"
-    (blur)="releaseBrand()"
-  >
-    <img class="app-chrome__brand-mark" src="/app-brand-mark.png" srcset="/app-brand-mark.png 2x" alt="" width="44" height="44" aria-hidden="true">
+<header class="app-chrome__header app-glass" [class.app-chrome__header--collapsed]="headerCollapsed()"
+  [class.app-chrome__header--detail]="detailHeaderMode()">
+  <a class="app-chrome__brand" routerLink="/" [attr.aria-label]="i18n.t('chrome.goHome')"
+    [class.is-pressing]="brandPressing()" (pointerdown)="pressBrand()" (pointerup)="releaseBrand()"
+    (pointerleave)="releaseBrand()" (pointercancel)="releaseBrand()" (blur)="releaseBrand()">
+    <img class="app-chrome__brand-mark" src="/app-brand-mark.png" srcset="/app-brand-mark.png 2x" alt="" width="44"
+      height="44" aria-hidden="true">
     <span class="app-chrome__brand-copy">
       <span class="app-chrome__brand-name">JANO</span>
-      <span class="app-chrome__brand-tag">{{ i18n.t('chrome.brandTagline') }}</span>
+
     </span>
   </a>
 
@@ -28,211 +18,283 @@
         <path d="m14 14 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
       </svg>
     </span>
-    <input
-      #searchInput
-      class="ds-input app-chrome__search-input"
-      type="search"
-      autocomplete="off"
-      [placeholder]="i18n.t('search.headerPlaceholder')"
-      [attr.aria-label]="i18n.t('search.headerPlaceholder')"
-      [attr.aria-expanded]="showSearchSuggestions()"
-      (input)="onSearchInput(searchInput.value)"
-      (focus)="onSearchFocus(searchInput.value)"
-      (blur)="onSearchBlur()"
-      (keydown)="onSearchKeydown($event, searchInput)"
-      (keydown.escape)="closeSearchSuggestions()"
-    />
+    <input #searchInput class="ds-input app-chrome__search-input" type="search" autocomplete="off"
+      [placeholder]="i18n.t('search.headerPlaceholder')" [attr.aria-label]="i18n.t('search.headerPlaceholder')"
+      [attr.aria-expanded]="showSearchSuggestions()" (input)="onSearchInput(searchInput.value)"
+      (focus)="onSearchFocus(searchInput.value)" (blur)="onSearchBlur()"
+      (keydown)="onSearchKeydown($event, searchInput)" (keydown.escape)="closeSearchSuggestions()" />
     @if (searchDraft()) {
-      <button
-        type="button"
-        class="app-chrome__search-clear"
-        aria-label="Limpiar búsqueda"
-        title="Limpiar búsqueda"
-        (click)="clearSearchInput(searchInput)"
-      >
-        ×
-      </button>
+    <button type="button" class="app-chrome__search-clear" aria-label="Limpiar búsqueda" title="Limpiar búsqueda"
+      (click)="clearSearchInput(searchInput)">
+      ×
+    </button>
     }
 
     @if (showSearchSuggestions()) {
-      <div class="app-chrome__search-suggestions app-glass" (wheel)="onSearchSuggestionsWheel($event)">
-        @if (searchLoading()) {
-          <div class="app-chrome__search-state">Buscando…</div>
-        } @else if (searchSuggestions().length) {
-          @for (item of searchSuggestions(); track item.id; let i = $index) {
-            <button
-              type="button"
-              class="app-chrome__suggestion"
-              [class.is-active]="activeSuggestionIndex() === i"
-              (mouseenter)="setActiveSearchSuggestion(i)"
-              (mousedown)="chooseSearchSuggestion(searchInput, item)"
-            >
-              <span class="app-chrome__suggestion-type">{{ item.type }}</span>
-              <span class="app-chrome__suggestion-title">{{ item.title }}</span>
-            </button>
+    <div class="app-chrome__search-suggestions app-glass" (wheel)="onSearchSuggestionsWheel($event)">
+      @if (searchLoading()) {
+      <div class="app-chrome__search-state">Buscando…</div>
+      } @else if (searchSuggestions().length) {
+      @for (item of searchSuggestions(); track item.id; let i = $index) {
+      <button type="button" class="app-chrome__suggestion" [class.is-active]="activeSuggestionIndex() === i"
+        (mouseenter)="setActiveSearchSuggestion(i)" (mousedown)="chooseSearchSuggestion(searchInput, item)">
+        <span class="app-chrome__suggestion-type">{{ item.type }}</span>
+        <span class="app-chrome__suggestion-title">{{ item.title }}</span>
+      </button>
+      }
+      <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
+        Ver todos los resultados para “{{ searchDraft() }}”
+      </button>
+      } @else {
+      <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
+        Buscar “{{ searchDraft() }}”
+      </button>
+      }
+    </div>
+    }
+
+    @if (showSearchPreparationPanel()) {
+    <section class="app-chrome__search-prelude app-glass">
+      @if (searchPreparationLoading()) {
+      <div class="app-chrome__search-prelude-state">{{ i18n.t('common.loading') }}</div>
+      } @else {
+      <section class="app-chrome__search-prelude-section">
+        <div class="app-chrome__search-prelude-head">
+          <h2>{{ i18n.t('search.prep.trending') }}</h2>
+        </div>
+        <div class="app-chrome__search-trends">
+          @for (topic of searchPreparationTopics().slice(0, 6); track topic.id) {
+          <button type="button" class="app-chrome__trend-card"
+            [style.--trend-image]="topic.image?.url ? 'url(' + topic.image?.url + ')' : 'none'"
+            (mousedown)="openPreparationCollection(topic)">
+            <span class="app-chrome__trend-card-copy">
+              <strong>{{ topic.title }}</strong>
+              <small>{{ trendMeta(topic) }}</small>
+            </span>
+          </button>
           }
-          <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
-            Ver todos los resultados para “{{ searchDraft() }}”
+        </div>
+      </section>
+
+      <section class="app-chrome__search-prelude-section">
+        <div class="app-chrome__search-prelude-head">
+          <h2>{{ i18n.t('search.prep.staffPicks') }}</h2>
+        </div>
+        <div class="app-chrome__search-picks">
+          @for (pick of searchPreparationPicks().slice(0, 3); track pick.id) {
+          <button type="button" class="app-chrome__pick-card"
+            [style.--pick-image]="pick.image?.url ? 'url(' + pick.image?.url + ')' : 'none'"
+            (mousedown)="openPreparationCollection(pick)">
+            <span class="app-chrome__pick-card-copy">
+              <strong>{{ pick.title }}</strong>
+              <small>{{ pick.description || pick.subtitle || i18n.t('search.editorialRoute') }}</small>
+            </span>
           </button>
-        } @else {
-          <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
-            Buscar “{{ searchDraft() }}”
+          }
+        </div>
+      </section>
+
+      <section class="app-chrome__search-prelude-section">
+        <div class="app-chrome__search-prelude-head">
+          <h2>{{ i18n.t('search.prep.categories') }}</h2>
+        </div>
+        <div class="app-chrome__search-categories">
+          @for (category of searchPreparationCategories; track category.type) {
+          <button type="button" class="app-chrome__search-category"
+            [class.is-active]="searchPreparationType() === category.type"
+            (mousedown)="openPreparationCategory(category.type)">
+            <span class="app-chrome__search-category-icon" aria-hidden="true">
+              @switch (category.icon) {
+              @case ('artist') {
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="7.5" r="3.2" />
+                <path d="M5.5 19c1.3-3.2 4-4.8 6.5-4.8s5.2 1.6 6.5 4.8" />
+              </svg>
+              }
+              @case ('movement') {
+              <svg viewBox="0 0 24 24">
+                <path d="M4.5 18.5c3.8-7.2 11.2-11.4 15-13" />
+                <path d="M6.5 7.5h6.5" />
+                <path d="M11 13h6.5" />
+              </svg>
+              }
+              @case ('concept') {
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="6.5" />
+                <path d="M12 3.5v3" />
+                <path d="M12 17.5v3" />
+                <path d="M3.5 12h3" />
+                <path d="M17.5 12h3" />
+              </svg>
+              }
+              @case ('artwork') {
+              <svg viewBox="0 0 24 24">
+                <rect x="4.5" y="5" width="15" height="14" rx="2.5" />
+                <path d="M7.5 15l3-3 2.5 2.5 3.5-4 1.5 1.8" />
+                <circle cx="9" cy="9" r="1.2" />
+              </svg>
+              }
+              @case ('article') {
+              <svg viewBox="0 0 24 24">
+                <rect x="5" y="4.5" width="14" height="15" rx="2.5" />
+                <path d="M8.5 9h7" />
+                <path d="M8.5 12.5h7" />
+                <path d="M8.5 16h4.5" />
+              </svg>
+              }
+              @case ('place') {
+              <svg viewBox="0 0 24 24">
+                <path d="M12 20.2c3.6-3.8 5.5-6.8 5.5-9.3A5.5 5.5 0 1 0 6.5 10.9c0 2.5 1.9 5.5 5.5 9.3Z" />
+                <circle cx="12" cy="10.5" r="1.8" />
+              </svg>
+              }
+              @case ('period') {
+              <svg viewBox="0 0 24 24">
+                <path d="M6.5 5.5h11" />
+                <path d="M8 3.8v3.4" />
+                <path d="M16 3.8v3.4" />
+                <rect x="5.5" y="6.5" width="13" height="12" rx="2.5" />
+                <path d="M8.5 11h7" />
+              </svg>
+              }
+              }
+            </span>
+            <span>{{ i18n.t(category.labelKey) }}</span>
           </button>
-        }
-      </div>
+          }
+        </div>
+      </section>
+      }
+    </section>
     }
   </form>
 
-  <nav
-    class="app-chrome__nav"
-    [class.has-active]="activeNavIndex() >= 0"
-    [attr.aria-label]="i18n.t('chrome.primaryNav')"
-    [style.--active-index]="activeNavIndex()"
-  >
+
+  <nav class="app-chrome__nav" [class.has-active]="activeNavIndex() >= 0"
+    [attr.aria-label]="i18n.t('chrome.primaryNav')" [style.--active-index]="activeNavIndex()">
     <span class="app-chrome__nav-indicator" aria-hidden="true"></span>
     @for (item of navItems; track item.label) {
-      @if ($index === 4) {
-        <span class="app-chrome__nav-separator" aria-hidden="true"></span>
-      }
-      @if (item.kind === 'route') {
-        <a
-          class="app-chrome__nav-link"
-          [class.is-active]="isRouteActive(item)"
-          [class.app-chrome__nav-link--personal]="item.group === 'personal'"
-          [routerLink]="targetRoute(item)"
-          (click)="primeRoute(item)"
-        >
-          {{ i18n.t(item.label) }}
-        </a>
-      } @else {
-        <button type="button" class="app-chrome__nav-link is-placeholder" (click)="preventPlaceholderAction($event)">
-          {{ i18n.t(item.label) }}
-        </button>
-      }
+    @if ($index === 4) {
+    <span class="app-chrome__nav-separator" aria-hidden="true"></span>
+    }
+    @if (item.kind === 'route') {
+    <a class="app-chrome__nav-link" [class.is-active]="isRouteActive(item)"
+      [class.app-chrome__nav-link--personal]="item.group === 'personal'" [routerLink]="targetRoute(item)"
+      (click)="primeRoute(item)">
+      {{ i18n.t(item.label) }}
+    </a>
+    } @else {
+    <button type="button" class="app-chrome__nav-link is-placeholder" (click)="preventPlaceholderAction($event)">
+      {{ i18n.t(item.label) }}
+    </button>
+    }
     }
   </nav>
 
   @if (showHeaderCloseButton()) {
-    <button
-      type="button"
-      class="app-chrome__header-toggle app-chrome__header-toggle--close"
-      [attr.aria-label]="i18n.t('chrome.hideHeader')"
-      [title]="i18n.t('chrome.hideHeader')"
-      (click)="collapseHeader()"
-    >
-      <span aria-hidden="true">×</span>
-    </button>
+  <button type="button" class="app-chrome__header-toggle app-chrome__header-toggle--close"
+    [attr.aria-label]="i18n.t('chrome.hideHeader')" [title]="i18n.t('chrome.hideHeader')" (click)="collapseHeader()">
+    <span aria-hidden="true">×</span>
+  </button>
   }
 </header>
 
 @if (headerToggleVisible() && headerCollapsed()) {
-  <button
-    type="button"
-    class="app-chrome__header-toggle app-chrome__header-toggle--open"
-    [class.app-chrome__header-toggle--visible]="true"
-    [attr.aria-label]="headerCollapsed() ? i18n.t('chrome.showHeader') : i18n.t('chrome.hideHeader')"
-    [title]="headerCollapsed() ? i18n.t('chrome.showHeader') : i18n.t('chrome.hideHeader')"
-    (click)="toggleDetailHeader()"
-  >
-    <span class="app-chrome__header-toggle-bars" aria-hidden="true">
-      <span></span>
-      <span></span>
-      <span></span>
-    </span>
-  </button>
+<button type="button" class="app-chrome__header-toggle app-chrome__header-toggle--open"
+  [class.app-chrome__header-toggle--visible]="true"
+  [attr.aria-label]="headerCollapsed() ? i18n.t('chrome.showHeader') : i18n.t('chrome.hideHeader')"
+  [title]="headerCollapsed() ? i18n.t('chrome.showHeader') : i18n.t('chrome.hideHeader')"
+  (click)="toggleDetailHeader()">
+  <span class="app-chrome__header-toggle-bars" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </span>
+</button>
 }
 
-<aside
-  class="app-chrome__utility app-glass"
-  [class.app-chrome__utility--contextual]="isDetailRoute()"
-  [class.has-active]="activeUtilityIndex() >= 0"
-  [attr.aria-label]="i18n.t('chrome.utilities')"
-  [style.--active-index]="activeUtilityIndex()"
->
+<aside class="app-chrome__utility app-glass" [class.app-chrome__utility--contextual]="isDetailRoute()"
+  [class.has-active]="activeUtilityIndex() >= 0" [attr.aria-label]="i18n.t('chrome.utilities')"
+  [style.--active-index]="activeUtilityIndex()">
   <span class="app-chrome__utility-indicator" aria-hidden="true"></span>
   @if (isDetailRoute() && rail.contextualRail()?.kind === 'detail') {
-    <button
-      type="button"
-      class="app-chrome__utility-btn"
-      data-action="share"
-      [attr.aria-label]="i18n.t('button.share')"
-      [title]="i18n.t('button.share')"
-      (click)="rail.trigger('share')"
-    >
-      <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--share" viewBox="0 0 24 24" aria-hidden="true">
-        <defs>
-          <linearGradient id="detailShareGlass" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.82" />
-            <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.44" />
-            <stop offset="1" stop-color="#dedfdb" stop-opacity="0.66" />
-          </linearGradient>
-          <radialGradient id="detailShareGlow" cx="0" cy="0" r="1" gradientTransform="matrix(8 8 -8 8 16 6)" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#ffffff" stop-opacity="0.48" />
-            <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.08" />
-            <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-          </radialGradient>
-        </defs>
-        <path class="app-chrome__detail-share-link" d="M8.25 11.35l7.15-4.18M8.25 12.75l7.12 4.12" />
-        <circle cx="6.25" cy="12.05" r="2.55" fill="url(#detailShareGlass)" />
-        <circle cx="17.75" cy="5.85" r="2.55" fill="url(#detailShareGlass)" />
-        <circle cx="17.75" cy="18.15" r="2.55" fill="url(#detailShareGlass)" />
-        <g fill="url(#detailShareGlow)">
-          <circle cx="6.25" cy="12.05" r="2.55" />
-          <circle cx="17.75" cy="5.85" r="2.55" />
-          <circle cx="17.75" cy="18.15" r="2.55" />
-        </g>
-      </svg>
-    </button>
+  <button type="button" class="app-chrome__utility-btn" data-action="share" [attr.aria-label]="i18n.t('button.share')"
+    [title]="i18n.t('button.share')" (click)="rail.trigger('share')">
+    <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--share" viewBox="0 0 24 24"
+      aria-hidden="true">
+      <defs>
+        <linearGradient id="detailShareGlass" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.82" />
+          <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.44" />
+          <stop offset="1" stop-color="#dedfdb" stop-opacity="0.66" />
+        </linearGradient>
+        <radialGradient id="detailShareGlow" cx="0" cy="0" r="1" gradientTransform="matrix(8 8 -8 8 16 6)"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.48" />
+          <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <path class="app-chrome__detail-share-link" d="M8.25 11.35l7.15-4.18M8.25 12.75l7.12 4.12" />
+      <circle cx="6.25" cy="12.05" r="2.55" fill="url(#detailShareGlass)" />
+      <circle cx="17.75" cy="5.85" r="2.55" fill="url(#detailShareGlass)" />
+      <circle cx="17.75" cy="18.15" r="2.55" fill="url(#detailShareGlass)" />
+      <g fill="url(#detailShareGlow)">
+        <circle cx="6.25" cy="12.05" r="2.55" />
+        <circle cx="17.75" cy="5.85" r="2.55" />
+        <circle cx="17.75" cy="18.15" r="2.55" />
+      </g>
+    </svg>
+  </button>
 
-    @if (rail.contextualRail()?.canSave) {
-      <button
-        type="button"
-        class="app-chrome__utility-btn"
-        [class.is-active]="rail.contextualRail()?.isSaved"
-        [class.is-busy]="rail.contextualRail()?.saveLoading"
-        data-action="save"
-        [disabled]="rail.contextualRail()?.saveLoading || !rail.contextualRail()?.canSave"
-        [attr.aria-busy]="rail.contextualRail()?.saveLoading ? 'true' : null"
-        [attr.aria-label]="rail.contextualRail()?.isSaved ? i18n.t('button.saved') : i18n.t('button.save')"
-        [title]="rail.contextualRail()?.isSaved ? i18n.t('button.saved') : i18n.t('button.save')"
-        (click)="rail.trigger('save')"
-      >
-        <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--save" viewBox="0 0 24 24" aria-hidden="true">
-          <defs>
-            <linearGradient id="detailSaveGlass" x1="7" y1="4" x2="18" y2="21" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.84" />
-              <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.42" />
-              <stop offset="1" stop-color="#dedfdb" stop-opacity="0.64" />
-            </linearGradient>
-            <radialGradient id="detailSaveGlow" cx="0" cy="0" r="1" gradientTransform="matrix(9 10 -10 9 15 6)" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
-              <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.08" />
-              <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-            </radialGradient>
-          </defs>
-          <path class="app-chrome__detail-save-mark" d="M7.15 4.4h9.7c.62 0 1.12.5 1.12 1.12v14.1c0 .78-.9 1.21-1.5.72L12 16.7l-4.47 3.64c-.6.49-1.5.06-1.5-.72V5.52c0-.62.5-1.12 1.12-1.12Z" fill="url(#detailSaveGlass)" />
-          <path d="M7.15 4.4h9.7c.62 0 1.12.5 1.12 1.12v14.1c0 .78-.9 1.21-1.5.72L12 16.7l-4.47 3.64c-.6.49-1.5.06-1.5-.72V5.52c0-.62.5-1.12 1.12-1.12Z" fill="url(#detailSaveGlow)" />
-          <path d="M7.15 4.4h9.7c.62 0 1.12.5 1.12 1.12v14.1c0 .78-.9 1.21-1.5.72L12 16.7l-4.47 3.64c-.6.49-1.5.06-1.5-.72V5.52c0-.62.5-1.12 1.12-1.12Z" fill="none" stroke="currentColor" stroke-opacity="0.28" stroke-width="0.85" />
-        </svg>
-      </button>
-    }
+  @if (rail.contextualRail()?.canSave) {
+  <button type="button" class="app-chrome__utility-btn" [class.is-active]="rail.contextualRail()?.isSaved"
+    [class.is-busy]="rail.contextualRail()?.saveLoading" data-action="save"
+    [disabled]="rail.contextualRail()?.saveLoading || !rail.contextualRail()?.canSave"
+    [attr.aria-busy]="rail.contextualRail()?.saveLoading ? 'true' : null"
+    [attr.aria-label]="rail.contextualRail()?.isSaved ? i18n.t('button.saved') : i18n.t('button.save')"
+    [title]="rail.contextualRail()?.isSaved ? i18n.t('button.saved') : i18n.t('button.save')"
+    (click)="rail.trigger('save')">
+    <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--save" viewBox="0 0 24 24"
+      aria-hidden="true">
+      <defs>
+        <linearGradient id="detailSaveGlass" x1="7" y1="4" x2="18" y2="21" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.84" />
+          <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.42" />
+          <stop offset="1" stop-color="#dedfdb" stop-opacity="0.64" />
+        </linearGradient>
+        <radialGradient id="detailSaveGlow" cx="0" cy="0" r="1" gradientTransform="matrix(9 10 -10 9 15 6)"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
+          <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <path class="app-chrome__detail-save-mark"
+        d="M7.15 4.4h9.7c.62 0 1.12.5 1.12 1.12v14.1c0 .78-.9 1.21-1.5.72L12 16.7l-4.47 3.64c-.6.49-1.5.06-1.5-.72V5.52c0-.62.5-1.12 1.12-1.12Z"
+        fill="url(#detailSaveGlass)" />
+      <path
+        d="M7.15 4.4h9.7c.62 0 1.12.5 1.12 1.12v14.1c0 .78-.9 1.21-1.5.72L12 16.7l-4.47 3.64c-.6.49-1.5.06-1.5-.72V5.52c0-.62.5-1.12 1.12-1.12Z"
+        fill="url(#detailSaveGlow)" />
+      <path
+        d="M7.15 4.4h9.7c.62 0 1.12.5 1.12 1.12v14.1c0 .78-.9 1.21-1.5.72L12 16.7l-4.47 3.64c-.6.49-1.5.06-1.5-.72V5.52c0-.62.5-1.12 1.12-1.12Z"
+        fill="none" stroke="currentColor" stroke-opacity="0.28" stroke-width="0.85" />
+    </svg>
+  </button>
+  }
 
-    <button
-      type="button"
-      class="app-chrome__utility-btn"
-      data-action="focus"
-      [attr.aria-label]="i18n.t('button.focus')"
-      [title]="i18n.t('button.focus')"
-      (click)="rail.trigger('focus')"
-    >
-      <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--focus" viewBox="0 0 24 24" aria-hidden="true">
+  <button type="button" class="app-chrome__utility-btn" data-action="focus" [attr.aria-label]="i18n.t('button.focus')"
+    [title]="i18n.t('button.focus')" (click)="rail.trigger('focus')">
+    <svg class="app-chrome__utility-icon app-chrome__detail-icon app-chrome__detail-icon--focus" viewBox="0 0 24 24"
+      aria-hidden="true">
       <defs>
         <linearGradient id="detailFocusGlass" x1="5" y1="4" x2="19" y2="20" gradientUnits="userSpaceOnUse">
           <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.86" />
           <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.42" />
           <stop offset="1" stop-color="#dedfdb" stop-opacity="0.62" />
         </linearGradient>
-        <radialGradient id="detailFocusGlow" cx="0" cy="0" r="1" gradientTransform="matrix(9 9 -9 9 15 7)" gradientUnits="userSpaceOnUse">
+        <radialGradient id="detailFocusGlow" cx="0" cy="0" r="1" gradientTransform="matrix(9 9 -9 9 15 7)"
+          gradientUnits="userSpaceOnUse">
           <stop offset="0" stop-color="#ffffff" stop-opacity="0.48" />
           <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.08" />
           <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
@@ -243,171 +305,182 @@
       <circle cx="12" cy="12" r="2.05" fill="url(#detailFocusGlass)" />
       <circle cx="12" cy="12" r="2.05" fill="url(#detailFocusGlow)" />
     </svg>
-    </button>
+  </button>
   } @else {
-    @for (item of currentUtilityItems(); track item.label) {
-      @if (item.kind === 'route') {
-        <a
-          class="app-chrome__utility-btn"
-          [class.is-active]="isUtilityActive(item)"
-          [routerLink]="targetRoute(item)"
-          [attr.aria-label]="utilityAriaLabel(item)"
-          [title]="utilityAriaLabel(item)"
-          (click)="primeRoute(item)"
-        >
-          @if (item.icon === 'profile') {
-            <svg class="app-chrome__utility-icon app-chrome__utility-icon--profile-glass" viewBox="0 0 24 24" aria-hidden="true">
-              <defs>
-                <linearGradient id="profileGlassFigure" x1="9" y1="4" x2="16" y2="21" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.96" />
-                  <stop offset="0.58" stop-color="#a6a9a7" stop-opacity="0.76" />
-                  <stop offset="1" stop-color="#dedfdb" stop-opacity="0.9" />
-                </linearGradient>
-                <radialGradient id="profileGlassFigureGlow" cx="0" cy="0" r="1" gradientTransform="matrix(8 9 -9 8 10 6)" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#ffffff" stop-opacity="0.62" />
-                  <stop offset="0.58" stop-color="#ffffff" stop-opacity="0.12" />
-                  <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-                </radialGradient>
-              </defs>
-              <path d="M12 11.6a3.45 3.45 0 1 0 0-6.9a3.45 3.45 0 0 0 0 6.9Z" fill="url(#profileGlassFigure)" />
-              <path d="M5.85 19.55c.52-3.64 2.9-5.86 6.15-5.86s5.63 2.22 6.15 5.86c.08.54-.36 1.02-.91 1.02H6.76c-.55 0-.99-.48-.91-1.02Z" fill="url(#profileGlassFigure)" />
-              <path d="M12 11.6a3.45 3.45 0 1 0 0-6.9a3.45 3.45 0 0 0 0 6.9Z" fill="url(#profileGlassFigureGlow)" />
-              <path d="M5.85 19.55c.52-3.64 2.9-5.86 6.15-5.86s5.63 2.22 6.15 5.86c.08.54-.36 1.02-.91 1.02H6.76c-.55 0-.99-.48-.91-1.02Z" fill="url(#profileGlassFigureGlow)" opacity="0.78" />
-            </svg>
-          } @else if (item.icon === 'space') {
-            <svg class="app-chrome__utility-icon app-chrome__utility-icon--space-glass" viewBox="0 0 24 24" aria-hidden="true">
-              <defs>
-                <linearGradient id="spaceGlassCell" x1="6" y1="4" x2="18" y2="21" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.88" />
-                  <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.46" />
-                  <stop offset="1" stop-color="#dedfdb" stop-opacity="0.62" />
-                </linearGradient>
-                <radialGradient id="spaceGlassGlow" cx="0" cy="0" r="1" gradientTransform="matrix(7 8 -8 7 15 6)" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#ffffff" stop-opacity="0.48" />
-                  <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.08" />
-                  <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-                </radialGradient>
-              </defs>
-              <rect x="4.15" y="4.05" width="6.45" height="6.45" rx="2.05" fill="url(#spaceGlassCell)" />
-              <rect x="13.4" y="4.05" width="6.45" height="6.45" rx="2.05" fill="url(#spaceGlassCell)" />
-              <rect x="4.15" y="13.3" width="6.45" height="6.45" rx="2.05" fill="url(#spaceGlassCell)" />
-              <rect x="13.4" y="13.3" width="6.45" height="6.45" rx="2.05" fill="url(#spaceGlassCell)" />
-              <g fill="url(#spaceGlassGlow)">
-                <rect x="4.15" y="4.05" width="6.45" height="6.45" rx="2.05" />
-                <rect x="13.4" y="4.05" width="6.45" height="6.45" rx="2.05" />
-                <rect x="4.15" y="13.3" width="6.45" height="6.45" rx="2.05" />
-                <rect x="13.4" y="13.3" width="6.45" height="6.45" rx="2.05" />
-              </g>
-              <g fill="none" stroke="currentColor" stroke-opacity="0.28" stroke-width="0.7">
-                <rect x="4.15" y="4.05" width="6.45" height="6.45" rx="2.05" />
-                <rect x="13.4" y="4.05" width="6.45" height="6.45" rx="2.05" />
-                <rect x="4.15" y="13.3" width="6.45" height="6.45" rx="2.05" />
-                <rect x="13.4" y="13.3" width="6.45" height="6.45" rx="2.05" />
-              </g>
-            </svg>
-          } @else if (item.icon === 'articles') {
-            <svg class="app-chrome__utility-icon app-chrome__utility-icon--articles-glass" viewBox="0 0 24 24" aria-hidden="true">
-              <defs>
-                <linearGradient id="articlesGlassPage" x1="7" y1="3" x2="18" y2="21" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.82" />
-                  <stop offset="0.56" stop-color="#a6a9a7" stop-opacity="0.38" />
-                  <stop offset="1" stop-color="#dedfdb" stop-opacity="0.58" />
-                </linearGradient>
-                <linearGradient id="articlesGlassInk" x1="8" y1="7" x2="17" y2="18" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#f6f3ea" stop-opacity="0.9" />
-                  <stop offset="1" stop-color="#c4cbc4" stop-opacity="0.64" />
-                </linearGradient>
-                <radialGradient id="articlesGlassGlow" cx="0" cy="0" r="1" gradientTransform="matrix(9 9 -9 9 15 6)" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#ffffff" stop-opacity="0.48" />
-                  <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.08" />
-                  <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-                </radialGradient>
-              </defs>
-              <rect x="5.75" y="3.55" width="12.5" height="16.9" rx="2.65" fill="url(#articlesGlassPage)" />
-              <rect x="7.85" y="6.35" width="4.55" height="5.3" rx="0.65" fill="url(#articlesGlassInk)" opacity="0.88" />
-              <rect x="7.85" y="13.95" width="8.3" height="1.45" rx="0.72" fill="url(#articlesGlassInk)" opacity="0.9" />
-              <rect x="7.85" y="17.05" width="6.3" height="1.35" rx="0.68" fill="url(#articlesGlassInk)" opacity="0.78" />
-              <rect x="5.75" y="3.55" width="12.5" height="16.9" rx="2.65" fill="url(#articlesGlassGlow)" />
-              <rect x="5.75" y="3.55" width="12.5" height="16.9" rx="2.65" fill="none" stroke="currentColor" stroke-opacity="0.26" stroke-width="0.75" />
-            </svg>
-          } @else if (item.icon === 'admin') {
-            <svg class="app-chrome__utility-icon app-chrome__utility-icon--admin-glass" viewBox="0 0 24 24" aria-hidden="true">
-              <defs>
-                <linearGradient id="adminGlassShield" x1="6" y1="3" x2="18" y2="22" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.78" />
-                  <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.42" />
-                  <stop offset="1" stop-color="#dedfdb" stop-opacity="0.62" />
-                </linearGradient>
-                <linearGradient id="adminGlassGear" x1="8" y1="7" x2="16" y2="17" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#f6f3ea" stop-opacity="0.88" />
-                  <stop offset="1" stop-color="#c4cbc4" stop-opacity="0.66" />
-                </linearGradient>
-                <radialGradient id="adminGlassGlow" cx="0" cy="0" r="1" gradientTransform="matrix(10 10 -10 10 15 6)" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
-                  <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.08" />
-                  <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-                </radialGradient>
-              </defs>
-              <path d="M12 3.25c2.35 1.5 4.55 2.48 6.78 3.02v4.78c0 4.55-2.48 7.7-6.78 9.65-4.3-1.95-6.78-5.1-6.78-9.65V6.27C7.45 5.73 9.65 4.75 12 3.25Z" fill="url(#adminGlassShield)" />
-              <path d="M12 3.25c2.35 1.5 4.55 2.48 6.78 3.02v4.78c0 4.55-2.48 7.7-6.78 9.65-4.3-1.95-6.78-5.1-6.78-9.65V6.27C7.45 5.73 9.65 4.75 12 3.25Z" fill="url(#adminGlassGlow)" />
-              <path d="M12.95 7.78l.54 1.38c.25.07.49.17.72.3l1.34-.6.9 1.56-1.18.88c.03.24.03.49 0 .74l1.18.88-.9 1.56-1.34-.6c-.23.13-.47.23-.72.3l-.54 1.38h-1.8l-.53-1.38a3.4 3.4 0 0 1-.7-.3l-1.34.6-.9-1.56 1.18-.88a3 3 0 0 1 0-.74l-1.18-.88.9-1.56 1.34.6c.23-.13.46-.23.7-.3l.53-1.38h1.8Zm-.9 2.65a1.76 1.76 0 1 0 0 3.52 1.76 1.76 0 0 0 0-3.52Z" fill="url(#adminGlassGear)" />
-              <path d="M12 3.25c2.35 1.5 4.55 2.48 6.78 3.02v4.78c0 4.55-2.48 7.7-6.78 9.65-4.3-1.95-6.78-5.1-6.78-9.65V6.27C7.45 5.73 9.65 4.75 12 3.25Z" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="0.75" />
-            </svg>
-          } @else if (item.icon === 'settings') {
-            <svg class="app-chrome__utility-icon app-chrome__utility-icon--settings-glass" viewBox="0 0 24 24" aria-hidden="true">
-              <defs>
-                <linearGradient id="settingsGlassGear" x1="6" y1="3" x2="18" y2="21" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.86" />
-                  <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.48" />
-                  <stop offset="1" stop-color="#dedfdb" stop-opacity="0.68" />
-                </linearGradient>
-                <radialGradient id="settingsGlassGlow" cx="0" cy="0" r="1" gradientTransform="matrix(10 10 -10 10 15 6)" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
-                  <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.08" />
-                  <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-                </radialGradient>
-              </defs>
-              <path d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z" fill="url(#settingsGlassGear)" />
-              <path d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z" fill="url(#settingsGlassGlow)" />
-              <path d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z" fill="none" stroke="currentColor" stroke-opacity="0.24" stroke-width="0.72" />
-              <circle cx="12" cy="12" r="3.15" class="app-chrome__settings-gear-hole" />
-            </svg>
-          } @else {
-            <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
-          }
-        </a>
-      } @else if (item.kind === 'action') {
-        <button
-          type="button"
-          class="app-chrome__utility-btn"
-          [class.is-active]="isUtilityActive(item)"
-          [class.is-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading"
-          [attr.data-action]="item.action ?? item.icon"
-          [disabled]="isUtilityDisabled(item)"
-          [attr.aria-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading ? 'true' : null"
-          [attr.aria-label]="utilityAriaLabel(item)"
-          [title]="utilityAriaLabel(item)"
-          (click)="triggerUtilityAction(item, $event)"
-        >
-          <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
-        </button>
-      } @else {
-        <button
-          type="button"
-          class="app-chrome__utility-btn is-placeholder"
-          [attr.aria-label]="utilityAriaLabel(item)"
-          [title]="utilityAriaLabel(item)"
-          (click)="preventPlaceholderAction($event)"
-        >
-          <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
-        </button>
-      }
+  @for (item of currentUtilityItems(); track item.label) {
+  @if (item.kind === 'route') {
+  <a class="app-chrome__utility-btn" [class.is-active]="isUtilityActive(item)" [routerLink]="targetRoute(item)"
+    [attr.aria-label]="utilityAriaLabel(item)" [title]="utilityAriaLabel(item)" (click)="primeRoute(item)">
+    @if (item.icon === 'profile') {
+    <svg class="app-chrome__utility-icon app-chrome__utility-icon--profile-glass" viewBox="0 0 24 24"
+      aria-hidden="true">
+      <defs>
+        <linearGradient id="profileGlassFigure" x1="9" y1="4" x2="16" y2="21" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.96" />
+          <stop offset="0.58" stop-color="#a6a9a7" stop-opacity="0.76" />
+          <stop offset="1" stop-color="#dedfdb" stop-opacity="0.9" />
+        </linearGradient>
+        <radialGradient id="profileGlassFigureGlow" cx="0" cy="0" r="1" gradientTransform="matrix(8 9 -9 8 10 6)"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.62" />
+          <stop offset="0.58" stop-color="#ffffff" stop-opacity="0.12" />
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <path d="M12 11.6a3.45 3.45 0 1 0 0-6.9a3.45 3.45 0 0 0 0 6.9Z" fill="url(#profileGlassFigure)" />
+      <path
+        d="M5.85 19.55c.52-3.64 2.9-5.86 6.15-5.86s5.63 2.22 6.15 5.86c.08.54-.36 1.02-.91 1.02H6.76c-.55 0-.99-.48-.91-1.02Z"
+        fill="url(#profileGlassFigure)" />
+      <path d="M12 11.6a3.45 3.45 0 1 0 0-6.9a3.45 3.45 0 0 0 0 6.9Z" fill="url(#profileGlassFigureGlow)" />
+      <path
+        d="M5.85 19.55c.52-3.64 2.9-5.86 6.15-5.86s5.63 2.22 6.15 5.86c.08.54-.36 1.02-.91 1.02H6.76c-.55 0-.99-.48-.91-1.02Z"
+        fill="url(#profileGlassFigureGlow)" opacity="0.78" />
+    </svg>
+    } @else if (item.icon === 'space') {
+    <svg class="app-chrome__utility-icon app-chrome__utility-icon--space-glass" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <linearGradient id="spaceGlassCell" x1="6" y1="4" x2="18" y2="21" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.88" />
+          <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.46" />
+          <stop offset="1" stop-color="#dedfdb" stop-opacity="0.62" />
+        </linearGradient>
+        <radialGradient id="spaceGlassGlow" cx="0" cy="0" r="1" gradientTransform="matrix(7 8 -8 7 15 6)"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.48" />
+          <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <rect x="4.15" y="4.05" width="6.45" height="6.45" rx="2.05" fill="url(#spaceGlassCell)" />
+      <rect x="13.4" y="4.05" width="6.45" height="6.45" rx="2.05" fill="url(#spaceGlassCell)" />
+      <rect x="4.15" y="13.3" width="6.45" height="6.45" rx="2.05" fill="url(#spaceGlassCell)" />
+      <rect x="13.4" y="13.3" width="6.45" height="6.45" rx="2.05" fill="url(#spaceGlassCell)" />
+      <g fill="url(#spaceGlassGlow)">
+        <rect x="4.15" y="4.05" width="6.45" height="6.45" rx="2.05" />
+        <rect x="13.4" y="4.05" width="6.45" height="6.45" rx="2.05" />
+        <rect x="4.15" y="13.3" width="6.45" height="6.45" rx="2.05" />
+        <rect x="13.4" y="13.3" width="6.45" height="6.45" rx="2.05" />
+      </g>
+      <g fill="none" stroke="currentColor" stroke-opacity="0.28" stroke-width="0.7">
+        <rect x="4.15" y="4.05" width="6.45" height="6.45" rx="2.05" />
+        <rect x="13.4" y="4.05" width="6.45" height="6.45" rx="2.05" />
+        <rect x="4.15" y="13.3" width="6.45" height="6.45" rx="2.05" />
+        <rect x="13.4" y="13.3" width="6.45" height="6.45" rx="2.05" />
+      </g>
+    </svg>
+    } @else if (item.icon === 'articles') {
+    <svg class="app-chrome__utility-icon app-chrome__utility-icon--articles-glass" viewBox="0 0 24 24"
+      aria-hidden="true">
+      <defs>
+        <linearGradient id="articlesGlassPage" x1="7" y1="3" x2="18" y2="21" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.82" />
+          <stop offset="0.56" stop-color="#a6a9a7" stop-opacity="0.38" />
+          <stop offset="1" stop-color="#dedfdb" stop-opacity="0.58" />
+        </linearGradient>
+        <linearGradient id="articlesGlassInk" x1="8" y1="7" x2="17" y2="18" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f6f3ea" stop-opacity="0.9" />
+          <stop offset="1" stop-color="#c4cbc4" stop-opacity="0.64" />
+        </linearGradient>
+        <radialGradient id="articlesGlassGlow" cx="0" cy="0" r="1" gradientTransform="matrix(9 9 -9 9 15 6)"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.48" />
+          <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <rect x="5.75" y="3.55" width="12.5" height="16.9" rx="2.65" fill="url(#articlesGlassPage)" />
+      <rect x="7.85" y="6.35" width="4.55" height="5.3" rx="0.65" fill="url(#articlesGlassInk)" opacity="0.88" />
+      <rect x="7.85" y="13.95" width="8.3" height="1.45" rx="0.72" fill="url(#articlesGlassInk)" opacity="0.9" />
+      <rect x="7.85" y="17.05" width="6.3" height="1.35" rx="0.68" fill="url(#articlesGlassInk)" opacity="0.78" />
+      <rect x="5.75" y="3.55" width="12.5" height="16.9" rx="2.65" fill="url(#articlesGlassGlow)" />
+      <rect x="5.75" y="3.55" width="12.5" height="16.9" rx="2.65" fill="none" stroke="currentColor"
+        stroke-opacity="0.26" stroke-width="0.75" />
+    </svg>
+    } @else if (item.icon === 'admin') {
+    <svg class="app-chrome__utility-icon app-chrome__utility-icon--admin-glass" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <linearGradient id="adminGlassShield" x1="6" y1="3" x2="18" y2="22" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.78" />
+          <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.42" />
+          <stop offset="1" stop-color="#dedfdb" stop-opacity="0.62" />
+        </linearGradient>
+        <linearGradient id="adminGlassGear" x1="8" y1="7" x2="16" y2="17" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f6f3ea" stop-opacity="0.88" />
+          <stop offset="1" stop-color="#c4cbc4" stop-opacity="0.66" />
+        </linearGradient>
+        <radialGradient id="adminGlassGlow" cx="0" cy="0" r="1" gradientTransform="matrix(10 10 -10 10 15 6)"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
+          <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <path
+        d="M12 3.25c2.35 1.5 4.55 2.48 6.78 3.02v4.78c0 4.55-2.48 7.7-6.78 9.65-4.3-1.95-6.78-5.1-6.78-9.65V6.27C7.45 5.73 9.65 4.75 12 3.25Z"
+        fill="url(#adminGlassShield)" />
+      <path
+        d="M12 3.25c2.35 1.5 4.55 2.48 6.78 3.02v4.78c0 4.55-2.48 7.7-6.78 9.65-4.3-1.95-6.78-5.1-6.78-9.65V6.27C7.45 5.73 9.65 4.75 12 3.25Z"
+        fill="url(#adminGlassGlow)" />
+      <path
+        d="M12.95 7.78l.54 1.38c.25.07.49.17.72.3l1.34-.6.9 1.56-1.18.88c.03.24.03.49 0 .74l1.18.88-.9 1.56-1.34-.6c-.23.13-.47.23-.72.3l-.54 1.38h-1.8l-.53-1.38a3.4 3.4 0 0 1-.7-.3l-1.34.6-.9-1.56 1.18-.88a3 3 0 0 1 0-.74l-1.18-.88.9-1.56 1.34.6c.23-.13.46-.23.7-.3l.53-1.38h1.8Zm-.9 2.65a1.76 1.76 0 1 0 0 3.52 1.76 1.76 0 0 0 0-3.52Z"
+        fill="url(#adminGlassGear)" />
+      <path
+        d="M12 3.25c2.35 1.5 4.55 2.48 6.78 3.02v4.78c0 4.55-2.48 7.7-6.78 9.65-4.3-1.95-6.78-5.1-6.78-9.65V6.27C7.45 5.73 9.65 4.75 12 3.25Z"
+        fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="0.75" />
+    </svg>
+    } @else if (item.icon === 'settings') {
+    <svg class="app-chrome__utility-icon app-chrome__utility-icon--settings-glass" viewBox="0 0 24 24"
+      aria-hidden="true">
+      <defs>
+        <linearGradient id="settingsGlassGear" x1="6" y1="3" x2="18" y2="21" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f2f3f1" stop-opacity="0.86" />
+          <stop offset="0.55" stop-color="#a6a9a7" stop-opacity="0.48" />
+          <stop offset="1" stop-color="#dedfdb" stop-opacity="0.68" />
+        </linearGradient>
+        <radialGradient id="settingsGlassGlow" cx="0" cy="0" r="1" gradientTransform="matrix(10 10 -10 10 15 6)"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.5" />
+          <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.08" />
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <path
+        d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z"
+        fill="url(#settingsGlassGear)" />
+      <path
+        d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z"
+        fill="url(#settingsGlassGlow)" />
+      <path
+        d="M13.55 3.05h-3.1l-.65 2.08c-.38.12-.75.27-1.1.45L6.72 4.55 4.55 6.72l1.03 1.98c-.18.35-.33.72-.45 1.1l-2.08.65v3.1l2.08.65c.12.38.27.75.45 1.1l-1.03 1.98 2.17 2.17 1.98-1.03c.35.18.72.33 1.1.45l.65 2.08h3.1l.65-2.08c.38-.12.75-.27 1.1-.45l1.98 1.03 2.17-2.17-1.03-1.98c.18-.35.33-.72.45-1.1l2.08-.65v-3.1l-2.08-.65a6.45 6.45 0 0 0-.45-1.1l1.03-1.98-2.17-2.17-1.98 1.03c-.35-.18-.72-.33-1.1-.45l-.65-2.08Z"
+        fill="none" stroke="currentColor" stroke-opacity="0.24" stroke-width="0.72" />
+      <circle cx="12" cy="12" r="3.15" class="app-chrome__settings-gear-hole" />
+    </svg>
+    } @else {
+    <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
     }
+  </a>
+  } @else if (item.kind === 'action') {
+  <button type="button" class="app-chrome__utility-btn" [class.is-active]="isUtilityActive(item)"
+    [class.is-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading"
+    [attr.data-action]="item.action ?? item.icon" [disabled]="isUtilityDisabled(item)"
+    [attr.aria-busy]="item.action === 'save' && rail.contextualRail()?.saveLoading ? 'true' : null"
+    [attr.aria-label]="utilityAriaLabel(item)" [title]="utilityAriaLabel(item)"
+    (click)="triggerUtilityAction(item, $event)">
+    <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+  </button>
+  } @else {
+  <button type="button" class="app-chrome__utility-btn is-placeholder" [attr.aria-label]="utilityAriaLabel(item)"
+    [title]="utilityAriaLabel(item)" (click)="preventPlaceholderAction($event)">
+    <span class="app-chrome__utility-icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+  </button>
+  }
+  }
   }
 </aside>
 
 <div class="app-chrome__orientation-lock" aria-live="polite">
-  <div class="app-chrome__orientation-lock-card app-glass" role="status" [attr.aria-label]="i18n.t('orientationLock.aria')">
+  <div class="app-chrome__orientation-lock-card app-glass" role="status"
+    [attr.aria-label]="i18n.t('orientationLock.aria')">
     <span class="app-chrome__orientation-lock-kicker">{{ i18n.t('orientationLock.kicker') }}</span>
     <h2 class="app-chrome__orientation-lock-title">{{ i18n.t('orientationLock.title') }}</h2>
     <p class="app-chrome__orientation-lock-copy">{{ i18n.t('orientationLock.copy') }}</p>

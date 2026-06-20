@@ -22,7 +22,7 @@
   "button.share": "Compartir",
   "button.focus": "Inicio",
   "button.close": "Cerrar",
-  "search.headerPlaceholder": "Buscar en JANO",
+  "search.headerPlaceholder": "Buscar artistas, obras, conceptos, lugares o periodos...",
   "button.continue": "Seguir",
   "button.addToCollection": "Añadir a colección",
   "button.removeSaved": "Quitar de guardados",
@@ -410,6 +410,13 @@
   ,"search.type.movements": "Movimientos"
   ,"search.type.concepts": "Conceptos"
   ,"search.type.articles": "Artículos"
+  ,"search.type.places": "Lugares"
+  ,"search.type.periods": "Periodos"
+  ,"search.prep.trending": "Tendencias Ahora"
+  ,"search.prep.staffPicks": "Selección del equipo"
+  ,"search.prep.categories": "Explora por categorías"
+  ,"search.prep.filtering": "Filtrando las sugerencias por {type}"
+  ,"search.prep.contents": "contenidos"
   ,"search.section.main": "Resultados principales"
   ,"search.section.keyWorks": "Obras clave"
   ,"search.section.relatedWorks": "Obras relacionadas"

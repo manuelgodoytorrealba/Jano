@@ -23,7 +23,7 @@ export const HOME_DECK_CTA_ROUTE_OPTIONS: HomeDeckCtaRouteOption[] = [
 ];
 
 export function homeDeckSurfaceLabel(surface: HomeDeckSurfaceValue | undefined): string {
-  return surface === 'RECOMMENDED' ? 'Recommended' : 'Home';
+  return surface === 'RECOMMENDED' ? 'Curated' : 'Home';
 }
 
 export function homeDeckSurfaceDescription(surface: HomeDeckSurfaceValue | undefined): string {
@@ -33,5 +33,5 @@ export function homeDeckSurfaceDescription(surface: HomeDeckSurfaceValue | undef
 }
 
 export function homeDeckPublicRoute(surface: HomeDeckSurfaceValue | undefined): string {
-  return surface === 'RECOMMENDED' ? '/recommended' : '/';
+  return surface === 'RECOMMENDED' ? '/curated' : '/';
 }

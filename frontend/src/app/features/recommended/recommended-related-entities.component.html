@@ -12,7 +12,7 @@
 
   <div class="recommended-chip-grid">
     @for (item of items(); track item.id) {
-      <a class="recommended-chip" [routerLink]="['/recommended']" [queryParams]="{ entity: item.slug }">
+      <a class="recommended-chip" [routerLink]="['/curated']" [queryParams]="{ entity: item.slug }">
         <strong>{{ item.title }}</strong>
         <p>{{ item.summary ?? typeLabel(item.type) }}</p>
       </a>

@@ -175,7 +175,7 @@ export class EntityDeckComponent {
         }
 
         if (action === 'picks') {
-            return url.startsWith('/recommended');
+            return url.startsWith('/curated');
         }
 
         if (action === 'profile') {

@@ -22,7 +22,7 @@
   "button.share": "Share",
   "button.focus": "Home",
   "button.close": "Close",
-  "search.headerPlaceholder": "Search in JANO",
+  "search.headerPlaceholder": "Search artists, artworks, concepts, places, or periods...",
   "button.continue": "Continue",
   "button.addToCollection": "Add to collection",
   "button.removeSaved": "Remove from saved",
@@ -410,6 +410,13 @@
   ,"search.type.movements": "Movements"
   ,"search.type.concepts": "Concepts"
   ,"search.type.articles": "Articles"
+  ,"search.type.places": "Places"
+  ,"search.type.periods": "Periods"
+  ,"search.prep.trending": "Trending Now"
+  ,"search.prep.staffPicks": "Staff Picks"
+  ,"search.prep.categories": "Explore by Category"
+  ,"search.prep.filtering": "Filtering suggestions by {type}"
+  ,"search.prep.contents": "entries"
   ,"search.section.main": "Main results"
   ,"search.section.keyWorks": "Key artworks"
   ,"search.section.relatedWorks": "Related artworks"

@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, HostBinding, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostBinding, HostListener, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterLink } from '@angular/router';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
 import { SearchApi, SearchResult } from '../../../core/api/search.api';
+import { HomeDeck, HomeDecksApi } from '../../../core/api/home-decks.api';
+import { CuratedApi, CuratedDeck } from '../../../core/api/curated.api';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
 import { I18nService } from '../../../core/i18n/i18n.service';
-import { catchError, debounceTime, distinctUntilChanged, filter, fromEvent, map, of, Subject, switchMap } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, forkJoin, fromEvent, map, of, Subject, switchMap } from 'rxjs';
 
 type HeaderNavItem = {
   label: string;
@@ -25,6 +27,25 @@ type UtilityItem = {
   action?: ContextualRailAction;
 };
 
+type SearchPreparationType = '' | 'ARTIST' | 'ARTWORK' | 'MOVEMENT' | 'CONCEPT' | 'ARTICLE' | 'PLACE' | 'PERIOD';
+type SearchPreparationCategoryType = Exclude<SearchPreparationType, ''>;
+
+type SearchPreparationCategory = {
+  type: SearchPreparationCategoryType;
+  labelKey: string;
+  icon: 'artist' | 'movement' | 'concept' | 'artwork' | 'article' | 'place' | 'period';
+};
+
+const SEARCH_PREPARATION_CATEGORIES: SearchPreparationCategory[] = [
+  { type: 'ARTIST', labelKey: 'search.type.artists', icon: 'artist' },
+  { type: 'MOVEMENT', labelKey: 'search.type.movements', icon: 'movement' },
+  { type: 'CONCEPT', labelKey: 'search.type.concepts', icon: 'concept' },
+  { type: 'ARTWORK', labelKey: 'search.type.artworks', icon: 'artwork' },
+  { type: 'ARTICLE', labelKey: 'search.type.articles', icon: 'article' },
+  { type: 'PLACE', labelKey: 'search.type.places', icon: 'place' },
+  { type: 'PERIOD', labelKey: 'search.type.periods', icon: 'period' },
+];
+
 @Component({
   standalone: true,
   selector: 'app-app-chrome',
@@ -37,6 +58,9 @@ export class AppChromeComponent {
   private static readonly COLLAPSIBLE_HEADER_MAX_WIDTH = 1200;
   private readonly router = inject(Router);
   private readonly searchApi = inject(SearchApi);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly homeDecksApi = inject(HomeDecksApi);
+  private readonly curatedApi = inject(CuratedApi);
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
   readonly i18n = inject(I18nService);
@@ -51,7 +75,13 @@ export class AppChromeComponent {
   readonly searchSuggestions = signal<SearchResult[]>([]);
   readonly searchFocused = signal(false);
   readonly searchLoading = signal(false);
+  readonly searchPreparationLoading = signal(false);
+  readonly searchPreparationTopics = signal<HomeDeck[]>([]);
+  readonly searchPreparationPicks = signal<CuratedDeck[]>([]);
+  readonly searchPreparationType = signal<SearchPreparationType>('');
+  readonly searchPreparationCategories = SEARCH_PREPARATION_CATEGORIES;
   readonly activeSuggestionIndex = signal(-1);
+  private searchPreparationLoaded = false;
   private readonly searchInput$ = new Subject<string>();
 
   @HostBinding('class.app-chrome--orientation-lock')
@@ -63,7 +93,7 @@ export class AppChromeComponent {
     { label: 'nav.discover', route: '/', kind: 'route', group: 'public', exact: true },
     { label: 'nav.explore', route: '/entities/artwork', kind: 'route', group: 'public' },
     { label: 'nav.articles', route: '/entities/article', kind: 'route', group: 'public' },
-    { label: 'nav.curated', route: '/recommended', kind: 'route', group: 'public' },
+    { label: 'nav.curated', route: '/curated', kind: 'route', group: 'public' },
     { label: 'nav.profile', route: '/profile', kind: 'route', group: 'personal' },
     { label: 'nav.mySpace', route: '/my-space', kind: 'route', group: 'personal' },
   ];
@@ -90,13 +120,17 @@ export class AppChromeComponent {
       distinctUntilChanged(),
       switchMap((value) => {
         const q = value.trim();
-        if (q.length < 2) {
+        if (q.length < 1) {
           this.searchLoading.set(false);
           return of([]);
         }
 
         this.searchLoading.set(true);
-        return this.searchApi.search({ q, limit: 6 }).pipe(
+        return this.searchApi.search({
+          q,
+          limit: 6,
+          type: this.searchPreparationType() || undefined,
+        }).pipe(
           map((response) => response.items.slice(0, 6)),
           catchError(() => of([])),
         );
@@ -207,6 +241,28 @@ export class AppChromeComponent {
 
     if (this.headerCollapsed()) {
       this.expandHeader();
+      return;
+    }
+
+    this.collapseHeader();
+  }
+
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    if (this.searchFocused() && !target.closest('.app-chrome__search, .app-chrome__search-prelude')) {
+      this.closeSearchUi();
+    }
+
+    if (!this.isDetailRoute() || this.headerCollapsed()) {
+      return;
+    }
+
+    if (target.closest('.app-chrome__header, .app-chrome__header-toggle')) {
       return;
     }
 
@@ -428,18 +484,89 @@ export class AppChromeComponent {
 
   onSearchFocus(value: string): void {
     this.searchFocused.set(true);
-    if (value.trim().length >= 2 && !this.searchSuggestions().length) {
+    this.ensureSearchPreparationLoaded();
+
+    if (value.trim().length >= 1 && !this.searchSuggestions().length) {
       this.searchInput$.next(value);
     }
   }
 
-  onSearchBlur(): void {
-    window.setTimeout(() => this.searchFocused.set(false), 120);
-  }
+  onSearchBlur(): void {}
 
   closeSearchSuggestions(): void {
-    this.searchFocused.set(false);
+    this.closeSearchUi();
+  }
+
+  showSearchPreparationPanel(): boolean {
+    return this.searchFocused() && this.searchDraft().trim().length === 0;
+  }
+
+  currentSearchPreparationTypeLabel(): string {
+    const active = this.searchPreparationCategories.find((item) => item.type === this.searchPreparationType());
+    return active ? this.i18n.t(active.labelKey) : '';
+  }
+
+  trendMeta(deck: HomeDeck): string {
+    return `${deck.entities.length} ${this.i18n.t('search.prep.contents')}`;
+  }
+
+  toggleSearchPreparationType(type: SearchPreparationType, input: HTMLInputElement): void {
+    this.searchPreparationType.set(this.searchPreparationType() === type ? '' : type);
+    this.searchFocused.set(true);
+    input.focus();
+
+    if (this.searchDraft().trim().length >= 2) {
+      this.searchInput$.next(this.searchDraft());
+    }
+  }
+
+  applySearchPreparationQuery(input: HTMLInputElement, query: string): void {
+    input.value = query;
+    this.searchDraft.set(query);
+    this.searchFocused.set(true);
     this.activeSuggestionIndex.set(-1);
+    input.focus();
+    this.searchInput$.next(query);
+  }
+
+  openPreparationCollection(deck: { slug: string; ctaRoute?: string | null; ctaUrl?: string | null }): void {
+    this.closeSearchUi();
+
+    if (deck.ctaUrl) {
+      window.location.href = deck.ctaUrl;
+      return;
+    }
+
+    if (deck.ctaRoute) {
+      void this.router.navigateByUrl(deck.ctaRoute);
+      return;
+    }
+
+    void this.router.navigate(['/entities'], { queryParams: { deck: deck.slug } });
+  }
+
+  openPreparationCategory(type: SearchPreparationCategoryType): void {
+    this.closeSearchUi();
+    void this.router.navigateByUrl(this.searchCategoryRoute(type));
+  }
+
+  private searchCategoryRoute(type: SearchPreparationCategoryType): string {
+    switch (type) {
+      case 'ARTIST':
+        return '/entities/artist';
+      case 'ARTWORK':
+        return '/entities/artwork';
+      case 'MOVEMENT':
+        return '/entities/movement';
+      case 'CONCEPT':
+        return '/entities/concept';
+      case 'ARTICLE':
+        return '/entities/article';
+      case 'PLACE':
+        return '/entities/place';
+      case 'PERIOD':
+        return '/entities/period';
+    }
   }
 
   moveSearchSuggestion(delta: number): void {
@@ -475,7 +602,7 @@ export class AppChromeComponent {
   }
 
   showSearchSuggestions(): boolean {
-    return this.searchFocused() && this.searchDraft().trim().length >= 2;
+    return this.searchFocused() && this.searchDraft().trim().length >= 1;
   }
 
   chooseSearchSuggestion(input: HTMLInputElement, item: SearchResult): void {
@@ -484,7 +611,8 @@ export class AppChromeComponent {
     this.searchSuggestions.set([]);
     this.activeSuggestionIndex.set(-1);
     this.searchFocused.set(false);
-    void navigateToAppSearch(this.router, item.title);
+    void navigateToAppSearch(this.router, item.title, { type: this.searchPreparationType() || null });
+    this.searchPreparationType.set('');
   }
 
   clearSearchInput(input: HTMLInputElement): void {
@@ -504,6 +632,30 @@ export class AppChromeComponent {
     this.searchSuggestions.set([]);
     this.activeSuggestionIndex.set(-1);
     this.searchFocused.set(false);
-    void navigateToAppSearch(this.router, rawQuery);
+    void navigateToAppSearch(this.router, rawQuery, { type: this.searchPreparationType() || null });
+    this.searchPreparationType.set('');
+  }
+
+  private closeSearchUi(): void {
+    this.searchFocused.set(false);
+    this.activeSuggestionIndex.set(-1);
+    this.searchPreparationType.set('');
+  }
+
+  private ensureSearchPreparationLoaded(): void {
+    if (this.searchPreparationLoaded || this.searchPreparationLoading()) {
+      return;
+    }
+
+    this.searchPreparationLoading.set(true);
+    forkJoin({
+      topics: this.homeDecksApi.listPublic('RECOMMENDED').pipe(catchError(() => of([]))),
+      curated: this.curatedApi.page().pipe(catchError(() => of(null))),
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ topics, curated }) => {
+      this.searchPreparationTopics.set(topics.slice(0, 6));
+      this.searchPreparationPicks.set(curated?.staffPicks?.slice(0, 3) ?? []);
+      this.searchPreparationLoading.set(false);
+      this.searchPreparationLoaded = true;
+    });
   }
 }

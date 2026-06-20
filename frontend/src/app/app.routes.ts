@@ -9,10 +9,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
-    path: 'recommended',
+    path: 'curated',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/recommended/recommended.component').then((m) => m.RecommendedComponent),
+  },
+  {
+    path: 'recommended',
+    redirectTo: 'curated',
+    pathMatch: 'full',
   },
   {
     path: 'search',

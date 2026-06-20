@@ -69,7 +69,7 @@
     z-index: 0;
 }
 
-.explorer3d.is-info-open .explorer3d__canvas {
+.explorer3d.is-info-modal .explorer3d__canvas {
     pointer-events: none;
 }
 
@@ -328,7 +328,7 @@
 @media (min-width: 1101px) and (max-width: 1500px) {
     .explorer3d {
         min-height: calc(var(--app-viewport-block, 100vh) - var(--entities-explorer-inner-top, 118px) - 12px);
-        padding-top: clamp(10px, 1.2svh, 16px);
+        padding-top: var(--entities-explorer-inner-top, 136px);
     }
 
     .explorer3d__info {
@@ -353,7 +353,7 @@
 @media (min-width: 1280px) {
     .explorer3d {
         min-height: calc(var(--app-viewport-block, 100vh) - var(--entities-explorer-inner-top, 118px) - 8px);
-        padding-top: clamp(10px, 1svh, 14px);
+        padding-top: var(--entities-explorer-inner-top, 136px);
         padding-left: var(--entities-explorer-inner-left, clamp(44px, 5vw, 96px));
         padding-right: var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px));
     }

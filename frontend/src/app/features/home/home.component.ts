@@ -98,7 +98,7 @@ export class HomeComponent {
     }
 
     if (action === 'picks') {
-      this.router.navigate(['/recommended']);
+      this.router.navigate(['/curated']);
       return;
     }
 
@@ -118,7 +118,7 @@ export class HomeComponent {
     }
 
     if (tab === 'picks') {
-      this.router.navigate(['/recommended']);
+      this.router.navigate(['/curated']);
       return;
     }
 

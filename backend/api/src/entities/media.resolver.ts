@@ -226,15 +226,51 @@ const ADMIN_EDITORIAL_SLOT_ORDER: AdminResolvedSlotKey[] = [
   'preview',
 ];
 
+const DEFAULT_ENTITY_MEDIA: ResolvedMediaItem = {
+  id: 'jano-default-entity-image',
+  url: '/assets/home/museum-room.jpg',
+  originType: null,
+  derivedFromMediaId: null,
+  canonicalUrl: null,
+  displayUrl: '/assets/home/museum-room.jpg',
+  sourcePageUrl: null,
+  storageKey: null,
+  originalFilename: 'museum-room.jpg',
+  fileSize: null,
+  mimeType: 'image/jpeg',
+  width: null,
+  height: null,
+  isVector: false,
+  provider: null,
+  qualityTier: null,
+  alt: null,
+  source: 'JANO',
+  photoBy: null,
+  license: null,
+  role: null,
+  sortOrder: null,
+  isPrimary: false,
+  displayMode: 'COVER',
+  focalX: null,
+  focalY: null,
+  assetFocalX: null,
+  assetFocalY: null,
+  cropX: null,
+  cropY: null,
+  cropZoom: null,
+};
+
 export function buildResolvedMedia(entity: EntityWithMediaLinks | null | undefined): ResolvedMediaPayload {
+  const fallback = DEFAULT_ENTITY_MEDIA;
+
   return {
-    hero: resolveEntityMedia(entity, 'hero'),
-    card: resolveEntityMedia(entity, 'card'),
-    detail: resolveEntityMedia(entity, 'detail'),
-    thumbnail: resolveEntityMedia(entity, 'thumbnail'),
-    explorer3d: resolveEntityMedia(entity, 'explorer3d'),
+    hero: resolveEntityMedia(entity, 'hero') ?? fallback,
+    card: resolveEntityMedia(entity, 'card') ?? fallback,
+    detail: resolveEntityMedia(entity, 'detail') ?? fallback,
+    thumbnail: resolveEntityMedia(entity, 'thumbnail') ?? fallback,
+    explorer3d: resolveEntityMedia(entity, 'explorer3d') ?? fallback,
     gallery: resolveEntityMedia(entity, 'gallery'),
-    primary: resolveEntityMedia(entity, 'primary'),
+    primary: resolveEntityMedia(entity, 'primary') ?? fallback,
   };
 }
 

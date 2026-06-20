@@ -4,11 +4,6 @@
   --entities-explorer-inner-top: 148px;
   --entities-explorer-inner-left: clamp(28px, 4vw, 56px);
   --entities-explorer-inner-right: clamp(28px, 4vw, 58px);
-  --entities-explorer-info-top: 150px;
-  --entities-explorer-info-right: clamp(72px, 6vw, 124px);
-  --entities-explorer-info-width: min(300px, calc(100% - 160px));
-  --entities-explorer-info-toggle-top: calc(var(--entities-explorer-info-top) + 10px);
-  --entities-explorer-info-toggle-right: clamp(76px, 6vw, 132px);
 }
 
 @media (min-width: 1101px) and (max-width: 1500px) {
@@ -18,21 +13,11 @@
     --entities-explorer-inner-top: 156px;
     --entities-explorer-inner-left: clamp(22px, 2.8vw, 34px);
     --entities-explorer-inner-right: clamp(22px, 2.8vw, 34px);
-    --entities-explorer-info-top: 156px;
-    --entities-explorer-info-right: clamp(56px, 5vw, 88px);
-    --entities-explorer-info-width: min(280px, calc(100% - 120px));
-    --entities-explorer-info-toggle-top: calc(var(--entities-explorer-info-top) + 8px);
-    --entities-explorer-info-toggle-right: clamp(58px, 5vw, 92px);
   }
 }
 
 .entities-page--curated-deck .entities-explorer-stage ::ng-deep .explorer3d::after {
   display: none;
-}
-
-.entities-page--curated-deck .entities-rail-handle {
-  top: calc(var(--entities-rail-top) + 6px);
-  left: clamp(18px, 1.8vw, 24px);
 }
 
 .entities-page--curated-deck .entities-filter-rail {

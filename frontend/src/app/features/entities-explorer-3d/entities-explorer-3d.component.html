@@ -2,6 +2,7 @@
     #root
     class="explorer3d"
     [class.is-info-open]="infoOpen"
+    [class.is-info-modal]="infoOpen && infoModal"
     [style.padding-right]="'var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px))'"
     role="region"
     [attr.aria-label]="i18n.t('explorer3d.aria')"
@@ -11,6 +12,7 @@
     <div #canvasHost class="explorer3d__canvas"></div>
 
     @if (activeItem; as active) {
+    @if (infoClosable) {
     <button
         class="explorer3d__info-toggle"
         [class.is-visible]="!infoOpen"
@@ -30,6 +32,7 @@
         [attr.aria-hidden]="!infoOpen"
         tabindex="-1"
     ></button>
+    }
 
     <aside
         class="explorer3d__info"
@@ -42,6 +45,7 @@
         (wheel)="$event.preventDefault(); $event.stopPropagation()"
     >
         <div class="explorer3d__info-head">
+        @if (infoClosable) {
         <button
             class="explorer3d__info-close-hit"
             type="button"
@@ -56,6 +60,7 @@
         >
             <span aria-hidden="true">×</span>
         </button>
+        }
         <div class="explorer3d__eyebrow">JANO Explorer</div>
         </div>
 

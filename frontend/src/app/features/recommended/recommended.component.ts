@@ -79,7 +79,7 @@ export class RecommendedComponent {
     this.seo.setPageMeta({
       title: 'Curated Discovery | JANO',
       description: 'A lightweight editorial view of the JANO graph built around one selected entity and its strongest relationships.',
-      path: '/recommended',
+      path: '/curated',
       image: '/assets/home/concept.jpg',
     });
 

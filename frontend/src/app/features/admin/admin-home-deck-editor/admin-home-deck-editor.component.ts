@@ -350,7 +350,7 @@ export class AdminHomeDeckEditorComponent {
   }
 
   destinationButtonLabel(): string {
-    return this.form.surface === 'RECOMMENDED' ? 'Ver Recommended' : 'Ver Home';
+    return this.form.surface === 'RECOMMENDED' ? 'Ver Curated' : 'Ver Home';
   }
 
   surfaceDescription(): string {
@@ -409,7 +409,7 @@ export class AdminHomeDeckEditorComponent {
 
   selectedCtaRouteDetail(): string {
     if (this.form.surface === 'RECOMMENDED') {
-      return 'Recommended abre siempre las entidades seleccionadas en esta curación.';
+      return 'Curated abre siempre las entidades seleccionadas en esta curación.';
     }
 
     const option = this.ctaRouteOptions.find((item) => item.value === this.form.ctaRoute);

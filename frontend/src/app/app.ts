@@ -80,7 +80,7 @@ export class App {
   }
 
   backgroundImageStyle(): string | null {
-    const url = this.appearance.backgroundImageUrl();
+    const url = this.appearance.currentBackgroundImageUrl();
     return url ? `url("${url.replace(/"/g, '%22')}")` : null;
   }
   isAuthRoute(): boolean {
