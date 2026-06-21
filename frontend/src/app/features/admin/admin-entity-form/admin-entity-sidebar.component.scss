@@ -13,7 +13,9 @@
   gap: 16px;
   align-self: start;
   max-height: calc(var(--app-content-height) - 36px);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   border: 1px solid rgba(255, 255, 255, 0.48);
   border-radius: 20px;
   background: linear-gradient(180deg, rgba(252, 251, 248, 0.98), rgba(242, 239, 233, 0.96));
@@ -86,10 +88,8 @@
   display: grid;
   gap: 8px;
   min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: visible;
   padding-right: 2px;
-  scrollbar-width: thin;
 }
 
 .admin-dashboard-nav__item {
