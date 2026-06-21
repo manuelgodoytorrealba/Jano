@@ -3,15 +3,42 @@
     <aside class="admin-sidebar" style="width:300px">
       <div class="admin-sidebar__toolhead">
         <span class="admin-sidebar__tooltitle">Editor</span>
+
         <div class="admin-sidebar__toolbar">
-          <button class="admin-sidebar__control" type="button" (click)="toggleSidebar.emit()">
+          <button
+            class="admin-sidebar__control"
+            type="button"
+            (click)="toggleSidebar.emit()"
+          >
             Ocultar editor
           </button>
-          <a class="admin-sidebar__control admin-sidebar__control--quiet" [attr.href]="cancelHref">Volver</a>
+
+          <a
+            class="admin-sidebar__control admin-sidebar__control--quiet"
+            [attr.href]="cancelHref"
+          >
+            Volver
+          </a>
         </div>
       </div>
+
+      @if (!isEdit) {
+        <div class="admin-sidebar__create-hint">
+          Completa título, slug y contenido inicial.
+          Guarda la entidad para desbloquear media,
+          relaciones, fuentes y colaboradores.
+        </div>
+      }
+
       <nav class="admin-dashboard-nav">
-        @for (section of navItems; track section.id) {
+        @for (
+          section of (
+            isEdit
+              ? navItems
+              : navItems.slice(0, 2)
+          );
+          track section.id
+        ) {
           <button
             type="button"
             class="admin-dashboard-nav__item"
@@ -19,72 +46,130 @@
             (click)="selectSection.emit(section.id)"
           >
             <span class="admin-dashboard-nav__item-main">
-              <span class="admin-dashboard-nav__item-label">{{ section.label }}</span>
+              <span class="admin-dashboard-nav__item-label">
+                {{ section.label }}
+              </span>
+
               @if (section.count) {
-                <span class="admin-dashboard-nav__item-count">{{ section.count }}</span>
+                <span class="admin-dashboard-nav__item-count">
+                  {{ section.count }}
+                </span>
               }
             </span>
+
             <span class="admin-dashboard-nav__item-meta">
               <span>{{ section.meta }}</span>
+
               @if (section.statusLabel) {
-                <span [class]="section.statusClass">{{ section.statusLabel }}</span>
+                <span [class]="section.statusClass">
+                  {{ section.statusLabel }}
+                </span>
               }
             </span>
           </button>
         }
       </nav>
+
       <div class="admin-sidebar__summary">
-        <span class="admin-sidebar__eyebrow">Editor dashboard</span>
-        <h2 class="admin-sidebar__title">{{ title || 'Entity sin título' }}</h2>
-        <span [class]="saveStatusClass">{{ saveStatusLabel }}</span>
-        <section class="admin-discovery-card" [class.admin-discovery-card--strong]="discoverabilityTone === 'strong'" [class.admin-discovery-card--partial]="discoverabilityTone === 'partial'">
-          <div class="admin-discovery-card__head">
-            <span class="admin-discovery-card__eyebrow">Search discoverability</span>
-            <span class="admin-discovery-card__score">{{ discoverabilityScoreLabel }}</span>
-          </div>
-          <p class="admin-discovery-card__summary">{{ discoverabilitySummary }}</p>
-          <div class="admin-discovery-card__list">
-            @for (item of discoverabilityItems; track item.label) {
-              <div class="admin-discovery-card__item" [class.is-done]="item.done">
-                <span class="admin-discovery-card__mark">{{ item.done ? 'OK' : 'TODO' }}</span>
-                <div class="admin-discovery-card__copy">
-                  <strong>{{ item.label }}</strong>
-                  <span>{{ item.detail }}</span>
+        <span class="admin-sidebar__eyebrow">
+          Editor dashboard
+        </span>
+
+        <h2 class="admin-sidebar__title">
+          {{ title || (isEdit ? 'Entity sin título' : 'Nueva entidad') }}
+        </h2>
+
+        <span [class]="saveStatusClass">
+          {{ saveStatusLabel }}
+        </span>
+
+        @if (isEdit) {
+          <section
+            class="admin-discovery-card"
+            [class.admin-discovery-card--strong]="discoverabilityTone === 'strong'"
+            [class.admin-discovery-card--partial]="discoverabilityTone === 'partial'"
+          >
+            <div class="admin-discovery-card__head">
+              <span class="admin-discovery-card__eyebrow">
+                Search discoverability
+              </span>
+
+              <span class="admin-discovery-card__score">
+                {{ discoverabilityScoreLabel }}
+              </span>
+            </div>
+
+            <p class="admin-discovery-card__summary">
+              {{ discoverabilitySummary }}
+            </p>
+
+            <div class="admin-discovery-card__list">
+              @for (
+                item of discoverabilityItems.slice(0, 3);
+                track item.label
+              ) {
+                <div
+                  class="admin-discovery-card__item"
+                  [class.is-done]="item.done"
+                >
+                  <span class="admin-discovery-card__mark">
+                    {{ item.done ? 'OK' : 'TODO' }}
+                  </span>
+
+                  <div class="admin-discovery-card__copy">
+                    <strong>{{ item.label }}</strong>
+                    <span>{{ item.detail }}</span>
+                  </div>
                 </div>
+              }
+            </div>
+
+            @if (publishWarning) {
+              <div class="admin-discovery-card__warning">
+                {{ publishWarning }}
               </div>
             }
-          </div>
-          @if (publishWarning) {
-            <div class="admin-discovery-card__warning">{{ publishWarning }}</div>
+          </section>
+        }
+      </div>
+
+      <div class="admin-sidebar__actions">
+        <a
+          class="admin-sidebar__action admin-sidebar__action--ghost"
+          [attr.href]="cancelHref"
+        >
+          Cancelar
+        </a>
+
+        <button
+          class="admin-sidebar__action admin-sidebar__action--ghost"
+          type="button"
+          [disabled]="saveDisabled"
+          (click)="saveStay.emit()"
+        >
+          {{ saveStayLabel }}
+        </button>
+
+        <button
+          class="admin-sidebar__action admin-sidebar__action--primary"
+          type="button"
+          [disabled]="saveDisabled"
+          (click)="saveBack.emit()"
+        >
+          @if (loading) {
+            Cargando...
+          } @else {
+            {{ saveBackLabel }}
           }
-        </section>
-        <div class="admin-sidebar__actions">
-          <a class="admin-sidebar__action admin-sidebar__action--ghost" [attr.href]="cancelHref">Cancelar</a>
-          <button
-            class="admin-sidebar__action admin-sidebar__action--ghost"
-            type="button"
-            [disabled]="saveDisabled"
-            (click)="saveStay.emit()"
-          >
-            {{ saveStayLabel }}
-          </button>
-          <button
-            class="admin-sidebar__action admin-sidebar__action--primary"
-            type="button"
-            [disabled]="saveDisabled"
-            (click)="saveBack.emit()"
-          >
-            @if (loading) {
-              Cargando...
-            } @else {
-              {{ saveBackLabel }}
-            }
-          </button>
-        </div>
+        </button>
       </div>
     </aside>
   } @else {
-    <button class="admin-sidebar__peek" type="button" (click)="toggleSidebar.emit()">
+    <button
+      class="admin-sidebar__peek"
+      type="button"
+      (click)="toggleSidebar.emit()"
+    >
       <span>Editor</span>
       <strong>Mostrar</strong>
     </button>

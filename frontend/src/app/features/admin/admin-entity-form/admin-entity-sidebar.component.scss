@@ -9,22 +9,42 @@
   position: sticky;
   top: 20px;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 16px;
   align-self: start;
   max-height: calc(var(--app-content-height) - 36px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
+
+  overflow: hidden;
+
   border: 1px solid rgba(255, 255, 255, 0.48);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(252, 251, 248, 0.98), rgba(242, 239, 233, 0.96));
+  background: linear-gradient(
+    180deg,
+    rgba(252, 251, 248, 0.98),
+    rgba(242, 239, 233, 0.96)
+  );
+
   box-shadow:
     0 22px 54px rgba(25, 20, 14, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.82);
+
   padding: 18px;
   backdrop-filter: blur(18px);
 }
+
+.admin-sidebar__create-hint {
+  padding: 12px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.72);
+
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5d554d;
+}
+
+
 
 .admin-sidebar__toolhead {
   display: flex;
@@ -86,15 +106,19 @@
 
 .admin-dashboard-nav {
   display: grid;
-  gap: 8px;
+  gap: 6px;
+
   min-height: 0;
-  overflow: visible;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
   padding-right: 2px;
 }
 
 .admin-dashboard-nav__item {
   text-align: left;
-  padding: 11px 13px;
+  padding: 8px 10px;
   border-radius: 18px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(255, 255, 255, 0.72);
@@ -190,7 +214,7 @@
 
 .admin-sidebar__title {
   margin: 0;
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1.12;
   letter-spacing: -0.02em;
   color: #171717;
@@ -331,10 +355,23 @@
 }
 
 .admin-sidebar__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+
   gap: 8px;
-  padding-top: 2px;
+
+  padding-top: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(242, 239, 233, 0),
+      rgba(242, 239, 233, 1) 40%
+    );
 }
 
 .admin-sidebar__action {

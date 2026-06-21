@@ -16,6 +16,7 @@ export type AdminEntityDiscoverabilityItem = {
 })
 export class AdminEntitySidebarComponent {
   @Input() visible = true;
+  @Input() isEdit = false;
   @Input() title = '';
   @Input() saveStatusLabel = '';
   @Input() saveStatusClass = 'entity-save-status';
