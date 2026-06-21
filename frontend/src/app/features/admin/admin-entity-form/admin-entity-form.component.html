@@ -49,6 +49,7 @@
             [entity]="previewEntity"
             [showActions]="false"
             [renderGraph]="true"
+            richTextPreviewAccess="admin"
           ></app-entity-detail-view>
           } @else {
           <div class="detail-live-embed__idle">
@@ -1236,18 +1237,5 @@
       }
 
     </section>
-
-      @if (hoveredSlug) {
-        <div
-          (mouseenter)="isHoveringPreviewPopup = true; cancelClosePreview()"
-          (mouseleave)="isHoveringPreviewPopup = false; scheduleClosePreview()"
-        >
-          <app-admin-entity-preview-popover
-            [visible]="true"
-            [loading]="previewLoading"
-            [previewData]="previewData"
-          ></app-admin-entity-preview-popover>
-        </div>
-      }
   </section>
 </div>

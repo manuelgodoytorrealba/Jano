@@ -118,6 +118,13 @@ export class EntitiesController {
   getByIdForAdmin(@Param('id') id: string) {
     return this.service.adminGetById(id);
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Get('admin/preview/:slug')
+  adminPreview(@Param('slug') slug: string, @Query('locale') locale?: string) {
+    return this.service.adminPreviewBySlug(slug, locale);
+  }
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Patch(':id/translations/:locale')

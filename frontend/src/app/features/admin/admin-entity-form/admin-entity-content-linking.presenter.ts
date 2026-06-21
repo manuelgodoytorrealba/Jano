@@ -42,26 +42,3 @@ export function insertAdminEntityLink(
     cursor: before.length + inserted.length,
   };
 }
-
-export function renderAdminEntityLinkedContentPreview(text: string | null | undefined): string {
-  if (!text) {
-    return '';
-  }
-
-  const escaped = text
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
-
-  const withLinks = escaped.replace(
-    /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,
-    (_match, slug, label) => {
-      const safeSlug = String(slug).trim();
-      const safeLabel = String(label ?? slug).trim();
-
-      return `<a class="entity-link" data-slug="${safeSlug}">${safeLabel}</a>`;
-    },
-  );
-
-  return withLinks.replace(/\n/g, '<br>');
-}

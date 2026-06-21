@@ -146,7 +146,7 @@
         <p class="section-label">{{ storySectionLabel(entity) }}</p>
       </div>
       <div class="entity-prose">
-        <app-rich-text [text]="entity.content"></app-rich-text>
+        <app-rich-text [text]="entity.content" [previewAccess]="richTextPreviewAccess"></app-rich-text>
       </div>
       } @else if (entity.summary) {
       <div class="entity-prose">{{ entity.summary }}</div>
@@ -169,11 +169,20 @@
           [imageAlt]="visualAlt(entity)"
           [entityTitle]="entity.title"
           [entityType]="entity.type"
+          [hideImagePane]="true"
         />
         } @placeholder {
-        <div class="entity-explorer__fallback entity-explorer__fallback--compact">
-          <div class="entity-explorer__fallback-media">
-            <app-jano-media [entity]="entity" usage="detail" [alt]="visualAlt(entity)" [lazy]="false" priority="high" />
+        <div class="entity-explorer__skeleton" aria-hidden="true" style="grid-template-columns: 1fr;">
+          <div class="entity-explorer__skeleton-pane" style="background: linear-gradient(180deg, rgba(8, 11, 16, 0.94), rgba(3, 5, 8, 0.98)); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <div class="entity-explorer__skeleton-toolbar">
+              <div style="width: 6rem; height: 1.05rem; border-radius: 999px; background: rgba(255, 255, 255, 0.12);"></div>
+              <div class="entity-explorer__skeleton-actions">
+                <span style="width: 3rem; height: 1.8rem;"></span>
+                <span style="width: 3rem; height: 1.8rem;"></span>
+                <span style="width: 3rem; height: 1.8rem;"></span>
+              </div>
+            </div>
+            <div style="min-height: 440px; border-radius: 22px; background: rgba(255, 255, 255, 0.06);"></div>
           </div>
         </div>
         }
@@ -211,13 +220,13 @@
         } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
         <div class="facts-sheet facts-sheet--textual">
           <div class="fact-note entity-glass-card">
-            <div class="entity-prose"><app-rich-text [text]="entity.concept?.definition ?? ''"></app-rich-text></div>
+            <div class="entity-prose"><app-rich-text [text]="entity.concept?.definition ?? ''" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
           </div>
         </div>
         } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
         <div class="facts-sheet facts-sheet--textual">
           <div class="fact-note entity-glass-card">
-            <div class="entity-prose"><app-rich-text [text]="entity.period?.definition ?? ''"></app-rich-text></div>
+            <div class="entity-prose"><app-rich-text [text]="entity.period?.definition ?? ''" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
           </div>
         </div>
         } @else {
@@ -243,7 +252,7 @@
                 <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">{{ r.to.title }}</a>
               </div>
               @if (r.justification) {
-              <div class="relation-card__text"><app-rich-text [text]="r.justification"></app-rich-text></div>
+              <div class="relation-card__text"><app-rich-text [text]="r.justification" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
               }
             </li>
             }
@@ -269,7 +278,7 @@
                 <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">{{ r.from.title }}</a>
               </div>
               @if (r.justification) {
-              <div class="relation-card__text"><app-rich-text [text]="r.justification"></app-rich-text></div>
+              <div class="relation-card__text"><app-rich-text [text]="r.justification" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
               }
             </li>
             }
@@ -307,7 +316,7 @@
           <div class="quote-block">“{{ r.quote }}”</div>
           }
           @if (r.note) {
-          <div class="relation-card__text"><app-rich-text [text]="r.note"></app-rich-text></div>
+          <div class="relation-card__text"><app-rich-text [text]="r.note" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
           }
         </li>
         }

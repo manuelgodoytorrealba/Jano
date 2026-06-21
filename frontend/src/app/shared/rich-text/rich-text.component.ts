@@ -35,6 +35,7 @@ export class RichTextComponent {
   private api = inject(EntitiesApi);
 
   @Input({ required: true }) text = '';
+  @Input() previewAccess: 'public' | 'admin' = 'public';
 
   openSlug = signal<string | null>(null);
   openPreviewKey = signal<string | null>(null);
@@ -70,7 +71,7 @@ export class RichTextComponent {
 
     const currentRequest = ++this.requestId;
 
-    this.api.preview(slug).subscribe({
+    this.api.preview(slug, { includeDrafts: this.previewAccess === 'admin' }).subscribe({
       next: (p: PublicEntityPreview) => {
         if (currentRequest !== this.requestId) return;
         if (this.openSlug() !== slug) return;

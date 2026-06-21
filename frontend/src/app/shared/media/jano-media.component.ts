@@ -26,16 +26,17 @@ export class JanoMediaComponent {
   @Input() lazy = true;
   @Input() priority: 'auto' | 'high' | 'low' = 'auto';
   @Input() placeholderMode: 'auto' | 'none' = 'auto';
+  private failedSrc: string | null = null;
 
   get src(): string | null {
     const direct = this.mediaPresentation.src;
-    if (direct) {
+    if (direct && direct !== this.failedSrc) {
       return direct;
     }
 
     const entityMedia = this.selectedEntityMedia;
     const resolved = mediaDisplayUrl(entityMedia);
-    if (resolved) {
+    if (resolved && resolved !== this.failedSrc) {
       return resolved;
     }
 
@@ -43,7 +44,12 @@ export class JanoMediaComponent {
       return null;
     }
 
-    return entityVisualUrl(this.entity, this.normalizedUsage);
+    const fallback = entityVisualUrl(this.entity, this.normalizedUsage);
+    return fallback === this.failedSrc ? null : fallback;
+  }
+
+  onImageError(): void {
+    this.failedSrc = this.src;
   }
 
   get altText(): string {

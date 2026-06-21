@@ -1,3 +1,46 @@
+:host {
+  --rt-heading-color: rgba(244, 245, 243, 0.94);
+  --rt-lead-color: rgba(226, 229, 234, 0.9);
+  --rt-strong-color: rgba(248, 249, 246, 0.96);
+  --rt-quote-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  --rt-quote-color: rgba(228, 231, 236, 0.9);
+  --rt-quote-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 28px rgba(0, 0, 0, 0.18);
+  --rt-tooltip-bg:
+    radial-gradient(circle at 16% 0%, rgba(255, 255, 255, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(54, 57, 60, 0.94), rgba(19, 21, 24, 0.96)),
+    rgba(17, 18, 21, 0.96);
+  --rt-tooltip-border: rgba(255, 255, 255, 0.14);
+  --rt-tooltip-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 54px rgba(0, 0, 0, 0.34);
+  --rt-tooltip-title: rgba(247, 248, 246, 0.96);
+  --rt-tooltip-meta: rgba(200, 205, 213, 0.74);
+  --rt-tooltip-summary: rgba(223, 227, 233, 0.86);
+  --rt-tooltip-loading: rgba(200, 205, 213, 0.78);
+}
+
+:host-context([data-theme="light"]) {
+  --rt-heading-color: rgba(17, 21, 30, 0.96);
+  --rt-lead-color: rgba(22, 26, 36, 0.96);
+  --rt-strong-color: rgba(24, 28, 37, 0.96);
+  --rt-quote-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.24));
+  --rt-quote-color: rgba(19, 23, 32, 0.96);
+  --rt-quote-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.58),
+    0 12px 28px rgba(17, 24, 39, 0.06);
+  --rt-tooltip-bg: #fff;
+  --rt-tooltip-border: rgba(0, 0, 0, 0.1);
+  --rt-tooltip-shadow: 0 20px 40px rgba(0, 0, 0, 0.16);
+  --rt-tooltip-title: #111;
+  --rt-tooltip-meta: #666;
+  --rt-tooltip-summary: #555;
+  --rt-tooltip-loading: #666;
+}
+
 .rt {
   position: relative;
   display: grid;
@@ -23,7 +66,7 @@
 .rt-h3 {
   font-family: var(--font-serif);
   font-weight: 400;
-  color: rgba(17, 21, 30, 0.96);
+  color: var(--rt-heading-color);
   line-height: 1.04;
   letter-spacing: var(--tracking-serif-tight);
   text-wrap: balance;
@@ -47,23 +90,20 @@
 .rt-lead {
   font-size: 1.22em;
   line-height: 1.8;
-  color: rgba(22, 26, 36, 0.96);
+  color: var(--rt-lead-color);
   text-wrap: pretty;
 }
 
 .rt-quote {
   padding: 1.15rem 1.2rem 1.1rem 1.35rem;
   border-left: 3px solid var(--color-reference-accent);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.24));
+  background: var(--rt-quote-bg);
   border-radius: 20px;
   font-size: 1.14em;
   font-style: italic;
   line-height: 1.85;
-  color: rgba(19, 23, 32, 0.96);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.58),
-    0 12px 28px rgba(17, 24, 39, 0.06);
+  color: var(--rt-quote-color);
+  box-shadow: var(--rt-quote-shadow);
 }
 
 .link-wrap {
@@ -74,7 +114,7 @@
 
 .rt strong {
   font-weight: 600;
-  color: rgba(24, 28, 37, 0.96);
+  color: var(--rt-strong-color);
 }
 
 .rt em {
@@ -106,14 +146,15 @@
   z-index: 240;
   width: 320px;
   max-width: min(320px, 88vw);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--rt-tooltip-border);
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.16);
+  background: var(--rt-tooltip-bg);
+  box-shadow: var(--rt-tooltip-shadow);
   padding: 14px;
   display: grid;
   gap: 10px;
   overflow: visible;
+  backdrop-filter: blur(16px);
 }
 
 .tooltip::after {
@@ -123,22 +164,22 @@
   left: 28%;
   width: 16px;
   height: 16px;
-  background: #fff;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--rt-tooltip-bg);
+  border-right: 1px solid var(--rt-tooltip-border);
+  border-bottom: 1px solid var(--rt-tooltip-border);
   transform: translateX(-50%) rotate(45deg);
 }
 
 .tt-loading {
   font-size: 13px;
-  color: #666;
+  color: var(--rt-tooltip-loading);
 }
 
 .tt-title {
   font-size: 18px;
   line-height: 1.2;
   font-weight: 600;
-  color: #111;
+  color: var(--rt-tooltip-title);
 }
 
 .tt-meta {
@@ -148,13 +189,13 @@
   font-size: 11px;
   letter-spacing: .04em;
   text-transform: uppercase;
-  color: #666;
+  color: var(--rt-tooltip-meta);
 }
 
 .tt-summary {
   font-size: 14px;
   line-height: 1.5;
-  color: #555;
+  color: var(--rt-tooltip-summary);
 }
 
 .tt-img {

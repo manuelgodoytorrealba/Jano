@@ -442,23 +442,6 @@
       white-space: nowrap;
     }
 
-    .entity-preview-popover {
-  position: absolute;
-  right: -320px;
-  top: 0;
-  width: 280px;
-
-  border: 1px solid rgba(0,0,0,.1);
-  border-radius: 14px;
-
-  padding: 14px;
-
-  background: white;
-  box-shadow: 0 20px 40px rgba(0,0,0,.18);
-
-  z-index: 50;
-}
- 
     .badge {
       font-size: 11px;
       padding: 4px 9px;
@@ -1077,21 +1060,6 @@
 .relations-list {
   display: grid;
   gap: 10px;
-}
-
-.entity-link {
-  color: #111;
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: rgba(0,0,0,.22);
-  text-underline-offset: 2px;
-  transition: color .12s ease, text-decoration-color .12s ease, opacity .12s ease;
-  cursor: pointer;
-}
-
-.entity-link:hover {
-  color: #000;
-  text-decoration-color: #111;
 }
 
 .preview-content a,

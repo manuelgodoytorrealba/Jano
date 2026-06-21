@@ -62,7 +62,11 @@ export class EntitiesApi {
     return this.http.get<GraphResponseDto>(apiUrl(`/entities/${slug}/graph`));
   }
 
-  preview(slug: string) {
-    return this.http.get<PublicEntityPreview>(apiUrl(`/entities/${slug}/preview`));
+  preview(slug: string, options?: { includeDrafts?: boolean }) {
+    const path = options?.includeDrafts
+      ? `/entities/admin/preview/${slug}`
+      : `/entities/${slug}/preview`;
+
+    return this.http.get<PublicEntityPreview>(apiUrl(path));
   }
 }

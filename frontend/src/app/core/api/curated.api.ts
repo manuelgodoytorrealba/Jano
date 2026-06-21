@@ -46,7 +46,7 @@ export class CuratedApi {
   private readonly http = inject(HttpClient);
 
   page(entity?: string) {
-    return this.http.get<CuratedPageResponse>(apiUrl('/curated'), {
+    return this.http.get<CuratedPageResponse | null>(apiUrl('/curated'), {
       params: entity ? { entity } : {},
     });
   }

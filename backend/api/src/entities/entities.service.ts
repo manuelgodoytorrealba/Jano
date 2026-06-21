@@ -1357,11 +1357,28 @@ export class EntitiesService {
   }
 
   async previewBySlug(slug: string, locale?: string) {
+    const e = await this.findPreviewEntityBySlug(slug, locale, true);
 
+    return {
+      ...this.resolveLocalizedEntity(e, locale),
+      mediaLibrary: buildAdminMediaLibrary(e),
+    };
+  }
+
+  async adminPreviewBySlug(slug: string, locale?: string) {
+    const e = await this.findPreviewEntityBySlug(slug, locale, false);
+
+    return {
+      ...this.resolveLocalizedEntity(e, locale),
+      mediaLibrary: buildAdminMediaLibrary(e),
+    };
+  }
+
+  private async findPreviewEntityBySlug(slug: string, locale: string | undefined, publishedOnly: boolean) {
     const e = await this.prisma.entity.findFirst({
       where: {
         slug,
-        status: EntityStatus.PUBLISHED,
+        ...(publishedOnly ? { status: EntityStatus.PUBLISHED } : {}),
       },
       select: {
         id: true,
@@ -1432,10 +1449,7 @@ export class EntitiesService {
 
     if (!e) throw new NotFoundException('Entity not found');
 
-    return {
-      ...this.resolveLocalizedEntity(e, locale),
-      mediaLibrary: buildAdminMediaLibrary(e),
-    };
+    return e;
   }
 
   async adminCreate(dto: CreateEntityDto) {

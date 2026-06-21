@@ -34,6 +34,9 @@ describe('EntitiesService.list filters', () => {
     entityTag: {
       deleteMany: jest.fn(),
     },
+    entityAlias: {
+      deleteMany: jest.fn(),
+    },
     homeDeckItem: {
       deleteMany: jest.fn(),
     },
@@ -78,6 +81,7 @@ describe('EntitiesService.list filters', () => {
     prisma.contributor.deleteMany.mockReset();
     prisma.curatorNote.deleteMany.mockReset();
     prisma.entityTag.deleteMany.mockReset();
+    prisma.entityAlias.deleteMany.mockReset();
     prisma.homeDeckItem.deleteMany.mockReset();
     prisma.collectionEntity.deleteMany.mockReset();
     prisma.savedEntity.deleteMany.mockReset();
@@ -103,6 +107,7 @@ describe('EntitiesService.list filters', () => {
     prisma.contributor.deleteMany.mockResolvedValue({ count: 0 });
     prisma.curatorNote.deleteMany.mockResolvedValue({ count: 0 });
     prisma.entityTag.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.entityAlias.deleteMany.mockResolvedValue({ count: 0 });
     prisma.homeDeckItem.deleteMany.mockResolvedValue({ count: 0 });
     prisma.collectionEntity.deleteMany.mockResolvedValue({ count: 0 });
     prisma.savedEntity.deleteMany.mockResolvedValue({ count: 0 });
@@ -673,6 +678,30 @@ describe('EntitiesService.list filters', () => {
         where: {
           slug: 'guernica',
           status: 'PUBLISHED',
+        },
+      }),
+    );
+  });
+
+  it('loads admin preview by slug without forcing published status', async () => {
+    prisma.entity.findFirst.mockResolvedValue({
+      id: 'entity-1',
+      slug: 'draft-guernica',
+      title: 'Draft Guernica',
+      type: 'ARTWORK',
+      status: 'DRAFT',
+      mediaLinks: [],
+      summary: null,
+      startYear: null,
+      endYear: null,
+    });
+
+    await service.adminPreviewBySlug('draft-guernica');
+
+    expect(prisma.entity.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          slug: 'draft-guernica',
         },
       }),
     );

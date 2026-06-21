@@ -179,6 +179,12 @@ export class RecommendedComponent {
           }
 
           this.page.set(page);
+          if (!page) {
+            this.visibleDiscoveryIds.set([]);
+            this.loading.set(false);
+            return;
+          }
+
           this.visibleDiscoveryIds.update((current) => {
             const incomingIds = new Set(page.discoveryEntities.map((item) => item.id));
             const preserved = current.filter((id) => incomingIds.has(id));

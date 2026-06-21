@@ -11,6 +11,22 @@ const pool = new Pool({
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+function getAdminCredentials() {
+  const required = ['SEED_ADMIN_EMAIL', 'SEED_ADMIN_PASSWORD'] as const;
+  const missing = required.filter((name) => !process.env[name]?.trim());
+
+  if (missing.length) {
+    throw new Error(
+      `Missing required environment variables:\n${missing.join('\n')}\n\nPlease define them before running prisma seed.`,
+    );
+  }
+
+  return {
+    email: process.env.SEED_ADMIN_EMAIL!.trim().toLowerCase(),
+    password: process.env.SEED_ADMIN_PASSWORD!,
+  };
+}
+
 type BaseEntity = { id: string; slug: string; title: string };
 
 type CreateEntityWithMediaInput = {
@@ -1274,6 +1290,8 @@ async function seedRelationAndSourceRefTranslations() {
 }
 
 async function main() {
+  const admin = getAdminCredentials();
+
   console.log('🧹 Resetting demo data...');
   await resetDatabase();
 
@@ -2820,220 +2838,7 @@ async function main() {
     },
   ];
 
-  const additionalRecommendedDecks = [
-    {
-      slug: 'archivo-y-silencio',
-      title: 'Archivo y silencio',
-      subtitle: 'Ensayo visual',
-      description: 'Memoria, archivo y huella material entre documentos, ruina y persistencia.',
-      ctaLabel: 'Ver curación',
-      imageUrl: '/assets/home/concept.jpg',
-      translations: { en: { title: 'Archive and silence', subtitle: 'Visual essay', description: 'Memory, archives and material trace through documents, ruin and persistence.', ctaLabel: 'View curation' } },
-      entities: [memoria, persistencia, articleDeath, ciudad, maman, violencia],
-    },
-    {
-      slug: 'imagen-y-testimonio',
-      title: 'Imagen y testimonio',
-      subtitle: 'Ruta editorial',
-      description: 'La imagen como prueba, memoria y narración de la violencia histórica.',
-      ctaLabel: 'Explorar',
-      imageUrl: '/assets/home/artwork.jpg',
-      translations: { en: { title: 'Image and testimony', subtitle: 'Editorial route', description: 'The image as proof, memory and narration of historical violence.', ctaLabel: 'Explore' } },
-      entities: [guernica, tresDeMayo, memoria, guerra, violencia, articleWar],
-    },
-    {
-      slug: 'surrealismo-y-deseo',
-      title: 'Surrealismo y deseo',
-      subtitle: 'Staff Note',
-      description: 'Sueño, tiempo, cuerpo e imagen psíquica en la sensibilidad surrealista.',
-      ctaLabel: 'Ver recorrido',
-      imageUrl: '/assets/home/movement.jpg',
-      translations: { en: { title: 'Surrealism and desire', subtitle: 'Staff Note', description: 'Dream, time, body and psychic image inside the surrealist imagination.', ctaLabel: 'View route' } },
-      entities: [surrealismo, persistencia, dali, tiempo, memoria, cuerpo, carnivalHarlequin],
-    },
-    {
-      slug: 'rostro-y-autorrepresentacion',
-      title: 'Rostro y autorrepresentación',
-      subtitle: 'Curated List',
-      description: 'Identidad, género y memoria personal a través del rostro y la figura.',
-      ctaLabel: 'Explorar rostros',
-      imageUrl: '/assets/home/artist.jpg',
-      translations: { en: { title: 'Face and self-representation', subtitle: 'Curated List', description: 'Identity, gender and personal memory through face and figure.', ctaLabel: 'Explore faces' } },
-      entities: [frida, dosFridas, identidad, genero, cuerpo, dolor],
-    },
-    {
-      slug: 'ciudad-y-soledad',
-      title: 'Ciudad y soledad',
-      subtitle: 'Lectura urbana',
-      description: 'Arquitectura, noche y experiencia moderna entre aislamiento y mirada.',
-      ctaLabel: 'Ver selección',
-      imageUrl: '/assets/home/artist.jpg',
-      translations: { en: { title: 'City and solitude', subtitle: 'Urban reading', description: 'Architecture, night and modern experience between isolation and observation.', ctaLabel: 'View selection' } },
-      entities: [ciudad, nighthawks, hopper, warhol, marilynDiptych, futbolistas],
-    },
-    {
-      slug: 'madres-y-monumentos',
-      title: 'Madres y monumentos',
-      subtitle: 'Ruta escultórica',
-      description: 'Maternidad, memoria y cuerpo en escalas íntimas y monumentales.',
-      ctaLabel: 'Explorar esculturas',
-      imageUrl: '/assets/home/artwork.jpg',
-      translations: { en: { title: 'Mothers and monuments', subtitle: 'Sculptural route', description: 'Motherhood, memory and the body across intimate and monumental scales.', ctaLabel: 'Explore sculptures' } },
-      entities: [maternidad, maman, bourgeois, memoria, cuerpo, articleBody],
-    },
-    {
-      slug: 'mirar-el-poder',
-      title: 'Mirar el poder',
-      subtitle: 'Curación temática',
-      description: 'Retrato, autoridad, institución y violencia simbólica desde el Barroco hasta hoy.',
-      ctaLabel: 'Ver curación',
-      imageUrl: '/assets/home/period.jpg',
-      translations: { en: { title: 'Looking at power', subtitle: 'Thematic curation', description: 'Portrait, authority, institution and symbolic violence from the Baroque to today.', ctaLabel: 'View curation' } },
-      entities: [poder, lasMeninas, velazquez, studyVelazquez, fountain, warhol],
-    },
-    {
-      slug: 'cubismo-y-fragmentacion',
-      title: 'Cubismo y fragmentación',
-      subtitle: 'Mapa formal',
-      description: 'La fragmentación del cuerpo y del espacio como nueva mirada moderna.',
-      ctaLabel: 'Explorar cubismo',
-      imageUrl: '/assets/home/movement.jpg',
-      translations: { en: { title: 'Cubism and fragmentation', subtitle: 'Formal map', description: 'The fragmentation of body and space as a new modern gaze.', ctaLabel: 'Explore cubism' } },
-      entities: [cubismo, demoiselles, guernica, picasso, cuerpo, identidad],
-    },
-    {
-      slug: 'tiempo-en-ruinas',
-      title: 'Tiempo en ruinas',
-      subtitle: 'Ensayo curado',
-      description: 'Duración, pérdida y resto visual para pensar la historia desde las imágenes.',
-      ctaLabel: 'Ver ensayo',
-      imageUrl: '/assets/home/period.jpg',
-      translations: { en: { title: 'Time in ruins', subtitle: 'Curated essay', description: 'Duration, loss and visual remains for thinking history through images.', ctaLabel: 'View essay' } },
-      entities: [tiempo, memoria, persistencia, saturno, muerte, articleDeath],
-    },
-    {
-      slug: 'infancia-y-juventud',
-      title: 'Infancia y juventud',
-      subtitle: 'Entrada sensible',
-      description: 'Promesa, energía y construcción del yo en escenas modernas y cortesanas.',
-      ctaLabel: 'Explorar',
-      imageUrl: '/assets/home/artist.jpg',
-      translations: { en: { title: 'Childhood and youth', subtitle: 'Sensitive entry', description: 'Promise, energy and self-construction in modern and courtly scenes.', ctaLabel: 'Explore' } },
-      entities: [juventud, carnivalHarlequin, lasMeninas, ciudad, futbolistas, identidad],
-    },
-    {
-      slug: 'dolor-y-resistencia',
-      title: 'Dolor y resistencia',
-      subtitle: 'Ruta corporal',
-      description: 'Cuerpo herido, dolor y persistencia afectiva en pintura y escultura.',
-      ctaLabel: 'Ver recorrido',
-      imageUrl: '/assets/home/concept.jpg',
-      translations: { en: { title: 'Pain and resistance', subtitle: 'Embodied route', description: 'Wounded body, pain and affective persistence in painting and sculpture.', ctaLabel: 'View route' } },
-      entities: [dolor, dosFridas, studyVelazquez, maman, cuerpo, articleBody],
-    },
-    {
-      slug: 'religion-y-teatralidad',
-      title: 'Religión y teatralidad',
-      subtitle: 'Lectura histórica',
-      description: 'Iconografía, autoridad y escena religiosa entre barroco y violencia moderna.',
-      ctaLabel: 'Explorar',
-      imageUrl: '/assets/home/period.jpg',
-      translations: { en: { title: 'Religion and theatricality', subtitle: 'Historical reading', description: 'Iconography, authority and religious staging between the Baroque and modern violence.', ctaLabel: 'Explore' } },
-      entities: [religion, barroco, velazquez, studyVelazquez, poder, muerte],
-    },
-    {
-      slug: 'objeto-y-museo',
-      title: 'Objeto y museo',
-      subtitle: 'Curated List',
-      description: 'Objeto encontrado, institución y definición de arte desde Duchamp.',
-      ctaLabel: 'Ver objetos',
-      imageUrl: '/assets/home/artwork.jpg',
-      translations: { en: { title: 'Object and museum', subtitle: 'Curated List', description: 'Found object, institution and the definition of art through Duchamp.', ctaLabel: 'View objects' } },
-      entities: [duchamp, fountain, bottleRack, dadaismo, poder, ciudad],
-    },
-    {
-      slug: 'celebridad-y-repeticion',
-      title: 'Celebridad y repetición',
-      subtitle: 'Visual culture',
-      description: 'Fama, reproducción técnica y superficie mediática en el Pop Art.',
-      ctaLabel: 'Explorar cultura visual',
-      imageUrl: '/assets/home/movement.jpg',
-      translations: { en: { title: 'Celebrity and repetition', subtitle: 'Visual culture', description: 'Fame, technical reproduction and media surface in Pop Art.', ctaLabel: 'Explore visual culture' } },
-      entities: [warhol, marilynDiptych, popArt, ciudad, muerte, articleAvant],
-    },
-    {
-      slug: 'paisaje-psiquico',
-      title: 'Paisaje psíquico',
-      subtitle: 'Entrada conceptual',
-      description: 'Sueño, deseo y tiempo en imágenes que desestabilizan la realidad visible.',
-      ctaLabel: 'Ver selección',
-      imageUrl: '/assets/home/concept.jpg',
-      translations: { en: { title: 'Psychic landscape', subtitle: 'Conceptual entry', description: 'Dream, desire and time in images that destabilize visible reality.', ctaLabel: 'View selection' } },
-      entities: [surrealismo, persistencia, tiempo, memoria, dali, miro],
-    },
-    {
-      slug: 'archivo-muerte-y-duelo',
-      title: 'Archivo, muerte y duelo',
-      subtitle: 'Ruta editorial',
-      description: 'Cómo las imágenes sostienen pérdida, archivo y memoria ritual.',
-      ctaLabel: 'Ver ruta',
-      imageUrl: '/assets/home/period.jpg',
-      translations: { en: { title: 'Archive, death and mourning', subtitle: 'Editorial route', description: 'How images sustain loss, archive and ritual memory.', ctaLabel: 'View route' } },
-      entities: [muerte, memoria, articleDeath, saturno, marilynDiptych, religion],
-    },
-    {
-      slug: 'modernidad-nocturna',
-      title: 'Modernidad nocturna',
-      subtitle: 'Scene study',
-      description: 'Luz artificial, ciudad y alienación en escenas de la vida moderna.',
-      ctaLabel: 'Explorar noche',
-      imageUrl: '/assets/home/artist.jpg',
-      translations: { en: { title: 'Nocturnal modernity', subtitle: 'Scene study', description: 'Artificial light, city and alienation in scenes of modern life.', ctaLabel: 'Explore night' } },
-      entities: [nighthawks, ciudad, hopper, memoria, warhol, articleAvant],
-    },
-    {
-      slug: 'goya-y-la-crisis-moderna',
-      title: 'Goya y la crisis moderna',
-      subtitle: 'Editorial route',
-      description: 'Violencia, poder y descomposición de la experiencia histórica en Goya.',
-      ctaLabel: 'Ver Goya',
-      imageUrl: '/assets/home/artwork.jpg',
-      translations: { en: { title: 'Goya and the modern crisis', subtitle: 'Editorial route', description: 'Violence, power and the breakdown of historical experience in Goya.', ctaLabel: 'See Goya' } },
-      entities: [goya, saturno, tresDeMayo, violencia, guerra, romanticismo],
-    },
-    {
-      slug: 'futbol-y-multitud',
-      title: 'Fútbol y multitud',
-      subtitle: 'Cultura popular',
-      description: 'Ritual colectivo, cuerpo y ciudad en la imaginación del fútbol.',
-      ctaLabel: 'Ver cultura popular',
-      imageUrl: '/assets/home/movement.jpg',
-      translations: { en: { title: 'Football and crowd', subtitle: 'Popular culture', description: 'Collective ritual, body and city in the visual imagination of football.', ctaLabel: 'See popular culture' } },
-      entities: [futbol, deporte, futbolistas, ciudad, juventud, articleFootball],
-    },
-    {
-      slug: 'feminidad-y-escision',
-      title: 'Feminidad y escisión',
-      subtitle: 'Curación sensible',
-      description: 'Representación de lo femenino entre autorretrato, herida y construcción identitaria.',
-      ctaLabel: 'Explorar',
-      imageUrl: '/assets/home/concept.jpg',
-      translations: { en: { title: 'Femininity and split self', subtitle: 'Sensitive curation', description: 'Representations of femininity between self-portrait, wound and identity construction.', ctaLabel: 'Explore' } },
-      entities: [frida, dosFridas, genero, identidad, dolor, cuerpo],
-    },
-    {
-      slug: 'obra-y-contexto-historico',
-      title: 'Obra y contexto histórico',
-      subtitle: 'Entry map',
-      description: 'Períodos, movimientos y obras como lectura cruzada de la historia visual.',
-      ctaLabel: 'Ver mapa',
-      imageUrl: '/assets/home/period.jpg',
-      translations: { en: { title: 'Work and historical context', subtitle: 'Entry map', description: 'Periods, movements and artworks as a cross-reading of visual history.', ctaLabel: 'See map' } },
-      entities: [periodXIX, periodXX, cubismo, surrealismo, guernica, persistencia, lasMeninas],
-    },
-  ];
-
-  const recommendedDecks = [...baseRecommendedDecks, ...additionalRecommendedDecks]
+  const recommendedDecks = baseRecommendedDecks.slice(0, 5)
     .map((deck, index) => ({
       ...deck,
       sortOrder: index,
@@ -3104,30 +2909,36 @@ async function main() {
     }
   }
 
-  console.log('🔐 Creating test user...');
+  console.log('🔐 Creating admin user...');
 
-  const testEmail = 'dev+tester@example.com';
-  const testPassword = 'Secret123!';
-  const testPasswordHash = await bcrypt.hash(testPassword, 10);
+  const passwordHash = await bcrypt.hash(admin.password, 10);
 
   await prisma.user.upsert({
-    where: { email: testEmail },
-    update: { passwordHash: testPasswordHash, name: 'Dev Tester', role: UserRole.ADMIN, isBeta: true },
-    create: { email: testEmail, passwordHash: testPasswordHash, name: 'Dev Tester', role: UserRole.ADMIN, isBeta: true },
+    where: { email: admin.email },
+    update: { passwordHash, name: 'JANO Admin', role: UserRole.ADMIN, isBeta: true },
+    create: { email: admin.email, passwordHash, name: 'JANO Admin', role: UserRole.ADMIN, isBeta: true },
   });
-
-  console.log(`Test user: ${testEmail} / ${testPassword}`);
 
   console.log('✅ Real art seed created successfully.');
   console.log('Entities created:');
   console.log('- 3 periods');
-  console.log('- 5 movements');
-  console.log('- 8 concepts');
+  console.log('- 10 movements');
+  console.log('- 19 concepts');
   console.log('- 4 places');
-  console.log('- 5 artists');
-  console.log('- 6 artworks');
+  console.log('- 11 artists');
+  console.log('- 16 artworks');
+  console.log('- 5 articles');
   console.log(`- ${homeDecks.length} home decks`);
   console.log(`- ${recommendedDecks.length} recommended decks`);
+  console.log('\n====================================');
+  console.log('JANO ADMIN ACCOUNT');
+  console.log('====================================');
+  console.log('\nEmail:');
+  console.log(admin.email);
+  console.log('\nPassword:');
+  console.log(admin.password);
+  console.log('\nStore these credentials securely.');
+  console.log('\n====================================');
 }
 
 main()

@@ -1,4 +1,8 @@
-<main class="deck-editor">
+<main
+  class="deck-editor"
+  [class.deck-editor--recommended]="form.surface === 'RECOMMENDED'"
+  [class.deck-editor--home]="form.surface === 'HOME'"
+>
   <header class="editor-head">
     <div>
       <p class="eyebrow">Editorial</p>
@@ -39,8 +43,16 @@
 
   @if (vm$ | async; as deck) {
     @if (deck) {
-      <section class="editor-layout">
-        <form class="panel form-panel" (ngSubmit)="save()">
+      <section
+        class="editor-layout"
+        [class.editor-layout--recommended]="form.surface === 'RECOMMENDED'"
+        [class.editor-layout--home]="form.surface === 'HOME'"
+      >
+        <form
+          class="panel form-panel"
+          [class.form-panel--home]="form.surface === 'HOME'"
+          (ngSubmit)="save()"
+        >
           <div class="section-title">
             <h2>Campos editoriales</h2>
             <p>{{ surfaceDescription() }} · {{ translationSummary() }}</p>
@@ -243,14 +255,14 @@
           </div>
         </form>
 
-        <aside class="side-stack">
-          <section class="panel preview-panel">
+        @if (form.surface === 'RECOMMENDED') {
+          <section class="panel preview-panel preview-panel--recommended">
             <div class="section-title">
               <h2>Portada en contexto</h2>
               <p>{{ publicationSummary() }} · {{ previewRouteSummary() }}</p>
             </div>
 
-            <article class="deck-preview" [class.is-inactive]="!form.isActive">
+            <article class="deck-preview" [class.is-inactive]="!form.isActive" [class.deck-preview--recommended]="form.surface === 'RECOMMENDED'">
               <div class="deck-preview__status">
                 <span>{{ activeTargetLabel() }}</span>
                 <strong>{{ form.isActive ? 'Activo' : 'Inactivo' }}</strong>
@@ -288,14 +300,14 @@
             }
           </section>
 
-          <section class="panel">
+          <section class="panel sequence-panel sequence-panel--recommended">
             <div class="section-title">
               <h2>Secuencia curatorial</h2>
               <p>El orden de estas piezas construye la lectura y el ritmo de la curación.</p>
             </div>
 
             @if (deck.entities.length) {
-              <div class="selected-strip">
+              <div class="selected-strip" [class.selected-strip--recommended]="form.surface === 'RECOMMENDED'">
                 @for (item of orderedEntities(deck.entities); track item.id) {
                   <article class="selected-card">
                     <div
@@ -359,7 +371,7 @@
             }
           </section>
 
-          <section class="panel">
+          <section class="panel search-panel search-panel--recommended">
             <div class="section-title">
               <h2>Añadir entity</h2>
               <p>Busca piezas para extender la secuencia y probar nuevas lecturas curatoriales.</p>
@@ -406,7 +418,154 @@
               }
             }
           </section>
-        </aside>
+        } @else {
+          <aside class="side-stack side-stack--home">
+            <section class="panel preview-panel">
+              <div class="section-title">
+                <h2>Portada en contexto</h2>
+                <p>{{ publicationSummary() }} · {{ previewRouteSummary() }}</p>
+              </div>
+
+              <article class="deck-preview" [class.is-inactive]="!form.isActive">
+                <div class="deck-preview__status">
+                  <span>{{ activeTargetLabel() }}</span>
+                  <strong>{{ form.isActive ? 'Activo' : 'Inactivo' }}</strong>
+                </div>
+                @if (previewImageUrl(); as imageUrl) {
+                  <img [src]="imageUrl" [alt]="previewTitle()" />
+                } @else {
+                  <div class="deck-preview__placeholder">
+                    <span>Sin imagen</span>
+                    <strong
+                      >Añade una portada para sostener el tono visual de esta pieza editorial.</strong
+                    >
+                  </div>
+                }
+                <div class="deck-preview__body">
+                  <span>{{ previewEyebrow() }}</span>
+                  <h3>{{ previewTitle() }}</h3>
+                  <p>{{ previewDescription() }}</p>
+                  <div class="deck-preview__footer">
+                    <strong>{{ previewCtaLabel() }} →</strong>
+                    <small>{{ previewRouteSummary() }}</small>
+                  </div>
+                </div>
+              </article>
+
+              @if (deck.warnings.length) {
+                <div class="warnings">
+                  @for (warning of deck.warnings; track warning.code + warning.message) {
+                    <div [class.is-warning]="warning.severity === 'warning'">
+                      <strong>{{ warning.code }}</strong>
+                      <span>{{ warning.message }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </section>
+
+            <section class="panel">
+              <div class="section-title">
+                <h2>Secuencia curatorial</h2>
+                <p>El orden de estas piezas construye la lectura y el ritmo de la curación.</p>
+              </div>
+
+              @if (deck.entities.length) {
+                <div class="selected-strip">
+                  @for (item of orderedEntities(deck.entities); track item.id) {
+                    <article class="selected-card">
+                      <div
+                        class="selected-card__media"
+                        draggable="true"
+                        (dragstart)="startEntityDrag(item.entity.id)"
+                        (dragend)="clearEntityDrag()"
+                        (dragover)="$event.preventDefault()"
+                        (drop)="dropEntityBefore(item.entity.id, deck.entities)"
+                      >
+                        @if (entityImageUrl(item.entity); as imageUrl) {
+                          <img [src]="imageUrl" [alt]="item.entity.title" />
+                        } @else {
+                          <div class="selected-card__media-empty">
+                            {{ entityEyebrow(item.entity) }}
+                          </div>
+                        }
+                        <span class="selected-row__rank">{{ item.sortOrder + 1 }}</span>
+                      </div>
+                      <div class="selected-card__body">
+                        <div class="selected-card__meta">
+                          <span>{{ entityEyebrow(item.entity) }}</span>
+                          <strong>{{ entityStatusLabel(item.entity) }}</strong>
+                        </div>
+                        <h3>{{ item.entity.title }}</h3>
+                        <p>{{ item.entity.summary || 'Sin resumen editorial todavía.' }}</p>
+                      </div>
+                      <div class="selected-card__actions">
+                        <span class="selected-card__hint">Arrastra para mover</span>
+                        <div class="row-actions">
+                          <button class="mini" type="button" (click)="moveEntity(item, -1, deck.entities)">Subir</button>
+                          <button class="mini" type="button" (click)="moveEntity(item, 1, deck.entities)">Bajar</button>
+                        </div>
+                        <button class="mini danger" type="button" (click)="removeEntity(item.entity.id)">Quitar</button>
+                      </div>
+                    </article>
+                  }
+                </div>
+              } @else {
+                <div class="empty">
+                  Esta pieza editorial todavía no tiene entidades seleccionadas.
+                </div>
+              }
+            </section>
+
+            <section class="panel">
+              <div class="section-title">
+                <h2>Añadir entity</h2>
+                <p>Busca piezas para extender la secuencia y probar nuevas lecturas curatoriales.</p>
+              </div>
+
+              <label class="search-field">
+                <span>Buscar</span>
+                <input
+                  name="entitySearch"
+                  [(ngModel)]="entitySearch"
+                  (ngModelChange)="onSearchChange($event)"
+                />
+              </label>
+
+              @if (entityResults$ | async; as results) {
+                @if (results.length) {
+                  <div class="result-list">
+                    @for (entity of results; track entity.id) {
+                      <button
+                        class="result-row"
+                        type="button"
+                        [disabled]="isSelected(entity.id)"
+                        (click)="addEntity(entity)"
+                      >
+                        <div class="result-row__media">
+                          @if (entityImageUrl(entity); as imageUrl) {
+                            <img [src]="imageUrl" [alt]="entity.title" />
+                          } @else {
+                            <div class="result-row__media-empty">{{ entityEyebrow(entity) }}</div>
+                          }
+                        </div>
+                        <div class="result-row__body">
+                          <strong>{{ entity.title }}</strong>
+                          <span>{{ entity.type }} · {{ entity.status }}</span>
+                        </div>
+                        <span class="result-row__action">{{
+                          isSelected(entity.id) ? 'Añadida' : 'Añadir'
+                        }}</span>
+                      </button>
+                    }
+                  </div>
+                } @else if (entitySearch.trim()) {
+                  <div class="empty">No encontramos entities con esa búsqueda.</div>
+                }
+              }
+            </section>
+          </aside>
+        }
       </section>
     }
   } @else if (loading) {

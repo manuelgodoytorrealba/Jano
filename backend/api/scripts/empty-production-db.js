@@ -5,8 +5,8 @@ require('dotenv/config');
 
 const confirm = process.env.CONFIRM_EMPTY_DB;
 const databaseUrl = process.env.DATABASE_URL;
-const adminEmail = process.env.ADMIN_EMAIL;
-const adminPassword = process.env.ADMIN_PASSWORD;
+const adminEmail = process.env.SEED_ADMIN_EMAIL;
+const adminPassword = process.env.SEED_ADMIN_PASSWORD;
 const adminName = process.env.ADMIN_NAME || 'Admin';
 const adminRole = process.env.ADMIN_ROLE || 'ADMIN';
 const adminIsBeta = process.env.ADMIN_IS_BETA || 'false';
@@ -22,7 +22,7 @@ if (confirm !== 'YES') {
 }
 
 if (!adminEmail || !adminPassword) {
-  console.error('Missing ADMIN_EMAIL or ADMIN_PASSWORD');
+  console.error('Missing SEED_ADMIN_EMAIL or SEED_ADMIN_PASSWORD');
   process.exit(1);
 }
 

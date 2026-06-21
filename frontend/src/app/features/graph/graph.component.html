@@ -6,14 +6,16 @@
     [class.explorer-shell--mode-split]="workspaceMode === 'split'"
     [class.explorer-shell--mode-image]="workspaceMode === 'image'"
     [class.explorer-shell--mode-graph]="workspaceMode === 'graph'"
+    [class.explorer-shell--graph-only]="hideImagePane"
     [class.explorer-shell--focused]="workspaceFocused"
     [class.explorer-shell--transitioning]="workspaceTransitioning"
-    [class.explorer-shell--artwork-arrival]="artworkRouteArrivalActive()"
-    [class.explorer-shell--artwork-arrival-complete]="!artworkTransition.shouldMaskDestinationArtwork(slug)"
-    [class.explorer-shell--artwork-arrival-controls]="artworkTransition.shouldRevealControls(slug)"
-    [class.explorer-shell--artwork-arrival-graph]="artworkTransition.shouldRevealGraph(slug)"
+    [class.explorer-shell--artwork-arrival]="!hideImagePane && artworkRouteArrivalActive()"
+    [class.explorer-shell--artwork-arrival-complete]="hideImagePane || !artworkTransition.shouldMaskDestinationArtwork(slug)"
+    [class.explorer-shell--artwork-arrival-controls]="!hideImagePane && artworkTransition.shouldRevealControls(slug)"
+    [class.explorer-shell--artwork-arrival-graph]="hideImagePane || artworkTransition.shouldRevealGraph(slug)"
   >
     <div class="explorer-canvas">
+      @if (!hideImagePane) {
       <section
         class="explorer-image-pane"
         [class.explorer-pane--collapsed]="workspaceMode === 'graph' && !workspaceFocused"
@@ -179,10 +181,11 @@
           }
         </div>
       </section>
+      }
 
       <section
         class="explorer-graph-pane"
-        [class.explorer-graph-pane--arrival-hidden]="!artworkTransition.shouldRevealGraph(slug)"
+        [class.explorer-graph-pane--arrival-hidden]="!hideImagePane && !artworkTransition.shouldRevealGraph(slug)"
         [class.explorer-pane--collapsed]="workspaceMode === 'image' && !workspaceFocused"
         [class.explorer-graph-pane--inspector-hidden]="!inspectorVisible()"
         [attr.aria-hidden]="workspaceMode === 'image' && !workspaceFocused ? 'true' : null"
@@ -326,15 +329,18 @@
     [class.explorer-shell--mode-split]="workspaceMode === 'split'"
     [class.explorer-shell--mode-image]="workspaceMode === 'image'"
     [class.explorer-shell--mode-graph]="workspaceMode === 'graph'"
+    [class.explorer-shell--graph-only]="hideImagePane"
     [class.explorer-shell--focused]="workspaceFocused"
     aria-hidden="true"
   >
     <div class="explorer-canvas">
+      @if (!hideImagePane) {
       <section class="explorer-image-pane explorer-pane-skeleton explorer-pane-skeleton--light">
         <div class="explorer-pane-skeleton__pill"></div>
         <div class="explorer-pane-skeleton__stage explorer-pane-skeleton__stage--light"></div>
         <div class="explorer-pane-skeleton__chip"></div>
       </section>
+      }
 
       <section class="explorer-graph-pane explorer-pane-skeleton explorer-pane-skeleton--dark">
         <div class="explorer-pane-skeleton__toolbar">

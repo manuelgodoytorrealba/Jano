@@ -33,6 +33,7 @@
     "prisma:deploy": "npm --prefix backend/api run prisma:deploy",
     "prisma:seed": "npm --prefix backend/api run prisma:seed",
     "prisma:reset": "npm --prefix backend/api run prisma:reset",
+    "admin:info": "npm --prefix backend/api run admin:info",
     "mobile": "node scripts/mobile-dev.mjs"
   },
   "devDependencies": {

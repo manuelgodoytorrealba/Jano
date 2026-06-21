@@ -52,6 +52,7 @@ type VirtualHomeDeckDefinition = {
   }[];
 };
 
+// ponytail: admin-only compatibility fallback; seed data is the normal source of truth.
 const VIRTUAL_HOME_DECKS: VirtualHomeDeckDefinition[] = [
   {
     slug: 'place',

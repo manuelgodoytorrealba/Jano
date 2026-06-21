@@ -96,7 +96,7 @@ export class CuratedService {
     const resolvedSlug = selectedSlug?.trim() || initialEntity?.slug;
 
     if (!resolvedSlug) {
-      throw new NotFoundException('No curated entities available');
+      return null;
     }
 
     const selectedEntityRecord = await this.prisma.entity.findFirst({

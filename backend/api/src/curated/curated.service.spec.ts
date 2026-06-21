@@ -21,6 +21,13 @@ describe('CuratedService', () => {
     service = new CuratedService(prisma as any);
   });
 
+  it('returns an empty response when no published curations are available', async () => {
+    prisma.homeDeck.findMany.mockResolvedValue([]);
+
+    await expect(service.page()).resolves.toBeNull();
+    expect(prisma.entity.findFirst).not.toHaveBeenCalled();
+  });
+
   it('builds the page around the requested selected entity and limits staff picks to three', async () => {
     const memoria = buildEntity({ id: 'concept-1', slug: 'memoria', title: 'Memoria', type: 'CONCEPT' });
     const guerra = buildEntity({ id: 'concept-2', slug: 'guerra', title: 'Guerra', type: 'CONCEPT' });

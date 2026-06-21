@@ -46,22 +46,11 @@ import { EntityDetailViewComponent } from '../../entity/entity-detail-view.compo
 import { PublicEntityPreview } from '../../../core/api/entities.models';
 import { AdminEntityMediaGroupComponent } from './admin-entity-media-group.component';
 import { AdminEntityLinkSuggestionsComponent } from './admin-entity-link-suggestions.component';
-import { AdminEntityPreviewPopoverComponent } from './admin-entity-preview-popover.component';
-import {
-  beginAdminEntityPreviewRequest,
-  closeAdminEntityPreview,
-  createAdminEntityPreviewHoverState,
-  resolveAdminEntityPreviewRequest,
-  setAdminEntityPreviewLinkHover,
-  setAdminEntityPreviewPopupHover,
-  shouldKeepAdminEntityPreviewOpen,
-} from './admin-entity-preview-hover.presenter';
 import { AdminEntitySidebarComponent } from './admin-entity-sidebar.component';
 import type { AdminEntityDiscoverabilityItem } from './admin-entity-sidebar.component';
 import {
   detectAdminEntityLinkMatch,
   insertAdminEntityLink,
-  renderAdminEntityLinkedContentPreview,
 } from './admin-entity-content-linking.presenter';
 import { MediaAddPanelComponent } from './media-add-panel.component';
 import { MediaCardEditorComponent } from './media-card-editor.component';
@@ -158,7 +147,7 @@ type EntitySaveState = 'idle' | 'saving' | 'saved' | 'error';
   standalone: true,
   selector: 'app-admin-entity-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, JanoMediaComponent, EntityDetailViewComponent, MediaAddPanelComponent, MediaCardEditorComponent, AdminEntityMediaGroupComponent, AdminEntitySidebarComponent, AdminEntityLinkSuggestionsComponent, AdminEntityPreviewPopoverComponent],
+  imports: [FormsModule, JanoMediaComponent, EntityDetailViewComponent, MediaAddPanelComponent, MediaCardEditorComponent, AdminEntityMediaGroupComponent, AdminEntitySidebarComponent, AdminEntityLinkSuggestionsComponent],
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
 })
@@ -174,17 +163,12 @@ export class AdminEntityFormComponent implements OnInit, OnDestroy, DoCheck {
 @ViewChild('contentTextarea')
 contentTextarea?: ElementRef<HTMLTextAreaElement>;
 
-@ViewChild('previewContainer')
-previewContainer?: ElementRef<HTMLElement>;
-
   linkSuggestions: AdminEntitySearchListItem[] = [];
   linkSearch = '';
   linkLoading = false;
   showLinkSuggestions = false;
   linkStartIndex = -1;
   previewEntityModel: PublicEntityPreview | null = null;
-  private closePreviewTimer: ReturnType<typeof setTimeout> | null = null;
-  private previewHoverState = createAdminEntityPreviewHoverState();
   private previewEntityStateKey = '';
 
   readonly dashboardSections = ADMIN_ENTITY_DASHBOARD_SECTIONS;
@@ -453,47 +437,6 @@ previewContainer?: ElementRef<HTMLElement>;
     }
     this.cdr.markForCheck();
   }
-  ngAfterViewInit() {
-  const container = this.previewContainer?.nativeElement;
-  if (!container) return;
-
-  container.addEventListener('mouseover', (event: MouseEvent) => {
-    const target = event.target as HTMLElement | null;
-    const link = target?.closest('.entity-link') as HTMLElement | null;
-
-    if (!link) return;
-
-    const slug = link.dataset['slug'];
-    if (!slug) return;
-
-    this.previewHoverState = setAdminEntityPreviewLinkHover(this.previewHoverState, true);
-    this.cancelClosePreview();
-    this.openPreview(slug);
-  });
-
-  container.addEventListener('mouseout', (event: MouseEvent) => {
-    const target = event.target as HTMLElement | null;
-    const link = target?.closest('.entity-link') as HTMLElement | null;
-
-    if (!link) return;
-
-    const related = event.relatedTarget as HTMLElement | null;
-
-    // Si vas hacia otro link del preview, no cierres
-    if (related?.closest('.entity-link')) {
-      return;
-    }
-
-    // Si vas hacia el popup, no cierres
-    if (related?.closest('.entity-preview-popover')) {
-      this.previewHoverState = setAdminEntityPreviewLinkHover(this.previewHoverState, false);
-      return;
-    }
-
-    this.previewHoverState = setAdminEntityPreviewLinkHover(this.previewHoverState, false);
-    this.scheduleClosePreview();
-  });
-}
 
   onTitleChange(value: string) {
     this.form.title = value;
@@ -2256,26 +2199,6 @@ previewContainer?: ElementRef<HTMLElement>;
     }).length;
   }
 
-  get hoveredSlug(): string | null {
-    return this.previewHoverState.hoveredSlug;
-  }
-
-  get previewData(): PublicEntityPreview | null {
-    return this.previewHoverState.previewData;
-  }
-
-  get previewLoading(): boolean {
-    return this.previewHoverState.previewLoading;
-  }
-
-  get isHoveringPreviewPopup(): boolean {
-    return this.previewHoverState.isHoveringPreviewPopup;
-  }
-
-  set isHoveringPreviewPopup(value: boolean) {
-    this.previewHoverState = setAdminEntityPreviewPopupHover(this.previewHoverState, value);
-  }
-
   private editorPresentation(link: EditableAdminMediaLink) {
     return this.mediaLibraryModel.editorMetaById[link.id] ?? {
       activeSlotLabels: [],
@@ -2395,65 +2318,8 @@ previewContainer?: ElementRef<HTMLElement>;
     this.cdr.markForCheck();
   }
 
-  renderContentPreview(text: string | null | undefined): string {
-    return renderAdminEntityLinkedContentPreview(text);
-  }
-
   ngOnDestroy() {
-    this.cancelClosePreview();
     this.destroy$.next();
     this.destroy$.complete();
   }
-
- openPreview(slug: string) {
-  this.cancelClosePreview();
-
-  const previewRequest = beginAdminEntityPreviewRequest(this.previewHoverState, slug);
-  this.previewHoverState = previewRequest.nextState;
-
-  if (!previewRequest.shouldFetch) {
-    return;
-  }
-
-  const requestId = previewRequest.requestId;
-
-  this.adminApi.previewBySlug(slug).subscribe({
-    next: (data) => {
-      this.previewHoverState = resolveAdminEntityPreviewRequest(this.previewHoverState, {
-        requestId,
-        slug,
-        previewData: data,
-      });
-      this.cdr.markForCheck();
-    },
-    error: () => {
-      this.previewHoverState = resolveAdminEntityPreviewRequest(this.previewHoverState, {
-        requestId,
-        slug,
-        previewData: null,
-      });
-      this.cdr.markForCheck();
-    },
-  });
-}
-
-scheduleClosePreview() {
-  this.cancelClosePreview();
-
-  this.closePreviewTimer = setTimeout(() => {
-    if (shouldKeepAdminEntityPreviewOpen(this.previewHoverState)) {
-      return;
-    }
-
-    this.previewHoverState = closeAdminEntityPreview(this.previewHoverState);
-    this.cdr.markForCheck();
-  }, 120);
-}
-
-cancelClosePreview() {
-  if (this.closePreviewTimer) {
-    clearTimeout(this.closePreviewTimer);
-    this.closePreviewTimer = null;
-  }
-}
 }

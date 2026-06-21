@@ -31,6 +31,63 @@
 $ npm install
 ```
 
+# Admin Account
+
+The Prisma seed requires an explicit administrator account. Configure both variables before running it:
+
+```bash
+SEED_ADMIN_EMAIL="manuel@example.com"
+SEED_ADMIN_PASSWORD="my-secure-password"
+```
+
+Create the editorial data and administrator from the repository root:
+
+```bash
+npm run prisma:seed
+```
+
+After the seed finishes, it prints the configured credentials:
+
+```text
+Email: manuel@example.com
+Password: my-secure-password
+```
+
+Running the seed again with the same email updates that administrator, including its password and `ADMIN` role; it does not create a duplicate. To regenerate or change the password, update `SEED_ADMIN_PASSWORD` and run `npm run prisma:seed` again. Changing `SEED_ADMIN_EMAIL` creates or updates that different email and does not delete previous administrators.
+
+Check the administrators currently stored without exposing password hashes:
+
+```bash
+npm run admin:info
+```
+
+The seed replaces the editorial demo data, saved entities, and collections. Do not run it against an active database unless that reset is intended.
+
+# First Production Deployment
+
+From the repository root:
+
+```bash
+# 1. Configure the backend environment.
+cp backend/api/.env.example backend/api/.env
+# Edit DATABASE_URL, JWT_SECRET, SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD.
+
+# 2. Apply production migrations.
+npm run prisma:deploy
+
+# 3. Create editorial data and the administrator.
+npm run prisma:seed
+
+# 4. Verify the administrator shown by the seed.
+npm run admin:info
+
+# 5. Build and start the backend.
+npm run backend:build
+npm --prefix backend/api run start:prod
+```
+
+Store the credentials printed by the seed in the deployment secret manager. Replace the example password before running production seed.
+
 ## Compile and run the project
 
 ```bash
@@ -64,8 +121,8 @@ To empty production and create the initial admin user in one command:
 ```bash
 cd backend/api
 CONFIRM_EMPTY_DB=YES \
-ADMIN_EMAIL="email-de-mi-hermana" \
-ADMIN_PASSWORD="contraseña-segura" \
+SEED_ADMIN_EMAIL="email-de-mi-hermana" \
+SEED_ADMIN_PASSWORD="contraseña-segura" \
 ADMIN_NAME="nombre-de-mi-hermana" \
 ADMIN_ROLE="ADMIN" \
 npm run db:empty:prod

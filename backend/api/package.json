@@ -29,7 +29,8 @@
     "prisma:seed": "prisma db seed",
     "prisma:reset": "prisma migrate reset",
     "studio": "prisma studio --port 5555 --browser none",
-    "db:empty:prod": "node scripts/empty-production-db.js"
+    "db:empty:prod": "node scripts/empty-production-db.js",
+    "admin:info": "node scripts/admin-info.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

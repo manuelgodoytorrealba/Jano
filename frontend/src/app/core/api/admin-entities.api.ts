@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { apiUrl } from './api-base';
-import { PublicEntityPreview } from './entities.models';
 import { GraphResponseDto } from '../../features/graph/graph.models';
 
 export type AdminLocale = 'es' | 'en';
@@ -608,8 +607,5 @@ export class AdminEntitiesApi {
 
   deleteRelation(entityId: string, relationId: string) {
     return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/relations/${relationId}`);
-  }
-  previewBySlug(slug: string) {
-    return this.http.get<PublicEntityPreview>(`${this.baseUrl}/${slug}/preview`);
   }
 }

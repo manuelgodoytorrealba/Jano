@@ -90,6 +90,7 @@ export class EntityDetailViewComponent implements OnDestroy {
   @Input() collectionsLoading = false;
   @Input() renderGraph = true;
   @Input() preferredWorkspaceMode: DetailWorkspaceMode | null = null;
+  @Input() richTextPreviewAccess: 'public' | 'admin' = 'public';
 
   @Output() saveToggle = new EventEmitter<string>();
   @Output() collectionsToggle = new EventEmitter<void>();

@@ -36,8 +36,12 @@
       <app-recommended-recently-added class="recommended-page__recent" [items]="page.recentlyAdded"></app-recommended-recently-added>
     </div>
   } @else if (loading()) {
-    <div class="recommended-page__loading">Loading curated discovery…</div>
+    <div class="recommended-page__loading">Preparando la selección editorial…</div>
   } @else {
-    <div class="recommended-page__loading">Curated discovery is not available yet.</div>
+    <div class="recommended-page__empty">
+      <span>Curaciones</span>
+      <h2>Todavía no hay curaciones publicadas.</h2>
+      <p>Las próximas selecciones editoriales aparecerán aquí.</p>
+    </div>
   }
 </section>

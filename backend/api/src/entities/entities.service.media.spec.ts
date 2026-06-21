@@ -221,9 +221,9 @@ describe('EntitiesService media admin workflows', () => {
 
     expect(prisma.media.create).toHaveBeenCalledWith({
       data: {
-        url: 'http://localhost:3000/uploads/media/uploaded-file.jpg',
-        canonicalUrl: 'http://localhost:3000/uploads/media/uploaded-file.jpg',
-        displayUrl: 'http://localhost:3000/uploads/media/uploaded-file.jpg',
+        url: '/uploads/media/uploaded-file.jpg',
+        canonicalUrl: '/uploads/media/uploaded-file.jpg',
+        displayUrl: '/uploads/media/uploaded-file.jpg',
         originType: MediaOriginType.UPLOAD,
         storageKey: 'media/uploaded-file.jpg',
         originalFilename: 'original-file.jpg',
@@ -235,6 +235,8 @@ describe('EntitiesService media admin workflows', () => {
         source: 'Uploaded via admin',
         photoBy: 'Equipo JANO',
         license: 'Uso interno',
+        focalX: undefined,
+        focalY: undefined,
       },
     });
 
@@ -408,8 +410,8 @@ describe('EntitiesService media admin workflows', () => {
         source: 'Museum source',
         photoBy: 'Photo credit',
         license: 'CC BY',
-        displayUrl: expect.stringMatching(/^http:\/\/localhost:3000\/uploads\/media\/ingested\/.+\.jpg$/),
-        url: expect.stringMatching(/^http:\/\/localhost:3000\/uploads\/media\/ingested\/.+\.jpg$/),
+        displayUrl: expect.stringMatching(/^\/uploads\/media\/ingested\/.+\.jpg$/),
+        url: expect.stringMatching(/^\/uploads\/media\/ingested\/.+\.jpg$/),
         storageKey: expect.stringMatching(/^media\/ingested\/.+\.jpg$/),
       }),
     });

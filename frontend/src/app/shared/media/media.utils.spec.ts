@@ -1,4 +1,5 @@
 import { mediaDisplayUrl, resolveEntityMediaItem, resolveEntityMediaSlot, resolveMediaPresentation } from './media.utils';
+import { describe, expect, it } from 'vitest';
 
 describe('media.utils', () => {
   it('keeps hero, card and detail separated when resolvedMedia provides distinct assets', () => {

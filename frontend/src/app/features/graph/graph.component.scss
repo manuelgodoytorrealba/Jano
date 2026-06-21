@@ -199,6 +199,13 @@
   grid-template-columns: minmax(var(--detail-preview-rail-width), 0.18fr) minmax(0, 1fr);
 }
 
+.explorer-shell--graph-only .explorer-canvas,
+.explorer-shell--focused.explorer-shell--graph-only .explorer-canvas,
+.explorer-shell--mode-image.explorer-shell--graph-only .explorer-canvas,
+.explorer-shell--mode-graph.explorer-shell--graph-only .explorer-canvas {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .explorer-shell--focused {
   --detail-media-overlay-offset: 0.48rem;
   --detail-image-meta-offset: 0.48rem;

@@ -194,6 +194,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() allowNodeOpen = true;
   @Input() showControls = true;
   @Input() showInspector = true;
+  @Input() hideImagePane = false;
   @Input() disableSelectionZoom = true;
   @Input() preserveRuntimeOnGraphChange = false;
   @Input() showAllOverviewRelations = false;

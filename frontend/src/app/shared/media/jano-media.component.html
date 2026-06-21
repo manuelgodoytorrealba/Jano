@@ -14,6 +14,7 @@
       [style.transform-origin]="imageTransformOrigin"
       [style.transform]="imageTransform"
       [style.filter]="imageFilter"
+      (error)="onImageError()"
     />
   </div>
 } @else {
