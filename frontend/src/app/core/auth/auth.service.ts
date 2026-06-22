@@ -37,18 +37,18 @@ export class AuthService {
   }
 
   login(data: { email: string; password: string }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, {
-      ...data,
-      email: data.email.trim().toLowerCase(),
-    }).pipe(
-      tap((res) => this.persistSession(res)),
-    );
+    return this.http
+      .post<AuthResponse>(`${this.baseUrl}/login`, {
+        ...data,
+        email: data.email.trim().toLowerCase(),
+      })
+      .pipe(tap((res) => this.persistSession(res)));
   }
 
   me(): Observable<AuthUser> {
-    return this.http.get<SessionUser>(`${this.baseUrl}/me`).pipe(
-      map((user) => this.normalizeSessionUser(user)),
-    );
+    return this.http
+      .get<SessionUser>(`${this.baseUrl}/me`)
+      .pipe(map((user) => this.normalizeSessionUser(user)));
   }
 
   refreshSession(): Observable<AuthUser> {

@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('me/saved')
 export class SavedController {
-  constructor(private savedService: SavedService) { }
+  constructor(private savedService: SavedService) {}
 
   @Get()
   list(@Req() req: any) {

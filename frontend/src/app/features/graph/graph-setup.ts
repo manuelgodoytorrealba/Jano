@@ -55,9 +55,7 @@ export function prepareGraphState(graph: GraphData): PreparedGraphState {
   const seededPositions = createInitialPositions(graph);
   const positions = graph.nodes.reduce<Record<string, GraphPoint>>((acc, node) => {
     acc[node.id] =
-      node.id === graph.centerId
-        ? { x: 0, y: 0 }
-        : seededPositions[node.id] ?? { x: 0, y: 0 };
+      node.id === graph.centerId ? { x: 0, y: 0 } : (seededPositions[node.id] ?? { x: 0, y: 0 });
     return acc;
   }, {});
 
@@ -96,7 +94,10 @@ export function createEnabledMap(values: string[]): Record<string, boolean> {
   }, {});
 }
 
-export function createFilterMap(values: string[], persisted?: Record<string, boolean>): Record<string, boolean> {
+export function createFilterMap(
+  values: string[],
+  persisted?: Record<string, boolean>,
+): Record<string, boolean> {
   const defaults = createEnabledMap(values);
   if (!persisted) {
     return defaults;
@@ -126,11 +127,7 @@ export function resolveGraphWarmupPasses(graph: GraphData, passes?: number): num
 
 function normalizeGraphFilterValues(values: Array<string | null | undefined>): string[] {
   return Array.from(
-    new Set(
-      values
-        .map((value) => `${value ?? ''}`.trim())
-        .filter((value) => value.length > 0),
-    ),
+    new Set(values.map((value) => `${value ?? ''}`.trim()).filter((value) => value.length > 0)),
   );
 }
 

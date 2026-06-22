@@ -9,19 +9,24 @@ describe('adminGuard', () => {
     const auth = {
       isAuthenticated: vi.fn(() => true),
       currentUser: null,
-      refreshSession: vi.fn(() => of({
-        id: '1',
-        email: 'admin@test.com',
-        name: null,
-        role: 'ADMIN',
-        isBeta: true,
-      })),
+      refreshSession: vi.fn(() =>
+        of({
+          id: '1',
+          email: 'admin@test.com',
+          name: null,
+          role: 'ADMIN',
+          isBeta: true,
+        }),
+      ),
     };
     const router = {
-      createUrlTree: vi.fn((commands: unknown[], extras?: { queryParams?: Record<string, string> }) => ({
-        commands,
-        extras,
-      } as unknown as UrlTree)),
+      createUrlTree: vi.fn(
+        (commands: unknown[], extras?: { queryParams?: Record<string, string> }) =>
+          ({
+            commands,
+            extras,
+          }) as unknown as UrlTree,
+      ),
     };
 
     TestBed.configureTestingModule({
@@ -32,7 +37,9 @@ describe('adminGuard', () => {
       ],
     });
 
-    const result$ = TestBed.runInInjectionContext(() => adminGuard({} as never, { url: '/admin/entities' } as never)) as ReturnType<typeof of>;
+    const result$ = TestBed.runInInjectionContext(() =>
+      adminGuard({} as never, { url: '/admin/entities' } as never),
+    ) as ReturnType<typeof of>;
 
     await expect(firstValueFrom(result$)).resolves.toBe(true);
     expect(auth.refreshSession).toHaveBeenCalledTimes(1);
@@ -45,10 +52,13 @@ describe('adminGuard', () => {
       refreshSession: vi.fn(() => throwError(() => new Error('401'))),
     };
     const router = {
-      createUrlTree: vi.fn((commands: unknown[], extras?: { queryParams?: Record<string, string> }) => ({
-        commands,
-        extras,
-      } as unknown as UrlTree)),
+      createUrlTree: vi.fn(
+        (commands: unknown[], extras?: { queryParams?: Record<string, string> }) =>
+          ({
+            commands,
+            extras,
+          }) as unknown as UrlTree,
+      ),
     };
 
     TestBed.configureTestingModule({
@@ -59,7 +69,9 @@ describe('adminGuard', () => {
       ],
     });
 
-    const result$ = TestBed.runInInjectionContext(() => adminGuard({} as never, { url: '/admin/entities' } as never)) as ReturnType<typeof of>;
+    const result$ = TestBed.runInInjectionContext(() =>
+      adminGuard({} as never, { url: '/admin/entities' } as never),
+    ) as ReturnType<typeof of>;
     const resolved = await firstValueFrom(result$);
 
     expect(router.createUrlTree).toHaveBeenCalledWith(['/login'], {

@@ -489,7 +489,10 @@ export class AdminEntitiesApi {
     return this.http.patch<AdminEntityResponse>(`${this.baseUrl}/${id}`, data);
   }
   upsertTranslation(id: string, locale: AdminLocale, data: AdminEntityTranslationPayload) {
-    return this.http.patch<AdminEntityResponse>(this.baseUrl + '/' + id + '/translations/' + locale, data);
+    return this.http.patch<AdminEntityResponse>(
+      this.baseUrl + '/' + id + '/translations/' + locale,
+      data,
+    );
   }
 
   createAlias(id: string, data: AdminEntityAliasPayload) {
@@ -503,7 +506,6 @@ export class AdminEntitiesApi {
   deleteAlias(id: string, aliasId: string) {
     return this.http.delete<AdminEntityResponse>(`${this.baseUrl}/${id}/aliases/${aliasId}`);
   }
-
 
   createMedia(entityId: string, data: AdminEntityMediaPayload) {
     return this.http.post<AdminEntityResponse>(`${this.baseUrl}/${entityId}/media`, data);
@@ -526,23 +528,38 @@ export class AdminEntitiesApi {
       formData.set(key, String(value));
     }
 
-    return this.http.post<AdminEntityResponse>(`${this.baseUrl}/${entityId}/media/upload`, formData);
+    return this.http.post<AdminEntityResponse>(
+      `${this.baseUrl}/${entityId}/media/upload`,
+      formData,
+    );
   }
 
   updateMedia(entityId: string, linkId: string, data: Partial<AdminEntityMediaPayload>) {
-    return this.http.patch<AdminEntityResponse>(`${this.baseUrl}/${entityId}/media/${linkId}`, data);
+    return this.http.patch<AdminEntityResponse>(
+      `${this.baseUrl}/${entityId}/media/${linkId}`,
+      data,
+    );
   }
 
   ingestMedia(entityId: string, linkId: string) {
-    return this.http.post<{ alreadyExisted?: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}/ingest`, {});
+    return this.http.post<{ alreadyExisted?: boolean }>(
+      `${this.baseUrl}/${entityId}/media/${linkId}/ingest`,
+      {},
+    );
   }
 
   promoteIngestedMedia(entityId: string, linkId: string) {
-    return this.http.post<{ ok: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}/promote`, {});
+    return this.http.post<{ ok: boolean }>(
+      `${this.baseUrl}/${entityId}/media/${linkId}/promote`,
+      {},
+    );
   }
 
   restoreExternalMedia(entityId: string, linkId: string) {
-    return this.http.post<{ ok: boolean }>(`${this.baseUrl}/${entityId}/media/${linkId}/restore-external`, {});
+    return this.http.post<{ ok: boolean }>(
+      `${this.baseUrl}/${entityId}/media/${linkId}/restore-external`,
+      {},
+    );
   }
 
   deleteMedia(entityId: string, linkId: string) {
@@ -558,7 +575,9 @@ export class AdminEntitiesApi {
   }
 
   listIncomingRelations(entityId: string) {
-    return this.http.get<AdminEntityRelationRecord[]>(`${this.baseUrl}/${entityId}/relations/incoming`);
+    return this.http.get<AdminEntityRelationRecord[]>(
+      `${this.baseUrl}/${entityId}/relations/incoming`,
+    );
   }
 
   workspaceGraph(locale?: AdminLocale | string) {
@@ -571,11 +590,17 @@ export class AdminEntitiesApi {
   }
 
   createSourceRef(entityId: string, data: AdminSourceRefPayload) {
-    return this.http.post<AdminEntitySourceRefRecord>(`${this.baseUrl}/${entityId}/source-refs`, data);
+    return this.http.post<AdminEntitySourceRefRecord>(
+      `${this.baseUrl}/${entityId}/source-refs`,
+      data,
+    );
   }
 
   updateSourceRef(entityId: string, refId: string, data: Partial<AdminSourceRefPayload>) {
-    return this.http.patch<AdminEntitySourceRefRecord>(`${this.baseUrl}/${entityId}/source-refs/${refId}`, data);
+    return this.http.patch<AdminEntitySourceRefRecord>(
+      `${this.baseUrl}/${entityId}/source-refs/${refId}`,
+      data,
+    );
   }
 
   deleteSourceRef(entityId: string, refId: string) {
@@ -583,26 +608,38 @@ export class AdminEntitiesApi {
   }
 
   createContributor(entityId: string, data: AdminContributorPayload) {
-    return this.http.post<AdminEntityContributorRecord>(`${this.baseUrl}/${entityId}/contributors`, data);
+    return this.http.post<AdminEntityContributorRecord>(
+      `${this.baseUrl}/${entityId}/contributors`,
+      data,
+    );
   }
 
-  updateContributor(entityId: string, contributorId: string, data: Partial<AdminContributorPayload>) {
-    return this.http.patch<AdminEntityContributorRecord>(`${this.baseUrl}/${entityId}/contributors/${contributorId}`, data);
+  updateContributor(
+    entityId: string,
+    contributorId: string,
+    data: Partial<AdminContributorPayload>,
+  ) {
+    return this.http.patch<AdminEntityContributorRecord>(
+      `${this.baseUrl}/${entityId}/contributors/${contributorId}`,
+      data,
+    );
   }
 
   deleteContributor(entityId: string, contributorId: string) {
-    return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${entityId}/contributors/${contributorId}`);
+    return this.http.delete<{ ok: boolean }>(
+      `${this.baseUrl}/${entityId}/contributors/${contributorId}`,
+    );
   }
 
-  createRelation(
-    entityId: string,
-    data: AdminCreateRelationPayload,
-  ) {
+  createRelation(entityId: string, data: AdminCreateRelationPayload) {
     return this.http.post<AdminEntityRelationRecord>(`${this.baseUrl}/${entityId}/relations`, data);
   }
 
   updateRelation(entityId: string, relationId: string, data: AdminUpdateRelationPayload) {
-    return this.http.patch<AdminEntityRelationRecord>(`${this.baseUrl}/${entityId}/relations/${relationId}`, data);
+    return this.http.patch<AdminEntityRelationRecord>(
+      `${this.baseUrl}/${entityId}/relations/${relationId}`,
+      data,
+    );
   }
 
   deleteRelation(entityId: string, relationId: string) {

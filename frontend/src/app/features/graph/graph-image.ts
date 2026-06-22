@@ -40,7 +40,16 @@ export function syncGraphImageViewport(options: {
   forceFit?: boolean;
   mapViewport?: (current: ImageViewport) => ImageViewport;
 }): ImageViewport | null {
-  const { asset, size, current, persistedImage, viewportOptions, imageViewportReady, forceFit, mapViewport } = options;
+  const {
+    asset,
+    size,
+    current,
+    persistedImage,
+    viewportOptions,
+    imageViewportReady,
+    forceFit,
+    mapViewport,
+  } = options;
   if (!asset || !size.width || !size.height) {
     return null;
   }
@@ -51,10 +60,11 @@ export function syncGraphImageViewport(options: {
     !forceFit && !imageViewportReady
       ? restoreImageViewport(persistedImage, size, asset, viewportOptions)
       : null;
-  const shouldFit = forceFit || !imageViewportReady || mappedCurrent.scale <= mappedCurrent.fitScale * 1.02;
+  const shouldFit =
+    forceFit || !imageViewportReady || mappedCurrent.scale <= mappedCurrent.fitScale * 1.02;
 
   return shouldFit
-    ? restored ?? fit
+    ? (restored ?? fit)
     : clampImageViewport(
         {
           ...mappedCurrent,

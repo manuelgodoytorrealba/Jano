@@ -1,6 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
-import { GraphAmbientField, GraphEdge, GraphRenderedEdge, GraphRenderedNode, GraphTooltip } from './graph.models';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  HostBinding,
+  Input,
+  Output,
+} from '@angular/core';
+import {
+  GraphAmbientField,
+  GraphEdge,
+  GraphRenderedEdge,
+  GraphRenderedNode,
+  GraphTooltip,
+} from './graph.models';
 
 @Component({
   standalone: true,

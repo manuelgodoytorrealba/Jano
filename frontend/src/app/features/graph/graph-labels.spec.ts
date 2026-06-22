@@ -8,12 +8,15 @@ import {
 
 describe('graph-labels', () => {
   it('keeps forced labels visible even when the budget is tight', () => {
-    const visible = selectRankedGraphLabels([
-      { id: 'center', priority: 1000, forced: true },
-      { id: 'selected', priority: 900, forced: true },
-      { id: 'secondary', priority: 500 },
-      { id: 'tertiary', priority: 300 },
-    ], 1);
+    const visible = selectRankedGraphLabels(
+      [
+        { id: 'center', priority: 1000, forced: true },
+        { id: 'selected', priority: 900, forced: true },
+        { id: 'secondary', priority: 500 },
+        { id: 'tertiary', priority: 300 },
+      ],
+      1,
+    );
 
     expect(visible).toEqual({
       center: true,
@@ -22,12 +25,15 @@ describe('graph-labels', () => {
   });
 
   it('fills remaining label slots by descending priority', () => {
-    const visible = selectRankedGraphLabels([
-      { id: 'center', priority: 1000, forced: true },
-      { id: 'a', priority: 400 },
-      { id: 'b', priority: 650 },
-      { id: 'c', priority: 280 },
-    ], 3);
+    const visible = selectRankedGraphLabels(
+      [
+        { id: 'center', priority: 1000, forced: true },
+        { id: 'a', priority: 400 },
+        { id: 'b', priority: 650 },
+        { id: 'c', priority: 280 },
+      ],
+      3,
+    );
 
     expect(visible).toEqual({
       center: true,

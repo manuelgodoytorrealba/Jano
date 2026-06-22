@@ -1,4 +1,8 @@
-import { ExplorerPersistedState, serializeGraphViewport, serializeImageViewport } from './graph-persistence';
+import {
+  ExplorerPersistedState,
+  serializeGraphViewport,
+  serializeImageViewport,
+} from './graph-persistence';
 import { GraphData, GraphViewport } from './graph.models';
 import { ImageAssetSize, ImageViewport, interpolateImageViewport } from './image-viewport';
 
@@ -64,8 +68,16 @@ export function createExplorerPersistedState(options: {
     },
   };
 
-  if (options.asset && options.imageSize.width && options.imageSize.height && options.imageViewportReady) {
-    state.image = serializeImageViewport(options.targetImageViewport ?? options.imageViewport, options.imageSize);
+  if (
+    options.asset &&
+    options.imageSize.width &&
+    options.imageSize.height &&
+    options.imageViewportReady
+  ) {
+    state.image = serializeImageViewport(
+      options.targetImageViewport ?? options.imageViewport,
+      options.imageSize,
+    );
   }
 
   return state;

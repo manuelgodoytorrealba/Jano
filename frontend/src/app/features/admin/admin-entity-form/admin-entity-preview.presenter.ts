@@ -7,7 +7,11 @@ import {
   PublicEntityTagReference,
 } from '../../../core/api/entities.models';
 import { AdminLocale } from '../../../core/api/admin-entities.api';
-import { EditableAdminMediaEditor, EditableAdminMediaLink, MediaEditorSlotKey } from './media-admin.models';
+import {
+  EditableAdminMediaEditor,
+  EditableAdminMediaLink,
+  MediaEditorSlotKey,
+} from './media-admin.models';
 
 export type AdminEntityPreviewDirection = 'outgoing' | 'incoming';
 
@@ -123,18 +127,23 @@ export type AdminEntityPreviewBuildInput = {
   toNullableNumber: (value: unknown) => number | null;
 };
 
-export function buildAdminEntityPreviewModel(input: AdminEntityPreviewBuildInput): PublicEntityPreview {
+export function buildAdminEntityPreviewModel(
+  input: AdminEntityPreviewBuildInput,
+): PublicEntityPreview {
   const translation = input.translations[input.locale];
-  const localizedDetails = input.locale === 'es'
-    ? (input.details as AdminEntityPreviewLocalizedDetailsForm)
-    : input.localizedDetails[input.locale];
+  const localizedDetails =
+    input.locale === 'es'
+      ? (input.details as AdminEntityPreviewLocalizedDetailsForm)
+      : input.localizedDetails[input.locale];
 
   return {
     id: input.entityId || 'draft-preview',
     type: input.form.type,
     title: (translation.title || input.form.title || 'Titulo de la entity').trim(),
     slug: input.form.slug || 'preview',
-    summary: (translation.shortDescription || translation.excerpt || input.form.summary || '').trim() || null,
+    summary:
+      (translation.shortDescription || translation.excerpt || input.form.summary || '').trim() ||
+      null,
     content: (translation.essay || input.form.content || '').trim() || null,
     contentLevel: input.form.contentLevel || null,
     status: input.form.status,
@@ -155,37 +164,58 @@ export function buildAdminEntityPreviewModel(input: AdminEntityPreviewBuildInput
       note: (input.locale === 'en' ? ref.noteEn : ref.noteEs) ?? ref.note ?? null,
       source: {
         type: ref.sourceType ?? 'SOURCE',
-        title: (input.locale === 'en' ? ref.sourceTitleEn : ref.sourceTitleEs) ?? ref.sourceTitle ?? 'Fuente editorial',
-        author: (input.locale === 'en' ? ref.sourceAuthorEn : ref.sourceAuthorEs) ?? ref.sourceAuthor ?? null,
-        publisher: (input.locale === 'en' ? ref.sourcePublisherEn : ref.sourcePublisherEs) ?? ref.sourcePublisher ?? null,
+        title:
+          (input.locale === 'en' ? ref.sourceTitleEn : ref.sourceTitleEs) ??
+          ref.sourceTitle ??
+          'Fuente editorial',
+        author:
+          (input.locale === 'en' ? ref.sourceAuthorEn : ref.sourceAuthorEs) ??
+          ref.sourceAuthor ??
+          null,
+        publisher:
+          (input.locale === 'en' ? ref.sourcePublisherEn : ref.sourcePublisherEs) ??
+          ref.sourcePublisher ??
+          null,
         year: ref.sourceYear ?? null,
       },
     })),
     contributors: input.contributors,
-    artwork: input.form.type === 'ARTWORK' ? {
-      technique: localizedDetails.technique || null,
-      materials: localizedDetails.materials || null,
-      dimensions: localizedDetails.dimensions || null,
-      location: localizedDetails.location || null,
-      collection: localizedDetails.collection || null,
-      state: localizedDetails.state || null,
-      authorNation: localizedDetails.authorNation || null,
-    } : null,
-    artist: input.form.type === 'ARTIST' ? {
-      country: localizedDetails.country || null,
-      city: localizedDetails.city || null,
-      birthYear: numberOrNull(input.details['birthYear']),
-      deathYear: numberOrNull(input.details['deathYear']),
-      disciplines: localizedDetails.disciplines || null,
-      links: localizedDetails.links || null,
-      bioShort: localizedDetails.bioShort || null,
-    } : null,
-    concept: input.form.type === 'CONCEPT' ? {
-      definition: localizedDetails.definition || null,
-    } : null,
-    period: input.form.type === 'PERIOD' ? {
-      definition: localizedDetails.definition || null,
-    } : null,
+    artwork:
+      input.form.type === 'ARTWORK'
+        ? {
+            technique: localizedDetails.technique || null,
+            materials: localizedDetails.materials || null,
+            dimensions: localizedDetails.dimensions || null,
+            location: localizedDetails.location || null,
+            collection: localizedDetails.collection || null,
+            state: localizedDetails.state || null,
+            authorNation: localizedDetails.authorNation || null,
+          }
+        : null,
+    artist:
+      input.form.type === 'ARTIST'
+        ? {
+            country: localizedDetails.country || null,
+            city: localizedDetails.city || null,
+            birthYear: numberOrNull(input.details['birthYear']),
+            deathYear: numberOrNull(input.details['deathYear']),
+            disciplines: localizedDetails.disciplines || null,
+            links: localizedDetails.links || null,
+            bioShort: localizedDetails.bioShort || null,
+          }
+        : null,
+    concept:
+      input.form.type === 'CONCEPT'
+        ? {
+            definition: localizedDetails.definition || null,
+          }
+        : null,
+    period:
+      input.form.type === 'PERIOD'
+        ? {
+            definition: localizedDetails.definition || null,
+          }
+        : null,
   };
 }
 
@@ -242,7 +272,8 @@ export function buildAdminPreviewKeyConnections(
 ): AdminEntityPreviewConnection[] {
   const groups: AdminEntityPreviewConnection[] = [];
   const first = (type: string) => relations.find((rel) => rel.type === type);
-  const collectTargets = (type: string) => relations.map((rel) => rel.type === type ? rel.to?.title : null).filter(isNonEmptyString);
+  const collectTargets = (type: string) =>
+    relations.map((rel) => (rel.type === type ? rel.to?.title : null)).filter(isNonEmptyString);
 
   const author = first('CREATED_BY')?.to?.title;
   if (isNonEmptyString(author)) {
@@ -271,31 +302,43 @@ export function buildAdminPreviewKeyConnections(
 
   const relatedArtworks = [
     ...relations
-      .map((rel) => rel.type === 'RELATED_TO' && rel.to?.type === 'ARTWORK' ? rel.to?.title : null)
+      .map((rel) =>
+        rel.type === 'RELATED_TO' && rel.to?.type === 'ARTWORK' ? rel.to?.title : null,
+      )
       .filter(isNonEmptyString),
     ...incomingRelations
-      .map((rel) => rel.type === 'RELATED_TO' && rel.from?.type === 'ARTWORK' ? rel.from?.title : null)
+      .map((rel) =>
+        rel.type === 'RELATED_TO' && rel.from?.type === 'ARTWORK' ? rel.from?.title : null,
+      )
       .filter(isNonEmptyString),
   ];
 
   if (relatedArtworks.length) {
-    groups.push({ label: 'Obras relacionadas', value: Array.from(new Set(relatedArtworks)).join(' · ') });
+    groups.push({
+      label: 'Obras relacionadas',
+      value: Array.from(new Set(relatedArtworks)).join(' · '),
+    });
   }
 
   return groups;
 }
 
-function buildPreviewResolvedMedia(input: AdminEntityPreviewBuildInput): PublicEntityResolvedMedia | null {
+function buildPreviewResolvedMedia(
+  input: AdminEntityPreviewBuildInput,
+): PublicEntityResolvedMedia | null {
   const resolved: PublicEntityResolvedMedia = input.persistedResolvedMedia
     ? {
-      ...input.persistedResolvedMedia,
-      gallery: Array.isArray(input.persistedResolvedMedia['gallery'])
-        ? [...(input.persistedResolvedMedia['gallery'] as PublicEntityMediaAsset[])]
-        : input.persistedResolvedMedia['gallery'] as PublicEntityMediaAsset[] | undefined,
-    }
+        ...input.persistedResolvedMedia,
+        gallery: Array.isArray(input.persistedResolvedMedia['gallery'])
+          ? [...(input.persistedResolvedMedia['gallery'] as PublicEntityMediaAsset[])]
+          : (input.persistedResolvedMedia['gallery'] as PublicEntityMediaAsset[] | undefined),
+      }
     : {};
 
-  const slotMap: Array<{ usage: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d'; slotKey: MediaEditorSlotKey }> = [
+  const slotMap: Array<{
+    usage: 'hero' | 'card' | 'detail' | 'thumbnail' | 'explorer3d';
+    slotKey: MediaEditorSlotKey;
+  }> = [
     { usage: 'hero', slotKey: 'detail' },
     { usage: 'explorer3d', slotKey: 'explorer3d' },
     { usage: 'card', slotKey: 'list' },
@@ -312,11 +355,12 @@ function buildPreviewResolvedMedia(input: AdminEntityPreviewBuildInput): PublicE
     }
   }
 
-  const primary = previewLinkForUsage(input, 'hero')
-    ?? previewLinkForUsage(input, 'detail')
-    ?? previewLinkForUsage(input, 'card')
-    ?? previewLinkForUsage(input, 'thumbnail')
-    ?? previewLinkForUsage(input, 'explorer3d');
+  const primary =
+    previewLinkForUsage(input, 'hero') ??
+    previewLinkForUsage(input, 'detail') ??
+    previewLinkForUsage(input, 'card') ??
+    previewLinkForUsage(input, 'thumbnail') ??
+    previewLinkForUsage(input, 'explorer3d');
 
   if (primary) {
     resolved['primary'] = mediaLinkToResolvedPreview(primary, 'detail', input.toNullableNumber);
@@ -360,14 +404,22 @@ function previewLinkForUsage(
     return exact;
   }
 
-  const resolvedItemId = usage === 'hero'
-    ? mediaItemId(input.persistedResolvedMedia, 'hero') ?? mediaItemId(input.persistedResolvedMedia, 'detail')
-    : input.resolvedVisualSlots.find((slot) => slot.key === ({
-        explorer3d: 'explorer3d',
-        card: 'list',
-        detail: 'detail',
-        thumbnail: 'preview',
-      } as const)[usage])?.state.item?.id ?? null;
+  const resolvedItemId =
+    usage === 'hero'
+      ? (mediaItemId(input.persistedResolvedMedia, 'hero') ??
+        mediaItemId(input.persistedResolvedMedia, 'detail'))
+      : (input.resolvedVisualSlots.find(
+          (slot) =>
+            slot.key ===
+            (
+              {
+                explorer3d: 'explorer3d',
+                card: 'list',
+                detail: 'detail',
+                thumbnail: 'preview',
+              } as const
+            )[usage],
+        )?.state.item?.id ?? null);
 
   if (resolvedItemId) {
     const byResolvedAsset = input.mediaEditors
@@ -379,14 +431,17 @@ function previewLinkForUsage(
     }
   }
 
-  return input.mediaEditors
-    .map((editor) => editor.draft)
-    .find((link) => link.isPrimary)
-    ?? input.mediaEditors[0]?.draft
-    ?? null;
+  return (
+    input.mediaEditors.map((editor) => editor.draft).find((link) => link.isPrimary) ??
+    input.mediaEditors[0]?.draft ??
+    null
+  );
 }
 
-function mediaLinkToPreview(link: EditableAdminMediaLink | null | undefined, toNullableNumber: (value: unknown) => number | null) {
+function mediaLinkToPreview(
+  link: EditableAdminMediaLink | null | undefined,
+  toNullableNumber: (value: unknown) => number | null,
+) {
   if (!link?.media) {
     return null;
   }
@@ -412,7 +467,7 @@ function mediaLinkToResolvedPreview(
   link: EditableAdminMediaLink,
   slotKey: MediaEditorSlotKey,
   toNullableNumber: (value: unknown) => number | null,
-) : PublicEntityMediaAsset | null {
+): PublicEntityMediaAsset | null {
   const crop = link.slotCrops?.[slotKey];
 
   return {
@@ -421,8 +476,12 @@ function mediaLinkToResolvedPreview(
     sortOrder: toNullableNumber(link.sortOrder) ?? 0,
     isPrimary: !!link.isPrimary,
     displayMode: link.displayMode || null,
-    focalX: toNullableNumber(link.focalX ?? link.assetFocalX ?? link.media.assetFocalX ?? link.media.focalX),
-    focalY: toNullableNumber(link.focalY ?? link.assetFocalY ?? link.media.assetFocalY ?? link.media.focalY),
+    focalX: toNullableNumber(
+      link.focalX ?? link.assetFocalX ?? link.media.assetFocalX ?? link.media.focalX,
+    ),
+    focalY: toNullableNumber(
+      link.focalY ?? link.assetFocalY ?? link.media.assetFocalY ?? link.media.focalY,
+    ),
     cropX: toNullableNumber(crop?.x),
     cropY: toNullableNumber(crop?.y),
     cropZoom: toNullableNumber(crop?.zoom),
@@ -449,24 +508,29 @@ function previewRelation(
     relationType: rel.relationType ?? null,
     relationTypeKey: rel.relationTypeKey ?? rel.relationType?.key ?? rel.type ?? 'RELATED_TO',
     relationTypeLabel: rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type ?? 'RELATED_TO',
-    justification: (input.locale === 'en' ? rel.justificationEn : rel.justificationEs) ?? rel.justification ?? null,
+    justification:
+      (input.locale === 'en' ? rel.justificationEn : rel.justificationEs) ??
+      rel.justification ??
+      null,
     weight: rel.weight ?? null,
-    from: direction === 'incoming'
-      ? fallbackEndpoint
-      : toRelationEndpoint(rel.from, {
-        id: input.entityId || 'draft-preview',
-        slug: input.form.slug || 'preview',
-        title: input.form.title || 'Titulo de la entity',
-        type: input.form.type,
-      }),
-    to: direction === 'outgoing'
-      ? fallbackEndpoint
-      : toRelationEndpoint(rel.to, {
-        id: input.entityId || 'draft-preview',
-        slug: input.form.slug || 'preview',
-        title: input.form.title || 'Titulo de la entity',
-        type: input.form.type,
-      }),
+    from:
+      direction === 'incoming'
+        ? fallbackEndpoint
+        : toRelationEndpoint(rel.from, {
+            id: input.entityId || 'draft-preview',
+            slug: input.form.slug || 'preview',
+            title: input.form.title || 'Titulo de la entity',
+            type: input.form.type,
+          }),
+    to:
+      direction === 'outgoing'
+        ? fallbackEndpoint
+        : toRelationEndpoint(rel.to, {
+            id: input.entityId || 'draft-preview',
+            slug: input.form.slug || 'preview',
+            title: input.form.title || 'Titulo de la entity',
+            type: input.form.type,
+          }),
   };
 }
 

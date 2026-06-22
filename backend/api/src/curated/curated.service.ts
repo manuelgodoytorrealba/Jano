@@ -34,12 +34,6 @@ type CuratedDeck = {
   createdAt?: Date;
 };
 
-type CuratedMapEntity = CuratedEntity & {
-  connectionIds: string[];
-  curationCount: number;
-  relatedCount: number;
-};
-
 type CandidateScore = {
   entity: any;
   score: number;
@@ -91,7 +85,7 @@ export class CuratedService {
       },
     });
 
-    const discoveryPool = this.buildDiscoveryPool(recommendedDecks, safeLocale);
+    const discoveryPool = this.buildDiscoveryPool(recommendedDecks);
     const initialEntity = discoveryPool[0];
     const resolvedSlug = selectedSlug?.trim() || initialEntity?.slug;
 
@@ -196,10 +190,10 @@ export class CuratedService {
         type: entity.type,
         slug: entity.slug,
         image:
-          entity.resolvedMedia?.thumbnail?.url
-          ?? entity.resolvedMedia?.card?.url
-          ?? entity.resolvedMedia?.primary?.url
-          ?? null,
+          entity.resolvedMedia?.thumbnail?.url ??
+          entity.resolvedMedia?.card?.url ??
+          entity.resolvedMedia?.primary?.url ??
+          null,
         metadata: {
           summary: entity.summary ?? null,
           startYear: entity.startYear ?? null,
@@ -242,9 +236,19 @@ export class CuratedService {
         articles: this.pickByType(rankedShelfCandidates, ['ARTICLE', 'TEXT'], 8, safeLocale),
         artists: this.pickByType(rankedShelfCandidates, ['ARTIST'], 8, safeLocale),
         artworks: this.pickByType(rankedShelfCandidates, ['ARTWORK'], 8, safeLocale),
-        concepts: this.pickByType(rankedShelfCandidates, Array.from(CONCEPTUAL_TYPES), 8, safeLocale),
+        concepts: this.pickByType(
+          rankedShelfCandidates,
+          Array.from(CONCEPTUAL_TYPES),
+          8,
+          safeLocale,
+        ),
       },
-      keyEntities: this.pickDiverse(rankedShelfCandidates, 6, new Set(['ARTICLE', 'TEXT', 'PLACE']), safeLocale),
+      keyEntities: this.pickDiverse(
+        rankedShelfCandidates,
+        6,
+        new Set(['ARTICLE', 'TEXT', 'PLACE']),
+        safeLocale,
+      ),
       relatedEntities: this.pickByType(
         directNeighbors,
         ['CONCEPT', 'MOVEMENT', 'PERIOD', 'ARTIST', 'ARTWORK', 'ARTICLE', 'PLACE'],
@@ -295,16 +299,23 @@ export class CuratedService {
     };
   }
 
-  private localizeDetail<T extends Record<string, any> | null | undefined>(detail: T, locale: string, fields: string[]): T {
+  private localizeDetail<T extends Record<string, any> | null | undefined>(
+    detail: T,
+    locale: string,
+    fields: string[],
+  ): T {
     if (!detail) {
       return detail;
     }
 
-    const translations = Array.isArray((detail as any).translations) ? (detail as any).translations : [];
-    const resolved = translations.find((item: any) => item?.locale === locale)
-      ?? translations.find((item: any) => item?.locale === 'es')
-      ?? translations.find((item: any) => item?.locale === 'en')
-      ?? null;
+    const translations = Array.isArray((detail as any).translations)
+      ? (detail as any).translations
+      : [];
+    const resolved =
+      translations.find((item: any) => item?.locale === locale) ??
+      translations.find((item: any) => item?.locale === 'es') ??
+      translations.find((item: any) => item?.locale === 'en') ??
+      null;
 
     if (!resolved) {
       return detail;
@@ -332,8 +343,22 @@ export class CuratedService {
       startYear: localized.startYear ?? null,
       endYear: localized.endYear ?? null,
       resolvedMedia: localized.resolvedMedia ?? {},
-      artwork: this.localizeDetail(localized.artwork, locale, ['authorNation', 'technique', 'materials', 'dimensions', 'location', 'collection', 'state']),
-      artist: this.localizeDetail(localized.artist, locale, ['country', 'city', 'disciplines', 'bioShort', 'links']),
+      artwork: this.localizeDetail(localized.artwork, locale, [
+        'authorNation',
+        'technique',
+        'materials',
+        'dimensions',
+        'location',
+        'collection',
+        'state',
+      ]),
+      artist: this.localizeDetail(localized.artist, locale, [
+        'country',
+        'city',
+        'disciplines',
+        'bioShort',
+        'links',
+      ]),
       concept: this.localizeDetail(localized.concept, locale, ['definition']),
       period: this.localizeDetail(localized.period, locale, ['definition']),
     };
@@ -341,10 +366,12 @@ export class CuratedService {
 
   private resolveDeckTranslation(deck: any, locale: string) {
     const translations = deck.translations ?? [];
-    return translations.find((item: any) => item.locale === locale)
-      ?? translations.find((item: any) => item.locale === 'es')
-      ?? translations.find((item: any) => item.locale === 'en')
-      ?? null;
+    return (
+      translations.find((item: any) => item.locale === locale) ??
+      translations.find((item: any) => item.locale === 'es') ??
+      translations.find((item: any) => item.locale === 'en') ??
+      null
+    );
   }
 
   private serializeDeck(deck: any, locale: string): CuratedDeck {
@@ -371,7 +398,7 @@ export class CuratedService {
     };
   }
 
-  private buildDiscoveryPool(decks: any[], locale: string) {
+  private buildDiscoveryPool(decks: any[]) {
     const seen = new Set<string>();
     const entities: any[] = [];
 
@@ -421,7 +448,11 @@ export class CuratedService {
           continue;
         }
 
-        const typeBonus = CONCEPTUAL_TYPES.has(entity.type) ? 0.12 : entity.type === 'ARTWORK' || entity.type === 'ARTIST' ? 0.16 : 0;
+        const typeBonus = CONCEPTUAL_TYPES.has(entity.type)
+          ? 0.12
+          : entity.type === 'ARTWORK' || entity.type === 'ARTIST'
+            ? 0.16
+            : 0;
         const relationBonus = KEY_RELATION_TYPES.has(relation.type) ? 0.18 : 0;
         const nextScore = relationWeight + typeBonus + relationBonus;
         const existing = scores.get(entity.id);
@@ -437,7 +468,10 @@ export class CuratedService {
     return scores;
   }
 
-  private mergeCandidateMaps(base: Map<string, CandidateScore>, extra: Map<string, CandidateScore>) {
+  private mergeCandidateMaps(
+    base: Map<string, CandidateScore>,
+    extra: Map<string, CandidateScore>,
+  ) {
     const merged = new Map(base);
     for (const [entityId, candidate] of extra.entries()) {
       const existing = merged.get(entityId);
@@ -474,7 +508,12 @@ export class CuratedService {
       .map((candidate) => this.serializeEntity(candidate.entity, locale));
   }
 
-  private pickDiverse(candidates: CandidateScore[], limit: number, excludedTypes: Set<string>, locale: string) {
+  private pickDiverse(
+    candidates: CandidateScore[],
+    limit: number,
+    excludedTypes: Set<string>,
+    locale: string,
+  ) {
     const selected: any[] = [];
     const selectedTypes = new Set<string>();
     const selectedIds = new Set<string>();

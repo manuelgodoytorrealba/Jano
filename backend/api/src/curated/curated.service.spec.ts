@@ -29,10 +29,30 @@ describe('CuratedService', () => {
   });
 
   it('builds the page around the requested selected entity and limits staff picks to three', async () => {
-    const memoria = buildEntity({ id: 'concept-1', slug: 'memoria', title: 'Memoria', type: 'CONCEPT' });
-    const guerra = buildEntity({ id: 'concept-2', slug: 'guerra', title: 'Guerra', type: 'CONCEPT' });
-    const guernica = buildEntity({ id: 'artwork-1', slug: 'guernica', title: 'Guernica', type: 'ARTWORK' });
-    const picasso = buildEntity({ id: 'artist-1', slug: 'pablo-picasso', title: 'Pablo Picasso', type: 'ARTIST' });
+    const memoria = buildEntity({
+      id: 'concept-1',
+      slug: 'memoria',
+      title: 'Memoria',
+      type: 'CONCEPT',
+    });
+    const guerra = buildEntity({
+      id: 'concept-2',
+      slug: 'guerra',
+      title: 'Guerra',
+      type: 'CONCEPT',
+    });
+    const guernica = buildEntity({
+      id: 'artwork-1',
+      slug: 'guernica',
+      title: 'Guernica',
+      type: 'ARTWORK',
+    });
+    const picasso = buildEntity({
+      id: 'artist-1',
+      slug: 'pablo-picasso',
+      title: 'Pablo Picasso',
+      type: 'ARTIST',
+    });
 
     prisma.homeDeck.findMany.mockResolvedValue([
       buildDeck('memoria-y-trauma', [memoria, guerra, guernica]),
@@ -47,9 +67,7 @@ describe('CuratedService', () => {
         buildRelation('r1', memoria, guerra, 'RELATED_TO', 1),
         buildRelation('r2', guernica, memoria, 'ABOUT_CONCEPT', 0.9),
       ])
-      .mockResolvedValueOnce([
-        buildRelation('r3', guernica, picasso, 'CREATED_BY', 1),
-      ])
+      .mockResolvedValueOnce([buildRelation('r3', guernica, picasso, 'CREATED_BY', 1)])
       .mockResolvedValueOnce([
         {
           id: 'r4',
@@ -63,6 +81,8 @@ describe('CuratedService', () => {
     prisma.entity.findMany.mockResolvedValue([guernica, picasso]);
 
     const result = await service.page('memoria', 'es');
+
+    if (!result) throw new Error('Expected curated page');
 
     expect(result.selectedEntity.slug).toBe('memoria');
     expect(result.staffPicks).toHaveLength(3);

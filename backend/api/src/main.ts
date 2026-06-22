@@ -55,4 +55,7 @@ async function bootstrap() {
   console.log(info(`Allowed frontend origin(s): ${corsOrigins.join(', ')}`));
   console.log(muted(`Uploads served from ${join(process.cwd(), 'uploads')}`));
 }
-bootstrap();
+bootstrap().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

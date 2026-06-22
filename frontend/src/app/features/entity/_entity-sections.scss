@@ -90,7 +90,6 @@
   font-weight: 800;
 }
 
-
 .relations-list {
   display: grid;
   gap: 0.75rem;
@@ -182,8 +181,7 @@
 .quote-block {
   padding: 1rem 1rem 1rem 1.1rem;
   border-left: 3px solid rgba(129, 111, 255, 0.52);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.2));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.2));
   border-radius: 18px;
   color: rgba(61, 68, 82, 0.86);
   font-style: italic;
@@ -351,7 +349,12 @@
 
 .entity-article-hero__overlay {
   background:
-    linear-gradient(180deg, rgba(8, 10, 16, 0.18), rgba(8, 10, 16, 0.36) 38%, rgba(8, 10, 16, 0.9) 100%),
+    linear-gradient(
+      180deg,
+      rgba(8, 10, 16, 0.18),
+      rgba(8, 10, 16, 0.36) 38%,
+      rgba(8, 10, 16, 0.9) 100%
+    ),
     radial-gradient(circle at 16% 18%, rgba(255, 212, 160, 0.18), transparent 24%);
 }
 

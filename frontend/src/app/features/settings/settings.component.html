@@ -26,12 +26,16 @@
       <div class="settings-account-grid">
         <div class="settings-field">
           <span class="settings-field__label">{{ i18n.t('settings.account.user') }}</span>
-          <strong class="settings-field__value">{{ user.name || i18n.t('profile.noNameShort') }}</strong>
+          <strong class="settings-field__value">{{
+            user.name || i18n.t('profile.noNameShort')
+          }}</strong>
         </div>
 
         <div class="settings-field">
           <span class="settings-field__label">{{ i18n.t('common.email') }}</span>
-          <strong class="settings-field__value settings-field__value--long">{{ user.email }}</strong>
+          <strong class="settings-field__value settings-field__value--long">{{
+            user.email
+          }}</strong>
         </div>
 
         <div class="settings-field">
@@ -53,9 +57,31 @@
           <strong>{{ i18n.localeLabel() }}</strong>
         </div>
       </div>
-      <div class="settings-theme-toggle" role="radiogroup" [attr.aria-label]="i18n.t('settings.language.label')">
-        <button type="button" class="settings-theme-option" [class.is-active]="i18n.locale() === 'es'" [attr.aria-checked]="i18n.locale() === 'es'" role="radio" (click)="setLocale('es')">{{ i18n.t('settings.language.es') }}</button>
-        <button type="button" class="settings-theme-option" [class.is-active]="i18n.locale() === 'en'" [attr.aria-checked]="i18n.locale() === 'en'" role="radio" (click)="setLocale('en')">{{ i18n.t('settings.language.en') }}</button>
+      <div
+        class="settings-theme-toggle"
+        role="radiogroup"
+        [attr.aria-label]="i18n.t('settings.language.label')"
+      >
+        <button
+          type="button"
+          class="settings-theme-option"
+          [class.is-active]="i18n.locale() === 'es'"
+          [attr.aria-checked]="i18n.locale() === 'es'"
+          role="radio"
+          (click)="setLocale('es')"
+        >
+          {{ i18n.t('settings.language.es') }}
+        </button>
+        <button
+          type="button"
+          class="settings-theme-option"
+          [class.is-active]="i18n.locale() === 'en'"
+          [attr.aria-checked]="i18n.locale() === 'en'"
+          role="radio"
+          (click)="setLocale('en')"
+        >
+          {{ i18n.t('settings.language.en') }}
+        </button>
       </div>
     </section>
 
@@ -67,14 +93,51 @@
           <p class="settings-muted">{{ i18n.t('settings.appearance.description') }}</p>
         </div>
         <div class="settings-theme-state">
-          <span class="settings-section-note__label">{{ i18n.t('settings.appearance.active') }}</span>
-          <strong>{{ appearance.resolvedTheme() === 'light' ? i18n.t('settings.theme.light') : i18n.t('settings.theme.dark') }}</strong>
+          <span class="settings-section-note__label">{{
+            i18n.t('settings.appearance.active')
+          }}</span>
+          <strong>{{
+            appearance.resolvedTheme() === 'light'
+              ? i18n.t('settings.theme.light')
+              : i18n.t('settings.theme.dark')
+          }}</strong>
         </div>
       </div>
-      <div class="settings-theme-toggle" role="radiogroup" aria-label="{{ i18n.t('settings.appearance.title') }}">
-        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'system'" [attr.aria-checked]="appearance.themePreference() === 'system'" role="radio" (click)="setThemePreference('system')">{{ i18n.t('settings.theme.system') }}</button>
-        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'dark'" [attr.aria-checked]="appearance.themePreference() === 'dark'" role="radio" (click)="setThemePreference('dark')">{{ i18n.t('settings.theme.dark') }}</button>
-        <button type="button" class="settings-theme-option" [class.is-active]="appearance.themePreference() === 'light'" [attr.aria-checked]="appearance.themePreference() === 'light'" role="radio" (click)="setThemePreference('light')">{{ i18n.t('settings.theme.light') }}</button>
+      <div
+        class="settings-theme-toggle"
+        role="radiogroup"
+        aria-label="{{ i18n.t('settings.appearance.title') }}"
+      >
+        <button
+          type="button"
+          class="settings-theme-option"
+          [class.is-active]="appearance.themePreference() === 'system'"
+          [attr.aria-checked]="appearance.themePreference() === 'system'"
+          role="radio"
+          (click)="setThemePreference('system')"
+        >
+          {{ i18n.t('settings.theme.system') }}
+        </button>
+        <button
+          type="button"
+          class="settings-theme-option"
+          [class.is-active]="appearance.themePreference() === 'dark'"
+          [attr.aria-checked]="appearance.themePreference() === 'dark'"
+          role="radio"
+          (click)="setThemePreference('dark')"
+        >
+          {{ i18n.t('settings.theme.dark') }}
+        </button>
+        <button
+          type="button"
+          class="settings-theme-option"
+          [class.is-active]="appearance.themePreference() === 'light'"
+          [attr.aria-checked]="appearance.themePreference() === 'light'"
+          role="radio"
+          (click)="setThemePreference('light')"
+        >
+          {{ i18n.t('settings.theme.light') }}
+        </button>
       </div>
     </section>
 
@@ -89,7 +152,9 @@
         </div>
 
         <div class="settings-section-note">
-          <span class="settings-section-note__label">{{ i18n.t('settings.personalBackground.scopeLabel') }}</span>
+          <span class="settings-section-note__label">{{
+            i18n.t('settings.personalBackground.scopeLabel')
+          }}</span>
           <strong>{{ i18n.t('settings.personalBackground.scopeValue') }}</strong>
         </div>
       </div>
@@ -98,21 +163,37 @@
         <article class="background-stage">
           <div class="background-stage__media">
             <span class="background-stage__badge">
-              {{ appearance.personalBackgroundImageUrl() ? i18n.t('settings.personalBackground.current') : i18n.t('settings.personalBackground.fallback') }}
+              {{
+                appearance.personalBackgroundImageUrl()
+                  ? i18n.t('settings.personalBackground.current')
+                  : i18n.t('settings.personalBackground.fallback')
+              }}
             </span>
 
             <div class="background-stage__frame">
               @if (appearance.personalBackgroundImageUrl(); as currentPersonalBackgroundUrl) {
-                <img [src]="currentPersonalBackgroundUrl" alt="{{ i18n.t('settings.personalBackground.currentAlt') }}" />
+                <img
+                  [src]="currentPersonalBackgroundUrl"
+                  alt="{{ i18n.t('settings.personalBackground.currentAlt') }}"
+                />
               } @else {
-                <img [src]="appearance.fallbackBackgroundImageUrl" alt="{{ i18n.t('settings.background.fallbackAlt') }}" />
+                <img
+                  [src]="appearance.fallbackBackgroundImageUrl"
+                  alt="{{ i18n.t('settings.background.fallbackAlt') }}"
+                />
               }
             </div>
           </div>
 
           <div class="background-stage__meta">
-            <span class="background-stage__eyebrow">{{ i18n.t('settings.personalBackground.ambient') }}</span>
-            <strong>{{ appearance.personalBackgroundImageUrl() ? i18n.t('settings.personalBackground.activeLocal') : i18n.t('settings.personalBackground.fallbackActive') }}</strong>
+            <span class="background-stage__eyebrow">{{
+              i18n.t('settings.personalBackground.ambient')
+            }}</span>
+            <strong>{{
+              appearance.personalBackgroundImageUrl()
+                ? i18n.t('settings.personalBackground.activeLocal')
+                : i18n.t('settings.personalBackground.fallbackActive')
+            }}</strong>
             <p>
               {{ i18n.t('settings.personalBackground.meta') }}
             </p>
@@ -127,20 +208,40 @@
               (change)="onPersonalBackgroundSelected($event)"
             />
 
-            <span class="background-upload__eyebrow">{{ i18n.t('settings.personalBackground.newImage') }}</span>
+            <span class="background-upload__eyebrow">{{
+              i18n.t('settings.personalBackground.newImage')
+            }}</span>
             <strong>{{ i18n.t('settings.personalBackground.select') }}</strong>
-            <p>{{ selectedPersonalBackgroundFile ? selectedPersonalBackgroundFile.name : i18n.t('settings.background.fileTypes') }}</p>
+            <p>
+              {{
+                selectedPersonalBackgroundFile
+                  ? selectedPersonalBackgroundFile.name
+                  : i18n.t('settings.background.fileTypes')
+              }}
+            </p>
           </label>
 
-          <article class="background-candidate" [class.background-candidate--empty]="!selectedPersonalBackgroundPreviewUrl">
+          <article
+            class="background-candidate"
+            [class.background-candidate--empty]="!selectedPersonalBackgroundPreviewUrl"
+          >
             <div class="background-candidate__head">
-              <span class="settings-label">{{ i18n.t('settings.personalBackground.preview') }}</span>
-              <strong>{{ selectedPersonalBackgroundPreviewUrl ? i18n.t('settings.personalBackground.newSelection') : i18n.t('settings.personalBackground.noSelection') }}</strong>
+              <span class="settings-label">{{
+                i18n.t('settings.personalBackground.preview')
+              }}</span>
+              <strong>{{
+                selectedPersonalBackgroundPreviewUrl
+                  ? i18n.t('settings.personalBackground.newSelection')
+                  : i18n.t('settings.personalBackground.noSelection')
+              }}</strong>
             </div>
 
             @if (selectedPersonalBackgroundPreviewUrl) {
               <div class="background-candidate__frame">
-                <img [src]="selectedPersonalBackgroundPreviewUrl" alt="{{ i18n.t('settings.personalBackground.previewAlt') }}" />
+                <img
+                  [src]="selectedPersonalBackgroundPreviewUrl"
+                  alt="{{ i18n.t('settings.personalBackground.previewAlt') }}"
+                />
               </div>
             } @else {
               <div class="background-candidate__empty">
@@ -157,7 +258,11 @@
                 [disabled]="!selectedPersonalBackgroundFile || personalBackgroundSaving"
                 (click)="applyPersonalBackground()"
               >
-                {{ personalBackgroundSaving ? i18n.t('common.saving') : i18n.t('settings.personalBackground.apply') }}
+                {{
+                  personalBackgroundSaving
+                    ? i18n.t('common.saving')
+                    : i18n.t('settings.personalBackground.apply')
+                }}
               </button>
 
               <button
@@ -178,10 +283,14 @@
           @if (personalBackgroundMessage || personalBackgroundError) {
             <div class="settings-feedback-shell">
               @if (personalBackgroundMessage) {
-                <p class="settings-feedback settings-feedback--ok">{{ personalBackgroundMessage }}</p>
+                <p class="settings-feedback settings-feedback--ok">
+                  {{ personalBackgroundMessage }}
+                </p>
               }
               @if (personalBackgroundError) {
-                <p class="settings-feedback settings-feedback--error">{{ personalBackgroundError }}</p>
+                <p class="settings-feedback settings-feedback--error">
+                  {{ personalBackgroundError }}
+                </p>
               }
             </div>
           }
@@ -190,7 +299,7 @@
     </section>
 
     @if (user.role === 'ADMIN') {
-    <section class="settings-surface settings-surface--background">
+      <section class="settings-surface settings-surface--background">
         <div class="settings-section-head settings-section-head--admin">
           <div>
             <span class="settings-label">{{ i18n.t('common.admin') }}</span>
@@ -201,7 +310,9 @@
           </div>
 
           <div class="settings-section-note">
-            <span class="settings-section-note__label">{{ i18n.t('settings.background.systemLabel') }}</span>
+            <span class="settings-section-note__label">{{
+              i18n.t('settings.background.systemLabel')
+            }}</span>
             <strong>{{ i18n.t('settings.background.systemValue') }}</strong>
           </div>
         </div>
@@ -210,21 +321,37 @@
           <article class="background-stage">
             <div class="background-stage__media">
               <span class="background-stage__badge">
-                {{ appearance.backgroundImageUrl() ? i18n.t('settings.background.current') : i18n.t('settings.background.fallback') }}
+                {{
+                  appearance.backgroundImageUrl()
+                    ? i18n.t('settings.background.current')
+                    : i18n.t('settings.background.fallback')
+                }}
               </span>
 
               <div class="background-stage__frame">
                 @if (appearance.backgroundImageUrl(); as currentBackgroundUrl) {
-                  <img [src]="currentBackgroundUrl" alt="{{ i18n.t('settings.background.currentAlt') }}" />
+                  <img
+                    [src]="currentBackgroundUrl"
+                    alt="{{ i18n.t('settings.background.currentAlt') }}"
+                  />
                 } @else {
-                  <img [src]="appearance.fallbackBackgroundImageUrl" alt="{{ i18n.t('settings.background.fallbackAlt') }}" />
+                  <img
+                    [src]="appearance.fallbackBackgroundImageUrl"
+                    alt="{{ i18n.t('settings.background.fallbackAlt') }}"
+                  />
                 }
               </div>
             </div>
 
             <div class="background-stage__meta">
-              <span class="background-stage__eyebrow">{{ i18n.t('settings.background.ambient') }}</span>
-              <strong>{{ appearance.backgroundImageUrl() ? i18n.t('settings.background.activeProd') : i18n.t('settings.background.fallbackActive') }}</strong>
+              <span class="background-stage__eyebrow">{{
+                i18n.t('settings.background.ambient')
+              }}</span>
+              <strong>{{
+                appearance.backgroundImageUrl()
+                  ? i18n.t('settings.background.activeProd')
+                  : i18n.t('settings.background.fallbackActive')
+              }}</strong>
               <p>
                 {{ i18n.t('settings.background.meta') }}
               </p>
@@ -239,20 +366,32 @@
                 (change)="onBackgroundSelected($event)"
               />
 
-              <span class="background-upload__eyebrow">{{ i18n.t('settings.background.newImage') }}</span>
+              <span class="background-upload__eyebrow">{{
+                i18n.t('settings.background.newImage')
+              }}</span>
               <strong>{{ i18n.t('settings.background.select') }}</strong>
               <p>{{ selectedBackgroundMeta }}</p>
             </label>
 
-            <article class="background-candidate" [class.background-candidate--empty]="!selectedBackgroundPreviewUrl">
+            <article
+              class="background-candidate"
+              [class.background-candidate--empty]="!selectedBackgroundPreviewUrl"
+            >
               <div class="background-candidate__head">
                 <span class="settings-label">{{ i18n.t('settings.background.preview') }}</span>
-                <strong>{{ selectedBackgroundPreviewUrl ? i18n.t('settings.background.newSelection') : i18n.t('settings.background.noSelection') }}</strong>
+                <strong>{{
+                  selectedBackgroundPreviewUrl
+                    ? i18n.t('settings.background.newSelection')
+                    : i18n.t('settings.background.noSelection')
+                }}</strong>
               </div>
 
               @if (selectedBackgroundPreviewUrl) {
                 <div class="background-candidate__frame">
-                  <img [src]="selectedBackgroundPreviewUrl" alt="{{ i18n.t('settings.background.previewAlt') }}" />
+                  <img
+                    [src]="selectedBackgroundPreviewUrl"
+                    alt="{{ i18n.t('settings.background.previewAlt') }}"
+                  />
                 </div>
               } @else {
                 <div class="background-candidate__empty">
@@ -269,7 +408,9 @@
                   [disabled]="!selectedBackgroundFile || backgroundSaving"
                   (click)="uploadBackground()"
                 >
-                  {{ backgroundSaving ? i18n.t('common.saving') : i18n.t('settings.background.apply') }}
+                  {{
+                    backgroundSaving ? i18n.t('common.saving') : i18n.t('settings.background.apply')
+                  }}
                 </button>
 
                 <button

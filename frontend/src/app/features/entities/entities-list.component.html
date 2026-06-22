@@ -2,7 +2,8 @@
   class="entities-page page-shell"
   [class.entities-page--immersive]="viewMode === 'explore'"
   [class.entities-page--list-shell]="viewMode === 'list'"
-  [class.entities-page--curated-deck]="curatedDeckMode()">
+  [class.entities-page--curated-deck]="curatedDeckMode()"
+>
   <h1 class="sr-only">
     @if (pageVm$ | async; as pageVm) {
       @if (pageVm.query) {
@@ -19,50 +20,65 @@
     [class.is-filters-collapsed]="!filtersPanelOpen()"
     [class.is-curated-deck]="curatedDeckMode()"
     [class.is-info-collapsed]="!infoPanelOpen()"
-    [class.is-mobile-portrait-totem]="isMobilePortraitTotemActive()">
+    [class.is-mobile-portrait-totem]="isMobilePortraitTotemActive()"
+  >
     <header class="entities-hud" [attr.aria-label]="i18n.t('explorer.view.explorer')">
       @if (pageVm$ | async; as pageVm) {
         <nav class="entities-breadcrumbs ds-panel" aria-label="Breadcrumb">
           <a class="entities-breadcrumbs__link" routerLink="/">{{ i18n.t('nav.discover') }}</a>
           <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
           @if (curatedDeckMode()) {
-            <a class="entities-breadcrumbs__link" routerLink="/curated">{{ i18n.t('nav.curated') }}</a>
+            <a class="entities-breadcrumbs__link" routerLink="/curated">{{
+              i18n.t('nav.curated')
+            }}</a>
             @if (breadcrumbCurrentLabel(pageVm)) {
               <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
-              <span class="entities-breadcrumbs__current">{{ breadcrumbCurrentLabel(pageVm) }}</span>
+              <span class="entities-breadcrumbs__current">{{
+                breadcrumbCurrentLabel(pageVm)
+              }}</span>
             }
           } @else {
-            <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{ breadcrumbSectionLabel(pageVm) }}</a>
+            <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{
+              breadcrumbSectionLabel(pageVm)
+            }}</a>
             @if (breadcrumbCurrentLabel(pageVm)) {
               <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
-              <span class="entities-breadcrumbs__current">{{ breadcrumbCurrentLabel(pageVm) }}</span>
+              <span class="entities-breadcrumbs__current">{{
+                breadcrumbCurrentLabel(pageVm)
+              }}</span>
             }
           }
         </nav>
       }
       <div class="entities-hud__controls">
         <div class="entities-mode-pill ds-panel">
-          <div class="view-toggle" role="tablist" [attr.aria-label]="i18n.t('explorer.view.explorer')">
-          <button
-            type="button"
-            class="view-toggle__button"
-            [class.is-active]="viewMode === 'explore'"
-            role="tab"
-            [attr.aria-selected]="viewMode === 'explore'"
-            (click)="setView('explore')">
-            {{ i18n.t('explorer.view.explorer') }}
-          </button>
+          <div
+            class="view-toggle"
+            role="tablist"
+            [attr.aria-label]="i18n.t('explorer.view.explorer')"
+          >
+            <button
+              type="button"
+              class="view-toggle__button"
+              [class.is-active]="viewMode === 'explore'"
+              role="tab"
+              [attr.aria-selected]="viewMode === 'explore'"
+              (click)="setView('explore')"
+            >
+              {{ i18n.t('explorer.view.explorer') }}
+            </button>
 
-          <button
-            type="button"
-            class="view-toggle__button"
-            [class.is-active]="viewMode === 'list'"
-            role="tab"
-            [attr.aria-selected]="viewMode === 'list'"
-            (click)="setView('list')">
-            {{ i18n.t('explorer.view.list') }}
-          </button>
-        </div>
+            <button
+              type="button"
+              class="view-toggle__button"
+              [class.is-active]="viewMode === 'list'"
+              role="tab"
+              [attr.aria-selected]="viewMode === 'list'"
+              (click)="setView('list')"
+            >
+              {{ i18n.t('explorer.view.list') }}
+            </button>
+          </div>
         </div>
 
         <button
@@ -70,9 +86,17 @@
           class="entities-hud__filters ds-panel"
           [class.is-collapsed]="!filtersPanelOpen()"
           (click)="toggleFiltersPanel()"
-          [attr.aria-label]="filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')"
-          [attr.aria-expanded]="filtersPanelOpen()">
-          <svg class="entities-hud__filters-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          [attr.aria-label]="
+            filtersPanelOpen() ? i18n.t('explorer.filters.hide') : i18n.t('explorer.filters.show')
+          "
+          [attr.aria-expanded]="filtersPanelOpen()"
+        >
+          <svg
+            class="entities-hud__filters-icon"
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            focusable="false"
+          >
             <path d="M4 6h16" />
             <circle cx="9" cy="6" r="1.9" />
             <path d="M4 12h16" />
@@ -86,22 +110,23 @@
 
     @if (pageVm$ | async; as pageVm) {
       @if (filtersPanelOpen()) {
-      <app-entities-list-filter-rail
-        [vm]="pageVm.filterRail"
-        [collapsed]="!filtersPanelOpen()"
-        [openFilterMenu]="openFilterMenu()"
-        [advancedFiltersOpen]="advancedFiltersOpen()"
-        (searchChange)="setQ($event)"
-        (clearSearch)="clearSearch()"
-        (clearChip)="clearActiveFilter($event)"
-        (toggleMenu)="toggleFilterMenu($event)"
-        (selectOption)="selectFilterOption($event.key, $event.value)"
-        (sortChange)="toggleSort($event)"
-        (statusChange)="toggleStatus($event)"
-        (contentLevelChange)="toggleContentLevel($event)"
-        (toggleAdvancedFilters)="toggleAdvancedFilters()"
-        (resetFilters)="resetFilters()">
-      </app-entities-list-filter-rail>
+        <app-entities-list-filter-rail
+          [vm]="pageVm.filterRail"
+          [collapsed]="!filtersPanelOpen()"
+          [openFilterMenu]="openFilterMenu()"
+          [advancedFiltersOpen]="advancedFiltersOpen()"
+          (searchChange)="setQ($event)"
+          (clearSearch)="clearSearch()"
+          (clearChip)="clearActiveFilter($event)"
+          (toggleMenu)="toggleFilterMenu($event)"
+          (selectOption)="selectFilterOption($event.key, $event.value)"
+          (sortChange)="toggleSort($event)"
+          (statusChange)="toggleStatus($event)"
+          (contentLevelChange)="toggleContentLevel($event)"
+          (toggleAdvancedFilters)="toggleAdvancedFilters()"
+          (resetFilters)="resetFilters()"
+        >
+        </app-entities-list-filter-rail>
       }
 
       @if (viewMode === 'explore') {
@@ -115,7 +140,8 @@
                 (activeIndexChange)="activeIndex.set($event)"
                 (openEntity)="go($event)"
                 (requestInfoOpen)="openInfoPanel()"
-                (requestInfoClose)="closeInfoPanel()">
+                (requestInfoClose)="closeInfoPanel()"
+              >
               </app-entities-explorer-totem>
             } @else {
               <app-entities-explorer-3d
@@ -127,13 +153,16 @@
                 (activeIndexChange)="activeIndex.set($event)"
                 (openEntity)="go($event)"
                 (requestInfoOpen)="openInfoPanel()"
-                (requestInfoClose)="closeInfoPanel()">
+                (requestInfoClose)="closeInfoPanel()"
+              >
               </app-entities-explorer-3d>
             }
           </div>
         } @else {
           <div class="entities-stage-shell entities-stage-shell--empty">
-            <app-entities-list-empty-state (returnToDiscovery)="returnToDiscovery()"></app-entities-list-empty-state>
+            <app-entities-list-empty-state
+              (returnToDiscovery)="returnToDiscovery()"
+            ></app-entities-list-empty-state>
           </div>
         }
       } @else {
@@ -141,9 +170,19 @@
           @if (pageVm.results.items.length) {
             <section class="entities-grid">
               @for (entity of pageVm.results.items; track entity.slug) {
-                <article class="entity-card ds-card" (click)="go(entity.slug)">
+                <article
+                  class="entity-card ds-card"
+                  role="link"
+                  tabindex="0"
+                  (click)="go(entity.slug)"
+                  (keydown.enter)="go(entity.slug)"
+                >
                   <div class="entity-card__thumb">
-                    <app-jano-media [entity]="entity" usage="card" [alt]="entity.title"></app-jano-media>
+                    <app-jano-media
+                      [entity]="entity"
+                      usage="card"
+                      [alt]="entity.title"
+                    ></app-jano-media>
                   </div>
 
                   <div class="entity-card__body">
@@ -157,13 +196,16 @@
                       }
                     </div>
 
-                    <div class="entity-card__title" [innerHTML]="highlight(entity.title, pageVm.query)"></div>
+                    <div
+                      class="entity-card__title"
+                      [innerHTML]="highlight(entity.title, pageVm.query)"
+                    ></div>
 
                     @if (entity.summary) {
                       <div
                         class="entity-card__summary"
-                        [innerHTML]="highlight(cleanWiki(entity.summary || ''), pageVm.query)">
-                      </div>
+                        [innerHTML]="highlight(cleanWiki(entity.summary || ''), pageVm.query)"
+                      ></div>
                     }
                   </div>
                 </article>
@@ -174,28 +216,41 @@
               [page]="pageVm.results.page"
               [totalPages]="pageVm.results.totalPages"
               (previous)="prevPage()"
-              (next)="nextPage(pageVm.results.totalPages)">
+              (next)="nextPage(pageVm.results.totalPages)"
+            >
             </app-entities-list-pager>
           } @else {
-            <app-entities-list-empty-state (returnToDiscovery)="returnToDiscovery()"></app-entities-list-empty-state>
+            <app-entities-list-empty-state
+              (returnToDiscovery)="returnToDiscovery()"
+            ></app-entities-list-empty-state>
           }
         </div>
       }
     } @else {
       @if (filtersPanelOpen()) {
-        <aside class="entities-filter-rail ds-panel" [class.is-collapsed]="!filtersPanelOpen()" [attr.aria-hidden]="!filtersPanelOpen()">
+        <aside
+          class="entities-filter-rail ds-panel"
+          [class.is-collapsed]="!filtersPanelOpen()"
+          [attr.aria-hidden]="!filtersPanelOpen()"
+        >
           <div class="entities-filter-rail__section">
-            <label class="entities-filter-rail__label" for="entities-search-skeleton">{{ i18n.t('explorer.search.label') }}</label>
+            <label class="entities-filter-rail__label" for="entities-search-skeleton">{{
+              i18n.t('explorer.search.label')
+            }}</label>
             <input
               id="entities-search-skeleton"
               class="ds-input entities-search entities-filter-rail__search"
               type="search"
               [placeholder]="i18n.t('explorer.search.placeholder')"
-              [attr.aria-label]="i18n.t('explorer.search.aria')" />
+              [attr.aria-label]="i18n.t('explorer.search.aria')"
+            />
           </div>
 
           @for (_ of filterSkeleton; track $index) {
-            <div class="entities-filter-rail__section entities-filter-rail__section--loading" aria-hidden="true">
+            <div
+              class="entities-filter-rail__section entities-filter-rail__section--loading"
+              aria-hidden="true"
+            >
               <div class="skeleton-box skeleton-box--eyebrow"></div>
               <div class="skeleton-box skeleton-box--control"></div>
             </div>
@@ -206,7 +261,10 @@
       @if (viewMode === 'explore') {
         <div class="entities-explorer-stage">
           @if (viewportWidth() > 640) {
-            <div class="entities-explorer-loading entities-explorer-loading--desktop" aria-hidden="true">
+            <div
+              class="entities-explorer-loading entities-explorer-loading--desktop"
+              aria-hidden="true"
+            >
               <div class="entities-explorer-loading__hud">
                 <div class="entities-explorer-loading__mode">
                   <span></span>
@@ -220,12 +278,20 @@
                   <div class="entities-explorer-loading__card-foot"></div>
                 </div>
 
-                <div class="entities-explorer-loading__card entities-explorer-loading__card--active">
+                <div
+                  class="entities-explorer-loading__card entities-explorer-loading__card--active"
+                >
                   <div class="entities-explorer-loading__art"></div>
                   <div class="entities-explorer-loading__card-meta">
-                    <div class="entities-explorer-loading__line entities-explorer-loading__line--eyebrow"></div>
-                    <div class="entities-explorer-loading__line entities-explorer-loading__line--title"></div>
-                    <div class="entities-explorer-loading__line entities-explorer-loading__line--summary"></div>
+                    <div
+                      class="entities-explorer-loading__line entities-explorer-loading__line--eyebrow"
+                    ></div>
+                    <div
+                      class="entities-explorer-loading__line entities-explorer-loading__line--title"
+                    ></div>
+                    <div
+                      class="entities-explorer-loading__line entities-explorer-loading__line--summary"
+                    ></div>
                   </div>
                 </div>
 
@@ -242,7 +308,9 @@
                   <div class="entities-explorer-loading__art"></div>
                 </div>
 
-                <div class="entities-explorer-loading__card entities-explorer-loading__card--active">
+                <div
+                  class="entities-explorer-loading__card entities-explorer-loading__card--active"
+                >
                   <div class="entities-explorer-loading__art"></div>
                 </div>
 

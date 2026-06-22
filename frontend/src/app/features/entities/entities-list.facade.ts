@@ -1,9 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, debounceTime, distinctUntilChanged, map, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { PublicEntityListItem, PublicEntityListResponse } from '../../core/api/entities.models';
-import { EntityArtworkTransitionPayload, EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
+import {
+  EntityArtworkTransitionPayload,
+  EntityRouteArtworkTransitionService,
+} from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { Tag, TagsApi } from '../../core/api/tags.api';
@@ -24,7 +35,12 @@ export type EntitiesListActiveFilterKey =
   | 'tag';
 
 type FilterOption = { slug: string; title: string };
-type FilterSupport = { movement: boolean; period: boolean; institution: boolean; nationality: boolean };
+type FilterSupport = {
+  movement: boolean;
+  period: boolean;
+  institution: boolean;
+  nationality: boolean;
+};
 type EntitiesListFilterOptionVm = { slug: string; label: string };
 type EntitiesListQueryState = {
   title: string;
@@ -131,37 +147,46 @@ export class EntitiesListFacade {
   private readonly i18n = inject(I18nService);
 
   private readonly limit = 24;
-  private readonly contextualFilterKeys = ['movement', 'period', 'institution', 'nationality'] as const;
+  private readonly contextualFilterKeys = [
+    'movement',
+    'period',
+    'institution',
+    'nationality',
+  ] as const;
 
-  readonly movementOptions$ = this.api.list({
-    type: 'MOVEMENT',
-    limit: 60,
-    page: 1,
-    sort: 'title',
-    status: 'PUBLISHED',
-  }).pipe(
-    map((result) => this.toFilterOptions(result.items ?? [])),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
+  readonly movementOptions$ = this.api
+    .list({
+      type: 'MOVEMENT',
+      limit: 60,
+      page: 1,
+      sort: 'title',
+      status: 'PUBLISHED',
+    })
+    .pipe(
+      map((result) => this.toFilterOptions(result.items ?? [])),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 
-  readonly periodOptions$ = this.api.list({
-    type: 'PERIOD',
-    limit: 60,
-    page: 1,
-    sort: 'title',
-    status: 'PUBLISHED',
-  }).pipe(
-    map((result) => this.toFilterOptions(result.items ?? [])),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
+  readonly periodOptions$ = this.api
+    .list({
+      type: 'PERIOD',
+      limit: 60,
+      page: 1,
+      sort: 'title',
+      status: 'PUBLISHED',
+    })
+    .pipe(
+      map((result) => this.toFilterOptions(result.items ?? [])),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 
   readonly institutionOptions$ = this.api.institutions().pipe(
-    map((items) => (items ?? []).map((item) => ({ slug: item, title: item }) as FilterOption)),
+    map((items) => (items ?? []).map((item) => ({ slug: item, title: item }))),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   readonly nationalityOptions$ = this.api.nationalities().pipe(
-    map((items) => (items ?? []).map((item) => ({ slug: item, title: item }) as FilterOption)),
+    map((items) => (items ?? []).map((item) => ({ slug: item, title: item }))),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
@@ -173,7 +198,7 @@ export class EntitiesListFacade {
           slug: item.slug,
           label: item.label,
           category: item.category,
-        }) as TagFilterOption),
+        })),
     ),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
@@ -222,10 +247,10 @@ export class EntitiesListFacade {
         sort: state.sort === 'relevance' && !debouncedQuery ? 'recent' : state.sort,
         status: state.status || undefined,
         contentLevel: state.contentLevel || undefined,
-        movement: state.filterSupport.movement ? (state.movement || undefined) : undefined,
-        period: state.filterSupport.period ? (state.period || undefined) : undefined,
-        institution: state.filterSupport.institution ? (state.institution || undefined) : undefined,
-        nationality: state.filterSupport.nationality ? (state.nationality || undefined) : undefined,
+        movement: state.filterSupport.movement ? state.movement || undefined : undefined,
+        period: state.filterSupport.period ? state.period || undefined : undefined,
+        institution: state.filterSupport.institution ? state.institution || undefined : undefined,
+        nationality: state.filterSupport.nationality ? state.nationality || undefined : undefined,
         tag: state.tag || undefined,
       }),
     ),
@@ -241,193 +266,239 @@ export class EntitiesListFacade {
     this.nationalityOptions$,
     this.tagOptions$,
   ]).pipe(
-    map(([state, results, movementOptions, periodOptions, institutionOptions, nationalityOptions, tagOptions]) => {
-      const movementLabel = this.findOptionLabel(movementOptions, state.movement);
-      const periodLabel = this.findOptionLabel(periodOptions, state.period);
-      const institutionLabel = this.findOptionLabel(institutionOptions, state.institution);
-      const nationalityLabel = this.findOptionLabel(nationalityOptions, state.nationality);
-      const tagLabel = tagOptions.find((item) => item.slug === state.tag)?.label ?? state.tag;
-
-      const activeFilterChips: EntitiesListActiveFilterChipVm[] = [];
-
-      if (state.status) {
-        activeFilterChips.push({
-          key: 'status',
-          label: this.i18n.t('explorer.status'),
-          value: this.statusLabel(state.status),
-          advanced: true,
-        });
-      }
-
-      if (state.contentLevel) {
-        activeFilterChips.push({
-          key: 'contentLevel',
-          label: this.i18n.t('explorer.level'),
-          value: this.contentLevelLabel(state.contentLevel),
-          advanced: true,
-        });
-      }
-
-      if (state.filterSupport.movement && state.movement) {
-        activeFilterChips.push({ key: 'movement', label: this.i18n.t('explorer.movement'), value: movementLabel });
-      }
-
-      if (state.filterSupport.period && state.period) {
-        activeFilterChips.push({ key: 'period', label: this.i18n.t('explorer.period'), value: periodLabel });
-      }
-
-      if (state.filterSupport.institution && state.institution) {
-        activeFilterChips.push({ key: 'institution', label: this.i18n.t('explorer.institution'), value: institutionLabel });
-      }
-
-      if (state.filterSupport.nationality && state.nationality) {
-        activeFilterChips.push({ key: 'nationality', label: this.i18n.t('explorer.nationality'), value: nationalityLabel });
-      }
-
-      if (state.tag) {
-        activeFilterChips.push({ key: 'tag', label: this.i18n.t('explorer.tag'), value: tagLabel });
-      }
-
-      const selects: EntitiesListSelectFilterVm[] = [
-        {
-          key: 'tag',
-          label: this.i18n.t('explorer.tag'),
-          ariaLabel: this.i18n.t('explorer.filterByTag'),
-          optionsLabel: this.i18n.t('explorer.tagOptions'),
-          allLabel: this.i18n.t('explorer.allTags'),
-          selectedValue: state.tag,
-          selectedLabel: state.tag ? tagLabel : this.i18n.t('explorer.allTags'),
-          options: tagOptions.map((item) => ({ slug: item.slug, label: item.label })),
-        },
-      ];
-
-      if (state.filterSupport.movement) {
-        selects.push(this.createSelectVm({
-          key: 'movement',
-          label: this.i18n.t('explorer.movement'),
-          ariaLabel: this.i18n.t('explorer.filterByMovement'),
-          optionsLabel: this.i18n.t('explorer.movementOptions'),
-          allLabel: this.i18n.t('explorer.allMovements'),
-          selectedValue: state.movement,
-          selectedLabel: state.movement ? movementLabel : this.i18n.t('explorer.allMovements'),
-          options: movementOptions,
-        }));
-      }
-
-      if (state.filterSupport.period) {
-        selects.push(this.createSelectVm({
-          key: 'period',
-          label: this.i18n.t('explorer.period'),
-          ariaLabel: this.i18n.t('explorer.filterByPeriod'),
-          optionsLabel: this.i18n.t('explorer.periodOptions'),
-          allLabel: this.i18n.t('explorer.allPeriods'),
-          selectedValue: state.period,
-          selectedLabel: state.period ? periodLabel : this.i18n.t('explorer.allPeriods'),
-          options: periodOptions,
-        }));
-      }
-
-      if (state.filterSupport.institution) {
-        selects.push(this.createSelectVm({
-          key: 'institution',
-          label: this.i18n.t('explorer.institution'),
-          ariaLabel: this.i18n.t('explorer.filterByInstitution'),
-          optionsLabel: this.i18n.t('explorer.institutionOptions'),
-          allLabel: this.i18n.t('explorer.allInstitutions'),
-          selectedValue: state.institution,
-          selectedLabel: state.institution ? institutionLabel : this.i18n.t('explorer.allInstitutions'),
-          options: institutionOptions,
-        }));
-      }
-
-      if (state.filterSupport.nationality) {
-        selects.push(this.createSelectVm({
-          key: 'nationality',
-          label: this.i18n.t('explorer.nationality'),
-          ariaLabel: this.i18n.t('explorer.filterByNationality'),
-          optionsLabel: this.i18n.t('explorer.nationalityOptions'),
-          allLabel: this.i18n.t('explorer.allNationalities'),
-          selectedValue: state.nationality,
-          selectedLabel: state.nationality ? nationalityLabel : this.i18n.t('explorer.allNationalities'),
-          options: nationalityOptions,
-        }));
-      }
-
-      const filterRail: EntitiesListFilterRailVm = {
-        searchQuery: state.q,
-        hasActiveFilters: !!(
-          state.q ||
-          state.deck ||
-          state.status ||
-          state.contentLevel ||
-          (state.filterSupport.movement && state.movement) ||
-          (state.filterSupport.period && state.period) ||
-          (state.filterSupport.institution && state.institution) ||
-          (state.filterSupport.nationality && state.nationality) ||
-          state.tag
-        ),
-        hasVisibleFilterChips: activeFilterChips.length > 0,
-        hasAdvancedFilters: !!(state.status || state.contentLevel),
-        activeFilterChips,
-        selects,
-        sort: state.sort,
-        canSortByRelevance: !!state.q,
-        status: state.status,
-        contentLevel: state.contentLevel,
-        resultsTotal: results.total,
-        page: results.page,
-        totalPages: results.totalPages,
-      };
-
-      return {
-        title: state.title,
-        type: state.type,
-        query: state.q,
-        curatedDeckMode: state.curatedDeckMode,
+    map(
+      ([
+        state,
         results,
-        filterRail,
-      } satisfies EntitiesListPageVm;
-    }),
+        movementOptions,
+        periodOptions,
+        institutionOptions,
+        nationalityOptions,
+        tagOptions,
+      ]) => {
+        const movementLabel = this.findOptionLabel(movementOptions, state.movement);
+        const periodLabel = this.findOptionLabel(periodOptions, state.period);
+        const institutionLabel = this.findOptionLabel(institutionOptions, state.institution);
+        const nationalityLabel = this.findOptionLabel(nationalityOptions, state.nationality);
+        const tagLabel = tagOptions.find((item) => item.slug === state.tag)?.label ?? state.tag;
+
+        const activeFilterChips: EntitiesListActiveFilterChipVm[] = [];
+
+        if (state.status) {
+          activeFilterChips.push({
+            key: 'status',
+            label: this.i18n.t('explorer.status'),
+            value: this.statusLabel(state.status),
+            advanced: true,
+          });
+        }
+
+        if (state.contentLevel) {
+          activeFilterChips.push({
+            key: 'contentLevel',
+            label: this.i18n.t('explorer.level'),
+            value: this.contentLevelLabel(state.contentLevel),
+            advanced: true,
+          });
+        }
+
+        if (state.filterSupport.movement && state.movement) {
+          activeFilterChips.push({
+            key: 'movement',
+            label: this.i18n.t('explorer.movement'),
+            value: movementLabel,
+          });
+        }
+
+        if (state.filterSupport.period && state.period) {
+          activeFilterChips.push({
+            key: 'period',
+            label: this.i18n.t('explorer.period'),
+            value: periodLabel,
+          });
+        }
+
+        if (state.filterSupport.institution && state.institution) {
+          activeFilterChips.push({
+            key: 'institution',
+            label: this.i18n.t('explorer.institution'),
+            value: institutionLabel,
+          });
+        }
+
+        if (state.filterSupport.nationality && state.nationality) {
+          activeFilterChips.push({
+            key: 'nationality',
+            label: this.i18n.t('explorer.nationality'),
+            value: nationalityLabel,
+          });
+        }
+
+        if (state.tag) {
+          activeFilterChips.push({
+            key: 'tag',
+            label: this.i18n.t('explorer.tag'),
+            value: tagLabel,
+          });
+        }
+
+        const selects: EntitiesListSelectFilterVm[] = [
+          {
+            key: 'tag',
+            label: this.i18n.t('explorer.tag'),
+            ariaLabel: this.i18n.t('explorer.filterByTag'),
+            optionsLabel: this.i18n.t('explorer.tagOptions'),
+            allLabel: this.i18n.t('explorer.allTags'),
+            selectedValue: state.tag,
+            selectedLabel: state.tag ? tagLabel : this.i18n.t('explorer.allTags'),
+            options: tagOptions.map((item) => ({ slug: item.slug, label: item.label })),
+          },
+        ];
+
+        if (state.filterSupport.movement) {
+          selects.push(
+            this.createSelectVm({
+              key: 'movement',
+              label: this.i18n.t('explorer.movement'),
+              ariaLabel: this.i18n.t('explorer.filterByMovement'),
+              optionsLabel: this.i18n.t('explorer.movementOptions'),
+              allLabel: this.i18n.t('explorer.allMovements'),
+              selectedValue: state.movement,
+              selectedLabel: state.movement ? movementLabel : this.i18n.t('explorer.allMovements'),
+              options: movementOptions,
+            }),
+          );
+        }
+
+        if (state.filterSupport.period) {
+          selects.push(
+            this.createSelectVm({
+              key: 'period',
+              label: this.i18n.t('explorer.period'),
+              ariaLabel: this.i18n.t('explorer.filterByPeriod'),
+              optionsLabel: this.i18n.t('explorer.periodOptions'),
+              allLabel: this.i18n.t('explorer.allPeriods'),
+              selectedValue: state.period,
+              selectedLabel: state.period ? periodLabel : this.i18n.t('explorer.allPeriods'),
+              options: periodOptions,
+            }),
+          );
+        }
+
+        if (state.filterSupport.institution) {
+          selects.push(
+            this.createSelectVm({
+              key: 'institution',
+              label: this.i18n.t('explorer.institution'),
+              ariaLabel: this.i18n.t('explorer.filterByInstitution'),
+              optionsLabel: this.i18n.t('explorer.institutionOptions'),
+              allLabel: this.i18n.t('explorer.allInstitutions'),
+              selectedValue: state.institution,
+              selectedLabel: state.institution
+                ? institutionLabel
+                : this.i18n.t('explorer.allInstitutions'),
+              options: institutionOptions,
+            }),
+          );
+        }
+
+        if (state.filterSupport.nationality) {
+          selects.push(
+            this.createSelectVm({
+              key: 'nationality',
+              label: this.i18n.t('explorer.nationality'),
+              ariaLabel: this.i18n.t('explorer.filterByNationality'),
+              optionsLabel: this.i18n.t('explorer.nationalityOptions'),
+              allLabel: this.i18n.t('explorer.allNationalities'),
+              selectedValue: state.nationality,
+              selectedLabel: state.nationality
+                ? nationalityLabel
+                : this.i18n.t('explorer.allNationalities'),
+              options: nationalityOptions,
+            }),
+          );
+        }
+
+        const filterRail: EntitiesListFilterRailVm = {
+          searchQuery: state.q,
+          hasActiveFilters: !!(
+            state.q ||
+            state.deck ||
+            state.status ||
+            state.contentLevel ||
+            (state.filterSupport.movement && state.movement) ||
+            (state.filterSupport.period && state.period) ||
+            (state.filterSupport.institution && state.institution) ||
+            (state.filterSupport.nationality && state.nationality) ||
+            state.tag
+          ),
+          hasVisibleFilterChips: activeFilterChips.length > 0,
+          hasAdvancedFilters: !!(state.status || state.contentLevel),
+          activeFilterChips,
+          selects,
+          sort: state.sort,
+          canSortByRelevance: !!state.q,
+          status: state.status,
+          contentLevel: state.contentLevel,
+          resultsTotal: results.total,
+          page: results.page,
+          totalPages: results.totalPages,
+        };
+
+        return {
+          title: state.title,
+          type: state.type,
+          query: state.q,
+          curatedDeckMode: state.curatedDeckMode,
+          results,
+          filterRail,
+        } satisfies EntitiesListPageVm;
+      },
+    ),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   constructor() {
-    combineLatest([this.queryState$, this.route.queryParamMap]).pipe(
-      map(([state, queryParamMap]) => this.obsoleteQueryParamsForType(state.type, queryParamMap)),
-      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-      tap((obsolete) => {
-        if (!obsolete) {
-          return;
-        }
+    combineLatest([this.queryState$, this.route.queryParamMap])
+      .pipe(
+        map(([state, queryParamMap]) => this.obsoleteQueryParamsForType(state.type, queryParamMap)),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+        tap((obsolete) => {
+          if (!obsolete) {
+            return;
+          }
 
-        void this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: obsolete,
-          queryParamsHandling: 'merge',
-          replaceUrl: true,
-        });
-      }),
-    ).subscribe();
+          void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: obsolete,
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+          });
+        }),
+      )
+      .subscribe();
 
-    this.queryState$.pipe(
-      tap((state) => {
-        const normalizedTitle = state.title || 'Entities';
-        const normalizedQuery = state.q.trim();
-        const pageTitle = normalizedQuery
-          ? `Search ${normalizedTitle} for "${normalizedQuery}" | JANO`
-          : `${normalizedTitle} | JANO`;
-        const description = normalizedQuery
-          ? `Browse JANO results for "${normalizedQuery}" inside ${normalizedTitle.toLowerCase()}.`
-          : `Explore ${normalizedTitle.toLowerCase()} in JANO with visual browsing and editorial filters.`;
-        const typeSlug = (state.type ?? '').trim().toLowerCase();
-        const basePath = typeSlug ? `/entities/${typeSlug}` : '/entities';
-        const path = normalizedQuery
-          ? `${basePath}?q=${encodeURIComponent(normalizedQuery)}`
-          : basePath;
+    this.queryState$
+      .pipe(
+        tap((state) => {
+          const normalizedTitle = state.title || 'Entities';
+          const normalizedQuery = state.q.trim();
+          const pageTitle = normalizedQuery
+            ? `Search ${normalizedTitle} for "${normalizedQuery}" | JANO`
+            : `${normalizedTitle} | JANO`;
+          const description = normalizedQuery
+            ? `Browse JANO results for "${normalizedQuery}" inside ${normalizedTitle.toLowerCase()}.`
+            : `Explore ${normalizedTitle.toLowerCase()} in JANO with visual browsing and editorial filters.`;
+          const typeSlug = (state.type ?? '').trim().toLowerCase();
+          const basePath = typeSlug ? `/entities/${typeSlug}` : '/entities';
+          const path = normalizedQuery
+            ? `${basePath}?q=${encodeURIComponent(normalizedQuery)}`
+            : basePath;
 
-        this.seo.setPageMeta({ title: pageTitle, description, path });
-      }),
-    ).subscribe();
+          this.seo.setPageMeta({ title: pageTitle, description, path });
+        }),
+      )
+      .subscribe();
   }
 
   clearSearch(): Promise<boolean> {
@@ -447,7 +518,10 @@ export class EntitiesListFacade {
   }
 
   toggleSort(next: Sort): Promise<boolean> {
-    const current = this.normalizeSort(this.route.snapshot.queryParamMap.get('sort'), this.route.snapshot.queryParamMap.get('q'));
+    const current = this.normalizeSort(
+      this.route.snapshot.queryParamMap.get('sort'),
+      this.route.snapshot.queryParamMap.get('q'),
+    );
     const query = (this.route.snapshot.queryParamMap.get('q') ?? '').trim();
 
     if (next === 'relevance' && !query) {
@@ -475,7 +549,9 @@ export class EntitiesListFacade {
   }
 
   toggleContentLevel(next: Level): Promise<boolean> {
-    const current = this.normalizeContentLevel(this.route.snapshot.queryParamMap.get('contentLevel'));
+    const current = this.normalizeContentLevel(
+      this.route.snapshot.queryParamMap.get('contentLevel'),
+    );
     const value = next && next === current ? '' : next;
     return this.navigateQuery({ contentLevel: value || null, page: 1 });
   }
@@ -546,12 +622,16 @@ export class EntitiesListFacade {
 
   private normalizeStatus(value: string | null): Status {
     const normalized = (value ?? '').trim();
-    return normalized === 'DRAFT' || normalized === 'IN_REVIEW' || normalized === 'PUBLISHED' ? normalized : '';
+    return normalized === 'DRAFT' || normalized === 'IN_REVIEW' || normalized === 'PUBLISHED'
+      ? normalized
+      : '';
   }
 
   private normalizeContentLevel(value: string | null): Level {
     const normalized = (value ?? '').trim();
-    return normalized === 'BASIC' || normalized === 'INTERMEDIATE' || normalized === 'ADVANCED' ? normalized : '';
+    return normalized === 'BASIC' || normalized === 'INTERMEDIATE' || normalized === 'ADVANCED'
+      ? normalized
+      : '';
   }
 
   private toPositiveInt(value: string | null): number {
@@ -560,15 +640,20 @@ export class EntitiesListFacade {
   }
 
   private filterSupportForType(type: string | null | undefined): FilterSupport {
-    return FILTER_SUPPORT_BY_TYPE[(type ?? '').trim().toUpperCase()] ?? {
-      movement: false,
-      period: false,
-      institution: false,
-      nationality: false,
-    };
+    return (
+      FILTER_SUPPORT_BY_TYPE[(type ?? '').trim().toUpperCase()] ?? {
+        movement: false,
+        period: false,
+        institution: false,
+        nationality: false,
+      }
+    );
   }
 
-  private obsoleteQueryParamsForType(type: string, queryParamMap: { get(key: string): string | null }) {
+  private obsoleteQueryParamsForType(
+    type: string,
+    queryParamMap: { get(key: string): string | null },
+  ) {
     const support = this.filterSupportForType(type);
     const obsolete: Record<string, null> = {};
 
@@ -579,10 +664,13 @@ export class EntitiesListFacade {
       }
 
       const isSupported =
-        key === 'movement' ? support.movement :
-          key === 'period' ? support.period :
-            key === 'institution' ? support.institution :
-              support.nationality;
+        key === 'movement'
+          ? support.movement
+          : key === 'period'
+            ? support.period
+            : key === 'institution'
+              ? support.institution
+              : support.nationality;
 
       if (!isSupported) {
         obsolete[key] = null;
@@ -600,7 +688,9 @@ export class EntitiesListFacade {
     return options.find((item) => item.slug === slug)?.title ?? slug;
   }
 
-  private createSelectVm(config: Omit<EntitiesListSelectFilterVm, 'options'> & { options: FilterOption[] }): EntitiesListSelectFilterVm {
+  private createSelectVm(
+    config: Omit<EntitiesListSelectFilterVm, 'options'> & { options: FilterOption[] },
+  ): EntitiesListSelectFilterVm {
     return {
       ...config,
       options: config.options.map((item) => ({ slug: item.slug, label: item.title })),

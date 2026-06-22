@@ -2,7 +2,7 @@
 .env
 
 node_modules
-package-lock.json
+.playwright-cli/
 
 backend/api/.env
 backend/api/dist
@@ -12,6 +12,7 @@ backend/api/uploads
 frontend/.angular
 frontend/dist
 frontend/node_modules
+frontend/out-tsc
 
 docs/.DS_Store
 .vscode/

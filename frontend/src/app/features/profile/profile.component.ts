@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { AuthUser } from '../../core/auth/auth.types';
 
 @Component({
   standalone: true,
@@ -16,11 +17,11 @@ export class ProfileComponent {
   readonly auth = inject(AuthService);
   readonly i18n = inject(I18nService);
 
-  isAdmin(user: any): boolean {
+  isAdmin(user: AuthUser | null | undefined): boolean {
     return String(user?.role ?? '').toUpperCase() === 'ADMIN';
   }
 
-  roleLabel(user: any): string {
+  roleLabel(user: AuthUser | null | undefined): string {
     return this.isAdmin(user) ? this.i18n.t('role.admin') : this.i18n.t('role.member');
   }
 }

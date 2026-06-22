@@ -93,17 +93,17 @@ export class HomeComponent {
 
   onRailClick(action: DeckRailAction): void {
     if (action === 'home') {
-      this.router.navigate(['/']);
+      void this.router.navigate(['/']);
       return;
     }
 
     if (action === 'picks') {
-      this.router.navigate(['/curated']);
+      void this.router.navigate(['/curated']);
       return;
     }
 
     if (action === 'profile') {
-      this.router.navigate(['/my-space']);
+      void this.router.navigate(['/my-space']);
     }
   }
 
@@ -113,17 +113,17 @@ export class HomeComponent {
 
   onTabChange(tab: 'home' | 'picks' | 'my-space'): void {
     if (tab === 'home') {
-      this.router.navigate(['/']);
+      void this.router.navigate(['/']);
       return;
     }
 
     if (tab === 'picks') {
-      this.router.navigate(['/curated']);
+      void this.router.navigate(['/curated']);
       return;
     }
 
     if (tab === 'my-space') {
-      this.router.navigate(['/my-space']);
+      void this.router.navigate(['/my-space']);
     }
   }
 
@@ -185,12 +185,12 @@ export class HomeComponent {
     }
 
     if (item.ctaRoute) {
-      this.router.navigateByUrl(item.ctaRoute);
+      void this.router.navigateByUrl(item.ctaRoute);
       return;
     }
 
     if (item.routeType) {
-      this.router.navigate(['/entities', item.routeType]);
+      void this.router.navigate(['/entities', item.routeType]);
     }
   }
 }

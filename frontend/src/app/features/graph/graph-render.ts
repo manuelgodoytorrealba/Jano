@@ -25,14 +25,22 @@ export function graphEdgeMarkerId(type: string): string {
   return `graph-arrow-${type.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 }
 
-export function graphNodeSize(node: GraphNode, centerId: string | null, selectedNodeId: string | null): number {
+export function graphNodeSize(
+  node: GraphNode,
+  centerId: string | null,
+  selectedNodeId: string | null,
+): number {
   const base = node.id === centerId ? 28 : isWorkspaceTypeHub(node.id) ? 26 : 22;
   const degreeBoost = Math.min(node.degree ?? 0, 5) * 1.25;
   const selectedBoost = selectedNodeId === node.id ? 6 : 0;
   return base + degreeBoost + selectedBoost;
 }
 
-export function graphNodeHaloSize(node: GraphNode, centerId: string | null, selectedNodeId: string | null): number {
+export function graphNodeHaloSize(
+  node: GraphNode,
+  centerId: string | null,
+  selectedNodeId: string | null,
+): number {
   return graphNodeSize(node, centerId, selectedNodeId) + 12;
 }
 
@@ -74,7 +82,7 @@ export function buildRenderedGraphNodes(options: {
   selectedNeighbors: Set<string>;
 }): GraphRenderedNode[] {
   const centerPoint = options.centerId
-    ? options.positions[options.centerId] ?? { x: 0, y: 0 }
+    ? (options.positions[options.centerId] ?? { x: 0, y: 0 })
     : { x: 0, y: 0 };
 
   return options.nodes.map((node) => {
@@ -89,7 +97,14 @@ export function buildRenderedGraphNodes(options: {
       point,
       transform: `translate(${point.x} ${point.y})`,
       selected: options.selectedNodeId === node.id,
-      depthTier: resolveNodeDepthTier(node, point, centerPoint, options.centerId, options.selectedNodeId, options.selectedNeighbors),
+      depthTier: resolveNodeDepthTier(
+        node,
+        point,
+        centerPoint,
+        options.centerId,
+        options.selectedNodeId,
+        options.selectedNeighbors,
+      ),
       muted:
         !!options.selectedNodeId &&
         options.selectedNodeId !== node.id &&
@@ -106,7 +121,10 @@ export function buildRenderedGraphNodes(options: {
   });
 }
 
-export function buildGraphTypeMeta(types: string[], kind: 'entity' | 'relation'): Record<string, GraphTypeMeta> {
+export function buildGraphTypeMeta(
+  types: string[],
+  kind: 'entity' | 'relation',
+): Record<string, GraphTypeMeta> {
   return types.reduce<Record<string, GraphTypeMeta>>((acc, type) => {
     const config = kind === 'entity' ? getEntityTypeConfig(type) : getRelationTypeConfig(type);
     acc[type] = { label: config.label, color: config.color };
@@ -130,7 +148,10 @@ export function buildGraphAmbientFields(options: {
   selectedNodeId: string | null;
   selectedNeighbors: Set<string>;
 }): GraphAmbientField[] {
-  const groups = new Map<string, { nodes: GraphNode[]; totalWeight: number; weightX: number; weightY: number }>();
+  const groups = new Map<
+    string,
+    { nodes: GraphNode[]; totalWeight: number; weightX: number; weightY: number }
+  >();
 
   for (const node of options.nodes) {
     if (node.id === options.centerId) {
@@ -160,10 +181,11 @@ export function buildGraphAmbientFields(options: {
       const config = getEntityTypeConfig(type);
       const x = group.weightX / Math.max(group.totalWeight, 1);
       const y = group.weightY / Math.max(group.totalWeight, 1);
-      const spread = group.nodes.reduce((sum, node) => {
-        const point = options.positions[node.id] ?? { x: 0, y: 0 };
-        return sum + Math.hypot(point.x - x, point.y - y);
-      }, 0) / Math.max(group.nodes.length, 1);
+      const spread =
+        group.nodes.reduce((sum, node) => {
+          const point = options.positions[node.id] ?? { x: 0, y: 0 };
+          return sum + Math.hypot(point.x - x, point.y - y);
+        }, 0) / Math.max(group.nodes.length, 1);
 
       const includesSelected = group.nodes.some((node) => node.id === options.selectedNodeId);
       const includesNeighbor = group.nodes.some((node) => options.selectedNeighbors.has(node.id));
@@ -182,11 +204,11 @@ export function buildGraphAmbientFields(options: {
         opacity: includesSelected ? 0.16 : includesNeighbor ? 0.11 : 0.08,
         emphasis,
         priority:
-          group.nodes.length * 80
-          + group.totalWeight * 40
-          + (includesSelected ? 400 : 0)
-          + (includesNeighbor ? 180 : 0),
-      } as GraphAmbientField & { priority: number };
+          group.nodes.length * 80 +
+          group.totalWeight * 40 +
+          (includesSelected ? 400 : 0) +
+          (includesNeighbor ? 180 : 0),
+      };
     })
     .filter((field): field is GraphAmbientField & { priority: number } => !!field)
     .sort((left, right) => right.priority - left.priority)
@@ -247,10 +269,10 @@ function resolveEdgeDepthTier(
   selectedNodeId: string | null,
 ): 'focus' | 'mid' | 'far' {
   if (
-    edge.source === selectedNodeId
-    || edge.target === selectedNodeId
-    || edge.source === centerId
-    || edge.target === centerId
+    edge.source === selectedNodeId ||
+    edge.target === selectedNodeId ||
+    edge.source === centerId ||
+    edge.target === centerId
   ) {
     return selectedNodeId && (edge.source === selectedNodeId || edge.target === selectedNodeId)
       ? 'focus'

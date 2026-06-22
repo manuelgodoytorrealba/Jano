@@ -191,7 +191,6 @@
   opacity: 0.12;
 }
 
-
 .graph-tooltip {
   position: absolute;
   z-index: 4;
@@ -225,7 +224,8 @@
 }
 
 @keyframes graphAmbientPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(0.985);
   }
   50% {
@@ -234,7 +234,8 @@
 }
 
 @keyframes graphNodeBreath {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

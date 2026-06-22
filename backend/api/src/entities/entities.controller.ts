@@ -55,7 +55,7 @@ const ALLOWED_UPLOAD_MIME_TYPES = new Set([
 
 @Controller('entities')
 export class EntitiesController {
-  constructor(private service: EntitiesService) { }
+  constructor(private service: EntitiesService) {}
 
   @Get()
   list(@Query() query: ListEntitiesQuery) {
@@ -139,10 +139,7 @@ export class EntitiesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post(':id/aliases')
-  createAlias(
-    @Param('id') id: string,
-    @Body() dto: CreateEntityAliasDto,
-  ) {
+  createAlias(@Param('id') id: string, @Body() dto: CreateEntityAliasDto) {
     return this.service.adminCreateAlias(id, dto);
   }
 
@@ -160,31 +157,21 @@ export class EntitiesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Delete(':id/aliases/:aliasId')
-  deleteAlias(
-    @Param('id') id: string,
-    @Param('aliasId') aliasId: string,
-  ) {
+  deleteAlias(@Param('id') id: string, @Param('aliasId') aliasId: string) {
     return this.service.adminDeleteAlias(id, aliasId);
   }
-
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Patch(':id/details')
-  updateDetails(
-    @Param('id') id: string,
-    @Body() dto: UpdateEntityDetailsDto,
-  ) {
+  updateDetails(@Param('id') id: string, @Body() dto: UpdateEntityDetailsDto) {
     return this.service.adminUpdateDetails(id, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post(':id/media')
-  createMedia(
-    @Param('id') id: string,
-    @Body() dto: CreateEntityMediaDto,
-  ) {
+  createMedia(@Param('id') id: string, @Body() dto: CreateEntityMediaDto) {
     return this.service.adminCreateMedia(id, dto);
   }
 
@@ -250,40 +237,28 @@ export class EntitiesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post(':id/media/:linkId/ingest')
-  ingestMedia(
-    @Param('id') id: string,
-    @Param('linkId') linkId: string,
-  ) {
+  ingestMedia(@Param('id') id: string, @Param('linkId') linkId: string) {
     return this.service.adminIngestMedia(id, linkId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post(':id/media/:linkId/promote')
-  promoteIngestedMedia(
-    @Param('id') id: string,
-    @Param('linkId') linkId: string,
-  ) {
+  promoteIngestedMedia(@Param('id') id: string, @Param('linkId') linkId: string) {
     return this.service.adminPromoteIngestedMedia(id, linkId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post(':id/media/:linkId/restore-external')
-  restoreExternalMedia(
-    @Param('id') id: string,
-    @Param('linkId') linkId: string,
-  ) {
+  restoreExternalMedia(@Param('id') id: string, @Param('linkId') linkId: string) {
     return this.service.adminRestoreExternalMedia(id, linkId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Delete(':id/media/:linkId')
-  deleteMedia(
-    @Param('id') id: string,
-    @Param('linkId') linkId: string,
-  ) {
+  deleteMedia(@Param('id') id: string, @Param('linkId') linkId: string) {
     return this.service.adminDeleteMedia(id, linkId);
   }
 
@@ -299,7 +274,16 @@ export class EntitiesController {
   @Post(':id/relations')
   createRelation(
     @Param('id') id: string,
-    @Body() dto: { toId: string; type?: string; relationTypeId?: string; justification?: string; justificationEs?: string; justificationEn?: string; weight?: number },
+    @Body()
+    dto: {
+      toId: string;
+      type?: string;
+      relationTypeId?: string;
+      justification?: string;
+      justificationEs?: string;
+      justificationEn?: string;
+      weight?: number;
+    },
   ) {
     return this.service.adminCreateRelation(id, dto);
   }
@@ -310,7 +294,15 @@ export class EntitiesController {
   updateRelation(
     @Param('id') id: string,
     @Param('relationId') relationId: string,
-    @Body() dto: { type?: string; relationTypeId?: string; justification?: string; justificationEs?: string; justificationEn?: string; weight?: number },
+    @Body()
+    dto: {
+      type?: string;
+      relationTypeId?: string;
+      justification?: string;
+      justificationEs?: string;
+      justificationEn?: string;
+      weight?: number;
+    },
   ) {
     return this.service.adminUpdateRelation(id, relationId, dto);
   }
@@ -318,10 +310,7 @@ export class EntitiesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Delete(':id/relations/:relationId')
-  deleteRelation(
-    @Param('id') id: string,
-    @Param('relationId') relationId: string,
-  ) {
+  deleteRelation(@Param('id') id: string, @Param('relationId') relationId: string) {
     return this.service.adminDeleteRelation(id, relationId);
   }
 
@@ -345,20 +334,14 @@ export class EntitiesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Delete(':id/tags/:tagId')
-  removeTag(
-    @Param('id') id: string,
-    @Param('tagId') tagId: string,
-  ) {
+  removeTag(@Param('id') id: string, @Param('tagId') tagId: string) {
     return this.service.adminRemoveTag(id, tagId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post(':id/source-refs')
-  createSourceRef(
-    @Param('id') id: string,
-    @Body() dto: CreateSourceRefDto,
-  ) {
+  createSourceRef(@Param('id') id: string, @Body() dto: CreateSourceRefDto) {
     return this.service.adminCreateSourceRef(id, dto);
   }
 
@@ -376,20 +359,14 @@ export class EntitiesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Delete(':id/source-refs/:refId')
-  deleteSourceRef(
-    @Param('id') id: string,
-    @Param('refId') refId: string,
-  ) {
+  deleteSourceRef(@Param('id') id: string, @Param('refId') refId: string) {
     return this.service.adminDeleteSourceRef(id, refId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post(':id/contributors')
-  createContributor(
-    @Param('id') id: string,
-    @Body() dto: CreateContributorDto,
-  ) {
+  createContributor(@Param('id') id: string, @Body() dto: CreateContributorDto) {
     return this.service.adminCreateContributor(id, dto);
   }
 
@@ -407,10 +384,7 @@ export class EntitiesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Delete(':id/contributors/:contributorId')
-  deleteContributor(
-    @Param('id') id: string,
-    @Param('contributorId') contributorId: string,
-  ) {
+  deleteContributor(@Param('id') id: string, @Param('contributorId') contributorId: string) {
     return this.service.adminDeleteContributor(id, contributorId);
   }
 

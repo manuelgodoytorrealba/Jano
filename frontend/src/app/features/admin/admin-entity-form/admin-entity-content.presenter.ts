@@ -39,15 +39,18 @@ export function translationStatus(
   locale: AdminLocale,
 ): TranslationCompleteness {
   const form = translations[locale];
-  const fields = [form.title, form.shortDescription, form.essay, form.notes, form.excerpt]
-    .map((value) => (value ?? '').trim());
+  const fields = [form.title, form.shortDescription, form.essay, form.notes, form.excerpt].map(
+    (value) => (value ?? '').trim(),
+  );
   const filled = fields.filter(Boolean).length;
 
   if (!filled) {
     return 'missing';
   }
 
-  return form.title.trim() && (form.shortDescription.trim() || form.excerpt.trim()) && form.essay.trim()
+  return form.title.trim() &&
+    (form.shortDescription.trim() || form.excerpt.trim()) &&
+    form.essay.trim()
     ? 'complete'
     : 'partial';
 }
@@ -80,7 +83,8 @@ export function buildEntityPayload(
 ): AdminEntityPayload {
   const spanish = translations.es;
   const title = spanish.title.trim() || (form.title ?? '').trim();
-  const summary = spanish.shortDescription.trim() || spanish.excerpt.trim() || (form.summary ?? '').trim();
+  const summary =
+    spanish.shortDescription.trim() || spanish.excerpt.trim() || (form.summary ?? '').trim();
   const content = spanish.essay.trim() || (form.content ?? '').trim();
 
   return {
@@ -92,17 +96,14 @@ export function buildEntityPayload(
     contentLevel: form.contentLevel || undefined,
     status: form.status || undefined,
     startYear:
-      form.startYear !== null && form.startYear !== ''
-        ? Number(form.startYear)
-        : undefined,
-    endYear:
-      form.endYear !== null && form.endYear !== ''
-        ? Number(form.endYear)
-        : undefined,
+      form.startYear !== null && form.startYear !== '' ? Number(form.startYear) : undefined,
+    endYear: form.endYear !== null && form.endYear !== '' ? Number(form.endYear) : undefined,
   };
 }
 
-export function applyTranslations(entity: AdminEntityResponse): Record<AdminLocale, AdminEntityPreviewTranslationForm> {
+export function applyTranslations(
+  entity: AdminEntityResponse,
+): Record<AdminLocale, AdminEntityPreviewTranslationForm> {
   const next: Record<AdminLocale, AdminEntityPreviewTranslationForm> = {
     es: {
       title: entity.title ?? '',
@@ -152,10 +153,22 @@ export function extractLocalizedDetailsForm(
     };
   }
 
-  const artworkTranslation = entity?.artwork?.translations?.find((item: { locale?: string | null }) => item?.locale === locale) ?? null;
-  const artistTranslation = entity?.artist?.translations?.find((item: { locale?: string | null }) => item?.locale === locale) ?? null;
-  const conceptTranslation = entity?.concept?.translations?.find((item: { locale?: string | null }) => item?.locale === locale) ?? null;
-  const periodTranslation = entity?.period?.translations?.find((item: { locale?: string | null }) => item?.locale === locale) ?? null;
+  const artworkTranslation =
+    entity?.artwork?.translations?.find(
+      (item: { locale?: string | null }) => item?.locale === locale,
+    ) ?? null;
+  const artistTranslation =
+    entity?.artist?.translations?.find(
+      (item: { locale?: string | null }) => item?.locale === locale,
+    ) ?? null;
+  const conceptTranslation =
+    entity?.concept?.translations?.find(
+      (item: { locale?: string | null }) => item?.locale === locale,
+    ) ?? null;
+  const periodTranslation =
+    entity?.period?.translations?.find(
+      (item: { locale?: string | null }) => item?.locale === locale,
+    ) ?? null;
 
   return {
     authorNation: artworkTranslation?.authorNation ?? '',
@@ -198,7 +211,9 @@ export function buildLocalizedDetailsPayload(
     definition: String(form.definition ?? '').trim() || undefined,
   };
 
-  return Object.values(payload).some((value) => value !== undefined && value !== null && String(value).trim() !== '')
+  return Object.values(payload).some(
+    (value) => value !== undefined && value !== null && String(value).trim() !== '',
+  )
     ? payload
     : undefined;
 }
@@ -211,14 +226,15 @@ export function buildTranslationPayload(
   toNullableNumber: (value: unknown) => number | null,
 ): AdminEntityTranslationPayload {
   const form = translations[locale];
-  const details = locale === 'es'
-    ? buildLocalizedDetailsPayload(
-      detailsForm as AdminEntityPreviewLocalizedDetailsForm,
-      toNullableNumber,
-      detailsForm.birthYear,
-      detailsForm.deathYear,
-    )
-    : buildLocalizedDetailsPayload(localizedDetailForms[locale], toNullableNumber);
+  const details =
+    locale === 'es'
+      ? buildLocalizedDetailsPayload(
+          detailsForm as AdminEntityPreviewLocalizedDetailsForm,
+          toNullableNumber,
+          detailsForm.birthYear,
+          detailsForm.deathYear,
+        )
+      : buildLocalizedDetailsPayload(localizedDetailForms[locale], toNullableNumber);
 
   return {
     title: form.title.trim(),
@@ -246,7 +262,10 @@ export function summaryFieldHint(type: AdminEntityPayload['type']): string {
     : 'Resumen breve de la entidad.';
 }
 
-export function typedDetailsSummary(type: AdminEntityPayload['type'], detailsForm: AdminEntityDetailsPayload): string {
+export function typedDetailsSummary(
+  type: AdminEntityPayload['type'],
+  detailsForm: AdminEntityDetailsPayload,
+): string {
   switch (type) {
     case 'ARTWORK':
       return compactJoin([
@@ -256,11 +275,7 @@ export function typedDetailsSummary(type: AdminEntityPayload['type'], detailsFor
         detailsForm.location,
       ]);
     case 'ARTIST':
-      return compactJoin([
-        detailsForm.country,
-        detailsForm.city,
-        detailsForm.disciplines,
-      ]);
+      return compactJoin([detailsForm.country, detailsForm.city, detailsForm.disciplines]);
     case 'CONCEPT':
     case 'PERIOD':
       return String(detailsForm.definition ?? '').trim();

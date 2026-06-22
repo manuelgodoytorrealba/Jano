@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import {
@@ -94,8 +103,14 @@ export class MediaCardEditorComponent implements OnChanges {
     const crop = this.activeSlotCrop;
     return {
       ...this.previewMedia,
-      focalX: this.toNullableNumber(crop?.x) ?? this.toNullableNumber(this.draft.assetFocalX) ?? this.toNullableNumber(this.draft.focalX),
-      focalY: this.toNullableNumber(crop?.y) ?? this.toNullableNumber(this.draft.assetFocalY) ?? this.toNullableNumber(this.draft.focalY),
+      focalX:
+        this.toNullableNumber(crop?.x) ??
+        this.toNullableNumber(this.draft.assetFocalX) ??
+        this.toNullableNumber(this.draft.focalX),
+      focalY:
+        this.toNullableNumber(crop?.y) ??
+        this.toNullableNumber(this.draft.assetFocalY) ??
+        this.toNullableNumber(this.draft.focalY),
       cropX: this.toNullableNumber(crop?.x),
       cropY: this.toNullableNumber(crop?.y),
       cropZoom: this.toNullableNumber(crop?.zoom),
@@ -106,8 +121,14 @@ export class MediaCardEditorComponent implements OnChanges {
     const crop = this.draft.slotCrops[slot];
     return {
       ...this.previewMedia,
-      focalX: this.toNullableNumber(crop?.x) ?? this.toNullableNumber(this.draft.assetFocalX) ?? this.toNullableNumber(this.draft.focalX),
-      focalY: this.toNullableNumber(crop?.y) ?? this.toNullableNumber(this.draft.assetFocalY) ?? this.toNullableNumber(this.draft.focalY),
+      focalX:
+        this.toNullableNumber(crop?.x) ??
+        this.toNullableNumber(this.draft.assetFocalX) ??
+        this.toNullableNumber(this.draft.focalX),
+      focalY:
+        this.toNullableNumber(crop?.y) ??
+        this.toNullableNumber(this.draft.assetFocalY) ??
+        this.toNullableNumber(this.draft.focalY),
       cropX: this.toNullableNumber(crop?.x),
       cropY: this.toNullableNumber(crop?.y),
       cropZoom: this.toNullableNumber(crop?.zoom),
@@ -161,7 +182,9 @@ export class MediaCardEditorComponent implements OnChanges {
   }
 
   get slotViewportLabel(): string {
-    return this.editorSlotOptions.find((slot) => slot.key === this.activeEditorSlot)?.label ?? 'Slot';
+    return (
+      this.editorSlotOptions.find((slot) => slot.key === this.activeEditorSlot)?.label ?? 'Slot'
+    );
   }
 
   get saveStateLabel(): string {
@@ -177,7 +200,10 @@ export class MediaCardEditorComponent implements OnChanges {
   }
 
   get warningCount(): number {
-    return Object.values(this.slotWarnings).reduce((total, items) => total + (items?.length ?? 0), 0);
+    return Object.values(this.slotWarnings).reduce(
+      (total, items) => total + (items?.length ?? 0),
+      0,
+    );
   }
 
   get currentRoleLabel(): string {
@@ -464,7 +490,11 @@ export class MediaCardEditorComponent implements OnChanges {
     const numeric = this.toNullableNumber(value);
     if (axis === 'x') {
       this.draft.assetFocalX = numeric;
-      if (this.draft.focalX === null || this.draft.focalX === undefined || this.draft.focalX === '') {
+      if (
+        this.draft.focalX === null ||
+        this.draft.focalX === undefined ||
+        this.draft.focalX === ''
+      ) {
         this.draft.focalX = numeric;
       }
       return;
@@ -492,7 +522,8 @@ export class MediaCardEditorComponent implements OnChanges {
   }
 
   nudgeSlotCrop(axis: 'x' | 'y', delta: number) {
-    const current = this.toNullableNumber(this.draft.slotCrops[this.activeEditorSlot]?.[axis]) ?? 50;
+    const current =
+      this.toNullableNumber(this.draft.slotCrops[this.activeEditorSlot]?.[axis]) ?? 50;
     this.updateSlotCrop(axis, this.clamp(current + delta, 0, 100));
   }
 
@@ -552,7 +583,11 @@ export class MediaCardEditorComponent implements OnChanges {
   @HostListener('window:pointercancel')
   @HostListener('window:blur')
   stopDrag() {
-    if (this.dragSurface && this.dragPointerId !== null && this.dragSurface.hasPointerCapture?.(this.dragPointerId)) {
+    if (
+      this.dragSurface &&
+      this.dragPointerId !== null &&
+      this.dragSurface.hasPointerCapture?.(this.dragPointerId)
+    ) {
       this.dragSurface.releasePointerCapture(this.dragPointerId);
     }
     this.dragTarget = null;
@@ -610,7 +645,11 @@ export class MediaCardEditorComponent implements OnChanges {
     return (this.slotWarnings[slot]?.length ?? 0) > 0;
   }
 
-  private relativePointFromElement(target: HTMLElement, clientX: number, clientY: number): { x: number; y: number } | null {
+  private relativePointFromElement(
+    target: HTMLElement,
+    clientX: number,
+    clientY: number,
+  ): { x: number; y: number } | null {
     const rect = target.getBoundingClientRect();
     if (!rect.width || !rect.height) {
       return null;

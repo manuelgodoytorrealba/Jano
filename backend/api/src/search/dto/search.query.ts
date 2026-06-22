@@ -1,7 +1,16 @@
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-const TYPES = ['ARTWORK', 'ARTIST', 'ARTICLE', 'PERIOD', 'MOVEMENT', 'CONCEPT', 'PLACE', 'TEXT'] as const;
+const TYPES = [
+  'ARTWORK',
+  'ARTIST',
+  'ARTICLE',
+  'PERIOD',
+  'MOVEMENT',
+  'CONCEPT',
+  'PLACE',
+  'TEXT',
+] as const;
 export type SearchEntityType = (typeof TYPES)[number];
 
 export class SearchQuery {
@@ -14,7 +23,7 @@ export class SearchQuery {
   locale?: string;
 
   @IsOptional()
-  @Transform(({ value }) => Array.isArray(value) ? value : value ? [value] : undefined)
+  @Transform(({ value }) => (Array.isArray(value) ? value : value ? [value] : undefined))
   @IsIn(TYPES, { each: true })
   type?: SearchEntityType[];
 
@@ -23,7 +32,7 @@ export class SearchQuery {
   @IsInt()
   @Min(1)
   @Max(60)
-  limit: number = 20;
+  limit?: number = 20;
 
   @IsOptional()
   @Transform(({ value }) => value === true || value === 'true')

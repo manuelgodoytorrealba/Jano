@@ -58,12 +58,15 @@ export class AdminHomeDecksComponent {
         map((decks) => {
           this.loading = false;
           const visibleDecks = decks.filter((deck) => !removedDeckIds.has(deck.id));
-          const homeActiveDecks = visibleDecks.filter((deck) => deck.surface === 'HOME' && deck.isActive);
+          const homeActiveDecks = visibleDecks.filter(
+            (deck) => deck.surface === 'HOME' && deck.isActive,
+          );
           const recommendedActiveDecks = visibleDecks.filter(
             (deck) => deck.surface === 'RECOMMENDED' && deck.isActive,
           );
           const starterStates = this.starterDecks.map((starter) => {
-            const deck = visibleDecks.find((candidate) => this.matchesStarter(candidate, starter)) ?? null;
+            const deck =
+              visibleDecks.find((candidate) => this.matchesStarter(candidate, starter)) ?? null;
             return {
               starter,
               deck,
@@ -186,7 +189,9 @@ export class AdminHomeDecksComponent {
     starterStates: Array<{ starter: HomeDeckStarter; imported: boolean }>,
     activeDeckCountForSurface: number,
   ): void {
-    const missing = starterStates.filter((state) => state.starter.surface === surface && !state.imported);
+    const missing = starterStates.filter(
+      (state) => state.starter.surface === surface && !state.imported,
+    );
     if (!missing.length) {
       this.feedback = 'No hay decks base pendientes para importar.';
       return;
@@ -230,7 +235,11 @@ export class AdminHomeDecksComponent {
   }
 
   toggleActive(deck: AdminHomeDeck): void {
-    this.updateDeck(deck.id, { isActive: !deck.isActive }, deck.isActive ? 'Deck desactivado.' : 'Deck activado.');
+    this.updateDeck(
+      deck.id,
+      { isActive: !deck.isActive },
+      deck.isActive ? 'Deck desactivado.' : 'Deck activado.',
+    );
   }
 
   move(deck: AdminHomeDeck, direction: -1 | 1, decks: AdminHomeDeck[]): void {
@@ -361,7 +370,8 @@ export class AdminHomeDecksComponent {
   }
 
   deckEntityImageUrl(entity: any): string | null {
-    const media = resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
+    const media =
+      resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
     return mediaDisplayUrl(media);
   }
 
@@ -383,8 +393,12 @@ export class AdminHomeDecksComponent {
       return 'Curated abre la selección curada que armes dentro del deck.';
     }
 
-    const option = this.ctaRouteOptions.find((candidate) => candidate.value === (this.newDeck.ctaRoute ?? ''));
-    return option?.detail ?? 'El deck puede abrir una selección curada o una ruta principal existente.';
+    const option = this.ctaRouteOptions.find(
+      (candidate) => candidate.value === (this.newDeck.ctaRoute ?? ''),
+    );
+    return (
+      option?.detail ?? 'El deck puede abrir una selección curada o una ruta principal existente.'
+    );
   }
 
   newDeckSurfaceSummary(): string {
@@ -427,7 +441,6 @@ export class AdminHomeDecksComponent {
   private refresh(): void {
     this.refresh$.next();
   }
-
 
   private starterTranslations(starter: HomeDeckStarter) {
     return [

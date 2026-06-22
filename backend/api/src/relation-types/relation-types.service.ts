@@ -8,10 +8,7 @@ export class RelationTypesService {
   list(options: { includeInactive?: boolean } = {}) {
     return this.prisma.relationType.findMany({
       where: options.includeInactive ? undefined : { isActive: true },
-      orderBy: [
-        { sortOrder: 'asc' },
-        { label: 'asc' },
-      ],
+      orderBy: [{ sortOrder: 'asc' }, { label: 'asc' }],
     });
   }
 }

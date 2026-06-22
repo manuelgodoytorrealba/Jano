@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+.angular
+out-tsc
+.playwright-cli
+backend/api/uploads
+package-lock.json

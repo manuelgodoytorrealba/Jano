@@ -44,12 +44,18 @@ async function main() {
   const client = await pool.connect();
 
   try {
-    const info = await client.query('select current_database() as database, current_user as username, inet_server_addr()::text as host, inet_server_port()::text as port');
+    const info = await client.query(
+      'select current_database() as database, current_user as username, inet_server_addr()::text as host, inet_server_port()::text as port',
+    );
     const target = info.rows[0];
 
-    console.log('WARNING: this will delete all data in the public schema except _prisma_migrations.');
+    console.log(
+      'WARNING: this will delete all data in the public schema except _prisma_migrations.',
+    );
     console.log(`Target: ${maskDatabaseUrl(databaseUrl)}`);
-    console.log(`Connected to: ${target.database} on ${target.host}:${target.port} as ${target.username}`);
+    console.log(
+      `Connected to: ${target.database} on ${target.host}:${target.port} as ${target.username}`,
+    );
 
     await client.query('BEGIN');
     await client.query(`
@@ -77,7 +83,14 @@ async function main() {
         INSERT INTO "User" ("id", "email", "passwordHash", "name", "role", "isBeta", "updatedAt")
         VALUES ($1, $2, $3, $4, $5, $6, NOW())
       `,
-      [randomUUID(), adminEmail.trim().toLowerCase(), passwordHash, adminName, adminRole, adminIsBeta === 'true'],
+      [
+        randomUUID(),
+        adminEmail.trim().toLowerCase(),
+        passwordHash,
+        adminName,
+        adminRole,
+        adminIsBeta === 'true',
+      ],
     );
 
     await client.query('COMMIT');

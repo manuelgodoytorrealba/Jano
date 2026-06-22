@@ -34,12 +34,12 @@ describe('createAdminGlobalGraphLayout', () => {
       nodes: [
         { id: 'workspace-center', label: 'JANO', type: 'CONCEPT', slug: 'jano' },
         ...types.flatMap((type) => [
-          { id: `workspace-type-`, label: type, type, slug: type },
+          { id: `workspace-type-${type}`, label: type, type, slug: type },
           ...Array.from({ length: 4 }, (_, index) => ({
-            id: `-`,
-            label: ` `,
+            id: `${type}-${index}`,
+            label: `${type} ${index}`,
             type,
-            slug: `-`,
+            slug: `${type}-${index}`,
           })),
         ]),
       ],

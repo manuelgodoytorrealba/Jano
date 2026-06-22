@@ -1,11 +1,20 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityStatus, HomeDeckSurface, MediaOriginType, Prisma } from '@prisma/client';
 import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
 import { readFile } from 'fs/promises';
 import { detectImageDimensionsFromBuffer } from '../entities/image-metadata';
 import { attachResolvedMedia } from '../entities/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
-import { buildPublicUploadUrl, normalizeStoredUploadUrl, resolveMediaPublicBaseUrl } from '../common/media-url.util';
+import {
+  buildPublicUploadUrl,
+  normalizeStoredUploadUrl,
+  resolveMediaPublicBaseUrl,
+} from '../common/media-url.util';
 import { AddHomeDeckEntityDto } from './dto/add-home-deck-entity.dto';
 import { CreateHomeDeckDto } from './dto/create-home-deck.dto';
 import { ReorderHomeDeckEntityDto } from './dto/reorder-home-deck-entity.dto';
@@ -68,14 +77,16 @@ const VIRTUAL_HOME_DECKS: VirtualHomeDeckDefinition[] = [
         locale: 'es',
         title: 'Lugares',
         subtitle: 'Contexto institucional',
-        description: 'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
+        description:
+          'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
         ctaLabel: 'Explorar lugares',
       },
       {
         locale: 'en',
         title: 'Places',
         subtitle: 'Institutional context',
-        description: 'Museums, collections and spaces that anchor works, movements and public memory.',
+        description:
+          'Museums, collections and spaces that anchor works, movements and public memory.',
         ctaLabel: 'Explore places',
       },
     ],
@@ -84,12 +95,16 @@ const VIRTUAL_HOME_DECKS: VirtualHomeDeckDefinition[] = [
 
 @Injectable()
 export class HomeDecksService {
-  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(process.env.MEDIA_PUBLIC_BASE_URL);
+  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(
+    process.env.MEDIA_PUBLIC_BASE_URL,
+  );
 
   constructor(private prisma: PrismaService) {}
 
   async listPublic(surface: HomeDeckSurface = HomeDeckSurface.HOME, locale?: string) {
-    const safeSurface = Object.values(HomeDeckSurface).includes(surface) ? surface : HomeDeckSurface.HOME;
+    const safeSurface = Object.values(HomeDeckSurface).includes(surface)
+      ? surface
+      : HomeDeckSurface.HOME;
 
     const decks = await this.prisma.homeDeck.findMany({
       where: { isActive: true, surface: safeSurface },
@@ -150,10 +165,7 @@ export class HomeDecksService {
     const existing = await this.prisma.homeDeck.findFirst({
       where: {
         surface: HomeDeckSurface.HOME,
-        OR: [
-          { slug: definition.slug },
-          { ctaRoute: definition.ctaRoute },
-        ],
+        OR: [{ slug: definition.slug }, { ctaRoute: definition.ctaRoute }],
       },
       select: { id: true },
     });
@@ -251,7 +263,7 @@ export class HomeDecksService {
       throw new ConflictException('Entity already exists in home deck');
     }
 
-    const sortOrder = dto.sortOrder ?? await this.nextItemSortOrder(deckId);
+    const sortOrder = dto.sortOrder ?? (await this.nextItemSortOrder(deckId));
 
     await this.prisma.homeDeckItem.create({
       data: {
@@ -298,7 +310,11 @@ export class HomeDecksService {
     return this.adminGetById(deckId);
   }
 
-  async uploadImage(deckId: string, file: UploadedImageFile | undefined, dto: UploadHomeDeckImageDto) {
+  async uploadImage(
+    deckId: string,
+    file: UploadedImageFile | undefined,
+    dto: UploadHomeDeckImageDto,
+  ) {
     await this.ensureDeck(deckId);
 
     if (!file) {
@@ -368,10 +384,7 @@ export class HomeDecksService {
             include: this.entityInclude(locale),
           },
         },
-        orderBy: [
-          { sortOrder: 'asc' as const },
-          { id: 'asc' as const },
-        ],
+        orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }],
       },
     };
   }
@@ -383,20 +396,23 @@ export class HomeDecksService {
       },
       mediaLinks: {
         include: { media: true },
-        orderBy: [
-          { sortOrder: 'asc' as const },
-          { id: 'asc' as const },
-        ],
+        orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }],
       },
     };
   }
 
-  private async appendVirtualHomeDecksIfMissing(decks: any[], surface: HomeDeckSurface, locale?: string) {
+  private async appendVirtualHomeDecksIfMissing(
+    decks: any[],
+    surface: HomeDeckSurface,
+    locale?: string,
+  ) {
     if (surface !== HomeDeckSurface.HOME) {
       return decks;
     }
 
-    const missingDefinitions = VIRTUAL_HOME_DECKS.filter((definition) => !this.hasDeckCoverage(decks, definition));
+    const missingDefinitions = VIRTUAL_HOME_DECKS.filter(
+      (definition) => !this.hasDeckCoverage(decks, definition),
+    );
     if (!missingDefinitions.length) {
       return decks;
     }
@@ -408,14 +424,22 @@ export class HomeDecksService {
       ),
     );
 
-    return [...decks, ...virtualDecks].sort((a, b) => (a.sortOrder - b.sortOrder) || a.slug.localeCompare(b.slug));
+    return [...decks, ...virtualDecks].sort(
+      (a, b) => a.sortOrder - b.sortOrder || a.slug.localeCompare(b.slug),
+    );
   }
 
   private hasDeckCoverage(decks: any[], definition: VirtualHomeDeckDefinition) {
-    return decks.some((deck) => deck.slug === definition.slug || deck.ctaRoute === definition.ctaRoute);
+    return decks.some(
+      (deck) => deck.slug === definition.slug || deck.ctaRoute === definition.ctaRoute,
+    );
   }
 
-  private async buildVirtualHomeDeck(definition: VirtualHomeDeckDefinition, sortOrder: number, locale?: string) {
+  private async buildVirtualHomeDeck(
+    definition: VirtualHomeDeckDefinition,
+    sortOrder: number,
+    locale?: string,
+  ) {
     const entities = await this.prisma.entity.findMany({
       where: {
         status: EntityStatus.PUBLISHED,
@@ -460,14 +484,14 @@ export class HomeDecksService {
     };
   }
 
-
   private resolveDeckTranslation(deck: any, requestedLocale?: string) {
     const locale = normalizeLocale(requestedLocale);
     const translations = deck.translations ?? [];
-    const resolved = translations.find((item: any) => item.locale === locale)
-      ?? translations.find((item: any) => item.locale === 'es')
-      ?? translations.find((item: any) => item.locale === 'en')
-      ?? null;
+    const resolved =
+      translations.find((item: any) => item.locale === locale) ??
+      translations.find((item: any) => item.locale === 'es') ??
+      translations.find((item: any) => item.locale === 'en') ??
+      null;
 
     return {
       title: resolved?.title?.trim() || deck.title,
@@ -514,7 +538,9 @@ export class HomeDecksService {
 
   private serializeItems(items: any[], locale?: string) {
     return (items ?? []).map((item) => {
-      const localizedEntity = item.entity ? resolveEntityTranslation(item.entity, locale) : item.entity;
+      const localizedEntity = item.entity
+        ? resolveEntityTranslation(item.entity, locale)
+        : item.entity;
 
       return {
         id: item.id,
@@ -549,7 +575,6 @@ export class HomeDecksService {
 
     return null;
   }
-
 
   private serializeDeckTranslations(deck: any) {
     return (deck.translations ?? [])
@@ -655,7 +680,10 @@ export class HomeDecksService {
       });
     }
 
-    if (deck.items?.length && !deck.items.some((item: any) => item.entity?.status === EntityStatus.PUBLISHED)) {
+    if (
+      deck.items?.length &&
+      !deck.items.some((item: any) => item.entity?.status === EntityStatus.PUBLISHED)
+    ) {
       warnings.push({
         code: 'no_published_entities',
         severity: 'warning',

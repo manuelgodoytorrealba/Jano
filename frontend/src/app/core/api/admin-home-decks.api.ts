@@ -60,7 +60,10 @@ export class AdminHomeDecksApi {
   }
 
   materializeVirtualDeck(slug: string) {
-    return this.http.post<AdminHomeDeck>(apiUrl(`/home-decks/materialize/${encodeURIComponent(slug)}`), {});
+    return this.http.post<AdminHomeDeck>(
+      apiUrl(`/home-decks/materialize/${encodeURIComponent(slug)}`),
+      {},
+    );
   }
 
   update(id: string, data: Partial<AdminHomeDeckPayload>) {

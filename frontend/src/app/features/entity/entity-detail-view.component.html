@@ -1,363 +1,582 @@
 @if (entity; as entity) {
-<div
-  class="entity-detail page-shell"
-  [class.entity-detail--workspace-focus]="workspaceFocused"
-  [class.entity-detail--workspace-transitioning]="workspaceTransitioning"
-  [class.entity-detail--image-focus]="workspaceMode === 'image'"
-  [class.entity-detail--graph-focus]="workspaceMode === 'graph'"
-  [class.entity-detail--info-focus]="workspaceMode === 'info'"
-  [class.entity-detail--artwork-arrival]="artworkArrivalActive(entity)"
->
-  <div class="entity-detail__layout">
-    @if (isArticle(entity)) {
-    <section class="entity-section entity-glass entity-section--wide entity-article-hero">
-      <div class="entity-article-hero__media">
-        <app-jano-media [entity]="entity" usage="hero" [alt]="visualAlt(entity)" [lazy]="false" priority="high" />
-        <div class="entity-article-hero__overlay"></div>
-      </div>
-
-      <div class="entity-article-hero__content">
-        <div class="entity-article-hero__meta">
-          <div class="entity-header__badges">
-            <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
-            @if (entity.contentLevel) {
-            <span class="ds-badge entity-badge">{{ contentLevelLabel(entity.contentLevel) }}</span>
-            }
-            <span class="ds-badge entity-badge">{{ i18n.t('entity.article') }}</span>
+  <div
+    class="entity-detail page-shell"
+    [class.entity-detail--workspace-focus]="workspaceFocused"
+    [class.entity-detail--workspace-transitioning]="workspaceTransitioning"
+    [class.entity-detail--image-focus]="workspaceMode === 'image'"
+    [class.entity-detail--graph-focus]="workspaceMode === 'graph'"
+    [class.entity-detail--info-focus]="workspaceMode === 'info'"
+    [class.entity-detail--artwork-arrival]="artworkArrivalActive(entity)"
+  >
+    <div class="entity-detail__layout">
+      @if (isArticle(entity)) {
+        <section class="entity-section entity-glass entity-section--wide entity-article-hero">
+          <div class="entity-article-hero__media">
+            <app-jano-media
+              [entity]="entity"
+              usage="hero"
+              [alt]="visualAlt(entity)"
+              [lazy]="false"
+              priority="high"
+            />
+            <div class="entity-article-hero__overlay"></div>
           </div>
 
-          <div class="entity-article-hero__byline">
-            @if (articleByline(entity); as author) {
-            <span>{{ i18n.t('entity.by') }} {{ author }}</span>
+          <div class="entity-article-hero__content">
+            <div class="entity-article-hero__meta">
+              <div class="entity-header__badges">
+                <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
+                @if (entity.contentLevel) {
+                  <span class="ds-badge entity-badge">{{
+                    contentLevelLabel(entity.contentLevel)
+                  }}</span>
+                }
+                <span class="ds-badge entity-badge">{{ i18n.t('entity.article') }}</span>
+              </div>
+
+              <div class="entity-article-hero__byline">
+                @if (articleByline(entity); as author) {
+                  <span>{{ i18n.t('entity.by') }} {{ author }}</span>
+                }
+                @if (articleDateLabel(entity); as dateLabel) {
+                  <span>{{ dateLabel }}</span>
+                }
+                @if (entity.startYear || entity.endYear) {
+                  <span
+                    >{{ entity.startYear ?? '' }}
+                    @if (entity.endYear) {
+                      –{{ entity.endYear }}
+                    }
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="entity-article-hero__title-block">
+              <h1 class="entity-article-hero__title">{{ entity.title }}</h1>
+              @if (entity.summary) {
+                <p class="entity-article-hero__summary">{{ entity.summary }}</p>
+              }
+            </div>
+          </div>
+        </section>
+      } @else {
+        <div
+          class="entity-explorer__workspace-deck"
+          [class.entity-explorer__workspace-deck--arrival-revealed]="revealArrivalControls(entity)"
+        >
+          <div
+            class="entity-explorer__workspace-bar"
+            role="toolbar"
+            [attr.aria-label]="i18n.t('workspace.aria')"
+          >
+            <span class="entity-explorer__workspace-label">{{ i18n.t('workspace.label') }}</span>
+            <div class="entity-explorer__workspace-switch">
+              @for (mode of workspaceModes; track mode.value) {
+                <button
+                  type="button"
+                  class="entity-explorer__workspace-btn"
+                  [class.is-active]="workspaceMode === mode.value"
+                  [attr.aria-pressed]="workspaceMode === mode.value"
+                  (click)="setWorkspaceMode(mode.value)"
+                >
+                  {{ i18n.t(mode.labelKey) }}
+                </button>
+              }
+            </div>
+            @if (!isMobileViewport) {
+              <button
+                type="button"
+                class="entity-explorer__workspace-btn entity-explorer__workspace-btn--focus"
+                [attr.aria-pressed]="workspaceFocused"
+                (click)="toggleWorkspaceFocus()"
+              >
+                {{ workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus') }}
+              </button>
             }
-            @if (articleDateLabel(entity); as dateLabel) {
-            <span>{{ dateLabel }}</span>
+          </div>
+        </div>
+        @if (showWorkspace(entity)) {
+          <section
+            class="entity-explorer entity-glass"
+            [class.entity-explorer--focused]="workspaceFocused"
+            [attr.data-workspace-mode]="workspaceMode"
+          >
+            @if (renderGraph) {
+              <app-graph
+                [slug]="entity.slug"
+                [workspaceMode]="graphWorkspaceMode"
+                [imageMedia]="detailMedia(entity)"
+                [imageUrl]="visualUrl(entity)"
+                [imageAlt]="visualAlt(entity)"
+                [entityTitle]="entity.title"
+                [entityType]="entity.type"
+                [workspaceFocused]="workspaceFocused"
+                [workspaceTransitioning]="workspaceTransitioning"
+                [isMobileViewport]="isMobileViewport"
+                [entityInfo]="mobileGraphEntityInfo(entity)"
+                [imageMeta]="{
+                  source: detailMedia(entity)?.source ?? null,
+                  photoBy: detailMedia(entity)?.photoBy ?? null,
+                  license: detailMedia(entity)?.license ?? null,
+                }"
+                (workspaceFocusToggle)="toggleWorkspaceFocus()"
+              />
+            } @else {
+              <ng-container *ngTemplateOutlet="explorerFallback"></ng-container>
+            }
+
+            <ng-template #explorerFallback>
+              <div class="entity-explorer__skeleton" aria-hidden="true">
+                <div
+                  class="entity-explorer__skeleton-pane"
+                  style="
+                    background: linear-gradient(
+                      180deg,
+                      rgba(244, 240, 235, 0.84),
+                      rgba(232, 227, 221, 0.7)
+                    );
+                    border: 1px solid rgba(255, 255, 255, 0.22);
+                  "
+                >
+                  <div
+                    style="
+                      width: 5.2rem;
+                      height: 2rem;
+                      border-radius: 999px;
+                      background: rgba(255, 255, 255, 0.5);
+                    "
+                  ></div>
+                  <div
+                    style="
+                      min-height: clamp(
+                        calc(var(--detail-hero-shell-min) - 0.9rem),
+                        calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.9rem),
+                        calc(var(--detail-hero-shell-max) - 0.9rem)
+                      );
+                      border-radius: 22px;
+                      background: rgba(255, 255, 255, 0.34);
+                    "
+                  ></div>
+                  <div
+                    style="
+                      justify-self: end;
+                      width: 7.4rem;
+                      height: 2rem;
+                      border-radius: 999px;
+                      background: rgba(255, 255, 255, 0.5);
+                    "
+                  ></div>
+                </div>
+                <div
+                  class="entity-explorer__skeleton-pane"
+                  style="
+                    background: linear-gradient(180deg, rgba(8, 11, 16, 0.94), rgba(3, 5, 8, 0.98));
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                  "
+                >
+                  <div class="entity-explorer__skeleton-toolbar">
+                    <div
+                      style="
+                        width: 6rem;
+                        height: 1.05rem;
+                        border-radius: 999px;
+                        background: rgba(255, 255, 255, 0.12);
+                      "
+                    ></div>
+                    <div class="entity-explorer__skeleton-actions">
+                      <span style="width: 3rem; height: 1.8rem"></span>
+                      <span style="width: 3rem; height: 1.8rem"></span>
+                      <span style="width: 3rem; height: 1.8rem"></span>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      min-height: clamp(
+                        calc(var(--detail-hero-shell-min) - 0.9rem),
+                        calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.9rem),
+                        calc(var(--detail-hero-shell-max) - 0.9rem)
+                      );
+                      border-radius: 22px;
+                      background: rgba(255, 255, 255, 0.06);
+                    "
+                  ></div>
+                  <div style="display: grid; gap: 0.45rem; padding: 0.35rem 0.45rem 0.5rem">
+                    <div
+                      style="
+                        width: min(18rem, 68%);
+                        height: 2rem;
+                        border-radius: 999px;
+                        background: rgba(255, 255, 255, 0.14);
+                      "
+                    ></div>
+                    <div
+                      style="
+                        width: min(24rem, 82%);
+                        height: 1.15rem;
+                        border-radius: 999px;
+                        background: rgba(255, 255, 255, 0.12);
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </section>
+        }
+      }
+
+      @if (showEditorialFlow(entity)) {
+        <section
+          class="entity-section entity-glass entity-section--wide entity-story"
+          [class.entity-story--article]="isArticle(entity)"
+        >
+          <header class="entity-topbar entity-topbar--embedded">
+            <ng-container
+              *ngTemplateOutlet="detailHeaderBlock; context: { $implicit: entity, mobile: false }"
+            ></ng-container>
+          </header>
+
+          @if (entity.content) {
+            <div class="entity-section__head">
+              <p class="section-label">{{ storySectionLabel(entity) }}</p>
+            </div>
+            <div class="entity-prose">
+              <app-rich-text
+                [text]="entity.content"
+                [previewAccess]="richTextPreviewAccess"
+              ></app-rich-text>
+            </div>
+          } @else if (entity.summary) {
+            <div class="entity-prose">{{ entity.summary }}</div>
+          }
+        </section>
+
+        <div class="entity-detail__sections">
+          @if (isArticle(entity)) {
+            <section class="entity-section entity-glass entity-article-graph">
+              <div class="entity-section__head">
+                <p class="section-label">{{ i18n.t('entity.connectionMap') }}</p>
+              </div>
+              @if (renderGraph) {
+                @defer (on idle) {
+                  <app-graph
+                    [slug]="entity.slug"
+                    [workspaceMode]="graphWorkspaceMode"
+                    [imageMedia]="detailMedia(entity)"
+                    [imageUrl]="visualUrl(entity)"
+                    [imageAlt]="visualAlt(entity)"
+                    [entityTitle]="entity.title"
+                    [entityType]="entity.type"
+                    [hideImagePane]="true"
+                  />
+                } @placeholder {
+                  <div
+                    class="entity-explorer__skeleton"
+                    aria-hidden="true"
+                    style="grid-template-columns: 1fr"
+                  >
+                    <div
+                      class="entity-explorer__skeleton-pane"
+                      style="
+                        background: linear-gradient(
+                          180deg,
+                          rgba(8, 11, 16, 0.94),
+                          rgba(3, 5, 8, 0.98)
+                        );
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                      "
+                    >
+                      <div class="entity-explorer__skeleton-toolbar">
+                        <div
+                          style="
+                            width: 6rem;
+                            height: 1.05rem;
+                            border-radius: 999px;
+                            background: rgba(255, 255, 255, 0.12);
+                          "
+                        ></div>
+                        <div class="entity-explorer__skeleton-actions">
+                          <span style="width: 3rem; height: 1.8rem"></span>
+                          <span style="width: 3rem; height: 1.8rem"></span>
+                          <span style="width: 3rem; height: 1.8rem"></span>
+                        </div>
+                      </div>
+                      <div
+                        style="
+                          min-height: 440px;
+                          border-radius: 22px;
+                          background: rgba(255, 255, 255, 0.06);
+                        "
+                      ></div>
+                    </div>
+                  </div>
+                }
+              } @else {
+                <div class="entity-explorer__fallback entity-explorer__fallback--compact">
+                  <div class="entity-explorer__fallback-media">
+                    <app-jano-media
+                      [entity]="entity"
+                      usage="detail"
+                      [alt]="visualAlt(entity)"
+                      [lazy]="false"
+                      priority="high"
+                    />
+                  </div>
+                </div>
+              }
+            </section>
+          } @else {
+            <section class="entity-section entity-glass">
+              <div class="entity-section__head">
+                <p class="section-label">{{ i18n.t('entity.sheet') }}</p>
+              </div>
+              @if (detailFacts(entity).length) {
+                <div class="facts-sheet">
+                  <div class="facts-sheet__intro">
+                    <span class="facts-sheet__kicker">{{ detailFactKicker(entity) }}</span>
+                    <h3 class="facts-sheet__title">{{ detailFactTitle(entity) }}</h3>
+                    @if (detailFactSummary(entity); as summary) {
+                      <p class="facts-sheet__summary">{{ summary }}</p>
+                    }
+                  </div>
+                  <div class="facts-grid">
+                    @for (fact of detailFacts(entity); track fact.label) {
+                      <article class="fact-card entity-glass-card">
+                        <span class="fact-card__label">{{ fact.label }}</span>
+                        <p class="fact-card__value">{{ fact.value }}</p>
+                      </article>
+                    }
+                  </div>
+                </div>
+              } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
+                <div class="facts-sheet facts-sheet--textual">
+                  <div class="fact-note entity-glass-card">
+                    <div class="entity-prose">
+                      <app-rich-text
+                        [text]="entity.concept?.definition ?? ''"
+                        [previewAccess]="richTextPreviewAccess"
+                      ></app-rich-text>
+                    </div>
+                  </div>
+                </div>
+              } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
+                <div class="facts-sheet facts-sheet--textual">
+                  <div class="fact-note entity-glass-card">
+                    <div class="entity-prose">
+                      <app-rich-text
+                        [text]="entity.period?.definition ?? ''"
+                        [previewAccess]="richTextPreviewAccess"
+                      ></app-rich-text>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <p class="text-muted">{{ i18n.t('entity.noSheet') }}</p>
+              }
+            </section>
+          }
+
+          <section class="entity-section entity-glass">
+            <div class="entity-section__head">
+              <p class="section-label">{{ i18n.t('entity.relations') }}</p>
+            </div>
+            <div class="relations-group">
+              <h3 class="title-section entity-subtitle">{{ i18n.t('entity.connectsWith') }}</h3>
+              @if ((entity.outgoing?.length ?? 0) === 0) {
+                <p class="text-muted">{{ i18n.t('entity.noOutgoing') }}</p>
+              } @else {
+                <ul class="relations-list">
+                  @for (r of visibleOutgoingRelations(entity); track r.id) {
+                    <li class="relation-card entity-glass-card relation-card--friendly">
+                      <div class="relation-card__topline">
+                        <span class="relation-card__label">{{
+                          r.relationTypeLabel ??
+                            relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing')
+                        }}</span>
+                        <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">{{
+                          r.to.title
+                        }}</a>
+                      </div>
+                      @if (r.justification) {
+                        <div class="relation-card__text">
+                          <app-rich-text
+                            [text]="r.justification"
+                            [previewAccess]="richTextPreviewAccess"
+                          ></app-rich-text>
+                        </div>
+                      }
+                    </li>
+                  }
+                </ul>
+                @if (hiddenOutgoingRelations(entity) > 0) {
+                  <button
+                    type="button"
+                    class="relations-reveal"
+                    (click)="showMoreOutgoingRelations()"
+                  >
+                    {{ i18n.t('common.show') }}
+                    {{
+                      hiddenOutgoingRelations(entity) > 48 ? 48 : hiddenOutgoingRelations(entity)
+                    }}
+                    {{ i18n.t('common.more') }}
+                  </button>
+                }
+              }
+            </div>
+
+            <div class="relations-group">
+              <h3 class="title-section entity-subtitle">{{ i18n.t('entity.alsoAppearsIn') }}</h3>
+              @if ((entity.incoming?.length ?? 0) === 0) {
+                <p class="text-muted">{{ i18n.t('entity.noIncoming') }}</p>
+              } @else {
+                <ul class="relations-list">
+                  @for (r of visibleIncomingRelations(entity); track r.id) {
+                    <li class="relation-card entity-glass-card relation-card--friendly">
+                      <div class="relation-card__topline">
+                        <span class="relation-card__label">{{
+                          r.relationTypeInverseLabel ??
+                            r.relationTypeLabel ??
+                            relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming')
+                        }}</span>
+                        <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">{{
+                          r.from.title
+                        }}</a>
+                      </div>
+                      @if (r.justification) {
+                        <div class="relation-card__text">
+                          <app-rich-text
+                            [text]="r.justification"
+                            [previewAccess]="richTextPreviewAccess"
+                          ></app-rich-text>
+                        </div>
+                      }
+                    </li>
+                  }
+                </ul>
+                @if (hiddenIncomingRelations(entity) > 0) {
+                  <button
+                    type="button"
+                    class="relations-reveal"
+                    (click)="showMoreIncomingRelations()"
+                  >
+                    {{ i18n.t('common.show') }}
+                    {{
+                      hiddenIncomingRelations(entity) > 48 ? 48 : hiddenIncomingRelations(entity)
+                    }}
+                    {{ i18n.t('common.more') }}
+                  </button>
+                }
+              }
+            </div>
+          </section>
+        </div>
+
+        @if ((entity.sourceRefs?.length ?? 0) > 0) {
+          <section class="entity-section entity-glass entity-section--wide">
+            <div class="entity-section__head">
+              <p class="section-label">{{ i18n.t('entity.sources') }}</p>
+            </div>
+            <ul class="relations-list">
+              @for (r of entity.sourceRefs; track r.id) {
+                <li class="relation-source">
+                  <div class="relation-card entity-glass-card">
+                    <span class="ds-badge entity-badge">{{
+                      sourceTypeLabel(r.source?.type ?? r.sourceType)
+                    }}</span>
+                    <span class="relation-card__text">
+                      <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
+                      @if (r.source?.author || r.sourceAuthor) {
+                        — {{ r.source?.author ?? r.sourceAuthor }}
+                      }
+                      @if (
+                        r.source?.publisher || r.sourcePublisher || r.source?.year || r.sourceYear
+                      ) {
+                        ({{ r.source?.publisher ?? r.sourcePublisher ?? '' }}
+                        @if (r.source?.year || r.sourceYear) {
+                          , {{ r.source?.year ?? r.sourceYear }}
+                        }
+                        )
+                      }
+                      @if (r.page) {
+                        — p. {{ r.page }}
+                      }
+                    </span>
+                  </div>
+                  @if (r.quote) {
+                    <div class="quote-block">“{{ r.quote }}”</div>
+                  }
+                  @if (r.note) {
+                    <div class="relation-card__text">
+                      <app-rich-text
+                        [text]="r.note"
+                        [previewAccess]="richTextPreviewAccess"
+                      ></app-rich-text>
+                    </div>
+                  }
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      }
+    </div>
+  </div>
+
+  <ng-template #detailHeaderBlock let-entity let-mobile="mobile">
+    <div class="entity-topbar__row" [class.entity-topbar__row--mobile]="mobile">
+      <div class="entity-topbar__lead">
+        <div class="entity-topbar__title-block">
+          <h1
+            class="title-display entity-header__title"
+            [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)"
+          >
+            {{ entity.title }}
+          </h1>
+          @if (detailHeroSubtitle(entity); as subtitle) {
+            <p
+              class="entity-topbar__subtitle"
+              [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)"
+            >
+              {{ subtitle }}
+            </p>
+          }
+          <div
+            class="entity-topbar__meta"
+            [class.entity-arrival-copy--visible]="revealArrivalMeta(entity)"
+          >
+            <div class="entity-header__badges">
+              <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
+              @if (entity.contentLevel) {
+                <span class="ds-badge entity-badge">{{
+                  contentLevelLabel(entity.contentLevel)
+                }}</span>
+              }
+              <span class="ds-badge entity-badge">{{ entityTypeLabel(entity.type) }}</span>
+            </div>
+            @if (entityTags(entity).length) {
+              <div class="entity-header__badges entity-header__badges--tags">
+                @for (tag of entityTags(entity); track tag.id ?? tag.slug) {
+                  <a
+                    class="ds-badge entity-badge"
+                    [routerLink]="['/search']"
+                    [queryParams]="{ tag: tag.slug, q: tag.label }"
+                    >{{ tag.label }}</a
+                  >
+                }
+              </div>
             }
             @if (entity.startYear || entity.endYear) {
-            <span>{{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}</span>
+              <span class="ds-pill entity-pill"
+                >{{ entity.startYear ?? '' }}
+                @if (entity.endYear) {
+                  –{{ entity.endYear }}
+                }
+              </span>
             }
           </div>
-        </div>
-
-        <div class="entity-article-hero__title-block">
-          <h1 class="entity-article-hero__title">{{ entity.title }}</h1>
-          @if (entity.summary) {
-          <p class="entity-article-hero__summary">{{ entity.summary }}</p>
-          }
-        </div>
-
-      </div>
-    </section>
-    } @else {
-    <div class="entity-explorer__workspace-deck" [class.entity-explorer__workspace-deck--arrival-revealed]="revealArrivalControls(entity)">
-      <div class="entity-explorer__workspace-bar" role="toolbar" [attr.aria-label]="i18n.t('workspace.aria')">
-        <span class="entity-explorer__workspace-label">{{ i18n.t('workspace.label') }}</span>
-        <div class="entity-explorer__workspace-switch">
-          @for (mode of workspaceModes; track mode.value) {
-          <button
-            type="button"
-            class="entity-explorer__workspace-btn"
-            [class.is-active]="workspaceMode === mode.value"
-            [attr.aria-pressed]="workspaceMode === mode.value"
-            (click)="setWorkspaceMode(mode.value)"
-          >
-            {{ i18n.t(mode.labelKey) }}
-          </button>
-          }
-        </div>
-        @if (!isMobileViewport) {
-        <button
-          type="button"
-          class="entity-explorer__workspace-btn entity-explorer__workspace-btn--focus"
-          [attr.aria-pressed]="workspaceFocused"
-          (click)="toggleWorkspaceFocus()"
-        >
-          {{ workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus') }}
-        </button>
-        }
-      </div>
-    </div>
-    @if (showWorkspace(entity)) {
-    <section
-      class="entity-explorer entity-glass"
-      [class.entity-explorer--focused]="workspaceFocused"
-      [attr.data-workspace-mode]="workspaceMode"
-    >
-      @if (renderGraph) {
-      <app-graph
-        [slug]="entity.slug"
-        [workspaceMode]="graphWorkspaceMode"
-        [imageMedia]="detailMedia(entity)"
-        [imageUrl]="visualUrl(entity)"
-        [imageAlt]="visualAlt(entity)"
-        [entityTitle]="entity.title"
-        [entityType]="entity.type"
-        [workspaceFocused]="workspaceFocused"
-        [workspaceTransitioning]="workspaceTransitioning"
-        [isMobileViewport]="isMobileViewport"
-        [entityInfo]="mobileGraphEntityInfo(entity)"
-        [imageMeta]="{
-          source: detailMedia(entity)?.source ?? null,
-          photoBy: detailMedia(entity)?.photoBy ?? null,
-          license: detailMedia(entity)?.license ?? null
-        }"
-        (workspaceFocusToggle)="toggleWorkspaceFocus()"
-      />
-      } @else {
-      <ng-container *ngTemplateOutlet="explorerFallback"></ng-container>
-      }
-
-      <ng-template #explorerFallback>
-        <div class="entity-explorer__skeleton" aria-hidden="true">
-          <div class="entity-explorer__skeleton-pane" style="background: linear-gradient(180deg, rgba(244, 240, 235, 0.84), rgba(232, 227, 221, 0.7)); border: 1px solid rgba(255, 255, 255, 0.22);">
-            <div style="width: 5.2rem; height: 2rem; border-radius: 999px; background: rgba(255, 255, 255, 0.5);"></div>
-            <div style="min-height: clamp(calc(var(--detail-hero-shell-min) - 0.9rem), calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.9rem), calc(var(--detail-hero-shell-max) - 0.9rem)); border-radius: 22px; background: rgba(255, 255, 255, 0.34);"></div>
-            <div style="justify-self: end; width: 7.4rem; height: 2rem; border-radius: 999px; background: rgba(255, 255, 255, 0.5);"></div>
-          </div>
-          <div class="entity-explorer__skeleton-pane" style="background: linear-gradient(180deg, rgba(8, 11, 16, 0.94), rgba(3, 5, 8, 0.98)); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div class="entity-explorer__skeleton-toolbar">
-              <div style="width: 6rem; height: 1.05rem; border-radius: 999px; background: rgba(255, 255, 255, 0.12);"></div>
-              <div class="entity-explorer__skeleton-actions">
-                <span style="width: 3rem; height: 1.8rem;"></span>
-                <span style="width: 3rem; height: 1.8rem;"></span>
-                <span style="width: 3rem; height: 1.8rem;"></span>
-              </div>
-            </div>
-            <div style="min-height: clamp(calc(var(--detail-hero-shell-min) - 0.9rem), calc(var(--app-viewport-block) - var(--detail-hero-shell-offset) - 0.9rem), calc(var(--detail-hero-shell-max) - 0.9rem)); border-radius: 22px; background: rgba(255, 255, 255, 0.06);"></div>
-            <div style="display: grid; gap: 0.45rem; padding: 0.35rem 0.45rem 0.5rem;">
-              <div style="width: min(18rem, 68%); height: 2rem; border-radius: 999px; background: rgba(255, 255, 255, 0.14);"></div>
-              <div style="width: min(24rem, 82%); height: 1.15rem; border-radius: 999px; background: rgba(255, 255, 255, 0.12);"></div>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </section>
-    }
-    }
-
-    @if (showEditorialFlow(entity)) {
-    <section class="entity-section entity-glass entity-section--wide entity-story" [class.entity-story--article]="isArticle(entity)">
-      <header class="entity-topbar entity-topbar--embedded">
-        <ng-container *ngTemplateOutlet="detailHeaderBlock; context: { $implicit: entity, mobile: false }"></ng-container>
-      </header>
-
-      @if (entity.content) {
-      <div class="entity-section__head">
-        <p class="section-label">{{ storySectionLabel(entity) }}</p>
-      </div>
-      <div class="entity-prose">
-        <app-rich-text [text]="entity.content" [previewAccess]="richTextPreviewAccess"></app-rich-text>
-      </div>
-      } @else if (entity.summary) {
-      <div class="entity-prose">{{ entity.summary }}</div>
-      }
-    </section>
-
-    <div class="entity-detail__sections">
-      @if (isArticle(entity)) {
-      <section class="entity-section entity-glass entity-article-graph">
-        <div class="entity-section__head">
-          <p class="section-label">{{ i18n.t('entity.connectionMap') }}</p>
-        </div>
-        @if (renderGraph) {
-        @defer (on idle) {
-        <app-graph
-          [slug]="entity.slug"
-          [workspaceMode]="graphWorkspaceMode"
-          [imageMedia]="detailMedia(entity)"
-          [imageUrl]="visualUrl(entity)"
-          [imageAlt]="visualAlt(entity)"
-          [entityTitle]="entity.title"
-          [entityType]="entity.type"
-          [hideImagePane]="true"
-        />
-        } @placeholder {
-        <div class="entity-explorer__skeleton" aria-hidden="true" style="grid-template-columns: 1fr;">
-          <div class="entity-explorer__skeleton-pane" style="background: linear-gradient(180deg, rgba(8, 11, 16, 0.94), rgba(3, 5, 8, 0.98)); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div class="entity-explorer__skeleton-toolbar">
-              <div style="width: 6rem; height: 1.05rem; border-radius: 999px; background: rgba(255, 255, 255, 0.12);"></div>
-              <div class="entity-explorer__skeleton-actions">
-                <span style="width: 3rem; height: 1.8rem;"></span>
-                <span style="width: 3rem; height: 1.8rem;"></span>
-                <span style="width: 3rem; height: 1.8rem;"></span>
-              </div>
-            </div>
-            <div style="min-height: 440px; border-radius: 22px; background: rgba(255, 255, 255, 0.06);"></div>
-          </div>
-        </div>
-        }
-        } @else {
-        <div class="entity-explorer__fallback entity-explorer__fallback--compact">
-          <div class="entity-explorer__fallback-media">
-            <app-jano-media [entity]="entity" usage="detail" [alt]="visualAlt(entity)" [lazy]="false" priority="high" />
-          </div>
-        </div>
-        }
-      </section>
-      } @else {
-      <section class="entity-section entity-glass">
-        <div class="entity-section__head">
-          <p class="section-label">{{ i18n.t('entity.sheet') }}</p>
-        </div>
-        @if (detailFacts(entity).length) {
-        <div class="facts-sheet">
-          <div class="facts-sheet__intro">
-            <span class="facts-sheet__kicker">{{ detailFactKicker(entity) }}</span>
-            <h3 class="facts-sheet__title">{{ detailFactTitle(entity) }}</h3>
-            @if (detailFactSummary(entity); as summary) {
-            <p class="facts-sheet__summary">{{ summary }}</p>
-            }
-          </div>
-          <div class="facts-grid">
-            @for (fact of detailFacts(entity); track fact.label) {
-            <article class="fact-card entity-glass-card">
-              <span class="fact-card__label">{{ fact.label }}</span>
-              <p class="fact-card__value">{{ fact.value }}</p>
-            </article>
-            }
-          </div>
-        </div>
-        } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
-        <div class="facts-sheet facts-sheet--textual">
-          <div class="fact-note entity-glass-card">
-            <div class="entity-prose"><app-rich-text [text]="entity.concept?.definition ?? ''" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
-          </div>
-        </div>
-        } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
-        <div class="facts-sheet facts-sheet--textual">
-          <div class="fact-note entity-glass-card">
-            <div class="entity-prose"><app-rich-text [text]="entity.period?.definition ?? ''" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
-          </div>
-        </div>
-        } @else {
-        <p class="text-muted">{{ i18n.t('entity.noSheet') }}</p>
-        }
-      </section>
-      }
-
-      <section class="entity-section entity-glass">
-        <div class="entity-section__head">
-          <p class="section-label">{{ i18n.t('entity.relations') }}</p>
-        </div>
-        <div class="relations-group">
-          <h3 class="title-section entity-subtitle">{{ i18n.t('entity.connectsWith') }}</h3>
-          @if ((entity.outgoing?.length ?? 0) === 0) {
-          <p class="text-muted">{{ i18n.t('entity.noOutgoing') }}</p>
-          } @else {
-          <ul class="relations-list">
-            @for (r of visibleOutgoingRelations(entity); track r.id) {
-            <li class="relation-card entity-glass-card relation-card--friendly">
-              <div class="relation-card__topline">
-                <span class="relation-card__label">{{ r.relationTypeLabel ?? relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing') }}</span>
-                <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">{{ r.to.title }}</a>
-              </div>
-              @if (r.justification) {
-              <div class="relation-card__text"><app-rich-text [text]="r.justification" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
-              }
-            </li>
-            }
-          </ul>
-          @if (hiddenOutgoingRelations(entity) > 0) {
-          <button type="button" class="relations-reveal" (click)="showMoreOutgoingRelations()">
-            {{ i18n.t('common.show') }} {{ hiddenOutgoingRelations(entity) > 48 ? 48 : hiddenOutgoingRelations(entity) }} {{ i18n.t('common.more') }}
-          </button>
-          }
-          }
-        </div>
-
-        <div class="relations-group">
-          <h3 class="title-section entity-subtitle">{{ i18n.t('entity.alsoAppearsIn') }}</h3>
-          @if ((entity.incoming?.length ?? 0) === 0) {
-          <p class="text-muted">{{ i18n.t('entity.noIncoming') }}</p>
-          } @else {
-          <ul class="relations-list">
-            @for (r of visibleIncomingRelations(entity); track r.id) {
-            <li class="relation-card entity-glass-card relation-card--friendly">
-              <div class="relation-card__topline">
-                <span class="relation-card__label">{{ r.relationTypeInverseLabel ?? r.relationTypeLabel ?? relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming') }}</span>
-                <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">{{ r.from.title }}</a>
-              </div>
-              @if (r.justification) {
-              <div class="relation-card__text"><app-rich-text [text]="r.justification" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
-              }
-            </li>
-            }
-          </ul>
-          @if (hiddenIncomingRelations(entity) > 0) {
-          <button type="button" class="relations-reveal" (click)="showMoreIncomingRelations()">
-            {{ i18n.t('common.show') }} {{ hiddenIncomingRelations(entity) > 48 ? 48 : hiddenIncomingRelations(entity) }} {{ i18n.t('common.more') }}
-          </button>
-          }
-          }
-        </div>
-      </section>
-    </div>
-
-    @if ((entity.sourceRefs?.length ?? 0) > 0) {
-    <section class="entity-section entity-glass entity-section--wide">
-      <div class="entity-section__head">
-        <p class="section-label">{{ i18n.t('entity.sources') }}</p>
-      </div>
-      <ul class="relations-list">
-        @for (r of entity.sourceRefs; track r.id) {
-        <li class="relation-source">
-          <div class="relation-card entity-glass-card">
-            <span class="ds-badge entity-badge">{{ sourceTypeLabel(r.source?.type ?? r.sourceType) }}</span>
-            <span class="relation-card__text">
-              <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
-              @if (r.source?.author || r.sourceAuthor) { — {{ r.source?.author ?? r.sourceAuthor }} }
-              @if (r.source?.publisher || r.sourcePublisher || r.source?.year || r.sourceYear) {
-              ({{ r.source?.publisher ?? r.sourcePublisher ?? '' }}@if (r.source?.year || r.sourceYear) {, {{ r.source?.year ?? r.sourceYear }} })
-              }
-              @if (r.page) { — p. {{ r.page }} }
-            </span>
-          </div>
-          @if (r.quote) {
-          <div class="quote-block">“{{ r.quote }}”</div>
-          }
-          @if (r.note) {
-          <div class="relation-card__text"><app-rich-text [text]="r.note" [previewAccess]="richTextPreviewAccess"></app-rich-text></div>
-          }
-        </li>
-        }
-      </ul>
-    </section>
-    }
-    }
-  </div>
-</div>
-
-<ng-template #detailHeaderBlock let-entity let-mobile="mobile">
-  <div class="entity-topbar__row" [class.entity-topbar__row--mobile]="mobile">
-    <div class="entity-topbar__lead">
-      <div class="entity-topbar__title-block">
-        <h1 class="title-display entity-header__title"
-          [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)">{{ entity.title }}</h1>
-        @if (detailHeroSubtitle(entity); as subtitle) {
-        <p class="entity-topbar__subtitle" [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)">{{ subtitle }}</p>
-        }
-        <div class="entity-topbar__meta"
-          [class.entity-arrival-copy--visible]="revealArrivalMeta(entity)">
-          <div class="entity-header__badges">
-            <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
-            @if (entity.contentLevel) {
-            <span class="ds-badge entity-badge">{{ contentLevelLabel(entity.contentLevel) }}</span>
-            }
-            <span class="ds-badge entity-badge">{{ entityTypeLabel(entity.type) }}</span>
-          </div>
-          @if (entityTags(entity).length) {
-          <div class="entity-header__badges entity-header__badges--tags">
-            @for (tag of entityTags(entity); track tag.id ?? tag.slug) {
-            <a class="ds-badge entity-badge" [routerLink]="['/search']" [queryParams]="{ tag: tag.slug, q: tag.label }">{{ tag.label }}</a>
-            }
-          </div>
-          }
-          @if (entity.startYear || entity.endYear) {
-          <span class="ds-pill entity-pill">{{ entity.startYear ?? '' }}@if (entity.endYear) {–{{ entity.endYear }}}</span>
-          }
         </div>
       </div>
     </div>
-  </div>
-</ng-template>
+  </ng-template>
 }

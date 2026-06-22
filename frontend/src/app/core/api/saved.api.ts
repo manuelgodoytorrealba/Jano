@@ -1,6 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { apiUrl } from './api-base';
+import { PublicEntity } from './entities.models';
+
+export type SavedItem = {
+  id: string;
+  createdAt: string;
+  entity: PublicEntity;
+};
 
 @Injectable({ providedIn: 'root' })
 export class SavedApi {
@@ -8,11 +15,11 @@ export class SavedApi {
   private readonly baseUrl = apiUrl('/me/saved');
 
   list() {
-    return this.http.get<any[]>(this.baseUrl);
+    return this.http.get<SavedItem[]>(this.baseUrl);
   }
 
   save(entityId: string) {
-    return this.http.post<any>(`${this.baseUrl}/${entityId}`, {});
+    return this.http.post<SavedItem>(`${this.baseUrl}/${entityId}`, {});
   }
 
   remove(entityId: string) {

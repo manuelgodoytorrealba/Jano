@@ -22,7 +22,9 @@
 .jano-media__img {
   background: rgba(244, 242, 247, 0.88);
   transform-origin: center center;
-  transition: transform .2s ease, object-position .2s ease;
+  transition:
+    transform 0.2s ease,
+    object-position 0.2s ease;
 }
 
 .jano-media__placeholder {

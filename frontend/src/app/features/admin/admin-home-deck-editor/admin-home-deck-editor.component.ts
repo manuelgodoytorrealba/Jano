@@ -292,7 +292,7 @@ export class AdminHomeDeckEditorComponent {
   }
 
   openPublicHome(): void {
-    this.router.navigateByUrl(homeDeckPublicRoute(this.form.surface));
+    void this.router.navigateByUrl(homeDeckPublicRoute(this.form.surface));
   }
 
   onSurfaceChange(surface: HomeDeckSurfaceValue): void {

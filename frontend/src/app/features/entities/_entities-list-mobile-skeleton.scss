@@ -15,7 +15,7 @@
   .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card--prev {
     top: calc(50% - 34svh);
     opacity: 0.34;
-    transform: translate3d(calc(-50% - 5px), -50%, 0) scale(0.70);
+    transform: translate3d(calc(-50% - 5px), -50%, 0) scale(0.7);
   }
 
   .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card--active {
@@ -27,6 +27,6 @@
   .entities-explorer-layout:not(.is-list) .entities-explorer-loading__card--next {
     top: calc(50% + 34svh);
     opacity: 0.34;
-    transform: translate3d(calc(-50% + 5px), -50%, 0) scale(0.70);
+    transform: translate3d(calc(-50% + 5px), -50%, 0) scale(0.7);
   }
 }

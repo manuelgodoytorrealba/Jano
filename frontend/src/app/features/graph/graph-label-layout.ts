@@ -35,10 +35,10 @@ export function resolveNodeLabelOcclusion(options: {
       return {
         id: node.node.id,
         priority:
-          (isCenter ? 1000 : 0)
-          + (isSelected ? 900 : 0)
-          + (isHovered ? 820 : 0)
-          + Math.min(node.node.degree ?? 0, 8) * 26,
+          (isCenter ? 1000 : 0) +
+          (isSelected ? 900 : 0) +
+          (isHovered ? 820 : 0) +
+          Math.min(node.node.degree ?? 0, 8) * 26,
         forced: isCenter || isSelected || isHovered,
         box: approximateNodeLabelBox(node),
       };
@@ -68,17 +68,21 @@ export function resolveEdgeLabelOcclusion(options: {
       return {
         id: edge.edge.id,
         priority:
-          (isHovered ? 1000 : 0)
-          + (connectedToSelected ? 760 : 0)
-          + (connectedToCenter ? 560 : 0)
-          + Math.round((edge.edge.weight ?? 1) * 42)
-          + Math.round(edge.relationVisual.width * 24),
+          (isHovered ? 1000 : 0) +
+          (connectedToSelected ? 760 : 0) +
+          (connectedToCenter ? 560 : 0) +
+          Math.round((edge.edge.weight ?? 1) * 42) +
+          Math.round(edge.relationVisual.width * 24),
         forced: isHovered,
         box: approximateEdgeLabelBox(edge),
       };
     });
 
-  return cullRankedLabelBoxes(candidates, labelCollisionPadding(options.scale), options.occupiedBoxes ?? []);
+  return cullRankedLabelBoxes(
+    candidates,
+    labelCollisionPadding(options.scale),
+    options.occupiedBoxes ?? [],
+  );
 }
 
 export function visibleLabelBoxes(options: {
@@ -101,7 +105,9 @@ function cullRankedLabelBoxes(
 
   const visible: Record<string, boolean> = {};
   const occupied = occupiedSeed.map((box) => expandBox(box, padding));
-  const ranked = [...candidates].sort((left, right) => right.priority - left.priority || left.id.localeCompare(right.id));
+  const ranked = [...candidates].sort(
+    (left, right) => right.priority - left.priority || left.id.localeCompare(right.id),
+  );
 
   for (const candidate of ranked) {
     const expanded = expandBox(candidate.box, padding);
@@ -122,10 +128,11 @@ function approximateNodeLabelBox(node: GraphRenderedNode): GraphLabelBox {
   const offsetY = offsetMatch ? Number(offsetMatch[2]) : 0;
   const anchorX = node.point.x + offsetX;
   const anchorY = node.point.y + offsetY;
-  const width = Math.max(
-    approximateTextWidth(node.titleLabel, 14, 0.62),
-    approximateTextWidth(node.typeLabel, 10, 0.58),
-  ) + 10;
+  const width =
+    Math.max(
+      approximateTextWidth(node.titleLabel, 14, 0.62),
+      approximateTextWidth(node.typeLabel, 10, 0.58),
+    ) + 10;
 
   return node.labelTextAnchor === 'start'
     ? {
@@ -177,9 +184,9 @@ function expandBox(box: GraphLabelBox, padding: number): GraphLabelBox {
 
 function boxesIntersect(left: GraphLabelBox, right: GraphLabelBox): boolean {
   return !(
-    left.right < right.left
-    || left.left > right.right
-    || left.bottom < right.top
-    || left.top > right.bottom
+    left.right < right.left ||
+    left.left > right.right ||
+    left.bottom < right.top ||
+    left.top > right.bottom
   );
 }

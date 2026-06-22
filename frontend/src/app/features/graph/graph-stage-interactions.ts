@@ -131,7 +131,10 @@ export function moveNodeDragSession(options: {
   nextNodePoint: GraphPoint | null;
   shouldPinCenter: boolean;
 } {
-  const moved = didNodeDragMove(options.session, { x: options.event.clientX, y: options.event.clientY });
+  const moved = didNodeDragMove(options.session, {
+    x: options.event.clientX,
+    y: options.event.clientY,
+  });
   if (!moved) {
     return {
       moved: false,

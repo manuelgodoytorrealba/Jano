@@ -14,17 +14,15 @@ export class TagsService {
           where: { locale: { in: Array.from(new Set([requestedLocale, 'es', 'en'])) } },
         },
       },
-      orderBy: [
-        { category: 'asc' },
-        { label: 'asc' },
-      ],
+      orderBy: [{ category: 'asc' }, { label: 'asc' }],
     });
 
     return tags.map((tag: any) => {
-      const resolved = tag.translations.find((item: any) => item.locale === requestedLocale)
-        ?? tag.translations.find((item: any) => item.locale === 'es')
-        ?? tag.translations.find((item: any) => item.locale === 'en')
-        ?? null;
+      const resolved =
+        tag.translations.find((item: any) => item.locale === requestedLocale) ??
+        tag.translations.find((item: any) => item.locale === 'es') ??
+        tag.translations.find((item: any) => item.locale === 'en') ??
+        null;
 
       return {
         ...tag,

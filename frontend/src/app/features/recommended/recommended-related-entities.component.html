@@ -12,7 +12,11 @@
 
   <div class="recommended-chip-grid recommended-related__list">
     @for (item of items(); track item.id) {
-      <a class="recommended-chip recommended-related__item" [routerLink]="['/curated']" [queryParams]="{ entity: item.slug }">
+      <a
+        class="recommended-chip recommended-related__item"
+        [routerLink]="['/curated']"
+        [queryParams]="{ entity: item.slug }"
+      >
         <span class="recommended-related__type">{{ typeLabel(item.type) }}</span>
         <strong>{{ item.title }}</strong>
         <p>{{ item.summary ?? typeLabel(item.type) }}</p>

@@ -131,7 +131,9 @@ export function buildAdminEntityMediaLibraryViewModel(
     }
 
     if (link.media.derivedFromMediaId) {
-      const direct = persistedMediaLinks.find((candidate) => candidate.media.id === link.media.derivedFromMediaId);
+      const direct = persistedMediaLinks.find(
+        (candidate) => candidate.media.id === link.media.derivedFromMediaId,
+      );
       if (direct?.media.originType === 'EXTERNAL_URL') {
         return direct;
       }
@@ -142,20 +144,18 @@ export function buildAdminEntityMediaLibraryViewModel(
       return null;
     }
 
-    return persistedMediaLinks.find((candidate) => {
-      if (candidate.id === link.id || candidate.media.originType !== 'EXTERNAL_URL') {
-        return false;
-      }
+    return (
+      persistedMediaLinks.find((candidate) => {
+        if (candidate.id === link.id || candidate.media.originType !== 'EXTERNAL_URL') {
+          return false;
+        }
 
-      return [
-        candidate.media.canonicalUrl,
-        candidate.media.displayUrl,
-        candidate.media.url,
-      ]
-        .map((value) => normalizeMediaUrl(value))
-        .filter(Boolean)
-        .includes(canonical);
-    }) ?? null;
+        return [candidate.media.canonicalUrl, candidate.media.displayUrl, candidate.media.url]
+          .map((value) => normalizeMediaUrl(value))
+          .filter(Boolean)
+          .includes(canonical);
+      }) ?? null
+    );
   };
 
   const hasPromotedVisualReplacement = (link: EditableAdminMediaLink): boolean => {
@@ -164,8 +164,7 @@ export function buildAdminEntityMediaLibraryViewModel(
       return false;
     }
 
-    return source.role === 'GALLERY'
-      && (link.role !== 'GALLERY' || link.isPrimary);
+    return source.role === 'GALLERY' && (link.role !== 'GALLERY' || link.isPrimary);
   };
 
   const replacementIngestedLink = (link: EditableAdminMediaLink): EditableAdminMediaLink | null => {
@@ -173,41 +172,46 @@ export function buildAdminEntityMediaLibraryViewModel(
       return null;
     }
 
-    const externalCandidates = [
-      link.media.canonicalUrl,
-      link.media.displayUrl,
-      link.media.url,
-    ]
+    const externalCandidates = [link.media.canonicalUrl, link.media.displayUrl, link.media.url]
       .map((value) => normalizeMediaUrl(value))
       .filter(Boolean);
 
     if (!externalCandidates.length) {
-      return persistedMediaLinks.find((candidate) =>
-        candidate.media.originType === 'INGESTED'
-        && candidate.media.derivedFromMediaId === link.media.id
-        && hasPromotedVisualReplacement(candidate),
-      ) ?? null;
+      return (
+        persistedMediaLinks.find(
+          (candidate) =>
+            candidate.media.originType === 'INGESTED' &&
+            candidate.media.derivedFromMediaId === link.media.id &&
+            hasPromotedVisualReplacement(candidate),
+        ) ?? null
+      );
     }
 
-    const byDerivedFrom = persistedMediaLinks.find((candidate) =>
-      candidate.media.originType === 'INGESTED'
-      && candidate.media.derivedFromMediaId === link.media.id
-      && hasPromotedVisualReplacement(candidate),
+    const byDerivedFrom = persistedMediaLinks.find(
+      (candidate) =>
+        candidate.media.originType === 'INGESTED' &&
+        candidate.media.derivedFromMediaId === link.media.id &&
+        hasPromotedVisualReplacement(candidate),
     );
 
     if (byDerivedFrom) {
       return byDerivedFrom;
     }
 
-    return persistedMediaLinks.find((candidate) =>
-      candidate.media.originType === 'INGESTED'
-      && hasPromotedVisualReplacement(candidate)
-      && externalCandidates.includes(normalizeMediaUrl(candidate.media.canonicalUrl)),
-    ) ?? null;
+    return (
+      persistedMediaLinks.find(
+        (candidate) =>
+          candidate.media.originType === 'INGESTED' &&
+          hasPromotedVisualReplacement(candidate) &&
+          externalCandidates.includes(normalizeMediaUrl(candidate.media.canonicalUrl)),
+      ) ?? null
+    );
   };
 
   const additionalIds = new Set(additionalMediaItems.map((item) => item.assignmentId));
-  const mainUsedEditors = mediaEditors.filter((editor) => (activeSlotLabelsByMediaId.get(editor.persisted.media.id)?.length ?? 0) > 0);
+  const mainUsedEditors = mediaEditors.filter(
+    (editor) => (activeSlotLabelsByMediaId.get(editor.persisted.media.id)?.length ?? 0) > 0,
+  );
   const additionalMediaEditors = mediaEditors.filter((editor) => additionalIds.has(editor.id));
   const mainUsedIds = new Set(mainUsedEditors.map((editor) => editor.id));
   const additionalEditorIds = new Set(additionalMediaEditors.map((editor) => editor.id));
@@ -217,42 +221,53 @@ export function buildAdminEntityMediaLibraryViewModel(
       return false;
     }
 
-    return editor.persisted.media.originType === 'INGESTED'
-      || !!editor.persisted.media.derivedFromMediaId
-      || hasPromotedVisualReplacement(editor.persisted)
-      || !!replacementIngestedLink(editor.persisted);
+    return (
+      editor.persisted.media.originType === 'INGESTED' ||
+      !!editor.persisted.media.derivedFromMediaId ||
+      hasPromotedVisualReplacement(editor.persisted) ||
+      !!replacementIngestedLink(editor.persisted)
+    );
   });
 
   const derivedIds = new Set(derivedEditors.map((editor) => editor.id));
-  const unusedEditors = mediaEditors.filter((editor) =>
-    !mainUsedIds.has(editor.id)
-    && !additionalEditorIds.has(editor.id)
-    && !derivedIds.has(editor.id),
+  const unusedEditors = mediaEditors.filter(
+    (editor) =>
+      !mainUsedIds.has(editor.id) &&
+      !additionalEditorIds.has(editor.id) &&
+      !derivedIds.has(editor.id),
   );
 
-  const editorMetaById = mediaEditors.reduce<Record<string, AdminEntityMediaEditorPresentation>>((acc, editor) => {
-    const source = sourceExternalLink(editor.persisted);
-    const ingestedReplacement = replacementIngestedLink(editor.persisted);
-    const hasPromotedReplacement = hasPromotedVisualReplacement(editor.persisted);
+  const editorMetaById = mediaEditors.reduce<Record<string, AdminEntityMediaEditorPresentation>>(
+    (acc, editor) => {
+      const source = sourceExternalLink(editor.persisted);
+      const ingestedReplacement = replacementIngestedLink(editor.persisted);
+      const hasPromotedReplacement = hasPromotedVisualReplacement(editor.persisted);
 
-    sourceExternalLinkById[editor.id] = source;
-    replacementIngestedLinkById[editor.id] = ingestedReplacement;
+      sourceExternalLinkById[editor.id] = source;
+      replacementIngestedLinkById[editor.id] = ingestedReplacement;
 
-    acc[editor.id] = {
-      activeSlotLabels: activeSlotLabelsByMediaId.get(editor.persisted.media.id) ?? [],
-      canIngest: editor.persisted.media.originType === 'EXTERNAL_URL',
-      canPromote: editor.persisted.media.originType === 'INGESTED' && !!source,
-      canRestore: editor.persisted.media.originType === 'EXTERNAL_URL' && !!ingestedReplacement,
-      hasPromotedReplacement,
-      replacementTargetLabel: source ? `${mediaRoleLabel(source.role)} · asset ${source.media.id}` : null,
-      replacementIngestedLabel: ingestedReplacement ? `asset INGESTED ${ingestedReplacement.media.id}` : null,
-      ingestedSourceLabel: editor.persisted.media.originType === 'INGESTED'
-        ? editor.persisted.media.canonicalUrl || editor.persisted.media.sourcePageUrl || null
-        : null,
-      slotWarnings: slotWarningsByMediaId.get(editor.persisted.media.id) ?? {},
-    };
-    return acc;
-  }, {});
+      acc[editor.id] = {
+        activeSlotLabels: activeSlotLabelsByMediaId.get(editor.persisted.media.id) ?? [],
+        canIngest: editor.persisted.media.originType === 'EXTERNAL_URL',
+        canPromote: editor.persisted.media.originType === 'INGESTED' && !!source,
+        canRestore: editor.persisted.media.originType === 'EXTERNAL_URL' && !!ingestedReplacement,
+        hasPromotedReplacement,
+        replacementTargetLabel: source
+          ? `${mediaRoleLabel(source.role)} · asset ${source.media.id}`
+          : null,
+        replacementIngestedLabel: ingestedReplacement
+          ? `asset INGESTED ${ingestedReplacement.media.id}`
+          : null,
+        ingestedSourceLabel:
+          editor.persisted.media.originType === 'INGESTED'
+            ? editor.persisted.media.canonicalUrl || editor.persisted.media.sourcePageUrl || null
+            : null,
+        slotWarnings: slotWarningsByMediaId.get(editor.persisted.media.id) ?? {},
+      };
+      return acc;
+    },
+    {},
+  );
 
   return {
     mainVisualSlots: resolvedVisualSlots,
@@ -261,12 +276,22 @@ export function buildAdminEntityMediaLibraryViewModel(
     additionalMediaEditors,
     derivedEditors,
     unusedEditors,
-    libraryManagedCount: mainUsedEditors.length + additionalMediaEditors.length + derivedEditors.length + unusedEditors.length,
+    libraryManagedCount:
+      mainUsedEditors.length +
+      additionalMediaEditors.length +
+      derivedEditors.length +
+      unusedEditors.length,
     mediaWarnings: mediaWarningMessages,
-    activeMediaEditor: mediaEditors.find((editor) => editor.id === activeMediaEditorId) ?? mediaEditors[0] ?? null,
+    activeMediaEditor:
+      mediaEditors.find((editor) => editor.id === activeMediaEditorId) ?? mediaEditors[0] ?? null,
     viewCounts: {
       coverage: `${mediaCoverageSummary?.coveredSlots.length ?? 0}/4`,
-      library: String(mainUsedEditors.length + additionalMediaEditors.length + derivedEditors.length + unusedEditors.length),
+      library: String(
+        mainUsedEditors.length +
+          additionalMediaEditors.length +
+          derivedEditors.length +
+          unusedEditors.length,
+      ),
       add: mediaEditors.length ? 'Listo' : 'Vacío',
     },
     editorMetaById,
@@ -312,9 +337,7 @@ export function mediaSlotResolutionLabel(slot: VisualSlot): string {
   return slot.state.explanation;
 }
 
-function buildCoverageSummaryCards(
-  summary: AdminMediaCoverageSummary | null,
-): MediaCoverageCard[] {
+function buildCoverageSummaryCards(summary: AdminMediaCoverageSummary | null): MediaCoverageCard[] {
   if (!summary) {
     return [];
   }
@@ -344,5 +367,7 @@ function buildCoverageSummaryCards(
 }
 
 function normalizeMediaUrl(value: string | null | undefined): string {
-  return String(value ?? '').trim().replace(/\/+$/, '');
+  return String(value ?? '')
+    .trim()
+    .replace(/\/+$/, '');
 }

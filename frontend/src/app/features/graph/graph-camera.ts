@@ -7,7 +7,7 @@ export interface GraphViewportAnimationConfig {
 }
 
 export const DEFAULT_GRAPH_VIEWPORT_ANIMATION: GraphViewportAnimationConfig = {
-  easing: 0.50,
+  easing: 0.5,
   epsilon: 4.6,
 };
 

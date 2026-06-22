@@ -12,9 +12,8 @@ export class AppAppearanceService {
   private readonly themeStorageKey = 'jano.theme';
   private readonly personalBackgroundStorageKey = 'jano.personal-background';
   private personalBackgroundObjectUrl: string | null = null;
-  private readonly systemThemeQuery = typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-color-scheme: light)')
-    : null;
+  private readonly systemThemeQuery =
+    typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: light)') : null;
 
   readonly fallbackBackgroundImageUrl = DEFAULT_BACKGROUND_IMAGE_URL;
   readonly personalBackgroundImageUrl = signal<string | null>(null);
@@ -106,7 +105,11 @@ export class AppAppearanceService {
   }
 
   currentBackgroundImageUrl(): string {
-    return this.personalBackgroundImageUrl() ?? this.backgroundImageUrl() ?? this.fallbackBackgroundImageUrl;
+    return (
+      this.personalBackgroundImageUrl() ??
+      this.backgroundImageUrl() ??
+      this.fallbackBackgroundImageUrl
+    );
   }
 
   private async restorePersonalBackground(): Promise<void> {
@@ -164,7 +167,8 @@ export class AppAppearanceService {
         const request = store.get(this.personalBackgroundStorageKey);
 
         request.onsuccess = () => resolve((request.result as Blob | undefined) ?? null);
-        request.onerror = () => reject(request.error ?? new Error('Could not read personal background'));
+        request.onerror = () =>
+          reject(request.error ?? new Error('Could not read personal background'));
       });
     } finally {
       db.close();

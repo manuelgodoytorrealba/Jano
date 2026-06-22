@@ -1,29 +1,29 @@
 <div
-    #root
-    class="explorer3d"
-    [class.is-info-open]="infoOpen"
-    [class.is-info-modal]="infoOpen && infoModal"
-    [style.padding-right]="'var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px))'"
-    role="region"
-    [attr.aria-label]="i18n.t('explorer3d.aria')"
-    (mouseenter)="onMouseEnter()"
-    (mouseleave)="onMouseLeave()"
+  #root
+  class="explorer3d"
+  [class.is-info-open]="infoOpen"
+  [class.is-info-modal]="infoOpen && infoModal"
+  [style.padding-right]="'var(--entities-explorer-inner-right, clamp(44px, 6vw, 104px))'"
+  role="region"
+  [attr.aria-label]="i18n.t('explorer3d.aria')"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
 >
-    <div #canvasHost class="explorer3d__canvas"></div>
+  <div #canvasHost class="explorer3d__canvas"></div>
 
-    @if (activeItem; as active) {
+  @if (activeItem; as active) {
     @if (infoClosable) {
-    <button
+      <button
         class="explorer3d__info-toggle"
         [class.is-visible]="!infoOpen"
         type="button"
         (click)="openInfoPanel()"
         [attr.aria-label]="i18n.t('explorer3d.showInfo') + ' ' + active.title"
-    >
+      >
         <span aria-hidden="true">i</span>
-    </button>
+      </button>
 
-    <button
+      <button
         class="explorer3d__info-backdrop"
         [class.is-hidden]="!infoOpen"
         type="button"
@@ -31,54 +31,59 @@
         (wheel)="onInfoBackdropWheel($event)"
         [attr.aria-hidden]="!infoOpen"
         tabindex="-1"
-    ></button>
+      >
+        <span class="sr-only">{{ i18n.t('button.close') }}</span>
+      </button>
     }
 
     <aside
-        class="explorer3d__info"
-        [class.is-hidden]="!infoOpen"
-        [attr.aria-hidden]="!infoOpen"
-        (click)="$event.stopPropagation()"
-        (pointerdown)="$event.stopPropagation()"
-        (pointermove)="$event.stopPropagation()"
-        (pointerup)="$event.stopPropagation()"
-        (wheel)="$event.preventDefault(); $event.stopPropagation()"
+      class="explorer3d__info"
+      [class.is-hidden]="!infoOpen"
+      [attr.aria-hidden]="!infoOpen"
+      (pointerdown)="$event.stopPropagation()"
+      (pointermove)="$event.stopPropagation()"
+      (pointerup)="$event.stopPropagation()"
+      (wheel)="$event.preventDefault(); $event.stopPropagation()"
     >
-        <div class="explorer3d__info-head">
+      <div class="explorer3d__info-head">
         @if (infoClosable) {
-        <button
+          <button
             class="explorer3d__info-close-hit"
             type="button"
             (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
             [attr.aria-label]="i18n.t('button.close')"
-        ></button>
-        <button
+          ></button>
+          <button
             class="explorer3d__info-close"
             type="button"
             (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
             [attr.aria-label]="i18n.t('button.close')"
-        >
+          >
             <span aria-hidden="true">×</span>
-        </button>
+          </button>
         }
         <div class="explorer3d__eyebrow">JANO Explorer</div>
-        </div>
+      </div>
 
-        <h2 class="explorer3d__title">{{ active.title }}</h2>
+      <h2 class="explorer3d__title">{{ active.title }}</h2>
 
-        <div class="explorer3d__meta">
-            <span>{{ active.type }}</span>
-            @if (active.status) { <span>{{ active.status }}</span> }
-            @if (active.contentLevel) { <span>{{ active.contentLevel }}</span> }
-        </div>
-
-        @if (active.summary) {
-        <p class="explorer3d__summary">{{ cleanWiki(active.summary) }}</p>
+      <div class="explorer3d__meta">
+        <span>{{ active.type }}</span>
+        @if (active.status) {
+          <span>{{ active.status }}</span>
         }
+        @if (active.contentLevel) {
+          <span>{{ active.contentLevel }}</span>
+        }
+      </div>
 
-        <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
-            {{ i18n.t('entity.open') }}
-        </button>
+      @if (active.summary) {
+        <p class="explorer3d__summary">{{ cleanWiki(active.summary) }}</p>
+      }
+
+      <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
+        {{ i18n.t('entity.open') }}
+      </button>
     </aside>
-    }
+  }
 </div>

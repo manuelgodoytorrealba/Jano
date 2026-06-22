@@ -15,10 +15,10 @@
 .eyebrow,
 label span,
 .summary span {
-  color: rgba(0, 0, 0, .54);
+  color: rgba(0, 0, 0, 0.54);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -40,7 +40,7 @@ h2 {
 .intro,
 .section-title p {
   margin-top: 7px;
-  color: rgba(0, 0, 0, .58);
+  color: rgba(0, 0, 0, 0.58);
 }
 
 .head-actions,
@@ -55,9 +55,9 @@ h2 {
 .status {
   min-height: 38px;
   padding: 0 13px;
-  border: 1px solid rgba(0, 0, 0, .12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .82);
+  background: rgba(255, 255, 255, 0.82);
   color: #141414;
   text-decoration: none;
   cursor: pointer;
@@ -90,10 +90,10 @@ h2 {
 .starter-library,
 .create-panel,
 .deck-table-wrap {
-  border: 1px solid rgba(0, 0, 0, .10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .78);
-  box-shadow: 0 18px 45px rgba(20, 18, 14, .08);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 45px rgba(20, 18, 14, 0.08);
   backdrop-filter: blur(18px) saturate(1.04);
 }
 
@@ -113,7 +113,7 @@ h2 {
 
 .summary div {
   padding: 12px 13px;
-  background: rgba(255, 255, 255, .42);
+  background: rgba(255, 255, 255, 0.42);
   display: grid;
   gap: 6px;
 }
@@ -155,9 +155,9 @@ h2 {
 .surface-status,
 .composer-note,
 .starter-card {
-  border: 1px solid rgba(0, 0, 0, .10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .48);
+  background: rgba(255, 255, 255, 0.48);
   overflow: hidden;
 }
 
@@ -169,10 +169,10 @@ h2 {
 }
 
 .composer-note span {
-  color: rgba(0, 0, 0, .52);
+  color: rgba(0, 0, 0, 0.52);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -181,7 +181,7 @@ h2 {
 }
 
 .composer-note p {
-  color: rgba(0, 0, 0, .62);
+  color: rgba(0, 0, 0, 0.62);
   line-height: 1.45;
 }
 
@@ -204,10 +204,10 @@ h2 {
 
 .surface-status__eyebrow,
 .starter-card__meta span {
-  color: rgba(0, 0, 0, .52);
+  color: rgba(0, 0, 0, 0.52);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -216,7 +216,7 @@ h2 {
 }
 
 .surface-status p {
-  color: rgba(0, 0, 0, .64);
+  color: rgba(0, 0, 0, 0.64);
   line-height: 1.45;
 }
 
@@ -234,10 +234,10 @@ h2 {
 .surface-pill {
   min-height: 28px;
   padding: 0 9px;
-  border: 1px solid rgba(0, 0, 0, .08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 999px;
-  background: rgba(255, 255, 255, .72);
-  color: rgba(0, 0, 0, .66);
+  background: rgba(255, 255, 255, 0.72);
+  color: rgba(0, 0, 0, 0.66);
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
@@ -250,7 +250,7 @@ h2 {
   aspect-ratio: 3 / 2;
   background-size: cover;
   background-position: center;
-  border-bottom: 1px solid rgba(0, 0, 0, .08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .starter-card__body {
@@ -261,7 +261,7 @@ h2 {
 
 .starter-card__meta strong {
   font-size: 12px;
-  color: rgba(0, 0, 0, .74);
+  color: rgba(0, 0, 0, 0.74);
 }
 
 .starter-card h3 {
@@ -269,7 +269,7 @@ h2 {
 }
 
 .starter-card p {
-  color: rgba(0, 0, 0, .62);
+  color: rgba(0, 0, 0, 0.62);
   line-height: 1.45;
   font-size: 13px;
 }
@@ -291,7 +291,7 @@ h2 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: rgba(0, 0, 0, .6);
+  color: rgba(0, 0, 0, 0.6);
   font-size: 12px;
   font-weight: 700;
 }
@@ -301,7 +301,7 @@ h2 {
   height: 26px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(0, 0, 0, .08);
+  background: rgba(0, 0, 0, 0.08);
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -315,10 +315,10 @@ h2 {
 }
 
 .starter-entity__thumb span {
-  color: rgba(0, 0, 0, .42);
+  color: rgba(0, 0, 0, 0.42);
   font-size: 8px;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -341,25 +341,25 @@ h2 {
 
 .surface-table__head p {
   margin-top: 6px;
-  color: rgba(0, 0, 0, .58);
+  color: rgba(0, 0, 0, 0.58);
 }
 
 .create-note {
   min-height: 72px;
   padding: 10px 11px;
-  border: 1px solid rgba(0, 0, 0, .10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .58);
+  background: rgba(255, 255, 255, 0.58);
   display: grid;
   align-content: center;
   gap: 5px;
 }
 
 .create-note span {
-  color: rgba(0, 0, 0, .54);
+  color: rgba(0, 0, 0, 0.54);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -368,7 +368,7 @@ h2 {
 }
 
 .create-note small {
-  color: rgba(0, 0, 0, .58);
+  color: rgba(0, 0, 0, 0.58);
   font-size: 12px;
 }
 
@@ -385,7 +385,7 @@ label {
 }
 
 label small {
-  color: rgba(0, 0, 0, .54);
+  color: rgba(0, 0, 0, 0.54);
   font-size: 12px;
   line-height: 1.35;
 }
@@ -394,9 +394,9 @@ input,
 select,
 textarea {
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, .12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .74);
+  background: rgba(255, 255, 255, 0.74);
   color: inherit;
   font: inherit;
   outline: none;
@@ -439,9 +439,9 @@ textarea {
 }
 
 .editable-card {
-  border: 1px solid rgba(0, 0, 0, .09);
+  border: 1px solid rgba(0, 0, 0, 0.09);
   border-radius: 8px;
-  background: rgba(255, 255, 255, .58);
+  background: rgba(255, 255, 255, 0.58);
   overflow: hidden;
   display: grid;
   grid-template-columns: 164px minmax(0, 1fr);
@@ -449,7 +449,7 @@ textarea {
 
 .editable-card__media {
   min-height: 100%;
-  background: rgba(0, 0, 0, .08);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .editable-card__media img {
@@ -465,10 +465,10 @@ textarea {
   min-height: 176px;
   display: grid;
   place-items: center;
-  color: rgba(0, 0, 0, .42);
+  color: rgba(0, 0, 0, 0.42);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -498,10 +498,10 @@ textarea {
 
 .editable-card__meta span,
 .editable-card__meta strong {
-  color: rgba(0, 0, 0, .54);
+  color: rgba(0, 0, 0, 0.54);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -516,12 +516,12 @@ textarea {
 }
 
 .editable-card__title span {
-  color: rgba(0, 0, 0, .56);
+  color: rgba(0, 0, 0, 0.56);
   font-size: 13px;
 }
 
 .editable-card__description {
-  color: rgba(0, 0, 0, .62);
+  color: rgba(0, 0, 0, 0.62);
   font-size: 13px;
   line-height: 1.45;
 }
@@ -533,7 +533,7 @@ textarea {
 }
 
 .editable-card__facts span {
-  color: rgba(0, 0, 0, .54);
+  color: rgba(0, 0, 0, 0.54);
   font-size: 12px;
 }
 
@@ -548,8 +548,8 @@ textarea {
 }
 
 .status.is-active {
-  background: rgba(42, 118, 72, .12);
-  border-color: rgba(42, 118, 72, .22);
+  background: rgba(42, 118, 72, 0.12);
+  border-color: rgba(42, 118, 72, 0.22);
   color: #23623c;
 }
 
@@ -573,24 +573,24 @@ textarea {
 }
 
 .warning {
-  background: rgba(156, 105, 30, .10);
+  background: rgba(156, 105, 30, 0.1);
   color: #7a4f13;
 }
 
 .warning.is-strong {
-  background: rgba(156, 105, 30, .16);
+  background: rgba(156, 105, 30, 0.16);
 }
 
 .ok {
-  background: rgba(42, 118, 72, .10);
+  background: rgba(42, 118, 72, 0.1);
   color: #23623c;
 }
 
 .empty {
   padding: 16px;
-  border: 1px dashed rgba(0, 0, 0, .16);
+  border: 1px dashed rgba(0, 0, 0, 0.16);
   border-radius: 8px;
-  color: rgba(0, 0, 0, .58);
+  color: rgba(0, 0, 0, 0.58);
 }
 
 @media (max-width: 1100px) {

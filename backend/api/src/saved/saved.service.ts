@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { attachResolvedMedia } from '../entities/media.resolver';
 
@@ -19,10 +15,7 @@ export class SavedService {
           include: {
             mediaLinks: {
               include: { media: true },
-              orderBy: [
-                { sortOrder: 'asc' },
-                { id: 'asc' },
-              ],
+              orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
             },
           },
         },
@@ -69,10 +62,7 @@ export class SavedService {
           include: {
             mediaLinks: {
               include: { media: true },
-              orderBy: [
-                { sortOrder: 'asc' },
-                { id: 'asc' },
-              ],
+              orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
             },
           },
         },

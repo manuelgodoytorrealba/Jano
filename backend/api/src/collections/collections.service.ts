@@ -17,20 +17,14 @@ export class CollectionsService {
   private readonly entityWithMediaInclude = {
     mediaLinks: {
       include: { media: true },
-      orderBy: [
-        { sortOrder: 'asc' as const },
-        { id: 'asc' as const },
-      ],
+      orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }],
     },
   };
 
   private readonly collectionInclude = {
     coverMedia: true,
     items: {
-      orderBy: [
-        { sortOrder: 'asc' as const },
-        { createdAt: 'asc' as const },
-      ],
+      orderBy: [{ sortOrder: 'asc' as const }, { createdAt: 'asc' as const }],
       include: {
         entity: {
           include: this.entityWithMediaInclude,
@@ -178,9 +172,9 @@ export class CollectionsService {
       where: { id: collectionId },
       data: {
         name: dto.name !== undefined ? dto.name.trim() : undefined,
-        description: dto.description !== undefined ? (dto.description?.trim() || null) : undefined,
-        notes: dto.notes !== undefined ? (dto.notes?.trim() || null) : undefined,
-        coverMediaId: dto.coverMediaId !== undefined ? (dto.coverMediaId?.trim() || null) : undefined,
+        description: dto.description !== undefined ? dto.description?.trim() || null : undefined,
+        notes: dto.notes !== undefined ? dto.notes?.trim() || null : undefined,
+        coverMediaId: dto.coverMediaId !== undefined ? dto.coverMediaId?.trim() || null : undefined,
       },
       include: this.collectionInclude,
     });
@@ -334,15 +328,12 @@ export class CollectionsService {
 
     const relations = nodeIds.length
       ? await this.prisma.relation.findMany({
-        where: {
-          fromId: { in: nodeIds },
-          toId: { in: nodeIds },
-        },
-        orderBy: [
-          { type: 'asc' },
-          { id: 'asc' },
-        ],
-      })
+          where: {
+            fromId: { in: nodeIds },
+            toId: { in: nodeIds },
+          },
+          orderBy: [{ type: 'asc' }, { id: 'asc' }],
+        })
       : [];
 
     const edges = relations

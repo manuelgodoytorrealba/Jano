@@ -262,7 +262,11 @@
               <p>{{ publicationSummary() }} · {{ previewRouteSummary() }}</p>
             </div>
 
-            <article class="deck-preview" [class.is-inactive]="!form.isActive" [class.deck-preview--recommended]="form.surface === 'RECOMMENDED'">
+            <article
+              class="deck-preview"
+              [class.is-inactive]="!form.isActive"
+              [class.deck-preview--recommended]="form.surface === 'RECOMMENDED'"
+            >
               <div class="deck-preview__status">
                 <span>{{ activeTargetLabel() }}</span>
                 <strong>{{ form.isActive ? 'Activo' : 'Inactivo' }}</strong>
@@ -307,7 +311,10 @@
             </div>
 
             @if (deck.entities.length) {
-              <div class="selected-strip" [class.selected-strip--recommended]="form.surface === 'RECOMMENDED'">
+              <div
+                class="selected-strip"
+                [class.selected-strip--recommended]="form.surface === 'RECOMMENDED'"
+              >
                 @for (item of orderedEntities(deck.entities); track item.id) {
                   <article class="selected-card">
                     <div
@@ -437,7 +444,8 @@
                   <div class="deck-preview__placeholder">
                     <span>Sin imagen</span>
                     <strong
-                      >Añade una portada para sostener el tono visual de esta pieza editorial.</strong
+                      >Añade una portada para sostener el tono visual de esta pieza
+                      editorial.</strong
                     >
                   </div>
                 }
@@ -502,10 +510,28 @@
                       <div class="selected-card__actions">
                         <span class="selected-card__hint">Arrastra para mover</span>
                         <div class="row-actions">
-                          <button class="mini" type="button" (click)="moveEntity(item, -1, deck.entities)">Subir</button>
-                          <button class="mini" type="button" (click)="moveEntity(item, 1, deck.entities)">Bajar</button>
+                          <button
+                            class="mini"
+                            type="button"
+                            (click)="moveEntity(item, -1, deck.entities)"
+                          >
+                            Subir
+                          </button>
+                          <button
+                            class="mini"
+                            type="button"
+                            (click)="moveEntity(item, 1, deck.entities)"
+                          >
+                            Bajar
+                          </button>
                         </div>
-                        <button class="mini danger" type="button" (click)="removeEntity(item.entity.id)">Quitar</button>
+                        <button
+                          class="mini danger"
+                          type="button"
+                          (click)="removeEntity(item.entity.id)"
+                        >
+                          Quitar
+                        </button>
                       </div>
                     </article>
                   }
@@ -520,7 +546,9 @@
             <section class="panel">
               <div class="section-title">
                 <h2>Añadir entity</h2>
-                <p>Busca piezas para extender la secuencia y probar nuevas lecturas curatoriales.</p>
+                <p>
+                  Busca piezas para extender la secuencia y probar nuevas lecturas curatoriales.
+                </p>
               </div>
 
               <label class="search-field">

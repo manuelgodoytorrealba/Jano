@@ -59,6 +59,11 @@ export class CollectionsController {
     @Param('entityId') entityId: string,
     @Body() dto: ReorderCollectionItemDto,
   ) {
-    return this.collectionsService.reorderEntity(req.user.userId, collectionId, entityId, dto.sortOrder);
+    return this.collectionsService.reorderEntity(
+      req.user.userId,
+      collectionId,
+      entityId,
+      dto.sortOrder,
+    );
   }
 }

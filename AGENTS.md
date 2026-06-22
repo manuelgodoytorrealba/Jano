@@ -7,6 +7,7 @@ JANO is a premium platform for art discovery, connected knowledge, and editorial
 It is not just a CRUD app.
 
 Core pillars:
+
 - visual exploration
 - cultural discovery
 - graph relationships
@@ -47,6 +48,7 @@ When tradeoffs exist, prioritize in this order:
 Backend owns business logic.
 
 Frontend should:
+
 - render state
 - manage local UI state
 - provide interactions
@@ -77,6 +79,7 @@ Do not mask architectural issues with cosmetic UI changes.
 JANO UI should feel premium, calm, intelligent, and editorial.
 
 Prefer:
+
 - strong hierarchy
 - elegant spacing
 - minimal noise
@@ -88,6 +91,7 @@ Prefer:
 - refined dark/light surfaces
 
 Avoid:
+
 - clutter
 - generic admin feeling
 - cramped layouts
@@ -107,6 +111,7 @@ Clarity beats decoration.
 The admin is a professional tool, not a raw internal panel.
 
 It should feel:
+
 - modular
 - focused
 - trustworthy
@@ -114,6 +119,7 @@ It should feel:
 - visually refined
 
 Editors should always understand:
+
 - what is active
 - what changed
 - what is saved
@@ -127,6 +133,7 @@ Editors should always understand:
 Media in JANO is editorial infrastructure.
 
 Respect these concepts:
+
 - slot intent
 - resolved output
 - draft vs persisted
@@ -168,6 +175,7 @@ Avoid hidden automatic behavior.
 # Refactor Rules
 
 Refactor when:
+
 - component is too large
 - logic is duplicated
 - feature velocity is slowing
@@ -210,6 +218,7 @@ Do not blindly follow prompts when a stronger solution is obvious.
 # Default Mindset
 
 Think like:
+
 - product designer
 - senior engineer
 - systems architect

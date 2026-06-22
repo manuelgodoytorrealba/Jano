@@ -2,27 +2,57 @@
   @for (block of blocks; track $index; let blockIndex = $index) {
     @if (block.kind === 'heading' && block.level === 1) {
       <h1 class="rt-block rt-h1">
-        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens, keyPrefix: blockIndex }" />
+        <ng-container
+          *ngTemplateOutlet="
+            inlineTokens;
+            context: { $implicit: block.tokens, keyPrefix: blockIndex }
+          "
+        />
       </h1>
     } @else if (block.kind === 'heading' && block.level === 2) {
       <h2 class="rt-block rt-h2">
-        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens, keyPrefix: blockIndex }" />
+        <ng-container
+          *ngTemplateOutlet="
+            inlineTokens;
+            context: { $implicit: block.tokens, keyPrefix: blockIndex }
+          "
+        />
       </h2>
     } @else if (block.kind === 'heading' && block.level === 3) {
       <h3 class="rt-block rt-h3">
-        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens, keyPrefix: blockIndex }" />
+        <ng-container
+          *ngTemplateOutlet="
+            inlineTokens;
+            context: { $implicit: block.tokens, keyPrefix: blockIndex }
+          "
+        />
       </h3>
     } @else if (block.kind === 'lead') {
       <p class="rt-block rt-lead">
-        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens, keyPrefix: blockIndex }" />
+        <ng-container
+          *ngTemplateOutlet="
+            inlineTokens;
+            context: { $implicit: block.tokens, keyPrefix: blockIndex }
+          "
+        />
       </p>
     } @else if (block.kind === 'quote') {
       <blockquote class="rt-block rt-quote">
-        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens, keyPrefix: blockIndex }" />
+        <ng-container
+          *ngTemplateOutlet="
+            inlineTokens;
+            context: { $implicit: block.tokens, keyPrefix: blockIndex }
+          "
+        />
       </blockquote>
     } @else {
       <p class="rt-block rt-paragraph">
-        <ng-container *ngTemplateOutlet="inlineTokens; context: { $implicit: block.tokens, keyPrefix: blockIndex }" />
+        <ng-container
+          *ngTemplateOutlet="
+            inlineTokens;
+            context: { $implicit: block.tokens, keyPrefix: blockIndex }
+          "
+        />
       </p>
     }
   }
@@ -66,7 +96,10 @@
 
                 @if (preview()!.startYear || preview()!.endYear) {
                   <span>
-                    • {{ preview()!.startYear ?? '' }}@if (preview()!.endYear) {–{{ preview()!.endYear }}}
+                    • {{ preview()!.startYear ?? '' }}
+                    @if (preview()!.endYear) {
+                      –{{ preview()!.endYear }}
+                    }
                   </span>
                 }
 

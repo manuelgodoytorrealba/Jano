@@ -22,16 +22,13 @@
   --curated-text-muted: rgba(242, 241, 238, 0.58);
   --curated-accent: #d7bd84;
   --curated-accent-soft: rgba(215, 189, 132, 0.14);
-  --curated-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    0 24px 70px rgba(0, 0, 0, 0.24);
+  --curated-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 24px 70px rgba(0, 0, 0, 0.24);
   min-height: 100vh;
   padding: 0 clamp(18px, 2vw, 30px) 36px;
   background:
     radial-gradient(circle at 16% 18%, rgba(86, 108, 138, 0.18), transparent 22%),
     radial-gradient(circle at 82% 22%, rgba(99, 84, 132, 0.14), transparent 18%),
-    radial-gradient(circle at 50% 78%, rgba(215, 189, 132, 0.08), transparent 20%),
-    transparent;
+    radial-gradient(circle at 50% 78%, rgba(215, 189, 132, 0.08), transparent 20%), transparent;
 }
 
 :host-context([data-theme='light']) .recommended-page {
@@ -54,14 +51,11 @@
   --curated-text-muted: rgba(87, 96, 113, 0.72);
   --curated-accent: #8d6b33;
   --curated-accent-soft: rgba(141, 107, 51, 0.1);
-  --curated-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    0 22px 58px rgba(31, 28, 23, 0.12);
+  --curated-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 22px 58px rgba(31, 28, 23, 0.12);
   background:
     radial-gradient(circle at 18% 16%, rgba(145, 158, 180, 0.16), transparent 24%),
     radial-gradient(circle at 84% 18%, rgba(186, 173, 157, 0.16), transparent 18%),
-    radial-gradient(circle at 52% 76%, rgba(181, 154, 112, 0.08), transparent 20%),
-    transparent;
+    radial-gradient(circle at 52% 76%, rgba(181, 154, 112, 0.08), transparent 20%), transparent;
 }
 
 .recommended-page__layout {

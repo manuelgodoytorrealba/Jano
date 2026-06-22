@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { apiUrl } from './api-base';
+import { PublicEntity } from './entities.models';
 
 export type HomeDeckImage = {
   id: string | null;
@@ -14,7 +15,7 @@ export type HomeDeckImage = {
 export type HomeDeckEntity = {
   id: string;
   sortOrder: number;
-  entity: any;
+  entity: PublicEntity;
 };
 
 export type HomeDeck = {

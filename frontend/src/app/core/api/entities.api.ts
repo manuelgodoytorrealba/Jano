@@ -4,6 +4,22 @@ import { GraphResponseDto } from '../../features/graph/graph.models';
 import { apiUrl } from './api-base';
 import { PublicEntity, PublicEntityListResponse, PublicEntityPreview } from './entities.models';
 
+export type EntitiesListParams = {
+  type?: string;
+  q?: string;
+  deck?: string;
+  page?: number;
+  limit?: number;
+  sort?: 'recent' | 'title' | 'relevance';
+  status?: string;
+  contentLevel?: string;
+  movement?: string;
+  period?: string;
+  institution?: string;
+  nationality?: string;
+  tag?: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class EntitiesApi {
   private http = inject(HttpClient);
@@ -12,21 +28,7 @@ export class EntitiesApi {
     return this.http.get<PublicEntity[]>(apiUrl('/entities/home'));
   }
 
-  list(params: {
-    type?: string;
-    q?: string;
-    deck?: string;
-    page?: number;
-    limit?: number;
-    sort?: 'recent' | 'title' | 'relevance';
-    status?: string;
-    contentLevel?: string;
-    movement?: string;
-    period?: string;
-    institution?: string;
-    nationality?: string;
-    tag?: string;
-  }) {
+  list(params: EntitiesListParams) {
     const clean: Record<string, string | number> = {};
 
     for (const [k, v] of Object.entries(params ?? {})) {
@@ -40,10 +42,7 @@ export class EntitiesApi {
       }
     }
 
-    return this.http.get<PublicEntityListResponse>(
-      apiUrl('/entities'),
-      { params: clean },
-    );
+    return this.http.get<PublicEntityListResponse>(apiUrl('/entities'), { params: clean });
   }
 
   institutions() {

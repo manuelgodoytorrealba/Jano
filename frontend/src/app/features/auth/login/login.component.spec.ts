@@ -7,10 +7,12 @@ import { AuthService } from '../../../core/auth/auth.service';
 describe('LoginComponent', () => {
   it('redirects to the requested url after a successful login', () => {
     const auth = {
-      login: vi.fn(() => of({
-        accessToken: 'token',
-        user: { id: '1', email: 'admin@test.com', name: null, role: 'ADMIN', isBeta: true },
-      })),
+      login: vi.fn(() =>
+        of({
+          accessToken: 'token',
+          user: { id: '1', email: 'admin@test.com', name: null, role: 'ADMIN', isBeta: true },
+        }),
+      ),
     };
     const router = {
       navigateByUrl: vi.fn(),

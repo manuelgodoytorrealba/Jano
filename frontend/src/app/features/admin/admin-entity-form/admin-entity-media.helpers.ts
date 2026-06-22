@@ -67,39 +67,45 @@ export function buildAdminEntityMediaLibraryState(
 
   const assignments = library?.assignments ?? legacyAssignmentsFromEntity(entity);
   const nextPersisted = assignments
-    .map((assignment) => normalizeMediaAssignment(assignment, assetMap.get(assignment.assetId), toNullableNumber))
+    .map((assignment) =>
+      normalizeMediaAssignment(assignment, assetMap.get(assignment.assetId), toNullableNumber),
+    )
     .filter((assignment): assignment is EditableAdminMediaLink => !!assignment);
 
   const existingEditors = new Map(mediaEditors.map((editor) => [editor.id, editor]));
   const persistedMediaLinks = sortMediaLinks(nextPersisted);
-  const nextMediaEditors: EditableAdminMediaEditor[] = persistedMediaLinks.map((persisted): EditableAdminMediaEditor => {
-    const existing = existingEditors.get(persisted.id);
-    const preserveDraft = preserveDirtyEditors && existing?.isDirty && existing.id !== clearedEditorId;
+  const nextMediaEditors: EditableAdminMediaEditor[] = persistedMediaLinks.map(
+    (persisted): EditableAdminMediaEditor => {
+      const existing = existingEditors.get(persisted.id);
+      const preserveDraft =
+        preserveDirtyEditors && existing?.isDirty && existing.id !== clearedEditorId;
 
-    if (existing && preserveDraft) {
+      if (existing && preserveDraft) {
+        return {
+          ...existing,
+          persisted,
+        };
+      }
+
       return {
-        ...existing,
+        id: persisted.id,
         persisted,
+        draft: cloneMediaLink(persisted, toNullableNumber),
+        isDirty: false,
+        saveState: clearedEditorId === persisted.id ? 'saved' : 'idle',
+        errorMessage: '',
+        removing: false,
+        ingesting: false,
+        promoting: false,
+        restoring: false,
       };
-    }
+    },
+  );
 
-    return {
-      id: persisted.id,
-      persisted,
-      draft: cloneMediaLink(persisted, toNullableNumber),
-      isDirty: false,
-      saveState: clearedEditorId === persisted.id ? 'saved' : 'idle',
-      errorMessage: '',
-      removing: false,
-      ingesting: false,
-      promoting: false,
-      restoring: false,
-    };
-  });
-
-  const nextActiveMediaEditorId = !activeMediaEditorId || !nextMediaEditors.some((editor) => editor.id === activeMediaEditorId)
-    ? nextMediaEditors[0]?.id ?? null
-    : activeMediaEditorId;
+  const nextActiveMediaEditorId =
+    !activeMediaEditorId || !nextMediaEditors.some((editor) => editor.id === activeMediaEditorId)
+      ? (nextMediaEditors[0]?.id ?? null)
+      : activeMediaEditorId;
 
   const additionalMediaItems = library?.additionalMedia ?? [];
   const mediaWarningsDetailed = library?.warnings ?? [];
@@ -113,9 +119,8 @@ export function buildAdminEntityMediaLibraryState(
     mediaWarningMessages: mediaWarningsDetailed.map((warning) => warning.message),
     mediaCoverageSummary: library?.coverageSummary ?? null,
     activeMediaEditorId: nextActiveMediaEditorId,
-    activeMediaLibraryView: !nextMediaEditors.length && !additionalMediaItems.length
-      ? 'add'
-      : activeMediaLibraryView,
+    activeMediaLibraryView:
+      !nextMediaEditors.length && !additionalMediaItems.length ? 'add' : activeMediaLibraryView,
   };
 }
 
@@ -124,9 +129,10 @@ export function removeMediaFromLibraryState(
   linkId: string,
 ): AdminEntityMediaLibraryState {
   const nextMediaEditors = state.mediaEditors.filter((candidate) => candidate.id !== linkId);
-  const nextActiveMediaEditorId = !state.activeMediaEditorId || state.activeMediaEditorId === linkId
-    ? nextMediaEditors[0]?.id ?? null
-    : state.activeMediaEditorId;
+  const nextActiveMediaEditorId =
+    !state.activeMediaEditorId || state.activeMediaEditorId === linkId
+      ? (nextMediaEditors[0]?.id ?? null)
+      : state.activeMediaEditorId;
 
   return {
     ...state,
@@ -142,7 +148,9 @@ export function cloneMediaLibraryState(
   toNullableNumber: ToNullableNumber,
 ): AdminEntityMediaLibraryState {
   return {
-    persistedMediaLinks: state.persistedMediaLinks.map((link) => cloneMediaLink(link, toNullableNumber)),
+    persistedMediaLinks: state.persistedMediaLinks.map((link) =>
+      cloneMediaLink(link, toNullableNumber),
+    ),
     mediaEditors: state.mediaEditors.map((editor) => ({
       ...editor,
       persisted: cloneMediaLink(editor.persisted, toNullableNumber),
@@ -163,13 +171,13 @@ export function cloneMediaLibraryState(
     mediaWarningMessages: [...state.mediaWarningMessages],
     mediaCoverageSummary: state.mediaCoverageSummary
       ? {
-        ...state.mediaCoverageSummary,
-        coveredSlots: [...state.mediaCoverageSummary.coveredSlots],
-        emptySlots: [...state.mediaCoverageSummary.emptySlots],
-        fallbackSlots: [...state.mediaCoverageSummary.fallbackSlots],
-        explicitSlots: [...state.mediaCoverageSummary.explicitSlots],
-        legacySlots: [...state.mediaCoverageSummary.legacySlots],
-      }
+          ...state.mediaCoverageSummary,
+          coveredSlots: [...state.mediaCoverageSummary.coveredSlots],
+          emptySlots: [...state.mediaCoverageSummary.emptySlots],
+          fallbackSlots: [...state.mediaCoverageSummary.fallbackSlots],
+          explicitSlots: [...state.mediaCoverageSummary.explicitSlots],
+          legacySlots: [...state.mediaCoverageSummary.legacySlots],
+        }
       : null,
     activeMediaEditorId: state.activeMediaEditorId,
     activeMediaLibraryView: state.activeMediaLibraryView,
@@ -370,10 +378,34 @@ function legacyAssignmentsFromEntity(entity: AdminEntityResponse): AdminMediaAss
 
 function normalizeResolvedSlot(slot: AdminResolvedSlot): VisualSlot {
   const definitions: Record<VisualSlot['key'], Omit<VisualSlot, 'state'>> = {
-    explorer3d: { key: 'explorer3d', label: 'Explorer 3D', description: 'Imagen para la vista inmersiva.', previewUsage: 'explorer3d', previewClass: 'slot-preview--explorer' },
-    list: { key: 'list', label: 'List', description: 'Imagen para listas, grids y railes.', previewUsage: 'card', previewClass: 'slot-preview--card' },
-    detail: { key: 'detail', label: 'Detail', description: 'Imagen principal de la entidad.', previewUsage: 'detail', previewClass: 'slot-preview--detail' },
-    preview: { key: 'preview', label: 'Preview', description: 'Imagen para previews contextuales.', previewUsage: 'thumbnail', previewClass: 'slot-preview--thumbnail' },
+    explorer3d: {
+      key: 'explorer3d',
+      label: 'Explorer 3D',
+      description: 'Imagen para la vista inmersiva.',
+      previewUsage: 'explorer3d',
+      previewClass: 'slot-preview--explorer',
+    },
+    list: {
+      key: 'list',
+      label: 'List',
+      description: 'Imagen para listas, grids y railes.',
+      previewUsage: 'card',
+      previewClass: 'slot-preview--card',
+    },
+    detail: {
+      key: 'detail',
+      label: 'Detail',
+      description: 'Imagen principal de la entidad.',
+      previewUsage: 'detail',
+      previewClass: 'slot-preview--detail',
+    },
+    preview: {
+      key: 'preview',
+      label: 'Preview',
+      description: 'Imagen para previews contextuales.',
+      previewUsage: 'thumbnail',
+      previewClass: 'slot-preview--thumbnail',
+    },
   };
 
   return {
@@ -421,12 +453,18 @@ function buildSlotCropPayload(
   }
 
   const keys: MediaEditorSlotKey[] = ['explorer3d', 'list', 'detail', 'preview'];
-  return keys.reduce((acc, key) => {
-    const crop = slotCrops[key];
-    const x = toNullableNumber(crop?.x);
-    const y = toNullableNumber(crop?.y);
-    const zoom = toNullableNumber(crop?.zoom);
-    acc[key] = x === null && y === null && zoom === null ? null : { x, y, zoom };
-    return acc;
-  }, {} as Record<MediaEditorSlotKey, { x: number | null; y: number | null; zoom: number | null } | null>);
+  return keys.reduce(
+    (acc, key) => {
+      const crop = slotCrops[key];
+      const x = toNullableNumber(crop?.x);
+      const y = toNullableNumber(crop?.y);
+      const zoom = toNullableNumber(crop?.zoom);
+      acc[key] = x === null && y === null && zoom === null ? null : { x, y, zoom };
+      return acc;
+    },
+    {} as Record<
+      MediaEditorSlotKey,
+      { x: number | null; y: number | null; zoom: number | null } | null
+    >,
+  );
 }

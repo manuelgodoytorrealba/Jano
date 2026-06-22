@@ -90,7 +90,7 @@ label span {
   color: var(--deck-editor-text-faint);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -148,7 +148,7 @@ h2 {
 
 .btn:disabled {
   cursor: default;
-  opacity: .58;
+  opacity: 0.58;
 }
 
 .mini {
@@ -177,20 +177,20 @@ h2 {
 }
 
 .feedback--success {
-  border-color: rgba(28, 116, 74, .24);
+  border-color: rgba(28, 116, 74, 0.24);
   background: var(--deck-editor-success-bg);
   color: color-mix(in srgb, var(--color-success) 78%, white);
 }
 
 .feedback--error {
-  border-color: rgba(138, 31, 31, .26);
+  border-color: rgba(138, 31, 31, 0.26);
   background: var(--deck-editor-error-bg);
   color: color-mix(in srgb, var(--color-danger) 86%, white);
 }
 
 .editor-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(380px, .8fr);
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.8fr);
   gap: 14px;
   align-items: start;
 }
@@ -272,7 +272,7 @@ h2 {
   color: var(--deck-editor-text-faint);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -323,7 +323,7 @@ label small {
   color: var(--deck-editor-text-faint);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -393,25 +393,25 @@ textarea {
 }
 
 .save-status--dirty {
-  border-color: rgba(156, 105, 30, .24);
+  border-color: rgba(156, 105, 30, 0.24);
   background: var(--deck-editor-warning-bg);
   color: color-mix(in srgb, var(--color-accent-gold) 88%, white);
 }
 
 .save-status--saving {
-  border-color: rgba(156, 105, 30, .24);
+  border-color: rgba(156, 105, 30, 0.24);
   background: var(--deck-editor-warning-bg);
   color: color-mix(in srgb, var(--color-accent-gold) 88%, white);
 }
 
 .save-status--saved {
-  border-color: rgba(28, 116, 74, .22);
+  border-color: rgba(28, 116, 74, 0.22);
   background: var(--deck-editor-success-bg);
   color: color-mix(in srgb, var(--color-success) 78%, white);
 }
 
 .save-status--error {
-  border-color: rgba(138, 31, 31, .26);
+  border-color: rgba(138, 31, 31, 0.26);
   background: var(--deck-editor-error-bg);
   color: color-mix(in srgb, var(--color-danger) 86%, white);
 }
@@ -419,9 +419,9 @@ textarea {
 .deck-preview {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, .10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  background: linear-gradient(180deg, rgba(26, 26, 26, .94), rgba(12, 12, 12, .96));
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.94), rgba(12, 12, 12, 0.96));
   color: #fff;
 }
 
@@ -434,22 +434,22 @@ textarea {
   gap: 6px;
   align-items: center;
   padding: 6px 8px;
-  border: 1px solid rgba(255, 255, 255, .20);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
-  background: rgba(18, 18, 18, .52);
+  background: rgba(18, 18, 18, 0.52);
   backdrop-filter: blur(14px);
 }
 
 .deck-preview__status span,
 .deck-preview__status strong {
-  color: rgba(255, 255, 255, .82);
+  color: rgba(255, 255, 255, 0.82);
   font-size: 11px;
   letter-spacing: 0;
   text-transform: none;
 }
 
 .deck-preview.is-inactive {
-  opacity: .72;
+  opacity: 0.72;
 }
 
 .deck-preview img {
@@ -475,8 +475,8 @@ textarea {
   align-content: center;
   justify-items: start;
   background:
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .08), transparent 42%),
-    linear-gradient(180deg, rgba(20, 20, 20, .92), rgba(10, 10, 10, .96));
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.08), transparent 42%),
+    linear-gradient(180deg, rgba(20, 20, 20, 0.92), rgba(10, 10, 10, 0.96));
 }
 
 .deck-preview__placeholder strong {
@@ -486,10 +486,10 @@ textarea {
 }
 
 .deck-preview span {
-  color: rgba(255, 255, 255, .66);
+  color: rgba(255, 255, 255, 0.66);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -499,18 +499,18 @@ textarea {
 }
 
 .deck-preview p {
-  color: rgba(255, 255, 255, .78);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .deck-preview__footer {
   display: grid;
   gap: 4px;
   padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, .10);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .deck-preview__footer small {
-  color: rgba(255, 255, 255, .62);
+  color: rgba(255, 255, 255, 0.62);
   line-height: 1.35;
 }
 
@@ -563,7 +563,7 @@ textarea {
 }
 
 .warnings .is-warning {
-  border-color: rgba(156, 105, 30, .24);
+  border-color: rgba(156, 105, 30, 0.24);
   background: var(--deck-editor-warning-bg);
 }
 
@@ -613,7 +613,7 @@ textarea {
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 8px;
-  background: rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, 0.08);
   flex: 0 0 auto;
 }
 
@@ -634,7 +634,7 @@ textarea {
   color: var(--deck-editor-text-faint);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -644,14 +644,14 @@ textarea {
   bottom: 8px;
   width: 28px;
   height: 28px;
-  border: 1px solid rgba(255, 255, 255, .16);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
-  background: rgba(18, 18, 18, .70);
+  background: rgba(18, 18, 18, 0.7);
   backdrop-filter: blur(12px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, .88);
+  color: rgba(255, 255, 255, 0.88);
   font-size: 12px;
   font-weight: 800;
 }
@@ -677,7 +677,7 @@ textarea {
   color: var(--deck-editor-text-faint);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -695,7 +695,7 @@ textarea {
   color: var(--deck-editor-chip-text);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -742,7 +742,7 @@ textarea {
 
 .result-row:disabled {
   cursor: default;
-  opacity: .62;
+  opacity: 0.62;
   transform: none;
   box-shadow: none;
 }

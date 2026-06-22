@@ -17,11 +17,13 @@ describe('JwtStrategy', () => {
 
     const strategy = new JwtStrategy(usersService as any, configService as any);
 
-    await expect(strategy.validate({
-      sub: 'user-1',
-      email: 'manuel@test3.com',
-      role: 'USER',
-    })).resolves.toEqual({
+    await expect(
+      strategy.validate({
+        sub: 'user-1',
+        email: 'manuel@test3.com',
+        role: 'USER',
+      }),
+    ).resolves.toEqual({
       userId: 'user-1',
       id: 'user-1',
       email: 'manuel@test3.com',

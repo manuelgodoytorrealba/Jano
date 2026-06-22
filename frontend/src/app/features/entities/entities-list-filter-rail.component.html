@@ -1,6 +1,12 @@
-<aside class="entities-filter-rail ds-panel" [class.is-collapsed]="collapsed" [attr.aria-hidden]="collapsed">
+<aside
+  class="entities-filter-rail ds-panel"
+  [class.is-collapsed]="collapsed"
+  [attr.aria-hidden]="collapsed"
+>
   <div class="entities-filter-rail__section">
-    <label class="entities-filter-rail__label" for="entities-search-main">{{ i18n.t('explorer.search.label') }}</label>
+    <label class="entities-filter-rail__label" for="entities-search-main">{{
+      i18n.t('explorer.search.label')
+    }}</label>
     <input
       id="entities-search-main"
       class="ds-input entities-search entities-filter-rail__search"
@@ -8,7 +14,8 @@
       [placeholder]="i18n.t('explorer.search.placeholder')"
       [attr.aria-label]="i18n.t('explorer.search.aria')"
       [value]="vm.searchQuery"
-      (input)="searchChange.emit($any($event.target).value)" />
+      (input)="searchChange.emit($any($event.target).value)"
+    />
 
     @if (vm.searchQuery) {
       <div class="search-chip search-chip--rail">
@@ -19,20 +26,26 @@
           class="ds-btn search-chip__clear"
           (click)="clearSearch.emit()"
           [attr.aria-label]="i18n.t('explorer.clearSearch')"
-          [title]="i18n.t('explorer.clearSearch')">
+          [title]="i18n.t('explorer.clearSearch')"
+        >
           ✕
         </button>
       </div>
     }
 
     @if (vm.hasVisibleFilterChips) {
-      <app-entities-list-active-filters [chips]="vm.activeFilterChips" (clear)="clearChip.emit($event)"></app-entities-list-active-filters>
+      <app-entities-list-active-filters
+        [chips]="vm.activeFilterChips"
+        (clear)="clearChip.emit($event)"
+      ></app-entities-list-active-filters>
     }
   </div>
 
   @for (select of vm.selects; track select.key) {
     <div class="entities-filter-rail__section">
-      <label class="entities-filter-rail__label" [for]="'entities-filter-' + select.key">{{ select.label }}</label>
+      <label class="entities-filter-rail__label" [for]="'entities-filter-' + select.key">{{
+        select.label
+      }}</label>
       <div class="entities-filter-menu" [class.is-open]="openFilterMenu === select.key">
         <button
           [id]="'entities-filter-' + select.key"
@@ -41,20 +54,26 @@
           [attr.aria-label]="select.ariaLabel"
           [attr.aria-expanded]="openFilterMenu === select.key"
           aria-haspopup="listbox"
-          (click)="toggleMenu.emit(select.key)">
+          (click)="toggleMenu.emit(select.key)"
+        >
           <span class="entities-filter-menu__value">{{ select.selectedLabel }}</span>
           <span class="entities-filter-menu__chevron" aria-hidden="true"></span>
         </button>
 
         @if (openFilterMenu === select.key) {
-          <div class="entities-filter-menu__panel ds-panel" role="listbox" [attr.aria-label]="select.optionsLabel">
+          <div
+            class="entities-filter-menu__panel ds-panel"
+            role="listbox"
+            [attr.aria-label]="select.optionsLabel"
+          >
             <button
               type="button"
               class="entities-filter-menu__option"
               [class.is-selected]="!select.selectedValue"
               [attr.aria-selected]="!select.selectedValue"
               role="option"
-              (click)="selectOption.emit({ key: select.key, value: '' })">
+              (click)="selectOption.emit({ key: select.key, value: '' })"
+            >
               {{ select.allLabel }}
             </button>
 
@@ -65,7 +84,8 @@
                 [class.is-selected]="select.selectedValue === option.slug"
                 [attr.aria-selected]="select.selectedValue === option.slug"
                 role="option"
-                (click)="selectOption.emit({ key: select.key, value: option.slug })">
+                (click)="selectOption.emit({ key: select.key, value: option.slug })"
+              >
                 {{ option.label }}
               </button>
             }
@@ -78,11 +98,21 @@
   <div class="entities-filter-rail__section">
     <div class="entities-filter-rail__label">{{ i18n.t('explorer.sort') }}</div>
     <div class="entities-filter-rail__chips entities-filter-rail__chips--compact">
-      <button type="button" class="filter-chip" [class.is-active]="vm.sort === 'recent'" (click)="sortChange.emit('recent')">
+      <button
+        type="button"
+        class="filter-chip"
+        [class.is-active]="vm.sort === 'recent'"
+        (click)="sortChange.emit('recent')"
+      >
         {{ i18n.t('explorer.sort.recent') }}
       </button>
 
-      <button type="button" class="filter-chip" [class.is-active]="vm.sort === 'title'" (click)="sortChange.emit('title')">
+      <button
+        type="button"
+        class="filter-chip"
+        [class.is-active]="vm.sort === 'title'"
+        (click)="sortChange.emit('title')"
+      >
         {{ i18n.t('explorer.sort.title') }}
       </button>
 
@@ -92,7 +122,8 @@
         [class.is-active]="vm.sort === 'relevance'"
         [disabled]="!vm.canSortByRelevance"
         (click)="sortChange.emit('relevance')"
-        [title]="i18n.t('explorer.sort.relevanceHint')">
+        [title]="i18n.t('explorer.sort.relevanceHint')"
+      >
         {{ i18n.t('explorer.sort.relevance') }}
       </button>
     </div>
@@ -100,12 +131,14 @@
 
   <div
     class="entities-filter-rail__section entities-filter-rail__section--advanced"
-    [class.is-open]="advancedFiltersOpen || vm.hasAdvancedFilters">
+    [class.is-open]="advancedFiltersOpen || vm.hasAdvancedFilters"
+  >
     <button
       type="button"
       class="entities-advanced-toggle"
       (click)="toggleAdvancedFilters.emit()"
-      [attr.aria-expanded]="advancedFiltersOpen || vm.hasAdvancedFilters">
+      [attr.aria-expanded]="advancedFiltersOpen || vm.hasAdvancedFilters"
+    >
       <span class="entities-filter-rail__label">{{ i18n.t('explorer.advancedFilters') }}</span>
       <span class="entities-advanced-toggle__meta">
         @if (vm.hasAdvancedFilters) {
@@ -121,16 +154,36 @@
         <div class="entities-filter-rail__group">
           <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.editorialStatus') }}</div>
           <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
-            <button type="button" class="filter-chip filter-chip--secondary" [class.is-active]="vm.status === 'DRAFT'" (click)="statusChange.emit('DRAFT')">
+            <button
+              type="button"
+              class="filter-chip filter-chip--secondary"
+              [class.is-active]="vm.status === 'DRAFT'"
+              (click)="statusChange.emit('DRAFT')"
+            >
               {{ i18n.t('status.draft') }}
             </button>
-            <button type="button" class="filter-chip filter-chip--secondary" [class.is-active]="vm.status === 'IN_REVIEW'" (click)="statusChange.emit('IN_REVIEW')">
+            <button
+              type="button"
+              class="filter-chip filter-chip--secondary"
+              [class.is-active]="vm.status === 'IN_REVIEW'"
+              (click)="statusChange.emit('IN_REVIEW')"
+            >
               {{ i18n.t('status.inReview') }}
             </button>
-            <button type="button" class="filter-chip filter-chip--secondary" [class.is-active]="vm.status === 'PUBLISHED'" (click)="statusChange.emit('PUBLISHED')">
+            <button
+              type="button"
+              class="filter-chip filter-chip--secondary"
+              [class.is-active]="vm.status === 'PUBLISHED'"
+              (click)="statusChange.emit('PUBLISHED')"
+            >
               {{ i18n.t('status.published') }}
             </button>
-            <button type="button" class="filter-chip filter-chip--ghost filter-chip--secondary" [class.is-active]="!vm.status" (click)="statusChange.emit('')">
+            <button
+              type="button"
+              class="filter-chip filter-chip--ghost filter-chip--secondary"
+              [class.is-active]="!vm.status"
+              (click)="statusChange.emit('')"
+            >
               {{ i18n.t('common.all') }}
             </button>
           </div>
@@ -139,16 +192,36 @@
         <div class="entities-filter-rail__group">
           <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.readingLevel') }}</div>
           <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
-            <button type="button" class="filter-chip filter-chip--secondary" [class.is-active]="vm.contentLevel === 'BASIC'" (click)="contentLevelChange.emit('BASIC')">
+            <button
+              type="button"
+              class="filter-chip filter-chip--secondary"
+              [class.is-active]="vm.contentLevel === 'BASIC'"
+              (click)="contentLevelChange.emit('BASIC')"
+            >
               {{ i18n.t('level.basic') }}
             </button>
-            <button type="button" class="filter-chip filter-chip--secondary" [class.is-active]="vm.contentLevel === 'INTERMEDIATE'" (click)="contentLevelChange.emit('INTERMEDIATE')">
+            <button
+              type="button"
+              class="filter-chip filter-chip--secondary"
+              [class.is-active]="vm.contentLevel === 'INTERMEDIATE'"
+              (click)="contentLevelChange.emit('INTERMEDIATE')"
+            >
               {{ i18n.t('level.intermediate') }}
             </button>
-            <button type="button" class="filter-chip filter-chip--secondary" [class.is-active]="vm.contentLevel === 'ADVANCED'" (click)="contentLevelChange.emit('ADVANCED')">
+            <button
+              type="button"
+              class="filter-chip filter-chip--secondary"
+              [class.is-active]="vm.contentLevel === 'ADVANCED'"
+              (click)="contentLevelChange.emit('ADVANCED')"
+            >
               {{ i18n.t('level.advanced') }}
             </button>
-            <button type="button" class="filter-chip filter-chip--ghost filter-chip--secondary" [class.is-active]="!vm.contentLevel" (click)="contentLevelChange.emit('')">
+            <button
+              type="button"
+              class="filter-chip filter-chip--ghost filter-chip--secondary"
+              [class.is-active]="!vm.contentLevel"
+              (click)="contentLevelChange.emit('')"
+            >
               {{ i18n.t('common.all') }}
             </button>
           </div>
@@ -159,7 +232,11 @@
 
   @if (vm.hasActiveFilters) {
     <div class="entities-filter-rail__section entities-filter-rail__section--actions">
-      <button type="button" class="ds-btn entities-filter-rail__reset" (click)="resetFilters.emit()">
+      <button
+        type="button"
+        class="ds-btn entities-filter-rail__reset"
+        (click)="resetFilters.emit()"
+      >
         {{ i18n.t('explorer.resetFilters') }}
       </button>
     </div>

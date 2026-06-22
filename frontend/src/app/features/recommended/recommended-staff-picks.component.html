@@ -32,17 +32,14 @@
       </div>
 
       @if (picks().length > 1) {
-        <div
-          class="recommended-staff__pagination"
-          (click)="$event.preventDefault(); $event.stopPropagation()"
-        >
+        <div class="recommended-staff__pagination">
           @for (staffPick of picks(); track staffPick.id; let index = $index) {
             <button
               type="button"
               class="recommended-staff__dot"
               [class.is-active]="index === selectedIndex()"
               [attr.aria-label]="'Show curation ' + staffPick.title"
-              (click)="selectPick(index)"
+              (click)="selectPick(index); $event.preventDefault(); $event.stopPropagation()"
             ></button>
           }
         </div>

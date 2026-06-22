@@ -15,6 +15,6 @@ export class BlockedComponent {
 
   logout() {
     this.auth.logout();
-    this.router.navigateByUrl('/login');
+    void this.router.navigateByUrl('/login');
   }
 }

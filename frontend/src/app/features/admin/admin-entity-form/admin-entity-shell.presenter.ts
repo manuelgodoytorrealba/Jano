@@ -87,10 +87,10 @@ export function buildAdminEntitySaveStatusViewModel(input: {
     return {
       label: input.entityLastSavedAt
         ? `Guardado a las ${input.entityLastSavedAt.toLocaleTimeString('es-ES', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        })}`
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          })}`
         : 'Guardado',
       className: 'entity-save-status entity-save-status--saved',
     };
@@ -109,7 +109,10 @@ export function buildAdminEntitySaveStatusViewModel(input: {
   };
 }
 
-function sectionCount(sectionId: DashboardSectionId, input: BuildAdminEntitySidebarSectionsInput): string | null {
+function sectionCount(
+  sectionId: DashboardSectionId,
+  input: BuildAdminEntitySidebarSectionsInput,
+): string | null {
   switch (sectionId) {
     case 'section-content':
       return input.supportsTypedDetails ? 'Base + ficha' : 'Base';
@@ -126,7 +129,10 @@ function sectionCount(sectionId: DashboardSectionId, input: BuildAdminEntitySide
   }
 }
 
-function sectionMeta(sectionId: DashboardSectionId, input: BuildAdminEntitySidebarSectionsInput): string {
+function sectionMeta(
+  sectionId: DashboardSectionId,
+  input: BuildAdminEntitySidebarSectionsInput,
+): string {
   switch (sectionId) {
     case 'section-content':
       return input.supportsTypedDetails

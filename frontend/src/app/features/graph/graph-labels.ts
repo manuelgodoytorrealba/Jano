@@ -43,13 +43,7 @@ export function graphNodeLabelBudget(options: {
     return options.nodeCount;
   }
 
-  let budget = options.scale >= 1.4
-    ? 11
-    : options.scale >= 1.1
-      ? 9
-      : options.scale >= 0.9
-        ? 7
-        : 5;
+  let budget = options.scale >= 1.4 ? 11 : options.scale >= 1.1 ? 9 : options.scale >= 0.9 ? 7 : 5;
 
   if (options.nodeCount >= 18) {
     budget -= 1;
@@ -64,21 +58,12 @@ export function graphNodeLabelBudget(options: {
   return Math.max(4, Math.min(options.nodeCount, budget));
 }
 
-export function graphEdgeLabelBudget(options: {
-  scale: number;
-  edgeCount: number;
-}): number {
+export function graphEdgeLabelBudget(options: { scale: number; edgeCount: number }): number {
   if (options.edgeCount <= 6) {
     return options.edgeCount;
   }
 
-  let budget = options.scale >= 1.4
-    ? 6
-    : options.scale >= 1.1
-      ? 5
-      : options.scale >= 0.9
-        ? 4
-        : 3;
+  let budget = options.scale >= 1.4 ? 6 : options.scale >= 1.1 ? 5 : options.scale >= 0.9 ? 4 : 3;
 
   if (options.edgeCount >= 16) {
     budget -= 1;
@@ -93,7 +78,10 @@ export function graphEdgeLabelBudget(options: {
   return Math.max(1, Math.min(options.edgeCount, budget));
 }
 
-export function selectRankedGraphLabels(candidates: GraphLabelCandidate[], budget: number): Record<string, boolean> {
+export function selectRankedGraphLabels(
+  candidates: GraphLabelCandidate[],
+  budget: number,
+): Record<string, boolean> {
   if (!candidates.length) {
     return {};
   }

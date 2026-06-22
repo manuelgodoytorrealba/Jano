@@ -19,10 +19,10 @@ export function prepareExplorerStateForSlugChange(
     ...state,
     graph: state.graph
       ? {
-        ...state.graph,
-        positions: {},
-        selectedNodeId: null,
-      }
+          ...state.graph,
+          positions: {},
+          selectedNodeId: null,
+        }
       : undefined,
     image: undefined,
   };
@@ -97,29 +97,32 @@ export function restoreResizedImageStageView(options: {
     return null;
   }
 
-  return restoreImageViewport(
-    serializeImageViewport(viewport, previousSize),
-    nextSize,
-    asset,
-    { entityType },
-  );
+  return restoreImageViewport(serializeImageViewport(viewport, previousSize), nextSize, asset, {
+    entityType,
+  });
 }
 
 export function shouldRestoreGraphStageAfterResize(options: {
   previousSize: { width: number; height: number };
   graphViewportReady: boolean;
 }): boolean {
-  return !!options.previousSize.width && !!options.previousSize.height && options.graphViewportReady;
+  return (
+    !!options.previousSize.width && !!options.previousSize.height && options.graphViewportReady
+  );
 }
 
 export function shouldSyncImageStageAfterResize(options: {
   previousSize: { width: number; height: number };
   imageViewportReady: boolean;
 }): boolean {
-  return !!options.previousSize.width && !!options.previousSize.height && options.imageViewportReady;
+  return (
+    !!options.previousSize.width && !!options.previousSize.height && options.imageViewportReady
+  );
 }
 
-export function readMeasuredStageSize(host: HTMLElement | null | undefined): { width: number; height: number } | null {
+export function readMeasuredStageSize(
+  host: HTMLElement | null | undefined,
+): { width: number; height: number } | null {
   if (!host) {
     return null;
   }

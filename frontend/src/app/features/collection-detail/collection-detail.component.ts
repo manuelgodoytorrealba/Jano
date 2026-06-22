@@ -1,15 +1,38 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { EMPTY, Subject, catchError, debounceTime, distinctUntilChanged, map, of, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  EMPTY,
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { CollectionsApi, Collection } from '../../core/api/collections.api';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { GraphResponseDto } from '../graph/graph.models';
 import { GraphComponent } from '../graph/graph.component';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
-import { resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
+import {
+  MediaLike,
+  resolveEntityMediaItem,
+  selectPrimaryVisualMedia,
+} from '../../shared/media/media.utils';
 
 type WorkspaceMode = 'split' | 'image' | 'graph';
 
@@ -21,7 +44,7 @@ type WorkspaceMode = 'split' | 'image' | 'graph';
   templateUrl: './collection-detail.component.html',
   styleUrls: ['./collection-detail.component.scss'],
 })
-export class CollectionDetailComponent {
+export class CollectionDetailComponent implements OnDestroy {
   private readonly api = inject(CollectionsApi);
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(SeoService);
@@ -51,36 +74,38 @@ export class CollectionDetailComponent {
     { value: 'graph', labelKey: 'workspace.graph' },
   ];
 
-  private readonly notesSaveSub = this.notesInput$.pipe(
-    debounceTime(700),
-    map((notes) => this.normalizeNotes(notes)),
-    distinctUntilChanged(),
-    switchMap((notes) => {
-      if (!this.currentCollectionId || notes === this.lastSavedNotes) {
-        this.notesStatus = 'idle';
-        this.cdr.markForCheck();
-        return EMPTY;
-      }
-
-      this.notesStatus = 'saving';
-      this.notesError = '';
-      this.cdr.markForCheck();
-
-      return this.api.update(this.currentCollectionId, { notes }).pipe(
-        tap(() => {
-          this.lastSavedNotes = notes;
-          this.notesStatus = 'saved';
-          this.cdr.markForCheck();
-        }),
-        catchError(() => {
-          this.notesStatus = 'error';
-          this.notesError = 'No se pudieron guardar las notas.';
+  private readonly notesSaveSub = this.notesInput$
+    .pipe(
+      debounceTime(700),
+      map((notes) => this.normalizeNotes(notes)),
+      distinctUntilChanged(),
+      switchMap((notes) => {
+        if (!this.currentCollectionId || notes === this.lastSavedNotes) {
+          this.notesStatus = 'idle';
           this.cdr.markForCheck();
           return EMPTY;
-        }),
-      );
-    }),
-  ).subscribe();
+        }
+
+        this.notesStatus = 'saving';
+        this.notesError = '';
+        this.cdr.markForCheck();
+
+        return this.api.update(this.currentCollectionId, { notes }).pipe(
+          tap(() => {
+            this.lastSavedNotes = notes;
+            this.notesStatus = 'saved';
+            this.cdr.markForCheck();
+          }),
+          catchError(() => {
+            this.notesStatus = 'error';
+            this.notesError = 'No se pudieron guardar las notas.';
+            this.cdr.markForCheck();
+            return EMPTY;
+          }),
+        );
+      }),
+    )
+    .subscribe();
 
   readonly collection$ = this.route.paramMap.pipe(
     map((params) => params.get('id') ?? ''),
@@ -98,7 +123,9 @@ export class CollectionDetailComponent {
           this.notesError = '';
           this.seo.setPageMeta({
             title: `${collection.name} | JANO`,
-            description: collection.description ?? `Coleccion personal con ${collection.itemCount} entidades en JANO.`,
+            description:
+              collection.description ??
+              `Coleccion personal con ${collection.itemCount} entidades en JANO.`,
             path: `/collections/${collection.id}`,
           });
         }),
@@ -116,11 +143,13 @@ export class CollectionDetailComponent {
     this.workspaceMode = mode;
   }
 
-  coverMedia(collection: Collection): any | null {
-    return collection.coverMedia
-      ?? resolveEntityMediaItem(collection.items[0]?.entity, 'detail')
-      ?? selectPrimaryVisualMedia(collection.items[0]?.entity)
-      ?? null;
+  coverMedia(collection: Collection): MediaLike | null {
+    return (
+      collection.coverMedia ??
+      resolveEntityMediaItem(collection.items[0]?.entity, 'detail') ??
+      selectPrimaryVisualMedia(collection.items[0]?.entity) ??
+      null
+    );
   }
 
   coverAlt(collection: Collection): string {
@@ -210,7 +239,10 @@ export class CollectionDetailComponent {
   }
 
   relationLabel(type: string): string {
-    return (type ?? '').toLowerCase().split('_').filter(Boolean)
+    return (type ?? '')
+      .toLowerCase()
+      .split('_')
+      .filter(Boolean)
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(' ');
   }

@@ -1,1055 +1,1060 @@
 :host {
-    display: block;
-    --deck-viewport-height: var(--app-immersive-height, var(--app-viewport-height, var(--app-real-viewport-height, 100%)));
-    --deck-content-height: var(--deck-viewport-height);
-    --deck-card-width: min(760px, 68vw);
-    --deck-card-height: clamp(350px, 26vw, 400px);
-    --deck-stack-height: clamp(330px, 35vw, 430px);
-    --deck-card-transform-duration: 300ms;
-    --deck-card-opacity-duration: 220ms;
-    --deck-card-shadow-duration: 220ms;
-    --deck-rail-safe-zone: clamp(92px, 8vw, 118px);
-    --deck-nav-edge-gap: clamp(26px, 2.4vw, 40px);
-    --deck-top-safe-space: 92px;
-    --deck-bottom-safe-space: 104px;
-    --deck-side-safe-space: clamp(48px, 5vw, 80px);
-    --deck-nav-size: 56px;
-    --deck-bottom-nav-offset: 18px;
-    --deck-dots-offset: 72px;
-    --deck-mobile-editorial-stage-top: calc(var(--app-safe-top) + 58px);
-    --deck-mobile-editorial-stage-side: 10px;
-    --deck-mobile-editorial-stage-bottom: calc(var(--app-safe-bottom) + 64px);
-    --deck-mobile-editorial-stack-top: 0px;
-    --deck-mobile-editorial-card-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
-    --deck-mobile-editorial-media-bottom-cut: 34%;
-    --deck-mobile-editorial-image-filter: saturate(1.035) contrast(1.03) brightness(1.015);
-    --deck-mobile-editorial-body-padding: 16px 18px 20px;
-    --deck-mobile-editorial-content-lift: 10px;
-    --deck-mobile-editorial-title-lift: 0px;
-    --deck-mobile-editorial-title-gap: 10px;
-    --deck-mobile-editorial-title-max-width: 9ch;
+  display: block;
+  --deck-viewport-height: var(
+    --app-immersive-height,
+    var(--app-viewport-height, var(--app-real-viewport-height, 100%))
+  );
+  --deck-content-height: var(--deck-viewport-height);
+  --deck-card-width: min(760px, 68vw);
+  --deck-card-height: clamp(350px, 26vw, 400px);
+  --deck-stack-height: clamp(330px, 35vw, 430px);
+  --deck-card-transform-duration: 300ms;
+  --deck-card-opacity-duration: 220ms;
+  --deck-card-shadow-duration: 220ms;
+  --deck-rail-safe-zone: clamp(92px, 8vw, 118px);
+  --deck-nav-edge-gap: clamp(26px, 2.4vw, 40px);
+  --deck-top-safe-space: 92px;
+  --deck-bottom-safe-space: 104px;
+  --deck-side-safe-space: clamp(48px, 5vw, 80px);
+  --deck-nav-size: 56px;
+  --deck-bottom-nav-offset: 18px;
+  --deck-dots-offset: 72px;
+  --deck-mobile-editorial-stage-top: calc(var(--app-safe-top) + 58px);
+  --deck-mobile-editorial-stage-side: 10px;
+  --deck-mobile-editorial-stage-bottom: calc(var(--app-safe-bottom) + 64px);
+  --deck-mobile-editorial-stack-top: 0px;
+  --deck-mobile-editorial-card-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+  --deck-mobile-editorial-media-bottom-cut: 34%;
+  --deck-mobile-editorial-image-filter: saturate(1.035) contrast(1.03) brightness(1.015);
+  --deck-mobile-editorial-body-padding: 16px 18px 20px;
+  --deck-mobile-editorial-content-lift: 10px;
+  --deck-mobile-editorial-title-lift: 0px;
+  --deck-mobile-editorial-title-gap: 10px;
+  --deck-mobile-editorial-title-max-width: 9ch;
 }
 
 .entity-deck {
-    width: 100%;
+  width: 100%;
 }
 
 .entity-deck--viewport {
-    min-height: var(--deck-viewport-height);
-    height: var(--deck-viewport-height);
-    display: flex;
+  min-height: var(--deck-viewport-height);
+  height: var(--deck-viewport-height);
+  display: flex;
 }
 
 .entity-deck--viewport .entity-deck__shell {
-    min-height: var(--deck-viewport-height);
-    height: var(--deck-viewport-height);
-    border-radius: 0;
+  min-height: var(--deck-viewport-height);
+  height: var(--deck-viewport-height);
+  border-radius: 0;
 }
 
 .entity-deck--viewport .entity-deck__stage {
-    min-height: var(--deck-content-height);
-    height: var(--deck-content-height);
+  min-height: var(--deck-content-height);
+  height: var(--deck-content-height);
 }
 
 .entity-deck--viewport {
-    --deck-top-safe-space: 96px;
-    --deck-bottom-safe-space: 116px;
-    --deck-bottom-nav-offset: 18px;
-    --deck-dots-offset: 112px;
+  --deck-top-safe-space: 96px;
+  --deck-bottom-safe-space: 116px;
+  --deck-bottom-nav-offset: 18px;
+  --deck-dots-offset: 112px;
 }
 
 .entity-deck__shell {
-    position: relative;
-    min-height: clamp(660px, var(--deck-content-height), 840px);
-    width: 100%;
-    border-radius: 36px;
-    overflow: hidden;
-    background: var(--app-background-base);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow:
-        0 48px 120px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  min-height: clamp(660px, var(--deck-content-height), 840px);
+  width: 100%;
+  border-radius: 36px;
+  overflow: hidden;
+  background: var(--app-background-base);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 48px 120px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .entity-deck__bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    filter:
-        blur(var(--app-background-blur))
-        saturate(var(--app-background-saturate))
-        brightness(var(--app-background-brightness));
-    transform: scale(var(--app-background-scale));
-    opacity: var(--app-background-opacity);
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(var(--app-background-blur)) saturate(var(--app-background-saturate))
+    brightness(var(--app-background-brightness));
+  transform: scale(var(--app-background-scale));
+  opacity: var(--app-background-opacity);
 }
 
 .entity-deck__overlay {
-    position: absolute;
-    inset: 0;
-    background: var(--app-background-overlay);
-    pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: var(--app-background-overlay);
+  pointer-events: none;
 }
 
 .entity-deck__stage {
-    position: relative;
-    z-index: 2;
-    min-height: clamp(600px, var(--deck-content-height), 680px);
-    display: grid;
-    place-items: center;
-    padding:
-        var(--deck-top-safe-space) var(--deck-side-safe-space) var(--deck-bottom-safe-space);
-    touch-action: pan-y;
+  position: relative;
+  z-index: 2;
+  min-height: clamp(600px, var(--deck-content-height), 680px);
+  display: grid;
+  place-items: center;
+  padding: var(--deck-top-safe-space) var(--deck-side-safe-space) var(--deck-bottom-safe-space);
+  touch-action: pan-y;
 }
 
 .entity-deck__stack {
-    position: relative;
-    width: 100%;
-    height: var(--deck-stack-height);
-    display: grid;
-    place-items: center;
-    perspective: 1600px;
-    transform-style: preserve-3d;
+  position: relative;
+  width: 100%;
+  height: var(--deck-stack-height);
+  display: grid;
+  place-items: center;
+  perspective: 1600px;
+  transform-style: preserve-3d;
 }
 
 .entity-deck__card {
-    position: absolute;
-    width: var(--deck-card-width);
-    height: var(--deck-card-height);
-    display: grid;
-    grid-template-columns: 1.06fr 0.94fr;
-    border-radius: 32px;
-    overflow: hidden;
-    cursor: pointer;
-    isolation: isolate;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)),
-        rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    contain: layout paint style;
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    backdrop-filter: blur(18px) saturate(1.12);
-    -webkit-backdrop-filter: blur(18px) saturate(1.12);
-    box-shadow:
-        0 34px 90px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.28),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-    transition:
-        transform var(--deck-card-transform-duration) cubic-bezier(.2, .8, .2, 1),
-        opacity var(--deck-card-opacity-duration) ease,
-        box-shadow var(--deck-card-shadow-duration) ease;
+  position: absolute;
+  width: var(--deck-card-width);
+  height: var(--deck-card-height);
+  display: grid;
+  grid-template-columns: 1.06fr 0.94fr;
+  border-radius: 32px;
+  overflow: hidden;
+  cursor: pointer;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  contain: layout paint style;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
+  box-shadow:
+    0 34px 90px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  transition:
+    transform var(--deck-card-transform-duration) cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity var(--deck-card-opacity-duration) ease,
+    box-shadow var(--deck-card-shadow-duration) ease;
 }
 
 .entity-deck__card:not(.is-active) {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
-        rgba(255, 255, 255, 0.03);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.03);
 }
 
 .entity-deck__card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.10),
-            rgba(255, 255, 255, 0.03) 38%,
-            transparent 58%);
-    pointer-events: none;
-    z-index: 1;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.03) 38%,
+    transparent 58%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .entity-deck__media,
 .entity-deck__body {
-    position: relative;
-    z-index: 2;
+  position: relative;
+  z-index: 2;
 }
 
 .entity-deck__media {
-    background: rgba(255, 255, 255, 0.06);
-    overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
 }
 
 .entity-deck__media app-jano-media {
-    display: block;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
+  display: block;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
 }
 
 .entity-deck__body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 26px 26px 24px;
-    color: rgba(255, 255, 255, 0.97);
-    background:
-        linear-gradient(180deg, rgba(242, 241, 238, 0.06), rgba(242, 241, 238, 0.02)),
-        rgba(20, 20, 20, 0.78);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 26px 26px 24px;
+  color: rgba(255, 255, 255, 0.97);
+  background:
+    linear-gradient(180deg, rgba(242, 241, 238, 0.06), rgba(242, 241, 238, 0.02)),
+    rgba(20, 20, 20, 0.78);
 }
 
 .entity-deck__card:not(.is-active) .entity-deck__body {
-    background: rgba(20, 20, 20, 0.66);
+  background: rgba(20, 20, 20, 0.66);
 }
 
 .entity-deck__topline {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 .entity-deck__top-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .entity-deck__eyebrow {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: var(--tracking-ui);
-    text-transform: uppercase;
-    color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-ui);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
 .entity-deck__chip {
-    height: 38px;
-    padding: 0 16px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.26);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
-        rgba(255, 255, 255, 0.06);
-    color: var(--color-text);
-    font-size: 0.86rem;
-    font-weight: 500;
-    cursor: pointer;
-    backdrop-filter: blur(12px) saturate(1.08);
-    -webkit-backdrop-filter: blur(12px) saturate(1.08);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.26),
-        0 8px 24px rgba(0, 0, 0, 0.18);
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.06);
+  color: var(--color-text);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(12px) saturate(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .entity-deck__admin-edit {
-    width: 38px;
-    height: 38px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.26);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
-        rgba(255, 255, 255, 0.06);
-    color: var(--color-text);
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    backdrop-filter: blur(12px) saturate(1.08);
-    -webkit-backdrop-filter: blur(12px) saturate(1.08);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.26),
-        0 8px 24px rgba(0, 0, 0, 0.18);
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.06);
+  color: var(--color-text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  backdrop-filter: blur(12px) saturate(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 .entity-deck__admin-edit-icon {
-    width: 18px;
-    height: 18px;
-    display: block;
-    overflow: visible;
-    color: rgba(255, 247, 239, 0.9);
-    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.16)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.23));
+  width: 18px;
+  height: 18px;
+  display: block;
+  overflow: visible;
+  color: rgba(255, 247, 239, 0.9);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.16)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.23));
 }
 
 .entity-deck__admin-edit-hole {
-    fill: rgba(34, 35, 34, 0.72);
-    stroke: rgba(255, 247, 239, 0.28);
-    stroke-width: 0.7;
+  fill: rgba(34, 35, 34, 0.72);
+  stroke: rgba(255, 247, 239, 0.28);
+  stroke-width: 0.7;
 }
 
 .entity-deck__title {
-    font-family: var(--font-sans);
-    font-weight: 800;
-    margin: 0;
-    font-size: clamp(2.35rem, 3.4vw, 4.25rem);
-    line-height: 0.94;
-    letter-spacing: var(--tracking-tight);
-    color: var(--color-text);
-    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.18);
+  font-family: var(--font-sans);
+  font-weight: 800;
+  margin: 0;
+  font-size: clamp(2.35rem, 3.4vw, 4.25rem);
+  line-height: 0.94;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.18);
 }
 
 .entity-deck__description {
-    margin: 14px 0 0;
-    font-size: 1rem;
-    line-height: var(--lh-relaxed);
-    color: var(--color-text-soft);
-    max-width: 32ch;
+  margin: 14px 0 0;
+  font-size: 1rem;
+  line-height: var(--lh-relaxed);
+  color: var(--color-text-soft);
+  max-width: 32ch;
 }
 
 .entity-deck__footer {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .entity-deck__meta {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
-
 .entity-deck__cta {
-    font-size: 0.94rem;
-    font-weight: 600;
-    color: var(--color-text);
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 :host-context([data-theme='light']) {
-    .entity-deck__title,
-    .entity-deck__cta {
-        color: rgba(247, 244, 240, 0.98);
-    }
+  .entity-deck__title,
+  .entity-deck__cta {
+    color: rgba(247, 244, 240, 0.98);
+  }
 
-    .entity-deck__description {
-        color: rgba(242, 241, 238, 0.76);
-    }
+  .entity-deck__description {
+    color: rgba(242, 241, 238, 0.76);
+  }
 
-    .entity-deck__eyebrow,
-    .entity-deck__meta {
-        color: rgba(242, 241, 238, 0.62);
-    }
+  .entity-deck__eyebrow,
+  .entity-deck__meta {
+    color: rgba(242, 241, 238, 0.62);
+  }
 }
 
 .entity-deck__rail {
-    position: absolute;
-    z-index: 4;
-    left: 22px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: grid;
-    gap: 10px;
-    padding: 12px 8px 14px;
-    border-radius: 999px;
-    contain: layout paint style;
-    backdrop-filter: blur(16px) saturate(1.12);
-    -webkit-backdrop-filter: blur(16px) saturate(1.12);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07)),
-        rgba(22, 22, 28, 0.28);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow:
-        0 18px 44px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.28),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  position: absolute;
+  z-index: 4;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 10px;
+  padding: 12px 8px 14px;
+  border-radius: 999px;
+  contain: layout paint style;
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07)),
+    rgba(22, 22, 28, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .entity-deck__rail-btn {
-    width: 46px;
-    height: 46px;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--color-text-soft);
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    transition:
-        transform 200ms ease,
-        background 200ms ease,
-        border-color 200ms ease,
-        box-shadow 200ms ease,
-        color 200ms ease;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-soft);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    transform 200ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    color 200ms ease;
 }
 
 .entity-deck__rail-btn.is-active {
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07)),
-        rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.16);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        0 4px 12px rgba(0, 0, 0, 0.12);
-    color: var(--color-text);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07)),
+    rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.12);
+  color: var(--color-text);
 }
 
 .entity-deck__rail-icon {
-    width: 22px;
-    height: 22px;
-    display: block;
-    opacity: 0.98;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12));
+  width: 22px;
+  height: 22px;
+  display: block;
+  opacity: 0.98;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12));
 }
 
 .entity-deck__nav {
-    position: absolute;
-    z-index: 4;
-    top: 50%;
-    transform: translateY(-50%);
-    width: var(--deck-nav-size);
-    height: var(--deck-nav-size);
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    contain: layout paint style;
-    backdrop-filter: blur(14px) saturate(1.1);
-    -webkit-backdrop-filter: blur(14px) saturate(1.1);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
-        rgba(22, 22, 28, 0.28);
-    color: var(--color-text);
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.24),
-        inset 0 1px 0 rgba(255, 255, 255, 0.30),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-    transition:
-        transform 220ms ease,
-        background 220ms ease,
-        box-shadow 220ms ease,
-        border-color 220ms ease,
-        color 220ms ease;
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--deck-nav-size);
+  height: var(--deck-nav-size);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  contain: layout paint style;
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+    rgba(22, 22, 28, 0.28);
+  color: var(--color-text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  transition:
+    transform 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
 }
 
 .entity-deck__nav::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.22), transparent 60%);
-    opacity: 0.4;
-    pointer-events: none;
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.22), transparent 60%);
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .entity-deck__nav:hover {
-    transform: translateY(-50%) scale(1.06);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.09)),
-        rgba(22, 22, 28, 0.32);
-    box-shadow:
-        0 18px 60px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  transform: translateY(-50%) scale(1.06);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.09)),
+    rgba(22, 22, 28, 0.32);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38);
 }
 
 .entity-deck__nav-icon {
-    width: 22px;
-    height: 22px;
-    display: block;
-    opacity: 0.98;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12));
+  width: 22px;
+  height: 22px;
+  display: block;
+  opacity: 0.98;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12));
 }
 
 .entity-deck__nav--left {
-    left: calc(var(--deck-rail-safe-zone) + var(--deck-nav-edge-gap));
+  left: calc(var(--deck-rail-safe-zone) + var(--deck-nav-edge-gap));
 }
 
 .entity-deck__nav--right {
-    right: calc(var(--deck-rail-safe-zone) + var(--deck-nav-edge-gap));
+  right: calc(var(--deck-rail-safe-zone) + var(--deck-nav-edge-gap));
 }
 
 .entity-deck__bottom-nav {
-    position: absolute;
-    z-index: 5;
-    left: 50%;
-    bottom: var(--deck-bottom-nav-offset);
-    transform: translateX(-50%);
-    width: min(540px, calc(100% - 40px));
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: var(--deck-bottom-nav-offset);
+  transform: translateX(-50%);
+  width: min(540px, calc(100% - 40px));
 }
 
 .entity-deck__bottom-glass {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px 12px;
-    border-radius: 22px;
-    contain: layout paint style;
-    backdrop-filter: blur(16px) saturate(1.1);
-    -webkit-backdrop-filter: blur(16px) saturate(1.1);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06)),
-        rgba(18, 18, 24, 0.34);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow:
-        0 22px 58px rgba(0, 0, 0, 0.33),
-        inset 0 1px 0 rgba(255, 255, 255, 0.26);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 22px;
+  contain: layout paint style;
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06)),
+    rgba(18, 18, 24, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.33),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
 }
 
 .entity-deck__search {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    height: 42px;
-    padding: 0 13px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .entity-deck__search-icon {
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 1rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1rem;
 }
 
 .entity-deck__search input {
-    flex: 1;
-    min-width: 0;
-    background: transparent;
-    border: 0;
-    outline: none;
-    color: var(--color-text);
-    font-size: 0.94rem;
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--color-text);
+  font-size: 0.94rem;
 }
 
 .entity-deck__search input::placeholder {
-    color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .entity-deck__tabs {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .entity-deck__tab {
-    height: 38px;
-    padding: 0 16px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--color-text-soft);
-    font-size: 0.86rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition:
-        transform 180ms ease,
-        background 180ms ease,
-        border-color 180ms ease;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-soft);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
 }
 
 .entity-deck__tab:hover {
-    transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .entity-deck__tab.is-active {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.24);
-    color: var(--color-text);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: var(--color-text);
 }
 
 .entity-deck__tab--icon {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .entity-deck__dots {
-    position: absolute;
-    z-index: 3;
-    left: 50%;
-    bottom: var(--deck-dots-offset);
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-    align-items: center;
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: var(--deck-dots-offset);
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .entity-deck__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(255, 255, 255, 0.16);
-    cursor: pointer;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.16);
+  cursor: pointer;
 }
 
 .entity-deck__dot.is-active {
-    width: 24px;
-    background: rgba(255, 255, 255, 0.82);
+  width: 24px;
+  background: rgba(255, 255, 255, 0.82);
 }
 
 @media (min-width: 1500px) {
-    :host {
-        --deck-rail-safe-zone: 112px;
-        --deck-nav-edge-gap: 44px;
-        --deck-top-safe-space: 96px;
-        --deck-bottom-safe-space: 122px;
-        --deck-side-safe-space: 100px;
-        --deck-bottom-nav-offset: 20px;
-        --deck-dots-offset: 114px;
-        --deck-card-width: min(780px, 58vw);
-        --deck-card-height: 384px;
-        --deck-stack-height: 412px;
-    }
+  :host {
+    --deck-rail-safe-zone: 112px;
+    --deck-nav-edge-gap: 44px;
+    --deck-top-safe-space: 96px;
+    --deck-bottom-safe-space: 122px;
+    --deck-side-safe-space: 100px;
+    --deck-bottom-nav-offset: 20px;
+    --deck-dots-offset: 114px;
+    --deck-card-width: min(780px, 58vw);
+    --deck-card-height: 384px;
+    --deck-stack-height: 412px;
+  }
 
-    .entity-deck__shell {
-        min-height: clamp(660px, var(--deck-content-height), 740px);
-    }
+  .entity-deck__shell {
+    min-height: clamp(660px, var(--deck-content-height), 740px);
+  }
 
-    .entity-deck__stage {
-        min-height: clamp(660px, var(--deck-content-height), 740px);
-    }
+  .entity-deck__stage {
+    min-height: clamp(660px, var(--deck-content-height), 740px);
+  }
 }
 
 @media (max-width: 1280px) {
-    :host {
-        --deck-rail-safe-zone: 94px;
-        --deck-nav-edge-gap: 24px;
-        --deck-top-safe-space: 78px;
-        --deck-bottom-safe-space: 116px;
-        --deck-side-safe-space: 62px;
-        --deck-bottom-nav-offset: 18px;
-        --deck-dots-offset: 108px;
-        --deck-card-width: min(680px, 72vw);
-        --deck-card-height: 354px;
-        --deck-stack-height: 372px;
-    }
+  :host {
+    --deck-rail-safe-zone: 94px;
+    --deck-nav-edge-gap: 24px;
+    --deck-top-safe-space: 78px;
+    --deck-bottom-safe-space: 116px;
+    --deck-side-safe-space: 62px;
+    --deck-bottom-nav-offset: 18px;
+    --deck-dots-offset: 108px;
+    --deck-card-width: min(680px, 72vw);
+    --deck-card-height: 354px;
+    --deck-stack-height: 372px;
+  }
 
-    .entity-deck__shell {
-        min-height: clamp(600px, var(--deck-content-height), 660px);
-    }
+  .entity-deck__shell {
+    min-height: clamp(600px, var(--deck-content-height), 660px);
+  }
 
-    .entity-deck__stage {
-        min-height: clamp(600px, var(--deck-content-height), 660px);
-    }
+  .entity-deck__stage {
+    min-height: clamp(600px, var(--deck-content-height), 660px);
+  }
 
-    .entity-deck__bottom-nav {
-        width: min(560px, calc(100% - 36px));
-    }
+  .entity-deck__bottom-nav {
+    width: min(560px, calc(100% - 36px));
+  }
 }
 
 @media (max-width: 1100px) {
-    :host {
-        --deck-rail-safe-zone: 88px;
-        --deck-nav-edge-gap: 18px;
-        --deck-top-safe-space: 68px;
-        --deck-bottom-safe-space: 106px;
-        --deck-side-safe-space: 50px;
-        --deck-bottom-nav-offset: 16px;
-        --deck-dots-offset: 98px;
-        --deck-card-width: min(620px, 76vw);
-        --deck-card-height: 332px;
-        --deck-stack-height: 346px;
-        --deck-nav-size: 48px;
-    }
+  :host {
+    --deck-rail-safe-zone: 88px;
+    --deck-nav-edge-gap: 18px;
+    --deck-top-safe-space: 68px;
+    --deck-bottom-safe-space: 106px;
+    --deck-side-safe-space: 50px;
+    --deck-bottom-nav-offset: 16px;
+    --deck-dots-offset: 98px;
+    --deck-card-width: min(620px, 76vw);
+    --deck-card-height: 332px;
+    --deck-stack-height: 346px;
+    --deck-nav-size: 48px;
+  }
 
-    .entity-deck__shell {
-        min-height: clamp(560px, var(--deck-content-height), 620px);
-    }
+  .entity-deck__shell {
+    min-height: clamp(560px, var(--deck-content-height), 620px);
+  }
 
-    .entity-deck__stage {
-        min-height: clamp(560px, var(--deck-content-height), 620px);
-    }
+  .entity-deck__stage {
+    min-height: clamp(560px, var(--deck-content-height), 620px);
+  }
 
-    .entity-deck__body {
-        padding: 20px 20px 18px;
-    }
+  .entity-deck__body {
+    padding: 20px 20px 18px;
+  }
 
-    .entity-deck__title {
-        font-size: clamp(1.65rem, 2vw, 2.35rem);
-    }
+  .entity-deck__title {
+    font-size: clamp(1.65rem, 2vw, 2.35rem);
+  }
 
-    .entity-deck__bottom-nav {
-        width: min(520px, calc(100% - 32px));
-    }
+  .entity-deck__bottom-nav {
+    width: min(520px, calc(100% - 32px));
+  }
 }
 
 /* FIREFOX: HACER EL PANEL MUCHO MÁS SÓLIDO */
 
 @supports (-moz-appearance: none) {
-    .entity-deck__card {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
-            rgba(42, 42, 48, 0.88);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(8px) saturate(1);
-        -webkit-backdrop-filter: blur(8px) saturate(1);
-        box-shadow:
-            0 30px 90px rgba(0, 0, 0, 0.38),
-            inset 0 1px 0 rgba(255, 255, 255, 0.12),
-            inset 0 -1px 0 rgba(255, 255, 255, 0.03);
-    }
+  .entity-deck__card {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+      rgba(42, 42, 48, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px) saturate(1);
+    -webkit-backdrop-filter: blur(8px) saturate(1);
+    box-shadow:
+      0 30px 90px rgba(0, 0, 0, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+  }
 
-    .entity-deck__card::before {
-        background:
-            linear-gradient(135deg,
-                rgba(255, 255, 255, 0.06),
-                rgba(255, 255, 255, 0.015) 38%,
-                transparent 58%);
-    }
+  .entity-deck__card::before {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.015) 38%,
+      transparent 58%
+    );
+  }
 
-    .entity-deck__body {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
-            rgba(16, 16, 22, 0.78);
-    }
+  .entity-deck__body {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+      rgba(16, 16, 22, 0.78);
+  }
 
-    .entity-deck__title {
-        color: rgba(255, 255, 255, 0.99);
-        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.22);
-    }
+  .entity-deck__title {
+    color: rgba(255, 255, 255, 0.99);
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.22);
+  }
 
-    .entity-deck__description {
-        color: var(--color-text-soft);
-    }
+  .entity-deck__description {
+    color: var(--color-text-soft);
+  }
 
-    .entity-deck__meta {
-        color: rgba(255, 255, 255, 0.68);
-    }
+  .entity-deck__meta {
+    color: rgba(255, 255, 255, 0.68);
+  }
 
-    .entity-deck__cta {
-        color: var(--color-text);
-    }
+  .entity-deck__cta {
+    color: var(--color-text);
+  }
 
-    .entity-deck__chip {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)),
-            rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        backdrop-filter: blur(8px) saturate(1);
-        -webkit-backdrop-filter: blur(8px) saturate(1);
-    }
+  .entity-deck__chip {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)),
+      rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(8px) saturate(1);
+    -webkit-backdrop-filter: blur(8px) saturate(1);
+  }
 
-    .entity-deck__rail {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03)),
-            rgba(18, 18, 24, 0.82);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(10px) saturate(1);
-        -webkit-backdrop-filter: blur(10px) saturate(1);
-    }
+  .entity-deck__rail {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+      rgba(18, 18, 24, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px) saturate(1);
+    -webkit-backdrop-filter: blur(10px) saturate(1);
+  }
 
-    .entity-deck__nav {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03)),
-            rgba(18, 18, 24, 0.82);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(8px) saturate(1);
-        -webkit-backdrop-filter: blur(8px) saturate(1);
-    }
+  .entity-deck__nav {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+      rgba(18, 18, 24, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px) saturate(1);
+    -webkit-backdrop-filter: blur(8px) saturate(1);
+  }
 
-    .entity-deck__bottom-glass {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
-            rgba(16, 16, 22, 0.86);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(10px) saturate(1);
-        -webkit-backdrop-filter: blur(10px) saturate(1);
-    }
+  .entity-deck__bottom-glass {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+      rgba(16, 16, 22, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px) saturate(1);
+    -webkit-backdrop-filter: blur(10px) saturate(1);
+  }
 
-    .entity-deck__search {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+  .entity-deck__search {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .entity-deck__card {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.16)),
-            rgba(255, 255, 255, 0.14);
-    }
+  .entity-deck__card {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.16)),
+      rgba(255, 255, 255, 0.14);
+  }
 
-    .entity-deck__body {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08)),
-            rgba(20, 20, 24, 0.16);
-    }
+  .entity-deck__body {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08)),
+      rgba(20, 20, 24, 0.16);
+  }
 
-    .entity-deck__rail,
-    .entity-deck__nav,
-    .entity-deck__bottom-glass,
-    .entity-deck__chip {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07));
-    }
+  .entity-deck__rail,
+  .entity-deck__nav,
+  .entity-deck__bottom-glass,
+  .entity-deck__chip {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07));
+  }
 
-    .entity-deck__search {
-        background: rgba(255, 255, 255, 0.08);
-    }
+  .entity-deck__search {
+    background: rgba(255, 255, 255, 0.08);
+  }
 }
 
 @media (max-width: 860px) {
-    :host {
-        --deck-top-safe-space: 42px;
-        --deck-bottom-safe-space: 170px;
-        --deck-side-safe-space: 20px;
-        --deck-bottom-nav-offset: 16px;
-        --deck-dots-offset: 112px;
-        --deck-card-width: min(92vw, 520px);
-        --deck-card-height: 400px;
-        --deck-stack-height: 400px;
-        --deck-nav-size: 46px;
-    }
+  :host {
+    --deck-top-safe-space: 42px;
+    --deck-bottom-safe-space: 170px;
+    --deck-side-safe-space: 20px;
+    --deck-bottom-nav-offset: 16px;
+    --deck-dots-offset: 112px;
+    --deck-card-width: min(92vw, 520px);
+    --deck-card-height: 400px;
+    --deck-stack-height: 400px;
+    --deck-nav-size: 46px;
+  }
 
-    .entity-deck__shell {
-        min-height: var(--deck-viewport-height);
-        height: var(--deck-viewport-height);
-        border-radius: 0;
-    }
+  .entity-deck__shell {
+    min-height: var(--deck-viewport-height);
+    height: var(--deck-viewport-height);
+    border-radius: 0;
+  }
 
-    .entity-deck__stage {
-        min-height: var(--deck-content-height);
-        height: var(--deck-content-height);
-    }
+  .entity-deck__stage {
+    min-height: var(--deck-content-height);
+    height: var(--deck-content-height);
+  }
 
-    .entity-deck__card {
-        grid-template-columns: 1fr;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
-            rgba(255, 255, 255, 0.006);
-        box-shadow:
-            0 16px 36px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    }
+  .entity-deck__card {
+    grid-template-columns: 1fr;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+      rgba(255, 255, 255, 0.006);
+    box-shadow:
+      0 16px 36px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
 
-    .entity-deck__media {
-        height: 210px;
-        background: rgba(255, 255, 255, 0.006);
-    }
+  .entity-deck__media {
+    height: 210px;
+    background: rgba(255, 255, 255, 0.006);
+  }
 
-    .entity-deck__nav {
-        font-size: 28px;
-        top: auto;
-        bottom: 136px;
-        transform: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-    }
+  .entity-deck__nav {
+    font-size: 28px;
+    top: auto;
+    bottom: 136px;
+    transform: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 
-    .entity-deck__nav:hover {
-        transform: scale(1.04);
-    }
+  .entity-deck__nav:hover {
+    transform: scale(1.04);
+  }
 
-    .entity-deck__nav--left {
-        left: 16px;
-    }
+  .entity-deck__nav--left {
+    left: 16px;
+  }
 
-    .entity-deck__nav--right {
-        right: 16px;
-    }
+  .entity-deck__nav--right {
+    right: 16px;
+  }
 
-    .entity-deck__rail {
-        left: 16px;
-        top: 20px;
-        transform: none;
-        grid-auto-flow: column;
-        gap: 8px;
-        padding: 8px;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-    }
+  .entity-deck__rail {
+    left: 16px;
+    top: 20px;
+    transform: none;
+    grid-auto-flow: column;
+    gap: 8px;
+    padding: 8px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 
-    .entity-deck__bottom-nav {
-        width: calc(100% - 24px);
-    }
+  .entity-deck__bottom-nav {
+    width: calc(100% - 24px);
+  }
 
-    .entity-deck__bottom-glass {
-        padding: 12px;
-        border-radius: 22px;
-    }
+  .entity-deck__bottom-glass {
+    padding: 12px;
+    border-radius: 22px;
+  }
 
-    .entity-deck__shell {
-        background: transparent;
-        border-color: rgba(255, 255, 255, 0.04);
-        box-shadow:
-            0 22px 52px rgba(0, 0, 0, 0.08),
-            inset 0 1px 0 rgba(255, 255, 255, 0.02);
-    }
+  .entity-deck__shell {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.04);
+    box-shadow:
+      0 22px 52px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  }
 
-    .entity-deck__bg {
-        opacity: 0.08;
-        filter:
-            blur(calc(var(--app-background-blur) * 0.65))
-            saturate(var(--app-background-saturate))
-            brightness(calc(var(--app-background-brightness) + 0.18));
-    }
+  .entity-deck__bg {
+    opacity: 0.08;
+    filter: blur(calc(var(--app-background-blur) * 0.65)) saturate(var(--app-background-saturate))
+      brightness(calc(var(--app-background-brightness) + 0.18));
+  }
 
-    .entity-deck__overlay {
-        background:
-            radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.02), transparent 28%),
-            radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.015), transparent 26%),
-            linear-gradient(180deg, rgba(8, 8, 8, 0.02), rgba(8, 8, 8, 0.08) 42%, rgba(8, 8, 8, 0.14) 100%);
-    }
+  .entity-deck__overlay {
+    background:
+      radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.02), transparent 28%),
+      radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.015), transparent 26%),
+      linear-gradient(
+        180deg,
+        rgba(8, 8, 8, 0.02),
+        rgba(8, 8, 8, 0.08) 42%,
+        rgba(8, 8, 8, 0.14) 100%
+      );
+  }
 
-    .entity-deck__card.is-active .entity-deck__body {
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
-            rgba(20, 20, 20, 0.54);
-    }
+  .entity-deck__card.is-active .entity-deck__body {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+      rgba(20, 20, 20, 0.54);
+  }
 
-    .entity-deck__card:not(.is-active) .entity-deck__body {
-        background: rgba(20, 20, 20, 0.30);
-    }
+  .entity-deck__card:not(.is-active) .entity-deck__body {
+    background: rgba(20, 20, 20, 0.3);
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__stage {
-        align-items: center;
-        padding:
-            var(--deck-mobile-editorial-stage-top)
-            var(--deck-mobile-editorial-stage-side)
-            var(--deck-mobile-editorial-stage-bottom);
-    }
+  .entity-deck--mobile-editorial .entity-deck__stage {
+    align-items: center;
+    padding: var(--deck-mobile-editorial-stage-top) var(--deck-mobile-editorial-stage-side)
+      var(--deck-mobile-editorial-stage-bottom);
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__stack {
-        top: var(--deck-mobile-editorial-stack-top);
-    }
+  .entity-deck--mobile-editorial .entity-deck__stack {
+    top: var(--deck-mobile-editorial-stack-top);
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card,
-    .entity-deck--mobile-editorial .entity-deck__card.is-active,
-    .entity-deck--mobile-editorial .entity-deck__nav,
-    .entity-deck--mobile-editorial .entity-deck__rail {
-        box-shadow: var(--deck-mobile-editorial-card-shadow);
-    }
+  .entity-deck--mobile-editorial .entity-deck__card,
+  .entity-deck--mobile-editorial .entity-deck__card.is-active,
+  .entity-deck--mobile-editorial .entity-deck__nav,
+  .entity-deck--mobile-editorial .entity-deck__rail {
+    box-shadow: var(--deck-mobile-editorial-card-shadow);
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__dots {
-        display: none;
-    }
+  .entity-deck--mobile-editorial .entity-deck__dots {
+    display: none;
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active {
-        position: relative;
-        overflow: hidden;
-        background:
-            linear-gradient(180deg, rgba(26, 24, 24, 0.98), rgba(18, 18, 22, 0.99));
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(26, 24, 24, 0.98), rgba(18, 18, 22, 0.99));
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__media {
-        position: absolute;
-        inset: 0 0 var(--deck-mobile-editorial-media-bottom-cut) 0;
-        height: auto;
-        min-height: 0;
-        background: rgba(12, 12, 16, 0.18);
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__media {
+    position: absolute;
+    inset: 0 0 var(--deck-mobile-editorial-media-bottom-cut) 0;
+    height: auto;
+    min-height: 0;
+    background: rgba(12, 12, 16, 0.18);
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__media::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background:
-            linear-gradient(180deg, rgba(8, 8, 8, 0) 0%, rgba(8, 8, 8, 0.01) 18%, rgba(8, 8, 8, 0.03) 58%, rgba(8, 8, 8, 0.1) 100%),
-            radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.18), transparent 40%);
-        pointer-events: none;
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(8, 8, 8, 0) 0%,
+        rgba(8, 8, 8, 0.01) 18%,
+        rgba(8, 8, 8, 0.03) 58%,
+        rgba(8, 8, 8, 0.1) 100%
+      ),
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.18), transparent 40%);
+    pointer-events: none;
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__media app-jano-media {
-        filter: var(--deck-mobile-editorial-image-filter);
-        transform: scale(1.04);
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__media app-jano-media {
+    filter: var(--deck-mobile-editorial-image-filter);
+    transform: scale(1.04);
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__body {
-        position: relative;
-        z-index: 2;
-        height: 100%;
-        padding: var(--deck-mobile-editorial-body-padding);
-        background:
-            linear-gradient(180deg,
-                rgba(8, 8, 8, 0) 0%,
-                rgba(8, 8, 8, 0) 42%,
-                rgba(18, 18, 22, 0.98) 56%,
-                rgba(18, 18, 22, 0.995) 68%,
-                rgba(18, 18, 22, 1) 100%);
-        display: flex;
-        flex-direction: column;
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__body {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: var(--deck-mobile-editorial-body-padding);
+    background: linear-gradient(
+      180deg,
+      rgba(8, 8, 8, 0) 0%,
+      rgba(8, 8, 8, 0) 42%,
+      rgba(18, 18, 22, 0.98) 56%,
+      rgba(18, 18, 22, 0.995) 68%,
+      rgba(18, 18, 22, 1) 100%
+    );
+    display: flex;
+    flex-direction: column;
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__content {
-        margin-top: auto;
-        transform: translateY(var(--deck-mobile-editorial-content-lift));
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__content {
+    margin-top: auto;
+    transform: translateY(var(--deck-mobile-editorial-content-lift));
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__title {
-        position: relative;
-        z-index: 1;
-        color: rgba(255, 250, 244, 0.98);
-        text-shadow: 0 10px 30px rgba(0, 0, 0, 0.42);
-        max-width: var(--deck-mobile-editorial-title-max-width);
-        margin-bottom: var(--deck-mobile-editorial-title-gap);
-        transform: translateY(var(--deck-mobile-editorial-title-lift));
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__title {
+    position: relative;
+    z-index: 1;
+    color: rgba(255, 250, 244, 0.98);
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.42);
+    max-width: var(--deck-mobile-editorial-title-max-width);
+    margin-bottom: var(--deck-mobile-editorial-title-gap);
+    transform: translateY(var(--deck-mobile-editorial-title-lift));
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__description {
-        color: rgba(255, 247, 239, 0.86);
-        max-width: none;
-        text-shadow: none;
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__description {
+    color: rgba(255, 247, 239, 0.86);
+    max-width: none;
+    text-shadow: none;
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__meta,
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__eyebrow {
-        color: rgba(255, 247, 239, 0.84);
-        text-shadow: 0 4px 18px rgba(0, 0, 0, 0.34);
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__meta,
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__eyebrow {
+    color: rgba(255, 247, 239, 0.84);
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.34);
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__footer {
-        margin-top: 14px;
-        padding-top: 10px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-    }
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__footer {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
-    .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__cta {
-        color: rgba(255, 250, 244, 0.94);
-    }
-
+  .entity-deck--mobile-editorial .entity-deck__card.is-active .entity-deck__cta {
+    color: rgba(255, 250, 244, 0.94);
+  }
 }
 
-
 @media (max-width: 620px) {
-    :host {
-        --deck-top-safe-space: 34px;
-        --deck-bottom-safe-space: 154px;
-        --deck-side-safe-space: 12px;
-        --deck-bottom-nav-offset: 12px;
-        --deck-dots-offset: 92px;
-        --deck-card-width: min(94vw, 520px);
-        --deck-card-height: 360px;
-        --deck-stack-height: 360px;
-        --deck-nav-size: 40px;
-    }
+  :host {
+    --deck-top-safe-space: 34px;
+    --deck-bottom-safe-space: 154px;
+    --deck-side-safe-space: 12px;
+    --deck-bottom-nav-offset: 12px;
+    --deck-dots-offset: 92px;
+    --deck-card-width: min(94vw, 520px);
+    --deck-card-height: 360px;
+    --deck-stack-height: 360px;
+    --deck-nav-size: 40px;
+  }
 
-    .entity-deck__media {
-        height: 180px;
-    }
+  .entity-deck__media {
+    height: 180px;
+  }
 
-    .entity-deck__body {
-        padding: 18px 18px 16px;
-    }
+  .entity-deck__body {
+    padding: 18px 18px 16px;
+  }
 
-    .entity-deck__title {
-        font-size: clamp(1.85rem, 7.8vw, 2.4rem);
-    }
+  .entity-deck__title {
+    font-size: clamp(1.85rem, 7.8vw, 2.4rem);
+  }
 
-    .entity-deck__description {
-        font-size: 0.92rem;
-        line-height: 1.56;
-    }
+  .entity-deck__description {
+    font-size: 0.92rem;
+    line-height: 1.56;
+  }
 
-    .entity-deck__nav {
-        opacity: 0.66;
-        border-color: rgba(255, 255, 255, 0.16);
-    }
+  .entity-deck__nav {
+    opacity: 0.66;
+    border-color: rgba(255, 255, 255, 0.16);
+  }
 
-    .entity-deck__nav-icon {
-        width: 18px;
-        height: 18px;
-    }
+  .entity-deck__nav-icon {
+    width: 18px;
+    height: 18px;
+  }
 
-    .entity-deck__dots {
-        gap: 6px;
-    }
+  .entity-deck__dots {
+    gap: 6px;
+  }
 
-    .entity-deck__dot {
-        width: 7px;
-        height: 7px;
-    }
+  .entity-deck__dot {
+    width: 7px;
+    height: 7px;
+  }
 
-    .entity-deck__dot.is-active {
-        width: 20px;
-    }
+  .entity-deck__dot.is-active {
+    width: 20px;
+  }
 }

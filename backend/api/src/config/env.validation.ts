@@ -82,8 +82,9 @@ export function validateEnv(env: RawEnv): AppEnv {
   const NODE_ENV = readNodeEnv(env);
   const PORT = readPort(env, 'PORT', 3000);
   const HOST = readString(env, 'HOST') ?? '0.0.0.0';
-  const FRONTEND_ORIGIN = readString(env, 'FRONTEND_ORIGIN')
-    ?? 'http://localhost:4200,http://localhost:4300,http://127.0.0.1:4200,http://127.0.0.1:4300';
+  const FRONTEND_ORIGIN =
+    readString(env, 'FRONTEND_ORIGIN') ??
+    'http://localhost:4200,http://localhost:4300,http://127.0.0.1:4200,http://127.0.0.1:4300';
   const DATABASE_URL = requireString(env, 'DATABASE_URL');
   const MEDIA_PUBLIC_BASE_URL =
     readString(env, 'MEDIA_PUBLIC_BASE_URL') ?? `http://localhost:${PORT}`;

@@ -44,7 +44,9 @@ export function recommendedEntityMeta(entity: PublicEntity | null): string | nul
   }
 
   if (entity.type === 'ARTIST') {
-    return [entity.artist?.country, entity.startYear, entity.endYear].filter(Boolean).join(' • ') || null;
+    return (
+      [entity.artist?.country, entity.startYear, entity.endYear].filter(Boolean).join(' • ') || null
+    );
   }
 
   if (entity.type === 'ARTWORK') {
@@ -52,7 +54,11 @@ export function recommendedEntityMeta(entity: PublicEntity | null): string | nul
   }
 
   if (entity.type === 'MOVEMENT' || entity.type === 'PERIOD') {
-    return [entity.startYear, entity.endYear].filter((value) => value !== null && value !== undefined).join(' - ') || null;
+    return (
+      [entity.startYear, entity.endYear]
+        .filter((value) => value !== null && value !== undefined)
+        .join(' - ') || null
+    );
   }
 
   return entity.summary ?? null;

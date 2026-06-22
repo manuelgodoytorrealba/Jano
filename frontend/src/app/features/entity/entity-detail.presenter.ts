@@ -1,4 +1,8 @@
-import { mediaDisplayUrl, resolveEntityMediaItem, selectPrimaryVisualMedia } from '../../shared/media/media.utils';
+import {
+  mediaDisplayUrl,
+  resolveEntityMediaItem,
+  selectPrimaryVisualMedia,
+} from '../../shared/media/media.utils';
 import {
   PublicEntity,
   PublicEntityMediaAsset,
@@ -29,12 +33,16 @@ const HIDDEN_OUTGOING_RELATIONS = new Set([
   'MENTIONS',
 ]);
 
-export function primaryMedia(entity: PublicEntity | null | undefined): PublicEntityMediaAsset | null {
-  return selectPrimaryVisualMedia(entity) as PublicEntityMediaAsset | null;
+export function primaryMedia(
+  entity: PublicEntity | null | undefined,
+): PublicEntityMediaAsset | null {
+  return selectPrimaryVisualMedia(entity);
 }
 
-export function detailMedia(entity: PublicEntity | null | undefined): PublicEntityMediaAsset | null {
-  return (resolveEntityMediaItem(entity, 'detail') as PublicEntityMediaAsset | null) ?? primaryMedia(entity);
+export function detailMedia(
+  entity: PublicEntity | null | undefined,
+): PublicEntityMediaAsset | null {
+  return resolveEntityMediaItem(entity, 'detail') ?? primaryMedia(entity);
 }
 
 export function visualUrl(entity: PublicEntity | null | undefined): string | null {
@@ -52,14 +60,19 @@ export function isArticle(entity: PublicEntity | null | undefined): boolean {
 export function articleByline(entity: PublicEntity | null | undefined): string | null {
   const contributors = Array.isArray(entity?.contributors) ? entity.contributors : [];
   const authorish =
-    contributors.find((item) => ['author', 'autor', 'writer', 'editor'].includes(`${item?.role ?? ''}`.trim().toLowerCase()))
-    ?? contributors[0]
-    ?? null;
+    contributors.find((item) =>
+      ['author', 'autor', 'writer', 'editor'].includes(`${item?.role ?? ''}`.trim().toLowerCase()),
+    ) ??
+    contributors[0] ??
+    null;
 
   return authorish?.name?.trim() || null;
 }
 
-export function articleDateLabel(entity: PublicEntity | null | undefined, locale: string): string | null {
+export function articleDateLabel(
+  entity: PublicEntity | null | undefined,
+  locale: string,
+): string | null {
   const value = entity?.createdAt ?? null;
   if (!value) {
     return null;
@@ -81,7 +94,10 @@ export function storySectionLabel(entity: PublicEntity | null | undefined, t: Tr
   return isArticle(entity) ? t('entity.article') : t('entity.essay');
 }
 
-export function detailHeroSubtitle(entity: PublicEntity | null | undefined, context: PresenterContext): string | null {
+export function detailHeroSubtitle(
+  entity: PublicEntity | null | undefined,
+  context: PresenterContext,
+): string | null {
   const parts: string[] = [];
   const author = entity?.type === 'ARTWORK' ? firstRelated(entity, 'CREATED_BY')?.title : null;
 
@@ -104,7 +120,10 @@ export function detailHeroSubtitle(entity: PublicEntity | null | undefined, cont
   return parts.length ? parts.join(' · ') : null;
 }
 
-export function detailFacts(entity: PublicEntity | null | undefined, context: PresenterContext): DetailFact[] {
+export function detailFacts(
+  entity: PublicEntity | null | undefined,
+  context: PresenterContext,
+): DetailFact[] {
   if (entity?.type === 'ARTWORK' && entity.artwork) {
     return compactFacts([
       { label: context.t('entity.fact.technique'), value: entity.artwork.technique },
@@ -180,37 +199,54 @@ export function detailFactSummary(entity: PublicEntity | null | undefined): stri
   }
 
   if (entity?.type === 'ARTIST' && entity.artist) {
-    return joinFactSummary([
-      entity.artist.country,
-      entity.artist.city,
-      entity.artist.disciplines,
-    ]);
+    return joinFactSummary([entity.artist.country, entity.artist.city, entity.artist.disciplines]);
   }
 
   return null;
 }
 
-export function outgoingByType(entity: PublicEntity | null | undefined, type: string): PublicEntityRelation[] {
+export function outgoingByType(
+  entity: PublicEntity | null | undefined,
+  type: string,
+): PublicEntityRelation[] {
   return (entity?.outgoing ?? []).filter((relation) => relation.type === type);
 }
 
-export function incomingByType(entity: PublicEntity | null | undefined, type: string): PublicEntityRelation[] {
+export function incomingByType(
+  entity: PublicEntity | null | undefined,
+  type: string,
+): PublicEntityRelation[] {
   return (entity?.incoming ?? []).filter((relation) => relation.type === type);
 }
 
-export function relatedOutgoing(entity: PublicEntity | null | undefined, type: string): PublicEntityRelationEndpoint[] {
-  return outgoingByType(entity, type).map((relation) => relation.to).filter(Boolean) as PublicEntityRelationEndpoint[];
+export function relatedOutgoing(
+  entity: PublicEntity | null | undefined,
+  type: string,
+): PublicEntityRelationEndpoint[] {
+  return outgoingByType(entity, type)
+    .map((relation) => relation.to)
+    .filter(Boolean);
 }
 
-export function relatedIncoming(entity: PublicEntity | null | undefined, type: string): PublicEntityRelationEndpoint[] {
-  return incomingByType(entity, type).map((relation) => relation.from).filter(Boolean) as PublicEntityRelationEndpoint[];
+export function relatedIncoming(
+  entity: PublicEntity | null | undefined,
+  type: string,
+): PublicEntityRelationEndpoint[] {
+  return incomingByType(entity, type)
+    .map((relation) => relation.from)
+    .filter(Boolean);
 }
 
-export function firstRelated(entity: PublicEntity | null | undefined, type: string): PublicEntityRelationEndpoint | null {
+export function firstRelated(
+  entity: PublicEntity | null | undefined,
+  type: string,
+): PublicEntityRelationEndpoint | null {
   return relatedOutgoing(entity, type)[0] ?? null;
 }
 
-export function allConcepts(entity: PublicEntity | null | undefined): PublicEntityRelationEndpoint[] {
+export function allConcepts(
+  entity: PublicEntity | null | undefined,
+): PublicEntityRelationEndpoint[] {
   return relatedOutgoing(entity, 'ABOUT_CONCEPT');
 }
 
@@ -218,7 +254,9 @@ export function allPlaces(entity: PublicEntity | null | undefined): PublicEntity
   return relatedOutgoing(entity, 'LOCATED_IN');
 }
 
-export function allRelatedArtworks(entity: PublicEntity | null | undefined): PublicEntityRelationEndpoint[] {
+export function allRelatedArtworks(
+  entity: PublicEntity | null | undefined,
+): PublicEntityRelationEndpoint[] {
   const outgoing = relatedOutgoing(entity, 'RELATED_TO').filter((item) => item.type === 'ARTWORK');
   const incoming = relatedIncoming(entity, 'RELATED_TO').filter((item) => item.type === 'ARTWORK');
   const deduped = new Map<string, PublicEntityRelationEndpoint>();
@@ -233,7 +271,9 @@ export function allRelatedArtworks(entity: PublicEntity | null | undefined): Pub
 }
 
 export function allOtherOutgoing(entity: PublicEntity | null | undefined): PublicEntityRelation[] {
-  return (entity?.outgoing ?? []).filter((relation) => !HIDDEN_OUTGOING_RELATIONS.has(relation.type));
+  return (entity?.outgoing ?? []).filter(
+    (relation) => !HIDDEN_OUTGOING_RELATIONS.has(relation.type),
+  );
 }
 
 export function allMentions(entity: PublicEntity | null | undefined): PublicEntityRelation[] {
@@ -264,7 +304,11 @@ export function relationLabel(type: string, t: Translate): string {
   return labels[type] ?? type.replaceAll('_', ' ').toLowerCase();
 }
 
-export function relationDirectionLabel(type: string, direction: 'outgoing' | 'incoming', t: Translate): string {
+export function relationDirectionLabel(
+  type: string,
+  direction: 'outgoing' | 'incoming',
+  t: Translate,
+): string {
   if (direction === 'outgoing') {
     return relationLabel(type, t);
   }
@@ -294,7 +338,7 @@ export function relationDirectionLabel(type: string, direction: 'outgoing' | 'in
 
 export function entityTags(entity: PublicEntity | null | undefined): PublicEntityTagItem[] {
   return Array.isArray(entity?.tags)
-    ? entity.tags.map((item) => ('tag' in item && item.tag ? item.tag : item)).filter(Boolean) as PublicEntityTagItem[]
+    ? entity.tags.map((item) => ('tag' in item && item.tag ? item.tag : item)).filter(Boolean)
     : [];
 }
 
@@ -327,14 +371,22 @@ export function entityTypeLabel(type: string, t: Translate): string {
 
 function compactFacts(items: Array<{ label: string; value: unknown }>): DetailFact[] {
   return items
-    .filter((item) => item.value !== null && item.value !== undefined && `${item.value}`.trim().length > 0)
-    .map((item) => ({ label: item.label, value: `${item.value}` }));
+    .map((item) => ({ label: item.label, value: toDisplayText(item.value) }))
+    .filter((item) => item.value.length > 0);
 }
 
 function joinFactSummary(values: unknown[]): string | null {
-  const parts = values
-    .filter((value) => value !== null && value !== undefined && `${value}`.trim().length > 0)
-    .map((value) => `${value}`.trim());
+  const parts = values.map(toDisplayText).filter(Boolean);
 
   return parts.length ? parts.join(' · ') : null;
+}
+
+function toDisplayText(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.map(toDisplayText).filter(Boolean).join(', ');
+  }
+
+  return typeof value === 'string' || typeof value === 'number' || typeof value === 'bigint'
+    ? String(value).trim()
+    : '';
 }

@@ -22,9 +22,13 @@ export const authGuard: CanActivateFn = (_route, state) => {
 
     return auth.refreshSession().pipe(
       map(() => true),
-      catchError(() => of(router.createUrlTree(['/login'], {
-        queryParams: { redirectTo: state.url },
-      }))),
+      catchError(() =>
+        of(
+          router.createUrlTree(['/login'], {
+            queryParams: { redirectTo: state.url },
+          }),
+        ),
+      ),
     );
   }
 

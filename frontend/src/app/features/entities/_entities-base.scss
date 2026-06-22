@@ -6,7 +6,9 @@
   --entities-rail-gap: clamp(18px, 1.8vw, 34px);
   --entities-rail-left: clamp(18px, 1.6vw, 28px);
   --entities-rail-top: 138px;
-  --entities-stage-right-gutter: calc(var(--app-shell-gap) + var(--app-rail-width) + clamp(40px, 4vw, 72px));
+  --entities-stage-right-gutter: calc(
+    var(--app-shell-gap) + var(--app-rail-width) + clamp(40px, 4vw, 72px)
+  );
   --entities-stage-left-gutter: clamp(28px, 5vw, 96px);
   --entities-stage-top-padding: 196px;
   --entities-list-max-width: 1280px;
@@ -23,8 +25,7 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
     rgba(18, 18, 24, 0.18);
   --entities-control-shell-shadow:
-    0 14px 28px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    0 14px 28px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.16);
   --entities-control-shell-backdrop: blur(18px) saturate(1.08);
   --entities-control-text: rgba(255, 247, 239, 0.72);
   --entities-control-text-strong: rgba(255, 252, 248, 0.96);
@@ -33,8 +34,7 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07)),
     rgba(255, 255, 255, 0.04);
   --entities-control-active-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 6px 14px rgba(0, 0, 0, 0.14);
+    inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 6px 14px rgba(0, 0, 0, 0.14);
 }
 
 .entities-page {
@@ -101,8 +101,7 @@
 }
 
 .view-toggle__button.is-active {
-  background:
-    linear-gradient(180deg, rgba(242, 241, 238, 0.22), rgba(242, 241, 238, 0.08));
+  background: linear-gradient(180deg, rgba(242, 241, 238, 0.22), rgba(242, 241, 238, 0.08));
   border-color: rgba(242, 241, 238, 0.18);
   color: var(--color-text);
   box-shadow:
@@ -280,8 +279,7 @@ mark {
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background:
-    linear-gradient(180deg, rgba(17, 18, 26, 0.82), rgba(10, 11, 18, 0.7)),
-    rgba(13, 14, 21, 0.72);
+    linear-gradient(180deg, rgba(17, 18, 26, 0.82), rgba(10, 11, 18, 0.7)), rgba(13, 14, 21, 0.72);
   box-shadow:
     0 22px 54px rgba(0, 0, 0, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);

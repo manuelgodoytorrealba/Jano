@@ -35,4 +35,4 @@ import { validateEnv } from './config/env.validation';
     CuratedModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

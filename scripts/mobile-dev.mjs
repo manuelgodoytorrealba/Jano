@@ -17,16 +17,10 @@ const frontendPort = String(process.env.FRONTEND_PORT || process.env.PORT || '42
 const localUrl = `http://localhost:${frontendPort}`;
 const lanIp = detectLanIpv4();
 const lanUrl = lanIp ? `http://${lanIp}:${frontendPort}` : null;
-const allowedHosts = [
-  'localhost',
-  '127.0.0.1',
-  lanIp,
-].filter(Boolean);
-const frontendOrigins = [
-  localUrl,
-  `http://127.0.0.1:${frontendPort}`,
-  lanUrl,
-].filter(Boolean).join(',');
+const allowedHosts = ['localhost', '127.0.0.1', lanIp].filter(Boolean);
+const frontendOrigins = [localUrl, `http://127.0.0.1:${frontendPort}`, lanUrl]
+  .filter(Boolean)
+  .join(',');
 const allowedHostsCsv = allowedHosts.join(',');
 const mediaPublicBaseUrl = lanUrl || localUrl;
 
@@ -72,9 +66,11 @@ function detectLanIpv4() {
 }
 
 function isPrivateIpv4(address) {
-  return /^10\./.test(address)
-    || /^192\.168\./.test(address)
-    || /^172\.(1[6-9]|2\d|3[0-1])\./.test(address);
+  return (
+    /^10\./.test(address) ||
+    /^192\.168\./.test(address) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(address)
+  );
 }
 
 function run(command, args, options = {}) {
@@ -158,7 +154,11 @@ async function main() {
   console.log('');
 
   const backend = spawnManaged('npm', ['run', 'backend:dev'], backendEnv);
-  const frontend = spawnManaged('npm', ['--prefix', 'frontend', 'run', 'start:mobile'], frontendEnv);
+  const frontend = spawnManaged(
+    'npm',
+    ['--prefix', 'frontend', 'run', 'start:mobile'],
+    frontendEnv,
+  );
 
   attachShutdown('SIGINT');
   attachShutdown('SIGTERM');

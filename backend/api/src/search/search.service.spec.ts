@@ -93,10 +93,7 @@ describe('SearchService', () => {
       },
     ]);
 
-    const result = await service.search(
-      { q: 'english', locale: 'en' },
-      { includeDrafts: false },
-    );
+    const result = await service.search({ q: 'english', locale: 'en' }, { includeDrafts: false });
 
     expect(prisma.entity.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -233,38 +230,24 @@ describe('SearchService', () => {
       },
     ]);
 
-    const result = await service.search(
-      { q: 'picasso', locale: 'es' },
-      { includeDrafts: false },
-    );
+    const result = await service.search({ q: 'picasso', locale: 'es' }, { includeDrafts: false });
 
-    const keyWorks = result.sections.find(
-      (section: any) => section.key === 'keyWorks',
-    );
-    const relatedWorks = result.sections.find(
-      (section: any) => section.key === 'relatedWorks',
-    );
+    const keyWorks = result.sections.find((section: any) => section.key === 'keyWorks');
+    const relatedWorks = result.sections.find((section: any) => section.key === 'relatedWorks');
 
     expect(keyWorks?.total).toBe(1);
-    expect(keyWorks?.items.map((item: any) => item.id)).toEqual(['artwork-1']);
+    expect(keyWorks?.items?.map((item: any) => item.id)).toEqual(['artwork-1']);
     expect(relatedWorks?.title).toBe('Obras relacionadas');
     expect(relatedWorks?.total).toBe(1);
-    expect(relatedWorks?.items.map((item: any) => item.id)).toEqual([
-      'artwork-2',
-    ]);
-    expect(relatedWorks?.items[0].relationReason).toBe(
-      'Both works address war violence.',
-    );
-    expect(relatedWorks?.items[0].relationWithTitle).toBe('Guernica');
+    expect(relatedWorks?.items?.map((item: any) => item.id)).toEqual(['artwork-2']);
+    expect(relatedWorks?.items?.[0].relationReason).toBe('Both works address war violence.');
+    expect(relatedWorks?.items?.[0].relationWithTitle).toBe('Guernica');
   });
 
   it('searches translation fields in the raw query pipeline', async () => {
     prisma.$queryRaw.mockResolvedValue([]);
 
-    await service.search(
-      { q: 'picasso', locale: 'en' },
-      { includeDrafts: false },
-    );
+    await service.search({ q: 'picasso', locale: 'en' }, { includeDrafts: false });
 
     const sql = prisma.$queryRaw.mock.calls[0]?.[0];
 
@@ -383,10 +366,7 @@ describe('SearchService', () => {
     expect(result.items[0]).toEqual(
       expect.objectContaining({
         matchedFields: ['detail', 'relation_text'],
-        matchReasons: [
-          'Matched via structured detail',
-          'Matched via graph context',
-        ],
+        matchReasons: ['Matched via structured detail', 'Matched via graph context'],
       }),
     );
   });

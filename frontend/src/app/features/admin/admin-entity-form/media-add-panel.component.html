@@ -2,14 +2,27 @@
   <div class="media-add-panel__head">
     <div>
       <h4>Add Media</h4>
-      <p class="muted">Elige entre referencia externa y asset propio antes de decidir dónde se usará dentro del producto.</p>
+      <p class="muted">
+        Elige entre referencia externa y asset propio antes de decidir dónde se usará dentro del
+        producto.
+      </p>
     </div>
 
     <div class="media-add-panel__modes">
-      <button class="mode-pill" type="button" [class.mode-pill--active]="mode === 'url'" (click)="setMode('url')">
+      <button
+        class="mode-pill"
+        type="button"
+        [class.mode-pill--active]="mode === 'url'"
+        (click)="setMode('url')"
+      >
         Por URL externa
       </button>
-      <button class="mode-pill" type="button" [class.mode-pill--active]="mode === 'upload'" (click)="setMode('upload')">
+      <button
+        class="mode-pill"
+        type="button"
+        [class.mode-pill--active]="mode === 'upload'"
+        (click)="setMode('upload')"
+      >
         Subir archivo
       </button>
     </div>
@@ -19,7 +32,9 @@
     <div class="media-create">
       <div class="media-create__eyebrow">
         <span class="media-pill media-pill--external">External</span>
-        <span class="media-create__caption">Referencia remota para documentar o probar una imagen sin copiarla todavía a JANO.</span>
+        <span class="media-create__caption"
+          >Referencia remota para documentar o probar una imagen sin copiarla todavía a JANO.</span
+        >
       </div>
 
       <div class="url-preview">
@@ -40,12 +55,22 @@
       <div class="media-grid media-grid--compact">
         <label class="field full">
           <span>URL externa</span>
-          <input type="url" [(ngModel)]="externalDraft.url" name="externalUrl" placeholder="https://..." />
+          <input
+            type="url"
+            [(ngModel)]="externalDraft.url"
+            name="externalUrl"
+            placeholder="https://..."
+          />
         </label>
 
         <label class="field full">
           <span>Alt</span>
-          <input type="text" [(ngModel)]="externalDraft.alt" name="externalAlt" placeholder="Opcional" />
+          <input
+            type="text"
+            [(ngModel)]="externalDraft.alt"
+            name="externalAlt"
+            placeholder="Opcional"
+          />
         </label>
 
         <label class="field">
@@ -62,16 +87,27 @@
     <div class="media-create">
       <div class="media-create__eyebrow">
         <span class="media-pill media-pill--upload">Upload</span>
-        <span class="media-create__caption">Asset propio estable para cobertura principal, reemplazos y trabajo editorial duradero.</span>
+        <span class="media-create__caption"
+          >Asset propio estable para cobertura principal, reemplazos y trabajo editorial
+          duradero.</span
+        >
       </div>
 
-      <div class="upload-dropzone"
+      <div
+        class="upload-dropzone"
         [class.upload-dropzone--active]="uploadDragActive"
         [class.upload-dropzone--invalid]="!!uploadValidationError"
         (dragover)="onDragOver($event)"
         (dragleave)="onDragLeave($event)"
-        (drop)="onDrop($event)">
-        <input #uploadInput type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" class="upload-input" (change)="onFileSelected($event)" />
+        (drop)="onDrop($event)"
+      >
+        <input
+          #uploadInput
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+          class="upload-input"
+          (change)="onFileSelected($event)"
+        />
 
         @if (uploadPreviewUrl) {
           <div class="upload-preview">
@@ -81,12 +117,17 @@
           <div class="upload-dropzone__placeholder">
             <strong>Arrastra una imagen aqui</strong>
             <span>o seleccionala desde tu PC</span>
-            <span class="hint">Formatos permitidos: {{ uploadAcceptedFormatsLabel }} · Maximo {{ maxUploadSizeLabel }}</span>
+            <span class="hint"
+              >Formatos permitidos: {{ uploadAcceptedFormatsLabel }} · Maximo
+              {{ maxUploadSizeLabel }}</span
+            >
           </div>
         }
 
         <div class="upload-dropzone__actions">
-          <button class="btn ghost" type="button" (click)="uploadInput.click()">Seleccionar archivo</button>
+          <button class="btn ghost" type="button" (click)="uploadInput.click()">
+            Seleccionar archivo
+          </button>
           @if (selectedUploadFile) {
             <button class="btn ghost" type="button" (click)="clearSelectedUpload()">Quitar</button>
           }
@@ -98,7 +139,9 @@
             <span>· {{ formatFileSize(selectedUploadFile.size) }}</span>
             <span>· {{ selectedUploadFile.type || 'image/*' }}</span>
             @if (uploadPreviewDimensions) {
-              <span>· {{ uploadPreviewDimensions.width }}×{{ uploadPreviewDimensions.height }}</span>
+              <span
+                >· {{ uploadPreviewDimensions.width }}×{{ uploadPreviewDimensions.height }}</span
+              >
             }
           </div>
         }
@@ -111,7 +154,12 @@
       <div class="media-grid media-grid--compact">
         <label class="field full">
           <span>Alt</span>
-          <input type="text" [(ngModel)]="uploadDraft.alt" name="uploadAlt" placeholder="Opcional" />
+          <input
+            type="text"
+            [(ngModel)]="uploadDraft.alt"
+            name="uploadAlt"
+            placeholder="Opcional"
+          />
         </label>
 
         <label class="field">
@@ -128,7 +176,11 @@
 
   <div class="advanced-toggle">
     <button class="btn ghost" type="button" (click)="toggleAdvanced()">
-      @if (showAdvanced) { Ocultar opciones avanzadas } @else { Mostrar opciones avanzadas }
+      @if (showAdvanced) {
+        Ocultar opciones avanzadas
+      } @else {
+        Mostrar opciones avanzadas
+      }
     </button>
   </div>
 
@@ -138,12 +190,22 @@
         <div class="media-grid">
           <label class="field full">
             <span>Display URL</span>
-            <input type="url" [(ngModel)]="externalDraft.displayUrl" name="externalDisplayUrl" placeholder="Opcional" />
+            <input
+              type="url"
+              [(ngModel)]="externalDraft.displayUrl"
+              name="externalDisplayUrl"
+              placeholder="Opcional"
+            />
           </label>
 
           <label class="field full">
             <span>Source page URL</span>
-            <input type="url" [(ngModel)]="externalDraft.sourcePageUrl" name="externalSourcePageUrl" placeholder="Opcional" />
+            <input
+              type="url"
+              [(ngModel)]="externalDraft.sourcePageUrl"
+              name="externalSourcePageUrl"
+              placeholder="Opcional"
+            />
           </label>
 
           <label class="field">
@@ -167,12 +229,26 @@
 
           <label class="field">
             <span>Focal X</span>
-            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="externalDraft.focalX" name="externalFocalX" />
+            <input
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              [(ngModel)]="externalDraft.focalX"
+              name="externalFocalX"
+            />
           </label>
 
           <label class="field">
             <span>Focal Y</span>
-            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="externalDraft.focalY" name="externalFocalY" />
+            <input
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              [(ngModel)]="externalDraft.focalY"
+              name="externalFocalY"
+            />
           </label>
 
           <label class="field">
@@ -213,12 +289,26 @@
 
           <label class="field">
             <span>Focal X</span>
-            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="uploadDraft.focalX" name="uploadFocalX" />
+            <input
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              [(ngModel)]="uploadDraft.focalX"
+              name="uploadFocalX"
+            />
           </label>
 
           <label class="field">
             <span>Focal Y</span>
-            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="uploadDraft.focalY" name="uploadFocalY" />
+            <input
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              [(ngModel)]="uploadDraft.focalY"
+              name="uploadFocalY"
+            />
           </label>
 
           <label class="field">

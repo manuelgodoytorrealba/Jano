@@ -63,10 +63,10 @@ export function advanceExplorerLoop(options: {
     shouldContinue ||= layoutFrame.shouldContinue;
 
     if (
-      options.ambientMotion
-      && draggingNodeId === null
-      && options.selectedNodeId === options.graph.centerId
-      && !layoutFrame.graphLayoutActive
+      options.ambientMotion &&
+      draggingNodeId === null &&
+      options.selectedNodeId === options.graph.centerId &&
+      !layoutFrame.graphLayoutActive
     ) {
       applyAmbientGraphDrift({
         graph: options.graph,

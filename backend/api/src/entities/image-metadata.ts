@@ -11,13 +11,14 @@ export function detectImageDimensionsFromBuffer(
 ): ImageDimensions {
   const normalizedMime = mimeType?.split(';')[0]?.trim().toLowerCase() ?? '';
 
-  return parseByMime(buffer, normalizedMime)
-    ?? parsePngDimensions(buffer)
-    ?? parseJpegDimensions(buffer)
-    ?? parseGifDimensions(buffer)
-    ?? parseWebpDimensions(buffer)
-    ?? parseAvifDimensions(buffer)
-    ?? { width: null, height: null };
+  return (
+    parseByMime(buffer, normalizedMime) ??
+    parsePngDimensions(buffer) ??
+    parseJpegDimensions(buffer) ??
+    parseGifDimensions(buffer) ??
+    parseWebpDimensions(buffer) ??
+    parseAvifDimensions(buffer) ?? { width: null, height: null }
+  );
 }
 
 function parseByMime(buffer: Buffer, mimeType: string): ImageDimensions | null {
@@ -106,15 +107,19 @@ function parseJpegDimensions(buffer: Buffer): ImageDimensions | null {
 
 function isStartOfFrameMarker(marker: number): boolean {
   return (
-    (marker >= 0xc0 && marker <= 0xc3)
-    || (marker >= 0xc5 && marker <= 0xc7)
-    || (marker >= 0xc9 && marker <= 0xcb)
-    || (marker >= 0xcd && marker <= 0xcf)
+    (marker >= 0xc0 && marker <= 0xc3) ||
+    (marker >= 0xc5 && marker <= 0xc7) ||
+    (marker >= 0xc9 && marker <= 0xcb) ||
+    (marker >= 0xcd && marker <= 0xcf)
   );
 }
 
 function parseWebpDimensions(buffer: Buffer): ImageDimensions | null {
-  if (buffer.length < 30 || buffer.subarray(0, 4).toString('ascii') !== 'RIFF' || buffer.subarray(8, 12).toString('ascii') !== 'WEBP') {
+  if (
+    buffer.length < 30 ||
+    buffer.subarray(0, 4).toString('ascii') !== 'RIFF' ||
+    buffer.subarray(8, 12).toString('ascii') !== 'WEBP'
+  ) {
     return null;
   }
 

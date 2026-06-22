@@ -21,7 +21,7 @@ export class I18nService {
   readonly ready = signal(false);
   readonly supportedLocales = SUPPORTED_LOCALES;
   private readonly missingKeys = new Set<string>();
-  readonly localeLabel = computed(() => this.locale() === 'es' ? 'Español' : 'English');
+  readonly localeLabel = computed(() => (this.locale() === 'es' ? 'Español' : 'English'));
   readonly fallbackLabel = computed(() =>
     this.locale() === 'es' ? 'Texto editorial disponible pronto.' : 'Editorial text coming soon.',
   );
@@ -54,7 +54,11 @@ export class I18nService {
     const translated = dictionaries[locale]?.[key] ?? dictionaries[FALLBACK_LOCALE]?.[key];
     const shouldWarnForMissingTranslation = isPlatformBrowser(this.platformId) && this.ready();
 
-    if (shouldWarnForMissingTranslation && translated === undefined && !this.missingKeys.has(`${locale}:${key}`)) {
+    if (
+      shouldWarnForMissingTranslation &&
+      translated === undefined &&
+      !this.missingKeys.has(`${locale}:${key}`)
+    ) {
       this.missingKeys.add(`${locale}:${key}`);
       console.warn(`[i18n] Missing translation for ${locale}:${key}`);
     }
@@ -64,7 +68,9 @@ export class I18nService {
 
   normalizeLocale(locale: string | null | undefined): AppLocale {
     const normalized = (locale ?? DEFAULT_LOCALE).trim().toLowerCase().split('-')[0];
-    return SUPPORTED_LOCALES.includes(normalized as AppLocale) ? normalized as AppLocale : DEFAULT_LOCALE;
+    return SUPPORTED_LOCALES.includes(normalized as AppLocale)
+      ? (normalized as AppLocale)
+      : DEFAULT_LOCALE;
   }
 
   private loadDictionary(locale: AppLocale) {
@@ -72,9 +78,9 @@ export class I18nService {
       return of({} as TranslationMap);
     }
 
-    return this.http.get<TranslationMap>("/assets/i18n/" + locale + ".json").pipe(
-      catchError(() => of({} as TranslationMap)),
-    );
+    return this.http
+      .get<TranslationMap>('/assets/i18n/' + locale + '.json')
+      .pipe(catchError(() => of({} as TranslationMap)));
   }
 
   private readInitialLocale(): AppLocale {

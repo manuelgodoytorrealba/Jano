@@ -49,13 +49,7 @@ if (mode === 'host') {
 
 process.env.DANGEROUSLY_DISABLE_HOST_CHECK = 'true';
 
-const args = [
-  ngEntrypoint,
-  'serve',
-  '--proxy-config',
-  'proxy.conf.js',
-  '--no-hmr',
-];
+const args = [ngEntrypoint, 'serve', '--proxy-config', 'proxy.conf.js', '--no-hmr'];
 
 if (mode === 'host' || mode === 'mobile') {
   args.push('--host', '0.0.0.0');

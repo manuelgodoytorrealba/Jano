@@ -218,8 +218,8 @@ function resolveOverviewVisibleNodeIds(options: {
   const selectedIsExplicit = !!selectedNodeId && selectedNodeId !== options.graph.centerId;
 
   if (selectedIsExplicit) {
-    visible.add(selectedNodeId!);
-    for (const neighborId of adjacency.get(selectedNodeId!) ?? []) {
+    visible.add(selectedNodeId);
+    for (const neighborId of adjacency.get(selectedNodeId) ?? []) {
       visible.add(neighborId);
       if (options.viewportScale >= 1.04) {
         for (const secondNeighborId of adjacency.get(neighborId) ?? []) {
@@ -327,7 +327,7 @@ function isOverviewHubNode(nodeId: string): boolean {
 }
 
 function normalizeGraphNodeId(value: unknown): string {
-  return String(value ?? '').trim();
+  return typeof value === 'string' || typeof value === 'number' ? String(value).trim() : '';
 }
 
 export function ensureGraphSelectionVisible(

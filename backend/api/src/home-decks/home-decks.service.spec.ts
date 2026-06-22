@@ -164,57 +164,75 @@ describe('HomeDecksService', () => {
     prisma.entity.findUnique.mockResolvedValue({ id: 'entity-1' });
     prisma.homeDeckItem.findFirst.mockResolvedValue({ id: 'existing-item' });
 
-    await expect(service.addEntity('deck-1', { entityId: 'entity-1' })).rejects.toBeInstanceOf(ConflictException);
+    await expect(service.addEntity('deck-1', { entityId: 'entity-1' })).rejects.toBeInstanceOf(
+      ConflictException,
+    );
   });
 
   it('materializes the virtual place deck as an active persisted deck with seeded entities', async () => {
-    prisma.homeDeck.findFirst
-      .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce({ sortOrder: 5 });
+    prisma.homeDeck.findFirst.mockResolvedValueOnce(null).mockResolvedValueOnce({ sortOrder: 5 });
     prisma.entity.findMany.mockResolvedValue([
       { id: 'place-1', slug: 'museo-del-prado' },
       { id: 'place-2', slug: 'museo-reina-sofia' },
       { id: 'place-3', slug: 'moma' },
       { id: 'place-4', slug: 'guggenheim-bilbao' },
     ]);
-    prisma.homeDeck.create.mockResolvedValue(buildDeck({
-      id: 'deck-place',
-      slug: 'place',
-      title: 'Lugares',
-      ctaRoute: '/entities/place',
-      sortOrder: 6,
-      items: [
-        { id: 'item-1', sortOrder: 0, entity: publishedEntity },
-      ],
-      translations: [
-        { locale: 'es', title: 'Lugares', subtitle: 'Contexto institucional', description: 'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.', ctaLabel: 'Explorar lugares' },
-        { locale: 'en', title: 'Places', subtitle: 'Institutional context', description: 'Museums, collections and spaces that anchor works, movements and public memory.', ctaLabel: 'Explore places' },
-      ],
-    }));
+    prisma.homeDeck.create.mockResolvedValue(
+      buildDeck({
+        id: 'deck-place',
+        slug: 'place',
+        title: 'Lugares',
+        ctaRoute: '/entities/place',
+        sortOrder: 6,
+        items: [{ id: 'item-1', sortOrder: 0, entity: publishedEntity }],
+        translations: [
+          {
+            locale: 'es',
+            title: 'Lugares',
+            subtitle: 'Contexto institucional',
+            description:
+              'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
+            ctaLabel: 'Explorar lugares',
+          },
+          {
+            locale: 'en',
+            title: 'Places',
+            subtitle: 'Institutional context',
+            description:
+              'Museums, collections and spaces that anchor works, movements and public memory.',
+            ctaLabel: 'Explore places',
+          },
+        ],
+      }),
+    );
 
     const result = await service.materializeVirtualDeck('place');
 
-    expect(prisma.homeDeck.create).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({
+    expect(prisma.homeDeck.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          slug: 'place',
+          isActive: true,
+          ctaRoute: '/entities/place',
+          sortOrder: 6,
+          items: {
+            create: [
+              { entityId: 'place-1', sortOrder: 0 },
+              { entityId: 'place-2', sortOrder: 1 },
+              { entityId: 'place-3', sortOrder: 2 },
+              { entityId: 'place-4', sortOrder: 3 },
+            ],
+          },
+        }),
+      }),
+    );
+    expect(result).toEqual(
+      expect.objectContaining({
         slug: 'place',
         isActive: true,
         ctaRoute: '/entities/place',
-        sortOrder: 6,
-        items: {
-          create: [
-            { entityId: 'place-1', sortOrder: 0 },
-            { entityId: 'place-2', sortOrder: 1 },
-            { entityId: 'place-3', sortOrder: 2 },
-            { entityId: 'place-4', sortOrder: 3 },
-          ],
-        },
       }),
-    }));
-    expect(result).toEqual(expect.objectContaining({
-      slug: 'place',
-      isActive: true,
-      ctaRoute: '/entities/place',
-    }));
+    );
   });
 });
 

@@ -68,24 +68,29 @@ describe('EntitiesService media admin workflows', () => {
     prisma.entityMedia.findFirst.mockResolvedValue(null);
     prisma.entityMedia.findMany.mockResolvedValue([]);
     prisma.entityMedia.findUnique.mockResolvedValue({ id: 'link-1', media: { id: 'media-1' } });
-    prisma.entityMedia.findUniqueOrThrow.mockResolvedValue({ id: 'link-1', media: { id: 'media-1' } });
+    prisma.entityMedia.findUniqueOrThrow.mockResolvedValue({
+      id: 'link-1',
+      media: { id: 'media-1' },
+    });
     prisma.entityMedia.updateMany.mockResolvedValue({ count: 0 });
     prisma.entityMedia.aggregate.mockResolvedValue({ _max: { sortOrder: 0 } });
     txMediaUpdate.mockResolvedValue(undefined);
     txEntityMediaUpdate.mockResolvedValue(undefined);
     txEntityMediaUpdateMany.mockResolvedValue({ count: 0 });
-    prisma.$transaction.mockImplementation(async (callback: (tx: any) => Promise<unknown>) => callback({
-      media: {
-        create: prisma.media.create,
-        update: txMediaUpdate,
-      },
-      entityMedia: {
-        create: prisma.entityMedia.create,
-        update: txEntityMediaUpdate,
-        updateMany: txEntityMediaUpdateMany,
-        findUniqueOrThrow: prisma.entityMedia.findUniqueOrThrow,
-      },
-    }));
+    prisma.$transaction.mockImplementation(async (callback: (tx: any) => Promise<unknown>) =>
+      callback({
+        media: {
+          create: prisma.media.create,
+          update: txMediaUpdate,
+        },
+        entityMedia: {
+          create: prisma.entityMedia.create,
+          update: txEntityMediaUpdate,
+          updateMany: txEntityMediaUpdateMany,
+          findUniqueOrThrow: prisma.entityMedia.findUniqueOrThrow,
+        },
+      }),
+    );
 
     (mkdir as jest.Mock).mockResolvedValue(undefined);
     (readFile as jest.Mock).mockResolvedValue(Buffer.from([1, 2, 3]));
@@ -95,10 +100,7 @@ describe('EntitiesService media admin workflows', () => {
     global.fetch = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        EntitiesService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [EntitiesService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get(EntitiesService);
@@ -168,15 +170,17 @@ describe('EntitiesService media admin workflows', () => {
       },
     });
 
-    expect(result).toEqual(expect.objectContaining({
-      id: 'link-external-1',
-      role: 'DETAIL',
-      sortOrder: 3,
-      isPrimary: true,
-      displayMode: 'CONTAIN',
-      focalX: 32.5,
-      focalY: 61.2,
-    }));
+    expect(result).toEqual(
+      expect.objectContaining({
+        id: 'link-external-1',
+        role: 'DETAIL',
+        sortOrder: 3,
+        isPrimary: true,
+        displayMode: 'CONTAIN',
+        focalX: 32.5,
+        focalY: 61.2,
+      }),
+    );
   });
 
   it('creates uploaded media with canonical/display public urls and preserves visual metadata', async () => {
@@ -198,26 +202,30 @@ describe('EntitiesService media admin workflows', () => {
       },
     });
 
-    const result = await service.adminUploadMedia('entity-1', {
-      filename: 'uploaded-file.jpg',
-      originalname: 'original-file.jpg',
-      mimetype: 'image/jpeg',
-      size: 123456,
-      path: '/tmp/uploaded-file.jpg',
-    }, {
-      alt: ' Obra subida ',
-      source: '',
-      photoBy: ' Equipo JANO ',
-      license: ' Uso interno ',
-      width: 10,
-      height: 10,
-      role: MediaRole.CARD,
-      sortOrder: 2,
-      isPrimary: false,
-      displayMode: 'COVER',
-      focalX: 44,
-      focalY: 55,
-    });
+    const result = await service.adminUploadMedia(
+      'entity-1',
+      {
+        filename: 'uploaded-file.jpg',
+        originalname: 'original-file.jpg',
+        mimetype: 'image/jpeg',
+        size: 123456,
+        path: '/tmp/uploaded-file.jpg',
+      },
+      {
+        alt: ' Obra subida ',
+        source: '',
+        photoBy: ' Equipo JANO ',
+        license: ' Uso interno ',
+        width: 10,
+        height: 10,
+        role: MediaRole.CARD,
+        sortOrder: 2,
+        isPrimary: false,
+        displayMode: 'COVER',
+        focalX: 44,
+        focalY: 55,
+      },
+    );
 
     expect(prisma.media.create).toHaveBeenCalledWith({
       data: {
@@ -256,12 +264,14 @@ describe('EntitiesService media admin workflows', () => {
       },
     });
 
-    expect(result).toEqual(expect.objectContaining({
-      id: 'link-upload-1',
-      role: 'CARD',
-      sortOrder: 2,
-      displayMode: 'COVER',
-    }));
+    expect(result).toEqual(
+      expect.objectContaining({
+        id: 'link-upload-1',
+        role: 'CARD',
+        sortOrder: 2,
+        displayMode: 'COVER',
+      }),
+    );
   });
 
   it('does not mark a new external media as fallback legacy unless explicitly requested', async () => {
@@ -285,11 +295,13 @@ describe('EntitiesService media admin workflows', () => {
       role: MediaRole.THUMBNAIL,
     });
 
-    expect(prisma.entityMedia.create).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({
-        isPrimary: false,
+    expect(prisma.entityMedia.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          isPrimary: false,
+        }),
       }),
-    }));
+    );
     expect(txEntityMediaUpdateMany).not.toHaveBeenCalled();
   });
 
@@ -330,31 +342,31 @@ describe('EntitiesService media admin workflows', () => {
   it('ingests an external media link into a derived INGESTED gallery asset preserving lineage and visual metadata', async () => {
     prisma.entityMedia.findFirst
       .mockResolvedValueOnce({
-      id: 'link-external-1',
-      entityId: 'entity-1',
-      mediaId: 'media-external-1',
-      role: MediaRole.DETAIL,
-      sortOrder: 4,
-      isPrimary: false,
-      displayMode: 'CONTAIN',
-      focalX: 21,
-      focalY: 73,
-      media: {
-        id: 'media-external-1',
-        originType: MediaOriginType.EXTERNAL_URL,
-        url: 'https://images.example.com/source.jpg',
-        displayUrl: null,
-        canonicalUrl: 'https://museum.example.com/work/source',
-        sourcePageUrl: 'https://museum.example.com/work',
-        width: 1200,
-        height: 900,
-        provider: 'MUSEUM',
-        qualityTier: 'HIGH',
-        alt: 'Detalle original',
-        source: 'Museum source',
-        photoBy: 'Photo credit',
-        license: 'CC BY',
-      },
+        id: 'link-external-1',
+        entityId: 'entity-1',
+        mediaId: 'media-external-1',
+        role: MediaRole.DETAIL,
+        sortOrder: 4,
+        isPrimary: false,
+        displayMode: 'CONTAIN',
+        focalX: 21,
+        focalY: 73,
+        media: {
+          id: 'media-external-1',
+          originType: MediaOriginType.EXTERNAL_URL,
+          url: 'https://images.example.com/source.jpg',
+          displayUrl: null,
+          canonicalUrl: 'https://museum.example.com/work/source',
+          sourcePageUrl: 'https://museum.example.com/work',
+          width: 1200,
+          height: 900,
+          provider: 'MUSEUM',
+          qualityTier: 'HIGH',
+          alt: 'Detalle original',
+          source: 'Museum source',
+          photoBy: 'Photo credit',
+          license: 'CC BY',
+        },
       })
       .mockResolvedValueOnce(null);
     prisma.entityMedia.aggregate.mockResolvedValue({ _max: { sortOrder: 6 } });
@@ -375,22 +387,26 @@ describe('EntitiesService media admin workflows', () => {
         derivedFromMediaId: 'media-external-1',
       },
     });
-    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) => callback({
-      media: { create: transactionMediaCreate },
-      entityMedia: { create: transactionEntityMediaCreate },
-    }));
+    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) =>
+      callback({
+        media: { create: transactionMediaCreate },
+        entityMedia: { create: transactionEntityMediaCreate },
+      }),
+    );
 
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       status: 200,
-      headers: { get: (name: string) => name === 'content-type' ? 'image/jpeg' : null },
+      headers: { get: (name: string) => (name === 'content-type' ? 'image/jpeg' : null) },
       arrayBuffer: jest.fn().mockResolvedValue(Uint8Array.from([1, 2, 3, 4]).buffer),
     });
 
     const result = await service.adminIngestMedia('entity-1', 'link-external-1');
 
     expect(global.fetch).toHaveBeenCalledWith('https://images.example.com/source.jpg');
-    expect(mkdir).toHaveBeenCalledWith(expect.stringContaining('/uploads/media/ingested'), { recursive: true });
+    expect(mkdir).toHaveBeenCalledWith(expect.stringContaining('/uploads/media/ingested'), {
+      recursive: true,
+    });
     expect(writeFile).toHaveBeenCalledWith(
       expect.stringContaining('/uploads/media/ingested/'),
       expect.any(Buffer),
@@ -432,14 +448,16 @@ describe('EntitiesService media admin workflows', () => {
       },
     });
 
-    expect(result).toEqual(expect.objectContaining({
-      id: 'link-ingested-1',
-      role: MediaRole.GALLERY,
-      sortOrder: 7,
-      displayMode: 'CONTAIN',
-      focalX: 21,
-      focalY: 73,
-    }));
+    expect(result).toEqual(
+      expect.objectContaining({
+        id: 'link-ingested-1',
+        role: MediaRole.GALLERY,
+        sortOrder: 7,
+        displayMode: 'CONTAIN',
+        focalX: 21,
+        focalY: 73,
+      }),
+    );
   });
 
   it('promotes an ingested asset as the active visual replacement and degrades the external source to gallery', async () => {
@@ -498,13 +516,15 @@ describe('EntitiesService media admin workflows', () => {
         originType: MediaOriginType.INGESTED,
       },
     };
-    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) => callback({
-      entityMedia: {
-        update: txUpdate,
-        updateMany: txEntityMediaUpdateMany,
-        findUniqueOrThrow: jest.fn().mockResolvedValue(promotedLink),
-      },
-    }));
+    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) =>
+      callback({
+        entityMedia: {
+          update: txUpdate,
+          updateMany: txEntityMediaUpdateMany,
+          findUniqueOrThrow: jest.fn().mockResolvedValue(promotedLink),
+        },
+      }),
+    );
     prisma.entityMedia.findUniqueOrThrow.mockResolvedValue({
       id: 'link-external-1',
       role: MediaRole.GALLERY,
@@ -647,13 +667,15 @@ describe('EntitiesService media admin workflows', () => {
         originType: MediaOriginType.EXTERNAL_URL,
       },
     };
-    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) => callback({
-      entityMedia: {
-        update: txUpdate,
-        updateMany: txEntityMediaUpdateMany,
-        findUniqueOrThrow: jest.fn().mockResolvedValue(restoredLink),
-      },
-    }));
+    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) =>
+      callback({
+        entityMedia: {
+          update: txUpdate,
+          updateMany: txEntityMediaUpdateMany,
+          findUniqueOrThrow: jest.fn().mockResolvedValue(restoredLink),
+        },
+      }),
+    );
     prisma.entityMedia.findUniqueOrThrow.mockResolvedValue({
       id: 'link-ingested-1',
       role: MediaRole.GALLERY,
@@ -809,7 +831,9 @@ describe('EntitiesService media admin workflows', () => {
 
     const result = await service.previewBySlug('guernica');
 
-    expect(result.mediaLibrary.resolvedSlots.find((slot: any) => slot.slotKey === 'preview')).toEqual(
+    expect(
+      result.mediaLibrary.resolvedSlots.find((slot: any) => slot.slotKey === 'preview'),
+    ).toEqual(
       expect.objectContaining({
         source: 'explicit',
         matchedRole: 'THUMBNAIL',
@@ -832,11 +856,7 @@ describe('EntitiesService media admin workflows', () => {
 
   it('normalizes legacy fallback to a single active media when adminGetById loads dirty data', async () => {
     prisma.entityMedia.findMany
-      .mockResolvedValueOnce([
-        { id: 'legacy-a' },
-        { id: 'legacy-b' },
-        { id: 'legacy-c' },
-      ] as any)
+      .mockResolvedValueOnce([{ id: 'legacy-a' }, { id: 'legacy-b' }, { id: 'legacy-c' }] as any)
       .mockResolvedValueOnce([]);
     prisma.entity.findUnique.mockResolvedValue({
       id: 'entity-1',

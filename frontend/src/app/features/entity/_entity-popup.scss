@@ -27,7 +27,7 @@
     0 30px 76px rgba(0, 0, 0, 0.28),
     0 8px 24px rgba(16, 18, 24, 0.14);
   transform: translateY(0) scale(1);
-  animation: collections-panel-enter 220ms cubic-bezier(.22, 1, .36, 1);
+  animation: collections-panel-enter 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .collections-panel--notice {
@@ -65,18 +65,18 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.48);
 }
 
-.collections-panel[data-kind="saved"] .collections-panel__state-dot,
-.collections-panel[data-kind="manage"] .collections-panel__state-dot,
-.collections-panel[data-kind="collections"] .collections-panel__state-dot,
-.collections-panel[data-kind="share"] .collections-panel__state-dot {
+.collections-panel[data-kind='saved'] .collections-panel__state-dot,
+.collections-panel[data-kind='manage'] .collections-panel__state-dot,
+.collections-panel[data-kind='collections'] .collections-panel__state-dot,
+.collections-panel[data-kind='share'] .collections-panel__state-dot {
   background: rgba(105, 111, 150, 0.9);
 }
 
-.collections-panel[data-kind="removed"] .collections-panel__state-dot {
+.collections-panel[data-kind='removed'] .collections-panel__state-dot {
   background: rgba(142, 124, 96, 0.88);
 }
 
-.collections-panel[data-kind="error"] .collections-panel__state-dot {
+.collections-panel[data-kind='error'] .collections-panel__state-dot {
   background: rgba(154, 82, 82, 0.9);
 }
 
@@ -102,8 +102,7 @@
   padding-inline: 1rem;
   border-radius: 999px;
   border-color: rgba(255, 255, 255, 0.72);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(231, 232, 229, 0.7));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(231, 232, 229, 0.7));
   color: rgba(31, 35, 45, 0.9);
   font-size: 0.86rem;
   font-weight: 700;
@@ -197,16 +196,14 @@
 
 .collections-panel .entity-action:not(.entity-action--primary):not(.entity-action--danger) {
   border-color: rgba(255, 255, 255, 0.6);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(218, 220, 217, 0.22));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(218, 220, 217, 0.22));
   color: rgba(42, 47, 59, 0.88);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
 
 .collections-panel .entity-action--primary {
   border-color: rgba(26, 28, 38, 0.18);
-  background:
-    linear-gradient(180deg, rgba(34, 36, 48, 0.96), rgba(20, 21, 30, 0.98));
+  background: linear-gradient(180deg, rgba(34, 36, 48, 0.96), rgba(20, 21, 30, 0.98));
   color: rgba(255, 255, 255, 0.96);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
@@ -215,8 +212,7 @@
 
 .collections-panel .entity-action--danger {
   border-color: rgba(126, 86, 82, 0.24);
-  background:
-    linear-gradient(180deg, rgba(244, 243, 240, 0.48), rgba(216, 213, 209, 0.22));
+  background: linear-gradient(180deg, rgba(244, 243, 240, 0.48), rgba(216, 213, 209, 0.22));
   color: rgba(126, 70, 67, 0.92);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
@@ -352,7 +348,7 @@
   }
 }
 
-:host-context([data-theme="dark"]) {
+:host-context([data-theme='dark']) {
   .collections-panel {
     border-color: rgba(218, 221, 220, 0.18);
     background:
@@ -394,15 +390,13 @@
   .collections-panel__close,
   .collections-panel .entity-action:not(.entity-action--primary):not(.entity-action--danger) {
     border-color: rgba(255, 255, 255, 0.16);
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
     color: rgba(240, 241, 238, 0.9);
   }
 
   .collections-panel .entity-action--primary {
     border-color: rgba(255, 255, 255, 0.18);
-    background:
-      linear-gradient(180deg, rgba(246, 247, 245, 0.94), rgba(196, 199, 198, 0.9));
+    background: linear-gradient(180deg, rgba(246, 247, 245, 0.94), rgba(196, 199, 198, 0.9));
     color: rgba(20, 23, 30, 0.96);
   }
 
@@ -470,7 +464,7 @@
     0 14px 30px rgba(0, 0, 0, 0.22);
 }
 
-:host-context([data-theme="light"]) {
+:host-context([data-theme='light']) {
   .entity-translation-notice {
     border-color: rgba(44, 46, 44, 0.12);
     background:

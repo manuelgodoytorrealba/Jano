@@ -1,4 +1,7 @@
-import { AdminContributorPayload, AdminSourceRefPayload } from '../../../core/api/admin-entities.api';
+import {
+  AdminContributorPayload,
+  AdminSourceRefPayload,
+} from '../../../core/api/admin-entities.api';
 
 export type AdminEditableSourceRef = {
   id: string;
@@ -121,15 +124,18 @@ export function buildSourceRefPayload(
 
   return {
     payload: {
-      sourceType: (source.sourceType ?? 'WEBSITE') as AdminSourceRefPayload['sourceType'],
+      sourceType: source.sourceType ?? 'WEBSITE',
       sourceTitle: title,
       sourceTitleEs: String(source.sourceTitleEs ?? source.sourceTitle ?? '').trim() || undefined,
       sourceTitleEn: String(source.sourceTitleEn ?? '').trim() || undefined,
       sourceAuthor: String(source.sourceAuthor ?? source.sourceAuthorEs ?? '').trim() || undefined,
-      sourceAuthorEs: String(source.sourceAuthorEs ?? source.sourceAuthor ?? '').trim() || undefined,
+      sourceAuthorEs:
+        String(source.sourceAuthorEs ?? source.sourceAuthor ?? '').trim() || undefined,
       sourceAuthorEn: String(source.sourceAuthorEn ?? '').trim() || undefined,
-      sourcePublisher: String(source.sourcePublisher ?? source.sourcePublisherEs ?? '').trim() || undefined,
-      sourcePublisherEs: String(source.sourcePublisherEs ?? source.sourcePublisher ?? '').trim() || undefined,
+      sourcePublisher:
+        String(source.sourcePublisher ?? source.sourcePublisherEs ?? '').trim() || undefined,
+      sourcePublisherEs:
+        String(source.sourcePublisherEs ?? source.sourcePublisher ?? '').trim() || undefined,
       sourcePublisherEn: String(source.sourcePublisherEn ?? '').trim() || undefined,
       sourceYear: toNullableNumber(source.sourceYear),
       sourceUrl: String(source.sourceUrl ?? '').trim() || undefined,

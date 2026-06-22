@@ -179,7 +179,10 @@
     max-height: min(56svh, 430px);
     margin: 0;
     z-index: 96;
-    transition: opacity 240ms ease, transform 300ms cubic-bezier(.2, .72, .2, 1), visibility 240ms ease;
+    transition:
+      opacity 240ms ease,
+      transform 300ms cubic-bezier(0.2, 0.72, 0.2, 1),
+      visibility 240ms ease;
   }
 
   .entities-explorer-layout:not(.is-list) .entities-filter-rail.is-collapsed,
@@ -228,5 +231,4 @@
   .entity-card__thumb {
     height: 160px;
   }
-
 }

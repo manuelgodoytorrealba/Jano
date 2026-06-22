@@ -114,7 +114,10 @@ export class HomeDecksController {
       }),
       fileFilter: (_req, file, callback) => {
         if (!ALLOWED_UPLOAD_MIME_TYPES.has(file.mimetype ?? '')) {
-          callback(new BadRequestException('Formato no permitido. Usa JPEG, PNG, WEBP, GIF o AVIF.'), false);
+          callback(
+            new BadRequestException('Formato no permitido. Usa JPEG, PNG, WEBP, GIF o AVIF.'),
+            false,
+          );
           return;
         }
 

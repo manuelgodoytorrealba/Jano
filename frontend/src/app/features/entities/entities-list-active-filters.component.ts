@@ -1,5 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { EntitiesListActiveFilterChipVm, EntitiesListActiveFilterKey } from './entities-list.facade';
+import {
+  EntitiesListActiveFilterChipVm,
+  EntitiesListActiveFilterKey,
+} from './entities-list.facade';
 
 @Component({
   standalone: true,
@@ -12,7 +15,8 @@ import { EntitiesListActiveFilterChipVm, EntitiesListActiveFilterKey } from './e
           type="button"
           class="search-chip entities-active-filter"
           [class.entities-active-filter--advanced]="chip.advanced"
-          (click)="clear.emit(chip.key)">
+          (click)="clear.emit(chip.key)"
+        >
           <span class="entities-active-filter__content">
             <span class="search-chip__label">{{ chip.label }}</span>
             <span class="search-chip__value">{{ chip.value }}</span>

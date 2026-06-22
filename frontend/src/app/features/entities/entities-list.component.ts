@@ -1,11 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostListener,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
@@ -19,7 +13,6 @@ import { EntitiesExplorerTotemComponent } from '../entities-explorer-totem/entit
 import {
   EntitiesListActiveFilterKey,
   EntitiesListFacade,
-  EntityListVm,
   FilterMenuKey,
   Level,
   Sort,
@@ -86,7 +79,11 @@ export class EntitiesListComponent {
   readonly activeIndex = signal(0);
   readonly advancedFiltersOpen = signal(false);
   readonly filtersPanelOpen = signal(false);
-  readonly infoPanelOpen = signal(typeof window !== 'undefined' ? !(window.innerWidth <= 720 && window.innerHeight > window.innerWidth) : true);
+  readonly infoPanelOpen = signal(
+    typeof window !== 'undefined'
+      ? !(window.innerWidth <= 720 && window.innerHeight > window.innerWidth)
+      : true,
+  );
   readonly openFilterMenu = signal<FilterMenuKey | null>(null);
   readonly curatedDeckMode = signal(!!(this.route.snapshot.queryParamMap.get('deck') ?? '').trim());
   readonly curatedDeckTitle = signal('');
@@ -94,42 +91,49 @@ export class EntitiesListComponent {
   viewMode: ViewMode = 'explore';
 
   constructor() {
-    this.pageVm$.pipe(
-      map((pageVm) => pageVm.curatedDeckMode),
-      distinctUntilChanged(),
-      tap((isCuratedDeck) => {
-        this.curatedDeckMode.set(isCuratedDeck);
-      }),
-      takeUntilDestroyed(),
-    ).subscribe();
-    this.route.queryParamMap.pipe(
-      map((queryParamMap) => (queryParamMap.get('deck') ?? '').trim()),
-      distinctUntilChanged(),
-      switchMap((deckSlug) => {
-        if (!deckSlug) {
-          return of('');
-        }
+    this.pageVm$
+      .pipe(
+        map((pageVm) => pageVm.curatedDeckMode),
+        distinctUntilChanged(),
+        tap((isCuratedDeck) => {
+          this.curatedDeckMode.set(isCuratedDeck);
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe();
+    this.route.queryParamMap
+      .pipe(
+        map((queryParamMap) => (queryParamMap.get('deck') ?? '').trim()),
+        distinctUntilChanged(),
+        switchMap((deckSlug) => {
+          if (!deckSlug) {
+            return of('');
+          }
 
-        return this.homeDecksApi.listPublic('RECOMMENDED').pipe(
-          map((decks) => decks.find((deck) => deck.slug === deckSlug)?.title?.trim() || ''),
-        );
-      }),
-      tap((title) => this.curatedDeckTitle.set(title)),
-      takeUntilDestroyed(),
-    ).subscribe();
+          return this.homeDecksApi
+            .listPublic('RECOMMENDED')
+            .pipe(
+              map((decks) => decks.find((deck) => deck.slug === deckSlug)?.title?.trim() || ''),
+            );
+        }),
+        tap((title) => this.curatedDeckTitle.set(title)),
+        takeUntilDestroyed(),
+      )
+      .subscribe();
 
-
-    this.pageVm$.pipe(
-      map((pageVm) => pageVm.results.items.length),
-      distinctUntilChanged(),
-      tap((total) => {
-        const nextIndex = total > 0 ? Math.floor((total - 1) / 2) : 0;
-        if (this.activeIndex() !== nextIndex) {
-          this.activeIndex.set(nextIndex);
-        }
-      }),
-      takeUntilDestroyed(),
-    ).subscribe();
+    this.pageVm$
+      .pipe(
+        map((pageVm) => pageVm.results.items.length),
+        distinctUntilChanged(),
+        tap((total) => {
+          const nextIndex = total > 0 ? Math.floor((total - 1) / 2) : 0;
+          if (this.activeIndex() !== nextIndex) {
+            this.activeIndex.set(nextIndex);
+          }
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe();
   }
 
   isMobilePortraitTotem(): boolean {
@@ -175,7 +179,6 @@ export class EntitiesListComponent {
     this.closeFilterMenu();
   }
 
-
   setView(mode: ViewMode) {
     this.closeFilterMenu();
     this.viewMode = mode;
@@ -205,7 +208,11 @@ export class EntitiesListComponent {
     this.infoPanelOpen.set(false);
   }
 
-  breadcrumbSectionLabel(pageVm: { title: string; type: string; curatedDeckMode: boolean }): string {
+  breadcrumbSectionLabel(pageVm: {
+    title: string;
+    type: string;
+    curatedDeckMode: boolean;
+  }): string {
     if (this.curatedDeckMode()) {
       return this.i18n.t('nav.curated');
     }
@@ -217,7 +224,11 @@ export class EntitiesListComponent {
     return this.i18n.t('nav.explore');
   }
 
-  breadcrumbSectionRoute(pageVm: { title: string; type: string; curatedDeckMode: boolean }): string {
+  breadcrumbSectionRoute(pageVm: {
+    title: string;
+    type: string;
+    curatedDeckMode: boolean;
+  }): string {
     if (this.curatedDeckMode()) {
       return '/curated';
     }
@@ -229,7 +240,11 @@ export class EntitiesListComponent {
     return '/entities/artwork';
   }
 
-  breadcrumbCurrentLabel(pageVm: { title: string; type: string; curatedDeckMode: boolean }): string {
+  breadcrumbCurrentLabel(pageVm: {
+    title: string;
+    type: string;
+    curatedDeckMode: boolean;
+  }): string {
     if (this.curatedDeckMode()) {
       return this.curatedDeckTitle() || this.i18n.t('nav.curated');
     }
@@ -241,7 +256,6 @@ export class EntitiesListComponent {
     return pageVm.title;
   }
 
-
   openInfoPanel() {
     if (this.isMobilePortraitTotemActive()) {
       this.filtersPanelOpen.set(false);
@@ -252,7 +266,7 @@ export class EntitiesListComponent {
   }
 
   toggleFilterMenu(key: FilterMenuKey) {
-    this.openFilterMenu.update((current) => current === key ? null : key);
+    this.openFilterMenu.update((current) => (current === key ? null : key));
   }
 
   closeFilterMenu() {

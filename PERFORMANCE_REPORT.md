@@ -39,26 +39,26 @@ The biggest real UX win is on mobile and tablet home/recommended, where the hero
 
 ### Before
 
-| Artifact | Raw size |
-| --- | ---: |
-| Initial total | `784.66 kB` |
-| `main` | `598.50 kB` |
-| Shared initial chunk | `179.16 kB` |
+| Artifact                              |    Raw size |
+| ------------------------------------- | ----------: |
+| Initial total                         | `784.66 kB` |
+| `main`                                | `598.50 kB` |
+| Shared initial chunk                  | `179.16 kB` |
 | Lazy `entities-explorer-3d-component` | `525.07 kB` |
 
 ### After
 
-| Artifact | Raw size |
-| --- | ---: |
-| Initial total | `364.59 kB` |
-| `main` | `52.85 kB` |
-| Shared initial chunks | `194.34 kB` + `108.50 kB` |
-| Lazy `graph-component` | `105.17 kB` |
-| Lazy `entities-list-component` | `48.71 kB` |
-| Lazy `entity-component` | `41.62 kB` |
-| Lazy `home-component` | `6.65 kB` |
-| Lazy `recommended-component` | `7.17 kB` |
-| Lazy `entities-explorer-3d-component` | `525.10 kB` |
+| Artifact                              |                  Raw size |
+| ------------------------------------- | ------------------------: |
+| Initial total                         |               `364.59 kB` |
+| `main`                                |                `52.85 kB` |
+| Shared initial chunks                 | `194.34 kB` + `108.50 kB` |
+| Lazy `graph-component`                |               `105.17 kB` |
+| Lazy `entities-list-component`        |                `48.71 kB` |
+| Lazy `entity-component`               |                `41.62 kB` |
+| Lazy `home-component`                 |                 `6.65 kB` |
+| Lazy `recommended-component`          |                 `7.17 kB` |
+| Lazy `entities-explorer-3d-component` |               `525.10 kB` |
 
 ### Interpretation
 
@@ -70,13 +70,13 @@ The biggest real UX win is on mobile and tablet home/recommended, where the hero
 
 ### Desktop
 
-| Route | Perf score before | Perf score after | A11y after | Best Practices before | Best Practices after | SEO after | FCP before | FCP after | LCP before | LCP after | CLS after | TBT before | TBT after |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `/` | 45 | 45 | 100 | 80 | 100 | 55 | `912 ms` | `476 ms` | `1344 ms` | `1108 ms` | `0` | `0 ms` | `0 ms` |
-| `/entities/artwork` | 45 | 45 | 88 | 72 | 72 | 45 | `452 ms` | `132 ms` | `452 ms` | `132 ms` | `0` | `0 ms` | `0 ms` |
-| `/entities/artwork?q=maman` | 45 | 45 | 88 | 72 | 72 | 45 | `148 ms` | `148 ms` | `148 ms` | `148 ms` | `0` | `0 ms` | `0 ms` |
-| `/entity/maman` | 45 | 45 | 100 | 72 | 72 | 45 | `148 ms` | `128 ms` | `148 ms` | `128 ms` | `0` | `0 ms` | `0 ms` |
-| `/recommended` | 45 | 45 | 100 | 80 | 100 | 55 | `200 ms` | `120 ms` | `232 ms` | `256 ms` | `0` | `0 ms` | `0 ms` |
+| Route                       | Perf score before | Perf score after | A11y after | Best Practices before | Best Practices after | SEO after | FCP before | FCP after | LCP before | LCP after | CLS after | TBT before | TBT after |
+| --------------------------- | ----------------: | ---------------: | ---------: | --------------------: | -------------------: | --------: | ---------: | --------: | ---------: | --------: | --------: | ---------: | --------: |
+| `/`                         |                45 |               45 |        100 |                    80 |                  100 |        55 |   `912 ms` |  `476 ms` |  `1344 ms` | `1108 ms` |       `0` |     `0 ms` |    `0 ms` |
+| `/entities/artwork`         |                45 |               45 |         88 |                    72 |                   72 |        45 |   `452 ms` |  `132 ms` |   `452 ms` |  `132 ms` |       `0` |     `0 ms` |    `0 ms` |
+| `/entities/artwork?q=maman` |                45 |               45 |         88 |                    72 |                   72 |        45 |   `148 ms` |  `148 ms` |   `148 ms` |  `148 ms` |       `0` |     `0 ms` |    `0 ms` |
+| `/entity/maman`             |                45 |               45 |        100 |                    72 |                   72 |        45 |   `148 ms` |  `128 ms` |   `148 ms` |  `128 ms` |       `0` |     `0 ms` |    `0 ms` |
+| `/recommended`              |                45 |               45 |        100 |                    80 |                  100 |        55 |   `200 ms` |  `120 ms` |   `232 ms` |  `256 ms` |       `0` |     `0 ms` |    `0 ms` |
 
 Notes:
 
@@ -85,13 +85,13 @@ Notes:
 
 ### Mobile
 
-| Route | FCP before | FCP after | LCP before | LCP after | CLS after | TBT before | TBT after |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `/` | `4400 ms` | `2396 ms` | `7484 ms` | `2860 ms` | `0` | `120 ms` | `61 ms` |
-| `/entities/artwork` | `420 ms` | `2264 ms` | `420 ms` | `2264 ms` | `0` | `100 ms` | `68 ms` |
-| `/entities/artwork?q=maman` | `400 ms` | `2244 ms` | `400 ms` | `2244 ms` | `0` | `94 ms` | `64 ms` |
-| `/entity/maman` | `400 ms` | `2264 ms` | `400 ms` | `2264 ms` | `0` | `96 ms` | `70 ms` |
-| `/recommended` | `760 ms` | `2236 ms` | `792 ms` | `2888 ms` | `0` | `117 ms` | `57 ms` |
+| Route                       | FCP before | FCP after | LCP before | LCP after | CLS after | TBT before | TBT after |
+| --------------------------- | ---------: | --------: | ---------: | --------: | --------: | ---------: | --------: |
+| `/`                         |  `4400 ms` | `2396 ms` |  `7484 ms` | `2860 ms` |       `0` |   `120 ms` |   `61 ms` |
+| `/entities/artwork`         |   `420 ms` | `2264 ms` |   `420 ms` | `2264 ms` |       `0` |   `100 ms` |   `68 ms` |
+| `/entities/artwork?q=maman` |   `400 ms` | `2244 ms` |   `400 ms` | `2244 ms` |       `0` |    `94 ms` |   `64 ms` |
+| `/entity/maman`             |   `400 ms` | `2264 ms` |   `400 ms` | `2264 ms` |       `0` |    `96 ms` |   `70 ms` |
+| `/recommended`              |   `760 ms` | `2236 ms` |   `792 ms` | `2888 ms` |       `0` |   `117 ms` |   `57 ms` |
 
 Notes:
 
@@ -100,13 +100,13 @@ Notes:
 
 ### Tablet / iPad
 
-| Route | Perf score before | Perf score after | Best Practices before | Best Practices after | FCP before | FCP after | LCP before | LCP after | TBT before | TBT after |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `/` | 65 | 75 | 80 | 100 | `1860 ms` | `1008 ms` | `3096 ms` | `2508 ms` | `19 ms` | `14 ms` |
-| `/entities/artwork` | 75 | 75 | 72 | 72 | `244 ms` | `212 ms` | `244 ms` | `212 ms` | `18 ms` | `16 ms` |
-| `/entities/artwork?q=maman` | 75 | 75 | 72 | 72 | `232 ms` | `212 ms` | `232 ms` | `212 ms` | `28 ms` | `15 ms` |
-| `/entity/maman` | 75 | 75 | 72 | 72 | `228 ms` | `196 ms` | `228 ms` | `196 ms` | `16 ms` | `14 ms` |
-| `/recommended` | 75 | 75 | 80 | 100 | `264 ms` | `212 ms` | `280 ms` | `364 ms` | `34 ms` | `16 ms` |
+| Route                       | Perf score before | Perf score after | Best Practices before | Best Practices after | FCP before | FCP after | LCP before | LCP after | TBT before | TBT after |
+| --------------------------- | ----------------: | ---------------: | --------------------: | -------------------: | ---------: | --------: | ---------: | --------: | ---------: | --------: |
+| `/`                         |                65 |               75 |                    80 |                  100 |  `1860 ms` | `1008 ms` |  `3096 ms` | `2508 ms` |    `19 ms` |   `14 ms` |
+| `/entities/artwork`         |                75 |               75 |                    72 |                   72 |   `244 ms` |  `212 ms` |   `244 ms` |  `212 ms` |    `18 ms` |   `16 ms` |
+| `/entities/artwork?q=maman` |                75 |               75 |                    72 |                   72 |   `232 ms` |  `212 ms` |   `232 ms` |  `212 ms` |    `28 ms` |   `15 ms` |
+| `/entity/maman`             |                75 |               75 |                    72 |                   72 |   `228 ms` |  `196 ms` |   `228 ms` |  `196 ms` |    `16 ms` |   `14 ms` |
+| `/recommended`              |                75 |               75 |                    80 |                  100 |   `264 ms` |  `212 ms` |   `280 ms` |  `364 ms` |    `34 ms` |   `16 ms` |
 
 ## Diagnostics
 

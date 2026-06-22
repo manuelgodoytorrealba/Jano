@@ -22,14 +22,13 @@ import { EntitiesApi } from '../../core/api/entities.api';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { MediaLike, resolveMediaPresentation } from '../../shared/media/media.utils';
-import { currentDraggedNodeId, GraphStageRect, GraphPointerSession } from './graph-interaction';
+import { GraphStageRect, GraphPointerSession } from './graph-interaction';
 import { ForceLayoutScratch } from './graph-layout';
 import { graphViewportTransform, panGraphViewport, zoomGraphViewport } from './graph-viewport';
 import {
   imageViewportTransform,
   ImageAssetSize,
   ImageViewport,
-  interpolateImageViewport,
   panImageViewport,
   zoomImageViewport,
 } from './image-viewport';
@@ -48,9 +47,7 @@ import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
 import { GraphSceneComponent } from './graph-scene.component';
 import {
-  animateGraphViewportStep,
   DEFAULT_GRAPH_VIEWPORT_ANIMATION,
-  FAST_GRAPH_VIEWPORT_ANIMATION,
   graphLabelScaleBucket,
   GraphViewportAnimationConfig,
   shouldEnsureInitialGraphFit,
@@ -82,12 +79,7 @@ import { initializeLoadedGraphState, warmupPreparedGraphLayout } from './graph-s
 import { createExplorerPersistedState, resolveLiveStageSize } from './graph-state';
 import { advanceExplorerLoop } from './graph-loop-runtime';
 import { syncImageViewportRuntime } from './graph-image-runtime';
-import {
-  buildLoadedGraphRuntime,
-  resetGraphRuntimeState,
-  resetImageRuntimeState,
-  resolveGraphInputChangesRuntime,
-} from './graph-load';
+import { buildLoadedGraphRuntime, resolveGraphInputChangesRuntime } from './graph-load';
 import {
   measureGraphStageRuntime,
   measureImageStageRuntime,

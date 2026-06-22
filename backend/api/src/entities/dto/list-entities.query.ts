@@ -1,7 +1,16 @@
 import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-const TYPES = ['ARTWORK', 'ARTIST', 'ARTICLE', 'PERIOD', 'MOVEMENT', 'CONCEPT', 'PLACE', 'TEXT'] as const;
+const TYPES = [
+  'ARTWORK',
+  'ARTIST',
+  'ARTICLE',
+  'PERIOD',
+  'MOVEMENT',
+  'CONCEPT',
+  'PLACE',
+  'TEXT',
+] as const;
 export type EntityType = (typeof TYPES)[number];
 
 export class ListEntitiesQuery {
@@ -30,9 +39,9 @@ export class ListEntitiesQuery {
   @Max(60)
   limit: number = 24;
 
-@IsOptional()
-@IsIn(['recent', 'title', 'relevance'])
-sort?: 'recent' | 'title' | 'relevance';
+  @IsOptional()
+  @IsIn(['recent', 'title', 'relevance'])
+  sort?: 'recent' | 'title' | 'relevance';
 
   @IsOptional()
   @IsString()

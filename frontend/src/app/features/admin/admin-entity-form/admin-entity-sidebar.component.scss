@@ -18,11 +18,7 @@
 
   border: 1px solid rgba(255, 255, 255, 0.48);
   border-radius: 20px;
-  background: linear-gradient(
-    180deg,
-    rgba(252, 251, 248, 0.98),
-    rgba(242, 239, 233, 0.96)
-  );
+  background: linear-gradient(180deg, rgba(252, 251, 248, 0.98), rgba(242, 239, 233, 0.96));
 
   box-shadow:
     0 22px 54px rgba(25, 20, 14, 0.08),
@@ -43,8 +39,6 @@
   line-height: 1.45;
   color: #5d554d;
 }
-
-
 
 .admin-sidebar__toolhead {
   display: flex;
@@ -366,12 +360,7 @@
 
   padding-top: 12px;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(242, 239, 233, 0),
-      rgba(242, 239, 233, 1) 40%
-    );
+  background: linear-gradient(180deg, rgba(242, 239, 233, 0), rgba(242, 239, 233, 1) 40%);
 }
 
 .admin-sidebar__action {

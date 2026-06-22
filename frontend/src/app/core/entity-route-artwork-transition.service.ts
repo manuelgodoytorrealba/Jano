@@ -98,9 +98,10 @@ export class EntityRouteArtworkTransitionService {
 
   beginArrivalFromState(state: unknown, slug: string): void {
     const existingPayload = sharedPayloadSignal();
-    const payload = this.normalizePayload(state, slug)
-      ?? (existingPayload?.slug === slug ? existingPayload : null)
-      ?? this.readPersistedPayload(slug);
+    const payload =
+      this.normalizePayload(state, slug) ??
+      (existingPayload?.slug === slug ? existingPayload : null) ??
+      this.readPersistedPayload(slug);
 
     if (!payload) {
       return;
@@ -193,21 +194,21 @@ export class EntityRouteArtworkTransitionService {
 
     const payload = candidate as Partial<EntityArtworkTransitionPayload>;
     if (
-      payload.slug !== slug
-      || typeof payload.title !== 'string'
-      || typeof payload.imageUrl !== 'string'
-      || !payload.imageUrl
-      || !payload.sourceBounds
+      payload.slug !== slug ||
+      typeof payload.title !== 'string' ||
+      typeof payload.imageUrl !== 'string' ||
+      !payload.imageUrl ||
+      !payload.sourceBounds
     ) {
       return null;
     }
 
     const rect = payload.sourceBounds as Partial<ArtworkTransitionRect>;
     if (
-      typeof rect.left !== 'number'
-      || typeof rect.top !== 'number'
-      || typeof rect.width !== 'number'
-      || typeof rect.height !== 'number'
+      typeof rect.left !== 'number' ||
+      typeof rect.top !== 'number' ||
+      typeof rect.width !== 'number' ||
+      typeof rect.height !== 'number'
     ) {
       return null;
     }
@@ -290,14 +291,14 @@ export class EntityRouteArtworkTransitionService {
 
       const rect = payload.sourceBounds as Partial<ArtworkTransitionRect> | undefined;
       if (
-        typeof payload.title !== 'string'
-        || typeof payload.imageUrl !== 'string'
-        || !payload.imageUrl
-        || !rect
-        || typeof rect.left !== 'number'
-        || typeof rect.top !== 'number'
-        || typeof rect.width !== 'number'
-        || typeof rect.height !== 'number'
+        typeof payload.title !== 'string' ||
+        typeof payload.imageUrl !== 'string' ||
+        !payload.imageUrl ||
+        !rect ||
+        typeof rect.left !== 'number' ||
+        typeof rect.top !== 'number' ||
+        typeof rect.width !== 'number' ||
+        typeof rect.height !== 'number'
       ) {
         return null;
       }
@@ -356,7 +357,10 @@ export class EntityRouteArtworkTransitionService {
       image.setAttribute('decoding', 'async');
     }
 
-    overlayElement.classList.toggle('app-route-artwork-overlay--fading', sharedOverlayFadingSignal());
+    overlayElement.classList.toggle(
+      'app-route-artwork-overlay--fading',
+      sharedOverlayFadingSignal(),
+    );
     overlayElement.style.transition = animated
       ? 'left 460ms cubic-bezier(0.2, 0.8, 0.2, 1), top 460ms cubic-bezier(0.2, 0.8, 0.2, 1), width 460ms cubic-bezier(0.2, 0.8, 0.2, 1), height 460ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 280ms ease'
       : 'none';
