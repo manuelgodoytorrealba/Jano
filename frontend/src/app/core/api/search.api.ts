@@ -1,6 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { apiUrl } from './api-base';
+import {
+  PublicEntityResolvedMedia,
+  PublicEntityTagItem,
+  PublicEntityTagReference,
+} from './entities.models';
 
 export type SearchResult = {
   id: string;
@@ -12,11 +17,8 @@ export type SearchResult = {
   contentLevel: string | null;
   startYear: number | null;
   endYear: number | null;
-  resolvedMedia?: {
-    thumbnail?: any | null;
-    card?: any | null;
-  };
-  tags?: any[];
+  resolvedMedia?: PublicEntityResolvedMedia | null;
+  tags?: PublicEntityTagReference[] | PublicEntityTagItem[];
   aliases?: Array<{
     id: string;
     locale: string;

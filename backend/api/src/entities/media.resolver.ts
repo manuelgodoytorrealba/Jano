@@ -103,11 +103,7 @@ export type MediaUsage =
   | 'gallery'
   | 'primary';
 
-export type AdminResolvedSlotKey =
-  | 'explorer3d'
-  | 'list'
-  | 'detail'
-  | 'preview';
+export type AdminResolvedSlotKey = 'explorer3d' | 'list' | 'detail' | 'preview';
 
 export type AdminResolvedSlotSource = 'explicit' | 'fallback' | 'legacy' | 'empty';
 
@@ -260,7 +256,9 @@ const DEFAULT_ENTITY_MEDIA: ResolvedMediaItem = {
   cropZoom: null,
 };
 
-export function buildResolvedMedia(entity: EntityWithMediaLinks | null | undefined): ResolvedMediaPayload {
+export function buildResolvedMedia(
+  entity: EntityWithMediaLinks | null | undefined,
+): ResolvedMediaPayload {
   const fallback = DEFAULT_ENTITY_MEDIA;
 
   return {
@@ -346,7 +344,9 @@ export function resolveEntityMedia(
   return null;
 }
 
-export function attachResolvedMedia<T extends EntityWithMediaLinks>(entity: T): T & { resolvedMedia: ResolvedMediaPayload } {
+export function attachResolvedMedia<T extends EntityWithMediaLinks>(
+  entity: T,
+): T & { resolvedMedia: ResolvedMediaPayload } {
   return {
     ...entity,
     resolvedMedia: buildResolvedMedia(entity),
@@ -395,7 +395,9 @@ export function resolveEntityMediaSlot(
   };
 }
 
-export function buildAdminMediaLibrary(entity: EntityWithMediaLinks | null | undefined): AdminMediaLibraryPayload {
+export function buildAdminMediaLibrary(
+  entity: EntityWithMediaLinks | null | undefined,
+): AdminMediaLibraryPayload {
   const resolvedEntity = attachResolvedMedia(entity ?? { mediaLinks: [] });
   const normalizedLinks = normalizeMediaLinks(resolvedEntity);
   const assignments = normalizedLinks.map((link) => ({
@@ -418,16 +420,18 @@ export function buildAdminMediaLibrary(entity: EntityWithMediaLinks | null | und
   }));
 
   const assets = Array.from(
-    normalizedLinks.reduce((map, link) => {
-      if (!map.has(link.media.id)) {
-        map.set(link.media.id, {
-          assetId: link.media.id,
-          ...toResolvedMediaItem(link),
-        });
-      }
+    normalizedLinks
+      .reduce((map, link) => {
+        if (!map.has(link.media.id)) {
+          map.set(link.media.id, {
+            assetId: link.media.id,
+            ...toResolvedMediaItem(link),
+          });
+        }
 
-      return map;
-    }, new Map<string, AdminMediaAsset>()).values(),
+        return map;
+      }, new Map<string, AdminMediaAsset>())
+      .values(),
   );
 
   const resolvedSlots = ADMIN_EDITORIAL_SLOT_ORDER.map((slotKey) =>
@@ -435,7 +439,12 @@ export function buildAdminMediaLibrary(entity: EntityWithMediaLinks | null | und
   );
   const additionalMedia = buildAdditionalMedia(normalizedLinks);
   const warnings = buildAdminMediaWarnings(assignments, assets, resolvedSlots, additionalMedia);
-  const coverageSummary = buildCoverageSummary(assignments, assets.length, resolvedSlots, additionalMedia);
+  const coverageSummary = buildCoverageSummary(
+    assignments,
+    assets.length,
+    resolvedSlots,
+    additionalMedia,
+  );
 
   return {
     assets,
@@ -459,7 +468,9 @@ export function resolvedMediaUrl(item: ResolvedMediaItem | null | undefined): st
   return item.displayUrl ?? item.url ?? null;
 }
 
-function normalizeMediaLinks(entity: EntityWithMediaLinks | null | undefined): NormalizedMediaLink[] {
+function normalizeMediaLinks(
+  entity: EntityWithMediaLinks | null | undefined,
+): NormalizedMediaLink[] {
   return (entity?.mediaLinks ?? [])
     .filter((link): link is MediaLinkLike => !!link?.media)
     .map((link) => ({
@@ -486,9 +497,7 @@ function normalizeDisplayMode(value: string | null | undefined): 'COVER' | 'CONT
   }
 
   const normalized = value.toUpperCase();
-  return normalized === 'COVER' || normalized === 'CONTAIN'
-    ? normalized
-    : null;
+  return normalized === 'COVER' || normalized === 'CONTAIN' ? normalized : null;
 }
 
 function exactRoleForUsage(usage: Exclude<MediaUsage, 'gallery'>): string {
@@ -555,9 +564,9 @@ function selectLegacyMediaLinkWithSource(
     const fallback = selectLegacyPrimary(links) ?? selectBestAvailable(links, entity?.type ?? null);
     return fallback
       ? {
-        link: fallback,
-        source: fallback.role === 'PRIMARY_LEGACY' ? 'explicit' : 'fallback',
-      }
+          link: fallback,
+          source: fallback.role === 'PRIMARY_LEGACY' ? 'explicit' : 'fallback',
+        }
       : null;
   }
 
@@ -572,16 +581,19 @@ function selectLegacyMediaLinkWithSource(
   }
 
   const fallback = PRIMARY_FALLBACK_USAGES.has(usage)
-    ? selectLegacyPrimary(links) ?? (BEST_AVAILABLE_FALLBACK_USAGES.has(usage) ? selectBestAvailable(links, entity?.type ?? null) : null)
+    ? (selectLegacyPrimary(links) ??
+      (BEST_AVAILABLE_FALLBACK_USAGES.has(usage)
+        ? selectBestAvailable(links, entity?.type ?? null)
+        : null))
     : BEST_AVAILABLE_FALLBACK_USAGES.has(usage)
       ? selectBestAvailable(links, entity?.type ?? null)
       : null;
 
   return fallback
     ? {
-      link: fallback,
-      source: 'fallback',
-    }
+        link: fallback,
+        source: 'fallback',
+      }
     : null;
 }
 
@@ -602,7 +614,7 @@ function resolveAdminEditorialSlot(
     };
   }
 
-  const fallback = selectAdminFallbackSlot(links, entityType, slotKey);
+  const fallback = selectAdminFallbackSlot(links, entityType);
   if (fallback) {
     return {
       slotKey,
@@ -624,7 +636,10 @@ function resolveAdminEditorialSlot(
   };
 }
 
-function selectAdminExplicitSlot(links: NormalizedMediaLink[], slotKey: AdminResolvedSlotKey): NormalizedMediaLink | null {
+function selectAdminExplicitSlot(
+  links: NormalizedMediaLink[],
+  slotKey: AdminResolvedSlotKey,
+): NormalizedMediaLink | null {
   switch (slotKey) {
     case 'explorer3d':
       return firstByRole(links, 'EXPLORER_3D');
@@ -640,7 +655,6 @@ function selectAdminExplicitSlot(links: NormalizedMediaLink[], slotKey: AdminRes
 function selectAdminFallbackSlot(
   links: NormalizedMediaLink[],
   _entityType: string | null | undefined,
-  slotKey: AdminResolvedSlotKey,
 ): { link: NormalizedMediaLink; source: 'fallback' | 'legacy'; reasonCode: string } | null {
   const legacy = selectLegacyPrimary(links);
 
@@ -763,9 +777,10 @@ function sanitizeCropPreset(value: unknown): CropPresetLike | null {
   const x = normalizeFocal(crop['x'] as number | null | undefined);
   const y = normalizeFocal(crop['y'] as number | null | undefined);
   const zoomValue = crop['zoom'];
-  const zoom = zoomValue === null || zoomValue === undefined || Number.isNaN(Number(zoomValue))
-    ? null
-    : Math.min(3, Math.max(1, Number(zoomValue)));
+  const zoom =
+    zoomValue === null || zoomValue === undefined || Number.isNaN(Number(zoomValue))
+      ? null
+      : Math.min(3, Math.max(1, Number(zoomValue)));
 
   if (x === null && y === null && zoom === null) {
     return null;
@@ -801,13 +816,16 @@ function cropPresetForSlot(
 
 function selectLegacyPrimary(links: NormalizedMediaLink[]): NormalizedMediaLink | null {
   return (
-    links.find((link) => link.role === 'PRIMARY_LEGACY' && link.isPrimary)
-    ?? links.find((link) => link.isPrimary)
-    ?? null
+    links.find((link) => link.role === 'PRIMARY_LEGACY' && link.isPrimary) ??
+    links.find((link) => link.isPrimary) ??
+    null
   );
 }
 
-function selectBestAvailable(links: NormalizedMediaLink[], entityType: string | null): NormalizedMediaLink | null {
+function selectBestAvailable(
+  links: NormalizedMediaLink[],
+  entityType: string | null,
+): NormalizedMediaLink | null {
   const byQuality = [...links].sort((a, b) => compareMediaQuality(a.media, b.media, entityType));
   return byQuality[0] ?? null;
 }
@@ -851,7 +869,10 @@ function toResolvedMediaItem(
     assetFocalY,
     cropX: normalizeFocal(crop?.x) ?? null,
     cropY: normalizeFocal(crop?.y) ?? null,
-    cropZoom: crop?.zoom === null || crop?.zoom === undefined ? null : Math.min(3, Math.max(1, Number(crop.zoom))),
+    cropZoom:
+      crop?.zoom === null || crop?.zoom === undefined
+        ? null
+        : Math.min(3, Math.max(1, Number(crop.zoom))),
   };
 }
 
@@ -920,7 +941,10 @@ function compareMediaQuality(a: MediaLike, b: MediaLike, entityType: string | nu
     else if (pixels >= 3_000_000) score += 5;
     else if (pixels >= 1_000_000) score += 3;
 
-    if (entityType === 'PLACE' && (alt.includes('logo') || alt.includes('identidad visual') || url.includes('logo'))) {
+    if (
+      entityType === 'PLACE' &&
+      (alt.includes('logo') || alt.includes('identidad visual') || url.includes('logo'))
+    ) {
       score -= 20;
     }
 
@@ -932,8 +956,10 @@ function compareMediaQuality(a: MediaLike, b: MediaLike, entityType: string | nu
 
 function isCommonsWikiRedirect(url: string): boolean {
   const normalized = url.toLowerCase();
-  return normalized.includes('commons.wikimedia.org/wiki/special:redirect/file/')
-    || normalized.includes('commons.wikimedia.org/wiki/special:filepath/');
+  return (
+    normalized.includes('commons.wikimedia.org/wiki/special:redirect/file/') ||
+    normalized.includes('commons.wikimedia.org/wiki/special:filepath/')
+  );
 }
 
 function buildAdminMediaWarnings(
@@ -1004,7 +1030,8 @@ function buildAdminMediaWarnings(
       warnings.push({
         code: 'media.additional_sort_ambiguous',
         severity: 'warning',
-        message: 'Additional Media tiene varios assets con el mismo sortOrder. Conviene ordenar mejor el material secundario.',
+        message:
+          'Additional Media tiene varios assets con el mismo sortOrder. Conviene ordenar mejor el material secundario.',
       });
     }
   }
@@ -1022,7 +1049,9 @@ function buildAdminMediaWarnings(
     ...resolvedSlots.map((slot) => slot.item?.id).filter((value): value is string => !!value),
     ...additionalMedia.map((item) => item.item.id),
   ]);
-  const unusedAssetCount = assignments.filter((assignment) => !activeAssetIds.has(assignment.assetId)).length;
+  const unusedAssetCount = assignments.filter(
+    (assignment) => !activeAssetIds.has(assignment.assetId),
+  ).length;
   if (unusedAssetCount > 0) {
     warnings.push({
       code: 'media.unused_assets',
@@ -1077,9 +1106,9 @@ function buildSlotQualityWarning(slot: AdminResolvedSlot): AdminMediaWarning | n
   const focalX = normalizeFocal(item.focalX);
   const focalY = normalizeFocal(item.focalY);
   if (
-    focalX !== null
-    && focalY !== null
-    && (focalX < 8 || focalX > 92 || focalY < 8 || focalY > 92)
+    focalX !== null &&
+    focalY !== null &&
+    (focalX < 8 || focalX > 92 || focalY < 8 || focalY > 92)
   ) {
     return {
       code: `media.${slot.slotKey}_focal_edge`,
@@ -1123,17 +1152,26 @@ function buildCoverageSummary(
   resolvedSlots: AdminResolvedSlot[],
   additionalMedia: AdminAdditionalMediaItem[],
 ): AdminMediaCoverageSummary {
-  const coveredSlots = resolvedSlots.filter((slot) => slot.source !== 'empty').map((slot) => slot.slotKey);
-  const emptySlots = resolvedSlots.filter((slot) => slot.source === 'empty').map((slot) => slot.slotKey);
-  const fallbackSlots = resolvedSlots.filter((slot) => slot.source === 'fallback').map((slot) => slot.slotKey);
-  const explicitSlots = resolvedSlots.filter((slot) => slot.source === 'explicit').map((slot) => slot.slotKey);
-  const legacySlots = resolvedSlots.filter((slot) => slot.source === 'legacy').map((slot) => slot.slotKey);
+  const coveredSlots = resolvedSlots
+    .filter((slot) => slot.source !== 'empty')
+    .map((slot) => slot.slotKey);
+  const emptySlots = resolvedSlots
+    .filter((slot) => slot.source === 'empty')
+    .map((slot) => slot.slotKey);
+  const fallbackSlots = resolvedSlots
+    .filter((slot) => slot.source === 'fallback')
+    .map((slot) => slot.slotKey);
+  const explicitSlots = resolvedSlots
+    .filter((slot) => slot.source === 'explicit')
+    .map((slot) => slot.slotKey);
+  const legacySlots = resolvedSlots
+    .filter((slot) => slot.source === 'legacy')
+    .map((slot) => slot.slotKey);
   const activeAssetIds = new Set(
     [
       ...resolvedSlots.map((slot) => slot.item?.id),
       ...additionalMedia.map((item) => item.item.id),
-    ]
-      .filter((value): value is string => !!value),
+    ].filter((value): value is string => !!value),
   );
 
   return {
@@ -1144,6 +1182,7 @@ function buildCoverageSummary(
     legacySlots,
     assetCount,
     assignmentCount: assignments.length,
-    unusedAssetCount: assignments.filter((assignment) => !activeAssetIds.has(assignment.assetId)).length,
+    unusedAssetCount: assignments.filter((assignment) => !activeAssetIds.has(assignment.assetId))
+      .length,
   };
 }

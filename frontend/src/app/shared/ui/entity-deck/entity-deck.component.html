@@ -110,7 +110,10 @@
             [style.zIndex]="cardStates()[$index].zIndex"
             [style.transform]="cardStates()[$index].transform"
             [style.opacity]="cardStates()[$index].opacity"
+            [attr.tabindex]="$index === activeIndex() ? 0 : -1"
             (click)="onCardClick(item)"
+            (keydown.enter)="onCardClick(item)"
+            (keydown.space)="onCardClick(item); $event.preventDefault()"
           >
             <div class="entity-deck__media">
               <app-jano-media

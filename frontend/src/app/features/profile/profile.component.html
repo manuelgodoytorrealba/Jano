@@ -33,7 +33,9 @@
             <a class="profile-shortcut" routerLink="/settings">{{ i18n.t('nav.settings') }}</a>
             <a class="profile-shortcut" routerLink="/my-space">{{ i18n.t('nav.mySpace') }}</a>
             @if (isAdmin(user)) {
-              <a class="profile-shortcut profile-shortcut--primary" routerLink="/admin">{{ i18n.t('profile.openAdmin') }}</a>
+              <a class="profile-shortcut profile-shortcut--primary" routerLink="/admin">{{
+                i18n.t('profile.openAdmin')
+              }}</a>
             }
           </nav>
         </div>

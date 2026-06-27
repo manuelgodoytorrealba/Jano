@@ -28,8 +28,10 @@ export const ssrApiOriginInterceptor: HttpInterceptorFn = (req, next) => {
     setHeaders['authorization'] = authorization;
   }
 
-  return next(req.clone({
-    url: `${ssrApiOrigin}${req.url}`,
-    setHeaders,
-  }));
+  return next(
+    req.clone({
+      url: `${ssrApiOrigin}${req.url}`,
+      setHeaders,
+    }),
+  );
 };

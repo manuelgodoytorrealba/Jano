@@ -12,6 +12,7 @@
     "build": "npm run validate:i18n && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "typecheck": "ngc -p tsconfig.app.json --noEmit && ngc -p tsconfig.spec.json --noEmit",
     "validate:i18n": "node scripts/validate-i18n.mjs",
     "serve:ssr:jano-web-app": "node dist/jano-web-app/server/server.mjs",
     "start:mobile": "node scripts/dev-server.mjs mobile"
@@ -42,7 +43,6 @@
     "@types/node": "^20.19.35",
     "@types/three": "^0.183.1",
     "jsdom": "^28.0.0",
-    "prettier": "^3.8.1",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   }

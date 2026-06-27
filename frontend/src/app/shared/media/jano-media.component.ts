@@ -53,11 +53,7 @@ export class JanoMediaComponent {
   }
 
   get altText(): string {
-    return this.alt
-      ?? this.media?.alt
-      ?? this.selectedEntityMedia?.alt
-      ?? this.entity?.title
-      ?? '';
+    return this.alt ?? this.media?.alt ?? this.selectedEntityMedia?.alt ?? this.entity?.title ?? '';
   }
 
   get objectFit(): 'cover' | 'contain' {

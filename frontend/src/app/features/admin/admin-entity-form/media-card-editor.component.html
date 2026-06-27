@@ -1,8 +1,18 @@
-<article class="media-card" [class.media-card--active]="activeSlotLabels.length > 0" [class.media-card--compact]="compact" [class.media-card--selected]="selected" [class.media-card--panel]="panel">
+<article
+  class="media-card"
+  [class.media-card--active]="activeSlotLabels.length > 0"
+  [class.media-card--compact]="compact"
+  [class.media-card--selected]="selected"
+  [class.media-card--panel]="panel"
+>
   @if (!panel) {
-  <div class="media-card__preview">
-    <app-jano-media [media]="previewMedia" usage="detail" [alt]="draft.media.alt || entityTitle"></app-jano-media>
-  </div>
+    <div class="media-card__preview">
+      <app-jano-media
+        [media]="previewMedia"
+        usage="detail"
+        [alt]="draft.media.alt || entityTitle"
+      ></app-jano-media>
+    </div>
   }
 
   <div class="media-card__body">
@@ -45,38 +55,40 @@
             <span class="media-pill media-pill--saved">Guardado</span>
           }
           @if (compact && warningCount > 0) {
-            <span class="media-pill media-pill--slot-fallback">{{ warningCount }} aviso{{ warningCount > 1 ? 's' : '' }}</span>
+            <span class="media-pill media-pill--slot-fallback"
+              >{{ warningCount }} aviso{{ warningCount > 1 ? 's' : '' }}</span
+            >
           }
         </div>
 
         @if (!compact && !panel) {
-        <div class="media-card__meta">
-          <span>{{ mediaOriginDescription(draft.media.originType) }}</span>
-          @if (draft.media.width || draft.media.height) {
-            <span>· {{ draft.media.width ?? '—' }}×{{ draft.media.height ?? '—' }}</span>
-          }
-          @if (draft.media.fileSize) {
-            <span>· {{ formatFileSize(draft.media.fileSize) }}</span>
-          }
-          <span>· Asset {{ draft.media.id }}</span>
-          @if (draft.media.originalFilename) {
-            <span>· {{ draft.media.originalFilename }}</span>
-          }
-        </div>
+          <div class="media-card__meta">
+            <span>{{ mediaOriginDescription(draft.media.originType) }}</span>
+            @if (draft.media.width || draft.media.height) {
+              <span>· {{ draft.media.width ?? '—' }}×{{ draft.media.height ?? '—' }}</span>
+            }
+            @if (draft.media.fileSize) {
+              <span>· {{ formatFileSize(draft.media.fileSize) }}</span>
+            }
+            <span>· Asset {{ draft.media.id }}</span>
+            @if (draft.media.originalFilename) {
+              <span>· {{ draft.media.originalFilename }}</span>
+            }
+          </div>
         } @else if (!panel) {
-        <div class="media-card__meta">
-          <span>{{ compactMetaLabel }}</span>
-        </div>
+          <div class="media-card__meta">
+            <span>{{ compactMetaLabel }}</span>
+          </div>
         } @else {
-        <div class="media-card__meta media-card__meta--panel">
-          <span>{{ assetLocationLabel }}</span>
-          @if (draft.media.width || draft.media.height) {
-            <span>· {{ draft.media.width ?? '—' }}×{{ draft.media.height ?? '—' }}</span>
-          }
-          @if (draft.media.originalFilename) {
-            <span>· {{ draft.media.originalFilename }}</span>
-          }
-        </div>
+          <div class="media-card__meta media-card__meta--panel">
+            <span>{{ assetLocationLabel }}</span>
+            @if (draft.media.width || draft.media.height) {
+              <span>· {{ draft.media.width ?? '—' }}×{{ draft.media.height ?? '—' }}</span>
+            }
+            @if (draft.media.originalFilename) {
+              <span>· {{ draft.media.originalFilename }}</span>
+            }
+          </div>
         }
 
         @if (compact) {
@@ -96,69 +108,88 @@
       <div class="media-card__main-actions">
         <div class="media-card__quick-edit">
           @if (!compact && !panel) {
-          <div class="media-card__pill-group">
-            @for (rolePill of primaryRolePills; track rolePill.role) {
-              <button
-                type="button"
-                [class]="rolePillClass(rolePill.role)"
-                (click)="toggleRole(rolePill.role)"
-                [attr.aria-pressed]="isRoleSelected(rolePill.role)"
-                [title]="isRoleSelected(rolePill.role) ? 'Quitar responsabilidad y mover a Additional Media' : 'Asignar responsabilidad'"
-              >
-                <span>{{ rolePill.label }}</span>
-                @if (isRoleSelected(rolePill.role)) {
-                  <span class="media-role-pill__clear">×</span>
-                }
-              </button>
-            }
-          </div>
-
-          <div class="media-card__pill-group media-card__pill-group--secondary">
-            @for (rolePill of secondaryRolePills; track rolePill.role) {
-              <button
-                type="button"
-                [class]="rolePillClass(rolePill.role)"
-                (click)="toggleRole(rolePill.role)"
-                [attr.aria-pressed]="isRoleSelected(rolePill.role)"
-                [title]="isRoleSelected(rolePill.role) && rolePill.role !== 'GALLERY' ? 'Quitar responsabilidad y mover a Additional Media' : 'Asignar responsabilidad'"
-              >
-                <span>{{ rolePill.label }}</span>
-                @if (isRoleSelected(rolePill.role) && rolePill.role !== 'GALLERY') {
-                  <span class="media-role-pill__clear">×</span>
-                }
-              </button>
-            }
-
-            <button
-              type="button"
-              [class]="legacyPillClass()"
-              (click)="toggleLegacyFallback()"
-              [attr.aria-pressed]="draft.isPrimary"
-              [title]="draft.isPrimary ? 'Quitar fallback legacy' : 'Marcar como fallback legacy única'"
-            >
-              <span>Fallback legacy</span>
-              @if (draft.isPrimary) {
-                <span class="media-role-pill__clear">×</span>
+            <div class="media-card__pill-group">
+              @for (rolePill of primaryRolePills; track rolePill.role) {
+                <button
+                  type="button"
+                  [class]="rolePillClass(rolePill.role)"
+                  (click)="toggleRole(rolePill.role)"
+                  [attr.aria-pressed]="isRoleSelected(rolePill.role)"
+                  [title]="
+                    isRoleSelected(rolePill.role)
+                      ? 'Quitar responsabilidad y mover a Additional Media'
+                      : 'Asignar responsabilidad'
+                  "
+                >
+                  <span>{{ rolePill.label }}</span>
+                  @if (isRoleSelected(rolePill.role)) {
+                    <span class="media-role-pill__clear">×</span>
+                  }
+                </button>
               }
-            </button>
-          </div>
+            </div>
+
+            <div class="media-card__pill-group media-card__pill-group--secondary">
+              @for (rolePill of secondaryRolePills; track rolePill.role) {
+                <button
+                  type="button"
+                  [class]="rolePillClass(rolePill.role)"
+                  (click)="toggleRole(rolePill.role)"
+                  [attr.aria-pressed]="isRoleSelected(rolePill.role)"
+                  [title]="
+                    isRoleSelected(rolePill.role) && rolePill.role !== 'GALLERY'
+                      ? 'Quitar responsabilidad y mover a Additional Media'
+                      : 'Asignar responsabilidad'
+                  "
+                >
+                  <span>{{ rolePill.label }}</span>
+                  @if (isRoleSelected(rolePill.role) && rolePill.role !== 'GALLERY') {
+                    <span class="media-role-pill__clear">×</span>
+                  }
+                </button>
+              }
+
+              <button
+                type="button"
+                [class]="legacyPillClass()"
+                (click)="toggleLegacyFallback()"
+                [attr.aria-pressed]="draft.isPrimary"
+                [title]="
+                  draft.isPrimary ? 'Quitar fallback legacy' : 'Marcar como fallback legacy única'
+                "
+              >
+                <span>Fallback legacy</span>
+                @if (draft.isPrimary) {
+                  <span class="media-role-pill__clear">×</span>
+                }
+              </button>
+            </div>
           }
         </div>
 
         @if (!panel) {
-        <button class="btn mini ghost" type="button" (click)="requestEdit()">
-          {{ compact ? compactActionLabel : (showAdvanced ? 'Cerrar edición' : 'Editar') }}
-        </button>
+          <button class="btn mini ghost" type="button" (click)="requestEdit()">
+            {{ compact ? compactActionLabel : showAdvanced ? 'Cerrar edición' : 'Editar' }}
+          </button>
         }
         @if (!compact) {
-        <button class="btn mini danger" type="button" [disabled]="editor.removing" (click)="removeLink()">
-          @if (editor.removing) { Quitando... } @else { Eliminar }
-        </button>
+          <button
+            class="btn mini danger"
+            type="button"
+            [disabled]="editor.removing"
+            (click)="removeLink()"
+          >
+            @if (editor.removing) {
+              Quitando...
+            } @else {
+              Eliminar
+            }
+          </button>
         }
       </div>
     </div>
 
-        @if (editor.errorMessage) {
+    @if (editor.errorMessage) {
       <div class="error-box">{{ editor.errorMessage }}</div>
     }
 
@@ -169,7 +200,9 @@
     @if (ingestedSourceLabel && !compact) {
       <div class="media-card__source-note">
         Derivado de:
-        <a [href]="ingestedSourceLabel" target="_blank" rel="noreferrer">{{ ingestedSourceLabel }}</a>
+        <a [href]="ingestedSourceLabel" target="_blank" rel="noreferrer">{{
+          ingestedSourceLabel
+        }}</a>
       </div>
     }
 
@@ -177,7 +210,11 @@
       <div class="media-card__advanced">
         <section class="media-editor">
           <section class="media-editor-block">
-            <button class="media-editor-block__toggle" type="button" (click)="togglePanelSection('composition')">
+            <button
+              class="media-editor-block__toggle"
+              type="button"
+              (click)="togglePanelSection('composition')"
+            >
               <span>
                 <strong>Encuadre</strong>
                 <small>Ajusta el recorte que verá el lector en {{ slotViewportLabel }}.</small>
@@ -185,158 +222,300 @@
               <span class="media-editor-block__chevron">{{ compositionOpen ? '−' : '+' }}</span>
             </button>
             @if (!panel || compositionOpen) {
-          <div class="media-editor__workspace" [class.media-editor__workspace--panel]="panel">
-            <div class="media-editor__panel media-editor__panel--composition">
-              <div class="media-editor__panel-head">
-                <strong>Así se verá en {{ slotViewportLabel }}</strong>
-                <span>Arrastra para componer. El marco muestra exactamente lo que saldrá publicado.</span>
-              </div>
-              <div class="media-editor__stage">
-                <div class="media-editor__stage-topline">
-                  <div class="media-editor__stage-copy">
-                    <span class="media-editor__stage-note">Encuadre activo</span>
-                    <strong>{{ slotCropSummary(activeEditorSlot) }}</strong>
+              <div class="media-editor__workspace" [class.media-editor__workspace--panel]="panel">
+                <div class="media-editor__panel media-editor__panel--composition">
+                  <div class="media-editor__panel-head">
+                    <strong>Así se verá en {{ slotViewportLabel }}</strong>
+                    <span
+                      >Arrastra para componer. El marco muestra exactamente lo que saldrá
+                      publicado.</span
+                    >
                   </div>
-                  <div class="media-editor__stage-actions">
-                    <div class="media-editor__zoom-group" aria-label="Ajustar zoom">
-                      <span class="media-editor__zoom-label">Zoom</span>
-                      <button class="btn ghost mini media-editor__icon-button" type="button" (click)="adjustSlotZoom(-0.1)" title="Alejar">−</button>
-                      <button class="btn ghost mini media-editor__icon-button" type="button" (click)="adjustSlotZoom(0.1)" title="Acercar">+</button>
+                  <div class="media-editor__stage">
+                    <div class="media-editor__stage-topline">
+                      <div class="media-editor__stage-copy">
+                        <span class="media-editor__stage-note">Encuadre activo</span>
+                        <strong>{{ slotCropSummary(activeEditorSlot) }}</strong>
+                      </div>
+                      <div class="media-editor__stage-actions">
+                        <div class="media-editor__zoom-group" aria-label="Ajustar zoom">
+                          <span class="media-editor__zoom-label">Zoom</span>
+                          <button
+                            class="btn ghost mini media-editor__icon-button"
+                            type="button"
+                            (click)="adjustSlotZoom(-0.1)"
+                            title="Alejar"
+                          >
+                            −
+                          </button>
+                          <button
+                            class="btn ghost mini media-editor__icon-button"
+                            type="button"
+                            (click)="adjustSlotZoom(0.1)"
+                            title="Acercar"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <button
+                          class="btn ghost mini media-editor__reset"
+                          type="button"
+                          (click)="resetSlotCrop()"
+                        >
+                          Recentrar
+                        </button>
+                      </div>
                     </div>
-                    <button class="btn ghost mini media-editor__reset" type="button" (click)="resetSlotCrop()">Recentrar</button>
+                    <button
+                      class="media-editor__viewport"
+                      [class.media-editor__viewport--dragging]="draggingSlot"
+                      type="button"
+                      (pointerdown)="startSlotDrag($event)"
+                      (pointerup)="stopDrag()"
+                      (pointercancel)="stopDrag()"
+                      (lostpointercapture)="stopDrag()"
+                    >
+                      <span [class]="slotViewportStageClass(activeEditorSlot)">
+                        <app-jano-media
+                          [media]="cropPreviewMedia"
+                          [usage]="slotUsage(activeEditorSlot)"
+                          [alt]="draft.media.alt || entityTitle"
+                        ></app-jano-media>
+                        <span class="media-editor__frame-handles" aria-hidden="true">
+                          <span
+                            class="media-editor__frame-handle media-editor__frame-handle--tl"
+                          ></span>
+                          <span
+                            class="media-editor__frame-handle media-editor__frame-handle--tr"
+                          ></span>
+                          <span
+                            class="media-editor__frame-handle media-editor__frame-handle--bl"
+                          ></span>
+                          <span
+                            class="media-editor__frame-handle media-editor__frame-handle--br"
+                          ></span>
+                        </span>
+                        <span class="media-editor__guides" aria-hidden="true">
+                          <span
+                            class="media-editor__guide media-editor__guide--v media-editor__guide--v1"
+                          ></span>
+                          <span
+                            class="media-editor__guide media-editor__guide--v media-editor__guide--v2"
+                          ></span>
+                          <span
+                            class="media-editor__guide media-editor__guide--h media-editor__guide--h1"
+                          ></span>
+                          <span
+                            class="media-editor__guide media-editor__guide--h media-editor__guide--h2"
+                          ></span>
+                          <span class="media-editor__guide media-editor__guide--center-v"></span>
+                          <span class="media-editor__guide media-editor__guide--center-h"></span>
+                        </span>
+                        <span
+                          class="media-editor__marker media-editor__marker--crop"
+                          [style.left.%]="activeSlotCrop.x ?? draft.assetFocalX ?? 50"
+                          [style.top.%]="activeSlotCrop.y ?? draft.assetFocalY ?? 50"
+                        ></span>
+                      </span>
+                    </button>
+                    <div class="media-editor__stage-toolbar">
+                      <div class="media-editor__stage-meta">
+                        <div class="media-editor__stage-badge">
+                          Zoom {{ (activeSlotCrop.zoom || 1).toFixed(2) }}x
+                        </div>
+                        <div class="media-editor__stage-badge media-editor__stage-badge--subtle">
+                          {{ slotViewportLabel }}
+                        </div>
+                      </div>
+                      <button
+                        class="media-editor__precision-toggle"
+                        [class.media-editor__precision-toggle--open]="precisionOpen"
+                        type="button"
+                        (click)="togglePrecision()"
+                        [attr.aria-expanded]="precisionOpen"
+                      >
+                        <span class="media-editor__precision-toggle-icon" aria-hidden="true">{{
+                          precisionOpen ? '−' : '+'
+                        }}</span>
+                        <span>
+                          <strong>{{
+                            precisionOpen ? 'Ocultar precisión' : 'Ajustes finos'
+                          }}</strong>
+                          <small>{{
+                            precisionOpen
+                              ? 'Volver al modo simple'
+                              : 'Coordenadas y microdesplazamiento'
+                          }}</small>
+                        </span>
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <button
-                  class="media-editor__viewport"
-                  [class.media-editor__viewport--dragging]="draggingSlot"
-                  type="button"
-                  (pointerdown)="startSlotDrag($event)"
-                  (pointerup)="stopDrag()"
-                  (pointercancel)="stopDrag()"
-                  (lostpointercapture)="stopDrag()"
-                >
-                  <span [class]="slotViewportStageClass(activeEditorSlot)">
-                    <app-jano-media [media]="cropPreviewMedia" [usage]="slotUsage(activeEditorSlot)" [alt]="draft.media.alt || entityTitle"></app-jano-media>
-                    <span class="media-editor__frame-handles" aria-hidden="true">
-                      <span class="media-editor__frame-handle media-editor__frame-handle--tl"></span>
-                      <span class="media-editor__frame-handle media-editor__frame-handle--tr"></span>
-                      <span class="media-editor__frame-handle media-editor__frame-handle--bl"></span>
-                      <span class="media-editor__frame-handle media-editor__frame-handle--br"></span>
-                    </span>
-                    <span class="media-editor__guides" aria-hidden="true">
-                      <span class="media-editor__guide media-editor__guide--v media-editor__guide--v1"></span>
-                      <span class="media-editor__guide media-editor__guide--v media-editor__guide--v2"></span>
-                      <span class="media-editor__guide media-editor__guide--h media-editor__guide--h1"></span>
-                      <span class="media-editor__guide media-editor__guide--h media-editor__guide--h2"></span>
-                      <span class="media-editor__guide media-editor__guide--center-v"></span>
-                      <span class="media-editor__guide media-editor__guide--center-h"></span>
-                    </span>
-                    <span class="media-editor__marker media-editor__marker--crop" [style.left.%]="activeSlotCrop.x ?? draft.assetFocalX ?? 50" [style.top.%]="activeSlotCrop.y ?? draft.assetFocalY ?? 50"></span>
-                  </span>
-                </button>
-                <div class="media-editor__stage-toolbar">
-                  <div class="media-editor__stage-meta">
-                    <div class="media-editor__stage-badge">Zoom {{ (activeSlotCrop.zoom || 1).toFixed(2) }}x</div>
-                    <div class="media-editor__stage-badge media-editor__stage-badge--subtle">{{ slotViewportLabel }}</div>
-                  </div>
-                  <button
-                    class="media-editor__precision-toggle"
-                    [class.media-editor__precision-toggle--open]="precisionOpen"
-                    type="button"
-                    (click)="togglePrecision()"
-                    [attr.aria-expanded]="precisionOpen"
-                  >
-                    <span class="media-editor__precision-toggle-icon" aria-hidden="true">{{ precisionOpen ? '−' : '+' }}</span>
-                    <span>
-                      <strong>{{ precisionOpen ? 'Ocultar precisión' : 'Ajustes finos' }}</strong>
-                      <small>{{ precisionOpen ? 'Volver al modo simple' : 'Coordenadas y microdesplazamiento' }}</small>
-                    </span>
-                  </button>
-                </div>
-              </div>
-              @if (activeSlotWarnings.length) {
-                <div class="media-editor__warning-list">
-                  @for (warning of activeSlotWarnings; track warning) {
-                    <div class="media-editor__warning">
-                      <span class="media-editor__warning-kicker">Revisión editorial</span>
-                      <span>{{ warning }}</span>
+                  @if (activeSlotWarnings.length) {
+                    <div class="media-editor__warning-list">
+                      @for (warning of activeSlotWarnings; track warning) {
+                        <div class="media-editor__warning">
+                          <span class="media-editor__warning-kicker">Revisión editorial</span>
+                          <span>{{ warning }}</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                  @if (precisionOpen) {
+                    <div class="media-editor__fine-tuning">
+                      <div class="media-editor__fine-head">
+                        <strong>Ajustes finos</strong>
+                        <span
+                          >Corrige posición y zoom con precisión cuando el arrastre no sea
+                          suficiente.</span
+                        >
+                      </div>
+                      <div class="media-editor__nudge-grid">
+                        <button
+                          class="btn ghost mini media-editor__nudge"
+                          type="button"
+                          (click)="nudgeSlotCrop('y', -2)"
+                        >
+                          ↑
+                        </button>
+                        <div></div>
+                        <button
+                          class="btn ghost mini media-editor__nudge"
+                          type="button"
+                          (click)="nudgeSlotCrop('x', -2)"
+                        >
+                          ←
+                        </button>
+                        <button
+                          class="btn ghost mini media-editor__nudge"
+                          type="button"
+                          (click)="nudgeSlotCrop('y', 2)"
+                        >
+                          ↓
+                        </button>
+                        <button
+                          class="btn ghost mini media-editor__nudge"
+                          type="button"
+                          (click)="nudgeSlotCrop('x', 2)"
+                        >
+                          →
+                        </button>
+                      </div>
+                      <div class="media-editor__sliders">
+                        <label class="field">
+                          <span>Horizontal</span>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            [ngModel]="activeSlotCrop.x || 50"
+                            (ngModelChange)="updateSlotCrop('x', $event)"
+                            [name]="'slot-crop-x-' + draft.id + '-' + activeEditorSlot"
+                          />
+                        </label>
+                        <label class="field">
+                          <span>Vertical</span>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="1"
+                            [ngModel]="activeSlotCrop.y || 50"
+                            (ngModelChange)="updateSlotCrop('y', $event)"
+                            [name]="'slot-crop-y-' + draft.id + '-' + activeEditorSlot"
+                          />
+                        </label>
+                        <label class="field">
+                          <span>Zoom</span>
+                          <input
+                            type="range"
+                            min="1"
+                            max="3"
+                            step="0.05"
+                            [ngModel]="activeSlotCrop.zoom || 1"
+                            (ngModelChange)="updateSlotCrop('zoom', $event)"
+                            [name]="'slot-crop-zoom-' + draft.id + '-' + activeEditorSlot"
+                          />
+                        </label>
+                      </div>
                     </div>
                   }
                 </div>
-              }
-              @if (precisionOpen) {
-              <div class="media-editor__fine-tuning">
-                <div class="media-editor__fine-head">
-                  <strong>Ajustes finos</strong>
-                  <span>Corrige posición y zoom con precisión cuando el arrastre no sea suficiente.</span>
-                </div>
-                <div class="media-editor__nudge-grid">
-                  <button class="btn ghost mini media-editor__nudge" type="button" (click)="nudgeSlotCrop('y', -2)">↑</button>
-                  <div></div>
-                  <button class="btn ghost mini media-editor__nudge" type="button" (click)="nudgeSlotCrop('x', -2)">←</button>
-                  <button class="btn ghost mini media-editor__nudge" type="button" (click)="nudgeSlotCrop('y', 2)">↓</button>
-                  <button class="btn ghost mini media-editor__nudge" type="button" (click)="nudgeSlotCrop('x', 2)">→</button>
-                </div>
-                <div class="media-editor__sliders">
-                <label class="field">
-                  <span>Horizontal</span>
-                  <input type="range" min="0" max="100" step="1" [ngModel]="activeSlotCrop.x || 50" (ngModelChange)="updateSlotCrop('x', $event)" [name]="'slot-crop-x-' + draft.id + '-' + activeEditorSlot" />
-                </label>
-                <label class="field">
-                  <span>Vertical</span>
-                  <input type="range" min="0" max="100" step="1" [ngModel]="activeSlotCrop.y || 50" (ngModelChange)="updateSlotCrop('y', $event)" [name]="'slot-crop-y-' + draft.id + '-' + activeEditorSlot" />
-                </label>
-                <label class="field">
-                  <span>Zoom</span>
-                  <input type="range" min="1" max="3" step="0.05" [ngModel]="activeSlotCrop.zoom || 1" (ngModelChange)="updateSlotCrop('zoom', $event)" [name]="'slot-crop-zoom-' + draft.id + '-' + activeEditorSlot" />
-                </label>
-              </div>
-              </div>
-              }
-            </div>
 
-            <div class="media-editor__panel media-editor__panel--secondary">
-              <div class="media-editor__panel-head">
-                <strong>Centro base del asset</strong>
-                <span>Punto visual de reserva cuando un slot no tenga recorte propio.</span>
+                <div class="media-editor__panel media-editor__panel--secondary">
+                  <div class="media-editor__panel-head">
+                    <strong>Centro base del asset</strong>
+                    <span>Punto visual de reserva cuando un slot no tenga recorte propio.</span>
+                  </div>
+                  <button
+                    class="media-editor__surface media-editor__surface--asset"
+                    [class.media-editor__surface--dragging]="draggingAsset"
+                    type="button"
+                    (pointerdown)="startAssetDrag($event)"
+                    (pointerup)="stopDrag()"
+                    (pointercancel)="stopDrag()"
+                    (lostpointercapture)="stopDrag()"
+                  >
+                    <app-jano-media
+                      [media]="previewMedia"
+                      usage="detail"
+                      [alt]="draft.media.alt || entityTitle"
+                    ></app-jano-media>
+                    <span class="media-editor__guides" aria-hidden="true">
+                      <span
+                        class="media-editor__guide media-editor__guide--v media-editor__guide--v1"
+                      ></span>
+                      <span
+                        class="media-editor__guide media-editor__guide--v media-editor__guide--v2"
+                      ></span>
+                      <span
+                        class="media-editor__guide media-editor__guide--h media-editor__guide--h1"
+                      ></span>
+                      <span
+                        class="media-editor__guide media-editor__guide--h media-editor__guide--h2"
+                      ></span>
+                      <span class="media-editor__guide media-editor__guide--center-v"></span>
+                      <span class="media-editor__guide media-editor__guide--center-h"></span>
+                    </span>
+                    <span
+                      class="media-editor__marker"
+                      [style.left.%]="draft.assetFocalX ?? 50"
+                      [style.top.%]="draft.assetFocalY ?? 50"
+                    ></span>
+                  </button>
+                  <div class="media-editor__surface-copy">
+                    <span>Sin recorte específico, se usará este centro visual.</span>
+                  </div>
+                  @if (precisionOpen) {
+                    <div class="media-editor__sliders">
+                      <label class="field">
+                        <span>Centro horizontal</span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          step="1"
+                          [ngModel]="draft.assetFocalX || 50"
+                          (ngModelChange)="updateAssetFocal('x', $event)"
+                          [name]="'asset-focal-x-' + draft.id"
+                        />
+                      </label>
+                      <label class="field">
+                        <span>Centro vertical</span>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          step="1"
+                          [ngModel]="draft.assetFocalY || 50"
+                          (ngModelChange)="updateAssetFocal('y', $event)"
+                          [name]="'asset-focal-y-' + draft.id"
+                        />
+                      </label>
+                    </div>
+                  }
+                </div>
               </div>
-              <button
-                class="media-editor__surface media-editor__surface--asset"
-                [class.media-editor__surface--dragging]="draggingAsset"
-                type="button"
-                (pointerdown)="startAssetDrag($event)"
-                (pointerup)="stopDrag()"
-                (pointercancel)="stopDrag()"
-                (lostpointercapture)="stopDrag()"
-              >
-                <app-jano-media [media]="previewMedia" usage="detail" [alt]="draft.media.alt || entityTitle"></app-jano-media>
-                <span class="media-editor__guides" aria-hidden="true">
-                  <span class="media-editor__guide media-editor__guide--v media-editor__guide--v1"></span>
-                  <span class="media-editor__guide media-editor__guide--v media-editor__guide--v2"></span>
-                  <span class="media-editor__guide media-editor__guide--h media-editor__guide--h1"></span>
-                  <span class="media-editor__guide media-editor__guide--h media-editor__guide--h2"></span>
-                  <span class="media-editor__guide media-editor__guide--center-v"></span>
-                  <span class="media-editor__guide media-editor__guide--center-h"></span>
-                </span>
-                <span class="media-editor__marker" [style.left.%]="draft.assetFocalX ?? 50" [style.top.%]="draft.assetFocalY ?? 50"></span>
-              </button>
-              <div class="media-editor__surface-copy">
-                <span>Sin recorte específico, se usará este centro visual.</span>
-              </div>
-              @if (precisionOpen) {
-              <div class="media-editor__sliders">
-                <label class="field">
-                  <span>Centro horizontal</span>
-                  <input type="range" min="0" max="100" step="1" [ngModel]="draft.assetFocalX || 50" (ngModelChange)="updateAssetFocal('x', $event)" [name]="'asset-focal-x-' + draft.id" />
-                </label>
-                <label class="field">
-                  <span>Centro vertical</span>
-                  <input type="range" min="0" max="100" step="1" [ngModel]="draft.assetFocalY || 50" (ngModelChange)="updateAssetFocal('y', $event)" [name]="'asset-focal-y-' + draft.id" />
-                </label>
-              </div>
-              }
-            </div>
-          </div>
             }
           </section>
 
@@ -345,10 +524,18 @@
               <div class="media-editor__usage-head">
                 <div>
                   <div class="media-editor__title">Uso editorial del asset</div>
-                  <div class="media-editor__subtitle">Decide dónde aparece la imagen y qué encuadre estás puliendo.</div>
+                  <div class="media-editor__subtitle">
+                    Decide dónde aparece la imagen y qué encuadre estás puliendo.
+                  </div>
                 </div>
                 <div class="media-editor__usage-status">
-                  <span [class]="hasDraftChanges ? 'media-editor__save-indicator media-editor__save-indicator--pending' : 'media-editor__save-indicator'">
+                  <span
+                    [class]="
+                      hasDraftChanges
+                        ? 'media-editor__save-indicator media-editor__save-indicator--pending'
+                        : 'media-editor__save-indicator'
+                    "
+                  >
                     {{ hasDraftChanges ? 'Cambios sin guardar' : 'Sin cambios' }}
                   </span>
                 </div>
@@ -359,7 +546,9 @@
                   </div>
                   <div>
                     <span>Activo en</span>
-                    <strong>{{ activeSlotLabels.length ? activeSlotLabels.join(', ') : 'Ningún slot' }}</strong>
+                    <strong>{{
+                      activeSlotLabels.length ? activeSlotLabels.join(', ') : 'Ningún slot'
+                    }}</strong>
                   </div>
                   <div>
                     <span>Editando</span>
@@ -378,7 +567,11 @@
                         [class]="rolePillClass(rolePill.role)"
                         (click)="toggleRole(rolePill.role)"
                         [attr.aria-pressed]="isRoleSelected(rolePill.role)"
-                        [title]="isRoleSelected(rolePill.role) ? 'Quitar de este slot' : 'Usar en este slot'"
+                        [title]="
+                          isRoleSelected(rolePill.role)
+                            ? 'Quitar de este slot'
+                            : 'Usar en este slot'
+                        "
                       >
                         <span>{{ rolePill.label }}</span>
                         @if (isRoleSelected(rolePill.role)) {
@@ -398,7 +591,11 @@
                         [class]="rolePillClass(rolePill.role)"
                         (click)="toggleRole(rolePill.role)"
                         [attr.aria-pressed]="isRoleSelected(rolePill.role)"
-                        [title]="isRoleSelected(rolePill.role) && rolePill.role !== 'GALLERY' ? 'Quitar de este uso' : 'Asignar este uso'"
+                        [title]="
+                          isRoleSelected(rolePill.role) && rolePill.role !== 'GALLERY'
+                            ? 'Quitar de este uso'
+                            : 'Asignar este uso'
+                        "
                       >
                         <span>{{ rolePill.label }}</span>
                         @if (isRoleSelected(rolePill.role) && rolePill.role !== 'GALLERY') {
@@ -412,7 +609,9 @@
                       [class]="legacyPillClass()"
                       (click)="toggleLegacyFallback()"
                       [attr.aria-pressed]="draft.isPrimary"
-                      [title]="draft.isPrimary ? 'Quitar fallback legacy' : 'Usar como fallback legacy'"
+                      [title]="
+                        draft.isPrimary ? 'Quitar fallback legacy' : 'Usar como fallback legacy'
+                      "
                     >
                       <span>Fallback legacy</span>
                       @if (draft.isPrimary) {
@@ -427,7 +626,11 @@
                 <span class="media-editor__slot-picker-label">Encuadre en edición</span>
                 <div class="media-card__pill-group">
                   @for (slot of editorSlotOptions; track slot.key) {
-                    <button type="button" [class]="editorSlotClass(slot.key)" (click)="setActiveEditorSlot(slot.key)">
+                    <button
+                      type="button"
+                      [class]="editorSlotClass(slot.key)"
+                      (click)="setActiveEditorSlot(slot.key)"
+                    >
                       {{ slot.label }}
                     </button>
                   }
@@ -438,11 +641,17 @@
             <div class="media-editor__header">
               <div>
                 <div class="media-editor__title">Composición editorial</div>
-                <div class="media-editor__subtitle">Elige dónde se usará, encuadra la imagen y guarda.</div>
+                <div class="media-editor__subtitle">
+                  Elige dónde se usará, encuadra la imagen y guarda.
+                </div>
               </div>
               <div class="media-card__pill-group">
                 @for (slot of editorSlotOptions; track slot.key) {
-                  <button type="button" [class]="editorSlotClass(slot.key)" (click)="setActiveEditorSlot(slot.key)">
+                  <button
+                    type="button"
+                    [class]="editorSlotClass(slot.key)"
+                    (click)="setActiveEditorSlot(slot.key)"
+                  >
                     {{ slot.label }}
                   </button>
                 }
@@ -451,7 +660,11 @@
           }
 
           <section class="media-editor-block">
-            <button class="media-editor-block__toggle" type="button" (click)="togglePanelSection('previews')">
+            <button
+              class="media-editor-block__toggle"
+              type="button"
+              (click)="togglePanelSection('previews')"
+            >
               <span>
                 <strong>Comprobar en otros contextos</strong>
                 <small>Revisa rápidamente cómo respira la imagen en cada slot.</small>
@@ -459,32 +672,36 @@
               <span class="media-editor-block__chevron">{{ previewsOpen ? '−' : '+' }}</span>
             </button>
             @if (!panel || previewsOpen) {
-          <div class="media-editor__context-grid">
-            @for (slot of editorSlotOptions; track slot.key) {
-              <div class="media-context-card">
-                <div class="media-context-card__head">
-                  <strong>{{ slot.label }}</strong>
-                  <span>{{ slotCropSummary(slot.key) }}</span>
-                </div>
-                @if (hasSlotWarnings(slot.key)) {
-                  <div class="media-context-card__badge">Warning editorial</div>
+              <div class="media-editor__context-grid">
+                @for (slot of editorSlotOptions; track slot.key) {
+                  <div class="media-context-card">
+                    <div class="media-context-card__head">
+                      <strong>{{ slot.label }}</strong>
+                      <span>{{ slotCropSummary(slot.key) }}</span>
+                    </div>
+                    @if (hasSlotWarnings(slot.key)) {
+                      <div class="media-context-card__badge">Warning editorial</div>
+                    }
+                    <div [class]="slotFrameClass(slot.key)">
+                      <app-jano-media
+                        [media]="slotPreviewMedia(slot.key)"
+                        [usage]="slotUsage(slot.key)"
+                        [alt]="draft.media.alt || entityTitle"
+                      ></app-jano-media>
+                    </div>
+                  </div>
                 }
-                <div [class]="slotFrameClass(slot.key)">
-                  <app-jano-media
-                    [media]="slotPreviewMedia(slot.key)"
-                    [usage]="slotUsage(slot.key)"
-                    [alt]="draft.media.alt || entityTitle"
-                  ></app-jano-media>
-                </div>
               </div>
-            }
-          </div>
             }
           </section>
         </section>
 
         <section class="media-editor-block">
-          <button class="media-editor-block__toggle" type="button" (click)="togglePanelSection('metadata')">
+          <button
+            class="media-editor-block__toggle"
+            type="button"
+            (click)="togglePanelSection('metadata')"
+          >
             <span>
               <strong>Detalles y guardado</strong>
               <small>Texto, origen y acciones del asset. Solo cuando haga falta.</small>
@@ -492,155 +709,270 @@
             <span class="media-editor-block__chevron">{{ metadataOpen ? '−' : '+' }}</span>
           </button>
           @if (!panel || metadataOpen) {
-        <div class="media-grid">
-          <label class="field full">
-            <span>Texto alternativo</span>
-            <input type="text" [(ngModel)]="draft.media.alt" [name]="'media-alt-' + draft.id" />
-          </label>
+            <div class="media-grid">
+              <label class="field full">
+                <span>Texto alternativo</span>
+                <input type="text" [(ngModel)]="draft.media.alt" [name]="'media-alt-' + draft.id" />
+              </label>
 
-          @if (!panel) {
-          <label class="field full">
-            <span>URL</span>
-            <input type="url" [(ngModel)]="draft.media.url" [name]="'media-url-' + draft.id" [disabled]="!canEditSourceUrls" />
-          </label>
+              @if (!panel) {
+                <label class="field full">
+                  <span>URL</span>
+                  <input
+                    type="url"
+                    [(ngModel)]="draft.media.url"
+                    [name]="'media-url-' + draft.id"
+                    [disabled]="!canEditSourceUrls"
+                  />
+                </label>
 
-          <label class="field full">
-            <span>URL visible</span>
-            <input type="url" [(ngModel)]="draft.media.displayUrl" [name]="'media-display-url-' + draft.id" [disabled]="!canEditSourceUrls" />
-          </label>
+                <label class="field full">
+                  <span>URL visible</span>
+                  <input
+                    type="url"
+                    [(ngModel)]="draft.media.displayUrl"
+                    [name]="'media-display-url-' + draft.id"
+                    [disabled]="!canEditSourceUrls"
+                  />
+                </label>
 
-          <label class="field full">
-            <span>Página fuente</span>
-            <input type="url" [(ngModel)]="draft.media.sourcePageUrl" [name]="'media-source-page-url-' + draft.id" />
-          </label>
-          } @else if (isLocalAsset) {
-          <label class="field full field--readonly">
-            <span>Asset local</span>
-            <input type="text" [ngModel]="draft.media.url || draft.media.storageKey || ''" [name]="'media-local-url-' + draft.id" readonly />
-          </label>
-          } @else {
-          <label class="field full">
-            <span>URL</span>
-            <input type="url" [(ngModel)]="draft.media.url" [name]="'media-url-panel-' + draft.id" />
-          </label>
+                <label class="field full">
+                  <span>Página fuente</span>
+                  <input
+                    type="url"
+                    [(ngModel)]="draft.media.sourcePageUrl"
+                    [name]="'media-source-page-url-' + draft.id"
+                  />
+                </label>
+              } @else if (isLocalAsset) {
+                <label class="field full field--readonly">
+                  <span>Asset local</span>
+                  <input
+                    type="text"
+                    [ngModel]="draft.media.url || draft.media.storageKey || ''"
+                    [name]="'media-local-url-' + draft.id"
+                    readonly
+                  />
+                </label>
+              } @else {
+                <label class="field full">
+                  <span>URL</span>
+                  <input
+                    type="url"
+                    [(ngModel)]="draft.media.url"
+                    [name]="'media-url-panel-' + draft.id"
+                  />
+                </label>
 
-          <label class="field full">
-            <span>URL visible</span>
-            <input type="url" [(ngModel)]="draft.media.displayUrl" [name]="'media-display-url-panel-' + draft.id" />
-          </label>
+                <label class="field full">
+                  <span>URL visible</span>
+                  <input
+                    type="url"
+                    [(ngModel)]="draft.media.displayUrl"
+                    [name]="'media-display-url-panel-' + draft.id"
+                  />
+                </label>
 
-          <label class="field full">
-            <span>Página fuente</span>
-            <input type="url" [(ngModel)]="draft.media.sourcePageUrl" [name]="'media-source-page-url-panel-' + draft.id" />
-          </label>
+                <label class="field full">
+                  <span>Página fuente</span>
+                  <input
+                    type="url"
+                    [(ngModel)]="draft.media.sourcePageUrl"
+                    [name]="'media-source-page-url-panel-' + draft.id"
+                  />
+                </label>
+              }
+
+              <label class="field">
+                <span>Asignación editorial</span>
+                <select [(ngModel)]="draft.role" [name]="'media-role-' + draft.id">
+                  @for (role of mediaRoles; track role) {
+                    <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Ajuste visual</span>
+                <select [(ngModel)]="draft.displayMode" [name]="'media-display-mode-' + draft.id">
+                  @for (mode of displayModes; track mode.value) {
+                    <option [value]="mode.value">{{ mode.label }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Orden</span>
+                <input
+                  type="number"
+                  [(ngModel)]="draft.sortOrder"
+                  [name]="'media-sort-order-' + draft.id"
+                />
+              </label>
+
+              <label class="field field--checkbox">
+                <span>Fallback legacy</span>
+                <input
+                  type="checkbox"
+                  [(ngModel)]="draft.isPrimary"
+                  [name]="'media-primary-' + draft.id"
+                />
+              </label>
+
+              <label class="field">
+                <span>Foco horizontal manual</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  [(ngModel)]="draft.focalX"
+                  [name]="'media-focal-x-' + draft.id"
+                />
+              </label>
+
+              <label class="field">
+                <span>Foco vertical manual</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  [(ngModel)]="draft.focalY"
+                  [name]="'media-focal-y-' + draft.id"
+                />
+              </label>
+
+              <label class="field">
+                <span>Centro horizontal del asset</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  [(ngModel)]="draft.assetFocalX"
+                  [name]="'media-asset-focal-x-' + draft.id"
+                />
+              </label>
+
+              <label class="field">
+                <span>Centro vertical del asset</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  [(ngModel)]="draft.assetFocalY"
+                  [name]="'media-asset-focal-y-' + draft.id"
+                />
+              </label>
+
+              <label class="field">
+                <span>Fuente</span>
+                <input
+                  type="text"
+                  [(ngModel)]="draft.media.source"
+                  [name]="'media-source-' + draft.id"
+                />
+              </label>
+
+              <label class="field">
+                <span>Crédito</span>
+                <input
+                  type="text"
+                  [(ngModel)]="draft.media.photoBy"
+                  [name]="'media-photo-by-' + draft.id"
+                />
+              </label>
+
+              <label class="field full">
+                <span>Licencia</span>
+                <input
+                  type="text"
+                  [(ngModel)]="draft.media.license"
+                  [name]="'media-license-' + draft.id"
+                />
+              </label>
+            </div>
+
+            @if (canIngest || canPromote || canRestore) {
+              <div class="workflow-actions">
+                <div class="workflow-actions__label">Acciones de asset</div>
+
+                @if (canIngest) {
+                  <div class="workflow-callout">
+                    <div>
+                      <strong>Convertir en asset propio</strong>
+                      <span
+                        >Importa esta referencia a la biblioteca local sin perder la fuente
+                        original.</span
+                      >
+                    </div>
+                    <button
+                      class="btn mini ghost"
+                      type="button"
+                      [disabled]="editor.ingesting"
+                      (click)="ingestLink()"
+                    >
+                      @if (editor.ingesting) {
+                        Importando...
+                      } @else {
+                        Importar
+                      }
+                    </button>
+                  </div>
+                }
+
+                @if (canPromote) {
+                  <div class="workflow-callout">
+                    <div>
+                      <strong>Usar como reemplazo visual</strong>
+                      <span
+                        >Este asset puede asumir el papel visual de
+                        {{ replacementTargetLabel || 'su externo origen' }}.</span
+                      >
+                    </div>
+                    <button
+                      class="btn mini ghost"
+                      type="button"
+                      [disabled]="editor.promoting"
+                      (click)="promoteLink()"
+                    >
+                      @if (editor.promoting) {
+                        Promoviendo...
+                      } @else {
+                        Promover
+                      }
+                    </button>
+                  </div>
+                }
+
+                @if (canRestore) {
+                  <div class="workflow-callout">
+                    <div>
+                      <strong>Restaurar externo</strong>
+                      <span
+                        >El externo puede recuperar el papel visual que ahora ocupa
+                        {{ replacementIngestedLabel || 'el asset derivado' }}.</span
+                      >
+                    </div>
+                    <button
+                      class="btn mini ghost"
+                      type="button"
+                      [disabled]="editor.restoring"
+                      (click)="restoreLink()"
+                    >
+                      @if (editor.restoring) {
+                        Restaurando...
+                      } @else {
+                        Restaurar
+                      }
+                    </button>
+                  </div>
+                }
+              </div>
+            }
           }
-
-          <label class="field">
-            <span>Asignación editorial</span>
-            <select [(ngModel)]="draft.role" [name]="'media-role-' + draft.id">
-              @for (role of mediaRoles; track role) {
-                <option [value]="role">{{ mediaRoleLabel(role) }}</option>
-              }
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Ajuste visual</span>
-            <select [(ngModel)]="draft.displayMode" [name]="'media-display-mode-' + draft.id">
-              @for (mode of displayModes; track mode.value) {
-                <option [value]="mode.value">{{ mode.label }}</option>
-              }
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Orden</span>
-            <input type="number" [(ngModel)]="draft.sortOrder" [name]="'media-sort-order-' + draft.id" />
-          </label>
-
-          <label class="field field--checkbox">
-            <span>Fallback legacy</span>
-            <input type="checkbox" [(ngModel)]="draft.isPrimary" [name]="'media-primary-' + draft.id" />
-          </label>
-
-          <label class="field">
-            <span>Foco horizontal manual</span>
-            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="draft.focalX" [name]="'media-focal-x-' + draft.id" />
-          </label>
-
-          <label class="field">
-            <span>Foco vertical manual</span>
-            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="draft.focalY" [name]="'media-focal-y-' + draft.id" />
-          </label>
-
-          <label class="field">
-            <span>Centro horizontal del asset</span>
-            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="draft.assetFocalX" [name]="'media-asset-focal-x-' + draft.id" />
-          </label>
-
-          <label class="field">
-            <span>Centro vertical del asset</span>
-            <input type="number" min="0" max="100" step="0.1" [(ngModel)]="draft.assetFocalY" [name]="'media-asset-focal-y-' + draft.id" />
-          </label>
-
-          <label class="field">
-            <span>Fuente</span>
-            <input type="text" [(ngModel)]="draft.media.source" [name]="'media-source-' + draft.id" />
-          </label>
-
-          <label class="field">
-            <span>Crédito</span>
-            <input type="text" [(ngModel)]="draft.media.photoBy" [name]="'media-photo-by-' + draft.id" />
-          </label>
-
-          <label class="field full">
-            <span>Licencia</span>
-            <input type="text" [(ngModel)]="draft.media.license" [name]="'media-license-' + draft.id" />
-          </label>
-        </div>
-
-        @if (canIngest || canPromote || canRestore) {
-          <div class="workflow-actions">
-            <div class="workflow-actions__label">Acciones de asset</div>
-
-            @if (canIngest) {
-              <div class="workflow-callout">
-                <div>
-                  <strong>Convertir en asset propio</strong>
-                  <span>Importa esta referencia a la biblioteca local sin perder la fuente original.</span>
-                </div>
-                <button class="btn mini ghost" type="button" [disabled]="editor.ingesting" (click)="ingestLink()">
-                  @if (editor.ingesting) { Importando... } @else { Importar }
-                </button>
-              </div>
-            }
-
-            @if (canPromote) {
-              <div class="workflow-callout">
-                <div>
-                  <strong>Usar como reemplazo visual</strong>
-                  <span>Este asset puede asumir el papel visual de {{ replacementTargetLabel || 'su externo origen' }}.</span>
-                </div>
-                <button class="btn mini ghost" type="button" [disabled]="editor.promoting" (click)="promoteLink()">
-                  @if (editor.promoting) { Promoviendo... } @else { Promover }
-                </button>
-              </div>
-            }
-
-            @if (canRestore) {
-              <div class="workflow-callout">
-                <div>
-                  <strong>Restaurar externo</strong>
-                  <span>El externo puede recuperar el papel visual que ahora ocupa {{ replacementIngestedLabel || 'el asset derivado' }}.</span>
-                </div>
-                <button class="btn mini ghost" type="button" [disabled]="editor.restoring" (click)="restoreLink()">
-                  @if (editor.restoring) { Restaurando... } @else { Restaurar }
-                </button>
-              </div>
-            }
-          </div>
-        }
-        }
         </section>
       </div>
     }
@@ -663,19 +995,31 @@
     }
 
     @if (!compact) {
-    <div class="media-card__footer">
-      <div class="media-card__footer-status">
-        {{ saveStateLabel }} · {{ legacyStatusLabel }}
+      <div class="media-card__footer">
+        <div class="media-card__footer-status">{{ saveStateLabel }} · {{ legacyStatusLabel }}</div>
+        <div class="media-card__footer-actions">
+          <button
+            class="btn ghost"
+            type="button"
+            [disabled]="saving || !hasDraftChanges"
+            (click)="discardChanges()"
+          >
+            Cancelar cambios
+          </button>
+          <button
+            class="btn primary"
+            type="button"
+            [disabled]="saving || !hasDraftChanges"
+            (click)="saveChanges()"
+          >
+            @if (saving) {
+              Guardando...
+            } @else {
+              Guardar encuadre
+            }
+          </button>
+        </div>
       </div>
-      <div class="media-card__footer-actions">
-        <button class="btn ghost" type="button" [disabled]="saving || !hasDraftChanges" (click)="discardChanges()">
-          Cancelar cambios
-        </button>
-        <button class="btn primary" type="button" [disabled]="saving || !hasDraftChanges" (click)="saveChanges()">
-          @if (saving) { Guardando... } @else { Guardar encuadre }
-        </button>
-      </div>
-    </div>
     }
   </div>
 </article>

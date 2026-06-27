@@ -46,10 +46,12 @@ describe('AuthService', () => {
       passwordHash,
     });
 
-    await expect(service.login({
-      email: 'manuel@test3.com',
-      password: 'secret123',
-    })).resolves.toEqual({
+    await expect(
+      service.login({
+        email: 'manuel@test3.com',
+        password: 'secret123',
+      }),
+    ).resolves.toEqual({
       accessToken: 'jwt-token',
       user: {
         id: 'user-1',
@@ -98,10 +100,12 @@ describe('AuthService', () => {
       passwordHash,
     });
 
-    await expect(service.login({
-      email: 'manuel@test3.com',
-      password: 'secret123',
-    })).resolves.toMatchObject({
+    await expect(
+      service.login({
+        email: 'manuel@test3.com',
+        password: 'secret123',
+      }),
+    ).resolves.toMatchObject({
       user: {
         id: 'user-1',
         email: 'manuel@test3.com',

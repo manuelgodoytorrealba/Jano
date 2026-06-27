@@ -53,9 +53,7 @@ export function resetImageRuntimeState(options: {
   };
 }
 
-export function applyLoadedGraphState(options: {
-  initialized: InitializedLoadedGraphState;
-}): {
+export function applyLoadedGraphState(options: { initialized: InitializedLoadedGraphState }): {
   graph: GraphData;
   layoutScratch: InitializedLoadedGraphState['layoutScratch'];
   positions: Record<string, GraphPoint>;
@@ -102,8 +100,8 @@ export function resolveGraphInputChangesRuntime(options: {
 } {
   const slugChanged = !!options.changes['slug']?.currentValue;
   const imageChanged =
-    (!!options.changes['imageUrl'] && !options.changes['imageUrl'].firstChange)
-    || (!!options.changes['imageMedia'] && !options.changes['imageMedia'].firstChange);
+    (!!options.changes['imageUrl'] && !options.changes['imageUrl'].firstChange) ||
+    (!!options.changes['imageMedia'] && !options.changes['imageMedia'].firstChange);
 
   return {
     slugState: slugChanged

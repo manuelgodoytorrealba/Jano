@@ -83,7 +83,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
 }
 
 .admin-curations__btn:hover,

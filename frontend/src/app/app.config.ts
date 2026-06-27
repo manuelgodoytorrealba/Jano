@@ -1,4 +1,9 @@
-import { APP_INITIALIZER, ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -16,12 +21,15 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true, runCoalescing: true }),
     provideClientHydration(withEventReplay()),
     provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([ssrApiOriginInterceptor, authInterceptor, localeInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([ssrApiOriginInterceptor, authInterceptor, localeInterceptor]),
+    ),
     {
       provide: APP_INITIALIZER,
       multi: true,
       deps: [I18nService],
       useFactory: (i18n: I18nService) => () => firstValueFrom(i18n.load()),
-    }
+    },
   ],
 };

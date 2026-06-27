@@ -1,5 +1,6 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import type { AuthenticatedUser } from '../auth/authenticated-user.type';
 
 @Injectable()
 export class OptionalJwtAuthGuard extends AuthGuard('jwt') {
@@ -14,7 +15,7 @@ export class OptionalJwtAuthGuard extends AuthGuard('jwt') {
     return true;
   }
 
-  handleRequest<TUser = any>(_err: unknown, user: TUser): TUser | null {
+  handleRequest<TUser extends AuthenticatedUser | null>(_err: unknown, user: TUser): TUser | null {
     return user ?? null;
   }
 }

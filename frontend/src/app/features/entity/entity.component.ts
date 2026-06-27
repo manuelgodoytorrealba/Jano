@@ -270,8 +270,8 @@ export class EntityComponent implements OnDestroy {
             autoCloseMs: 2000,
           });
         })
-        .catch((error: any) => {
-          if (error?.name === 'AbortError') {
+        .catch((error: unknown) => {
+          if (error instanceof Error && error.name === 'AbortError') {
             return;
           }
 

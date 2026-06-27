@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
@@ -60,7 +54,11 @@ export class RichTextComponent {
     this.isHoveringLink = true;
     this.cancelClose();
 
-    if (this.openSlug() === slug && this.openPreviewKey() === previewKey && (this.previewLoading() || this.preview())) {
+    if (
+      this.openSlug() === slug &&
+      this.openPreviewKey() === previewKey &&
+      (this.previewLoading() || this.preview())
+    ) {
       return;
     }
 
@@ -146,13 +144,15 @@ export class RichTextComponent {
       }
     }
 
-    return entity?.resolvedMedia?.thumbnail
-      ?? entity?.resolvedMedia?.card
-      ?? entity?.resolvedMedia?.detail
-      ?? entity?.resolvedMedia?.hero
-      ?? entity?.resolvedMedia?.primary
-      ?? entity?.mediaLinks?.[0]?.media
-      ?? null;
+    return (
+      entity?.resolvedMedia?.thumbnail ??
+      entity?.resolvedMedia?.card ??
+      entity?.resolvedMedia?.detail ??
+      entity?.resolvedMedia?.hero ??
+      entity?.resolvedMedia?.primary ??
+      entity?.mediaLinks?.[0]?.media ??
+      null
+    );
   }
 }
 

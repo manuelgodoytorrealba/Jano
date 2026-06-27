@@ -1,5 +1,11 @@
 import { GraphPoint, GraphViewport } from './graph.models';
-import { clampImageViewport, createImageViewport, ImageAssetSize, ImageViewport, ImageViewportOptions } from './image-viewport';
+import {
+  clampImageViewport,
+  createImageViewport,
+  ImageAssetSize,
+  ImageViewport,
+  ImageViewportOptions,
+} from './image-viewport';
 import { focusGraphPoint } from './graph-viewport';
 
 const STORAGE_PREFIX = 'jano:entity-explorer';
@@ -46,7 +52,10 @@ export function saveExplorerState(slug: string, state: ExplorerPersistedState): 
   }
 }
 
-export function serializeGraphViewport(viewport: GraphViewport, size: { width: number; height: number }) {
+export function serializeGraphViewport(
+  viewport: GraphViewport,
+  size: { width: number; height: number },
+) {
   return {
     focus: {
       x: (size.width / 2 - viewport.x) / viewport.scale,
@@ -92,7 +101,10 @@ export function restoreImageViewport(
     return fit;
   }
 
-  const nextScale = Math.min(fit.fitScale * 6, Math.max(fit.fitScale, fit.fitScale * payload.scaleRatio));
+  const nextScale = Math.min(
+    fit.fitScale * 6,
+    Math.max(fit.fitScale, fit.fitScale * payload.scaleRatio),
+  );
 
   return clampImageViewport(
     {

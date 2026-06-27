@@ -5,7 +5,10 @@
     <div class="recommended-page__layout">
       <div class="recommended-page__fold">
         <div class="recommended-page__row recommended-page__row--top">
-          <app-recommended-staff-picks class="recommended-page__staff" [picks]="page.staffPicks"></app-recommended-staff-picks>
+          <app-recommended-staff-picks
+            class="recommended-page__staff"
+            [picks]="page.staffPicks"
+          ></app-recommended-staff-picks>
 
           <app-recommended-discovery-map
             class="recommended-page__map"
@@ -15,7 +18,8 @@
             [graphData]="graphData()"
             (selectEntity)="selectEntity($event)"
             (addEntity)="onAddEntity($event)"
-            (removeEntity)="onRemoveEntity($event)">
+            (removeEntity)="onRemoveEntity($event)"
+          >
           </app-recommended-discovery-map>
         </div>
 
@@ -24,16 +28,26 @@
           [entity]="page.selectedEntity"
           [selectedTab]="selectedTab()"
           [tabGroups]="page.tabGroups"
-          (selectedTabChange)="selectedTab.set($event)">
+          (selectedTabChange)="selectedTab.set($event)"
+        >
         </app-recommended-entity-panel>
       </div>
 
       <div class="recommended-page__row recommended-page__row--middle">
-        <app-recommended-key-entities class="recommended-page__key" [items]="page.keyEntities"></app-recommended-key-entities>
-        <app-recommended-related-entities class="recommended-page__related" [items]="page.relatedEntities"></app-recommended-related-entities>
+        <app-recommended-key-entities
+          class="recommended-page__key"
+          [items]="page.keyEntities"
+        ></app-recommended-key-entities>
+        <app-recommended-related-entities
+          class="recommended-page__related"
+          [items]="page.relatedEntities"
+        ></app-recommended-related-entities>
       </div>
 
-      <app-recommended-recently-added class="recommended-page__recent" [items]="page.recentlyAdded"></app-recommended-recently-added>
+      <app-recommended-recently-added
+        class="recommended-page__recent"
+        [items]="page.recentlyAdded"
+      ></app-recommended-recently-added>
     </div>
   } @else if (loading()) {
     <div class="recommended-page__loading">Preparando la selección editorial…</div>

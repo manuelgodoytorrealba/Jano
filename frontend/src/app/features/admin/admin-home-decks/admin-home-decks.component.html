@@ -64,7 +64,9 @@
             @if (vm.homeActiveDecks.length) {
               <div class="surface-status__pills">
                 @for (deck of vm.homeActiveDecks; track deck.id) {
-                  <a class="surface-pill" [routerLink]="['/admin/home-decks', deck.id, 'edit']">{{ deck.title }}</a>
+                  <a class="surface-pill" [routerLink]="['/admin/home-decks', deck.id, 'edit']">{{
+                    deck.title
+                  }}</a>
                 }
               </div>
             }
@@ -74,7 +76,8 @@
               class="mini"
               type="button"
               (click)="importMissingStarters('HOME', vm.starterStates, vm.homeActiveDecks.length)"
-              [disabled]="saving">
+              [disabled]="saving"
+            >
               Importar base Home
             </button>
           </div>
@@ -92,7 +95,9 @@
             @if (vm.recommendedActiveDecks.length) {
               <div class="surface-status__pills">
                 @for (deck of vm.recommendedActiveDecks; track deck.id) {
-                  <a class="surface-pill" [routerLink]="['/admin/home-decks', deck.id, 'edit']">{{ deck.title }}</a>
+                  <a class="surface-pill" [routerLink]="['/admin/home-decks', deck.id, 'edit']">{{
+                    deck.title
+                  }}</a>
                 }
               </div>
             }
@@ -101,8 +106,15 @@
             <button
               class="mini"
               type="button"
-              (click)="importMissingStarters('RECOMMENDED', vm.starterStates, vm.recommendedActiveDecks.length)"
-              [disabled]="saving">
+              (click)="
+                importMissingStarters(
+                  'RECOMMENDED',
+                  vm.starterStates,
+                  vm.recommendedActiveDecks.length
+                )
+              "
+              [disabled]="saving"
+            >
               Importar base Curated
             </button>
           </div>
@@ -119,11 +131,16 @@
       <div class="starter-library__grid">
         @for (state of vm.starterStates; track state.starter.id) {
           <article class="starter-card">
-            <div class="starter-card__media" [style.background-image]="'url(' + state.starter.image + ')'"></div>
+            <div
+              class="starter-card__media"
+              [style.background-image]="'url(' + state.starter.image + ')'"
+            ></div>
             <div class="starter-card__body">
               <div class="starter-card__meta">
                 <span>{{ surfaceLabel(state.starter.surface) }}</span>
-                <strong>{{ state.imported ? (state.active ? 'Editable activo' : 'Editable') : 'Fallback base' }}</strong>
+                <strong>{{
+                  state.imported ? (state.active ? 'Editable activo' : 'Editable') : 'Fallback base'
+                }}</strong>
               </div>
               <h3>{{ state.starter.title }}</h3>
               <p>{{ state.starter.description }}</p>
@@ -135,7 +152,7 @@
                         @if (deckEntityImageUrl(item.entity); as entityImageUrl) {
                           <img [src]="entityImageUrl" [alt]="deckEntityLabel(item.entity)" />
                         } @else {
-                          <span>{{ item.entity?.type || 'ENTITY' }}</span>
+                          <span>{{ item.entity.type || 'ENTITY' }}</span>
                         }
                       </div>
                       <span>{{ deckEntityLabel(item.entity) }}</span>
@@ -145,22 +162,33 @@
               }
               <div class="starter-card__actions">
                 @if (state.deck) {
-                  <a class="mini" [routerLink]="['/admin/home-decks', state.deck.id, 'edit']">Editar deck</a>
+                  <a class="mini" [routerLink]="['/admin/home-decks', state.deck.id, 'edit']"
+                    >Editar deck</a
+                  >
                 } @else {
                   @if (canMaterializeStarter(state.starter)) {
                     <button
                       class="mini"
                       type="button"
                       (click)="materializeStarter(state.starter)"
-                      [disabled]="saving">
+                      [disabled]="saving"
+                    >
                       Materializar deck
                     </button>
                   } @else {
                     <button
                       class="mini"
                       type="button"
-                      (click)="importStarter(state.starter, state.starter.surface === 'HOME' ? vm.homeActiveDecks.length : vm.recommendedActiveDecks.length)"
-                      [disabled]="saving">
+                      (click)="
+                        importStarter(
+                          state.starter,
+                          state.starter.surface === 'HOME'
+                            ? vm.homeActiveDecks.length
+                            : vm.recommendedActiveDecks.length
+                        )
+                      "
+                      [disabled]="saving"
+                    >
                       Importar deck
                     </button>
                   }
@@ -175,7 +203,10 @@
     <section class="create-panel">
       <div class="section-title">
         <h2>Componer un deck nuevo</h2>
-        <p>Piensa este bloque como una portada curatorial: dónde vive, qué promete y a qué mirada conduce.</p>
+        <p>
+          Piensa este bloque como una portada curatorial: dónde vive, qué promete y a qué mirada
+          conduce.
+        </p>
       </div>
 
       <div class="composer-intro">
@@ -195,7 +226,9 @@
           <span>Empezar desde una base</span>
           <div class="starter-pills">
             @for (starter of starterDecksForSurface(newDeck.surface); track starter.id) {
-              <button class="mini" type="button" (click)="startFromStarter(starter)">{{ starter.title }}</button>
+              <button class="mini" type="button" (click)="startFromStarter(starter)">
+                {{ starter.title }}
+              </button>
             }
           </div>
         </article>
@@ -204,7 +237,11 @@
       <form class="create-grid" (ngSubmit)="createDeck()">
         <label>
           <span>Publicar en</span>
-          <select name="surface" [ngModel]="newDeck.surface" (ngModelChange)="onNewDeckSurfaceChange($event)">
+          <select
+            name="surface"
+            [ngModel]="newDeck.surface"
+            (ngModelChange)="onNewDeckSurfaceChange($event)"
+          >
             <option value="HOME">Home</option>
             <option value="RECOMMENDED">Curated</option>
           </select>
@@ -247,8 +284,15 @@
 
         <label class="create-grid__wide">
           <span>Imagen base</span>
-          <input name="imageUrl" [(ngModel)]="newDeck.imageUrl" placeholder="/assets/home/artwork.jpg" />
-          <small>Usa una imagen que pueda sostenerse como portada del bloque, no solo como decoración.</small>
+          <input
+            name="imageUrl"
+            [(ngModel)]="newDeck.imageUrl"
+            placeholder="/assets/home/artwork.jpg"
+          />
+          <small
+            >Usa una imagen que pueda sostenerse como portada del bloque, no solo como
+            decoración.</small
+          >
         </label>
 
         <label class="create-grid__wide">
@@ -269,7 +313,10 @@
     <section class="deck-table-wrap">
       <div class="section-title">
         <h2>Decks editables actuales</h2>
-        <p>Lo que ya existe como deck real en el sistema, ya en una lectura más cercana a portada, estado y secuencia.</p>
+        <p>
+          Lo que ya existe como deck real en el sistema, ya en una lectura más cercana a portada,
+          estado y secuencia.
+        </p>
       </div>
 
       @if (loading) {
@@ -290,7 +337,9 @@
                       @if (deck.image?.url; as imageUrl) {
                         <img [src]="imageUrl" [alt]="deck.title" />
                       } @else {
-                        <div class="editable-card__media-empty">{{ surfaceLabel(deck.surface) }}</div>
+                        <div class="editable-card__media-empty">
+                          {{ surfaceLabel(deck.surface) }}
+                        </div>
                       }
                     </div>
 
@@ -300,7 +349,12 @@
                           <span>{{ surfaceLabel(deck.surface) }}</span>
                           <strong>#{{ deck.sortOrder }}</strong>
                         </div>
-                        <button class="status" [class.is-active]="deck.isActive" type="button" (click)="toggleActive(deck)">
+                        <button
+                          class="status"
+                          [class.is-active]="deck.isActive"
+                          type="button"
+                          (click)="toggleActive(deck)"
+                        >
                           {{ deck.isActive ? 'Activo' : 'Inactivo' }}
                         </button>
                       </div>
@@ -326,9 +380,12 @@
                             <div class="starter-entity">
                               <div class="starter-entity__thumb">
                                 @if (deckEntityImageUrl(item.entity); as entityImageUrl) {
-                                  <img [src]="entityImageUrl" [alt]="deckEntityLabel(item.entity)" />
+                                  <img
+                                    [src]="entityImageUrl"
+                                    [alt]="deckEntityLabel(item.entity)"
+                                  />
                                 } @else {
-                                  <span>{{ item.entity?.type || 'ENTITY' }}</span>
+                                  <span>{{ item.entity.type || 'ENTITY' }}</span>
                                 }
                               </div>
                               <span>{{ deckEntityLabel(item.entity) }}</span>
@@ -343,17 +400,27 @@
                             {{ deck.image ? 'Portada lista' : 'Falta portada' }}
                           </span>
                           @if (deck.warnings.length) {
-                            <span class="warning" [class.is-strong]="hasWarnings(deck)">{{ warningLabel(deck) }}</span>
+                            <span class="warning" [class.is-strong]="hasWarnings(deck)">{{
+                              warningLabel(deck)
+                            }}</span>
                           } @else {
                             <span class="ok">Listo</span>
                           }
                         </div>
 
                         <div class="row-actions">
-                          <a class="mini" [routerLink]="['/admin/home-decks', deck.id, 'edit']">Editar</a>
-                          <button class="mini" type="button" (click)="move(deck, -1, vm.decks)">Subir</button>
-                          <button class="mini" type="button" (click)="move(deck, 1, vm.decks)">Bajar</button>
-                          <button class="mini danger" type="button" (click)="remove(deck)">Borrar</button>
+                          <a class="mini" [routerLink]="['/admin/home-decks', deck.id, 'edit']"
+                            >Editar</a
+                          >
+                          <button class="mini" type="button" (click)="move(deck, -1, vm.decks)">
+                            Subir
+                          </button>
+                          <button class="mini" type="button" (click)="move(deck, 1, vm.decks)">
+                            Bajar
+                          </button>
+                          <button class="mini danger" type="button" (click)="remove(deck)">
+                            Borrar
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -361,12 +428,16 @@
                 }
               </div>
             } @else {
-              <div class="empty">Todavía no hay decks editables en {{ surfaceLabel(surface) }}.</div>
+              <div class="empty">
+                Todavía no hay decks editables en {{ surfaceLabel(surface) }}.
+              </div>
             }
           </section>
         }
       } @else {
-        <div class="empty">No hay decks creados. Home y Curated seguirán usando fallback visual.</div>
+        <div class="empty">
+          No hay decks creados. Home y Curated seguirán usando fallback visual.
+        </div>
       }
     </section>
   }

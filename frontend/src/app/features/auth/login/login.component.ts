@@ -203,7 +203,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     this.auth.login(this.form.getRawValue()).subscribe({
       next: () => {
         const redirectTo = (this.route.snapshot.queryParamMap.get('redirectTo') ?? '').trim();
-        this.router.navigateByUrl(redirectTo || '/my-space');
+        void this.router.navigateByUrl(redirectTo || '/my-space');
       },
       error: (err) => {
         this.loading = false;

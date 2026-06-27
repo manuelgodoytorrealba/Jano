@@ -17,7 +17,9 @@ export class AdminEntityMediaGroupComponent {
   @Input({ required: true }) activeEditorId: string | null = null;
   @Input() entityTitle = '';
   @Input() hasAnyPersistedLegacyForEditor: (editorId: string) => boolean = () => false;
-  @Input() editorPresentationFor: (link: EditableAdminMediaLink) => AdminEntityMediaEditorPresentation = () => ({
+  @Input() editorPresentationFor: (
+    link: EditableAdminMediaLink,
+  ) => AdminEntityMediaEditorPresentation = () => ({
     activeSlotLabels: [],
     canIngest: false,
     canPromote: false,

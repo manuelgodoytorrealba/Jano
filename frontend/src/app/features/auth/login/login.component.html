@@ -23,7 +23,7 @@
       </label>
 
       @if (error) {
-      <div class="beta-auth-error" role="alert">{{ error }}</div>
+        <div class="beta-auth-error" role="alert">{{ error }}</div>
       }
 
       <button class="beta-auth-submit" type="submit" [disabled]="form.invalid || loading">

@@ -13,7 +13,15 @@ export type MediaLike = {
   isVector?: boolean | null;
   width?: number | null;
   height?: number | null;
-  provider?: 'WIKIMEDIA_COMMONS' | 'WIKIPEDIA' | 'MUSEUM' | 'IIIF' | 'OPENVERSE' | 'UNKNOWN' | string | null;
+  provider?:
+    | 'WIKIMEDIA_COMMONS'
+    | 'WIKIPEDIA'
+    | 'MUSEUM'
+    | 'IIIF'
+    | 'OPENVERSE'
+    | 'UNKNOWN'
+    | string
+    | null;
   qualityTier?: 'LOW' | 'MEDIUM' | 'HIGH' | 'MASTER' | string | null;
   alt?: string | null;
   source?: string | null;
@@ -166,22 +174,25 @@ export function isRenderableRasterMedia(media: MediaLike | null | undefined): bo
   return !mime || mime.startsWith('image/');
 }
 
-export function isAbstractEntityType(entityOrType: EntityWithMediaLinks | string | null | undefined): boolean {
-  const type = typeof entityOrType === 'string'
-    ? entityOrType
-    : entityOrType?.type;
+export function isAbstractEntityType(
+  entityOrType: EntityWithMediaLinks | string | null | undefined,
+): boolean {
+  const type = typeof entityOrType === 'string' ? entityOrType : entityOrType?.type;
 
   return ABSTRACT_ENTITY_TYPES.has((type ?? '').toUpperCase());
 }
 
-export function selectPrimaryVisualMedia(entity: EntityWithMediaLinks | null | undefined): ResolvedMediaItem | MediaLike | null {
-  const resolvedPrimary = entity?.resolvedMedia?.primary
-    ?? entity?.resolvedMedia?.detail
-    ?? entity?.resolvedMedia?.card
-    ?? entity?.resolvedMedia?.hero
-    ?? entity?.resolvedMedia?.thumbnail
-    ?? entity?.resolvedMedia?.explorer3d
-    ?? null;
+export function selectPrimaryVisualMedia(
+  entity: EntityWithMediaLinks | null | undefined,
+): ResolvedMediaItem | MediaLike | null {
+  const resolvedPrimary =
+    entity?.resolvedMedia?.primary ??
+    entity?.resolvedMedia?.detail ??
+    entity?.resolvedMedia?.card ??
+    entity?.resolvedMedia?.hero ??
+    entity?.resolvedMedia?.thumbnail ??
+    entity?.resolvedMedia?.explorer3d ??
+    null;
 
   if (resolvedPrimary && isRenderableRasterMedia(resolvedPrimary)) {
     return resolvedPrimary;
@@ -217,9 +228,7 @@ export function resolveEntityMediaGallery(
   }
 
   const normalized = normalizeMediaLinks(entity);
-  const gallery = normalized
-    .filter((link) => link.role === 'GALLERY')
-    .map(toResolvedMediaItem);
+  const gallery = normalized.filter((link) => link.role === 'GALLERY').map(toResolvedMediaItem);
 
   if (gallery.length) {
     return gallery;
@@ -315,7 +324,11 @@ export function mediaObjectFit(
 }
 
 export function mediaObjectPosition(
-  media: Pick<ResolvedMediaItem, 'focalX' | 'focalY' | 'cropX' | 'cropY'> | MediaLike | null | undefined,
+  media:
+    | Pick<ResolvedMediaItem, 'focalX' | 'focalY' | 'cropX' | 'cropY'>
+    | MediaLike
+    | null
+    | undefined,
 ): string {
   const x = normalizeFocal(media?.cropX ?? media?.focalX);
   const y = normalizeFocal(media?.cropY ?? media?.focalY);
@@ -335,15 +348,20 @@ export function mediaTransform(
 }
 
 export function resolveMediaPresentation(
-  media: Pick<ResolvedMediaItem, 'displayMode' | 'focalX' | 'focalY' | 'cropX' | 'cropY' | 'cropZoom'> | MediaLike | null | undefined,
+  media:
+    | Pick<ResolvedMediaItem, 'displayMode' | 'focalX' | 'focalY' | 'cropX' | 'cropY' | 'cropZoom'>
+    | MediaLike
+    | null
+    | undefined,
   usage: MediaUsage = 'card',
 ): MediaPresentation {
   const focusX = normalizeFocal(media?.cropX ?? media?.focalX);
   const focusY = normalizeFocal(media?.cropY ?? media?.focalY);
   const zoomValue = media?.cropZoom;
-  const zoom = zoomValue === null || zoomValue === undefined || Number.isNaN(Number(zoomValue))
-    ? 1
-    : Math.min(3, Math.max(1, Number(zoomValue)));
+  const zoom =
+    zoomValue === null || zoomValue === undefined || Number.isNaN(Number(zoomValue))
+      ? 1
+      : Math.min(3, Math.max(1, Number(zoomValue)));
 
   return {
     src: mediaDisplayUrl(media),
@@ -425,9 +443,9 @@ function selectLegacyMediaLinkWithSource(
     const fallback = selectLegacyPrimary(links) ?? selectBestAvailable(links, entity?.type ?? null);
     return fallback
       ? {
-        link: fallback,
-        source: fallback.role === 'PRIMARY_LEGACY' ? 'explicit' : 'fallback',
-      }
+          link: fallback,
+          source: fallback.role === 'PRIMARY_LEGACY' ? 'explicit' : 'fallback',
+        }
       : null;
   }
 
@@ -442,19 +460,24 @@ function selectLegacyMediaLinkWithSource(
   }
 
   const fallback = PRIMARY_FALLBACK_USAGES.has(usage)
-    ? selectLegacyPrimary(links) ?? (BEST_AVAILABLE_FALLBACK_USAGES.has(usage) ? selectBestAvailable(links, entity?.type ?? null) : null)
+    ? (selectLegacyPrimary(links) ??
+      (BEST_AVAILABLE_FALLBACK_USAGES.has(usage)
+        ? selectBestAvailable(links, entity?.type ?? null)
+        : null))
     : BEST_AVAILABLE_FALLBACK_USAGES.has(usage)
       ? selectBestAvailable(links, entity?.type ?? null)
       : null;
   return fallback
     ? {
-      link: fallback,
-      source: 'fallback',
-    }
+        link: fallback,
+        source: 'fallback',
+      }
     : null;
 }
 
-function normalizeMediaLinks(entity: EntityWithMediaLinks | null | undefined): NormalizedMediaLink[] {
+function normalizeMediaLinks(
+  entity: EntityWithMediaLinks | null | undefined,
+): NormalizedMediaLink[] {
   return (entity?.mediaLinks ?? [])
     .filter((link): link is MediaLinkLike => !!link?.media)
     .map((link) => ({
@@ -477,9 +500,7 @@ function normalizeDisplayMode(value: string | null | undefined): 'COVER' | 'CONT
   }
 
   const normalized = value.toUpperCase();
-  return normalized === 'COVER' || normalized === 'CONTAIN'
-    ? normalized
-    : null;
+  return normalized === 'COVER' || normalized === 'CONTAIN' ? normalized : null;
 }
 
 function normalizeMediaUrlValue(value: string | null | undefined): string | null {
@@ -572,14 +593,17 @@ function firstByRole(links: NormalizedMediaLink[], role: string): NormalizedMedi
 
 function selectLegacyPrimary(links: NormalizedMediaLink[]): NormalizedMediaLink | null {
   return (
-    links.find((link) => link.role === 'PRIMARY_LEGACY' && link.isPrimary)
-    ?? links.find((link) => link.role === 'PRIMARY_LEGACY')
-    ?? links.find((link) => link.isPrimary)
-    ?? null
+    links.find((link) => link.role === 'PRIMARY_LEGACY' && link.isPrimary) ??
+    links.find((link) => link.role === 'PRIMARY_LEGACY') ??
+    links.find((link) => link.isPrimary) ??
+    null
   );
 }
 
-function selectBestAvailable(links: NormalizedMediaLink[], entityType: string | null): NormalizedMediaLink | null {
+function selectBestAvailable(
+  links: NormalizedMediaLink[],
+  entityType: string | null,
+): NormalizedMediaLink | null {
   const byQuality = [...links].sort((a, b) => compareMediaQuality(a.media, b.media, entityType));
   return byQuality[0] ?? null;
 }
@@ -630,7 +654,10 @@ function compareMediaQuality(a: MediaLike, b: MediaLike, entityType: string | nu
     else if (pixels >= 3_000_000) score += 5;
     else if (pixels >= 1_000_000) score += 3;
 
-    if (entityType === 'PLACE' && (alt.includes('logo') || alt.includes('identidad visual') || url.includes('logo'))) {
+    if (
+      entityType === 'PLACE' &&
+      (alt.includes('logo') || alt.includes('identidad visual') || url.includes('logo'))
+    ) {
       score -= 20;
     }
 
@@ -642,8 +669,10 @@ function compareMediaQuality(a: MediaLike, b: MediaLike, entityType: string | nu
 
 function isCommonsWikiRedirect(url: string): boolean {
   const normalized = url.toLowerCase();
-  return normalized.includes('commons.wikimedia.org/wiki/special:redirect/file/')
-    || normalized.includes('commons.wikimedia.org/wiki/special:filepath/');
+  return (
+    normalized.includes('commons.wikimedia.org/wiki/special:redirect/file/') ||
+    normalized.includes('commons.wikimedia.org/wiki/special:filepath/')
+  );
 }
 
 function buildAbstractEntityPoster(entity: EntityWithMediaLinks): string {
@@ -689,7 +718,9 @@ function buildAbstractEntityPoster(entity: EntityWithMediaLinks): string {
         ${summary ? `<text x="0" y="236" fill="${theme.body}" font-family="Helvetica, Arial, sans-serif" font-size="38">${escapeSvg(summary)}</text>` : ''}
       </g>
     </svg>
-  `.replace(/\s+/g, ' ').trim();
+  `
+    .replace(/\s+/g, ' ')
+    .trim();
 
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -698,16 +729,88 @@ function getAbstractTheme(type: string, title: string) {
   const seed = Array.from(title).reduce((sum, char) => sum + char.charCodeAt(0), 0);
   const families = {
     CONCEPT: [
-      { bgStart: '#08121e', bgEnd: '#16324f', glowA: '#34d399', glowB: '#38bdf8', line: '#c7f9cc', lineSoft: '#bae6fd', frame: '#86efac', eyebrow: '#86efac', title: '#f8fafc', meta: '#cbd5e1', body: '#dbeafe' },
-      { bgStart: '#20102f', bgEnd: '#35244a', glowA: '#f472b6', glowB: '#a78bfa', line: '#fbcfe8', lineSoft: '#ddd6fe', frame: '#f9a8d4', eyebrow: '#f9a8d4', title: '#fdf4ff', meta: '#e9d5ff', body: '#f5d0fe' },
+      {
+        bgStart: '#08121e',
+        bgEnd: '#16324f',
+        glowA: '#34d399',
+        glowB: '#38bdf8',
+        line: '#c7f9cc',
+        lineSoft: '#bae6fd',
+        frame: '#86efac',
+        eyebrow: '#86efac',
+        title: '#f8fafc',
+        meta: '#cbd5e1',
+        body: '#dbeafe',
+      },
+      {
+        bgStart: '#20102f',
+        bgEnd: '#35244a',
+        glowA: '#f472b6',
+        glowB: '#a78bfa',
+        line: '#fbcfe8',
+        lineSoft: '#ddd6fe',
+        frame: '#f9a8d4',
+        eyebrow: '#f9a8d4',
+        title: '#fdf4ff',
+        meta: '#e9d5ff',
+        body: '#f5d0fe',
+      },
     ],
     MOVEMENT: [
-      { bgStart: '#111827', bgEnd: '#312e81', glowA: '#f59e0b', glowB: '#ef4444', line: '#fde68a', lineSoft: '#fecaca', frame: '#fbbf24', eyebrow: '#fbbf24', title: '#fffbeb', meta: '#fde68a', body: '#ffedd5' },
-      { bgStart: '#132a13', bgEnd: '#31572c', glowA: '#22c55e', glowB: '#84cc16', line: '#d8f3dc', lineSoft: '#bef264', frame: '#86efac', eyebrow: '#86efac', title: '#f7fee7', meta: '#d9f99d', body: '#ecfccb' },
+      {
+        bgStart: '#111827',
+        bgEnd: '#312e81',
+        glowA: '#f59e0b',
+        glowB: '#ef4444',
+        line: '#fde68a',
+        lineSoft: '#fecaca',
+        frame: '#fbbf24',
+        eyebrow: '#fbbf24',
+        title: '#fffbeb',
+        meta: '#fde68a',
+        body: '#ffedd5',
+      },
+      {
+        bgStart: '#132a13',
+        bgEnd: '#31572c',
+        glowA: '#22c55e',
+        glowB: '#84cc16',
+        line: '#d8f3dc',
+        lineSoft: '#bef264',
+        frame: '#86efac',
+        eyebrow: '#86efac',
+        title: '#f7fee7',
+        meta: '#d9f99d',
+        body: '#ecfccb',
+      },
     ],
     PERIOD: [
-      { bgStart: '#0f172a', bgEnd: '#1e293b', glowA: '#60a5fa', glowB: '#c084fc', line: '#bfdbfe', lineSoft: '#ddd6fe', frame: '#93c5fd', eyebrow: '#93c5fd', title: '#eff6ff', meta: '#cbd5e1', body: '#dbeafe' },
-      { bgStart: '#3b0764', bgEnd: '#1f2937', glowA: '#f59e0b', glowB: '#ec4899', line: '#fef08a', lineSoft: '#f9a8d4', frame: '#f0abfc', eyebrow: '#f0abfc', title: '#faf5ff', meta: '#f5d0fe', body: '#fde68a' },
+      {
+        bgStart: '#0f172a',
+        bgEnd: '#1e293b',
+        glowA: '#60a5fa',
+        glowB: '#c084fc',
+        line: '#bfdbfe',
+        lineSoft: '#ddd6fe',
+        frame: '#93c5fd',
+        eyebrow: '#93c5fd',
+        title: '#eff6ff',
+        meta: '#cbd5e1',
+        body: '#dbeafe',
+      },
+      {
+        bgStart: '#3b0764',
+        bgEnd: '#1f2937',
+        glowA: '#f59e0b',
+        glowB: '#ec4899',
+        line: '#fef08a',
+        lineSoft: '#f9a8d4',
+        frame: '#f0abfc',
+        eyebrow: '#f0abfc',
+        title: '#faf5ff',
+        meta: '#f5d0fe',
+        body: '#fde68a',
+      },
     ],
   } as const;
 

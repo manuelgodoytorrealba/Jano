@@ -15,6 +15,7 @@ function createNode(overrides: Partial<GraphRenderedNode>): GraphRenderedNode {
     transform: 'translate(0 0)',
     selected: false,
     muted: false,
+    depthTier: 'mid',
     size: 22,
     haloSize: 34,
     shapePath: '',
@@ -51,6 +52,7 @@ function createEdge(overrides: Partial<GraphRenderedEdge>): GraphRenderedEdge {
     path: '',
     labelPoint: { x: 0, y: 0 },
     muted: false,
+    depthTier: 'mid',
     relationVisual: {
       label: 'Relacionado con',
       color: '#94a3b8',
@@ -86,8 +88,8 @@ describe('graph-label-layout', () => {
       scale: 1,
     });
 
-    expect(visible.center).toBe(true);
-    expect(visible.neighbor).toBeUndefined();
+    expect(visible['center']).toBe(true);
+    expect(visible['neighbor']).toBeUndefined();
   });
 
   it('drops a lower-priority edge label when it collides with an occupied node label region', () => {

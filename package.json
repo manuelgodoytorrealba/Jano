@@ -1,6 +1,10 @@
 {
   "name": "jano",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "backend/api"
+  ],
   "packageManager": "npm@10.9.4",
   "engines": {
     "node": "22.14.0",
@@ -11,6 +15,15 @@
     "npm": "10.9.4"
   },
   "scripts": {
+    "postinstall": "npm run prisma:generate",
+    "prepare": "husky",
+    "lint": "eslint frontend/src backend/api/src backend/api/test backend/api/scripts scripts",
+    "lint:fix": "npm run lint -- --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm test --workspaces --if-present -- --watch=false",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run format:check",
     "dev": "npm run db:up && concurrently -n BACKEND,FRONTEND -c blue,green \"npm run backend:dev\" \"npm run frontend:dev\"",
     "dev:full": "npm run docker:up",
     "dev:db": "npm run db:up",
@@ -21,9 +34,9 @@
     "docker:logs": "docker compose -f infra/docker-compose.yml logs -f",
     "db:up": "docker compose -f infra/docker-compose.yml up -d db adminer",
     "db:down": "docker compose -f infra/docker-compose.yml stop db adminer",
-    "backend:install": "npm --prefix backend/api ci",
-    "frontend:install": "npm --prefix frontend ci",
-    "setup:local": "npm install && npm run backend:install && npm run frontend:install",
+    "backend:install": "npm install --workspace backend/api",
+    "frontend:install": "npm install --workspace frontend",
+    "setup:local": "npm install",
     "backend:dev": "npm --prefix backend/api run start:dev",
     "frontend:dev": "npm --prefix frontend run start",
     "backend:build": "npm --prefix backend/api run build",
@@ -37,6 +50,22 @@
     "mobile": "node scripts/mobile-dev.mjs"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "@eslint/js": "^9.39.3",
+    "angular-eslint": "^21.0.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.3",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "typescript-eslint": "^8.56.1"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,html,scss,css,md,yml,yaml}": "prettier --write"
   }
 }

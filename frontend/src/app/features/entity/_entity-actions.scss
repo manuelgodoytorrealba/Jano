@@ -2,8 +2,7 @@
   min-height: 44px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.62);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.26));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.26));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.65),
     0 8px 18px rgba(17, 24, 39, 0.06);
@@ -18,8 +17,7 @@
 }
 
 .entity-action--primary {
-  background:
-    linear-gradient(180deg, rgba(24, 27, 38, 0.98), rgba(10, 12, 18, 0.96));
+  background: linear-gradient(180deg, rgba(24, 27, 38, 0.98), rgba(10, 12, 18, 0.96));
   border-color: rgba(255, 255, 255, 0.12);
   color: #fff;
   box-shadow:
@@ -34,8 +32,7 @@
 
 .entity-action--danger {
   border-color: rgba(216, 97, 97, 0.28);
-  background:
-    linear-gradient(180deg, rgba(255, 242, 242, 0.58), rgba(255, 255, 255, 0.24));
+  background: linear-gradient(180deg, rgba(255, 242, 242, 0.58), rgba(255, 255, 255, 0.24));
   color: rgba(168, 36, 36, 0.92);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.68),

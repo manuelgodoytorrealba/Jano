@@ -22,11 +22,39 @@ export type SearchIntentResult = {
 };
 
 const STOPWORDS = new Set([
-  'a', 'al', 'and', 'arte', 'art', 'box', 'con', 'de', 'del', 'el', 'en', 'for', 'la', 'las', 'los', 'of', 'para',
-  'por', 'sobre', 'the', 'un', 'una', 'with', 'wooden', 'y',
+  'a',
+  'al',
+  'and',
+  'arte',
+  'art',
+  'box',
+  'con',
+  'de',
+  'del',
+  'el',
+  'en',
+  'for',
+  'la',
+  'las',
+  'los',
+  'of',
+  'para',
+  'por',
+  'sobre',
+  'the',
+  'un',
+  'una',
+  'with',
+  'wooden',
+  'y',
 ]);
 
-const DIRECT_REWRITES: Array<{ match: RegExp; replacement: string; reason: string; signals: SearchIntentSignal[] }> = [
+const DIRECT_REWRITES: Array<{
+  match: RegExp;
+  replacement: string;
+  reason: string;
+  signals: SearchIntentSignal[];
+}> = [
   {
     match: /\bjimikubako\b/i,
     replacement: 'himitsubako japanese puzzle box',
@@ -47,20 +75,50 @@ const TERM_EXPANSIONS: Record<string, { additions: string[]; signals?: SearchInt
   wooden: { additions: ['madera', 'wood'], signals: [{ kind: 'material', value: 'wood' }] },
   caja: { additions: ['box', 'objeto'], signals: [{ kind: 'object', value: 'box' }] },
   box: { additions: ['caja', 'objeto'], signals: [{ kind: 'object', value: 'box' }] },
-  rompecabezas: { additions: ['puzzle', 'trick'], signals: [{ kind: 'mechanism', value: 'puzzle' }] },
-  puzzle: { additions: ['rompecabezas', 'trick'], signals: [{ kind: 'mechanism', value: 'puzzle' }] },
-  secreto: { additions: ['secret', 'hidden'], signals: [{ kind: 'mechanism', value: 'hidden opening' }] },
-  secreta: { additions: ['secret', 'hidden'], signals: [{ kind: 'mechanism', value: 'hidden opening' }] },
-  secret: { additions: ['secreto', 'hidden'], signals: [{ kind: 'mechanism', value: 'hidden opening' }] },
-  hidden: { additions: ['secret', 'oculto'], signals: [{ kind: 'mechanism', value: 'hidden opening' }] },
+  rompecabezas: {
+    additions: ['puzzle', 'trick'],
+    signals: [{ kind: 'mechanism', value: 'puzzle' }],
+  },
+  puzzle: {
+    additions: ['rompecabezas', 'trick'],
+    signals: [{ kind: 'mechanism', value: 'puzzle' }],
+  },
+  secreto: {
+    additions: ['secret', 'hidden'],
+    signals: [{ kind: 'mechanism', value: 'hidden opening' }],
+  },
+  secreta: {
+    additions: ['secret', 'hidden'],
+    signals: [{ kind: 'mechanism', value: 'hidden opening' }],
+  },
+  secret: {
+    additions: ['secreto', 'hidden'],
+    signals: [{ kind: 'mechanism', value: 'hidden opening' }],
+  },
+  hidden: {
+    additions: ['secret', 'oculto'],
+    signals: [{ kind: 'mechanism', value: 'hidden opening' }],
+  },
   urinal: { additions: ['urinario', 'porcelain'], signals: [{ kind: 'object', value: 'urinal' }] },
   urinario: { additions: ['urinal', 'porcelain'], signals: [{ kind: 'object', value: 'urinal' }] },
   porcelana: { additions: ['porcelain'], signals: [{ kind: 'material', value: 'porcelain' }] },
   porcelain: { additions: ['porcelana'], signals: [{ kind: 'material', value: 'porcelain' }] },
-  museo: { additions: ['museum', 'objeto'], signals: [{ kind: 'concept', value: 'museum object' }] },
-  museum: { additions: ['museo', 'object'], signals: [{ kind: 'concept', value: 'museum object' }] },
-  artesania: { additions: ['craft', 'artesanal'], signals: [{ kind: 'discipline', value: 'craft' }] },
-  craft: { additions: ['artesania', 'artesanal'], signals: [{ kind: 'discipline', value: 'craft' }] },
+  museo: {
+    additions: ['museum', 'objeto'],
+    signals: [{ kind: 'concept', value: 'museum object' }],
+  },
+  museum: {
+    additions: ['museo', 'object'],
+    signals: [{ kind: 'concept', value: 'museum object' }],
+  },
+  artesania: {
+    additions: ['craft', 'artesanal'],
+    signals: [{ kind: 'discipline', value: 'craft' }],
+  },
+  craft: {
+    additions: ['artesania', 'artesanal'],
+    signals: [{ kind: 'discipline', value: 'craft' }],
+  },
 };
 
 @Injectable()
@@ -101,7 +159,13 @@ export class SearchIntentService {
     }
 
     if (expandedTerms.size > significantTerms.length) {
-      this.pushVariant(variants, seen, Array.from(expandedTerms).join(' '), 'expanded vocabulary', 0.9);
+      this.pushVariant(
+        variants,
+        seen,
+        Array.from(expandedTerms).join(' '),
+        'expanded vocabulary',
+        0.9,
+      );
     }
 
     return {
@@ -114,7 +178,13 @@ export class SearchIntentService {
     };
   }
 
-  private pushVariant(target: SearchQueryVariant[], seen: Set<string>, query: string, reason: string, weight: number) {
+  private pushVariant(
+    target: SearchQueryVariant[],
+    seen: Set<string>,
+    query: string,
+    reason: string,
+    weight: number,
+  ) {
     const normalized = query.trim();
     if (!normalized || seen.has(normalized)) {
       return;

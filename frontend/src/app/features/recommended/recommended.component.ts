@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { GraphResponseDto } from '../graph/graph.models';
@@ -56,7 +64,9 @@ export class RecommendedComponent {
     }
 
     const nodeIds = new Set(nodes.map((node) => node.id));
-    const edges = page.graph.edges.filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target));
+    const edges = page.graph.edges.filter(
+      (edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target),
+    );
 
     return {
       centerId: page.selectedEntity.id,
@@ -106,19 +116,18 @@ export class RecommendedComponent {
   constructor() {
     this.seo.setPageMeta({
       title: 'Curated Discovery | JANO',
-      description: 'A lightweight editorial view of the JANO graph built around one selected entity and its strongest relationships.',
+      description:
+        'A lightweight editorial view of the JANO graph built around one selected entity and its strongest relationships.',
       path: '/curated',
       image: '/assets/home/concept.jpg',
     });
 
-    this.route.queryParamMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        const slug = (params.get('entity') ?? '').trim() || null;
-        if (slug !== this.selectedEntitySlug()) {
-          this.selectedEntitySlug.set(slug);
-        }
-      });
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const slug = (params.get('entity') ?? '').trim() || null;
+      if (slug !== this.selectedEntitySlug()) {
+        this.selectedEntitySlug.set(slug);
+      }
+    });
 
     effect(() => {
       this.i18n.locale();
@@ -170,7 +179,8 @@ export class RecommendedComponent {
     this.loading.set(true);
     const requestId = ++this.requestId;
 
-    this.api.page(entity ?? undefined)
+    this.api
+      .page(entity ?? undefined)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (page) => {
@@ -191,7 +201,10 @@ export class RecommendedComponent {
 
             if (preserved.length > 1) {
               if (!preserved.includes(page.selectedEntity.id)) {
-                return [page.selectedEntity.id, ...preserved.filter((id) => id !== page.selectedEntity.id)].slice(0, 5);
+                return [
+                  page.selectedEntity.id,
+                  ...preserved.filter((id) => id !== page.selectedEntity.id),
+                ].slice(0, 5);
               }
               return preserved.slice(0, 5);
             }

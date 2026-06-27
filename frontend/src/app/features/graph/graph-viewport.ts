@@ -17,7 +17,11 @@ export function graphViewportTransform(viewport: GraphViewport): string {
   return `matrix(${viewport.scale} 0 0 ${viewport.scale} ${viewport.x} ${viewport.y})`;
 }
 
-export function panGraphViewport(viewport: GraphViewport, deltaX: number, deltaY: number): GraphViewport {
+export function panGraphViewport(
+  viewport: GraphViewport,
+  deltaX: number,
+  deltaY: number,
+): GraphViewport {
   return {
     ...viewport,
     x: viewport.x + deltaX,
@@ -75,7 +79,11 @@ export function fitGraphBounds(
 ): GraphViewport {
   const usableWidth = Math.max(size.width - padding * 2, 1);
   const usableHeight = Math.max(size.height - padding * 2, 1);
-  const scale = clamp(Math.min(usableWidth / bounds.width, usableHeight / bounds.height), GRAPH_MIN_SCALE, 1.5);
+  const scale = clamp(
+    Math.min(usableWidth / bounds.width, usableHeight / bounds.height),
+    GRAPH_MIN_SCALE,
+    1.5,
+  );
 
   return {
     scale,

@@ -87,7 +87,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(8, 8, 8, 0.1), rgba(8, 8, 8, 0.84)), var(--trend-image, var(--pick-image)) center/cover;
+  background:
+    linear-gradient(180deg, rgba(8, 8, 8, 0.1), rgba(8, 8, 8, 0.84)),
+    var(--trend-image, var(--pick-image)) center/cover;
 }
 
 .app-chrome__trend-card-copy,
@@ -163,9 +165,78 @@
   stroke-linejoin: round;
 }
 
+.app-chrome__search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 250, 244, 0.82);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.app-chrome__search-input.ds-input:has(~ .app-chrome__search-clear) {
+  padding-right: 44px;
+}
+.app-chrome__search-suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  display: grid;
+  gap: 0.28rem;
+  padding: 0.45rem;
+  border-radius: 14px;
+  z-index: 20;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.28);
+}
+.app-chrome__search-state,
+.app-chrome__suggestion {
+  border-radius: 10px;
+  padding: 0.62rem 0.7rem;
+}
+.app-chrome__search-state {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+.app-chrome__suggestion {
+  display: grid;
+  gap: 0.12rem;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.app-chrome__suggestion:hover,
+.app-chrome__suggestion:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+.app-chrome__suggestion-type {
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.app-chrome__suggestion-title {
+  color: rgba(255, 250, 244, 0.96);
+  font-size: 0.96rem;
+  font-weight: 700;
+}
+.app-chrome__suggestion--search {
+  margin-top: 0.12rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 250, 244, 0.9);
+  font-weight: 700;
+}
 
-.app-chrome__search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:0;border-radius:999px;background:rgba(255,255,255,.1);color:rgba(255,250,244,.82);cursor:pointer;font-size:1.1rem;line-height:1}.app-chrome__search-input.ds-input:has(~.app-chrome__search-clear){padding-right:44px}.app-chrome__search-suggestions{position:absolute;top:calc(100% + 8px);left:0;right:0;display:grid;gap:.28rem;padding:.45rem;border-radius:14px;z-index:20;box-shadow:0 22px 50px rgba(0,0,0,.28)}.app-chrome__search-state,.app-chrome__suggestion{border-radius:10px;padding:.62rem .7rem}.app-chrome__search-state{color:var(--color-text-muted);font-size:.9rem}.app-chrome__suggestion{display:grid;gap:.12rem;width:100%;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}.app-chrome__suggestion:hover,.app-chrome__suggestion:focus-visible{background:rgba(255,255,255,.12);outline:none}.app-chrome__suggestion-type{color:var(--color-text-muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em}.app-chrome__suggestion-title{color:rgba(255,250,244,.96);font-size:.96rem;font-weight:700}.app-chrome__suggestion--search{margin-top:.12rem;border-top:1px solid rgba(255,255,255,.1);color:rgba(255,250,244,.9);font-weight:700}
-
-
-
-.app-chrome__suggestion.is-active{background:rgba(255,255,255,.16);}
+.app-chrome__suggestion.is-active {
+  background: rgba(255, 255, 255, 0.16);
+}

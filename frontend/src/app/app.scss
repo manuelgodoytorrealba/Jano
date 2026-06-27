@@ -19,10 +19,12 @@
   --app-background-overlay:
     radial-gradient(circle at 50% 36%, var(--app-background-top-light), transparent 26%),
     radial-gradient(circle at 50% 100%, var(--app-background-bottom-warm), transparent 24%),
-    linear-gradient(180deg,
+    linear-gradient(
+      180deg,
       var(--app-background-shade-0),
       var(--app-background-shade-mid) 38%,
-      var(--app-background-shade-100) 100%);
+      var(--app-background-shade-100) 100%
+    );
 
   min-height: var(--app-viewport-height);
   position: relative;
@@ -46,7 +48,8 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: blur(var(--app-background-blur)) saturate(var(--app-background-saturate)) brightness(var(--app-background-brightness));
+  filter: blur(var(--app-background-blur)) saturate(var(--app-background-saturate))
+    brightness(var(--app-background-brightness));
   opacity: var(--app-background-opacity);
   transform: scale(var(--app-background-scale));
 }
@@ -64,13 +67,13 @@
   position: relative;
   z-index: 0;
   min-height: var(--app-viewport-height);
-  padding:
-    var(--app-chrome-top)
+  padding: var(--app-chrome-top)
     calc(var(--app-safe-right) + var(--app-shell-gap) + var(--app-rail-width) + 18px)
-    var(--app-chrome-bottom)
-    calc(var(--app-safe-left) + var(--app-shell-gap));
+    var(--app-chrome-bottom) calc(var(--app-safe-left) + var(--app-shell-gap));
   overflow: visible;
-  transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+  transition:
+    opacity 220ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .app-route-artwork-overlay {
@@ -84,10 +87,10 @@
   background: rgba(18, 18, 22, 0.22);
   pointer-events: none;
   transition:
-    left 460ms cubic-bezier(.22, 1, .36, 1),
-    top 460ms cubic-bezier(.22, 1, .36, 1),
-    width 460ms cubic-bezier(.22, 1, .36, 1),
-    height 460ms cubic-bezier(.22, 1, .36, 1),
+    left 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 460ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 220ms ease;
 }
 
@@ -108,7 +111,9 @@ body.jano-artwork-route-active .entity-topbar__subtitle,
 body.jano-artwork-route-active .entity-topbar__meta {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+  transition:
+    opacity 220ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body.jano-artwork-route-title .entity-header__title,
@@ -121,7 +126,9 @@ body.jano-artwork-route-meta .entity-topbar__meta {
 body.jano-artwork-route-active .entity-explorer__workspace-deck {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 260ms ease, transform 320ms cubic-bezier(.22, 1, .36, 1);
+  transition:
+    opacity 260ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body.jano-artwork-route-controls .entity-explorer__workspace-deck {
@@ -135,7 +142,9 @@ body.jano-artwork-route-active #imageStage .image-overlay-bar,
 body.jano-artwork-route-active #imageStage .image-meta-dock,
 body.jano-artwork-route-active .explorer-graph-pane {
   opacity: 0;
-  transition: opacity 240ms ease, transform 320ms cubic-bezier(.22, 1, .36, 1);
+  transition:
+    opacity 240ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body.jano-artwork-route-active .explorer-graph-pane {
@@ -164,7 +173,9 @@ body.jano-artwork-route-graph .explorer-graph-pane {
 
 .app-auth-shell {
   min-height: var(--app-viewport-height);
-  transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+  transition:
+    opacity 220ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .app-auth-shell.is-transitioning {
@@ -175,10 +186,6 @@ body.jano-artwork-route-graph .explorer-graph-pane {
 /* =========================
    🔥 AUTH MODE (LOGIN)
    ========================= */
-
-
-
-
 
 /* =========================
    MODOS EXISTENTES (NO TOCAR)
@@ -221,7 +228,9 @@ body.jano-artwork-route-graph .explorer-graph-pane {
   .app-shell {
     --app-chrome-top: calc(var(--app-safe-top) + 122px);
     --app-chrome-bottom: calc(var(--app-safe-bottom) + 88px);
-    --app-content-height: calc(var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom));
+    --app-content-height: calc(
+      var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom)
+    );
     height: var(--app-viewport-height);
     overflow: hidden;
     --app-background-top-light: rgba(255, 255, 255, 0.018);
@@ -233,11 +242,8 @@ body.jano-artwork-route-graph .explorer-graph-pane {
   }
 
   .app-shell__content {
-    padding:
-      var(--app-chrome-top)
-      calc(var(--app-safe-right) + var(--app-shell-gap))
-      var(--app-chrome-bottom)
-      calc(var(--app-safe-left) + var(--app-shell-gap));
+    padding: var(--app-chrome-top) calc(var(--app-safe-right) + var(--app-shell-gap))
+      var(--app-chrome-bottom) calc(var(--app-safe-left) + var(--app-shell-gap));
     min-height: 100%;
     height: 100%;
     overflow-x: hidden;
@@ -251,26 +257,27 @@ body.jano-artwork-route-graph .explorer-graph-pane {
   }
 
   .app-shell--detail .app-shell__content {
-    padding:
-      calc(var(--app-safe-top) + 0.45rem)
-      calc(var(--app-safe-right) + var(--app-shell-gap))
-      calc(var(--app-safe-bottom) + 88px)
-      calc(var(--app-safe-left) + var(--app-shell-gap));
+    padding: calc(var(--app-safe-top) + 0.45rem) calc(var(--app-safe-right) + var(--app-shell-gap))
+      calc(var(--app-safe-bottom) + 88px) calc(var(--app-safe-left) + var(--app-shell-gap));
   }
 
   .app-shell::after {
     background:
       radial-gradient(ellipse at 50% 52%, transparent 54%, rgba(10, 10, 10, 0.06) 100%),
-      linear-gradient(180deg,
+      linear-gradient(
+        180deg,
         rgba(10, 10, 10, 0.06) 0%,
         transparent 12%,
         transparent 88%,
-        rgba(10, 10, 10, 0.08) 100%),
+        rgba(10, 10, 10, 0.08) 100%
+      ),
       radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.012), transparent 24%),
       radial-gradient(circle at 50% 100%, rgba(214, 183, 131, 0.04), transparent 28%),
-      linear-gradient(180deg,
+      linear-gradient(
+        180deg,
         var(--app-background-shade-0),
         var(--app-background-shade-mid) 38%,
-        var(--app-background-shade-100) 100%);
+        var(--app-background-shade-100) 100%
+      );
   }
 }

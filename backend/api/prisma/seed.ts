@@ -83,7 +83,9 @@ function inferMimeType(url: string): string {
   return 'image/jpeg';
 }
 
-function inferMediaProvider(url: string): 'WIKIMEDIA_COMMONS' | 'WIKIPEDIA' | 'MUSEUM' | 'IIIF' | 'OPENVERSE' | 'UNKNOWN' {
+function inferMediaProvider(
+  url: string,
+): 'WIKIMEDIA_COMMONS' | 'WIKIPEDIA' | 'MUSEUM' | 'IIIF' | 'OPENVERSE' | 'UNKNOWN' {
   if (
     url.includes('upload.wikimedia.org/wikipedia/commons/') ||
     url.includes('commons.wikimedia.org/wiki/file:') ||
@@ -96,7 +98,11 @@ function inferMediaProvider(url: string): 'WIKIMEDIA_COMMONS' | 'WIKIPEDIA' | 'M
     return 'WIKIPEDIA';
   }
 
-  if (url.includes('/iiif/') || url.includes('/iiif-img/') || url.includes('/full/full/0/default.')) {
+  if (
+    url.includes('/iiif/') ||
+    url.includes('/iiif-img/') ||
+    url.includes('/full/full/0/default.')
+  ) {
     return 'IIIF';
   }
 
@@ -360,164 +366,249 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   'siglo-xix': {
     title: '19th Century',
     shortDescription: 'Historical and artistic period between 1801 and 1900.',
-    essay: 'A period shaped by political change, industrialization, Romanticism, Realism, and the rise of new modern sensibilities.',
+    essay:
+      'A period shaped by political change, industrialization, Romanticism, Realism, and the rise of new modern sensibilities.',
     period: { definition: 'Historical and cultural period spanning 1801 to 1900.' },
   },
   'siglo-xx': {
     title: '20th Century',
     shortDescription: 'A defining period for the avant-garde and modern art.',
-    essay: 'The 20th century brought together the historical avant-garde, world wars, technological transformation, and radical new forms of representation.',
+    essay:
+      'The 20th century brought together the historical avant-garde, world wars, technological transformation, and radical new forms of representation.',
     period: { definition: 'Historical and cultural period spanning 1901 to 2000.' },
   },
   'siglo-xxi': {
     title: '21st Century',
     shortDescription: 'A global and digital contemporary period.',
-    essay: 'A period marked by networks, digitization, the global circulation of images, and new models of cultural production.',
+    essay:
+      'A period marked by networks, digitization, the global circulation of images, and new models of cultural production.',
     period: { definition: 'Contemporary period from 2001 to the present.' },
   },
   romanticismo: {
     title: 'Romanticism',
-    shortDescription: 'A movement that emphasizes emotion, subjectivity, intensity, and historical experience.',
-    essay: 'Romanticism privileges emotion, imagination, the sublime, drama, and an intense relationship between art, history, and human experience.',
+    shortDescription:
+      'A movement that emphasizes emotion, subjectivity, intensity, and historical experience.',
+    essay:
+      'Romanticism privileges emotion, imagination, the sublime, drama, and an intense relationship between art, history, and human experience.',
   },
   cubismo: {
     title: 'Cubism',
     shortDescription: 'An avant-garde movement that fragments and reorganizes representation.',
-    essay: 'Cubism reformulates representation through the fragmentation of the picture plane and the coexistence of multiple viewpoints.',
+    essay:
+      'Cubism reformulates representation through the fragmentation of the picture plane and the coexistence of multiple viewpoints.',
   },
   surrealismo: {
     title: 'Surrealism',
-    shortDescription: 'A movement that explores dreams, the unconscious, desire, and irrationality.',
-    essay: 'Surrealism explores free association, dream imagery, and unexpected relationships between objects, time, and memory.',
+    shortDescription:
+      'A movement that explores dreams, the unconscious, desire, and irrationality.',
+    essay:
+      'Surrealism explores free association, dream imagery, and unexpected relationships between objects, time, and memory.',
   },
   'arte-moderno': {
     title: 'Modern Art',
     shortDescription: 'A broad field of artistic practices that redefined visual modernity.',
-    essay: 'Modern art gathers processes of formal rupture, material experimentation, and new ways of seeing the world.',
+    essay:
+      'Modern art gathers processes of formal rupture, material experimentation, and new ways of seeing the world.',
   },
   'arte-contemporaneo': {
     title: 'Contemporary Art',
     shortDescription: 'Contemporary, hybrid, and conceptual artistic practices.',
-    essay: 'Contemporary art incorporates installation, performance, expanded sculpture, institutional critique, and a strong conceptual dimension.',
+    essay:
+      'Contemporary art incorporates installation, performance, expanded sculpture, institutional critique, and a strong conceptual dimension.',
   },
   tiempo: {
     title: 'Time',
     shortDescription: 'Duration, change, memory, and finitude.',
-    essay: 'In art, time can appear as duration, ruin, repetition, waiting, simultaneity, or materialized memory.',
-    concept: { definition: 'A concept tied to duration, change, past, present, future, and historical experience.' },
+    essay:
+      'In art, time can appear as duration, ruin, repetition, waiting, simultaneity, or materialized memory.',
+    concept: {
+      definition:
+        'A concept tied to duration, change, past, present, future, and historical experience.',
+    },
   },
   memoria: {
     title: 'Memory',
     shortDescription: 'Individual and collective remembrance, archive, and trace.',
-    essay: 'Memory articulates identity, history, trauma, archives, and the persistence of images or experiences.',
-    concept: { definition: 'A concept linked to remembrance, identity, archives, and the construction of the past.' },
+    essay:
+      'Memory articulates identity, history, trauma, archives, and the persistence of images or experiences.',
+    concept: {
+      definition:
+        'A concept linked to remembrance, identity, archives, and the construction of the past.',
+    },
   },
   guerra: {
     title: 'War',
     shortDescription: 'Organized violence, historical conflict, and devastation.',
-    essay: 'In art, war appears as trauma, denunciation, destruction, heroism, suffering, and political memory.',
-    concept: { definition: 'A concept associated with armed conflict, violence, trauma, and historical memory.' },
+    essay:
+      'In art, war appears as trauma, denunciation, destruction, heroism, suffering, and political memory.',
+    concept: {
+      definition:
+        'A concept associated with armed conflict, violence, trauma, and historical memory.',
+    },
   },
   identidad: {
     title: 'Identity',
     shortDescription: 'The symbolic construction of the self, the body, and belonging.',
-    essay: 'Identity runs through self-representation, gender, nation, personal memory, and the representation of the body.',
-    concept: { definition: 'A concept associated with subjectivity, self-representation, belonging, and difference.' },
+    essay:
+      'Identity runs through self-representation, gender, nation, personal memory, and the representation of the body.',
+    concept: {
+      definition:
+        'A concept associated with subjectivity, self-representation, belonging, and difference.',
+    },
   },
   cuerpo: {
     title: 'Body',
     shortDescription: 'Material presence, gesture, vulnerability, and representation.',
-    essay: 'The body is support, matter, symbol, political territory, and a form of presence in space.',
-    concept: { definition: 'A concept tied to living matter, representation, physical presence, and political dimension.' },
+    essay:
+      'The body is support, matter, symbol, political territory, and a form of presence in space.',
+    concept: {
+      definition:
+        'A concept tied to living matter, representation, physical presence, and political dimension.',
+    },
   },
   dolor: {
     title: 'Pain',
     shortDescription: 'Physical, emotional, and symbolic suffering.',
     essay: 'In art, pain is linked to trauma, loss, vulnerability, illness, and resistance.',
-    concept: { definition: 'A concept that points to suffering, wounds, loss, and vulnerable experience.' },
+    concept: {
+      definition: 'A concept that points to suffering, wounds, loss, and vulnerable experience.',
+    },
   },
   maternidad: {
     title: 'Motherhood',
     shortDescription: 'Bond, care, origin, ambivalence, and affective memory.',
-    essay: 'Motherhood can appear as origin, protection, affective tension, a shared body, or emotional ambivalence.',
-    concept: { definition: 'A concept associated with care, origin, affective bonds, and the symbolic dimension of the maternal.' },
+    essay:
+      'Motherhood can appear as origin, protection, affective tension, a shared body, or emotional ambivalence.',
+    concept: {
+      definition:
+        'A concept associated with care, origin, affective bonds, and the symbolic dimension of the maternal.',
+    },
   },
   violencia: {
     title: 'Violence',
     shortDescription: 'Physical, symbolic, social, or historical harm.',
-    essay: 'In art, violence can manifest as aggression, trauma, imposition, rupture, or visual denunciation.',
-    concept: { definition: 'A concept associated with harm, imposition, trauma, rupture, and conflict.' },
+    essay:
+      'In art, violence can manifest as aggression, trauma, imposition, rupture, or visual denunciation.',
+    concept: {
+      definition: 'A concept associated with harm, imposition, trauma, rupture, and conflict.',
+    },
   },
   muerte: {
     title: 'Death',
     shortDescription: 'Finitude, mourning, loss, ritual, and symbolic passage.',
-    essay: 'Death in art can appear as mourning, memory, ritual, vanitas, historical catastrophe, or spiritual transition.',
-    concept: { definition: 'A concept tied to finitude, mourning, loss, ritual, and the representation of disappearance.' },
+    essay:
+      'Death in art can appear as mourning, memory, ritual, vanitas, historical catastrophe, or spiritual transition.',
+    concept: {
+      definition:
+        'A concept tied to finitude, mourning, loss, ritual, and the representation of disappearance.',
+    },
   },
   poder: {
     title: 'Power',
     shortDescription: 'Authority, domination, prestige, and political representation.',
-    essay: 'Power is represented through portraiture, institutions, architecture, the disciplined body, spectacle, and symbolic authority.',
-    concept: { definition: 'A concept associated with authority, domination, legitimacy, prestige, and political representation.' },
+    essay:
+      'Power is represented through portraiture, institutions, architecture, the disciplined body, spectacle, and symbolic authority.',
+    concept: {
+      definition:
+        'A concept associated with authority, domination, legitimacy, prestige, and political representation.',
+    },
   },
   religion: {
     title: 'Religion',
     shortDescription: 'Belief, ritual, iconography, and spiritual experience.',
-    essay: 'Religion organizes images of devotion, sacrifice, community, transcendence, mystery, and symbolic order.',
-    concept: { definition: 'A concept linked to belief, ritual, devotion, transcendence, and sacred representation.' },
+    essay:
+      'Religion organizes images of devotion, sacrifice, community, transcendence, mystery, and symbolic order.',
+    concept: {
+      definition:
+        'A concept linked to belief, ritual, devotion, transcendence, and sacred representation.',
+    },
   },
   naturaleza: {
     title: 'Nature',
     shortDescription: 'Landscape, living matter, climate, and the more-than-human world.',
-    essay: 'Nature may appear as landscape, refuge, threat, matter, symbol, environment, or a field of transformation.',
-    concept: { definition: 'A concept associated with landscape, living matter, environment, climate, and the natural world.' },
+    essay:
+      'Nature may appear as landscape, refuge, threat, matter, symbol, environment, or a field of transformation.',
+    concept: {
+      definition:
+        'A concept associated with landscape, living matter, environment, climate, and the natural world.',
+    },
   },
   ciudad: {
     title: 'City',
     shortDescription: 'Urban modernity, architecture, crowds, and solitude.',
-    essay: 'The city condenses modern experience through architecture, labor, crowds, spectacle, anonymity, and new ways of seeing.',
-    concept: { definition: 'A concept tied to urban life, architecture, crowds, infrastructure, and modern experience.' },
+    essay:
+      'The city condenses modern experience through architecture, labor, crowds, spectacle, anonymity, and new ways of seeing.',
+    concept: {
+      definition:
+        'A concept tied to urban life, architecture, crowds, infrastructure, and modern experience.',
+    },
   },
   deporte: {
     title: 'Sport',
     shortDescription: 'Competition, movement, spectacle, and the social body.',
-    essay: 'Sport connects movement, discipline, competition, media, mass culture, collective identity, and the aesthetics of performance.',
-    concept: { definition: 'A concept linked to competition, movement, spectacle, discipline, and collective identity.' },
+    essay:
+      'Sport connects movement, discipline, competition, media, mass culture, collective identity, and the aesthetics of performance.',
+    concept: {
+      definition:
+        'A concept linked to competition, movement, spectacle, discipline, and collective identity.',
+    },
   },
   futbol: {
     title: 'Football',
     shortDescription: 'A collective game shaped by ritual, spectacle, and identity.',
-    essay: 'Football can be read through the body, movement, ritual, city, mass media, collective identity, and popular culture.',
-    concept: { definition: 'A concept connected to football as ritual, spectacle, movement, collective identity, and popular culture.' },
+    essay:
+      'Football can be read through the body, movement, ritual, city, mass media, collective identity, and popular culture.',
+    concept: {
+      definition:
+        'A concept connected to football as ritual, spectacle, movement, collective identity, and popular culture.',
+    },
   },
   genero: {
     title: 'Gender',
     shortDescription: 'Identity, social roles, the body, and representation.',
-    essay: 'Gender helps interpret how images construct femininity, masculinity, desire, norm, difference, and embodied identity.',
-    concept: { definition: 'A concept associated with gender identity, social roles, representation, norm, and difference.' },
+    essay:
+      'Gender helps interpret how images construct femininity, masculinity, desire, norm, difference, and embodied identity.',
+    concept: {
+      definition:
+        'A concept associated with gender identity, social roles, representation, norm, and difference.',
+    },
   },
   vejez: {
     title: 'Old Age',
     shortDescription: 'Aging, fragility, memory, and the time-marked body.',
-    essay: 'Old age appears in art as trace, dignity, vulnerability, wisdom, decline, and an acute awareness of mortality.',
-    concept: { definition: 'A concept tied to aging, fragility, experience, memory, and the time-marked body.' },
+    essay:
+      'Old age appears in art as trace, dignity, vulnerability, wisdom, decline, and an acute awareness of mortality.',
+    concept: {
+      definition:
+        'A concept tied to aging, fragility, experience, memory, and the time-marked body.',
+    },
   },
   juventud: {
     title: 'Youth',
     shortDescription: 'Vitality, promise, beauty, rebellion, and formation.',
-    essay: 'Youth can appear as idealization, physical energy, desire, rebellion, apprenticeship, style, and social projection.',
-    concept: { definition: 'A concept associated with vitality, formation, beauty, desire, rebellion, and becoming.' },
+    essay:
+      'Youth can appear as idealization, physical energy, desire, rebellion, apprenticeship, style, and social projection.',
+    concept: {
+      definition:
+        'A concept associated with vitality, formation, beauty, desire, rebellion, and becoming.',
+    },
   },
   himitsubako: {
     title: 'Himitsubako',
-    shortDescription: 'A Japanese wooden puzzle box associated with yosegi marquetry, secrecy, and manual ingenuity.',
-    essay: 'Himitsubako names a Japanese wooden puzzle box opened through a hidden sequence of movements. It can be read through craft, wood, object memory, dexterity, and Japanese visual culture.',
-    concept: { definition: 'A concept associated with Japanese wooden puzzle boxes, hidden mechanisms, craft tradition, and yosegi marquetry.' },
+    shortDescription:
+      'A Japanese wooden puzzle box associated with yosegi marquetry, secrecy, and manual ingenuity.',
+    essay:
+      'Himitsubako names a Japanese wooden puzzle box opened through a hidden sequence of movements. It can be read through craft, wood, object memory, dexterity, and Japanese visual culture.',
+    concept: {
+      definition:
+        'A concept associated with Japanese wooden puzzle boxes, hidden mechanisms, craft tradition, and yosegi marquetry.',
+    },
   },
   'museo-del-prado': {
     title: 'Museo del Prado',
     shortDescription: 'A national art museum located in Madrid.',
-    essay: 'A central institution for the history of European and Spanish art, with one of the most important collections in the world.',
+    essay:
+      'A central institution for the history of European and Spanish art, with one of the most important collections in the world.',
   },
   'museo-reina-sofia': {
     title: 'Museo Reina Sofia',
@@ -532,24 +623,30 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   'guggenheim-bilbao': {
     title: 'Guggenheim Bilbao',
     shortDescription: 'A contemporary art museum located in Bilbao.',
-    essay: 'An internationally recognized museum known for its architecture and contemporary art collection.',
+    essay:
+      'An internationally recognized museum known for its architecture and contemporary art collection.',
   },
   'francisco-de-goya': {
     title: 'Francisco de Goya',
-    shortDescription: 'A Spanish painter and printmaker who was crucial to the transition from the Ancien Regime to modernity.',
-    essay: 'Francisco de Goya was one of the most influential artists in the history of Spanish art. His work spans portraiture, history painting, social critique, violence, and dark visions of the human condition.',
+    shortDescription:
+      'A Spanish painter and printmaker who was crucial to the transition from the Ancien Regime to modernity.',
+    essay:
+      'Francisco de Goya was one of the most influential artists in the history of Spanish art. His work spans portraiture, history painting, social critique, violence, and dark visions of the human condition.',
     artist: {
       country: 'Spain',
       city: 'Fuendetodos',
       disciplines: 'Painting, Printmaking',
-      bioShort: 'A key figure in Spanish painting, celebrated for his critical, expressive, and visionary power.',
+      bioShort:
+        'A key figure in Spanish painting, celebrated for his critical, expressive, and visionary power.',
       links: 'https://www.museodelprado.es',
     },
   },
   'pablo-picasso': {
     title: 'Pablo Picasso',
-    shortDescription: 'A Spanish painter, sculptor, and maker who became a central figure of 20th-century art.',
-    essay: 'Pablo Picasso was a decisive figure in modern art. His work spans painting, sculpture, printmaking, and formal experimentation, with an essential role in Cubism.',
+    shortDescription:
+      'A Spanish painter, sculptor, and maker who became a central figure of 20th-century art.',
+    essay:
+      'Pablo Picasso was a decisive figure in modern art. His work spans painting, sculpture, printmaking, and formal experimentation, with an essential role in Cubism.',
     artist: {
       country: 'Spain',
       city: 'Malaga',
@@ -560,116 +657,142 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
   'salvador-dali': {
     title: 'Salvador Dali',
-    shortDescription: 'A Spanish artist associated with Surrealism and the exploration of dream imagery.',
-    essay: 'Salvador Dali developed a highly recognizable body of work shaped by dream images, unexpected associations, and visual reflections on time and desire.',
+    shortDescription:
+      'A Spanish artist associated with Surrealism and the exploration of dream imagery.',
+    essay:
+      'Salvador Dali developed a highly recognizable body of work shaped by dream images, unexpected associations, and visual reflections on time and desire.',
     artist: {
       country: 'Spain',
       city: 'Figueres',
       disciplines: 'Painting, Drawing, Sculpture, Design',
-      bioShort: 'One of the most recognizable Surrealist artists, celebrated for his dreamlike and symbolic imagery.',
+      bioShort:
+        'One of the most recognizable Surrealist artists, celebrated for his dreamlike and symbolic imagery.',
       links: 'https://www.moma.org',
     },
   },
   'frida-kahlo': {
     title: 'Frida Kahlo',
-    shortDescription: 'A Mexican painter known for her self-representations and her exploration of identity, pain, and the body.',
-    essay: 'Frida Kahlo turned personal, bodily, and emotional experience into a powerful form of artistic representation. Her work is tied to identity, pain, memory, and self-representation.',
+    shortDescription:
+      'A Mexican painter known for her self-representations and her exploration of identity, pain, and the body.',
+    essay:
+      'Frida Kahlo turned personal, bodily, and emotional experience into a powerful form of artistic representation. Her work is tied to identity, pain, memory, and self-representation.',
     artist: {
       country: 'Mexico',
       city: 'Coyoacan',
       disciplines: 'Painting',
-      bioShort: 'A key 20th-century artist whose work turns personal and bodily experience into visual language.',
+      bioShort:
+        'A key 20th-century artist whose work turns personal and bodily experience into visual language.',
       links: 'https://www.moma.org/artists/2963',
     },
   },
   'louise-bourgeois': {
     title: 'Louise Bourgeois',
     shortDescription: 'A French-American artist essential to sculpture and contemporary art.',
-    essay: 'Louise Bourgeois developed a body of work of great psychological intensity, tied to memory, the body, motherhood, pain, and sculptural space.',
+    essay:
+      'Louise Bourgeois developed a body of work of great psychological intensity, tied to memory, the body, motherhood, pain, and sculptural space.',
     artist: {
       country: 'France / United States',
       city: 'Paris',
       disciplines: 'Sculpture, Installation, Drawing',
-      bioShort: 'A foundational sculptor of contemporary art, associated with memory, the body, and motherhood.',
+      bioShort:
+        'A foundational sculptor of contemporary art, associated with memory, the body, and motherhood.',
       links: 'https://www.tate.org.uk/art/artists/louise-bourgeois-2351',
     },
   },
   'joan-miro': {
     title: 'Joan Miro',
-    shortDescription: 'A Catalan artist associated with Surrealism, signs, play, and poetic abstraction.',
-    essay: 'Joan Miro developed a visual language of signs, stars, bodies, and open space between Surrealism, play, and modern abstraction.',
+    shortDescription:
+      'A Catalan artist associated with Surrealism, signs, play, and poetic abstraction.',
+    essay:
+      'Joan Miro developed a visual language of signs, stars, bodies, and open space between Surrealism, play, and modern abstraction.',
     artist: {
       country: 'Spain',
       city: 'Barcelona',
       disciplines: 'Painting, Drawing, Sculpture, Ceramics',
-      bioShort: 'A major 20th-century artist known for his poetic signs, playful forms, and dreamlike visual language.',
+      bioShort:
+        'A major 20th-century artist known for his poetic signs, playful forms, and dreamlike visual language.',
       links: 'https://www.fmirobcn.org/en/',
     },
   },
   'diego-velazquez': {
     title: 'Diego Velazquez',
-    shortDescription: 'A Spanish Baroque painter essential for thinking about power, looking, and representation.',
-    essay: 'Diego Velazquez transformed court portraiture into a subtle investigation of power, presence, vision, and pictorial artifice.',
+    shortDescription:
+      'A Spanish Baroque painter essential for thinking about power, looking, and representation.',
+    essay:
+      'Diego Velazquez transformed court portraiture into a subtle investigation of power, presence, vision, and pictorial artifice.',
     artist: {
       country: 'Spain',
       city: 'Seville',
       disciplines: 'Painting',
-      bioShort: 'A central Baroque painter whose work reshaped portraiture, space, and the politics of looking.',
+      bioShort:
+        'A central Baroque painter whose work reshaped portraiture, space, and the politics of looking.',
       links: 'https://www.museodelprado.es',
     },
   },
   'edward-hopper': {
     title: 'Edward Hopper',
     shortDescription: 'An American painter of urban solitude, waiting, light, and modern life.',
-    essay: 'Edward Hopper turned architecture, artificial light, and everyday scenes into images of isolation and urban modernity.',
+    essay:
+      'Edward Hopper turned architecture, artificial light, and everyday scenes into images of isolation and urban modernity.',
     artist: {
       country: 'United States',
       city: 'Nyack',
       disciplines: 'Painting, Printmaking',
-      bioShort: 'A defining painter of urban solitude and quiet psychological tension in 20th-century America.',
+      bioShort:
+        'A defining painter of urban solitude and quiet psychological tension in 20th-century America.',
       links: 'https://www.moma.org',
     },
   },
   'francis-bacon': {
     title: 'Francis Bacon',
     shortDescription: 'A painter of the body, violence, flesh, enclosure, and modern anguish.',
-    essay: 'Francis Bacon treated the human figure as vulnerable matter under pressure, producing intense images of bodily and psychological violence.',
+    essay:
+      'Francis Bacon treated the human figure as vulnerable matter under pressure, producing intense images of bodily and psychological violence.',
     artist: {
       country: 'Ireland / United Kingdom',
       city: 'Dublin',
       disciplines: 'Painting',
-      bioShort: 'A major 20th-century painter known for distorted figures, existential intensity, and violent psychological space.',
+      bioShort:
+        'A major 20th-century painter known for distorted figures, existential intensity, and violent psychological space.',
       links: 'https://www.tate.org.uk',
     },
   },
   'marcel-duchamp': {
     title: 'Marcel Duchamp',
-    shortDescription: 'An artist who transformed authorship, the object, play, and the definition of art.',
-    essay: 'Marcel Duchamp shifted art toward choice, irony, language, and conceptual play, radically challenging the museum object.',
+    shortDescription:
+      'An artist who transformed authorship, the object, play, and the definition of art.',
+    essay:
+      'Marcel Duchamp shifted art toward choice, irony, language, and conceptual play, radically challenging the museum object.',
     artist: {
       country: 'France / United States',
       city: 'Blainville-Crevon',
       disciplines: 'Conceptual art, Sculpture, Painting',
-      bioShort: 'A foundational modern artist whose readymades redefined authorship, objecthood, and artistic intention.',
+      bioShort:
+        'A foundational modern artist whose readymades redefined authorship, objecthood, and artistic intention.',
       links: 'https://www.moma.org',
     },
   },
   'andy-warhol': {
     title: 'Andy Warhol',
-    shortDescription: 'A Pop artist associated with consumption, celebrity, repetition, and media imagery.',
-    essay: 'Andy Warhol read modern visual culture through advertising, fame, mechanical repetition, surface, and mass media circulation.',
+    shortDescription:
+      'A Pop artist associated with consumption, celebrity, repetition, and media imagery.',
+    essay:
+      'Andy Warhol read modern visual culture through advertising, fame, mechanical repetition, surface, and mass media circulation.',
     artist: {
       country: 'United States',
       city: 'Pittsburgh',
       disciplines: 'Painting, Printmaking, Film',
-      bioShort: 'A central Pop artist who transformed celebrity, repetition, and media culture into artistic material.',
+      bioShort:
+        'A central Pop artist who transformed celebrity, repetition, and media culture into artistic material.',
       links: 'https://www.moma.org',
     },
   },
   'saturno-devorando-a-su-hijo': {
     title: 'Saturn Devouring His Son',
-    shortDescription: 'One of Goya\'s Black Paintings, marked by violence, darkness, and expressive force.',
-    essay: 'This work by Francisco de Goya condenses violence, time, destruction, and an extreme vision of the human condition. It can be connected to [[violence]], [[time]], and [[pain]].',
+    shortDescription:
+      "One of Goya's Black Paintings, marked by violence, darkness, and expressive force.",
+    essay:
+      'This work by Francisco de Goya condenses violence, time, destruction, and an extreme vision of the human condition. It can be connected to [[violence]], [[time]], and [[pain]].',
     artwork: {
       authorNation: 'Spanish',
       technique: 'Oil transferred to canvas',
@@ -683,7 +806,8 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   'el-tres-de-mayo-de-1808': {
     title: 'The Third of May 1808',
     shortDescription: 'A history painting by Goya about the violence of war and execution.',
-    essay: 'A central work for thinking about [[war]], [[violence]], and historical memory. Its visual drama and political dimension make it a decisive image of modernity.',
+    essay:
+      'A central work for thinking about [[war]], [[violence]], and historical memory. Its visual drama and political dimension make it a decisive image of modernity.',
     artwork: {
       authorNation: 'Spanish',
       technique: 'Oil on canvas',
@@ -696,8 +820,9 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
   guernica: {
     title: 'Guernica',
-    shortDescription: 'Picasso\'s monumental work on the horror of bombing and the violence of war.',
-    essay: '[[Guernica]] articulates a visual reflection on [[war]], [[violence]], and historical memory. It also connects with the formal fragmentation of [[cubism]].',
+    shortDescription: "Picasso's monumental work on the horror of bombing and the violence of war.",
+    essay:
+      '[[Guernica]] articulates a visual reflection on [[war]], [[violence]], and historical memory. It also connects with the formal fragmentation of [[cubism]].',
     artwork: {
       authorNation: 'Spanish',
       technique: 'Oil on canvas',
@@ -710,8 +835,9 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
   'la-persistencia-de-la-memoria': {
     title: 'The Persistence of Memory',
-    shortDescription: 'Dali\'s iconic work on time, dreams, instability, and perception.',
-    essay: 'This work connects directly with [[time]] and [[memory]], and also with the imagery of [[surrealism]].',
+    shortDescription: "Dali's iconic work on time, dreams, instability, and perception.",
+    essay:
+      'This work connects directly with [[time]] and [[memory]], and also with the imagery of [[surrealism]].',
     artwork: {
       authorNation: 'Spanish',
       technique: 'Oil on canvas',
@@ -724,8 +850,10 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
   'las-dos-fridas': {
     title: 'The Two Fridas',
-    shortDescription: 'A double self-representation by Frida Kahlo tied to identity, the body, and pain.',
-    essay: 'A key work for thinking about [[identity]], [[body]], and [[pain]] through self-representation. It can also be read through affective memory and inner division.',
+    shortDescription:
+      'A double self-representation by Frida Kahlo tied to identity, the body, and pain.',
+    essay:
+      'A key work for thinking about [[identity]], [[body]], and [[pain]] through self-representation. It can also be read through affective memory and inner division.',
     artwork: {
       authorNation: 'Mexican',
       technique: 'Oil on canvas',
@@ -738,8 +866,10 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
   maman: {
     title: 'Maman',
-    shortDescription: 'Louise Bourgeois\'s monumental sculpture associated with motherhood, memory, and affective ambivalence.',
-    essay: '[[Maman]] connects with [[motherhood]], [[memory]], and [[body]]. Its monumental scale intensifies its emotional and spatial reading.',
+    shortDescription:
+      "Louise Bourgeois's monumental sculpture associated with motherhood, memory, and affective ambivalence.",
+    essay:
+      '[[Maman]] connects with [[motherhood]], [[memory]], and [[body]]. Its monumental scale intensifies its emotional and spatial reading.',
     artwork: {
       authorNation: 'French-American',
       technique: 'Monumental sculpture',
@@ -752,8 +882,10 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
   'las-meninas': {
     title: 'Las Meninas',
-    shortDescription: 'Velazquez\'s landmark work on power, looking, representation, and courtly space.',
-    essay: '[[Las Meninas]] opens a rich reading of [[power]], vision, childhood, spatial construction, and the politics of representation in the Baroque.',
+    shortDescription:
+      "Velazquez's landmark work on power, looking, representation, and courtly space.",
+    essay:
+      '[[Las Meninas]] opens a rich reading of [[power]], vision, childhood, spatial construction, and the politics of representation in the Baroque.',
     artwork: {
       authorNation: 'Spanish',
       technique: 'Oil on canvas',
@@ -766,8 +898,10 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
   'el-viejo-guitarrista': {
     title: 'The Old Guitarist',
-    shortDescription: 'A Blue Period work by Picasso on old age, poverty, the body, and melancholy.',
-    essay: 'This work can be read through [[old age]], vulnerability, poverty, the body, and music as a visual image of modern suffering.',
+    shortDescription:
+      'A Blue Period work by Picasso on old age, poverty, the body, and melancholy.',
+    essay:
+      'This work can be read through [[old age]], vulnerability, poverty, the body, and music as a visual image of modern suffering.',
     artwork: {
       authorNation: 'Spanish',
       technique: 'Oil on panel',
@@ -779,9 +913,10 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
     },
   },
   'las-senoritas-de-avignon': {
-    title: 'Les Demoiselles d\'Avignon',
+    title: "Les Demoiselles d'Avignon",
     shortDescription: 'A key Picasso work for Cubism, the body, gender, and modern rupture.',
-    essay: '[[Les Demoiselles d\'Avignon]] opens readings around [[body]], [[gender]], visual violence, masking, and the emergence of [[cubism]].',
+    essay:
+      "[[Les Demoiselles d'Avignon]] opens readings around [[body]], [[gender]], visual violence, masking, and the emergence of [[cubism]].",
     artwork: {
       authorNation: 'Spanish',
       technique: 'Oil on canvas',
@@ -793,9 +928,10 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
     },
   },
   'el-carnaval-de-arlequin': {
-    title: 'Harlequin\'s Carnival',
+    title: "Harlequin's Carnival",
     shortDescription: 'A Miro work about play, signs, bodies, and surrealist space.',
-    essay: 'This work connects [[surrealism]], youthful play, bodily fragmentation, fantasy, and poetic visual freedom.',
+    essay:
+      'This work connects [[surrealism]], youthful play, bodily fragmentation, fantasy, and poetic visual freedom.',
     artwork: {
       authorNation: 'Spanish',
       technique: 'Oil on canvas',
@@ -809,7 +945,8 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   nighthawks: {
     title: 'Nighthawks',
     shortDescription: 'A Hopper city scene about night, isolation, and modern urban life.',
-    essay: '[[Nighthawks]] condenses [[city]], solitude, artificial light, waiting, and the emotional atmosphere of modernity.',
+    essay:
+      '[[Nighthawks]] condenses [[city]], solitude, artificial light, waiting, and the emotional atmosphere of modernity.',
     artwork: {
       authorNation: 'American',
       technique: 'Oil on canvas',
@@ -821,9 +958,10 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
     },
   },
   'estudio-papa-inocencio-x': {
-    title: 'Study after Velazquez\'s Portrait of Pope Innocent X',
+    title: "Study after Velazquez's Portrait of Pope Innocent X",
     shortDescription: 'Bacon reinterprets power, the body, the scream, and psychological violence.',
-    essay: 'This work crosses [[power]], [[religion]], the body, fear, enclosure, and the violence of modern representation.',
+    essay:
+      'This work crosses [[power]], [[religion]], the body, fear, enclosure, and the violence of modern representation.',
     artwork: {
       authorNation: 'Irish-British',
       technique: 'Oil on canvas',
@@ -836,8 +974,9 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
   fountain: {
     title: 'Fountain',
-    shortDescription: 'Duchamp\'s readymade that questions authorship, the object, and the museum.',
-    essay: '[[Fountain]] transforms an everyday object into a question about art, institutional power, conceptual play, and modern culture.',
+    shortDescription: "Duchamp's readymade that questions authorship, the object, and the museum.",
+    essay:
+      '[[Fountain]] transforms an everyday object into a question about art, institutional power, conceptual play, and modern culture.',
     artwork: {
       authorNation: 'French-American',
       technique: 'Readymade',
@@ -851,7 +990,8 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   'marilyn-diptych': {
     title: 'Marilyn Diptych',
     shortDescription: 'A Warhol work about celebrity, repetition, death, and media image culture.',
-    essay: '[[Marilyn Diptych]] connects [[death]], fame, repetition, mechanical image circulation, and the visual logic of Pop Art.',
+    essay:
+      '[[Marilyn Diptych]] connects [[death]], fame, repetition, mechanical image circulation, and the visual logic of Pop Art.',
     artwork: {
       authorNation: 'American',
       technique: 'Acrylic and silkscreen ink on canvas',
@@ -865,7 +1005,8 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   'bottle-rack': {
     title: 'Bottle Rack',
     shortDescription: 'A Duchamp readymade about the found object, choice, and conceptual gesture.',
-    essay: '[[Bottle Rack]] helps frame the found object, urban modernity, anti-art, irony, and conceptual displacement.',
+    essay:
+      '[[Bottle Rack]] helps frame the found object, urban modernity, anti-art, irony, and conceptual displacement.',
     artwork: {
       authorNation: 'French-American',
       technique: 'Readymade',
@@ -879,7 +1020,8 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   futbolistas: {
     title: 'Footballers',
     shortDescription: 'A demo editorial work connecting art, sport, the body, and the crowd.',
-    essay: '[[Footballers]] works as a discovery node for reading football through the body, movement, competition, city, youth, and collective identity.',
+    essay:
+      '[[Footballers]] works as a discovery node for reading football through the body, movement, competition, city, youth, and collective identity.',
     artwork: {
       authorNation: 'Unknown / editorial demo',
       technique: 'Editorial demo artwork',
@@ -892,7 +1034,10 @@ const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
   },
 };
 
-const SOURCE_EN_BY_KEY: Record<string, { title: string; author: string | null; publisher: string | null }> = {
+const SOURCE_EN_BY_KEY: Record<
+  string,
+  { title: string; author: string | null; publisher: string | null }
+> = {
   'https://www.museodelprado.es': {
     title: 'Museo del Prado Collection',
     author: 'Museo Nacional del Prado',
@@ -921,40 +1066,121 @@ const SOURCE_EN_BY_KEY: Record<string, { title: string; author: string | null; p
 };
 
 const SOURCE_REF_EN_BY_KEY: Record<string, { quote: string | null; note: string | null }> = {
-  'francisco-de-goya::https://www.museodelprado.es': { quote: null, note: 'Primary institutional reference.' },
-  'saturno-devorando-a-su-hijo::https://www.museodelprado.es': { quote: null, note: 'Institutional work record.' },
-  'el-tres-de-mayo-de-1808::https://www.museodelprado.es': { quote: null, note: 'Institutional work record.' },
-  'pablo-picasso::https://www.museoreinasofia.es': { quote: null, note: 'Primary institutional reference.' },
+  'francisco-de-goya::https://www.museodelprado.es': {
+    quote: null,
+    note: 'Primary institutional reference.',
+  },
+  'saturno-devorando-a-su-hijo::https://www.museodelprado.es': {
+    quote: null,
+    note: 'Institutional work record.',
+  },
+  'el-tres-de-mayo-de-1808::https://www.museodelprado.es': {
+    quote: null,
+    note: 'Institutional work record.',
+  },
+  'pablo-picasso::https://www.museoreinasofia.es': {
+    quote: null,
+    note: 'Primary institutional reference.',
+  },
   'guernica::https://www.museoreinasofia.es': { quote: null, note: 'Institutional work record.' },
   'salvador-dali::https://www.moma.org': { quote: null, note: 'Primary institutional reference.' },
-  'la-persistencia-de-la-memoria::https://www.moma.org': { quote: null, note: 'Institutional work record.' },
+  'la-persistencia-de-la-memoria::https://www.moma.org': {
+    quote: null,
+    note: 'Institutional work record.',
+  },
   'frida-kahlo::https://www.moma.org/artists/2963': { quote: null, note: 'Museum reference.' },
-  'las-dos-fridas::https://www.moma.org/artists/2963': { quote: null, note: 'Contextual reference for the artist and the work.' },
-  'louise-bourgeois::https://www.tate.org.uk': { quote: null, note: 'Institutional and contextual reference.' },
-  'maman::https://www.tate.org.uk': { quote: null, note: 'Contextual reference on the artist and her work.' },
+  'las-dos-fridas::https://www.moma.org/artists/2963': {
+    quote: null,
+    note: 'Contextual reference for the artist and the work.',
+  },
+  'louise-bourgeois::https://www.tate.org.uk': {
+    quote: null,
+    note: 'Institutional and contextual reference.',
+  },
+  'maman::https://www.tate.org.uk': {
+    quote: null,
+    note: 'Contextual reference on the artist and her work.',
+  },
 };
 
-const ENTITY_ALIASES_BY_SLUG: Record<string, Array<{
-  locale: 'es' | 'en' | 'und';
-  kind: 'ALTERNATE_TITLE' | 'COMMON_NAME' | 'MISSPELLING' | 'TRANSLITERATION' | 'NICKNAME' | 'SEARCH_HINT';
-  value: string;
-  weight?: number;
-  source?: string;
-}>> = {
+const ENTITY_ALIASES_BY_SLUG: Record<
+  string,
+  Array<{
+    locale: 'es' | 'en' | 'und';
+    kind:
+      | 'ALTERNATE_TITLE'
+      | 'COMMON_NAME'
+      | 'MISSPELLING'
+      | 'TRANSLITERATION'
+      | 'NICKNAME'
+      | 'SEARCH_HINT';
+    value: string;
+    weight?: number;
+    source?: string;
+  }>
+> = {
   himitsubako: [
     { locale: 'und', kind: 'COMMON_NAME', value: 'himitsubako', weight: 1, source: 'SEED' },
     { locale: 'und', kind: 'MISSPELLING', value: 'jimikubako', weight: 0.85, source: 'SEED' },
-    { locale: 'es', kind: 'SEARCH_HINT', value: 'caja japonesa secreta', weight: 1, source: 'SEED' },
-    { locale: 'es', kind: 'SEARCH_HINT', value: 'caja japonesa de madera', weight: 0.95, source: 'SEED' },
-    { locale: 'es', kind: 'SEARCH_HINT', value: 'caja japonesa rompecabezas', weight: 0.95, source: 'SEED' },
+    {
+      locale: 'es',
+      kind: 'SEARCH_HINT',
+      value: 'caja japonesa secreta',
+      weight: 1,
+      source: 'SEED',
+    },
+    {
+      locale: 'es',
+      kind: 'SEARCH_HINT',
+      value: 'caja japonesa de madera',
+      weight: 0.95,
+      source: 'SEED',
+    },
+    {
+      locale: 'es',
+      kind: 'SEARCH_HINT',
+      value: 'caja japonesa rompecabezas',
+      weight: 0.95,
+      source: 'SEED',
+    },
     { locale: 'en', kind: 'COMMON_NAME', value: 'japanese puzzle box', weight: 1, source: 'SEED' },
-    { locale: 'en', kind: 'SEARCH_HINT', value: 'japanese secret box', weight: 0.95, source: 'SEED' },
-    { locale: 'en', kind: 'TRANSLITERATION', value: 'secret japanese wooden box', weight: 0.8, source: 'SEED' },
+    {
+      locale: 'en',
+      kind: 'SEARCH_HINT',
+      value: 'japanese secret box',
+      weight: 0.95,
+      source: 'SEED',
+    },
+    {
+      locale: 'en',
+      kind: 'TRANSLITERATION',
+      value: 'secret japanese wooden box',
+      weight: 0.8,
+      source: 'SEED',
+    },
   ],
   fountain: [
-    { locale: 'en', kind: 'SEARCH_HINT', value: 'porcelain urinal artwork', weight: 0.95, source: 'SEED' },
-    { locale: 'en', kind: 'SEARCH_HINT', value: 'museum object duchamp urinal', weight: 0.95, source: 'SEED' },
-    { locale: 'es', kind: 'SEARCH_HINT', value: 'urinario de porcelana de duchamp', weight: 0.95, source: 'SEED' },
+    {
+      locale: 'en',
+      kind: 'SEARCH_HINT',
+      value: 'porcelain urinal artwork',
+      weight: 0.95,
+      source: 'SEED',
+    },
+    {
+      locale: 'en',
+      kind: 'SEARCH_HINT',
+      value: 'museum object duchamp urinal',
+      weight: 0.95,
+      source: 'SEED',
+    },
+    {
+      locale: 'es',
+      kind: 'SEARCH_HINT',
+      value: 'urinario de porcelana de duchamp',
+      weight: 0.95,
+      source: 'SEED',
+    },
   ],
 };
 
@@ -965,48 +1191,64 @@ const RELATION_EN_BY_KEY: Record<string, string> = {
   'dolor::RELATED_TO::cuerpo': 'Pain is experienced through the body.',
   'maternidad::RELATED_TO::memoria': 'Motherhood can articulate affective and symbolic memory.',
   'guerra::RELATED_TO::violencia': 'War is a historical form of violence.',
-  'francisco-de-goya::ASSOCIATED_WITH::romanticismo': 'Goya is a foundational figure in the origins of modern and Romantic sensibility.',
+  'francisco-de-goya::ASSOCIATED_WITH::romanticismo':
+    'Goya is a foundational figure in the origins of modern and Romantic sensibility.',
   'pablo-picasso::BELONGS_TO_MOVEMENT::cubismo': 'Picasso is a co-founder of Cubism.',
   'salvador-dali::BELONGS_TO_MOVEMENT::surrealismo': 'Dali is a key figure of Surrealism.',
-  'frida-kahlo::ASSOCIATED_WITH::arte-moderno': 'Frida Kahlo is studied within the field of 20th-century modern art.',
-  'louise-bourgeois::ASSOCIATED_WITH::arte-contemporaneo': 'Louise Bourgeois is central to contemporary art.',
-  'francisco-de-goya::BELONGS_TO_PERIOD::siglo-xix': 'Goya belongs historically to the late 18th and early 19th centuries.',
+  'frida-kahlo::ASSOCIATED_WITH::arte-moderno':
+    'Frida Kahlo is studied within the field of 20th-century modern art.',
+  'louise-bourgeois::ASSOCIATED_WITH::arte-contemporaneo':
+    'Louise Bourgeois is central to contemporary art.',
+  'francisco-de-goya::BELONGS_TO_PERIOD::siglo-xix':
+    'Goya belongs historically to the late 18th and early 19th centuries.',
   'pablo-picasso::BELONGS_TO_PERIOD::siglo-xx': 'Picasso is central to 20th-century art.',
   'salvador-dali::BELONGS_TO_PERIOD::siglo-xx': 'Dali belongs to the 20th century.',
   'frida-kahlo::BELONGS_TO_PERIOD::siglo-xx': 'Frida Kahlo belongs to the 20th century.',
-  'louise-bourgeois::BELONGS_TO_PERIOD::siglo-xx': 'Bourgeois\'s career unfolds primarily in the 20th century.',
-  'frida-kahlo::ASSOCIATED_WITH::identidad': 'Identity is central to Frida Kahlo\'s work.',
-  'frida-kahlo::ASSOCIATED_WITH::cuerpo': 'The body is central to Frida Kahlo\'s work.',
-  'frida-kahlo::ASSOCIATED_WITH::dolor': 'Pain is a key axis in Frida Kahlo\'s work.',
-  'louise-bourgeois::ASSOCIATED_WITH::memoria': 'Memory is a fundamental dimension of Bourgeois\'s work.',
-  'louise-bourgeois::ASSOCIATED_WITH::maternidad': 'Motherhood is an important conceptual axis in Bourgeois.',
-  'louise-bourgeois::ASSOCIATED_WITH::cuerpo': 'The body runs through Bourgeois\'s sculptural work.',
-  'salvador-dali::ASSOCIATED_WITH::tiempo': 'Temporality is a central theme in Dali\'s work.',
-  'salvador-dali::ASSOCIATED_WITH::memoria': 'Memory and psychic imagery carry weight in Dali\'s work.',
+  'louise-bourgeois::BELONGS_TO_PERIOD::siglo-xx':
+    "Bourgeois's career unfolds primarily in the 20th century.",
+  'frida-kahlo::ASSOCIATED_WITH::identidad': "Identity is central to Frida Kahlo's work.",
+  'frida-kahlo::ASSOCIATED_WITH::cuerpo': "The body is central to Frida Kahlo's work.",
+  'frida-kahlo::ASSOCIATED_WITH::dolor': "Pain is a key axis in Frida Kahlo's work.",
+  'louise-bourgeois::ASSOCIATED_WITH::memoria':
+    "Memory is a fundamental dimension of Bourgeois's work.",
+  'louise-bourgeois::ASSOCIATED_WITH::maternidad':
+    'Motherhood is an important conceptual axis in Bourgeois.',
+  'louise-bourgeois::ASSOCIATED_WITH::cuerpo': "The body runs through Bourgeois's sculptural work.",
+  'salvador-dali::ASSOCIATED_WITH::tiempo': "Temporality is a central theme in Dali's work.",
+  'salvador-dali::ASSOCIATED_WITH::memoria':
+    "Memory and psychic imagery carry weight in Dali's work.",
   'francisco-de-goya::ASSOCIATED_WITH::violencia': 'Goya addresses historical and human violence.',
   'francisco-de-goya::ASSOCIATED_WITH::guerra': 'Goya represents war with critical intensity.',
   'pablo-picasso::ASSOCIATED_WITH::guerra': 'War is a central axis in Guernica.',
-  'pablo-picasso::ASSOCIATED_WITH::violencia': 'Picasso thematizes political violence in key works.',
+  'pablo-picasso::ASSOCIATED_WITH::violencia':
+    'Picasso thematizes political violence in key works.',
   'saturno-devorando-a-su-hijo::CREATED_BY::francisco-de-goya': 'Direct authorship.',
   'el-tres-de-mayo-de-1808::CREATED_BY::francisco-de-goya': 'Direct authorship.',
   'guernica::CREATED_BY::pablo-picasso': 'Direct authorship.',
   'la-persistencia-de-la-memoria::CREATED_BY::salvador-dali': 'Direct authorship.',
   'las-dos-fridas::CREATED_BY::frida-kahlo': 'Direct authorship.',
   'maman::CREATED_BY::louise-bourgeois': 'Direct authorship.',
-  'saturno-devorando-a-su-hijo::BELONGS_TO_MOVEMENT::romanticismo': 'A work associated with Romantic and premodern sensibility.',
-  'el-tres-de-mayo-de-1808::BELONGS_TO_MOVEMENT::romanticismo': 'A key work of Romantic historical drama.',
-  'guernica::BELONGS_TO_MOVEMENT::cubismo': 'Its formal fragmentation is linked to Cubist language.',
-  'la-persistencia-de-la-memoria::BELONGS_TO_MOVEMENT::surrealismo': 'An emblematic work of Surrealism.',
-  'las-dos-fridas::BELONGS_TO_MOVEMENT::arte-moderno': 'It is studied within the languages of 20th-century modern art.',
+  'saturno-devorando-a-su-hijo::BELONGS_TO_MOVEMENT::romanticismo':
+    'A work associated with Romantic and premodern sensibility.',
+  'el-tres-de-mayo-de-1808::BELONGS_TO_MOVEMENT::romanticismo':
+    'A key work of Romantic historical drama.',
+  'guernica::BELONGS_TO_MOVEMENT::cubismo':
+    'Its formal fragmentation is linked to Cubist language.',
+  'la-persistencia-de-la-memoria::BELONGS_TO_MOVEMENT::surrealismo':
+    'An emblematic work of Surrealism.',
+  'las-dos-fridas::BELONGS_TO_MOVEMENT::arte-moderno':
+    'It is studied within the languages of 20th-century modern art.',
   'maman::BELONGS_TO_MOVEMENT::arte-contemporaneo': 'A central sculpture of contemporary art.',
-  'saturno-devorando-a-su-hijo::BELONGS_TO_PERIOD::siglo-xix': 'A work from the early 19th century.',
+  'saturno-devorando-a-su-hijo::BELONGS_TO_PERIOD::siglo-xix':
+    'A work from the early 19th century.',
   'el-tres-de-mayo-de-1808::BELONGS_TO_PERIOD::siglo-xix': 'A work from 1814.',
   'guernica::BELONGS_TO_PERIOD::siglo-xx': 'A work from 1937.',
   'la-persistencia-de-la-memoria::BELONGS_TO_PERIOD::siglo-xx': 'A work from 1931.',
   'las-dos-fridas::BELONGS_TO_PERIOD::siglo-xx': 'A work from 1939.',
   'maman::BELONGS_TO_PERIOD::siglo-xx': 'A work from 1999.',
   'saturno-devorando-a-su-hijo::ABOUT_CONCEPT::violencia': 'The work expresses radical violence.',
-  'saturno-devorando-a-su-hijo::ABOUT_CONCEPT::tiempo': 'It can be read through destruction and devouring time.',
+  'saturno-devorando-a-su-hijo::ABOUT_CONCEPT::tiempo':
+    'It can be read through destruction and devouring time.',
   'saturno-devorando-a-su-hijo::ABOUT_CONCEPT::dolor': 'Its emotional intensity points to pain.',
   'el-tres-de-mayo-de-1808::ABOUT_CONCEPT::guerra': 'The work depicts war and execution.',
   'el-tres-de-mayo-de-1808::ABOUT_CONCEPT::violencia': 'Violence is explicit and central.',
@@ -1014,23 +1256,31 @@ const RELATION_EN_BY_KEY: Record<string, string> = {
   'guernica::ABOUT_CONCEPT::guerra': 'War is the central axis of the work.',
   'guernica::ABOUT_CONCEPT::violencia': 'Violence runs through the composition.',
   'guernica::ABOUT_CONCEPT::memoria': 'The work operates as historical memory of the bombing.',
-  'la-persistencia-de-la-memoria::ABOUT_CONCEPT::tiempo': 'The work is emblematic for thinking about time.',
-  'la-persistencia-de-la-memoria::ABOUT_CONCEPT::memoria': 'Its title and imagery point to memory and persistence.',
+  'la-persistencia-de-la-memoria::ABOUT_CONCEPT::tiempo':
+    'The work is emblematic for thinking about time.',
+  'la-persistencia-de-la-memoria::ABOUT_CONCEPT::memoria':
+    'Its title and imagery point to memory and persistence.',
   'las-dos-fridas::ABOUT_CONCEPT::identidad': 'Identity is one of its most evident axes.',
   'las-dos-fridas::ABOUT_CONCEPT::cuerpo': 'Bodily representation is central.',
   'las-dos-fridas::ABOUT_CONCEPT::dolor': 'Wound and suffering are visible.',
   'maman::ABOUT_CONCEPT::maternidad': 'The work is deeply tied to the maternal.',
   'maman::ABOUT_CONCEPT::memoria': 'Affective memory is central to the reading of the work.',
-  'maman::ABOUT_CONCEPT::cuerpo': 'The sculpture\'s bodily monumentality suggests it.',
-  'saturno-devorando-a-su-hijo::LOCATED_IN::museo-del-prado': 'The work is housed at Museo del Prado.',
+  'maman::ABOUT_CONCEPT::cuerpo': "The sculpture's bodily monumentality suggests it.",
+  'saturno-devorando-a-su-hijo::LOCATED_IN::museo-del-prado':
+    'The work is housed at Museo del Prado.',
   'el-tres-de-mayo-de-1808::LOCATED_IN::museo-del-prado': 'The work is housed at Museo del Prado.',
   'guernica::LOCATED_IN::museo-reina-sofia': 'The work is housed at Museo Reina Sofia.',
   'la-persistencia-de-la-memoria::LOCATED_IN::moma': 'The work is housed at MoMA.',
-  'maman::LOCATED_IN::guggenheim-bilbao': 'An emblematic version or installation is associated with Guggenheim Bilbao.',
-  'guernica::RELATED_TO::el-tres-de-mayo-de-1808': 'Both works invite reflection on historical violence and war.',
-  'la-persistencia-de-la-memoria::RELATED_TO::saturno-devorando-a-su-hijo': 'Both can be read through time and an unsettling dimension.',
-  'las-dos-fridas::RELATED_TO::maman': 'Both works engage with the body, affect, and personal experience.',
-  'saturno-devorando-a-su-hijo::RELATED_TO::guernica': 'Both articulate intense images of destruction and violence.',
+  'maman::LOCATED_IN::guggenheim-bilbao':
+    'An emblematic version or installation is associated with Guggenheim Bilbao.',
+  'guernica::RELATED_TO::el-tres-de-mayo-de-1808':
+    'Both works invite reflection on historical violence and war.',
+  'la-persistencia-de-la-memoria::RELATED_TO::saturno-devorando-a-su-hijo':
+    'Both can be read through time and an unsettling dimension.',
+  'las-dos-fridas::RELATED_TO::maman':
+    'Both works engage with the body, affect, and personal experience.',
+  'saturno-devorando-a-su-hijo::RELATED_TO::guernica':
+    'Both articulate intense images of destruction and violence.',
   'la-persistencia-de-la-memoria::MENTIONS::tiempo': 'Explicit mention in the content.',
   'la-persistencia-de-la-memoria::MENTIONS::memoria': 'Explicit mention in the content.',
   'las-dos-fridas::MENTIONS::identidad': 'Explicit mention in the content.',
@@ -1167,7 +1417,11 @@ async function seedEntityTranslations() {
       await prisma.conceptDetailsTranslation.upsert({
         where: { entityId_locale: { entityId: entity.id, locale: 'es' } },
         update: { definition: entity.concept.definition ?? null },
-        create: { entityId: entity.id, locale: 'es', definition: entity.concept.definition ?? null },
+        create: {
+          entityId: entity.id,
+          locale: 'es',
+          definition: entity.concept.definition ?? null,
+        },
       });
       await prisma.conceptDetailsTranslation.upsert({
         where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
@@ -1233,8 +1487,18 @@ async function seedSourceTranslations() {
     const english = requireDemoTranslation(SOURCE_EN_BY_KEY[sourceKey], `source:${sourceKey}`);
     await prisma.sourceTranslation.upsert({
       where: { sourceId_locale: { sourceId: source.id, locale: 'es' } },
-      update: { title: source.title, author: source.author ?? null, publisher: source.publisher ?? null },
-      create: { sourceId: source.id, locale: 'es', title: source.title, author: source.author ?? null, publisher: source.publisher ?? null },
+      update: {
+        title: source.title,
+        author: source.author ?? null,
+        publisher: source.publisher ?? null,
+      },
+      create: {
+        sourceId: source.id,
+        locale: 'es',
+        title: source.title,
+        author: source.author ?? null,
+        publisher: source.publisher ?? null,
+      },
     });
     await prisma.sourceTranslation.upsert({
       where: { sourceId_locale: { sourceId: source.id, locale: 'en' } },
@@ -1257,7 +1521,11 @@ async function seedRelationAndSourceRefTranslations() {
     await prisma.relationTranslation.upsert({
       where: { relationId_locale: { relationId: relation.id, locale: 'es' } },
       update: { justification: relation.justification ?? null },
-      create: { relationId: relation.id, locale: 'es', justification: relation.justification ?? null },
+      create: {
+        relationId: relation.id,
+        locale: 'es',
+        justification: relation.justification ?? null,
+      },
     });
     await prisma.relationTranslation.upsert({
       where: { relationId_locale: { relationId: relation.id, locale: 'en' } },
@@ -1279,7 +1547,12 @@ async function seedRelationAndSourceRefTranslations() {
     await prisma.sourceRefTranslation.upsert({
       where: { sourceRefId_locale: { sourceRefId: ref.id, locale: 'es' } },
       update: { quote: ref.quote ?? null, note: ref.note ?? null },
-      create: { sourceRefId: ref.id, locale: 'es', quote: ref.quote ?? null, note: ref.note ?? null },
+      create: {
+        sourceRefId: ref.id,
+        locale: 'es',
+        quote: ref.quote ?? null,
+        note: ref.note ?? null,
+      },
     });
     await prisma.sourceRefTranslation.upsert({
       where: { sourceRefId_locale: { sourceRefId: ref.id, locale: 'en' } },
@@ -1378,8 +1651,7 @@ async function main() {
   await prisma.periodDetails.create({
     data: {
       entityId: periodXIX.id,
-      definition:
-        'Periodo histórico y cultural comprendido entre 1801 y 1900.',
+      definition: 'Periodo histórico y cultural comprendido entre 1801 y 1900.',
     },
   });
 
@@ -1410,8 +1682,7 @@ async function main() {
   await prisma.periodDetails.create({
     data: {
       entityId: periodXX.id,
-      definition:
-        'Periodo histórico y cultural comprendido entre 1901 y 2000.',
+      definition: 'Periodo histórico y cultural comprendido entre 1901 y 2000.',
     },
   });
 
@@ -1446,8 +1717,7 @@ async function main() {
     type: 'MOVEMENT',
     title: 'Romanticismo',
     slug: 'romanticismo',
-    summary:
-      'Movimiento que enfatiza emoción, subjetividad, intensidad y experiencia histórica.',
+    summary: 'Movimiento que enfatiza emoción, subjetividad, intensidad y experiencia histórica.',
     content:
       'El Romanticismo privilegia la emoción, la imaginación, lo sublime, el dramatismo y una relación intensa entre arte, historia y experiencia humana.',
     media: {
@@ -1463,8 +1733,7 @@ async function main() {
     type: 'MOVEMENT',
     title: 'Cubismo',
     slug: 'cubismo',
-    summary:
-      'Movimiento de vanguardia que fragmenta y reorganiza la representación.',
+    summary: 'Movimiento de vanguardia que fragmenta y reorganiza la representación.',
     content:
       'El Cubismo reformula la representación mediante la fragmentación del plano y la multiplicidad de puntos de vista.',
     media: {
@@ -1486,8 +1755,7 @@ async function main() {
     type: 'MOVEMENT',
     title: 'Surrealismo',
     slug: 'surrealismo',
-    summary:
-      'Movimiento que explora sueño, subconsciente, deseo e irracionalidad.',
+    summary: 'Movimiento que explora sueño, subconsciente, deseo e irracionalidad.',
     content:
       'El Surrealismo explora asociaciones libres, imágenes oníricas y relaciones inesperadas entre objetos, tiempo y memoria.',
     media: {
@@ -1509,8 +1777,7 @@ async function main() {
     type: 'MOVEMENT',
     title: 'Arte moderno',
     slug: 'arte-moderno',
-    summary:
-      'Conjunto amplio de prácticas artísticas que redefinen la modernidad visual.',
+    summary: 'Conjunto amplio de prácticas artísticas que redefinen la modernidad visual.',
     content:
       'El arte moderno reúne procesos de ruptura formal, experimentación material y nuevas formas de ver el mundo.',
     media: {
@@ -1538,8 +1805,7 @@ async function main() {
     type: 'MOVEMENT',
     title: 'Arte contemporáneo',
     slug: 'arte-contemporaneo',
-    summary:
-      'Prácticas artísticas contemporáneas, híbridas y conceptuales.',
+    summary: 'Prácticas artísticas contemporáneas, híbridas y conceptuales.',
     content:
       'El arte contemporáneo incorpora instalación, performance, escultura expandida, crítica institucional y una fuerte dimensión conceptual.',
     media: {
@@ -1559,11 +1825,45 @@ async function main() {
     },
   });
 
-  const barroco = await createEntityWithOptionalPrimaryMedia({ type: 'MOVEMENT', title: 'Barroco', slug: 'barroco', summary: 'Dramatismo, teatralidad, poder e imagen religiosa.', content: 'El Barroco intensifica la emoción, el cuerpo, la luz, la propaganda política y la experiencia religiosa.' });
-  const popArt = await createEntityWithOptionalPrimaryMedia({ type: 'MOVEMENT', title: 'Pop Art', slug: 'pop-art', summary: 'Consumo, medios de masas, celebridad e imagen popular.', content: 'El Pop Art trabaja con publicidad, cine, prensa, consumo, repetición y cultura visual urbana.' });
-  const dadaismo = await createEntityWithOptionalPrimaryMedia({ type: 'MOVEMENT', title: 'Dadaísmo', slug: 'dadaismo', summary: 'Antiarte, gesto crítico, objeto encontrado y ruptura institucional.', content: 'El Dadaísmo cuestiona autoría, gusto, museo y sentido estable de la obra de arte.' });
-  const expresionismo = await createEntityWithOptionalPrimaryMedia({ type: 'MOVEMENT', title: 'Expresionismo', slug: 'expresionismo', summary: 'Intensidad emocional, cuerpo deformado y ansiedad moderna.', content: 'El Expresionismo hace visible angustia, violencia interior, cuerpo vulnerable y crisis de la modernidad.' });
-  const realismoAmericano = await createEntityWithOptionalPrimaryMedia({ type: 'MOVEMENT', title: 'Realismo americano', slug: 'realismo-americano', summary: 'Ciudad, soledad moderna, escena cotidiana y mirada contenida.', content: 'El realismo americano observa la vida urbana, el aislamiento, la arquitectura y la psicología de lo cotidiano.' });
+  const barroco = await createEntityWithOptionalPrimaryMedia({
+    type: 'MOVEMENT',
+    title: 'Barroco',
+    slug: 'barroco',
+    summary: 'Dramatismo, teatralidad, poder e imagen religiosa.',
+    content:
+      'El Barroco intensifica la emoción, el cuerpo, la luz, la propaganda política y la experiencia religiosa.',
+  });
+  const popArt = await createEntityWithOptionalPrimaryMedia({
+    type: 'MOVEMENT',
+    title: 'Pop Art',
+    slug: 'pop-art',
+    summary: 'Consumo, medios de masas, celebridad e imagen popular.',
+    content:
+      'El Pop Art trabaja con publicidad, cine, prensa, consumo, repetición y cultura visual urbana.',
+  });
+  const dadaismo = await createEntityWithOptionalPrimaryMedia({
+    type: 'MOVEMENT',
+    title: 'Dadaísmo',
+    slug: 'dadaismo',
+    summary: 'Antiarte, gesto crítico, objeto encontrado y ruptura institucional.',
+    content: 'El Dadaísmo cuestiona autoría, gusto, museo y sentido estable de la obra de arte.',
+  });
+  const expresionismo = await createEntityWithOptionalPrimaryMedia({
+    type: 'MOVEMENT',
+    title: 'Expresionismo',
+    slug: 'expresionismo',
+    summary: 'Intensidad emocional, cuerpo deformado y ansiedad moderna.',
+    content:
+      'El Expresionismo hace visible angustia, violencia interior, cuerpo vulnerable y crisis de la modernidad.',
+  });
+  const realismoAmericano = await createEntityWithOptionalPrimaryMedia({
+    type: 'MOVEMENT',
+    title: 'Realismo americano',
+    slug: 'realismo-americano',
+    summary: 'Ciudad, soledad moderna, escena cotidiana y mirada contenida.',
+    content:
+      'El realismo americano observa la vida urbana, el aislamiento, la arquitectura y la psicología de lo cotidiano.',
+  });
 
   console.log('💡 Creating concepts...');
 
@@ -1652,8 +1952,7 @@ async function main() {
   await prisma.conceptDetails.create({
     data: {
       entityId: guerra.id,
-      definition:
-        'Concepto asociado a conflicto armado, violencia, trauma y memoria histórica.',
+      definition: 'Concepto asociado a conflicto armado, violencia, trauma y memoria histórica.',
     },
   });
 
@@ -1748,8 +2047,7 @@ async function main() {
   await prisma.conceptDetails.create({
     data: {
       entityId: dolor.id,
-      definition:
-        'Concepto que remite a sufrimiento, herida, pérdida y experiencia vulnerable.',
+      definition: 'Concepto que remite a sufrimiento, herida, pérdida y experiencia vulnerable.',
     },
   });
 
@@ -1804,8 +2102,7 @@ async function main() {
   await prisma.conceptDetails.create({
     data: {
       entityId: violencia.id,
-      definition:
-        'Concepto asociado a daño, imposición, trauma, ruptura y conflicto.',
+      definition: 'Concepto asociado a daño, imposición, trauma, ruptura y conflicto.',
     },
   });
 
@@ -1814,48 +2111,166 @@ async function main() {
     title: 'Muerte',
     slug: 'muerte',
     summary: 'Finitud, duelo, desaparición y memoria ritual.',
-    content: 'La muerte atraviesa vanitas, martirios, memoria familiar, duelo moderno y preguntas sobre la permanencia de las imágenes.',
+    content:
+      'La muerte atraviesa vanitas, martirios, memoria familiar, duelo moderno y preguntas sobre la permanencia de las imágenes.',
   });
-  await prisma.conceptDetails.create({ data: { entityId: muerte.id, definition: 'Concepto asociado a finitud, duelo, memoria y representación del límite vital.' } });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: muerte.id,
+      definition: 'Concepto asociado a finitud, duelo, memoria y representación del límite vital.',
+    },
+  });
 
-  const poder = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Poder', slug: 'poder', summary: 'Autoridad, representación política, control y propaganda.', content: 'El poder se representa en retratos oficiales, arquitectura, imágenes religiosas, cuerpos disciplinados y cultura de masas.' });
-  await prisma.conceptDetails.create({ data: { entityId: poder.id, definition: 'Concepto ligado a autoridad, dominio, representación pública e imagen política.' } });
+  const poder = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Poder',
+    slug: 'poder',
+    summary: 'Autoridad, representación política, control y propaganda.',
+    content:
+      'El poder se representa en retratos oficiales, arquitectura, imágenes religiosas, cuerpos disciplinados y cultura de masas.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: poder.id,
+      definition: 'Concepto ligado a autoridad, dominio, representación pública e imagen política.',
+    },
+  });
 
-  const religion = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Religión', slug: 'religion', summary: 'Creencia, rito, iconografía y experiencia espiritual.', content: 'La religión organiza imágenes de devoción, sacrificio, comunidad, misterio, muerte y trascendencia.' });
-  await prisma.conceptDetails.create({ data: { entityId: religion.id, definition: 'Concepto asociado a rito, fe, iconografía y experiencia espiritual.' } });
+  const religion = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Religión',
+    slug: 'religion',
+    summary: 'Creencia, rito, iconografía y experiencia espiritual.',
+    content:
+      'La religión organiza imágenes de devoción, sacrificio, comunidad, misterio, muerte y trascendencia.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: religion.id,
+      definition: 'Concepto asociado a rito, fe, iconografía y experiencia espiritual.',
+    },
+  });
 
-  const naturaleza = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Naturaleza', slug: 'naturaleza', summary: 'Paisaje, materia viva, clima y relación con el mundo natural.', content: 'La naturaleza aparece como paisaje, refugio, amenaza, materia, símbolo y campo de transformación cultural.' });
-  await prisma.conceptDetails.create({ data: { entityId: naturaleza.id, definition: 'Concepto vinculado a paisaje, vida, materia y entorno.' } });
+  const naturaleza = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Naturaleza',
+    slug: 'naturaleza',
+    summary: 'Paisaje, materia viva, clima y relación con el mundo natural.',
+    content:
+      'La naturaleza aparece como paisaje, refugio, amenaza, materia, símbolo y campo de transformación cultural.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: naturaleza.id,
+      definition: 'Concepto vinculado a paisaje, vida, materia y entorno.',
+    },
+  });
 
-  const ciudad = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Ciudad', slug: 'ciudad', summary: 'Modernidad urbana, arquitectura, soledad y vida colectiva.', content: 'La ciudad condensa experiencia moderna, anonimato, espectáculo, trabajo, publicidad y nuevas formas de mirar.' });
-  await prisma.conceptDetails.create({ data: { entityId: ciudad.id, definition: 'Concepto asociado a espacio urbano, modernidad y vida social.' } });
+  const ciudad = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Ciudad',
+    slug: 'ciudad',
+    summary: 'Modernidad urbana, arquitectura, soledad y vida colectiva.',
+    content:
+      'La ciudad condensa experiencia moderna, anonimato, espectáculo, trabajo, publicidad y nuevas formas de mirar.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: ciudad.id,
+      definition: 'Concepto asociado a espacio urbano, modernidad y vida social.',
+    },
+  });
 
-  const deporte = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Deporte', slug: 'deporte', summary: 'Cuerpo, competición, masa social y cultura visual popular.', content: 'El deporte conecta cuerpo, movimiento, espectáculo, identidad colectiva, medios de masas y representación contemporánea.' });
-  await prisma.conceptDetails.create({ data: { entityId: deporte.id, definition: 'Concepto que vincula cuerpo, juego, competición e imaginario social.' } });
+  const deporte = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Deporte',
+    slug: 'deporte',
+    summary: 'Cuerpo, competición, masa social y cultura visual popular.',
+    content:
+      'El deporte conecta cuerpo, movimiento, espectáculo, identidad colectiva, medios de masas y representación contemporánea.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: deporte.id,
+      definition: 'Concepto que vincula cuerpo, juego, competición e imaginario social.',
+    },
+  });
 
-  const futbol = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Fútbol', slug: 'futbol', summary: 'Juego, multitud, identidad colectiva y espectáculo popular.', content: 'El fútbol puede leerse desde deporte, cuerpo, ritual colectivo, ciudad, nación, cultura de masas y estética del movimiento.' });
-  await prisma.conceptDetails.create({ data: { entityId: futbol.id, definition: 'Concepto asociado a deporte, multitud, identidad popular y cultura visual.' } });
+  const futbol = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Fútbol',
+    slug: 'futbol',
+    summary: 'Juego, multitud, identidad colectiva y espectáculo popular.',
+    content:
+      'El fútbol puede leerse desde deporte, cuerpo, ritual colectivo, ciudad, nación, cultura de masas y estética del movimiento.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: futbol.id,
+      definition: 'Concepto asociado a deporte, multitud, identidad popular y cultura visual.',
+    },
+  });
 
-  const genero = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Género', slug: 'genero', summary: 'Identidad, cuerpo, roles sociales y representación.', content: 'El género permite leer cómo las imágenes construyen mujer, masculinidad, deseo, norma, poder y diferencia.' });
-  await prisma.conceptDetails.create({ data: { entityId: genero.id, definition: 'Concepto asociado a identidad, cuerpo, roles sociales y representación cultural.' } });
+  const genero = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Género',
+    slug: 'genero',
+    summary: 'Identidad, cuerpo, roles sociales y representación.',
+    content:
+      'El género permite leer cómo las imágenes construyen mujer, masculinidad, deseo, norma, poder y diferencia.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: genero.id,
+      definition:
+        'Concepto asociado a identidad, cuerpo, roles sociales y representación cultural.',
+    },
+  });
 
-  const vejez = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Vejez', slug: 'vejez', summary: 'Tiempo vivido, fragilidad, memoria y dignidad del cuerpo.', content: 'La vejez en arte aparece como huella del tiempo, sabiduría, vulnerabilidad, retrato psicológico y conciencia de la muerte.' });
-  await prisma.conceptDetails.create({ data: { entityId: vejez.id, definition: 'Concepto vinculado a tiempo, cuerpo, memoria y finitud.' } });
+  const vejez = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Vejez',
+    slug: 'vejez',
+    summary: 'Tiempo vivido, fragilidad, memoria y dignidad del cuerpo.',
+    content:
+      'La vejez en arte aparece como huella del tiempo, sabiduría, vulnerabilidad, retrato psicológico y conciencia de la muerte.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: vejez.id,
+      definition: 'Concepto vinculado a tiempo, cuerpo, memoria y finitud.',
+    },
+  });
 
-  const juventud = await createEntityWithOptionalPrimaryMedia({ type: 'CONCEPT', title: 'Juventud', slug: 'juventud', summary: 'Energía, formación, belleza, rebeldía y promesa.', content: 'La juventud aparece como ideal, potencia física, aprendizaje, deseo, moda, rebeldía y construcción social.' });
-  await prisma.conceptDetails.create({ data: { entityId: juventud.id, definition: 'Concepto asociado a energía vital, promesa, cuerpo joven e identidad en formación.' } });
+  const juventud = await createEntityWithOptionalPrimaryMedia({
+    type: 'CONCEPT',
+    title: 'Juventud',
+    slug: 'juventud',
+    summary: 'Energía, formación, belleza, rebeldía y promesa.',
+    content:
+      'La juventud aparece como ideal, potencia física, aprendizaje, deseo, moda, rebeldía y construcción social.',
+  });
+  await prisma.conceptDetails.create({
+    data: {
+      entityId: juventud.id,
+      definition:
+        'Concepto asociado a energía vital, promesa, cuerpo joven e identidad en formación.',
+    },
+  });
   const himitsubako = await createEntityWithOptionalPrimaryMedia({
     type: 'CONCEPT',
     title: 'Himitsubako',
     slug: 'himitsubako',
     summary: 'Caja japonesa de madera con mecanismo oculto y apertura secuencial.',
-    content: 'Himitsubako designa una caja japonesa de rompecabezas hecha en madera, ligada a la marquetería yosegi, al secreto, al gesto manual y al ingenio artesanal. Sirve como caso fuerte para búsquedas como caja japonesa secreta, caja de madera con truco o japanese puzzle box.',
+    content:
+      'Himitsubako designa una caja japonesa de rompecabezas hecha en madera, ligada a la marquetería yosegi, al secreto, al gesto manual y al ingenio artesanal. Sirve como caso fuerte para búsquedas como caja japonesa secreta, caja de madera con truco o japanese puzzle box.',
     contentLevel: 'INTERMEDIATE',
   });
   await prisma.conceptDetails.create({
     data: {
       entityId: himitsubako.id,
-      definition: 'Concepto asociado a cajas japonesas de rompecabezas en madera, apertura oculta, secuencias manuales y tradición artesanal.',
+      definition:
+        'Concepto asociado a cajas japonesas de rompecabezas en madera, apertura oculta, secuencias manuales y tradición artesanal.',
     },
   });
 
@@ -1882,8 +2297,7 @@ async function main() {
     title: 'Museo Reina Sofía',
     slug: 'museo-reina-sofia',
     summary: 'Museo nacional de arte moderno y contemporáneo en Madrid.',
-    content:
-      'Institución clave para el estudio del arte moderno y contemporáneo en España.',
+    content: 'Institución clave para el estudio del arte moderno y contemporáneo en España.',
     media: {
       url: 'https://upload.wikimedia.org/wikipedia/commons/0/02/MNCARS_entrada_principal.jpg',
       alt: 'Entrada principal del Museo Reina Sofía',
@@ -1898,8 +2312,7 @@ async function main() {
     title: 'MoMA',
     slug: 'moma',
     summary: 'Museum of Modern Art de Nueva York.',
-    content:
-      'Museo central para el estudio del arte moderno y contemporáneo internacional.',
+    content: 'Museo central para el estudio del arte moderno y contemporáneo internacional.',
     media: {
       url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/The_Museum_of_Modern_Art%2C_MoMA%2C_New_York_%2850415923226%29.jpg',
       canonicalUrl:
@@ -1984,8 +2397,7 @@ async function main() {
     type: 'ARTIST',
     title: 'Pablo Picasso',
     slug: 'pablo-picasso',
-    summary:
-      'Pintor, escultor y creador español, figura central del arte del siglo XX.',
+    summary: 'Pintor, escultor y creador español, figura central del arte del siglo XX.',
     content:
       'Pablo Picasso fue una figura decisiva del arte moderno. Su obra abarca pintura, escultura, grabado y experimentación formal, con un papel esencial en el Cubismo.',
     startYear: 1881,
@@ -2007,8 +2419,7 @@ async function main() {
       birthYear: 1881,
       deathYear: 1973,
       disciplines: 'Pintura, Escultura, Grabado',
-      bioShort:
-        'Figura central de la vanguardia del siglo XX y cofundador del Cubismo.',
+      bioShort: 'Figura central de la vanguardia del siglo XX y cofundador del Cubismo.',
       links: 'https://www.museoreinasofia.es',
     },
   });
@@ -2017,8 +2428,7 @@ async function main() {
     type: 'ARTIST',
     title: 'Salvador Dalí',
     slug: 'salvador-dali',
-    summary:
-      'Artista español asociado al Surrealismo y a la exploración de imágenes oníricas.',
+    summary: 'Artista español asociado al Surrealismo y a la exploración de imágenes oníricas.',
     content:
       'Salvador Dalí desarrolló una obra intensamente reconocible, marcada por imágenes de sueño, asociaciones insólitas y reflexiones visuales sobre el tiempo y el deseo.',
     startYear: 1904,
@@ -2059,8 +2469,10 @@ async function main() {
     media: {
       url: 'https://upload.wikimedia.org/wikipedia/commons/0/06/Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
       canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
-      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/06/Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
-      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
+      displayUrl:
+        'https://upload.wikimedia.org/wikipedia/commons/0/06/Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
+      sourcePageUrl:
+        'https://commons.wikimedia.org/wiki/File:Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg',
       mimeType: 'image/jpeg',
       width: 1197,
       height: 1795,
@@ -2091,8 +2503,7 @@ async function main() {
     type: 'ARTIST',
     title: 'Louise Bourgeois',
     slug: 'louise-bourgeois',
-    summary:
-      'Artista franco-estadounidense fundamental para la escultura y el arte contemporáneo.',
+    summary: 'Artista franco-estadounidense fundamental para la escultura y el arte contemporáneo.',
     content:
       'Louise Bourgeois desarrolló una obra de enorme intensidad psicológica, vinculada a memoria, cuerpo, maternidad, dolor y espacio escultórico.',
     startYear: 1911,
@@ -2100,7 +2511,8 @@ async function main() {
     media: {
       url: 'https://upload.wikimedia.org/wikipedia/commons/1/10/Louise_Bourgeois%2C_c._2000.jpg',
       canonicalUrl: 'https://commons.wikimedia.org/wiki/File:Louise_Bourgeois,_c._2000.jpg',
-      displayUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/10/Louise_Bourgeois%2C_c._2000.jpg',
+      displayUrl:
+        'https://upload.wikimedia.org/wikipedia/commons/1/10/Louise_Bourgeois%2C_c._2000.jpg',
       sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Louise_Bourgeois,_c._2000.jpg',
       mimeType: 'image/jpeg',
       width: 1054,
@@ -2128,23 +2540,144 @@ async function main() {
     },
   });
 
-  const miro = await createEntityWithOptionalPrimaryMedia({ type: 'ARTIST', title: 'Joan Miró', slug: 'joan-miro', summary: 'Artista catalán vinculado a surrealismo, signo, infancia visual y abstracción poética.', content: 'Joan Miró construyó un lenguaje de signos, cuerpos, estrellas y espacios abiertos entre surrealismo, juego y modernidad.', startYear: 1893, endYear: 1983 });
-  await prisma.artistDetails.create({ data: { entityId: miro.id, country: 'España', city: 'Barcelona', birthYear: 1893, deathYear: 1983, disciplines: 'Pintura, Escultura, Cerámica', bioShort: 'Figura moderna entre surrealismo, signo y poética visual.', links: null } });
+  const miro = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTIST',
+    title: 'Joan Miró',
+    slug: 'joan-miro',
+    summary:
+      'Artista catalán vinculado a surrealismo, signo, infancia visual y abstracción poética.',
+    content:
+      'Joan Miró construyó un lenguaje de signos, cuerpos, estrellas y espacios abiertos entre surrealismo, juego y modernidad.',
+    startYear: 1893,
+    endYear: 1983,
+  });
+  await prisma.artistDetails.create({
+    data: {
+      entityId: miro.id,
+      country: 'España',
+      city: 'Barcelona',
+      birthYear: 1893,
+      deathYear: 1983,
+      disciplines: 'Pintura, Escultura, Cerámica',
+      bioShort: 'Figura moderna entre surrealismo, signo y poética visual.',
+      links: null,
+    },
+  });
 
-  const velazquez = await createEntityWithOptionalPrimaryMedia({ type: 'ARTIST', title: 'Diego Velázquez', slug: 'diego-velazquez', summary: 'Pintor barroco español clave para pensar poder, mirada y representación.', content: 'Velázquez transformó el retrato cortesano en una investigación sobre poder, presencia, mirada y artificio pictórico.', startYear: 1599, endYear: 1660 });
-  await prisma.artistDetails.create({ data: { entityId: velazquez.id, country: 'España', city: 'Sevilla', birthYear: 1599, deathYear: 1660, disciplines: 'Pintura', bioShort: 'Maestro del Barroco español y de la representación del poder.', links: null } });
+  const velazquez = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTIST',
+    title: 'Diego Velázquez',
+    slug: 'diego-velazquez',
+    summary: 'Pintor barroco español clave para pensar poder, mirada y representación.',
+    content:
+      'Velázquez transformó el retrato cortesano en una investigación sobre poder, presencia, mirada y artificio pictórico.',
+    startYear: 1599,
+    endYear: 1660,
+  });
+  await prisma.artistDetails.create({
+    data: {
+      entityId: velazquez.id,
+      country: 'España',
+      city: 'Sevilla',
+      birthYear: 1599,
+      deathYear: 1660,
+      disciplines: 'Pintura',
+      bioShort: 'Maestro del Barroco español y de la representación del poder.',
+      links: null,
+    },
+  });
 
-  const hopper = await createEntityWithOptionalPrimaryMedia({ type: 'ARTIST', title: 'Edward Hopper', slug: 'edward-hopper', summary: 'Pintor estadounidense de ciudad, soledad, espera y vida moderna.', content: 'Hopper convirtió arquitectura, luz y escenas cotidianas en imágenes de aislamiento y modernidad urbana.', startYear: 1882, endYear: 1967 });
-  await prisma.artistDetails.create({ data: { entityId: hopper.id, country: 'Estados Unidos', city: 'Nyack', birthYear: 1882, deathYear: 1967, disciplines: 'Pintura, Grabado', bioShort: 'Pintor de la soledad urbana y la escena moderna.', links: null } });
+  const hopper = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTIST',
+    title: 'Edward Hopper',
+    slug: 'edward-hopper',
+    summary: 'Pintor estadounidense de ciudad, soledad, espera y vida moderna.',
+    content:
+      'Hopper convirtió arquitectura, luz y escenas cotidianas en imágenes de aislamiento y modernidad urbana.',
+    startYear: 1882,
+    endYear: 1967,
+  });
+  await prisma.artistDetails.create({
+    data: {
+      entityId: hopper.id,
+      country: 'Estados Unidos',
+      city: 'Nyack',
+      birthYear: 1882,
+      deathYear: 1967,
+      disciplines: 'Pintura, Grabado',
+      bioShort: 'Pintor de la soledad urbana y la escena moderna.',
+      links: null,
+    },
+  });
 
-  const bacon = await createEntityWithOptionalPrimaryMedia({ type: 'ARTIST', title: 'Francis Bacon', slug: 'francis-bacon', summary: 'Pintor de cuerpo, violencia, carne, encierro y angustia moderna.', content: 'Bacon trabaja la figura humana como cuerpo vulnerable, deformado y sometido a fuerzas de violencia psicológica.', startYear: 1909, endYear: 1992 });
-  await prisma.artistDetails.create({ data: { entityId: bacon.id, country: 'Irlanda / Reino Unido', city: 'Dublin', birthYear: 1909, deathYear: 1992, disciplines: 'Pintura', bioShort: 'Pintor esencial para leer cuerpo, violencia y angustia moderna.', links: null } });
+  const bacon = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTIST',
+    title: 'Francis Bacon',
+    slug: 'francis-bacon',
+    summary: 'Pintor de cuerpo, violencia, carne, encierro y angustia moderna.',
+    content:
+      'Bacon trabaja la figura humana como cuerpo vulnerable, deformado y sometido a fuerzas de violencia psicológica.',
+    startYear: 1909,
+    endYear: 1992,
+  });
+  await prisma.artistDetails.create({
+    data: {
+      entityId: bacon.id,
+      country: 'Irlanda / Reino Unido',
+      city: 'Dublin',
+      birthYear: 1909,
+      deathYear: 1992,
+      disciplines: 'Pintura',
+      bioShort: 'Pintor esencial para leer cuerpo, violencia y angustia moderna.',
+      links: null,
+    },
+  });
 
-  const duchamp = await createEntityWithOptionalPrimaryMedia({ type: 'ARTIST', title: 'Marcel Duchamp', slug: 'marcel-duchamp', summary: 'Artista que transformó autoría, objeto, juego y definición de arte.', content: 'Duchamp desplaza el arte hacia idea, elección, ironía, deporte mental, juego y crítica institucional.', startYear: 1887, endYear: 1968 });
-  await prisma.artistDetails.create({ data: { entityId: duchamp.id, country: 'Francia / Estados Unidos', city: 'Blainville-Crevon', birthYear: 1887, deathYear: 1968, disciplines: 'Objeto, Pintura, Conceptual', bioShort: 'Figura decisiva del ready-made y la crítica a la institución arte.', links: null } });
+  const duchamp = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTIST',
+    title: 'Marcel Duchamp',
+    slug: 'marcel-duchamp',
+    summary: 'Artista que transformó autoría, objeto, juego y definición de arte.',
+    content:
+      'Duchamp desplaza el arte hacia idea, elección, ironía, deporte mental, juego y crítica institucional.',
+    startYear: 1887,
+    endYear: 1968,
+  });
+  await prisma.artistDetails.create({
+    data: {
+      entityId: duchamp.id,
+      country: 'Francia / Estados Unidos',
+      city: 'Blainville-Crevon',
+      birthYear: 1887,
+      deathYear: 1968,
+      disciplines: 'Objeto, Pintura, Conceptual',
+      bioShort: 'Figura decisiva del ready-made y la crítica a la institución arte.',
+      links: null,
+    },
+  });
 
-  const warhol = await createEntityWithOptionalPrimaryMedia({ type: 'ARTIST', title: 'Andy Warhol', slug: 'andy-warhol', summary: 'Artista del Pop Art asociado a consumo, celebridad, repetición y medios.', content: 'Warhol lee la cultura visual moderna desde la publicidad, la fama, la reproducción técnica y la superficie mediática.', startYear: 1928, endYear: 1987 });
-  await prisma.artistDetails.create({ data: { entityId: warhol.id, country: 'Estados Unidos', city: 'Pittsburgh', birthYear: 1928, deathYear: 1987, disciplines: 'Pintura, Serigrafía, Cine', bioShort: 'Figura central del Pop Art y de la imagen mediática.', links: null } });
+  const warhol = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTIST',
+    title: 'Andy Warhol',
+    slug: 'andy-warhol',
+    summary: 'Artista del Pop Art asociado a consumo, celebridad, repetición y medios.',
+    content:
+      'Warhol lee la cultura visual moderna desde la publicidad, la fama, la reproducción técnica y la superficie mediática.',
+    startYear: 1928,
+    endYear: 1987,
+  });
+  await prisma.artistDetails.create({
+    data: {
+      entityId: warhol.id,
+      country: 'Estados Unidos',
+      city: 'Pittsburgh',
+      birthYear: 1928,
+      deathYear: 1987,
+      disciplines: 'Pintura, Serigrafía, Cine',
+      bioShort: 'Figura central del Pop Art y de la imagen mediática.',
+      links: null,
+    },
+  });
 
   console.log('🖼 Creating artworks...');
 
@@ -2185,8 +2718,7 @@ async function main() {
     type: 'ARTWORK',
     title: 'El tres de mayo de 1808',
     slug: 'el-tres-de-mayo-de-1808',
-    summary:
-      'Pintura histórica de Goya sobre la violencia de la guerra y la ejecución.',
+    summary: 'Pintura histórica de Goya sobre la violencia de la guerra y la ejecución.',
     content:
       'Obra central para pensar [[guerra]], [[violencia]] y memoria histórica. Su dramatismo visual y su dimensión política la convierten en una imagen decisiva de la modernidad.',
     startYear: 1814,
@@ -2260,8 +2792,7 @@ async function main() {
     type: 'ARTWORK',
     title: 'La persistencia de la memoria',
     slug: 'la-persistencia-de-la-memoria',
-    summary:
-      'Obra icónica de Dalí sobre tiempo, sueño, inestabilidad y percepción.',
+    summary: 'Obra icónica de Dalí sobre tiempo, sueño, inestabilidad y percepción.',
     content:
       'Esta obra se conecta directamente con [[tiempo]] y [[memoria]], y también con el imaginario del [[surrealismo]].',
     startYear: 1931,
@@ -2299,8 +2830,7 @@ async function main() {
     type: 'ARTWORK',
     title: 'Las dos Fridas',
     slug: 'las-dos-fridas',
-    summary:
-      'Doble autorrepresentación de Frida Kahlo vinculada a identidad, cuerpo y dolor.',
+    summary: 'Doble autorrepresentación de Frida Kahlo vinculada a identidad, cuerpo y dolor.',
     content:
       'Obra clave para pensar [[identidad]], [[cuerpo]] y [[dolor]] desde la autorrepresentación. También puede leerse desde memoria afectiva y escisión interior.',
     startYear: 1939,
@@ -2377,41 +2907,291 @@ async function main() {
     },
   });
 
-  const lasMeninas = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'Las meninas', slug: 'las-meninas', summary: 'Obra de Velázquez sobre poder, mirada, representación y espacio cortesano.', content: 'Las meninas permite leer poder, infancia, mirada, artificio pictórico y representación política en el Barroco.', startYear: 1656, endYear: 1656, contentLevel: 'INTERMEDIATE' });
-  await prisma.artworkDetails.create({ data: { entityId: lasMeninas.id, authorNation: 'Española', technique: 'Óleo sobre lienzo', materials: 'Óleo', dimensions: null, location: 'Museo del Prado, Madrid', collection: 'Colección permanente', state: 'Conservada' } });
+  const lasMeninas = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'Las meninas',
+    slug: 'las-meninas',
+    summary: 'Obra de Velázquez sobre poder, mirada, representación y espacio cortesano.',
+    content:
+      'Las meninas permite leer poder, infancia, mirada, artificio pictórico y representación política en el Barroco.',
+    startYear: 1656,
+    endYear: 1656,
+    contentLevel: 'INTERMEDIATE',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: lasMeninas.id,
+      authorNation: 'Española',
+      technique: 'Óleo sobre lienzo',
+      materials: 'Óleo',
+      dimensions: null,
+      location: 'Museo del Prado, Madrid',
+      collection: 'Colección permanente',
+      state: 'Conservada',
+    },
+  });
 
-  const oldGuitarist = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'El viejo guitarrista', slug: 'el-viejo-guitarrista', summary: 'Obra del periodo azul de Picasso sobre vejez, pobreza, cuerpo y melancolía.', content: 'El viejo guitarrista conecta vejez, cuerpo, dolor, pobreza y música como imagen de vulnerabilidad moderna.', startYear: 1903, endYear: 1904, contentLevel: 'INTERMEDIATE' });
-  await prisma.artworkDetails.create({ data: { entityId: oldGuitarist.id, authorNation: 'Española', technique: 'Óleo sobre tabla', materials: 'Óleo', dimensions: null, location: 'Art Institute of Chicago', collection: 'Colección permanente', state: 'Conservada' } });
+  const oldGuitarist = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'El viejo guitarrista',
+    slug: 'el-viejo-guitarrista',
+    summary: 'Obra del periodo azul de Picasso sobre vejez, pobreza, cuerpo y melancolía.',
+    content:
+      'El viejo guitarrista conecta vejez, cuerpo, dolor, pobreza y música como imagen de vulnerabilidad moderna.',
+    startYear: 1903,
+    endYear: 1904,
+    contentLevel: 'INTERMEDIATE',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: oldGuitarist.id,
+      authorNation: 'Española',
+      technique: 'Óleo sobre tabla',
+      materials: 'Óleo',
+      dimensions: null,
+      location: 'Art Institute of Chicago',
+      collection: 'Colección permanente',
+      state: 'Conservada',
+    },
+  });
 
-  const demoiselles = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'Las señoritas de Avignon', slug: 'las-senoritas-de-avignon', summary: 'Obra clave de Picasso para cubismo, cuerpo, género y ruptura moderna.', content: 'Las señoritas de Avignon abre una lectura sobre cuerpo, género, violencia visual, máscara y nacimiento del cubismo.', startYear: 1907, endYear: 1907, contentLevel: 'ADVANCED' });
-  await prisma.artworkDetails.create({ data: { entityId: demoiselles.id, authorNation: 'Española', technique: 'Óleo sobre lienzo', materials: 'Óleo', dimensions: null, location: 'MoMA, New York', collection: 'Colección permanente', state: 'Conservada' } });
+  const demoiselles = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'Las señoritas de Avignon',
+    slug: 'las-senoritas-de-avignon',
+    summary: 'Obra clave de Picasso para cubismo, cuerpo, género y ruptura moderna.',
+    content:
+      'Las señoritas de Avignon abre una lectura sobre cuerpo, género, violencia visual, máscara y nacimiento del cubismo.',
+    startYear: 1907,
+    endYear: 1907,
+    contentLevel: 'ADVANCED',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: demoiselles.id,
+      authorNation: 'Española',
+      technique: 'Óleo sobre lienzo',
+      materials: 'Óleo',
+      dimensions: null,
+      location: 'MoMA, New York',
+      collection: 'Colección permanente',
+      state: 'Conservada',
+    },
+  });
 
-  const carnivalHarlequin = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'El carnaval de Arlequín', slug: 'el-carnaval-de-arlequin', summary: 'Obra de Miró sobre juego, cuerpo, signo y espacio surrealista.', content: 'El carnaval de Arlequín conecta surrealismo, juventud visual, juego, cuerpo fragmentado y libertad imaginativa.', startYear: 1924, endYear: 1925, contentLevel: 'INTERMEDIATE' });
-  await prisma.artworkDetails.create({ data: { entityId: carnivalHarlequin.id, authorNation: 'Española', technique: 'Óleo sobre lienzo', materials: 'Óleo', dimensions: null, location: 'Albright-Knox Art Gallery', collection: 'Colección permanente', state: 'Conservada' } });
+  const carnivalHarlequin = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'El carnaval de Arlequín',
+    slug: 'el-carnaval-de-arlequin',
+    summary: 'Obra de Miró sobre juego, cuerpo, signo y espacio surrealista.',
+    content:
+      'El carnaval de Arlequín conecta surrealismo, juventud visual, juego, cuerpo fragmentado y libertad imaginativa.',
+    startYear: 1924,
+    endYear: 1925,
+    contentLevel: 'INTERMEDIATE',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: carnivalHarlequin.id,
+      authorNation: 'Española',
+      technique: 'Óleo sobre lienzo',
+      materials: 'Óleo',
+      dimensions: null,
+      location: 'Albright-Knox Art Gallery',
+      collection: 'Colección permanente',
+      state: 'Conservada',
+    },
+  });
 
-  const nighthawks = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'Nighthawks', slug: 'nighthawks', summary: 'Escena urbana de Hopper sobre ciudad, noche, aislamiento y modernidad.', content: 'Nighthawks condensa ciudad, soledad, luz artificial, espera y cultura visual moderna.', startYear: 1942, endYear: 1942, contentLevel: 'INTERMEDIATE' });
-  await prisma.artworkDetails.create({ data: { entityId: nighthawks.id, authorNation: 'Estadounidense', technique: 'Óleo sobre lienzo', materials: 'Óleo', dimensions: null, location: 'Art Institute of Chicago', collection: 'Colección permanente', state: 'Conservada' } });
+  const nighthawks = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'Nighthawks',
+    slug: 'nighthawks',
+    summary: 'Escena urbana de Hopper sobre ciudad, noche, aislamiento y modernidad.',
+    content:
+      'Nighthawks condensa ciudad, soledad, luz artificial, espera y cultura visual moderna.',
+    startYear: 1942,
+    endYear: 1942,
+    contentLevel: 'INTERMEDIATE',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: nighthawks.id,
+      authorNation: 'Estadounidense',
+      technique: 'Óleo sobre lienzo',
+      materials: 'Óleo',
+      dimensions: null,
+      location: 'Art Institute of Chicago',
+      collection: 'Colección permanente',
+      state: 'Conservada',
+    },
+  });
 
-  const studyVelazquez = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'Estudio según el retrato del papa Inocencio X', slug: 'estudio-papa-inocencio-x', summary: 'Bacon reinterpreta poder, cuerpo, grito y violencia psicológica.', content: 'La serie de Bacon sobre Inocencio X cruza poder, religión, cuerpo, encierro, miedo y violencia de la imagen.', startYear: 1953, endYear: 1953, contentLevel: 'ADVANCED' });
-  await prisma.artworkDetails.create({ data: { entityId: studyVelazquez.id, authorNation: 'Irlandesa / británica', technique: 'Óleo sobre lienzo', materials: 'Óleo', dimensions: null, location: 'Colección privada / versiones en museo', collection: null, state: 'Conservada' } });
+  const studyVelazquez = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'Estudio según el retrato del papa Inocencio X',
+    slug: 'estudio-papa-inocencio-x',
+    summary: 'Bacon reinterpreta poder, cuerpo, grito y violencia psicológica.',
+    content:
+      'La serie de Bacon sobre Inocencio X cruza poder, religión, cuerpo, encierro, miedo y violencia de la imagen.',
+    startYear: 1953,
+    endYear: 1953,
+    contentLevel: 'ADVANCED',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: studyVelazquez.id,
+      authorNation: 'Irlandesa / británica',
+      technique: 'Óleo sobre lienzo',
+      materials: 'Óleo',
+      dimensions: null,
+      location: 'Colección privada / versiones en museo',
+      collection: null,
+      state: 'Conservada',
+    },
+  });
 
-  const fountain = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'Fountain', slug: 'fountain', summary: 'Ready-made de Duchamp que cuestiona autoría, objeto y museo.', content: 'Fountain transforma un objeto cotidiano en pregunta sobre arte, poder institucional, juego conceptual y cultura moderna.', startYear: 1917, endYear: 1917, contentLevel: 'ADVANCED' });
-  await prisma.artworkDetails.create({ data: { entityId: fountain.id, authorNation: 'Francesa / estadounidense', technique: 'Ready-made', materials: 'Porcelana', dimensions: null, location: 'Réplicas en colecciones museísticas', collection: null, state: 'Original perdido' } });
+  const fountain = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'Fountain',
+    slug: 'fountain',
+    summary: 'Ready-made de Duchamp que cuestiona autoría, objeto y museo.',
+    content:
+      'Fountain transforma un objeto cotidiano en pregunta sobre arte, poder institucional, juego conceptual y cultura moderna.',
+    startYear: 1917,
+    endYear: 1917,
+    contentLevel: 'ADVANCED',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: fountain.id,
+      authorNation: 'Francesa / estadounidense',
+      technique: 'Ready-made',
+      materials: 'Porcelana',
+      dimensions: null,
+      location: 'Réplicas en colecciones museísticas',
+      collection: null,
+      state: 'Original perdido',
+    },
+  });
 
-  const marilynDiptych = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'Marilyn Diptych', slug: 'marilyn-diptych', summary: 'Warhol sobre celebridad, repetición, muerte e imagen mediática.', content: 'Marilyn Diptych conecta Pop Art, muerte, fama, repetición técnica, consumo y cultura de masas.', startYear: 1962, endYear: 1962, contentLevel: 'INTERMEDIATE' });
-  await prisma.artworkDetails.create({ data: { entityId: marilynDiptych.id, authorNation: 'Estadounidense', technique: 'Acrílico y serigrafía', materials: 'Lienzo', dimensions: null, location: 'Tate', collection: 'Colección permanente', state: 'Conservada' } });
+  const marilynDiptych = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'Marilyn Diptych',
+    slug: 'marilyn-diptych',
+    summary: 'Warhol sobre celebridad, repetición, muerte e imagen mediática.',
+    content:
+      'Marilyn Diptych conecta Pop Art, muerte, fama, repetición técnica, consumo y cultura de masas.',
+    startYear: 1962,
+    endYear: 1962,
+    contentLevel: 'INTERMEDIATE',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: marilynDiptych.id,
+      authorNation: 'Estadounidense',
+      technique: 'Acrílico y serigrafía',
+      materials: 'Lienzo',
+      dimensions: null,
+      location: 'Tate',
+      collection: 'Colección permanente',
+      state: 'Conservada',
+    },
+  });
 
-  const bottleRack = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'Bottle Rack', slug: 'bottle-rack', summary: 'Ready-made de Duchamp sobre objeto, elección y gesto conceptual.', content: 'Bottle Rack permite pensar objeto encontrado, ciudad, consumo, juego intelectual y antiarte dadaísta.', startYear: 1914, endYear: 1914, contentLevel: 'INTERMEDIATE' });
-  await prisma.artworkDetails.create({ data: { entityId: bottleRack.id, authorNation: 'Francesa / estadounidense', technique: 'Ready-made', materials: 'Metal', dimensions: null, location: 'Réplicas en museo', collection: null, state: 'Original perdido' } });
+  const bottleRack = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'Bottle Rack',
+    slug: 'bottle-rack',
+    summary: 'Ready-made de Duchamp sobre objeto, elección y gesto conceptual.',
+    content:
+      'Bottle Rack permite pensar objeto encontrado, ciudad, consumo, juego intelectual y antiarte dadaísta.',
+    startYear: 1914,
+    endYear: 1914,
+    contentLevel: 'INTERMEDIATE',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: bottleRack.id,
+      authorNation: 'Francesa / estadounidense',
+      technique: 'Ready-made',
+      materials: 'Metal',
+      dimensions: null,
+      location: 'Réplicas en museo',
+      collection: null,
+      state: 'Original perdido',
+    },
+  });
 
-  const futbolistas = await createEntityWithOptionalPrimaryMedia({ type: 'ARTWORK', title: 'Futbolistas', slug: 'futbolistas', summary: 'Obra editorial de prueba para conectar arte, deporte, cuerpo y multitud.', content: 'Futbolistas funciona como nodo de prueba para leer arte en el fútbol: cuerpo, movimiento, competición, ciudad, juventud e identidad colectiva.', startYear: 1930, endYear: 1930, contentLevel: 'BASIC' });
-  await prisma.artworkDetails.create({ data: { entityId: futbolistas.id, authorNation: 'Editorial', technique: 'Pintura / imagen deportiva', materials: null, dimensions: null, location: 'Dataset editorial JANO', collection: 'Arte y deporte', state: 'Referencia curatorial' } });
+  const futbolistas = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTWORK',
+    title: 'Futbolistas',
+    slug: 'futbolistas',
+    summary: 'Obra editorial de prueba para conectar arte, deporte, cuerpo y multitud.',
+    content:
+      'Futbolistas funciona como nodo de prueba para leer arte en el fútbol: cuerpo, movimiento, competición, ciudad, juventud e identidad colectiva.',
+    startYear: 1930,
+    endYear: 1930,
+    contentLevel: 'BASIC',
+  });
+  await prisma.artworkDetails.create({
+    data: {
+      entityId: futbolistas.id,
+      authorNation: 'Editorial',
+      technique: 'Pintura / imagen deportiva',
+      materials: null,
+      dimensions: null,
+      location: 'Dataset editorial JANO',
+      collection: 'Arte y deporte',
+      state: 'Referencia curatorial',
+    },
+  });
 
-  const articleWar = await createEntityWithOptionalPrimaryMedia({ type: 'ARTICLE', title: 'Cómo mirar la guerra en el arte', slug: 'como-mirar-la-guerra-en-el-arte', summary: 'Una ruta editorial por guerra, violencia, memoria, Goya y Picasso.', content: 'Este artículo conecta Guernica, El tres de mayo, Saturno, guerra, violencia y memoria como ejes para leer la imagen moderna.', contentLevel: 'BASIC' });
-  const articleBody = await createEntityWithOptionalPrimaryMedia({ type: 'ARTICLE', title: 'El cuerpo en el siglo XX', slug: 'el-cuerpo-en-el-siglo-xx', summary: 'De Frida Kahlo a Bacon y Bourgeois: cuerpo, dolor, género y memoria.', content: 'Una lectura del cuerpo moderno a través de identidad, dolor, género, maternidad, violencia y escultura contemporánea.', contentLevel: 'INTERMEDIATE' });
-  const articleFootball = await createEntityWithOptionalPrimaryMedia({ type: 'ARTICLE', title: 'Arte y fútbol: cuerpo, ciudad y multitud', slug: 'arte-y-futbol-cuerpo-ciudad-y-multitud', summary: 'Una entrada a deporte y fútbol desde el cuerpo, el movimiento y la cultura de masas.', content: 'El fútbol permite conectar deporte, ciudad, juventud, cuerpo, identidad colectiva, espectáculo popular y cultura visual.', contentLevel: 'BASIC' });
-  const articleDeath = await createEntityWithOptionalPrimaryMedia({ type: 'ARTICLE', title: 'Muerte y memoria visual', slug: 'muerte-y-memoria-visual', summary: 'Una lectura de muerte, memoria, religión, guerra y duelo en imágenes.', content: 'La muerte en arte se cruza con memoria, religión, violencia, guerra, vejez y rituales de permanencia visual.', contentLevel: 'INTERMEDIATE' });
-  const articleAvant = await createEntityWithOptionalPrimaryMedia({ type: 'ARTICLE', title: 'Vanguardias modernas para empezar', slug: 'vanguardias-modernas-para-empezar', summary: 'Cubismo, surrealismo, dadaísmo y Pop Art como rutas de entrada.', content: 'Las vanguardias modernas conectan Picasso, Miró, Dalí, Duchamp y Warhol con cubismo, surrealismo, dadaísmo, ciudad y cultura de masas.', contentLevel: 'BASIC' });
+  const articleWar = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTICLE',
+    title: 'Cómo mirar la guerra en el arte',
+    slug: 'como-mirar-la-guerra-en-el-arte',
+    summary: 'Una ruta editorial por guerra, violencia, memoria, Goya y Picasso.',
+    content:
+      'Este artículo conecta Guernica, El tres de mayo, Saturno, guerra, violencia y memoria como ejes para leer la imagen moderna.',
+    contentLevel: 'BASIC',
+  });
+  const articleBody = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTICLE',
+    title: 'El cuerpo en el siglo XX',
+    slug: 'el-cuerpo-en-el-siglo-xx',
+    summary: 'De Frida Kahlo a Bacon y Bourgeois: cuerpo, dolor, género y memoria.',
+    content:
+      'Una lectura del cuerpo moderno a través de identidad, dolor, género, maternidad, violencia y escultura contemporánea.',
+    contentLevel: 'INTERMEDIATE',
+  });
+  const articleFootball = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTICLE',
+    title: 'Arte y fútbol: cuerpo, ciudad y multitud',
+    slug: 'arte-y-futbol-cuerpo-ciudad-y-multitud',
+    summary: 'Una entrada a deporte y fútbol desde el cuerpo, el movimiento y la cultura de masas.',
+    content:
+      'El fútbol permite conectar deporte, ciudad, juventud, cuerpo, identidad colectiva, espectáculo popular y cultura visual.',
+    contentLevel: 'BASIC',
+  });
+  const articleDeath = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTICLE',
+    title: 'Muerte y memoria visual',
+    slug: 'muerte-y-memoria-visual',
+    summary: 'Una lectura de muerte, memoria, religión, guerra y duelo en imágenes.',
+    content:
+      'La muerte en arte se cruza con memoria, religión, violencia, guerra, vejez y rituales de permanencia visual.',
+    contentLevel: 'INTERMEDIATE',
+  });
+  const articleAvant = await createEntityWithOptionalPrimaryMedia({
+    type: 'ARTICLE',
+    title: 'Vanguardias modernas para empezar',
+    slug: 'vanguardias-modernas-para-empezar',
+    summary: 'Cubismo, surrealismo, dadaísmo y Pop Art como rutas de entrada.',
+    content:
+      'Las vanguardias modernas conectan Picasso, Miró, Dalí, Duchamp y Warhol con cubismo, surrealismo, dadaísmo, ciudad y cultura de masas.',
+    contentLevel: 'BASIC',
+  });
 
   console.log('🔗 Creating source refs...');
 
@@ -2420,17 +3200,29 @@ async function main() {
     { entityId: saturno.id, sourceId: srcPrado.id, note: 'Ficha institucional de obra.' },
     { entityId: tresDeMayo.id, sourceId: srcPrado.id, note: 'Ficha institucional de obra.' },
 
-    { entityId: picasso.id, sourceId: srcReinaSofia.id, note: 'Referencia institucional principal.' },
+    {
+      entityId: picasso.id,
+      sourceId: srcReinaSofia.id,
+      note: 'Referencia institucional principal.',
+    },
     { entityId: guernica.id, sourceId: srcReinaSofia.id, note: 'Ficha institucional de obra.' },
 
     { entityId: dali.id, sourceId: srcMoma.id, note: 'Referencia institucional principal.' },
     { entityId: persistencia.id, sourceId: srcMoma.id, note: 'Ficha institucional de obra.' },
 
     { entityId: frida.id, sourceId: srcFridaMuseum.id, note: 'Referencia museística.' },
-    { entityId: dosFridas.id, sourceId: srcFridaMuseum.id, note: 'Referencia contextual de artista/obra.' },
+    {
+      entityId: dosFridas.id,
+      sourceId: srcFridaMuseum.id,
+      note: 'Referencia contextual de artista/obra.',
+    },
 
     { entityId: bourgeois.id, sourceId: srcTate.id, note: 'Referencia institucional/contextual.' },
-    { entityId: maman.id, sourceId: srcTate.id, note: 'Referencia contextual sobre la artista y su obra.' },
+    {
+      entityId: maman.id,
+      sourceId: srcTate.id,
+      note: 'Referencia contextual sobre la artista y su obra.',
+    },
   ];
 
   for (const ref of sourceRefsData) {
@@ -2440,44 +3232,188 @@ async function main() {
   console.log('🧠 Creating semantic relations...');
 
   // Concept to concept
-  await rel(memoria.id, identidad.id, 'RELATED_TO', 0.85, 'La memoria participa en la construcción de identidad.');
-  await rel(tiempo.id, memoria.id, 'RELATED_TO', 0.95, 'La experiencia de la memoria está ligada a la temporalidad.');
-  await rel(cuerpo.id, identidad.id, 'RELATED_TO', 0.85, 'El cuerpo es una dimensión clave de la identidad.');
+  await rel(
+    memoria.id,
+    identidad.id,
+    'RELATED_TO',
+    0.85,
+    'La memoria participa en la construcción de identidad.',
+  );
+  await rel(
+    tiempo.id,
+    memoria.id,
+    'RELATED_TO',
+    0.95,
+    'La experiencia de la memoria está ligada a la temporalidad.',
+  );
+  await rel(
+    cuerpo.id,
+    identidad.id,
+    'RELATED_TO',
+    0.85,
+    'El cuerpo es una dimensión clave de la identidad.',
+  );
   await rel(dolor.id, cuerpo.id, 'RELATED_TO', 0.8, 'El dolor se experimenta a través del cuerpo.');
-  await rel(maternidad.id, memoria.id, 'RELATED_TO', 0.75, 'La maternidad puede articular memoria afectiva y simbólica.');
-  await rel(guerra.id, violencia.id, 'RELATED_TO', 0.95, 'La guerra es una forma histórica de violencia.');
+  await rel(
+    maternidad.id,
+    memoria.id,
+    'RELATED_TO',
+    0.75,
+    'La maternidad puede articular memoria afectiva y simbólica.',
+  );
+  await rel(
+    guerra.id,
+    violencia.id,
+    'RELATED_TO',
+    0.95,
+    'La guerra es una forma histórica de violencia.',
+  );
 
   // Artists to movements
-  await rel(goya.id, romanticismo.id, 'ASSOCIATED_WITH', 0.7, 'Goya es una figura fundamental en los orígenes de la sensibilidad moderna y romántica.');
+  await rel(
+    goya.id,
+    romanticismo.id,
+    'ASSOCIATED_WITH',
+    0.7,
+    'Goya es una figura fundamental en los orígenes de la sensibilidad moderna y romántica.',
+  );
   await rel(picasso.id, cubismo.id, 'BELONGS_TO_MOVEMENT', 1, 'Picasso es cofundador del Cubismo.');
-  await rel(dali.id, surrealismo.id, 'BELONGS_TO_MOVEMENT', 1, 'Dalí es una figura clave del Surrealismo.');
-  await rel(frida.id, arteModerno.id, 'ASSOCIATED_WITH', 0.75, 'Frida Kahlo se estudia dentro del arte moderno del siglo XX.');
-  await rel(bourgeois.id, arteContemporaneo.id, 'ASSOCIATED_WITH', 0.9, 'Louise Bourgeois es central para el arte contemporáneo.');
+  await rel(
+    dali.id,
+    surrealismo.id,
+    'BELONGS_TO_MOVEMENT',
+    1,
+    'Dalí es una figura clave del Surrealismo.',
+  );
+  await rel(
+    frida.id,
+    arteModerno.id,
+    'ASSOCIATED_WITH',
+    0.75,
+    'Frida Kahlo se estudia dentro del arte moderno del siglo XX.',
+  );
+  await rel(
+    bourgeois.id,
+    arteContemporaneo.id,
+    'ASSOCIATED_WITH',
+    0.9,
+    'Louise Bourgeois es central para el arte contemporáneo.',
+  );
 
   // Artists to periods
-  await rel(goya.id, periodXIX.id, 'BELONGS_TO_PERIOD', 0.9, 'Goya pertenece históricamente a finales del XVIII y comienzos del XIX.');
-  await rel(picasso.id, periodXX.id, 'BELONGS_TO_PERIOD', 1, 'Picasso es central para el arte del siglo XX.');
+  await rel(
+    goya.id,
+    periodXIX.id,
+    'BELONGS_TO_PERIOD',
+    0.9,
+    'Goya pertenece históricamente a finales del XVIII y comienzos del XIX.',
+  );
+  await rel(
+    picasso.id,
+    periodXX.id,
+    'BELONGS_TO_PERIOD',
+    1,
+    'Picasso es central para el arte del siglo XX.',
+  );
   await rel(dali.id, periodXX.id, 'BELONGS_TO_PERIOD', 1, 'Dalí pertenece al siglo XX.');
   await rel(frida.id, periodXX.id, 'BELONGS_TO_PERIOD', 1, 'Frida Kahlo pertenece al siglo XX.');
-  await rel(bourgeois.id, periodXX.id, 'BELONGS_TO_PERIOD', 0.9, 'La trayectoria de Bourgeois se desarrolla principalmente en el siglo XX.');
+  await rel(
+    bourgeois.id,
+    periodXX.id,
+    'BELONGS_TO_PERIOD',
+    0.9,
+    'La trayectoria de Bourgeois se desarrolla principalmente en el siglo XX.',
+  );
 
   // Artists to concepts
-  await rel(frida.id, identidad.id, 'ASSOCIATED_WITH', 0.95, 'La identidad es central en la obra de Frida Kahlo.');
-  await rel(frida.id, cuerpo.id, 'ASSOCIATED_WITH', 0.95, 'El cuerpo es central en la obra de Frida Kahlo.');
-  await rel(frida.id, dolor.id, 'ASSOCIATED_WITH', 0.95, 'El dolor es un eje clave en la obra de Frida Kahlo.');
+  await rel(
+    frida.id,
+    identidad.id,
+    'ASSOCIATED_WITH',
+    0.95,
+    'La identidad es central en la obra de Frida Kahlo.',
+  );
+  await rel(
+    frida.id,
+    cuerpo.id,
+    'ASSOCIATED_WITH',
+    0.95,
+    'El cuerpo es central en la obra de Frida Kahlo.',
+  );
+  await rel(
+    frida.id,
+    dolor.id,
+    'ASSOCIATED_WITH',
+    0.95,
+    'El dolor es un eje clave en la obra de Frida Kahlo.',
+  );
 
-  await rel(bourgeois.id, memoria.id, 'ASSOCIATED_WITH', 0.95, 'La memoria es una dimensión fundamental en la obra de Bourgeois.');
-  await rel(bourgeois.id, maternidad.id, 'ASSOCIATED_WITH', 0.95, 'La maternidad es un eje conceptual importante en Bourgeois.');
-  await rel(bourgeois.id, cuerpo.id, 'ASSOCIATED_WITH', 0.85, 'El cuerpo atraviesa la obra escultórica de Bourgeois.');
+  await rel(
+    bourgeois.id,
+    memoria.id,
+    'ASSOCIATED_WITH',
+    0.95,
+    'La memoria es una dimensión fundamental en la obra de Bourgeois.',
+  );
+  await rel(
+    bourgeois.id,
+    maternidad.id,
+    'ASSOCIATED_WITH',
+    0.95,
+    'La maternidad es un eje conceptual importante en Bourgeois.',
+  );
+  await rel(
+    bourgeois.id,
+    cuerpo.id,
+    'ASSOCIATED_WITH',
+    0.85,
+    'El cuerpo atraviesa la obra escultórica de Bourgeois.',
+  );
 
-  await rel(dali.id, tiempo.id, 'ASSOCIATED_WITH', 0.9, 'La temporalidad es un tema central en la obra de Dalí.');
-  await rel(dali.id, memoria.id, 'ASSOCIATED_WITH', 0.75, 'La memoria y las imágenes psíquicas tienen peso en Dalí.');
+  await rel(
+    dali.id,
+    tiempo.id,
+    'ASSOCIATED_WITH',
+    0.9,
+    'La temporalidad es un tema central en la obra de Dalí.',
+  );
+  await rel(
+    dali.id,
+    memoria.id,
+    'ASSOCIATED_WITH',
+    0.75,
+    'La memoria y las imágenes psíquicas tienen peso en Dalí.',
+  );
 
-  await rel(goya.id, violencia.id, 'ASSOCIATED_WITH', 0.85, 'Goya aborda la violencia histórica y humana.');
-  await rel(goya.id, guerra.id, 'ASSOCIATED_WITH', 0.85, 'Goya representa la guerra con intensidad crítica.');
+  await rel(
+    goya.id,
+    violencia.id,
+    'ASSOCIATED_WITH',
+    0.85,
+    'Goya aborda la violencia histórica y humana.',
+  );
+  await rel(
+    goya.id,
+    guerra.id,
+    'ASSOCIATED_WITH',
+    0.85,
+    'Goya representa la guerra con intensidad crítica.',
+  );
 
-  await rel(picasso.id, guerra.id, 'ASSOCIATED_WITH', 0.9, 'La guerra es un eje central en Guernica.');
-  await rel(picasso.id, violencia.id, 'ASSOCIATED_WITH', 0.85, 'Picasso tematiza la violencia política en obras clave.');
+  await rel(
+    picasso.id,
+    guerra.id,
+    'ASSOCIATED_WITH',
+    0.9,
+    'La guerra es un eje central en Guernica.',
+  );
+  await rel(
+    picasso.id,
+    violencia.id,
+    'ASSOCIATED_WITH',
+    0.85,
+    'Picasso tematiza la violencia política en obras clave.',
+  );
 
   // Artworks to artists
   await rel(saturno.id, goya.id, 'CREATED_BY', 1, 'Autoría directa.');
@@ -2488,15 +3424,57 @@ async function main() {
   await rel(maman.id, bourgeois.id, 'CREATED_BY', 1, 'Autoría directa.');
 
   // Artworks to movements
-  await rel(saturno.id, romanticismo.id, 'BELONGS_TO_MOVEMENT', 0.7, 'Obra asociada a la sensibilidad romántica y premoderna.');
-  await rel(tresDeMayo.id, romanticismo.id, 'BELONGS_TO_MOVEMENT', 0.85, 'Obra clave del dramatismo histórico romántico.');
-  await rel(guernica.id, cubismo.id, 'BELONGS_TO_MOVEMENT', 0.85, 'La fragmentación formal se vincula al lenguaje cubista.');
-  await rel(persistencia.id, surrealismo.id, 'BELONGS_TO_MOVEMENT', 1, 'Obra emblemática del Surrealismo.');
-  await rel(dosFridas.id, arteModerno.id, 'BELONGS_TO_MOVEMENT', 0.75, 'Se estudia dentro de los lenguajes del arte moderno del siglo XX.');
-  await rel(maman.id, arteContemporaneo.id, 'BELONGS_TO_MOVEMENT', 0.95, 'Escultura central del arte contemporáneo.');
+  await rel(
+    saturno.id,
+    romanticismo.id,
+    'BELONGS_TO_MOVEMENT',
+    0.7,
+    'Obra asociada a la sensibilidad romántica y premoderna.',
+  );
+  await rel(
+    tresDeMayo.id,
+    romanticismo.id,
+    'BELONGS_TO_MOVEMENT',
+    0.85,
+    'Obra clave del dramatismo histórico romántico.',
+  );
+  await rel(
+    guernica.id,
+    cubismo.id,
+    'BELONGS_TO_MOVEMENT',
+    0.85,
+    'La fragmentación formal se vincula al lenguaje cubista.',
+  );
+  await rel(
+    persistencia.id,
+    surrealismo.id,
+    'BELONGS_TO_MOVEMENT',
+    1,
+    'Obra emblemática del Surrealismo.',
+  );
+  await rel(
+    dosFridas.id,
+    arteModerno.id,
+    'BELONGS_TO_MOVEMENT',
+    0.75,
+    'Se estudia dentro de los lenguajes del arte moderno del siglo XX.',
+  );
+  await rel(
+    maman.id,
+    arteContemporaneo.id,
+    'BELONGS_TO_MOVEMENT',
+    0.95,
+    'Escultura central del arte contemporáneo.',
+  );
 
   // Artworks to periods
-  await rel(saturno.id, periodXIX.id, 'BELONGS_TO_PERIOD', 0.95, 'Obra de comienzos del siglo XIX.');
+  await rel(
+    saturno.id,
+    periodXIX.id,
+    'BELONGS_TO_PERIOD',
+    0.95,
+    'Obra de comienzos del siglo XIX.',
+  );
   await rel(tresDeMayo.id, periodXIX.id, 'BELONGS_TO_PERIOD', 1, 'Obra de 1814.');
   await rel(guernica.id, periodXX.id, 'BELONGS_TO_PERIOD', 1, 'Obra de 1937.');
   await rel(persistencia.id, periodXX.id, 'BELONGS_TO_PERIOD', 1, 'Obra de 1931.');
@@ -2504,41 +3482,173 @@ async function main() {
   await rel(maman.id, periodXX.id, 'BELONGS_TO_PERIOD', 0.95, 'Obra de 1999.');
 
   // Artworks to concepts
-  await rel(saturno.id, violencia.id, 'ABOUT_CONCEPT', 0.95, 'La obra expresa una violencia radical.');
-  await rel(saturno.id, tiempo.id, 'ABOUT_CONCEPT', 0.7, 'Puede leerse desde la destrucción y el tiempo devorador.');
+  await rel(
+    saturno.id,
+    violencia.id,
+    'ABOUT_CONCEPT',
+    0.95,
+    'La obra expresa una violencia radical.',
+  );
+  await rel(
+    saturno.id,
+    tiempo.id,
+    'ABOUT_CONCEPT',
+    0.7,
+    'Puede leerse desde la destrucción y el tiempo devorador.',
+  );
   await rel(saturno.id, dolor.id, 'ABOUT_CONCEPT', 0.7, 'La intensidad emocional remite al dolor.');
 
-  await rel(tresDeMayo.id, guerra.id, 'ABOUT_CONCEPT', 1, 'La obra representa la guerra y la ejecución.');
-  await rel(tresDeMayo.id, violencia.id, 'ABOUT_CONCEPT', 1, 'La violencia es explícita y central.');
-  await rel(tresDeMayo.id, memoria.id, 'ABOUT_CONCEPT', 0.75, 'También puede leerse como memoria histórica.');
+  await rel(
+    tresDeMayo.id,
+    guerra.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La obra representa la guerra y la ejecución.',
+  );
+  await rel(
+    tresDeMayo.id,
+    violencia.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La violencia es explícita y central.',
+  );
+  await rel(
+    tresDeMayo.id,
+    memoria.id,
+    'ABOUT_CONCEPT',
+    0.75,
+    'También puede leerse como memoria histórica.',
+  );
 
   await rel(guernica.id, guerra.id, 'ABOUT_CONCEPT', 1, 'La guerra es el eje central de la obra.');
-  await rel(guernica.id, violencia.id, 'ABOUT_CONCEPT', 1, 'La violencia atraviesa la composición.');
-  await rel(guernica.id, memoria.id, 'ABOUT_CONCEPT', 0.8, 'La obra opera como memoria histórica del bombardeo.');
+  await rel(
+    guernica.id,
+    violencia.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La violencia atraviesa la composición.',
+  );
+  await rel(
+    guernica.id,
+    memoria.id,
+    'ABOUT_CONCEPT',
+    0.8,
+    'La obra opera como memoria histórica del bombardeo.',
+  );
 
-  await rel(persistencia.id, tiempo.id, 'ABOUT_CONCEPT', 1, 'La obra es emblemática para pensar el tiempo.');
-  await rel(persistencia.id, memoria.id, 'ABOUT_CONCEPT', 0.9, 'El título y la imagen remiten a memoria y persistencia.');
+  await rel(
+    persistencia.id,
+    tiempo.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La obra es emblemática para pensar el tiempo.',
+  );
+  await rel(
+    persistencia.id,
+    memoria.id,
+    'ABOUT_CONCEPT',
+    0.9,
+    'El título y la imagen remiten a memoria y persistencia.',
+  );
 
-  await rel(dosFridas.id, identidad.id, 'ABOUT_CONCEPT', 1, 'La identidad es uno de los ejes más evidentes.');
-  await rel(dosFridas.id, cuerpo.id, 'ABOUT_CONCEPT', 0.95, 'La representación corporal es central.');
-  await rel(dosFridas.id, dolor.id, 'ABOUT_CONCEPT', 0.9, 'La herida y el sufrimiento son visibles.');
+  await rel(
+    dosFridas.id,
+    identidad.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La identidad es uno de los ejes más evidentes.',
+  );
+  await rel(
+    dosFridas.id,
+    cuerpo.id,
+    'ABOUT_CONCEPT',
+    0.95,
+    'La representación corporal es central.',
+  );
+  await rel(
+    dosFridas.id,
+    dolor.id,
+    'ABOUT_CONCEPT',
+    0.9,
+    'La herida y el sufrimiento son visibles.',
+  );
 
-  await rel(maman.id, maternidad.id, 'ABOUT_CONCEPT', 1, 'La obra está profundamente ligada a lo materno.');
-  await rel(maman.id, memoria.id, 'ABOUT_CONCEPT', 0.9, 'La memoria afectiva es central en la lectura de la obra.');
-  await rel(maman.id, cuerpo.id, 'ABOUT_CONCEPT', 0.7, 'La monumentalidad corporal de la escultura lo sugiere.');
+  await rel(
+    maman.id,
+    maternidad.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La obra está profundamente ligada a lo materno.',
+  );
+  await rel(
+    maman.id,
+    memoria.id,
+    'ABOUT_CONCEPT',
+    0.9,
+    'La memoria afectiva es central en la lectura de la obra.',
+  );
+  await rel(
+    maman.id,
+    cuerpo.id,
+    'ABOUT_CONCEPT',
+    0.7,
+    'La monumentalidad corporal de la escultura lo sugiere.',
+  );
 
   // Artworks to places
   await rel(saturno.id, prado.id, 'LOCATED_IN', 1, 'La obra se encuentra en el Museo del Prado.');
-  await rel(tresDeMayo.id, prado.id, 'LOCATED_IN', 1, 'La obra se encuentra en el Museo del Prado.');
-  await rel(guernica.id, reinaSofia.id, 'LOCATED_IN', 1, 'La obra se encuentra en el Museo Reina Sofía.');
+  await rel(
+    tresDeMayo.id,
+    prado.id,
+    'LOCATED_IN',
+    1,
+    'La obra se encuentra en el Museo del Prado.',
+  );
+  await rel(
+    guernica.id,
+    reinaSofia.id,
+    'LOCATED_IN',
+    1,
+    'La obra se encuentra en el Museo Reina Sofía.',
+  );
   await rel(persistencia.id, moma.id, 'LOCATED_IN', 1, 'La obra se encuentra en el MoMA.');
-  await rel(maman.id, guggenheimBilbao.id, 'LOCATED_IN', 0.9, 'Existe una versión/instalación emblemática asociada a Guggenheim Bilbao.');
+  await rel(
+    maman.id,
+    guggenheimBilbao.id,
+    'LOCATED_IN',
+    0.9,
+    'Existe una versión/instalación emblemática asociada a Guggenheim Bilbao.',
+  );
 
   // Related artworks
-  await rel(guernica.id, tresDeMayo.id, 'RELATED_TO', 0.75, 'Ambas obras permiten pensar la violencia histórica y la guerra.');
-  await rel(persistencia.id, saturno.id, 'RELATED_TO', 0.45, 'Ambas pueden leerse desde el tiempo y una dimensión inquietante.');
-  await rel(dosFridas.id, maman.id, 'RELATED_TO', 0.6, 'Ambas dialogan con cuerpo, afecto y experiencia personal.');
-  await rel(saturno.id, guernica.id, 'RELATED_TO', 0.55, 'Ambas articulan imágenes intensas de destrucción y violencia.');
+  await rel(
+    guernica.id,
+    tresDeMayo.id,
+    'RELATED_TO',
+    0.75,
+    'Ambas obras permiten pensar la violencia histórica y la guerra.',
+  );
+  await rel(
+    persistencia.id,
+    saturno.id,
+    'RELATED_TO',
+    0.45,
+    'Ambas pueden leerse desde el tiempo y una dimensión inquietante.',
+  );
+  await rel(
+    dosFridas.id,
+    maman.id,
+    'RELATED_TO',
+    0.6,
+    'Ambas dialogan con cuerpo, afecto y experiencia personal.',
+  );
+  await rel(
+    saturno.id,
+    guernica.id,
+    'RELATED_TO',
+    0.55,
+    'Ambas articulan imágenes intensas de destrucción y violencia.',
+  );
 
   // Mention-like curated links
   await rel(persistencia.id, tiempo.id, 'MENTIONS', 0.8, 'Mención explícita en el contenido.');
@@ -2550,12 +3660,48 @@ async function main() {
   await rel(maman.id, memoria.id, 'MENTIONS', 0.8, 'Mención explícita en el contenido.');
 
   // Discovery v1: denser editorial graph for search.
-  await rel(velazquez.id, barroco.id, 'BELONGS_TO_MOVEMENT', 1, 'Velázquez es una figura central del Barroco español.');
-  await rel(warhol.id, popArt.id, 'BELONGS_TO_MOVEMENT', 1, 'Warhol es uno de los nombres clave del Pop Art.');
-  await rel(duchamp.id, dadaismo.id, 'ASSOCIATED_WITH', 0.9, 'Duchamp es decisivo para la sensibilidad dadaísta y conceptual.');
-  await rel(bacon.id, expresionismo.id, 'ASSOCIATED_WITH', 0.8, 'Bacon comparte una intensidad corporal cercana al expresionismo.');
-  await rel(hopper.id, realismoAmericano.id, 'BELONGS_TO_MOVEMENT', 0.9, 'Hopper es una referencia del realismo americano.');
-  await rel(miro.id, surrealismo.id, 'ASSOCIATED_WITH', 0.9, 'Miró dialoga con el surrealismo desde signo, juego y automatismo.');
+  await rel(
+    velazquez.id,
+    barroco.id,
+    'BELONGS_TO_MOVEMENT',
+    1,
+    'Velázquez es una figura central del Barroco español.',
+  );
+  await rel(
+    warhol.id,
+    popArt.id,
+    'BELONGS_TO_MOVEMENT',
+    1,
+    'Warhol es uno de los nombres clave del Pop Art.',
+  );
+  await rel(
+    duchamp.id,
+    dadaismo.id,
+    'ASSOCIATED_WITH',
+    0.9,
+    'Duchamp es decisivo para la sensibilidad dadaísta y conceptual.',
+  );
+  await rel(
+    bacon.id,
+    expresionismo.id,
+    'ASSOCIATED_WITH',
+    0.8,
+    'Bacon comparte una intensidad corporal cercana al expresionismo.',
+  );
+  await rel(
+    hopper.id,
+    realismoAmericano.id,
+    'BELONGS_TO_MOVEMENT',
+    0.9,
+    'Hopper es una referencia del realismo americano.',
+  );
+  await rel(
+    miro.id,
+    surrealismo.id,
+    'ASSOCIATED_WITH',
+    0.9,
+    'Miró dialoga con el surrealismo desde signo, juego y automatismo.',
+  );
 
   await rel(lasMeninas.id, velazquez.id, 'CREATED_BY', 1, 'Autoría directa.');
   await rel(oldGuitarist.id, picasso.id, 'CREATED_BY', 1, 'Autoría directa.');
@@ -2567,73 +3713,315 @@ async function main() {
   await rel(bottleRack.id, duchamp.id, 'CREATED_BY', 1, 'Autoría directa.');
   await rel(marilynDiptych.id, warhol.id, 'CREATED_BY', 1, 'Autoría directa.');
 
-  await rel(lasMeninas.id, barroco.id, 'BELONGS_TO_MOVEMENT', 1, 'Obra clave del Barroco cortesano.');
-  await rel(demoiselles.id, cubismo.id, 'BELONGS_TO_MOVEMENT', 0.95, 'Obra decisiva para el nacimiento del Cubismo.');
-  await rel(carnivalHarlequin.id, surrealismo.id, 'BELONGS_TO_MOVEMENT', 0.85, 'Obra conectada al imaginario surrealista.');
-  await rel(nighthawks.id, realismoAmericano.id, 'BELONGS_TO_MOVEMENT', 1, 'Icono del realismo urbano americano.');
-  await rel(fountain.id, dadaismo.id, 'BELONGS_TO_MOVEMENT', 0.9, 'Ready-made decisivo para la ruptura dadaísta.');
-  await rel(bottleRack.id, dadaismo.id, 'BELONGS_TO_MOVEMENT', 0.8, 'Objeto encontrado ligado a la sensibilidad dadaísta.');
-  await rel(marilynDiptych.id, popArt.id, 'BELONGS_TO_MOVEMENT', 1, 'Obra emblemática del Pop Art.');
+  await rel(
+    lasMeninas.id,
+    barroco.id,
+    'BELONGS_TO_MOVEMENT',
+    1,
+    'Obra clave del Barroco cortesano.',
+  );
+  await rel(
+    demoiselles.id,
+    cubismo.id,
+    'BELONGS_TO_MOVEMENT',
+    0.95,
+    'Obra decisiva para el nacimiento del Cubismo.',
+  );
+  await rel(
+    carnivalHarlequin.id,
+    surrealismo.id,
+    'BELONGS_TO_MOVEMENT',
+    0.85,
+    'Obra conectada al imaginario surrealista.',
+  );
+  await rel(
+    nighthawks.id,
+    realismoAmericano.id,
+    'BELONGS_TO_MOVEMENT',
+    1,
+    'Icono del realismo urbano americano.',
+  );
+  await rel(
+    fountain.id,
+    dadaismo.id,
+    'BELONGS_TO_MOVEMENT',
+    0.9,
+    'Ready-made decisivo para la ruptura dadaísta.',
+  );
+  await rel(
+    bottleRack.id,
+    dadaismo.id,
+    'BELONGS_TO_MOVEMENT',
+    0.8,
+    'Objeto encontrado ligado a la sensibilidad dadaísta.',
+  );
+  await rel(
+    marilynDiptych.id,
+    popArt.id,
+    'BELONGS_TO_MOVEMENT',
+    1,
+    'Obra emblemática del Pop Art.',
+  );
 
-  await rel(lasMeninas.id, poder.id, 'ABOUT_CONCEPT', 1, 'La obra interroga representación, corte y autoridad.');
-  await rel(lasMeninas.id, juventud.id, 'ABOUT_CONCEPT', 0.55, 'La infancia cortesana forma parte de su lectura.');
-  await rel(oldGuitarist.id, vejez.id, 'ABOUT_CONCEPT', 1, 'La vejez estructura la imagen del cuerpo vulnerable.');
-  await rel(oldGuitarist.id, dolor.id, 'ABOUT_CONCEPT', 0.8, 'La obra transmite melancolía y sufrimiento.');
+  await rel(
+    lasMeninas.id,
+    poder.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La obra interroga representación, corte y autoridad.',
+  );
+  await rel(
+    lasMeninas.id,
+    juventud.id,
+    'ABOUT_CONCEPT',
+    0.55,
+    'La infancia cortesana forma parte de su lectura.',
+  );
+  await rel(
+    oldGuitarist.id,
+    vejez.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La vejez estructura la imagen del cuerpo vulnerable.',
+  );
+  await rel(
+    oldGuitarist.id,
+    dolor.id,
+    'ABOUT_CONCEPT',
+    0.8,
+    'La obra transmite melancolía y sufrimiento.',
+  );
   await rel(demoiselles.id, cuerpo.id, 'ABOUT_CONCEPT', 1, 'El cuerpo fragmentado es central.');
-  await rel(demoiselles.id, genero.id, 'ABOUT_CONCEPT', 0.9, 'La representación de mujeres exige lectura de género.');
-  await rel(carnivalHarlequin.id, juventud.id, 'ABOUT_CONCEPT', 0.65, 'Su energía visual conecta con juego e infancia.');
-  await rel(nighthawks.id, ciudad.id, 'ABOUT_CONCEPT', 1, 'La ciudad nocturna estructura la escena.');
-  await rel(nighthawks.id, memoria.id, 'ABOUT_CONCEPT', 0.45, 'La escena funciona como imagen persistente de modernidad.');
-  await rel(studyVelazquez.id, poder.id, 'ABOUT_CONCEPT', 1, 'El papa es una imagen extrema del poder.');
-  await rel(studyVelazquez.id, religion.id, 'ABOUT_CONCEPT', 0.9, 'La iconografía papal activa la lectura religiosa.');
-  await rel(studyVelazquez.id, violencia.id, 'ABOUT_CONCEPT', 0.95, 'La figura aparece sometida a violencia psicológica.');
-  await rel(studyVelazquez.id, cuerpo.id, 'ABOUT_CONCEPT', 0.85, 'El cuerpo queda deformado y atrapado.');
-  await rel(fountain.id, poder.id, 'ABOUT_CONCEPT', 0.65, 'El gesto desafía el poder institucional del museo.');
-  await rel(fountain.id, ciudad.id, 'ABOUT_CONCEPT', 0.45, 'El objeto cotidiano procede de cultura material urbana.');
-  await rel(marilynDiptych.id, muerte.id, 'ABOUT_CONCEPT', 0.95, 'La repetición convive con la muerte de la celebridad.');
-  await rel(marilynDiptych.id, ciudad.id, 'ABOUT_CONCEPT', 0.65, 'La cultura mediática urbana atraviesa la obra.');
+  await rel(
+    demoiselles.id,
+    genero.id,
+    'ABOUT_CONCEPT',
+    0.9,
+    'La representación de mujeres exige lectura de género.',
+  );
+  await rel(
+    carnivalHarlequin.id,
+    juventud.id,
+    'ABOUT_CONCEPT',
+    0.65,
+    'Su energía visual conecta con juego e infancia.',
+  );
+  await rel(
+    nighthawks.id,
+    ciudad.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La ciudad nocturna estructura la escena.',
+  );
+  await rel(
+    nighthawks.id,
+    memoria.id,
+    'ABOUT_CONCEPT',
+    0.45,
+    'La escena funciona como imagen persistente de modernidad.',
+  );
+  await rel(
+    studyVelazquez.id,
+    poder.id,
+    'ABOUT_CONCEPT',
+    1,
+    'El papa es una imagen extrema del poder.',
+  );
+  await rel(
+    studyVelazquez.id,
+    religion.id,
+    'ABOUT_CONCEPT',
+    0.9,
+    'La iconografía papal activa la lectura religiosa.',
+  );
+  await rel(
+    studyVelazquez.id,
+    violencia.id,
+    'ABOUT_CONCEPT',
+    0.95,
+    'La figura aparece sometida a violencia psicológica.',
+  );
+  await rel(
+    studyVelazquez.id,
+    cuerpo.id,
+    'ABOUT_CONCEPT',
+    0.85,
+    'El cuerpo queda deformado y atrapado.',
+  );
+  await rel(
+    fountain.id,
+    poder.id,
+    'ABOUT_CONCEPT',
+    0.65,
+    'El gesto desafía el poder institucional del museo.',
+  );
+  await rel(
+    fountain.id,
+    ciudad.id,
+    'ABOUT_CONCEPT',
+    0.45,
+    'El objeto cotidiano procede de cultura material urbana.',
+  );
+  await rel(
+    marilynDiptych.id,
+    muerte.id,
+    'ABOUT_CONCEPT',
+    0.95,
+    'La repetición convive con la muerte de la celebridad.',
+  );
+  await rel(
+    marilynDiptych.id,
+    ciudad.id,
+    'ABOUT_CONCEPT',
+    0.65,
+    'La cultura mediática urbana atraviesa la obra.',
+  );
   await rel(futbolistas.id, futbol.id, 'ABOUT_CONCEPT', 1, 'Nodo de entrada para arte y fútbol.');
-  await rel(futbolistas.id, deporte.id, 'ABOUT_CONCEPT', 1, 'La obra se centra en cultura deportiva.');
-  await rel(futbolistas.id, cuerpo.id, 'ABOUT_CONCEPT', 0.85, 'El cuerpo en movimiento es central.');
-  await rel(futbolistas.id, ciudad.id, 'ABOUT_CONCEPT', 0.65, 'El fútbol se lee como ritual urbano y colectivo.');
-  await rel(futbolistas.id, juventud.id, 'ABOUT_CONCEPT', 0.65, 'La energía física dialoga con juventud y competición.');
+  await rel(
+    futbolistas.id,
+    deporte.id,
+    'ABOUT_CONCEPT',
+    1,
+    'La obra se centra en cultura deportiva.',
+  );
+  await rel(
+    futbolistas.id,
+    cuerpo.id,
+    'ABOUT_CONCEPT',
+    0.85,
+    'El cuerpo en movimiento es central.',
+  );
+  await rel(
+    futbolistas.id,
+    ciudad.id,
+    'ABOUT_CONCEPT',
+    0.65,
+    'El fútbol se lee como ritual urbano y colectivo.',
+  );
+  await rel(
+    futbolistas.id,
+    juventud.id,
+    'ABOUT_CONCEPT',
+    0.65,
+    'La energía física dialoga con juventud y competición.',
+  );
 
   await rel(muerte.id, memoria.id, 'RELATED_TO', 0.9, 'La muerte activa rituales de memoria.');
-  await rel(muerte.id, religion.id, 'RELATED_TO', 0.8, 'La religión organiza imágenes de muerte y trascendencia.');
+  await rel(
+    muerte.id,
+    religion.id,
+    'RELATED_TO',
+    0.8,
+    'La religión organiza imágenes de muerte y trascendencia.',
+  );
   await rel(vejez.id, tiempo.id, 'RELATED_TO', 0.9, 'La vejez es tiempo inscrito en el cuerpo.');
   await rel(vejez.id, muerte.id, 'RELATED_TO', 0.7, 'La vejez abre preguntas sobre finitud.');
-  await rel(genero.id, cuerpo.id, 'RELATED_TO', 0.9, 'El género se representa a través del cuerpo.');
-  await rel(deporte.id, cuerpo.id, 'RELATED_TO', 0.9, 'El deporte hace visible cuerpo y movimiento.');
-  await rel(futbol.id, deporte.id, 'RELATED_TO', 1, 'El fútbol es una práctica deportiva y cultural.');
-  await rel(futbol.id, ciudad.id, 'RELATED_TO', 0.75, 'El fútbol funciona como ritual urbano y multitudinario.');
-  await rel(popArt.id, ciudad.id, 'ASSOCIATED_WITH', 0.75, 'El Pop Art emerge de cultura urbana y consumo.');
-  await rel(dadaismo.id, poder.id, 'ASSOCIATED_WITH', 0.55, 'El Dadaísmo desafía poder cultural e institucional.');
+  await rel(
+    genero.id,
+    cuerpo.id,
+    'RELATED_TO',
+    0.9,
+    'El género se representa a través del cuerpo.',
+  );
+  await rel(
+    deporte.id,
+    cuerpo.id,
+    'RELATED_TO',
+    0.9,
+    'El deporte hace visible cuerpo y movimiento.',
+  );
+  await rel(
+    futbol.id,
+    deporte.id,
+    'RELATED_TO',
+    1,
+    'El fútbol es una práctica deportiva y cultural.',
+  );
+  await rel(
+    futbol.id,
+    ciudad.id,
+    'RELATED_TO',
+    0.75,
+    'El fútbol funciona como ritual urbano y multitudinario.',
+  );
+  await rel(
+    popArt.id,
+    ciudad.id,
+    'ASSOCIATED_WITH',
+    0.75,
+    'El Pop Art emerge de cultura urbana y consumo.',
+  );
+  await rel(
+    dadaismo.id,
+    poder.id,
+    'ASSOCIATED_WITH',
+    0.55,
+    'El Dadaísmo desafía poder cultural e institucional.',
+  );
 
   await rel(articleWar.id, guerra.id, 'ABOUT_CONCEPT', 1, 'Artículo dedicado a guerra en el arte.');
   await rel(articleWar.id, guernica.id, 'MENTIONS', 1, 'Guernica es un caso central.');
   await rel(articleWar.id, tresDeMayo.id, 'MENTIONS', 0.9, 'El tres de mayo es un caso central.');
   await rel(articleBody.id, cuerpo.id, 'ABOUT_CONCEPT', 1, 'Artículo dedicado al cuerpo moderno.');
-  await rel(articleBody.id, genero.id, 'ABOUT_CONCEPT', 0.8, 'El género forma parte de la lectura del cuerpo.');
-  await rel(articleFootball.id, futbol.id, 'ABOUT_CONCEPT', 1, 'Artículo dedicado a arte y fútbol.');
-  await rel(articleFootball.id, deporte.id, 'ABOUT_CONCEPT', 0.9, 'El deporte es el marco principal.');
-  await rel(articleDeath.id, muerte.id, 'ABOUT_CONCEPT', 1, 'Artículo dedicado a muerte y memoria.');
+  await rel(
+    articleBody.id,
+    genero.id,
+    'ABOUT_CONCEPT',
+    0.8,
+    'El género forma parte de la lectura del cuerpo.',
+  );
+  await rel(
+    articleFootball.id,
+    futbol.id,
+    'ABOUT_CONCEPT',
+    1,
+    'Artículo dedicado a arte y fútbol.',
+  );
+  await rel(
+    articleFootball.id,
+    deporte.id,
+    'ABOUT_CONCEPT',
+    0.9,
+    'El deporte es el marco principal.',
+  );
+  await rel(
+    articleDeath.id,
+    muerte.id,
+    'ABOUT_CONCEPT',
+    1,
+    'Artículo dedicado a muerte y memoria.',
+  );
   await rel(articleDeath.id, memoria.id, 'ABOUT_CONCEPT', 0.85, 'La memoria articula la lectura.');
   await rel(articleAvant.id, cubismo.id, 'MENTIONS', 0.8, 'El Cubismo es una ruta de entrada.');
-  await rel(articleAvant.id, surrealismo.id, 'MENTIONS', 0.8, 'El Surrealismo es una ruta de entrada.');
+  await rel(
+    articleAvant.id,
+    surrealismo.id,
+    'MENTIONS',
+    0.8,
+    'El Surrealismo es una ruta de entrada.',
+  );
   await rel(articleAvant.id, dadaismo.id, 'MENTIONS', 0.8, 'El Dadaísmo es una ruta de entrada.');
   await rel(articleAvant.id, popArt.id, 'MENTIONS', 0.8, 'El Pop Art es una ruta de entrada.');
 
   const discoveryTags = [
     ['guerra', 'Guerra', [guerra, guernica, tresDeMayo, saturno, articleWar]],
     ['memoria', 'Memoria', [memoria, guernica, persistencia, maman, articleDeath]],
-    ['cuerpo', 'Cuerpo', [cuerpo, dosFridas, maman, demoiselles, studyVelazquez, futbolistas, articleBody]],
+    [
+      'cuerpo',
+      'Cuerpo',
+      [cuerpo, dosFridas, maman, demoiselles, studyVelazquez, futbolistas, articleBody],
+    ],
     ['muerte', 'Muerte', [muerte, saturno, marilynDiptych, articleDeath]],
     ['identidad', 'Identidad', [identidad, frida, dosFridas, futbol, articleFootball]],
     ['deporte', 'Deporte', [deporte, futbol, futbolistas, articleFootball]],
     ['futbol', 'Fútbol', [futbol, futbolistas, articleFootball]],
     ['genero', 'Género', [genero, frida, dosFridas, demoiselles, articleBody]],
     ['ciudad', 'Ciudad', [ciudad, nighthawks, warhol, marilynDiptych, futbolistas]],
-    ['vanguardias', 'Vanguardias', [cubismo, surrealismo, dadaismo, popArt, picasso, dali, miro, duchamp, warhol, articleAvant]],
+    [
+      'vanguardias',
+      'Vanguardias',
+      [cubismo, surrealismo, dadaismo, popArt, picasso, dali, miro, duchamp, warhol, articleAvant],
+    ],
     ['japon', 'Japón', [himitsubako]],
     ['madera', 'Madera', [himitsubako, fountain, bottleRack]],
     ['artesania', 'Artesanía', [himitsubako]],
@@ -2641,9 +4029,13 @@ async function main() {
   ] as const;
 
   for (const [slug, label, entities] of discoveryTags) {
-    const tag = await prisma.tag.create({ data: { slug, label, category: 'discovery', isActive: true } });
+    const tag = await prisma.tag.create({
+      data: { slug, label, category: 'discovery', isActive: true },
+    });
     for (const entity of entities) {
-      await prisma.entityTag.create({ data: { entityId: entity.id, tagId: tag.id, source: 'SEED', weight: 1 } });
+      await prisma.entityTag.create({
+        data: { entityId: entity.id, tagId: tag.id, source: 'SEED', weight: 1 },
+      });
     }
   }
 
@@ -2665,7 +4057,12 @@ async function main() {
       ctaRoute: '/entities/artwork',
       imageUrl: '/assets/home/artwork.jpg',
       translations: {
-        en: { title: 'Artworks', subtitle: 'Key pieces', description: 'Key pieces for studying form, technique, symbolism and context.', ctaLabel: 'Explore artworks' },
+        en: {
+          title: 'Artworks',
+          subtitle: 'Key pieces',
+          description: 'Key pieces for studying form, technique, symbolism and context.',
+          ctaLabel: 'Explore artworks',
+        },
       },
       sortOrder: 0,
       entities: [guernica, persistencia, dosFridas, maman, saturno, tresDeMayo],
@@ -2679,7 +4076,13 @@ async function main() {
       ctaRoute: '/entities/article',
       imageUrl: '/assets/home/concept.jpg',
       translations: {
-        en: { title: 'Articles', subtitle: 'Editorial readings', description: 'Editorial readings, criticism and connections between works, authors and ideas.', ctaLabel: 'Explore articles' },
+        en: {
+          title: 'Articles',
+          subtitle: 'Editorial readings',
+          description:
+            'Editorial readings, criticism and connections between works, authors and ideas.',
+          ctaLabel: 'Explore articles',
+        },
       },
       sortOrder: 1,
       entities: [],
@@ -2693,7 +4096,12 @@ async function main() {
       ctaRoute: '/entities/artist',
       imageUrl: '/assets/home/artist.jpg',
       translations: {
-        en: { title: 'Artists', subtitle: 'Visual trajectories', description: 'Authors, careers, visual obsessions and crossed influences.', ctaLabel: 'Explore artists' },
+        en: {
+          title: 'Artists',
+          subtitle: 'Visual trajectories',
+          description: 'Authors, careers, visual obsessions and crossed influences.',
+          ctaLabel: 'Explore artists',
+        },
       },
       sortOrder: 2,
       entities: [goya, picasso, dali, frida, bourgeois],
@@ -2707,7 +4115,12 @@ async function main() {
       ctaRoute: '/entities/movement',
       imageUrl: '/assets/home/movement.jpg',
       translations: {
-        en: { title: 'Movements', subtitle: 'Ideas in motion', description: 'Aesthetic currents and ideas that redefined art history.', ctaLabel: 'Explore movements' },
+        en: {
+          title: 'Movements',
+          subtitle: 'Ideas in motion',
+          description: 'Aesthetic currents and ideas that redefined art history.',
+          ctaLabel: 'Explore movements',
+        },
       },
       sortOrder: 3,
       entities: [romanticismo, cubismo, surrealismo, arteModerno, arteContemporaneo],
@@ -2721,7 +4134,12 @@ async function main() {
       ctaRoute: '/entities/period',
       imageUrl: '/assets/home/period.jpg',
       translations: {
-        en: { title: 'Periods', subtitle: 'Historical context', description: 'Historical stages for understanding cultural and visual change.', ctaLabel: 'Explore periods' },
+        en: {
+          title: 'Periods',
+          subtitle: 'Historical context',
+          description: 'Historical stages for understanding cultural and visual change.',
+          ctaLabel: 'Explore periods',
+        },
       },
       sortOrder: 4,
       entities: [periodXIX, periodXX, periodXXI],
@@ -2735,7 +4153,12 @@ async function main() {
       ctaRoute: '/entities/concept',
       imageUrl: '/assets/home/concept.jpg',
       translations: {
-        en: { title: 'Concepts', subtitle: 'Reading keys', description: 'Foundational ideas for reading works and relationships with more clarity.', ctaLabel: 'Explore concepts' },
+        en: {
+          title: 'Concepts',
+          subtitle: 'Reading keys',
+          description: 'Foundational ideas for reading works and relationships with more clarity.',
+          ctaLabel: 'Explore concepts',
+        },
       },
       sortOrder: 5,
       entities: [tiempo, memoria, guerra, identidad, cuerpo, dolor, maternidad, violencia],
@@ -2744,7 +4167,8 @@ async function main() {
       slug: 'place',
       title: 'Lugares',
       subtitle: 'Contexto institucional',
-      description: 'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
+      description:
+        'Museos, colecciones y espacios que anclan obras, movimientos y memoria pública.',
       ctaLabel: 'Explorar lugares',
       ctaRoute: '/entities/place',
       imageUrl: '/assets/home/museum-room.jpg',
@@ -2752,7 +4176,8 @@ async function main() {
         en: {
           title: 'Places',
           subtitle: 'Institutional context',
-          description: 'Museums, collections and spaces that anchor works, movements and public memory.',
+          description:
+            'Museums, collections and spaces that anchor works, movements and public memory.',
           ctaLabel: 'Explore places',
         },
       },
@@ -2770,7 +4195,13 @@ async function main() {
       ctaLabel: 'Ver selección',
       imageUrl: '/assets/home/artwork.jpg',
       translations: {
-        en: { title: 'Magic in art', subtitle: 'Staff Pick', description: 'A curated selection to enter JANO through key works and strong connections.', ctaLabel: 'View selection' },
+        en: {
+          title: 'Magic in art',
+          subtitle: 'Staff Pick',
+          description:
+            'A curated selection to enter JANO through key works and strong connections.',
+          ctaLabel: 'View selection',
+        },
       },
       entities: [persistencia, surrealismo, memoria, tiempo, identidad, cuerpo],
     },
@@ -2778,11 +4209,18 @@ async function main() {
       slug: 'memoria-y-trauma',
       title: 'Memoria y trauma',
       subtitle: 'Curated List',
-      description: 'Obras, conceptos y relaciones para leer la persistencia de la memoria histórica.',
+      description:
+        'Obras, conceptos y relaciones para leer la persistencia de la memoria histórica.',
       ctaLabel: 'Ver recorrido',
       imageUrl: '/assets/home/concept.jpg',
       translations: {
-        en: { title: 'Memory and trauma', subtitle: 'Curated List', description: 'Works, concepts and relationships for reading the persistence of historical memory.', ctaLabel: 'View route' },
+        en: {
+          title: 'Memory and trauma',
+          subtitle: 'Curated List',
+          description:
+            'Works, concepts and relationships for reading the persistence of historical memory.',
+          ctaLabel: 'View route',
+        },
       },
       entities: [guernica, guerra, violencia, memoria, tresDeMayo, saturno],
     },
@@ -2793,7 +4231,14 @@ async function main() {
       description: 'De Goya a Picasso: imágenes para pensar violencia, poder y memoria.',
       ctaLabel: 'Explorar ruta',
       imageUrl: '/assets/home/artwork.jpg',
-      translations: { en: { title: 'Art and war', subtitle: 'Editorial route', description: 'From Goya to Picasso: images for thinking violence, power and memory.', ctaLabel: 'Explore route' } },
+      translations: {
+        en: {
+          title: 'Art and war',
+          subtitle: 'Editorial route',
+          description: 'From Goya to Picasso: images for thinking violence, power and memory.',
+          ctaLabel: 'Explore route',
+        },
+      },
       entities: [guernica, tresDeMayo, saturno, guerra, violencia, memoria, articleWar],
     },
     {
@@ -2803,7 +4248,14 @@ async function main() {
       description: 'Cuerpo, dolor, género y vulnerabilidad en la modernidad artística.',
       ctaLabel: 'Explorar cuerpos',
       imageUrl: '/assets/home/concept.jpg',
-      translations: { en: { title: 'The body in the 20th century', subtitle: 'Concept route', description: 'Body, pain, gender and vulnerability in modern art.', ctaLabel: 'Explore bodies' } },
+      translations: {
+        en: {
+          title: 'The body in the 20th century',
+          subtitle: 'Concept route',
+          description: 'Body, pain, gender and vulnerability in modern art.',
+          ctaLabel: 'Explore bodies',
+        },
+      },
       entities: [dosFridas, demoiselles, studyVelazquez, maman, cuerpo, dolor, genero, articleBody],
     },
     {
@@ -2813,7 +4265,14 @@ async function main() {
       description: 'Fútbol, cuerpo, ciudad y espectáculo popular como ruta de descubrimiento.',
       ctaLabel: 'Ver recorrido',
       imageUrl: '/assets/home/movement.jpg',
-      translations: { en: { title: 'Art and sport', subtitle: 'Visual culture', description: 'Football, body, city and popular spectacle as a discovery route.', ctaLabel: 'View route' } },
+      translations: {
+        en: {
+          title: 'Art and sport',
+          subtitle: 'Visual culture',
+          description: 'Football, body, city and popular spectacle as a discovery route.',
+          ctaLabel: 'View route',
+        },
+      },
       entities: [futbolistas, futbol, deporte, cuerpo, ciudad, juventud, articleFootball],
     },
     {
@@ -2823,7 +4282,14 @@ async function main() {
       description: 'Finitud, duelo, religión y persistencia visual.',
       ctaLabel: 'Explorar memoria',
       imageUrl: '/assets/home/period.jpg',
-      translations: { en: { title: 'Death and memory', subtitle: 'Symbolic reading', description: 'Finitude, mourning, religion and visual persistence.', ctaLabel: 'Explore memory' } },
+      translations: {
+        en: {
+          title: 'Death and memory',
+          subtitle: 'Symbolic reading',
+          description: 'Finitude, mourning, religion and visual persistence.',
+          ctaLabel: 'Explore memory',
+        },
+      },
       entities: [muerte, memoria, religion, saturno, marilynDiptych, articleDeath],
     },
     {
@@ -2833,16 +4299,35 @@ async function main() {
       description: 'Cubismo, surrealismo, dadaísmo y Pop Art conectados por artistas y obras.',
       ctaLabel: 'Explorar vanguardias',
       imageUrl: '/assets/home/movement.jpg',
-      translations: { en: { title: 'Modern avant-gardes', subtitle: 'Entry map', description: 'Cubism, Surrealism, Dada and Pop Art connected through artists and works.', ctaLabel: 'Explore avant-gardes' } },
-      entities: [picasso, guernica, demoiselles, dali, persistencia, miro, carnivalHarlequin, duchamp, fountain, warhol, marilynDiptych, articleAvant],
+      translations: {
+        en: {
+          title: 'Modern avant-gardes',
+          subtitle: 'Entry map',
+          description: 'Cubism, Surrealism, Dada and Pop Art connected through artists and works.',
+          ctaLabel: 'Explore avant-gardes',
+        },
+      },
+      entities: [
+        picasso,
+        guernica,
+        demoiselles,
+        dali,
+        persistencia,
+        miro,
+        carnivalHarlequin,
+        duchamp,
+        fountain,
+        warhol,
+        marilynDiptych,
+        articleAvant,
+      ],
     },
   ];
 
-  const recommendedDecks = baseRecommendedDecks.slice(0, 5)
-    .map((deck, index) => ({
-      ...deck,
-      sortOrder: index,
-    }));
+  const recommendedDecks = baseRecommendedDecks.slice(0, 5).map((deck, index) => ({
+    ...deck,
+    sortOrder: index,
+  }));
 
   for (const deck of homeDecks) {
     const createdDeck = await prisma.homeDeck.create({
@@ -2859,8 +4344,20 @@ async function main() {
         isActive: true,
         translations: {
           create: [
-            { locale: 'es', title: deck.title, subtitle: deck.subtitle, description: deck.description, ctaLabel: deck.ctaLabel },
-            { locale: 'en', title: deck.translations.en.title, subtitle: deck.translations.en.subtitle, description: deck.translations.en.description, ctaLabel: deck.translations.en.ctaLabel },
+            {
+              locale: 'es',
+              title: deck.title,
+              subtitle: deck.subtitle,
+              description: deck.description,
+              ctaLabel: deck.ctaLabel,
+            },
+            {
+              locale: 'en',
+              title: deck.translations.en.title,
+              subtitle: deck.translations.en.subtitle,
+              description: deck.translations.en.description,
+              ctaLabel: deck.translations.en.ctaLabel,
+            },
           ],
         },
       },
@@ -2891,8 +4388,20 @@ async function main() {
         isActive: true,
         translations: {
           create: [
-            { locale: 'es', title: deck.title, subtitle: deck.subtitle, description: deck.description, ctaLabel: deck.ctaLabel },
-            { locale: 'en', title: deck.translations.en.title, subtitle: deck.translations.en.subtitle, description: deck.translations.en.description, ctaLabel: deck.translations.en.ctaLabel },
+            {
+              locale: 'es',
+              title: deck.title,
+              subtitle: deck.subtitle,
+              description: deck.description,
+              ctaLabel: deck.ctaLabel,
+            },
+            {
+              locale: 'en',
+              title: deck.translations.en.title,
+              subtitle: deck.translations.en.subtitle,
+              description: deck.translations.en.description,
+              ctaLabel: deck.translations.en.ctaLabel,
+            },
           ],
         },
       },
@@ -2916,7 +4425,13 @@ async function main() {
   await prisma.user.upsert({
     where: { email: admin.email },
     update: { passwordHash, name: 'JANO Admin', role: UserRole.ADMIN, isBeta: true },
-    create: { email: admin.email, passwordHash, name: 'JANO Admin', role: UserRole.ADMIN, isBeta: true },
+    create: {
+      email: admin.email,
+      passwordHash,
+      name: 'JANO Admin',
+      role: UserRole.ADMIN,
+      isBeta: true,
+    },
   });
 
   console.log('✅ Real art seed created successfully.');

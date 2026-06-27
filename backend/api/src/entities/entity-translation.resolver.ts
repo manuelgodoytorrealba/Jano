@@ -1,15 +1,19 @@
 export const SUPPORTED_LOCALES = ['es', 'en'] as const;
 export const DEFAULT_CONTENT_LOCALE = 'es';
 export const FALLBACK_CONTENT_LOCALE = 'en';
+const SUPPORTED_LOCALE_SET = new Set<string>(SUPPORTED_LOCALES);
 
-type TranslationLike = {
-  locale: string;
-  title: string;
-  shortDescription?: string | null;
-  essay?: string | null;
-  notes?: string | null;
-  excerpt?: string | null;
-} | null | undefined;
+type TranslationLike =
+  | {
+      locale: string;
+      title: string;
+      shortDescription?: string | null;
+      essay?: string | null;
+      notes?: string | null;
+      excerpt?: string | null;
+    }
+  | null
+  | undefined;
 
 type LegacyEntityLike = {
   title: string;
@@ -22,7 +26,7 @@ export type TranslationStatus = 'complete' | 'partial' | 'missing';
 
 export function normalizeLocale(locale: string | null | undefined): string {
   const normalized = (locale ?? DEFAULT_CONTENT_LOCALE).trim().toLowerCase().split('-')[0];
-  return SUPPORTED_LOCALES.includes(normalized as any) ? normalized : DEFAULT_CONTENT_LOCALE;
+  return SUPPORTED_LOCALE_SET.has(normalized) ? normalized : DEFAULT_CONTENT_LOCALE;
 }
 
 function translationStatus(translation: TranslationLike): TranslationStatus {
@@ -37,7 +41,10 @@ function translationStatus(translation: TranslationLike): TranslationStatus {
   return 'missing';
 }
 
-export function resolveEntityTranslation<T extends LegacyEntityLike>(entity: T, requestedLocale?: string): T & {
+export function resolveEntityTranslation<T extends LegacyEntityLike>(
+  entity: T,
+  requestedLocale?: string,
+): T & {
   title: string;
   summary: string | null;
   content: string | null;
@@ -60,7 +67,8 @@ export function resolveEntityTranslation<T extends LegacyEntityLike>(entity: T, 
   return {
     ...entity,
     title: resolved?.title?.trim() || entity.title,
-    summary: resolved?.shortDescription?.trim() || resolved?.excerpt?.trim() || (entity.summary ?? null),
+    summary:
+      resolved?.shortDescription?.trim() || resolved?.excerpt?.trim() || (entity.summary ?? null),
     content: resolved?.essay?.trim() || (entity.content ?? null),
     translationMeta: {
       requestedLocale: locale,
@@ -68,13 +76,20 @@ export function resolveEntityTranslation<T extends LegacyEntityLike>(entity: T, 
       isFallback: resolvedLocale !== locale,
       status: translationStatus(requested),
       availableLocales: translations
-        .filter((item): item is NonNullable<TranslationLike> => !!item && translationStatus(item) !== 'missing')
+        .filter(
+          (item): item is NonNullable<TranslationLike> =>
+            !!item && translationStatus(item) !== 'missing',
+        )
         .map((item) => item.locale),
     },
   };
 }
 
-export function translationStatusSummary(translations: TranslationLike[] | null | undefined): Record<string, TranslationStatus> {
+export function translationStatusSummary(
+  translations: TranslationLike[] | null | undefined,
+): Record<string, TranslationStatus> {
   const byLocale = new Map((translations ?? []).map((item) => [item?.locale, item] as const));
-  return Object.fromEntries(SUPPORTED_LOCALES.map((locale) => [locale, translationStatus(byLocale.get(locale))]));
+  return Object.fromEntries(
+    SUPPORTED_LOCALES.map((locale) => [locale, translationStatus(byLocale.get(locale))]),
+  );
 }

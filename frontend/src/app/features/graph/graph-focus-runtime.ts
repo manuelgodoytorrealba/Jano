@@ -1,3 +1,5 @@
+import { GraphViewport } from './graph.models';
+
 export function runScheduleInitialEntityFocusRuntime(options: {
   schedule: (payload: {
     isBrowser: boolean;
@@ -36,16 +38,16 @@ export function runEnsureInitialGraphFitRuntime(options: {
     hasUserAdjustedGraphView: boolean;
     hasGraphNow: () => boolean;
     pinCenterNode: () => void;
-    computeNextViewport: () => any;
-    applyViewport: (next: any) => void;
+    computeNextViewport: () => GraphViewport | null;
+    applyViewport: (next: GraphViewport) => void;
     onApplied: () => void;
   }) => void;
   isBrowser: boolean;
   hasUserAdjustedGraphView: boolean;
   hasGraphNow: () => boolean;
   pinCenterNode: () => void;
-  computeNextViewport: () => any;
-  applyViewport: (next: any) => void;
+  computeNextViewport: () => GraphViewport | null;
+  applyViewport: (next: GraphViewport) => void;
   onApplied: () => void;
 }): void {
   options.ensureFit({

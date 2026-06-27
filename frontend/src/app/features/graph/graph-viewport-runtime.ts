@@ -1,5 +1,9 @@
-import { DEFAULT_GRAPH_VIEWPORT_ANIMATION, FAST_GRAPH_VIEWPORT_ANIMATION, GraphViewportAnimationConfig } from './graph-camera';
-import { GraphPoint, GraphViewport } from './graph.models';
+import {
+  DEFAULT_GRAPH_VIEWPORT_ANIMATION,
+  FAST_GRAPH_VIEWPORT_ANIMATION,
+  GraphViewportAnimationConfig,
+} from './graph-camera';
+import { GraphPoint, GraphTooltip, GraphViewport } from './graph.models';
 import { GraphTooltipController, GraphViewportController } from './graph-runtime-controllers';
 import { GraphViewportFocusPlan } from './graph-focus';
 
@@ -95,16 +99,21 @@ export function scheduleTooltipPositionRuntime(options: {
   tooltipController: GraphTooltipController;
   point: GraphPoint;
   isBrowser: boolean;
-  getTooltip: () => any;
-  setTooltip: (tooltip: any) => void;
+  getTooltip: () => GraphTooltip | null;
+  setTooltip: (tooltip: GraphTooltip) => void;
 }): void {
-  options.tooltipController.schedule(options.point, options.isBrowser, options.getTooltip, options.setTooltip);
+  options.tooltipController.schedule(
+    options.point,
+    options.isBrowser,
+    options.getTooltip,
+    options.setTooltip,
+  );
 }
 
 export function flushPendingTooltipPositionRuntime(options: {
   tooltipController: GraphTooltipController;
-  getTooltip: () => any;
-  setTooltip: (tooltip: any) => void;
+  getTooltip: () => GraphTooltip | null;
+  setTooltip: (tooltip: GraphTooltip) => void;
 }): void {
   options.tooltipController.flush(options.getTooltip, options.setTooltip);
 }

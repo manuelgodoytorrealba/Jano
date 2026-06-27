@@ -36,17 +36,21 @@ export function createImageViewport(
   const insetY = Math.min(Math.max(container.height * 0.02, 12), 24);
   const containScale = Math.max(
     0.01,
-    Math.min((container.width - insetX * 2) / asset.width, (container.height - insetY * 2) / asset.height),
+    Math.min(
+      (container.width - insetX * 2) / asset.width,
+      (container.height - insetY * 2) / asset.height,
+    ),
   );
   const aspectRatio = asset.width / asset.height;
   const type = (options?.entityType ?? '').toUpperCase();
   const isArtwork = type === 'ARTWORK';
   const isPortraitSubject = type === 'ARTIST' || type === 'PERSON';
-  const targetWidthScale = (container.width * 0.985) / asset.width;
-  const targetHeightScale = (container.height * 0.965) / asset.height;
   const coverScale = Math.max(
     0.01,
-    Math.max((container.width - insetX * 2) / asset.width, (container.height - insetY * 2) / asset.height),
+    Math.max(
+      (container.width - insetX * 2) / asset.width,
+      (container.height - insetY * 2) / asset.height,
+    ),
   );
 
   let scale = containScale;
@@ -54,9 +58,15 @@ export function createImageViewport(
   if (isPortraitSubject && aspectRatio <= 0.92) {
     scale = Math.max(containScale, coverScale);
   } else if (isArtwork && aspectRatio <= 0.9) {
-    scale = Math.max(containScale, Math.min((container.height * 0.92) / asset.height, (container.width * 0.94) / asset.width));
+    scale = Math.max(
+      containScale,
+      Math.min((container.height * 0.92) / asset.height, (container.width * 0.94) / asset.width),
+    );
   } else if (!isArtwork && aspectRatio > 1.05 && aspectRatio < 1.8) {
-    scale = Math.max(containScale, Math.min((container.width * 0.99) / asset.width, (container.height * 0.96) / asset.height));
+    scale = Math.max(
+      containScale,
+      Math.min((container.width * 0.99) / asset.width, (container.height * 0.96) / asset.height),
+    );
   }
 
   const width = asset.width * scale;
@@ -83,7 +93,11 @@ export function zoomImageViewport(
     return viewport;
   }
 
-  const nextScale = clamp(viewport.scale * factor, viewport.fitScale, viewport.fitScale * IMAGE_MAX_FACTOR);
+  const nextScale = clamp(
+    viewport.scale * factor,
+    viewport.fitScale,
+    viewport.fitScale * IMAGE_MAX_FACTOR,
+  );
   const assetX = (anchor.x - viewport.x) / viewport.scale;
   const assetY = (anchor.y - viewport.y) / viewport.scale;
 
@@ -192,7 +206,11 @@ function applyEditorialViewport(
     return viewport;
   }
 
-  const scale = clamp(viewport.fitScale * zoom, viewport.fitScale, viewport.fitScale * IMAGE_MAX_FACTOR);
+  const scale = clamp(
+    viewport.fitScale * zoom,
+    viewport.fitScale,
+    viewport.fitScale * IMAGE_MAX_FACTOR,
+  );
 
   return clampImageViewport(
     {

@@ -10,6 +10,25 @@ import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { attachResolvedMedia } from '../entities/media.resolver';
 
+type CollectionItemWithEntity = {
+  sortOrder?: number | null;
+  entity?: CollectionEntityRecord | null;
+} & Record<string, unknown>;
+
+type CollectionRecord = {
+  items?: CollectionItemWithEntity[] | null;
+} & Record<string, unknown>;
+
+type CollectionEntityRecord = Parameters<typeof attachResolvedMedia>[0] & {
+  id: string;
+  title: string;
+  type: string;
+  slug: string;
+  summary?: string | null;
+  startYear?: number | null;
+  endYear?: number | null;
+};
+
 @Injectable()
 export class CollectionsService {
   constructor(private prisma: PrismaService) {}
@@ -17,20 +36,14 @@ export class CollectionsService {
   private readonly entityWithMediaInclude = {
     mediaLinks: {
       include: { media: true },
-      orderBy: [
-        { sortOrder: 'asc' as const },
-        { id: 'asc' as const },
-      ],
+      orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }],
     },
   };
 
   private readonly collectionInclude = {
     coverMedia: true,
     items: {
-      orderBy: [
-        { sortOrder: 'asc' as const },
-        { createdAt: 'asc' as const },
-      ],
+      orderBy: [{ sortOrder: 'asc' as const }, { createdAt: 'asc' as const }],
       include: {
         entity: {
           include: this.entityWithMediaInclude,
@@ -39,8 +52,8 @@ export class CollectionsService {
     },
   };
 
-  private serializeCollection(collection: any, graph: any = null) {
-    const items = (collection.items ?? []).map((item: any) => ({
+  private serializeCollection(collection: CollectionRecord, graph: unknown = null) {
+    const items = (collection.items ?? []).map((item) => ({
       ...item,
       entity: item.entity ? attachResolvedMedia(item.entity) : item.entity,
     }));
@@ -178,9 +191,9 @@ export class CollectionsService {
       where: { id: collectionId },
       data: {
         name: dto.name !== undefined ? dto.name.trim() : undefined,
-        description: dto.description !== undefined ? (dto.description?.trim() || null) : undefined,
-        notes: dto.notes !== undefined ? (dto.notes?.trim() || null) : undefined,
-        coverMediaId: dto.coverMediaId !== undefined ? (dto.coverMediaId?.trim() || null) : undefined,
+        description: dto.description !== undefined ? dto.description?.trim() || null : undefined,
+        notes: dto.notes !== undefined ? dto.notes?.trim() || null : undefined,
+        coverMediaId: dto.coverMediaId !== undefined ? dto.coverMediaId?.trim() || null : undefined,
       },
       include: this.collectionInclude,
     });
@@ -309,9 +322,12 @@ export class CollectionsService {
     return { ok: true };
   }
 
-  private async buildCollectionGraph(items: any[]) {
+  private async buildCollectionGraph(items: CollectionItemWithEntity[]) {
     const nodes = items
-      .filter((item) => item.entity)
+      .filter(
+        (item): item is CollectionItemWithEntity & { entity: CollectionEntityRecord } =>
+          !!item.entity,
+      )
       .map((item) => {
         const entity = attachResolvedMedia(item.entity);
         return {
@@ -334,15 +350,12 @@ export class CollectionsService {
 
     const relations = nodeIds.length
       ? await this.prisma.relation.findMany({
-        where: {
-          fromId: { in: nodeIds },
-          toId: { in: nodeIds },
-        },
-        orderBy: [
-          { type: 'asc' },
-          { id: 'asc' },
-        ],
-      })
+          where: {
+            fromId: { in: nodeIds },
+            toId: { in: nodeIds },
+          },
+          orderBy: [{ type: 'asc' }, { id: 'asc' }],
+        })
       : [];
 
     const edges = relations
@@ -361,7 +374,9 @@ export class CollectionsService {
       edges,
       summary: {
         entityTypes: this.countBy(nodes.map((node) => node.type)),
-        relationTypes: this.countBy(edges.map((edge) => edge.relationType)),
+        relationTypes: this.countBy(
+          edges.map((edge) => edge.relationType).filter((value): value is string => !!value),
+        ),
       },
     };
   }

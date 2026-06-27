@@ -10,201 +10,241 @@
     [class.explorer-shell--focused]="workspaceFocused"
     [class.explorer-shell--transitioning]="workspaceTransitioning"
     [class.explorer-shell--artwork-arrival]="!hideImagePane && artworkRouteArrivalActive()"
-    [class.explorer-shell--artwork-arrival-complete]="hideImagePane || !artworkTransition.shouldMaskDestinationArtwork(slug)"
-    [class.explorer-shell--artwork-arrival-controls]="!hideImagePane && artworkTransition.shouldRevealControls(slug)"
-    [class.explorer-shell--artwork-arrival-graph]="hideImagePane || artworkTransition.shouldRevealGraph(slug)"
+    [class.explorer-shell--artwork-arrival-complete]="
+      hideImagePane || !artworkTransition.shouldMaskDestinationArtwork(slug)
+    "
+    [class.explorer-shell--artwork-arrival-controls]="
+      !hideImagePane && artworkTransition.shouldRevealControls(slug)
+    "
+    [class.explorer-shell--artwork-arrival-graph]="
+      hideImagePane || artworkTransition.shouldRevealGraph(slug)
+    "
   >
     <div class="explorer-canvas">
       @if (!hideImagePane) {
-      <section
-        class="explorer-image-pane"
-        [class.explorer-pane--collapsed]="workspaceMode === 'graph' && !workspaceFocused"
-        [attr.aria-hidden]="workspaceMode === 'graph' && !workspaceFocused ? 'true' : null"
-      >
-        <div
-          #imageStage
-          class="image-stage"
-          [class.image-stage--arrival-masked]="artworkTransition.shouldMaskDestinationArtwork(slug)"
-          (wheel)="onImageWheel($event)"
-          (pointerdown)="onImagePointerDown($event)"
-          (pointermove)="onImagePointerMove($event)"
-          (pointerup)="onImagePointerUp($event)"
-          (pointercancel)="onImagePointerCancel($event)"
+        <section
+          class="explorer-image-pane"
+          [class.explorer-pane--collapsed]="workspaceMode === 'graph' && !workspaceFocused"
+          [attr.aria-hidden]="workspaceMode === 'graph' && !workspaceFocused ? 'true' : null"
         >
-          @if (hasImageSource()) {
-            <div class="image-stage__backdrop" [style.background-image]="imageBackdrop()" aria-hidden="true"></div>
-            @if (imageLoading()) {
-              <div class="image-stage__loading" aria-hidden="true">
-                <div class="image-stage__loading-label"></div>
-                <div class="image-stage__loading-frame"></div>
+          <div
+            #imageStage
+            class="image-stage"
+            [class.image-stage--arrival-masked]="
+              artworkTransition.shouldMaskDestinationArtwork(slug)
+            "
+            (wheel)="onImageWheel($event)"
+            (pointerdown)="onImagePointerDown($event)"
+            (pointermove)="onImagePointerMove($event)"
+            (pointerup)="onImagePointerUp($event)"
+            (pointercancel)="onImagePointerCancel($event)"
+          >
+            @if (hasImageSource()) {
+              <div
+                class="image-stage__backdrop"
+                [style.background-image]="imageBackdrop()"
+                aria-hidden="true"
+              ></div>
+              @if (imageLoading()) {
+                <div class="image-stage__loading" aria-hidden="true">
+                  <div class="image-stage__loading-label"></div>
+                  <div class="image-stage__loading-frame"></div>
+                </div>
+              }
+              <div class="image-stage__asset" [style.transform]="imageTransform()">
+                <img
+                  class="image-stage__img"
+                  [class.is-loading]="imageLoading()"
+                  [src]="imagePresentation().src ?? imageUrl!"
+                  [alt]="imageAlt || entityTitle"
+                  loading="eager"
+                  decoding="async"
+                  draggable="false"
+                  (load)="onImageLoaded($event)"
+                />
+              </div>
+            } @else {
+              <div class="image-stage__empty">
+                <span>Sin imagen disponible</span>
               </div>
             }
-            <div class="image-stage__asset" [style.transform]="imageTransform()">
-              <img
-                class="image-stage__img"
-                [class.is-loading]="imageLoading()"
-                [src]="imagePresentation().src ?? imageUrl!"
-                [alt]="imageAlt || entityTitle"
-                loading="eager"
-                decoding="async"
-                draggable="false"
-                (load)="onImageLoaded($event)"
-              />
 
-            </div>
-          } @else {
-            <div class="image-stage__empty">
-              <span>Sin imagen disponible</span>
-            </div>
-          }
-
-          @if (isMobileViewport && entityInfo) {
-          <button
-            type="button"
-            class="image-info-toggle"
-            (pointerdown)="$event.stopPropagation()"
-            (click)="openImageInfo()"
-            [attr.aria-label]="i18n.t('graph.info') + ' ' + entityInfo.title"
-          >
-            <span aria-hidden="true">i</span>
-          </button>
-
-          <button
-            type="button"
-            class="image-info-backdrop"
-            [class.is-hidden]="!imageInfoOpen()"
-            (pointerdown)="closeImageInfo(); $event.preventDefault(); $event.stopPropagation()"
-            [attr.aria-hidden]="!imageInfoOpen()"
-            tabindex="-1"
-          ></button>
-
-          <aside
-            class="image-info-sheet"
-            [class.is-hidden]="!imageInfoOpen()"
-            [attr.aria-hidden]="!imageInfoOpen()"
-            (click)="$event.stopPropagation()"
-            (pointerdown)="$event.stopPropagation()"
-            (pointermove)="$event.stopPropagation()"
-            (pointerup)="$event.stopPropagation()"
-            (wheel)="$event.preventDefault(); $event.stopPropagation()"
-          >
-            <div class="image-info-sheet__head">
-              <div class="image-info-sheet__eyebrow">{{ i18n.t('graph.info') }}</div>
+            @if (isMobileViewport && entityInfo) {
               <button
                 type="button"
-                class="image-info-sheet__close"
-                (pointerdown)="closeImageInfo(); $event.preventDefault(); $event.stopPropagation()"
-                [attr.aria-label]="i18n.t('button.close')"
+                class="image-info-toggle"
+                (pointerdown)="$event.stopPropagation()"
+                (click)="openImageInfo()"
+                [attr.aria-label]="i18n.t('graph.info') + ' ' + entityInfo.title"
               >
-                <span aria-hidden="true">×</span>
+                <span aria-hidden="true">i</span>
               </button>
-            </div>
 
-            <h2 class="image-info-sheet__title">{{ entityInfo.title }}</h2>
-            @if (entityInfo.subtitle) {
-            <p class="image-info-sheet__subtitle">{{ entityInfo.subtitle }}</p>
+              <button
+                type="button"
+                class="image-info-backdrop"
+                [class.is-hidden]="!imageInfoOpen()"
+                (pointerdown)="closeImageInfo(); $event.preventDefault(); $event.stopPropagation()"
+                [attr.aria-hidden]="!imageInfoOpen()"
+                tabindex="-1"
+              >
+                <span class="sr-only">{{ i18n.t('button.close') }}</span>
+              </button>
+
+              <aside
+                class="image-info-sheet"
+                [class.is-hidden]="!imageInfoOpen()"
+                [attr.aria-hidden]="!imageInfoOpen()"
+                (pointerdown)="$event.stopPropagation()"
+                (pointermove)="$event.stopPropagation()"
+                (pointerup)="$event.stopPropagation()"
+                (wheel)="$event.preventDefault(); $event.stopPropagation()"
+              >
+                <div class="image-info-sheet__head">
+                  <div class="image-info-sheet__eyebrow">{{ i18n.t('graph.info') }}</div>
+                  <button
+                    type="button"
+                    class="image-info-sheet__close"
+                    (pointerdown)="
+                      closeImageInfo(); $event.preventDefault(); $event.stopPropagation()
+                    "
+                    [attr.aria-label]="i18n.t('button.close')"
+                  >
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+
+                <h2 class="image-info-sheet__title">{{ entityInfo.title }}</h2>
+                @if (entityInfo.subtitle) {
+                  <p class="image-info-sheet__subtitle">{{ entityInfo.subtitle }}</p>
+                }
+                @if (entityInfo.badges.length) {
+                  <div class="image-info-sheet__meta">
+                    @for (badge of entityInfo.badges; track badge) {
+                      <span>{{ badge }}</span>
+                    }
+                  </div>
+                }
+                @if (entityInfo.summary) {
+                  <p class="image-info-sheet__summary">{{ entityInfo.summary }}</p>
+                }
+              </aside>
             }
-            @if (entityInfo.badges.length) {
-            <div class="image-info-sheet__meta">
-              @for (badge of entityInfo.badges; track badge) {
-              <span>{{ badge }}</span>
+
+            @if (isMobileViewport) {
+              <button
+                type="button"
+                class="stage-focus-toggle"
+                [class.is-active]="workspaceFocused"
+                (pointerdown)="$event.stopPropagation()"
+                (click)="toggleWorkspaceFocusStage()"
+                [attr.aria-label]="
+                  workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus')
+                "
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  @if (workspaceFocused) {
+                    <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
+                    <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
+                  } @else {
+                    <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+                    <path d="M10 10 4 4M14 10l6-6M10 14l-6 6M14 14l6 6" />
+                  }
+                </svg>
+              </button>
+            }
+
+            <div class="image-overlay-bar">
+              @if (!isMobileViewport) {
+                <div class="explorer-surface-label">Imagen</div>
+              }
+
+              @if (!isMobileViewport) {
+                <div class="surface-controls surface-controls--image">
+                  <div class="surface-controls__cluster">
+                    <button
+                      type="button"
+                      class="surface-control surface-control--iconic"
+                      [disabled]="!imageAsset()"
+                      (pointerdown)="$event.stopPropagation()"
+                      (click)="adjustImageZoom(1.14)"
+                    >
+                      +
+                    </button>
+                    <button
+                      type="button"
+                      class="surface-control surface-control--iconic"
+                      [disabled]="!imageAsset()"
+                      (pointerdown)="$event.stopPropagation()"
+                      (click)="adjustImageZoom(0.88)"
+                    >
+                      −
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    class="surface-control surface-control--wide"
+                    [disabled]="!imageAsset()"
+                    (pointerdown)="$event.stopPropagation()"
+                    (click)="resetImageView()"
+                  >
+                    Reset
+                  </button>
+                </div>
               }
             </div>
-            }
-            @if (entityInfo.summary) {
-            <p class="image-info-sheet__summary">{{ entityInfo.summary }}</p>
-            }
-          </aside>
-          }
 
-          @if (isMobileViewport) {
-          <button
-            type="button"
-            class="stage-focus-toggle"
-            [class.is-active]="workspaceFocused"
-            (pointerdown)="$event.stopPropagation()"
-            (click)="toggleWorkspaceFocusStage()"
-            [attr.aria-label]="workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus')"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              @if (workspaceFocused) {
-              <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
-              <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
-              } @else {
-              <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
-              <path d="M10 10 4 4M14 10l6-6M10 14l-6 6M14 14l6 6" />
-              }
-            </svg>
-          </button>
-          }
+            @if (imageMeta?.source || imageMeta?.photoBy || imageMeta?.license) {
+              <div class="image-meta-dock">
+                <button
+                  type="button"
+                  class="image-meta-dock__toggle"
+                  (pointerdown)="$event.stopPropagation()"
+                >
+                  Creditos
+                </button>
 
-          <div class="image-overlay-bar">
-            @if (!isMobileViewport) {
-            <div class="explorer-surface-label">Imagen</div>
-            }
-
-            @if (!isMobileViewport) {
-            <div class="surface-controls surface-controls--image">
-              <div class="surface-controls__cluster">
-                <button type="button" class="surface-control surface-control--iconic" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(1.14)">+</button>
-                <button type="button" class="surface-control surface-control--iconic" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="adjustImageZoom(0.88)">−</button>
+                <div class="image-meta-card">
+                  @if (imageMeta?.source) {
+                    <div><strong>Fuente</strong> {{ imageMeta?.source }}</div>
+                  }
+                  @if (imageMeta?.photoBy) {
+                    <div><strong>Foto</strong> {{ imageMeta?.photoBy }}</div>
+                  }
+                  @if (imageMeta?.license) {
+                    <div><strong>Licencia</strong> {{ imageMeta?.license }}</div>
+                  }
+                </div>
               </div>
-              <button type="button" class="surface-control surface-control--wide" [disabled]="!imageAsset()" (pointerdown)="$event.stopPropagation()" (click)="resetImageView()">
-                Reset
-              </button>
-            </div>
             }
           </div>
-
-          @if (imageMeta?.source || imageMeta?.photoBy || imageMeta?.license) {
-            <div class="image-meta-dock">
-              <button
-                type="button"
-                class="image-meta-dock__toggle"
-                (pointerdown)="$event.stopPropagation()"
-              >
-                Creditos
-              </button>
-
-              <div class="image-meta-card">
-                @if (imageMeta?.source) {
-                  <div><strong>Fuente</strong> {{ imageMeta?.source }}</div>
-                }
-                @if (imageMeta?.photoBy) {
-                  <div><strong>Foto</strong> {{ imageMeta?.photoBy }}</div>
-                }
-                @if (imageMeta?.license) {
-                  <div><strong>Licencia</strong> {{ imageMeta?.license }}</div>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      </section>
+        </section>
       }
 
       <section
         class="explorer-graph-pane"
-        [class.explorer-graph-pane--arrival-hidden]="!hideImagePane && !artworkTransition.shouldRevealGraph(slug)"
+        [class.explorer-graph-pane--arrival-hidden]="
+          !hideImagePane && !artworkTransition.shouldRevealGraph(slug)
+        "
         [class.explorer-pane--collapsed]="workspaceMode === 'image' && !workspaceFocused"
         [class.explorer-graph-pane--inspector-hidden]="!inspectorVisible()"
         [attr.aria-hidden]="workspaceMode === 'image' && !workspaceFocused ? 'true' : null"
       >
         @if (showControls) {
-        <app-graph-controls-bar
-          [labelsMode]="labelsMode()"
-          [nodeCount]="graphDerived().filteredNodes.length"
-          [edgeCount]="graphDerived().filteredEdges.length"
-          [scalePercent]="+(graphViewport().scale * 100).toFixed(0)"
-          [graphReady]="!!graphData"
-          [inspectorVisible]="inspectorVisible()"
-          [isMobileViewport]="isMobileViewport"
-          (labelsModeChange)="setLabelsMode($event)"
-          (centerSelection)="centerSelection()"
-          (graphZoom)="adjustGraphZoom($event)"
-          (resetGraphView)="resetGraphView()"
-          (toggleInspector)="toggleInspector()"
-        />
+          <app-graph-controls-bar
+            [labelsMode]="labelsMode()"
+            [nodeCount]="graphDerived().filteredNodes.length"
+            [edgeCount]="graphDerived().filteredEdges.length"
+            [scalePercent]="+(graphViewport().scale * 100).toFixed(0)"
+            [graphReady]="!!graphData"
+            [inspectorVisible]="inspectorVisible()"
+            [isMobileViewport]="isMobileViewport"
+            (labelsModeChange)="setLabelsMode($event)"
+            (centerSelection)="centerSelection()"
+            (graphZoom)="adjustGraphZoom($event)"
+            (resetGraphView)="resetGraphView()"
+            (toggleInspector)="toggleInspector()"
+          />
         }
 
         <div
@@ -218,24 +258,26 @@
           (pointercancel)="onGraphStagePointerUp($event)"
         >
           @if (isMobileViewport) {
-          <button
-            type="button"
-            class="stage-focus-toggle"
-            [class.is-active]="workspaceFocused"
-            (pointerdown)="$event.stopPropagation()"
-            (click)="toggleWorkspaceFocusStage()"
-            [attr.aria-label]="workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus')"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              @if (workspaceFocused) {
-              <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
-              <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
-              } @else {
-              <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
-              <path d="M10 10 4 4M14 10l6-6M10 14l-6 6M14 14l6 6" />
-              }
-            </svg>
-          </button>
+            <button
+              type="button"
+              class="stage-focus-toggle"
+              [class.is-active]="workspaceFocused"
+              (pointerdown)="$event.stopPropagation()"
+              (click)="toggleWorkspaceFocusStage()"
+              [attr.aria-label]="
+                workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus')
+              "
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                @if (workspaceFocused) {
+                  <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
+                  <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
+                } @else {
+                  <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+                  <path d="M10 10 4 4M14 10l6-6M10 14l-6 6M14 14l6 6" />
+                }
+              </svg>
+            </button>
           }
 
           <app-graph-scene
@@ -294,7 +336,7 @@
             [attr.aria-label]="i18n.t('button.close')"
           ></button>
 
-          <aside class="graph-inspector-sheet" (click)="$event.stopPropagation()">
+          <aside class="graph-inspector-sheet">
             <app-graph-inspector-panel
               [isMobileViewport]="true"
               [nodeCount]="graphDerived().filteredNodes.length"
@@ -311,7 +353,7 @@
               [relationTypeFilters]="relationTypeFilters()"
               [entityTypeMeta]="graphDerived().entityTypeMeta"
               [relationTypeMeta]="graphDerived().relationTypeMeta"
-              (close)="toggleInspector()"
+              (closeInspector)="toggleInspector()"
               (openSelectedEntity)="openSelectedEntity()"
               (setAllEntityTypes)="setAllEntityTypes($event)"
               (toggleEntityType)="toggleEntityType($event)"
@@ -335,11 +377,11 @@
   >
     <div class="explorer-canvas">
       @if (!hideImagePane) {
-      <section class="explorer-image-pane explorer-pane-skeleton explorer-pane-skeleton--light">
-        <div class="explorer-pane-skeleton__pill"></div>
-        <div class="explorer-pane-skeleton__stage explorer-pane-skeleton__stage--light"></div>
-        <div class="explorer-pane-skeleton__chip"></div>
-      </section>
+        <section class="explorer-image-pane explorer-pane-skeleton explorer-pane-skeleton--light">
+          <div class="explorer-pane-skeleton__pill"></div>
+          <div class="explorer-pane-skeleton__stage explorer-pane-skeleton__stage--light"></div>
+          <div class="explorer-pane-skeleton__chip"></div>
+        </section>
       }
 
       <section class="explorer-graph-pane explorer-pane-skeleton explorer-pane-skeleton--dark">

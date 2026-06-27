@@ -8,8 +8,16 @@
 
     @for (field of ambientFields; track field.id) {
       <radialGradient [attr.id]="field.id + '-gradient'" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" [attr.stop-color]="field.color" [attr.stop-opacity]="field.opacity"></stop>
-        <stop offset="58%" [attr.stop-color]="field.color" [attr.stop-opacity]="field.opacity * 0.3"></stop>
+        <stop
+          offset="0%"
+          [attr.stop-color]="field.color"
+          [attr.stop-opacity]="field.opacity"
+        ></stop>
+        <stop
+          offset="58%"
+          [attr.stop-color]="field.color"
+          [attr.stop-opacity]="field.opacity * 0.3"
+        ></stop>
         <stop offset="100%" [attr.stop-color]="field.color" stop-opacity="0"></stop>
       </radialGradient>
     }
@@ -30,7 +38,14 @@
   </defs>
 
   <g [attr.transform]="viewportTransform">
-    <rect class="graph-depth-vignette" x="-2000" y="-2000" width="4000" height="4000" fill="url(#graph-depth-vignette)"></rect>
+    <rect
+      class="graph-depth-vignette"
+      x="-2000"
+      y="-2000"
+      width="4000"
+      height="4000"
+      fill="url(#graph-depth-vignette)"
+    ></rect>
 
     @for (field of ambientFields; track field.id) {
       <circle
@@ -46,7 +61,12 @@
     }
 
     @for (renderedEdge of renderedEdges; track renderedEdge.edge.id) {
-      <g class="graph-edge-group" [class.graph-edge-group--focus]="renderedEdge.depthTier === 'focus'" [class.graph-edge-group--mid]="renderedEdge.depthTier === 'mid'" [class.graph-edge-group--far]="renderedEdge.depthTier === 'far'">
+      <g
+        class="graph-edge-group"
+        [class.graph-edge-group--focus]="renderedEdge.depthTier === 'focus'"
+        [class.graph-edge-group--mid]="renderedEdge.depthTier === 'mid'"
+        [class.graph-edge-group--far]="renderedEdge.depthTier === 'far'"
+      >
         <path
           class="graph-edge graph-edge--aura"
           [attr.d]="renderedEdge.path"
@@ -62,7 +82,9 @@
           [attr.stroke]="renderedEdge.relationVisual.color"
           [attr.stroke-width]="renderedEdge.relationVisual.width"
           [attr.stroke-dasharray]="renderedEdge.dasharray"
-          [attr.marker-end]="renderedEdge.edge.directed ? 'url(#' + renderedEdge.markerId + ')' : null"
+          [attr.marker-end]="
+            renderedEdge.edge.directed ? 'url(#' + renderedEdge.markerId + ')' : null
+          "
           [class.is-muted]="renderedEdge.muted"
         ></path>
 
@@ -133,7 +155,12 @@
           [attr.fill]="renderedNode.nodeVisual.color"
         ></path>
 
-        <text class="graph-node__icon" text-anchor="middle" dy="0.35em" [attr.fill]="renderedNode.nodeVisual.textColor">
+        <text
+          class="graph-node__icon"
+          text-anchor="middle"
+          dy="0.35em"
+          [attr.fill]="renderedNode.nodeVisual.textColor"
+        >
           {{ renderedNode.nodeVisual.icon }}
         </text>
 

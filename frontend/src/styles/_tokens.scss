@@ -32,9 +32,11 @@
   --color-danger-soft: rgba(196, 123, 112, 0.12);
 
   /* Typography */
-  --font-sans: "Helvetica Now Display", "Neue Haas Grotesk", "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Times New Roman", Times, serif;
-  --font-mono: "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans:
+    'Helvetica Now Display', 'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, Arial, ui-sans-serif,
+    system-ui, sans-serif;
+  --font-serif: 'Times New Roman', Times, serif;
+  --font-mono: 'SFMono-Regular', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --text-xs: 12px;
   --text-sm: 14px;
@@ -102,9 +104,13 @@
 
   /* Semantic viewport contract. New pages should consume these first. */
   --app-viewport-height: var(--app-visual-viewport-height);
-  --app-chrome-top: calc(var(--app-safe-top) + var(--app-shell-gap) + var(--app-header-height) + 18px);
+  --app-chrome-top: calc(
+    var(--app-safe-top) + var(--app-shell-gap) + var(--app-header-height) + 18px
+  );
   --app-chrome-bottom: calc(var(--app-safe-bottom) + var(--app-shell-gap));
-  --app-content-height: calc(var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom));
+  --app-content-height: calc(
+    var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom)
+  );
   --app-immersive-height: var(--app-viewport-height);
 
   /* Compatibility aliases. Keep until every page migrates to the semantic contract. */
@@ -112,7 +118,7 @@
   --app-viewport-stable-block: 100svh;
 
   /* Motion */
-  --ease-standard: cubic-bezier(.2, .8, .2, 1);
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --transition-fast: 140ms var(--ease-standard);
   --transition-base: 220ms var(--ease-standard);
 }
@@ -121,13 +127,15 @@
   :root {
     --app-viewport-height: var(--app-visual-viewport-height);
     --app-immersive-height: var(--app-viewport-height);
-    --app-content-height: calc(var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom));
+    --app-content-height: calc(
+      var(--app-viewport-height) - var(--app-chrome-top) - var(--app-chrome-bottom)
+    );
     --app-viewport-block: var(--app-viewport-height);
     --app-viewport-stable-block: 100svh;
   }
 }
 
-:root[data-theme="light"] {
+:root[data-theme='light'] {
   --color-bg: #e7e2d8;
   --color-bg-deep: #d7d0c4;
   --color-surface: rgba(255, 255, 255, 0.62);

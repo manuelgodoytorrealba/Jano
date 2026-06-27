@@ -69,7 +69,7 @@ type GraphEntityInfo = {
   templateUrl: './entity-detail-view.component.html',
   styleUrls: ['./entity-detail-view.component.scss'],
 })
-export class EntityDetailViewComponent implements OnDestroy {
+export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   private static readonly MOBILE_BREAKPOINT = 760;
   private static readonly INITIAL_RELATION_LIMIT = 48;
   private static readonly RELATION_LIMIT_STEP = 48;

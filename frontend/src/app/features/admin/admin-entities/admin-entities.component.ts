@@ -13,9 +13,22 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
+import {
+  AdminEntitiesApi,
+  AdminEntityListResponse,
+  AdminEntitySearchListItem,
+} from '../../../core/api/admin-entities.api';
 
-type AdminType = '' | 'ARTWORK' | 'ARTIST' | 'ARTICLE' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
+type AdminType =
+  | ''
+  | 'ARTWORK'
+  | 'ARTIST'
+  | 'ARTICLE'
+  | 'CONCEPT'
+  | 'MOVEMENT'
+  | 'PERIOD'
+  | 'TEXT'
+  | 'PLACE';
 type AdminStatus = '' | 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED';
 
 @Component({
@@ -41,11 +54,7 @@ export class AdminEntitiesComponent {
     'PLACE',
   ];
 
-  statuses: Exclude<AdminStatus, ''>[] = [
-    'DRAFT',
-    'IN_REVIEW',
-    'PUBLISHED',
-  ];
+  statuses: Exclude<AdminStatus, ''>[] = ['DRAFT', 'IN_REVIEW', 'PUBLISHED'];
 
   search = '';
   selectedType: AdminType = '';
@@ -59,41 +68,49 @@ export class AdminEntitiesComponent {
   private search$ = new BehaviorSubject<string>('');
   private removedIds$ = new BehaviorSubject<Set<string>>(new Set());
 
+  private filterVisibleItems(
+    response: AdminEntityListResponse,
+    removedIds: Set<string>,
+  ): AdminEntitySearchListItem[] {
+    return (response.items ?? []).filter((item) => !removedIds.has(item.id));
+  }
+
   vm$ = combineLatest([
     this.refresh$,
-    this.search$.pipe(
-      debounceTime(220),
-      distinctUntilChanged(),
-      startWith(''),
-    ),
+    this.search$.pipe(debounceTime(220), distinctUntilChanged(), startWith('')),
     this.removedIds$,
   ]).pipe(
     switchMap(([_, q, removedIds]) => {
       this.loading = true;
       this.feedbackMessage = '';
 
-      return this.api.list({
-        page: 1,
-        limit: 60,
-        sort: 'recent',
-        q: q.trim() || undefined,
-        type: this.selectedType || undefined,
-        status: this.selectedStatus || undefined,
-      }).pipe(
-        map((res) => {
-          this.loading = false;
-          const items = (res.items ?? []).filter((item: any) => !removedIds.has(item.id));
-          return {
-            ...res,
-            items,
-            total: typeof res.total === 'number' ? Math.max(items.length, res.total - ((res.items?.length ?? 0) - items.length)) : items.length,
-          };
-        }),
-        catchError(() => {
-          this.loading = false;
-          return of({ items: [], total: 0 });
-        }),
-      );
+      return this.api
+        .list({
+          page: 1,
+          limit: 60,
+          sort: 'recent',
+          q: q.trim() || undefined,
+          type: this.selectedType || undefined,
+          status: this.selectedStatus || undefined,
+        })
+        .pipe(
+          map((res) => {
+            this.loading = false;
+            const items = this.filterVisibleItems(res, removedIds);
+            return {
+              ...res,
+              items,
+              total:
+                typeof res.total === 'number'
+                  ? Math.max(items.length, res.total - ((res.items?.length ?? 0) - items.length))
+                  : items.length,
+            };
+          }),
+          catchError(() => {
+            this.loading = false;
+            return of({ items: [], total: 0 });
+          }),
+        );
     }),
   );
 
@@ -104,7 +121,9 @@ export class AdminEntitiesComponent {
       const q = params.get('q') ?? '';
 
       this.selectedType = this.types.includes(type as Exclude<AdminType, ''>) ? type : '';
-      this.selectedStatus = this.statuses.includes(status as Exclude<AdminStatus, ''>) ? status : '';
+      this.selectedStatus = this.statuses.includes(status as Exclude<AdminStatus, ''>)
+        ? status
+        : '';
       this.search = q;
 
       this.search$.next(q);
@@ -189,5 +208,4 @@ export class AdminEntitiesComponent {
     next.delete(id);
     this.removedIds$.next(next);
   }
-
 }

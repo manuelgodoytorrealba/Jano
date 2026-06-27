@@ -1,7 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet } from '@angular/router';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 import { AppChromeComponent } from './shared/ui/app-chrome/app-chrome.component';
 import { AppAppearanceService } from './core/app-appearance.service';
 import { EntityRouteArtworkTransitionService } from './core/entity-route-artwork-transition.service';
@@ -13,7 +20,7 @@ import { filter } from 'rxjs';
   selector: 'app-root',
   imports: [CommonModule, RouterOutlet, AppChromeComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
   private readonly router = inject(Router);
@@ -31,35 +38,39 @@ export class App {
   constructor() {
     this.viewport.start();
     this.appearance.load().subscribe();
-    this.router.events.pipe(
-      filter((event) =>
-        event instanceof NavigationStart ||
-        event instanceof NavigationEnd ||
-        event instanceof NavigationCancel ||
-        event instanceof NavigationError,
-      ),
-      takeUntilDestroyed(),
-    ).subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        this.routeTransitioning.set(true);
-        return;
-      }
+    this.router.events
+      .pipe(
+        filter(
+          (event) =>
+            event instanceof NavigationStart ||
+            event instanceof NavigationEnd ||
+            event instanceof NavigationCancel ||
+            event instanceof NavigationError,
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          this.routeTransitioning.set(true);
+          return;
+        }
 
-      if (event instanceof NavigationCancel || event instanceof NavigationError) {
-        this.artworkTransition.cancel();
-      }
-
-      this.schedulePostNavigation(() => {
-        this.routeTransitioning.set(false);
-
-        if (!this.isEntityDetailRoute() && this.artworkTransition.isActive()) {
+        if (event instanceof NavigationCancel || event instanceof NavigationError) {
           this.artworkTransition.cancel();
         }
+
+        this.schedulePostNavigation(() => {
+          this.routeTransitioning.set(false);
+
+          if (!this.isEntityDetailRoute() && this.artworkTransition.isActive()) {
+            this.artworkTransition.cancel();
+          }
+        });
       });
-    });
 
     effect(() => {
-      const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 860px)').matches;
+      const isMobile =
+        typeof window !== 'undefined' && window.matchMedia('(max-width: 860px)').matches;
       const themeColor = isMobile ? '#231d1b' : '#0a0a0a';
       this.setThemeColor(themeColor);
     });
@@ -88,7 +99,7 @@ export class App {
   }
 
   private setThemeColor(color: string): void {
-    const existing = this.document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+    const existing = this.document.querySelector('meta[name="theme-color"]');
 
     if (existing) {
       existing.setAttribute('content', color);

@@ -1,4 +1,6 @@
 import { JwtStrategy } from './jwt.strategy';
+import type { ConfigService } from '@nestjs/config';
+import type { UsersService } from '../../users/users.service';
 
 describe('JwtStrategy', () => {
   it('loads the current user from the database and returns the effective role', async () => {
@@ -15,13 +17,18 @@ describe('JwtStrategy', () => {
       getOrThrow: jest.fn().mockReturnValue('test-jwt-secret'),
     };
 
-    const strategy = new JwtStrategy(usersService as any, configService as any);
+    const strategy = new JwtStrategy(
+      usersService as Pick<UsersService, 'findById'> as UsersService,
+      configService as Pick<ConfigService, 'getOrThrow'> as ConfigService,
+    );
 
-    await expect(strategy.validate({
-      sub: 'user-1',
-      email: 'manuel@test3.com',
-      role: 'USER',
-    })).resolves.toEqual({
+    await expect(
+      strategy.validate({
+        sub: 'user-1',
+        email: 'manuel@test3.com',
+        role: 'USER',
+      }),
+    ).resolves.toEqual({
       userId: 'user-1',
       id: 'user-1',
       email: 'manuel@test3.com',

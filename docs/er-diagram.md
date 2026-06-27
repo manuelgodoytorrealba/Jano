@@ -138,7 +138,7 @@ Cubren la parte de usuario:
 
 ## Diagrama Mermaid
 
-```mermaid
+````mermaid
 erDiagram
   Entity {
     string id PK
@@ -392,7 +392,7 @@ erDiagram
   User ||--o{ Collection : "owns"
   Collection ||--o{ CollectionEntity : "contains"
   Entity ||--o{ CollectionEntity : "included_in"
-```
+````
 
 ## Nota de modelado
 

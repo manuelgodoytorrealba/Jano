@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { apiUrl } from './api-base';
+import { PublicEntity, PublicEntityMediaAsset, PublicEntityResolvedMedia } from './entities.models';
 
 export type CollectionItem = {
   id: string;
@@ -8,7 +9,7 @@ export type CollectionItem = {
   entityId: string;
   sortOrder: number;
   createdAt: string;
-  entity: any;
+  entity: PublicEntity;
 };
 
 export type CollectionGraph = {
@@ -18,7 +19,7 @@ export type CollectionGraph = {
     type: string;
     slug: string;
     sortOrder: number;
-    resolvedMedia?: any;
+    resolvedMedia?: PublicEntityResolvedMedia | null;
     metadata: {
       summary: string | null;
       startYear: number | null;
@@ -46,7 +47,7 @@ export type Collection = {
   description?: string | null;
   notes?: string | null;
   coverMediaId?: string | null;
-  coverMedia?: any | null;
+  coverMedia?: PublicEntityMediaAsset | null;
   isDefault: boolean;
   createdAt: string;
   updatedAt: string;
@@ -84,14 +85,21 @@ export class CollectionsApi {
   }
 
   addEntity(collectionId: string, entityId: string) {
-    return this.http.post<CollectionItem>(`${this.baseUrl}/${collectionId}/entities/${entityId}`, {});
+    return this.http.post<CollectionItem>(
+      `${this.baseUrl}/${collectionId}/entities/${entityId}`,
+      {},
+    );
   }
 
   reorderEntity(collectionId: string, entityId: string, sortOrder: number) {
-    return this.http.patch<CollectionItem>(`${this.baseUrl}/${collectionId}/entities/${entityId}`, { sortOrder });
+    return this.http.patch<CollectionItem>(`${this.baseUrl}/${collectionId}/entities/${entityId}`, {
+      sortOrder,
+    });
   }
 
   removeEntity(collectionId: string, entityId: string) {
-    return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/${collectionId}/entities/${entityId}`);
+    return this.http.delete<{ ok: boolean }>(
+      `${this.baseUrl}/${collectionId}/entities/${entityId}`,
+    );
   }
 }

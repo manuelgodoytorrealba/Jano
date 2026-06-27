@@ -15,7 +15,8 @@ export type AdminEntityRelationDraft = {
 };
 
 export function createEmptyRelationDraft(relationTypes: RelationType[]): AdminEntityRelationDraft {
-  const preferred = relationTypes.find((type) => type.key === 'RELATED_TO') ?? relationTypes[0] ?? null;
+  const preferred =
+    relationTypes.find((type) => type.key === 'RELATED_TO') ?? relationTypes[0] ?? null;
 
   return {
     toId: '',
@@ -44,7 +45,9 @@ export function canSubmitRelationDraft(entityId: string, draft: AdminEntityRelat
   return !!entityId && !!draft.toId && !!draft.type.trim();
 }
 
-export function buildCreateRelationPayload(draft: AdminEntityRelationDraft): AdminCreateRelationPayload {
+export function buildCreateRelationPayload(
+  draft: AdminEntityRelationDraft,
+): AdminCreateRelationPayload {
   return {
     toId: draft.toId,
     type: draft.type.trim(),
@@ -54,11 +57,14 @@ export function buildCreateRelationPayload(draft: AdminEntityRelationDraft): Adm
   };
 }
 
-export function buildUpdateRelationPayload(relation: AdminEntityRelationRecord): AdminUpdateRelationPayload {
+export function buildUpdateRelationPayload(
+  relation: AdminEntityRelationRecord,
+): AdminUpdateRelationPayload {
   return {
     relationTypeId: relation.relationTypeId || relation.relationType?.id || undefined,
     type: relation.type || relation.relationTypeKey || undefined,
-    justificationEs: String(relation.justificationEs ?? relation.justification ?? '').trim() || undefined,
+    justificationEs:
+      String(relation.justificationEs ?? relation.justification ?? '').trim() || undefined,
     justificationEn: String(relation.justificationEn ?? '').trim() || undefined,
     weight: relation.weight ?? undefined,
   };

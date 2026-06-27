@@ -78,7 +78,8 @@
     padding-left: calc(164px + 22px);
   }
 
-  .entities-explorer-layout.is-filters-collapsed :is(.entities-stage-shell--list, .entities-stage-shell--empty) {
+  .entities-explorer-layout.is-filters-collapsed
+    :is(.entities-stage-shell--list, .entities-stage-shell--empty) {
     padding-left: 18px;
   }
 

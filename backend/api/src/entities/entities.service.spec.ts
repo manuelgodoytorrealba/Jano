@@ -98,7 +98,9 @@ describe('EntitiesService.list filters', () => {
     prisma.entity.findMany.mockResolvedValue([]);
     prisma.entity.findUnique.mockResolvedValue(null);
     prisma.entity.delete.mockResolvedValue({ id: 'entity-id' });
-    prisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
+    prisma.$transaction.mockImplementation(
+      async (callback: (tx: typeof prisma) => Promise<unknown> | unknown) => callback(prisma),
+    );
     prisma.source.deleteMany.mockResolvedValue({ count: 0 });
     prisma.sourceRef.findMany.mockResolvedValue([]);
     prisma.sourceRef.count.mockResolvedValue(0);
@@ -121,10 +123,7 @@ describe('EntitiesService.list filters', () => {
     prisma.relation.deleteMany.mockResolvedValue({ count: 0 });
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        EntitiesService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [EntitiesService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get(EntitiesService);
@@ -257,10 +256,7 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.$transaction).toHaveBeenCalled();
     expect(prisma.relation.deleteMany).toHaveBeenCalledWith({
       where: {
-        OR: [
-          { fromId: 'entity-1' },
-          { toId: 'entity-1' },
-        ],
+        OR: [{ fromId: 'entity-1' }, { toId: 'entity-1' }],
       },
     });
     expect(prisma.entityMedia.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
@@ -268,13 +264,25 @@ describe('EntitiesService.list filters', () => {
     expect(prisma.contributor.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
     expect(prisma.curatorNote.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
     expect(prisma.entityTag.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
-    expect(prisma.homeDeckItem.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
-    expect(prisma.collectionEntity.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.homeDeckItem.deleteMany).toHaveBeenCalledWith({
+      where: { entityId: 'entity-1' },
+    });
+    expect(prisma.collectionEntity.deleteMany).toHaveBeenCalledWith({
+      where: { entityId: 'entity-1' },
+    });
     expect(prisma.savedEntity.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
-    expect(prisma.artworkDetails.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
-    expect(prisma.artistDetails.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
-    expect(prisma.conceptDetails.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
-    expect(prisma.periodDetails.deleteMany).toHaveBeenCalledWith({ where: { entityId: 'entity-1' } });
+    expect(prisma.artworkDetails.deleteMany).toHaveBeenCalledWith({
+      where: { entityId: 'entity-1' },
+    });
+    expect(prisma.artistDetails.deleteMany).toHaveBeenCalledWith({
+      where: { entityId: 'entity-1' },
+    });
+    expect(prisma.conceptDetails.deleteMany).toHaveBeenCalledWith({
+      where: { entityId: 'entity-1' },
+    });
+    expect(prisma.periodDetails.deleteMany).toHaveBeenCalledWith({
+      where: { entityId: 'entity-1' },
+    });
     expect(prisma.entity.delete).toHaveBeenCalledWith({ where: { id: 'entity-1' } });
     expect(prisma.source.deleteMany).toHaveBeenCalledWith({
       where: {

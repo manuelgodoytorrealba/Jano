@@ -1,6 +1,21 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, HostBinding, HostListener, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  HostBinding,
+  HostListener,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterLink } from '@angular/router';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterLink,
+} from '@angular/router';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
 import { SearchApi, SearchResult } from '../../../core/api/search.api';
 import { HomeDeck, HomeDecksApi } from '../../../core/api/home-decks.api';
@@ -8,7 +23,18 @@ import { CuratedApi, CuratedDeck } from '../../../core/api/curated.api';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
 import { I18nService } from '../../../core/i18n/i18n.service';
-import { catchError, debounceTime, distinctUntilChanged, filter, forkJoin, fromEvent, map, of, Subject, switchMap } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  forkJoin,
+  fromEvent,
+  map,
+  of,
+  Subject,
+  switchMap,
+} from 'rxjs';
 
 type HeaderNavItem = {
   label: string;
@@ -27,7 +53,15 @@ type UtilityItem = {
   action?: ContextualRailAction;
 };
 
-type SearchPreparationType = '' | 'ARTIST' | 'ARTWORK' | 'MOVEMENT' | 'CONCEPT' | 'ARTICLE' | 'PLACE' | 'PERIOD';
+type SearchPreparationType =
+  | ''
+  | 'ARTIST'
+  | 'ARTWORK'
+  | 'MOVEMENT'
+  | 'CONCEPT'
+  | 'ARTICLE'
+  | 'PLACE'
+  | 'PERIOD';
 type SearchPreparationCategoryType = Exclude<SearchPreparationType, ''>;
 
 type SearchPreparationCategory = {
@@ -115,66 +149,77 @@ export class AppChromeComponent {
   }
 
   constructor() {
-    this.searchInput$.pipe(
-      debounceTime(180),
-      distinctUntilChanged(),
-      switchMap((value) => {
-        const q = value.trim();
-        if (q.length < 1) {
-          this.searchLoading.set(false);
-          return of([]);
+    this.searchInput$
+      .pipe(
+        debounceTime(180),
+        distinctUntilChanged(),
+        switchMap((value) => {
+          const q = value.trim();
+          if (q.length < 1) {
+            this.searchLoading.set(false);
+            return of([]);
+          }
+
+          this.searchLoading.set(true);
+          return this.searchApi
+            .search({
+              q,
+              limit: 6,
+              type: this.searchPreparationType() || undefined,
+            })
+            .pipe(
+              map((response) => response.items.slice(0, 6)),
+              catchError(() => of([])),
+            );
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe((items) => {
+        this.searchSuggestions.set(items);
+        this.activeSuggestionIndex.set(items.length ? 0 : -1);
+        this.searchLoading.set(false);
+      });
+
+    this.router.events
+      .pipe(
+        filter(
+          (event) =>
+            event instanceof NavigationStart ||
+            event instanceof NavigationEnd ||
+            event instanceof NavigationCancel ||
+            event instanceof NavigationError,
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          this.pendingUrl.set(this.normalizeUrl(event.url));
+          return;
         }
 
-        this.searchLoading.set(true);
-        return this.searchApi.search({
-          q,
-          limit: 6,
-          type: this.searchPreparationType() || undefined,
-        }).pipe(
-          map((response) => response.items.slice(0, 6)),
-          catchError(() => of([])),
-        );
-      }),
-      takeUntilDestroyed(),
-    ).subscribe((items) => {
-      this.searchSuggestions.set(items);
-      this.activeSuggestionIndex.set(items.length ? 0 : -1);
-      this.searchLoading.set(false);
-    });
-
-    this.router.events.pipe(
-      filter((event) =>
-        event instanceof NavigationStart ||
-        event instanceof NavigationEnd ||
-        event instanceof NavigationCancel ||
-        event instanceof NavigationError,
-      ),
-      takeUntilDestroyed(),
-    ).subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        this.pendingUrl.set(this.normalizeUrl(event.url));
-        return;
-      }
-
-      this.currentUrl.set(this.normalizeUrl(this.router.url));
-      this.pendingUrl.set(null);
-      this.syncHeaderState();
-    });
-
-    if (typeof window !== 'undefined') {
-      fromEvent(window, 'resize').pipe(takeUntilDestroyed()).subscribe(() => {
-        const compact = this.readCompactHeaderEnabled();
-        this.orientationLockVisible.set(this.readOrientationLockVisible());
-        this.compactHeaderEnabled.set(compact);
-
+        this.currentUrl.set(this.normalizeUrl(this.router.url));
+        this.pendingUrl.set(null);
         this.syncHeaderState();
       });
 
-      fromEvent<KeyboardEvent>(window, 'keydown').pipe(takeUntilDestroyed()).subscribe((event) => {
-        if (event.key === 'Escape' && this.isDetailRoute()) {
-          this.revealDetailHeader();
-        }
-      });
+    if (typeof window !== 'undefined') {
+      fromEvent(window, 'resize')
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => {
+          const compact = this.readCompactHeaderEnabled();
+          this.orientationLockVisible.set(this.readOrientationLockVisible());
+          this.compactHeaderEnabled.set(compact);
+
+          this.syncHeaderState();
+        });
+
+      fromEvent<KeyboardEvent>(window, 'keydown')
+        .pipe(takeUntilDestroyed())
+        .subscribe((event) => {
+          if (event.key === 'Escape' && this.isDetailRoute()) {
+            this.revealDetailHeader();
+          }
+        });
     }
 
     this.syncHeaderState();
@@ -196,7 +241,10 @@ export class AppChromeComponent {
       window.innerWidth >= 768 &&
       window.innerWidth <= 1180;
 
-    return isIpad && window.matchMedia('(orientation: portrait) and (pointer: coarse) and (hover: none)').matches;
+    return (
+      isIpad &&
+      window.matchMedia('(orientation: portrait) and (pointer: coarse) and (hover: none)').matches
+    );
   }
 
   private readCompactHeaderEnabled(): boolean {
@@ -254,7 +302,10 @@ export class AppChromeComponent {
       return;
     }
 
-    if (this.searchFocused() && !target.closest('.app-chrome__search, .app-chrome__search-prelude')) {
+    if (
+      this.searchFocused() &&
+      !target.closest('.app-chrome__search, .app-chrome__search-prelude')
+    ) {
       this.closeSearchUi();
     }
 
@@ -432,7 +483,9 @@ export class AppChromeComponent {
     if (item.kind === 'action' && item.action === 'save') {
       const contextual = this.rail.contextualRail();
       if (contextual?.saveLoading) {
-        return contextual.isSaved ? this.i18n.t('button.removingSaved') : this.i18n.t('button.saving');
+        return contextual.isSaved
+          ? this.i18n.t('button.removingSaved')
+          : this.i18n.t('button.saving');
       }
 
       return contextual?.isSaved ? this.i18n.t('button.saved') : this.i18n.t(item.label);
@@ -502,7 +555,9 @@ export class AppChromeComponent {
   }
 
   currentSearchPreparationTypeLabel(): string {
-    const active = this.searchPreparationCategories.find((item) => item.type === this.searchPreparationType());
+    const active = this.searchPreparationCategories.find(
+      (item) => item.type === this.searchPreparationType(),
+    );
     return active ? this.i18n.t(active.labelKey) : '';
   }
 
@@ -529,7 +584,11 @@ export class AppChromeComponent {
     this.searchInput$.next(query);
   }
 
-  openPreparationCollection(deck: { slug: string; ctaRoute?: string | null; ctaUrl?: string | null }): void {
+  openPreparationCollection(deck: {
+    slug: string;
+    ctaRoute?: string | null;
+    ctaUrl?: string | null;
+  }): void {
     this.closeSearchUi();
 
     if (deck.ctaUrl) {
@@ -576,7 +635,7 @@ export class AppChromeComponent {
     this.activeSuggestionIndex.set((current + delta + total) % total);
   }
 
-  onSearchKeydown(event: KeyboardEvent, input: HTMLInputElement): void {
+  onSearchKeydown(event: KeyboardEvent): void {
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       this.moveSearchSuggestion(1);
@@ -588,7 +647,6 @@ export class AppChromeComponent {
       this.moveSearchSuggestion(-1);
       return;
     }
-
   }
 
   onSearchSuggestionsWheel(event: WheelEvent): void {
@@ -611,7 +669,9 @@ export class AppChromeComponent {
     this.searchSuggestions.set([]);
     this.activeSuggestionIndex.set(-1);
     this.searchFocused.set(false);
-    void navigateToAppSearch(this.router, item.title, { type: this.searchPreparationType() || null });
+    void navigateToAppSearch(this.router, item.title, {
+      type: this.searchPreparationType() || null,
+    });
     this.searchPreparationType.set('');
   }
 
@@ -651,11 +711,13 @@ export class AppChromeComponent {
     forkJoin({
       topics: this.homeDecksApi.listPublic('RECOMMENDED').pipe(catchError(() => of([]))),
       curated: this.curatedApi.page().pipe(catchError(() => of(null))),
-    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ topics, curated }) => {
-      this.searchPreparationTopics.set(topics.slice(0, 6));
-      this.searchPreparationPicks.set(curated?.staffPicks?.slice(0, 3) ?? []);
-      this.searchPreparationLoading.set(false);
-      this.searchPreparationLoaded = true;
-    });
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ topics, curated }) => {
+        this.searchPreparationTopics.set(topics.slice(0, 6));
+        this.searchPreparationPicks.set(curated?.staffPicks?.slice(0, 3) ?? []);
+        this.searchPreparationLoading.set(false);
+        this.searchPreparationLoaded = true;
+      });
   }
 }

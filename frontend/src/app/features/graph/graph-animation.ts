@@ -12,7 +12,10 @@ export interface GraphLayoutFrameResult extends GraphLayoutFrameState {
   shouldContinue: boolean;
 }
 
-export function resolveDraggingNodeId(pointerSessionKind: string | null | undefined, nodeId?: string): string | null {
+export function resolveDraggingNodeId(
+  pointerSessionKind: string | null | undefined,
+  nodeId?: string,
+): string | null {
   return pointerSessionKind === 'node-drag' ? (nodeId ?? null) : null;
 }
 

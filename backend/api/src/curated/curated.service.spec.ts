@@ -1,4 +1,39 @@
 import { CuratedService } from './curated.service';
+import type { PrismaService } from '../prisma/prisma.service';
+
+type CuratedEntityFixture = {
+  id: string;
+  slug: string;
+  title: string;
+  type: string;
+} & Record<string, unknown>;
+
+type CuratedDeckFixture = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  imageUrl: string;
+  imageMedia: null;
+  translations: [];
+  items: Array<{
+    id: string;
+    entityId: string;
+    sortOrder: number;
+    entity: CuratedEntityFixture;
+  }>;
+};
+
+type CuratedRelationFixture = {
+  id: string;
+  fromId: string;
+  toId: string;
+  type: string;
+  weight: number;
+  from: CuratedEntityFixture;
+  to: CuratedEntityFixture;
+};
 
 describe('CuratedService', () => {
   let service: CuratedService;
@@ -18,7 +53,7 @@ describe('CuratedService', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    service = new CuratedService(prisma as any);
+    service = new CuratedService(prisma as unknown as PrismaService);
   });
 
   it('returns an empty response when no published curations are available', async () => {
@@ -29,10 +64,30 @@ describe('CuratedService', () => {
   });
 
   it('builds the page around the requested selected entity and limits staff picks to three', async () => {
-    const memoria = buildEntity({ id: 'concept-1', slug: 'memoria', title: 'Memoria', type: 'CONCEPT' });
-    const guerra = buildEntity({ id: 'concept-2', slug: 'guerra', title: 'Guerra', type: 'CONCEPT' });
-    const guernica = buildEntity({ id: 'artwork-1', slug: 'guernica', title: 'Guernica', type: 'ARTWORK' });
-    const picasso = buildEntity({ id: 'artist-1', slug: 'pablo-picasso', title: 'Pablo Picasso', type: 'ARTIST' });
+    const memoria = buildEntity({
+      id: 'concept-1',
+      slug: 'memoria',
+      title: 'Memoria',
+      type: 'CONCEPT',
+    });
+    const guerra = buildEntity({
+      id: 'concept-2',
+      slug: 'guerra',
+      title: 'Guerra',
+      type: 'CONCEPT',
+    });
+    const guernica = buildEntity({
+      id: 'artwork-1',
+      slug: 'guernica',
+      title: 'Guernica',
+      type: 'ARTWORK',
+    });
+    const picasso = buildEntity({
+      id: 'artist-1',
+      slug: 'pablo-picasso',
+      title: 'Pablo Picasso',
+      type: 'ARTIST',
+    });
 
     prisma.homeDeck.findMany.mockResolvedValue([
       buildDeck('memoria-y-trauma', [memoria, guerra, guernica]),
@@ -47,9 +102,7 @@ describe('CuratedService', () => {
         buildRelation('r1', memoria, guerra, 'RELATED_TO', 1),
         buildRelation('r2', guernica, memoria, 'ABOUT_CONCEPT', 0.9),
       ])
-      .mockResolvedValueOnce([
-        buildRelation('r3', guernica, picasso, 'CREATED_BY', 1),
-      ])
+      .mockResolvedValueOnce([buildRelation('r3', guernica, picasso, 'CREATED_BY', 1)])
       .mockResolvedValueOnce([
         {
           id: 'r4',
@@ -64,22 +117,24 @@ describe('CuratedService', () => {
 
     const result = await service.page('memoria', 'es');
 
+    if (!result) throw new Error('Expected curated page');
+
     expect(result.selectedEntity.slug).toBe('memoria');
     expect(result.staffPicks).toHaveLength(3);
-    expect(result.staffPicks.map((item: any) => item.slug)).toEqual([
+    expect(result.staffPicks.map((item) => item.slug)).toEqual([
       'memoria-y-trauma',
       'arte-y-guerra',
       'muerte-y-memoria',
     ]);
-    expect(result.relatedEntities.some((item: any) => item.slug === 'guerra')).toBe(true);
-    expect(result.tabGroups.artworks.some((item: any) => item.slug === 'guernica')).toBe(true);
+    expect(result.relatedEntities.some((item) => item.slug === 'guerra')).toBe(true);
+    expect(result.tabGroups.artworks.some((item) => item.slug === 'guernica')).toBe(true);
     expect(result.graph.centerId).toBe(memoria.id);
-    expect(result.graph.nodes.some((item: any) => item.slug === 'guerra')).toBe(true);
-    expect(result.graph.edges.some((item: any) => item.relationType === 'RELATED_TO')).toBe(true);
+    expect(result.graph.nodes.some((item) => item.slug === 'guerra')).toBe(true);
+    expect(result.graph.edges.some((item) => item.relationType === 'RELATED_TO')).toBe(true);
   });
 });
 
-function buildEntity(overrides: Record<string, any> = {}) {
+function buildEntity(overrides: Partial<CuratedEntityFixture> = {}): CuratedEntityFixture {
   return {
     id: 'entity-1',
     slug: 'entity-1',
@@ -100,7 +155,7 @@ function buildEntity(overrides: Record<string, any> = {}) {
   };
 }
 
-function buildDeck(slug: string, entities: any[]) {
+function buildDeck(slug: string, entities: CuratedEntityFixture[]): CuratedDeckFixture {
   return {
     id: slug,
     slug,
@@ -119,7 +174,13 @@ function buildDeck(slug: string, entities: any[]) {
   };
 }
 
-function buildRelation(id: string, from: any, to: any, type: string, weight: number) {
+function buildRelation(
+  id: string,
+  from: CuratedEntityFixture,
+  to: CuratedEntityFixture,
+  type: string,
+  weight: number,
+): CuratedRelationFixture {
   return {
     id,
     fromId: from.id,

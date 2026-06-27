@@ -11,7 +11,14 @@ import {
   createGraphZoomViewport,
   createNodeHoverTooltip,
 } from './graph-stage-interactions';
-import { GraphData, GraphEdge, GraphNode, GraphPoint, GraphTooltip, GraphViewport } from './graph.models';
+import {
+  GraphData,
+  GraphEdge,
+  GraphNode,
+  GraphPoint,
+  GraphTooltip,
+  GraphViewport,
+} from './graph.models';
 
 export function createCenterSelectionRuntime(options: {
   graph: GraphData | null;
@@ -123,7 +130,10 @@ export function createEdgeHoverRuntime(options: {
   };
 }
 
-export function shouldMoveTooltipRuntime(session: GraphPointerSession | null, tooltip: GraphTooltip | null): boolean {
+export function shouldMoveTooltipRuntime(
+  session: GraphPointerSession | null,
+  tooltip: GraphTooltip | null,
+): boolean {
   return canHandleHover(session) && !!tooltip;
 }
 

@@ -1,4 +1,8 @@
-import { animateGraphViewportStep, DEFAULT_GRAPH_VIEWPORT_ANIMATION, GraphViewportAnimationConfig } from './graph-camera';
+import {
+  animateGraphViewportStep,
+  DEFAULT_GRAPH_VIEWPORT_ANIMATION,
+  GraphViewportAnimationConfig,
+} from './graph-camera';
 import { GraphPoint, GraphTooltip, GraphViewport } from './graph.models';
 import { currentGraphViewportState } from './graph-camera';
 
@@ -29,7 +33,11 @@ export class GraphViewportController {
     this.targetGraphViewport = next;
   }
 
-  schedule(next: GraphViewport, isBrowser: boolean, apply: (viewport: GraphViewport) => void): void {
+  schedule(
+    next: GraphViewport,
+    isBrowser: boolean,
+    apply: (viewport: GraphViewport) => void,
+  ): void {
     this.pendingGraphViewport = next;
 
     if (!isBrowser || this.graphViewportFrameId !== null) {
@@ -75,7 +83,11 @@ export class GraphViewportController {
       return false;
     }
 
-    const { next, done } = animateGraphViewportStep(current, this.targetGraphViewport, this.graphViewportAnimation);
+    const { next, done } = animateGraphViewportStep(
+      current,
+      this.targetGraphViewport,
+      this.graphViewportAnimation,
+    );
     apply(next);
 
     if (done) {

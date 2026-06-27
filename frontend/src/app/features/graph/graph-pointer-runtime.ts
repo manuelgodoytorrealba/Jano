@@ -38,7 +38,10 @@ export function runGraphStagePointerMoveRuntime(options: {
   clearViewportTarget: () => void;
   scheduleViewport: (viewport: GraphViewport) => void;
 }): void {
-  if (options.pointerSession?.kind !== 'graph-pan' || options.pointerSession.pointerId !== options.event.pointerId) {
+  if (
+    options.pointerSession?.kind !== 'graph-pan' ||
+    options.pointerSession.pointerId !== options.event.pointerId
+  ) {
     return;
   }
 
@@ -64,7 +67,10 @@ export function runGraphStagePointerUpRuntime(options: {
   persist: () => void;
   clearPointerSession: () => void;
 }): void {
-  if (options.pointerSession?.kind !== 'graph-pan' || options.pointerSession.pointerId !== options.event.pointerId) {
+  if (
+    options.pointerSession?.kind !== 'graph-pan' ||
+    options.pointerSession.pointerId !== options.event.pointerId
+  ) {
     return;
   }
 
@@ -116,7 +122,10 @@ export function runNodePointerMoveRuntime(options: {
   setNodePosition: (nodeId: string, point: GraphPoint) => void;
   setPointerSession: (session: GraphPointerSession | null) => void;
 }): void {
-  if (options.pointerSession?.kind !== 'node-drag' || options.pointerSession.pointerId !== options.event.pointerId) {
+  if (
+    options.pointerSession?.kind !== 'node-drag' ||
+    options.pointerSession.pointerId !== options.event.pointerId
+  ) {
     return;
   }
 
@@ -159,7 +168,10 @@ export function runNodePointerUpRuntime(options: {
   persist: () => void;
   clearPointerSession: () => void;
 }): void {
-  if (options.pointerSession?.kind !== 'node-drag' || options.pointerSession.pointerId !== options.event.pointerId) {
+  if (
+    options.pointerSession?.kind !== 'node-drag' ||
+    options.pointerSession.pointerId !== options.event.pointerId
+  ) {
     return;
   }
 
@@ -180,7 +192,10 @@ export function runNodePointerCancelRuntime(options: {
   persist: () => void;
   clearPointerSession: () => void;
 }): void {
-  if (options.pointerSession?.kind !== 'node-drag' || options.pointerSession.pointerId !== options.event.pointerId) {
+  if (
+    options.pointerSession?.kind !== 'node-drag' ||
+    options.pointerSession.pointerId !== options.event.pointerId
+  ) {
     return;
   }
 
@@ -207,7 +222,10 @@ export function runImagePointerMoveRuntime(options: {
   setTargetImageViewport: (viewport: ImageViewport | null) => void;
   setImageViewport: (viewport: ImageViewport) => void;
 }): void {
-  if (options.pointerSession?.kind !== 'image-pan' || options.pointerSession.pointerId !== options.event.pointerId) {
+  if (
+    options.pointerSession?.kind !== 'image-pan' ||
+    options.pointerSession.pointerId !== options.event.pointerId
+  ) {
     return;
   }
 
@@ -233,7 +251,10 @@ export function runImagePointerUpRuntime(options: {
   persist: () => void;
   clearPointerSession: () => void;
 }): void {
-  if (options.pointerSession?.kind !== 'image-pan' || options.pointerSession.pointerId !== options.event.pointerId) {
+  if (
+    options.pointerSession?.kind !== 'image-pan' ||
+    options.pointerSession.pointerId !== options.event.pointerId
+  ) {
     return;
   }
 
@@ -248,7 +269,10 @@ export function runImagePointerCancelRuntime(options: {
   persist: () => void;
   clearPointerSession: () => void;
 }): void {
-  if (options.pointerSession?.kind !== 'image-pan' || options.pointerSession.pointerId !== options.event.pointerId) {
+  if (
+    options.pointerSession?.kind !== 'image-pan' ||
+    options.pointerSession.pointerId !== options.event.pointerId
+  ) {
     return;
   }
 

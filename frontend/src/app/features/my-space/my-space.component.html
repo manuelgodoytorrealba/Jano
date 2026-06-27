@@ -18,7 +18,9 @@
           }
         </nav>
 
-        <button class="space-shortcut space-shortcut--quiet" type="button" (click)="logout()">{{ i18n.t('auth.logout') }}</button>
+        <button class="space-shortcut space-shortcut--quiet" type="button" (click)="logout()">
+          {{ i18n.t('auth.logout') }}
+        </button>
       </div>
     </section>
 
@@ -73,7 +75,11 @@
           [disabled]="creating || !newCollectionName.trim()"
           (click)="createCollection()"
         >
-          @if (creating) { {{ i18n.t('common.creating') }} } @else { {{ i18n.t('collection.create') }} }
+          @if (creating) {
+            {{ i18n.t('common.creating') }}
+          } @else {
+            {{ i18n.t('collection.create') }}
+          }
         </button>
       </div>
 
@@ -96,15 +102,31 @@
           <div class="saved-shelf">
             @for (row of previewItems(savedItems, 6); track row.id) {
               <article class="saved-tile">
-                <div class="saved-tile__thumb" (click)="go(row.entity.slug)">
-                  <app-jano-media [entity]="row.entity" usage="card" [alt]="row.entity.title"></app-jano-media>
+                <div
+                  class="saved-tile__thumb"
+                  role="link"
+                  tabindex="0"
+                  (click)="go(row.entity.slug)"
+                  (keydown.enter)="go(row.entity.slug)"
+                >
+                  <app-jano-media
+                    [entity]="row.entity"
+                    usage="card"
+                    [alt]="row.entity.title"
+                  ></app-jano-media>
                 </div>
 
                 <div class="saved-tile__body">
                   <button type="button" class="saved-tile__title" (click)="go(row.entity.slug)">
                     {{ row.entity.title }}
                   </button>
-                  <button type="button" class="saved-tile__remove" (click)="removeSaved(row.entity.id)">{{ i18n.t('button.remove') }}</button>
+                  <button
+                    type="button"
+                    class="saved-tile__remove"
+                    (click)="removeSaved(row.entity.id)"
+                  >
+                    {{ i18n.t('button.remove') }}
+                  </button>
                 </div>
               </article>
             }
@@ -146,14 +168,27 @@
               (keydown.enter)="goToCollection(collection.id)"
               (keydown.space)="$event.preventDefault(); goToCollection(collection.id)"
             >
-              <div class="board-card__mosaic" [class.board-card__mosaic--empty]="!collection.items.length">
+              <div
+                class="board-card__mosaic"
+                [class.board-card__mosaic--empty]="!collection.items.length"
+              >
                 @if (collection.items.length) {
-                  @for (item of previewItems(collection.items, 4); track item.id; let index = $index) {
+                  @for (
+                    item of previewItems(collection.items, 4);
+                    track item.id;
+                    let index = $index
+                  ) {
                     <div class="board-card__tile" [class.board-card__tile--accent]="index === 0">
-                      <app-jano-media [entity]="item.entity" usage="card" [alt]="item.entity.title"></app-jano-media>
+                      <app-jano-media
+                        [entity]="item.entity"
+                        usage="card"
+                        [alt]="item.entity.title"
+                      ></app-jano-media>
 
                       @if (index === 3 && remainingItems(collection.itemCount, 4) > 0) {
-                        <div class="board-card__overflow">+{{ remainingItems(collection.itemCount, 4) }}</div>
+                        <div class="board-card__overflow">
+                          +{{ remainingItems(collection.itemCount, 4) }}
+                        </div>
                       }
                     </div>
                   }

@@ -29,7 +29,11 @@ export type GraphPointerSession =
 
 export const GRAPH_DRAG_THRESHOLD = 6;
 
-export function exceedsPointerThreshold(origin: GraphPoint, current: GraphPoint, threshold = GRAPH_DRAG_THRESHOLD): boolean {
+export function exceedsPointerThreshold(
+  origin: GraphPoint,
+  current: GraphPoint,
+  threshold = GRAPH_DRAG_THRESHOLD,
+): boolean {
   const dx = current.x - origin.x;
   const dy = current.y - origin.y;
   return Math.sqrt(dx * dx + dy * dy) >= threshold;

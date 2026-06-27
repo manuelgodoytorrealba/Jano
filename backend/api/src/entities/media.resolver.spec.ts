@@ -1,7 +1,32 @@
 import { buildAdminMediaLibrary, buildResolvedMedia, resolveEntityMedia } from './media.resolver';
 
+type MediaLinkOverride = Partial<{
+  id: string;
+  role: string;
+  sortOrder: number;
+  isPrimary: boolean;
+  displayMode: 'COVER' | 'CONTAIN' | null;
+  focalX: number | null;
+  focalY: number | null;
+  mediaId: string;
+  url: string;
+  displayUrl: string;
+  canonicalUrl: string | null;
+  sourcePageUrl: string | null;
+  mimeType: string;
+  width: number;
+  height: number;
+  isVector: boolean;
+  provider: string;
+  qualityTier: string;
+  alt: string | null;
+  source: string | null;
+  photoBy: string | null;
+  license: string | null;
+}>;
+
 describe('media.resolver', () => {
-  const createLink = (overrides: Record<string, any> = {}) => ({
+  const createLink = (overrides: MediaLinkOverride = {}) => ({
     id: overrides.id ?? 'link-1',
     role: overrides.role ?? 'PRIMARY_LEGACY',
     sortOrder: overrides.sortOrder ?? 0,
@@ -32,7 +57,12 @@ describe('media.resolver', () => {
     const entity = {
       type: 'ARTWORK',
       mediaLinks: [
-        createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: true }),
+        createLink({
+          id: 'legacy',
+          mediaId: 'legacy-media',
+          role: 'PRIMARY_LEGACY',
+          isPrimary: true,
+        }),
         createLink({ id: 'card', mediaId: 'card-media', role: 'CARD', sortOrder: 2 }),
       ],
     };
@@ -58,7 +88,12 @@ describe('media.resolver', () => {
     const entity = {
       type: 'ARTWORK',
       mediaLinks: [
-        createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: true }),
+        createLink({
+          id: 'legacy',
+          mediaId: 'legacy-media',
+          role: 'PRIMARY_LEGACY',
+          isPrimary: true,
+        }),
       ],
     };
 
@@ -71,7 +106,12 @@ describe('media.resolver', () => {
     const entity = {
       type: 'ARTWORK',
       mediaLinks: [
-        createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: true }),
+        createLink({
+          id: 'legacy',
+          mediaId: 'legacy-media',
+          role: 'PRIMARY_LEGACY',
+          isPrimary: true,
+        }),
         createLink({ id: 'detail', mediaId: 'detail-media', role: 'DETAIL' }),
       ],
     };
@@ -85,9 +125,7 @@ describe('media.resolver', () => {
   it('uses detail as gallery fallback when no explicit gallery media exists', () => {
     const entity = {
       type: 'ARTWORK',
-      mediaLinks: [
-        createLink({ id: 'detail', mediaId: 'detail-media', role: 'DETAIL' }),
-      ],
+      mediaLinks: [createLink({ id: 'detail', mediaId: 'detail-media', role: 'DETAIL' })],
     };
 
     const gallery = resolveEntityMedia(entity, 'gallery');
@@ -129,7 +167,13 @@ describe('media.resolver', () => {
     const entity = {
       type: 'ARTWORK',
       mediaLinks: [
-        createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: true, alt: '' }),
+        createLink({
+          id: 'legacy',
+          mediaId: 'legacy-media',
+          role: 'PRIMARY_LEGACY',
+          isPrimary: true,
+          alt: '',
+        }),
         createLink({ id: 'detail', mediaId: 'detail-media', role: 'DETAIL' }),
         createLink({ id: 'gallery', mediaId: 'gallery-media', role: 'GALLERY', sortOrder: 3 }),
       ],
@@ -152,23 +196,31 @@ describe('media.resolver', () => {
       }),
     );
     expect(library.warnings.map((warning) => warning.code)).toEqual(
-      expect.arrayContaining(['media.explorer3d_legacy', 'media.list_legacy', 'media.preview_legacy', 'media.alt_missing']),
+      expect.arrayContaining([
+        'media.explorer3d_legacy',
+        'media.list_legacy',
+        'media.preview_legacy',
+        'media.alt_missing',
+      ]),
     );
   });
 
   it('does not let list colonize explorer3d, detail or preview in admin resolved slots', () => {
     const entity = {
       type: 'ARTWORK',
-      mediaLinks: [
-        createLink({ id: 'list', mediaId: 'list-media', role: 'CARD' }),
-      ],
+      mediaLinks: [createLink({ id: 'list', mediaId: 'list-media', role: 'CARD' })],
     };
 
     const library = buildAdminMediaLibrary(entity);
 
     expect(library.resolvedSlots).toEqual([
       expect.objectContaining({ slotKey: 'explorer3d', source: 'empty', item: null }),
-      expect.objectContaining({ slotKey: 'list', source: 'explicit', matchedRole: 'CARD', item: expect.objectContaining({ id: 'list-media' }) }),
+      expect.objectContaining({
+        slotKey: 'list',
+        source: 'explicit',
+        matchedRole: 'CARD',
+        item: expect.objectContaining({ id: 'list-media' }),
+      }),
       expect.objectContaining({ slotKey: 'detail', source: 'empty', item: null }),
       expect.objectContaining({ slotKey: 'preview', source: 'empty', item: null }),
     ]);
@@ -206,7 +258,12 @@ describe('media.resolver', () => {
     const entity = {
       type: 'ARTWORK',
       mediaLinks: [
-        createLink({ id: 'legacy', mediaId: 'legacy-media', role: 'PRIMARY_LEGACY', isPrimary: false }),
+        createLink({
+          id: 'legacy',
+          mediaId: 'legacy-media',
+          role: 'PRIMARY_LEGACY',
+          isPrimary: false,
+        }),
       ],
     };
 

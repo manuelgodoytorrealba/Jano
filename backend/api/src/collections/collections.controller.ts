@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import type { AuthenticatedRequest } from '../auth/authenticated-user.type';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CollectionsService } from './collections.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
@@ -11,23 +12,23 @@ export class CollectionsController {
   constructor(private collectionsService: CollectionsService) {}
 
   @Get()
-  list(@Req() req: any) {
+  list(@Req() req: AuthenticatedRequest) {
     return this.collectionsService.list(req.user.userId);
   }
 
   @Get(':collectionId')
-  getById(@Req() req: any, @Param('collectionId') collectionId: string) {
+  getById(@Req() req: AuthenticatedRequest, @Param('collectionId') collectionId: string) {
     return this.collectionsService.getById(req.user.userId, collectionId);
   }
 
   @Post()
-  create(@Req() req: any, @Body() dto: CreateCollectionDto) {
+  create(@Req() req: AuthenticatedRequest, @Body() dto: CreateCollectionDto) {
     return this.collectionsService.create(req.user.userId, dto);
   }
 
   @Patch(':collectionId')
   update(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @Param('collectionId') collectionId: string,
     @Body() dto: UpdateCollectionDto,
   ) {
@@ -36,7 +37,7 @@ export class CollectionsController {
 
   @Post(':collectionId/entities/:entityId')
   addEntity(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @Param('collectionId') collectionId: string,
     @Param('entityId') entityId: string,
   ) {
@@ -45,7 +46,7 @@ export class CollectionsController {
 
   @Delete(':collectionId/entities/:entityId')
   removeEntity(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @Param('collectionId') collectionId: string,
     @Param('entityId') entityId: string,
   ) {
@@ -54,11 +55,16 @@ export class CollectionsController {
 
   @Patch(':collectionId/entities/:entityId')
   reorderEntity(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @Param('collectionId') collectionId: string,
     @Param('entityId') entityId: string,
     @Body() dto: ReorderCollectionItemDto,
   ) {
-    return this.collectionsService.reorderEntity(req.user.userId, collectionId, entityId, dto.sortOrder);
+    return this.collectionsService.reorderEntity(
+      req.user.userId,
+      collectionId,
+      entityId,
+      dto.sortOrder,
+    );
   }
 }

@@ -1,4 +1,9 @@
-import { clearPointerCapture, createImagePanSession, GraphPointerSession, updateImagePanSession } from './graph-interaction';
+import {
+  clearPointerCapture,
+  createImagePanSession,
+  GraphPointerSession,
+  updateImagePanSession,
+} from './graph-interaction';
 import {
   createImageWheelAnchor,
   createResetImageViewport,
@@ -46,7 +51,10 @@ export function moveImagePanRuntime(options: {
   nextSession: Extract<GraphPointerSession, { kind: 'image-pan' }>;
   nextViewport: ImageViewport | null;
 } {
-  const update = updateImagePanSession(options.session, { x: options.event.clientX, y: options.event.clientY });
+  const update = updateImagePanSession(options.session, {
+    x: options.event.clientX,
+    y: options.event.clientY,
+  });
 
   return {
     nextSession: update.nextSession,

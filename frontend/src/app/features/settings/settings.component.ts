@@ -41,8 +41,8 @@ export class SettingsComponent implements OnDestroy {
   }
 
   get roleLabel(): string {
-    const role = this.auth.currentUser?.role ?? "";
-    return role === "ADMIN" ? this.i18n.t('role.admin') : role || this.i18n.t('role.none');
+    const role = this.auth.currentUser?.role ?? '';
+    return role === 'ADMIN' ? this.i18n.t('role.admin') : role || this.i18n.t('role.none');
   }
 
   setThemePreference(preference: AppThemePreference): void {

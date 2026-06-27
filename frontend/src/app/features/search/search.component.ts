@@ -98,7 +98,7 @@ export class SearchComponent {
   );
 
   setType(type: SearchType): void {
-    this.router.navigate(['/search'], {
+    void this.router.navigate(['/search'], {
       queryParams: {
         q: this.searchInput.trim() || null,
         type: type || null,
@@ -108,7 +108,7 @@ export class SearchComponent {
   }
 
   clearTag(): void {
-    this.router.navigate(['/search'], {
+    void this.router.navigate(['/search'], {
       queryParams: {
         q: this.searchInput.trim() || null,
         type: this.route.snapshot.queryParamMap.get('type') || null,
@@ -118,11 +118,11 @@ export class SearchComponent {
   }
 
   go(result: SearchResult): void {
-    this.router.navigate(['/entity', result.slug]);
+    void this.router.navigate(['/entity', result.slug]);
   }
 
   goDeck(deck: SearchDeck): void {
-    this.router.navigate(['/entities'], { queryParams: { deck: deck.slug } });
+    void this.router.navigate(['/entities'], { queryParams: { deck: deck.slug } });
   }
 
   openGraph(result: SearchResult | null | undefined): void {

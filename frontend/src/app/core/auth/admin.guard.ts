@@ -26,9 +26,13 @@ export const adminGuard: CanActivateFn = (_route, state) => {
   }
 
   return auth.refreshSession().pipe(
-    map((freshUser) => freshUser.role === 'ADMIN' ? true : router.createUrlTree(['/'])),
-    catchError(() => of(router.createUrlTree(['/login'], {
-      queryParams: { redirectTo: state.url },
-    }))),
+    map((freshUser) => (freshUser.role === 'ADMIN' ? true : router.createUrlTree(['/']))),
+    catchError(() =>
+      of(
+        router.createUrlTree(['/login'], {
+          queryParams: { redirectTo: state.url },
+        }),
+      ),
+    ),
   );
 };

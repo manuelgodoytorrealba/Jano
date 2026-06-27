@@ -20,12 +20,21 @@ export class TagsApi {
     return this.http.get<Tag[]>(apiUrl('/tags'));
   }
 
-  create(data: { label: string; slug?: string; description?: string; category?: string; isActive?: boolean }) {
+  create(data: {
+    label: string;
+    slug?: string;
+    description?: string;
+    category?: string;
+    isActive?: boolean;
+  }) {
     return this.http.post<Tag>(apiUrl('/tags'), data);
   }
 
   addToEntity(entityId: string, tagId: string) {
-    return this.http.post<AdminEntityTagRecord>(apiUrl(`/entities/${entityId}/tags`), { tagId, source: 'MANUAL' });
+    return this.http.post<AdminEntityTagRecord>(apiUrl(`/entities/${entityId}/tags`), {
+      tagId,
+      source: 'MANUAL',
+    });
   }
 
   removeFromEntity(entityId: string, tagId: string) {

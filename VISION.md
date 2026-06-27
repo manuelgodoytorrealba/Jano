@@ -18,13 +18,13 @@ Make art easier to explore, deeper to understand, and more meaningful to return 
 JANO should help users go from:
 
 - “I know this artwork”
-to
+  to
 - “I understand why it matters”
 
 and from:
 
 - “I know this artist”
-to
+  to
 - “I can connect movements, ideas, symbols, influences, and context”
 
 ---
@@ -53,15 +53,19 @@ JANO should feel closer to a premium product experience than a traditional museu
 ## Primary Users
 
 ### Curious Learners
+
 People who love culture, aesthetics, history, and learning.
 
 ### Students
+
 Users studying art, design, humanities, architecture, visual culture, etc.
 
 ### Creatives
+
 Designers, artists, writers, filmmakers, thinkers seeking references and inspiration.
 
 ### Deep Explorers
+
 People who enjoy systems, patterns, hidden connections, and knowledge graphs.
 
 ---
@@ -69,23 +73,28 @@ People who enjoy systems, patterns, hidden connections, and knowledge graphs.
 # What Makes JANO Unique
 
 ## 1. Connected Knowledge
+
 Entities are not isolated pages.  
 Everything can connect to everything else.
 
 Artists, works, movements, concepts, materials, places, periods, articles, and ideas form a navigable knowledge network.
 
 ## 2. Visual First
+
 Discovery should begin with images, composition, atmosphere, and curiosity.
 
 Not with walls of text.
 
 ## 3. Premium Experience
+
 Elegant interface, refined interactions, calm confidence, strong hierarchy, intentional motion.
 
 ## 4. Human Curation + Smart Systems
+
 Quality comes from editorial decisions supported by intelligent tooling.
 
 ## 5. Built for Return Visits
+
 Users should want to come back repeatedly, not just visit once.
 
 ---
@@ -93,21 +102,27 @@ Users should want to come back repeatedly, not just visit once.
 # Product Principles
 
 ## Clarity Over Noise
+
 Every screen should feel understandable and focused.
 
 ## Depth Without Friction
+
 Deep knowledge should feel accessible.
 
 ## Beauty Matters
+
 Design quality is part of the product value.
 
 ## Systems Over Hacks
+
 Build durable foundations.
 
 ## Curiosity Loops
+
 Every page should invite the next click.
 
 ## Premium Trust
+
 Users should feel the platform is thoughtful, serious, and curated.
 
 ---
@@ -129,21 +144,27 @@ When someone uses JANO, they should feel:
 # Key Product Areas
 
 ## Discovery
+
 Visual browsing, categories, featured paths, recommendations.
 
 ## Entity Pages
+
 Rich pages for artists, works, concepts, movements, articles, etc.
 
 ## Graph Exploration
+
 Interactive relationships between entities.
 
 ## Collections
+
 Save, organize, revisit.
 
 ## Editorial Content
+
 Articles, essays, guided journeys, curated narratives.
 
 ## Admin Curation Tools
+
 Internal premium tooling for managing quality content efficiently.
 
 ---
@@ -151,18 +172,23 @@ Internal premium tooling for managing quality content efficiently.
 # Business Model Possibilities
 
 ## Premium Subscription
+
 Advanced features, deeper tools, exclusive collections, guided learning, better personalization.
 
 ## Institutional Licenses
+
 Schools, universities, museums, libraries.
 
 ## Editorial Partnerships
+
 Curated collaborations with brands or institutions aligned with culture.
 
 ## Digital Products
+
 Courses, thematic packs, visual learning experiences.
 
 ## Patron / Supporter Tier
+
 For users who want to support the mission.
 
 ---

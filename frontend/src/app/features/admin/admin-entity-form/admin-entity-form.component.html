@@ -1,4 +1,4 @@
-   <div class="page">
+<div class="page">
   @if (loadError) {
     <div class="error-box">{{ loadError }}</div>
   }
@@ -35,36 +35,59 @@
         <div class="success-box">{{ successMessage }}</div>
       }
 
-      <section id="section-preview" class="admin-dashboard-panel detail-live-panel" [class.admin-dashboard-panel--active]="isActiveSection('section-preview')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-preview')" [attr.aria-hidden]="!isActiveSection('section-preview')">
+      <section
+        id="section-preview"
+        class="admin-dashboard-panel detail-live-panel"
+        [class.admin-dashboard-panel--active]="isActiveSection('section-preview')"
+        [class.admin-dashboard-panel--hidden]="!isActiveSection('section-preview')"
+        [attr.aria-hidden]="!isActiveSection('section-preview')"
+      >
         <div class="admin-dashboard-panel__head">
           <div>
             <h2>Preview Detail</h2>
-            <p class="muted">Render público vivo de la entity con contenido, media, fuentes, colaboradores y relaciones.</p>
+            <p class="muted">
+              Render público vivo de la entity con contenido, media, fuentes, colaboradores y
+              relaciones.
+            </p>
           </div>
           <span class="admin-dashboard-panel__pill">Detail</span>
         </div>
 
         <div class="detail-live-embed">
-          @if (isActiveSection('section-preview') && (!isEdit || initialEntityHydrated) && previewEntityModel; as previewEntity) {
-          <app-entity-detail-view
-            [entity]="previewEntity"
-            [showActions]="false"
-            [renderGraph]="true"
-            richTextPreviewAccess="admin"
-          ></app-entity-detail-view>
+          @if (
+            isActiveSection('section-preview') &&
+              (!isEdit || initialEntityHydrated) &&
+              previewEntityModel;
+            as previewEntity
+          ) {
+            <app-entity-detail-view
+              [entity]="previewEntity"
+              [showActions]="false"
+              [renderGraph]="true"
+              richTextPreviewAccess="admin"
+            ></app-entity-detail-view>
           } @else {
-          <div class="detail-live-embed__idle">
-            <span>Abre el bloque de preview para activar la vista pública compuesta.</span>
-          </div>
+            <div class="detail-live-embed__idle">
+              <span>Abre el bloque de preview para activar la vista pública compuesta.</span>
+            </div>
           }
         </div>
       </section>
 
-      <section id="section-content" class="admin-dashboard-panel" [class.admin-dashboard-panel--active]="isActiveSection('section-content')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-content')" [attr.aria-hidden]="!isActiveSection('section-content')">
+      <section
+        id="section-content"
+        class="admin-dashboard-panel"
+        [class.admin-dashboard-panel--active]="isActiveSection('section-content')"
+        [class.admin-dashboard-panel--hidden]="!isActiveSection('section-content')"
+        [attr.aria-hidden]="!isActiveSection('section-content')"
+      >
         <div class="admin-dashboard-panel__head">
           <div>
             <h2>Global data</h2>
-            <p class="muted">Datos compartidos por todos los idiomas: tipo, estado, slug, fechas, tags, relaciones y media.</p>
+            <p class="muted">
+              Datos compartidos por todos los idiomas: tipo, estado, slug, fechas, tags, relaciones
+              y media.
+            </p>
           </div>
           <span class="admin-dashboard-panel__pill">Compartido</span>
         </div>
@@ -135,9 +158,17 @@
               <div class="translation-editor__head">
                 <div>
                   <span>Traducciones editoriales</span>
-                  <small class="hint">Contenido curatorial por idioma. Los datos globales, relaciones y tags siguen siendo únicos.</small>
+                  <small class="hint"
+                    >Contenido curatorial por idioma. Los datos globales, relaciones y tags siguen
+                    siendo únicos.</small
+                  >
                 </div>
-                <button class="btn" type="button" [disabled]="translationSaving" (click)="saveActiveTranslation()">
+                <button
+                  class="btn"
+                  type="button"
+                  [disabled]="translationSaving"
+                  (click)="saveActiveTranslation()"
+                >
                   {{ translationSaving ? 'Guardando...' : 'Guardar traducción' }}
                 </button>
               </div>
@@ -154,7 +185,10 @@
                     (click)="setActiveTranslationLocale(item.locale)"
                   >
                     <span>{{ item.label }}</span>
-                    <strong>{{ translationStatusMark(item.locale) }} {{ translationStatusLabel(item.locale) }}</strong>
+                    <strong
+                      >{{ translationStatusMark(item.locale) }}
+                      {{ translationStatusLabel(item.locale) }}</strong
+                    >
                   </button>
                 }
               </div>
@@ -162,99 +196,176 @@
               <div class="translation-fields">
                 <label class="field full">
                   <span>Título</span>
-                  <input type="text" [(ngModel)]="activeTranslationForm().title" [name]="'translationTitle_' + activeTranslationLocale" />
+                  <input
+                    type="text"
+                    [(ngModel)]="activeTranslationForm().title"
+                    [name]="'translationTitle_' + activeTranslationLocale"
+                  />
                 </label>
 
                 <label class="field full">
                   <span>Descripción corta</span>
-                  <textarea rows="4" [(ngModel)]="activeTranslationForm().shortDescription" [name]="'translationShort_' + activeTranslationLocale"></textarea>
+                  <textarea
+                    rows="4"
+                    [(ngModel)]="activeTranslationForm().shortDescription"
+                    [name]="'translationShort_' + activeTranslationLocale"
+                  ></textarea>
                 </label>
 
                 <label class="field full">
                   <span>Ensayo / contenido</span>
-                  <textarea rows="10" [(ngModel)]="activeTranslationForm().essay" [name]="'translationEssay_' + activeTranslationLocale"></textarea>
+                  <textarea
+                    rows="10"
+                    [(ngModel)]="activeTranslationForm().essay"
+                    [name]="'translationEssay_' + activeTranslationLocale"
+                  ></textarea>
                 </label>
 
                 <label class="field full">
                   <span>Excerpt</span>
-                  <textarea rows="3" [(ngModel)]="activeTranslationForm().excerpt" [name]="'translationExcerpt_' + activeTranslationLocale"></textarea>
+                  <textarea
+                    rows="3"
+                    [(ngModel)]="activeTranslationForm().excerpt"
+                    [name]="'translationExcerpt_' + activeTranslationLocale"
+                  ></textarea>
                 </label>
 
                 <label class="field full">
                   <span>Notas curatoriales</span>
-                  <textarea rows="3" [(ngModel)]="activeTranslationForm().notes" [name]="'translationNotes_' + activeTranslationLocale"></textarea>
+                  <textarea
+                    rows="3"
+                    [(ngModel)]="activeTranslationForm().notes"
+                    [name]="'translationNotes_' + activeTranslationLocale"
+                  ></textarea>
                 </label>
                 @if (supportsTypedDetails()) {
                   <div class="translation-fields__subhead">
                     <strong>Ficha localizada</strong>
-                    <small class="hint">Estos campos alimentan la ficha pública en el idioma activo.</small>
+                    <small class="hint"
+                      >Estos campos alimentan la ficha pública en el idioma activo.</small
+                    >
                   </div>
                   @if (form.type === 'ARTWORK') {
                     <label class="field">
                       <span>Técnica</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().technique" [name]="'translationTechnique_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().technique"
+                        [name]="'translationTechnique_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field">
                       <span>Materiales</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().materials" [name]="'translationMaterials_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().materials"
+                        [name]="'translationMaterials_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field">
                       <span>Dimensiones</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().dimensions" [name]="'translationDimensions_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().dimensions"
+                        [name]="'translationDimensions_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field">
                       <span>Ubicación</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().location" [name]="'translationLocation_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().location"
+                        [name]="'translationLocation_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field">
                       <span>Colección</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().collection" [name]="'translationCollection_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().collection"
+                        [name]="'translationCollection_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field">
                       <span>Estado</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().state" [name]="'translationState_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().state"
+                        [name]="'translationState_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field full">
                       <span>Nacionalidad autor</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().authorNation" [name]="'translationAuthorNation_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().authorNation"
+                        [name]="'translationAuthorNation_' + activeTranslationLocale"
+                      />
                     </label>
                   }
                   @if (form.type === 'ARTIST') {
                     <label class="field">
                       <span>País</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().country" [name]="'translationCountry_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().country"
+                        [name]="'translationCountry_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field">
                       <span>Ciudad</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().city" [name]="'translationCity_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().city"
+                        [name]="'translationCity_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field full">
                       <span>Disciplinas</span>
-                      <input type="text" [(ngModel)]="activeLocalizedDetailsForm().disciplines" [name]="'translationDisciplines_' + activeTranslationLocale" />
+                      <input
+                        type="text"
+                        [(ngModel)]="activeLocalizedDetailsForm().disciplines"
+                        [name]="'translationDisciplines_' + activeTranslationLocale"
+                      />
                     </label>
                     <label class="field full">
                       <span>Biografía breve</span>
-                      <textarea rows="4" [(ngModel)]="activeLocalizedDetailsForm().bioShort" [name]="'translationBioShort_' + activeTranslationLocale"></textarea>
+                      <textarea
+                        rows="4"
+                        [(ngModel)]="activeLocalizedDetailsForm().bioShort"
+                        [name]="'translationBioShort_' + activeTranslationLocale"
+                      ></textarea>
                     </label>
                     <label class="field full">
                       <span>Links</span>
-                      <textarea rows="3" [(ngModel)]="activeLocalizedDetailsForm().links" [name]="'translationLinks_' + activeTranslationLocale"></textarea>
+                      <textarea
+                        rows="3"
+                        [(ngModel)]="activeLocalizedDetailsForm().links"
+                        [name]="'translationLinks_' + activeTranslationLocale"
+                      ></textarea>
                     </label>
                   }
                   @if (form.type === 'CONCEPT' || form.type === 'PERIOD') {
                     <label class="field full">
                       <span>Definición</span>
-                      <textarea rows="6" [(ngModel)]="activeLocalizedDetailsForm().definition" [name]="'translationDefinition_' + activeTranslationLocale"></textarea>
+                      <textarea
+                        rows="6"
+                        [(ngModel)]="activeLocalizedDetailsForm().definition"
+                        [name]="'translationDefinition_' + activeTranslationLocale"
+                      ></textarea>
                     </label>
                   }
                 }
               </div>
 
-              @if (translationMessage) { <small class="success-text">{{ translationMessage }}</small> }
-              @if (translationError) { <small class="error-text">{{ translationError }}</small> }
+              @if (translationMessage) {
+                <small class="success-text">{{ translationMessage }}</small>
+              }
+              @if (translationError) {
+                <small class="error-text">{{ translationError }}</small>
+              }
             </section>
           }
-
 
           @if (isEdit) {
             <div class="field full">
@@ -279,20 +390,53 @@
                   <select [(ngModel)]="selectedTagId" name="selectedTagId">
                     <option value="">Seleccionar tag existente</option>
                     @for (tag of availableTagsToAttach(); track tag.id) {
-                      <option [value]="tag.id">{{ tag.label }}@if (tag.category) { · {{ tag.category }} }</option>
+                      <option [value]="tag.id">
+                        {{ tag.label }}
+                        @if (tag.category) {
+                          · {{ tag.category }}
+                        }
+                      </option>
                     }
                   </select>
-                  <button class="btn" type="button" [disabled]="!selectedTagId || tagsSaving" (click)="addSelectedTag()">Añadir tag</button>
+                  <button
+                    class="btn"
+                    type="button"
+                    [disabled]="!selectedTagId || tagsSaving"
+                    (click)="addSelectedTag()"
+                  >
+                    Añadir tag
+                  </button>
                 </div>
 
                 <div class="tag-admin__create">
-                  <input type="text" [(ngModel)]="newTagLabel" name="newTagLabel" placeholder="Nuevo tag" />
-                  <input type="text" [(ngModel)]="newTagCategory" name="newTagCategory" placeholder="Categoría" />
-                  <button class="btn" type="button" [disabled]="!newTagLabel.trim() || tagsSaving" (click)="createTagAndAttach()">Crear y añadir</button>
+                  <input
+                    type="text"
+                    [(ngModel)]="newTagLabel"
+                    name="newTagLabel"
+                    placeholder="Nuevo tag"
+                  />
+                  <input
+                    type="text"
+                    [(ngModel)]="newTagCategory"
+                    name="newTagCategory"
+                    placeholder="Categoría"
+                  />
+                  <button
+                    class="btn"
+                    type="button"
+                    [disabled]="!newTagLabel.trim() || tagsSaving"
+                    (click)="createTagAndAttach()"
+                  >
+                    Crear y añadir
+                  </button>
                 </div>
 
-                @if (tagsMessage) { <small class="success-text">{{ tagsMessage }}</small> }
-                @if (tagsError) { <small class="error-text">{{ tagsError }}</small> }
+                @if (tagsMessage) {
+                  <small class="success-text">{{ tagsMessage }}</small>
+                }
+                @if (tagsError) {
+                  <small class="error-text">{{ tagsError }}</small>
+                }
               </div>
             </div>
 
@@ -302,9 +446,16 @@
                 <div class="tag-admin__current">
                   @if (entityAliases.length) {
                     @for (alias of entityAliases; track alias.id) {
-                      <button type="button" class="tag-chip tag-chip--alias" (click)="removeAlias(alias.id)">
+                      <button
+                        type="button"
+                        class="tag-chip tag-chip--alias"
+                        (click)="removeAlias(alias.id)"
+                      >
                         {{ alias.value }}
-                        <small>{{ aliasLocaleLabel(alias.locale) }} · {{ aliasKindLabel(alias.kind) }}</small>
+                        <small
+                          >{{ aliasLocaleLabel(alias.locale) }} ·
+                          {{ aliasKindLabel(alias.kind) }}</small
+                        >
                         <span aria-hidden="true">×</span>
                       </button>
                     }
@@ -314,7 +465,12 @@
                 </div>
 
                 <div class="tag-admin__create tag-admin__create--alias">
-                  <input type="text" [(ngModel)]="newAliasValue" name="newAliasValue" placeholder="Ej. caja japonesa secreta" />
+                  <input
+                    type="text"
+                    [(ngModel)]="newAliasValue"
+                    name="newAliasValue"
+                    placeholder="Ej. caja japonesa secreta"
+                  />
                   <select [(ngModel)]="newAliasLocale" name="newAliasLocale">
                     <option value="und">Global</option>
                     <option value="es">Español</option>
@@ -325,203 +481,253 @@
                       <option [value]="aliasKind.value">{{ aliasKind.label }}</option>
                     }
                   </select>
-                  <button class="btn" type="button" [disabled]="!newAliasValue.trim() || aliasesSaving" (click)="addAlias()">Añadir alias</button>
+                  <button
+                    class="btn"
+                    type="button"
+                    [disabled]="!newAliasValue.trim() || aliasesSaving"
+                    (click)="addAlias()"
+                  >
+                    Añadir alias
+                  </button>
                 </div>
 
-                @if (aliasesMessage) { <small class="success-text">{{ aliasesMessage }}</small> }
-                @if (aliasesError) { <small class="error-text">{{ aliasesError }}</small> }
+                @if (aliasesMessage) {
+                  <small class="success-text">{{ aliasesMessage }}</small>
+                }
+                @if (aliasesError) {
+                  <small class="error-text">{{ aliasesError }}</small>
+                }
               </div>
             </div>
           }
 
           @if (!isEdit) {
-          <label class="field full">
-            <span>Resumen inicial ES</span>
-            <textarea
-              rows="5"
-              [(ngModel)]="form.summary"
-              name="summary"
-            ></textarea>
-            <small class="hint">{{ summaryFieldHint() }}</small>
-          </label>
+            <label class="field full">
+              <span>Resumen inicial ES</span>
+              <textarea rows="5" [(ngModel)]="form.summary" name="summary"></textarea>
+              <small class="hint">{{ summaryFieldHint() }}</small>
+            </label>
 
-          <label class="field full content-field">
-            <span>{{ contentFieldLabel() }}</span>
-            <textarea
-              #contentTextarea
-              rows="14"
-              [(ngModel)]="form.content"
-              (input)="onContentInput()"
-              (keydown.escape)="closeLinkSuggestions()"
-              name="content"
-            ></textarea>
-            <small class="hint">{{ contentFieldHint() }}</small>
+            <label class="field full content-field">
+              <span>{{ contentFieldLabel() }}</span>
+              <textarea
+                #contentTextarea
+                rows="14"
+                [(ngModel)]="form.content"
+                (input)="onContentInput()"
+                (keydown.escape)="closeLinkSuggestions()"
+                name="content"
+              ></textarea>
+              <small class="hint">{{ contentFieldHint() }}</small>
 
-            @if (form.type === 'ARTICLE') {
-              <div class="article-cheatsheet">
-                <div class="article-cheatsheet__head">
-                  <strong>Sintaxis rápida</strong>
-                  <span>Se renderiza en la vista pública del artículo.</span>
-                </div>
+              @if (form.type === 'ARTICLE') {
+                <div class="article-cheatsheet">
+                  <div class="article-cheatsheet__head">
+                    <strong>Sintaxis rápida</strong>
+                    <span>Se renderiza en la vista pública del artículo.</span>
+                  </div>
 
-                <div class="article-cheatsheet__grid">
-                  <div class="article-cheatsheet__item">
-                    <code># Título</code>
-                    <span>Título grande</span>
-                  </div>
-                  <div class="article-cheatsheet__item">
-                    <code>## Sección</code>
-                    <span>Subtítulo</span>
-                  </div>
-                  <div class="article-cheatsheet__item">
-                    <code>&gt; Cita destacada</code>
-                    <span>Quote editorial</span>
-                  </div>
-                  <div class="article-cheatsheet__item">
-                    <code>**texto**</code>
-                    <span>Negrita</span>
-                  </div>
-                  <div class="article-cheatsheet__item">
-                    <code>*texto*</code>
-                    <span>Cursiva</span>
-                  </div>
-                  <div class="article-cheatsheet__item">
-                    <code>[[guernica|obra]]</code>
-                    <span>Enlace con preview</span>
-                  </div>
-                  <div class="article-cheatsheet__item article-cheatsheet__item--wide">
-                    <code>:::lead ... :::</code>
-                    <span>Párrafo de apertura más grande</span>
+                  <div class="article-cheatsheet__grid">
+                    <div class="article-cheatsheet__item">
+                      <code># Título</code>
+                      <span>Título grande</span>
+                    </div>
+                    <div class="article-cheatsheet__item">
+                      <code>## Sección</code>
+                      <span>Subtítulo</span>
+                    </div>
+                    <div class="article-cheatsheet__item">
+                      <code>&gt; Cita destacada</code>
+                      <span>Quote editorial</span>
+                    </div>
+                    <div class="article-cheatsheet__item">
+                      <code>**texto**</code>
+                      <span>Negrita</span>
+                    </div>
+                    <div class="article-cheatsheet__item">
+                      <code>*texto*</code>
+                      <span>Cursiva</span>
+                    </div>
+                    <div class="article-cheatsheet__item">
+                      <code>[[guernica|obra]]</code>
+                      <span>Enlace con preview</span>
+                    </div>
+                    <div class="article-cheatsheet__item article-cheatsheet__item--wide">
+                      <code>:::lead ... :::</code>
+                      <span>Párrafo de apertura más grande</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            }
+              }
 
-            <app-admin-entity-link-suggestions
-              [visible]="showLinkSuggestions"
-              [loading]="linkLoading"
-              [query]="linkSearch"
-              [items]="linkSuggestions"
-              (selectItem)="insertEntityLink($event)"
-            ></app-admin-entity-link-suggestions>
-          </label>
+              <app-admin-entity-link-suggestions
+                [visible]="showLinkSuggestions"
+                [loading]="linkLoading"
+                [query]="linkSearch"
+                [items]="linkSuggestions"
+                (selectItem)="insertEntityLink($event)"
+              ></app-admin-entity-link-suggestions>
+            </label>
           }
         </div>
 
         @if (supportsTypedDetails()) {
           <section class="details-box">
-          <div class="relations-head">
-            <h3>{{ typedDetailsTitle() }}</h3>
-            <p class="muted">Campos específicos que alimentan la ficha pública de esta entidad.</p>
-          </div>
+            <div class="relations-head">
+              <h3>{{ typedDetailsTitle() }}</h3>
+              <p class="muted">
+                Campos específicos que alimentan la ficha pública de esta entidad.
+              </p>
+            </div>
 
-          @if (detailsError) {
-            <div class="error-box">{{ detailsError }}</div>
-          }
-
-          @if (detailsMessage) {
-            <div class="success-box">{{ detailsMessage }}</div>
-          }
-
-          <div class="grid">
-            @if (form.type === 'ARTWORK') {
-              <label class="field">
-                <span>Técnica</span>
-                <input type="text" [(ngModel)]="detailsForm.technique" name="artworkTechnique" />
-              </label>
-
-              <label class="field">
-                <span>Materiales</span>
-                <input type="text" [(ngModel)]="detailsForm.materials" name="artworkMaterials" />
-              </label>
-
-              <label class="field">
-                <span>Dimensiones</span>
-                <input type="text" [(ngModel)]="detailsForm.dimensions" name="artworkDimensions" />
-              </label>
-
-              <label class="field">
-                <span>Ubicación</span>
-                <input type="text" [(ngModel)]="detailsForm.location" name="artworkLocation" />
-              </label>
-
-              <label class="field">
-                <span>Colección</span>
-                <input type="text" [(ngModel)]="detailsForm.collection" name="artworkCollection" />
-              </label>
-
-              <label class="field">
-                <span>Estado</span>
-                <input type="text" [(ngModel)]="detailsForm.state" name="artworkState" />
-              </label>
-
-              <label class="field full">
-                <span>Nacionalidad autor</span>
-                <input type="text" [(ngModel)]="detailsForm.authorNation" name="artworkAuthorNation" />
-              </label>
+            @if (detailsError) {
+              <div class="error-box">{{ detailsError }}</div>
             }
 
-            @if (form.type === 'ARTIST') {
-              <label class="field">
-                <span>País</span>
-                <input type="text" [(ngModel)]="detailsForm.country" name="artistCountry" />
-              </label>
-
-              <label class="field">
-                <span>Ciudad</span>
-                <input type="text" [(ngModel)]="detailsForm.city" name="artistCity" />
-              </label>
-
-              <label class="field">
-                <span>Nacimiento</span>
-                <input type="number" [(ngModel)]="detailsForm.birthYear" name="artistBirthYear" />
-              </label>
-
-              <label class="field">
-                <span>Muerte</span>
-                <input type="number" [(ngModel)]="detailsForm.deathYear" name="artistDeathYear" />
-              </label>
-
-              <label class="field full">
-                <span>Disciplinas</span>
-                <input type="text" [(ngModel)]="detailsForm.disciplines" name="artistDisciplines" />
-              </label>
-
-              <label class="field full">
-                <span>Biografía breve</span>
-                <textarea rows="4" [(ngModel)]="detailsForm.bioShort" name="artistBioShort"></textarea>
-              </label>
-
-              <label class="field full">
-                <span>Links</span>
-                <textarea rows="3" [(ngModel)]="detailsForm.links" name="artistLinks"></textarea>
-              </label>
+            @if (detailsMessage) {
+              <div class="success-box">{{ detailsMessage }}</div>
             }
 
-            @if (form.type === 'CONCEPT' || form.type === 'PERIOD') {
-              <label class="field full">
-                <span>Definición</span>
-                <textarea rows="6" [(ngModel)]="detailsForm.definition" name="typedDefinition"></textarea>
-              </label>
-            }
-          </div>
+            <div class="grid">
+              @if (form.type === 'ARTWORK') {
+                <label class="field">
+                  <span>Técnica</span>
+                  <input type="text" [(ngModel)]="detailsForm.technique" name="artworkTechnique" />
+                </label>
 
-          <div class="relations-actions">
-            <button class="btn primary" type="button" [disabled]="detailsSaving" (click)="saveDetails()">
-              @if (detailsSaving) { Guardando ficha... } @else { Guardar ficha }
-            </button>
-          </div>
+                <label class="field">
+                  <span>Materiales</span>
+                  <input type="text" [(ngModel)]="detailsForm.materials" name="artworkMaterials" />
+                </label>
+
+                <label class="field">
+                  <span>Dimensiones</span>
+                  <input
+                    type="text"
+                    [(ngModel)]="detailsForm.dimensions"
+                    name="artworkDimensions"
+                  />
+                </label>
+
+                <label class="field">
+                  <span>Ubicación</span>
+                  <input type="text" [(ngModel)]="detailsForm.location" name="artworkLocation" />
+                </label>
+
+                <label class="field">
+                  <span>Colección</span>
+                  <input
+                    type="text"
+                    [(ngModel)]="detailsForm.collection"
+                    name="artworkCollection"
+                  />
+                </label>
+
+                <label class="field">
+                  <span>Estado</span>
+                  <input type="text" [(ngModel)]="detailsForm.state" name="artworkState" />
+                </label>
+
+                <label class="field full">
+                  <span>Nacionalidad autor</span>
+                  <input
+                    type="text"
+                    [(ngModel)]="detailsForm.authorNation"
+                    name="artworkAuthorNation"
+                  />
+                </label>
+              }
+
+              @if (form.type === 'ARTIST') {
+                <label class="field">
+                  <span>País</span>
+                  <input type="text" [(ngModel)]="detailsForm.country" name="artistCountry" />
+                </label>
+
+                <label class="field">
+                  <span>Ciudad</span>
+                  <input type="text" [(ngModel)]="detailsForm.city" name="artistCity" />
+                </label>
+
+                <label class="field">
+                  <span>Nacimiento</span>
+                  <input type="number" [(ngModel)]="detailsForm.birthYear" name="artistBirthYear" />
+                </label>
+
+                <label class="field">
+                  <span>Muerte</span>
+                  <input type="number" [(ngModel)]="detailsForm.deathYear" name="artistDeathYear" />
+                </label>
+
+                <label class="field full">
+                  <span>Disciplinas</span>
+                  <input
+                    type="text"
+                    [(ngModel)]="detailsForm.disciplines"
+                    name="artistDisciplines"
+                  />
+                </label>
+
+                <label class="field full">
+                  <span>Biografía breve</span>
+                  <textarea
+                    rows="4"
+                    [(ngModel)]="detailsForm.bioShort"
+                    name="artistBioShort"
+                  ></textarea>
+                </label>
+
+                <label class="field full">
+                  <span>Links</span>
+                  <textarea rows="3" [(ngModel)]="detailsForm.links" name="artistLinks"></textarea>
+                </label>
+              }
+
+              @if (form.type === 'CONCEPT' || form.type === 'PERIOD') {
+                <label class="field full">
+                  <span>Definición</span>
+                  <textarea
+                    rows="6"
+                    [(ngModel)]="detailsForm.definition"
+                    name="typedDefinition"
+                  ></textarea>
+                </label>
+              }
+            </div>
+
+            <div class="relations-actions">
+              <button
+                class="btn primary"
+                type="button"
+                [disabled]="detailsSaving"
+                (click)="saveDetails()"
+              >
+                @if (detailsSaving) {
+                  Guardando ficha...
+                } @else {
+                  Guardar ficha
+                }
+              </button>
+            </div>
           </section>
         }
       </section>
 
-      <section id="section-media" class="admin-dashboard-panel media-box" [class.admin-dashboard-panel--active]="isActiveSection('section-media')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-media')" [attr.aria-hidden]="!isActiveSection('section-media')">
+      <section
+        id="section-media"
+        class="admin-dashboard-panel media-box"
+        [class.admin-dashboard-panel--active]="isActiveSection('section-media')"
+        [class.admin-dashboard-panel--hidden]="!isActiveSection('section-media')"
+        [attr.aria-hidden]="!isActiveSection('section-media')"
+      >
         @if (!isEdit) {
-          <div class="preview-empty">
-            Guarda primero la entity para poder asociarle media.
-          </div>
+          <div class="preview-empty">Guarda primero la entity para poder asociarle media.</div>
         } @else {
-          <div class="media-library-nav__tabs" role="tablist" aria-label="Navegación interna de Media Library">
+          <div
+            class="media-library-nav__tabs"
+            role="tablist"
+            aria-label="Navegación interna de Media Library"
+          >
             @for (view of mediaLibraryViews; track view.id) {
               <button
                 type="button"
@@ -531,7 +737,9 @@
               >
                 <span class="admin-dashboard-nav__item-main">
                   <span>{{ view.label }}</span>
-                  <span class="admin-dashboard-nav__item-count">{{ mediaLibraryViewCount(view.id) }}</span>
+                  <span class="admin-dashboard-nav__item-count">{{
+                    mediaLibraryViewCount(view.id)
+                  }}</span>
                 </span>
               </button>
             }
@@ -545,12 +753,19 @@
             <div class="success-box">{{ mediaMessage }}</div>
           }
 
-          <div class="media-library-view" [class.media-library-view--hidden]="activeMediaLibraryView !== 'coverage'" [attr.aria-hidden]="activeMediaLibraryView !== 'coverage'">
+          <div
+            class="media-library-view"
+            [class.media-library-view--hidden]="activeMediaLibraryView !== 'coverage'"
+            [attr.aria-hidden]="activeMediaLibraryView !== 'coverage'"
+          >
             <section class="media-overview">
               <div class="media-coverage__head">
                 <div>
                   <h3>Cobertura</h3>
-                  <p class="muted">Lectura editorial de lo que realmente se publica en Explorer 3D, List, Detail y Preview.</p>
+                  <p class="muted">
+                    Lectura editorial de lo que realmente se publica en Explorer 3D, List, Detail y
+                    Preview.
+                  </p>
                 </div>
                 <span class="admin-dashboard-panel__pill">Publicado</span>
               </div>
@@ -581,7 +796,10 @@
 
               <div class="slot-grid slot-grid--summary slot-grid--compact">
                 @for (slot of mainVisualSlots; track slot.key) {
-                  <article class="slot-card" [class.slot-card--empty]="slot.state.source === 'empty'">
+                  <article
+                    class="slot-card"
+                    [class.slot-card--empty]="slot.state.source === 'empty'"
+                  >
                     <div class="slot-card__head">
                       <div>
                         <div class="slot-card__title">{{ slot.label }}</div>
@@ -589,7 +807,15 @@
                       </div>
 
                       <span [class]="'media-pill ' + slotStateClass(slot)">
-                        {{ slot.state.source === 'empty' ? 'Vacío' : slot.state.source === 'explicit' ? 'OK' : slot.state.source === 'legacy' ? 'Legacy' : 'Fallback' }}
+                        {{
+                          slot.state.source === 'empty'
+                            ? 'Vacío'
+                            : slot.state.source === 'explicit'
+                              ? 'OK'
+                              : slot.state.source === 'legacy'
+                                ? 'Legacy'
+                                : 'Fallback'
+                        }}
                       </span>
                     </div>
 
@@ -620,7 +846,9 @@
               <section class="media-warning-stack">
                 <div class="relations-head">
                   <h4>Warnings</h4>
-                  <p class="muted">Señales editoriales para completar cobertura y limpiar la librería.</p>
+                  <p class="muted">
+                    Señales editoriales para completar cobertura y limpiar la librería.
+                  </p>
                 </div>
                 <div class="media-warning-list">
                   @for (warning of mediaWarnings; track warning) {
@@ -631,13 +859,19 @@
             }
           </div>
 
-          <div class="media-library-view" [class.media-library-view--hidden]="activeMediaLibraryView !== 'library'" [attr.aria-hidden]="activeMediaLibraryView !== 'library'">
+          <div
+            class="media-library-view"
+            [class.media-library-view--hidden]="activeMediaLibraryView !== 'library'"
+            [attr.aria-hidden]="activeMediaLibraryView !== 'library'"
+          >
             <div class="media-library-workspace">
               <div class="media-library-stack">
                 <section class="current-relations">
                   <div class="relations-head">
                     <h4>Assets Library</h4>
-                    <p class="muted">Selector de assets para cargar una imagen en el editor visual.</p>
+                    <p class="muted">
+                      Selector de assets para cargar una imagen en el editor visual.
+                    </p>
                   </div>
 
                   <div class="media-library-sections">
@@ -703,7 +937,9 @@
                 <section class="current-relations current-relations--secondary">
                   <div class="relations-head">
                     <h4>Additional Media</h4>
-                    <p class="muted">Material documental, extra o de apoyo. No compite con los slots principales.</p>
+                    <p class="muted">
+                      Material documental, extra o de apoyo. No compite con los slots principales.
+                    </p>
                   </div>
 
                   <app-admin-entity-media-group
@@ -730,7 +966,10 @@
                   <div class="media-editor-panel__head">
                     <div>
                       <h4>Editor visual</h4>
-                      <p class="muted">{{ form.title || 'Entity sin título' }} · trabaja una sola imagen cada vez con crop, foco, metadata y guardado local.</p>
+                      <p class="muted">
+                        {{ form.title || 'Entity sin título' }} · trabaja una sola imagen cada vez
+                        con crop, foco, metadata y guardado local.
+                      </p>
                     </div>
                     <span class="admin-dashboard-panel__pill">Media tool</span>
                   </div>
@@ -760,17 +999,26 @@
                     (restore)="restoreExternalMedia($event)"
                   ></app-media-card-editor>
                 } @else {
-                  <div class="preview-empty">Selecciona un asset de la biblioteca para editarlo aquí.</div>
+                  <div class="preview-empty">
+                    Selecciona un asset de la biblioteca para editarlo aquí.
+                  </div>
                 }
               </aside>
             </div>
           </div>
 
-          <div class="media-library-view" [class.media-library-view--hidden]="activeMediaLibraryView !== 'add'" [attr.aria-hidden]="activeMediaLibraryView !== 'add'">
+          <div
+            class="media-library-view"
+            [class.media-library-view--hidden]="activeMediaLibraryView !== 'add'"
+            [attr.aria-hidden]="activeMediaLibraryView !== 'add'"
+          >
             <section class="media-intake">
               <div class="relations-head">
                 <h4>Añadir media</h4>
-                <p class="muted">Alta rápida de URL externa, subida de archivo y opciones avanzadas en un bloque separado del trabajo editorial.</p>
+                <p class="muted">
+                  Alta rápida de URL externa, subida de archivo y opciones avanzadas en un bloque
+                  separado del trabajo editorial.
+                </p>
               </div>
               <app-media-add-panel
                 [adding]="addingMedia"
@@ -785,7 +1033,13 @@
       </section>
 
       @if (isEdit) {
-        <section id="section-sources" class="admin-dashboard-panel sources-box" [class.admin-dashboard-panel--active]="isActiveSection('section-sources')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-sources')" [attr.aria-hidden]="!isActiveSection('section-sources')">
+        <section
+          id="section-sources"
+          class="admin-dashboard-panel sources-box"
+          [class.admin-dashboard-panel--active]="isActiveSection('section-sources')"
+          [class.admin-dashboard-panel--hidden]="!isActiveSection('section-sources')"
+          [attr.aria-hidden]="!isActiveSection('section-sources')"
+        >
           <div class="admin-dashboard-panel__head">
             <div>
               <h2>Fuentes</h2>
@@ -824,32 +1078,56 @@
 
               <label class="field full">
                 <span>Título ES</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourceTitleEs" name="newSourceTitleEs" />
+                <input
+                  type="text"
+                  [(ngModel)]="newSourceRef.sourceTitleEs"
+                  name="newSourceTitleEs"
+                />
               </label>
 
               <label class="field full">
                 <span>Title EN</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourceTitleEn" name="newSourceTitleEn" />
+                <input
+                  type="text"
+                  [(ngModel)]="newSourceRef.sourceTitleEn"
+                  name="newSourceTitleEn"
+                />
               </label>
 
               <label class="field">
                 <span>Autor ES</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourceAuthorEs" name="newSourceAuthorEs" />
+                <input
+                  type="text"
+                  [(ngModel)]="newSourceRef.sourceAuthorEs"
+                  name="newSourceAuthorEs"
+                />
               </label>
 
               <label class="field">
                 <span>Author EN</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourceAuthorEn" name="newSourceAuthorEn" />
+                <input
+                  type="text"
+                  [(ngModel)]="newSourceRef.sourceAuthorEn"
+                  name="newSourceAuthorEn"
+                />
               </label>
 
               <label class="field">
                 <span>Publisher ES</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourcePublisherEs" name="newSourcePublisherEs" />
+                <input
+                  type="text"
+                  [(ngModel)]="newSourceRef.sourcePublisherEs"
+                  name="newSourcePublisherEs"
+                />
               </label>
 
               <label class="field">
                 <span>Publisher EN</span>
-                <input type="text" [(ngModel)]="newSourceRef.sourcePublisherEn" name="newSourcePublisherEn" />
+                <input
+                  type="text"
+                  [(ngModel)]="newSourceRef.sourcePublisherEn"
+                  name="newSourcePublisherEn"
+                />
               </label>
 
               <label class="field full">
@@ -864,28 +1142,53 @@
 
               <label class="field full">
                 <span>Cita ES</span>
-                <textarea rows="3" [(ngModel)]="newSourceRef.quoteEs" name="newSourceQuoteEs"></textarea>
+                <textarea
+                  rows="3"
+                  [(ngModel)]="newSourceRef.quoteEs"
+                  name="newSourceQuoteEs"
+                ></textarea>
               </label>
 
               <label class="field full">
                 <span>Cita EN</span>
-                <textarea rows="3" [(ngModel)]="newSourceRef.quoteEn" name="newSourceQuoteEn"></textarea>
+                <textarea
+                  rows="3"
+                  [(ngModel)]="newSourceRef.quoteEn"
+                  name="newSourceQuoteEn"
+                ></textarea>
               </label>
 
               <label class="field full">
                 <span>Nota ES</span>
-                <textarea rows="2" [(ngModel)]="newSourceRef.noteEs" name="newSourceNoteEs"></textarea>
+                <textarea
+                  rows="2"
+                  [(ngModel)]="newSourceRef.noteEs"
+                  name="newSourceNoteEs"
+                ></textarea>
               </label>
 
               <label class="field full">
                 <span>Nota EN</span>
-                <textarea rows="2" [(ngModel)]="newSourceRef.noteEn" name="newSourceNoteEn"></textarea>
+                <textarea
+                  rows="2"
+                  [(ngModel)]="newSourceRef.noteEn"
+                  name="newSourceNoteEn"
+                ></textarea>
               </label>
             </div>
 
             <div class="relations-actions">
-              <button class="btn primary" type="button" [disabled]="sourcesSaving" (click)="addSourceRef()">
-                @if (sourcesSaving) { Guardando... } @else { Añadir fuente }
+              <button
+                class="btn primary"
+                type="button"
+                [disabled]="sourcesSaving"
+                (click)="addSourceRef()"
+              >
+                @if (sourcesSaving) {
+                  Guardando...
+                } @else {
+                  Añadir fuente
+                }
               </button>
             </div>
           </div>
@@ -909,42 +1212,74 @@
 
                       <label class="field">
                         <span>Año</span>
-                        <input type="number" [(ngModel)]="ref.sourceYear" [name]="'sourceYear-' + ref.id" />
+                        <input
+                          type="number"
+                          [(ngModel)]="ref.sourceYear"
+                          [name]="'sourceYear-' + ref.id"
+                        />
                       </label>
 
                       <label class="field full">
                         <span>Título ES</span>
-                        <input type="text" [(ngModel)]="ref.sourceTitleEs" [name]="'sourceTitleEs-' + ref.id" />
+                        <input
+                          type="text"
+                          [(ngModel)]="ref.sourceTitleEs"
+                          [name]="'sourceTitleEs-' + ref.id"
+                        />
                       </label>
 
                       <label class="field full">
                         <span>Title EN</span>
-                        <input type="text" [(ngModel)]="ref.sourceTitleEn" [name]="'sourceTitleEn-' + ref.id" />
+                        <input
+                          type="text"
+                          [(ngModel)]="ref.sourceTitleEn"
+                          [name]="'sourceTitleEn-' + ref.id"
+                        />
                       </label>
 
                       <label class="field">
                         <span>Autor ES</span>
-                        <input type="text" [(ngModel)]="ref.sourceAuthorEs" [name]="'sourceAuthorEs-' + ref.id" />
+                        <input
+                          type="text"
+                          [(ngModel)]="ref.sourceAuthorEs"
+                          [name]="'sourceAuthorEs-' + ref.id"
+                        />
                       </label>
 
                       <label class="field">
                         <span>Author EN</span>
-                        <input type="text" [(ngModel)]="ref.sourceAuthorEn" [name]="'sourceAuthorEn-' + ref.id" />
+                        <input
+                          type="text"
+                          [(ngModel)]="ref.sourceAuthorEn"
+                          [name]="'sourceAuthorEn-' + ref.id"
+                        />
                       </label>
 
                       <label class="field">
                         <span>Publisher ES</span>
-                        <input type="text" [(ngModel)]="ref.sourcePublisherEs" [name]="'sourcePublisherEs-' + ref.id" />
+                        <input
+                          type="text"
+                          [(ngModel)]="ref.sourcePublisherEs"
+                          [name]="'sourcePublisherEs-' + ref.id"
+                        />
                       </label>
 
                       <label class="field">
                         <span>Publisher EN</span>
-                        <input type="text" [(ngModel)]="ref.sourcePublisherEn" [name]="'sourcePublisherEn-' + ref.id" />
+                        <input
+                          type="text"
+                          [(ngModel)]="ref.sourcePublisherEn"
+                          [name]="'sourcePublisherEn-' + ref.id"
+                        />
                       </label>
 
                       <label class="field full">
                         <span>URL</span>
-                        <input type="url" [(ngModel)]="ref.sourceUrl" [name]="'sourceUrl-' + ref.id" />
+                        <input
+                          type="url"
+                          [(ngModel)]="ref.sourceUrl"
+                          [name]="'sourceUrl-' + ref.id"
+                        />
                       </label>
 
                       <label class="field">
@@ -954,28 +1289,58 @@
 
                       <label class="field full">
                         <span>Cita ES</span>
-                        <textarea rows="3" [(ngModel)]="ref.quoteEs" [name]="'sourceQuoteEs-' + ref.id"></textarea>
+                        <textarea
+                          rows="3"
+                          [(ngModel)]="ref.quoteEs"
+                          [name]="'sourceQuoteEs-' + ref.id"
+                        ></textarea>
                       </label>
 
                       <label class="field full">
                         <span>Cita EN</span>
-                        <textarea rows="3" [(ngModel)]="ref.quoteEn" [name]="'sourceQuoteEn-' + ref.id"></textarea>
+                        <textarea
+                          rows="3"
+                          [(ngModel)]="ref.quoteEn"
+                          [name]="'sourceQuoteEn-' + ref.id"
+                        ></textarea>
                       </label>
 
                       <label class="field full">
                         <span>Nota ES</span>
-                        <textarea rows="2" [(ngModel)]="ref.noteEs" [name]="'sourceNoteEs-' + ref.id"></textarea>
+                        <textarea
+                          rows="2"
+                          [(ngModel)]="ref.noteEs"
+                          [name]="'sourceNoteEs-' + ref.id"
+                        ></textarea>
                       </label>
 
                       <label class="field full">
                         <span>Nota EN</span>
-                        <textarea rows="2" [(ngModel)]="ref.noteEn" [name]="'sourceNoteEn-' + ref.id"></textarea>
+                        <textarea
+                          rows="2"
+                          [(ngModel)]="ref.noteEn"
+                          [name]="'sourceNoteEn-' + ref.id"
+                        ></textarea>
                       </label>
                     </div>
 
                     <div class="source-card__actions">
-                      <button class="btn" type="button" [disabled]="sourcesSaving" (click)="saveSourceRef(ref)">Guardar</button>
-                      <button class="btn danger" type="button" [disabled]="sourcesSaving" (click)="removeSourceRef(ref.id)">Quitar</button>
+                      <button
+                        class="btn"
+                        type="button"
+                        [disabled]="sourcesSaving"
+                        (click)="saveSourceRef(ref)"
+                      >
+                        Guardar
+                      </button>
+                      <button
+                        class="btn danger"
+                        type="button"
+                        [disabled]="sourcesSaving"
+                        (click)="removeSourceRef(ref.id)"
+                      >
+                        Quitar
+                      </button>
                     </div>
                   </article>
                 }
@@ -986,7 +1351,13 @@
           </div>
         </section>
 
-        <section id="section-contributors" class="admin-dashboard-panel contributors-box" [class.admin-dashboard-panel--active]="isActiveSection('section-contributors')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-contributors')" [attr.aria-hidden]="!isActiveSection('section-contributors')">
+        <section
+          id="section-contributors"
+          class="admin-dashboard-panel contributors-box"
+          [class.admin-dashboard-panel--active]="isActiveSection('section-contributors')"
+          [class.admin-dashboard-panel--hidden]="!isActiveSection('section-contributors')"
+          [attr.aria-hidden]="!isActiveSection('section-contributors')"
+        >
           <div class="admin-dashboard-panel__head">
             <div>
               <h2>Colaboradores</h2>
@@ -1020,13 +1391,26 @@
 
             <label class="field full">
               <span>Nota</span>
-              <textarea rows="2" [(ngModel)]="newContributor.note" name="newContributorNote"></textarea>
+              <textarea
+                rows="2"
+                [(ngModel)]="newContributor.note"
+                name="newContributorNote"
+              ></textarea>
             </label>
           </div>
 
           <div class="relations-actions">
-            <button class="btn primary" type="button" [disabled]="contributorsSaving" (click)="addContributor()">
-              @if (contributorsSaving) { Guardando... } @else { Añadir colaborador }
+            <button
+              class="btn primary"
+              type="button"
+              [disabled]="contributorsSaving"
+              (click)="addContributor()"
+            >
+              @if (contributorsSaving) {
+                Guardando...
+              } @else {
+                Añadir colaborador
+              }
             </button>
           </div>
 
@@ -1040,23 +1424,49 @@
                     <div class="grid">
                       <label class="field">
                         <span>Nombre</span>
-                        <input type="text" [(ngModel)]="contributor.name" [name]="'contributorName-' + contributor.id" />
+                        <input
+                          type="text"
+                          [(ngModel)]="contributor.name"
+                          [name]="'contributorName-' + contributor.id"
+                        />
                       </label>
 
                       <label class="field">
                         <span>Rol</span>
-                        <input type="text" [(ngModel)]="contributor.role" [name]="'contributorRole-' + contributor.id" />
+                        <input
+                          type="text"
+                          [(ngModel)]="contributor.role"
+                          [name]="'contributorRole-' + contributor.id"
+                        />
                       </label>
 
                       <label class="field full">
                         <span>Nota</span>
-                        <textarea rows="2" [(ngModel)]="contributor.note" [name]="'contributorNote-' + contributor.id"></textarea>
+                        <textarea
+                          rows="2"
+                          [(ngModel)]="contributor.note"
+                          [name]="'contributorNote-' + contributor.id"
+                        ></textarea>
                       </label>
                     </div>
 
                     <div class="source-card__actions">
-                      <button class="btn" type="button" [disabled]="contributorsSaving" (click)="saveContributor(contributor)">Guardar</button>
-                      <button class="btn danger" type="button" [disabled]="contributorsSaving" (click)="removeContributor(contributor.id)">Quitar</button>
+                      <button
+                        class="btn"
+                        type="button"
+                        [disabled]="contributorsSaving"
+                        (click)="saveContributor(contributor)"
+                      >
+                        Guardar
+                      </button>
+                      <button
+                        class="btn danger"
+                        type="button"
+                        [disabled]="contributorsSaving"
+                        (click)="removeContributor(contributor.id)"
+                      >
+                        Quitar
+                      </button>
                     </div>
                   </article>
                 }
@@ -1069,11 +1479,19 @@
       }
 
       @if (isEdit) {
-        <section id="section-relations" class="admin-dashboard-panel relations-box" [class.admin-dashboard-panel--active]="isActiveSection('section-relations')" [class.admin-dashboard-panel--hidden]="!isActiveSection('section-relations')" [attr.aria-hidden]="!isActiveSection('section-relations')">
+        <section
+          id="section-relations"
+          class="admin-dashboard-panel relations-box"
+          [class.admin-dashboard-panel--active]="isActiveSection('section-relations')"
+          [class.admin-dashboard-panel--hidden]="!isActiveSection('section-relations')"
+          [attr.aria-hidden]="!isActiveSection('section-relations')"
+        >
           <div class="admin-dashboard-panel__head">
             <div>
               <h2>Relaciones</h2>
-              <p class="muted">Conecta la entity con otras obras, conceptos, periodos o artículos.</p>
+              <p class="muted">
+                Conecta la entity con otras obras, conceptos, periodos o artículos.
+              </p>
             </div>
             <span class="admin-dashboard-panel__pill">Paso 5</span>
           </div>
@@ -1100,11 +1518,7 @@
             @if (relationResults.length) {
               <div class="search-results">
                 @for (item of relationResults; track item.id) {
-                  <button
-                    type="button"
-                    class="search-item"
-                    (click)="selectRelationTarget(item)"
-                  >
+                  <button type="button" class="search-item" (click)="selectRelationTarget(item)">
                     <strong>{{ item.title }}</strong>
                     <span>{{ item.type }}</span>
                   </button>
@@ -1114,7 +1528,11 @@
 
             <label class="field">
               <span>Tipo de relación</span>
-              <select [ngModel]="newRelation.relationTypeId" (ngModelChange)="onRelationTypeChange($event)" name="newRelationType">
+              <select
+                [ngModel]="newRelation.relationTypeId"
+                (ngModelChange)="onRelationTypeChange($event)"
+                name="newRelationType"
+              >
                 @for (type of relationTypes; track type.id) {
                   <option [value]="type.id">{{ type.label }}</option>
                 }
@@ -1156,38 +1574,38 @@
                 @for (rel of relations; track rel.id) {
                   <article class="relation-card">
                     <div class="relation-main">
-                      <div class="relation-type">{{ rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type }}</div>
+                      <div class="relation-type">
+                        {{ rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type }}
+                      </div>
                       <div class="relation-target">
-  <span class="relation-arrow">→</span>
-  {{ rel.to?.title }}
-  @if (rel.to?.type) {
-    <span class="relation-meta">· {{ rel.to?.type }}</span>
-  }
-</div>
+                        <span class="relation-arrow">→</span>
+                        {{ rel.to?.title }}
+                        @if (rel.to?.type) {
+                          <span class="relation-meta">· {{ rel.to?.type }}</span>
+                        }
+                      </div>
 
                       <label class="field full">
                         <span>Justificación ES</span>
-                        <textarea rows="2" [(ngModel)]="rel.justificationEs" [name]="'relationJustificationEs-' + rel.id"></textarea>
+                        <textarea
+                          rows="2"
+                          [(ngModel)]="rel.justificationEs"
+                          [name]="'relationJustificationEs-' + rel.id"
+                        ></textarea>
                       </label>
                       <label class="field full">
                         <span>Justification EN</span>
-                        <textarea rows="2" [(ngModel)]="rel.justificationEn" [name]="'relationJustificationEn-' + rel.id"></textarea>
+                        <textarea
+                          rows="2"
+                          [(ngModel)]="rel.justificationEn"
+                          [name]="'relationJustificationEn-' + rel.id"
+                        ></textarea>
                       </label>
                     </div>
 
                     <div class="source-card__actions">
-                      <button
-                        type="button"
-                        class="btn"
-                        (click)="saveRelation(rel)"
-                      >
-                        Guardar
-                      </button>
-                      <button
-                        type="button"
-                        class="btn danger"
-                        (click)="removeRelation(rel.id)"
-                      >
+                      <button type="button" class="btn" (click)="saveRelation(rel)">Guardar</button>
+                      <button type="button" class="btn danger" (click)="removeRelation(rel.id)">
                         Quitar
                       </button>
                     </div>
@@ -1195,48 +1613,47 @@
                 }
               </div>
             } @else {
-              <div class="preview-empty">
-                Esta entity aún no tiene relaciones salientes.
-              </div>
+              <div class="preview-empty">Esta entity aún no tiene relaciones salientes.</div>
             }
           </div>
 
           <div class="current-relations">
-  <h4>Relaciones entrantes</h4>
+            <h4>Relaciones entrantes</h4>
 
-  @if (incomingRelationsLoading) {
-    <div class="muted">Cargando relaciones entrantes…</div>
-  } @else if (incomingRelations.length) {
-    <div class="relations-list">
-      @for (rel of incomingRelations; track rel.id) {
-        <article class="relation-card incoming">
-          <div class="relation-main">
-            <div class="relation-type">{{ rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type }}</div>
-            <div class="relation-target">
-  <span class="relation-arrow incoming">←</span>
-  {{ rel.from?.title }}
-  @if (rel.from?.type) {
-    <span class="relation-meta">· {{ rel.from?.type }}</span>
-  }
-</div>
+            @if (incomingRelationsLoading) {
+              <div class="muted">Cargando relaciones entrantes…</div>
+            } @else if (incomingRelations.length) {
+              <div class="relations-list">
+                @for (rel of incomingRelations; track rel.id) {
+                  <article class="relation-card incoming">
+                    <div class="relation-main">
+                      <div class="relation-type">
+                        {{ rel.relationTypeLabel ?? rel.relationType?.label ?? rel.type }}
+                      </div>
+                      <div class="relation-target">
+                        <span class="relation-arrow incoming">←</span>
+                        {{ rel.from?.title }}
+                        @if (rel.from?.type) {
+                          <span class="relation-meta">· {{ rel.from?.type }}</span>
+                        }
+                      </div>
 
-            @if (rel.justificationEs || rel.justificationEn || rel.justification) {
-              <div class="relation-note">ES: {{ rel.justificationEs || rel.justification || "—" }}</div>
-              <div class="relation-note">EN: {{ rel.justificationEn || "—" }}</div>
+                      @if (rel.justificationEs || rel.justificationEn || rel.justification) {
+                        <div class="relation-note">
+                          ES: {{ rel.justificationEs || rel.justification || '—' }}
+                        </div>
+                        <div class="relation-note">EN: {{ rel.justificationEn || '—' }}</div>
+                      }
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="preview-empty">Esta entity aún no tiene relaciones entrantes.</div>
             }
           </div>
-        </article>
-      }
-    </div>
-  } @else {
-    <div class="preview-empty">
-      Esta entity aún no tiene relaciones entrantes.
-    </div>
-  }
-</div>
         </section>
       }
-
     </section>
   </section>
 </div>

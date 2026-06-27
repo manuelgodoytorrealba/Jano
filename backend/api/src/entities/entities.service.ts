@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
-import { ContentLevel, EntityStatus, MediaOriginType, MediaRole } from '@prisma/client';
+import { ContentLevel, EntityStatus, MediaOriginType, MediaRole, Prisma } from '@prisma/client';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { UpsertEntityTranslationDto } from './dto/upsert-entity-translation.dto';
@@ -15,12 +20,21 @@ import { CreateSourceRefDto } from './dto/create-source-ref.dto';
 import { UpdateSourceRefDto } from './dto/update-source-ref.dto';
 import { CreateContributorDto } from './dto/create-contributor.dto';
 import { UpdateContributorDto } from './dto/update-contributor.dto';
-import { attachResolvedMedia, buildAdminMediaLibrary, resolvedMediaUrl, type ResolvedMediaPayload } from './media.resolver';
+import {
+  attachResolvedMedia,
+  buildAdminMediaLibrary,
+  resolvedMediaUrl,
+  type ResolvedMediaPayload,
+} from './media.resolver';
 import { mkdir, readFile, unlink, writeFile } from 'fs/promises';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
 import { detectImageDimensionsFromBuffer } from './image-metadata';
-import { normalizeLocale, resolveEntityTranslation, translationStatusSummary } from './entity-translation.resolver';
+import {
+  normalizeLocale,
+  resolveEntityTranslation,
+  translationStatusSummary,
+} from './entity-translation.resolver';
 import { buildPublicUploadUrl, resolveMediaPublicBaseUrl } from '../common/media-url.util';
 
 type GraphNodePayload = {
@@ -74,16 +88,125 @@ const MIME_EXTENSION_MAP: Record<string, string> = {
 
 const DEFAULT_ENTITY_ALIAS_KIND: EntityAliasKindValue = 'COMMON_NAME';
 
-type SlotCropInput = {
-  explorer3d?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
-  list?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
-  detail?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
-  preview?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
-} | null | undefined;
+type SlotCropInput =
+  | {
+      explorer3d?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
+      list?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
+      detail?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
+      preview?: { x?: number | null; y?: number | null; zoom?: number | null } | null;
+    }
+  | null
+  | undefined;
+
+type LocaleTranslationRecord = {
+  locale?: string | null;
+} & Record<string, unknown>;
+
+type MediaLinkedRecord = Parameters<typeof attachResolvedMedia>[0];
+
+type LocalizedEntityRecord = Parameters<typeof resolveEntityTranslation>[0] & MediaLinkedRecord;
+
+type LocalizedDetailRecord = {
+  translations?: LocaleTranslationRecord[] | null;
+} & Record<string, unknown>;
+
+type EntityTypedDetailsRecord = {
+  artwork?: LocalizedDetailRecord | null;
+  artist?: LocalizedDetailRecord | null;
+  concept?: LocalizedDetailRecord | null;
+  period?: LocalizedDetailRecord | null;
+};
+
+type RelationTypeTranslationRecord = LocaleTranslationRecord & {
+  label?: string | null;
+  inverseLabel?: string | null;
+};
+
+type RelationLabelRecord = {
+  type?: string | null;
+  relationType?: {
+    label?: string | null;
+    inverseLabel?: string | null;
+    key?: string | null;
+    directed?: boolean | null;
+    translations?: RelationTypeTranslationRecord[] | null;
+  } | null;
+};
+
+type JustificationTranslationRecord = LocaleTranslationRecord & {
+  justification?: string | null;
+};
+
+type SerializedRelationRecord = RelationLabelRecord & {
+  justification?: string | null;
+  translations?: JustificationTranslationRecord[] | null;
+};
+
+type SourceTranslationRecord = LocaleTranslationRecord & {
+  title?: string | null;
+  author?: string | null;
+  publisher?: string | null;
+};
+
+type SerializedSourceRecord = {
+  title?: string | null;
+  author?: string | null;
+  publisher?: string | null;
+  translations?: SourceTranslationRecord[] | null;
+};
+
+type SourceRefTranslationRecord = LocaleTranslationRecord & {
+  quote?: string | null;
+  note?: string | null;
+};
+
+type SerializedSourceRefRecord = {
+  quote?: string | null;
+  note?: string | null;
+  source?: SerializedSourceRecord | null;
+  translations?: SourceRefTranslationRecord[] | null;
+};
+
+type GraphEntityNodeRecord = LocalizedEntityRecord & {
+  id: string;
+  type: string;
+  slug: string;
+  startYear?: number | null;
+  endYear?: number | null;
+};
+
+type AdminEntityDetailRecord = GraphEntityNodeRecord &
+  EntityTypedDetailsRecord & {
+    sourceRefs?: SerializedSourceRefRecord[] | null;
+    outgoing?: Array<
+      SerializedRelationRecord & { to?: (LocalizedEntityRecord & EntityTypedDetailsRecord) | null }
+    > | null;
+    incoming?: Array<
+      SerializedRelationRecord & {
+        from?: (LocalizedEntityRecord & EntityTypedDetailsRecord) | null;
+      }
+    > | null;
+  };
+
+type PrismaKnownError = {
+  code?: string;
+};
+
+type RelationMutationDto = {
+  toId?: string;
+  relationTypeId?: string;
+  type?: string;
+  justification?: string;
+  justificationEs?: string;
+  justificationEn?: string;
+  weight?: number | null;
+};
 
 @Injectable()
 export class EntitiesService {
-  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(process.env.MEDIA_PUBLIC_BASE_URL);
+  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(
+    process.env.MEDIA_PUBLIC_BASE_URL,
+  );
 
   private readonly HOME_TYPES: EntityType[] = [
     'ARTWORK',
@@ -94,33 +217,40 @@ export class EntitiesService {
     'ARTIST',
   ];
 
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
-  private withResolvedMedia<T extends { mediaLinks?: any[] | null }>(entity: T): T & { resolvedMedia: ResolvedMediaPayload } {
+  private withResolvedMedia<T extends MediaLinkedRecord>(
+    entity: T,
+  ): T & { resolvedMedia: ResolvedMediaPayload } {
     return attachResolvedMedia(entity);
   }
 
-  private resolveLocalizedEntity<T extends { title: string; summary?: string | null; content?: string | null; translations?: any[] | null; mediaLinks?: any[] | null }>(entity: T, locale?: string) {
+  private resolveLocalizedEntity<T extends LocalizedEntityRecord>(entity: T, locale?: string) {
     return this.withResolvedMedia(resolveEntityTranslation(entity, locale));
   }
 
-  private resolveLocalizedDetail<T extends Record<string, any> | null | undefined>(detail: T, locale: string | undefined, fields: string[]): T {
+  private resolveLocalizedDetail<T extends LocalizedDetailRecord | null | undefined>(
+    detail: T,
+    locale: string | undefined,
+    fields: string[],
+  ): T {
     if (!detail) {
       return detail;
     }
 
     const requestedLocale = normalizeLocale(locale);
-    const translations = Array.isArray((detail as any).translations) ? (detail as any).translations : [];
-    const resolved = translations.find((item: any) => item?.locale === requestedLocale)
-      ?? translations.find((item: any) => item?.locale === 'es')
-      ?? translations.find((item: any) => item?.locale === 'en')
-      ?? null;
+    const translations = Array.isArray(detail.translations) ? detail.translations : [];
+    const resolved =
+      translations.find((item) => item?.locale === requestedLocale) ??
+      translations.find((item) => item?.locale === 'es') ??
+      translations.find((item) => item?.locale === 'en') ??
+      null;
 
     if (!resolved) {
       return detail;
     }
 
-    const localized = { ...detail } as Record<string, any>;
+    const localized: LocalizedDetailRecord = { ...detail };
     for (const field of fields) {
       const value = resolved?.[field];
       if (typeof value === 'string' && value.trim()) {
@@ -131,17 +261,36 @@ export class EntitiesService {
     return localized as T;
   }
 
-  private applyLocalizedTypedDetails<T extends { artwork?: any; artist?: any; concept?: any; period?: any }>(entity: T, locale?: string): T {
+  private applyLocalizedTypedDetails<T extends EntityTypedDetailsRecord>(
+    entity: T,
+    locale?: string,
+  ): T {
     return {
       ...entity,
-      artwork: this.resolveLocalizedDetail(entity.artwork, locale, ['authorNation', 'technique', 'materials', 'dimensions', 'location', 'collection', 'state']),
-      artist: this.resolveLocalizedDetail(entity.artist, locale, ['country', 'city', 'disciplines', 'bioShort', 'links']),
+      artwork: this.resolveLocalizedDetail(entity.artwork, locale, [
+        'authorNation',
+        'technique',
+        'materials',
+        'dimensions',
+        'location',
+        'collection',
+        'state',
+      ]),
+      artist: this.resolveLocalizedDetail(entity.artist, locale, [
+        'country',
+        'city',
+        'disciplines',
+        'bioShort',
+        'links',
+      ]),
       concept: this.resolveLocalizedDetail(entity.concept, locale, ['definition']),
       period: this.resolveLocalizedDetail(entity.period, locale, ['definition']),
     };
   }
 
-  private resolveLocalizedEntityWithDetails<T extends { title: string; summary?: string | null; content?: string | null; translations?: any[] | null; mediaLinks?: any[] | null; artwork?: any; artist?: any; concept?: any; period?: any }>(entity: T, locale?: string) {
+  private resolveLocalizedEntityWithDetails<
+    T extends LocalizedEntityRecord & EntityTypedDetailsRecord,
+  >(entity: T, locale?: string) {
     return this.applyLocalizedTypedDetails(this.resolveLocalizedEntity(entity, locale), locale);
   }
 
@@ -152,29 +301,38 @@ export class EntitiesService {
     };
   }
 
-  private translationField(record: { translations?: any[] | null } | null | undefined, locale: string | undefined, field: string): string | null {
+  private translationField(
+    record: { translations?: LocaleTranslationRecord[] | null } | null | undefined,
+    locale: string | undefined,
+    field: string,
+  ): string | null {
     if (!record) {
       return null;
     }
 
     const requestedLocale = normalizeLocale(locale);
     const translations = Array.isArray(record.translations) ? record.translations : [];
-    const resolved = translations.find((item: any) => item?.locale === requestedLocale)
-      ?? translations.find((item: any) => item?.locale === 'es')
-      ?? translations.find((item: any) => item?.locale === 'en')
-      ?? null;
+    const resolved =
+      translations.find((item) => item?.locale === requestedLocale) ??
+      translations.find((item) => item?.locale === 'es') ??
+      translations.find((item) => item?.locale === 'en') ??
+      null;
 
     const value = resolved?.[field];
     return typeof value === 'string' && value.trim() ? value.trim() : null;
   }
 
-  private translationValueForLocale(record: { translations?: any[] | null } | null | undefined, field: string, locale: string): string | null {
+  private translationValueForLocale(
+    record: { translations?: LocaleTranslationRecord[] | null } | null | undefined,
+    field: string,
+    locale: string,
+  ): string | null {
     if (!record) {
       return null;
     }
 
     const translations = Array.isArray(record.translations) ? record.translations : [];
-    const match = translations.find((item: any) => item?.locale === locale);
+    const match = translations.find((item) => item?.locale === locale);
     const value = match?.[field];
     return typeof value === 'string' && value.trim() ? value.trim() : null;
   }
@@ -231,7 +389,10 @@ export class EntitiesService {
     return labels[type] ?? type;
   }
 
-  private relationKey(relation: { type?: string | null; relationType?: { key?: string | null } | null }): string {
+  private relationKey(relation: {
+    type?: string | null;
+    relationType?: { key?: string | null } | null;
+  }): string {
     const relationTypeKey = relation.relationType?.key?.trim();
     if (relationTypeKey) {
       return relationTypeKey;
@@ -245,14 +406,19 @@ export class EntitiesService {
     return 'RELATED_TO';
   }
 
-  private relationDisplayLabel(relation: { type?: string | null; relationType?: { label?: string | null; key?: string | null; translations?: any[] | null } | null }, locale?: string): string {
+  private relationDisplayLabel(relation: RelationLabelRecord, locale?: string): string {
     const requestedLocale = normalizeLocale(locale);
-    const translation = relation.relationType?.translations?.find((item: any) => item.locale === requestedLocale)
-      ?? relation.relationType?.translations?.find((item: any) => item.locale === 'es')
-      ?? relation.relationType?.translations?.find((item: any) => item.locale === 'en')
-      ?? null;
+    const translation =
+      relation.relationType?.translations?.find((item) => item.locale === requestedLocale) ??
+      relation.relationType?.translations?.find((item) => item.locale === 'es') ??
+      relation.relationType?.translations?.find((item) => item.locale === 'en') ??
+      null;
 
-    return translation?.label?.trim() ?? relation.relationType?.label ?? this.relationLabel(this.relationKey(relation));
+    return (
+      translation?.label?.trim() ??
+      relation.relationType?.label ??
+      this.relationLabel(this.relationKey(relation))
+    );
   }
 
   private graphMediaInclude(locale?: string) {
@@ -260,23 +426,20 @@ export class EntitiesService {
       translations: this.localizedInclude(locale),
       mediaLinks: {
         include: { media: true },
-        orderBy: [
-          { sortOrder: 'asc' as const },
-          { id: 'asc' as const },
-        ],
+        orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }],
       },
     };
   }
 
-  private toGraphNodePayload(node: any, locale?: string): GraphNodePayload {
+  private toGraphNodePayload(node: GraphEntityNodeRecord, locale?: string): GraphNodePayload {
     const resolvedNode = this.resolveLocalizedEntity(node, locale);
     const image =
-      resolvedMediaUrl(resolvedNode.resolvedMedia.thumbnail)
-      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.card)
-      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.detail)
-      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.hero)
-      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.explorer3d)
-      ?? resolvedMediaUrl(resolvedNode.resolvedMedia.primary);
+      resolvedMediaUrl(resolvedNode.resolvedMedia.thumbnail) ??
+      resolvedMediaUrl(resolvedNode.resolvedMedia.card) ??
+      resolvedMediaUrl(resolvedNode.resolvedMedia.detail) ??
+      resolvedMediaUrl(resolvedNode.resolvedMedia.hero) ??
+      resolvedMediaUrl(resolvedNode.resolvedMedia.explorer3d) ??
+      resolvedMediaUrl(resolvedNode.resolvedMedia.primary);
 
     return {
       id: node.id,
@@ -293,7 +456,10 @@ export class EntitiesService {
     };
   }
 
-  private toWorkspaceGraphNodePayload(node: any, locale?: string): GraphNodePayload {
+  private toWorkspaceGraphNodePayload(
+    node: GraphEntityNodeRecord,
+    locale?: string,
+  ): GraphNodePayload {
     const resolvedNode = resolveEntityTranslation(node, locale);
 
     return {
@@ -310,18 +476,34 @@ export class EntitiesService {
     };
   }
 
-  private relationInverseDisplayLabel(relation: { type?: string | null; relationType?: { inverseLabel?: string | null; key?: string | null; translations?: any[] | null } | null }, locale?: string): string {
+  private relationInverseDisplayLabel(relation: RelationLabelRecord, locale?: string): string {
     const requestedLocale = normalizeLocale(locale);
-    const translation = relation.relationType?.translations?.find((item: any) => item.locale === requestedLocale)
-      ?? relation.relationType?.translations?.find((item: any) => item.locale === 'es')
-      ?? relation.relationType?.translations?.find((item: any) => item.locale === 'en')
-      ?? null;
+    const translation =
+      relation.relationType?.translations?.find((item) => item.locale === requestedLocale) ??
+      relation.relationType?.translations?.find((item) => item.locale === 'es') ??
+      relation.relationType?.translations?.find((item) => item.locale === 'en') ??
+      null;
 
-    return translation?.inverseLabel?.trim() ?? relation.relationType?.inverseLabel ?? this.relationLabel(this.relationKey(relation));
+    return (
+      translation?.inverseLabel?.trim() ??
+      relation.relationType?.inverseLabel ??
+      this.relationLabel(this.relationKey(relation))
+    );
   }
 
-  private isDirectedRelation(relation: { type?: string | null; relationType?: { key?: string | null; directed?: boolean | null } | null } | string): boolean {
-    if (typeof relation !== 'string' && relation.relationType?.directed !== null && relation.relationType?.directed !== undefined) {
+  private isDirectedRelation(
+    relation:
+      | {
+          type?: string | null;
+          relationType?: { key?: string | null; directed?: boolean | null } | null;
+        }
+      | string,
+  ): boolean {
+    if (
+      typeof relation !== 'string' &&
+      relation.relationType?.directed !== null &&
+      relation.relationType?.directed !== undefined
+    ) {
       return relation.relationType.directed;
     }
 
@@ -329,7 +511,10 @@ export class EntitiesService {
     return !['RELATED_TO', 'ASSOCIATED_WITH', 'SIMILAR_TO', 'CURATED_WITH'].includes(type);
   }
 
-  private serializeRelation<T extends { type?: string | null; relationType?: any; justification?: string | null; translations?: any[] | null }>(relation: T, locale?: string): T & {
+  private serializeRelation<T extends SerializedRelationRecord>(
+    relation: T,
+    locale?: string,
+  ): T & {
     relationTypeKey: string;
     relationTypeLabel: string;
     relationTypeInverseLabel: string;
@@ -346,13 +531,20 @@ export class EntitiesService {
       relationTypeLabel: this.relationDisplayLabel(relation, locale),
       relationTypeInverseLabel: this.relationInverseDisplayLabel(relation, locale),
       directed: this.isDirectedRelation(relation),
-      justification: this.translationField(relation, locale, 'justification') ?? relation.justification ?? null,
-      justificationEs: this.translationValueForLocale(relation, 'justification', 'es') ?? relation.justification ?? null,
+      justification:
+        this.translationField(relation, locale, 'justification') ?? relation.justification ?? null,
+      justificationEs:
+        this.translationValueForLocale(relation, 'justification', 'es') ??
+        relation.justification ??
+        null,
       justificationEn: this.translationValueForLocale(relation, 'justification', 'en'),
     };
   }
 
-  private serializeSource<T extends { title?: string | null; author?: string | null; publisher?: string | null; translations?: any[] | null }>(source: T | null | undefined, locale?: string) {
+  private serializeSource<T extends SerializedSourceRecord>(
+    source: T | null | undefined,
+    locale?: string,
+  ) {
     if (!source) {
       return source;
     }
@@ -366,12 +558,16 @@ export class EntitiesService {
       titleEn: this.translationValueForLocale(source, 'title', 'en'),
       authorEs: this.translationValueForLocale(source, 'author', 'es') ?? source.author ?? null,
       authorEn: this.translationValueForLocale(source, 'author', 'en'),
-      publisherEs: this.translationValueForLocale(source, 'publisher', 'es') ?? source.publisher ?? null,
+      publisherEs:
+        this.translationValueForLocale(source, 'publisher', 'es') ?? source.publisher ?? null,
       publisherEn: this.translationValueForLocale(source, 'publisher', 'en'),
     };
   }
 
-  private serializeSourceRef<T extends { quote?: string | null; note?: string | null; translations?: any[] | null }>(ref: T, locale?: string): T & {
+  private serializeSourceRef<T extends SerializedSourceRefRecord>(
+    ref: T,
+    locale?: string,
+  ): T & {
     quote: string | null;
     note: string | null;
     quoteEs: string | null;
@@ -381,7 +577,7 @@ export class EntitiesService {
   } {
     return {
       ...ref,
-      source: this.serializeSource((ref as any).source, locale),
+      source: this.serializeSource(ref.source, locale),
       quote: this.translationField(ref, locale, 'quote') ?? ref.quote ?? null,
       note: this.translationField(ref, locale, 'note') ?? ref.note ?? null,
       quoteEs: this.translationValueForLocale(ref, 'quote', 'es') ?? ref.quote ?? null,
@@ -450,15 +646,13 @@ export class EntitiesService {
       include: {
         media: true,
       },
-      orderBy: [
-        { isPrimary: 'desc' },
-        { sortOrder: 'asc' },
-        { id: 'asc' },
-      ],
+      orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }, { id: 'asc' }],
     });
 
     if (ingestedMedia?.derivedFromMediaId) {
-      const direct = candidates.find((candidate) => candidate.mediaId === ingestedMedia.derivedFromMediaId);
+      const direct = candidates.find(
+        (candidate) => candidate.mediaId === ingestedMedia.derivedFromMediaId,
+      );
       if (direct) {
         return direct;
       }
@@ -466,7 +660,9 @@ export class EntitiesService {
 
     const normalizedCanonical = this.normalizeUrlCandidate(canonicalUrl);
     if (!normalizedCanonical) {
-      throw new BadRequestException('El asset INGESTED no conserva referencia suficiente al asset externo');
+      throw new BadRequestException(
+        'El asset INGESTED no conserva referencia suficiente al asset externo',
+      );
     }
 
     const match = candidates.find((candidate) =>
@@ -480,7 +676,11 @@ export class EntitiesService {
     return match;
   }
 
-  private async findPromotedIngestedLinkForExternal(entityId: string, externalLinkId: string, externalMediaId: string) {
+  private async findPromotedIngestedLinkForExternal(
+    entityId: string,
+    externalLinkId: string,
+    externalMediaId: string,
+  ) {
     const candidates = await this.prisma.entityMedia.findMany({
       where: {
         entityId,
@@ -495,14 +695,14 @@ export class EntitiesService {
       include: {
         media: true,
       },
-      orderBy: [
-        { isPrimary: 'desc' },
-        { sortOrder: 'asc' },
-        { id: 'asc' },
-      ],
+      orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }, { id: 'asc' }],
     });
 
-    return candidates.find((candidate) => candidate.role !== MediaRole.GALLERY || candidate.isPrimary) ?? candidates[0] ?? null;
+    return (
+      candidates.find((candidate) => candidate.role !== MediaRole.GALLERY || candidate.isPrimary) ??
+      candidates[0] ??
+      null
+    );
   }
 
   private inferOriginalFilename(urlValue: string, fallbackExt: string): string {
@@ -553,7 +753,9 @@ export class EntitiesService {
     return Math.min(3, Math.max(1, Number(value)));
   }
 
-  private normalizeCropPreset(value: { x?: number | null; y?: number | null; zoom?: number | null } | null | undefined) {
+  private normalizeCropPreset(
+    value: { x?: number | null; y?: number | null; zoom?: number | null } | null | undefined,
+  ) {
     if (!value) {
       return null;
     }
@@ -569,17 +771,25 @@ export class EntitiesService {
     return { x, y, zoom };
   }
 
+  private normalizeCropPresetJson(
+    value: { x?: number | null; y?: number | null; zoom?: number | null } | null | undefined,
+  ): Prisma.InputJsonValue | typeof Prisma.JsonNull {
+    return this.normalizeCropPreset(value) ?? Prisma.JsonNull;
+  }
+
   private slotCropColumns(input: SlotCropInput) {
     return {
-      cropExplorer3d: this.normalizeCropPreset(input?.explorer3d),
-      cropList: this.normalizeCropPreset(input?.list),
-      cropDetail: this.normalizeCropPreset(input?.detail),
-      cropPreview: this.normalizeCropPreset(input?.preview),
+      cropExplorer3d: this.normalizeCropPresetJson(input?.explorer3d),
+      cropList: this.normalizeCropPresetJson(input?.list),
+      cropDetail: this.normalizeCropPresetJson(input?.detail),
+      cropPreview: this.normalizeCropPresetJson(input?.preview),
     };
   }
 
   private async clearOtherLegacyPrimaries(
-    tx: { entityMedia: { updateMany: (args: any) => Promise<unknown> } },
+    tx: {
+      entityMedia: { updateMany: (args: Prisma.EntityMediaUpdateManyArgs) => Promise<unknown> };
+    },
     entityId: string,
     activeLinkId: string,
   ) {
@@ -604,17 +814,14 @@ export class EntitiesService {
       select: {
         id: true,
       },
-      orderBy: [
-        { sortOrder: 'asc' },
-        { id: 'asc' },
-      ],
+      orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
     });
 
     if (activeLegacyLinks.length <= 1) {
       return;
     }
 
-    const [keep, ...extra] = activeLegacyLinks;
+    const extra = activeLegacyLinks.slice(1);
     await this.prisma.entityMedia.updateMany({
       where: {
         entityId,
@@ -637,7 +844,6 @@ export class EntitiesService {
   }
 
   private async listForVisibility(query: ListEntitiesQuery, options: { publicOnly: boolean }) {
-
     const page = Number(query.page ?? 1);
     const limit = Number(query.limit ?? 24);
 
@@ -660,18 +866,15 @@ export class EntitiesService {
     const tag = (query.tag ?? '').trim();
     const locale = normalizeLocale(query.locale);
 
-    const where: any = {};
-    const and: any[] = [];
+    const where: Prisma.EntityWhereInput = {};
+    const and: Prisma.EntityWhereInput[] = [];
 
     let deckEntityOrder: string[] = [];
 
     if (deck && deck !== 'undefined' && deck !== 'null') {
       const homeDeck = await this.prisma.homeDeck.findFirst({
         where: {
-          OR: [
-            { id: deck },
-            { slug: deck },
-          ],
+          OR: [{ id: deck }, { slug: deck }],
           ...(options.publicOnly ? { isActive: true } : {}),
         },
         include: {
@@ -683,10 +886,7 @@ export class EntitiesService {
                   },
                 }
               : undefined,
-            orderBy: [
-              { sortOrder: 'asc' },
-              { id: 'asc' },
-            ],
+            orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
             select: {
               entityId: true,
             },
@@ -720,10 +920,10 @@ export class EntitiesService {
     if (qValid) {
       and.push({
         OR: [
-        { title: { contains: q, mode: 'insensitive' } },
-        { summary: { contains: q, mode: 'insensitive' } },
-        { content: { contains: q, mode: 'insensitive' } },
-        { slug: { contains: q, mode: 'insensitive' } },
+          { title: { contains: q, mode: 'insensitive' } },
+          { summary: { contains: q, mode: 'insensitive' } },
+          { content: { contains: q, mode: 'insensitive' } },
+          { slug: { contains: q, mode: 'insensitive' } },
         ],
       });
     }
@@ -807,15 +1007,11 @@ export class EntitiesService {
 
     const useRelevance = sort === 'relevance' && !!qValid;
 
-    const orderBy =
-      sort === 'title'
-        ? { title: 'asc' as const }
-        : { createdAt: 'desc' as const };
+    const orderBy = sort === 'title' ? { title: 'asc' as const } : { createdAt: 'desc' as const };
 
     const useCuratedOrder = deckEntityOrder.length > 0 && sort !== 'title' && !useRelevance;
 
     if (!useRelevance) {
-
       const items = await this.prisma.entity.findMany({
         where,
         skip: useCuratedOrder ? undefined : skip,
@@ -829,10 +1025,7 @@ export class EntitiesService {
           },
           mediaLinks: {
             include: { media: true },
-            orderBy: [
-              { sortOrder: 'asc' },
-              { id: 'asc' },
-            ],
+            orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
           },
         },
       });
@@ -866,18 +1059,18 @@ export class EntitiesService {
         },
         mediaLinks: {
           include: { media: true },
-          orderBy: [
-            { sortOrder: 'asc' },
-            { id: 'asc' },
-          ],
+          orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
         },
       },
     });
 
     const needle = q.toLowerCase();
 
-    const score = (e: any) => {
-
+    const score = (e: {
+      title?: string | null;
+      summary?: string | null;
+      content?: string | null;
+    }) => {
       const t = (e.title ?? '').toLowerCase();
       const s = (e.summary ?? '').toLowerCase();
       const c = (e.content ?? '').toLowerCase();
@@ -897,13 +1090,9 @@ export class EntitiesService {
     const ranked = raw
       .map((e) => ({ e, sc: score(e) }))
       .sort((a, b) => {
-
         if (b.sc !== a.sc) return b.sc - a.sc;
 
-        return (
-          new Date(b.e.createdAt).getTime() -
-          new Date(a.e.createdAt).getTime()
-        );
+        return new Date(b.e.createdAt).getTime() - new Date(a.e.createdAt).getTime();
       })
       .map((x) => x.e);
 
@@ -941,11 +1130,7 @@ export class EntitiesService {
     });
 
     return Array.from(
-      new Set(
-        rows
-          .map((row) => row.location?.trim())
-          .filter((value): value is string => !!value),
-      ),
+      new Set(rows.map((row) => row.location?.trim()).filter((value): value is string => !!value)),
     ).sort((a, b) => a.localeCompare(b, 'es'));
   }
 
@@ -970,16 +1155,11 @@ export class EntitiesService {
     });
 
     return Array.from(
-      new Set(
-        rows
-          .map((row) => row.country?.trim())
-          .filter((value): value is string => !!value),
-      ),
+      new Set(rows.map((row) => row.country?.trim()).filter((value): value is string => !!value)),
     ).sort((a, b) => a.localeCompare(b, 'es'));
   }
 
   async home(locale?: string) {
-
     const results = await Promise.all(
       this.HOME_TYPES.map((type) =>
         this.prisma.entity.findFirst({
@@ -996,21 +1176,19 @@ export class EntitiesService {
             },
             mediaLinks: {
               include: { media: true },
-              orderBy: [
-                { sortOrder: 'asc' },
-                { id: 'asc' },
-              ],
+              orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
             },
           },
         }),
       ),
     );
 
-    return results.filter(Boolean).map((entity) => this.resolveLocalizedEntity(entity!, locale));
+    return results.flatMap((entity) =>
+      entity ? [this.resolveLocalizedEntity(entity, locale)] : [],
+    );
   }
 
   async getBySlug(slug: string, locale?: string) {
-
     const entity = await this.prisma.entity.findFirst({
       where: {
         slug,
@@ -1028,13 +1206,15 @@ export class EntitiesService {
         },
         mediaLinks: {
           include: { media: true },
-          orderBy: [
-            { sortOrder: 'asc' },
-            { id: 'asc' },
-          ],
+          orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
         },
         contributors: true,
-        sourceRefs: { include: { source: { include: { translations: this.localizedInclude(locale) } }, translations: this.localizedInclude(locale) } },
+        sourceRefs: {
+          include: {
+            source: { include: { translations: this.localizedInclude(locale) } },
+            translations: this.localizedInclude(locale),
+          },
+        },
         outgoing: {
           where: {
             to: {
@@ -1049,10 +1229,7 @@ export class EntitiesService {
                 translations: this.localizedInclude(locale),
                 mediaLinks: {
                   include: { media: true },
-                  orderBy: [
-                    { sortOrder: 'asc' },
-                    { id: 'asc' },
-                  ],
+                  orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
                 },
               },
             },
@@ -1072,10 +1249,7 @@ export class EntitiesService {
                 translations: this.localizedInclude(locale),
                 mediaLinks: {
                   include: { media: true },
-                  orderBy: [
-                    { sortOrder: 'asc' },
-                    { id: 'asc' },
-                  ],
+                  orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
                 },
               },
             },
@@ -1086,16 +1260,22 @@ export class EntitiesService {
 
     if (!entity) throw new NotFoundException('Entity not found');
 
+    const detailedEntity = entity as AdminEntityDetailRecord;
+
     return {
-      ...this.resolveLocalizedEntityWithDetails(entity, locale),
-      sourceRefs: (entity.sourceRefs ?? []).map((ref: any) => this.serializeSourceRef(ref, locale)),
-      outgoing: (entity.outgoing ?? []).map((relation: any) => ({
+      ...this.resolveLocalizedEntityWithDetails(detailedEntity, locale),
+      sourceRefs: (detailedEntity.sourceRefs ?? []).map((ref) =>
+        this.serializeSourceRef(ref, locale),
+      ),
+      outgoing: (detailedEntity.outgoing ?? []).map((relation) => ({
         ...this.serializeRelation(relation, locale),
         to: relation.to ? this.resolveLocalizedEntityWithDetails(relation.to, locale) : relation.to,
       })),
-      incoming: (entity.incoming ?? []).map((relation: any) => ({
+      incoming: (detailedEntity.incoming ?? []).map((relation) => ({
         ...this.serializeRelation(relation, locale),
-        from: relation.from ? this.resolveLocalizedEntityWithDetails(relation.from, locale) : relation.from,
+        from: relation.from
+          ? this.resolveLocalizedEntityWithDetails(relation.from, locale)
+          : relation.from,
       })),
     };
   }
@@ -1151,9 +1331,7 @@ export class EntitiesService {
     });
 
     const relatedNodeIds = Array.from(
-      new Set(
-        relations.flatMap((relation) => [relation.fromId, relation.toId]),
-      ),
+      new Set(relations.flatMap((relation) => [relation.fromId, relation.toId])),
     ).filter((id) => id !== center.id);
 
     const relatedNodes = relatedNodeIds.length
@@ -1167,7 +1345,7 @@ export class EntitiesService {
       : [];
 
     const nodesMap = new Map<string, GraphNodePayload>();
-    const entityMap = new Map<string, any>([
+    const entityMap = new Map<string, GraphEntityNodeRecord>([
       [center.id, center],
       ...relatedNodes.map((node) => [node.id, node] as const),
     ]);
@@ -1218,10 +1396,7 @@ export class EntitiesService {
 
   async adminWorkspaceGraph(locale?: string) {
     const entities = await this.prisma.entity.findMany({
-      orderBy: [
-        { updatedAt: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }],
       select: {
         id: true,
         title: true,
@@ -1265,7 +1440,15 @@ export class EntitiesService {
       : [];
 
     const entityTypes = Array.from(
-      new Set(entities.map((entity) => String(entity.type ?? 'ENTITY').trim().toUpperCase()).filter(Boolean)),
+      new Set(
+        entities
+          .map((entity) =>
+            String(entity.type ?? 'ENTITY')
+              .trim()
+              .toUpperCase(),
+          )
+          .filter(Boolean),
+      ),
     ).sort();
 
     const nodes: GraphNodePayload[] = [
@@ -1312,7 +1495,10 @@ export class EntitiesService {
     }
 
     for (const entity of entities) {
-      const type = String(entity.type ?? 'ENTITY').trim().toUpperCase() || 'ENTITY';
+      const type =
+        String(entity.type ?? 'ENTITY')
+          .trim()
+          .toUpperCase() || 'ENTITY';
       edgesMap.set(`workspace-hub-${entity.id}`, {
         id: `workspace-hub-${entity.id}`,
         source: `workspace-type-${type}`,
@@ -1338,7 +1524,10 @@ export class EntitiesService {
         label: this.relationDisplayLabel(relation, locale),
         directed: this.isDirectedRelation(relation),
         weight: relation.weight ?? 1,
-        justification: this.translationField(relation, locale, 'justification') ?? relation.justification ?? null,
+        justification:
+          this.translationField(relation, locale, 'justification') ??
+          relation.justification ??
+          null,
       });
     }
 
@@ -1374,7 +1563,11 @@ export class EntitiesService {
     };
   }
 
-  private async findPreviewEntityBySlug(slug: string, locale: string | undefined, publishedOnly: boolean) {
+  private async findPreviewEntityBySlug(
+    slug: string,
+    locale: string | undefined,
+    publishedOnly: boolean,
+  ) {
     const e = await this.prisma.entity.findFirst({
       where: {
         slug,
@@ -1400,10 +1593,7 @@ export class EntitiesService {
           orderBy: [{ tag: { label: 'asc' } }],
         },
         mediaLinks: {
-          orderBy: [
-            { sortOrder: 'asc' },
-            { id: 'asc' },
-          ],
+          orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
           select: {
             id: true,
             role: true,
@@ -1453,7 +1643,6 @@ export class EntitiesService {
   }
 
   async adminCreate(dto: CreateEntityDto) {
-
     const existing = await this.prisma.entity.findUnique({
       where: { slug: dto.slug },
       select: { id: true },
@@ -1492,7 +1681,6 @@ export class EntitiesService {
   }
 
   async adminUpdate(id: string, dto: UpdateEntityDto) {
-
     const existing = await this.prisma.entity.findUnique({
       where: { id },
       select: { id: true },
@@ -1503,7 +1691,6 @@ export class EntitiesService {
     }
 
     if (dto.slug) {
-
       const slugOwner = await this.prisma.entity.findUnique({
         where: { slug: dto.slug },
         select: { id: true },
@@ -1555,7 +1742,6 @@ export class EntitiesService {
   }
 
   async adminDelete(id: string) {
-
     const existing = await this.prisma.entity.findUnique({
       where: { id },
       select: { id: true },
@@ -1570,15 +1756,14 @@ export class EntitiesService {
       select: { sourceId: true },
     });
 
-    const orphanCandidateSourceIds = [...new Set(sourceRefs.map((ref) => ref.sourceId).filter(Boolean))];
+    const orphanCandidateSourceIds = [
+      ...new Set(sourceRefs.map((ref) => ref.sourceId).filter(Boolean)),
+    ];
 
     await this.prisma.$transaction(async (tx) => {
       await tx.relation.deleteMany({
         where: {
-          OR: [
-            { fromId: id },
-            { toId: id },
-          ],
+          OR: [{ fromId: id }, { toId: id }],
         },
       });
 
@@ -1587,7 +1772,7 @@ export class EntitiesService {
       await tx.contributor.deleteMany({ where: { entityId: id } });
       await tx.curatorNote.deleteMany({ where: { entityId: id } });
       await tx.entityTag.deleteMany({ where: { entityId: id } });
-      await (tx as any).entityAlias.deleteMany({ where: { entityId: id } });
+      await tx.entityAlias.deleteMany({ where: { entityId: id } });
       await tx.homeDeckItem.deleteMany({ where: { entityId: id } });
       await tx.collectionEntity.deleteMany({ where: { entityId: id } });
       await tx.savedEntity.deleteMany({ where: { entityId: id } });
@@ -1684,7 +1869,12 @@ export class EntitiesService {
     }
   }
 
-  private async upsertTranslatedDetails(id: string, entityType: string, locale: string, dto: UpdateEntityDetailsDto) {
+  private async upsertTranslatedDetails(
+    id: string,
+    entityType: string,
+    locale: string,
+    dto: UpdateEntityDetailsDto,
+  ) {
     switch (entityType) {
       case 'ARTWORK':
         await this.prisma.artworkDetailsTranslation.upsert({
@@ -1751,9 +1941,16 @@ export class EntitiesService {
     }
   }
 
-  private async upsertRelationTranslations(relationId: string, dto: { justification?: string; justificationEs?: string; justificationEn?: string }) {
-    const justificationEs = dto.justificationEs !== undefined ? (dto.justificationEs?.trim() || null) : (dto.justification?.trim() || null);
-    const justificationEn = dto.justificationEn !== undefined ? (dto.justificationEn?.trim() || null) : null;
+  private async upsertRelationTranslations(
+    relationId: string,
+    dto: { justification?: string; justificationEs?: string; justificationEn?: string },
+  ) {
+    const justificationEs =
+      dto.justificationEs !== undefined
+        ? dto.justificationEs?.trim() || null
+        : dto.justification?.trim() || null;
+    const justificationEn =
+      dto.justificationEn !== undefined ? dto.justificationEn?.trim() || null : null;
 
     await this.prisma.relationTranslation.upsert({
       where: { relationId_locale: { relationId, locale: 'es' } },
@@ -1768,32 +1965,78 @@ export class EntitiesService {
     });
   }
 
-  private async upsertSourceTranslations(sourceId: string, dto: { sourceTitle: string; sourceTitleEs?: string; sourceTitleEn?: string; sourceAuthor?: string; sourceAuthorEs?: string; sourceAuthorEn?: string; sourcePublisher?: string; sourcePublisherEs?: string; sourcePublisherEn?: string }) {
-    const titleEs = dto.sourceTitleEs !== undefined ? (dto.sourceTitleEs?.trim() || null) : (dto.sourceTitle?.trim() || null);
-    const titleEn = dto.sourceTitleEn !== undefined ? (dto.sourceTitleEn?.trim() || null) : null;
-    const authorEs = dto.sourceAuthorEs !== undefined ? (dto.sourceAuthorEs?.trim() || null) : (dto.sourceAuthor?.trim() || null);
-    const authorEn = dto.sourceAuthorEn !== undefined ? (dto.sourceAuthorEn?.trim() || null) : null;
-    const publisherEs = dto.sourcePublisherEs !== undefined ? (dto.sourcePublisherEs?.trim() || null) : (dto.sourcePublisher?.trim() || null);
-    const publisherEn = dto.sourcePublisherEn !== undefined ? (dto.sourcePublisherEn?.trim() || null) : null;
+  private async upsertSourceTranslations(
+    sourceId: string,
+    dto: {
+      sourceTitle?: string;
+      sourceTitleEs?: string;
+      sourceTitleEn?: string;
+      sourceAuthor?: string;
+      sourceAuthorEs?: string;
+      sourceAuthorEn?: string;
+      sourcePublisher?: string;
+      sourcePublisherEs?: string;
+      sourcePublisherEn?: string;
+    },
+  ) {
+    const titleEs =
+      dto.sourceTitleEs !== undefined
+        ? dto.sourceTitleEs?.trim() || null
+        : dto.sourceTitle?.trim() || null;
+    const titleEn = dto.sourceTitleEn !== undefined ? dto.sourceTitleEn?.trim() || null : null;
+    const authorEs =
+      dto.sourceAuthorEs !== undefined
+        ? dto.sourceAuthorEs?.trim() || null
+        : dto.sourceAuthor?.trim() || null;
+    const authorEn = dto.sourceAuthorEn !== undefined ? dto.sourceAuthorEn?.trim() || null : null;
+    const publisherEs =
+      dto.sourcePublisherEs !== undefined
+        ? dto.sourcePublisherEs?.trim() || null
+        : dto.sourcePublisher?.trim() || null;
+    const publisherEn =
+      dto.sourcePublisherEn !== undefined ? dto.sourcePublisherEn?.trim() || null : null;
 
     await this.prisma.sourceTranslation.upsert({
       where: { sourceId_locale: { sourceId, locale: 'es' } },
       update: { title: titleEs ?? '', author: authorEs, publisher: publisherEs },
-      create: { sourceId, locale: 'es', title: titleEs ?? '', author: authorEs, publisher: publisherEs },
+      create: {
+        sourceId,
+        locale: 'es',
+        title: titleEs ?? '',
+        author: authorEs,
+        publisher: publisherEs,
+      },
     });
 
     await this.prisma.sourceTranslation.upsert({
       where: { sourceId_locale: { sourceId, locale: 'en' } },
-      update: { title: titleEn ?? (titleEs ?? ''), author: authorEn, publisher: publisherEn },
-      create: { sourceId, locale: 'en', title: titleEn ?? (titleEs ?? ''), author: authorEn, publisher: publisherEn },
+      update: { title: titleEn ?? titleEs ?? '', author: authorEn, publisher: publisherEn },
+      create: {
+        sourceId,
+        locale: 'en',
+        title: titleEn ?? titleEs ?? '',
+        author: authorEn,
+        publisher: publisherEn,
+      },
     });
   }
 
-  private async upsertSourceRefTranslations(sourceRefId: string, dto: { quote?: string; quoteEs?: string; quoteEn?: string; note?: string; noteEs?: string; noteEn?: string }) {
-    const quoteEs = dto.quoteEs !== undefined ? (dto.quoteEs?.trim() || null) : (dto.quote?.trim() || null);
-    const quoteEn = dto.quoteEn !== undefined ? (dto.quoteEn?.trim() || null) : null;
-    const noteEs = dto.noteEs !== undefined ? (dto.noteEs?.trim() || null) : (dto.note?.trim() || null);
-    const noteEn = dto.noteEn !== undefined ? (dto.noteEn?.trim() || null) : null;
+  private async upsertSourceRefTranslations(
+    sourceRefId: string,
+    dto: {
+      quote?: string;
+      quoteEs?: string;
+      quoteEn?: string;
+      note?: string;
+      noteEs?: string;
+      noteEn?: string;
+    },
+  ) {
+    const quoteEs =
+      dto.quoteEs !== undefined ? dto.quoteEs?.trim() || null : dto.quote?.trim() || null;
+    const quoteEn = dto.quoteEn !== undefined ? dto.quoteEn?.trim() || null : null;
+    const noteEs = dto.noteEs !== undefined ? dto.noteEs?.trim() || null : dto.note?.trim() || null;
+    const noteEn = dto.noteEn !== undefined ? dto.noteEn?.trim() || null : null;
 
     await this.prisma.sourceRefTranslation.upsert({
       where: { sourceRefId_locale: { sourceRefId, locale: 'es' } },
@@ -1811,16 +2054,12 @@ export class EntitiesService {
   async adminGetById(id: string) {
     await this.normalizeEntityLegacyPrimary(id);
 
-    const entity = await (this.prisma as any).entity.findUnique({
+    const entity = await this.prisma.entity.findUnique({
       where: { id },
       include: {
         translations: { orderBy: { locale: 'asc' } },
         aliases: {
-          orderBy: [
-            { locale: 'asc' },
-            { kind: 'asc' },
-            { value: 'asc' },
-          ],
+          orderBy: [{ locale: 'asc' }, { kind: 'asc' }, { value: 'asc' }],
         },
         artwork: { include: { translations: { orderBy: { locale: 'asc' } } } },
         artist: { include: { translations: { orderBy: { locale: 'asc' } } } },
@@ -1834,22 +2073,17 @@ export class EntitiesService {
           include: {
             media: true,
           },
-          orderBy: [
-            { sortOrder: 'asc' },
-            { id: 'asc' },
-          ],
+          orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
         },
         contributors: {
-          orderBy: [
-            { role: 'asc' },
-            { id: 'asc' },
-          ],
+          orderBy: [{ role: 'asc' }, { id: 'asc' }],
         },
         sourceRefs: {
-          include: { source: { include: { translations: { orderBy: { locale: 'asc' } } } }, translations: { orderBy: { locale: 'asc' } } },
-          orderBy: [
-            { id: 'asc' },
-          ],
+          include: {
+            source: { include: { translations: { orderBy: { locale: 'asc' } } } },
+            translations: { orderBy: { locale: 'asc' } },
+          },
+          orderBy: [{ id: 'asc' }],
         },
         outgoing: {
           include: {
@@ -1865,10 +2099,7 @@ export class EntitiesService {
               },
             },
           },
-          orderBy: [
-            { type: 'asc' },
-            { id: 'asc' },
-          ],
+          orderBy: [{ type: 'asc' }, { id: 'asc' }],
         },
         incoming: {
           include: {
@@ -1884,13 +2115,10 @@ export class EntitiesService {
               },
             },
           },
-          orderBy: [
-            { type: 'asc' },
-            { id: 'asc' },
-          ],
+          orderBy: [{ type: 'asc' }, { id: 'asc' }],
         },
       },
-    }) as any;
+    });
 
     if (!entity) {
       throw new NotFoundException('Entity not found');
@@ -1900,11 +2128,11 @@ export class EntitiesService {
 
     return {
       ...entity,
-      outgoing: (entity.outgoing ?? []).map((relation: any) => this.serializeRelation(relation)),
-      incoming: (entity.incoming ?? []).map((relation: any) => this.serializeRelation(relation)),
+      outgoing: (entity.outgoing ?? []).map((relation) => this.serializeRelation(relation)),
+      incoming: (entity.incoming ?? []).map((relation) => this.serializeRelation(relation)),
       resolvedMedia: resolvedEntity.resolvedMedia,
       mediaLibrary: buildAdminMediaLibrary(entity),
-      translationStatus: translationStatusSummary((entity as any).translations),
+      translationStatus: translationStatusSummary(entity.translations),
     };
   }
 
@@ -1987,7 +2215,7 @@ export class EntitiesService {
     }
 
     try {
-      await (this.prisma as any).entityAlias.create({
+      await this.prisma.entityAlias.create({
         data: {
           entityId: id,
           locale: this.normalizeAliasLocale(dto.locale),
@@ -1997,8 +2225,9 @@ export class EntitiesService {
           source: dto.source?.trim() || null,
         },
       });
-    } catch (error: any) {
-      if (error?.code === 'P2002') {
+    } catch (error) {
+      const knownError = error as PrismaKnownError;
+      if (knownError.code === 'P2002') {
         throw new ConflictException('Alias already exists for this entity');
       }
 
@@ -2009,7 +2238,7 @@ export class EntitiesService {
   }
 
   async adminUpdateAlias(entityId: string, aliasId: string, dto: UpdateEntityAliasDto) {
-    const alias = await (this.prisma as any).entityAlias.findUnique({
+    const alias = await this.prisma.entityAlias.findUnique({
       where: { id: aliasId },
       select: { id: true, entityId: true, value: true, locale: true, kind: true },
     });
@@ -2024,18 +2253,19 @@ export class EntitiesService {
     }
 
     try {
-      await (this.prisma as any).entityAlias.update({
+      await this.prisma.entityAlias.update({
         where: { id: aliasId },
         data: {
           value: nextValue,
           locale: dto.locale !== undefined ? this.normalizeAliasLocale(dto.locale) : alias.locale,
           kind: dto.kind ?? alias.kind,
-          weight: dto.weight !== undefined ? dto.weight ?? null : undefined,
+          weight: dto.weight !== undefined ? (dto.weight ?? null) : undefined,
           source: dto.source !== undefined ? dto.source?.trim() || null : undefined,
         },
       });
-    } catch (error: any) {
-      if (error?.code === 'P2002') {
+    } catch (error) {
+      const knownError = error as PrismaKnownError;
+      if (knownError.code === 'P2002') {
         throw new ConflictException('Alias already exists for this entity');
       }
 
@@ -2046,7 +2276,7 @@ export class EntitiesService {
   }
 
   async adminDeleteAlias(entityId: string, aliasId: string) {
-    const alias = await (this.prisma as any).entityAlias.findUnique({
+    const alias = await this.prisma.entityAlias.findUnique({
       where: { id: aliasId },
       select: { id: true, entityId: true },
     });
@@ -2055,7 +2285,7 @@ export class EntitiesService {
       throw new NotFoundException('Alias not found');
     }
 
-    await (this.prisma as any).entityAlias.delete({
+    await this.prisma.entityAlias.delete({
       where: { id: aliasId },
     });
 
@@ -2077,7 +2307,6 @@ export class EntitiesService {
   }
 
   async adminCreateMedia(entityId: string, dto: CreateEntityMediaDto) {
-
     const entity = await this.prisma.entity.findUnique({
       where: { id: entityId },
       select: { id: true },
@@ -2100,7 +2329,7 @@ export class EntitiesService {
           license: dto.license?.trim() || undefined,
           focalX: this.normalizePercent(dto.assetFocalX) ?? undefined,
           focalY: this.normalizePercent(dto.assetFocalY) ?? undefined,
-        } as any,
+        } satisfies Prisma.MediaCreateInput,
       });
 
       const createdLink = await tx.entityMedia.create({
@@ -2114,22 +2343,25 @@ export class EntitiesService {
           focalX: dto.focalX ?? null,
           focalY: dto.focalY ?? null,
           ...this.slotCropColumns(dto.slotCrops),
-        } as any,
+        } satisfies Prisma.EntityMediaUncheckedCreateInput,
         include: {
           media: true,
         },
       });
 
       if (dto.isPrimary) {
-        await this.clearOtherLegacyPrimaries(tx as any, entityId, createdLink.id);
+        await this.clearOtherLegacyPrimaries(tx, entityId, createdLink.id);
       }
 
       return createdLink;
     });
   }
 
-  async adminUploadMedia(entityId: string, file: UploadedImageFile | undefined, dto: UploadEntityMediaDto) {
-
+  async adminUploadMedia(
+    entityId: string,
+    file: UploadedImageFile | undefined,
+    dto: UploadEntityMediaDto,
+  ) {
     const entity = await this.prisma.entity.findUnique({
       where: { id: entityId },
       select: { id: true },
@@ -2172,7 +2404,7 @@ export class EntitiesService {
           license: dto.license?.trim() || undefined,
           focalX: this.normalizePercent(dto.assetFocalX) ?? undefined,
           focalY: this.normalizePercent(dto.assetFocalY) ?? undefined,
-        } as any,
+        } satisfies Prisma.MediaCreateInput,
       });
 
       const createdLink = await tx.entityMedia.create({
@@ -2186,14 +2418,14 @@ export class EntitiesService {
           focalX: dto.focalX ?? null,
           focalY: dto.focalY ?? null,
           ...this.slotCropColumns(dto.slotCrops),
-        } as any,
+        } satisfies Prisma.EntityMediaUncheckedCreateInput,
         include: {
           media: true,
         },
       });
 
       if (dto.isPrimary) {
-        await this.clearOtherLegacyPrimaries(tx as any, entityId, createdLink.id);
+        await this.clearOtherLegacyPrimaries(tx, entityId, createdLink.id);
       }
 
       return createdLink;
@@ -2230,11 +2462,7 @@ export class EntitiesService {
       include: {
         media: true,
       },
-      orderBy: [
-        { isPrimary: 'desc' },
-        { sortOrder: 'asc' },
-        { id: 'asc' },
-      ],
+      orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }, { id: 'asc' }],
     });
 
     if (existingDerived) {
@@ -2274,7 +2502,9 @@ export class EntitiesService {
     }
 
     if (buffer.length > MAX_INGEST_SIZE_BYTES) {
-      throw new BadRequestException('La media externa supera el tamaño máximo permitido para ingestión');
+      throw new BadRequestException(
+        'La media externa supera el tamaño máximo permitido para ingestión',
+      );
     }
 
     const detectedDimensions = detectImageDimensionsFromBuffer(buffer, mimeType);
@@ -2304,10 +2534,11 @@ export class EntitiesService {
       });
 
       const publicUrl = this.buildPublicUploadUrl(storageKey);
-      const sourceReference = link.media.canonicalUrl?.trim()
-        || link.media.displayUrl?.trim()
-        || link.media.url?.trim()
-        || sourceUrl;
+      const sourceReference =
+        link.media.canonicalUrl?.trim() ||
+        link.media.displayUrl?.trim() ||
+        link.media.url?.trim() ||
+        sourceUrl;
 
       const created = await this.prisma.$transaction(async (tx) => {
         const media = await tx.media.create({
@@ -2419,7 +2650,7 @@ export class EntitiesService {
       });
 
       if (sourceExternalLink.isPrimary) {
-        await this.clearOtherLegacyPrimaries(tx as any, entityId, linkId);
+        await this.clearOtherLegacyPrimaries(tx, entityId, linkId);
       }
 
       return tx.entityMedia.findUniqueOrThrow({
@@ -2469,7 +2700,9 @@ export class EntitiesService {
     );
 
     if (!promotedIngestedLink) {
-      throw new BadRequestException('No hay un asset INGESTED promovido que restaurar para este externo');
+      throw new BadRequestException(
+        'No hay un asset INGESTED promovido que restaurar para este externo',
+      );
     }
 
     const galleryMax = await this.prisma.entityMedia.aggregate({
@@ -2499,7 +2732,7 @@ export class EntitiesService {
       });
 
       if (promotedIngestedLink.isPrimary) {
-        await this.clearOtherLegacyPrimaries(tx as any, entityId, linkId);
+        await this.clearOtherLegacyPrimaries(tx, entityId, linkId);
       }
 
       await tx.entityMedia.update({
@@ -2533,7 +2766,6 @@ export class EntitiesService {
   }
 
   async adminUpdateMedia(entityId: string, linkId: string, dto: UpdateEntityMediaDto) {
-
     const link = await this.prisma.entityMedia.findFirst({
       where: {
         id: linkId,
@@ -2549,23 +2781,25 @@ export class EntitiesService {
     }
 
     if (
-      link.media.originType !== MediaOriginType.EXTERNAL_URL
-      && (
-        (dto.url !== undefined && dto.url.trim() !== link.media.url)
-        || (dto.displayUrl !== undefined && (dto.displayUrl?.trim() || null) !== (link.media.displayUrl ?? null))
-      )
+      link.media.originType !== MediaOriginType.EXTERNAL_URL &&
+      ((dto.url !== undefined && dto.url.trim() !== link.media.url) ||
+        (dto.displayUrl !== undefined &&
+          (dto.displayUrl?.trim() || null) !== (link.media.displayUrl ?? null)))
     ) {
-      throw new BadRequestException('No se puede editar manualmente URL o display URL en assets locales');
+      throw new BadRequestException(
+        'No se puede editar manualmente URL o display URL en assets locales',
+      );
     }
 
     const mediaData = {
       url: dto.url?.trim(),
-      displayUrl: dto.displayUrl !== undefined ? (dto.displayUrl?.trim() || null) : undefined,
-      sourcePageUrl: dto.sourcePageUrl !== undefined ? (dto.sourcePageUrl?.trim() || null) : undefined,
-      alt: dto.alt !== undefined ? (dto.alt?.trim() || null) : undefined,
-      source: dto.source !== undefined ? (dto.source?.trim() || null) : undefined,
-      photoBy: dto.photoBy !== undefined ? (dto.photoBy?.trim() || null) : undefined,
-      license: dto.license !== undefined ? (dto.license?.trim() || null) : undefined,
+      displayUrl: dto.displayUrl !== undefined ? dto.displayUrl?.trim() || null : undefined,
+      sourcePageUrl:
+        dto.sourcePageUrl !== undefined ? dto.sourcePageUrl?.trim() || null : undefined,
+      alt: dto.alt !== undefined ? dto.alt?.trim() || null : undefined,
+      source: dto.source !== undefined ? dto.source?.trim() || null : undefined,
+      photoBy: dto.photoBy !== undefined ? dto.photoBy?.trim() || null : undefined,
+      license: dto.license !== undefined ? dto.license?.trim() || null : undefined,
       focalX: dto.assetFocalX === undefined ? undefined : this.normalizePercent(dto.assetFocalX),
       focalY: dto.assetFocalY === undefined ? undefined : this.normalizePercent(dto.assetFocalY),
     };
@@ -2574,11 +2808,9 @@ export class EntitiesService {
       role: dto.role,
       sortOrder: dto.sortOrder,
       isPrimary: dto.isPrimary,
-      displayMode: dto.displayMode === undefined
-        ? undefined
-        : dto.displayMode ?? null,
-      focalX: dto.focalX === undefined ? undefined : dto.focalX ?? null,
-      focalY: dto.focalY === undefined ? undefined : dto.focalY ?? null,
+      displayMode: dto.displayMode === undefined ? undefined : (dto.displayMode ?? null),
+      focalX: dto.focalX === undefined ? undefined : (dto.focalX ?? null),
+      focalY: dto.focalY === undefined ? undefined : (dto.focalY ?? null),
       ...(dto.slotCrops === undefined ? {} : this.slotCropColumns(dto.slotCrops)),
     };
 
@@ -2593,11 +2825,11 @@ export class EntitiesService {
       if (Object.values(linkData).some((value) => value !== undefined)) {
         await tx.entityMedia.update({
           where: { id: linkId },
-          data: linkData as any,
+          data: linkData satisfies Prisma.EntityMediaUpdateInput,
         });
 
         if (dto.isPrimary === true) {
-          await this.clearOtherLegacyPrimaries(tx as any, entityId, linkId);
+          await this.clearOtherLegacyPrimaries(tx, entityId, linkId);
         }
       }
     });
@@ -2611,7 +2843,6 @@ export class EntitiesService {
   }
 
   async adminDeleteMedia(entityId: string, linkId: string) {
-
     const link = await this.prisma.entityMedia.findFirst({
       where: {
         id: linkId,
@@ -2632,7 +2863,6 @@ export class EntitiesService {
   }
 
   async adminListRelations(entityId: string) {
-
     const entity = await this.prisma.entity.findUnique({
       where: { id: entityId },
       select: { id: true },
@@ -2662,8 +2892,7 @@ export class EntitiesService {
     return rows.map((relation) => this.serializeRelation(relation, 'es'));
   }
 
-  async adminCreateRelation(entityId: string, dto: any) {
-
+  async adminCreateRelation(entityId: string, dto: RelationMutationDto) {
     const from = await this.prisma.entity.findUnique({
       where: { id: entityId },
       select: { id: true },
@@ -2671,6 +2900,10 @@ export class EntitiesService {
 
     if (!from) {
       throw new NotFoundException('Origin entity not found');
+    }
+
+    if (!dto.toId) {
+      throw new BadRequestException('Target entity is required');
     }
 
     const to = await this.prisma.entity.findUnique({
@@ -2682,14 +2915,16 @@ export class EntitiesService {
       throw new NotFoundException('Target entity not found');
     }
 
+    const toId = dto.toId;
+
     const relationType = dto.relationTypeId
       ? await this.prisma.relationType.findUnique({
-        where: { id: dto.relationTypeId },
-      })
+          where: { id: dto.relationTypeId },
+        })
       : dto.type
         ? await this.prisma.relationType.findUnique({
-          where: { key: dto.type.trim() },
-        })
+            where: { key: dto.type.trim() },
+          })
         : null;
 
     const type = relationType?.key ?? dto.type?.trim();
@@ -2700,7 +2935,7 @@ export class EntitiesService {
     const relation = await this.prisma.relation.create({
       data: {
         fromId: entityId,
-        toId: dto.toId,
+        toId,
         type,
         relationTypeId: relationType?.id,
         justification: dto.justificationEs?.trim() || dto.justification?.trim() || undefined,
@@ -2734,7 +2969,7 @@ export class EntitiesService {
     return this.serializeRelation(persisted, 'es');
   }
 
-  async adminUpdateRelation(entityId: string, relationId: string, dto: any) {
+  async adminUpdateRelation(entityId: string, relationId: string, dto: RelationMutationDto) {
     const existing = await this.prisma.relation.findFirst({
       where: { id: relationId, fromId: entityId },
       include: { relationType: true },
@@ -2750,14 +2985,15 @@ export class EntitiesService {
         ? await this.prisma.relationType.findUnique({ where: { key: dto.type.trim() } })
         : existing.relationType;
 
-    const persisted = await this.prisma.relation.update({
+    await this.prisma.relation.update({
       where: { id: relationId },
       data: {
         type: relationType?.key ?? dto.type?.trim() ?? existing.type,
         relationTypeId: relationType?.id ?? existing.relationTypeId ?? undefined,
-        justification: dto.justificationEs !== undefined || dto.justification !== undefined
-          ? (dto.justificationEs?.trim() || dto.justification?.trim() || null)
-          : undefined,
+        justification:
+          dto.justificationEs !== undefined || dto.justification !== undefined
+            ? dto.justificationEs?.trim() || dto.justification?.trim() || null
+            : undefined,
         weight: dto.weight !== undefined ? dto.weight : undefined,
       },
       include: {
@@ -2782,7 +3018,6 @@ export class EntitiesService {
   }
 
   async adminDeleteRelation(entityId: string, relationId: string) {
-
     const relation = await this.prisma.relation.findFirst({
       where: {
         id: relationId,
@@ -2803,7 +3038,6 @@ export class EntitiesService {
   }
 
   async adminListIncomingRelations(entityId: string) {
-
     const entity = await this.prisma.entity.findUnique({
       where: { id: entityId },
       select: { id: true },
@@ -2946,7 +3180,10 @@ export class EntitiesService {
 
     const persisted = await this.prisma.sourceRef.findUniqueOrThrow({
       where: { id: ref.id },
-      include: { source: { include: { translations: { orderBy: { locale: 'asc' } } } }, translations: { orderBy: { locale: 'asc' } } },
+      include: {
+        source: { include: { translations: { orderBy: { locale: 'asc' } } } },
+        translations: { orderBy: { locale: 'asc' } },
+      },
     });
 
     return this.serializeSourceRef(persisted, 'es');
@@ -2972,22 +3209,37 @@ export class EntitiesService {
       where: { id: existing.sourceId },
       data: {
         type: dto.sourceType ?? undefined,
-        title: dto.sourceTitleEs !== undefined || dto.sourceTitle !== undefined ? (dto.sourceTitleEs?.trim() || dto.sourceTitle?.trim() || existing.source.title) : undefined,
-        author: dto.sourceAuthorEs !== undefined || dto.sourceAuthor !== undefined ? (dto.sourceAuthorEs?.trim() || dto.sourceAuthor?.trim() || null) : undefined,
-        publisher: dto.sourcePublisherEs !== undefined || dto.sourcePublisher !== undefined ? (dto.sourcePublisherEs?.trim() || dto.sourcePublisher?.trim() || null) : undefined,
+        title:
+          dto.sourceTitleEs !== undefined || dto.sourceTitle !== undefined
+            ? dto.sourceTitleEs?.trim() || dto.sourceTitle?.trim() || existing.source.title
+            : undefined,
+        author:
+          dto.sourceAuthorEs !== undefined || dto.sourceAuthor !== undefined
+            ? dto.sourceAuthorEs?.trim() || dto.sourceAuthor?.trim() || null
+            : undefined,
+        publisher:
+          dto.sourcePublisherEs !== undefined || dto.sourcePublisher !== undefined
+            ? dto.sourcePublisherEs?.trim() || dto.sourcePublisher?.trim() || null
+            : undefined,
         year: dto.sourceYear !== undefined ? (dto.sourceYear ?? null) : undefined,
-        url: dto.sourceUrl !== undefined ? (dto.sourceUrl?.trim() || null) : undefined,
+        url: dto.sourceUrl !== undefined ? dto.sourceUrl?.trim() || null : undefined,
       },
     });
 
-    await this.upsertSourceTranslations(existing.sourceId, dto as any);
+    await this.upsertSourceTranslations(existing.sourceId, dto);
 
     await this.prisma.sourceRef.update({
       where: { id: refId },
       data: {
-        page: dto.page !== undefined ? (dto.page?.trim() || null) : undefined,
-        quote: dto.quoteEs !== undefined || dto.quote !== undefined ? (dto.quoteEs?.trim() || dto.quote?.trim() || null) : undefined,
-        note: dto.noteEs !== undefined || dto.note !== undefined ? (dto.noteEs?.trim() || dto.note?.trim() || null) : undefined,
+        page: dto.page !== undefined ? dto.page?.trim() || null : undefined,
+        quote:
+          dto.quoteEs !== undefined || dto.quote !== undefined
+            ? dto.quoteEs?.trim() || dto.quote?.trim() || null
+            : undefined,
+        note:
+          dto.noteEs !== undefined || dto.note !== undefined
+            ? dto.noteEs?.trim() || dto.note?.trim() || null
+            : undefined,
       },
     });
 
@@ -2995,7 +3247,10 @@ export class EntitiesService {
 
     const refreshed = await this.prisma.sourceRef.findUniqueOrThrow({
       where: { id: refId },
-      include: { source: { include: { translations: { orderBy: { locale: 'asc' } } } }, translations: { orderBy: { locale: 'asc' } } },
+      include: {
+        source: { include: { translations: { orderBy: { locale: 'asc' } } } },
+        translations: { orderBy: { locale: 'asc' } },
+      },
     });
 
     return this.serializeSourceRef(refreshed, 'es');
@@ -3072,7 +3327,7 @@ export class EntitiesService {
       data: {
         name: dto.name !== undefined ? dto.name.trim() : undefined,
         role: dto.role !== undefined ? dto.role.trim() : undefined,
-        note: dto.note !== undefined ? (dto.note?.trim() || null) : undefined,
+        note: dto.note !== undefined ? dto.note?.trim() || null : undefined,
       },
     });
   }
@@ -3118,19 +3373,19 @@ export class EntitiesService {
 
     const targets = slugs.length
       ? await this.prisma.entity.findMany({
-        where: {
-          slug: {
-            in: slugs,
+          where: {
+            slug: {
+              in: slugs,
+            },
+            id: {
+              not: entityId,
+            },
           },
-          id: {
-            not: entityId,
+          select: {
+            id: true,
+            slug: true,
           },
-        },
-        select: {
-          id: true,
-          slug: true,
-        },
-      })
+        })
       : [];
 
     const targetIds = new Set(targets.map((t) => t.id));

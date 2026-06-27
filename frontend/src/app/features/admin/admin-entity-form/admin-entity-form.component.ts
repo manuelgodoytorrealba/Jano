@@ -26,17 +26,12 @@ import {
   AdminEntitiesApi,
   AdminContributorPayload,
   AdminEntityDetailsPayload,
-  AdminMediaAsset,
-  AdminMediaAssignment,
   AdminMediaCoverageSummary,
-  AdminEntityMediaPayload,
   AdminEntityPayload,
   AdminEntityTranslationPayload,
   AdminLocale,
   AdminMediaWarning,
-  AdminResolvedSlot,
   AdminSourceRefPayload,
-  AdminUploadEntityMediaPayload,
 } from '../../../core/api/admin-entities.api';
 import { RelationType, RelationTypesApi } from '../../../core/api/relation-types.api';
 import { Tag, TagsApi } from '../../../core/api/tags.api';
@@ -66,8 +61,6 @@ import {
   AdminEntityPreviewBuildInput,
   AdminEntityPreviewConnection,
   AdminEntityPreviewLocalizedDetailsForm,
-  AdminEntityPreviewRelation,
-  AdminEntityPreviewSourceRef,
   AdminEntityPreviewTranslationForm,
   buildAdminEntityPreviewModel,
   buildAdminEntityPreviewStateKey,
@@ -147,7 +140,16 @@ type EntitySaveState = 'idle' | 'saving' | 'saved' | 'error';
   standalone: true,
   selector: 'app-admin-entity-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, JanoMediaComponent, EntityDetailViewComponent, MediaAddPanelComponent, MediaCardEditorComponent, AdminEntityMediaGroupComponent, AdminEntitySidebarComponent, AdminEntityLinkSuggestionsComponent],
+  imports: [
+    FormsModule,
+    JanoMediaComponent,
+    EntityDetailViewComponent,
+    MediaAddPanelComponent,
+    MediaCardEditorComponent,
+    AdminEntityMediaGroupComponent,
+    AdminEntitySidebarComponent,
+    AdminEntityLinkSuggestionsComponent,
+  ],
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
 })
@@ -160,8 +162,8 @@ export class AdminEntityFormComponent implements OnInit, OnDestroy, DoCheck {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
-@ViewChild('contentTextarea')
-contentTextarea?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('contentTextarea')
+  contentTextarea?: ElementRef<HTMLTextAreaElement>;
 
   linkSuggestions: AdminEntitySearchListItem[] = [];
   linkSearch = '';
@@ -311,17 +313,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     'PLACE',
   ];
 
-  statuses: NonNullable<AdminEntityPayload['status']>[] = [
-    'DRAFT',
-    'IN_REVIEW',
-    'PUBLISHED',
-  ];
+  statuses: NonNullable<AdminEntityPayload['status']>[] = ['DRAFT', 'IN_REVIEW', 'PUBLISHED'];
 
-  levels: NonNullable<AdminEntityPayload['contentLevel']>[] = [
-    'BASIC',
-    'INTERMEDIATE',
-    'ADVANCED',
-  ];
+  levels: NonNullable<AdminEntityPayload['contentLevel']>[] = ['BASIC', 'INTERMEDIATE', 'ADVANCED'];
 
   saving = false;
   loading = false;
@@ -345,22 +339,24 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     startYear: number | null | string;
     endYear: number | null | string;
   } = {
-      type: 'ARTWORK',
-      title: '',
-      slug: '',
-      summary: '',
-      content: '',
-      contentLevel: '',
-      status: 'DRAFT',
-      startYear: null,
-      endYear: null,
-    };
+    type: 'ARTWORK',
+    title: '',
+    slug: '',
+    summary: '',
+    content: '',
+    contentLevel: '',
+    status: 'DRAFT',
+    startYear: null,
+    endYear: null,
+  };
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     this.isEdit = !!id;
     this.entityId = id ?? '';
-    this.adminReturnTo = this.normalizeAdminReturnTo(this.route.snapshot.queryParamMap.get('returnTo'));
+    this.adminReturnTo = this.normalizeAdminReturnTo(
+      this.route.snapshot.queryParamMap.get('returnTo'),
+    );
     this.restoreDashboardSection();
     this.restorePreviewVisibility();
     this.restoreAdminSidebarVisibility();
@@ -517,12 +513,18 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     };
   }
 
-  private extractLocalizedDetailsForm(entity: AdminEntityResponse, locale: AdminLocale): AdminEntityPreviewLocalizedDetailsForm {
+  private extractLocalizedDetailsForm(
+    entity: AdminEntityResponse,
+    locale: AdminLocale,
+  ): AdminEntityPreviewLocalizedDetailsForm {
     return extractLocalizedDetailsForm(entity, locale);
   }
 
   private buildLocalizedDetailsPayload(locale: AdminLocale): AdminEntityDetailsPayload | undefined {
-    const form = locale === 'es' ? (this.detailsForm as AdminEntityPreviewLocalizedDetailsForm) : this.localizedDetailForms[locale];
+    const form =
+      locale === 'es'
+        ? (this.detailsForm as AdminEntityPreviewLocalizedDetailsForm)
+        : this.localizedDetailForms[locale];
     const payload: AdminEntityDetailsPayload = {
       authorNation: String(form.authorNation ?? '').trim() || undefined,
       technique: String(form.technique ?? '').trim() || undefined,
@@ -539,7 +541,11 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
       definition: String(form.definition ?? '').trim() || undefined,
     };
 
-    return Object.values(payload).some((value) => value !== undefined && value !== null && String(value).trim() !== '') ? payload : undefined;
+    return Object.values(payload).some(
+      (value) => value !== undefined && value !== null && String(value).trim() !== '',
+    )
+      ? payload
+      : undefined;
   }
 
   private buildTranslationPayload(locale: AdminLocale): AdminEntityTranslationPayload {
@@ -612,7 +618,11 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     });
   }
 
-  private applyEntityResponse(entity: AdminEntityResponse, preserveDirtyMediaEditors = true, clearedEditorId?: string) {
+  private applyEntityResponse(
+    entity: AdminEntityResponse,
+    preserveDirtyMediaEditors = true,
+    clearedEditorId?: string,
+  ) {
     this.form = {
       type: entity.type ?? 'ARTWORK',
       title: entity.title ?? '',
@@ -724,7 +734,7 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
 
         if (mode === 'stay') {
           if (!this.isEdit && entity?.id) {
-            this.router.navigate(['/admin/entities', entity.id, 'edit'], {
+            void this.router.navigate(['/admin/entities', entity.id, 'edit'], {
               queryParams: { returnTo: this.adminReturnTo },
             });
           }
@@ -732,7 +742,7 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
         }
 
         setTimeout(() => {
-          this.router.navigateByUrl(this.adminReturnTarget());
+          void this.router.navigateByUrl(this.adminReturnTarget());
         }, 700);
       },
       error: (err) => {
@@ -770,7 +780,7 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
   }
 
   navigateToAdminReturn() {
-    this.router.navigateByUrl(this.adminReturnTarget());
+    void this.router.navigateByUrl(this.adminReturnTarget());
   }
 
   adminReturnHref(): string {
@@ -838,24 +848,26 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
 
     this.relationLoading = true;
 
-    this.adminApi.list({
-      q,
-      limit: 12,
-      page: 1,
-      sort: 'title',
-    }).subscribe({
-      next: (res) => {
-        const items = Array.isArray(res?.items) ? res.items : [];
-        this.relationResults = filterRelationSearchResults(items, this.entityId);
-        this.relationLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.relationResults = [];
-        this.relationLoading = false;
-        this.cdr.markForCheck();
-      },
-    });
+    this.adminApi
+      .list({
+        q,
+        limit: 12,
+        page: 1,
+        sort: 'title',
+      })
+      .subscribe({
+        next: (res) => {
+          const items = Array.isArray(res?.items) ? res.items : [];
+          this.relationResults = filterRelationSearchResults(items, this.entityId);
+          this.relationLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.relationResults = [];
+          this.relationLoading = false;
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   selectRelationTarget(entity: AdminEntitySearchListItem) {
@@ -866,7 +878,11 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
   }
 
   onRelationTypeChange(relationTypeId: string) {
-    this.newRelation = resolveRelationTypeSelection(this.relationTypes, relationTypeId, this.newRelation);
+    this.newRelation = resolveRelationTypeSelection(
+      this.relationTypes,
+      relationTypeId,
+      this.newRelation,
+    );
   }
 
   addRelation() {
@@ -922,34 +938,39 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     this.tagsMessage = '';
     this.tagsError = '';
 
-    this.tagsApi.create({
-      label,
-      category: this.newTagCategory.trim() || undefined,
-    }).subscribe({
-      next: (tag) => {
-        this.availableTags = [...this.availableTags, tag].sort((a, b) => a.label.localeCompare(b.label));
-        this.newTagLabel = '';
-        this.newTagCategory = '';
-        this.tagsApi.addToEntity(this.entityId, tag.id).subscribe({
-          next: (entityTag) => {
-            this.tagsSaving = false;
-            this.upsertEntityTag(entityTag);
-            this.tagsMessage = 'Tag creado y añadido.';
-            this.cdr.markForCheck();
-          },
-          error: (err) => {
-            this.tagsSaving = false;
-            this.tagsError = err?.error?.message ?? 'Tag creado, pero no se pudo añadir a la entity.';
-            this.cdr.markForCheck();
-          },
-        });
-      },
-      error: (err) => {
-        this.tagsSaving = false;
-        this.tagsError = err?.error?.message ?? 'No se pudo crear el tag.';
-        this.cdr.markForCheck();
-      },
-    });
+    this.tagsApi
+      .create({
+        label,
+        category: this.newTagCategory.trim() || undefined,
+      })
+      .subscribe({
+        next: (tag) => {
+          this.availableTags = [...this.availableTags, tag].sort((a, b) =>
+            a.label.localeCompare(b.label),
+          );
+          this.newTagLabel = '';
+          this.newTagCategory = '';
+          this.tagsApi.addToEntity(this.entityId, tag.id).subscribe({
+            next: (entityTag) => {
+              this.tagsSaving = false;
+              this.upsertEntityTag(entityTag);
+              this.tagsMessage = 'Tag creado y añadido.';
+              this.cdr.markForCheck();
+            },
+            error: (err) => {
+              this.tagsSaving = false;
+              this.tagsError =
+                err?.error?.message ?? 'Tag creado, pero no se pudo añadir a la entity.';
+              this.cdr.markForCheck();
+            },
+          });
+        },
+        error: (err) => {
+          this.tagsSaving = false;
+          this.tagsError = err?.error?.message ?? 'No se pudo crear el tag.';
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   removeTag(tagId: string) {
@@ -962,7 +983,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     this.tagsApi.removeFromEntity(this.entityId, tagId).subscribe({
       next: () => {
         this.tagsSaving = false;
-        this.entityTags = this.entityTags.filter((entityTag) => entityTag.tagId !== tagId && entityTag.tag?.id !== tagId);
+        this.entityTags = this.entityTags.filter(
+          (entityTag) => entityTag.tagId !== tagId && entityTag.tag?.id !== tagId,
+        );
         this.tagsMessage = 'Tag quitado.';
         this.cdr.markForCheck();
       },
@@ -975,7 +998,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
   }
 
   tagAlreadySelected(tagId: string): boolean {
-    return this.entityTags.some((entityTag) => entityTag.tagId === tagId || entityTag.tag?.id === tagId);
+    return this.entityTags.some(
+      (entityTag) => entityTag.tagId === tagId || entityTag.tag?.id === tagId,
+    );
   }
 
   aliasLocaleLabel(locale?: string | null): string {
@@ -1006,26 +1031,28 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     this.aliasesMessage = '';
     this.aliasesError = '';
 
-    this.adminApi.createAlias(this.entityId, {
-      value,
-      locale: this.newAliasLocale,
-      kind: this.newAliasKind,
-    }).subscribe({
-      next: (entity) => {
-        this.aliasesSaving = false;
-        this.entityAliases = Array.isArray(entity.aliases) ? entity.aliases : [];
-        this.newAliasValue = '';
-        this.newAliasLocale = 'und';
-        this.newAliasKind = 'COMMON_NAME';
-        this.aliasesMessage = 'Alias anadido.';
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        this.aliasesSaving = false;
-        this.aliasesError = err?.error?.message ?? 'No se pudo anadir el alias.';
-        this.cdr.markForCheck();
-      },
-    });
+    this.adminApi
+      .createAlias(this.entityId, {
+        value,
+        locale: this.newAliasLocale,
+        kind: this.newAliasKind,
+      })
+      .subscribe({
+        next: (entity) => {
+          this.aliasesSaving = false;
+          this.entityAliases = Array.isArray(entity.aliases) ? entity.aliases : [];
+          this.newAliasValue = '';
+          this.newAliasLocale = 'und';
+          this.newAliasKind = 'COMMON_NAME';
+          this.aliasesMessage = 'Alias anadido.';
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.aliasesSaving = false;
+          this.aliasesError = err?.error?.message ?? 'No se pudo anadir el alias.';
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   removeAlias(aliasId: string) {
@@ -1059,8 +1086,10 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
 
     this.adminApi.updateRelation(this.entityId, rel.id, buildUpdateRelationPayload(rel)).subscribe({
       next: (updated) => {
-        this.relations = this.relations.map((item) => item.id === updated.id ? updated : item);
-        this.incomingRelations = this.incomingRelations.map((item) => item.id === updated.id ? updated : item);
+        this.relations = this.relations.map((item) => (item.id === updated.id ? updated : item));
+        this.incomingRelations = this.incomingRelations.map((item) =>
+          item.id === updated.id ? updated : item,
+        );
         this.syncPreviewEntityModel(true);
         this.cdr.markForCheck();
       },
@@ -1080,7 +1109,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     const previousRelations = [...this.relations];
     const previousIncomingRelations = [...this.incomingRelations];
     this.relations = this.relations.filter((relation) => relation.id !== relationId);
-    this.incomingRelations = this.incomingRelations.filter((relation) => relation.id !== relationId);
+    this.incomingRelations = this.incomingRelations.filter(
+      (relation) => relation.id !== relationId,
+    );
     this.cdr.markForCheck();
 
     this.adminApi.deleteRelation(this.entityId, relationId).subscribe({
@@ -1126,7 +1157,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
       return;
     }
 
-    const result = buildSourceRefPayload(this.newSourceRef, (value) => this.toNullableNumber(value));
+    const result = buildSourceRefPayload(this.newSourceRef, (value) =>
+      this.toNullableNumber(value),
+    );
     if (!result.payload) {
       this.sourcesError = result.error ?? 'No se pudo preparar la fuente.';
       this.cdr.markForCheck();
@@ -1341,10 +1374,7 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
   }
 
   previewKeyConnections(): AdminEntityPreviewConnection[] {
-    return buildAdminPreviewKeyConnections(
-      this.relations as AdminEntityPreviewRelation[],
-      this.incomingRelations as AdminEntityPreviewRelation[],
-    );
+    return buildAdminPreviewKeyConnections(this.relations, this.incomingRelations);
   }
 
   hasPreviewKeyConnections(): boolean {
@@ -1395,7 +1425,11 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     return this.mediaLibraryModel.mainVisualSlots;
   }
 
-  get coverageSummaryCards(): Array<{ label: string; value: string; tone?: 'warning' | 'ok' | 'neutral' }> {
+  get coverageSummaryCards(): Array<{
+    label: string;
+    value: string;
+    tone?: 'warning' | 'ok' | 'neutral';
+  }> {
     return this.mediaLibraryModel.coverageSummaryCards;
   }
 
@@ -1525,7 +1559,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     this.mediaError = '';
     this.mediaMessage = '';
 
-    const payload = buildAdminUploadPayload(event.draft, event.dimensions, (value) => this.toNullableNumber(value));
+    const payload = buildAdminUploadPayload(event.draft, event.dimensions, (value) =>
+      this.toNullableNumber(value),
+    );
     this.uploadingMedia = true;
 
     this.adminApi.uploadMedia(this.entityId, event.file, payload).subscribe({
@@ -1553,7 +1589,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     this.mediaMessage = '';
     this.markEditorDirty(editor);
 
-    const result = buildAdminMediaUpdatePayload(editor.draft, (value) => this.toNullableNumber(value));
+    const result = buildAdminMediaUpdatePayload(editor.draft, (value) =>
+      this.toNullableNumber(value),
+    );
     if ('error' in result) {
       this.mediaError = result.error;
       this.cdr.markForCheck();
@@ -1591,7 +1629,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     this.mediaError = '';
     this.mediaMessage = '';
     editor.removing = true;
-    const previousMediaState = cloneMediaLibraryState(this.currentMediaLibraryState(), (value) => this.toNullableNumber(value));
+    const previousMediaState = cloneMediaLibraryState(this.currentMediaLibraryState(), (value) =>
+      this.toNullableNumber(value),
+    );
     this.applyMediaLibraryStateSnapshot(removeMediaFromLibraryState(previousMediaState, link.id));
     this.syncPreviewEntityModel(true);
     this.cdr.markForCheck();
@@ -1666,7 +1706,8 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     this.adminApi.promoteIngestedMedia(this.entityId, link.id).subscribe({
       next: () => {
         editor.promoting = false;
-        this.mediaMessage = 'El asset INGESTED ocupa ahora el papel visual del externo. El asset externo sigue visible como Additional Media.';
+        this.mediaMessage =
+          'El asset INGESTED ocupa ahora el papel visual del externo. El asset externo sigue visible como Additional Media.';
         this.refreshMediaLibrary(true);
       },
       error: (err) => {
@@ -1684,7 +1725,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     }
 
     const ingested = this.replacementIngestedLink(link);
-    const ingestedRoleLabel = ingested ? this.mediaRoleLabel(ingested.role) : 'el asset ingerido promovido';
+    const ingestedRoleLabel = ingested
+      ? this.mediaRoleLabel(ingested.role)
+      : 'el asset ingerido promovido';
 
     const ok = window.confirm(
       `El asset EXTERNAL_URL recuperará ${ingestedRoleLabel}, sortOrder, isPrimary, displayMode y focales. El INGESTED seguirá visible como Additional Media. ¿Continuar?`,
@@ -1700,7 +1743,8 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     this.adminApi.restoreExternalMedia(this.entityId, link.id).subscribe({
       next: () => {
         editor.restoring = false;
-        this.mediaMessage = 'El asset externo recupera ahora el papel visual principal. El INGESTED sigue visible como Additional Media.';
+        this.mediaMessage =
+          'El asset externo recupera ahora el papel visual principal. El INGESTED sigue visible como Additional Media.';
         this.refreshMediaLibrary(true);
       },
       error: (err) => {
@@ -1793,15 +1837,15 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
       locale: this.i18n.locale(),
       form: this.form,
       translations: this.translationForms,
-      details: this.detailsForm as Record<string, unknown>,
+      details: this.detailsForm,
       localizedDetails: this.localizedDetailForms,
       entityTags: this.entityTags,
-      relations: this.relations as AdminEntityPreviewRelation[],
-      incomingRelations: this.incomingRelations as AdminEntityPreviewRelation[],
-      sourceRefs: this.sourceRefs as AdminEntityPreviewSourceRef[],
+      relations: this.relations,
+      incomingRelations: this.incomingRelations,
+      sourceRefs: this.sourceRefs,
       contributors: this.contributors,
       mediaEditors: this.mediaEditors,
-      persistedResolvedMedia: this.persistedResolvedMedia as Record<string, unknown> | null,
+      persistedResolvedMedia: this.persistedResolvedMedia,
       resolvedVisualSlots: this.resolvedVisualSlots,
       toNullableNumber: (value) => this.toNullableNumber(value),
     };
@@ -1836,7 +1880,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
       return;
     }
 
-    const saved = window.localStorage.getItem(this.dashboardSectionStorageKey()) as DashboardSectionId | null;
+    const saved = window.localStorage.getItem(
+      this.dashboardSectionStorageKey(),
+    ) as DashboardSectionId | null;
     if (!saved) {
       return;
     }
@@ -1893,7 +1939,10 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
       return;
     }
 
-    window.localStorage.setItem(this.previewVisibilityStorageKey(), this.previewVisible ? 'visible' : 'hidden');
+    window.localStorage.setItem(
+      this.previewVisibilityStorageKey(),
+      this.previewVisible ? 'visible' : 'hidden',
+    );
   }
 
   private persistAdminSidebarVisibility() {
@@ -1901,7 +1950,10 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
       return;
     }
 
-    window.localStorage.setItem(this.adminSidebarStorageKey(), this.adminSidebarVisible ? 'visible' : 'hidden');
+    window.localStorage.setItem(
+      this.adminSidebarStorageKey(),
+      this.adminSidebarVisible ? 'visible' : 'hidden',
+    );
   }
 
   private extractDetailsForm(entity: AdminEntityResponse): AdminEntityDetailsPayload {
@@ -1956,7 +2008,9 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     const tagId = entityTag.tagId ?? entityTag.tag?.id;
     if (!tagId) return;
 
-    const existingIndex = this.entityTags.findIndex((item) => (item.tagId ?? item.tag?.id) === tagId);
+    const existingIndex = this.entityTags.findIndex(
+      (item) => (item.tagId ?? item.tag?.id) === tagId,
+    );
     if (existingIndex >= 0) {
       const next = [...this.entityTags];
       next[existingIndex] = entityTag;
@@ -1978,24 +2032,32 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
       .join(' · ');
   }
 
-  private applyMediaLibraryState(entity: AdminEntityResponse, preserveDirtyEditors = true, clearedEditorId?: string) {
-    this.applyMediaLibraryStateSnapshot(buildAdminEntityMediaLibraryState({
-      entity,
-      mediaEditors: this.mediaEditors,
-      activeMediaEditorId: this.activeMediaEditorId,
-      activeMediaLibraryView: this.activeMediaLibraryView,
-      preserveDirtyEditors,
-      clearedEditorId,
-      toNullableNumber: (value) => this.toNullableNumber(value),
-    }));
+  private applyMediaLibraryState(
+    entity: AdminEntityResponse,
+    preserveDirtyEditors = true,
+    clearedEditorId?: string,
+  ) {
+    this.applyMediaLibraryStateSnapshot(
+      buildAdminEntityMediaLibraryState({
+        entity,
+        mediaEditors: this.mediaEditors,
+        activeMediaEditorId: this.activeMediaEditorId,
+        activeMediaLibraryView: this.activeMediaLibraryView,
+        preserveDirtyEditors,
+        clearedEditorId,
+        toNullableNumber: (value) => this.toNullableNumber(value),
+      }),
+    );
   }
 
-  slotWarningsForEditor(link: EditableAdminMediaLink): Partial<Record<MediaEditorSlotKey, string[]>> {
+  slotWarningsForEditor(
+    link: EditableAdminMediaLink,
+  ): Partial<Record<MediaEditorSlotKey, string[]>> {
     return this.editorPresentation(link).slotWarnings;
   }
 
   selectMediaEditor(linkOrId: EditableAdminMediaLink | string | null | undefined) {
-    this.activeMediaEditorId = typeof linkOrId === 'string' ? linkOrId : linkOrId?.id ?? null;
+    this.activeMediaEditorId = typeof linkOrId === 'string' ? linkOrId : (linkOrId?.id ?? null);
     this.syncMediaLibraryModel();
     this.cdr.markForCheck();
   }
@@ -2058,8 +2120,10 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
     return this.editorPresentation(link).activeSlotLabels;
   }
 
-  readonly mediaEditorPresentationFor = (link: EditableAdminMediaLink) => this.editorPresentation(link);
-  readonly hasAnyPersistedLegacyForEditor = (editorId: string) => this.hasOtherPersistedLegacy(editorId);
+  readonly mediaEditorPresentationFor = (link: EditableAdminMediaLink) =>
+    this.editorPresentation(link);
+  readonly hasAnyPersistedLegacyForEditor = (editorId: string) =>
+    this.hasOtherPersistedLegacy(editorId);
 
   get sidebarSections(): AdminEntitySidebarSectionItem[] {
     return buildAdminEntitySidebarSections({
@@ -2074,7 +2138,11 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
       contentHasError: !!(this.errorMessage || this.detailsError),
       contentSaving: !!(this.saving || this.detailsSaving),
       mediaHasError: !!this.mediaError,
-      mediaSaving: !!(this.addingMedia || this.uploadingMedia || this.mediaEditors.some((editor) => editor.saveState === 'saving')),
+      mediaSaving: !!(
+        this.addingMedia ||
+        this.uploadingMedia ||
+        this.mediaEditors.some((editor) => editor.saveState === 'saving')
+      ),
       sourcesHasError: !!this.sourcesError,
       sourcesSaving: !!this.sourcesSaving,
       contributorsHasError: !!this.contributorsError,
@@ -2096,16 +2164,20 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
   get discoverabilityItems(): AdminEntityDiscoverabilityItem[] {
     const aliasesCount = this.entityAliases.length;
     const tagsCount = this.entityTags.length;
-    const translationCoverage = this.translationLocales.every((entry) => this.translationStatus(entry.locale) !== 'missing');
+    const translationCoverage = this.translationLocales.every(
+      (entry) => this.translationStatus(entry.locale) !== 'missing',
+    );
     const structuredFieldCount = this.structuredSearchSignalCount();
-    const contextCount = this.relations.length + this.incomingRelations.length + this.sourceRefs.length;
+    const contextCount =
+      this.relations.length + this.incomingRelations.length + this.sourceRefs.length;
 
     return [
       {
         label: 'Lenguaje base',
-        detail: this.form.summary?.trim() || this.form.content?.trim()
-          ? 'La entity tiene resumen o contenido explicativo.'
-          : 'Añade al menos resumen o contenido para describirla mejor.',
+        detail:
+          this.form.summary?.trim() || this.form.content?.trim()
+            ? 'La entity tiene resumen o contenido explicativo.'
+            : 'Añade al menos resumen o contenido para describirla mejor.',
         done: !!(this.form.summary?.trim() || this.form.content?.trim()),
       },
       {
@@ -2200,17 +2272,19 @@ contentTextarea?: ElementRef<HTMLTextAreaElement>;
   }
 
   private editorPresentation(link: EditableAdminMediaLink) {
-    return this.mediaLibraryModel.editorMetaById[link.id] ?? {
-      activeSlotLabels: [],
-      canIngest: false,
-      canPromote: false,
-      canRestore: false,
-      hasPromotedReplacement: false,
-      replacementTargetLabel: null,
-      replacementIngestedLabel: null,
-      ingestedSourceLabel: null,
-      slotWarnings: {},
-    };
+    return (
+      this.mediaLibraryModel.editorMetaById[link.id] ?? {
+        activeSlotLabels: [],
+        canIngest: false,
+        canPromote: false,
+        canRestore: false,
+        hasPromotedReplacement: false,
+        replacementTargetLabel: null,
+        replacementIngestedLabel: null,
+        ingestedSourceLabel: null,
+        slotWarnings: {},
+      }
+    );
   }
 
   private buildMediaLibraryModel(): AdminEntityMediaLibraryViewModel {

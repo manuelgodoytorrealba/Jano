@@ -16,7 +16,13 @@ export class SeoService {
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
 
-  setPageMeta({ title, description, path = '/', image = null, robots = 'index,follow' }: PageMeta): void {
+  setPageMeta({
+    title,
+    description,
+    path = '/',
+    image = null,
+    robots = 'index,follow',
+  }: PageMeta): void {
     const canonical = this.resolveCanonical(path);
 
     this.title.setTitle(title);
@@ -26,7 +32,10 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:description', content: description });
     this.meta.updateTag({ property: 'og:type', content: 'website' });
     this.meta.updateTag({ property: 'og:url', content: canonical });
-    this.meta.updateTag({ name: 'twitter:card', content: image ? 'summary_large_image' : 'summary' });
+    this.meta.updateTag({
+      name: 'twitter:card',
+      content: image ? 'summary_large_image' : 'summary',
+    });
     this.meta.updateTag({ name: 'twitter:title', content: title });
     this.meta.updateTag({ name: 'twitter:description', content: description });
 
@@ -47,7 +56,7 @@ export class SeoService {
 
   private setCanonical(href: string): void {
     const head = this.document.head;
-    let link = head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    let link = head.querySelector('link[rel="canonical"]');
 
     if (!link) {
       link = this.document.createElement('link');

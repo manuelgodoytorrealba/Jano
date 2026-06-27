@@ -4,7 +4,13 @@ import { PublicEntity } from '../../core/api/entities.models';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { CuratedPageTabs } from './recommended-presenter';
 import { RecommendedEntityShelfComponent } from './recommended-entity-shelf.component';
-import { RecommendedTab, recommendedEntityDescription, recommendedEntityMeta, recommendedTypeLabel, recommendedTabItems } from './recommended-presenter';
+import {
+  RecommendedTab,
+  recommendedEntityDescription,
+  recommendedEntityMeta,
+  recommendedTypeLabel,
+  recommendedTabItems,
+} from './recommended-presenter';
 
 @Component({
   standalone: true,

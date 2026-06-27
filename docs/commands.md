@@ -1,5 +1,24 @@
 # Jano Commands
 
+## Versiones soportadas
+
+- Node: `22.14.0`
+- npm: `10.9.4`
+
+Usa la version pinneada del repo antes de instalar o arrancar nada:
+
+```bash
+nvm use
+```
+
+o con Volta:
+
+```bash
+volta install node@22.14.0 npm@10.9.4
+```
+
+Si entras con Node 25 o cualquier otra mayor, no lo des por valido aunque algo arranque: el repo, CI y scripts locales se verifican con Node 22.
+
 ## Setup inicial
 
 ### Full Docker
@@ -44,6 +63,29 @@ npm run backend:dev
 ```bash
 npm run frontend:dev
 ```
+
+### Stack local completo
+
+```bash
+npm run dev
+```
+
+### Stack local mobile
+
+```bash
+npm run mobile
+```
+
+## Calidad
+
+```bash
+npm run lint
+npm run typecheck
+npm test --workspaces --if-present -- --watch=false
+npm run check
+```
+
+`npm run check` es el gate real del repo. Ejecuta lint, typecheck, tests del monorepo y format check.
 
 ## Backend
 
@@ -160,7 +202,7 @@ Edita `.env` en la raíz y cambia `FRONTEND_PORT`, `BACKEND_PORT`, `POSTGRES_POR
 ### Dependencias rotas al cambiar de máquina
 
 ```bash
-rm -rf backend/api/node_modules frontend/node_modules
+nvm use
 npm run setup:local
 ```
 

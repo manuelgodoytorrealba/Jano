@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  inject,
+} from '@angular/core';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { getRelationTypeConfig } from './graph.config';
 import { GraphEdge, GraphNode, GraphTypeMeta } from './graph.models';
@@ -52,7 +59,7 @@ export class GraphInspectorPanelComponent {
   @Output() toggleEntityType = new EventEmitter<string>();
   @Output() setAllRelationTypes = new EventEmitter<boolean>();
   @Output() toggleRelationType = new EventEmitter<string>();
-  @Output() close = new EventEmitter<void>();
+  @Output() closeInspector = new EventEmitter<void>();
 
   activeEntityTypesCount(): number {
     return this.entityTypes.filter((type) => this.entityTypeFilters[type] !== false).length;
@@ -67,7 +74,9 @@ export class GraphInspectorPanelComponent {
       return this.i18n.t('graph.mapAndFilters');
     }
 
-    return this.focusedNodeIsCenter ? this.i18n.t('graph.entityAndConnections') : this.i18n.t('graph.focusedEntity');
+    return this.focusedNodeIsCenter
+      ? this.i18n.t('graph.entityAndConnections')
+      : this.i18n.t('graph.focusedEntity');
   }
 
   focusedNodeConnectionCount(): number {
@@ -96,7 +105,8 @@ export class GraphInspectorPanelComponent {
     return this.contextualEdges
       .filter(
         (edge) =>
-          this.normalizeNodeId(edge.source) === normalizedCenterId || this.normalizeNodeId(edge.target) === normalizedCenterId,
+          this.normalizeNodeId(edge.source) === normalizedCenterId ||
+          this.normalizeNodeId(edge.target) === normalizedCenterId,
       )
       .map((edge) => this.toConnectionItem(edge, this.selectedNode!.id))
       .filter((item): item is MobileConnectionItem => item !== null);
@@ -114,7 +124,10 @@ export class GraphInspectorPanelComponent {
         }
 
         const normalizedCenterId = this.normalizeNodeId(this.centerNode.id);
-        return this.normalizeNodeId(edge.source) !== normalizedCenterId && this.normalizeNodeId(edge.target) !== normalizedCenterId;
+        return (
+          this.normalizeNodeId(edge.source) !== normalizedCenterId &&
+          this.normalizeNodeId(edge.target) !== normalizedCenterId
+        );
       })
       .map((edge) => this.toConnectionItem(edge, this.selectedNode!.id))
       .filter((item): item is MobileConnectionItem => item !== null);
@@ -157,7 +170,9 @@ export class GraphInspectorPanelComponent {
         ...group,
         items: group.items.sort((left, right) => left.nodeLabel.localeCompare(right.nodeLabel)),
       }))
-      .sort((left, right) => right.count - left.count || left.typeLabel.localeCompare(right.typeLabel));
+      .sort(
+        (left, right) => right.count - left.count || left.typeLabel.localeCompare(right.typeLabel),
+      );
   }
 
   previewItems(items: MobileConnectionItem[], limit = 3): MobileConnectionItem[] {
@@ -170,7 +185,8 @@ export class GraphInspectorPanelComponent {
 
   private resolveOtherNode(edge: GraphEdge, nodeId: string): GraphNode | null {
     const normalizedNodeId = this.normalizeNodeId(nodeId);
-    const otherId = this.normalizeNodeId(edge.source) === normalizedNodeId ? edge.target : edge.source;
+    const otherId =
+      this.normalizeNodeId(edge.source) === normalizedNodeId ? edge.target : edge.source;
     const directMatch = this.nodeMap.get(otherId);
 
     if (directMatch) {
@@ -188,7 +204,7 @@ export class GraphInspectorPanelComponent {
   }
 
   private normalizeNodeId(value: unknown): string {
-    return String(value ?? '').trim();
+    return typeof value === 'string' || typeof value === 'number' ? String(value).trim() : '';
   }
 
   private toConnectionItem(edge: GraphEdge, nodeId: string): MobileConnectionItem | null {

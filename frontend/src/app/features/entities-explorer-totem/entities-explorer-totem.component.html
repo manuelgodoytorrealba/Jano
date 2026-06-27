@@ -1,95 +1,98 @@
 <div
-    #stage
-    class="explorer-totem"
-    role="region"
-    [attr.aria-label]="i18n.t('explorer3d.aria')"
-    [class.is-dragging]="isDragging"
-    [class.is-settling]="isSettling"
-    [class.is-info-open]="infoOpen"
-    (pointerdown)="onPointerDown($event)"
-    (pointermove)="onPointerMove($event)"
-    (pointerup)="onPointerUp($event)"
-    (pointercancel)="onPointerCancel($event)"
+  #stage
+  class="explorer-totem"
+  role="region"
+  [attr.aria-label]="i18n.t('explorer3d.aria')"
+  [class.is-dragging]="isDragging"
+  [class.is-settling]="isSettling"
+  [class.is-info-open]="infoOpen"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerUp($event)"
+  (pointercancel)="onPointerCancel($event)"
 >
-    <div class="explorer-totem__stack">
-        @for (card of ribbonCards(); track card.index + ':' + card.role) {
-        <article
-            class="explorer-totem__card"
-            [class.explorer-totem__card--active]="card.active"
-            [attr.data-role]="card.role"
-            [ngStyle]="cardStyle(card.role)"
-            [attr.aria-hidden]="!card.active"
-            [attr.tabindex]="card.active ? 0 : -1"
-            [attr.role]="card.active ? 'button' : 'presentation'"
-            (keydown.enter)="card.active && openActive()"
-            (keydown.space)="card.active && openActive()"
-            [attr.aria-label]="card.active ? i18n.t('entity.open') + ' ' + card.item.title : null"
-        >
-            <span class="explorer-totem__card-shell">
-                <app-jano-media
-                    [entity]="card.item"
-                    usage="explorer3d"
-                    [alt]="card.item.title"
-                    [lazy]="!card.active"
-                    [priority]="card.active ? 'high' : 'low'"
-                ></app-jano-media>
-                @if (card.active) {
-                <button
-                    class="explorer-totem__info-toggle"
-                    [class.is-visible]="!infoOpen && !isDragging && !isSettling"
-                    type="button"
-                    (pointerdown)="$event.stopPropagation()"
-                    (click)="openInfoPanel(); $event.stopPropagation()"
-                    [attr.aria-label]="i18n.t('explorer3d.showInfo') + ' ' + card.item.title"
-                >
-                    <span aria-hidden="true">i</span>
-                </button>
-                }
-            </span>
-        </article>
-        }
-    </div>
-
-    @if (panelItem; as active) {
-    <aside
-        class="explorer-totem__info"
-        [class.is-hidden]="!infoOpen"
-        [attr.aria-hidden]="!infoOpen"
-        (click)="$event.stopPropagation()"
-        (pointerdown)="$event.stopPropagation()"
-        (pointermove)="$event.stopPropagation()"
-        (pointerup)="$event.stopPropagation()"
-        (wheel)="$event.preventDefault(); $event.stopPropagation()"
-    >
-        <button
-            class="explorer-totem__info-close"
-            type="button"
-            (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
-            [attr.aria-label]="i18n.t('button.close')"
-        >
-            <span aria-hidden="true">×</span>
-        </button>
-
-        <div class="explorer-totem__hero">
-            <div class="explorer-totem__eyebrow">JANO Explorer</div>
-            <h2 class="explorer-totem__title">{{ active.title }}</h2>
-        </div>
-
-        <div class="explorer-totem__panel">
-            <div class="explorer-totem__meta">
-                @if (formatPrimaryMeta(active)) { <span>{{ formatPrimaryMeta(active) }}</span> }
-                @if (formatPeriod(active)) { <span>{{ formatPeriod(active) }}</span> }
-                <span>{{ active.type }}</span>
-            </div>
-
-            @if (active.summary) {
-            <p class="explorer-totem__summary">{{ cleanWiki(active.summary) }}</p>
-            }
-
-            <button class="ds-btn explorer-totem__cta" type="button" (click)="openPanelItem()">
-                {{ i18n.t('entity.open') }}
+  <div class="explorer-totem__stack">
+    @for (card of ribbonCards(); track card.index + ':' + card.role) {
+      <article
+        class="explorer-totem__card"
+        [class.explorer-totem__card--active]="card.active"
+        [attr.data-role]="card.role"
+        [ngStyle]="cardStyle(card.role)"
+        [attr.aria-hidden]="!card.active"
+        [attr.tabindex]="card.active ? 0 : -1"
+        [attr.role]="card.active ? 'button' : 'presentation'"
+        (keydown.enter)="card.active && openActive()"
+        (keydown.space)="card.active && openActive()"
+        [attr.aria-label]="card.active ? i18n.t('entity.open') + ' ' + card.item.title : null"
+      >
+        <span class="explorer-totem__card-shell">
+          <app-jano-media
+            [entity]="card.item"
+            usage="explorer3d"
+            [alt]="card.item.title"
+            [lazy]="!card.active"
+            [priority]="card.active ? 'high' : 'low'"
+          ></app-jano-media>
+          @if (card.active) {
+            <button
+              class="explorer-totem__info-toggle"
+              [class.is-visible]="!infoOpen && !isDragging && !isSettling"
+              type="button"
+              (pointerdown)="$event.stopPropagation()"
+              (click)="openInfoPanel(); $event.stopPropagation()"
+              [attr.aria-label]="i18n.t('explorer3d.showInfo') + ' ' + card.item.title"
+            >
+              <span aria-hidden="true">i</span>
             </button>
-        </div>
-    </aside>
+          }
+        </span>
+      </article>
     }
+  </div>
+
+  @if (panelItem; as active) {
+    <aside
+      class="explorer-totem__info"
+      [class.is-hidden]="!infoOpen"
+      [attr.aria-hidden]="!infoOpen"
+      (pointerdown)="$event.stopPropagation()"
+      (pointermove)="$event.stopPropagation()"
+      (pointerup)="$event.stopPropagation()"
+      (wheel)="$event.preventDefault(); $event.stopPropagation()"
+    >
+      <button
+        class="explorer-totem__info-close"
+        type="button"
+        (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
+        [attr.aria-label]="i18n.t('button.close')"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+
+      <div class="explorer-totem__hero">
+        <div class="explorer-totem__eyebrow">JANO Explorer</div>
+        <h2 class="explorer-totem__title">{{ active.title }}</h2>
+      </div>
+
+      <div class="explorer-totem__panel">
+        <div class="explorer-totem__meta">
+          @if (formatPrimaryMeta(active)) {
+            <span>{{ formatPrimaryMeta(active) }}</span>
+          }
+          @if (formatPeriod(active)) {
+            <span>{{ formatPeriod(active) }}</span>
+          }
+          <span>{{ active.type }}</span>
+        </div>
+
+        @if (active.summary) {
+          <p class="explorer-totem__summary">{{ cleanWiki(active.summary) }}</p>
+        }
+
+        <button class="ds-btn explorer-totem__cta" type="button" (click)="openPanelItem()">
+          {{ i18n.t('entity.open') }}
+        </button>
+      </div>
+    </aside>
+  }
 </div>

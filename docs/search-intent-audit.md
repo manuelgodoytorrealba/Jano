@@ -93,7 +93,7 @@ Impact:
   - `secret japanese puzzle box`
   - `japanese wooden trick box`
   - `caja japonesa secreta`
-may all converge on the same concept.
+    may all converge on the same concept.
 
 ### 3. Tags exist, but search uses them only as filters
 

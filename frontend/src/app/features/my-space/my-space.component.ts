@@ -5,6 +5,7 @@ import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from '
 import { AuthService } from '../../core/auth/auth.service';
 import { CollectionsApi } from '../../core/api/collections.api';
 import { SavedApi } from '../../core/api/saved.api';
+import { AuthUser } from '../../core/auth/auth.types';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { I18nService } from '../../core/i18n/i18n.service';
 
@@ -37,27 +38,40 @@ export class MySpaceComponent {
       if (!user) return of([]);
 
       return this.savedApi.list().pipe(
-        map((items) => items.filter((item: any) => !removedSavedIds.has(item.entity?.id ?? ''))),
+        map((items) => items.filter((item) => !removedSavedIds.has(item.entity.id))),
         catchError(() => of([])),
       );
     }),
   );
 
-  collections$ = combineLatest([this.auth.user$, this.refresh$, this.removedCollectionItemKeys$]).pipe(
+  collections$ = combineLatest([
+    this.auth.user$,
+    this.refresh$,
+    this.removedCollectionItemKeys$,
+  ]).pipe(
     switchMap(([user, _, removedKeys]) => {
       if (!user) return of([]);
 
       return this.collectionsApi.list().pipe(
-        map((collections) => collections.map((collection: any) => {
-          const filteredItems = (collection.items ?? []).filter((item: any) => !removedKeys.has(this.collectionItemKey(collection.id, item.entity?.id)));
-          return {
-            ...collection,
-            items: filteredItems,
-            itemCount: typeof collection.itemCount === 'number'
-              ? Math.max(filteredItems.length, collection.itemCount - ((collection.items?.length ?? 0) - filteredItems.length))
-              : filteredItems.length,
-          };
-        })),
+        map((collections) =>
+          collections.map((collection) => {
+            const filteredItems = collection.items.filter(
+              (item) => !removedKeys.has(this.collectionItemKey(collection.id, item.entity.id)),
+            );
+            return {
+              ...collection,
+              items: filteredItems,
+              itemCount:
+                typeof collection.itemCount === 'number'
+                  ? Math.max(
+                      filteredItems.length,
+                      collection.itemCount -
+                        ((collection.items?.length ?? 0) - filteredItems.length),
+                    )
+                  : filteredItems.length,
+            };
+          }),
+        ),
         catchError(() => of([])),
       );
     }),
@@ -67,15 +81,15 @@ export class MySpaceComponent {
     return (text ?? '').replace(/\[\[(.*?)\|(.*?)\]\]/g, '$2');
   }
 
-  isAdmin(user: any): boolean {
+  isAdmin(user: AuthUser | null | undefined): boolean {
     return String(user?.role ?? '').toUpperCase() === 'ADMIN';
   }
 
-  roleLabel(user: any): string {
+  roleLabel(user: AuthUser | null | undefined): string {
     return this.isAdmin(user) ? this.i18n.t('role.admin') : this.i18n.t('role.member');
   }
 
-  previewItems(items: any[] | null | undefined, limit = 4): any[] {
+  previewItems<T>(items: readonly T[] | null | undefined, limit = 4): T[] {
     return (items ?? []).slice(0, limit);
   }
 
@@ -92,21 +106,23 @@ export class MySpaceComponent {
     this.creating = true;
     this.createError = '';
 
-    this.collectionsApi.create({
-      name,
-      description: description || undefined,
-    }).subscribe({
-      next: () => {
-        this.newCollectionName = '';
-        this.newCollectionDescription = '';
-        this.creating = false;
-        this.refresh$.next();
-      },
-      error: (err) => {
-        this.creating = false;
-        this.createError = err?.error?.message ?? this.i18n.t('mySpace.createError');
-      },
-    });
+    this.collectionsApi
+      .create({
+        name,
+        description: description || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.newCollectionName = '';
+          this.newCollectionDescription = '';
+          this.creating = false;
+          this.refresh$.next();
+        },
+        error: (err) => {
+          this.creating = false;
+          this.createError = err?.error?.message ?? this.i18n.t('mySpace.createError');
+        },
+      });
   }
 
   removeSaved(entityId: string) {
@@ -131,21 +147,21 @@ export class MySpaceComponent {
   }
 
   goToCollection(collectionId: string) {
-    this.router.navigate(['/collections', collectionId]);
+    void this.router.navigate(['/collections', collectionId]);
   }
 
   go(slug: string) {
-    this.router.navigate(['/entity', slug]);
+    void this.router.navigate(['/entity', slug]);
   }
 
   goToAdmin() {
-    this.router.navigate(['/admin']);
+    void this.router.navigate(['/admin']);
   }
 
   logout() {
     this.auth.logout();
     this.refresh$.next();
-    this.router.navigate(['/login']);
+    void this.router.navigate(['/login']);
   }
 
   private collectionItemKey(collectionId: string, entityId: string | null | undefined): string {

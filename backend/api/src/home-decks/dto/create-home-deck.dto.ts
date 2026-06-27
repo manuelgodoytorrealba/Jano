@@ -1,5 +1,14 @@
 import { HomeDeckSurface } from '@prisma/client';
-import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
 
 class HomeDeckTranslationDto {
   @IsString()

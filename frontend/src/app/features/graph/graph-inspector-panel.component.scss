@@ -79,8 +79,12 @@
   gap: 0.8rem;
   margin: -0.16rem -0.12rem 0;
   padding: 0.08rem 0.12rem 0.32rem;
-  background:
-    linear-gradient(180deg, rgba(11, 16, 24, 0.98), rgba(11, 16, 24, 0.88) 78%, rgba(11, 16, 24, 0));
+  background: linear-gradient(
+    180deg,
+    rgba(11, 16, 24, 0.98),
+    rgba(11, 16, 24, 0.88) 78%,
+    rgba(11, 16, 24, 0)
+  );
 }
 
 .graph-panel-footer__mobile-intro {

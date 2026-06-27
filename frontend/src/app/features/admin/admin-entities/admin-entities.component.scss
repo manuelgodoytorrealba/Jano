@@ -10,7 +10,7 @@
   color: black;
 }
 
-.page>* {
+.page > * {
   position: relative;
   z-index: 1;
 }
@@ -42,7 +42,7 @@ h1 {
   height: 40px;
   padding: 0 14px;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, .10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   background: #fff;
   cursor: pointer;
   text-decoration: none;
@@ -59,21 +59,20 @@ h1 {
 }
 
 .filters-card {
-  border: 1px solid rgba(255, 255, 255, .52);
+  border: 1px solid rgba(255, 255, 255, 0.52);
   border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, .76), rgba(248, 246, 241, .64));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(248, 246, 241, 0.64));
   padding: 16px;
   margin-bottom: 14px;
   box-shadow:
-    0 18px 46px rgba(25, 20, 14, .07),
-    inset 0 1px 0 rgba(255, 255, 255, .72);
+    0 18px 46px rgba(25, 20, 14, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(22px) saturate(1.06);
 }
 
 .filters-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(160px, .7fr)) auto;
+  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(160px, 0.7fr)) auto;
   gap: 12px;
   align-items: end;
 }
@@ -85,7 +84,7 @@ h1 {
 
 .field span {
   font-size: 12px;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #666;
   font-weight: 700;
@@ -95,8 +94,8 @@ input,
 select {
   height: 42px;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, .10);
-  background: rgba(255, 255, 255, .76);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.76);
   color: #15120f;
   padding: 0 12px;
   font: inherit;
@@ -117,25 +116,25 @@ select option {
   font-size: 12px;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, .08);
-  background: rgba(255, 255, 255, .8);
-  color: rgba(0, 0, 0, .72);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.72);
   width: fit-content;
 }
 
 .pill.subtle {
-  background: rgba(0, 0, 0, .03);
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .pill.success {
-  border-color: rgba(0, 128, 0, .14);
-  background: rgba(0, 128, 0, .06);
+  border-color: rgba(0, 128, 0, 0.14);
+  background: rgba(0, 128, 0, 0.06);
   color: #126b12;
 }
 
 .pill.type-pill {
-  background: rgba(17, 17, 17, .06);
-  border-color: rgba(17, 17, 17, .10);
+  background: rgba(17, 17, 17, 0.06);
+  border-color: rgba(17, 17, 17, 0.1);
   color: #111;
 }
 
@@ -157,12 +156,11 @@ select option {
 
 .loading-box,
 .empty {
-  border: 1px solid rgba(255, 255, 255, .5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, .76), rgba(248, 246, 241, .62));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(248, 246, 241, 0.62));
   padding: 18px;
-  box-shadow: 0 18px 46px rgba(25, 20, 14, .07);
+  box-shadow: 0 18px 46px rgba(25, 20, 14, 0.07);
   backdrop-filter: blur(22px) saturate(1.06);
 }
 
@@ -180,14 +178,13 @@ select option {
 }
 
 .table-wrap {
-  border: 1px solid rgba(255, 255, 255, .5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 18px;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, .78), rgba(247, 245, 240, .66));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(247, 245, 240, 0.66));
   box-shadow:
-    0 22px 58px rgba(25, 20, 14, .08),
-    inset 0 1px 0 rgba(255, 255, 255, .72);
+    0 22px 58px rgba(25, 20, 14, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(22px) saturate(1.06);
 }
 
@@ -199,7 +196,7 @@ select option {
 .table th,
 .table td {
   padding: 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, .06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   text-align: left;
   vertical-align: top;
   font-size: 14px;
@@ -208,9 +205,9 @@ select option {
 .table th {
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   color: #666;
-  background: rgba(255, 255, 255, .56);
+  background: rgba(255, 255, 255, 0.56);
 }
 
 .title-cell {
@@ -246,11 +243,11 @@ select option {
   font-size: 11px;
   padding: 5px 8px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, .08);
-  background: rgba(0, 0, 0, .03);
-  color: rgba(0, 0, 0, .72);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.03);
+  color: rgba(0, 0, 0, 0.72);
   text-transform: uppercase;
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
 }
 
 .row-actions {
@@ -263,7 +260,7 @@ select option {
   height: 32px;
   padding: 0 10px;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, .10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   background: #fff;
   cursor: pointer;
   text-decoration: none;
@@ -276,11 +273,11 @@ select option {
 
 .mini.danger {
   color: #b00020;
-  border-color: rgba(176, 0, 32, .18);
+  border-color: rgba(176, 0, 32, 0.18);
 }
 
 .mini:disabled {
-  opacity: .55;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
