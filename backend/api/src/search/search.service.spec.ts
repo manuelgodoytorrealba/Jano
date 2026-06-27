@@ -232,14 +232,14 @@ describe('SearchService', () => {
 
     const result = await service.search({ q: 'picasso', locale: 'es' }, { includeDrafts: false });
 
-    const keyWorks = result.sections.find((section: any) => section.key === 'keyWorks');
-    const relatedWorks = result.sections.find((section: any) => section.key === 'relatedWorks');
+    const keyWorks = result.sections.find((section) => section.key === 'keyWorks');
+    const relatedWorks = result.sections.find((section) => section.key === 'relatedWorks');
 
     expect(keyWorks?.total).toBe(1);
-    expect(keyWorks?.items?.map((item: any) => item.id)).toEqual(['artwork-1']);
+    expect(keyWorks?.items?.map((item) => item.id)).toEqual(['artwork-1']);
     expect(relatedWorks?.title).toBe('Obras relacionadas');
     expect(relatedWorks?.total).toBe(1);
-    expect(relatedWorks?.items?.map((item: any) => item.id)).toEqual(['artwork-2']);
+    expect(relatedWorks?.items?.map((item) => item.id)).toEqual(['artwork-2']);
     expect(relatedWorks?.items?.[0].relationReason).toBe('Both works address war violence.');
     expect(relatedWorks?.items?.[0].relationWithTitle).toBe('Guernica');
   });

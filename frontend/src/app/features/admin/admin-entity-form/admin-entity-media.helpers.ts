@@ -22,6 +22,23 @@ import {
 import { MediaLibraryViewId, VisualSlot } from './admin-entity-media.presenter';
 
 type ToNullableNumber = (value: unknown) => number | null;
+type LegacyMediaLink = {
+  id?: string | null;
+  media?: { id?: string | null; focalX?: number | null; focalY?: number | null } | null;
+  role?: string | null;
+  sortOrder?: number | null;
+  isPrimary?: boolean | null;
+  displayMode?: AdminMediaDisplayMode | null;
+  focalX?: number | null;
+  focalY?: number | null;
+};
+type CropValueInput = { x?: unknown; y?: unknown; zoom?: unknown };
+type SlotCropValue = {
+  explorer3d?: CropValueInput | null;
+  list?: CropValueInput | null;
+  detail?: CropValueInput | null;
+  preview?: CropValueInput | null;
+};
 
 export type AdminEntityMediaLibraryState = {
   persistedMediaLinks: EditableAdminMediaLink[];
@@ -361,9 +378,9 @@ function normalizeMediaAssignment(
 }
 
 function legacyAssignmentsFromEntity(entity: AdminEntityResponse): AdminMediaAssignment[] {
-  return (entity.mediaLinks ?? []).map((link: any) => ({
-    assignmentId: link.id,
-    assetId: link.media?.id,
+  return ((entity.mediaLinks ?? []) as LegacyMediaLink[]).map((link) => ({
+    assignmentId: link.id ?? '',
+    assetId: link.media?.id ?? '',
     role: link.role ?? 'CARD',
     sortOrder: link.sortOrder ?? 0,
     isPrimary: !!link.isPrimary,
@@ -420,7 +437,10 @@ function normalizeResolvedSlot(slot: AdminResolvedSlot): VisualSlot {
   };
 }
 
-function normalizeSlotCrops(value: any, toNullableNumber: ToNullableNumber): MediaSlotCropMap {
+function normalizeSlotCrops(
+  value: SlotCropValue | null | undefined,
+  toNullableNumber: ToNullableNumber,
+): MediaSlotCropMap {
   return {
     explorer3d: normalizeCropValue(value?.explorer3d, toNullableNumber),
     list: normalizeCropValue(value?.list, toNullableNumber),
@@ -429,7 +449,10 @@ function normalizeSlotCrops(value: any, toNullableNumber: ToNullableNumber): Med
   };
 }
 
-function normalizeCropValue(value: any, toNullableNumber: ToNullableNumber) {
+function normalizeCropValue(
+  value: CropValueInput | null | undefined,
+  toNullableNumber: ToNullableNumber,
+) {
   return {
     x: toNullableNumber(value?.x),
     y: toNullableNumber(value?.y),

@@ -13,7 +13,11 @@ import {
   startWith,
   switchMap,
 } from 'rxjs';
-import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
+import {
+  AdminEntitiesApi,
+  AdminEntityListResponse,
+  AdminEntitySearchListItem,
+} from '../../../core/api/admin-entities.api';
 
 type AdminType =
   | ''
@@ -64,6 +68,13 @@ export class AdminEntitiesComponent {
   private search$ = new BehaviorSubject<string>('');
   private removedIds$ = new BehaviorSubject<Set<string>>(new Set());
 
+  private filterVisibleItems(
+    response: AdminEntityListResponse,
+    removedIds: Set<string>,
+  ): AdminEntitySearchListItem[] {
+    return (response.items ?? []).filter((item) => !removedIds.has(item.id));
+  }
+
   vm$ = combineLatest([
     this.refresh$,
     this.search$.pipe(debounceTime(220), distinctUntilChanged(), startWith('')),
@@ -85,7 +96,7 @@ export class AdminEntitiesComponent {
         .pipe(
           map((res) => {
             this.loading = false;
-            const items = (res.items ?? []).filter((item: any) => !removedIds.has(item.id));
+            const items = this.filterVisibleItems(res, removedIds);
             return {
               ...res,
               items,

@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { existsSync } from 'node:fs';
 
 const RESET = '\x1b[0m';
 const MAGENTA = '\x1b[35m';
@@ -16,7 +17,9 @@ function line(color, label, message) {
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(currentDir, '..');
-const ngEntrypoint = resolve(projectRoot, 'node_modules/@angular/cli/bin/ng.js');
+const localNgEntrypoint = resolve(projectRoot, 'node_modules/@angular/cli/bin/ng.js');
+const workspaceNgEntrypoint = resolve(projectRoot, '../node_modules/@angular/cli/bin/ng.js');
+const ngEntrypoint = existsSync(localNgEntrypoint) ? localNgEntrypoint : workspaceNgEntrypoint;
 
 const rawMode = process.argv[2];
 const mode = rawMode === 'host' || rawMode === 'mobile' ? rawMode : 'local';

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
-import { ContentLevel, EntityStatus, MediaOriginType, MediaRole } from '@prisma/client';
+import { ContentLevel, EntityStatus, MediaOriginType, MediaRole, Prisma } from '@prisma/client';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { UpsertEntityTranslationDto } from './dto/upsert-entity-translation.dto';
@@ -98,6 +98,110 @@ type SlotCropInput =
   | null
   | undefined;
 
+type LocaleTranslationRecord = {
+  locale?: string | null;
+} & Record<string, unknown>;
+
+type MediaLinkedRecord = Parameters<typeof attachResolvedMedia>[0];
+
+type LocalizedEntityRecord = Parameters<typeof resolveEntityTranslation>[0] & MediaLinkedRecord;
+
+type LocalizedDetailRecord = {
+  translations?: LocaleTranslationRecord[] | null;
+} & Record<string, unknown>;
+
+type EntityTypedDetailsRecord = {
+  artwork?: LocalizedDetailRecord | null;
+  artist?: LocalizedDetailRecord | null;
+  concept?: LocalizedDetailRecord | null;
+  period?: LocalizedDetailRecord | null;
+};
+
+type RelationTypeTranslationRecord = LocaleTranslationRecord & {
+  label?: string | null;
+  inverseLabel?: string | null;
+};
+
+type RelationLabelRecord = {
+  type?: string | null;
+  relationType?: {
+    label?: string | null;
+    inverseLabel?: string | null;
+    key?: string | null;
+    directed?: boolean | null;
+    translations?: RelationTypeTranslationRecord[] | null;
+  } | null;
+};
+
+type JustificationTranslationRecord = LocaleTranslationRecord & {
+  justification?: string | null;
+};
+
+type SerializedRelationRecord = RelationLabelRecord & {
+  justification?: string | null;
+  translations?: JustificationTranslationRecord[] | null;
+};
+
+type SourceTranslationRecord = LocaleTranslationRecord & {
+  title?: string | null;
+  author?: string | null;
+  publisher?: string | null;
+};
+
+type SerializedSourceRecord = {
+  title?: string | null;
+  author?: string | null;
+  publisher?: string | null;
+  translations?: SourceTranslationRecord[] | null;
+};
+
+type SourceRefTranslationRecord = LocaleTranslationRecord & {
+  quote?: string | null;
+  note?: string | null;
+};
+
+type SerializedSourceRefRecord = {
+  quote?: string | null;
+  note?: string | null;
+  source?: SerializedSourceRecord | null;
+  translations?: SourceRefTranslationRecord[] | null;
+};
+
+type GraphEntityNodeRecord = LocalizedEntityRecord & {
+  id: string;
+  type: string;
+  slug: string;
+  startYear?: number | null;
+  endYear?: number | null;
+};
+
+type AdminEntityDetailRecord = GraphEntityNodeRecord &
+  EntityTypedDetailsRecord & {
+    sourceRefs?: SerializedSourceRefRecord[] | null;
+    outgoing?: Array<
+      SerializedRelationRecord & { to?: (LocalizedEntityRecord & EntityTypedDetailsRecord) | null }
+    > | null;
+    incoming?: Array<
+      SerializedRelationRecord & {
+        from?: (LocalizedEntityRecord & EntityTypedDetailsRecord) | null;
+      }
+    > | null;
+  };
+
+type PrismaKnownError = {
+  code?: string;
+};
+
+type RelationMutationDto = {
+  toId?: string;
+  relationTypeId?: string;
+  type?: string;
+  justification?: string;
+  justificationEs?: string;
+  justificationEn?: string;
+  weight?: number | null;
+};
+
 @Injectable()
 export class EntitiesService {
   private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(
@@ -115,25 +219,17 @@ export class EntitiesService {
 
   constructor(private prisma: PrismaService) {}
 
-  private withResolvedMedia<T extends { mediaLinks?: any[] | null }>(
+  private withResolvedMedia<T extends MediaLinkedRecord>(
     entity: T,
   ): T & { resolvedMedia: ResolvedMediaPayload } {
     return attachResolvedMedia(entity);
   }
 
-  private resolveLocalizedEntity<
-    T extends {
-      title: string;
-      summary?: string | null;
-      content?: string | null;
-      translations?: any[] | null;
-      mediaLinks?: any[] | null;
-    },
-  >(entity: T, locale?: string) {
+  private resolveLocalizedEntity<T extends LocalizedEntityRecord>(entity: T, locale?: string) {
     return this.withResolvedMedia(resolveEntityTranslation(entity, locale));
   }
 
-  private resolveLocalizedDetail<T extends Record<string, any> | null | undefined>(
+  private resolveLocalizedDetail<T extends LocalizedDetailRecord | null | undefined>(
     detail: T,
     locale: string | undefined,
     fields: string[],
@@ -143,20 +239,18 @@ export class EntitiesService {
     }
 
     const requestedLocale = normalizeLocale(locale);
-    const translations = Array.isArray((detail as any).translations)
-      ? (detail as any).translations
-      : [];
+    const translations = Array.isArray(detail.translations) ? detail.translations : [];
     const resolved =
-      translations.find((item: any) => item?.locale === requestedLocale) ??
-      translations.find((item: any) => item?.locale === 'es') ??
-      translations.find((item: any) => item?.locale === 'en') ??
+      translations.find((item) => item?.locale === requestedLocale) ??
+      translations.find((item) => item?.locale === 'es') ??
+      translations.find((item) => item?.locale === 'en') ??
       null;
 
     if (!resolved) {
       return detail;
     }
 
-    const localized = { ...detail } as Record<string, any>;
+    const localized: LocalizedDetailRecord = { ...detail };
     for (const field of fields) {
       const value = resolved?.[field];
       if (typeof value === 'string' && value.trim()) {
@@ -167,9 +261,10 @@ export class EntitiesService {
     return localized as T;
   }
 
-  private applyLocalizedTypedDetails<
-    T extends { artwork?: any; artist?: any; concept?: any; period?: any },
-  >(entity: T, locale?: string): T {
+  private applyLocalizedTypedDetails<T extends EntityTypedDetailsRecord>(
+    entity: T,
+    locale?: string,
+  ): T {
     return {
       ...entity,
       artwork: this.resolveLocalizedDetail(entity.artwork, locale, [
@@ -194,17 +289,7 @@ export class EntitiesService {
   }
 
   private resolveLocalizedEntityWithDetails<
-    T extends {
-      title: string;
-      summary?: string | null;
-      content?: string | null;
-      translations?: any[] | null;
-      mediaLinks?: any[] | null;
-      artwork?: any;
-      artist?: any;
-      concept?: any;
-      period?: any;
-    },
+    T extends LocalizedEntityRecord & EntityTypedDetailsRecord,
   >(entity: T, locale?: string) {
     return this.applyLocalizedTypedDetails(this.resolveLocalizedEntity(entity, locale), locale);
   }
@@ -217,7 +302,7 @@ export class EntitiesService {
   }
 
   private translationField(
-    record: { translations?: any[] | null } | null | undefined,
+    record: { translations?: LocaleTranslationRecord[] | null } | null | undefined,
     locale: string | undefined,
     field: string,
   ): string | null {
@@ -228,9 +313,9 @@ export class EntitiesService {
     const requestedLocale = normalizeLocale(locale);
     const translations = Array.isArray(record.translations) ? record.translations : [];
     const resolved =
-      translations.find((item: any) => item?.locale === requestedLocale) ??
-      translations.find((item: any) => item?.locale === 'es') ??
-      translations.find((item: any) => item?.locale === 'en') ??
+      translations.find((item) => item?.locale === requestedLocale) ??
+      translations.find((item) => item?.locale === 'es') ??
+      translations.find((item) => item?.locale === 'en') ??
       null;
 
     const value = resolved?.[field];
@@ -238,7 +323,7 @@ export class EntitiesService {
   }
 
   private translationValueForLocale(
-    record: { translations?: any[] | null } | null | undefined,
+    record: { translations?: LocaleTranslationRecord[] | null } | null | undefined,
     field: string,
     locale: string,
   ): string | null {
@@ -247,7 +332,7 @@ export class EntitiesService {
     }
 
     const translations = Array.isArray(record.translations) ? record.translations : [];
-    const match = translations.find((item: any) => item?.locale === locale);
+    const match = translations.find((item) => item?.locale === locale);
     const value = match?.[field];
     return typeof value === 'string' && value.trim() ? value.trim() : null;
   }
@@ -321,22 +406,12 @@ export class EntitiesService {
     return 'RELATED_TO';
   }
 
-  private relationDisplayLabel(
-    relation: {
-      type?: string | null;
-      relationType?: {
-        label?: string | null;
-        key?: string | null;
-        translations?: any[] | null;
-      } | null;
-    },
-    locale?: string,
-  ): string {
+  private relationDisplayLabel(relation: RelationLabelRecord, locale?: string): string {
     const requestedLocale = normalizeLocale(locale);
     const translation =
-      relation.relationType?.translations?.find((item: any) => item.locale === requestedLocale) ??
-      relation.relationType?.translations?.find((item: any) => item.locale === 'es') ??
-      relation.relationType?.translations?.find((item: any) => item.locale === 'en') ??
+      relation.relationType?.translations?.find((item) => item.locale === requestedLocale) ??
+      relation.relationType?.translations?.find((item) => item.locale === 'es') ??
+      relation.relationType?.translations?.find((item) => item.locale === 'en') ??
       null;
 
     return (
@@ -356,7 +431,7 @@ export class EntitiesService {
     };
   }
 
-  private toGraphNodePayload(node: any, locale?: string): GraphNodePayload {
+  private toGraphNodePayload(node: GraphEntityNodeRecord, locale?: string): GraphNodePayload {
     const resolvedNode = this.resolveLocalizedEntity(node, locale);
     const image =
       resolvedMediaUrl(resolvedNode.resolvedMedia.thumbnail) ??
@@ -381,7 +456,10 @@ export class EntitiesService {
     };
   }
 
-  private toWorkspaceGraphNodePayload(node: any, locale?: string): GraphNodePayload {
+  private toWorkspaceGraphNodePayload(
+    node: GraphEntityNodeRecord,
+    locale?: string,
+  ): GraphNodePayload {
     const resolvedNode = resolveEntityTranslation(node, locale);
 
     return {
@@ -398,22 +476,12 @@ export class EntitiesService {
     };
   }
 
-  private relationInverseDisplayLabel(
-    relation: {
-      type?: string | null;
-      relationType?: {
-        inverseLabel?: string | null;
-        key?: string | null;
-        translations?: any[] | null;
-      } | null;
-    },
-    locale?: string,
-  ): string {
+  private relationInverseDisplayLabel(relation: RelationLabelRecord, locale?: string): string {
     const requestedLocale = normalizeLocale(locale);
     const translation =
-      relation.relationType?.translations?.find((item: any) => item.locale === requestedLocale) ??
-      relation.relationType?.translations?.find((item: any) => item.locale === 'es') ??
-      relation.relationType?.translations?.find((item: any) => item.locale === 'en') ??
+      relation.relationType?.translations?.find((item) => item.locale === requestedLocale) ??
+      relation.relationType?.translations?.find((item) => item.locale === 'es') ??
+      relation.relationType?.translations?.find((item) => item.locale === 'en') ??
       null;
 
     return (
@@ -443,14 +511,7 @@ export class EntitiesService {
     return !['RELATED_TO', 'ASSOCIATED_WITH', 'SIMILAR_TO', 'CURATED_WITH'].includes(type);
   }
 
-  private serializeRelation<
-    T extends {
-      type?: string | null;
-      relationType?: any;
-      justification?: string | null;
-      translations?: any[] | null;
-    },
-  >(
+  private serializeRelation<T extends SerializedRelationRecord>(
     relation: T,
     locale?: string,
   ): T & {
@@ -480,14 +541,10 @@ export class EntitiesService {
     };
   }
 
-  private serializeSource<
-    T extends {
-      title?: string | null;
-      author?: string | null;
-      publisher?: string | null;
-      translations?: any[] | null;
-    },
-  >(source: T | null | undefined, locale?: string) {
+  private serializeSource<T extends SerializedSourceRecord>(
+    source: T | null | undefined,
+    locale?: string,
+  ) {
     if (!source) {
       return source;
     }
@@ -507,9 +564,7 @@ export class EntitiesService {
     };
   }
 
-  private serializeSourceRef<
-    T extends { quote?: string | null; note?: string | null; translations?: any[] | null },
-  >(
+  private serializeSourceRef<T extends SerializedSourceRefRecord>(
     ref: T,
     locale?: string,
   ): T & {
@@ -522,7 +577,7 @@ export class EntitiesService {
   } {
     return {
       ...ref,
-      source: this.serializeSource((ref as any).source, locale),
+      source: this.serializeSource(ref.source, locale),
       quote: this.translationField(ref, locale, 'quote') ?? ref.quote ?? null,
       note: this.translationField(ref, locale, 'note') ?? ref.note ?? null,
       quoteEs: this.translationValueForLocale(ref, 'quote', 'es') ?? ref.quote ?? null,
@@ -716,17 +771,25 @@ export class EntitiesService {
     return { x, y, zoom };
   }
 
+  private normalizeCropPresetJson(
+    value: { x?: number | null; y?: number | null; zoom?: number | null } | null | undefined,
+  ): Prisma.InputJsonValue | typeof Prisma.JsonNull {
+    return this.normalizeCropPreset(value) ?? Prisma.JsonNull;
+  }
+
   private slotCropColumns(input: SlotCropInput) {
     return {
-      cropExplorer3d: this.normalizeCropPreset(input?.explorer3d),
-      cropList: this.normalizeCropPreset(input?.list),
-      cropDetail: this.normalizeCropPreset(input?.detail),
-      cropPreview: this.normalizeCropPreset(input?.preview),
+      cropExplorer3d: this.normalizeCropPresetJson(input?.explorer3d),
+      cropList: this.normalizeCropPresetJson(input?.list),
+      cropDetail: this.normalizeCropPresetJson(input?.detail),
+      cropPreview: this.normalizeCropPresetJson(input?.preview),
     };
   }
 
   private async clearOtherLegacyPrimaries(
-    tx: { entityMedia: { updateMany: (args: any) => Promise<unknown> } },
+    tx: {
+      entityMedia: { updateMany: (args: Prisma.EntityMediaUpdateManyArgs) => Promise<unknown> };
+    },
     entityId: string,
     activeLinkId: string,
   ) {
@@ -803,8 +866,8 @@ export class EntitiesService {
     const tag = (query.tag ?? '').trim();
     const locale = normalizeLocale(query.locale);
 
-    const where: any = {};
-    const and: any[] = [];
+    const where: Prisma.EntityWhereInput = {};
+    const and: Prisma.EntityWhereInput[] = [];
 
     let deckEntityOrder: string[] = [];
 
@@ -1003,7 +1066,11 @@ export class EntitiesService {
 
     const needle = q.toLowerCase();
 
-    const score = (e: any) => {
+    const score = (e: {
+      title?: string | null;
+      summary?: string | null;
+      content?: string | null;
+    }) => {
       const t = (e.title ?? '').toLowerCase();
       const s = (e.summary ?? '').toLowerCase();
       const c = (e.content ?? '').toLowerCase();
@@ -1193,14 +1260,18 @@ export class EntitiesService {
 
     if (!entity) throw new NotFoundException('Entity not found');
 
+    const detailedEntity = entity as AdminEntityDetailRecord;
+
     return {
-      ...this.resolveLocalizedEntityWithDetails(entity, locale),
-      sourceRefs: (entity.sourceRefs ?? []).map((ref: any) => this.serializeSourceRef(ref, locale)),
-      outgoing: (entity.outgoing ?? []).map((relation: any) => ({
+      ...this.resolveLocalizedEntityWithDetails(detailedEntity, locale),
+      sourceRefs: (detailedEntity.sourceRefs ?? []).map((ref) =>
+        this.serializeSourceRef(ref, locale),
+      ),
+      outgoing: (detailedEntity.outgoing ?? []).map((relation) => ({
         ...this.serializeRelation(relation, locale),
         to: relation.to ? this.resolveLocalizedEntityWithDetails(relation.to, locale) : relation.to,
       })),
-      incoming: (entity.incoming ?? []).map((relation: any) => ({
+      incoming: (detailedEntity.incoming ?? []).map((relation) => ({
         ...this.serializeRelation(relation, locale),
         from: relation.from
           ? this.resolveLocalizedEntityWithDetails(relation.from, locale)
@@ -1274,7 +1345,7 @@ export class EntitiesService {
       : [];
 
     const nodesMap = new Map<string, GraphNodePayload>();
-    const entityMap = new Map<string, any>([
+    const entityMap = new Map<string, GraphEntityNodeRecord>([
       [center.id, center],
       ...relatedNodes.map((node) => [node.id, node] as const),
     ]);
@@ -1897,7 +1968,7 @@ export class EntitiesService {
   private async upsertSourceTranslations(
     sourceId: string,
     dto: {
-      sourceTitle: string;
+      sourceTitle?: string;
       sourceTitleEs?: string;
       sourceTitleEn?: string;
       sourceAuthor?: string;
@@ -1983,7 +2054,7 @@ export class EntitiesService {
   async adminGetById(id: string) {
     await this.normalizeEntityLegacyPrimary(id);
 
-    const entity = await (this.prisma as any).entity.findUnique({
+    const entity = await this.prisma.entity.findUnique({
       where: { id },
       include: {
         translations: { orderBy: { locale: 'asc' } },
@@ -2057,8 +2128,8 @@ export class EntitiesService {
 
     return {
       ...entity,
-      outgoing: (entity.outgoing ?? []).map((relation: any) => this.serializeRelation(relation)),
-      incoming: (entity.incoming ?? []).map((relation: any) => this.serializeRelation(relation)),
+      outgoing: (entity.outgoing ?? []).map((relation) => this.serializeRelation(relation)),
+      incoming: (entity.incoming ?? []).map((relation) => this.serializeRelation(relation)),
       resolvedMedia: resolvedEntity.resolvedMedia,
       mediaLibrary: buildAdminMediaLibrary(entity),
       translationStatus: translationStatusSummary(entity.translations),
@@ -2144,7 +2215,7 @@ export class EntitiesService {
     }
 
     try {
-      await (this.prisma as any).entityAlias.create({
+      await this.prisma.entityAlias.create({
         data: {
           entityId: id,
           locale: this.normalizeAliasLocale(dto.locale),
@@ -2154,8 +2225,9 @@ export class EntitiesService {
           source: dto.source?.trim() || null,
         },
       });
-    } catch (error: any) {
-      if (error?.code === 'P2002') {
+    } catch (error) {
+      const knownError = error as PrismaKnownError;
+      if (knownError.code === 'P2002') {
         throw new ConflictException('Alias already exists for this entity');
       }
 
@@ -2166,7 +2238,7 @@ export class EntitiesService {
   }
 
   async adminUpdateAlias(entityId: string, aliasId: string, dto: UpdateEntityAliasDto) {
-    const alias = await (this.prisma as any).entityAlias.findUnique({
+    const alias = await this.prisma.entityAlias.findUnique({
       where: { id: aliasId },
       select: { id: true, entityId: true, value: true, locale: true, kind: true },
     });
@@ -2181,7 +2253,7 @@ export class EntitiesService {
     }
 
     try {
-      await (this.prisma as any).entityAlias.update({
+      await this.prisma.entityAlias.update({
         where: { id: aliasId },
         data: {
           value: nextValue,
@@ -2191,8 +2263,9 @@ export class EntitiesService {
           source: dto.source !== undefined ? dto.source?.trim() || null : undefined,
         },
       });
-    } catch (error: any) {
-      if (error?.code === 'P2002') {
+    } catch (error) {
+      const knownError = error as PrismaKnownError;
+      if (knownError.code === 'P2002') {
         throw new ConflictException('Alias already exists for this entity');
       }
 
@@ -2203,7 +2276,7 @@ export class EntitiesService {
   }
 
   async adminDeleteAlias(entityId: string, aliasId: string) {
-    const alias = await (this.prisma as any).entityAlias.findUnique({
+    const alias = await this.prisma.entityAlias.findUnique({
       where: { id: aliasId },
       select: { id: true, entityId: true },
     });
@@ -2212,7 +2285,7 @@ export class EntitiesService {
       throw new NotFoundException('Alias not found');
     }
 
-    await (this.prisma as any).entityAlias.delete({
+    await this.prisma.entityAlias.delete({
       where: { id: aliasId },
     });
 
@@ -2256,7 +2329,7 @@ export class EntitiesService {
           license: dto.license?.trim() || undefined,
           focalX: this.normalizePercent(dto.assetFocalX) ?? undefined,
           focalY: this.normalizePercent(dto.assetFocalY) ?? undefined,
-        } as any,
+        } satisfies Prisma.MediaCreateInput,
       });
 
       const createdLink = await tx.entityMedia.create({
@@ -2270,7 +2343,7 @@ export class EntitiesService {
           focalX: dto.focalX ?? null,
           focalY: dto.focalY ?? null,
           ...this.slotCropColumns(dto.slotCrops),
-        } as any,
+        } satisfies Prisma.EntityMediaUncheckedCreateInput,
         include: {
           media: true,
         },
@@ -2331,7 +2404,7 @@ export class EntitiesService {
           license: dto.license?.trim() || undefined,
           focalX: this.normalizePercent(dto.assetFocalX) ?? undefined,
           focalY: this.normalizePercent(dto.assetFocalY) ?? undefined,
-        } as any,
+        } satisfies Prisma.MediaCreateInput,
       });
 
       const createdLink = await tx.entityMedia.create({
@@ -2345,7 +2418,7 @@ export class EntitiesService {
           focalX: dto.focalX ?? null,
           focalY: dto.focalY ?? null,
           ...this.slotCropColumns(dto.slotCrops),
-        } as any,
+        } satisfies Prisma.EntityMediaUncheckedCreateInput,
         include: {
           media: true,
         },
@@ -2752,7 +2825,7 @@ export class EntitiesService {
       if (Object.values(linkData).some((value) => value !== undefined)) {
         await tx.entityMedia.update({
           where: { id: linkId },
-          data: linkData as any,
+          data: linkData satisfies Prisma.EntityMediaUpdateInput,
         });
 
         if (dto.isPrimary === true) {
@@ -2819,7 +2892,7 @@ export class EntitiesService {
     return rows.map((relation) => this.serializeRelation(relation, 'es'));
   }
 
-  async adminCreateRelation(entityId: string, dto: any) {
+  async adminCreateRelation(entityId: string, dto: RelationMutationDto) {
     const from = await this.prisma.entity.findUnique({
       where: { id: entityId },
       select: { id: true },
@@ -2827,6 +2900,10 @@ export class EntitiesService {
 
     if (!from) {
       throw new NotFoundException('Origin entity not found');
+    }
+
+    if (!dto.toId) {
+      throw new BadRequestException('Target entity is required');
     }
 
     const to = await this.prisma.entity.findUnique({
@@ -2837,6 +2914,8 @@ export class EntitiesService {
     if (!to) {
       throw new NotFoundException('Target entity not found');
     }
+
+    const toId = dto.toId;
 
     const relationType = dto.relationTypeId
       ? await this.prisma.relationType.findUnique({
@@ -2856,7 +2935,7 @@ export class EntitiesService {
     const relation = await this.prisma.relation.create({
       data: {
         fromId: entityId,
-        toId: dto.toId,
+        toId,
         type,
         relationTypeId: relationType?.id,
         justification: dto.justificationEs?.trim() || dto.justification?.trim() || undefined,
@@ -2890,7 +2969,7 @@ export class EntitiesService {
     return this.serializeRelation(persisted, 'es');
   }
 
-  async adminUpdateRelation(entityId: string, relationId: string, dto: any) {
+  async adminUpdateRelation(entityId: string, relationId: string, dto: RelationMutationDto) {
     const existing = await this.prisma.relation.findFirst({
       where: { id: relationId, fromId: entityId },
       include: { relationType: true },
@@ -3147,7 +3226,7 @@ export class EntitiesService {
       },
     });
 
-    await this.upsertSourceTranslations(existing.sourceId, dto as any);
+    await this.upsertSourceTranslations(existing.sourceId, dto);
 
     await this.prisma.sourceRef.update({
       where: { id: refId },

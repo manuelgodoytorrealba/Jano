@@ -14,8 +14,10 @@ import {
   homeDeckSurfaceDescription,
   homeDeckSurfaceLabel,
 } from '../home-decks-editorial-options';
+import { PublicEntity } from '../../../core/api/entities.models';
 import { HOME_DECK_STARTERS, HomeDeckStarter } from '../home-deck-starters';
 import { mediaDisplayUrl, resolveEntityMediaItem } from '../../../shared/media/media.utils';
+import { HomeDeckEntity } from '../../../core/api/home-decks.api';
 
 @Component({
   standalone: true,
@@ -359,7 +361,7 @@ export class AdminHomeDecksComponent {
     return decks.map((deck) => deck.title).join(' · ');
   }
 
-  starterDeckPreviewEntities(deck: AdminHomeDeck | null): any[] {
+  starterDeckPreviewEntities(deck: AdminHomeDeck | null): HomeDeckEntity[] {
     if (!deck) {
       return [];
     }
@@ -369,13 +371,13 @@ export class AdminHomeDecksComponent {
       .slice(0, 3);
   }
 
-  deckEntityImageUrl(entity: any): string | null {
+  deckEntityImageUrl(entity: PublicEntity): string | null {
     const media =
       resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
     return mediaDisplayUrl(media);
   }
 
-  deckEntityLabel(entity: any): string {
+  deckEntityLabel(entity: Partial<PublicEntity> & { name?: string | null }): string {
     return entity?.title?.trim() || entity?.name?.trim() || entity?.slug || 'Entity';
   }
 

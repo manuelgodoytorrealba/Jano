@@ -17,7 +17,8 @@ import {
   AdminHomeDeckPayload,
   AdminHomeDecksApi,
 } from '../../../core/api/admin-home-decks.api';
-import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
+import { PublicEntity } from '../../../core/api/entities.models';
+import { AdminEntitiesApi, AdminEntitySearchListItem } from '../../../core/api/admin-entities.api';
 import {
   HOME_DECK_CTA_ROUTE_OPTIONS,
   HomeDeckSurfaceValue,
@@ -38,6 +39,7 @@ type DeckForm = AdminHomeDeckPayload & {
 };
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+type DeckEntityCandidate = AdminEntitySearchListItem | PublicEntity;
 
 @Component({
   standalone: true,
@@ -173,7 +175,7 @@ export class AdminHomeDeckEditorComponent {
     this.entitySearch$.next(value ?? '');
   }
 
-  addEntity(entity: any): void {
+  addEntity(entity: AdminEntitySearchListItem): void {
     if (!this.deck) return;
 
     this.saving = true;
@@ -460,17 +462,17 @@ export class AdminHomeDeckEditorComponent {
     return option?.label ?? this.form.ctaRoute;
   }
 
-  entityImageUrl(entity: any): string | null {
+  entityImageUrl(entity: DeckEntityCandidate): string | null {
     const media =
       resolveEntityMediaItem(entity, 'card') ?? resolveEntityMediaItem(entity, 'detail');
     return mediaDisplayUrl(media);
   }
 
-  entityEyebrow(entity: any): string {
+  entityEyebrow(entity: DeckEntityCandidate): string {
     return (entity?.type ?? 'ENTITY').toString();
   }
 
-  entityStatusLabel(entity: any): string {
+  entityStatusLabel(entity: DeckEntityCandidate): string {
     return (entity?.status ?? 'DRAFT').toString();
   }
 

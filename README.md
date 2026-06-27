@@ -4,6 +4,25 @@ Full-stack art knowledge platform built with NestJS, Prisma, PostgreSQL and Angu
 
 ## Quick Start
 
+Versiones recomendadas del repo:
+
+- Node: `22.14.0`
+- npm: `10.9.4`
+
+Si usas `nvm`, ejecuta:
+
+```bash
+nvm use
+```
+
+Si usas Volta:
+
+```bash
+volta install node@22.14.0 npm@10.9.4
+```
+
+Evita Node 25 en este repo. El proyecto, CI y scripts locales están alineados con Node 22.
+
 ### Opcion recomendada: hibrido
 
 Base de datos en Docker. Backend y frontend en tu host.
@@ -54,7 +73,10 @@ En desarrollo usa `proxy.conf.js` para enviar `/api` y `/uploads` al backend.
 
 ```bash
 npm run setup:local
+npm run check
 npm run db:up
+npm run dev
+npm run mobile
 npm run backend:dev
 npm run frontend:dev
 npm run prisma:migrate
@@ -62,6 +84,8 @@ npm run prisma:seed
 npm run docker:up
 npm run docker:down
 ```
+
+`npm run check` ejecuta lint, typecheck, tests y format check para todo el monorepo.
 
 ## Docs adicionales
 

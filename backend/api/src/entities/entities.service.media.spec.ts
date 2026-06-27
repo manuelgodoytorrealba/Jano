@@ -16,6 +16,32 @@ jest.mock('./image-metadata', () => ({
   detectImageDimensionsFromBuffer: jest.fn(),
 }));
 
+type EntityMediaTransaction = {
+  media?: {
+    create?: (...args: unknown[]) => unknown;
+    update?: (...args: unknown[]) => unknown;
+  };
+  entityMedia?: {
+    create?: (...args: unknown[]) => unknown;
+    update?: (...args: unknown[]) => unknown;
+    updateMany?: (...args: unknown[]) => unknown;
+    findUniqueOrThrow?: (...args: unknown[]) => unknown;
+  };
+};
+
+type EntityMediaLinkFixture = {
+  id: string;
+  entityId?: string;
+  mediaId?: string;
+  role?: MediaRole;
+  sortOrder?: number;
+  isPrimary?: boolean;
+  displayMode?: string | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  media?: Record<string, unknown>;
+};
+
 describe('EntitiesService media admin workflows', () => {
   let service: EntitiesService;
   const txMediaUpdate = jest.fn();
@@ -77,19 +103,20 @@ describe('EntitiesService media admin workflows', () => {
     txMediaUpdate.mockResolvedValue(undefined);
     txEntityMediaUpdate.mockResolvedValue(undefined);
     txEntityMediaUpdateMany.mockResolvedValue({ count: 0 });
-    prisma.$transaction.mockImplementation(async (callback: (tx: any) => Promise<unknown>) =>
-      callback({
-        media: {
-          create: prisma.media.create,
-          update: txMediaUpdate,
-        },
-        entityMedia: {
-          create: prisma.entityMedia.create,
-          update: txEntityMediaUpdate,
-          updateMany: txEntityMediaUpdateMany,
-          findUniqueOrThrow: prisma.entityMedia.findUniqueOrThrow,
-        },
-      }),
+    prisma.$transaction.mockImplementation(
+      async (callback: (tx: EntityMediaTransaction) => Promise<unknown>) =>
+        callback({
+          media: {
+            create: prisma.media.create,
+            update: txMediaUpdate,
+          },
+          entityMedia: {
+            create: prisma.entityMedia.create,
+            update: txEntityMediaUpdate,
+            updateMany: txEntityMediaUpdateMany,
+            findUniqueOrThrow: prisma.entityMedia.findUniqueOrThrow,
+          },
+        }),
     );
 
     (mkdir as jest.Mock).mockResolvedValue(undefined);
@@ -387,11 +414,12 @@ describe('EntitiesService media admin workflows', () => {
         derivedFromMediaId: 'media-external-1',
       },
     });
-    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) =>
-      callback({
-        media: { create: transactionMediaCreate },
-        entityMedia: { create: transactionEntityMediaCreate },
-      }),
+    prisma.$transaction.mockImplementationOnce(
+      async (callback: (tx: EntityMediaTransaction) => Promise<unknown>) =>
+        callback({
+          media: { create: transactionMediaCreate },
+          entityMedia: { create: transactionEntityMediaCreate },
+        }),
     );
 
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -516,14 +544,15 @@ describe('EntitiesService media admin workflows', () => {
         originType: MediaOriginType.INGESTED,
       },
     };
-    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) =>
-      callback({
-        entityMedia: {
-          update: txUpdate,
-          updateMany: txEntityMediaUpdateMany,
-          findUniqueOrThrow: jest.fn().mockResolvedValue(promotedLink),
-        },
-      }),
+    prisma.$transaction.mockImplementationOnce(
+      async (callback: (tx: EntityMediaTransaction) => Promise<unknown>) =>
+        callback({
+          entityMedia: {
+            update: txUpdate,
+            updateMany: txEntityMediaUpdateMany,
+            findUniqueOrThrow: jest.fn().mockResolvedValue(promotedLink),
+          },
+        }),
     );
     prisma.entityMedia.findUniqueOrThrow.mockResolvedValue({
       id: 'link-external-1',
@@ -667,14 +696,15 @@ describe('EntitiesService media admin workflows', () => {
         originType: MediaOriginType.EXTERNAL_URL,
       },
     };
-    prisma.$transaction.mockImplementationOnce(async (callback: (tx: any) => Promise<unknown>) =>
-      callback({
-        entityMedia: {
-          update: txUpdate,
-          updateMany: txEntityMediaUpdateMany,
-          findUniqueOrThrow: jest.fn().mockResolvedValue(restoredLink),
-        },
-      }),
+    prisma.$transaction.mockImplementationOnce(
+      async (callback: (tx: EntityMediaTransaction) => Promise<unknown>) =>
+        callback({
+          entityMedia: {
+            update: txUpdate,
+            updateMany: txEntityMediaUpdateMany,
+            findUniqueOrThrow: jest.fn().mockResolvedValue(restoredLink),
+          },
+        }),
     );
     prisma.entityMedia.findUniqueOrThrow.mockResolvedValue({
       id: 'link-ingested-1',
@@ -757,7 +787,7 @@ describe('EntitiesService media admin workflows', () => {
         id: 'media-legacy-1',
         originType: MediaOriginType.EXTERNAL_URL,
       },
-    } as any);
+    } satisfies EntityMediaLinkFixture);
 
     await service.adminUpdateMedia('entity-1', 'link-legacy-1', {
       url: 'https://example.com/legacy.jpg',
@@ -831,9 +861,7 @@ describe('EntitiesService media admin workflows', () => {
 
     const result = await service.previewBySlug('guernica');
 
-    expect(
-      result.mediaLibrary.resolvedSlots.find((slot: any) => slot.slotKey === 'preview'),
-    ).toEqual(
+    expect(result.mediaLibrary.resolvedSlots.find((slot) => slot.slotKey === 'preview')).toEqual(
       expect.objectContaining({
         source: 'explicit',
         matchedRole: 'THUMBNAIL',
@@ -856,7 +884,11 @@ describe('EntitiesService media admin workflows', () => {
 
   it('normalizes legacy fallback to a single active media when adminGetById loads dirty data', async () => {
     prisma.entityMedia.findMany
-      .mockResolvedValueOnce([{ id: 'legacy-a' }, { id: 'legacy-b' }, { id: 'legacy-c' }] as any)
+      .mockResolvedValueOnce([
+        { id: 'legacy-a' },
+        { id: 'legacy-b' },
+        { id: 'legacy-c' },
+      ] satisfies EntityMediaLinkFixture[])
       .mockResolvedValueOnce([]);
     prisma.entity.findUnique.mockResolvedValue({
       id: 'entity-1',

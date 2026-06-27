@@ -10,6 +10,25 @@ import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { attachResolvedMedia } from '../entities/media.resolver';
 
+type CollectionItemWithEntity = {
+  sortOrder?: number | null;
+  entity?: CollectionEntityRecord | null;
+} & Record<string, unknown>;
+
+type CollectionRecord = {
+  items?: CollectionItemWithEntity[] | null;
+} & Record<string, unknown>;
+
+type CollectionEntityRecord = Parameters<typeof attachResolvedMedia>[0] & {
+  id: string;
+  title: string;
+  type: string;
+  slug: string;
+  summary?: string | null;
+  startYear?: number | null;
+  endYear?: number | null;
+};
+
 @Injectable()
 export class CollectionsService {
   constructor(private prisma: PrismaService) {}
@@ -33,8 +52,8 @@ export class CollectionsService {
     },
   };
 
-  private serializeCollection(collection: any, graph: any = null) {
-    const items = (collection.items ?? []).map((item: any) => ({
+  private serializeCollection(collection: CollectionRecord, graph: unknown = null) {
+    const items = (collection.items ?? []).map((item) => ({
       ...item,
       entity: item.entity ? attachResolvedMedia(item.entity) : item.entity,
     }));
@@ -303,9 +322,12 @@ export class CollectionsService {
     return { ok: true };
   }
 
-  private async buildCollectionGraph(items: any[]) {
+  private async buildCollectionGraph(items: CollectionItemWithEntity[]) {
     const nodes = items
-      .filter((item) => item.entity)
+      .filter(
+        (item): item is CollectionItemWithEntity & { entity: CollectionEntityRecord } =>
+          !!item.entity,
+      )
       .map((item) => {
         const entity = attachResolvedMedia(item.entity);
         return {
@@ -352,7 +374,9 @@ export class CollectionsService {
       edges,
       summary: {
         entityTypes: this.countBy(nodes.map((node) => node.type)),
-        relationTypes: this.countBy(edges.map((edge) => edge.relationType)),
+        relationTypes: this.countBy(
+          edges.map((edge) => edge.relationType).filter((value): value is string => !!value),
+        ),
       },
     };
   }

@@ -98,7 +98,9 @@ describe('EntitiesService.list filters', () => {
     prisma.entity.findMany.mockResolvedValue([]);
     prisma.entity.findUnique.mockResolvedValue(null);
     prisma.entity.delete.mockResolvedValue({ id: 'entity-id' });
-    prisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
+    prisma.$transaction.mockImplementation(
+      async (callback: (tx: typeof prisma) => Promise<unknown> | unknown) => callback(prisma),
+    );
     prisma.source.deleteMany.mockResolvedValue({ count: 0 });
     prisma.sourceRef.findMany.mockResolvedValue([]);
     prisma.sourceRef.count.mockResolvedValue(0);

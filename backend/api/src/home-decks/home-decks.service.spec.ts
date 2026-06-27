@@ -1,5 +1,6 @@
 import { ConflictException } from '@nestjs/common';
 import { EntityStatus, HomeDeckSurface } from '@prisma/client';
+import type { PrismaService } from '../prisma/prisma.service';
 import { HomeDecksService } from './home-decks.service';
 
 describe('HomeDecksService', () => {
@@ -47,7 +48,7 @@ describe('HomeDecksService', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    service = new HomeDecksService(prisma as any);
+    service = new HomeDecksService(prisma as unknown as PrismaService);
   });
 
   it('loads public decks as active decks ordered by editorial sort and published items only', async () => {
@@ -83,7 +84,7 @@ describe('HomeDecksService', () => {
     });
     expect(result).toHaveLength(2);
     expect(result[0].entities).toHaveLength(1);
-    expect(result[0].entities[0].entity.resolvedMedia).toBeDefined();
+    expect(result[0].entities[0]?.entity?.resolvedMedia).toBeDefined();
     expect(result[1]).toEqual(
       expect.objectContaining({
         slug: 'place',
@@ -236,7 +237,7 @@ describe('HomeDecksService', () => {
   });
 });
 
-function buildDeck(overrides: Record<string, any> = {}) {
+function buildDeck(overrides: Record<string, unknown> = {}) {
   return {
     id: 'deck-1',
     slug: 'discover',

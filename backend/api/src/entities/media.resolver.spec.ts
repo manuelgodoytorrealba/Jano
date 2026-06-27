@@ -1,7 +1,32 @@
 import { buildAdminMediaLibrary, buildResolvedMedia, resolveEntityMedia } from './media.resolver';
 
+type MediaLinkOverride = Partial<{
+  id: string;
+  role: string;
+  sortOrder: number;
+  isPrimary: boolean;
+  displayMode: 'COVER' | 'CONTAIN' | null;
+  focalX: number | null;
+  focalY: number | null;
+  mediaId: string;
+  url: string;
+  displayUrl: string;
+  canonicalUrl: string | null;
+  sourcePageUrl: string | null;
+  mimeType: string;
+  width: number;
+  height: number;
+  isVector: boolean;
+  provider: string;
+  qualityTier: string;
+  alt: string | null;
+  source: string | null;
+  photoBy: string | null;
+  license: string | null;
+}>;
+
 describe('media.resolver', () => {
-  const createLink = (overrides: Record<string, any> = {}) => ({
+  const createLink = (overrides: MediaLinkOverride = {}) => ({
     id: overrides.id ?? 'link-1',
     role: overrides.role ?? 'PRIMARY_LEGACY',
     sortOrder: overrides.sortOrder ?? 0,

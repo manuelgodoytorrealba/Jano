@@ -1,6 +1,7 @@
 export const SUPPORTED_LOCALES = ['es', 'en'] as const;
 export const DEFAULT_CONTENT_LOCALE = 'es';
 export const FALLBACK_CONTENT_LOCALE = 'en';
+const SUPPORTED_LOCALE_SET = new Set<string>(SUPPORTED_LOCALES);
 
 type TranslationLike =
   | {
@@ -25,7 +26,7 @@ export type TranslationStatus = 'complete' | 'partial' | 'missing';
 
 export function normalizeLocale(locale: string | null | undefined): string {
   const normalized = (locale ?? DEFAULT_CONTENT_LOCALE).trim().toLowerCase().split('-')[0];
-  return SUPPORTED_LOCALES.includes(normalized as any) ? normalized : DEFAULT_CONTENT_LOCALE;
+  return SUPPORTED_LOCALE_SET.has(normalized) ? normalized : DEFAULT_CONTENT_LOCALE;
 }
 
 function translationStatus(translation: TranslationLike): TranslationStatus {

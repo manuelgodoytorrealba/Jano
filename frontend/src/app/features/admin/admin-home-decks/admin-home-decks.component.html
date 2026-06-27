@@ -152,7 +152,7 @@
                         @if (deckEntityImageUrl(item.entity); as entityImageUrl) {
                           <img [src]="entityImageUrl" [alt]="deckEntityLabel(item.entity)" />
                         } @else {
-                          <span>{{ item.entity?.type || 'ENTITY' }}</span>
+                          <span>{{ item.entity.type || 'ENTITY' }}</span>
                         }
                       </div>
                       <span>{{ deckEntityLabel(item.entity) }}</span>
@@ -385,7 +385,7 @@
                                     [alt]="deckEntityLabel(item.entity)"
                                   />
                                 } @else {
-                                  <span>{{ item.entity?.type || 'ENTITY' }}</span>
+                                  <span>{{ item.entity.type || 'ENTITY' }}</span>
                                 }
                               </div>
                               <span>{{ deckEntityLabel(item.entity) }}</span>
