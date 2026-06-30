@@ -7,12 +7,27 @@
   ],
   "packageManager": "npm@10.9.4",
   "engines": {
-    "node": "22.14.0",
-    "npm": "10.9.4"
+    "node": ">=22.14.0 <23",
+    "npm": ">=10.9.4 <11"
   },
   "volta": {
     "node": "22.14.0",
     "npm": "10.9.4"
+  },
+  "overrides": {
+    "@babel/core": "7.29.7",
+    "@nestjs/platform-express": {
+      "multer": "2.2.0"
+    },
+    "@prisma/dev": {
+      "@hono/node-server": "1.19.14"
+    },
+    "@angular/build": {
+      "undici": "7.28.0"
+    },
+    "vite": {
+      "esbuild": "0.28.1"
+    }
   },
   "scripts": {
     "postinstall": "npm run prisma:generate",
@@ -32,6 +47,10 @@
     "docker:down": "docker compose -f infra/docker-compose.yml down",
     "docker:reset": "docker compose -f infra/docker-compose.yml down -v --remove-orphans",
     "docker:logs": "docker compose -f infra/docker-compose.yml logs -f",
+    "deploy:prod": "bash infra/scripts/prod.sh deploy",
+    "backup:prod": "bash infra/scripts/prod.sh backup",
+    "healthcheck:prod": "bash infra/scripts/prod.sh healthcheck",
+    "rollback:prod": "bash infra/scripts/prod.sh rollback",
     "db:up": "docker compose -f infra/docker-compose.yml up -d db adminer",
     "db:down": "docker compose -f infra/docker-compose.yml stop db adminer",
     "backend:install": "npm install --workspace backend/api",

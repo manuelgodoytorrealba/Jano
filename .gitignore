@@ -1,5 +1,7 @@
 .DS_Store
 .env
+infra/.env.production
+.deploy/
 
 node_modules
 .playwright-cli/

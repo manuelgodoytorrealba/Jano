@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 FROM node:22.14.0-bookworm-slim AS base
 WORKDIR /app
 
@@ -5,35 +7,40 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends openssl \
   && rm -rf /var/lib/apt/lists/*
 
-COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm install --global npm@10.9.4
 
-COPY prisma ./prisma
+COPY package.json package-lock.json .npmrc ./
+COPY backend/api/package.json ./backend/api/package.json
+COPY frontend/package.json ./frontend/package.json
+RUN npm pkg delete scripts.postinstall scripts.prepare
+
+FROM base AS development-dependencies
+RUN --mount=type=cache,target=/root/.npm npm ci --workspace=backend/api
+
+COPY backend/api/prisma ./backend/api/prisma
+COPY backend/api/prisma.config.ts ./backend/api/prisma.config.ts
+WORKDIR /app/backend/api
 RUN npx prisma generate
 
-FROM base AS dev
+FROM development-dependencies AS dev
 ENV NODE_ENV=development
-COPY . .
+COPY backend/api ./
 CMD ["npm", "run", "start:dev"]
 
-FROM base AS build
-COPY . .
+FROM dev AS build
 RUN npm run build
 
-FROM node:22.14.0-bookworm-slim AS runtime
-WORKDIR /app
+FROM base AS production-dependencies
 ENV NODE_ENV=production
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --workspace=backend/api
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends openssl \
-  && rm -rf /var/lib/apt/lists/*
-
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
-
-COPY prisma ./prisma
+COPY backend/api/prisma ./backend/api/prisma
+COPY backend/api/prisma.config.ts ./backend/api/prisma.config.ts
+WORKDIR /app/backend/api
 RUN npx prisma generate
 
-COPY --from=build /app/dist ./dist
+FROM production-dependencies AS runtime
+COPY --from=build /app/backend/api/dist ./dist
 
-CMD ["node", "dist/main"]
+EXPOSE 3000
+CMD ["node", "dist/src/main.js"]

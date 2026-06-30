@@ -2,12 +2,13 @@
 
 ## Versiones soportadas
 
-- Node: `22.14.0`
-- npm: `10.9.4`
+- Node: `>=22.14.0 <23` (`22.14.0` está fijado en `.nvmrc` y Docker)
+- npm: `>=10.9.4 <11`
 
 Usa la version pinneada del repo antes de instalar o arrancar nada:
 
 ```bash
+nvm install
 nvm use
 ```
 
@@ -175,6 +176,41 @@ docker compose -f infra/docker-compose.yml up --build backend frontend
 docker compose -f infra/docker-compose.yml up -d db adminer
 ```
 
+## Producción
+
+Producción usa un Compose y un entorno separados. No uses `infra/docker-compose.yml` en el servidor.
+
+```bash
+cp infra/.env.production.example infra/.env.production
+chmod 600 infra/.env.production
+docker volume ls
+```
+
+Después de configurar los nombres exactos de los volúmenes existentes y los secretos:
+
+```bash
+git pull --ff-only origin develop
+RELEASE="$(git rev-parse --short=12 HEAD)"
+bash infra/scripts/prod.sh preflight "$RELEASE"
+bash infra/scripts/prod.sh deploy "$RELEASE"
+bash infra/scripts/prod.sh status "$RELEASE"
+```
+
+Backup y comprobación manual:
+
+```bash
+bash infra/scripts/prod.sh backup
+bash infra/scripts/prod.sh healthcheck
+```
+
+Rollback de aplicación, solo después de confirmar compatibilidad con el esquema actual:
+
+```bash
+bash infra/scripts/prod.sh rollback COMMIT_ANTERIOR --schema-compatible
+```
+
+Consulta el procedimiento completo en [deployment.md](deployment.md).
+
 ## Troubleshooting
 
 ### Prisma client desactualizado
@@ -204,8 +240,25 @@ Edita `.env` en la raíz y cambia `FRONTEND_PORT`, `BACKEND_PORT`, `POSTGRES_POR
 ### Dependencias rotas al cambiar de máquina
 
 ```bash
+nvm install
 nvm use
-npm run setup:local
+npm install --global npm@10.9.4
+npm ci
+```
+
+En servidores usa `npm ci`, nunca `npm install`: instala exactamente el lockfile y no intenta resolver versiones nuevas. Si el despliegue es completamente Docker, no necesitas instalar las dependencias en el host; ejecuta directamente `docker compose -f infra/docker-compose.yml up --build -d`.
+
+### `EBADENGINE` durante la instalación
+
+No ignores el aviso ni uses `--force`. Comprueba y corrige el runtime antes de instalar:
+
+```bash
+node --version
+npm --version
+nvm install 22.14.0
+nvm use 22.14.0
+npm install --global npm@10.9.4
+npm ci
 ```
 
 ### Error de entorno en backend

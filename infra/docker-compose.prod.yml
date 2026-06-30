@@ -1,0 +1,129 @@
+name: ${COMPOSE_PROJECT_NAME:?COMPOSE_PROJECT_NAME is required}
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '3'
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+    volumes:
+      - jano_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    logging: *default-logging
+
+  backend:
+    image: jano-backend:${JANO_RELEASE:?JANO_RELEASE is required}
+    pull_policy: never
+    build:
+      context: ..
+      dockerfile: backend/api/Dockerfile
+      target: runtime
+    init: true
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: &backend-environment
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:?FRONTEND_ORIGIN is required}
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      MEDIA_PUBLIC_BASE_URL: ${MEDIA_PUBLIC_BASE_URL:?MEDIA_PUBLIC_BASE_URL is required}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+    ports:
+      - '${BACKEND_BIND:-127.0.0.1}:${BACKEND_PORT:-3000}:3000'
+    volumes:
+      - backend_uploads:/app/backend/api/uploads
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    stop_grace_period: 30s
+    logging: *default-logging
+
+  migrate:
+    image: jano-backend:${JANO_RELEASE:?JANO_RELEASE is required}
+    pull_policy: never
+    profiles: [release]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: *backend-environment
+    command: ['npx', 'prisma', 'migrate', 'deploy']
+    restart: 'no'
+    logging: *default-logging
+
+  frontend:
+    image: jano-frontend:${JANO_RELEASE:?JANO_RELEASE is required}
+    pull_policy: never
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+      target: runtime
+    init: true
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4200
+      SSR_API_ORIGIN: http://backend:3000
+      API_PROXY_TARGET: http://backend:3000
+      NG_ALLOWED_HOSTS: ${NG_ALLOWED_HOSTS:?NG_ALLOWED_HOSTS is required}
+    ports:
+      - '${FRONTEND_BIND:-127.0.0.1}:${FRONTEND_PORT:-4200}:4200'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4200/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    stop_grace_period: 30s
+    logging: *default-logging
+
+  adminer:
+    image: adminer
+    profiles: [tools]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:${ADMINER_PORT:-8082}:8080'
+    logging: *default-logging
+
+volumes:
+  jano_pgdata:
+    external: true
+    name: ${POSTGRES_VOLUME:?POSTGRES_VOLUME is required}
+  backend_uploads:
+    external: true
+    name: ${UPLOADS_VOLUME:?UPLOADS_VOLUME is required}

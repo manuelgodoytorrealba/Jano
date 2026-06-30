@@ -4,14 +4,15 @@ Full-stack art knowledge platform built with NestJS, Prisma, PostgreSQL and Angu
 
 ## Quick Start
 
-Versiones recomendadas del repo:
+Versiones soportadas del repo:
 
-- Node: `22.14.0`
-- npm: `10.9.4`
+- Node: `>=22.14.0 <23` (`22.14.0` es la versión fijada para desarrollo y Docker)
+- npm: `>=10.9.4 <11`
 
 Si usas `nvm`, ejecuta:
 
 ```bash
+nvm install
 nvm use
 ```
 
@@ -21,7 +22,7 @@ Si usas Volta:
 volta install node@22.14.0 npm@10.9.4
 ```
 
-Evita Node 25 en este repo. El proyecto, CI y scripts locales están alineados con Node 22.
+Node 20 y Node 25 no son compatibles. Prisma 7 requiere Node 22 o superior y el repositorio limita la versión mayor a Node 22.
 
 ### Opcion recomendada: hibrido
 
@@ -89,6 +90,7 @@ npm run docker:down
 
 ## Docs adicionales
 
+- [docs/deployment.md](docs/deployment.md)
 - [docs/commands.md](docs/commands.md)
 - [docs/architecture-overview.md](docs/architecture-overview.md)
 - [docs/development-workflow.md](docs/development-workflow.md)

@@ -202,6 +202,17 @@ Always respond with:
 6. Known limitations
 7. Suggested next step (optional)
 
+---
+
+# Production Deployment Safety
+
+- Production deployments must use `infra/docker-compose.prod.yml` through `infra/scripts/prod.sh`.
+- Never run `docker compose down -v`, `prisma migrate reset`, or `prisma db push` against production.
+- Never run production migrations from backend startup; use the one-shot `migrate` service after a verified backup.
+- Treat PostgreSQL and `backend_uploads` as one release snapshot and back up both.
+- Production volume names must be verified and configured as external volumes before deploy.
+- Application rollback never restores or mutates PostgreSQL automatically.
+
 Be concise but useful.
 
 ---

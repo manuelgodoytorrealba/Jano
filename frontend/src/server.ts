@@ -92,6 +92,10 @@ const allowedHostSet = new Set(allowedHosts);
 const app = express();
 app.set('trust proxy', true);
 
+app.get('/healthz', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use((req, _res, next) => {
   const forwardedHost = firstHeaderValue(req.headers['x-forwarded-host']);
 

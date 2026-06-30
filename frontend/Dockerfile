@@ -1,30 +1,34 @@
+# syntax=docker/dockerfile:1.7
+
 FROM node:22.14.0-bookworm-slim AS base
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm install --global npm@10.9.4
 
-# ---- DEV (no se usará en servidor) ----
-FROM base AS dev
+COPY package.json package-lock.json .npmrc ./
+COPY backend/api/package.json ./backend/api/package.json
+COPY frontend/package.json ./frontend/package.json
+RUN npm pkg delete scripts.postinstall scripts.prepare
+
+FROM base AS development-dependencies
+RUN --mount=type=cache,target=/root/.npm npm ci --workspace=frontend
+
+FROM development-dependencies AS dev
 ENV NODE_ENV=development
-COPY . .
+WORKDIR /app/frontend
+COPY frontend ./
 CMD ["npm", "run", "start:host"]
 
-# ---- BUILD ----
-FROM base AS build
-COPY . .
+FROM dev AS build
 RUN npm run build
 
-# ---- PRODUCTION ----
-FROM node:22.14.0-bookworm-slim AS runtime
-WORKDIR /app
+FROM base AS production-dependencies
 ENV NODE_ENV=production
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --workspace=frontend
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
-
-COPY --from=build /app/dist ./dist
+FROM production-dependencies AS runtime
+WORKDIR /app/frontend
+COPY --from=build /app/frontend/dist ./dist
 
 EXPOSE 4200
-
 CMD ["npm", "run", "serve:ssr:jano-web-app"]

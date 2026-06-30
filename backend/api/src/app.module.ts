@@ -13,8 +13,10 @@ import { RelationTypesModule } from './relation-types/relation-types.module';
 import { TagsModule } from './tags/tags.module';
 import { CuratedModule } from './curated/curated.module';
 import { validateEnv } from './config/env.validation';
+import { HealthController } from './health.controller';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
