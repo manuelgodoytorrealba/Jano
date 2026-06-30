@@ -1,9 +1,13 @@
 <section class="home-page">
   <h1 class="sr-only">JANO home: immersive art discovery</h1>
 
-  @if (loadState() === 'ready') {
+  @if (loadState() === 'ready' || loadState() === 'loading') {
     <app-entity-deck
       class="home-page__deck"
+      [class.home-page__deck--loading]="loadState() === 'loading'"
+      [attr.role]="loadState() === 'loading' ? 'status' : null"
+      [attr.aria-label]="loadState() === 'loading' ? i18n.t('home.state.loading') : null"
+      [attr.aria-busy]="loadState() === 'loading'"
       [items]="deckItems()"
       [backgroundImage]="backgroundImage()"
       [mobileVariant]="'editorial'"

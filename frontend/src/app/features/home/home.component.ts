@@ -49,8 +49,11 @@ export class HomeComponent {
     });
 
     effect(() => {
-      this.i18n.locale();
-      this.loadHomeDecks();
+      const locale = this.i18n.locale();
+      const cachedDecks = this.homeDecksApi.readCachedPublic('HOME', locale);
+
+      if (cachedDecks) this.setDecks(cachedDecks);
+      this.loadHomeDecks(locale);
     });
   }
 
@@ -111,25 +114,27 @@ export class HomeComponent {
   }
 
   retryLoad(): void {
-    this.loadHomeDecks();
+    this.loadHomeDecks(this.i18n.locale());
   }
 
-  private loadHomeDecks(): void {
-    this.loadState.set('loading');
+  private loadHomeDecks(locale: string): void {
+    if (!this.deckItems().length) this.loadState.set('loading');
+
     this.homeDecksApi
-      .listPublic()
+      .listPublic('HOME', locale)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (decks) => {
-          const items = decks.map((deck) => this.deckToItem(deck));
-          this.deckItems.set(items);
-          this.loadState.set(items.length ? 'ready' : 'empty');
-        },
+        next: (decks) => this.setDecks(decks),
         error: () => {
-          this.deckItems.set([]);
-          this.loadState.set('error');
+          if (!this.deckItems().length) this.loadState.set('error');
         },
       });
+  }
+
+  private setDecks(decks: HomeDeck[]): void {
+    const items = decks.map((deck) => this.deckToItem(deck));
+    this.deckItems.set(items);
+    this.loadState.set(items.length ? 'ready' : 'empty');
   }
 
   private deckToItem(deck: HomeDeck): DeckItem {

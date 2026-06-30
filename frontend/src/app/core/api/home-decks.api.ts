@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { tap } from 'rxjs';
 import { apiUrl } from './api-base';
 import { PublicEntity } from './entities.models';
 
@@ -36,8 +37,21 @@ export type HomeDeck = {
 @Injectable({ providedIn: 'root' })
 export class HomeDecksApi {
   private http = inject(HttpClient);
+  private readonly publicCache = new Map<string, HomeDeck[]>();
 
-  listPublic(surface: 'HOME' | 'RECOMMENDED' = 'HOME') {
-    return this.http.get<HomeDeck[]>(apiUrl('/home-decks'), { params: { surface } });
+  listPublic(surface: 'HOME' | 'RECOMMENDED' = 'HOME', locale?: string) {
+    return this.http
+      .get<HomeDeck[]>(apiUrl('/home-decks'), {
+        params: locale ? { surface, locale } : { surface },
+      })
+      .pipe(
+        tap((decks) => {
+          if (locale) this.publicCache.set(`${surface}:${locale}`, decks);
+        }),
+      );
+  }
+
+  readCachedPublic(surface: 'HOME' | 'RECOMMENDED', locale: string): HomeDeck[] | undefined {
+    return this.publicCache.get(`${surface}:${locale}`);
   }
 }

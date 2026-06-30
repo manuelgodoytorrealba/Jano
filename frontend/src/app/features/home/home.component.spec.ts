@@ -13,15 +13,16 @@ import { SeoService } from '../../core/seo/seo.service';
 import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
-  it('shows backend empty/error states without inventing fallback decks or images', async () => {
-    const response = new Subject<HomeDeck[]>();
+  it('keeps valid decks during refreshes and shows errors only without content', async () => {
+    let response = new Subject<HomeDeck[]>();
     const listPublic = vi.fn(() => response);
+    const readCachedPublic = vi.fn(() => undefined as HomeDeck[] | undefined);
 
     await TestBed.configureTestingModule({
       imports: [HomeComponent],
       providers: [
         provideRouter([]),
-        { provide: HomeDecksApi, useValue: { listPublic } },
+        { provide: HomeDecksApi, useValue: { listPublic, readCachedPublic } },
         { provide: AdminHomeDecksApi, useValue: {} },
         { provide: AuthService, useValue: { currentUser: null } },
         { provide: SeoService, useValue: { setPageMeta: vi.fn() } },
@@ -50,9 +51,30 @@ describe('HomeComponent', () => {
     expect(component.loadState()).toBe('ready');
     expect(component.deckItems()[0]?.image).toBe('');
 
+    fixture.destroy();
+    readCachedPublic.mockReturnValue([deckWithoutImage]);
+    response = new Subject<HomeDeck[]>();
+
+    const cachedFixture = TestBed.createComponent(HomeComponent);
+    cachedFixture.detectChanges();
+
+    expect(cachedFixture.componentInstance.loadState()).toBe('ready');
+    expect(cachedFixture.componentInstance.deckItems()).toHaveLength(1);
+
     response.error(new Error('offline'));
-    expect(component.loadState()).toBe('error');
-    expect(component.deckItems()).toEqual([]);
+    expect(cachedFixture.componentInstance.loadState()).toBe('ready');
+    expect(cachedFixture.componentInstance.deckItems()).toHaveLength(1);
+
+    cachedFixture.destroy();
+    readCachedPublic.mockReturnValue(undefined);
+    response = new Subject<HomeDeck[]>();
+
+    const emptyFixture = TestBed.createComponent(HomeComponent);
+    emptyFixture.detectChanges();
+    response.error(new Error('offline'));
+
+    expect(emptyFixture.componentInstance.loadState()).toBe('error');
+    expect(emptyFixture.componentInstance.deckItems()).toEqual([]);
   });
 });
 

@@ -69,9 +69,9 @@ export class AppChromeComponent {
     { label: 'nav.discover', route: '/', kind: 'route', group: 'public', exact: true },
     { label: 'nav.explore', route: '/entities/artwork', kind: 'route', group: 'public' },
     { label: 'nav.articles', route: '/entities/article', kind: 'route', group: 'public' },
-    { label: 'nav.curated', route: '/curated', kind: 'route', group: 'public' },
+    { label: 'nav.curatedShort', route: '/curated', kind: 'route', group: 'public' },
     { label: 'nav.profile', route: '/profile', kind: 'route', group: 'personal' },
-    { label: 'nav.mySpace', route: '/my-space', kind: 'route', group: 'personal' },
+    { label: 'nav.spaceShort', route: '/my-space', kind: 'route', group: 'personal' },
   ];
 
   readonly utilityItems: UtilityItem[] = [
