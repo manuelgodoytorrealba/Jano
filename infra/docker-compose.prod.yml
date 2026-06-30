@@ -30,6 +30,8 @@ services:
       context: ..
       dockerfile: backend/api/Dockerfile
       target: runtime
+      args:
+        JANO_RELEASE: ${JANO_RELEASE:?JANO_RELEASE is required}
     init: true
     restart: unless-stopped
     depends_on:
@@ -65,12 +67,13 @@ services:
   migrate:
     image: jano-backend:${JANO_RELEASE:?JANO_RELEASE is required}
     pull_policy: never
+    init: true
     profiles: [release]
     depends_on:
       db:
         condition: service_healthy
     environment: *backend-environment
-    command: ['npx', 'prisma', 'migrate', 'deploy']
+    command: ['npm', 'exec', '--', 'prisma', 'migrate', 'deploy']
     restart: 'no'
     logging: *default-logging
 
@@ -81,6 +84,8 @@ services:
       context: ..
       dockerfile: frontend/Dockerfile
       target: runtime
+      args:
+        JANO_RELEASE: ${JANO_RELEASE:?JANO_RELEASE is required}
     init: true
     restart: unless-stopped
     depends_on:

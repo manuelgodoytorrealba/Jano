@@ -20,13 +20,16 @@ COPY frontend ./
 CMD ["npm", "run", "start:host"]
 
 FROM dev AS build
-RUN npm run build
+RUN npm run build \
+  && test -f dist/jano-web-app/server/server.mjs
 
 FROM base AS production-dependencies
 ENV NODE_ENV=production
 RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --workspace=frontend
 
 FROM production-dependencies AS runtime
+ARG JANO_RELEASE
+LABEL org.opencontainers.image.revision="$JANO_RELEASE"
 WORKDIR /app/frontend
 COPY --from=build /app/frontend/dist ./dist
 

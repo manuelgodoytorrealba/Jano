@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/root/.npm npm ci --workspace=backend/api
 COPY backend/api/prisma ./backend/api/prisma
 COPY backend/api/prisma.config.ts ./backend/api/prisma.config.ts
 WORKDIR /app/backend/api
-RUN npx prisma generate
+RUN npm exec -- prisma generate
 
 FROM development-dependencies AS dev
 ENV NODE_ENV=development
@@ -28,7 +28,8 @@ COPY backend/api ./
 CMD ["npm", "run", "start:dev"]
 
 FROM dev AS build
-RUN npm run build
+RUN npm run build \
+  && test -f dist/src/main.js
 
 FROM base AS production-dependencies
 ENV NODE_ENV=production
@@ -37,9 +38,11 @@ RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --workspace=backend/a
 COPY backend/api/prisma ./backend/api/prisma
 COPY backend/api/prisma.config.ts ./backend/api/prisma.config.ts
 WORKDIR /app/backend/api
-RUN npx prisma generate
+RUN npm exec -- prisma generate
 
 FROM production-dependencies AS runtime
+ARG JANO_RELEASE
+LABEL org.opencontainers.image.revision="$JANO_RELEASE"
 COPY --from=build /app/backend/api/dist ./dist
 
 EXPOSE 3000

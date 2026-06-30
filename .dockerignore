@@ -1,4 +1,5 @@
 .git
+.deploy
 .github
 .husky
 .playwright-cli
