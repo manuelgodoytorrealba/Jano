@@ -712,7 +712,12 @@
             <div class="media-grid">
               <label class="field full">
                 <span>Texto alternativo</span>
-                <input type="text" [(ngModel)]="draft.media.alt" [name]="'media-alt-' + draft.id" />
+                <input
+                  type="text"
+                  [ngModel]="draft.media.alt"
+                  (ngModelChange)="updateMediaField('alt', $event)"
+                  [name]="'media-alt-' + draft.id"
+                />
               </label>
 
               @if (!panel) {
@@ -720,7 +725,8 @@
                   <span>URL</span>
                   <input
                     type="url"
-                    [(ngModel)]="draft.media.url"
+                    [ngModel]="draft.media.url"
+                    (ngModelChange)="updateMediaField('url', $event)"
                     [name]="'media-url-' + draft.id"
                     [disabled]="!canEditSourceUrls"
                   />
@@ -730,7 +736,8 @@
                   <span>URL visible</span>
                   <input
                     type="url"
-                    [(ngModel)]="draft.media.displayUrl"
+                    [ngModel]="draft.media.displayUrl"
+                    (ngModelChange)="updateMediaField('displayUrl', $event)"
                     [name]="'media-display-url-' + draft.id"
                     [disabled]="!canEditSourceUrls"
                   />
@@ -740,7 +747,8 @@
                   <span>Página fuente</span>
                   <input
                     type="url"
-                    [(ngModel)]="draft.media.sourcePageUrl"
+                    [ngModel]="draft.media.sourcePageUrl"
+                    (ngModelChange)="updateMediaField('sourcePageUrl', $event)"
                     [name]="'media-source-page-url-' + draft.id"
                   />
                 </label>
@@ -759,7 +767,8 @@
                   <span>URL</span>
                   <input
                     type="url"
-                    [(ngModel)]="draft.media.url"
+                    [ngModel]="draft.media.url"
+                    (ngModelChange)="updateMediaField('url', $event)"
                     [name]="'media-url-panel-' + draft.id"
                   />
                 </label>
@@ -768,7 +777,8 @@
                   <span>URL visible</span>
                   <input
                     type="url"
-                    [(ngModel)]="draft.media.displayUrl"
+                    [ngModel]="draft.media.displayUrl"
+                    (ngModelChange)="updateMediaField('displayUrl', $event)"
                     [name]="'media-display-url-panel-' + draft.id"
                   />
                 </label>
@@ -777,7 +787,8 @@
                   <span>Página fuente</span>
                   <input
                     type="url"
-                    [(ngModel)]="draft.media.sourcePageUrl"
+                    [ngModel]="draft.media.sourcePageUrl"
+                    (ngModelChange)="updateMediaField('sourcePageUrl', $event)"
                     [name]="'media-source-page-url-panel-' + draft.id"
                   />
                 </label>
@@ -785,7 +796,11 @@
 
               <label class="field">
                 <span>Asignación editorial</span>
-                <select [(ngModel)]="draft.role" [name]="'media-role-' + draft.id">
+                <select
+                  [ngModel]="draft.role"
+                  (ngModelChange)="updateDraftField('role', $event)"
+                  [name]="'media-role-' + draft.id"
+                >
                   @for (role of mediaRoles; track role) {
                     <option [value]="role">{{ mediaRoleLabel(role) }}</option>
                   }
@@ -794,7 +809,11 @@
 
               <label class="field">
                 <span>Ajuste visual</span>
-                <select [(ngModel)]="draft.displayMode" [name]="'media-display-mode-' + draft.id">
+                <select
+                  [ngModel]="draft.displayMode"
+                  (ngModelChange)="updateDraftField('displayMode', $event)"
+                  [name]="'media-display-mode-' + draft.id"
+                >
                   @for (mode of displayModes; track mode.value) {
                     <option [value]="mode.value">{{ mode.label }}</option>
                   }
@@ -805,7 +824,8 @@
                 <span>Orden</span>
                 <input
                   type="number"
-                  [(ngModel)]="draft.sortOrder"
+                  [ngModel]="draft.sortOrder"
+                  (ngModelChange)="updateDraftField('sortOrder', $event)"
                   [name]="'media-sort-order-' + draft.id"
                 />
               </label>
@@ -814,7 +834,8 @@
                 <span>Fallback legacy</span>
                 <input
                   type="checkbox"
-                  [(ngModel)]="draft.isPrimary"
+                  [ngModel]="draft.isPrimary"
+                  (ngModelChange)="updateDraftField('isPrimary', $event)"
                   [name]="'media-primary-' + draft.id"
                 />
               </label>
@@ -826,7 +847,8 @@
                   min="0"
                   max="100"
                   step="0.1"
-                  [(ngModel)]="draft.focalX"
+                  [ngModel]="draft.focalX"
+                  (ngModelChange)="updateDraftField('focalX', $event)"
                   [name]="'media-focal-x-' + draft.id"
                 />
               </label>
@@ -838,7 +860,8 @@
                   min="0"
                   max="100"
                   step="0.1"
-                  [(ngModel)]="draft.focalY"
+                  [ngModel]="draft.focalY"
+                  (ngModelChange)="updateDraftField('focalY', $event)"
                   [name]="'media-focal-y-' + draft.id"
                 />
               </label>
@@ -850,7 +873,8 @@
                   min="0"
                   max="100"
                   step="0.1"
-                  [(ngModel)]="draft.assetFocalX"
+                  [ngModel]="draft.assetFocalX"
+                  (ngModelChange)="updateAssetFocal('x', $event)"
                   [name]="'media-asset-focal-x-' + draft.id"
                 />
               </label>
@@ -862,7 +886,8 @@
                   min="0"
                   max="100"
                   step="0.1"
-                  [(ngModel)]="draft.assetFocalY"
+                  [ngModel]="draft.assetFocalY"
+                  (ngModelChange)="updateAssetFocal('y', $event)"
                   [name]="'media-asset-focal-y-' + draft.id"
                 />
               </label>
@@ -871,7 +896,8 @@
                 <span>Fuente</span>
                 <input
                   type="text"
-                  [(ngModel)]="draft.media.source"
+                  [ngModel]="draft.media.source"
+                  (ngModelChange)="updateMediaField('source', $event)"
                   [name]="'media-source-' + draft.id"
                 />
               </label>
@@ -880,7 +906,8 @@
                 <span>Crédito</span>
                 <input
                   type="text"
-                  [(ngModel)]="draft.media.photoBy"
+                  [ngModel]="draft.media.photoBy"
+                  (ngModelChange)="updateMediaField('photoBy', $event)"
                   [name]="'media-photo-by-' + draft.id"
                 />
               </label>
@@ -889,7 +916,8 @@
                 <span>Licencia</span>
                 <input
                   type="text"
-                  [(ngModel)]="draft.media.license"
+                  [ngModel]="draft.media.license"
+                  (ngModelChange)="updateMediaField('license', $event)"
                   [name]="'media-license-' + draft.id"
                 />
               </label>

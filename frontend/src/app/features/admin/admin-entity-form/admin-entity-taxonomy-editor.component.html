@@ -1,0 +1,116 @@
+<div class="field full">
+  <span>Tags</span>
+  <div class="tag-admin">
+    <div class="tag-admin__current">
+      @if (tags.length) {
+        @for (entityTag of tags; track entityTag.tagId ?? entityTag.tag?.id) {
+          @if (entityTagId(entityTag); as tagId) {
+            <button type="button" class="tag-chip" (click)="removeTag(tagId)">
+              {{ entityTag.tag?.label ?? entityTag.tagId }} <span aria-hidden="true">×</span>
+            </button>
+          }
+        }
+      } @else {
+        <span class="muted">Sin tags asignados.</span>
+      }
+    </div>
+
+    <div class="tag-admin__attach">
+      <select [(ngModel)]="selectedTagId" name="selectedTagId">
+        <option value="">Seleccionar tag existente</option>
+        @for (tag of availableTagsToAttach(); track tag.id) {
+          <option [value]="tag.id">
+            {{ tag.label }}
+            @if (tag.category) {
+              · {{ tag.category }}
+            }
+          </option>
+        }
+      </select>
+      <button
+        class="btn"
+        type="button"
+        [disabled]="!selectedTagId || tagsSaving"
+        (click)="addSelectedTag()"
+      >
+        Añadir tag
+      </button>
+    </div>
+
+    <div class="tag-admin__create">
+      <input type="text" [(ngModel)]="newTagLabel" name="newTagLabel" placeholder="Nuevo tag" />
+      <input
+        type="text"
+        [(ngModel)]="newTagCategory"
+        name="newTagCategory"
+        placeholder="Categoría"
+      />
+      <button
+        class="btn"
+        type="button"
+        [disabled]="!newTagLabel.trim() || tagsSaving"
+        (click)="createTagAndAttach()"
+      >
+        Crear y añadir
+      </button>
+    </div>
+    @if (tagsMessage) {
+      <small class="success-text">{{ tagsMessage }}</small>
+    }
+    @if (tagsError) {
+      <small class="error-text">{{ tagsError }}</small>
+    }
+  </div>
+</div>
+
+<div class="field full">
+  <span>Aliases de búsqueda</span>
+  <div class="tag-admin">
+    <div class="tag-admin__current">
+      @if (aliases.length) {
+        @for (alias of aliases; track alias.id) {
+          <button type="button" class="tag-chip tag-chip--alias" (click)="removeAlias(alias.id)">
+            {{ alias.value }}
+            <small>{{ aliasLocaleLabel(alias.locale) }} · {{ aliasKindLabel(alias.kind) }}</small>
+            <span aria-hidden="true">×</span>
+          </button>
+        }
+      } @else {
+        <span class="muted">Sin aliases definidos.</span>
+      }
+    </div>
+
+    <div class="tag-admin__create tag-admin__create--alias">
+      <input
+        type="text"
+        [(ngModel)]="newAliasValue"
+        name="newAliasValue"
+        placeholder="Ej. caja japonesa secreta"
+      />
+      <select [(ngModel)]="newAliasLocale" name="newAliasLocale">
+        <option value="und">Global</option>
+        <option value="es">Español</option>
+        <option value="en">English</option>
+      </select>
+      <select [(ngModel)]="newAliasKind" name="newAliasKind">
+        @for (kind of aliasKinds; track kind.value) {
+          <option [value]="kind.value">{{ kind.label }}</option>
+        }
+      </select>
+      <button
+        class="btn"
+        type="button"
+        [disabled]="!newAliasValue.trim() || aliasesSaving"
+        (click)="addAlias()"
+      >
+        Añadir alias
+      </button>
+    </div>
+    @if (aliasesMessage) {
+      <small class="success-text">{{ aliasesMessage }}</small>
+    }
+    @if (aliasesError) {
+      <small class="error-text">{{ aliasesError }}</small>
+    }
+  </div>
+</div>

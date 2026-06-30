@@ -1,0 +1,182 @@
+<section class="details-box">
+  <div class="relations-head">
+    <h3>{{ title }}</h3>
+    <p class="muted">Campos específicos que alimentan la ficha pública de esta entidad.</p>
+  </div>
+
+  @if (error) {
+    <div class="error-box">{{ error }}</div>
+  }
+
+  @if (message) {
+    <div class="success-box">{{ message }}</div>
+  }
+
+  <div class="grid">
+    @if (entityType === 'ARTWORK') {
+      <label class="field">
+        <span>Técnica</span>
+        <input
+          type="text"
+          [(ngModel)]="details.technique"
+          (ngModelChange)="emitDraft()"
+          name="artworkTechnique"
+        />
+      </label>
+
+      <label class="field">
+        <span>Materiales</span>
+        <input
+          type="text"
+          [(ngModel)]="details.materials"
+          (ngModelChange)="emitDraft()"
+          name="artworkMaterials"
+        />
+      </label>
+
+      <label class="field">
+        <span>Dimensiones</span>
+        <input
+          type="text"
+          [(ngModel)]="details.dimensions"
+          (ngModelChange)="emitDraft()"
+          name="artworkDimensions"
+        />
+      </label>
+
+      <label class="field">
+        <span>Ubicación</span>
+        <input
+          type="text"
+          [(ngModel)]="details.location"
+          (ngModelChange)="emitDraft()"
+          name="artworkLocation"
+        />
+      </label>
+
+      <label class="field">
+        <span>Colección</span>
+        <input
+          type="text"
+          [(ngModel)]="details.collection"
+          (ngModelChange)="emitDraft()"
+          name="artworkCollection"
+        />
+      </label>
+
+      <label class="field">
+        <span>Estado</span>
+        <input
+          type="text"
+          [(ngModel)]="details.state"
+          (ngModelChange)="emitDraft()"
+          name="artworkState"
+        />
+      </label>
+
+      <label class="field full">
+        <span>Nacionalidad autor</span>
+        <input
+          type="text"
+          [(ngModel)]="details.authorNation"
+          (ngModelChange)="emitDraft()"
+          name="artworkAuthorNation"
+        />
+      </label>
+    }
+
+    @if (entityType === 'ARTIST') {
+      <label class="field">
+        <span>País</span>
+        <input
+          type="text"
+          [(ngModel)]="details.country"
+          (ngModelChange)="emitDraft()"
+          name="artistCountry"
+        />
+      </label>
+
+      <label class="field">
+        <span>Ciudad</span>
+        <input
+          type="text"
+          [(ngModel)]="details.city"
+          (ngModelChange)="emitDraft()"
+          name="artistCity"
+        />
+      </label>
+
+      <label class="field">
+        <span>Nacimiento</span>
+        <input
+          type="number"
+          [(ngModel)]="details.birthYear"
+          (ngModelChange)="emitDraft()"
+          name="artistBirthYear"
+        />
+      </label>
+
+      <label class="field">
+        <span>Muerte</span>
+        <input
+          type="number"
+          [(ngModel)]="details.deathYear"
+          (ngModelChange)="emitDraft()"
+          name="artistDeathYear"
+        />
+      </label>
+
+      <label class="field full">
+        <span>Disciplinas</span>
+        <input
+          type="text"
+          [(ngModel)]="details.disciplines"
+          (ngModelChange)="emitDraft()"
+          name="artistDisciplines"
+        />
+      </label>
+
+      <label class="field full">
+        <span>Biografía breve</span>
+        <textarea
+          rows="4"
+          [(ngModel)]="details.bioShort"
+          (ngModelChange)="emitDraft()"
+          name="artistBioShort"
+        ></textarea>
+      </label>
+
+      <label class="field full">
+        <span>Links</span>
+        <textarea
+          rows="3"
+          [(ngModel)]="details.links"
+          (ngModelChange)="emitDraft()"
+          name="artistLinks"
+        ></textarea>
+      </label>
+    }
+
+    @if (entityType === 'CONCEPT' || entityType === 'PERIOD') {
+      <label class="field full">
+        <span>Definición</span>
+        <textarea
+          rows="6"
+          [(ngModel)]="details.definition"
+          (ngModelChange)="emitDraft()"
+          name="typedDefinition"
+        ></textarea>
+      </label>
+    }
+  </div>
+
+  <div class="relations-actions">
+    <button class="btn primary" type="button" [disabled]="saving" (click)="save()">
+      @if (saving) {
+        Guardando ficha...
+      } @else {
+        Guardar ficha
+      }
+    </button>
+  </div>
+</section>

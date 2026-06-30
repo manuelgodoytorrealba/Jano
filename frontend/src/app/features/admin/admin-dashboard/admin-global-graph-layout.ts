@@ -1,4 +1,5 @@
-import { GraphPoint, GraphResponseDto } from '../../graph/graph.models';
+import { GraphResponseDto } from '../../../core/api/graph.models';
+import { GraphPoint } from '../../graph/graph.models';
 
 const FULL_CIRCLE = Math.PI * 2;
 

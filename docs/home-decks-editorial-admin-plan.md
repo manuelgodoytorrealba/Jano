@@ -1,10 +1,17 @@
 # Home Decks Editorial Admin Plan
 
+> Estado: **IMPLEMENTED** (2026-06-30)
+>
+> Plan histórico. `HomeDeck`/`HomeDeckItem`, el editor admin, la resolución de media y la lectura
+> pública desde contenido persistido ya están implementados. El fallback virtual y su
+> materialización fueron retirados. La arquitectura vigente está en
+> [`architecture-overview.md`](./architecture-overview.md).
+
 ## Purpose
 
 Home decks are the editorial surface of JANO's home page. They should let an admin shape discovery paths without touching code while keeping the backend as the source of truth.
 
-This plan prepares the implementation. It is intentionally not a feature implementation.
+This plan prepared the implementation; the sections below preserve the original design context.
 
 ## Product Decision
 

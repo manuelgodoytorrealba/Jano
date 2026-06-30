@@ -80,6 +80,39 @@ export default tseslint.config(
     },
   },
   {
+    files: ['frontend/src/app/core/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/features/**'],
+              message: 'Core contracts and services cannot depend on UI features.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['frontend/src/app/features/**/*.ts'],
+    ignores: ['frontend/src/app/features/admin/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/admin/**'],
+              message: 'Public features cannot depend on admin implementation details.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['backend/api/{src,test}/**/*.ts'],
     extends: [eslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
     languageOptions: {

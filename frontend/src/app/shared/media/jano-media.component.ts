@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import {
-  EntityWithMediaLinks,
+  EntityWithResolvedMedia,
   MediaLike,
   MediaUsage,
   entityVisualUrl,
@@ -19,7 +19,7 @@ import {
   styleUrls: ['./jano-media.component.scss'],
 })
 export class JanoMediaComponent {
-  @Input() entity: EntityWithMediaLinks | null = null;
+  @Input() entity: EntityWithResolvedMedia | null = null;
   @Input() media: MediaLike | null = null;
   @Input() usage: MediaUsage = 'card';
   @Input() alt: string | null = null;

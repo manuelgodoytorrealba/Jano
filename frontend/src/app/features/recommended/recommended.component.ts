@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { GraphResponseDto } from '../graph/graph.models';
+import { GraphResponseDto } from '../../core/api/graph.models';
 import { CuratedApi, CuratedPageResponse } from '../../core/api/curated.api';
 import { SeoService } from '../../core/seo/seo.service';
 import { I18nService } from '../../core/i18n/i18n.service';

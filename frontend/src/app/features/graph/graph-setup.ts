@@ -7,7 +7,8 @@ import {
   normalizeGraphData,
   stepForceLayout,
 } from './graph-layout';
-import { GraphData, GraphPoint, GraphResponseDto } from './graph.models';
+import { GraphResponseDto } from '../../core/api/graph.models';
+import { GraphData, GraphPoint } from './graph.models';
 
 export interface PreparedGraphState {
   graph: GraphData;
@@ -107,6 +108,52 @@ export function createFilterMap(
     acc[value] = persisted[value] !== false;
     return acc;
   }, {});
+}
+
+export function reconcileGraphFilters(
+  values: string[],
+  current: Record<string, boolean>,
+): Record<string, boolean> {
+  return values.reduce<Record<string, boolean>>((filters, value) => {
+    filters[value] = current[value] !== false;
+    return filters;
+  }, {});
+}
+
+export function reuseGraphPositions(
+  graph: GraphData,
+  current: Record<string, GraphPoint>,
+  fallback: Record<string, GraphPoint>,
+): Record<string, GraphPoint> {
+  const center = current[graph.centerId] ?? fallback[graph.centerId] ?? { x: 0, y: 0 };
+  return graph.nodes.reduce<Record<string, GraphPoint>>((positions, node) => {
+    const previous = current[node.id];
+    positions[node.id] = previous
+      ? { x: previous.x - center.x, y: previous.y - center.y }
+      : (fallback[node.id] ?? { x: 0, y: 0 });
+    return positions;
+  }, {});
+}
+
+export function pinGraphCenter(
+  graph: GraphData,
+  positions: Record<string, GraphPoint>,
+  velocities: Record<string, GraphPoint>,
+): void {
+  positions[graph.centerId] = { x: 0, y: 0 };
+  velocities[graph.centerId] = { x: 0, y: 0 };
+}
+
+export function stopGraphMotion(
+  graph: GraphData | null,
+  positions: Record<string, GraphPoint>,
+  velocities: Record<string, GraphPoint>,
+): void {
+  for (const velocity of Object.values(velocities)) {
+    velocity.x = 0;
+    velocity.y = 0;
+  }
+  if (graph) pinGraphCenter(graph, positions, velocities);
 }
 
 export function resolveGraphWarmupPasses(graph: GraphData, passes?: number): number {

@@ -12,6 +12,18 @@ import {
 
 export type TranslationCompleteness = 'complete' | 'partial' | 'missing';
 
+export type AdminEntityFormDraft = {
+  type: AdminEntityPayload['type'];
+  title: string;
+  slug: string;
+  summary: string;
+  content: string;
+  contentLevel: '' | NonNullable<AdminEntityPayload['contentLevel']>;
+  status: NonNullable<AdminEntityPayload['status']>;
+  startYear: number | null | string;
+  endYear: number | null | string;
+};
+
 export function createEmptyTranslationForm(): AdminEntityPreviewTranslationForm {
   return { title: '', shortDescription: '', essay: '', notes: '', excerpt: '' };
 }
@@ -68,17 +80,7 @@ export function translationStatusMark(status: TranslationCompleteness): string {
 }
 
 export function buildEntityPayload(
-  form: {
-    type: AdminEntityPayload['type'];
-    title: string;
-    slug: string;
-    summary: string;
-    content: string;
-    contentLevel: '' | NonNullable<AdminEntityPayload['contentLevel']>;
-    status: NonNullable<AdminEntityPayload['status']>;
-    startYear: number | null | string;
-    endYear: number | null | string;
-  },
+  form: AdminEntityFormDraft,
   translations: Record<AdminLocale, AdminEntityPreviewTranslationForm>,
 ): AdminEntityPayload {
   const spanish = translations.es;
@@ -184,6 +186,26 @@ export function extractLocalizedDetailsForm(
     bioShort: artistTranslation?.bioShort ?? '',
     links: artistTranslation?.links ?? '',
     definition: conceptTranslation?.definition ?? periodTranslation?.definition ?? '',
+  };
+}
+
+export function extractEntityDetails(entity: AdminEntityResponse): AdminEntityDetailsPayload {
+  return {
+    authorNation: entity.artwork?.authorNation ?? '',
+    technique: entity.artwork?.technique ?? '',
+    materials: entity.artwork?.materials ?? '',
+    dimensions: entity.artwork?.dimensions ?? '',
+    location: entity.artwork?.location ?? '',
+    collection: entity.artwork?.collection ?? '',
+    state: entity.artwork?.state ?? '',
+    country: entity.artist?.country ?? '',
+    city: entity.artist?.city ?? '',
+    birthYear: entity.artist?.birthYear ?? null,
+    deathYear: entity.artist?.deathYear ?? null,
+    disciplines: entity.artist?.disciplines ?? '',
+    bioShort: entity.artist?.bioShort ?? '',
+    links: entity.artist?.links ?? '',
+    definition: entity.concept?.definition ?? entity.period?.definition ?? '',
   };
 }
 

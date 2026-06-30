@@ -117,7 +117,7 @@ export function buildSourceRefPayload(
   source: Partial<AdminEditableSourceRef | AdminSourceRefPayload>,
   toNullableNumber: (value: unknown) => number | null,
 ): { payload: AdminSourceRefPayload | null; error: string | null } {
-  const title = String(source.sourceTitle ?? '').trim();
+  const title = String(source.sourceTitleEs ?? source.sourceTitle ?? '').trim();
   if (!title) {
     return { payload: null, error: 'El titulo de la fuente es obligatorio.' };
   }

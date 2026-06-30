@@ -20,7 +20,6 @@ export type HomeDeckEntity = {
 
 export type HomeDeck = {
   id: string;
-  isVirtual?: boolean;
   surface: 'HOME' | 'RECOMMENDED';
   slug: string;
   title: string;

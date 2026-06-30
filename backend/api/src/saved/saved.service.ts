@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { attachResolvedMedia } from '../entities/media.resolver';
+import { attachResolvedMedia } from '../media/media.resolver';
 
 @Injectable()
 export class SavedService {

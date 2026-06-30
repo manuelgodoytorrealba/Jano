@@ -22,8 +22,46 @@
     <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/site.webmanifest" />
+    <style>
+      .jano-boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(circle at 50% 38%, rgba(198, 178, 142, 0.12), transparent 28%), #0d0d0d;
+        color: #f2f1ee;
+      }
+
+      .jano-boot__mark {
+        font:
+          700 clamp(2rem, 5vw, 3.4rem) / 1 Helvetica,
+          Arial,
+          sans-serif;
+        letter-spacing: 0.32em;
+        opacity: 0.82;
+        transform: translateX(0.16em);
+        animation: jano-boot-pulse 1.2s ease-in-out infinite alternate;
+      }
+
+      @keyframes jano-boot-pulse {
+        to {
+          opacity: 0.5;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .jano-boot__mark {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
-    <app-root></app-root>
+    <app-root>
+      <div class="jano-boot" role="status" aria-label="Cargando JANO">
+        <span class="jano-boot__mark" aria-hidden="true">JANO</span>
+      </div>
+    </app-root>
   </body>
 </html>

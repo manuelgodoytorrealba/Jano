@@ -32,6 +32,7 @@ export class AdminEntityMediaGroupComponent {
   });
 
   @Output() editRequested = new EventEmitter<EditableAdminMediaLink>();
+  @Output() draftChange = new EventEmitter<EditableAdminMediaLink>();
   @Output() assignRole = new EventEmitter<{ link: EditableAdminMediaLink; role: string }>();
   @Output() toggleLegacy = new EventEmitter<EditableAdminMediaLink>();
   @Output() save = new EventEmitter<EditableAdminMediaLink>();

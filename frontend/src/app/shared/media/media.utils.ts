@@ -56,17 +56,6 @@ export type ResolvedMediaPayload = {
   primary?: ResolvedMediaItem | null;
 };
 
-export type MediaLinkLike = {
-  id?: string | null;
-  role?: string | null;
-  sortOrder?: number | null;
-  isPrimary?: boolean | null;
-  displayMode?: 'COVER' | 'CONTAIN' | string | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  media?: MediaLike | null;
-};
-
 export type MediaUsage =
   | 'hero'
   | 'card'
@@ -76,60 +65,16 @@ export type MediaUsage =
   | 'gallery'
   | 'primary';
 
-export type ResolvedMediaSlotState = {
-  item: ResolvedMediaItem | null;
-  source: 'explicit' | 'fallback' | 'empty';
-  matchedRole: string | null;
-};
-
-export type EntityWithMediaLinks = {
+export type EntityWithResolvedMedia = {
   title?: string | null;
   summary?: string | null;
   startYear?: number | null;
   endYear?: number | null;
   type?: string | null;
   resolvedMedia?: ResolvedMediaPayload | null;
-  mediaLinks?: MediaLinkLike[] | null;
-};
-
-type NormalizedMediaLink = {
-  id: string | null;
-  role: string | null;
-  sortOrder: number;
-  isPrimary: boolean;
-  displayMode: 'COVER' | 'CONTAIN' | null;
-  focalX: number | null;
-  focalY: number | null;
-  media: MediaLike;
 };
 
 const ABSTRACT_ENTITY_TYPES = new Set(['CONCEPT', 'MOVEMENT', 'PERIOD']);
-
-const ROLE_ORDER: Record<Exclude<MediaUsage, 'gallery' | 'primary'>, string[]> = {
-  hero: ['HERO'],
-  card: ['CARD', 'THUMBNAIL'],
-  detail: ['DETAIL', 'HERO', 'CARD'],
-  thumbnail: ['THUMBNAIL', 'CARD'],
-  explorer3d: ['EXPLORER_3D'],
-};
-
-const PRIMARY_ROLE_ORDER = ['PRIMARY_LEGACY', 'HERO', 'CARD', 'DETAIL', 'THUMBNAIL', 'EXPLORER_3D'];
-
-const PRIMARY_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | 'primary'>>([
-  'hero',
-  'card',
-  'detail',
-  'thumbnail',
-  'explorer3d',
-]);
-
-const BEST_AVAILABLE_FALLBACK_USAGES = new Set<Exclude<MediaUsage, 'gallery' | 'primary'>>([
-  'hero',
-  'card',
-  'detail',
-  'thumbnail',
-  'explorer3d',
-]);
 
 export type MediaPresentation = {
   src: string | null;
@@ -175,7 +120,7 @@ export function isRenderableRasterMedia(media: MediaLike | null | undefined): bo
 }
 
 export function isAbstractEntityType(
-  entityOrType: EntityWithMediaLinks | string | null | undefined,
+  entityOrType: EntityWithResolvedMedia | string | null | undefined,
 ): boolean {
   const type = typeof entityOrType === 'string' ? entityOrType : entityOrType?.type;
 
@@ -183,105 +128,28 @@ export function isAbstractEntityType(
 }
 
 export function selectPrimaryVisualMedia(
-  entity: EntityWithMediaLinks | null | undefined,
+  entity: EntityWithResolvedMedia | null | undefined,
 ): ResolvedMediaItem | MediaLike | null {
-  const resolvedPrimary =
-    entity?.resolvedMedia?.primary ??
-    entity?.resolvedMedia?.detail ??
-    entity?.resolvedMedia?.card ??
-    entity?.resolvedMedia?.hero ??
-    entity?.resolvedMedia?.thumbnail ??
-    entity?.resolvedMedia?.explorer3d ??
-    null;
+  const resolvedPrimary = entity?.resolvedMedia?.primary ?? null;
 
-  if (resolvedPrimary && isRenderableRasterMedia(resolvedPrimary)) {
-    return resolvedPrimary;
-  }
-
-  const legacy = selectLegacyMediaLink(entity, 'primary');
-  return legacy ? toResolvedMediaItem(legacy) : null;
+  return resolvedPrimary && isRenderableRasterMedia(resolvedPrimary) ? resolvedPrimary : null;
 }
 
 export function resolveEntityMediaItem(
-  entity: EntityWithMediaLinks | null | undefined,
+  entity: EntityWithResolvedMedia | null | undefined,
   usage: Exclude<MediaUsage, 'gallery'> = 'card',
 ): ResolvedMediaItem | null {
-  const resolved = selectResolvedMediaItem(entity, usage);
-  if (resolved) {
-    return resolved;
-  }
-
-  if (isAbstractEntityType(entity)) {
-    return null;
-  }
-
-  const legacy = selectLegacyMediaLink(entity, usage);
-  return legacy ? toResolvedMediaItem(legacy) : null;
+  return selectResolvedMediaItem(entity, usage);
 }
 
 export function resolveEntityMediaGallery(
-  entity: EntityWithMediaLinks | null | undefined,
+  entity: EntityWithResolvedMedia | null | undefined,
 ): ResolvedMediaItem[] {
-  const resolved = entity?.resolvedMedia?.gallery?.filter(isRenderableRasterMedia) ?? [];
-  if (resolved.length) {
-    return resolved;
-  }
-
-  const normalized = normalizeMediaLinks(entity);
-  const gallery = normalized.filter((link) => link.role === 'GALLERY').map(toResolvedMediaItem);
-
-  if (gallery.length) {
-    return gallery;
-  }
-
-  const detail = resolveEntityMediaItem(entity, 'detail');
-  return detail ? [detail] : [];
-}
-
-export function resolveEntityMediaSlot(
-  entity: EntityWithMediaLinks | null | undefined,
-  usage: Exclude<MediaUsage, 'gallery'>,
-): ResolvedMediaSlotState {
-  const resolved = entity?.resolvedMedia ?? null;
-  const exactRole = exactRoleForUsage(usage);
-
-  if (resolved) {
-    const direct = resolved[usage];
-    if (direct && isRenderableRasterMedia(direct)) {
-      return {
-        item: direct,
-        source: direct.role === exactRole ? 'explicit' : 'fallback',
-        matchedRole: direct.role ?? null,
-      };
-    }
-
-    if (usage !== 'primary' && resolved.primary && isRenderableRasterMedia(resolved.primary)) {
-      return {
-        item: resolved.primary,
-        source: 'fallback',
-        matchedRole: resolved.primary.role ?? null,
-      };
-    }
-  }
-
-  const legacy = selectLegacyMediaLinkWithSource(entity, usage);
-  if (legacy) {
-    return {
-      item: toResolvedMediaItem(legacy.link),
-      source: legacy.source,
-      matchedRole: legacy.link.role,
-    };
-  }
-
-  return {
-    item: null,
-    source: 'empty',
-    matchedRole: null,
-  };
+  return entity?.resolvedMedia?.gallery?.filter(isRenderableRasterMedia) ?? [];
 }
 
 export function entityVisualUrl(
-  entity: EntityWithMediaLinks | null | undefined,
+  entity: EntityWithResolvedMedia | null | undefined,
   usage: Exclude<MediaUsage, 'gallery'> = 'card',
 ): string | null {
   if (!entity) {
@@ -297,8 +165,7 @@ export function entityVisualUrl(
     return buildAbstractEntityPoster(entity);
   }
 
-  const legacy = selectLegacyMediaLink(entity, usage);
-  return legacy ? mediaDisplayUrl(legacy.media) : null;
+  return null;
 }
 
 export function mediaObjectFit(
@@ -395,7 +262,7 @@ export function editorialImageFilter(usage: MediaUsage = 'card'): string {
 }
 
 function selectResolvedMediaItem(
-  entity: EntityWithMediaLinks | null | undefined,
+  entity: EntityWithResolvedMedia | null | undefined,
   usage: Exclude<MediaUsage, 'gallery'>,
 ): ResolvedMediaItem | null {
   const resolved = entity?.resolvedMedia ?? null;
@@ -410,88 +277,6 @@ function selectResolvedMediaItem(
   }
 
   return null;
-}
-
-function selectLegacyMediaLink(
-  entity: EntityWithMediaLinks | null | undefined,
-  usage: Exclude<MediaUsage, 'gallery'>,
-): NormalizedMediaLink | null {
-  return selectLegacyMediaLinkWithSource(entity, usage)?.link ?? null;
-}
-
-function selectLegacyMediaLinkWithSource(
-  entity: EntityWithMediaLinks | null | undefined,
-  usage: Exclude<MediaUsage, 'gallery'>,
-): { link: NormalizedMediaLink; source: 'explicit' | 'fallback' } | null {
-  const links = normalizeMediaLinks(entity);
-
-  if (!links.length) {
-    return null;
-  }
-
-  if (usage === 'primary') {
-    for (const role of PRIMARY_ROLE_ORDER) {
-      const candidate = firstByRole(links, role);
-      if (candidate) {
-        return {
-          link: candidate,
-          source: candidate.role === 'PRIMARY_LEGACY' ? 'explicit' : 'fallback',
-        };
-      }
-    }
-
-    const fallback = selectLegacyPrimary(links) ?? selectBestAvailable(links, entity?.type ?? null);
-    return fallback
-      ? {
-          link: fallback,
-          source: fallback.role === 'PRIMARY_LEGACY' ? 'explicit' : 'fallback',
-        }
-      : null;
-  }
-
-  for (const role of ROLE_ORDER[usage]) {
-    const candidate = firstByRole(links, role);
-    if (candidate) {
-      return {
-        link: candidate,
-        source: candidate.role === exactRoleForUsage(usage) ? 'explicit' : 'fallback',
-      };
-    }
-  }
-
-  const fallback = PRIMARY_FALLBACK_USAGES.has(usage)
-    ? (selectLegacyPrimary(links) ??
-      (BEST_AVAILABLE_FALLBACK_USAGES.has(usage)
-        ? selectBestAvailable(links, entity?.type ?? null)
-        : null))
-    : BEST_AVAILABLE_FALLBACK_USAGES.has(usage)
-      ? selectBestAvailable(links, entity?.type ?? null)
-      : null;
-  return fallback
-    ? {
-        link: fallback,
-        source: 'fallback',
-      }
-    : null;
-}
-
-function normalizeMediaLinks(
-  entity: EntityWithMediaLinks | null | undefined,
-): NormalizedMediaLink[] {
-  return (entity?.mediaLinks ?? [])
-    .filter((link): link is MediaLinkLike => !!link?.media)
-    .map((link) => ({
-      id: link.id ?? null,
-      role: link.role ?? null,
-      sortOrder: link.sortOrder ?? 0,
-      isPrimary: !!link.isPrimary,
-      displayMode: normalizeDisplayMode(link.displayMode),
-      focalX: link.focalX ?? null,
-      focalY: link.focalY ?? null,
-      media: link.media!,
-    }))
-    .filter((link) => isRenderableRasterMedia(link.media))
-    .sort(compareNormalizedLinks);
 }
 
 function normalizeDisplayMode(value: string | null | undefined): 'COVER' | 'CONTAIN' | null {
@@ -542,23 +327,6 @@ function isLocalUploadHost(hostname: string): boolean {
   return private172;
 }
 
-function exactRoleForUsage(usage: Exclude<MediaUsage, 'gallery'>): string {
-  switch (usage) {
-    case 'hero':
-      return 'HERO';
-    case 'card':
-      return 'CARD';
-    case 'detail':
-      return 'DETAIL';
-    case 'thumbnail':
-      return 'THUMBNAIL';
-    case 'explorer3d':
-      return 'EXPLORER_3D';
-    case 'primary':
-      return 'PRIMARY_LEGACY';
-  }
-}
-
 function normalizeFocal(value: number | null | undefined): number {
   if (typeof value !== 'number' || Number.isNaN(value)) {
     return 50;
@@ -566,105 +334,6 @@ function normalizeFocal(value: number | null | undefined): number {
 
   const scaled = value <= 1 && value >= 0 ? value * 100 : value;
   return Math.min(100, Math.max(0, scaled));
-}
-
-function compareNormalizedLinks(a: NormalizedMediaLink, b: NormalizedMediaLink): number {
-  if (a.sortOrder !== b.sortOrder) {
-    return a.sortOrder - b.sortOrder;
-  }
-
-  if (a.isPrimary !== b.isPrimary) {
-    return a.isPrimary ? -1 : 1;
-  }
-
-  const roleA = a.role ?? '';
-  const roleB = b.role ?? '';
-
-  if (roleA !== roleB) {
-    return roleA.localeCompare(roleB, 'en');
-  }
-
-  return (a.id ?? '').localeCompare(b.id ?? '', 'en');
-}
-
-function firstByRole(links: NormalizedMediaLink[], role: string): NormalizedMediaLink | null {
-  return links.find((link) => link.role === role) ?? null;
-}
-
-function selectLegacyPrimary(links: NormalizedMediaLink[]): NormalizedMediaLink | null {
-  return (
-    links.find((link) => link.role === 'PRIMARY_LEGACY' && link.isPrimary) ??
-    links.find((link) => link.role === 'PRIMARY_LEGACY') ??
-    links.find((link) => link.isPrimary) ??
-    null
-  );
-}
-
-function selectBestAvailable(
-  links: NormalizedMediaLink[],
-  entityType: string | null,
-): NormalizedMediaLink | null {
-  const byQuality = [...links].sort((a, b) => compareMediaQuality(a.media, b.media, entityType));
-  return byQuality[0] ?? null;
-}
-
-function toResolvedMediaItem(link: NormalizedMediaLink): ResolvedMediaItem {
-  return {
-    ...link.media,
-    role: link.role,
-    sortOrder: link.sortOrder,
-    isPrimary: link.isPrimary,
-    displayMode: link.displayMode,
-    focalX: link.focalX,
-    focalY: link.focalY,
-  };
-}
-
-function compareMediaQuality(a: MediaLike, b: MediaLike, entityType: string | null): number {
-  const qualityScore = (media: MediaLike) => {
-    const pixels = (media.width ?? 0) * (media.height ?? 0);
-    const provider = (media.provider ?? '').toUpperCase();
-    const alt = (media.alt ?? '').toLowerCase();
-    const url = mediaDisplayUrl(media)?.toLowerCase() ?? '';
-    let score = 0;
-
-    switch ((media.qualityTier ?? '').toUpperCase()) {
-      case 'MASTER':
-        score += 40;
-        break;
-      case 'HIGH':
-        score += 30;
-        break;
-      case 'MEDIUM':
-        score += 20;
-        break;
-      case 'LOW':
-        score += 10;
-        break;
-      default:
-        score += 0;
-    }
-
-    if (provider === 'IIIF') score += 8;
-    if (provider === 'WIKIMEDIA_COMMONS') score += 6;
-    if (provider === 'MUSEUM') score += 5;
-    if (provider === 'WIKIPEDIA') score -= 8;
-
-    if (pixels >= 7_000_000) score += 8;
-    else if (pixels >= 3_000_000) score += 5;
-    else if (pixels >= 1_000_000) score += 3;
-
-    if (
-      entityType === 'PLACE' &&
-      (alt.includes('logo') || alt.includes('identidad visual') || url.includes('logo'))
-    ) {
-      score -= 20;
-    }
-
-    return score;
-  };
-
-  return qualityScore(b) - qualityScore(a);
 }
 
 function isCommonsWikiRedirect(url: string): boolean {
@@ -675,7 +344,7 @@ function isCommonsWikiRedirect(url: string): boolean {
   );
 }
 
-function buildAbstractEntityPoster(entity: EntityWithMediaLinks): string {
+function buildAbstractEntityPoster(entity: EntityWithResolvedMedia): string {
   const type = (entity.type ?? '').toUpperCase();
   const title = (entity.title ?? '').trim() || 'JANO';
   const summary = compact((entity.summary ?? '').trim(), 92);

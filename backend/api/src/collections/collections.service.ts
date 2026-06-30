@@ -8,7 +8,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserPlan } from '@prisma/client';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
-import { attachResolvedMedia } from '../entities/media.resolver';
+import { attachResolvedMedia } from '../media/media.resolver';
+import {
+  canonicalRelationDirected,
+  canonicalRelationKey,
+} from '../relation-types/relation-type.utils';
 
 type CollectionItemWithEntity = {
   sortOrder?: number | null;
@@ -354,7 +358,12 @@ export class CollectionsService {
             fromId: { in: nodeIds },
             toId: { in: nodeIds },
           },
-          orderBy: [{ type: 'asc' }, { id: 'asc' }],
+          orderBy: [{ relationType: { key: 'asc' } }, { id: 'asc' }],
+          include: {
+            relationType: {
+              select: { key: true, directed: true },
+            },
+          },
         })
       : [];
 
@@ -364,7 +373,8 @@ export class CollectionsService {
         id: relation.id,
         source: relation.fromId,
         target: relation.toId,
-        relationType: relation.type,
+        relationType: canonicalRelationKey(relation),
+        directed: canonicalRelationDirected(relation),
         weight: relation.weight ?? 1,
         justification: relation.justification ?? null,
       }));

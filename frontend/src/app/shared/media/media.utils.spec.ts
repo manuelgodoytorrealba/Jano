@@ -1,9 +1,4 @@
-import {
-  mediaDisplayUrl,
-  resolveEntityMediaItem,
-  resolveEntityMediaSlot,
-  resolveMediaPresentation,
-} from './media.utils';
+import { mediaDisplayUrl, resolveEntityMediaItem, resolveMediaPresentation } from './media.utils';
 import { describe, expect, it } from 'vitest';
 
 describe('media.utils', () => {
@@ -26,7 +21,7 @@ describe('media.utils', () => {
     expect(resolveEntityMediaItem(entity, 'detail')?.id).toBe('detail-media');
   });
 
-  it('resolves slot states from local mediaLinks without collapsing distinct roles', () => {
+  it('ignores legacy mediaLinks because public media is resolved by the backend', () => {
     const entity = {
       type: 'ARTWORK',
       mediaLinks: [
@@ -35,72 +30,10 @@ describe('media.utils', () => {
           role: 'HERO',
           media: { id: 'hero-media', url: 'https://example.com/hero.jpg' },
         },
-        {
-          id: 'link-2',
-          role: 'CARD',
-          media: { id: 'card-media', url: 'https://example.com/card.jpg' },
-        },
-        {
-          id: 'link-3',
-          role: 'DETAIL',
-          media: { id: 'detail-media', url: 'https://example.com/detail.jpg' },
-        },
       ],
     };
 
-    expect(resolveEntityMediaSlot(entity, 'hero').item?.id).toBe('hero-media');
-    expect(resolveEntityMediaSlot(entity, 'card').item?.id).toBe('card-media');
-    expect(resolveEntityMediaSlot(entity, 'detail').item?.id).toBe('detail-media');
-  });
-
-  it('prefers primary fallback over detail for hero, card and explorer3d when those roles are unset', () => {
-    const entity = {
-      type: 'ARTWORK',
-      mediaLinks: [
-        {
-          id: 'link-1',
-          role: 'PRIMARY_LEGACY',
-          isPrimary: true,
-          media: { id: 'legacy-media', url: 'https://example.com/legacy.jpg' },
-        },
-        {
-          id: 'link-2',
-          role: 'DETAIL',
-          media: { id: 'detail-media', url: 'https://example.com/detail.jpg' },
-        },
-      ],
-    };
-
-    expect(resolveEntityMediaSlot(entity, 'hero').item?.id).toBe('legacy-media');
-    expect(resolveEntityMediaSlot(entity, 'card').item?.id).toBe('legacy-media');
-    expect(resolveEntityMediaSlot(entity, 'detail').item?.id).toBe('detail-media');
-    expect(resolveEntityMediaSlot(entity, 'explorer3d').item?.id).toBe('legacy-media');
-  });
-
-  it('prefers the active legacy fallback for detail before best-available heuristics', () => {
-    const entity = {
-      type: 'ARTWORK',
-      mediaLinks: [
-        {
-          id: 'legacy-preview',
-          role: 'PRIMARY_LEGACY',
-          isPrimary: true,
-          media: { id: 'legacy-preview-media', url: 'https://example.com/preview.jpg' },
-        },
-        {
-          id: 'explorer',
-          role: 'EXPLORER_3D',
-          media: {
-            id: 'explorer-media',
-            url: 'https://example.com/explorer.jpg',
-            width: 2400,
-            height: 2400,
-          },
-        },
-      ],
-    };
-
-    expect(resolveEntityMediaItem(entity, 'detail')?.id).toBe('legacy-preview-media');
+    expect(resolveEntityMediaItem(entity, 'hero')).toBeNull();
   });
 
   it('falls back to media.url when admin data carries an empty displayUrl string', () => {
@@ -110,26 +43,6 @@ describe('media.utils', () => {
         url: 'https://images.unsplash.com/photo-1554188248-986adbb73be4',
       }),
     ).toBe('https://images.unsplash.com/photo-1554188248-986adbb73be4');
-
-    const entity = {
-      type: 'ARTWORK',
-      mediaLinks: [
-        {
-          id: 'link-card',
-          role: 'CARD',
-          media: {
-            id: 'card-media',
-            displayUrl: '',
-            url: 'https://images.unsplash.com/photo-1554188248-986adbb73be4',
-          },
-        },
-      ],
-    };
-
-    expect(resolveEntityMediaItem(entity, 'card')?.id).toBe('card-media');
-    expect(mediaDisplayUrl(resolveEntityMediaItem(entity, 'card'))).toBe(
-      'https://images.unsplash.com/photo-1554188248-986adbb73be4',
-    );
   });
 
   it('rewrites local upload media to same-origin paths so SSR and browser reuse the frontend origin', () => {

@@ -1,0 +1,83 @@
+:host {
+  display: contents;
+}
+
+.muted {
+  margin: 6px 0 0;
+  color: #666;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.field span {
+  color: #555;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+  color: #15120f;
+  font: inherit;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.hint {
+  color: #777;
+  font-size: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn.primary {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+
+.btn.danger {
+  border-color: rgba(176, 0, 32, 0.18);
+  color: #b00020;
+}
+
+.success-text {
+  color: #2f6f4c;
+}
+
+.error-text {
+  color: #9f2f2f;
+}
+
+:host-context([data-theme='dark']) input,
+:host-context([data-theme='dark']) select,
+:host-context([data-theme='dark']) textarea,
+:host-context([data-theme='dark']) .field span {
+  color: #201d19;
+}

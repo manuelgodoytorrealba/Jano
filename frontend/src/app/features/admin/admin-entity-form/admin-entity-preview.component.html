@@ -1,0 +1,32 @@
+<section
+  id="section-preview"
+  class="admin-dashboard-panel detail-live-panel"
+  [class.admin-dashboard-panel--active]="active"
+  [class.admin-dashboard-panel--hidden]="!active"
+  [attr.aria-hidden]="!active"
+>
+  <div class="admin-dashboard-panel__head">
+    <div>
+      <h2>Preview Detail</h2>
+      <p class="muted">
+        Render público vivo de la entity con contenido, media, fuentes, colaboradores y relaciones.
+      </p>
+    </div>
+    <span class="admin-dashboard-panel__pill">Detail</span>
+  </div>
+
+  <div class="detail-live-embed">
+    @if (active && ready && previewEntity; as entity) {
+      <app-entity-detail-view
+        [entity]="entity"
+        [showActions]="false"
+        [renderGraph]="true"
+        richTextPreviewAccess="admin"
+      ></app-entity-detail-view>
+    } @else {
+      <div class="detail-live-embed__idle">
+        <span>Abre el bloque de preview para activar la vista pública compuesta.</span>
+      </div>
+    }
+  </div>
+</section>

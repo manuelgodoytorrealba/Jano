@@ -16,37 +16,14 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { inject } from '@angular/core';
-import * as THREE from 'three';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { PublicEntityListItem } from '../../core/api/entities.models';
-import {
-  ArtworkTransitionRect,
-  EntityArtworkTransitionPayload,
-} from '../../core/entity-route-artwork-transition.service';
-import {
-  MediaPresentation,
-  resolveEntityMediaItem,
-  resolveMediaPresentation,
-} from '../../shared/media/media.utils';
+import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
+import { resolveEntityMediaItem, resolveMediaPresentation } from '../../shared/media/media.utils';
+import { Explorer3dScene } from './explorer-3d-scene';
 
 type Entity = PublicEntityListItem;
 type NavDirection = -1 | 1;
-
-type CardUserData = {
-  index: number;
-  slug?: string;
-  targetPosition?: THREE.Vector3;
-  targetRotation?: THREE.Euler;
-  targetScale?: number;
-  targetOpacity?: number;
-};
-
-type Card3D = {
-  group: THREE.Group;
-  frame: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
-  image: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
-  glass: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
-};
 
 @Component({
   standalone: true,
@@ -76,30 +53,17 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   private readonly isBrowser: boolean;
   readonly i18n = inject(I18nService);
 
-  private scene!: THREE.Scene;
-  private camera!: THREE.PerspectiveCamera;
-  private renderer!: THREE.WebGLRenderer;
-  private raycaster = new THREE.Raycaster();
-  private pointer = new THREE.Vector2();
-
-  private animationFrameId = 0;
-  private resizeObserver?: ResizeObserver;
+  private readonly scene = new Explorer3dScene();
   private canvasInteractionsAttached = false;
-
-  private cards: Card3D[] = [];
-  private raycastTargets: THREE.Mesh[] = [];
 
   private isDragging = false;
   private dragStartX = 0;
   private dragAccumulatedX = 0;
   private dragMoved = false;
-  private hoveredIndex: number | null = null;
   private wheelIntent = 0;
   private lastWheelEventAt = 0;
   private lastWheelNavigationAt = 0;
   private keyboardNavigationActive = false;
-  private viewportWidth = 1200;
-  private viewportHeight = 700;
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -112,28 +76,22 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
 
-    this.initScene();
-    this.buildCards();
-    this.updateCardTargets();
-    this.startRenderLoop();
-    this.observeResize();
+    this.scene.initialize(this.canvasHostRef.nativeElement, this.items, this.activeIndex);
+    this.syncCanvasInteractionState();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!this.isBrowser) return;
 
     if (changes['items']) {
-      if (this.scene) {
-        this.buildCards();
-        this.updateCardTargets();
-      }
+      this.scene.setItems(this.items);
     }
 
-    if (changes['activeIndex'] && this.scene) {
-      this.updateCardTargets();
+    if (changes['activeIndex']) {
+      this.scene.setActiveIndex(this.activeIndex);
     }
 
-    if (changes['infoOpen'] && this.renderer?.domElement) {
+    if (changes['infoOpen'] && this.scene.domElement) {
       if (changes['infoOpen'].currentValue) {
         this.cancelCanvasInteraction();
       }
@@ -145,16 +103,8 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   ngOnDestroy(): void {
     if (!this.isBrowser) return;
 
-    if (this.animationFrameId) {
-      window.cancelAnimationFrame(this.animationFrameId);
-    }
-
-    this.resizeObserver?.disconnect();
-
     this.detachCanvasInteractions();
-
-    this.disposeCards();
-    this.renderer?.dispose();
+    this.scene.destroy();
   }
 
   openActive(): void {
@@ -183,9 +133,8 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     this.dragMoved = false;
     this.dragAccumulatedX = 0;
     this.wheelIntent = 0;
-    this.hoveredIndex = null;
-    this.renderer?.domElement?.classList.remove('is-dragging');
-    this.updateCardTargets();
+    this.scene.setDragging(false);
+    this.scene.setHoveredIndex(null);
   }
 
   cleanWiki(text: string): string {
@@ -242,38 +191,10 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     this.deactivateExplorerFocus();
   }
 
-  private initScene(): void {
-    const host = this.canvasHostRef.nativeElement;
-    const width = host.clientWidth || 1200;
-    const height = host.clientHeight || 700;
-    this.viewportWidth = width;
-    this.viewportHeight = height;
-
-    this.scene = new THREE.Scene();
-    this.scene.background = null;
-
-    this.camera = new THREE.PerspectiveCamera(33, width / height, 0.1, 100);
-    this.applyViewportCamera(width, height);
-
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance',
-    });
-
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.setSize(width, height);
-
-    host.innerHTML = '';
-    host.appendChild(this.renderer.domElement);
-    this.syncCanvasInteractionState();
-  }
-
   private syncCanvasInteractionState(): void {
-    if (!this.renderer?.domElement) return;
+    if (!this.scene.domElement) return;
 
-    this.renderer.domElement.style.pointerEvents = this.infoOpen ? 'none' : 'auto';
+    this.scene.setInteractive(!this.infoOpen);
 
     if (this.infoOpen) {
       this.detachCanvasInteractions();
@@ -284,686 +205,33 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   }
 
   private attachCanvasInteractions(): void {
-    if (!this.renderer?.domElement || this.canvasInteractionsAttached) return;
+    const canvas = this.scene.domElement;
+    if (!canvas || this.canvasInteractionsAttached) return;
 
-    this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown);
-    this.renderer.domElement.addEventListener('pointermove', this.onPointerMove);
-    this.renderer.domElement.addEventListener('pointerup', this.onPointerUp);
-    this.renderer.domElement.addEventListener('pointerleave', this.onPointerLeave);
-    this.renderer.domElement.addEventListener('wheel', this.onWheel as EventListener, {
+    canvas.addEventListener('pointerdown', this.onPointerDown);
+    canvas.addEventListener('pointermove', this.onPointerMove);
+    canvas.addEventListener('pointerup', this.onPointerUp);
+    canvas.addEventListener('pointerleave', this.onPointerLeave);
+    canvas.addEventListener('wheel', this.onWheel as EventListener, {
       passive: false,
     });
     this.canvasInteractionsAttached = true;
   }
 
   private detachCanvasInteractions(): void {
-    if (!this.renderer?.domElement || !this.canvasInteractionsAttached) return;
+    const canvas = this.scene.domElement;
+    if (!canvas || !this.canvasInteractionsAttached) return;
 
-    this.renderer.domElement.removeEventListener('pointerdown', this.onPointerDown);
-    this.renderer.domElement.removeEventListener('pointermove', this.onPointerMove);
-    this.renderer.domElement.removeEventListener('pointerup', this.onPointerUp);
-    this.renderer.domElement.removeEventListener('pointerleave', this.onPointerLeave);
-    this.renderer.domElement.removeEventListener('wheel', this.onWheel as EventListener);
+    canvas.removeEventListener('pointerdown', this.onPointerDown);
+    canvas.removeEventListener('pointermove', this.onPointerMove);
+    canvas.removeEventListener('pointerup', this.onPointerUp);
+    canvas.removeEventListener('pointerleave', this.onPointerLeave);
+    canvas.removeEventListener('wheel', this.onWheel as EventListener);
     this.canvasInteractionsAttached = false;
   }
 
-  private disposeCards(): void {
-    this.cards.forEach((card) => {
-      card.frame.geometry.dispose();
-      card.frame.material.map?.dispose();
-      card.frame.material.dispose();
-
-      card.image.geometry.dispose();
-      card.image.material.map?.dispose();
-      card.image.material.dispose();
-
-      card.glass.geometry.dispose();
-      card.glass.material.map?.dispose();
-      card.glass.material.dispose();
-
-      this.scene.remove(card.group);
-    });
-
-    this.cards = [];
-    this.raycastTargets = [];
-  }
-
-  private createRoundedRectTexture(
-    width: number,
-    height: number,
-    radius: number,
-    fillStyle: string,
-    strokeStyle?: string,
-    strokeWidth = 0,
-    alpha = 1,
-  ): THREE.CanvasTexture {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('No se pudo crear canvas 2D');
-    }
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.globalAlpha = alpha;
-
-    this.drawRoundedRect(ctx, 0, 0, width, height, radius);
-
-    const ambient = ctx.createLinearGradient(0, 0, 0, height);
-    ambient.addColorStop(0, 'rgba(255,255,255,0.22)');
-    ambient.addColorStop(0.28, 'rgba(255,255,255,0.08)');
-    ambient.addColorStop(0.7, 'rgba(255,255,255,0.03)');
-    ambient.addColorStop(1, 'rgba(255,255,255,0.1)');
-
-    ctx.fillStyle = fillStyle;
-    ctx.fill();
-    ctx.fillStyle = ambient;
-    ctx.fill();
-
-    if (strokeStyle && strokeWidth > 0) {
-      ctx.strokeStyle = strokeStyle;
-      ctx.lineWidth = strokeWidth;
-      ctx.stroke();
-    }
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.needsUpdate = true;
-    return texture;
-  }
-
-  private createSpecularHighlightTexture(
-    width: number,
-    height: number,
-    radius: number,
-  ): THREE.CanvasTexture {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('No se pudo crear canvas 2D');
-    }
-
-    ctx.clearRect(0, 0, width, height);
-
-    this.drawRoundedRect(ctx, 0, 0, width, height, radius);
-    ctx.clip();
-
-    const grad = ctx.createLinearGradient(0, 0, width * 0.72, height);
-    grad.addColorStop(0, 'rgba(255,255,255,0)');
-    grad.addColorStop(0.14, 'rgba(255,255,255,0)');
-    grad.addColorStop(0.23, 'rgba(255,255,255,0.62)');
-    grad.addColorStop(0.31, 'rgba(255,255,255,0.2)');
-    grad.addColorStop(0.38, 'rgba(255,255,255,0.08)');
-    grad.addColorStop(0.5, 'rgba(255,255,255,0)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
-
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, width, height);
-
-    const rim = ctx.createLinearGradient(0, 0, 0, height);
-    rim.addColorStop(0, 'rgba(255,255,255,0.22)');
-    rim.addColorStop(0.18, 'rgba(255,255,255,0.08)');
-    rim.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = rim;
-    ctx.fillRect(0, 0, width, height * 0.18);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.needsUpdate = true;
-    return texture;
-  }
-
-  private createRoundedImageTexture(
-    image: HTMLImageElement,
-    width: number,
-    height: number,
-    radius: number,
-    presentation: MediaPresentation,
-  ): THREE.CanvasTexture {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('No se pudo crear canvas 2D');
-    }
-
-    ctx.clearRect(0, 0, width, height);
-
-    this.drawRoundedRect(ctx, 0, 0, width, height, radius);
-    ctx.clip();
-
-    ctx.fillStyle = '#e9e3dc';
-    ctx.fillRect(0, 0, width, height);
-
-    const draw = this.resolveImagePlacement({
-      imageWidth: image.width,
-      imageHeight: image.height,
-      width,
-      height,
-      presentation,
-    });
-
-    ctx.drawImage(image, draw.dx, draw.dy, draw.drawWidth, draw.drawHeight);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.needsUpdate = true;
-    return texture;
-  }
-
-  private createFallbackImageTexture(
-    item: Entity,
-    width: number,
-    height: number,
-    radius: number,
-  ): THREE.CanvasTexture {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('No se pudo crear canvas 2D');
-    }
-
-    ctx.clearRect(0, 0, width, height);
-    this.drawRoundedRect(ctx, 0, 0, width, height, radius);
-    ctx.clip();
-
-    const background = ctx.createLinearGradient(0, 0, 0, height);
-    background.addColorStop(0, '#26221e');
-    background.addColorStop(0.48, '#1a1715');
-    background.addColorStop(1, '#100f10');
-    ctx.fillStyle = background;
-    ctx.fillRect(0, 0, width, height);
-
-    const glow = ctx.createRadialGradient(
-      width * 0.52,
-      height * 0.24,
-      0,
-      width * 0.52,
-      height * 0.24,
-      width * 0.7,
-    );
-    glow.addColorStop(0, 'rgba(214, 184, 138, 0.16)');
-    glow.addColorStop(0.4, 'rgba(214, 184, 138, 0.06)');
-    glow.addColorStop(1, 'rgba(214, 184, 138, 0)');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.strokeStyle = 'rgba(244, 235, 223, 0.16)';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(28, 28, width - 56, height - 56);
-
-    const typeLabel = String(item?.type ?? 'Entity').replaceAll('_', ' ');
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(239, 227, 210, 0.52)';
-    ctx.font = '600 36px system-ui';
-    ctx.letterSpacing = '0.12em';
-    ctx.fillText(typeLabel, width / 2, height * 0.24);
-
-    ctx.fillStyle = 'rgba(248, 241, 232, 0.94)';
-    ctx.font = '700 76px system-ui';
-    this.drawCenteredWrappedText(
-      ctx,
-      item?.title ?? 'JANO',
-      width / 2,
-      height * 0.48,
-      width * 0.66,
-      92,
-    );
-
-    ctx.fillStyle = 'rgba(214, 184, 138, 0.7)';
-    ctx.fillRect(width * 0.28, height * 0.77, width * 0.44, 2);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.needsUpdate = true;
-    return texture;
-  }
-
-  private drawCenteredWrappedText(
-    ctx: CanvasRenderingContext2D,
-    text: string,
-    centerX: number,
-    startY: number,
-    maxWidth: number,
-    lineHeight: number,
-  ): void {
-    const words = text.split(/\s+/).filter(Boolean);
-    const lines: string[] = [];
-    let current = '';
-
-    for (const word of words) {
-      const next = current ? `${current} ${word}` : word;
-      if (ctx.measureText(next).width <= maxWidth || !current) {
-        current = next;
-      } else {
-        lines.push(current);
-        current = word;
-      }
-    }
-
-    if (current) {
-      lines.push(current);
-    }
-
-    const limitedLines = lines.slice(0, 3);
-    const offsetY = ((limitedLines.length - 1) * lineHeight) / 2;
-
-    limitedLines.forEach((line, index) => {
-      ctx.fillText(line, centerX, startY - offsetY + index * lineHeight);
-    });
-  }
-
-  private drawRoundedRect(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    radius: number,
-  ): void {
-    const r = Math.min(radius, width / 2, height / 2);
-
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + width - r, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + r);
-    ctx.lineTo(x + width, y + height - r);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
-    ctx.lineTo(x + r, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
-  }
-
-  private buildCards(): void {
-    this.disposeCards();
-
-    const profile = this.getViewportProfile();
-    const frameWidth = profile.cardWidth;
-    const frameHeight = profile.cardHeight;
-    const imageInset = profile.imageInset;
-    const imageWidth = frameWidth - imageInset * 2;
-    const imageHeight = frameHeight - imageInset * 2.35;
-    const glassWidth = frameWidth - imageInset;
-    const glassHeight = frameHeight - imageInset * 1.55;
-
-    this.items.forEach((item, index) => {
-      const frameGeometry = new THREE.PlaneGeometry(frameWidth, frameHeight, 1, 1);
-      const imageGeometry = new THREE.PlaneGeometry(imageWidth, imageHeight, 1, 1);
-      const glassGeometry = new THREE.PlaneGeometry(glassWidth, glassHeight, 1, 1);
-
-      const frameTexture = this.createRoundedRectTexture(
-        1100,
-        1200,
-        58,
-        'rgba(255,255,255,0.08)',
-        'rgba(255,255,255,0.52)',
-        6,
-        1,
-      );
-
-      const glassTexture = this.createSpecularHighlightTexture(1100, 1200, 54);
-
-      const frameMaterial = new THREE.MeshBasicMaterial({
-        map: frameTexture,
-        transparent: true,
-        opacity: 0.42,
-        depthWrite: false,
-      });
-
-      const imageMaterial = new THREE.MeshBasicMaterial({
-        color: new THREE.Color('#f2f2ef'),
-        transparent: true,
-        opacity: 1,
-      });
-
-      const glassMaterial = new THREE.MeshBasicMaterial({
-        map: glassTexture,
-        transparent: true,
-        opacity: 0.18,
-        depthWrite: false,
-      });
-
-      const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-      const image = new THREE.Mesh(imageGeometry, imageMaterial);
-      const glass = new THREE.Mesh(glassGeometry, glassMaterial);
-
-      const group = new THREE.Group();
-
-      frame.position.z = -0.022;
-      image.position.z = 0.02;
-      glass.position.z = 0.036;
-
-      const textureUrl = this.thumb(item);
-      if (textureUrl) {
-        const presentation = this.mediaPresentation(item);
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          const roundedTexture = this.createRoundedImageTexture(img, 1100, 1200, 48, presentation);
-          imageMaterial.map = roundedTexture;
-          imageMaterial.needsUpdate = true;
-        };
-        img.onerror = () => {
-          imageMaterial.map = this.createFallbackImageTexture(item, 1100, 1200, 48);
-          imageMaterial.needsUpdate = true;
-        };
-        img.src = textureUrl;
-      } else {
-        imageMaterial.color = new THREE.Color('#f2f2ef');
-        imageMaterial.map = this.createFallbackImageTexture(item, 1100, 1200, 48);
-        imageMaterial.needsUpdate = true;
-      }
-
-      group.userData = {
-        index,
-        slug: item?.slug,
-      } satisfies CardUserData;
-
-      image.userData = {
-        index,
-        slug: item?.slug,
-      } satisfies CardUserData;
-
-      group.add(frame);
-      group.add(image);
-      group.add(glass);
-
-      this.scene.add(group);
-
-      this.cards.push({
-        group,
-        frame,
-        image,
-        glass,
-      });
-
-      this.raycastTargets.push(image);
-    });
-  }
-
-  private getCircularOffset(index: number, active: number, total: number): number {
-    let diff = index - active;
-    const half = Math.floor(total / 2);
-
-    if (diff > half) diff -= total;
-    if (diff < -half) diff += total;
-
-    return diff;
-  }
-
-  private updateCardTargets(): void {
-    const total = this.items.length;
-    if (!total) return;
-
-    const profile = this.getViewportProfile();
-    const spacing = profile.spacing;
-    const depthSpacing = profile.depthSpacing;
-    const baseY = profile.baseY;
-    const sideYOffset = profile.sideYOffset;
-
-    this.cards.forEach((card, i) => {
-      const offset = this.getCircularOffset(i, this.activeIndex, total);
-      const abs = Math.abs(offset);
-
-      const visible = abs <= Math.min(5, Math.floor(total / 2));
-      card.group.visible = visible;
-
-      if (!visible) return;
-
-      const isHovered = this.hoveredIndex === i;
-      const isActive = offset === 0;
-
-      const x = offset * spacing;
-      const y = baseY + (isActive ? 0 : sideYOffset);
-      const z = -abs * depthSpacing + (isActive ? 1.55 : 0) + (isHovered ? 0.42 : 0);
-
-      const rotY = isActive ? 0 : offset * -0.082;
-      const rotZ = isActive ? 0 : offset * -0.018;
-
-      const scaleBase = isActive
-        ? profile.activeScale
-        : Math.max(profile.sideScaleFloor, profile.sideScaleStart - abs * profile.sideScaleDecay);
-      const scale = isHovered ? scaleBase + 0.04 : scaleBase;
-
-      const opacityBase = isActive
-        ? 1
-        : Math.max(
-            profile.sideOpacityFloor,
-            profile.sideOpacityStart - abs * profile.sideOpacityDecay,
-          );
-      const opacity = isHovered ? Math.min(1, opacityBase + 0.1) : opacityBase;
-
-      const userData = card.group.userData as CardUserData;
-      userData.targetPosition = new THREE.Vector3(x, y, z);
-      userData.targetRotation = new THREE.Euler(0, rotY, rotZ);
-      userData.targetScale = scale;
-      userData.targetOpacity = opacity;
-    });
-  }
-
-  private startRenderLoop(): void {
-    const tick = () => {
-      this.animationFrameId = window.requestAnimationFrame(tick);
-
-      this.cards.forEach((card) => {
-        if (!card.group.visible) return;
-
-        const userData = card.group.userData as CardUserData;
-        const targetPosition = userData.targetPosition;
-        const targetRotation = userData.targetRotation;
-        const targetScale = userData.targetScale;
-        const targetOpacity = userData.targetOpacity;
-
-        if (targetPosition) {
-          card.group.position.lerp(targetPosition, 0.082);
-        }
-
-        if (targetRotation) {
-          card.group.rotation.x = THREE.MathUtils.lerp(
-            card.group.rotation.x,
-            targetRotation.x,
-            0.082,
-          );
-          card.group.rotation.y = THREE.MathUtils.lerp(
-            card.group.rotation.y,
-            targetRotation.y,
-            0.082,
-          );
-          card.group.rotation.z = THREE.MathUtils.lerp(
-            card.group.rotation.z,
-            targetRotation.z,
-            0.082,
-          );
-        }
-
-        if (typeof targetScale === 'number') {
-          const next = THREE.MathUtils.lerp(card.group.scale.x, targetScale, 0.082);
-          card.group.scale.setScalar(next);
-        }
-
-        if (typeof targetOpacity === 'number') {
-          card.image.material.opacity = THREE.MathUtils.lerp(
-            card.image.material.opacity,
-            targetOpacity,
-            0.082,
-          );
-
-          card.frame.material.opacity = THREE.MathUtils.lerp(
-            card.frame.material.opacity,
-            targetOpacity === 1 ? 0.5 : Math.max(0.12, targetOpacity * 0.2),
-            0.082,
-          );
-
-          card.glass.material.opacity = THREE.MathUtils.lerp(
-            card.glass.material.opacity,
-            targetOpacity === 1 ? 0.16 : Math.max(0.05, targetOpacity * 0.08),
-            0.082,
-          );
-        }
-      });
-
-      this.renderer.render(this.scene, this.camera);
-    };
-
-    tick();
-  }
-
-  private observeResize(): void {
-    this.resizeObserver = new ResizeObserver(() => {
-      const host = this.canvasHostRef.nativeElement;
-      const width = host.clientWidth || 1200;
-      const height = host.clientHeight || 700;
-      this.viewportWidth = width;
-      this.viewportHeight = height;
-
-      this.applyViewportCamera(width, height);
-      this.camera.aspect = width / height;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(width, height);
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      this.buildCards();
-      this.updateCardTargets();
-    });
-
-    this.resizeObserver.observe(this.canvasHostRef.nativeElement);
-  }
-
   private thumb(e: Entity): string | null {
-    return this.mediaPresentation(e).src;
-  }
-
-  private mediaPresentation(entity: Entity): MediaPresentation {
-    return resolveMediaPresentation(resolveEntityMediaItem(entity, 'explorer3d'), 'explorer3d');
-  }
-
-  private applyViewportCamera(width: number, height: number): void {
-    const compactDesktop = width >= 1100 && width <= 1500;
-    const shortDesktop = compactDesktop && height <= 940;
-
-    this.camera.fov = compactDesktop ? 31.6 : 33;
-    this.camera.position.set(
-      0,
-      compactDesktop ? (shortDesktop ? 0.34 : 0.26) : 0.1,
-      compactDesktop ? 11.3 : 11.9,
-    );
-    this.camera.updateProjectionMatrix();
-  }
-
-  private getViewportProfile(): {
-    cardWidth: number;
-    cardHeight: number;
-    imageInset: number;
-    spacing: number;
-    depthSpacing: number;
-    baseY: number;
-    sideYOffset: number;
-    activeScale: number;
-    sideScaleStart: number;
-    sideScaleFloor: number;
-    sideScaleDecay: number;
-    sideOpacityStart: number;
-    sideOpacityFloor: number;
-    sideOpacityDecay: number;
-  } {
-    const width = this.viewportWidth;
-    const height = this.viewportHeight;
-    const compactDesktop = width >= 1100 && width <= 1500;
-    const shortDesktop = compactDesktop && height <= 940;
-
-    if (compactDesktop) {
-      return {
-        cardWidth: shortDesktop ? 2.68 : 2.82,
-        cardHeight: shortDesktop ? 3.04 : 3.18,
-        imageInset: shortDesktop ? 0.12 : 0.13,
-        spacing: shortDesktop ? 1.14 : 1.2,
-        depthSpacing: shortDesktop ? 0.95 : 1.01,
-        baseY: shortDesktop ? -0.06 : -0.02,
-        sideYOffset: 0,
-        activeScale: shortDesktop ? 1.14 : 1.18,
-        sideScaleStart: 0.89,
-        sideScaleFloor: 0.7,
-        sideScaleDecay: 0.058,
-        sideOpacityStart: 0.58,
-        sideOpacityFloor: 0.16,
-        sideOpacityDecay: 0.108,
-      };
-    }
-
-    return {
-      cardWidth: 2.84,
-      cardHeight: 3.08,
-      imageInset: 0.1,
-      spacing: 1.4,
-      depthSpacing: 1.2,
-      baseY: 0.2,
-      sideYOffset: 0,
-      activeScale: 1.16,
-      sideScaleStart: 0.94,
-      sideScaleFloor: 0.76,
-      sideScaleDecay: 0.05,
-      sideOpacityStart: 0.66,
-      sideOpacityFloor: 0.2,
-      sideOpacityDecay: 0.095,
-    };
-  }
-
-  private resolveImagePlacement(options: {
-    imageWidth: number;
-    imageHeight: number;
-    width: number;
-    height: number;
-    presentation: MediaPresentation;
-  }): { drawWidth: number; drawHeight: number; dx: number; dy: number } {
-    const { imageWidth, imageHeight, width, height, presentation } = options;
-
-    const baseScale =
-      presentation.objectFit === 'contain'
-        ? Math.min(width / imageWidth, height / imageHeight)
-        : Math.max(width / imageWidth, height / imageHeight);
-    const scale = baseScale * presentation.zoom;
-    const drawWidth = imageWidth * scale;
-    const drawHeight = imageHeight * scale;
-    const focusX = drawWidth * (presentation.focusX / 100);
-    const focusY = drawHeight * (presentation.focusY / 100);
-
-    const targetDx = width / 2 - focusX;
-    const targetDy = height / 2 - focusY;
-
-    return {
-      drawWidth,
-      drawHeight,
-      dx: this.clampDrawOffset(targetDx, drawWidth, width),
-      dy: this.clampDrawOffset(targetDy, drawHeight, height),
-    };
-  }
-
-  private clampDrawOffset(offset: number, drawSize: number, viewportSize: number): number {
-    if (drawSize <= viewportSize) {
-      return (viewportSize - drawSize) / 2;
-    }
-
-    return THREE.MathUtils.clamp(offset, viewportSize - drawSize, 0);
-  }
-
-  private pickPlane(clientX: number, clientY: number): THREE.Intersection<THREE.Object3D>[] {
-    const rect = this.renderer.domElement.getBoundingClientRect();
-    this.pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
-    this.pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
-
-    this.raycaster.setFromCamera(this.pointer, this.camera);
-    return this.raycaster.intersectObjects(this.raycastTargets, false);
+    return resolveMediaPresentation(resolveEntityMediaItem(e, 'explorer3d'), 'explorer3d').src;
   }
 
   private goToIndex(next: number): void {
@@ -995,7 +263,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
 
   private openIndex(index: number): void {
     const item = this.items[index];
-    const sourceBounds = this.activeCardBounds();
+    const sourceBounds = this.scene.activeCardBounds(this.activeIndex);
     const imageUrl = item ? this.thumb(item) : null;
 
     if (item?.slug && sourceBounds && imageUrl) {
@@ -1009,77 +277,19 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
       return;
     }
 
-    if (item?.slug && imageUrl) {
+    const fallbackBounds = this.scene.fallbackCanvasBounds();
+    if (item?.slug && imageUrl && fallbackBounds) {
       this.openEntity.emit({
         slug: item.slug,
         title: item.title ?? '',
         imageUrl,
-        sourceBounds: this.fallbackCanvasBounds(),
+        sourceBounds: fallbackBounds,
         sourceSurface: 'explorer3d',
       });
       return;
     }
 
     if (item?.slug) this.openEntity.emit(item.slug);
-  }
-
-  private activeCardBounds(): ArtworkTransitionRect | null {
-    const card = this.cards[this.activeIndex];
-    const canvas = this.renderer?.domElement;
-    if (!card || !canvas) {
-      return null;
-    }
-
-    const imageMesh = card.image;
-    imageMesh.updateWorldMatrix(true, false);
-    const rect = canvas.getBoundingClientRect();
-    const halfWidth = 1.32;
-    const halfHeight = 1.45;
-    const corners = [
-      new THREE.Vector3(-halfWidth, halfHeight, 0),
-      new THREE.Vector3(halfWidth, halfHeight, 0),
-      new THREE.Vector3(halfWidth, -halfHeight, 0),
-      new THREE.Vector3(-halfWidth, -halfHeight, 0),
-    ];
-
-    const projected = corners.map((corner) => {
-      const point = corner.clone().applyMatrix4(imageMesh.matrixWorld).project(this.camera);
-      return {
-        x: ((point.x + 1) / 2) * rect.width + rect.left,
-        y: ((1 - point.y) / 2) * rect.height + rect.top,
-      };
-    });
-
-    const xs = projected.map((point) => point.x);
-    const ys = projected.map((point) => point.y);
-    const left = Math.min(...xs);
-    const right = Math.max(...xs);
-    const top = Math.min(...ys);
-    const bottom = Math.max(...ys);
-
-    if (!Number.isFinite(left) || !Number.isFinite(top) || right <= left || bottom <= top) {
-      return null;
-    }
-
-    return {
-      left,
-      top,
-      width: right - left,
-      height: bottom - top,
-    };
-  }
-
-  private fallbackCanvasBounds(): ArtworkTransitionRect {
-    const rect = this.renderer.domElement.getBoundingClientRect();
-    const width = Math.min(rect.width * 0.28, 320);
-    const height = width * 1.08;
-
-    return {
-      left: rect.left + (rect.width - width) / 2,
-      top: rect.top + (rect.height - height) / 2,
-      width,
-      height,
-    };
   }
 
   private activateExplorerFocus(source: 'hover' | 'pointer' | 'wheel'): void {
@@ -1211,7 +421,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     this.dragMoved = false;
     this.dragStartX = event.clientX;
     this.dragAccumulatedX = 0;
-    this.renderer.domElement.classList.add('is-dragging');
+    this.scene.setDragging(true);
   };
 
   private onPointerMove = (event: PointerEvent) => {
@@ -1220,10 +430,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
       return;
     }
 
-    const hits = this.pickPlane(event.clientX, event.clientY);
-    const first = hits[0];
-    this.hoveredIndex = first ? (first.object.userData as CardUserData).index : null;
-    this.updateCardTargets();
+    this.scene.setHoveredIndex(this.scene.pickIndex(event.clientX, event.clientY));
 
     if (!this.isDragging) return;
 
@@ -1249,25 +456,22 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
 
     if (!this.isDragging) return;
     this.isDragging = false;
-    this.renderer.domElement.classList.remove('is-dragging');
+    this.scene.setDragging(false);
 
     if (this.dragMoved) {
       this.dragMoved = false;
       return;
     }
 
-    const hits = this.pickPlane(event.clientX, event.clientY);
-    const first = hits[0];
-    if (!first) return;
+    const index = this.scene.pickIndex(event.clientX, event.clientY);
+    if (index === null) return;
 
-    const data = first.object.userData as CardUserData;
-
-    if (data.index === this.activeIndex) {
-      this.openIndex(data.index);
+    if (index === this.activeIndex) {
+      this.openIndex(index);
       return;
     }
 
-    this.goToIndex(data.index);
+    this.goToIndex(index);
   };
 
   private onPointerLeave = () => {
@@ -1278,8 +482,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
 
     this.isDragging = false;
     this.dragMoved = false;
-    this.hoveredIndex = null;
-    this.renderer.domElement.classList.remove('is-dragging');
-    this.updateCardTargets();
+    this.scene.setDragging(false);
+    this.scene.setHoveredIndex(null);
   };
 }

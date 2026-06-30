@@ -1,0 +1,110 @@
+@use './admin-entity-editor-controls';
+
+.translation-editor {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid rgba(28, 25, 23, 0.12);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(244, 241, 235, 0.7));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 16px 38px rgba(24, 20, 16, 0.07);
+  color: #24211d;
+}
+
+.translation-editor__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.translation-editor__head > div {
+  display: grid;
+  gap: 6px;
+}
+
+.translation-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.translation-tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(28, 25, 23, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.58);
+  color: #3f3933;
+  cursor: pointer;
+}
+
+.translation-tab.is-active {
+  border-color: rgba(28, 25, 23, 0.18);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    0 12px 30px rgba(24, 20, 16, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: #1f1c18;
+}
+
+.translation-tab strong {
+  color: #6d665f;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.translation-tab.is-complete strong {
+  color: #2f6f4c;
+}
+.translation-tab.is-partial strong {
+  color: #80610f;
+}
+.translation-tab.is-missing strong {
+  color: #77716a;
+}
+
+.translation-fields {
+  display: grid;
+  gap: 14px;
+}
+
+.translation-editor .hint,
+.translation-editor .field span {
+  color: #5f5851;
+}
+
+.translation-editor input,
+.translation-editor textarea,
+.translation-editor select {
+  background: rgba(255, 255, 255, 0.94);
+  color: #201d19;
+}
+
+.translation-fields__subhead {
+  display: grid;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(28, 25, 23, 0.08);
+}
+
+.translation-fields__subhead strong {
+  color: #1f1c18;
+}
+
+@media (max-width: 720px) {
+  .translation-editor__head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .translation-tabs {
+    grid-template-columns: 1fr;
+  }
+}

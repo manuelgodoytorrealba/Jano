@@ -196,22 +196,20 @@ model EntityAlias {
 }
 
 model Relation {
-  id            String  @id @default(cuid())
-  fromId        String
-  toId          String
-  type          String // "CREATED_BY", "REPRESENTS_CONCEPT", ...
-  relationTypeId String?
-  weight        Float?
-  justification String?
+  id             String  @id @default(cuid())
+  fromId         String
+  toId           String
+  relationTypeId String
+  weight         Float?
+  justification  String?
 
-  from Entity @relation("outgoing", fields: [fromId], references: [id])
-  to   Entity @relation("incoming", fields: [toId], references: [id])
-  relationType RelationType? @relation(fields: [relationTypeId], references: [id])
+  from         Entity                @relation("outgoing", fields: [fromId], references: [id])
+  to           Entity                @relation("incoming", fields: [toId], references: [id])
+  relationType RelationType          @relation(fields: [relationTypeId], references: [id])
   translations RelationTranslation[]
 
   @@index([fromId])
   @@index([toId])
-  @@index([type])
   @@index([relationTypeId])
 }
 
@@ -241,7 +239,7 @@ model RelationType {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  relations Relation[]
+  relations    Relation[]
   translations RelationTypeTranslation[]
 }
 
@@ -270,7 +268,7 @@ model Tag {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  entities EntityTag[]
+  entities     EntityTag[]
   translations TagTranslation[]
 
   @@index([category])
@@ -293,10 +291,10 @@ model TagTranslation {
 }
 
 model EntityTag {
-  entityId String
-  tagId    String
-  weight   Float?
-  source   String?
+  entityId  String
+  tagId     String
+  weight    Float?
+  source    String?
   createdAt DateTime @default(now())
 
   entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
@@ -309,26 +307,26 @@ model EntityTag {
 }
 
 model Media {
-  id   String    @id @default(cuid())
-  url  String
-  kind MediaKind @default(IMAGE)
-  originType MediaOriginType @default(EXTERNAL_URL)
+  id                 String          @id @default(cuid())
+  url                String
+  kind               MediaKind       @default(IMAGE)
+  originType         MediaOriginType @default(EXTERNAL_URL)
   derivedFromMediaId String?
 
-  canonicalUrl String?
-  displayUrl   String?
-  sourcePageUrl String?
-  storageKey   String?
+  canonicalUrl     String?
+  displayUrl       String?
+  sourcePageUrl    String?
+  storageKey       String?
   originalFilename String?
-  fileSize     Int?
-  mimeType     String?
-  width        Int?
-  height       Int?
-  focalX       Float?
-  focalY       Float?
-  isVector     Boolean          @default(false)
-  provider     MediaProvider    @default(UNKNOWN)
-  qualityTier  MediaQualityTier @default(MEDIUM)
+  fileSize         Int?
+  mimeType         String?
+  width            Int?
+  height           Int?
+  focalX           Float?
+  focalY           Float?
+  isVector         Boolean          @default(false)
+  provider         MediaProvider    @default(UNKNOWN)
+  qualityTier      MediaQualityTier @default(MEDIUM)
 
   alt     String?
   source  String? // where it comes from (page/museum/etc)
@@ -337,25 +335,25 @@ model Media {
 
   createdAt DateTime @default(now())
 
-  derivedFromMedia Media?  @relation("MediaDerivation", fields: [derivedFromMediaId], references: [id])
-  derivedAssets    Media[] @relation("MediaDerivation")
-  entities EntityMedia[]
-  collectionCovers Collection[] @relation("CollectionCoverMedia")
-  homeDeckCovers HomeDeck[] @relation("HomeDeckCoverMedia")
+  derivedFromMedia Media?        @relation("MediaDerivation", fields: [derivedFromMediaId], references: [id])
+  derivedAssets    Media[]       @relation("MediaDerivation")
+  entities         EntityMedia[]
+  collectionCovers Collection[]  @relation("CollectionCoverMedia")
+  homeDeckCovers   HomeDeck[]    @relation("HomeDeckCoverMedia")
 
   @@index([derivedFromMediaId])
 }
 
 model EntityMedia {
-  id          String            @id @default(cuid())
-  entityId    String
-  mediaId     String
-  role        MediaRole         @default(PRIMARY_LEGACY)
-  sortOrder   Int               @default(0)
-  isPrimary   Boolean           @default(false)
-  displayMode MediaDisplayMode?
-  focalX      Float?
-  focalY      Float?
+  id             String            @id @default(cuid())
+  entityId       String
+  mediaId        String
+  role           MediaRole         @default(PRIMARY_LEGACY)
+  sortOrder      Int               @default(0)
+  isPrimary      Boolean           @default(false)
+  displayMode    MediaDisplayMode?
+  focalX         Float?
+  focalY         Float?
   cropExplorer3d Json?
   cropList       Json?
   cropDetail     Json?
@@ -381,19 +379,19 @@ model Source {
 
   createdAt DateTime @default(now())
 
-  refs SourceRef[]
+  refs         SourceRef[]
   translations SourceTranslation[]
 }
 
 model SourceTranslation {
-  id          String   @id @default(cuid())
-  sourceId    String
-  locale      String
-  title       String
-  author      String?
-  publisher   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  sourceId  String
+  locale    String
+  title     String
+  author    String?
+  publisher String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
 
@@ -410,8 +408,8 @@ model SourceRef {
   quote String?
   note  String?
 
-  entity Entity @relation(fields: [entityId], references: [id])
-  source Source @relation(fields: [sourceId], references: [id])
+  entity       Entity                 @relation(fields: [entityId], references: [id])
+  source       Source                 @relation(fields: [sourceId], references: [id])
   translations SourceRefTranslation[]
 
   @@index([entityId])
@@ -469,7 +467,7 @@ model ArtworkDetails {
   collection String?
   state      String? // restored, destroyed, unfinished...
 
-  entity Entity @relation(fields: [entityId], references: [id])
+  entity       Entity                      @relation(fields: [entityId], references: [id])
   translations ArtworkDetailsTranslation[]
 }
 
@@ -485,7 +483,7 @@ model ArtistDetails {
   bioShort    String?
   links       String? // simple string list for now
 
-  entity Entity @relation(fields: [entityId], references: [id])
+  entity       Entity                     @relation(fields: [entityId], references: [id])
   translations ArtistDetailsTranslation[]
 }
 
@@ -493,7 +491,7 @@ model ConceptDetails {
   entityId   String  @id
   definition String?
 
-  entity Entity @relation(fields: [entityId], references: [id])
+  entity       Entity                      @relation(fields: [entityId], references: [id])
   translations ConceptDetailsTranslation[]
 }
 
@@ -501,23 +499,23 @@ model PeriodDetails {
   entityId   String  @id
   definition String?
 
-  entity Entity @relation(fields: [entityId], references: [id])
+  entity       Entity                     @relation(fields: [entityId], references: [id])
   translations PeriodDetailsTranslation[]
 }
 
 model ArtworkDetailsTranslation {
-  id          String   @id @default(cuid())
-  entityId    String
-  locale      String
+  id           String   @id @default(cuid())
+  entityId     String
+  locale       String
   authorNation String?
-  technique   String?
-  materials   String?
-  dimensions  String?
-  location    String?
-  collection  String?
-  state       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  technique    String?
+  materials    String?
+  dimensions   String?
+  location     String?
+  collection   String?
+  state        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   details ArtworkDetails @relation(fields: [entityId], references: [entityId], onDelete: Cascade)
 
@@ -610,13 +608,13 @@ model SavedEntity {
 }
 
 model Collection {
-  id          String  @id @default(cuid())
-  userId      String
-  name        String
-  description String?
-  notes       String?
+  id           String  @id @default(cuid())
+  userId       String
+  name         String
+  description  String?
+  notes        String?
   coverMediaId String?
-  isDefault   Boolean @default(false)
+  isDefault    Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -648,9 +646,9 @@ model CollectionEntity {
 }
 
 model HomeDeck {
-  id           String   @id @default(cuid())
+  id           String          @id @default(cuid())
   surface      HomeDeckSurface @default(HOME)
-  slug         String   @unique
+  slug         String          @unique
   title        String
   subtitle     String?
   description  String?
@@ -659,10 +657,10 @@ model HomeDeck {
   ctaRoute     String?
   imageUrl     String?
   imageMediaId String?
-  sortOrder    Int      @default(0)
-  isActive     Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  sortOrder    Int             @default(0)
+  isActive     Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
   imageMedia   Media?                @relation("HomeDeckCoverMedia", fields: [imageMediaId], references: [id], onDelete: SetNull)
   items        HomeDeckItem[]

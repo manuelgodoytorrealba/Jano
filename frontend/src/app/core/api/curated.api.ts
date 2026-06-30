@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { GraphResponseDto } from '../../features/graph/graph.models';
+import { GraphResponseDto } from './graph.models';
 import { apiUrl } from './api-base';
 import { PublicEntity } from './entities.models';
 

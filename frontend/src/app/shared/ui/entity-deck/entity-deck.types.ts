@@ -13,7 +13,6 @@ export type DeckItem = {
   ctaRoute?: string;
   ctaUrl?: string;
   adminEditRoute?: string;
-  adminMaterializeSlug?: string;
 };
 
 export type DeckRailAction = 'home' | 'picks' | 'profile';

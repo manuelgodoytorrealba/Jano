@@ -157,6 +157,9 @@ Avoid hidden automatic behavior.
 - Preserve responsiveness
 - Avoid unnecessary state complexity
 - Keep naming clear and domain-driven
+- Keep the pre-bootstrap frame branded and accessible; never render only decorative background
+- Treat the 28 kB Angular component-style budget as a build error
+- Remove dead CSS or transfer visual ownership; do not raise budgets or hide size in partials
 
 ---
 

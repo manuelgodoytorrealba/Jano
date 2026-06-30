@@ -150,7 +150,6 @@ export class RichTextComponent {
       entity?.resolvedMedia?.detail ??
       entity?.resolvedMedia?.hero ??
       entity?.resolvedMedia?.primary ??
-      entity?.mediaLinks?.[0]?.media ??
       null
     );
   }

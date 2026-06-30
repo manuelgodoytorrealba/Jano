@@ -10,7 +10,7 @@ import {
 import { AdminHomeDeck, AdminHomeDecksApi } from '../../../core/api/admin-home-decks.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import { getEntityTypeConfig, getRelationTypeConfig } from '../../graph/graph.config';
-import { GraphNodeDto, GraphResponseDto } from '../../graph/graph.models';
+import { GraphNodeDto, GraphResponseDto } from '../../../core/api/graph.models';
 import { AdminGlobalGraphComponent } from './admin-global-graph.component';
 
 type SidebarItem = {

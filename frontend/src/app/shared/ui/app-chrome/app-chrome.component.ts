@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   HostBinding,
   HostListener,
   inject,
@@ -16,25 +15,11 @@ import {
   Router,
   RouterLink,
 } from '@angular/router';
-import { navigateToAppSearch } from '../../../core/search/search-navigation';
-import { SearchApi, SearchResult } from '../../../core/api/search.api';
-import { HomeDeck, HomeDecksApi } from '../../../core/api/home-decks.api';
-import { CuratedApi, CuratedDeck } from '../../../core/api/curated.api';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
 import { I18nService } from '../../../core/i18n/i18n.service';
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  forkJoin,
-  fromEvent,
-  map,
-  of,
-  Subject,
-  switchMap,
-} from 'rxjs';
+import { filter, fromEvent } from 'rxjs';
+import { GlobalSearchComponent } from './global-search.component';
 
 type HeaderNavItem = {
   label: string;
@@ -53,37 +38,10 @@ type UtilityItem = {
   action?: ContextualRailAction;
 };
 
-type SearchPreparationType =
-  | ''
-  | 'ARTIST'
-  | 'ARTWORK'
-  | 'MOVEMENT'
-  | 'CONCEPT'
-  | 'ARTICLE'
-  | 'PLACE'
-  | 'PERIOD';
-type SearchPreparationCategoryType = Exclude<SearchPreparationType, ''>;
-
-type SearchPreparationCategory = {
-  type: SearchPreparationCategoryType;
-  labelKey: string;
-  icon: 'artist' | 'movement' | 'concept' | 'artwork' | 'article' | 'place' | 'period';
-};
-
-const SEARCH_PREPARATION_CATEGORIES: SearchPreparationCategory[] = [
-  { type: 'ARTIST', labelKey: 'search.type.artists', icon: 'artist' },
-  { type: 'MOVEMENT', labelKey: 'search.type.movements', icon: 'movement' },
-  { type: 'CONCEPT', labelKey: 'search.type.concepts', icon: 'concept' },
-  { type: 'ARTWORK', labelKey: 'search.type.artworks', icon: 'artwork' },
-  { type: 'ARTICLE', labelKey: 'search.type.articles', icon: 'article' },
-  { type: 'PLACE', labelKey: 'search.type.places', icon: 'place' },
-  { type: 'PERIOD', labelKey: 'search.type.periods', icon: 'period' },
-];
-
 @Component({
   standalone: true,
   selector: 'app-app-chrome',
-  imports: [RouterLink],
+  imports: [RouterLink, GlobalSearchComponent],
   templateUrl: './app-chrome.component.html',
   styleUrl: './app-chrome.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,10 +49,6 @@ const SEARCH_PREPARATION_CATEGORIES: SearchPreparationCategory[] = [
 export class AppChromeComponent {
   private static readonly COLLAPSIBLE_HEADER_MAX_WIDTH = 1200;
   private readonly router = inject(Router);
-  private readonly searchApi = inject(SearchApi);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly homeDecksApi = inject(HomeDecksApi);
-  private readonly curatedApi = inject(CuratedApi);
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
   readonly i18n = inject(I18nService);
@@ -105,18 +59,6 @@ export class AppChromeComponent {
   readonly detailHeaderRevealed = signal(false);
   readonly brandPressing = signal(false);
   readonly orientationLockVisible = signal(this.readOrientationLockVisible());
-  readonly searchDraft = signal('');
-  readonly searchSuggestions = signal<SearchResult[]>([]);
-  readonly searchFocused = signal(false);
-  readonly searchLoading = signal(false);
-  readonly searchPreparationLoading = signal(false);
-  readonly searchPreparationTopics = signal<HomeDeck[]>([]);
-  readonly searchPreparationPicks = signal<CuratedDeck[]>([]);
-  readonly searchPreparationType = signal<SearchPreparationType>('');
-  readonly searchPreparationCategories = SEARCH_PREPARATION_CATEGORIES;
-  readonly activeSuggestionIndex = signal(-1);
-  private searchPreparationLoaded = false;
-  private readonly searchInput$ = new Subject<string>();
 
   @HostBinding('class.app-chrome--orientation-lock')
   get orientationLockActive(): boolean {
@@ -149,37 +91,6 @@ export class AppChromeComponent {
   }
 
   constructor() {
-    this.searchInput$
-      .pipe(
-        debounceTime(180),
-        distinctUntilChanged(),
-        switchMap((value) => {
-          const q = value.trim();
-          if (q.length < 1) {
-            this.searchLoading.set(false);
-            return of([]);
-          }
-
-          this.searchLoading.set(true);
-          return this.searchApi
-            .search({
-              q,
-              limit: 6,
-              type: this.searchPreparationType() || undefined,
-            })
-            .pipe(
-              map((response) => response.items.slice(0, 6)),
-              catchError(() => of([])),
-            );
-        }),
-        takeUntilDestroyed(),
-      )
-      .subscribe((items) => {
-        this.searchSuggestions.set(items);
-        this.activeSuggestionIndex.set(items.length ? 0 : -1);
-        this.searchLoading.set(false);
-      });
-
     this.router.events
       .pipe(
         filter(
@@ -300,13 +211,6 @@ export class AppChromeComponent {
     const target = event.target;
     if (!(target instanceof Element)) {
       return;
-    }
-
-    if (
-      this.searchFocused() &&
-      !target.closest('.app-chrome__search, .app-chrome__search-prelude')
-    ) {
-      this.closeSearchUi();
     }
 
     if (!this.isDetailRoute() || this.headerCollapsed()) {
@@ -526,198 +430,5 @@ export class AppChromeComponent {
 
   preventPlaceholderAction(event: Event): void {
     event.preventDefault();
-  }
-
-  onSearchInput(value: string): void {
-    this.searchDraft.set(value);
-    this.searchFocused.set(true);
-    this.activeSuggestionIndex.set(-1);
-    this.searchInput$.next(value);
-  }
-
-  onSearchFocus(value: string): void {
-    this.searchFocused.set(true);
-    this.ensureSearchPreparationLoaded();
-
-    if (value.trim().length >= 1 && !this.searchSuggestions().length) {
-      this.searchInput$.next(value);
-    }
-  }
-
-  onSearchBlur(): void {}
-
-  closeSearchSuggestions(): void {
-    this.closeSearchUi();
-  }
-
-  showSearchPreparationPanel(): boolean {
-    return this.searchFocused() && this.searchDraft().trim().length === 0;
-  }
-
-  currentSearchPreparationTypeLabel(): string {
-    const active = this.searchPreparationCategories.find(
-      (item) => item.type === this.searchPreparationType(),
-    );
-    return active ? this.i18n.t(active.labelKey) : '';
-  }
-
-  trendMeta(deck: HomeDeck): string {
-    return `${deck.entities.length} ${this.i18n.t('search.prep.contents')}`;
-  }
-
-  toggleSearchPreparationType(type: SearchPreparationType, input: HTMLInputElement): void {
-    this.searchPreparationType.set(this.searchPreparationType() === type ? '' : type);
-    this.searchFocused.set(true);
-    input.focus();
-
-    if (this.searchDraft().trim().length >= 2) {
-      this.searchInput$.next(this.searchDraft());
-    }
-  }
-
-  applySearchPreparationQuery(input: HTMLInputElement, query: string): void {
-    input.value = query;
-    this.searchDraft.set(query);
-    this.searchFocused.set(true);
-    this.activeSuggestionIndex.set(-1);
-    input.focus();
-    this.searchInput$.next(query);
-  }
-
-  openPreparationCollection(deck: {
-    slug: string;
-    ctaRoute?: string | null;
-    ctaUrl?: string | null;
-  }): void {
-    this.closeSearchUi();
-
-    if (deck.ctaUrl) {
-      window.location.href = deck.ctaUrl;
-      return;
-    }
-
-    if (deck.ctaRoute) {
-      void this.router.navigateByUrl(deck.ctaRoute);
-      return;
-    }
-
-    void this.router.navigate(['/entities'], { queryParams: { deck: deck.slug } });
-  }
-
-  openPreparationCategory(type: SearchPreparationCategoryType): void {
-    this.closeSearchUi();
-    void this.router.navigateByUrl(this.searchCategoryRoute(type));
-  }
-
-  private searchCategoryRoute(type: SearchPreparationCategoryType): string {
-    switch (type) {
-      case 'ARTIST':
-        return '/entities/artist';
-      case 'ARTWORK':
-        return '/entities/artwork';
-      case 'MOVEMENT':
-        return '/entities/movement';
-      case 'CONCEPT':
-        return '/entities/concept';
-      case 'ARTICLE':
-        return '/entities/article';
-      case 'PLACE':
-        return '/entities/place';
-      case 'PERIOD':
-        return '/entities/period';
-    }
-  }
-
-  moveSearchSuggestion(delta: number): void {
-    const total = this.searchSuggestions().length;
-    if (!total) return;
-    const current = this.activeSuggestionIndex();
-    this.activeSuggestionIndex.set((current + delta + total) % total);
-  }
-
-  onSearchKeydown(event: KeyboardEvent): void {
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      this.moveSearchSuggestion(1);
-      return;
-    }
-
-    if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      this.moveSearchSuggestion(-1);
-      return;
-    }
-  }
-
-  onSearchSuggestionsWheel(event: WheelEvent): void {
-    if (!this.searchSuggestions().length) return;
-    event.preventDefault();
-    this.moveSearchSuggestion(event.deltaY > 0 ? 1 : -1);
-  }
-
-  setActiveSearchSuggestion(index: number): void {
-    this.activeSuggestionIndex.set(index);
-  }
-
-  showSearchSuggestions(): boolean {
-    return this.searchFocused() && this.searchDraft().trim().length >= 1;
-  }
-
-  chooseSearchSuggestion(input: HTMLInputElement, item: SearchResult): void {
-    input.value = '';
-    this.searchDraft.set('');
-    this.searchSuggestions.set([]);
-    this.activeSuggestionIndex.set(-1);
-    this.searchFocused.set(false);
-    void navigateToAppSearch(this.router, item.title, {
-      type: this.searchPreparationType() || null,
-    });
-    this.searchPreparationType.set('');
-  }
-
-  clearSearchInput(input: HTMLInputElement): void {
-    input.value = '';
-    this.searchDraft.set('');
-    this.searchSuggestions.set([]);
-    this.activeSuggestionIndex.set(-1);
-    this.searchLoading.set(false);
-    input.focus();
-  }
-
-  onSearchSubmit(event: Event, input: HTMLInputElement): void {
-    event.preventDefault();
-    const rawQuery = input.value;
-    input.value = '';
-    this.searchDraft.set('');
-    this.searchSuggestions.set([]);
-    this.activeSuggestionIndex.set(-1);
-    this.searchFocused.set(false);
-    void navigateToAppSearch(this.router, rawQuery, { type: this.searchPreparationType() || null });
-    this.searchPreparationType.set('');
-  }
-
-  private closeSearchUi(): void {
-    this.searchFocused.set(false);
-    this.activeSuggestionIndex.set(-1);
-    this.searchPreparationType.set('');
-  }
-
-  private ensureSearchPreparationLoaded(): void {
-    if (this.searchPreparationLoaded || this.searchPreparationLoading()) {
-      return;
-    }
-
-    this.searchPreparationLoading.set(true);
-    forkJoin({
-      topics: this.homeDecksApi.listPublic('RECOMMENDED').pipe(catchError(() => of([]))),
-      curated: this.curatedApi.page().pipe(catchError(() => of(null))),
-    })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ topics, curated }) => {
-        this.searchPreparationTopics.set(topics.slice(0, 6));
-        this.searchPreparationPicks.set(curated?.staffPicks?.slice(0, 3) ?? []);
-        this.searchPreparationLoading.set(false);
-        this.searchPreparationLoaded = true;
-      });
   }
 }

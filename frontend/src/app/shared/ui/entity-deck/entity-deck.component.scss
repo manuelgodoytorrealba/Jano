@@ -509,47 +509,6 @@
   color: rgba(255, 255, 255, 0.62);
 }
 
-.entity-deck__tabs {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.entity-deck__tab {
-  height: 38px;
-  padding: 0 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--color-text-soft);
-  font-size: 0.86rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    transform 180ms ease,
-    background 180ms ease,
-    border-color 180ms ease;
-}
-
-.entity-deck__tab:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.entity-deck__tab.is-active {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.24);
-  color: var(--color-text);
-}
-
-.entity-deck__tab--icon {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .entity-deck__dots {
   position: absolute;
   z-index: 3;

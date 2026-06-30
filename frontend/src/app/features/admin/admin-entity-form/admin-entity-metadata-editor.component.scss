@@ -1,0 +1,111 @@
+@use './admin-entity-editor-controls';
+
+.admin-dashboard-panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(245, 242, 236, 0.58));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 14px 34px rgba(22, 18, 14, 0.06);
+  backdrop-filter: blur(18px) saturate(1.06);
+}
+
+.admin-dashboard-panel--hidden {
+  display: none !important;
+}
+
+.admin-dashboard-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.admin-dashboard-panel__head h2,
+.relations-head h3,
+.current-relations h4 {
+  margin: 0;
+}
+
+.admin-dashboard-panel__pill {
+  padding: 7px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #6a625d;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grid,
+.relation-form,
+.sources-list,
+.contributors-list {
+  display: grid;
+  gap: 14px;
+}
+
+.details-box {
+  display: grid;
+  gap: 16px;
+}
+
+.grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.source-card,
+.contributor-card {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.relations-actions,
+.source-card__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.success-box,
+.error-box,
+.preview-empty {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.success-box {
+  border: 1px solid rgba(0, 128, 0, 0.18);
+  background: rgba(0, 128, 0, 0.05);
+  color: #126b12;
+}
+
+.error-box {
+  border: 1px solid rgba(176, 0, 32, 0.18);
+  background: rgba(176, 0, 32, 0.05);
+  color: #b00020;
+}
+
+.preview-empty {
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.015);
+  color: #888;
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -48,15 +48,15 @@
     <section class="production-status">
       <div class="section-title">
         <h2>Estado real en producción</h2>
-        <p>Te dice si Home y Curated viven de decks editables o del fallback editorial base.</p>
+        <p>Te dice si Home y Curated tienen decks editables activos.</p>
       </div>
 
       <div class="production-status__grid">
         <article class="surface-status">
           <div class="surface-status__head">
             <span class="surface-status__eyebrow">Home</span>
-            <strong [class.is-fallback]="vm.usesHomeFallback">
-              {{ vm.usesHomeFallback ? 'Fallback activo' : 'Decks activos' }}
+            <strong [class.is-empty]="vm.hasNoActiveHomeDecks">
+              {{ vm.hasNoActiveHomeDecks ? 'Sin decks activos' : 'Decks activos' }}
             </strong>
           </div>
           <div class="surface-status__summary">
@@ -86,8 +86,8 @@
         <article class="surface-status">
           <div class="surface-status__head">
             <span class="surface-status__eyebrow">Curated</span>
-            <strong [class.is-fallback]="vm.usesRecommendedFallback">
-              {{ vm.usesRecommendedFallback ? 'Fallback activo' : 'Decks activos' }}
+            <strong [class.is-empty]="vm.hasNoActiveRecommendedDecks">
+              {{ vm.hasNoActiveRecommendedDecks ? 'Sin decks activos' : 'Decks activos' }}
             </strong>
           </div>
           <div class="surface-status__summary">
@@ -139,7 +139,11 @@
               <div class="starter-card__meta">
                 <span>{{ surfaceLabel(state.starter.surface) }}</span>
                 <strong>{{
-                  state.imported ? (state.active ? 'Editable activo' : 'Editable') : 'Fallback base'
+                  state.imported
+                    ? state.active
+                      ? 'Editable activo'
+                      : 'Editable'
+                    : 'Plantilla pendiente'
                 }}</strong>
               </div>
               <h3>{{ state.starter.title }}</h3>
@@ -166,32 +170,21 @@
                     >Editar deck</a
                   >
                 } @else {
-                  @if (canMaterializeStarter(state.starter)) {
-                    <button
-                      class="mini"
-                      type="button"
-                      (click)="materializeStarter(state.starter)"
-                      [disabled]="saving"
-                    >
-                      Materializar deck
-                    </button>
-                  } @else {
-                    <button
-                      class="mini"
-                      type="button"
-                      (click)="
-                        importStarter(
-                          state.starter,
-                          state.starter.surface === 'HOME'
-                            ? vm.homeActiveDecks.length
-                            : vm.recommendedActiveDecks.length
-                        )
-                      "
-                      [disabled]="saving"
-                    >
-                      Importar deck
-                    </button>
-                  }
+                  <button
+                    class="mini"
+                    type="button"
+                    (click)="
+                      importStarter(
+                        state.starter,
+                        state.starter.surface === 'HOME'
+                          ? vm.homeActiveDecks.length
+                          : vm.recommendedActiveDecks.length
+                      )
+                    "
+                    [disabled]="saving"
+                  >
+                    Importar deck
+                  </button>
                 }
               </div>
             </div>

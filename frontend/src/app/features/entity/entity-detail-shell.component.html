@@ -2,12 +2,12 @@
   <app-entity-detail-view
     [entity]="entity"
     [showActions]="auth.isLoggedIn"
-    [isSaved]="isSaved()"
-    [saveLoading]="saveLoading()"
-    [collectionsLoading]="collectionsLoading()"
+    [isSaved]="saved.isSaved()"
+    [saveLoading]="saved.saveLoading()"
+    [collectionsLoading]="saved.collectionsLoading()"
     [preferredWorkspaceMode]="preferredWorkspaceMode"
-    (saveToggle)="toggleSave($event)"
-    (collectionsToggle)="toggleCollectionsPanel()"
+    (saveToggle)="saved.toggleSave($event)"
+    (collectionsToggle)="saved.toggleCollectionsPanel()"
     (shareToggle)="shareEntity(entity)"
   ></app-entity-detail-view>
   @if (entity.translationMeta?.isFallback) {
@@ -16,20 +16,20 @@
     </div>
   }
 
-  @if (showCollectionsPanel() && auth.isLoggedIn) {
+  @if (saved.showCollectionsPanel() && auth.isLoggedIn) {
     <div class="entity-detail-popup-wrap" aria-live="polite">
       <section
         class="collections-panel entity-glass"
-        [class.collections-panel--notice]="!collectionsChooserOpen()"
-        [class.collections-panel--chooser]="collectionsChooserOpen()"
-        [attr.data-kind]="popupKind()"
+        [class.collections-panel--notice]="!saved.collectionsChooserOpen()"
+        [class.collections-panel--chooser]="saved.collectionsChooserOpen()"
+        [attr.data-kind]="saved.popupKind()"
       >
         <div class="collections-panel__head">
           <div class="collections-panel__title-block">
             <div class="collections-panel__eyebrow">
               <span class="collections-panel__state-dot" aria-hidden="true"></span>
               <p class="section-label">
-                @switch (popupKind()) {
+                @switch (saved.popupKind()) {
                   @case ('manage') {
                     {{ i18n.t('popup.state.saved') }}
                   }
@@ -51,30 +51,30 @@
                 }
               </p>
             </div>
-            <h2 class="title-section">{{ popupTitle() }}</h2>
+            <h2 class="title-section">{{ saved.popupTitle() }}</h2>
           </div>
           <button
             class="ds-btn collections-panel__close"
             type="button"
-            (click)="closeCollectionsPanel()"
+            (click)="saved.closeCollectionsPanel()"
           >
             {{ i18n.t('button.close') }}
           </button>
         </div>
 
-        @if (collectionMessage()) {
+        @if (saved.collectionMessage()) {
           <div
             class="collections-panel__message"
             [class.collections-panel__message--positive]="
-              popupKind() === 'saved' || popupKind() === 'share'
+              saved.popupKind() === 'saved' || saved.popupKind() === 'share'
             "
           >
             <span class="collections-panel__message-icon" aria-hidden="true"></span>
-            <p class="collections-panel__message-text">{{ collectionMessage() }}</p>
+            <p class="collections-panel__message-text">{{ saved.collectionMessage() }}</p>
           </div>
         }
 
-        @if (collectionsChooserOpen()) {
+        @if (saved.collectionsChooserOpen()) {
           <div class="collections-panel__create entity-glass-card">
             <div class="collections-panel__create-head">
               <h3 class="collections-panel__create-title">{{ i18n.t('collection.new') }}</h3>
@@ -87,24 +87,24 @@
                 class="ds-input collections-panel__input"
                 type="text"
                 placeholder="{{ i18n.t('collection.namePlaceholder') }}"
-                [value]="createCollectionName()"
-                (input)="createCollectionName.set($any($event.target).value)"
+                [value]="saved.createCollectionName()"
+                (input)="saved.createCollectionName.set($any($event.target).value)"
               />
               <input
                 class="ds-input collections-panel__input"
                 type="text"
                 placeholder="{{ i18n.t('collection.descriptionPlaceholder') }}"
-                [value]="createCollectionDescription()"
-                (input)="createCollectionDescription.set($any($event.target).value)"
+                [value]="saved.createCollectionDescription()"
+                (input)="saved.createCollectionDescription.set($any($event.target).value)"
               />
             </div>
             <button
               class="ds-btn entity-action entity-action--primary collections-panel__create-btn"
               type="button"
-              [disabled]="creatingCollection() || !createCollectionName().trim()"
-              (click)="createCollectionAndAttach(entity.id)"
+              [disabled]="saved.creatingCollection() || !saved.createCollectionName().trim()"
+              (click)="saved.createCollectionAndAttach(entity.id)"
             >
-              @if (creatingCollection()) {
+              @if (saved.creatingCollection()) {
                 {{ i18n.t('common.creating') }}
               } @else {
                 {{ i18n.t('collection.create') }}
@@ -112,15 +112,15 @@
             </button>
           </div>
 
-          @if (collections$ | async; as collections) {
+          @if (saved.collections$ | async; as collections) {
             @if (collections.length) {
               <div class="collections-panel__list">
                 @for (collection of collections; track collection.id) {
                   <button
                     type="button"
                     class="collection-option entity-glass-card"
-                    [disabled]="addingToCollection()"
-                    (click)="addToCollection(collection.id, entity.id)"
+                    [disabled]="saved.addingToCollection()"
+                    (click)="saved.addToCollection(collection.id, entity.id)"
                   >
                     <div class="collection-option__body">
                       <div class="collection-option__name">{{ collection.name }}</div>
@@ -140,37 +140,37 @@
           }
         } @else {
           <div class="collections-panel__choices">
-            @if (popupKind() === 'saved' || popupKind() === 'manage') {
+            @if (saved.popupKind() === 'saved' || saved.popupKind() === 'manage') {
               <div class="collections-panel__primary-actions">
                 <button
                   class="ds-btn entity-action"
                   type="button"
-                  (click)="closeCollectionsPanel()"
+                  (click)="saved.closeCollectionsPanel()"
                 >
                   {{ i18n.t('button.continue') }}
                 </button>
                 <button
                   class="ds-btn entity-action entity-action--primary"
                   type="button"
-                  [disabled]="collectionsLoading()"
-                  (click)="openCollectionsChooser()"
+                  [disabled]="saved.collectionsLoading()"
+                  (click)="saved.openCollectionsChooser()"
                 >
-                  @if (collectionsLoading()) {
+                  @if (saved.collectionsLoading()) {
                     {{ i18n.t('common.loading') }}
                   } @else {
                     {{ i18n.t('button.addToCollection') }}
                   }
                 </button>
               </div>
-              @if (popupKind() === 'manage') {
+              @if (saved.popupKind() === 'manage') {
                 <div class="collections-panel__secondary-actions">
                   <button
                     class="ds-btn entity-action entity-action--danger entity-action--quiet-danger"
                     type="button"
-                    [disabled]="saveLoading()"
-                    (click)="removeSavedEntity(entity.id)"
+                    [disabled]="saved.saveLoading()"
+                    (click)="saved.removeSavedEntity(entity.id)"
                   >
-                    @if (saveLoading()) {
+                    @if (saved.saveLoading()) {
                       {{ i18n.t('common.removing') }}
                     } @else {
                       {{ i18n.t('button.removeSaved') }}
@@ -182,7 +182,7 @@
               <button
                 class="ds-btn entity-action entity-action--primary"
                 type="button"
-                (click)="closeCollectionsPanel()"
+                (click)="saved.closeCollectionsPanel()"
               >
                 {{ i18n.t('button.ok') }}
               </button>

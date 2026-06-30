@@ -29,8 +29,8 @@ type CuratedRelationFixture = {
   id: string;
   fromId: string;
   toId: string;
-  type: string;
   weight: number;
+  relationType: { key: string; directed: boolean };
   from: CuratedEntityFixture;
   to: CuratedEntityFixture;
 };
@@ -108,7 +108,6 @@ describe('CuratedService', () => {
           id: 'r4',
           fromId: memoria.id,
           toId: guerra.id,
-          type: 'RELATED_TO',
           weight: 1,
           relationType: { directed: false, key: 'RELATED_TO' },
         },
@@ -185,7 +184,7 @@ function buildRelation(
     id,
     fromId: from.id,
     toId: to.id,
-    type,
+    relationType: { key: type, directed: type !== 'RELATED_TO' },
     weight,
     from,
     to,

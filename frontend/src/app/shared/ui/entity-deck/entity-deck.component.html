@@ -130,7 +130,7 @@
                 <span class="entity-deck__eyebrow">{{ item.eyebrow }}</span>
 
                 <div class="entity-deck__top-actions">
-                  @if (showAdminEdit() && (item.adminEditRoute || item.adminMaterializeSlug)) {
+                  @if (showAdminEdit() && item.adminEditRoute) {
                     <button
                       class="entity-deck__admin-edit"
                       type="button"

@@ -1,19 +1,37 @@
 <section class="home-page">
   <h1 class="sr-only">JANO home: immersive art discovery</h1>
 
-  <app-entity-deck
-    class="home-page__deck"
-    [items]="deckItems()"
-    [backgroundImage]="backgroundImage()"
-    [mobileVariant]="'editorial'"
-    [showRail]="false"
-    [showDots]="true"
-    [showNav]="false"
-    [showBottomSearch]="false"
-    [fullViewport]="true"
-    [showAdminEdit]="showAdminEdit()"
-    (cardClick)="onCardClick($event)"
-    (expandClick)="onExpandClick($event)"
-    (adminEditClick)="onAdminEditClick($event)"
-  />
+  @if (loadState() === 'ready') {
+    <app-entity-deck
+      class="home-page__deck"
+      [items]="deckItems()"
+      [backgroundImage]="backgroundImage()"
+      [mobileVariant]="'editorial'"
+      [showRail]="false"
+      [showDots]="true"
+      [showNav]="false"
+      [showBottomSearch]="false"
+      [fullViewport]="true"
+      [showAdminEdit]="showAdminEdit()"
+      (cardClick)="onCardClick($event)"
+      (expandClick)="onExpandClick($event)"
+      (adminEditClick)="onAdminEditClick($event)"
+    />
+  } @else {
+    <div
+      class="home-page__state"
+      [style.backgroundImage]="'url(' + backgroundImage() + ')'"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="home-page__state-card">
+        <p>{{ i18n.t('home.state.' + loadState()) }}</p>
+        @if (loadState() === 'error') {
+          <button type="button" (click)="retryLoad()">
+            {{ i18n.t('home.retry') }}
+          </button>
+        }
+      </div>
+    </div>
+  }
 </section>

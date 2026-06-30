@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GraphResponseDto } from '../../graph/graph.models';
+import { GraphResponseDto } from '../../../core/api/graph.models';
 import { createAdminGlobalGraphLayout } from './admin-global-graph-layout';
 
 const graph: GraphResponseDto = {

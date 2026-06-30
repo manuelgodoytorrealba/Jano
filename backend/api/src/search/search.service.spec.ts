@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { SearchIntentService } from './search-intent.service';
+import { SearchQueryRepository } from './search-query.repository';
 import { SearchService } from './search.service';
 
 describe('SearchService', () => {
@@ -42,6 +43,7 @@ describe('SearchService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SearchService,
+        SearchQueryRepository,
         { provide: PrismaService, useValue: prisma },
         { provide: SearchIntentService, useValue: searchIntent },
       ],
@@ -213,20 +215,18 @@ describe('SearchService', () => {
     prisma.entity.findMany.mockResolvedValue([picasso, guernica]);
     prisma.relation.findMany.mockResolvedValue([
       {
-        type: 'CREATED_BY',
         weight: 1,
         from: guernica,
         to: picasso,
-        relationType: { translations: [] },
+        relationType: { key: 'CREATED_BY', translations: [] },
       },
       {
-        type: 'RELATED_TO',
         weight: 0.7,
         from: guernica,
         to: goyaWork,
         justification: 'Both works address war violence.',
         translations: [],
-        relationType: { translations: [] },
+        relationType: { key: 'RELATED_TO', translations: [] },
       },
     ]);
 

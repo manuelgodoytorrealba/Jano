@@ -83,9 +83,11 @@ npm run lint
 npm run typecheck
 npm test --workspaces --if-present -- --watch=false
 npm run check
+npm run frontend:build
 ```
 
 `npm run check` es el gate real del repo. Ejecuta lint, typecheck, tests del monorepo y format check.
+El build frontend es además el gate visual: falla si cualquier component style supera 28 kB.
 
 ## Backend
 

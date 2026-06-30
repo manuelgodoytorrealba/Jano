@@ -25,7 +25,7 @@ import {
 import { CollectionsApi, Collection } from '../../core/api/collections.api';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
-import { GraphResponseDto } from '../graph/graph.models';
+import { GraphResponseDto } from '../../core/api/graph.models';
 import { GraphComponent } from '../graph/graph.component';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import {

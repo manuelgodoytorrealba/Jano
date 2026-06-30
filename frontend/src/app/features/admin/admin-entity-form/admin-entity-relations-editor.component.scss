@@ -1,0 +1,154 @@
+@use './admin-entity-editor-controls';
+
+.admin-dashboard-panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(245, 242, 236, 0.58));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 14px 34px rgba(22, 18, 14, 0.06);
+  backdrop-filter: blur(18px) saturate(1.06);
+}
+
+.admin-dashboard-panel--hidden {
+  display: none !important;
+}
+
+.admin-dashboard-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.admin-dashboard-panel__head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.admin-dashboard-panel__pill {
+  padding: 7px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #6a625d;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.relation-form,
+.relations-list,
+.relation-main {
+  display: grid;
+  gap: 10px;
+}
+
+.relation-form {
+  gap: 14px;
+}
+.current-relations h4 {
+  margin: 0;
+  color: #111;
+}
+
+.search-results {
+  display: grid;
+  gap: 8px;
+  max-height: 220px;
+  padding: 8px;
+  overflow: auto;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.search-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  background: #fff;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+}
+
+.search-item strong {
+  color: #111;
+  font-size: 14px;
+}
+.search-item span {
+  color: #666;
+  font-size: 12px;
+}
+
+.relation-card {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.relation-card.incoming {
+  background: rgba(0, 0, 0, 0.03);
+}
+.relation-type {
+  color: #666;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.relation-target {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111;
+  font-weight: 700;
+}
+.relation-arrow,
+.relation-meta {
+  color: #666;
+  font-size: 13px;
+  font-weight: 400;
+}
+.relation-note {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.relations-actions,
+.source-card__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.preview-empty {
+  padding: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.015);
+  color: #888;
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .relation-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -1,119 +1,31 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityStatus, HomeDeckSurface } from '@prisma/client';
-import { attachResolvedMedia, type ResolvedMediaPayload } from '../entities/media.resolver';
-import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
+import { normalizeLocale } from '../entities/entity-translation.resolver';
+import { localizedInclude } from '../entities/entity.presenter';
 import { PrismaService } from '../prisma/prisma.service';
-
-type CuratedEntity = {
-  id: string;
-  slug: string;
-  title: string;
-  type: string;
-  summary: string | null;
-  content: string | null;
-  startYear: number | null;
-  endYear: number | null;
-  resolvedMedia: ResolvedMediaPayload | Record<string, never>;
-  artwork?: LocalizedDetail | null;
-  artist?: LocalizedDetail | null;
-  concept?: LocalizedDetail | null;
-  period?: LocalizedDetail | null;
-};
-
-type CuratedDeck = {
-  id: string;
-  slug: string;
-  title: string;
-  subtitle: string | null;
-  description: string | null;
-  image: {
-    url: string;
-    alt: string | null;
-  } | null;
-  entityCount: number;
-  createdAt?: Date;
-};
-
-type CandidateScore = {
-  entity: CuratedEntityRecord;
-  score: number;
-};
-
-type LocalizedTranslation = {
-  locale?: string | null;
-} & Record<string, unknown>;
-
-type LocalizedDetail = {
-  translations?: LocalizedTranslation[] | null;
-} & Record<string, unknown>;
-
-type CuratedEntityRecord = {
-  id: string;
-  slug: string;
-  title: string;
-  type: string;
-  summary: string | null;
-  content: string | null;
-  startYear: number | null;
-  endYear: number | null;
-  resolvedMedia?: ResolvedMediaPayload | null;
-  mediaLinks?: Array<Record<string, unknown>> | null;
-  artwork?: LocalizedDetail | null;
-  artist?: LocalizedDetail | null;
-  concept?: LocalizedDetail | null;
-  period?: LocalizedDetail | null;
-};
-
-type DeckTranslation = {
-  locale: string;
-  title?: string | null;
-  subtitle?: string | null;
-  description?: string | null;
-};
-
-type DeckImageMedia = {
-  displayUrl?: string | null;
-  url: string;
-  alt?: string | null;
-};
-
-type CuratedDeckItem = {
-  entityId: string;
-  entity?: CuratedEntityRecord | null;
-};
-
-type CuratedDeckRecord = {
-  id: string;
-  slug: string;
-  title: string;
-  subtitle?: string | null;
-  description?: string | null;
-  imageUrl?: string | null;
-  imageMedia?: DeckImageMedia | null;
-  translations?: DeckTranslation[] | null;
-  items?: CuratedDeckItem[] | null;
-  createdAt?: Date;
-};
-
-type CuratedRelationRecord = {
-  type: string;
-  weight?: number | null;
-  from: CuratedEntityRecord | null;
-  to: CuratedEntityRecord | null;
-};
+import {
+  canonicalRelationDirected,
+  canonicalRelationKey,
+  canonicalRelationTypeFilter,
+} from '../relation-types/relation-type.utils';
+import {
+  collectCuratedCandidates,
+  CONCEPTUAL_ENTITY_TYPES,
+  CURATED_RELATION_TYPES,
+  mergeCuratedCandidates,
+  pickCuratedByType,
+  pickDiverseCurated,
+  rankCuratedCandidates,
+  type RankedCandidate,
+} from './curated-ranking';
+import {
+  presentCuratedDeck,
+  presentCuratedEntity,
+  type CuratedDeckRecord,
+  type CuratedEntityRecord,
+} from './curated.presenter';
 
 const DISCOVERY_TYPES = new Set(['CONCEPT', 'MOVEMENT', 'PERIOD', 'ARTIST', 'ARTWORK']);
-const CONCEPTUAL_TYPES = new Set(['CONCEPT', 'MOVEMENT', 'PERIOD']);
-const KEY_RELATION_TYPES = new Set([
-  'ABOUT_CONCEPT',
-  'ASSOCIATED_WITH',
-  'BELONGS_TO_MOVEMENT',
-  'BELONGS_TO_PERIOD',
-  'CREATED_BY',
-  'RELATED_TO',
-  'MENTIONS',
-]);
-const DISCOVERY_RELATION_TYPES = Array.from(KEY_RELATION_TYPES);
 
 @Injectable()
 export class CuratedService {
@@ -168,24 +80,31 @@ export class CuratedService {
       throw new NotFoundException('Curated entity not found');
     }
 
-    const selectedEntity = this.serializeEntity(selectedEntityRecord, safeLocale);
+    const selectedEntity = presentCuratedEntity(selectedEntityRecord, safeLocale);
     const selectedDecks = recommendedDecks
       .filter((deck) => deck.items.some((item) => item.entityId === selectedEntity.id))
-      .map((deck) => this.serializeDeck(deck, safeLocale));
+      .map((deck) => presentCuratedDeck(deck, safeLocale));
 
     const directRelations = await this.loadRelations([selectedEntity.id], safeLocale, 48);
-    const directCandidates = this.collectCandidates(directRelations, new Set([selectedEntity.id]));
-    const directNeighbors = this.rankCandidates(directCandidates);
+    const directCandidates = collectCuratedCandidates(
+      directRelations,
+      new Set([selectedEntity.id]),
+    );
+    const directNeighbors = rankCuratedCandidates(directCandidates);
 
     const bridgeSeedIds = directNeighbors.slice(0, 8).map((candidate) => candidate.entity.id);
     const bridgeRelations = bridgeSeedIds.length
       ? await this.loadRelations(bridgeSeedIds, safeLocale, 96)
       : [];
-    const shelfCandidates = this.mergeCandidateMaps(
+    const shelfCandidates = mergeCuratedCandidates(
       directCandidates,
-      this.collectCandidates(bridgeRelations, new Set([selectedEntity.id, ...bridgeSeedIds]), 0.62),
+      collectCuratedCandidates(
+        bridgeRelations,
+        new Set([selectedEntity.id, ...bridgeSeedIds]),
+        0.62,
+      ),
     );
-    const rankedShelfCandidates = this.rankCandidates(shelfCandidates);
+    const rankedShelfCandidates = rankCuratedCandidates(shelfCandidates);
 
     const baseDiscovery = discoveryPool.slice(0, 20);
     const discoveryEntityMap = new Map(baseDiscovery.map((entity) => [entity.id, entity]));
@@ -194,7 +113,7 @@ export class CuratedService {
     const discoveryIds = Array.from(discoveryEntityMap.keys());
     const discoveryConnections = await this.prisma.relation.findMany({
       where: {
-        type: { in: DISCOVERY_RELATION_TYPES },
+        ...canonicalRelationTypeFilter(CURATED_RELATION_TYPES),
         fromId: { in: discoveryIds },
         toId: { in: discoveryIds },
       },
@@ -202,7 +121,6 @@ export class CuratedService {
         id: true,
         fromId: true,
         toId: true,
-        type: true,
         weight: true,
         relationType: {
           select: {
@@ -233,7 +151,7 @@ export class CuratedService {
     const discoveryEntities = Array.from(discoveryEntityMap.values()).map((entity) => {
       const relatedCount = adjacency.get(entity.id)?.size ?? 0;
       return {
-        ...this.serializeEntity(entity, safeLocale),
+        ...presentCuratedEntity(entity, safeLocale),
         connectionIds: Array.from(adjacency.get(entity.id) ?? []).sort(),
         curationCount: deckCountByEntityId.get(entity.id) ?? 0,
         relatedCount,
@@ -267,8 +185,8 @@ export class CuratedService {
       id: relation.id,
       source: relation.fromId,
       target: relation.toId,
-      relationType: relation.relationType?.key ?? relation.type,
-      directed: relation.relationType?.directed ?? false,
+      relationType: canonicalRelationKey(relation),
+      directed: canonicalRelationDirected(relation),
       weight: relation.weight ?? 1,
     }));
     const graph = {
@@ -287,7 +205,7 @@ export class CuratedService {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .filter((deck) => !staffPickIds.has(deck.id))
       .slice(0, 6)
-      .map((deck) => this.serializeDeck(deck, safeLocale));
+      .map((deck) => presentCuratedDeck(deck, safeLocale));
 
     return {
       selectedEntity,
@@ -299,12 +217,7 @@ export class CuratedService {
         articles: this.pickByType(rankedShelfCandidates, ['ARTICLE', 'TEXT'], 8, safeLocale),
         artists: this.pickByType(rankedShelfCandidates, ['ARTIST'], 8, safeLocale),
         artworks: this.pickByType(rankedShelfCandidates, ['ARTWORK'], 8, safeLocale),
-        concepts: this.pickByType(
-          rankedShelfCandidates,
-          Array.from(CONCEPTUAL_TYPES),
-          8,
-          safeLocale,
-        ),
+        concepts: this.pickByType(rankedShelfCandidates, CONCEPTUAL_ENTITY_TYPES, 8, safeLocale),
       },
       keyEntities: this.pickDiverse(
         rankedShelfCandidates,
@@ -324,138 +237,31 @@ export class CuratedService {
 
   private entityInclude(locale: string) {
     return {
-      translations: {
-        where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
-      },
+      translations: localizedInclude(locale),
       mediaLinks: {
         include: { media: true },
         orderBy: [{ sortOrder: 'asc' as const }, { id: 'asc' as const }],
       },
       artwork: {
         include: {
-          translations: {
-            where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
-          },
+          translations: localizedInclude(locale),
         },
       },
       artist: {
         include: {
-          translations: {
-            where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
-          },
+          translations: localizedInclude(locale),
         },
       },
       concept: {
         include: {
-          translations: {
-            where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
-          },
+          translations: localizedInclude(locale),
         },
       },
       period: {
         include: {
-          translations: {
-            where: { locale: { in: Array.from(new Set([locale, 'es', 'en'])) } },
-          },
+          translations: localizedInclude(locale),
         },
       },
-    };
-  }
-
-  private localizeDetail<T extends LocalizedDetail | null | undefined>(
-    detail: T,
-    locale: string,
-    fields: string[],
-  ): T {
-    if (!detail) {
-      return detail;
-    }
-
-    const translations = Array.isArray(detail.translations) ? detail.translations : [];
-    const resolved =
-      translations.find((item) => item?.locale === locale) ??
-      translations.find((item) => item?.locale === 'es') ??
-      translations.find((item) => item?.locale === 'en') ??
-      null;
-
-    if (!resolved) {
-      return detail;
-    }
-
-    const localized: Record<string, unknown> = { ...detail };
-    for (const field of fields) {
-      const value = resolved?.[field];
-      if (typeof value === 'string' && value.trim()) {
-        localized[field] = value.trim();
-      }
-    }
-    return localized as T;
-  }
-
-  private serializeEntity(entity: CuratedEntityRecord, locale: string): CuratedEntity {
-    const localized = attachResolvedMedia(resolveEntityTranslation(entity, locale));
-    return {
-      id: localized.id,
-      slug: localized.slug,
-      title: localized.title,
-      type: localized.type,
-      summary: localized.summary ?? null,
-      content: localized.content ?? null,
-      startYear: localized.startYear ?? null,
-      endYear: localized.endYear ?? null,
-      resolvedMedia: localized.resolvedMedia ?? {},
-      artwork: this.localizeDetail(localized.artwork, locale, [
-        'authorNation',
-        'technique',
-        'materials',
-        'dimensions',
-        'location',
-        'collection',
-        'state',
-      ]),
-      artist: this.localizeDetail(localized.artist, locale, [
-        'country',
-        'city',
-        'disciplines',
-        'bioShort',
-        'links',
-      ]),
-      concept: this.localizeDetail(localized.concept, locale, ['definition']),
-      period: this.localizeDetail(localized.period, locale, ['definition']),
-    };
-  }
-
-  private resolveDeckTranslation(deck: CuratedDeckRecord, locale: string) {
-    const translations = deck.translations ?? [];
-    return (
-      translations.find((item) => item.locale === locale) ??
-      translations.find((item) => item.locale === 'es') ??
-      translations.find((item) => item.locale === 'en') ??
-      null
-    );
-  }
-
-  private serializeDeck(deck: CuratedDeckRecord, locale: string): CuratedDeck {
-    const translation = this.resolveDeckTranslation(deck, locale);
-    return {
-      id: deck.id,
-      slug: deck.slug,
-      title: translation?.title?.trim() || deck.title,
-      subtitle: translation?.subtitle?.trim() || deck.subtitle || null,
-      description: translation?.description?.trim() || deck.description || null,
-      image: deck.imageMedia
-        ? {
-            url: deck.imageMedia.displayUrl ?? deck.imageMedia.url,
-            alt: deck.imageMedia.alt ?? deck.title,
-          }
-        : deck.imageUrl
-          ? {
-              url: deck.imageUrl,
-              alt: deck.title,
-            }
-          : null,
-      entityCount: deck.items?.length ?? 0,
-      createdAt: deck.createdAt,
     };
   }
 
@@ -484,10 +290,14 @@ export class CuratedService {
   private async loadRelations(entityIds: string[], locale: string, take: number) {
     return this.prisma.relation.findMany({
       where: {
-        type: { in: DISCOVERY_RELATION_TYPES },
-        OR: [
-          { fromId: { in: entityIds }, to: { status: EntityStatus.PUBLISHED } },
-          { toId: { in: entityIds }, from: { status: EntityStatus.PUBLISHED } },
+        AND: [
+          canonicalRelationTypeFilter(CURATED_RELATION_TYPES),
+          {
+            OR: [
+              { fromId: { in: entityIds }, to: { status: EntityStatus.PUBLISHED } },
+              { toId: { in: entityIds }, from: { status: EntityStatus.PUBLISHED } },
+            ],
+          },
         ],
       },
       orderBy: [{ weight: 'desc' }, { id: 'asc' }],
@@ -495,123 +305,30 @@ export class CuratedService {
       include: {
         from: { include: this.entityInclude(locale) },
         to: { include: this.entityInclude(locale) },
+        relationType: { select: { key: true, directed: true } },
       },
     });
   }
 
-  private collectCandidates(
-    relations: CuratedRelationRecord[],
-    excludedIds: Set<string>,
-    multiplier = 1,
+  private pickByType(
+    candidates: RankedCandidate<CuratedEntityRecord>[],
+    types: readonly string[],
+    limit: number,
+    locale: string,
   ) {
-    const scores = new Map<string, CandidateScore>();
-
-    for (const relation of relations) {
-      const relationWeight = Number(relation.weight ?? 0.5);
-      for (const entity of [relation.from, relation.to]) {
-        if (!entity || excludedIds.has(entity.id)) {
-          continue;
-        }
-
-        const typeBonus = CONCEPTUAL_TYPES.has(entity.type)
-          ? 0.12
-          : entity.type === 'ARTWORK' || entity.type === 'ARTIST'
-            ? 0.16
-            : 0;
-        const relationBonus = KEY_RELATION_TYPES.has(relation.type) ? 0.18 : 0;
-        const nextScore = relationWeight + typeBonus + relationBonus;
-        const existing = scores.get(entity.id);
-        const combined = (existing?.score ?? 0) + nextScore * multiplier;
-
-        scores.set(entity.id, {
-          entity,
-          score: combined,
-        });
-      }
-    }
-
-    return scores;
-  }
-
-  private mergeCandidateMaps(
-    base: Map<string, CandidateScore>,
-    extra: Map<string, CandidateScore>,
-  ) {
-    const merged = new Map(base);
-    for (const [entityId, candidate] of extra.entries()) {
-      const existing = merged.get(entityId);
-      merged.set(entityId, {
-        entity: candidate.entity,
-        score: (existing?.score ?? 0) + candidate.score,
-      });
-    }
-    return merged;
-  }
-
-  private rankCandidates(candidates: Map<string, CandidateScore>) {
-    return Array.from(candidates.values()).sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
-      }
-      return a.entity.title.localeCompare(b.entity.title);
-    });
-  }
-
-  private pickByType(candidates: CandidateScore[], types: string[], limit: number, locale: string) {
-    const seen = new Set<string>();
-    const allowedTypes = new Set(types);
-    return candidates
-      .filter((candidate) => allowedTypes.has(candidate.entity.type))
-      .filter((candidate) => {
-        if (seen.has(candidate.entity.id)) {
-          return false;
-        }
-        seen.add(candidate.entity.id);
-        return true;
-      })
-      .slice(0, limit)
-      .map((candidate) => this.serializeEntity(candidate.entity, locale));
+    return pickCuratedByType(candidates, types, limit).map((entity) =>
+      presentCuratedEntity(entity, locale),
+    );
   }
 
   private pickDiverse(
-    candidates: CandidateScore[],
+    candidates: RankedCandidate<CuratedEntityRecord>[],
     limit: number,
     excludedTypes: Set<string>,
     locale: string,
   ) {
-    const selected: CuratedEntityRecord[] = [];
-    const selectedTypes = new Set<string>();
-    const selectedIds = new Set<string>();
-
-    for (const candidate of candidates) {
-      if (selected.length >= limit) {
-        break;
-      }
-      if (excludedTypes.has(candidate.entity.type) || selectedIds.has(candidate.entity.id)) {
-        continue;
-      }
-      if (selectedTypes.has(candidate.entity.type) && selected.length < 4) {
-        continue;
-      }
-
-      selected.push(candidate.entity);
-      selectedTypes.add(candidate.entity.type);
-      selectedIds.add(candidate.entity.id);
-    }
-
-    if (selected.length < limit) {
-      for (const candidate of candidates) {
-        if (selected.length >= limit) {
-          break;
-        }
-        if (excludedTypes.has(candidate.entity.type) || selectedIds.has(candidate.entity.id)) {
-          continue;
-        }
-        selected.push(candidate.entity);
-        selectedIds.add(candidate.entity.id);
-      }
-    }
-
-    return selected.map((entity) => this.serializeEntity(entity, locale));
+    return pickDiverseCurated(candidates, limit, excludedTypes).map((entity) =>
+      presentCuratedEntity(entity, locale),
+    );
   }
 }

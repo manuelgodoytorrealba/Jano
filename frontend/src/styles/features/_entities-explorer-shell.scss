@@ -665,17 +665,9 @@
   -webkit-backdrop-filter: blur(14px);
 }
 
-.entities-explorer-loading__pill,
 .entities-explorer-loading__mode span,
 .entities-explorer-loading__card-foot {
   border-radius: 999px;
-}
-
-.entities-explorer-loading__pill {
-  width: 124px;
-  height: 34px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .entities-explorer-loading__mode {

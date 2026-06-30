@@ -1,5 +1,3 @@
-import { DeckItem } from '../../shared/ui/entity-deck/entity-deck.types';
-
 export type HomeDeckStarter = {
   id: string;
   surface: 'HOME' | 'RECOMMENDED';
@@ -241,23 +239,3 @@ const STARTERS: HomeDeckStarter[] = [
 ];
 
 export const HOME_DECK_STARTERS = STARTERS;
-export const HOME_FALLBACK_STARTERS = STARTERS.filter((starter) => starter.surface === 'HOME');
-export const RECOMMENDED_FALLBACK_STARTERS = STARTERS.filter(
-  (starter) => starter.surface === 'RECOMMENDED',
-);
-
-export function starterToDeckItem(starter: HomeDeckStarter): DeckItem {
-  return {
-    id: starter.id,
-    eyebrow: starter.subtitle,
-    title: starter.title,
-    description: starter.description,
-    meta: starter.meta,
-    cta: `${starter.ctaLabel} →`,
-    image: starter.image,
-    imageWidth: starter.imageWidth,
-    imageHeight: starter.imageHeight,
-    ctaRoute: starter.ctaRoute,
-    adminMaterializeSlug: starter.slug,
-  };
-}

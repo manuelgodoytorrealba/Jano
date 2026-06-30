@@ -18,7 +18,7 @@ import {
 import { Router } from '@angular/router';
 import * as THREE from 'three';
 import { getEntityTypeConfig, getRelationTypeConfig } from '../../graph/graph.config';
-import { GraphNodeDto, GraphResponseDto } from '../../graph/graph.models';
+import { GraphNodeDto, GraphResponseDto } from '../../../core/api/graph.models';
 import { AdminGlobalGraphLayout, createAdminGlobalGraphLayout } from './admin-global-graph-layout';
 
 type GraphTooltipState = { node: GraphNodeDto; x: number; y: number };

@@ -21,6 +21,7 @@ import {
   MEDIA_SECONDARY_ROLE_PILLS,
   MediaEditorSlotKey,
 } from './media-admin.models';
+import { cloneMediaLink } from './admin-entity-media.helpers';
 
 @Component({
   standalone: true,
@@ -57,6 +58,7 @@ export class MediaCardEditorComponent implements OnChanges {
   @Output() promote = new EventEmitter<EditableAdminMediaLink>();
   @Output() restore = new EventEmitter<EditableAdminMediaLink>();
   @Output() editRequested = new EventEmitter<EditableAdminMediaLink>();
+  @Output() draftChange = new EventEmitter<EditableAdminMediaLink>();
 
   showAdvanced = false;
   activeEditorSlot: MediaEditorSlotKey = 'detail';
@@ -68,6 +70,7 @@ export class MediaCardEditorComponent implements OnChanges {
   private dragSurface: HTMLElement | null = null;
   private dragPointerId: number | null = null;
   private lastEditorId: string | null = null;
+  private draftState: EditableAdminMediaLink | null = null;
 
   readonly mediaRoles = MEDIA_ROLE_OPTIONS;
   readonly displayModes = MEDIA_DISPLAY_MODES;
@@ -77,7 +80,7 @@ export class MediaCardEditorComponent implements OnChanges {
   readonly editorSlotOptions = MEDIA_EDITOR_SLOT_OPTIONS;
 
   get draft(): EditableAdminMediaLink {
-    return this.editor.draft;
+    return this.draftState ?? this.editor.draft;
   }
 
   get persisted(): EditableAdminMediaLink {
@@ -260,8 +263,25 @@ export class MediaCardEditorComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['editor']) {
+      this.draftState = cloneMediaLink(this.editor.draft, (value) => this.toNullableNumber(value));
       this.syncActiveEditorSlot();
     }
+  }
+
+  updateDraftField<K extends keyof EditableAdminMediaLink>(
+    field: K,
+    value: EditableAdminMediaLink[K],
+  ) {
+    this.draftState = { ...this.draft, [field]: value };
+    this.emitDraftChange();
+  }
+
+  updateMediaField<K extends keyof EditableAdminMediaLink['media']>(
+    field: K,
+    value: EditableAdminMediaLink['media'][K],
+  ) {
+    this.draftState = { ...this.draft, media: { ...this.draft.media, [field]: value } };
+    this.emitDraftChange();
   }
 
   get legacyStatusLabel(): string {
@@ -489,36 +509,42 @@ export class MediaCardEditorComponent implements OnChanges {
   updateAssetFocal(axis: 'x' | 'y', value: number | string | null) {
     const numeric = this.toNullableNumber(value);
     if (axis === 'x') {
-      this.draft.assetFocalX = numeric;
-      if (
-        this.draft.focalX === null ||
-        this.draft.focalX === undefined ||
-        this.draft.focalX === ''
-      ) {
-        this.draft.focalX = numeric;
-      }
+      this.draftState = {
+        ...this.draft,
+        assetFocalX: numeric,
+        focalX:
+          this.draft.focalX === null || this.draft.focalX === undefined || this.draft.focalX === ''
+            ? numeric
+            : this.draft.focalX,
+      };
+      this.emitDraftChange();
       return;
     }
 
-    this.draft.assetFocalY = numeric;
-    if (this.draft.focalY === null || this.draft.focalY === undefined || this.draft.focalY === '') {
-      this.draft.focalY = numeric;
-    }
+    this.draftState = {
+      ...this.draft,
+      assetFocalY: numeric,
+      focalY:
+        this.draft.focalY === null || this.draft.focalY === undefined || this.draft.focalY === ''
+          ? numeric
+          : this.draft.focalY,
+    };
+    this.emitDraftChange();
   }
 
   updateSlotCrop(axis: 'x' | 'y' | 'zoom', value: number | string | null) {
-    this.draft.slotCrops[this.activeEditorSlot] = {
+    this.setActiveSlotCrop({
       ...this.draft.slotCrops[this.activeEditorSlot],
       [axis]: this.toNullableNumber(value),
-    };
+    });
   }
 
   resetSlotCrop() {
-    this.draft.slotCrops[this.activeEditorSlot] = {
+    this.setActiveSlotCrop({
       x: null,
       y: null,
       zoom: null,
-    };
+    });
   }
 
   nudgeSlotCrop(axis: 'x' | 'y', delta: number) {
@@ -606,17 +632,17 @@ export class MediaCardEditorComponent implements OnChanges {
     }
 
     if (this.dragTarget === 'asset') {
-      this.draft.assetFocalX = point.x;
-      this.draft.assetFocalY = point.y;
+      this.draftState = { ...this.draft, assetFocalX: point.x, assetFocalY: point.y };
+      this.emitDraftChange();
       return;
     }
 
-    this.draft.slotCrops[this.activeEditorSlot] = {
+    this.setActiveSlotCrop({
       ...this.draft.slotCrops[this.activeEditorSlot],
       x: point.x,
       y: point.y,
       zoom: this.toNullableNumber(this.draft.slotCrops[this.activeEditorSlot]?.zoom) ?? 1,
-    };
+    });
   }
 
   slotFrameClass(slot: MediaEditorSlotKey): string {
@@ -674,6 +700,18 @@ export class MediaCardEditorComponent implements OnChanges {
 
   private clamp(value: number, min: number, max: number) {
     return Math.min(max, Math.max(min, value));
+  }
+
+  private setActiveSlotCrop(crop: EditableAdminMediaLink['slotCrops'][MediaEditorSlotKey]) {
+    this.draftState = {
+      ...this.draft,
+      slotCrops: { ...this.draft.slotCrops, [this.activeEditorSlot]: crop },
+    };
+    this.emitDraftChange();
+  }
+
+  private emitDraftChange() {
+    this.draftChange.emit(cloneMediaLink(this.draft, (value) => this.toNullableNumber(value)));
   }
 
   private syncActiveEditorSlot() {

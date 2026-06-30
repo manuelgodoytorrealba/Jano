@@ -23,6 +23,7 @@
           [ingestedSourceLabel]="presentation(editor.persisted).ingestedSourceLabel"
           [slotWarnings]="presentation(editor.persisted).slotWarnings"
           (editRequested)="editRequested.emit($event)"
+          (draftChange)="draftChange.emit($event)"
           (assignRole)="assignRole.emit($event)"
           (toggleLegacy)="toggleLegacy.emit($event)"
           (save)="save.emit($event)"

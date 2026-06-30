@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { PublicEntity } from '../../core/api/entities.models';
 import { CuratedMapEntity } from '../../core/api/curated.api';
-import { GraphResponseDto } from '../graph/graph.models';
+import { GraphResponseDto } from '../../core/api/graph.models';
 import { GraphComponent } from '../graph/graph.component';
 import { recommendedTypeLabel } from './recommended-presenter';
 

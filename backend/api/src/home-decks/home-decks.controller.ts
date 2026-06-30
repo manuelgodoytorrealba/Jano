@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -13,11 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { mkdirSync } from 'fs';
 import { unlink } from 'fs/promises';
-import { extname, join } from 'path';
-import { randomUUID } from 'crypto';
 import { Roles } from '../auth/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -28,6 +23,7 @@ import { UpdateHomeDeckDto } from './dto/update-home-deck.dto';
 import { UploadHomeDeckImageDto } from './dto/upload-home-deck-image.dto';
 import { HomeDecksService } from './home-decks.service';
 import { HomeDeckSurface } from '@prisma/client';
+import { MEDIA_IMAGE_UPLOAD_OPTIONS } from '../media/image-upload.config';
 
 type UploadedImageFile = {
   filename: string;
@@ -36,14 +32,6 @@ type UploadedImageFile = {
   size: number;
   path: string;
 };
-
-const ALLOWED_UPLOAD_MIME_TYPES = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/gif',
-  'image/avif',
-]);
 
 @Controller('home-decks')
 export class HomeDecksController {
@@ -77,13 +65,6 @@ export class HomeDecksController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  @Post('materialize/:slug')
-  materializeVirtualDeck(@Param('slug') slug: string) {
-    return this.service.materializeVirtualDeck(slug);
-  }
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateHomeDeckDto) {
     return this.service.update(id, dto);
@@ -99,35 +80,7 @@ export class HomeDecksController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post(':id/image/upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: (_req, _file, callback) => {
-          const destination = join(process.cwd(), 'uploads', 'media');
-          mkdirSync(destination, { recursive: true });
-          callback(null, destination);
-        },
-        filename: (_req, file, callback) => {
-          const suffix = `${Date.now()}-${randomUUID()}`;
-          callback(null, `${suffix}${extname(file.originalname)}`);
-        },
-      }),
-      fileFilter: (_req, file, callback) => {
-        if (!ALLOWED_UPLOAD_MIME_TYPES.has(file.mimetype ?? '')) {
-          callback(
-            new BadRequestException('Formato no permitido. Usa JPEG, PNG, WEBP, GIF o AVIF.'),
-            false,
-          );
-          return;
-        }
-
-        callback(null, true);
-      },
-      limits: {
-        fileSize: 15 * 1024 * 1024,
-      },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file', MEDIA_IMAGE_UPLOAD_OPTIONS))
   async uploadImage(
     @Param('id') id: string,
     @UploadedFile() file: UploadedImageFile,

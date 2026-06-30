@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { GraphResponseDto } from '../../graph/graph.models';
+import { GraphResponseDto } from '../../../core/api/graph.models';
 import { createAdminGlobalGraphLayout } from './admin-global-graph-layout';
 
 addEventListener('message', ({ data }: MessageEvent<{ id: number; graph: GraphResponseDto }>) => {

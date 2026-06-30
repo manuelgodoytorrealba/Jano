@@ -85,8 +85,8 @@ export class AdminHomeDecksComponent {
             warningCount: visibleDecks.filter((deck) => this.hasWarnings(deck)).length,
             homeActiveDecks,
             recommendedActiveDecks,
-            usesHomeFallback: homeActiveDecks.length === 0,
-            usesRecommendedFallback: recommendedActiveDecks.length === 0,
+            hasNoActiveHomeDecks: homeActiveDecks.length === 0,
+            hasNoActiveRecommendedDecks: recommendedActiveDecks.length === 0,
             starterStates,
             missingStarterCount: starterStates.filter((state) => !state.imported).length,
           };
@@ -101,8 +101,8 @@ export class AdminHomeDecksComponent {
             warningCount: 0,
             homeActiveDecks: [],
             recommendedActiveDecks: [],
-            usesHomeFallback: true,
-            usesRecommendedFallback: true,
+            hasNoActiveHomeDecks: true,
+            hasNoActiveRecommendedDecks: true,
             starterStates: [],
             missingStarterCount: 0,
           });
@@ -165,23 +165,6 @@ export class AdminHomeDecksComponent {
       error: () => {
         this.saving = false;
         this.feedback = `No se pudo importar "${starter.title}".`;
-      },
-    });
-  }
-
-  materializeStarter(starter: HomeDeckStarter): void {
-    this.saving = true;
-    this.feedback = '';
-
-    this.api.materializeVirtualDeck(starter.slug).subscribe({
-      next: (deck) => {
-        this.saving = false;
-        this.feedback = `Deck base "${deck.title}" materializado con sus entidades iniciales.`;
-        this.refresh();
-      },
-      error: () => {
-        this.saving = false;
-        this.feedback = `No se pudo materializar "${starter.title}".`;
       },
     });
   }
@@ -384,10 +367,6 @@ export class AdminHomeDecksComponent {
   starterDecksForSurface(surface: HomeDeckSurfaceValue | undefined): HomeDeckStarter[] {
     const safeSurface = surface ?? 'HOME';
     return this.starterDecks.filter((starter) => starter.surface === safeSurface);
-  }
-
-  canMaterializeStarter(starter: HomeDeckStarter): boolean {
-    return starter.surface === 'HOME' && starter.slug === 'place';
   }
 
   selectedCtaRouteDetail(): string {

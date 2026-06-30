@@ -1,0 +1,205 @@
+<section class="field full translation-editor">
+  <div class="translation-editor__head">
+    <div>
+      <span>Traducciones editoriales</span>
+      <small class="hint">
+        Contenido curatorial por idioma. Los datos globales, relaciones y tags siguen siendo únicos.
+      </small>
+    </div>
+    <button class="btn" type="button" [disabled]="saving" (click)="save()">
+      {{ saving ? 'Guardando...' : 'Guardar traducción' }}
+    </button>
+  </div>
+
+  <div class="translation-tabs" role="tablist" aria-label="Traducciones de la entity">
+    @for (item of locales; track item.locale) {
+      <button
+        type="button"
+        class="translation-tab"
+        [class.is-active]="activeLocale === item.locale"
+        [class.is-complete]="status(item.locale) === 'complete'"
+        [class.is-partial]="status(item.locale) === 'partial'"
+        [class.is-missing]="status(item.locale) === 'missing'"
+        (click)="setActiveLocale(item.locale)"
+      >
+        <span>{{ item.label }}</span>
+        <strong>{{ statusMark(item.locale) }} {{ statusLabel(item.locale) }}</strong>
+      </button>
+    }
+  </div>
+
+  <div class="translation-fields">
+    <label class="field full">
+      <span>Título</span>
+      <input
+        type="text"
+        [ngModel]="activeTranslation().title"
+        (ngModelChange)="updateTranslation('title', $event)"
+        [name]="'translationTitle_' + activeLocale"
+      />
+    </label>
+    <label class="field full">
+      <span>Descripción corta</span>
+      <textarea
+        rows="4"
+        [ngModel]="activeTranslation().shortDescription"
+        (ngModelChange)="updateTranslation('shortDescription', $event)"
+        [name]="'translationShort_' + activeLocale"
+      ></textarea>
+    </label>
+    <label class="field full">
+      <span>Ensayo / contenido</span>
+      <textarea
+        rows="10"
+        [ngModel]="activeTranslation().essay"
+        (ngModelChange)="updateTranslation('essay', $event)"
+        [name]="'translationEssay_' + activeLocale"
+      ></textarea>
+    </label>
+    <label class="field full">
+      <span>Excerpt</span>
+      <textarea
+        rows="3"
+        [ngModel]="activeTranslation().excerpt"
+        (ngModelChange)="updateTranslation('excerpt', $event)"
+        [name]="'translationExcerpt_' + activeLocale"
+      ></textarea>
+    </label>
+    <label class="field full">
+      <span>Notas curatoriales</span>
+      <textarea
+        rows="3"
+        [ngModel]="activeTranslation().notes"
+        (ngModelChange)="updateTranslation('notes', $event)"
+        [name]="'translationNotes_' + activeLocale"
+      ></textarea>
+    </label>
+
+    @if (supportsTypedDetails()) {
+      <div class="translation-fields__subhead">
+        <strong>Ficha localizada</strong>
+        <small class="hint">Estos campos alimentan la ficha pública en el idioma activo.</small>
+      </div>
+      @if (entityType === 'ARTWORK') {
+        <label class="field"
+          ><span>Técnica</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().technique"
+            (ngModelChange)="updateDetails('technique', $event)"
+            [name]="'translationTechnique_' + activeLocale"
+        /></label>
+        <label class="field"
+          ><span>Materiales</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().materials"
+            (ngModelChange)="updateDetails('materials', $event)"
+            [name]="'translationMaterials_' + activeLocale"
+        /></label>
+        <label class="field"
+          ><span>Dimensiones</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().dimensions"
+            (ngModelChange)="updateDetails('dimensions', $event)"
+            [name]="'translationDimensions_' + activeLocale"
+        /></label>
+        <label class="field"
+          ><span>Ubicación</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().location"
+            (ngModelChange)="updateDetails('location', $event)"
+            [name]="'translationLocation_' + activeLocale"
+        /></label>
+        <label class="field"
+          ><span>Colección</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().collection"
+            (ngModelChange)="updateDetails('collection', $event)"
+            [name]="'translationCollection_' + activeLocale"
+        /></label>
+        <label class="field"
+          ><span>Estado</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().state"
+            (ngModelChange)="updateDetails('state', $event)"
+            [name]="'translationState_' + activeLocale"
+        /></label>
+        <label class="field full"
+          ><span>Nacionalidad autor</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().authorNation"
+            (ngModelChange)="updateDetails('authorNation', $event)"
+            [name]="'translationAuthorNation_' + activeLocale"
+        /></label>
+      }
+      @if (entityType === 'ARTIST') {
+        <label class="field"
+          ><span>País</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().country"
+            (ngModelChange)="updateDetails('country', $event)"
+            [name]="'translationCountry_' + activeLocale"
+        /></label>
+        <label class="field"
+          ><span>Ciudad</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().city"
+            (ngModelChange)="updateDetails('city', $event)"
+            [name]="'translationCity_' + activeLocale"
+        /></label>
+        <label class="field full"
+          ><span>Disciplinas</span
+          ><input
+            type="text"
+            [ngModel]="activeDetails().disciplines"
+            (ngModelChange)="updateDetails('disciplines', $event)"
+            [name]="'translationDisciplines_' + activeLocale"
+        /></label>
+        <label class="field full"
+          ><span>Biografía breve</span
+          ><textarea
+            rows="4"
+            [ngModel]="activeDetails().bioShort"
+            (ngModelChange)="updateDetails('bioShort', $event)"
+            [name]="'translationBioShort_' + activeLocale"
+          ></textarea>
+        </label>
+        <label class="field full"
+          ><span>Links</span
+          ><textarea
+            rows="3"
+            [ngModel]="activeDetails().links"
+            (ngModelChange)="updateDetails('links', $event)"
+            [name]="'translationLinks_' + activeLocale"
+          ></textarea>
+        </label>
+      }
+      @if (entityType === 'CONCEPT' || entityType === 'PERIOD') {
+        <label class="field full"
+          ><span>Definición</span
+          ><textarea
+            rows="6"
+            [ngModel]="activeDetails().definition"
+            (ngModelChange)="updateDetails('definition', $event)"
+            [name]="'translationDefinition_' + activeLocale"
+          ></textarea>
+        </label>
+      }
+    }
+  </div>
+
+  @if (message) {
+    <small class="success-text">{{ message }}</small>
+  }
+  @if (error) {
+    <small class="error-text">{{ error }}</small>
+  }
+</section>

@@ -1,0 +1,43 @@
+@use './admin-entity-editor-controls';
+
+.tag-admin {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.tag-admin__current,
+.tag-admin__attach,
+.tag-admin__create {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tag-admin__attach select,
+.tag-admin__create input,
+.tag-admin__create select {
+  min-width: min(16rem, 100%);
+}
+
+.tag-chip {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  cursor: pointer;
+}
+
+.tag-chip--alias {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tag-chip--alias small {
+  opacity: 0.72;
+}
+.tag-chip span {
+  margin-left: 0.35rem;
+}

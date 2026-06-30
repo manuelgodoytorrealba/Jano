@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaOriginType, MediaRole } from '@prisma/client';
 import { mkdir, readFile, unlink, writeFile } from 'fs/promises';
-import { EntitiesService } from './entities.service';
+import { EntityReadService } from './entity-read.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { detectImageDimensionsFromBuffer } from './image-metadata';
+import { detectImageDimensionsFromBuffer } from '../media/image-metadata';
+import { EntityMediaService } from '../media/entity-media.service';
+import { EntityMediaLifecycleService } from '../media/entity-media-lifecycle.service';
 
 jest.mock('fs/promises', () => ({
   mkdir: jest.fn(),
@@ -12,7 +14,7 @@ jest.mock('fs/promises', () => ({
   unlink: jest.fn(),
 }));
 
-jest.mock('./image-metadata', () => ({
+jest.mock('../media/image-metadata', () => ({
   detectImageDimensionsFromBuffer: jest.fn(),
 }));
 
@@ -42,8 +44,10 @@ type EntityMediaLinkFixture = {
   media?: Record<string, unknown>;
 };
 
-describe('EntitiesService media admin workflows', () => {
-  let service: EntitiesService;
+describe('EntityMediaService admin workflows', () => {
+  let service: EntityMediaService;
+  let lifecycleService: EntityMediaLifecycleService;
+  let entitiesService: EntityReadService;
   const txMediaUpdate = jest.fn();
   const txEntityMediaUpdate = jest.fn();
   const txEntityMediaUpdateMany = jest.fn();
@@ -127,10 +131,17 @@ describe('EntitiesService media admin workflows', () => {
     global.fetch = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EntitiesService, { provide: PrismaService, useValue: prisma }],
+      providers: [
+        EntityReadService,
+        EntityMediaService,
+        EntityMediaLifecycleService,
+        { provide: PrismaService, useValue: prisma },
+      ],
     }).compile();
 
-    service = module.get(EntitiesService);
+    service = module.get(EntityMediaService);
+    lifecycleService = module.get(EntityMediaLifecycleService);
+    entitiesService = module.get(EntityReadService);
   });
 
   it('creates external media links with trimmed metadata and preserves visual metadata', async () => {
@@ -429,7 +440,7 @@ describe('EntitiesService media admin workflows', () => {
       arrayBuffer: jest.fn().mockResolvedValue(Uint8Array.from([1, 2, 3, 4]).buffer),
     });
 
-    const result = await service.adminIngestMedia('entity-1', 'link-external-1');
+    const result = await lifecycleService.adminIngestMedia('entity-1', 'link-external-1');
 
     expect(global.fetch).toHaveBeenCalledWith('https://images.example.com/source.jpg');
     expect(mkdir).toHaveBeenCalledWith(expect.stringContaining('/uploads/media/ingested'), {
@@ -568,7 +579,7 @@ describe('EntitiesService media admin workflows', () => {
       },
     });
 
-    const result = await service.adminPromoteIngestedMedia('entity-1', 'link-ingested-1');
+    const result = await lifecycleService.adminPromoteIngestedMedia('entity-1', 'link-ingested-1');
 
     expect(txUpdate).toHaveBeenNthCalledWith(1, {
       where: { id: 'link-ingested-1' },
@@ -634,7 +645,7 @@ describe('EntitiesService media admin workflows', () => {
       })
       .mockResolvedValueOnce(existingLink);
 
-    const result = await service.adminIngestMedia('entity-1', 'link-external-1');
+    const result = await lifecycleService.adminIngestMedia('entity-1', 'link-external-1');
 
     expect(result).toEqual({
       ...existingLink,
@@ -721,7 +732,7 @@ describe('EntitiesService media admin workflows', () => {
       },
     });
 
-    const result = await service.adminRestoreExternalMedia('entity-1', 'link-external-1');
+    const result = await lifecycleService.adminRestoreExternalMedia('entity-1', 'link-external-1');
 
     expect(txUpdate).toHaveBeenNthCalledWith(1, {
       where: { id: 'link-external-1' },
@@ -859,7 +870,7 @@ describe('EntitiesService media admin workflows', () => {
       ],
     });
 
-    const result = await service.previewBySlug('guernica');
+    const result = await entitiesService.previewBySlug('guernica');
 
     expect(result.mediaLibrary.resolvedSlots.find((slot) => slot.slotKey === 'preview')).toEqual(
       expect.objectContaining({
@@ -895,6 +906,7 @@ describe('EntitiesService media admin workflows', () => {
       type: 'ARTWORK',
       title: 'Entidad',
       slug: 'entidad',
+      translations: [],
       artwork: null,
       artist: null,
       concept: null,
@@ -906,7 +918,7 @@ describe('EntitiesService media admin workflows', () => {
       mediaLinks: [],
     });
 
-    await service.adminGetById('entity-1');
+    const result = await entitiesService.adminGetById('entity-1');
 
     expect(prisma.entityMedia.updateMany).toHaveBeenCalledWith({
       where: {
@@ -919,5 +931,20 @@ describe('EntitiesService media admin workflows', () => {
         isPrimary: false,
       },
     });
+    expect(result).toEqual(
+      expect.objectContaining({
+        id: 'entity-1',
+        resolvedMedia: expect.any(Object),
+        mediaLibrary: expect.objectContaining({
+          assets: [],
+          assignments: [],
+          resolvedSlots: expect.any(Array),
+        }),
+        translationStatus: {
+          es: 'missing',
+          en: 'missing',
+        },
+      }),
+    );
   });
 });

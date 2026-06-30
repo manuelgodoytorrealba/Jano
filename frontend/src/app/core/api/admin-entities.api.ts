@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { apiUrl } from './api-base';
-import { GraphResponseDto } from '../../features/graph/graph.models';
+import { GraphResponseDto } from './graph.models';
 
 export type AdminLocale = 'es' | 'en';
 

@@ -1,5 +1,13 @@
 # Search Intent Audit
 
+> Estado: **SUPERSEDED** (2026-06-30)
+>
+> Auditoría histórica. Su descripción del estado actual y su propuesta dejaron de ser la referencia
+> tras la implementación de `SearchIntentService`, `SearchQueryRepository`, la búsqueda sobre
+> aliases/tags/details/relaciones y `GlobalSearchComponent`. La arquitectura vigente está en
+> [`architecture-overview.md`](./architecture-overview.md); cualquier evolución adicional de Search
+> debe partir de una especificación nueva basada en el código actual.
+
 ## Goal
 
 Evolve JANO search from literal term matching into intent-aware discovery that can recover entities from incomplete, fuzzy, symbolic, or misremembered descriptions.
