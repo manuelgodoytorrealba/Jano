@@ -428,3 +428,20 @@
     overscroll-behavior: contain;
   }
 }
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .app-chrome__search-input.ds-input {
+    height: 44px;
+    padding-left: 40px;
+    font-size: 0.95rem;
+  }
+
+  .app-chrome__search-input.ds-input::placeholder {
+    font-size: 0.95rem;
+  }
+
+  .app-chrome__search-icon {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+}

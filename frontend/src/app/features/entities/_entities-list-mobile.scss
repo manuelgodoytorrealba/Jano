@@ -47,6 +47,7 @@
   .entities-explorer-layout.is-list .entities-stage-shell--list {
     position: absolute;
     inset: 0;
+    padding-top: calc(var(--app-safe-top) + 132px);
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
