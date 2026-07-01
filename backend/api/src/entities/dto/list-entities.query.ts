@@ -40,8 +40,8 @@ export class ListEntitiesQuery {
   limit: number = 24;
 
   @IsOptional()
-  @IsIn(['recent', 'title', 'relevance'])
-  sort?: 'recent' | 'title' | 'relevance';
+  @IsIn(['recent', 'updated', 'title', 'relevance'])
+  sort?: 'recent' | 'updated' | 'title' | 'relevance';
 
   @IsOptional()
   @IsString()

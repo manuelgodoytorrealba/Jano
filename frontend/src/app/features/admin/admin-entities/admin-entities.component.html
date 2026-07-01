@@ -1,157 +1,271 @@
-<div class="page">
-  <header class="top">
-    <div>
-      <h1>Admin · Entities</h1>
-      <p class="muted">Gestiona el contenido de JANO.</p>
+<main class="archive-page">
+  <header class="archive-head">
+    <div class="archive-head__copy">
+      <p class="archive-eyebrow">Archivo editorial</p>
+      <h1>Biblioteca de conocimiento</h1>
+      <p>Encuentra, retoma y organiza las entidades que construyen JANO.</p>
     </div>
 
-    <div class="top-actions">
-      <a class="btn ghost" routerLink="/admin">Editorial desk</a>
-      <a class="btn ghost" routerLink="/admin/visual-selector">Selector visual</a>
-      <a class="btn ghost" routerLink="/">Volver al sitio</a>
+    <div class="archive-head__actions">
+      <a class="archive-btn archive-btn--quiet" routerLink="/admin">Editorial Desk</a>
+      <a class="archive-btn archive-btn--quiet" routerLink="/admin/visual-selector"
+        >Selector visual</a
+      >
       <a
-        class="btn primary"
+        class="archive-btn archive-btn--primary"
         routerLink="/admin/entities/new"
         [queryParams]="{ returnTo: adminListReturnUrl() }"
-        >Nueva entity</a
+        >Nueva entidad</a
       >
     </div>
   </header>
 
-  <section class="filters-card">
-    <div class="filters-grid">
-      <label class="field field-search">
-        <span>Buscar</span>
-        <input
-          type="text"
-          [(ngModel)]="search"
-          (ngModelChange)="onSearchChange($event)"
-          placeholder="Título, slug, resumen o contenido..."
-        />
-      </label>
+  <section class="archive-filters" aria-label="Filtros del archivo editorial">
+    <label class="archive-field archive-field--search">
+      <span>Buscar en la biblioteca</span>
+      <input
+        type="search"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="Título, slug, resumen o contenido"
+      />
+    </label>
 
-      <label class="field">
-        <span>Tipo</span>
-        <select [(ngModel)]="selectedType" (ngModelChange)="refresh()">
-          <option value="">Todos</option>
-          @for (type of types; track type) {
-            <option [value]="type">{{ type }}</option>
-          }
-        </select>
-      </label>
+    <label class="archive-field">
+      <span>Tipo</span>
+      <select [(ngModel)]="selectedType" (ngModelChange)="setType($event)">
+        <option value="">Todos los tipos</option>
+        @for (type of types; track type) {
+          <option [value]="type">{{ typeLabel(type) }}</option>
+        }
+      </select>
+    </label>
 
-      <label class="field">
-        <span>Status</span>
-        <select [(ngModel)]="selectedStatus" (ngModelChange)="refresh()">
-          <option value="">Todos</option>
-          @for (status of statuses; track status) {
-            <option [value]="status">{{ status }}</option>
-          }
-        </select>
-      </label>
+    <label class="archive-field">
+      <span>Estado</span>
+      <select [(ngModel)]="selectedStatus" (ngModelChange)="setStatus($event)">
+        <option value="">Todos los estados</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
 
-      <div class="filters-actions">
-        <button class="btn ghost" type="button" (click)="resetFilters()">Reset</button>
-      </div>
-    </div>
+    <label class="archive-field">
+      <span>Orden</span>
+      <select [(ngModel)]="selectedSort" (ngModelChange)="setSort($event)">
+        @for (sort of sorts; track sort.value) {
+          <option [value]="sort.value">{{ sort.label }}</option>
+        }
+      </select>
+    </label>
+
+    <button
+      class="archive-reset"
+      type="button"
+      [disabled]="!hasActiveFilters()"
+      (click)="resetFilters()"
+    >
+      Limpiar filtros
+    </button>
   </section>
 
   @if (vm$ | async; as vm) {
-    <section class="meta">
-      <div class="meta-left">
-        <span class="pill">{{ vm.total }} entities</span>
+    @if (vm.state === 'ready') {
+      <section class="archive-summary" aria-live="polite">
+        <div>
+          <strong>{{ vm.total }}</strong>
+          <span>{{ vm.total === 1 ? 'entidad' : 'entidades' }}</span>
+        </div>
 
         @if (hasActiveFilters()) {
-          <span class="pill subtle">Filtros activos</span>
-        }
-
-        @if (selectedType) {
-          <span class="pill type-pill">Tipo: {{ selectedType }}</span>
+          <span class="archive-summary__context">Vista filtrada</span>
         }
 
         @if (feedbackMessage) {
-          <span class="pill success">{{ feedbackMessage }}</span>
+          <span
+            class="archive-feedback"
+            [class.archive-feedback--error]="feedbackKind === 'error'"
+            >{{ feedbackMessage }}</span
+          >
         }
-      </div>
-    </section>
+      </section>
+    }
 
-    @if (loading) {
-      <div class="loading-box">Cargando entities…</div>
+    @if (vm.state === 'loading') {
+      <section class="archive-state" aria-live="polite">
+        <span class="archive-state__pulse" aria-hidden="true"></span>
+        <div>
+          <strong>Abriendo el archivo</strong>
+          <p>Recuperando el estado más reciente de la biblioteca.</p>
+        </div>
+      </section>
+    } @else if (vm.state === 'error') {
+      <section class="archive-state archive-state--error" role="alert">
+        <div>
+          <strong>El archivo no está disponible</strong>
+          <p>{{ vm.error }} Tus filtros permanecen intactos.</p>
+        </div>
+        <button class="archive-btn archive-btn--quiet" type="button" (click)="refresh()">
+          Reintentar
+        </button>
+      </section>
     } @else if (vm.items.length > 0) {
-      <section class="table-wrap">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th>Tipo</th>
-              <th>Status</th>
-              <th>Nivel</th>
-              <th>Slug</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+      <section class="archive-list" aria-label="Entidades del archivo">
+        @for (item of vm.items; track item.id) {
+          @let typeConfig = entityTypeConfig(item.type);
+          @let health = healthSignals(item);
+          <article
+            class="archive-entry"
+            [style.--entity-color]="typeConfig.color"
+            [style.--entity-accent]="typeConfig.accent"
+            [style.--entity-halo]="typeConfig.halo"
+          >
+            <a
+              class="archive-entry__visual"
+              [attr.data-shape]="typeConfig.shape"
+              [attr.data-variant]="visualVariant(item.id)"
+              [routerLink]="['/admin/entities', item.id, 'edit']"
+              [queryParams]="{ returnTo: adminListReturnUrl() }"
+              [attr.aria-label]="'Abrir ' + item.title"
+            >
+              @if (hasEditorialVisual(item)) {
+                <app-jano-media
+                  [entity]="item"
+                  usage="thumbnail"
+                  [alt]="item.title"
+                ></app-jano-media>
+              } @else {
+                <span class="archive-placeholder__shape" aria-hidden="true"></span>
+                <span class="archive-placeholder__graph" aria-hidden="true"></span>
+                <span class="archive-placeholder__icon">{{ typeConfig.icon }}</span>
+                <strong class="archive-placeholder__initials">{{
+                  visualInitials(item.title)
+                }}</strong>
+                <span class="archive-placeholder__type">{{ typeLabel(item.type) }}</span>
+              }
+              <span class="archive-entry__visual-accent" aria-hidden="true"></span>
+            </a>
 
-          <tbody class="table-body">
-            @for (item of vm.items; track item.id) {
-              <tr>
-                <td>
-                  <div class="title-cell">
-                    <div class="title">{{ item.title }}</div>
-                    @if (item.summary) {
-                      <div class="summary">{{ item.summary }}</div>
-                    }
-                  </div>
-                </td>
+            <div class="archive-entry__body">
+              <a
+                class="archive-entry__title"
+                [routerLink]="['/admin/entities', item.id, 'edit']"
+                [queryParams]="{ returnTo: adminListReturnUrl() }"
+              >
+                {{ item.title }}
+              </a>
 
-                <td>
-                  <span class="mini-pill">{{ item.type }}</span>
-                </td>
+              @if (item.summary) {
+                <p class="archive-entry__summary">{{ item.summary }}</p>
+              } @else {
+                <p class="archive-entry__summary archive-entry__summary--empty">
+                  Sin resumen editorial.
+                </p>
+              }
 
-                <td>
-                  <span class="mini-pill">{{ item.status }}</span>
-                </td>
+              <div class="archive-entry__facts">
+                <span class="archive-pill archive-pill--type">{{ typeLabel(item.type) }}</span>
+                <span>{{ relationCountLabel(item) }}</span>
+                <span>{{ sourceCountLabel(item) }}</span>
+                <span>{{ languageLabel(item) }}</span>
+              </div>
 
-                <td>
-                  <span class="mini-pill">{{ item.contentLevel || '—' }}</span>
-                </td>
+              @if (health.length) {
+                <div class="archive-entry__health" aria-label="Atención editorial">
+                  @for (signal of health.slice(0, 2); track signal) {
+                    <span>{{ signal }}</span>
+                  }
+                  @if (health.length > 2) {
+                    <span>+{{ health.length - 2 }}</span>
+                  }
+                </div>
+              }
+            </div>
 
-                <td class="slug">{{ item.slug }}</td>
+            <div class="archive-entry__aside">
+              <span [class]="statusClass(item.status)">{{ statusLabel(item.status) }}</span>
+              <time [attr.datetime]="item.updatedAt || item.createdAt">
+                Editada {{ item.updatedAt || item.createdAt | date: 'dd/MM/yyyy · HH:mm' }}
+              </time>
 
-                <td>
-                  <div class="row-actions">
-                    <a class="mini" [routerLink]="['/entity', item.slug]">Ver</a>
-                    <a
-                      class="mini"
-                      [routerLink]="['/admin/entities', item.id, 'edit']"
-                      [queryParams]="{ returnTo: adminListReturnUrl() }"
-                      >Editar</a
-                    >
+              <div class="archive-entry__actions">
+                <a
+                  class="archive-btn archive-btn--quiet"
+                  [routerLink]="['/admin/entities', item.id, 'edit']"
+                  [queryParams]="{ returnTo: adminListReturnUrl() }"
+                  >Abrir</a
+                >
+                <details class="archive-more">
+                  <summary [attr.aria-label]="'Más acciones para ' + item.title">•••</summary>
+                  <div class="archive-more__menu">
                     <button
-                      class="mini danger"
+                      class="archive-delete"
                       type="button"
                       [disabled]="deletingId === item.id"
                       (click)="remove(item.id, item.title)"
                     >
-                      @if (deletingId === item.id) {
-                        Borrando...
-                      } @else {
-                        Borrar
-                      }
+                      {{ deletingId === item.id ? 'Eliminando...' : 'Eliminar entidad' }}
                     </button>
                   </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+                </details>
+              </div>
+            </div>
+          </article>
+        }
       </section>
+
+      <nav class="archive-pagination" aria-label="Paginación del archivo">
+        <button
+          class="archive-btn archive-btn--quiet"
+          type="button"
+          [disabled]="vm.page <= 1"
+          (click)="goToPage(vm.page - 1, vm.totalPages)"
+        >
+          Anterior
+        </button>
+        <span
+          >Página <strong>{{ vm.page }}</strong> de {{ vm.totalPages }}</span
+        >
+        <button
+          class="archive-btn archive-btn--quiet"
+          type="button"
+          [disabled]="vm.page >= vm.totalPages"
+          (click)="goToPage(vm.page + 1, vm.totalPages)"
+        >
+          Siguiente
+        </button>
+      </nav>
     } @else {
-      <div class="empty">
-        <div class="empty-title">No hay resultados</div>
-        <div class="empty-sub">Ajusta la búsqueda o los filtros, o crea una nueva entity.</div>
-      </div>
+      <section class="archive-state">
+        <div>
+          <strong>{{
+            vm.page > 1 ? 'Esta página ya no contiene entidades' : 'No hay coincidencias'
+          }}</strong>
+          <p>
+            {{
+              vm.page > 1
+                ? 'Vuelve a la página anterior para continuar explorando.'
+                : hasActiveFilters()
+                  ? 'Ajusta la búsqueda o limpia los filtros.'
+                  : 'Crea la primera entidad para comenzar la biblioteca.'
+            }}
+          </p>
+        </div>
+        @if (vm.page > 1) {
+          <button
+            class="archive-btn archive-btn--quiet"
+            type="button"
+            (click)="goToPage(vm.page - 1, vm.totalPages)"
+          >
+            Página anterior
+          </button>
+        } @else if (hasActiveFilters()) {
+          <button class="archive-btn archive-btn--quiet" type="button" (click)="resetFilters()">
+            Limpiar filtros
+          </button>
+        }
+      </section>
     }
-  } @else {
-    <div class="loading-box">Cargando…</div>
   }
-</div>
+</main>

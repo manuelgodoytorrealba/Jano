@@ -172,8 +172,11 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
 
   openSelected(): void {
     const node = this.selectedNode();
-    if (node && !node.id.startsWith('workspace-'))
-      void this.router.navigate(['/entity', node.slug]);
+    if (node && !node.id.startsWith('workspace-')) {
+      void this.router.navigate(['/admin/entities', node.id, 'edit'], {
+        queryParams: { returnTo: '/admin' },
+      });
+    }
   }
 
   private initRenderer(): void {

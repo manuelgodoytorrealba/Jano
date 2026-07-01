@@ -326,6 +326,96 @@ describe('EntityReadService.list filters', () => {
     });
   });
 
+  it('orders the admin archive by last edit without changing public recent ordering', async () => {
+    await catalogService.adminList({
+      page: 1,
+      limit: 24,
+      sort: 'updated',
+    });
+
+    expect(prisma.entity.findMany).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        orderBy: { updatedAt: 'desc' },
+      }),
+    );
+
+    await catalogService.list({
+      page: 1,
+      limit: 24,
+      sort: 'updated',
+    });
+
+    expect(prisma.entity.findMany).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        orderBy: { createdAt: 'desc' },
+      }),
+    );
+    expect(prisma.entity.findMany.mock.calls.at(-1)?.[0]?.include).not.toHaveProperty('_count');
+  });
+
+  it('returns compact editorial signals without mistaking the public fallback for real media', async () => {
+    prisma.entity.findMany.mockResolvedValueOnce([
+      {
+        id: 'entity-1',
+        type: 'CONCEPT',
+        title: 'Memoria cultural',
+        slug: 'memoria-cultural',
+        summary: 'Una definición editorial.',
+        content: 'Contenido conectado.',
+        status: 'DRAFT',
+        translations: [
+          {
+            locale: 'es',
+            title: 'Memoria cultural',
+            shortDescription: 'Una definición editorial.',
+            essay: 'Contenido conectado.',
+          },
+          {
+            locale: 'en',
+            title: 'Cultural memory',
+            shortDescription: null,
+            essay: null,
+          },
+        ],
+        tags: [],
+        mediaLinks: [],
+        _count: {
+          outgoing: 2,
+          incoming: 1,
+          sourceRefs: 4,
+        },
+      },
+    ]);
+
+    const result = await catalogService.adminList({
+      page: 1,
+      limit: 24,
+      sort: 'updated',
+    });
+
+    expect(prisma.entity.findMany.mock.calls.at(-1)?.[0]?.include?._count).toEqual({
+      select: {
+        outgoing: true,
+        incoming: true,
+        sourceRefs: true,
+      },
+    });
+    expect(result.items[0]).toEqual(
+      expect.objectContaining({
+        editorialSummary: {
+          visualSource: 'empty',
+          relationsCount: 3,
+          sourcesCount: 4,
+          translationStatus: {
+            es: 'complete',
+            en: 'partial',
+          },
+        },
+      }),
+    );
+    expect(result.items[0]).not.toHaveProperty('_count');
+  });
+
   it('passes the filtered where clause through to findMany for the paged list query', async () => {
     await catalogService.list({
       type: 'ARTWORK',

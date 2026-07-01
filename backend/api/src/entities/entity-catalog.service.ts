@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ContentLevel, EntityStatus, Prisma } from '@prisma/client';
+import { resolveEntityMediaSlot } from '../media/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import { canonicalRelationTypeFilter } from '../relation-types/relation-type.utils';
 import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
 import { localizedInclude, resolveLocalizedEntity } from './entity.presenter';
-import { normalizeLocale } from './entity-translation.resolver';
+import { normalizeLocale, translationStatusSummary } from './entity-translation.resolver';
 
 @Injectable()
 export class EntityCatalogService {
@@ -189,7 +190,12 @@ export class EntityCatalogService {
 
     const useRelevance = sort === 'relevance' && !!qValid;
 
-    const orderBy = sort === 'title' ? { title: 'asc' as const } : { createdAt: 'desc' as const };
+    const orderBy =
+      sort === 'title'
+        ? { title: 'asc' as const }
+        : sort === 'updated' && !options.publicOnly
+          ? { updatedAt: 'desc' as const }
+          : { createdAt: 'desc' as const };
 
     const useCuratedOrder = deckEntityOrder.length > 0 && sort !== 'title' && !useRelevance;
 
@@ -209,6 +215,17 @@ export class EntityCatalogService {
             include: { media: true },
             orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
           },
+          ...(options.publicOnly
+            ? {}
+            : {
+                _count: {
+                  select: {
+                    outgoing: true,
+                    incoming: true,
+                    sourceRefs: true,
+                  },
+                },
+              }),
         },
       });
 
@@ -219,7 +236,9 @@ export class EntityCatalogService {
         : items;
 
       return {
-        items: orderedItems.map((item) => resolveLocalizedEntity(item, locale)),
+        items: orderedItems.map((item) =>
+          this.serializeCatalogItem(item, locale, options.publicOnly),
+        ),
         page: safePage,
         limit: safeLimit,
         total,
@@ -243,6 +262,17 @@ export class EntityCatalogService {
           include: { media: true },
           orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
         },
+        ...(options.publicOnly
+          ? {}
+          : {
+              _count: {
+                select: {
+                  outgoing: true,
+                  incoming: true,
+                  sourceRefs: true,
+                },
+              },
+            }),
       },
     });
 
@@ -280,7 +310,7 @@ export class EntityCatalogService {
 
     const items = ranked
       .slice(skip, skip + safeLimit)
-      .map((item) => resolveLocalizedEntity(item, locale));
+      .map((item) => this.serializeCatalogItem(item, locale, options.publicOnly));
 
     return {
       items,
@@ -288,6 +318,37 @@ export class EntityCatalogService {
       limit: safeLimit,
       total,
       totalPages,
+    };
+  }
+
+  private serializeCatalogItem<T extends Parameters<typeof resolveLocalizedEntity>[0]>(
+    item: T,
+    locale: string,
+    publicOnly: boolean,
+  ) {
+    const localized = resolveLocalizedEntity(item, locale);
+    if (publicOnly) {
+      return localized;
+    }
+
+    const counted = localized as typeof localized & {
+      _count?: {
+        outgoing: number;
+        incoming: number;
+        sourceRefs: number;
+      };
+    };
+    const { _count, ...entity } = counted;
+    const visual = resolveEntityMediaSlot(item, 'thumbnail');
+
+    return {
+      ...entity,
+      editorialSummary: {
+        visualSource: visual.source,
+        relationsCount: (_count?.outgoing ?? 0) + (_count?.incoming ?? 0),
+        sourcesCount: _count?.sourceRefs ?? 0,
+        translationStatus: translationStatusSummary(item.translations),
+      },
     };
   }
 
