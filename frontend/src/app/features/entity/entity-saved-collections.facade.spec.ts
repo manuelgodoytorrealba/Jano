@@ -26,4 +26,34 @@ describe('EntitySavedCollectionsFacade', () => {
     expect(facade.isSaved()).toBe(true);
     expect(facade.popupKind()).toBe('saved');
   });
+
+  it('auto-closes after adding the entity to a collection without reopening collection actions', () => {
+    vi.useFakeTimers();
+
+    const savedApi = { save: vi.fn(() => of({})) };
+    const collectionsApi = {
+      list: vi.fn(() => of([])),
+      addEntity: vi.fn(() => of({})),
+    };
+    const auth = { isLoggedIn: true, user$: new BehaviorSubject({ id: 'user' }) };
+    const i18n = { t: (key: string) => key };
+    const facade = new EntitySavedCollectionsFacade(
+      savedApi as unknown as SavedApi,
+      collectionsApi as unknown as CollectionsApi,
+      auth as unknown as AuthService,
+      i18n as unknown as I18nService,
+    );
+
+    facade.showCollectionsPanel.set(true);
+    facade.collectionsChooserOpen.set(true);
+    facade.addToCollection('collection-1', 'entity-1');
+
+    expect(facade.popupKind()).toBe('collectionSaved');
+    expect(facade.collectionsChooserOpen()).toBe(false);
+
+    vi.advanceTimersByTime(1600);
+
+    expect(facade.showCollectionsPanel()).toBe(false);
+    vi.useRealTimers();
+  });
 });

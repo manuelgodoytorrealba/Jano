@@ -14,7 +14,14 @@ import { SavedApi } from '../../core/api/saved.api';
 import { AuthService } from '../../core/auth/auth.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 
-export type DetailPopupKind = 'saved' | 'manage' | 'removed' | 'share' | 'error' | 'collections';
+export type DetailPopupKind =
+  | 'saved'
+  | 'manage'
+  | 'removed'
+  | 'share'
+  | 'error'
+  | 'collections'
+  | 'collectionSaved';
 
 @Injectable()
 export class EntitySavedCollectionsFacade implements OnDestroy {
@@ -201,7 +208,7 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
         this.addingToCollection.set(false);
         this.collectionsChooserOpen.set(false);
         this.refresh$.next();
-        this.popupKind.set('saved');
+        this.popupKind.set('collectionSaved');
         this.popupTitle.set(
           createdNow ? this.i18n.t('collection.created') : this.i18n.t('collection.added'),
         );
@@ -210,7 +217,7 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
             ? this.i18n.t('collection.createdAndAdded')
             : this.i18n.t('collection.entityAdded'),
         );
-        this.scheduleClose(createdNow ? 2800 : 2400);
+        this.scheduleClose(createdNow ? 1800 : 1600);
       },
       error: (error) => {
         this.addingToCollection.set(false);

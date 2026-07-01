@@ -45,6 +45,9 @@
                   @case ('collections') {
                     {{ i18n.t('mySpace.collections') }}
                   }
+                  @case ('collectionSaved') {
+                    {{ i18n.t('popup.state.saved') }}
+                  }
                   @default {
                     {{ i18n.t('popup.state.saved') }}
                   }
@@ -66,7 +69,9 @@
           <div
             class="collections-panel__message"
             [class.collections-panel__message--positive]="
-              saved.popupKind() === 'saved' || saved.popupKind() === 'share'
+              saved.popupKind() === 'saved' ||
+              saved.popupKind() === 'collectionSaved' ||
+              saved.popupKind() === 'share'
             "
           >
             <span class="collections-panel__message-icon" aria-hidden="true"></span>
@@ -154,11 +159,7 @@
                   type="button"
                   (click)="saved.openCollectionsChooser()"
                 >
-                  @if (saved.collectionsLoading()) {
-                    {{ i18n.t('common.loading') }}
-                  } @else {
-                    {{ i18n.t('button.addToCollection') }}
-                  }
+                  {{ i18n.t('button.addToCollection') }}
                 </button>
               </div>
               @if (saved.popupKind() === 'manage') {
@@ -177,7 +178,7 @@
                   </button>
                 </div>
               }
-            } @else {
+            } @else if (saved.popupKind() !== 'collectionSaved') {
               <button
                 class="ds-btn entity-action entity-action--primary"
                 type="button"
