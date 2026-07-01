@@ -22,6 +22,7 @@
         class="collections-panel entity-glass"
         [class.collections-panel--notice]="!saved.collectionsChooserOpen()"
         [class.collections-panel--chooser]="saved.collectionsChooserOpen()"
+        [class.collections-panel--toast]="saved.popupKind() === 'collectionSaved'"
         [attr.data-kind]="saved.popupKind()"
       >
         <div class="collections-panel__head">
@@ -56,13 +57,15 @@
             </div>
             <h2 class="title-section">{{ saved.popupTitle() }}</h2>
           </div>
-          <button
-            class="ds-btn collections-panel__close"
-            type="button"
-            (click)="saved.closeCollectionsPanel()"
-          >
-            {{ i18n.t('button.close') }}
-          </button>
+          @if (saved.popupKind() !== 'collectionSaved') {
+            <button
+              class="ds-btn collections-panel__close"
+              type="button"
+              (click)="saved.closeCollectionsPanel()"
+            >
+              {{ i18n.t('button.close') }}
+            </button>
+          }
         </div>
 
         @if (saved.collectionMessage()) {
