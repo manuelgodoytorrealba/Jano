@@ -84,7 +84,7 @@ export class AdminDashboardComponent {
 
   readonly graphExpanded = signal(true);
   readonly graphFocusMode = signal(false);
-  readonly leftSidebarVisible = signal(true);
+  readonly leftSidebarVisible = signal(false);
   readonly rightSidebarVisible = signal(true);
   readonly selectedGraphNode = signal<GraphNodeDto | null>(null);
 
@@ -230,6 +230,7 @@ export class AdminDashboardComponent {
   exitGraphFocus(): void {
     if (document.fullscreenElement) void document.exitFullscreen();
     this.graphFocusMode.set(false);
+    this.leftSidebarVisible.set(false);
   }
 
   toggleGraphExpanded(): void {

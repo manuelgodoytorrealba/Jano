@@ -98,6 +98,12 @@ describe('AdminDashboardComponent', () => {
       ),
     );
 
+    expect(component.leftSidebarVisible()).toBe(false);
+    component.toggleLeftSidebar();
+    expect(component.leftSidebarVisible()).toBe(true);
+    component.exitGraphFocus();
+    expect(component.leftSidebarVisible()).toBe(false);
+
     component.graphExpanded.set(false);
     await component.toggleGraphFocus();
     expect(component.graphFocusMode()).toBe(true);
