@@ -27,4 +27,19 @@ describe('AdminEntityFormFacade', () => {
     expect(facade.saveState()).toBe('saved');
     expect(facade.successMessage()).toBe('Entity actualizada correctamente.');
   });
+
+  it('creates a typed Draft and clears its pending state', async () => {
+    const entity = { id: 'draft-1', type: 'CONCEPT' };
+    const api = { createDraft: vi.fn().mockReturnValue(of(entity)) };
+    TestBed.configureTestingModule({
+      providers: [AdminEntityFormFacade, { provide: AdminEntitiesApi, useValue: api }],
+    });
+    const facade = TestBed.inject(AdminEntityFormFacade);
+
+    await expect(firstValueFrom(facade.createDraft('CONCEPT'))).resolves.toEqual(entity);
+
+    expect(api.createDraft).toHaveBeenCalledWith('CONCEPT');
+    expect(facade.creatingDraft()).toBe(false);
+    expect(facade.createDraftError()).toBe('');
+  });
 });

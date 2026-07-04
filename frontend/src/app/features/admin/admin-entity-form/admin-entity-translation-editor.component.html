@@ -1,9 +1,10 @@
-<section class="field full translation-editor">
+<section class="translation-editor">
   <div class="translation-editor__head">
     <div>
-      <span>Traducciones editoriales</span>
+      <span class="translation-editor__eyebrow">Idioma de trabajo</span>
+      <h3>Narrativa</h3>
       <small class="hint">
-        Contenido curatorial por idioma. Los datos globales, relaciones y tags siguen siendo únicos.
+        Trabaja directamente sobre la lectura que formará parte de la biblioteca.
       </small>
     </div>
     <button class="btn" type="button" [disabled]="saving" (click)="save()">
@@ -29,8 +30,8 @@
   </div>
 
   <div class="translation-fields">
-    <label class="field full">
-      <span>Título</span>
+    <label class="field editorial-field editorial-field--title">
+      <span>Hero · Título</span>
       <input
         type="text"
         [ngModel]="activeTranslation().title"
@@ -38,8 +39,8 @@
         [name]="'translationTitle_' + activeLocale"
       />
     </label>
-    <label class="field full">
-      <span>Descripción corta</span>
+    <label class="field editorial-field editorial-field--lead">
+      <span>Resumen editorial</span>
       <textarea
         rows="4"
         [ngModel]="activeTranslation().shortDescription"
@@ -47,35 +48,46 @@
         [name]="'translationShort_' + activeLocale"
       ></textarea>
     </label>
-    <label class="field full">
-      <span>Ensayo / contenido</span>
+    <label class="field editorial-field editorial-field--essay">
+      <span>Ensayo</span>
       <textarea
         rows="10"
         [ngModel]="activeTranslation().essay"
         (ngModelChange)="updateTranslation('essay', $event)"
         [name]="'translationEssay_' + activeLocale"
       ></textarea>
+      <aside class="essay-guide" aria-label="Guía de escritura del ensayo">
+        <strong>Guía de escritura</strong>
+        <span><code># ## ###</code> Títulos</span>
+        <span><code>&gt;</code> Cita</span>
+        <span><code>:::lead ... :::</code> Texto destacado</span>
+        <span><code>[[slug]]</code> Entidad</span>
+        <span><code>[[slug|texto]]</code> Entidad con texto propio</span>
+      </aside>
     </label>
-    <label class="field full">
-      <span>Excerpt</span>
-      <textarea
-        rows="3"
-        [ngModel]="activeTranslation().excerpt"
-        (ngModelChange)="updateTranslation('excerpt', $event)"
-        [name]="'translationExcerpt_' + activeLocale"
-      ></textarea>
-    </label>
-    <label class="field full">
-      <span>Notas curatoriales</span>
-      <textarea
-        rows="3"
-        [ngModel]="activeTranslation().notes"
-        (ngModelChange)="updateTranslation('notes', $event)"
-        [name]="'translationNotes_' + activeLocale"
-      ></textarea>
-    </label>
+    <details class="editorial-support">
+      <summary>Notas y apoyo editorial</summary>
+      <label class="field full">
+        <span>Excerpt</span>
+        <textarea
+          rows="3"
+          [ngModel]="activeTranslation().excerpt"
+          (ngModelChange)="updateTranslation('excerpt', $event)"
+          [name]="'translationExcerpt_' + activeLocale"
+        ></textarea>
+      </label>
+      <label class="field full">
+        <span>Notas curatoriales</span>
+        <textarea
+          rows="3"
+          [ngModel]="activeTranslation().notes"
+          (ngModelChange)="updateTranslation('notes', $event)"
+          [name]="'translationNotes_' + activeLocale"
+        ></textarea>
+      </label>
+    </details>
 
-    @if (supportsTypedDetails()) {
+    @if (supportsTypedDetails() && activeLocale !== 'es') {
       <div class="translation-fields__subhead">
         <strong>Ficha localizada</strong>
         <small class="hint">Estos campos alimentan la ficha pública en el idioma activo.</small>

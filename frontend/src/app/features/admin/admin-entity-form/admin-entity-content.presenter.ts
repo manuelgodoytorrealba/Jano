@@ -103,6 +103,21 @@ export function buildEntityPayload(
   };
 }
 
+export function canAutosaveEntity(input: {
+  isEdit: boolean;
+  hydrated: boolean;
+  payload: AdminEntityPayload;
+}): boolean {
+  return (
+    input.isEdit &&
+    input.hydrated &&
+    input.payload.status !== 'PUBLISHED' &&
+    !!input.payload.title &&
+    !!input.payload.slug &&
+    !!input.payload.type
+  );
+}
+
 export function applyTranslations(
   entity: AdminEntityResponse,
 ): Record<AdminLocale, AdminEntityPreviewTranslationForm> {

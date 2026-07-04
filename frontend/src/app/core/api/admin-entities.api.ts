@@ -493,6 +493,10 @@ export class AdminEntitiesApi {
     return this.http.post<AdminEntityResponse>(this.baseUrl, data);
   }
 
+  createDraft(type: AdminEntityPayload['type']) {
+    return this.http.post<AdminEntityResponse>(`${this.baseUrl}/drafts`, { type });
+  }
+
   update(id: string, data: Partial<AdminEntityPayload>) {
     return this.http.patch<AdminEntityResponse>(`${this.baseUrl}/${id}`, data);
   }

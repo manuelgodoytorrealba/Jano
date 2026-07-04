@@ -48,7 +48,6 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true }) entityId = '';
-  @Input() active = false;
   @Output() stateChange = new EventEmitter<AdminEntityRelationsState>();
 
   relationTypes: RelationType[] = [];

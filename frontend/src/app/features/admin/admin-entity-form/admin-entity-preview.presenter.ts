@@ -109,6 +109,57 @@ export type AdminEntityPreviewConnection = {
   value: string;
 };
 
+export type AdminEntityPublicationCheck = {
+  label: string;
+  detail: string;
+  done: boolean;
+};
+
+export function buildAdminEntityPublicationChecks(input: {
+  hasTitle: boolean;
+  hasNarrative: boolean;
+  mediaCount: number;
+  sourcesCount: number;
+  relationsCount: number;
+  translationCount: number;
+  totalTranslations: number;
+}): AdminEntityPublicationCheck[] {
+  return [
+    {
+      label: 'Contenido',
+      detail:
+        input.hasTitle && input.hasNarrative
+          ? 'Título y narrativa editorial presentes.'
+          : 'Falta título, resumen o ensayo principal.',
+      done: input.hasTitle && input.hasNarrative,
+    },
+    {
+      label: 'Media',
+      detail: input.mediaCount ? `${input.mediaCount} assets vinculados.` : 'Sin identidad visual.',
+      done: input.mediaCount > 0,
+    },
+    {
+      label: 'Fuentes',
+      detail: input.sourcesCount
+        ? `${input.sourcesCount} referencias registradas.`
+        : 'Sin fuentes.',
+      done: input.sourcesCount > 0,
+    },
+    {
+      label: 'Relaciones',
+      detail: input.relationsCount
+        ? `${input.relationsCount} conexiones en el grafo.`
+        : 'La pieza permanece aislada.',
+      done: input.relationsCount > 0,
+    },
+    {
+      label: 'Idiomas',
+      detail: `${input.translationCount}/${input.totalTranslations} versiones con título.`,
+      done: input.totalTranslations > 0 && input.translationCount === input.totalTranslations,
+    },
+  ];
+}
+
 export type AdminEntityPreviewBuildInput = {
   entityId: string;
   locale: AdminLocale;

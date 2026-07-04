@@ -17,7 +17,7 @@
 }
 
 .field span {
-  color: #555;
+  color: var(--color-text-soft);
   font-size: 13px;
   font-weight: 700;
 }
@@ -77,7 +77,6 @@ textarea {
 
 :host-context([data-theme='dark']) input,
 :host-context([data-theme='dark']) select,
-:host-context([data-theme='dark']) textarea,
-:host-context([data-theme='dark']) .field span {
+:host-context([data-theme='dark']) textarea {
   color: #201d19;
 }

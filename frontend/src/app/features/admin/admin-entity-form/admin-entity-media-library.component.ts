@@ -64,7 +64,6 @@ export type AdminEntityMediaLibraryIntent =
 })
 export class AdminEntityMediaLibraryComponent implements OnChanges {
   private readonly actions = inject(AdminEntityMediaActions);
-  @Input() active = false;
   @Input() isEdit = false;
   @Input() entityTitle = '';
   @Input() mediaEditors: EditableAdminMediaEditor[] = [];

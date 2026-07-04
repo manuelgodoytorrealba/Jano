@@ -38,7 +38,6 @@ export class AdminEntityContributorsEditorComponent implements OnChanges {
   private readonly cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true }) entityId = '';
-  @Input() active = false;
   @Input() contributors: AdminEditableContributor[] = [];
   @Output() stateChange = new EventEmitter<AdminEntityContributorsState>();
 

@@ -6,19 +6,23 @@ import {
   createEmptyLocalizedDetailsForm,
   createEmptyTranslationForm,
 } from './admin-entity-content.presenter';
+import { AdminEntityFormFacade } from './admin-entity-form.facade';
 import { AdminEntityGlobalDataComponent } from './admin-entity-global-data.component';
 
 describe('AdminEntityGlobalDataComponent', () => {
-  it('emits an immutable draft and owns title-to-slug synchronization', () => {
+  it('replaces a provisional slug while preserving immutable draft inputs', () => {
     TestBed.configureTestingModule({
       imports: [AdminEntityGlobalDataComponent],
-      providers: [{ provide: AdminEntitiesApi, useValue: { list: () => undefined } }],
+      providers: [
+        AdminEntityFormFacade,
+        { provide: AdminEntitiesApi, useValue: { list: () => undefined } },
+      ],
     });
     const component = TestBed.createComponent(AdminEntityGlobalDataComponent).componentInstance;
     const inputForm = {
       type: 'ARTWORK' as const,
       title: '',
-      slug: '',
+      slug: '_draft-123',
       summary: '',
       content: '',
       contentLevel: '' as const,
@@ -26,6 +30,7 @@ describe('AdminEntityGlobalDataComponent', () => {
       startYear: null,
       endYear: null,
     };
+    component.isEdit = true;
     component.form = inputForm;
     component.translations = {
       es: createEmptyTranslationForm(),
@@ -35,15 +40,34 @@ describe('AdminEntityGlobalDataComponent', () => {
       es: createEmptyLocalizedDetailsForm(),
       en: createEmptyLocalizedDetailsForm(),
     };
-    component.ngOnChanges({ form: new SimpleChange(null, inputForm, true) });
+    component.ngOnChanges({
+      form: new SimpleChange(null, inputForm, true),
+      isEdit: new SimpleChange(false, true, true),
+    });
     let emittedTitle = '';
     component.draftChange.subscribe((draft) => (emittedTitle = draft.form.title));
 
-    component.onTitleChange('Édouard Manet');
+    component.onTranslationDraftChange({
+      translations: {
+        ...component.translations,
+        es: {
+          ...component.translations.es,
+          title: 'Édouard Manet',
+          shortDescription: 'Una lectura editorial.',
+          essay: 'Mirada, representación y poder.',
+        },
+      },
+      localizedDetails: component.localizedDetails,
+      details: {},
+    });
 
     expect(inputForm.title).toBe('');
-    expect(component.form.slug).toBe('edouard-manet');
-    expect(component.translations.es.title).toBe('Édouard Manet');
     expect(emittedTitle).toBe('Édouard Manet');
+    expect(component.form).toMatchObject({
+      title: 'Édouard Manet',
+      slug: 'edouard-manet',
+      summary: 'Una lectura editorial.',
+      content: 'Mirada, representación y poder.',
+    });
   });
 });

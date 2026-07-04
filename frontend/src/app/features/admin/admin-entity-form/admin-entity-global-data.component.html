@@ -1,94 +1,18 @@
-<section
-  id="section-content"
-  class="admin-dashboard-panel"
-  [class.admin-dashboard-panel--active]="active"
-  [class.admin-dashboard-panel--hidden]="!active"
-  [attr.aria-hidden]="!active"
->
-  <div class="admin-dashboard-panel__head">
+<section id="section-content" class="admin-dashboard-panel editorial-content">
+  <header class="admin-dashboard-panel__head editorial-content__head">
     <div>
-      <h2>Global data</h2>
+      <p class="editorial-eyebrow">Documento editorial</p>
+      <h2>{{ form.title || 'Pieza sin título' }}</h2>
       <p class="muted">
-        Datos compartidos por todos los idiomas: tipo, estado, slug, fechas, tags, relaciones y
-        media.
+        Escribe la pieza como será leída. La configuración técnica permanece disponible en el
+        inspector.
       </p>
     </div>
-    <span class="admin-dashboard-panel__pill">Compartido</span>
-  </div>
+    <span class="admin-dashboard-panel__pill">{{ form.type }}</span>
+  </header>
 
-  <div class="grid">
-    <label class="field">
-      <span>Tipo</span>
-      <select [(ngModel)]="form.type" (ngModelChange)="onFormChange()" name="type">
-        @for (type of types; track type) {
-          <option [value]="type">{{ type }}</option>
-        }
-      </select>
-    </label>
-
-    <label class="field">
-      <span>Status</span>
-      <select [(ngModel)]="form.status" (ngModelChange)="onFormChange()" name="status">
-        @for (status of statuses; track status) {
-          <option [value]="status">{{ status }}</option>
-        }
-      </select>
-    </label>
-
-    <label class="field">
-      <span>Nivel</span>
-      <select [(ngModel)]="form.contentLevel" (ngModelChange)="onFormChange()" name="contentLevel">
-        <option value="">—</option>
-        @for (level of levels; track level) {
-          <option [value]="level">{{ level }}</option>
-        }
-      </select>
-    </label>
-
-    <label class="field">
-      <span>Año inicio</span>
-      <input
-        type="number"
-        [(ngModel)]="form.startYear"
-        (ngModelChange)="onFormChange()"
-        name="startYear"
-      />
-    </label>
-
-    <label class="field">
-      <span>Año fin</span>
-      <input
-        type="number"
-        [(ngModel)]="form.endYear"
-        (ngModelChange)="onFormChange()"
-        name="endYear"
-      />
-    </label>
-
-    <div></div>
-
-    <label class="field full">
-      <span>Título base ES</span>
-      <input
-        type="text"
-        [(ngModel)]="form.title"
-        (ngModelChange)="onTitleChange($event)"
-        name="title"
-      />
-    </label>
-
-    <label class="field full">
-      <span>Slug</span>
-      <input
-        type="text"
-        [(ngModel)]="form.slug"
-        (ngModelChange)="onSlugChange($event)"
-        name="slug"
-      />
-      <small class="hint">URL única y neutral para todos los idiomas.</small>
-    </label>
-
-    @if (isEdit) {
+  <div class="editorial-stage">
+    <article class="editorial-document" aria-label="Contenido editorial de la entidad">
       <app-admin-entity-translation-editor
         [entityId]="entityId"
         [entityType]="form.type"
@@ -99,95 +23,126 @@
         (saved)="translationSaved.emit($event)"
       ></app-admin-entity-translation-editor>
 
-      <app-admin-entity-taxonomy-editor
-        [entityId]="entityId"
-        [tags]="tags"
-        [aliases]="aliases"
-        (stateChange)="onTaxonomyStateChange($event)"
-      ></app-admin-entity-taxonomy-editor>
-    } @else {
-      <label class="field full">
-        <span>Resumen inicial ES</span>
-        <textarea
-          rows="5"
-          [(ngModel)]="form.summary"
-          (ngModelChange)="onFormChange()"
-          name="summary"
-        ></textarea>
-        <small class="hint">{{ summaryHint() }}</small>
-      </label>
+      @if (supportsTypedDetails()) {
+        <section class="editorial-context" aria-labelledby="editorial-context-title">
+          <header class="editorial-context__head">
+            <p class="editorial-eyebrow">Ficha contextual</p>
+            <h3 id="editorial-context-title">Datos que sostienen la lectura</h3>
+            <p class="muted">Información específica que acompaña la narrativa pública.</p>
+          </header>
+          <app-admin-entity-details-editor
+            [entityId]="entityId"
+            [entityType]="form.type"
+            [details]="details"
+            (detailsChange)="onDetailsChange($event)"
+            (statusChange)="detailsStatusChange.emit($event)"
+            (saved)="detailsSaved.emit($event)"
+          ></app-admin-entity-details-editor>
+        </section>
+      }
+    </article>
 
-      <label class="field full content-field">
-        <span>{{ contentLabel() }}</span>
-        <textarea
-          #contentTextarea
-          rows="14"
-          [(ngModel)]="form.content"
-          (input)="onContentInput()"
-          (keydown.escape)="closeLinkSuggestions()"
-          name="content"
-        ></textarea>
-        <small class="hint">{{ contentHint() }}</small>
+    <details class="editorial-inspector">
+      <summary>
+        <span>Inspector</span>
+        <strong>{{ form.status }}</strong>
+      </summary>
 
-        @if (form.type === 'ARTICLE') {
-          <div class="article-cheatsheet">
-            <div class="article-cheatsheet__head">
-              <strong>Sintaxis rápida</strong>
-              <span>Se renderiza en la vista pública del artículo.</span>
-            </div>
+      <div class="editorial-inspector__body">
+        <header class="editorial-inspector__head">
+          <p class="editorial-eyebrow">Configuración</p>
+          <h3>Metadatos de la pieza</h3>
+          <p>Datos operativos que no deben interrumpir la escritura.</p>
+        </header>
 
-            <div class="article-cheatsheet__grid">
-              <div class="article-cheatsheet__item">
-                <code># Título</code>
-                <span>Título grande</span>
-              </div>
-              <div class="article-cheatsheet__item">
-                <code>## Sección</code>
-                <span>Subtítulo</span>
-              </div>
-              <div class="article-cheatsheet__item">
-                <code>&gt; Cita destacada</code>
-                <span>Quote editorial</span>
-              </div>
-              <div class="article-cheatsheet__item">
-                <code>**texto**</code>
-                <span>Negrita</span>
-              </div>
-              <div class="article-cheatsheet__item">
-                <code>*texto*</code>
-                <span>Cursiva</span>
-              </div>
-              <div class="article-cheatsheet__item">
-                <code>[[guernica|obra]]</code>
-                <span>Enlace con preview</span>
-              </div>
-              <div class="article-cheatsheet__item article-cheatsheet__item--wide">
-                <code>:::lead ... :::</code>
-                <span>Párrafo de apertura más grande</span>
-              </div>
-            </div>
+        <div class="editorial-inspector__fields">
+          <label class="field">
+            <span>Estado</span>
+            <select
+              [(ngModel)]="form.status"
+              (ngModelChange)="onFormChange()"
+              name="status"
+              [disabled]="form.status === 'PUBLISHED'"
+            >
+              @if (form.status === 'PUBLISHED') {
+                <option value="PUBLISHED">PUBLISHED</option>
+              }
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+            @if (form.status === 'PUBLISHED') {
+              <small class="hint">El contenido publicado permanece en guardado manual.</small>
+            }
+          </label>
+
+          <label class="field">
+            <span>Tipo</span>
+            <select [(ngModel)]="form.type" (ngModelChange)="onFormChange()" name="type">
+              @for (type of types; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Slug</span>
+            <input
+              type="text"
+              [(ngModel)]="form.slug"
+              (ngModelChange)="onSlugChange($event)"
+              name="slug"
+            />
+            <small class="hint">URL única y neutral para todos los idiomas.</small>
+          </label>
+
+          <label class="field">
+            <span>Nivel</span>
+            <select
+              [(ngModel)]="form.contentLevel"
+              (ngModelChange)="onFormChange()"
+              name="contentLevel"
+            >
+              <option value="">—</option>
+              @for (level of levels; track level) {
+                <option [value]="level">{{ level }}</option>
+              }
+            </select>
+          </label>
+
+          <div class="editorial-inspector__years">
+            <label class="field">
+              <span>Año inicio</span>
+              <input
+                type="number"
+                [(ngModel)]="form.startYear"
+                (ngModelChange)="onFormChange()"
+                name="startYear"
+              />
+            </label>
+            <label class="field">
+              <span>Año fin</span>
+              <input
+                type="number"
+                [(ngModel)]="form.endYear"
+                (ngModelChange)="onFormChange()"
+                name="endYear"
+              />
+            </label>
           </div>
+        </div>
+
+        @if (isEdit) {
+          <section class="editorial-inspector__taxonomy" aria-label="Taxonomía editorial">
+            <app-admin-entity-taxonomy-editor
+              [entityId]="entityId"
+              [tags]="tags"
+              [aliases]="aliases"
+              (stateChange)="onTaxonomyStateChange($event)"
+            ></app-admin-entity-taxonomy-editor>
+          </section>
         }
-
-        <app-admin-entity-link-suggestions
-          [visible]="showLinkSuggestions"
-          [loading]="linkLoading"
-          [query]="linkSearch"
-          [items]="linkSuggestions"
-          (selectItem)="insertEntityLink($event)"
-        ></app-admin-entity-link-suggestions>
-      </label>
-    }
+      </div>
+    </details>
   </div>
-
-  @if (supportsTypedDetails()) {
-    <app-admin-entity-details-editor
-      [entityId]="entityId"
-      [entityType]="form.type"
-      [details]="details"
-      (detailsChange)="onDetailsChange($event)"
-      (statusChange)="detailsStatusChange.emit($event)"
-      (saved)="detailsSaved.emit($event)"
-    ></app-admin-entity-details-editor>
-  }
 </section>

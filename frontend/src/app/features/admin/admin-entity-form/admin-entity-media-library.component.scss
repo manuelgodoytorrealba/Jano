@@ -1,4 +1,5 @@
 @use './admin-entity-editor-controls';
+@use './admin-entity-resource-block';
 
 .admin-dashboard-nav__item {
   text-align: left;
@@ -94,10 +95,6 @@
   scroll-margin-top: 96px;
 }
 
-.admin-dashboard-panel--active {
-  animation: adminPanelIn 0.18s ease;
-}
-
 .admin-dashboard-panel__head {
   display: flex;
   justify-content: center;
@@ -164,10 +161,6 @@
 .media-box {
   display: grid;
   gap: 16px;
-}
-
-.admin-dashboard-panel.admin-dashboard-panel--hidden {
-  display: none !important;
 }
 
 .relations-head h3,
@@ -381,17 +374,6 @@
   margin: 0;
   font-size: 18px;
   line-height: 1.1;
-}
-
-@keyframes adminPanelIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (max-width: 980px) {

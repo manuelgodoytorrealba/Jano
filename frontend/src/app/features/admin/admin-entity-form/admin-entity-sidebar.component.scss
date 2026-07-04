@@ -1,14 +1,25 @@
-.admin-sidebar-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
+:host {
+  position: fixed;
+  top: calc(var(--app-chrome-top) + 28px);
+  left: max(38px, calc((100vw - 1500px) / 2 + 10px));
   z-index: 8;
+  display: block;
+  width: fit-content;
+  height: fit-content;
+}
+
+.admin-sidebar-layer {
+  width: 84px;
+}
+
+.admin-sidebar-layer--visible {
+  width: var(--editor-sidebar-width, 300px);
 }
 
 .admin-sidebar {
-  position: sticky;
-  top: 20px;
   display: grid;
+  width: var(--editor-sidebar-width, 300px);
+  box-sizing: border-box;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 16px;
   align-self: start;
@@ -354,7 +365,7 @@
   z-index: 3;
 
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 
   gap: 8px;
 
@@ -392,13 +403,7 @@
   opacity: 0.58;
 }
 
-.admin-sidebar__action--ghost {
-  background: rgba(255, 255, 255, 0.78);
-  color: #3f3933;
-}
-
 .admin-sidebar__action--primary {
-  grid-column: 1 / -1;
   background: #111;
   border-color: #111;
   color: #fff;

@@ -38,7 +38,6 @@ export class AdminEntitySourcesEditorComponent implements OnChanges {
   private readonly cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true }) entityId = '';
-  @Input() active = false;
   @Input() sourceRefs: AdminEditableSourceRef[] = [];
   @Output() stateChange = new EventEmitter<AdminEntitySourcesState>();
 

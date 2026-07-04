@@ -1,7 +1,9 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  OnDestroy,
   OnInit,
   inject,
 } from '@angular/core';
@@ -18,9 +20,11 @@ import {
   AdminMediaWarning,
 } from '../../../core/api/admin-entities.api';
 import { I18nService } from '../../../core/i18n/i18n.service';
+import { getEntityTypeConfig } from '../../graph/graph.config';
 import { AdminEntitySidebarComponent } from './admin-entity-sidebar.component';
 import { buildAdminEntityDiscoverabilityModel } from './admin-entity-discoverability.presenter';
 import {
+  ADMIN_ENTITY_DASHBOARD_SECTIONS,
   AdminEntitySaveStatusViewModel,
   AdminEntitySidebarSectionItem,
   buildAdminEntitySaveStatusViewModel,
@@ -37,6 +41,7 @@ import {
   AdminEntityFormDraft,
   applyTranslations as applyContentTranslations,
   buildEntityPayload,
+  canAutosaveEntity,
   createEmptyLocalizedDetailsForm,
   createEmptyTranslationForm,
   extractEntityDetails,
@@ -78,6 +83,45 @@ import {
 } from './admin-entity-global-data.component';
 import { AdminEntityRouteShell } from './admin-entity-route-shell';
 
+const DRAFT_TYPES: Array<{
+  type: AdminEntityPayload['type'];
+  label: string;
+  description: string;
+}> = [
+  {
+    type: 'ARTWORK',
+    label: 'Obra',
+    description: 'Una obra y su contexto material, histórico y visual.',
+  },
+  {
+    type: 'ARTIST',
+    label: 'Artista',
+    description: 'Una trayectoria, práctica y red de influencias.',
+  },
+  {
+    type: 'ARTICLE',
+    label: 'Artículo',
+    description: 'Una pieza editorial que interpreta y conecta conocimiento.',
+  },
+  {
+    type: 'CONCEPT',
+    label: 'Concepto',
+    description: 'Una idea crítica presente en obras, épocas y discursos.',
+  },
+  {
+    type: 'MOVEMENT',
+    label: 'Movimiento',
+    description: 'Una corriente artística y las conexiones que la definen.',
+  },
+  {
+    type: 'PERIOD',
+    label: 'Periodo',
+    description: 'Un marco temporal para organizar la biblioteca.',
+  },
+  { type: 'PLACE', label: 'Lugar', description: 'Un lugar cultural, geográfico o institucional.' },
+  { type: 'TEXT', label: 'Texto', description: 'Un documento, manifiesto o referencia escrita.' },
+];
+
 @Component({
   standalone: true,
   selector: 'app-admin-entity-form',
@@ -95,15 +139,20 @@ import { AdminEntityRouteShell } from './admin-entity-route-shell';
   styleUrls: ['./admin-entity-form.component.scss'],
   providers: [AdminEntityFormFacade, AdminEntityRouteShell],
 })
-export class AdminEntityFormComponent implements OnInit {
+export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestroy {
+  private static readonly AUTOSAVE_DELAY_MS = 1200;
   readonly i18n = inject(I18nService);
   private cdr = inject(ChangeDetectorRef);
   readonly facade = inject(AdminEntityFormFacade);
   readonly shell = inject(AdminEntityRouteShell);
 
+  readonly draftTypes = DRAFT_TYPES.map((option) => ({
+    ...getEntityTypeConfig(option.type),
+    ...option,
+  }));
+
   activeMediaLibraryView: MediaLibraryViewId = 'coverage';
 
-  submitMode: 'back' | 'stay' = 'back';
   readonly translationLocales: Array<{ locale: AdminLocale; label: string }> = [
     { locale: 'es', label: 'Español' },
     { locale: 'en', label: 'English' },
@@ -155,6 +204,9 @@ export class AdminEntityFormComponent implements OnInit {
   contributorsError = '';
 
   initialEntityHydrated = false;
+  private sectionObserver: IntersectionObserver | null = null;
+  private autosaveTimer: ReturnType<typeof setTimeout> | null = null;
+  private lastAutosavedPayload = '';
 
   form: AdminEntityFormDraft = {
     type: 'ARTWORK',
@@ -179,8 +231,53 @@ export class AdminEntityFormComponent implements OnInit {
     this.loadEntity();
   }
 
+  ngAfterViewInit(): void {
+    if (!this.shell.isEdit || typeof window === 'undefined') return;
+
+    const sections = ADMIN_ENTITY_DASHBOARD_SECTIONS.map(({ id }) =>
+      document.getElementById(id),
+    ).filter((section): section is HTMLElement => section !== null);
+    this.sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const visibleSection = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => left.boundingClientRect.top - right.boundingClientRect.top)[0];
+        const sectionId = visibleSection?.target.id as DashboardSectionId | undefined;
+
+        if (sectionId && sectionId !== this.shell.activeSection) {
+          this.shell.selectSection(sectionId);
+          this.cdr.markForCheck();
+        }
+      },
+      { rootMargin: '-96px 0px -65% 0px', threshold: 0 },
+    );
+    sections.forEach((section) => this.sectionObserver?.observe(section));
+  }
+
+  ngOnDestroy(): void {
+    this.sectionObserver?.disconnect();
+    if (this.autosaveTimer) clearTimeout(this.autosaveTimer);
+  }
+
+  createDraft(type: AdminEntityPayload['type']): void {
+    if (this.facade.creatingDraft()) return;
+
+    this.facade.createDraft(type).subscribe({
+      next: (entity) => this.shell.navigateToDraft(entity),
+      error: () => this.cdr.markForCheck(),
+    });
+  }
+
   scrollToSection(sectionId: DashboardSectionId) {
     this.shell.selectSection(sectionId);
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.style.scrollMarginTop = '96px';
+      section.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    }
     this.cdr.markForCheck();
   }
 
@@ -206,6 +303,7 @@ export class AdminEntityFormComponent implements OnInit {
     this.detailsForm = state.details;
     this.entityTags = state.tags;
     this.entityAliases = state.aliases;
+    this.scheduleAutosave();
   }
 
   onTranslationSaved(entity: AdminEntityResponse): void {
@@ -222,10 +320,12 @@ export class AdminEntityFormComponent implements OnInit {
       next: (entity) => {
         this.applyEntityResponse(entity, false);
         this.initialEntityHydrated = true;
+        this.lastAutosavedPayload = this.serializePayload(this.buildPayload());
         this.cdr.markForCheck();
       },
       error: () => {
         this.initialEntityHydrated = true;
+        this.lastAutosavedPayload = this.serializePayload(this.buildPayload());
         this.cdr.markForCheck();
       },
     });
@@ -263,12 +363,18 @@ export class AdminEntityFormComponent implements OnInit {
     this.entityAliases = Array.isArray(entity.aliases) ? entity.aliases : [];
   }
 
-  submit(mode: 'back' | 'stay' = 'back') {
+  submit() {
+    this.savePayload(this.buildPayload());
+  }
+
+  publishEntity(): void {
+    this.savePayload({ ...this.buildPayload(), status: 'PUBLISHED' });
+  }
+
+  private savePayload(payload: AdminEntityPayload) {
+    const localDraft = this.serializePayload(this.buildPayload());
     this.facade.errorMessage.set('');
     this.facade.successMessage.set('');
-    this.submitMode = mode;
-
-    const payload = this.buildPayload();
 
     if (!payload.title || !payload.slug || !payload.type) {
       this.facade.setSaveError('Título, slug y tipo son obligatorios.');
@@ -287,12 +393,16 @@ export class AdminEntityFormComponent implements OnInit {
 
     this.facade.saveEntity(this.shell.isEdit ? this.shell.entityId : null, payload).subscribe({
       next: (entity) => {
-        if (entity && this.shell.isEdit) {
+        if (
+          entity &&
+          this.shell.isEdit &&
+          this.serializePayload(this.buildPayload()) === localDraft
+        ) {
           this.applyEntityResponse(entity);
+          this.lastAutosavedPayload = this.serializePayload(this.buildPayload());
         }
 
         this.cdr.markForCheck();
-        this.shell.navigateAfterSave(mode, entity);
       },
       error: () => {
         this.cdr.markForCheck();
@@ -300,16 +410,9 @@ export class AdminEntityFormComponent implements OnInit {
     });
   }
 
-  entitySaveButtonLabel(mode: 'back' | 'stay'): string {
-    if (this.facade.saving() && this.submitMode === mode) {
-      return 'Guardando...';
-    }
-
-    if (this.facade.saveState() === 'saved') {
-      return mode === 'stay' ? 'Guardado' : 'Guardar';
-    }
-
-    return mode === 'stay' ? 'Guardar y seguir' : 'Guardar';
+  get manualSaveLabel(): string {
+    if (this.facade.saving()) return 'Guardando...';
+    return this.form.status === 'PUBLISHED' ? 'Guardar cambios' : 'Guardar ahora';
   }
 
   onRelationsStateChange(state: AdminEntityRelationsState): void {
@@ -383,10 +486,6 @@ export class AdminEntityFormComponent implements OnInit {
     };
   }
 
-  isActiveSection(sectionId: DashboardSectionId): boolean {
-    return this.shell.activeSection === sectionId;
-  }
-
   toggleAdminSidebar() {
     this.shell.toggleSidebar();
     this.cdr.markForCheck();
@@ -452,7 +551,58 @@ export class AdminEntityFormComponent implements OnInit {
       entitySaveState: this.facade.saveState(),
       entityLastSavedAt: this.facade.lastSavedAt(),
       isEdit: this.shell.isEdit,
+      autosaveEnabled: this.autosaveEnabled,
+      isPublished: this.form.status === 'PUBLISHED',
     });
+  }
+
+  get autosaveEnabled(): boolean {
+    return canAutosaveEntity({
+      isEdit: this.shell.isEdit,
+      hydrated: this.initialEntityHydrated,
+      payload: this.buildPayload(),
+    });
+  }
+
+  private scheduleAutosave(): void {
+    if (!this.initialEntityHydrated) return;
+    if (this.autosaveTimer) clearTimeout(this.autosaveTimer);
+    this.autosaveTimer = setTimeout(
+      () => this.autosaveDraft(),
+      AdminEntityFormComponent.AUTOSAVE_DELAY_MS,
+    );
+  }
+
+  private autosaveDraft(): void {
+    this.autosaveTimer = null;
+    const payload = this.buildPayload();
+    const serialized = this.serializePayload(payload);
+    if (
+      !canAutosaveEntity({
+        isEdit: this.shell.isEdit,
+        hydrated: this.initialEntityHydrated,
+        payload,
+      }) ||
+      serialized === this.lastAutosavedPayload
+    ) {
+      return;
+    }
+    if (this.facade.saving()) {
+      this.scheduleAutosave();
+      return;
+    }
+
+    this.facade.saveEntity(this.shell.entityId, payload, false).subscribe({
+      next: () => {
+        this.lastAutosavedPayload = serialized;
+        this.cdr.markForCheck();
+      },
+      error: () => this.cdr.markForCheck(),
+    });
+  }
+
+  private serializePayload(payload: AdminEntityPayload): string {
+    return JSON.stringify(payload);
   }
 
   get discoverabilityModel() {

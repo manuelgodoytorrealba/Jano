@@ -14,7 +14,7 @@ export class AdminEntityRouteShell {
   entityId = '';
   isEdit = false;
   returnTo = '/admin';
-  activeSection: DashboardSectionId = 'section-preview';
+  activeSection: DashboardSectionId = 'section-content';
   sidebarVisible = true;
 
   initialize(): void {
@@ -49,16 +49,11 @@ export class AdminEntityRouteShell {
       : '/admin';
   }
 
-  navigateAfterSave(mode: 'back' | 'stay', entity?: AdminEntityResponse): void {
-    if (mode === 'stay') {
-      if (!this.isEdit && entity?.id) {
-        void this.router.navigate(['/admin/entities', entity.id, 'edit'], {
-          queryParams: { returnTo: this.returnTo },
-        });
-      }
-      return;
-    }
-    setTimeout(() => void this.router.navigateByUrl(this.cancelHref(entity?.type)), 700);
+  navigateToDraft(entity: AdminEntityResponse): void {
+    void this.router.navigate(['/admin/entities', entity.id, 'edit'], {
+      queryParams: { returnTo: this.returnTo },
+      replaceUrl: true,
+    });
   }
 
   private restoreSection(): void {

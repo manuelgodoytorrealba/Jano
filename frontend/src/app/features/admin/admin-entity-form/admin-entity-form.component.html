@@ -1,121 +1,161 @@
 <div class="page">
-  @if (facade.loadError()) {
-    <div class="error-box">{{ facade.loadError() }}</div>
-  }
+  @if (!shell.isEdit) {
+    <section
+      class="draft-launcher"
+      aria-labelledby="draft-launcher-title"
+      [attr.aria-busy]="facade.creatingDraft()"
+    >
+      <header class="draft-launcher__head">
+        <div>
+          <p class="draft-launcher__eyebrow">Nueva pieza</p>
+          <h1 id="draft-launcher-title">¿Qué quieres incorporar a la biblioteca?</h1>
+          <p>
+            Elige una forma de conocimiento. JANO abrirá un borrador para empezar a trabajar
+            inmediatamente.
+          </p>
+        </div>
+        <a class="draft-launcher__back" [attr.href]="shell.returnTo">Volver</a>
+      </header>
 
-  <section class="editor-layout" [class.editor-layout--sidebar-open]="shell.sidebarVisible">
-    <app-admin-entity-sidebar
-      [visible]="shell.sidebarVisible"
-      [title]="form.title"
-      [saveStatusLabel]="entitySaveStatus.label"
-      [saveStatusClass]="entitySaveStatus.className"
-      [cancelHref]="shell.cancelHref(form.type)"
-      [saveStayLabel]="entitySaveButtonLabel('stay')"
-      [saveBackLabel]="entitySaveButtonLabel('back')"
-      [saveDisabled]="facade.saving() || facade.loading()"
-      [loading]="facade.loading()"
-      [navItems]="sidebarSections"
-      [discoverabilityScoreLabel]="discoverabilityModel.scoreLabel"
-      [discoverabilityTone]="discoverabilityModel.tone"
-      [discoverabilitySummary]="discoverabilityModel.summary"
-      [discoverabilityItems]="discoverabilityModel.items"
-      [publishWarning]="discoverabilityModel.publishWarning"
-      (toggleSidebar)="toggleAdminSidebar()"
-      (saveStay)="submit('stay')"
-      (saveBack)="submit('back')"
-      (selectSection)="scrollToSection($event)"
-      [isEdit]="shell.isEdit"
-    ></app-admin-entity-sidebar>
+      <div class="draft-types" role="list" aria-label="Tipos de entidad">
+        @for (option of draftTypes; track option.type) {
+          <button
+            type="button"
+            class="draft-type"
+            role="listitem"
+            [style.--entity-color]="option.color"
+            [disabled]="facade.creatingDraft()"
+            (click)="createDraft(option.type)"
+          >
+            <span class="draft-type__mark" aria-hidden="true">{{ option.icon }}</span>
+            <span class="draft-type__copy">
+              <strong>{{ option.label }}</strong>
+              <span>{{ option.description }}</span>
+            </span>
+            <span class="draft-type__action" aria-hidden="true">Crear borrador&nbsp;›</span>
+          </button>
+        }
+      </div>
 
-    <section class="form-wrap">
-      @if (facade.errorMessage()) {
-        <div class="error-box">{{ facade.errorMessage() }}</div>
+      @if (facade.createDraftError()) {
+        <p class="draft-launcher__error" role="alert">{{ facade.createDraftError() }}</p>
       }
-      @if (facade.successMessage()) {
-        <div class="success-box">{{ facade.successMessage() }}</div>
-      }
 
-      <app-admin-entity-preview
-        [active]="isActiveSection('section-preview')"
-        [ready]="!shell.isEdit || initialEntityHydrated"
-        [stateKey]="previewStateKey()"
-        [entityId]="shell.entityId"
-        [locale]="i18n.locale()"
-        [form]="form"
-        [translations]="translationForms"
-        [details]="detailsForm"
-        [localizedDetails]="localizedDetailForms"
-        [entityTags]="entityTags"
-        [relations]="relations"
-        [incomingRelations]="incomingRelations"
-        [sourceRefs]="sourceRefs"
-        [contributors]="contributors"
-        [mediaEditors]="mediaEditors"
-        [persistedResolvedMedia]="persistedResolvedMedia"
-        [resolvedVisualSlots]="resolvedVisualSlots"
-      ></app-admin-entity-preview>
+      <p class="draft-launcher__note">
+        La pieza se crea como borrador privado. Nada será público hasta que decidas publicarla.
+      </p>
+    </section>
+  } @else {
+    @if (facade.loadError()) {
+      <div class="error-box">{{ facade.loadError() }}</div>
+    }
 
-      <app-admin-entity-global-data
-        [active]="isActiveSection('section-content')"
+    <section class="editor-layout" [class.editor-layout--sidebar-open]="shell.sidebarVisible">
+      <app-admin-entity-sidebar
+        [visible]="shell.sidebarVisible"
+        [title]="form.title"
+        [saveStatusLabel]="entitySaveStatus.label"
+        [saveStatusClass]="entitySaveStatus.className"
+        [cancelHref]="shell.cancelHref(form.type)"
+        [saveLabel]="manualSaveLabel"
+        [saveDisabled]="facade.saving() || facade.loading()"
+        [loading]="facade.loading()"
+        [navItems]="sidebarSections"
+        [discoverabilityScoreLabel]="discoverabilityModel.scoreLabel"
+        [discoverabilityTone]="discoverabilityModel.tone"
+        [discoverabilitySummary]="discoverabilityModel.summary"
+        [discoverabilityItems]="discoverabilityModel.items"
+        [publishWarning]="discoverabilityModel.publishWarning"
+        (toggleSidebar)="toggleAdminSidebar()"
+        (save)="submit()"
+        (selectSection)="scrollToSection($event)"
         [isEdit]="shell.isEdit"
-        [entityId]="shell.entityId"
-        [form]="form"
-        [translations]="translationForms"
-        [localizedDetails]="localizedDetailForms"
-        [details]="detailsForm"
-        [tags]="entityTags"
-        [aliases]="entityAliases"
-        (draftChange)="onGlobalDataDraftChange($event)"
-        (translationSaved)="onTranslationSaved($event)"
-        (detailsSaved)="onDetailsSaved($event)"
-        (detailsStatusChange)="onDetailsStatusChange($event)"
-      ></app-admin-entity-global-data>
+      ></app-admin-entity-sidebar>
 
-      <app-admin-entity-media-library
-        [active]="isActiveSection('section-media')"
-        [isEdit]="shell.isEdit"
-        [entityTitle]="form.title"
-        [mediaEditors]="mediaEditors"
-        [persistedMediaLinks]="persistedMediaLinks"
-        [resolvedVisualSlots]="resolvedVisualSlots"
-        [additionalMediaItems]="additionalMediaItems"
-        [mediaWarningsDetailed]="mediaWarningsDetailed"
-        [mediaWarningMessages]="mediaWarningMessages"
-        [mediaCoverageSummary]="mediaCoverageSummary"
-        [persistedResolvedMedia]="persistedResolvedMedia"
-        [entityId]="shell.entityId"
-        [initialActiveEditorId]="activeMediaEditorId"
-        [adding]="addingMedia"
-        [uploading]="uploadingMedia"
-        [addResetVersion]="mediaAddResetVersion"
-        [message]="mediaMessage"
-        [error]="mediaError"
-        (stateChange)="onMediaLibraryStateChange($event)"
-      ></app-admin-entity-media-library>
+      <section class="form-wrap">
+        @if (facade.errorMessage()) {
+          <div class="error-box">{{ facade.errorMessage() }}</div>
+        }
+        @if (facade.successMessage()) {
+          <div class="success-box">{{ facade.successMessage() }}</div>
+        }
 
-      @if (shell.isEdit) {
-        <app-admin-entity-sources-editor
+        <app-admin-entity-global-data
+          [isEdit]="shell.isEdit"
           [entityId]="shell.entityId"
-          [active]="isActiveSection('section-sources')"
-          [sourceRefs]="sourceRefs"
-          (stateChange)="onSourcesStateChange($event)"
-        ></app-admin-entity-sources-editor>
+          [form]="form"
+          [translations]="translationForms"
+          [localizedDetails]="localizedDetailForms"
+          [details]="detailsForm"
+          [tags]="entityTags"
+          [aliases]="entityAliases"
+          (draftChange)="onGlobalDataDraftChange($event)"
+          (translationSaved)="onTranslationSaved($event)"
+          (detailsSaved)="onDetailsSaved($event)"
+          (detailsStatusChange)="onDetailsStatusChange($event)"
+        ></app-admin-entity-global-data>
 
-        <app-admin-entity-contributors-editor
-          [entityId]="shell.entityId"
-          [active]="isActiveSection('section-contributors')"
-          [contributors]="contributors"
-          (stateChange)="onContributorsStateChange($event)"
-        ></app-admin-entity-contributors-editor>
-      }
-
-      @if (shell.isEdit) {
         <app-admin-entity-relations-editor
           [entityId]="shell.entityId"
-          [active]="isActiveSection('section-relations')"
           (stateChange)="onRelationsStateChange($event)"
         ></app-admin-entity-relations-editor>
-      }
+
+        <app-admin-entity-media-library
+          [isEdit]="shell.isEdit"
+          [entityTitle]="form.title"
+          [mediaEditors]="mediaEditors"
+          [persistedMediaLinks]="persistedMediaLinks"
+          [resolvedVisualSlots]="resolvedVisualSlots"
+          [additionalMediaItems]="additionalMediaItems"
+          [mediaWarningsDetailed]="mediaWarningsDetailed"
+          [mediaWarningMessages]="mediaWarningMessages"
+          [mediaCoverageSummary]="mediaCoverageSummary"
+          [persistedResolvedMedia]="persistedResolvedMedia"
+          [entityId]="shell.entityId"
+          [initialActiveEditorId]="activeMediaEditorId"
+          [adding]="addingMedia"
+          [uploading]="uploadingMedia"
+          [addResetVersion]="mediaAddResetVersion"
+          [message]="mediaMessage"
+          [error]="mediaError"
+          (stateChange)="onMediaLibraryStateChange($event)"
+        ></app-admin-entity-media-library>
+
+        @if (shell.isEdit) {
+          <app-admin-entity-sources-editor
+            [entityId]="shell.entityId"
+            [sourceRefs]="sourceRefs"
+            (stateChange)="onSourcesStateChange($event)"
+          ></app-admin-entity-sources-editor>
+
+          <app-admin-entity-contributors-editor
+            [entityId]="shell.entityId"
+            [contributors]="contributors"
+            (stateChange)="onContributorsStateChange($event)"
+          ></app-admin-entity-contributors-editor>
+        }
+
+        <app-admin-entity-preview
+          [ready]="initialEntityHydrated"
+          [stateKey]="previewStateKey()"
+          [entityId]="shell.entityId"
+          [locale]="i18n.locale()"
+          [form]="form"
+          [translations]="translationForms"
+          [details]="detailsForm"
+          [localizedDetails]="localizedDetailForms"
+          [entityTags]="entityTags"
+          [relations]="relations"
+          [incomingRelations]="incomingRelations"
+          [sourceRefs]="sourceRefs"
+          [contributors]="contributors"
+          [mediaEditors]="mediaEditors"
+          [persistedResolvedMedia]="persistedResolvedMedia"
+          [resolvedVisualSlots]="resolvedVisualSlots"
+          [publishing]="facade.saving()"
+          (publish)="publishEntity()"
+        ></app-admin-entity-preview>
+      </section>
     </section>
-  </section>
+  }
 </div>

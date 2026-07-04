@@ -22,12 +22,12 @@ export type AdminEntitySaveStatusViewModel = {
 };
 
 export const ADMIN_ENTITY_DASHBOARD_SECTIONS: Array<{ id: DashboardSectionId; label: string }> = [
-  { id: 'section-preview', label: 'Preview Detail' },
-  { id: 'section-content', label: 'Global data' },
-  { id: 'section-media', label: 'Media library' },
+  { id: 'section-content', label: 'Contenido' },
+  { id: 'section-relations', label: 'Relaciones' },
+  { id: 'section-media', label: 'Media' },
   { id: 'section-sources', label: 'Fuentes' },
   { id: 'section-contributors', label: 'Colaboradores' },
-  { id: 'section-relations', label: 'Relaciones' },
+  { id: 'section-preview', label: 'Revisión' },
 ];
 
 type SectionStatus = 'error' | 'saving' | 'ready' | 'locked' | null;
@@ -75,11 +75,20 @@ export function buildAdminEntitySaveStatusViewModel(input: {
   entitySaveState: 'idle' | 'saving' | 'saved' | 'error';
   entityLastSavedAt: Date | null;
   isEdit: boolean;
+  autosaveEnabled: boolean;
+  isPublished: boolean;
 }): AdminEntitySaveStatusViewModel {
   if (input.saving || input.entitySaveState === 'saving') {
     return {
       label: 'Guardando cambios...',
       className: 'entity-save-status entity-save-status--saving',
+    };
+  }
+
+  if (input.isPublished) {
+    return {
+      label: 'Publicada · autoguardado pausado',
+      className: 'entity-save-status entity-save-status--saved',
     };
   }
 
@@ -104,7 +113,11 @@ export function buildAdminEntitySaveStatusViewModel(input: {
   }
 
   return {
-    label: input.isEdit ? 'Listo para guardar' : 'Crea la entity para activar el resto',
+    label: input.autosaveEnabled
+      ? 'Autoguardado activo'
+      : input.isEdit
+        ? 'Completa título y slug para autoguardar'
+        : 'Crea la entity para activar el resto',
     className: 'entity-save-status',
   };
 }
@@ -119,7 +132,7 @@ function sectionCount(
     case 'section-media':
       return input.isEdit ? String(input.persistedMediaLinksCount) : '—';
     case 'section-preview':
-      return 'Detail';
+      return 'Final';
     case 'section-sources':
       return input.isEdit ? String(input.sourceRefsCount) : '—';
     case 'section-contributors':
@@ -137,13 +150,13 @@ function sectionMeta(
     case 'section-content':
       return input.supportsTypedDetails
         ? 'Contenido principal y ficha específica'
-        : 'Contenido principal de la entity';
+        : 'Contenido principal de la pieza';
     case 'section-media':
       return input.isEdit
         ? `${input.persistedMediaLinksCount} assets cargados`
         : 'Guarda la entity para habilitar media';
     case 'section-preview':
-      return 'Vista pública compuesta';
+      return 'Lectura pública y salida editorial';
     case 'section-sources':
       return input.isEdit
         ? `${input.sourceRefsCount} fuentes editoriales`

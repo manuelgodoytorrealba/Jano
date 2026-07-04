@@ -15,6 +15,8 @@ export class AdminEntityFormFacade {
 
   readonly loading = signal(false);
   readonly loadError = signal('');
+  readonly creatingDraft = signal(false);
+  readonly createDraftError = signal('');
   readonly saving = signal(false);
   readonly saveState = signal<EntitySaveState>('idle');
   readonly lastSavedAt = signal<Date | null>(null);
@@ -38,16 +40,30 @@ export class AdminEntityFormFacade {
     );
   }
 
+  createDraft(type: AdminEntityPayload['type']) {
+    this.creatingDraft.set(true);
+    this.createDraftError.set('');
+
+    return this.api.createDraft(type).pipe(
+      tap(() => this.creatingDraft.set(false)),
+      catchError((error) => {
+        this.creatingDraft.set(false);
+        this.createDraftError.set(error?.error?.message ?? 'No se pudo abrir el nuevo borrador.');
+        return throwError(() => error);
+      }),
+    );
+  }
+
   refreshEntity(id: string) {
     return this.api.getById(id);
   }
 
-  saveEntity(id: string | null, payload: AdminEntityPayload) {
+  saveEntity(id: string | null, payload: AdminEntityPayload, announce = true) {
     const isEdit = !!id;
     this.saving.set(true);
     this.saveState.set('saving');
     this.errorMessage.set('');
-    this.successMessage.set('Guardando cambios en el backend...');
+    this.successMessage.set(announce ? 'Guardando cambios en el backend...' : '');
 
     return (isEdit ? this.api.update(id, payload) : this.api.create(payload)).pipe(
       tap(() => {
@@ -55,7 +71,11 @@ export class AdminEntityFormFacade {
         this.saveState.set('saved');
         this.lastSavedAt.set(new Date());
         this.successMessage.set(
-          isEdit ? 'Entity actualizada correctamente.' : 'Entity creada correctamente.',
+          announce
+            ? isEdit
+              ? 'Entity actualizada correctamente.'
+              : 'Entity creada correctamente.'
+            : '',
         );
       }),
       catchError((error) => {

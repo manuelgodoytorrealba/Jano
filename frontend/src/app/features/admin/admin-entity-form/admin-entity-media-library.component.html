@@ -1,18 +1,17 @@
-<section
-  id="section-media"
-  class="admin-dashboard-panel media-box"
-  [class.admin-dashboard-panel--active]="active"
-  [class.admin-dashboard-panel--hidden]="!active"
-  [attr.aria-hidden]="!active"
->
+<section id="section-media" class="admin-dashboard-panel resource-block media-box">
+  <header class="resource-block__head">
+    <div>
+      <p class="resource-block__eyebrow">Archivo visual</p>
+      <h2>Media</h2>
+      <p class="muted">Construye la identidad visual y revisa su cobertura editorial.</p>
+    </div>
+    <span class="resource-block__count">{{ persistedMediaLinks.length }}</span>
+  </header>
+
   @if (!isEdit) {
-    <div class="preview-empty">Guarda primero la entity para poder asociarle media.</div>
+    <div class="preview-empty">Guarda primero la pieza para poder asociarle media.</div>
   } @else {
-    <div
-      class="media-library-nav__tabs"
-      role="tablist"
-      aria-label="Navegación interna de Media Library"
-    >
+    <div class="media-library-nav__tabs" role="tablist" aria-label="Navegación interna de media">
       @for (view of views; track view.id) {
         <button
           type="button"

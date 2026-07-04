@@ -1,4 +1,5 @@
 @use './admin-entity-editor-controls';
+@use './admin-entity-resource-block';
 
 .admin-dashboard-panel {
   display: grid;
@@ -11,36 +12,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.72),
     0 14px 34px rgba(22, 18, 14, 0.06);
   backdrop-filter: blur(18px) saturate(1.06);
-}
-
-.admin-dashboard-panel--hidden {
-  display: none !important;
-}
-
-.admin-dashboard-panel__head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  text-align: center;
-}
-
-.admin-dashboard-panel__head h2 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.admin-dashboard-panel__pill {
-  padding: 7px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #6a625d;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .relation-form,

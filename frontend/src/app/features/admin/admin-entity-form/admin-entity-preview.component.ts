@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+} from '@angular/core';
 import {
   AdminEntityDetailsPayload,
   AdminEntityRelationRecord,
@@ -12,6 +19,7 @@ import {
   AdminEntityPreviewLocalizedDetailsForm,
   AdminEntityPreviewSourceRef,
   AdminEntityPreviewTranslationForm,
+  buildAdminEntityPublicationChecks,
   buildAdminEntityPreviewModel,
 } from './admin-entity-preview.presenter';
 import { AdminEditableContributor } from './admin-entity-metadata.presenter';
@@ -27,7 +35,6 @@ import { VisualSlot } from './admin-entity-media.presenter';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminEntityPreviewComponent implements OnChanges {
-  @Input() active = false;
   @Input() ready = false;
   @Input() stateKey = '';
   @Input() entityId = '';
@@ -47,11 +54,45 @@ export class AdminEntityPreviewComponent implements OnChanges {
   @Input() mediaEditors: EditableAdminMediaEditor[] = [];
   @Input() persistedResolvedMedia: Record<string, unknown> | null = null;
   @Input() resolvedVisualSlots: VisualSlot[] = [];
+  @Input() publishing = false;
+  @Output() publish = new EventEmitter<void>();
 
   previewEntity: PublicEntityPreview | null = null;
 
+  get publicationChecks() {
+    const translations = Object.values(this.translations ?? {});
+    return buildAdminEntityPublicationChecks({
+      hasTitle:
+        translations.some((translation) => !!translation.title.trim()) || !!this.form.title.trim(),
+      hasNarrative:
+        translations.some(
+          (translation) => !!translation.shortDescription.trim() || !!translation.essay.trim(),
+        ) ||
+        !!this.form.summary.trim() ||
+        !!this.form.content.trim(),
+      mediaCount: this.mediaEditors.length,
+      sourcesCount: this.sourceRefs.length,
+      relationsCount: this.relations.length + this.incomingRelations.length,
+      translationCount: translations.filter((translation) => !!translation.title.trim()).length,
+      totalTranslations: translations.length,
+    });
+  }
+
+  get publicationReadyCount(): number {
+    return this.publicationChecks.filter((check) => check.done).length;
+  }
+
+  get isPublished(): boolean {
+    return this.form.status === 'PUBLISHED';
+  }
+
+  get statusLabel(): string {
+    if (this.isPublished) return 'Publicada';
+    return this.form.status === 'IN_REVIEW' ? 'En revisión' : 'Borrador';
+  }
+
   ngOnChanges(): void {
-    if (!this.active || !this.ready || !this.form) {
+    if (!this.ready || !this.form) {
       this.previewEntity = null;
       return;
     }

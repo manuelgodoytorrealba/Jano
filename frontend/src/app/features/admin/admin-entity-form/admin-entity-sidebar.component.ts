@@ -21,8 +21,7 @@ export class AdminEntitySidebarComponent {
   @Input() saveStatusLabel = '';
   @Input() saveStatusClass = 'entity-save-status';
   @Input() cancelHref = '/admin';
-  @Input() saveStayLabel = 'Guardar y seguir';
-  @Input() saveBackLabel = 'Guardar';
+  @Input() saveLabel = 'Guardar ahora';
   @Input() saveDisabled = false;
   @Input() loading = false;
   @Input() navItems: AdminEntitySidebarSectionItem[] = [];
@@ -33,7 +32,6 @@ export class AdminEntitySidebarComponent {
   @Input() publishWarning: string | null = null;
 
   @Output() toggleSidebar = new EventEmitter<void>();
-  @Output() saveStay = new EventEmitter<void>();
-  @Output() saveBack = new EventEmitter<void>();
+  @Output() save = new EventEmitter<void>();
   @Output() selectSection = new EventEmitter<DashboardSectionId>();
 }

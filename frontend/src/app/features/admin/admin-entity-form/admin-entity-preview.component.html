@@ -1,22 +1,56 @@
-<section
-  id="section-preview"
-  class="admin-dashboard-panel detail-live-panel"
-  [class.admin-dashboard-panel--active]="active"
-  [class.admin-dashboard-panel--hidden]="!active"
-  [attr.aria-hidden]="!active"
->
-  <div class="admin-dashboard-panel__head">
+<section id="section-preview" class="admin-dashboard-panel resource-block detail-live-panel">
+  <header class="resource-block__head publication-head">
     <div>
-      <h2>Preview Detail</h2>
-      <p class="muted">
-        Render público vivo de la entity con contenido, media, fuentes, colaboradores y relaciones.
-      </p>
+      <p class="resource-block__eyebrow">Cierre editorial</p>
+      <h2>Lectura y publicación</h2>
+      <p class="muted">Revisa la pieza completa y decide cuándo incorporarla a la biblioteca.</p>
     </div>
-    <span class="admin-dashboard-panel__pill">Detail</span>
-  </div>
+    <span class="publication-status" [class.is-published]="isPublished">{{ statusLabel }}</span>
+  </header>
+
+  <section class="publication-review" aria-labelledby="publication-review-title">
+    <div class="publication-review__head">
+      <div>
+        <p class="resource-block__eyebrow">Preparación editorial</p>
+        <h3 id="publication-review-title">
+          {{ publicationReadyCount }}/{{ publicationChecks.length }} señales listas
+        </h3>
+        <p>Son recomendaciones de trabajo. Ninguna impide publicar.</p>
+      </div>
+
+      <button
+        type="button"
+        class="publication-action"
+        [disabled]="publishing || isPublished"
+        (click)="publish.emit()"
+      >
+        @if (publishing) {
+          Publicando…
+        } @else if (isPublished) {
+          Publicada
+        } @else {
+          Publicar pieza
+        }
+      </button>
+    </div>
+
+    <ul class="publication-checks">
+      @for (check of publicationChecks; track check.label) {
+        <li [class.is-done]="check.done">
+          <span class="publication-checks__mark" aria-hidden="true">
+            {{ check.done ? '✓' : '·' }}
+          </span>
+          <span
+            ><strong>{{ check.label }}</strong
+            >{{ check.detail }}</span
+          >
+        </li>
+      }
+    </ul>
+  </section>
 
   <div class="detail-live-embed">
-    @if (active && ready && previewEntity; as entity) {
+    @if (ready && previewEntity; as entity) {
       <app-entity-detail-view
         [entity]="entity"
         [showActions]="false"
@@ -25,7 +59,7 @@
       ></app-entity-detail-view>
     } @else {
       <div class="detail-live-embed__idle">
-        <span>Abre el bloque de preview para activar la vista pública compuesta.</span>
+        <span>Preparando la lectura pública compuesta.</span>
       </div>
     }
   </div>

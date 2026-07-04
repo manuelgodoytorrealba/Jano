@@ -4,6 +4,7 @@ import { AdminLocale } from '../../../core/api/admin-entities.api';
 import { AdminEntityPreviewTranslationForm } from './admin-entity-preview.presenter';
 import {
   buildEntityPayload,
+  canAutosaveEntity,
   buildTranslationPayload,
   createEmptyLocalizedDetailsForm,
 } from './admin-entity-content.presenter';
@@ -84,5 +85,28 @@ describe('admin-entity-content presenter', () => {
       excerpt: null,
       details: { technique: 'Oil on canvas', birthYear: null, deathYear: null },
     });
+  });
+});
+
+describe('admin entity autosave', () => {
+  it('autosaves only hydrated drafts with their required identity', () => {
+    const payload = {
+      type: 'ARTWORK' as const,
+      title: 'Guernica',
+      slug: 'guernica',
+      status: 'DRAFT' as const,
+    };
+
+    expect(canAutosaveEntity({ isEdit: true, hydrated: true, payload })).toBe(true);
+    expect(
+      canAutosaveEntity({
+        isEdit: true,
+        hydrated: true,
+        payload: { ...payload, status: 'PUBLISHED' },
+      }),
+    ).toBe(false);
+    expect(
+      canAutosaveEntity({ isEdit: true, hydrated: true, payload: { ...payload, title: '' } }),
+    ).toBe(false);
   });
 });
