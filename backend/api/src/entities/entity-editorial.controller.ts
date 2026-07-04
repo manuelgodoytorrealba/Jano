@@ -4,6 +4,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { CreateContributorDto } from './dto/create-contributor.dto';
 import { CreateEntityAliasDto } from './dto/create-entity-alias.dto';
+import { CreateEntityDraftDto } from './dto/create-entity-draft.dto';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { CreateSourceRefDto } from './dto/create-source-ref.dto';
 import { UpdateContributorDto } from './dto/update-contributor.dto';
@@ -25,6 +26,11 @@ export class EntityEditorialController {
     private readonly taxonomy: EntityTaxonomyService,
     private readonly credits: EntityCreditsService,
   ) {}
+
+  @Post('drafts')
+  createDraft(@Body() dto: CreateEntityDraftDto) {
+    return this.editorial.createDraft(dto);
+  }
 
   @Post()
   create(@Body() dto: CreateEntityDto) {

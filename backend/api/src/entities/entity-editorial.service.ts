@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import {
   BadRequestException,
   ConflictException,
@@ -7,6 +8,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { canonicalRelationTypeFilter } from '../relation-types/relation-type.utils';
+import { CreateEntityDraftDto } from './dto/create-entity-draft.dto';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDetailsDto } from './dto/update-entity-details.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
@@ -20,6 +22,15 @@ export class EntityEditorialService {
     private readonly prisma: PrismaService,
     private readonly entities: EntityReadService,
   ) {}
+
+  createDraft(dto: CreateEntityDraftDto) {
+    return this.create({
+      type: dto.type,
+      title: 'Sin título',
+      slug: '_draft-' + randomUUID(),
+      status: 'DRAFT',
+    });
+  }
 
   async create(dto: CreateEntityDto) {
     const id = await this.prisma.$transaction(async (tx) => {
