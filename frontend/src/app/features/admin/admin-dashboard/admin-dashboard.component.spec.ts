@@ -3,10 +3,11 @@ import { filter, firstValueFrom, of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
 import { AdminHomeDecksApi } from '../../../core/api/admin-home-decks.api';
+import { ResearchApi } from '../../../core/api/research.api';
 import { AdminDashboardComponent } from './admin-dashboard.component';
 
 describe('AdminDashboardComponent', () => {
-  it('builds the desk from the three compact editorial reads', async () => {
+  it('builds the desk from compact editorial reads', async () => {
     const api = {
       list: vi.fn().mockReturnValue(
         of({
@@ -62,6 +63,23 @@ describe('AdminDashboardComponent', () => {
         }),
       ),
     };
+    const researchApi = {
+      list: vi.fn().mockReturnValue(
+        of([
+          {
+            id: 'research-1',
+            title: 'Goya y guerra',
+            objective: 'Reunir fuentes',
+            scope: 'Prado',
+            status: 'ACTIVE',
+            lastActiveAt: '2026-07-07T08:00:00.000Z',
+            createdAt: '2026-07-06T08:00:00.000Z',
+            updatedAt: '2026-07-07T08:00:00.000Z',
+            _count: { sources: 2, evidence: 3, findings: 1 },
+          },
+        ]),
+      ),
+    };
     const decksApi = {
       list: vi.fn().mockReturnValue(
         of([
@@ -84,6 +102,7 @@ describe('AdminDashboardComponent', () => {
       providers: [
         { provide: AdminEntitiesApi, useValue: api },
         { provide: AdminHomeDecksApi, useValue: decksApi },
+        { provide: ResearchApi, useValue: researchApi },
       ],
     });
     const component = TestBed.createComponent(AdminDashboardComponent).componentInstance;
@@ -92,6 +111,7 @@ describe('AdminDashboardComponent', () => {
         filter(
           (value) =>
             value.recent.state === 'ready' &&
+            value.research.state === 'ready' &&
             value.decks.state === 'ready' &&
             value.graph.state === 'ready',
         ),
@@ -118,6 +138,11 @@ describe('AdminDashboardComponent', () => {
       sort: 'updated',
     });
     expect(api.workspaceGraph).toHaveBeenCalledOnce();
+    expect(researchApi.list).toHaveBeenCalledOnce();
+    expect(vm.research.data[0].title).toBe('Goya y guerra');
+    expect(component.researchMeta(vm.research.data[0])).toBe(
+      '2 fuentes · 3 evidencias · 1 hallazgos',
+    );
     expect(decksApi.list).toHaveBeenCalledOnce();
     expect(vm.sidebarGroups[0].items[0].count).toBe(1);
     expect(vm.attention).toEqual([

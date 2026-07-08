@@ -186,6 +186,41 @@
             >
           </div>
 
+          @if (vm.research.state === 'loading') {
+            <div class="workspace-state" aria-live="polite">
+              <span class="workspace-state__pulse" aria-hidden="true"></span>
+              <span>Recuperando investigaciones recientes.</span>
+            </div>
+          } @else if (vm.research.state === 'error') {
+            <div class="workspace-state workspace-state--error" role="alert">
+              <strong>No se pudieron recuperar las investigaciones</strong>
+              <span>El trabajo con entidades sigue disponible.</span>
+            </div>
+          } @else if (vm.research.data.length) {
+            <div class="workspace-research-list" role="list" aria-label="Investigaciones recientes">
+              @for (project of vm.research.data; track project.id) {
+                <a
+                  class="workspace-research-row"
+                  role="listitem"
+                  routerLink="/admin/research"
+                  [queryParams]="{ project: project.id }"
+                >
+                  <span class="workspace-research-row__marker" aria-hidden="true">R</span>
+                  <span class="workspace-research-row__identity">
+                    <strong>{{ project.title }}</strong>
+                    <small>{{ researchMeta(project) }}</small>
+                  </span>
+                  <span [class]="statusClass(project.status)">{{
+                    researchStatusLabel(project.status)
+                  }}</span>
+                  <time [attr.datetime]="project.lastActiveAt">
+                    {{ project.lastActiveAt | date: 'dd MMM · HH:mm' }}
+                  </time>
+                </a>
+              }
+            </div>
+          }
+
           @if (vm.recent.state === 'loading') {
             <div class="workspace-state" aria-live="polite">
               <span class="workspace-state__pulse" aria-hidden="true"></span>
@@ -327,6 +362,7 @@
               [queryParams]="{ returnTo: '/admin' }"
               >+ Nueva pieza</a
             >
+            <a class="workspace-btn" routerLink="/admin/research/new">+ Nueva investigación</a>
             <a class="workspace-btn" routerLink="/admin/curations/new">+ Nueva curación</a>
             <a class="workspace-btn" routerLink="/admin/entities">Explorar archivo</a>
           </div>

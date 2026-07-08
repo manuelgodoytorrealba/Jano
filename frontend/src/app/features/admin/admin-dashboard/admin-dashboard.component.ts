@@ -5,6 +5,7 @@ import { Observable, catchError, combineLatest, map, of, startWith } from 'rxjs'
 import { AdminEntitiesApi, AdminEntitySearchListItem } from '../../../core/api/admin-entities.api';
 import { GraphNodeDto, GraphResponseDto } from '../../../core/api/graph.models';
 import { AdminHomeDeck, AdminHomeDecksApi } from '../../../core/api/admin-home-decks.api';
+import { ResearchApi, ResearchProjectSummary } from '../../../core/api/research.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import { getEntityTypeConfig, getRelationTypeConfig } from '../../graph/graph.config';
 import { AdminGlobalGraphComponent } from './admin-global-graph.component';
@@ -56,6 +57,7 @@ type WorkspaceGraphCard = {
 type WorkspaceVm = {
   sidebarGroups: SidebarGroup[];
   recent: WorkspaceSection<AdminEntitySearchListItem[]>;
+  research: WorkspaceSection<ResearchProjectSummary[]>;
   attention: WorkspaceAttentionItem[];
   recentSignals: WorkspaceRecentSignal[];
   decks: WorkspaceSection<AdminHomeDeck[]>;
@@ -81,6 +83,7 @@ function sectionState<T>(source: Observable<T>, empty: T): Observable<WorkspaceS
 export class AdminDashboardComponent {
   private readonly adminEntitiesApi = inject(AdminEntitiesApi);
   private readonly homeDecksApi = inject(AdminHomeDecksApi);
+  private readonly researchApi = inject(ResearchApi);
 
   readonly graphExpanded = signal(true);
   readonly graphFocusMode = signal(false);
@@ -94,6 +97,10 @@ export class AdminDashboardComponent {
       .pipe(map((response) => response.items ?? [])),
     [] as AdminEntitySearchListItem[],
   );
+  private readonly research$ = sectionState(
+    this.researchApi.list().pipe(map((projects) => projects.slice(0, 3))),
+    [] as ResearchProjectSummary[],
+  );
   private readonly decks$ = sectionState(this.homeDecksApi.list(), [] as AdminHomeDeck[]);
   private readonly graph$ = sectionState(
     this.adminEntitiesApi.workspaceGraph().pipe(map((graph) => this.buildGraphCard(graph))),
@@ -102,10 +109,11 @@ export class AdminDashboardComponent {
 
   readonly vm$ = combineLatest({
     recent: this.recent$,
+    research: this.research$,
     decks: this.decks$,
     graph: this.graph$,
   }).pipe(
-    map(({ recent, decks, graph }) => {
+    map(({ recent, research, decks, graph }) => {
       const recentEntities = recent.data.slice(0, 5);
       const featuredDecks = this.featuredDecks(decks.data);
 
@@ -117,6 +125,7 @@ export class AdminDashboardComponent {
             : null,
         ),
         recent: { ...recent, data: recentEntities },
+        research,
         attention: this.buildAttention(recent.data),
         recentSignals: this.buildRecentSignals(recent.data),
         decks: { ...decks, data: featuredDecks },
@@ -186,12 +195,29 @@ export class AdminDashboardComponent {
     return labels[(status ?? '').toUpperCase()] ?? 'Actualizada';
   }
 
+  researchStatusLabel(status: string | null | undefined): string {
+    const labels: Record<string, string> = {
+      ACTIVE: 'Activa',
+      PAUSED: 'Pausada',
+      READY_TO_DECIDE: 'Lista para decidir',
+      ARCHIVED: 'Archivada',
+    };
+    return labels[(status ?? '').toUpperCase()] ?? 'Investigación';
+  }
+
   statusClass(status: string | null | undefined): string {
     return `workspace-status workspace-status--${(status ?? 'draft').toLowerCase().replace('_', '-')}`;
   }
 
   relationLabel(count: number): string {
     return count === 1 ? '1 relación' : `${count} relaciones`;
+  }
+
+  researchMeta(project: ResearchProjectSummary): string {
+    const counts = project._count;
+    if (!counts) return project.scope ?? 'Investigación documental';
+
+    return `${counts.sources} fuentes · ${counts.evidence} evidencias · ${counts.findings} hallazgos`;
   }
 
   deckPreviewEntities(deck: AdminHomeDeck) {

@@ -12,6 +12,7 @@ import { SearchModule } from './search/search.module';
 import { RelationTypesModule } from './relation-types/relation-types.module';
 import { TagsModule } from './tags/tags.module';
 import { CuratedModule } from './curated/curated.module';
+import { ResearchModule } from './research/research.module';
 import { validateEnv } from './config/env.validation';
 import { HealthController } from './health.controller';
 
@@ -35,6 +36,7 @@ import { HealthController } from './health.controller';
     RelationTypesModule,
     TagsModule,
     CuratedModule,
+    ResearchModule,
   ],
 })
 export class AppModule {}

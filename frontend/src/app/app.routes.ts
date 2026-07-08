@@ -120,6 +120,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'research',
+        loadComponent: () =>
+          import('./features/admin/admin-research/admin-research.component').then(
+            (m) => m.AdminResearchComponent,
+          ),
+      },
+      {
+        path: 'research/new',
+        loadComponent: () =>
+          import('./features/admin/admin-research/admin-research.component').then(
+            (m) => m.AdminResearchComponent,
+          ),
+      },
+      {
         path: 'curations/new',
         loadComponent: () =>
           import('./features/admin/admin-curations/admin-curations.component').then(

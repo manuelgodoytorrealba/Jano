@@ -1,0 +1,423 @@
+<main class="admin-research">
+  <header class="admin-research__hero">
+    <div>
+      <p class="admin-research__eyebrow">Research</p>
+      <h1>Investigaciones</h1>
+      <p>
+        Trabajo documental previo a entidades, relaciones y publicación. Las propuestas siguen fuera
+        del dominio canónico hasta una decisión editorial.
+      </p>
+    </div>
+
+    <div class="admin-research__actions">
+      <a class="admin-research__btn" routerLink="/admin">Volver al workspace</a>
+      <button
+        class="admin-research__btn admin-research__btn--primary"
+        type="button"
+        (click)="openCreateRoute()"
+      >
+        Nueva investigación
+      </button>
+    </div>
+  </header>
+
+  @if (vm$ | async; as vm) {
+    <section class="admin-research__layout">
+      <article class="admin-research__panel admin-research__panel--compose">
+        <div class="admin-research__panel-head">
+          <div>
+            <p class="admin-research__eyebrow">Crear</p>
+            <h2>Nueva investigación</h2>
+          </div>
+        </div>
+
+        <form class="admin-research__form" (ngSubmit)="createResearch()">
+          <label class="admin-research__field">
+            <span>Título</span>
+            <input
+              #titleInput
+              type="text"
+              name="title"
+              [(ngModel)]="title"
+              placeholder="Goya y la guerra"
+            />
+          </label>
+
+          <label class="admin-research__field">
+            <span>Objetivo</span>
+            <textarea
+              name="objective"
+              [(ngModel)]="objective"
+              rows="4"
+              placeholder="Qué pregunta editorial debe resolver esta investigación."
+            ></textarea>
+          </label>
+
+          <label class="admin-research__field">
+            <span>Alcance</span>
+            <input
+              type="text"
+              name="scope"
+              [(ngModel)]="scope"
+              placeholder="Corpus, periodo o institución"
+            />
+          </label>
+
+          @if (feedback) {
+            <div class="admin-research__feedback admin-research__feedback--success">
+              {{ feedback }}
+            </div>
+          }
+
+          @if (error) {
+            <div class="admin-research__feedback admin-research__feedback--error">{{ error }}</div>
+          }
+
+          <button
+            class="admin-research__submit"
+            type="submit"
+            [disabled]="creating || !title.trim() || !objective.trim()"
+          >
+            @if (creating) {
+              Creando...
+            } @else {
+              Crear investigación
+            }
+          </button>
+        </form>
+      </article>
+
+      <article class="admin-research__panel">
+        <div class="admin-research__panel-head">
+          <div>
+            <p class="admin-research__eyebrow">Biblioteca de trabajo</p>
+            <h2>Investigaciones recientes</h2>
+          </div>
+          <span>{{ vm.total }} total</span>
+        </div>
+
+        <div class="admin-research__filters" aria-label="Filtros de investigaciones">
+          <input
+            type="search"
+            name="researchSearch"
+            [(ngModel)]="search"
+            (ngModelChange)="applyFilters()"
+            placeholder="Buscar investigación"
+          />
+          <select name="researchStatus" [(ngModel)]="status" (ngModelChange)="applyFilters()">
+            @for (option of statuses; track option) {
+              <option [ngValue]="option">
+                {{ option ? statusLabel(option) : 'Todos los estados' }}
+              </option>
+            }
+          </select>
+        </div>
+
+        @if (vm.state === 'loading') {
+          <div class="admin-research__state">Cargando investigaciones.</div>
+        } @else if (vm.state === 'error') {
+          <div class="admin-research__state admin-research__state--error">{{ vm.error }}</div>
+        } @else if (vm.projects.length) {
+          <div class="admin-research__list" role="list">
+            @for (project of vm.projects; track project.id) {
+              <a
+                class="research-card"
+                role="listitem"
+                routerLink="/admin/research"
+                [queryParams]="{ project: project.id }"
+                [class.research-card--selected]="vm.selected?.id === project.id"
+              >
+                <span class="research-card__marker" aria-hidden="true">R</span>
+                <span class="research-card__body">
+                  <strong>{{ project.title }}</strong>
+                  <span>{{ project.objective }}</span>
+                  <small>{{ projectMeta(project) }}</small>
+                </span>
+                <span class="research-card__side">
+                  <strong>{{ statusLabel(project.status) }}</strong>
+                  <time [attr.datetime]="project.lastActiveAt">{{
+                    project.lastActiveAt | date: 'dd MMM yyyy'
+                  }}</time>
+                </span>
+              </a>
+            }
+          </div>
+        } @else {
+          <div class="admin-research__state">No hay investigaciones con esos filtros.</div>
+        }
+      </article>
+
+      <article class="admin-research__panel admin-research__workspace">
+        @if (vm.selectedError) {
+          <div class="admin-research__state admin-research__state--error">
+            {{ vm.selectedError }}
+          </div>
+        } @else if (vm.selectedProject; as project) {
+          <div class="admin-research__workspace-head">
+            <div>
+              <p class="admin-research__eyebrow">Workspace</p>
+              <h2>{{ project.title }}</h2>
+              <p>{{ project.objective }}</p>
+            </div>
+            <span>{{ statusLabel(project.status) }}</span>
+          </div>
+
+          <div class="research-action-panel">
+            @if (actionFeedback) {
+              <div class="admin-research__feedback admin-research__feedback--success">
+                {{ actionFeedback }}
+              </div>
+            }
+
+            @if (actionError) {
+              <div class="admin-research__feedback admin-research__feedback--error">
+                {{ actionError }}
+              </div>
+            }
+
+            <form class="research-action-form" (ngSubmit)="addSource(project.id)">
+              <h3>Asociar fuente</h3>
+              <input
+                type="search"
+                name="sourceSearch"
+                [(ngModel)]="sourceSearch"
+                (ngModelChange)="searchSources()"
+                placeholder="Buscar fuente canónica"
+              />
+              @if (sourceResults$ | async; as sourceResults) {
+                <div class="research-source-results">
+                  @for (source of sourceResults; track source.id) {
+                    <button type="button" (click)="selectSource(source)">
+                      <strong>{{ sourceRecordLabel(source) }}</strong>
+                      <span>{{ source.type }}{{ source.year ? ' · ' + source.year : '' }}</span>
+                    </button>
+                  } @empty {
+                    @if (sourceSearch.trim()) {
+                      <span>No hay fuentes canónicas con esa búsqueda.</span>
+                    }
+                  }
+                </div>
+              }
+              @if (selectedSourceLabel) {
+                <p class="research-action-form__selected">{{ selectedSourceLabel }}</p>
+              }
+              <input
+                type="text"
+                name="sourceNote"
+                [(ngModel)]="sourceNote"
+                placeholder="Nota de proyecto"
+              />
+              <button type="submit" [disabled]="actionBusy || !sourceId.trim()">Asociar</button>
+            </form>
+
+            <form class="research-action-form" (ngSubmit)="createEvidence(project.id)">
+              <h3>Registrar evidencia</h3>
+              <select name="evidenceSourceId" [(ngModel)]="evidenceSourceId">
+                <option value="">Fuente</option>
+                @for (item of project.sources; track item.sourceId) {
+                  <option [value]="item.sourceId">{{ sourceTitle(item) }}</option>
+                }
+              </select>
+              <input
+                type="text"
+                name="evidenceSourceVersion"
+                [(ngModel)]="evidenceSourceVersion"
+                placeholder="Versión de fuente"
+              />
+              <input
+                type="text"
+                name="evidenceLocator"
+                [(ngModel)]="evidenceLocator"
+                placeholder="Página o localizador"
+              />
+              <textarea
+                name="evidenceQuote"
+                [(ngModel)]="evidenceQuote"
+                rows="3"
+                placeholder="Pasaje exacto"
+              ></textarea>
+              <input
+                type="text"
+                name="evidenceContext"
+                [(ngModel)]="evidenceContext"
+                placeholder="Contexto"
+              />
+              <input
+                type="text"
+                name="evidenceNote"
+                [(ngModel)]="evidenceNote"
+                placeholder="Nota interpretativa"
+              />
+              <button
+                type="submit"
+                [disabled]="
+                  actionBusy ||
+                  !evidenceSourceId.trim() ||
+                  !evidenceSourceVersion.trim() ||
+                  !evidenceLocator.trim() ||
+                  !evidenceQuote.trim()
+                "
+              >
+                Registrar
+              </button>
+            </form>
+
+            <form class="research-action-form" (ngSubmit)="createFinding(project.id)">
+              <h3>Proponer hallazgo</h3>
+              <input
+                type="text"
+                name="findingTitle"
+                [(ngModel)]="findingTitle"
+                placeholder="Título del hallazgo"
+              />
+              <input
+                type="text"
+                name="findingKind"
+                [(ngModel)]="findingKind"
+                placeholder="Tipo opcional"
+              />
+              <textarea
+                name="findingSummary"
+                [(ngModel)]="findingSummary"
+                rows="3"
+                placeholder="Resumen"
+              ></textarea>
+              <div class="research-evidence-picker" aria-label="Evidencias del hallazgo">
+                @for (evidence of project.evidence; track evidence.id) {
+                  <label class="research-evidence-option">
+                    <input
+                      type="checkbox"
+                      name="findingEvidence"
+                      [checked]="selectedFindingEvidenceIds.includes(evidence.id)"
+                      (change)="toggleFindingEvidence(evidence.id, $any($event.target).checked)"
+                    />
+                    <span>
+                      <strong>{{ evidenceSourceTitle(project, evidence) }}</strong>
+                      <small>{{ evidence.locator }} · {{ evidence.sourceVersion }}</small>
+                      <em>{{ evidence.quote }}</em>
+                    </span>
+                  </label>
+                } @empty {
+                  <div class="admin-research__state">Registra evidencia antes de proponer.</div>
+                }
+              </div>
+              <button
+                type="submit"
+                [disabled]="
+                  actionBusy || !findingTitle.trim() || !selectedFindingEvidenceIds.length
+                "
+              >
+                Proponer
+              </button>
+            </form>
+          </div>
+
+          <div class="research-workspace-grid">
+            <section class="research-workspace-section">
+              <h3>Fuentes</h3>
+              @if (project.sources.length) {
+                <div class="research-workspace-list">
+                  @for (item of project.sources; track item.sourceId) {
+                    <div class="research-workspace-row">
+                      <strong>{{ sourceTitle(item) }}</strong>
+                      @if (item.note) {
+                        <span>{{ item.note }}</span>
+                      } @else {
+                        <span>Sin nota de proyecto.</span>
+                      }
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">Sin fuentes asociadas.</div>
+              }
+            </section>
+
+            <section class="research-workspace-section">
+              <h3>Evidencias</h3>
+              @if (project.evidence.length) {
+                <div class="research-workspace-list">
+                  @for (evidence of project.evidence; track evidence.id) {
+                    <div class="research-workspace-row research-workspace-row--quote">
+                      <strong>{{ evidence.locator }} · {{ evidence.sourceVersion }}</strong>
+                      <span>{{ evidence.quote }}</span>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">Sin evidencias registradas.</div>
+              }
+            </section>
+
+            <section class="research-workspace-section">
+              <h3>Hallazgos</h3>
+              @if (project.findings.length) {
+                <div class="research-workspace-list">
+                  @for (finding of project.findings; track finding.id) {
+                    <div class="research-workspace-row research-finding-card">
+                      <div class="research-finding-card__head">
+                        <strong>{{ finding.title }}</strong>
+                        <small>{{ findingStatusLabel(finding.status) }}</small>
+                      </div>
+                      @if (finding.kind) {
+                        <small>{{ finding.kind }}</small>
+                      }
+                      @if (finding.summary) {
+                        <span>{{ finding.summary }}</span>
+                      }
+                      <input
+                        type="text"
+                        name="findingDecisionNote-{{ finding.id }}"
+                        [ngModel]="findingDecisionNotes[finding.id] || ''"
+                        (ngModelChange)="setFindingDecisionNote(finding.id, $event)"
+                        placeholder="Nota opcional de decisión"
+                      />
+                      <div class="research-finding-card__actions">
+                        @for (action of decisionActions; track action) {
+                          <button
+                            type="button"
+                            [disabled]="actionBusy"
+                            (click)="decideFinding(project.id, finding.id, action)"
+                          >
+                            {{ decisionActionLabel(action) }}
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">Sin hallazgos propuestos.</div>
+              }
+            </section>
+
+            <section class="research-workspace-section">
+              <h3>Decisiones</h3>
+              @if (project.decisions.length) {
+                <div class="research-workspace-list">
+                  @for (decision of project.decisions; track decision.id) {
+                    <div class="research-workspace-row">
+                      <strong>{{ decisionActionLabel(decision.action) }}</strong>
+                      @if (decision.note) {
+                        <span>{{ decision.note }}</span>
+                      }
+                      <time [attr.datetime]="decision.createdAt">{{
+                        decision.createdAt | date: 'dd MMM yyyy · HH:mm'
+                      }}</time>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">Sin decisiones editoriales.</div>
+              }
+            </section>
+          </div>
+        } @else {
+          <div class="admin-research__state">
+            Selecciona una investigación para abrir su contexto.
+          </div>
+        }
+      </article>
+    </section>
+  }
+</main>
