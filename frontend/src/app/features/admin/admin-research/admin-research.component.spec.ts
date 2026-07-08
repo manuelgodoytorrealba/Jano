@@ -41,6 +41,22 @@ describe('AdminResearchComponent', () => {
                 createdAt: '2026-07-07T08:00:00.000Z',
               },
             },
+            {
+              projectId: 'research-1',
+              sourceId: 'source-2',
+              note: null,
+              createdAt: '2026-07-07T08:00:00.000Z',
+              source: {
+                id: 'source-2',
+                type: 'CATALOG',
+                title: 'Catálogo razonado',
+                author: null,
+                publisher: 'JANO Archivo',
+                year: 2018,
+                url: null,
+                createdAt: '2026-07-07T08:00:00.000Z',
+              },
+            },
           ],
           evidence: [
             {
@@ -59,12 +75,12 @@ describe('AdminResearchComponent', () => {
             {
               id: 'evidence-2',
               projectId: 'research-1',
-              sourceId: 'source-1',
+              sourceId: 'source-2',
               sourceVersion: 'v1',
               locator: 'p. 43',
               quote: 'Segundo fragmento',
-              context: null,
-              note: null,
+              context: 'Capítulo de procedencia',
+              note: 'Contrastar con inventario',
               fingerprint: 'hash-2',
               createdAt: '2026-07-07T08:00:00.000Z',
               updatedAt: '2026-07-07T08:00:00.000Z',
@@ -80,6 +96,36 @@ describe('AdminResearchComponent', () => {
               status: 'PROPOSED',
               createdAt: '2026-07-07T08:00:00.000Z',
               updatedAt: '2026-07-07T08:00:00.000Z',
+              evidence: [
+                {
+                  findingId: 'finding-1',
+                  evidenceId: 'evidence-1',
+                  evidence: {
+                    id: 'evidence-1',
+                    projectId: 'research-1',
+                    sourceId: 'source-1',
+                    sourceVersion: 'v1',
+                    locator: 'p. 42',
+                    quote: 'Fragmento',
+                    context: null,
+                    note: null,
+                    fingerprint: 'hash',
+                    createdAt: '2026-07-07T08:00:00.000Z',
+                    updatedAt: '2026-07-07T08:00:00.000Z',
+                  },
+                },
+              ],
+            },
+            {
+              id: 'finding-2',
+              projectId: 'research-1',
+              title: 'Hipótesis sin evidencia visible',
+              kind: null,
+              summary: null,
+              status: 'PROPOSED',
+              createdAt: '2026-07-07T08:00:00.000Z',
+              updatedAt: '2026-07-07T08:00:00.000Z',
+              evidence: [],
             },
           ],
           decisions: [
@@ -146,17 +192,70 @@ describe('AdminResearchComponent', () => {
 
     expect(api.getById).toHaveBeenCalledWith('research-1');
     expect(vm.selected?.id).toBe('research-1');
-    expect(vm.selectedProject?.sources.length).toBe(1);
+    expect(vm.selectedProject?.sources.length).toBe(2);
     expect(vm.selectedProject?.evidence.length).toBe(2);
-    expect(vm.selectedProject?.findings.length).toBe(1);
+    expect(vm.selectedProject?.findings.length).toBe(2);
     expect(vm.selectedProject?.decisions.length).toBe(1);
     expect(component.projectMeta(vm.projects[0])).toBe('2 fuentes · 3 evidencias · 1 hallazgos');
     expect(component.sourceTitle(vm.selectedProject!.sources[0])).toBe(
       'Los desastres de la guerra · Museo del Prado',
     );
+    expect(component.evidenceBySource(vm.selectedProject!)).toEqual([
+      expect.objectContaining({
+        sourceId: 'source-1',
+        title: 'Los desastres de la guerra · Museo del Prado',
+        evidence: [expect.objectContaining({ quote: 'Fragmento' })],
+      }),
+      expect.objectContaining({
+        sourceId: 'source-2',
+        title: 'Catálogo razonado',
+        evidence: [
+          expect.objectContaining({
+            quote: 'Segundo fragmento',
+            context: 'Capítulo de procedencia',
+            note: 'Contrastar con inventario',
+          }),
+        ],
+      }),
+    ]);
     expect(
       component.evidenceSourceTitle(vm.selectedProject!, vm.selectedProject!.evidence[0]),
     ).toBe('Los desastres de la guerra · Museo del Prado');
+    expect(
+      component.visibleFindingEvidence(vm.selectedProject!, vm.selectedProject!.findings[0]),
+    ).toEqual([
+      expect.objectContaining({ locator: 'p. 42', sourceVersion: 'v1', quote: 'Fragmento' }),
+    ]);
+    expect(
+      component.hiddenFindingEvidenceCount(vm.selectedProject!, vm.selectedProject!.findings[0]),
+    ).toBe(0);
+    expect(component.findingEvidence(vm.selectedProject!, vm.selectedProject!.findings[1])).toEqual(
+      [],
+    );
+    expect(component.findingCountForEvidence(vm.selectedProject!, 'evidence-1')).toBe(1);
+    expect(component.findingCountForEvidence(vm.selectedProject!, 'evidence-2')).toBe(0);
+
+    component.evidenceSearch = 'segundo';
+    expect(component.filteredEvidence(vm.selectedProject!)).toEqual([
+      expect.objectContaining({ id: 'evidence-2' }),
+    ]);
+
+    component.evidenceSearch = '';
+    component.evidenceSourceFilter = 'source-2';
+    expect(component.filteredEvidence(vm.selectedProject!)).toEqual([
+      expect.objectContaining({ id: 'evidence-2' }),
+    ]);
+
+    component.evidenceSourceFilter = '';
+    component.evidenceSearch = 'inventario';
+    expect(component.filteredEvidence(vm.selectedProject!)).toEqual([
+      expect.objectContaining({ id: 'evidence-2' }),
+    ]);
+
+    component.evidenceSearch = 'sin coincidencias';
+    expect(component.filteredEvidence(vm.selectedProject!)).toEqual([]);
+
+    component.evidenceSearch = '';
 
     component.selectSource({
       id: 'source-2',
@@ -192,27 +291,42 @@ describe('AdminResearchComponent', () => {
       note: 'Nota',
     });
 
-    component.evidenceSourceId = 'source-1';
+    component.prepareEvidenceForSource('source-1');
+    expect(component.evidenceSourceId).toBe('source-1');
     component.evidenceSourceVersion = ' v1 ';
     component.evidenceLocator = ' p. 1 ';
     component.evidenceQuote = ' Fragmento ';
+    component.evidenceContext = ' Contexto ';
+    component.evidenceNote = ' Nota editorial ';
     component.createEvidence('research-1');
     expect(api.createEvidence).toHaveBeenCalledWith('research-1', {
       sourceId: 'source-1',
       sourceVersion: 'v1',
       locator: 'p. 1',
       quote: 'Fragmento',
-      context: undefined,
-      note: undefined,
+      context: 'Contexto',
+      note: 'Nota editorial',
     });
+    expect(component.evidenceSourceId).toBe('source-1');
+    expect(component.evidenceSourceVersion).toBe(' v1 ');
+    expect(component.evidenceLocator).toBe('');
+    expect(component.evidenceQuote).toBe('');
+    expect(component.evidenceContext).toBe('');
+    expect(component.evidenceNote).toBe('');
 
     component.findingTitle = ' Hipótesis ';
-    component.toggleFindingEvidence('evidence-1', true);
-    component.toggleFindingEvidence('evidence-2', true);
+    component.selectFindingEvidence('evidence-1');
+    component.selectFindingEvidence('evidence-1');
+    expect(component.selectedFindingEvidenceIds).toEqual(['evidence-1']);
+    component.selectFindingEvidenceGroup(['evidence-1', 'evidence-2']);
+    expect(component.selectedFindingEvidenceIds).toEqual(['evidence-1', 'evidence-2']);
+    component.removeFindingEvidence('evidence-1');
+    expect(component.selectedFindingEvidenceIds).toEqual(['evidence-2']);
+    component.selectFindingEvidence('evidence-1');
     component.createFinding('research-1');
     expect(api.createFinding).toHaveBeenCalledWith('research-1', {
       title: 'Hipótesis',
-      evidenceIds: ['evidence-1', 'evidence-2'],
+      evidenceIds: ['evidence-2', 'evidence-1'],
       kind: undefined,
       summary: undefined,
     });

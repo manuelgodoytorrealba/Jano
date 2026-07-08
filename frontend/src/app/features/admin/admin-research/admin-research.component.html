@@ -218,6 +218,11 @@
                   <option [value]="item.sourceId">{{ sourceTitle(item) }}</option>
                 }
               </select>
+              @if (evidenceSourceId) {
+                <p class="research-action-form__selected">
+                  Fuente: {{ projectSourceTitle(project, evidenceSourceId) }}
+                </p>
+              }
               <input
                 type="text"
                 name="evidenceSourceVersion"
@@ -225,6 +230,7 @@
                 placeholder="Versión de fuente"
               />
               <input
+                #evidenceLocatorInput
                 type="text"
                 name="evidenceLocator"
                 [(ngModel)]="evidenceLocator"
@@ -288,7 +294,7 @@
                     <input
                       type="checkbox"
                       name="findingEvidence"
-                      [checked]="selectedFindingEvidenceIds.includes(evidence.id)"
+                      [checked]="isFindingEvidenceSelected(evidence.id)"
                       (change)="toggleFindingEvidence(evidence.id, $any($event.target).checked)"
                     />
                     <span>
@@ -301,6 +307,24 @@
                   <div class="admin-research__state">Registra evidencia antes de proponer.</div>
                 }
               </div>
+              @if (selectedFindingEvidenceIds.length) {
+                <div class="research-selected-evidence">
+                  @for (
+                    evidence of evidenceByIds(project, selectedFindingEvidenceIds);
+                    track evidence.id
+                  ) {
+                    <div class="research-selected-evidence__item">
+                      <span>
+                        <strong>{{ evidenceSourceTitle(project, evidence) }}</strong>
+                        <small>{{ evidence.locator }} · {{ evidence.sourceVersion }}</small>
+                      </span>
+                      <button type="button" (click)="removeFindingEvidence(evidence.id)">
+                        Quitar
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
               <button
                 type="submit"
                 [disabled]="
@@ -334,16 +358,85 @@
             </section>
 
             <section class="research-workspace-section">
-              <h3>Evidencias</h3>
-              @if (project.evidence.length) {
-                <div class="research-workspace-list">
-                  @for (evidence of project.evidence; track evidence.id) {
-                    <div class="research-workspace-row research-workspace-row--quote">
-                      <strong>{{ evidence.locator }} · {{ evidence.sourceVersion }}</strong>
-                      <span>{{ evidence.quote }}</span>
-                    </div>
+              <div class="research-section-head">
+                <h3>Evidencias</h3>
+                <small
+                  >{{ filteredEvidence(project).length }} de {{ project.evidence.length }}</small
+                >
+              </div>
+              <div class="research-evidence-filters" aria-label="Filtros de evidencias">
+                <input
+                  type="search"
+                  name="evidenceSearch"
+                  [(ngModel)]="evidenceSearch"
+                  placeholder="Buscar en evidencias"
+                />
+                <select name="evidenceSourceFilter" [(ngModel)]="evidenceSourceFilter">
+                  <option value="">Todas las fuentes</option>
+                  @for (item of project.sources; track item.sourceId) {
+                    <option [value]="item.sourceId">{{ sourceTitle(item) }}</option>
                   }
-                </div>
+                </select>
+              </div>
+              @if (project.evidence.length) {
+                @if (filteredEvidence(project).length) {
+                  <div class="research-evidence-groups">
+                    @for (group of evidenceBySource(project); track group.sourceId) {
+                      <div class="research-evidence-group">
+                        <div class="research-evidence-group__head">
+                          <div>
+                            <strong>{{ group.title }}</strong>
+                            <small>{{ group.evidence.length }} evidencias</small>
+                          </div>
+                          <button type="button" (click)="prepareEvidenceForSource(group.sourceId)">
+                            Añadir evidencia
+                          </button>
+                          <button
+                            type="button"
+                            (click)="selectFindingEvidenceGroup(evidenceIds(group.evidence))"
+                          >
+                            Usar visibles en hallazgo
+                          </button>
+                        </div>
+                        <div class="research-workspace-list">
+                          @for (evidence of group.evidence; track evidence.id) {
+                            <div
+                              class="research-workspace-row research-workspace-row--quote research-evidence-row"
+                            >
+                              <strong>{{ evidence.locator }} · {{ evidence.sourceVersion }}</strong>
+                              <span>{{ evidence.quote }}</span>
+                              @if (evidence.context) {
+                                <small>Contexto: {{ evidence.context }}</small>
+                              }
+                              @if (evidence.note) {
+                                <small class="research-evidence-row__note">
+                                  Nota editorial: {{ evidence.note }}
+                                </small>
+                              }
+                              <small>
+                                @if (findingCountForEvidence(project, evidence.id); as count) {
+                                  Usada en {{ count }} hallazgos
+                                } @else {
+                                  Sin hallazgos vinculados
+                                }
+                              </small>
+                              <button
+                                type="button"
+                                class="research-evidence-row__action"
+                                (click)="selectFindingEvidence(evidence.id)"
+                                [disabled]="isFindingEvidenceSelected(evidence.id)"
+                              >
+                                Usar en hallazgo
+                              </button>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="admin-research__state">No hay evidencias con esos filtros.</div>
+                }
               } @else {
                 <div class="admin-research__state">Sin evidencias registradas.</div>
               }
@@ -365,6 +458,27 @@
                       @if (finding.summary) {
                         <span>{{ finding.summary }}</span>
                       }
+                      <div class="research-finding-evidence">
+                        @for (
+                          evidence of visibleFindingEvidence(project, finding);
+                          track evidence.id
+                        ) {
+                          <div class="research-finding-evidence__item">
+                            <strong>{{ evidenceSourceTitle(project, evidence) }}</strong>
+                            <small>{{ evidence.locator }} · {{ evidence.sourceVersion }}</small>
+                            <span>{{ evidence.quote }}</span>
+                          </div>
+                        } @empty {
+                          <div class="research-finding-evidence__empty">
+                            Sin evidencias vinculadas
+                          </div>
+                        }
+                        @if (hiddenFindingEvidenceCount(project, finding) > 0) {
+                          <small class="research-finding-evidence__more">
+                            + {{ hiddenFindingEvidenceCount(project, finding) }} evidencias más
+                          </small>
+                        }
+                      </div>
                       <input
                         type="text"
                         name="findingDecisionNote-{{ finding.id }}"

@@ -16,6 +16,7 @@ import {
   ResearchApi,
   ResearchDecisionAction,
   ResearchEvidence,
+  ResearchFinding,
   ResearchFindingStatus,
   ResearchProject,
   ResearchProjectStatus,
@@ -34,6 +35,12 @@ type ResearchListVm = {
   selectedError: string;
   total: number;
   error: string;
+};
+
+type ResearchEvidenceGroup = {
+  sourceId: string;
+  title: string;
+  evidence: ResearchEvidence[];
 };
 
 @Component({
@@ -55,6 +62,9 @@ export class AdminResearchComponent {
     requestAnimationFrame(() => value.nativeElement.focus());
   }
 
+  @ViewChild('evidenceLocatorInput')
+  private evidenceLocatorInput?: ElementRef<HTMLInputElement>;
+
   readonly statuses: ResearchStatusFilter[] = [
     '',
     'ACTIVE',
@@ -69,6 +79,8 @@ export class AdminResearchComponent {
   scope = '';
   search = '';
   status: ResearchStatusFilter = '';
+  evidenceSearch = '';
+  evidenceSourceFilter = '';
   creating = false;
   feedback = '';
   error = '';
@@ -235,14 +247,18 @@ export class AdminResearchComponent {
       }),
       'Evidencia registrada.',
       () => {
-        this.evidenceSourceId = '';
-        this.evidenceSourceVersion = '';
         this.evidenceLocator = '';
         this.evidenceQuote = '';
         this.evidenceContext = '';
         this.evidenceNote = '';
+        requestAnimationFrame(() => this.evidenceLocatorInput?.nativeElement.focus());
       },
     );
+  }
+
+  prepareEvidenceForSource(sourceId: string): void {
+    this.evidenceSourceId = sourceId;
+    requestAnimationFrame(() => this.evidenceLocatorInput?.nativeElement.focus());
   }
 
   createFinding(projectId: string): void {
@@ -268,9 +284,33 @@ export class AdminResearchComponent {
   }
 
   toggleFindingEvidence(evidenceId: string, checked: boolean): void {
-    this.selectedFindingEvidenceIds = checked
-      ? [...new Set([...this.selectedFindingEvidenceIds, evidenceId])]
-      : this.selectedFindingEvidenceIds.filter((id) => id !== evidenceId);
+    if (checked) {
+      this.selectFindingEvidence(evidenceId);
+    } else {
+      this.removeFindingEvidence(evidenceId);
+    }
+  }
+
+  selectFindingEvidence(evidenceId: string): void {
+    this.selectedFindingEvidenceIds = [
+      ...new Set([...this.selectedFindingEvidenceIds, evidenceId]),
+    ];
+  }
+
+  selectFindingEvidenceGroup(evidenceIds: string[]): void {
+    this.selectedFindingEvidenceIds = [
+      ...new Set([...this.selectedFindingEvidenceIds, ...evidenceIds]),
+    ];
+  }
+
+  removeFindingEvidence(evidenceId: string): void {
+    this.selectedFindingEvidenceIds = this.selectedFindingEvidenceIds.filter(
+      (id) => id !== evidenceId,
+    );
+  }
+
+  isFindingEvidenceSelected(evidenceId: string): boolean {
+    return this.selectedFindingEvidenceIds.includes(evidenceId);
   }
 
   setFindingDecisionNote(findingId: string, note: string): void {
@@ -343,8 +383,82 @@ export class AdminResearchComponent {
   }
 
   evidenceSourceTitle(project: ResearchProject, evidence: ResearchEvidence): string {
-    const item = project.sources.find((source) => source.sourceId === evidence.sourceId);
+    return this.projectSourceTitle(project, evidence.sourceId);
+  }
+
+  projectSourceTitle(project: ResearchProject, sourceId: string): string {
+    const item = project.sources.find((source) => source.sourceId === sourceId);
     return item ? this.sourceTitle(item) : 'Fuente asociada';
+  }
+
+  evidenceBySource(project: ResearchProject): ResearchEvidenceGroup[] {
+    const groups = new Map<string, ResearchEvidence[]>();
+    for (const evidence of this.filteredEvidence(project)) {
+      groups.set(evidence.sourceId, [...(groups.get(evidence.sourceId) ?? []), evidence]);
+    }
+    return [...groups.entries()].map(([sourceId, evidence]) => ({
+      sourceId,
+      title: this.projectSourceTitle(project, sourceId),
+      evidence,
+    }));
+  }
+
+  filteredEvidence(project: ResearchProject): ResearchEvidence[] {
+    const query = this.evidenceSearch.trim().toLowerCase();
+    return project.evidence.filter((evidence) => {
+      const matchesSource =
+        !this.evidenceSourceFilter || evidence.sourceId === this.evidenceSourceFilter;
+      if (!matchesSource) return false;
+      if (!query) return true;
+
+      const source = project.sources.find((item) => item.sourceId === evidence.sourceId)?.source;
+      const text = [
+        evidence.quote,
+        evidence.locator,
+        evidence.sourceVersion,
+        evidence.context,
+        evidence.note,
+        source?.title,
+        source?.author,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return text.includes(query);
+    });
+  }
+
+  findingCountForEvidence(project: ResearchProject, evidenceId: string): number {
+    return project.findings.filter((finding) =>
+      (finding.evidence ?? []).some((item) => item.evidenceId === evidenceId),
+    ).length;
+  }
+
+  findingEvidence(project: ResearchProject, finding: ResearchFinding): ResearchEvidence[] {
+    return (finding.evidence ?? [])
+      .map(
+        (item) =>
+          item.evidence ?? project.evidence.find((evidence) => evidence.id === item.evidenceId),
+      )
+      .filter((evidence): evidence is ResearchEvidence => Boolean(evidence));
+  }
+
+  visibleFindingEvidence(project: ResearchProject, finding: ResearchFinding): ResearchEvidence[] {
+    return this.findingEvidence(project, finding).slice(0, 3);
+  }
+
+  hiddenFindingEvidenceCount(project: ResearchProject, finding: ResearchFinding): number {
+    return Math.max(0, this.findingEvidence(project, finding).length - 3);
+  }
+
+  evidenceByIds(project: ResearchProject, evidenceIds: string[]): ResearchEvidence[] {
+    return evidenceIds
+      .map((id) => project.evidence.find((evidence) => evidence.id === id))
+      .filter((evidence): evidence is ResearchEvidence => Boolean(evidence));
+  }
+
+  evidenceIds(evidence: ResearchEvidence[]): string[] {
+    return evidence.map((item) => item.id);
   }
 
   private runProjectAction(
