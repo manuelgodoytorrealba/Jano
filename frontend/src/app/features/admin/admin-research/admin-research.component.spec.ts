@@ -1,9 +1,11 @@
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { BehaviorSubject, filter, firstValueFrom, of } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { ResearchApi } from '../../../core/api/research.api';
 import { AdminResearchComponent } from './admin-research.component';
+import { ResearchFindingsSectionComponent } from './research-findings-section.component';
 
 describe('AdminResearchComponent', () => {
   it('lists, opens and creates research projects', async () => {
@@ -130,6 +132,15 @@ describe('AdminResearchComponent', () => {
           ],
           decisions: [
             {
+              id: 'decision-2',
+              projectId: 'research-1',
+              findingId: 'finding-1',
+              actorId: 'user-1',
+              action: 'REJECT',
+              note: 'Duplicado posterior',
+              createdAt: '2026-07-07T09:00:00.000Z',
+            },
+            {
               id: 'decision-1',
               projectId: 'research-1',
               findingId: 'finding-1',
@@ -187,15 +198,17 @@ describe('AdminResearchComponent', () => {
       ],
     });
 
-    const component = TestBed.createComponent(AdminResearchComponent).componentInstance;
+    const fixture = TestBed.createComponent(AdminResearchComponent);
+    const component = fixture.componentInstance;
     const vm = await firstValueFrom(component.vm$.pipe(filter((value) => value.state === 'ready')));
+    fixture.detectChanges();
 
     expect(api.getById).toHaveBeenCalledWith('research-1');
     expect(vm.selected?.id).toBe('research-1');
     expect(vm.selectedProject?.sources.length).toBe(2);
     expect(vm.selectedProject?.evidence.length).toBe(2);
     expect(vm.selectedProject?.findings.length).toBe(2);
-    expect(vm.selectedProject?.decisions.length).toBe(1);
+    expect(vm.selectedProject?.decisions.length).toBe(2);
     expect(component.projectMeta(vm.projects[0])).toBe('2 fuentes · 3 evidencias · 1 hallazgos');
     expect(component.sourceTitle(vm.selectedProject!.sources[0])).toBe(
       'Los desastres de la guerra · Museo del Prado',
@@ -221,19 +234,35 @@ describe('AdminResearchComponent', () => {
     expect(
       component.evidenceSourceTitle(vm.selectedProject!, vm.selectedProject!.evidence[0]),
     ).toBe('Los desastres de la guerra · Museo del Prado');
-    expect(
-      component.visibleFindingEvidence(vm.selectedProject!, vm.selectedProject!.findings[0]),
-    ).toEqual([
-      expect.objectContaining({ locator: 'p. 42', sourceVersion: 'v1', quote: 'Fragmento' }),
-    ]);
-    expect(
-      component.hiddenFindingEvidenceCount(vm.selectedProject!, vm.selectedProject!.findings[0]),
-    ).toBe(0);
-    expect(component.findingEvidence(vm.selectedProject!, vm.selectedProject!.findings[1])).toEqual(
-      [],
-    );
     expect(component.findingCountForEvidence(vm.selectedProject!, 'evidence-1')).toBe(1);
     expect(component.findingCountForEvidence(vm.selectedProject!, 'evidence-2')).toBe(0);
+
+    const findingsSection = fixture.debugElement.query(
+      By.directive(ResearchFindingsSectionComponent),
+    ).componentInstance as ResearchFindingsSectionComponent;
+    expect(findingsSection.visibleFindingEvidence(vm.selectedProject!.findings[0])).toEqual([
+      expect.objectContaining({ locator: 'p. 42', sourceVersion: 'v1', quote: 'Fragmento' }),
+    ]);
+    expect(findingsSection.hiddenFindingEvidenceCount(vm.selectedProject!.findings[0])).toBe(0);
+    expect(findingsSection.findingEvidence(vm.selectedProject!.findings[1])).toEqual([]);
+    expect(findingsSection.decisionsForFinding('finding-1')).toEqual([
+      expect.objectContaining({
+        id: 'decision-2',
+        action: 'REJECT',
+        note: 'Duplicado posterior',
+      }),
+      expect.objectContaining({
+        id: 'decision-1',
+        action: 'POSTPONE',
+        note: 'Falta contraste',
+      }),
+    ]);
+    expect(findingsSection.decisionsForFinding('finding-2')).toEqual([]);
+    const renderedText = fixture.nativeElement.textContent as string;
+    expect(renderedText).toContain('Hipótesis');
+    expect(renderedText).toContain('Fragmento');
+    expect(renderedText).toContain('Duplicado posterior');
+    expect(renderedText).toContain('Sin decisiones registradas');
 
     component.evidenceSearch = 'segundo';
     expect(component.filteredEvidence(vm.selectedProject!)).toEqual([
@@ -252,8 +281,20 @@ describe('AdminResearchComponent', () => {
       expect.objectContaining({ id: 'evidence-2' }),
     ]);
 
-    component.evidenceSearch = 'sin coincidencias';
+    const evidenceSearchInput = fixture.nativeElement.querySelector(
+      'input[name="evidenceSearch"]',
+    ) as HTMLInputElement;
+    evidenceSearchInput.value = 'sin coincidencias';
+    evidenceSearchInput.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
     expect(component.filteredEvidence(vm.selectedProject!)).toEqual([]);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('No hay evidencias con esos filtros.');
+    fixture.nativeElement.querySelector('.admin-research__state button').click();
+    await fixture.whenStable();
+    expect(component.evidenceSearch).toBe('');
+    expect(component.evidenceSourceFilter).toBe('');
+    expect(component.filteredEvidence(vm.selectedProject!).length).toBe(2);
 
     component.evidenceSearch = '';
 
@@ -346,5 +387,113 @@ describe('AdminResearchComponent', () => {
       action: 'POSTPONE',
       note: undefined,
     });
+
+    findingsSection.decisionNoteChange.emit({ findingId: 'finding-1', note: ' Desde hijo ' });
+    findingsSection.decide.emit({ findingId: 'finding-1', action: 'INCORPORATE' });
+    expect(api.decideFinding).toHaveBeenLastCalledWith('research-1', 'finding-1', {
+      action: 'INCORPORATE',
+      note: 'Desde hijo',
+    });
+
+    api.addSource.mockReturnValueOnce(throwError(() => ({})));
+    component.sourceId = 'source-error';
+    component.sourceNote = ' Nota sin guardar ';
+    component.addSource('research-1');
+    expect(component.actionBusy).toBe(false);
+    expect(component.actionError).toBe(
+      'No se pudo completar la acción. Revisa los datos y vuelve a intentarlo.',
+    );
+    expect(component.sourceId).toBe('source-error');
+    expect(component.sourceNote).toBe(' Nota sin guardar ');
+  });
+
+  it('shows a clear workspace empty state without a selected project', async () => {
+    const api = {
+      list: vi.fn().mockReturnValue(of([])),
+      getById: vi.fn(),
+      searchSources: vi.fn().mockReturnValue(of([])),
+    };
+
+    TestBed.configureTestingModule({
+      imports: [AdminResearchComponent],
+      providers: [
+        { provide: ResearchApi, useValue: api },
+        {
+          provide: ActivatedRoute,
+          useValue: { url: of([]), queryParamMap: of(convertToParamMap({})) },
+        },
+        { provide: Router, useValue: { navigate: vi.fn().mockResolvedValue(true) } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(AdminResearchComponent);
+    await firstValueFrom(
+      fixture.componentInstance.vm$.pipe(filter((value) => value.state === 'ready')),
+    );
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'Selecciona una investigación de la biblioteca o crea una nueva para abrir el workspace.',
+    );
+    expect(api.getById).not.toHaveBeenCalled();
+  });
+
+  it('orients empty research projects without sources, evidence or findings', async () => {
+    const summary = {
+      id: 'research-empty',
+      title: 'Investigación vacía',
+      objective: 'Preparar corpus',
+      scope: null,
+      status: 'ACTIVE',
+      lastActiveAt: '2026-07-07T08:00:00.000Z',
+      createdAt: '2026-07-07T08:00:00.000Z',
+      updatedAt: '2026-07-07T08:00:00.000Z',
+      _count: { sources: 0, evidence: 0, findings: 0 },
+    };
+    const api = {
+      list: vi.fn().mockReturnValue(of([summary])),
+      getById: vi
+        .fn()
+        .mockReturnValue(
+          of({ ...summary, sources: [], evidence: [], findings: [], decisions: [], jobs: [] }),
+        ),
+      searchSources: vi.fn().mockReturnValue(of([])),
+      addSource: vi.fn().mockReturnValue(of({})),
+      createEvidence: vi.fn().mockReturnValue(of({})),
+      createFinding: vi.fn().mockReturnValue(of({})),
+      decideFinding: vi.fn().mockReturnValue(of({})),
+    };
+
+    TestBed.configureTestingModule({
+      imports: [AdminResearchComponent],
+      providers: [
+        { provide: ResearchApi, useValue: api },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            url: of([]),
+            queryParamMap: of(convertToParamMap({ project: 'research-empty' })),
+          },
+        },
+        { provide: Router, useValue: { navigate: vi.fn().mockResolvedValue(true) } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(AdminResearchComponent);
+    await firstValueFrom(
+      fixture.componentInstance.vm$.pipe(filter((value) => value.state === 'ready')),
+    );
+    fixture.detectChanges();
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(text).toContain(
+      'Sin fuentes asociadas. Asocia una fuente canónica existente para empezar.',
+    );
+    expect(text).toContain(
+      'Sin evidencias registradas. Primero asocia una fuente canónica existente.',
+    );
+    expect(text).toContain(
+      'Sin hallazgos propuestos. Registra evidencias antes de construir hallazgos.',
+    );
   });
 });

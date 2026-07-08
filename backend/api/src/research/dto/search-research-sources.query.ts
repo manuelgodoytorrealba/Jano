@@ -7,6 +7,10 @@ export class SearchResearchSourcesQuery {
   q?: string;
 
   @IsOptional()
+  @IsString()
+  locale?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)

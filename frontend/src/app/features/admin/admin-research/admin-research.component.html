@@ -212,6 +212,11 @@
 
             <form class="research-action-form" (ngSubmit)="createEvidence(project.id)">
               <h3>Registrar evidencia</h3>
+              @if (!project.sources.length) {
+                <p class="research-action-form__selected">
+                  Asocia una fuente canónica antes de registrar evidencia.
+                </p>
+              }
               <select name="evidenceSourceId" [(ngModel)]="evidenceSourceId">
                 <option value="">Fuente</option>
                 @for (item of project.sources; track item.sourceId) {
@@ -304,7 +309,9 @@
                     </span>
                   </label>
                 } @empty {
-                  <div class="admin-research__state">Registra evidencia antes de proponer.</div>
+                  <div class="admin-research__state">
+                    Los hallazgos necesitan evidencias vinculadas antes de proponerse.
+                  </div>
                 }
               </div>
               @if (selectedFindingEvidenceIds.length) {
@@ -353,7 +360,9 @@
                   }
                 </div>
               } @else {
-                <div class="admin-research__state">Sin fuentes asociadas.</div>
+                <div class="admin-research__state">
+                  Sin fuentes asociadas. Asocia una fuente canónica existente para empezar.
+                </div>
               }
             </section>
 
@@ -435,75 +444,35 @@
                     }
                   </div>
                 } @else {
-                  <div class="admin-research__state">No hay evidencias con esos filtros.</div>
+                  <div class="admin-research__state">
+                    <span>No hay evidencias con esos filtros.</span>
+                    @if (hasEvidenceFilters()) {
+                      <button type="button" (click)="clearEvidenceFilters()">
+                        Limpiar filtros
+                      </button>
+                    }
+                  </div>
                 }
               } @else {
-                <div class="admin-research__state">Sin evidencias registradas.</div>
+                @if (project.sources.length) {
+                  <div class="admin-research__state">
+                    Sin evidencias registradas. Selecciona una fuente y registra el primer pasaje.
+                  </div>
+                } @else {
+                  <div class="admin-research__state">
+                    Sin evidencias registradas. Primero asocia una fuente canónica existente.
+                  </div>
+                }
               }
             </section>
 
-            <section class="research-workspace-section">
-              <h3>Hallazgos</h3>
-              @if (project.findings.length) {
-                <div class="research-workspace-list">
-                  @for (finding of project.findings; track finding.id) {
-                    <div class="research-workspace-row research-finding-card">
-                      <div class="research-finding-card__head">
-                        <strong>{{ finding.title }}</strong>
-                        <small>{{ findingStatusLabel(finding.status) }}</small>
-                      </div>
-                      @if (finding.kind) {
-                        <small>{{ finding.kind }}</small>
-                      }
-                      @if (finding.summary) {
-                        <span>{{ finding.summary }}</span>
-                      }
-                      <div class="research-finding-evidence">
-                        @for (
-                          evidence of visibleFindingEvidence(project, finding);
-                          track evidence.id
-                        ) {
-                          <div class="research-finding-evidence__item">
-                            <strong>{{ evidenceSourceTitle(project, evidence) }}</strong>
-                            <small>{{ evidence.locator }} · {{ evidence.sourceVersion }}</small>
-                            <span>{{ evidence.quote }}</span>
-                          </div>
-                        } @empty {
-                          <div class="research-finding-evidence__empty">
-                            Sin evidencias vinculadas
-                          </div>
-                        }
-                        @if (hiddenFindingEvidenceCount(project, finding) > 0) {
-                          <small class="research-finding-evidence__more">
-                            + {{ hiddenFindingEvidenceCount(project, finding) }} evidencias más
-                          </small>
-                        }
-                      </div>
-                      <input
-                        type="text"
-                        name="findingDecisionNote-{{ finding.id }}"
-                        [ngModel]="findingDecisionNotes[finding.id] || ''"
-                        (ngModelChange)="setFindingDecisionNote(finding.id, $event)"
-                        placeholder="Nota opcional de decisión"
-                      />
-                      <div class="research-finding-card__actions">
-                        @for (action of decisionActions; track action) {
-                          <button
-                            type="button"
-                            [disabled]="actionBusy"
-                            (click)="decideFinding(project.id, finding.id, action)"
-                          >
-                            {{ decisionActionLabel(action) }}
-                          </button>
-                        }
-                      </div>
-                    </div>
-                  }
-                </div>
-              } @else {
-                <div class="admin-research__state">Sin hallazgos propuestos.</div>
-              }
-            </section>
+            <app-research-findings-section
+              [project]="project"
+              [actionBusy]="actionBusy"
+              [decisionNotes]="findingDecisionNotes"
+              (decisionNoteChange)="setFindingDecisionNote($event.findingId, $event.note)"
+              (decide)="decideFinding(project.id, $event.findingId, $event.action)"
+            />
 
             <section class="research-workspace-section">
               <h3>Decisiones</h3>
@@ -528,7 +497,7 @@
           </div>
         } @else {
           <div class="admin-research__state">
-            Selecciona una investigación para abrir su contexto.
+            Selecciona una investigación de la biblioteca o crea una nueva para abrir el workspace.
           </div>
         }
       </article>

@@ -252,6 +252,24 @@
   font-size: 13px;
 }
 
+.admin-research__state {
+  display: grid;
+  gap: 9px;
+}
+
+.admin-research__state button {
+  justify-self: start;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(247, 244, 238, 0.92);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
 .admin-research__feedback--success {
   border-color: rgba(143, 110, 213, 0.35);
 }
@@ -645,100 +663,6 @@
 }
 
 .research-action-form button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.research-finding-card {
-  gap: 9px;
-}
-
-.research-finding-card__head {
-  min-width: 0;
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.research-finding-card__head small {
-  flex: 0 0 auto;
-  padding: 3px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.035);
-  color: rgba(242, 238, 232, 0.72);
-}
-
-.research-finding-card input {
-  min-height: 34px;
-  font-size: 13px;
-}
-
-.research-finding-evidence {
-  display: grid;
-  gap: 6px;
-}
-
-.research-finding-evidence__item {
-  min-width: 0;
-  padding: 8px;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.035);
-  display: grid;
-  gap: 3px;
-}
-
-.research-finding-evidence__item strong,
-.research-finding-evidence__item small,
-.research-finding-evidence__item span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.research-finding-evidence__item strong {
-  color: rgba(247, 244, 238, 0.92);
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.research-finding-evidence__item small,
-.research-finding-evidence__more,
-.research-finding-evidence__empty {
-  color: rgba(232, 228, 220, 0.52);
-  font-size: 11px;
-}
-
-.research-finding-evidence__item span {
-  color: rgba(242, 238, 232, 0.68);
-  display: -webkit-box;
-  font-size: 12px;
-  line-height: 1.35;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.research-finding-card__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.research-finding-card__actions button {
-  min-height: 32px;
-  padding: 0 10px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.055);
-  color: inherit;
-  font: inherit;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.research-finding-card__actions button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }

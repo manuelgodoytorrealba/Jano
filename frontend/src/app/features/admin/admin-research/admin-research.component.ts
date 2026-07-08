@@ -16,14 +16,13 @@ import {
   ResearchApi,
   ResearchDecisionAction,
   ResearchEvidence,
-  ResearchFinding,
-  ResearchFindingStatus,
   ResearchProject,
   ResearchProjectStatus,
   ResearchProjectSummary,
   ResearchProjectSource,
   ResearchSourceRecord,
 } from '../../../core/api/research.api';
+import { ResearchFindingsSectionComponent } from './research-findings-section.component';
 
 type ResearchStatusFilter = '' | ResearchProjectStatus;
 
@@ -46,7 +45,7 @@ type ResearchEvidenceGroup = {
 @Component({
   standalone: true,
   selector: 'app-admin-research',
-  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink],
+  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink, ResearchFindingsSectionComponent],
   templateUrl: './admin-research.component.html',
   styleUrl: './admin-research.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -157,14 +156,17 @@ export class AdminResearchComponent {
   readonly sourceResults$ = this.sourceSearch$.pipe(
     debounceTime(180),
     distinctUntilChanged(),
-    switchMap((query) =>
-      this.api.searchSources(query).pipe(
+    switchMap((query) => {
+      const trimmed = query.trim();
+      if (!trimmed) return of([]);
+
+      return this.api.searchSources(trimmed).pipe(
         catchError(() => {
           this.actionError = 'No se pudieron buscar fuentes.';
           return of([]);
         }),
-      ),
-    ),
+      );
+    }),
   );
 
   createResearch(): void {
@@ -337,6 +339,15 @@ export class AdminResearchComponent {
     this.refresh$.next();
   }
 
+  clearEvidenceFilters(): void {
+    this.evidenceSearch = '';
+    this.evidenceSourceFilter = '';
+  }
+
+  hasEvidenceFilters(): boolean {
+    return Boolean(this.evidenceSearch.trim() || this.evidenceSourceFilter);
+  }
+
   statusLabel(status: string | null | undefined): string {
     const labels: Record<string, string> = {
       ACTIVE: 'Activa',
@@ -345,16 +356,6 @@ export class AdminResearchComponent {
       ARCHIVED: 'Archivada',
     };
     return labels[(status ?? '').toUpperCase()] ?? 'Investigación';
-  }
-
-  findingStatusLabel(status: ResearchFindingStatus | string | null | undefined): string {
-    const labels: Record<string, string> = {
-      PROPOSED: 'Propuesta',
-      ACCEPTED: 'Aceptada',
-      REJECTED: 'Rechazada',
-      POSTPONED: 'Pospuesta',
-    };
-    return labels[(status ?? '').toUpperCase()] ?? 'Hallazgo';
   }
 
   decisionActionLabel(action: ResearchDecisionAction | string | null | undefined): string {
@@ -434,23 +435,6 @@ export class AdminResearchComponent {
     ).length;
   }
 
-  findingEvidence(project: ResearchProject, finding: ResearchFinding): ResearchEvidence[] {
-    return (finding.evidence ?? [])
-      .map(
-        (item) =>
-          item.evidence ?? project.evidence.find((evidence) => evidence.id === item.evidenceId),
-      )
-      .filter((evidence): evidence is ResearchEvidence => Boolean(evidence));
-  }
-
-  visibleFindingEvidence(project: ResearchProject, finding: ResearchFinding): ResearchEvidence[] {
-    return this.findingEvidence(project, finding).slice(0, 3);
-  }
-
-  hiddenFindingEvidenceCount(project: ResearchProject, finding: ResearchFinding): number {
-    return Math.max(0, this.findingEvidence(project, finding).length - 3);
-  }
-
   evidenceByIds(project: ResearchProject, evidenceIds: string[]): ResearchEvidence[] {
     return evidenceIds
       .map((id) => project.evidence.find((evidence) => evidence.id === id))
@@ -481,7 +465,9 @@ export class AdminResearchComponent {
       },
       error: (err) => {
         this.actionBusy = false;
-        this.actionError = err?.error?.message ?? 'No se pudo completar la acción.';
+        this.actionError =
+          err?.error?.message ??
+          'No se pudo completar la acción. Revisa los datos y vuelve a intentarlo.';
       },
     });
   }
