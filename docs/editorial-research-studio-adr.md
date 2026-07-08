@@ -690,3 +690,59 @@ Toda Pull Request relacionada con el Editorial Research Studio DEBE responder:
 - [ ] ¿Incluye pruebas de invariantes, fallo y permisos aplicables?
 
 Una respuesta negativa bloquea el merge o exige un ADR explícito antes de continuar.
+
+12.Product Principles
+
+El producto debe reducir decisiones.
+
+Nunca aumentarlas.
+
+---
+
+El producto debe mantener el contexto.
+
+Nunca obligar al editor a reconstruirlo.
+
+---
+
+El producto debe ayudar a pensar.
+
+Nunca exigir gestionar información.
+
+---
+
+El producto debe mostrar incertidumbre.
+
+Nunca ocultarla.
+
+---
+
+Cada clic debe acercar al conocimiento.
+
+Nunca a la administración.
+
+---
+
+El usuario debe sentir que trabaja con ideas.
+
+No con formularios.
+
+---
+
+El conocimiento debe sentirse vivo.
+
+No almacenado.
+
+---
+
+La IA debe desaparecer.
+
+Lo importante es el trabajo editorial.
+
+No la tecnología.
+
+North Star
+
+El objetivo del Editorial Research Studio no es producir más entidades.
+
+Es producir mejor conocimiento.
