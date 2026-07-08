@@ -82,9 +82,25 @@ describe('ResearchService', () => {
   });
 
   it('opens one project with its research context', async () => {
-    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchProject.findUnique.mockResolvedValue({
+      id: 'project-1',
+      findings: [
+        {
+          id: 'finding-1',
+          evidence: [{ evidenceId: 'evidence-1', evidence: { id: 'evidence-1' } }],
+        },
+      ],
+    });
 
-    await expect(service.getProject('project-1')).resolves.toEqual({ id: 'project-1' });
+    await expect(service.getProject('project-1')).resolves.toEqual({
+      id: 'project-1',
+      findings: [
+        {
+          id: 'finding-1',
+          evidence: [{ evidenceId: 'evidence-1', evidence: { id: 'evidence-1' } }],
+        },
+      ],
+    });
 
     expect(prisma.researchProject.findUnique).toHaveBeenCalledWith({
       where: { id: 'project-1' },
@@ -94,7 +110,10 @@ describe('ResearchService', () => {
           orderBy: { createdAt: 'desc' },
         },
         evidence: { orderBy: { createdAt: 'desc' } },
-        findings: { orderBy: { updatedAt: 'desc' } },
+        findings: {
+          include: { evidence: { include: { evidence: true } } },
+          orderBy: { updatedAt: 'desc' },
+        },
         decisions: { orderBy: { createdAt: 'desc' } },
         jobs: { orderBy: { updatedAt: 'desc' } },
       },

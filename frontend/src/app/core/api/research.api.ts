@@ -104,6 +104,13 @@ export type ResearchFinding = {
   status: ResearchFindingStatus;
   createdAt: string;
   updatedAt: string;
+  evidence?: ResearchFindingEvidence[];
+};
+
+export type ResearchFindingEvidence = {
+  findingId: string;
+  evidenceId: string;
+  evidence?: ResearchEvidence | null;
 };
 
 export type ResearchDecision = {

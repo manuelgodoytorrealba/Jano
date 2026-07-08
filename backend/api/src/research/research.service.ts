@@ -88,7 +88,10 @@ export class ResearchService {
           orderBy: { createdAt: 'desc' },
         },
         evidence: { orderBy: { createdAt: 'desc' } },
-        findings: { orderBy: { updatedAt: 'desc' } },
+        findings: {
+          include: { evidence: { include: { evidence: true } } },
+          orderBy: { updatedAt: 'desc' },
+        },
         decisions: { orderBy: { createdAt: 'desc' } },
         jobs: { orderBy: { updatedAt: 'desc' } },
       },
