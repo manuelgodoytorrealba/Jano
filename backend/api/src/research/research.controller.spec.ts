@@ -1,6 +1,7 @@
 import { ResearchDecisionAction } from '@prisma/client';
 import { ROLES_KEY } from '../auth/roles.decorator';
 import { ResearchController } from './research.controller';
+import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchService } from './research.service';
 
 describe('ResearchController', () => {
@@ -16,11 +17,14 @@ describe('ResearchController', () => {
     createFinding: jest.fn(),
     decideFinding: jest.fn(),
   } as unknown as jest.Mocked<ResearchService>;
+  const jobRunner = {
+    runNextQueuedJob: jest.fn(),
+  } as unknown as jest.Mocked<ResearchJobRunnerService>;
   let controller: ResearchController;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    controller = new ResearchController(service);
+    controller = new ResearchController(service, jobRunner);
   });
 
   it('is admin-only', () => {
@@ -64,6 +68,13 @@ describe('ResearchController', () => {
 
     await expect(controller.searchSources(query)).resolves.toEqual([{ id: 'source-1' }]);
     expect(service.searchSources).toHaveBeenCalledWith(query);
+  });
+
+  it('delegates manual queued job execution to the local runner', async () => {
+    jobRunner.runNextQueuedJob.mockResolvedValue({ processed: false });
+
+    await expect(controller.runNextJob()).resolves.toEqual({ processed: false });
+    expect(jobRunner.runNextQueuedJob).toHaveBeenCalledWith();
   });
 
   it('delegates source preparation job creation to the research service', async () => {

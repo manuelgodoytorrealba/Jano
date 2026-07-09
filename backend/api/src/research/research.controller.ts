@@ -9,13 +9,17 @@ import { CreateResearchEvidenceDto } from './dto/create-research-evidence.dto';
 import { CreateResearchFindingDto } from './dto/create-research-finding.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { SearchResearchSourcesQuery } from './dto/search-research-sources.query';
+import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchService } from './research.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
 @Controller('research')
 export class ResearchController {
-  constructor(private readonly service: ResearchService) {}
+  constructor(
+    private readonly service: ResearchService,
+    private readonly jobRunner: ResearchJobRunnerService,
+  ) {}
 
   @Get()
   list() {
@@ -35,6 +39,11 @@ export class ResearchController {
   @Get('sources')
   searchSources(@Query() query: SearchResearchSourcesQuery) {
     return this.service.searchSources(query);
+  }
+
+  @Post('jobs/run-next')
+  runNextJob() {
+    return this.jobRunner.runNextQueuedJob();
   }
 
   @Get(':id')
