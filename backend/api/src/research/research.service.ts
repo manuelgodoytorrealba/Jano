@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ResearchDecisionAction, ResearchFindingStatus } from '@prisma/client';
+import { ResearchDecisionAction, ResearchFindingStatus, ResearchJobType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
 import { CreateResearchDecisionDto } from './dto/create-research-decision.dto';
@@ -121,6 +121,32 @@ export class ResearchService {
     return this.getProject(projectId);
   }
 
+  async prepareSourceJob(projectId: string, sourceId: string) {
+    const project = await this.prisma.researchProject.findUnique({
+      where: { id: projectId },
+      select: { id: true },
+    });
+    if (!project) throw new NotFoundException('Research project not found');
+
+    const projectSource = await this.prisma.researchProjectSource.findUnique({
+      where: { projectId_sourceId: { projectId, sourceId } },
+      select: { sourceId: true },
+    });
+    if (!projectSource) throw new NotFoundException('Research project source not found');
+
+    const type = ResearchJobType.PREPARE_SOURCE;
+    const inputFingerprint = this.jobFingerprint({ projectId, sourceId, type });
+
+    await this.prisma.researchJob.upsert({
+      where: { projectId_type_inputFingerprint: { projectId, type, inputFingerprint } },
+      create: { projectId, sourceId, type, inputFingerprint },
+      update: {},
+    });
+
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
   async createEvidence(projectId: string, dto: CreateResearchEvidenceDto) {
     const projectSource = await this.prisma.researchProjectSource.findUnique({
       where: { projectId_sourceId: { projectId, sourceId: dto.sourceId } },
@@ -227,6 +253,12 @@ export class ResearchService {
       where: { id: projectId },
       data: { lastActiveAt: new Date() },
     });
+  }
+
+  private jobFingerprint(input: { projectId: string; sourceId: string; type: ResearchJobType }) {
+    return createHash('sha256')
+      .update([input.projectId, input.sourceId, input.type].join('\u001f'))
+      .digest('hex');
   }
 
   private evidenceFingerprint(input: {

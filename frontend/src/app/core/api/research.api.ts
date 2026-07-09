@@ -174,6 +174,13 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/sources`, data);
   }
 
+  prepareSource(projectId: string, sourceId: string) {
+    return this.http.post<ResearchProject>(
+      `${this.baseUrl}/${projectId}/sources/${sourceId}/jobs/prepare`,
+      {},
+    );
+  }
+
   createEvidence(projectId: string, data: CreateResearchEvidencePayload) {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/evidence`, data);
   }

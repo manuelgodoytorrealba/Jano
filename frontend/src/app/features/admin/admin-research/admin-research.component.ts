@@ -9,6 +9,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   map,
+  Observable,
   of,
   switchMap,
 } from 'rxjs';
@@ -16,6 +17,7 @@ import {
   ResearchApi,
   ResearchDecisionAction,
   ResearchEvidence,
+  ResearchJob,
   ResearchProject,
   ResearchProjectStatus,
   ResearchProjectSummary,
@@ -263,6 +265,14 @@ export class AdminResearchComponent {
     requestAnimationFrame(() => this.evidenceLocatorInput?.nativeElement.focus());
   }
 
+  prepareSource(projectId: string, sourceId: string): void {
+    this.runProjectAction(
+      this.api.prepareSource(projectId, sourceId),
+      'Fuente enviada a preparación.',
+      () => undefined,
+    );
+  }
+
   createFinding(projectId: string): void {
     const title = this.findingTitle.trim();
     const evidenceIds = this.selectedFindingEvidenceIds;
@@ -358,6 +368,24 @@ export class AdminResearchComponent {
     return labels[(status ?? '').toUpperCase()] ?? 'Investigación';
   }
 
+  jobTypeLabel(type: ResearchJob['type'] | string | null | undefined): string {
+    const labels: Record<string, string> = {
+      PREPARE_SOURCE: 'Preparar fuente',
+      EXTRACT_FINDINGS: 'Extraer hallazgos',
+    };
+    return labels[(type ?? '').toUpperCase()] ?? 'Trabajo';
+  }
+
+  jobStatusLabel(status: ResearchJob['status'] | string | null | undefined): string {
+    const labels: Record<string, string> = {
+      QUEUED: 'En cola',
+      RUNNING: 'En curso',
+      SUCCEEDED: 'Completado',
+      FAILED: 'Fallido',
+    };
+    return labels[(status ?? '').toUpperCase()] ?? 'Estado desconocido';
+  }
+
   decisionActionLabel(action: ResearchDecisionAction | string | null | undefined): string {
     const labels: Record<string, string> = {
       INCORPORATE: 'Incorporar',
@@ -446,7 +474,7 @@ export class AdminResearchComponent {
   }
 
   private runProjectAction(
-    request: ReturnType<ResearchApi['addSource']>,
+    request: Observable<ResearchProject>,
     message: string,
     reset: () => void,
   ): void {

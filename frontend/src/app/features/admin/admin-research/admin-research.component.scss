@@ -417,6 +417,12 @@
   -webkit-box-orient: vertical;
 }
 
+.research-workspace-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .research-evidence-groups {
   display: grid;
   gap: 12px;

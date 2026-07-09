@@ -150,7 +150,23 @@ describe('AdminResearchComponent', () => {
               createdAt: '2026-07-07T08:00:00.000Z',
             },
           ],
-          jobs: [],
+          jobs: [
+            {
+              id: 'job-1',
+              projectId: 'research-1',
+              sourceId: 'source-1',
+              type: 'PREPARE_SOURCE',
+              status: 'QUEUED',
+              inputFingerprint: 'job-hash',
+              attempts: 0,
+              maxAttempts: 3,
+              lastError: null,
+              createdAt: '2026-07-07T08:00:00.000Z',
+              updatedAt: '2026-07-07T08:00:00.000Z',
+              startedAt: null,
+              finishedAt: null,
+            },
+          ],
         }),
       ),
       create: vi.fn().mockReturnValue(
@@ -180,6 +196,7 @@ describe('AdminResearchComponent', () => {
         ]),
       ),
       addSource: vi.fn().mockReturnValue(of({})),
+      prepareSource: vi.fn().mockReturnValue(of({})),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),
@@ -263,6 +280,9 @@ describe('AdminResearchComponent', () => {
     expect(renderedText).toContain('Fragmento');
     expect(renderedText).toContain('Duplicado posterior');
     expect(renderedText).toContain('Sin decisiones registradas');
+    expect(renderedText).toContain('Procesamiento');
+    expect(renderedText).toContain('Preparar fuente');
+    expect(renderedText).toContain('En cola');
 
     component.evidenceSearch = 'segundo';
     expect(component.filteredEvidence(vm.selectedProject!)).toEqual([
@@ -331,6 +351,12 @@ describe('AdminResearchComponent', () => {
       sourceId: 'source-2',
       note: 'Nota',
     });
+
+    const prepareButton = fixture.nativeElement.querySelector(
+      '.research-workspace-row__actions button:last-child',
+    ) as HTMLButtonElement;
+    prepareButton.click();
+    expect(api.prepareSource).toHaveBeenCalledWith('research-1', 'source-1');
 
     component.prepareEvidenceForSource('source-1');
     expect(component.evidenceSourceId).toBe('source-1');
@@ -459,6 +485,7 @@ describe('AdminResearchComponent', () => {
         ),
       searchSources: vi.fn().mockReturnValue(of([])),
       addSource: vi.fn().mockReturnValue(of({})),
+      prepareSource: vi.fn().mockReturnValue(of({})),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),
@@ -540,6 +567,7 @@ describe('AdminResearchComponent', () => {
       ),
       searchSources: vi.fn().mockReturnValue(of([])),
       addSource: vi.fn().mockReturnValue(of({})),
+      prepareSource: vi.fn().mockReturnValue(of({})),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),

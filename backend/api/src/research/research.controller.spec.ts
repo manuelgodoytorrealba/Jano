@@ -11,6 +11,7 @@ describe('ResearchController', () => {
     getProject: jest.fn(),
     searchSources: jest.fn(),
     addProjectSource: jest.fn(),
+    prepareSourceJob: jest.fn(),
     createEvidence: jest.fn(),
     createFinding: jest.fn(),
     decideFinding: jest.fn(),
@@ -63,6 +64,15 @@ describe('ResearchController', () => {
 
     await expect(controller.searchSources(query)).resolves.toEqual([{ id: 'source-1' }]);
     expect(service.searchSources).toHaveBeenCalledWith(query);
+  });
+
+  it('delegates source preparation job creation to the research service', async () => {
+    service.prepareSourceJob.mockResolvedValue({ id: 'project-1' } as never);
+
+    await expect(controller.prepareSource('project-1', 'source-1')).resolves.toEqual({
+      id: 'project-1',
+    });
+    expect(service.prepareSourceJob).toHaveBeenCalledWith('project-1', 'source-1');
   });
 
   it('delegates evidence creation to the research service', async () => {

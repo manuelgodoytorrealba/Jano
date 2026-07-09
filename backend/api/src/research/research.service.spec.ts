@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { ResearchDecisionAction, ResearchFindingStatus } from '@prisma/client';
+import { ResearchDecisionAction, ResearchFindingStatus, ResearchJobType } from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
 import { ResearchService } from './research.service';
 
@@ -26,6 +26,9 @@ describe('ResearchService', () => {
     },
     researchEvidence: {
       findMany: jest.fn(),
+      upsert: jest.fn(),
+    },
+    researchJob: {
       upsert: jest.fn(),
     },
     researchFinding: {
@@ -195,6 +198,54 @@ describe('ResearchService', () => {
     await expect(
       service.addProjectSource('project-1', { sourceId: 'missing' }),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('creates a queued source preparation job idempotently', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchProjectSource.findUnique.mockResolvedValue({ sourceId: 'source-1' });
+    prisma.researchJob.upsert.mockResolvedValue({ id: 'job-1' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+
+    await service.prepareSourceJob('project-1', 'source-1');
+    await service.prepareSourceJob('project-1', 'source-1');
+
+    expect(prisma.researchJob.upsert).toHaveBeenCalledTimes(2);
+    expect(prisma.researchJob.upsert).toHaveBeenNthCalledWith(1, {
+      where: {
+        projectId_type_inputFingerprint: {
+          projectId: 'project-1',
+          type: ResearchJobType.PREPARE_SOURCE,
+          inputFingerprint: expect.stringMatching(/^[a-f0-9]{64}$/),
+        },
+      },
+      create: {
+        projectId: 'project-1',
+        sourceId: 'source-1',
+        type: ResearchJobType.PREPARE_SOURCE,
+        inputFingerprint: expect.stringMatching(/^[a-f0-9]{64}$/),
+      },
+      update: {},
+    });
+    expect(prisma.researchJob.upsert.mock.calls[1][0].where).toEqual(
+      prisma.researchJob.upsert.mock.calls[0][0].where,
+    );
+  });
+
+  it('rejects source preparation when project or project source is missing', async () => {
+    prisma.researchProject.findUnique.mockResolvedValueOnce(null);
+
+    await expect(service.prepareSourceJob('missing', 'source-1')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+    expect(prisma.researchJob.upsert).not.toHaveBeenCalled();
+
+    prisma.researchProject.findUnique.mockResolvedValueOnce({ id: 'project-1' });
+    prisma.researchProjectSource.findUnique.mockResolvedValueOnce(null);
+
+    await expect(service.prepareSourceJob('project-1', 'source-outside')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+    expect(prisma.researchJob.upsert).not.toHaveBeenCalled();
   });
 
   it('creates evidence idempotently for a project source', async () => {

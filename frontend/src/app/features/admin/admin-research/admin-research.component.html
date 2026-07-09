@@ -356,13 +356,23 @@
                       } @else {
                         <span>Sin nota de proyecto.</span>
                       }
-                      <button
-                        type="button"
-                        class="research-workspace-row__action"
-                        (click)="prepareEvidenceForSource(item.sourceId)"
-                      >
-                        Añadir evidencia
-                      </button>
+                      <div class="research-workspace-row__actions">
+                        <button
+                          type="button"
+                          class="research-workspace-row__action"
+                          (click)="prepareEvidenceForSource(item.sourceId)"
+                        >
+                          Añadir evidencia
+                        </button>
+                        <button
+                          type="button"
+                          class="research-workspace-row__action"
+                          [disabled]="actionBusy"
+                          (click)="prepareSource(project.id, item.sourceId)"
+                        >
+                          Preparar fuente
+                        </button>
+                      </div>
                     </div>
                   }
                 </div>
@@ -470,6 +480,29 @@
                     Sin evidencias registradas. Primero asocia una fuente canónica existente.
                   </div>
                 }
+              }
+            </section>
+
+            <section class="research-workspace-section">
+              <h3>Procesamiento</h3>
+              @if (project.jobs.length) {
+                <div class="research-workspace-list">
+                  @for (job of project.jobs; track job.id) {
+                    <div class="research-workspace-row">
+                      <strong>{{ jobTypeLabel(job.type) }}</strong>
+                      <span>{{ jobStatusLabel(job.status) }}</span>
+                      @if (job.sourceId) {
+                        <small>{{ projectSourceTitle(project, job.sourceId) }}</small>
+                      }
+                      <small>Intentos: {{ job.attempts }} / {{ job.maxAttempts }}</small>
+                      @if (job.lastError) {
+                        <small>Último error: {{ job.lastError }}</small>
+                      }
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">Sin trabajos de procesamiento.</div>
               }
             </section>
 

@@ -47,6 +47,11 @@ export class ResearchController {
     return this.service.addProjectSource(id, dto);
   }
 
+  @Post(':id/sources/:sourceId/jobs/prepare')
+  prepareSource(@Param('id') id: string, @Param('sourceId') sourceId: string) {
+    return this.service.prepareSourceJob(id, sourceId);
+  }
+
   @Post(':id/evidence')
   createEvidence(@Param('id') id: string, @Body() dto: CreateResearchEvidenceDto) {
     return this.service.createEvidence(id, dto);
