@@ -134,6 +134,12 @@ enum ResearchJobStatus {
   FAILED
 }
 
+enum ResearchProposalReviewState {
+  PENDING
+  REVIEWED
+  REJECTED
+}
+
 model Entity {
   id           String        @id @default(cuid())
   type         EntityType
@@ -477,11 +483,13 @@ model ResearchProject {
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
 
-  sources   ResearchProjectSource[]
-  evidence  ResearchEvidence[]
-  findings  ResearchFinding[]
-  decisions ResearchDecision[]
-  jobs      ResearchJob[]
+  sources          ResearchProjectSource[]
+  evidence         ResearchEvidence[]
+  findings         ResearchFinding[]
+  decisions        ResearchDecision[]
+  jobs             ResearchJob[]
+  aiExecutions     AIExecution[]
+  findingProposals ResearchFindingProposal[]
 
   @@index([status, lastActiveAt])
   @@index([updatedAt])
@@ -513,9 +521,10 @@ model ResearchEvidence {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  project  ResearchProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  source   Source                    @relation(fields: [sourceId], references: [id], onDelete: Restrict)
-  findings ResearchFindingEvidence[]
+  project          ResearchProject                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  source           Source                            @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  findings         ResearchFindingEvidence[]
+  findingProposals ResearchFindingProposalEvidence[]
 
   @@unique([projectId, sourceId, fingerprint])
   @@index([projectId])
@@ -532,9 +541,10 @@ model ResearchFinding {
   createdAt DateTime              @default(now())
   updatedAt DateTime              @updatedAt
 
-  project   ResearchProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  evidence  ResearchFindingEvidence[]
-  decisions ResearchDecision[]
+  project            ResearchProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  evidence           ResearchFindingEvidence[]
+  decisions          ResearchDecision[]
+  convertedProposals ResearchFindingProposal[] @relation("ConvertedFindingProposal")
 
   @@index([projectId, status])
   @@index([updatedAt])
@@ -584,12 +594,69 @@ model ResearchJob {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
-  project ResearchProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  source  Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  project      ResearchProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  source       Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  aiExecutions AIExecution[]
 
   @@unique([projectId, type, inputFingerprint])
   @@index([projectId, status])
   @@index([sourceId])
+}
+
+model AIExecution {
+  id              String   @id @default(cuid())
+  jobId           String?
+  projectId       String?
+  task            String
+  provider        String
+  model           String
+  providerVersion String?
+  input           Json
+  output          Json?
+  durationMs      Int?
+  costCents       Int?
+  error           String?
+  createdAt       DateTime @default(now())
+
+  job              ResearchJob?              @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  project          ResearchProject?          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  findingProposals ResearchFindingProposal[]
+
+  @@index([jobId])
+  @@index([projectId, createdAt])
+  @@index([task, createdAt])
+}
+
+model ResearchFindingProposal {
+  id                 String                      @id @default(cuid())
+  projectId          String
+  aiExecutionId      String
+  convertedFindingId String?
+  title              String
+  summary            String?
+  kind               String?
+  reviewState        ResearchProposalReviewState @default(PENDING)
+  createdAt          DateTime                    @default(now())
+
+  project          ResearchProject                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  aiExecution      AIExecution                       @relation(fields: [aiExecutionId], references: [id], onDelete: Cascade)
+  convertedFinding ResearchFinding?                  @relation("ConvertedFindingProposal", fields: [convertedFindingId], references: [id], onDelete: SetNull)
+  evidence         ResearchFindingProposalEvidence[]
+
+  @@index([projectId, reviewState])
+  @@index([aiExecutionId])
+  @@index([convertedFindingId])
+}
+
+model ResearchFindingProposalEvidence {
+  proposalId String
+  evidenceId String
+
+  proposal ResearchFindingProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  evidence ResearchEvidence        @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@id([proposalId, evidenceId])
+  @@index([evidenceId])
 }
 
 model CuratorNote {

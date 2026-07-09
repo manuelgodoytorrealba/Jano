@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ResearchJobStatus, ResearchJobType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { ResearchAIService } from './research-ai.service';
 
 type QueuedResearchJob = {
   id: string;
@@ -16,7 +17,10 @@ type RunNextResult =
 
 @Injectable()
 export class ResearchJobRunnerService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly researchAI: ResearchAIService,
+  ) {}
 
   async runNextQueuedJob(): Promise<RunNextResult> {
     const job = await this.prisma.researchJob.findFirst({
@@ -67,6 +71,11 @@ export class ResearchJobRunnerService {
   }
 
   private async runJobWork(job: QueuedResearchJob): Promise<void> {
+    if (job.type === ResearchJobType.EXTRACT_FINDINGS) {
+      await this.researchAI.extractFindings(job);
+      return;
+    }
+
     if (job.type !== ResearchJobType.PREPARE_SOURCE) {
       throw new Error(`Unsupported research job type: ${job.type}`);
     }

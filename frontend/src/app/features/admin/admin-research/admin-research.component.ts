@@ -19,6 +19,7 @@ import {
   ResearchEvidence,
   ResearchJob,
   ResearchProject,
+  ResearchProposalReviewState,
   ResearchProjectStatus,
   ResearchProjectSummary,
   ResearchProjectSource,
@@ -353,6 +354,26 @@ export class AdminResearchComponent {
     this.findingDecisionNotes = { ...this.findingDecisionNotes, [findingId]: note };
   }
 
+  convertFindingProposalToFinding(projectId: string, proposalId: string): void {
+    this.runProjectAction(
+      this.api.convertFindingProposalToFinding(projectId, proposalId),
+      'Propuesta convertida en hallazgo.',
+      () => undefined,
+    );
+  }
+
+  reviewFindingProposal(
+    projectId: string,
+    proposalId: string,
+    reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
+  ): void {
+    this.runProjectAction(
+      this.api.reviewFindingProposal(projectId, proposalId, { reviewState }),
+      reviewState === 'REJECTED' ? 'Propuesta rechazada.' : 'Propuesta revisada.',
+      () => undefined,
+    );
+  }
+
   decideFinding(projectId: string, findingId: string, action: ResearchDecisionAction): void {
     const note = this.findingDecisionNotes[findingId]?.trim() || undefined;
 
@@ -408,6 +429,19 @@ export class AdminResearchComponent {
       FAILED: 'Fallido',
     };
     return labels[(status ?? '').toUpperCase()] ?? 'Estado desconocido';
+  }
+
+  proposalReviewStateLabel(state: string | null | undefined): string {
+    const labels: Record<string, string> = {
+      PENDING: 'Pendiente',
+      REVIEWED: 'Revisada',
+      REJECTED: 'Rechazada',
+    };
+    return labels[(state ?? '').toUpperCase()] ?? 'Sin revisar';
+  }
+
+  aiExecutionStateLabel(error: string | null | undefined): string {
+    return error ? 'Fallida' : 'Registrada';
   }
 
   hasQueuedJobs(project: ResearchProject): boolean {

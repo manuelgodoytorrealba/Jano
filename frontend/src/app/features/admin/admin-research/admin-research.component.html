@@ -515,6 +515,116 @@
               }
             </section>
 
+            <section class="research-workspace-section research-workspace-section--wide">
+              <div class="research-section-head">
+                <h3>Propuestas automáticas</h3>
+                <small>{{ project.findingProposals.length }} privadas</small>
+              </div>
+              @if (project.findingProposals.length) {
+                <div class="research-workspace-list">
+                  @for (proposal of project.findingProposals; track proposal.id) {
+                    <div class="research-workspace-row research-ai-proposal">
+                      <div class="research-ai-proposal__head">
+                        <strong>{{ proposal.title }}</strong>
+                        <small>{{ proposalReviewStateLabel(proposal.reviewState) }}</small>
+                      </div>
+                      @if (proposal.kind) {
+                        <small>{{ proposal.kind }}</small>
+                      }
+                      @if (proposal.summary) {
+                        <span>{{ proposal.summary }}</span>
+                      }
+                      <time [attr.datetime]="proposal.createdAt">
+                        {{ proposal.createdAt | date: 'dd MMM yyyy · HH:mm' }}
+                      </time>
+                      <div class="research-ai-proposal__actions">
+                        @if (proposal.convertedFindingId) {
+                          <small>Convertida en hallazgo</small>
+                        } @else if (proposal.reviewState === 'REVIEWED') {
+                          <button
+                            type="button"
+                            [disabled]="actionBusy"
+                            (click)="convertFindingProposalToFinding(project.id, proposal.id)"
+                          >
+                            Convertir en hallazgo
+                          </button>
+                        }
+                        <button
+                          type="button"
+                          [disabled]="actionBusy || proposal.reviewState === 'REVIEWED'"
+                          (click)="reviewFindingProposal(project.id, proposal.id, 'REVIEWED')"
+                        >
+                          Marcar revisada
+                        </button>
+                        <button
+                          type="button"
+                          [disabled]="actionBusy || proposal.reviewState === 'REJECTED'"
+                          (click)="reviewFindingProposal(project.id, proposal.id, 'REJECTED')"
+                        >
+                          Rechazar
+                        </button>
+                      </div>
+                      <div class="research-ai-evidence">
+                        @for (item of proposal.evidence ?? []; track item.evidenceId) {
+                          @if (item.evidence; as evidence) {
+                            <div class="research-ai-evidence__item">
+                              <strong>{{ evidenceSourceTitle(project, evidence) }}</strong>
+                              <small>{{ evidence.locator }} · {{ evidence.sourceVersion }}</small>
+                              <span>{{ evidence.quote }}</span>
+                            </div>
+                          }
+                        } @empty {
+                          <div class="research-ai-evidence__empty">Sin evidencias vinculadas</div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">Sin propuestas automáticas.</div>
+              }
+            </section>
+
+            <section class="research-workspace-section">
+              <div class="research-section-head">
+                <h3>Historial IA</h3>
+                <small>{{ project.aiExecutions.length }} ejecuciones</small>
+              </div>
+              @if (project.aiExecutions.length) {
+                <div class="research-workspace-list">
+                  @for (execution of project.aiExecutions; track execution.id) {
+                    <div class="research-workspace-row research-ai-execution">
+                      <div class="research-ai-proposal__head">
+                        <strong>{{ execution.task }}</strong>
+                        <small>{{ aiExecutionStateLabel(execution.error) }}</small>
+                      </div>
+                      <span>{{ execution.provider }} · {{ execution.model }}</span>
+                      @if (execution.providerVersion) {
+                        <small>Versión: {{ execution.providerVersion }}</small>
+                      }
+                      @if (execution.durationMs !== null) {
+                        <small>{{ execution.durationMs }} ms</small>
+                      }
+                      @if (execution.costCents !== null) {
+                        <small>Coste: {{ execution.costCents }} cents</small>
+                      }
+                      @if (execution.jobId) {
+                        <small>Job {{ execution.jobId }}</small>
+                      }
+                      @if (execution.error) {
+                        <small class="research-ai-execution__error">{{ execution.error }}</small>
+                      }
+                      <time [attr.datetime]="execution.createdAt">
+                        {{ execution.createdAt | date: 'dd MMM yyyy · HH:mm' }}
+                      </time>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">Sin ejecuciones IA registradas.</div>
+              }
+            </section>
+
             <app-research-findings-section
               [project]="project"
               [actionBusy]="actionBusy"

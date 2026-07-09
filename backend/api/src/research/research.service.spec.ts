@@ -1,5 +1,10 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { ResearchDecisionAction, ResearchFindingStatus, ResearchJobType } from '@prisma/client';
+import {
+  ResearchDecisionAction,
+  ResearchFindingStatus,
+  ResearchJobType,
+  ResearchProposalReviewState,
+} from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
 import { ResearchService } from './research.service';
 
@@ -7,6 +12,7 @@ describe('ResearchService', () => {
   const tx = {
     researchFinding: { create: jest.fn(), update: jest.fn() },
     researchFindingEvidence: { createMany: jest.fn() },
+    researchFindingProposal: { update: jest.fn() },
     researchDecision: { create: jest.fn() },
     researchProject: { update: jest.fn() },
   };
@@ -33,6 +39,10 @@ describe('ResearchService', () => {
     },
     researchFinding: {
       findFirst: jest.fn(),
+    },
+    researchFindingProposal: {
+      findFirst: jest.fn(),
+      update: jest.fn(),
     },
     source: {
       findUnique: jest.fn(),
@@ -119,6 +129,25 @@ describe('ResearchService', () => {
         },
         decisions: { orderBy: { createdAt: 'desc' } },
         jobs: { orderBy: { updatedAt: 'desc' } },
+        findingProposals: {
+          include: { evidence: { include: { evidence: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
+        aiExecutions: {
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            task: true,
+            provider: true,
+            model: true,
+            providerVersion: true,
+            durationMs: true,
+            costCents: true,
+            error: true,
+            createdAt: true,
+            jobId: true,
+          },
+        },
       },
     });
   });
@@ -231,6 +260,47 @@ describe('ResearchService', () => {
     );
   });
 
+  it('creates a queued finding extraction job idempotently', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchJob.upsert.mockResolvedValue({ id: 'job-1' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+
+    await service.extractFindingsJob('project-1');
+    await service.extractFindingsJob('project-1');
+
+    expect(prisma.researchJob.upsert).toHaveBeenCalledTimes(2);
+    expect(prisma.researchJob.upsert).toHaveBeenNthCalledWith(1, {
+      where: {
+        projectId_type_inputFingerprint: {
+          projectId: 'project-1',
+          type: ResearchJobType.EXTRACT_FINDINGS,
+          inputFingerprint: expect.stringMatching(/^[a-f0-9]{64}$/),
+        },
+      },
+      create: {
+        projectId: 'project-1',
+        sourceId: null,
+        type: ResearchJobType.EXTRACT_FINDINGS,
+        inputFingerprint: expect.stringMatching(/^[a-f0-9]{64}$/),
+      },
+      update: {},
+    });
+    expect(prisma.researchJob.upsert.mock.calls[1][0].where).toEqual(
+      prisma.researchJob.upsert.mock.calls[0][0].where,
+    );
+  });
+
+  it('rejects finding extraction for sources outside the project library', async () => {
+    prisma.researchProject.findUnique.mockResolvedValueOnce({ id: 'project-1' });
+    prisma.researchProjectSource.findUnique.mockResolvedValueOnce(null);
+
+    await expect(service.extractFindingsJob('project-1', 'source-outside')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+    expect(prisma.researchJob.upsert).not.toHaveBeenCalled();
+  });
+
   it('rejects source preparation when project or project source is missing', async () => {
     prisma.researchProject.findUnique.mockResolvedValueOnce(null);
 
@@ -246,6 +316,168 @@ describe('ResearchService', () => {
       NotFoundException,
     );
     expect(prisma.researchJob.upsert).not.toHaveBeenCalled();
+  });
+
+  it('marks an automatic finding proposal as reviewed without creating a finding', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue({ id: 'proposal-1' });
+    prisma.researchFindingProposal.update.mockResolvedValue({ id: 'proposal-1' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+
+    await service.reviewFindingProposal('project-1', 'proposal-1', {
+      reviewState: ResearchProposalReviewState.REVIEWED,
+    });
+
+    expect(prisma.researchFindingProposal.findFirst).toHaveBeenCalledWith({
+      where: { id: 'proposal-1', projectId: 'project-1' },
+      select: { id: true },
+    });
+    expect(prisma.researchFindingProposal.update).toHaveBeenCalledWith({
+      where: { id: 'proposal-1' },
+      data: { reviewState: ResearchProposalReviewState.REVIEWED },
+    });
+    expect(tx.researchFinding.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects an automatic finding proposal without creating a finding', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue({ id: 'proposal-1' });
+    prisma.researchFindingProposal.update.mockResolvedValue({ id: 'proposal-1' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+
+    await service.reviewFindingProposal('project-1', 'proposal-1', {
+      reviewState: ResearchProposalReviewState.REJECTED,
+    });
+
+    expect(prisma.researchFindingProposal.update).toHaveBeenCalledWith({
+      where: { id: 'proposal-1' },
+      data: { reviewState: ResearchProposalReviewState.REJECTED },
+    });
+    expect(tx.researchFinding.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects proposal review when the proposal is missing or outside the project', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue(null);
+
+    await expect(
+      service.reviewFindingProposal('project-1', 'proposal-outside', {
+        reviewState: ResearchProposalReviewState.REJECTED,
+      }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(prisma.researchFindingProposal.update).not.toHaveBeenCalled();
+  });
+
+  it('rejects unsupported automatic proposal review states', async () => {
+    await expect(
+      service.reviewFindingProposal('project-1', 'proposal-1', {
+        reviewState: ResearchProposalReviewState.PENDING as never,
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(prisma.researchFindingProposal.findFirst).not.toHaveBeenCalled();
+  });
+
+  it('converts a reviewed automatic finding proposal into a private finding', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue({
+      id: 'proposal-1',
+      title: 'Hallazgo revisado',
+      summary: 'Resumen',
+      kind: 'attribution',
+      reviewState: ResearchProposalReviewState.REVIEWED,
+      convertedFindingId: null,
+      evidence: [{ evidenceId: 'evidence-1' }, { evidenceId: 'evidence-2' }],
+    });
+    tx.researchFinding.create.mockResolvedValue({ id: 'finding-1' });
+    tx.researchFindingEvidence.createMany.mockResolvedValue({ count: 2 });
+    tx.researchProject.update.mockResolvedValue({ id: 'project-1' });
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+
+    await service.convertFindingProposalToFinding('project-1', 'proposal-1');
+
+    expect(prisma.researchFindingProposal.findFirst).toHaveBeenCalledWith({
+      where: { id: 'proposal-1', projectId: 'project-1' },
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        kind: true,
+        reviewState: true,
+        convertedFindingId: true,
+        evidence: { select: { evidenceId: true } },
+      },
+    });
+    expect(tx.researchFinding.create).toHaveBeenCalledWith({
+      data: {
+        projectId: 'project-1',
+        title: 'Hallazgo revisado',
+        summary: 'Resumen',
+        kind: 'attribution',
+      },
+      select: { id: true },
+    });
+    expect(tx.researchFindingEvidence.createMany).toHaveBeenCalledWith({
+      data: [
+        { findingId: 'finding-1', evidenceId: 'evidence-1' },
+        { findingId: 'finding-1', evidenceId: 'evidence-2' },
+      ],
+    });
+    expect(tx.researchFindingProposal.update).toHaveBeenCalledWith({
+      where: { id: 'proposal-1' },
+      data: { convertedFindingId: 'finding-1' },
+    });
+  });
+
+  it('does not create another finding when a reviewed proposal was already converted', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue({
+      id: 'proposal-1',
+      title: 'Hallazgo revisado',
+      summary: 'Resumen',
+      kind: 'attribution',
+      reviewState: ResearchProposalReviewState.REVIEWED,
+      convertedFindingId: 'finding-existing',
+      evidence: [{ evidenceId: 'evidence-1' }],
+    });
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+
+    await service.convertFindingProposalToFinding('project-1', 'proposal-1');
+    await service.convertFindingProposalToFinding('project-1', 'proposal-1');
+
+    expect(tx.researchFinding.create).not.toHaveBeenCalled();
+    expect(tx.researchFindingEvidence.createMany).not.toHaveBeenCalled();
+    expect(tx.researchFindingProposal.update).not.toHaveBeenCalled();
+  });
+
+  it('rejects conversion for pending or rejected automatic finding proposals', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValueOnce({
+      id: 'proposal-1',
+      reviewState: ResearchProposalReviewState.PENDING,
+      convertedFindingId: null,
+      evidence: [],
+    });
+
+    await expect(
+      service.convertFindingProposalToFinding('project-1', 'proposal-1'),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    prisma.researchFindingProposal.findFirst.mockResolvedValueOnce({
+      id: 'proposal-2',
+      reviewState: ResearchProposalReviewState.REJECTED,
+      convertedFindingId: null,
+      evidence: [],
+    });
+
+    await expect(
+      service.convertFindingProposalToFinding('project-1', 'proposal-2'),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(tx.researchFinding.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects conversion when the proposal is missing or outside the project', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue(null);
+
+    await expect(
+      service.convertFindingProposalToFinding('project-1', 'proposal-outside'),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(tx.researchFinding.create).not.toHaveBeenCalled();
   });
 
   it('creates evidence idempotently for a project source', async () => {

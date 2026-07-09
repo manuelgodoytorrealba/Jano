@@ -1,12 +1,18 @@
 import { createHash } from 'node:crypto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ResearchDecisionAction, ResearchFindingStatus, ResearchJobType } from '@prisma/client';
+import {
+  ResearchDecisionAction,
+  ResearchFindingStatus,
+  ResearchJobType,
+  ResearchProposalReviewState,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
 import { CreateResearchDecisionDto } from './dto/create-research-decision.dto';
 import { CreateResearchEvidenceDto } from './dto/create-research-evidence.dto';
 import { CreateResearchFindingDto } from './dto/create-research-finding.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
+import { ReviewResearchFindingProposalDto } from './dto/review-research-finding-proposal.dto';
 import { SearchResearchSourcesQuery } from './dto/search-research-sources.query';
 
 const FINDING_STATUS_BY_DECISION: Record<ResearchDecisionAction, ResearchFindingStatus> = {
@@ -94,6 +100,25 @@ export class ResearchService {
         },
         decisions: { orderBy: { createdAt: 'desc' } },
         jobs: { orderBy: { updatedAt: 'desc' } },
+        findingProposals: {
+          include: { evidence: { include: { evidence: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
+        aiExecutions: {
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            task: true,
+            provider: true,
+            model: true,
+            providerVersion: true,
+            durationMs: true,
+            costCents: true,
+            error: true,
+            createdAt: true,
+            jobId: true,
+          },
+        },
       },
     });
 
@@ -144,6 +169,113 @@ export class ResearchService {
     });
 
     await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async extractFindingsJob(projectId: string, sourceId?: string) {
+    const project = await this.prisma.researchProject.findUnique({
+      where: { id: projectId },
+      select: { id: true },
+    });
+    if (!project) throw new NotFoundException('Research project not found');
+
+    const sourceKey = sourceId?.trim() || null;
+    if (sourceKey) {
+      const projectSource = await this.prisma.researchProjectSource.findUnique({
+        where: { projectId_sourceId: { projectId, sourceId: sourceKey } },
+        select: { sourceId: true },
+      });
+      if (!projectSource) throw new NotFoundException('Research project source not found');
+    }
+
+    const type = ResearchJobType.EXTRACT_FINDINGS;
+    const inputFingerprint = this.jobFingerprint({ projectId, sourceId: sourceKey ?? 'all', type });
+
+    await this.prisma.researchJob.upsert({
+      where: { projectId_type_inputFingerprint: { projectId, type, inputFingerprint } },
+      create: { projectId, sourceId: sourceKey, type, inputFingerprint },
+      update: {},
+    });
+
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async reviewFindingProposal(
+    projectId: string,
+    proposalId: string,
+    dto: ReviewResearchFindingProposalDto,
+  ) {
+    if (
+      dto.reviewState !== ResearchProposalReviewState.REVIEWED &&
+      dto.reviewState !== ResearchProposalReviewState.REJECTED
+    ) {
+      throw new BadRequestException('Unsupported proposal review state');
+    }
+
+    const proposal = await this.prisma.researchFindingProposal.findFirst({
+      where: { id: proposalId, projectId },
+      select: { id: true },
+    });
+    if (!proposal) throw new NotFoundException('Research finding proposal not found');
+
+    await this.prisma.researchFindingProposal.update({
+      where: { id: proposalId },
+      data: { reviewState: dto.reviewState },
+    });
+
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async convertFindingProposalToFinding(projectId: string, proposalId: string) {
+    const proposal = await this.prisma.researchFindingProposal.findFirst({
+      where: { id: proposalId, projectId },
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        kind: true,
+        reviewState: true,
+        convertedFindingId: true,
+        evidence: { select: { evidenceId: true } },
+      },
+    });
+    if (!proposal) throw new NotFoundException('Research finding proposal not found');
+    if (proposal.reviewState !== ResearchProposalReviewState.REVIEWED) {
+      throw new BadRequestException('Research finding proposal must be reviewed before conversion');
+    }
+    if (proposal.convertedFindingId) return this.getProject(projectId);
+
+    await this.prisma.$transaction(async (tx) => {
+      const finding = await tx.researchFinding.create({
+        data: {
+          projectId,
+          title: proposal.title,
+          summary: proposal.summary,
+          kind: proposal.kind,
+        },
+        select: { id: true },
+      });
+
+      await tx.researchFindingEvidence.createMany({
+        data: proposal.evidence.map((item) => ({
+          findingId: finding.id,
+          evidenceId: item.evidenceId,
+        })),
+      });
+
+      await tx.researchFindingProposal.update({
+        where: { id: proposal.id },
+        data: { convertedFindingId: finding.id },
+      });
+
+      await tx.researchProject.update({
+        where: { id: projectId },
+        data: { lastActiveAt: new Date() },
+      });
+    });
+
     return this.getProject(projectId);
   }
 

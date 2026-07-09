@@ -8,6 +8,7 @@ import { CreateResearchDecisionDto } from './dto/create-research-decision.dto';
 import { CreateResearchEvidenceDto } from './dto/create-research-evidence.dto';
 import { CreateResearchFindingDto } from './dto/create-research-finding.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
+import { ReviewResearchFindingProposalDto } from './dto/review-research-finding-proposal.dto';
 import { SearchResearchSourcesQuery } from './dto/search-research-sources.query';
 import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchService } from './research.service';
@@ -59,6 +60,33 @@ export class ResearchController {
   @Post(':id/sources/:sourceId/jobs/prepare')
   prepareSource(@Param('id') id: string, @Param('sourceId') sourceId: string) {
     return this.service.prepareSourceJob(id, sourceId);
+  }
+
+  @Post(':id/jobs/extract-findings')
+  extractFindings(@Param('id') id: string) {
+    return this.service.extractFindingsJob(id);
+  }
+
+  @Post(':id/sources/:sourceId/jobs/extract-findings')
+  extractFindingsForSource(@Param('id') id: string, @Param('sourceId') sourceId: string) {
+    return this.service.extractFindingsJob(id, sourceId);
+  }
+
+  @Post(':id/finding-proposals/:proposalId/convert-to-finding')
+  convertFindingProposalToFinding(
+    @Param('id') id: string,
+    @Param('proposalId') proposalId: string,
+  ) {
+    return this.service.convertFindingProposalToFinding(id, proposalId);
+  }
+
+  @Post(':id/finding-proposals/:proposalId/review')
+  reviewFindingProposal(
+    @Param('id') id: string,
+    @Param('proposalId') proposalId: string,
+    @Body() dto: ReviewResearchFindingProposalDto,
+  ) {
+    return this.service.reviewFindingProposal(id, proposalId, dto);
   }
 
   @Post(':id/evidence')

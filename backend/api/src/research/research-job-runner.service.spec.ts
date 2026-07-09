@@ -13,11 +13,14 @@ describe('ResearchJobRunnerService', () => {
       findUnique: jest.fn(),
     },
   };
+  const researchAI = {
+    extractFindings: jest.fn(),
+  };
   let service: ResearchJobRunnerService;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    service = new ResearchJobRunnerService(prisma as unknown as PrismaService);
+    service = new ResearchJobRunnerService(prisma as unknown as PrismaService, researchAI as never);
   });
 
   it('runs the next queued source preparation job to success', async () => {
@@ -95,6 +98,41 @@ describe('ResearchJobRunnerService', () => {
       data: {
         status: ResearchJobStatus.FAILED,
         lastError: 'Research project source not found',
+        finishedAt: expect.any(Date),
+      },
+    });
+  });
+
+  it('runs extract finding jobs through the research AI service', async () => {
+    prisma.researchJob.findFirst.mockResolvedValue({
+      id: 'job-2',
+      projectId: 'project-1',
+      sourceId: null,
+      type: ResearchJobType.EXTRACT_FINDINGS,
+      attempts: 0,
+    });
+    prisma.researchJob.updateMany.mockResolvedValue({ count: 1 });
+    researchAI.extractFindings.mockRejectedValue(new Error('AI provider is not available'));
+    prisma.researchJob.update.mockResolvedValue({ id: 'job-2' });
+
+    await expect(service.runNextQueuedJob()).resolves.toEqual({
+      processed: true,
+      jobId: 'job-2',
+      status: ResearchJobStatus.FAILED,
+    });
+
+    expect(researchAI.extractFindings).toHaveBeenCalledWith({
+      id: 'job-2',
+      projectId: 'project-1',
+      sourceId: null,
+      type: ResearchJobType.EXTRACT_FINDINGS,
+      attempts: 1,
+    });
+    expect(prisma.researchJob.update).toHaveBeenLastCalledWith({
+      where: { id: 'job-2' },
+      data: {
+        status: ResearchJobStatus.FAILED,
+        lastError: 'AI provider is not available',
         finishedAt: expect.any(Date),
       },
     });

@@ -4,6 +4,7 @@ import { apiUrl } from './api-base';
 
 export type ResearchProjectStatus = 'ACTIVE' | 'PAUSED' | 'READY_TO_DECIDE' | 'ARCHIVED';
 export type ResearchFindingStatus = 'PROPOSED' | 'ACCEPTED' | 'REJECTED' | 'POSTPONED';
+export type ResearchProposalReviewState = 'PENDING' | 'REVIEWED' | 'REJECTED';
 export type ResearchDecisionAction = 'INCORPORATE' | 'REJECT' | 'POSTPONE';
 export type ResearchJobStatus = 'QUEUED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED';
 export type ResearchJobType = 'PREPARE_SOURCE' | 'EXTRACT_FINDINGS';
@@ -38,6 +39,10 @@ export type CreateResearchFindingPayload = {
 export type CreateResearchDecisionPayload = {
   action: ResearchDecisionAction;
   note?: string;
+};
+
+export type ReviewResearchFindingProposalPayload = {
+  reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>;
 };
 
 export type ResearchProjectSummary = {
@@ -113,6 +118,38 @@ export type ResearchFindingEvidence = {
   evidence?: ResearchEvidence | null;
 };
 
+export type ResearchFindingProposal = {
+  id: string;
+  projectId: string;
+  aiExecutionId: string;
+  convertedFindingId: string | null;
+  title: string;
+  summary: string | null;
+  kind: string | null;
+  reviewState: ResearchProposalReviewState;
+  createdAt: string;
+  evidence?: ResearchFindingProposalEvidence[];
+};
+
+export type ResearchFindingProposalEvidence = {
+  proposalId: string;
+  evidenceId: string;
+  evidence?: ResearchEvidence | null;
+};
+
+export type ResearchAIExecution = {
+  id: string;
+  task: string;
+  provider: string;
+  model: string;
+  providerVersion: string | null;
+  durationMs: number | null;
+  costCents: number | null;
+  error: string | null;
+  createdAt: string;
+  jobId: string | null;
+};
+
 export type ResearchDecision = {
   id: string;
   projectId: string;
@@ -143,6 +180,8 @@ export type ResearchProject = ResearchProjectSummary & {
   sources: ResearchProjectSource[];
   evidence: ResearchEvidence[];
   findings: ResearchFinding[];
+  findingProposals: ResearchFindingProposal[];
+  aiExecutions: ResearchAIExecution[];
   decisions: ResearchDecision[];
   jobs: ResearchJob[];
 };
@@ -195,6 +234,24 @@ export class ResearchApi {
 
   createFinding(projectId: string, data: CreateResearchFindingPayload) {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/findings`, data);
+  }
+
+  reviewFindingProposal(
+    projectId: string,
+    proposalId: string,
+    data: ReviewResearchFindingProposalPayload,
+  ) {
+    return this.http.post<ResearchProject>(
+      `${this.baseUrl}/${projectId}/finding-proposals/${proposalId}/review`,
+      data,
+    );
+  }
+
+  convertFindingProposalToFinding(projectId: string, proposalId: string) {
+    return this.http.post<ResearchProject>(
+      `${this.baseUrl}/${projectId}/finding-proposals/${proposalId}/convert-to-finding`,
+      {},
+    );
   }
 
   decideFinding(projectId: string, findingId: string, data: CreateResearchDecisionPayload) {

@@ -1,4 +1,4 @@
-import { ResearchDecisionAction } from '@prisma/client';
+import { ResearchDecisionAction, ResearchProposalReviewState } from '@prisma/client';
 import { ROLES_KEY } from '../auth/roles.decorator';
 import { ResearchController } from './research.controller';
 import { ResearchJobRunnerService } from './research-job-runner.service';
@@ -13,8 +13,11 @@ describe('ResearchController', () => {
     searchSources: jest.fn(),
     addProjectSource: jest.fn(),
     prepareSourceJob: jest.fn(),
+    extractFindingsJob: jest.fn(),
     createEvidence: jest.fn(),
     createFinding: jest.fn(),
+    convertFindingProposalToFinding: jest.fn(),
+    reviewFindingProposal: jest.fn(),
     decideFinding: jest.fn(),
   } as unknown as jest.Mocked<ResearchService>;
   const jobRunner = {
@@ -84,6 +87,39 @@ describe('ResearchController', () => {
       id: 'project-1',
     });
     expect(service.prepareSourceJob).toHaveBeenCalledWith('project-1', 'source-1');
+  });
+
+  it('delegates finding extraction job creation to the research service', async () => {
+    service.extractFindingsJob.mockResolvedValue({ id: 'project-1' } as never);
+
+    await expect(controller.extractFindings('project-1')).resolves.toEqual({ id: 'project-1' });
+    expect(service.extractFindingsJob).toHaveBeenCalledWith('project-1');
+
+    await expect(controller.extractFindingsForSource('project-1', 'source-1')).resolves.toEqual({
+      id: 'project-1',
+    });
+    expect(service.extractFindingsJob).toHaveBeenCalledWith('project-1', 'source-1');
+  });
+
+  it('delegates automatic proposal conversion to the research service', async () => {
+    service.convertFindingProposalToFinding.mockResolvedValue({ id: 'project-1' } as never);
+
+    await expect(
+      controller.convertFindingProposalToFinding('project-1', 'proposal-1'),
+    ).resolves.toEqual({ id: 'project-1' });
+    expect(service.convertFindingProposalToFinding).toHaveBeenCalledWith('project-1', 'proposal-1');
+  });
+
+  it('delegates automatic proposal review to the research service', async () => {
+    const dto = { reviewState: ResearchProposalReviewState.REVIEWED };
+    service.reviewFindingProposal.mockResolvedValue({ id: 'project-1' } as never);
+
+    await expect(controller.reviewFindingProposal('project-1', 'proposal-1', dto)).resolves.toEqual(
+      {
+        id: 'project-1',
+      },
+    );
+    expect(service.reviewFindingProposal).toHaveBeenCalledWith('project-1', 'proposal-1', dto);
   });
 
   it('delegates evidence creation to the research service', async () => {

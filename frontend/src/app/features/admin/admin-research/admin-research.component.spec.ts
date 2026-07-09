@@ -130,6 +130,88 @@ describe('AdminResearchComponent', () => {
               evidence: [],
             },
           ],
+          findingProposals: [
+            {
+              id: 'proposal-1',
+              projectId: 'research-1',
+              aiExecutionId: 'execution-1',
+              convertedFindingId: null,
+              title: 'Propuesta automática sobre atribución',
+              summary: 'La evidencia sugiere una línea de investigación.',
+              kind: 'attribution',
+              reviewState: 'PENDING',
+              createdAt: '2026-07-07T10:00:00.000Z',
+              evidence: [
+                {
+                  proposalId: 'proposal-1',
+                  evidenceId: 'evidence-1',
+                  evidence: {
+                    id: 'evidence-1',
+                    projectId: 'research-1',
+                    sourceId: 'source-1',
+                    sourceVersion: 'v1',
+                    locator: 'p. 42',
+                    quote: 'Fragmento',
+                    context: null,
+                    note: null,
+                    fingerprint: 'hash',
+                    createdAt: '2026-07-07T08:00:00.000Z',
+                    updatedAt: '2026-07-07T08:00:00.000Z',
+                  },
+                },
+              ],
+            },
+            {
+              id: 'proposal-reviewed',
+              projectId: 'research-1',
+              aiExecutionId: 'execution-1',
+              convertedFindingId: null,
+              title: 'Propuesta revisada',
+              summary: null,
+              kind: null,
+              reviewState: 'REVIEWED',
+              createdAt: '2026-07-07T10:05:00.000Z',
+              evidence: [],
+            },
+            {
+              id: 'proposal-rejected',
+              projectId: 'research-1',
+              aiExecutionId: 'execution-1',
+              convertedFindingId: null,
+              title: 'Propuesta rechazada',
+              summary: null,
+              kind: null,
+              reviewState: 'REJECTED',
+              createdAt: '2026-07-07T10:10:00.000Z',
+              evidence: [],
+            },
+            {
+              id: 'proposal-converted',
+              projectId: 'research-1',
+              aiExecutionId: 'execution-1',
+              convertedFindingId: 'finding-existing',
+              title: 'Propuesta ya convertida',
+              summary: null,
+              kind: null,
+              reviewState: 'REVIEWED',
+              createdAt: '2026-07-07T10:15:00.000Z',
+              evidence: [],
+            },
+          ],
+          aiExecutions: [
+            {
+              id: 'execution-1',
+              task: 'research.extract_findings',
+              provider: 'noop',
+              model: 'unavailable',
+              providerVersion: null,
+              durationMs: 12,
+              costCents: null,
+              error: 'AI provider is not available',
+              createdAt: '2026-07-07T10:00:00.000Z',
+              jobId: 'job-2',
+            },
+          ],
           decisions: [
             {
               id: 'decision-2',
@@ -202,6 +284,8 @@ describe('AdminResearchComponent', () => {
         .mockReturnValue(of({ processed: true, jobId: 'job-1', status: 'SUCCEEDED' })),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
+      convertFindingProposalToFinding: vi.fn().mockReturnValue(of({})),
+      reviewFindingProposal: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),
     };
     const router = { navigate: vi.fn().mockResolvedValue(true) };
@@ -286,6 +370,47 @@ describe('AdminResearchComponent', () => {
     expect(renderedText).toContain('Procesamiento');
     expect(renderedText).toContain('Preparar fuente');
     expect(renderedText).toContain('En cola');
+    expect(renderedText).toContain('Propuestas automáticas');
+    expect(renderedText).toContain('Propuesta automática sobre atribución');
+    expect(renderedText).toContain('Pendiente');
+    expect(renderedText).toContain('Historial IA');
+    expect(renderedText).toContain('research.extract_findings');
+    expect(renderedText).toContain('Fallida');
+    expect(renderedText).toContain('AI provider is not available');
+    expect(renderedText).toContain('Propuesta revisada');
+    expect(renderedText).toContain('Propuesta rechazada');
+    expect(renderedText).toContain('Propuesta ya convertida');
+    expect(renderedText).toContain('Convertida en hallazgo');
+
+    const convertButtons = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+        '.research-ai-proposal__actions button',
+      ),
+    ).filter((button) => button.textContent?.includes('Convertir en hallazgo'));
+    expect(convertButtons.length).toBe(1);
+    convertButtons[0].click();
+    expect(api.convertFindingProposalToFinding).toHaveBeenCalledWith(
+      'research-1',
+      'proposal-reviewed',
+    );
+    expect(component.actionFeedback).toBe('Propuesta convertida en hallazgo.');
+
+    const proposalButtons = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+        '.research-ai-proposal__actions button',
+      ),
+    );
+    proposalButtons.find((button) => button.textContent?.includes('Marcar revisada'))?.click();
+    expect(api.reviewFindingProposal).toHaveBeenCalledWith('research-1', 'proposal-1', {
+      reviewState: 'REVIEWED',
+    });
+    expect(component.actionFeedback).toBe('Propuesta revisada.');
+
+    proposalButtons.find((button) => button.textContent?.includes('Rechazar'))?.click();
+    expect(api.reviewFindingProposal).toHaveBeenLastCalledWith('research-1', 'proposal-1', {
+      reviewState: 'REJECTED',
+    });
+    expect(component.actionFeedback).toBe('Propuesta rechazada.');
 
     const runNextButton = Array.from(
       (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
@@ -498,11 +623,18 @@ describe('AdminResearchComponent', () => {
     };
     const api = {
       list: vi.fn().mockReturnValue(of([summary])),
-      getById: vi
-        .fn()
-        .mockReturnValue(
-          of({ ...summary, sources: [], evidence: [], findings: [], decisions: [], jobs: [] }),
-        ),
+      getById: vi.fn().mockReturnValue(
+        of({
+          ...summary,
+          sources: [],
+          evidence: [],
+          findings: [],
+          findingProposals: [],
+          aiExecutions: [],
+          decisions: [],
+          jobs: [],
+        }),
+      ),
       searchSources: vi.fn().mockReturnValue(of([])),
       addSource: vi.fn().mockReturnValue(of({})),
       prepareSource: vi.fn().mockReturnValue(of({})),
@@ -511,6 +643,8 @@ describe('AdminResearchComponent', () => {
         .mockReturnValue(of({ processed: true, jobId: 'job-1', status: 'SUCCEEDED' })),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
+      convertFindingProposalToFinding: vi.fn().mockReturnValue(of({})),
+      reviewFindingProposal: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),
     };
 
@@ -545,6 +679,8 @@ describe('AdminResearchComponent', () => {
     expect(text).toContain(
       'Sin hallazgos propuestos. Registra evidencias antes de construir hallazgos.',
     );
+    expect(text).toContain('Sin propuestas automáticas.');
+    expect(text).toContain('Sin ejecuciones IA registradas.');
 
     const runNextButton = Array.from(
       (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
@@ -593,6 +729,8 @@ describe('AdminResearchComponent', () => {
           ],
           evidence: [],
           findings: [],
+          findingProposals: [],
+          aiExecutions: [],
           decisions: [],
           jobs: [],
         }),
@@ -605,6 +743,8 @@ describe('AdminResearchComponent', () => {
         .mockReturnValue(of({ processed: true, jobId: 'job-1', status: 'SUCCEEDED' })),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
+      convertFindingProposalToFinding: vi.fn().mockReturnValue(of({})),
+      reviewFindingProposal: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),
     };
 
