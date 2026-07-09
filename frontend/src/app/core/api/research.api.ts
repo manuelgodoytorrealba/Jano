@@ -147,6 +147,10 @@ export type ResearchProject = ResearchProjectSummary & {
   jobs: ResearchJob[];
 };
 
+export type RunResearchJobResult =
+  | { processed: false }
+  | { processed: true; jobId: string; status: ResearchJobStatus };
+
 @Injectable({ providedIn: 'root' })
 export class ResearchApi {
   private readonly http = inject(HttpClient);
@@ -179,6 +183,10 @@ export class ResearchApi {
       `${this.baseUrl}/${projectId}/sources/${sourceId}/jobs/prepare`,
       {},
     );
+  }
+
+  runNextJob() {
+    return this.http.post<RunResearchJobResult>(`${this.baseUrl}/jobs/run-next`, {});
   }
 
   createEvidence(projectId: string, data: CreateResearchEvidencePayload) {

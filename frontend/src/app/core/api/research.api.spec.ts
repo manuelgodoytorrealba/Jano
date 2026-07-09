@@ -22,6 +22,14 @@ describe('ResearchApi', () => {
     expect(req.request.body).toEqual({});
     req.flush({ id: 'project-1' });
 
+    api.runNextJob().subscribe((result) => {
+      expect(result).toEqual({ processed: false });
+    });
+
+    const runReq = http.expectOne('/api/research/jobs/run-next');
+    expect(runReq.request.method).toBe('POST');
+    expect(runReq.request.body).toEqual({});
+    runReq.flush({ processed: false });
     http.verify();
   });
 });

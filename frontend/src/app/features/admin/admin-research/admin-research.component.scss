@@ -357,6 +357,24 @@
   font-size: 12px;
 }
 
+.research-section-head button {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(247, 244, 238, 0.92);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.research-section-head button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .research-evidence-filters {
   margin-bottom: 12px;
   display: grid;

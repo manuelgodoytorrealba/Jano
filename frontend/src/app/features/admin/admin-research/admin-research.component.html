@@ -484,7 +484,16 @@
             </section>
 
             <section class="research-workspace-section">
-              <h3>Procesamiento</h3>
+              <div class="research-section-head">
+                <h3>Procesamiento</h3>
+                <button
+                  type="button"
+                  [disabled]="actionBusy || !hasQueuedJobs(project)"
+                  (click)="runNextJob()"
+                >
+                  Ejecutar siguiente
+                </button>
+              </div>
               @if (project.jobs.length) {
                 <div class="research-workspace-list">
                   @for (job of project.jobs; track job.id) {

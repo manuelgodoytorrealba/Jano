@@ -197,6 +197,9 @@ describe('AdminResearchComponent', () => {
       ),
       addSource: vi.fn().mockReturnValue(of({})),
       prepareSource: vi.fn().mockReturnValue(of({})),
+      runNextJob: vi
+        .fn()
+        .mockReturnValue(of({ processed: true, jobId: 'job-1', status: 'SUCCEEDED' })),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),
@@ -283,6 +286,23 @@ describe('AdminResearchComponent', () => {
     expect(renderedText).toContain('Procesamiento');
     expect(renderedText).toContain('Preparar fuente');
     expect(renderedText).toContain('En cola');
+
+    const runNextButton = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+        '.research-section-head button',
+      ),
+    ).find((button): button is HTMLButtonElement =>
+      button.textContent?.includes('Ejecutar siguiente'),
+    );
+    expect(runNextButton).toBeTruthy();
+    expect(runNextButton?.disabled).toBe(false);
+    runNextButton?.click();
+    expect(api.runNextJob).toHaveBeenCalledWith();
+    expect(component.actionFeedback).toBe('Trabajo ejecutado.');
+
+    api.runNextJob.mockReturnValueOnce(of({ processed: false }));
+    component.runNextJob();
+    expect(component.actionFeedback).toBe('No hay trabajos pendientes.');
 
     component.evidenceSearch = 'segundo';
     expect(component.filteredEvidence(vm.selectedProject!)).toEqual([
@@ -486,6 +506,9 @@ describe('AdminResearchComponent', () => {
       searchSources: vi.fn().mockReturnValue(of([])),
       addSource: vi.fn().mockReturnValue(of({})),
       prepareSource: vi.fn().mockReturnValue(of({})),
+      runNextJob: vi
+        .fn()
+        .mockReturnValue(of({ processed: true, jobId: 'job-1', status: 'SUCCEEDED' })),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),
@@ -522,6 +545,15 @@ describe('AdminResearchComponent', () => {
     expect(text).toContain(
       'Sin hallazgos propuestos. Registra evidencias antes de construir hallazgos.',
     );
+
+    const runNextButton = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+        '.research-section-head button',
+      ),
+    ).find((button): button is HTMLButtonElement =>
+      button.textContent?.includes('Ejecutar siguiente'),
+    );
+    expect(runNextButton?.disabled).toBe(true);
   });
 
   it('starts evidence capture from an associated source without evidence', async () => {
@@ -568,6 +600,9 @@ describe('AdminResearchComponent', () => {
       searchSources: vi.fn().mockReturnValue(of([])),
       addSource: vi.fn().mockReturnValue(of({})),
       prepareSource: vi.fn().mockReturnValue(of({})),
+      runNextJob: vi
+        .fn()
+        .mockReturnValue(of({ processed: true, jobId: 'job-1', status: 'SUCCEEDED' })),
       createEvidence: vi.fn().mockReturnValue(of({})),
       createFinding: vi.fn().mockReturnValue(of({})),
       decideFinding: vi.fn().mockReturnValue(of({})),

@@ -273,6 +273,30 @@ export class AdminResearchComponent {
     );
   }
 
+  runNextJob(): void {
+    if (this.actionBusy) return;
+
+    this.actionBusy = true;
+    this.actionFeedback = '';
+    this.actionError = '';
+
+    this.api.runNextJob().subscribe({
+      next: (result) => {
+        this.actionBusy = false;
+        this.actionFeedback = result.processed
+          ? 'Trabajo ejecutado.'
+          : 'No hay trabajos pendientes.';
+        this.refresh$.next();
+      },
+      error: (err) => {
+        this.actionBusy = false;
+        this.actionError =
+          err?.error?.message ??
+          'No se pudo completar la acción. Revisa los datos y vuelve a intentarlo.';
+      },
+    });
+  }
+
   createFinding(projectId: string): void {
     const title = this.findingTitle.trim();
     const evidenceIds = this.selectedFindingEvidenceIds;
@@ -384,6 +408,10 @@ export class AdminResearchComponent {
       FAILED: 'Fallido',
     };
     return labels[(status ?? '').toUpperCase()] ?? 'Estado desconocido';
+  }
+
+  hasQueuedJobs(project: ResearchProject): boolean {
+    return project.jobs.some((job) => job.status === 'QUEUED');
   }
 
   decisionActionLabel(action: ResearchDecisionAction | string | null | undefined): string {
