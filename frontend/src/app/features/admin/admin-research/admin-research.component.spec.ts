@@ -496,4 +496,82 @@ describe('AdminResearchComponent', () => {
       'Sin hallazgos propuestos. Registra evidencias antes de construir hallazgos.',
     );
   });
+
+  it('starts evidence capture from an associated source without evidence', async () => {
+    const summary = {
+      id: 'research-source-only',
+      title: 'Investigación con fuente',
+      objective: 'Preparar corpus',
+      scope: null,
+      status: 'ACTIVE',
+      lastActiveAt: '2026-07-07T08:00:00.000Z',
+      createdAt: '2026-07-07T08:00:00.000Z',
+      updatedAt: '2026-07-07T08:00:00.000Z',
+      _count: { sources: 1, evidence: 0, findings: 0 },
+    };
+    const api = {
+      list: vi.fn().mockReturnValue(of([summary])),
+      getById: vi.fn().mockReturnValue(
+        of({
+          ...summary,
+          sources: [
+            {
+              projectId: 'research-source-only',
+              sourceId: 'source-empty',
+              note: null,
+              createdAt: '2026-07-07T08:00:00.000Z',
+              source: {
+                id: 'source-empty',
+                type: 'BOOK',
+                title: 'Fuente sin evidencias',
+                author: 'Archivo JANO',
+                publisher: null,
+                year: 2026,
+                url: null,
+                createdAt: '2026-07-07T08:00:00.000Z',
+              },
+            },
+          ],
+          evidence: [],
+          findings: [],
+          decisions: [],
+          jobs: [],
+        }),
+      ),
+      searchSources: vi.fn().mockReturnValue(of([])),
+      addSource: vi.fn().mockReturnValue(of({})),
+      createEvidence: vi.fn().mockReturnValue(of({})),
+      createFinding: vi.fn().mockReturnValue(of({})),
+      decideFinding: vi.fn().mockReturnValue(of({})),
+    };
+
+    TestBed.configureTestingModule({
+      imports: [AdminResearchComponent],
+      providers: [
+        { provide: ResearchApi, useValue: api },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            url: of([]),
+            queryParamMap: of(convertToParamMap({ project: 'research-source-only' })),
+          },
+        },
+        { provide: Router, useValue: { navigate: vi.fn().mockResolvedValue(true) } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(AdminResearchComponent);
+    const component = fixture.componentInstance;
+    await firstValueFrom(component.vm$.pipe(filter((value) => value.state === 'ready')));
+    fixture.detectChanges();
+
+    const sourceAction = fixture.nativeElement.querySelector(
+      '.research-workspace-row__action',
+    ) as HTMLButtonElement;
+    expect(sourceAction.textContent).toContain('Añadir evidencia');
+
+    sourceAction.click();
+
+    expect(component.evidenceSourceId).toBe('source-empty');
+  });
 });

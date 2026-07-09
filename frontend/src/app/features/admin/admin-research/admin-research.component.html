@@ -356,6 +356,13 @@
                       } @else {
                         <span>Sin nota de proyecto.</span>
                       }
+                      <button
+                        type="button"
+                        class="research-workspace-row__action"
+                        (click)="prepareEvidenceForSource(item.sourceId)"
+                      >
+                        Añadir evidencia
+                      </button>
                     </div>
                   }
                 </div>
