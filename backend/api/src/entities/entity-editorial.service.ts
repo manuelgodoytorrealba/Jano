@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { EntityType, KnowledgeEntityKind, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { canonicalRelationTypeFilter } from '../relation-types/relation-type.utils';
 import { CreateEntityDraftDto } from './dto/create-entity-draft.dto';
@@ -15,6 +15,23 @@ import { UpdateEntityDto } from './dto/update-entity.dto';
 import { UpsertEntityTranslationDto } from './dto/upsert-entity-translation.dto';
 import { EntityReadService } from './entity-read.service';
 import { normalizeLocale } from './entity-translation.resolver';
+
+const LEGACY_ENTITY_KIND: Record<EntityType, KnowledgeEntityKind> = {
+  ARTIST: KnowledgeEntityKind.PERSON,
+  ARTWORK: KnowledgeEntityKind.WORK,
+  ARTICLE: KnowledgeEntityKind.WORK,
+  TEXT: KnowledgeEntityKind.WORK,
+  CONCEPT: KnowledgeEntityKind.ABSTRACTION,
+  MOVEMENT: KnowledgeEntityKind.ABSTRACTION,
+  PERIOD: KnowledgeEntityKind.ABSTRACTION,
+  PLACE: KnowledgeEntityKind.PLACE,
+  EVENT: KnowledgeEntityKind.EVENT,
+  ORGANIZATION: KnowledgeEntityKind.ORGANIZATION,
+};
+
+export function kindForLegacyEntityType(type: EntityType): KnowledgeEntityKind {
+  return LEGACY_ENTITY_KIND[type];
+}
 
 @Injectable()
 export class EntityEditorialService {
@@ -26,6 +43,7 @@ export class EntityEditorialService {
   createDraft(dto: CreateEntityDraftDto) {
     return this.create({
       type: dto.type,
+      kind: dto.kind,
       title: 'Sin título',
       slug: '_draft-' + randomUUID(),
       status: 'DRAFT',
@@ -43,6 +61,7 @@ export class EntityEditorialService {
       const entity = await tx.entity.create({
         data: {
           type: dto.type,
+          kind: dto.kind ?? kindForLegacyEntityType(dto.type),
           title: dto.title.trim(),
           slug: dto.slug.trim(),
           summary: dto.summary?.trim(),
@@ -74,7 +93,7 @@ export class EntityEditorialService {
     await this.prisma.$transaction(async (tx) => {
       const existing = await tx.entity.findUnique({
         where: { id },
-        select: { id: true },
+        select: { id: true, type: true, kind: true },
       });
       if (!existing) throw new NotFoundException('Entity not found');
 
@@ -92,6 +111,7 @@ export class EntityEditorialService {
         where: { id },
         data: {
           type: dto.type,
+          kind: dto.kind ?? (dto.type ? kindForLegacyEntityType(dto.type) : existing.kind),
           title: dto.title?.trim(),
           slug: dto.slug?.trim(),
           summary: dto.summary?.trim(),
@@ -137,12 +157,6 @@ export class EntityEditorialService {
       });
       if (!existing) throw new NotFoundException('Entity not found');
 
-      const sourceRefs = await tx.sourceRef.findMany({
-        where: { entityId: id },
-        select: { sourceId: true },
-      });
-      const sourceIds = [...new Set(sourceRefs.map((ref) => ref.sourceId).filter(Boolean))];
-
       await tx.relation.deleteMany({ where: { OR: [{ fromId: id }, { toId: id }] } });
       await tx.entityMedia.deleteMany({ where: { entityId: id } });
       await tx.sourceRef.deleteMany({ where: { entityId: id } });
@@ -158,12 +172,6 @@ export class EntityEditorialService {
       await tx.conceptDetails.deleteMany({ where: { entityId: id } });
       await tx.periodDetails.deleteMany({ where: { entityId: id } });
       await tx.entity.delete({ where: { id } });
-
-      if (sourceIds.length) {
-        await tx.source.deleteMany({
-          where: { id: { in: sourceIds }, refs: { none: {} } },
-        });
-      }
     });
 
     return { ok: true };
@@ -177,7 +185,7 @@ export class EntityEditorialService {
     await this.prisma.$transaction(async (tx) => {
       const entity = await tx.entity.findUnique({
         where: { id },
-        select: { id: true, type: true },
+        select: { id: true, type: true, kind: true },
       });
       if (!entity) throw new NotFoundException('Entity not found');
 
@@ -226,7 +234,7 @@ export class EntityEditorialService {
     await this.prisma.$transaction(async (tx) => {
       const entity = await tx.entity.findUnique({
         where: { id },
-        select: { id: true, type: true },
+        select: { id: true, type: true, kind: true },
       });
       if (!entity) throw new NotFoundException('Entity not found');
       await this.upsertBaseDetails(tx, id, entity.type, dto);
@@ -381,6 +389,7 @@ export class EntityEditorialService {
             fromId: entityId,
             toId: target.id,
             relationTypeId: relationType.id,
+            status: 'PUBLISHED',
           },
         });
       }

@@ -1,3 +1,4 @@
+import type { PublicKnowledgeEntityKind } from './entities.models';
 export type GraphEntityType =
   | 'ARTIST'
   | 'ARTWORK'
@@ -19,6 +20,7 @@ export interface GraphNodeDto {
   id: string;
   label: string;
   type: GraphEntityType;
+  kind?: PublicKnowledgeEntityKind | null;
   slug: string;
   image?: string | null;
   metadata?: GraphNodeMetadata | null;
@@ -41,6 +43,7 @@ export interface GraphResponseDto {
   edges: GraphEdgeDto[];
   filters?: {
     entityTypes: string[];
+    entityKinds?: string[];
     relationTypes: string[];
   };
 }

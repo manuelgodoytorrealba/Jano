@@ -1,0 +1,68 @@
+.citations-editor {
+  display: grid;
+  gap: 0.65rem;
+  padding-top: 0.75rem;
+}
+
+.citations-editor__title {
+  font-weight: 700;
+}
+
+.citations-editor__hint {
+  margin: -0.35rem 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.85rem;
+}
+
+.citations-editor__list,
+.citations-editor__form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.citations-editor__item {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.65rem;
+}
+
+.citations-editor__item div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.citations-editor__item small,
+.citations-editor__item span {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.citations-editor__results {
+  display: grid;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.65rem;
+  overflow: hidden;
+}
+
+.citations-editor__results button {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.citations-editor__results button:last-child {
+  border-bottom: 0;
+}
+
+.citations-editor__results span {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.8rem;
+}

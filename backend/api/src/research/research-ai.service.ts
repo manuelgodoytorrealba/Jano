@@ -4,7 +4,7 @@ import { AIProvider } from '../ai/ai.provider';
 import { PrismaService } from '../prisma/prisma.service';
 
 const EXTRACT_FINDINGS_TASK = 'research.extract_findings';
-const EXTRACT_FINDINGS_SCHEMA_VERSION = '1';
+const EXTRACT_FINDINGS_SCHEMA_VERSION = '2';
 
 type ExtractFindingsJob = {
   id: string;
@@ -17,6 +17,22 @@ type FindingProposalOutput = {
     title: string;
     summary?: string | null;
     kind?: string | null;
+    evidenceIds: string[];
+  }>;
+  entityCandidates?: Array<{
+    localId: string;
+    kind: 'PERSON' | 'WORK' | 'ABSTRACTION' | 'EVENT' | 'PLACE' | 'ORGANIZATION';
+    title: string;
+    summary?: string | null;
+    confidence?: number | null;
+    evidenceIds: string[];
+  }>;
+  relationCandidates?: Array<{
+    fromLocalId: string;
+    toLocalId: string;
+    relationTypeId?: string | null;
+    explanation?: string | null;
+    confidence?: number | null;
     evidenceIds: string[];
   }>;
 };
@@ -75,6 +91,50 @@ export class ResearchAIService {
           },
         });
 
+        const candidateIds = new Map<string, string>();
+        for (const entityCandidate of output.entityCandidates ?? []) {
+          const created = await tx.researchEntityCandidate.create({
+            data: {
+              projectId: job.projectId,
+              kind: entityCandidate.kind,
+              title: entityCandidate.title,
+              summary: entityCandidate.summary,
+              confidence: entityCandidate.confidence,
+            },
+            select: { id: true },
+          });
+          await tx.researchEntityCandidateEvidence.createMany({
+            data: entityCandidate.evidenceIds.map((evidenceId) => ({
+              candidateId: created.id,
+              evidenceId,
+            })),
+          });
+          candidateIds.set(entityCandidate.localId, created.id);
+        }
+        for (const relationCandidate of output.relationCandidates ?? []) {
+          const fromCandidateId = candidateIds.get(relationCandidate.fromLocalId);
+          const toCandidateId = candidateIds.get(relationCandidate.toLocalId);
+          if (!fromCandidateId || !toCandidateId)
+            throw new Error('AI relation candidate references unknown entity candidate');
+          const created = await tx.researchRelationCandidate.create({
+            data: {
+              projectId: job.projectId,
+              fromCandidateId,
+              toCandidateId,
+              relationTypeId: relationCandidate.relationTypeId,
+              explanation: relationCandidate.explanation,
+              confidence: relationCandidate.confidence,
+            },
+            select: { id: true },
+          });
+          await tx.researchRelationCandidateEvidence.createMany({
+            data: relationCandidate.evidenceIds.map((evidenceId) => ({
+              candidateId: created.id,
+              evidenceId,
+            })),
+          });
+        }
+
         for (const proposal of output.proposals) {
           const created = await tx.researchFindingProposal.create({
             data: {
@@ -130,7 +190,14 @@ export class ResearchAIService {
     if (!evidence.length)
       throw new Error('Research evidence is required for AI finding extraction');
 
-    return { project, sourceId: job.sourceId, evidence };
+    return {
+      project,
+      sourceId: job.sourceId,
+      evidence,
+      canonicalEntityKinds: ['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'],
+      outputContract:
+        'Propose evidence-backed cultural referents and connections; never publish automatically.',
+    };
   }
 
   private validateExtractFindingsOutput(
@@ -166,6 +233,76 @@ export class ResearchAIService {
       };
     });
 
-    return { proposals };
+    const entityCandidates = Array.isArray((output as FindingProposalOutput).entityCandidates)
+      ? ((output as FindingProposalOutput).entityCandidates ?? []).map((candidate) => {
+          const localId = typeof candidate.localId === 'string' ? candidate.localId.trim() : '';
+          const title = typeof candidate.title === 'string' ? candidate.title.trim() : '';
+          const evidenceIds = Array.isArray(candidate.evidenceIds)
+            ? [...new Set(candidate.evidenceIds)]
+            : [];
+          if (
+            !localId ||
+            !title ||
+            !['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'].includes(
+              candidate.kind,
+            ) ||
+            !evidenceIds.length ||
+            evidenceIds.some((id) => typeof id !== 'string' || !knownEvidenceIds.has(id))
+          )
+            throw new Error('Invalid AI entity candidate');
+          const confidence =
+            typeof candidate.confidence === 'number' &&
+            candidate.confidence >= 0 &&
+            candidate.confidence <= 1
+              ? candidate.confidence
+              : null;
+          return {
+            localId,
+            kind: candidate.kind,
+            title,
+            summary: typeof candidate.summary === 'string' ? candidate.summary : null,
+            confidence,
+            evidenceIds,
+          };
+        })
+      : [];
+    const localIds = new Set(entityCandidates.map((candidate) => candidate.localId));
+    const relationCandidates = Array.isArray((output as FindingProposalOutput).relationCandidates)
+      ? ((output as FindingProposalOutput).relationCandidates ?? []).map((candidate) => {
+          const fromLocalId =
+            typeof candidate.fromLocalId === 'string' ? candidate.fromLocalId.trim() : '';
+          const toLocalId =
+            typeof candidate.toLocalId === 'string' ? candidate.toLocalId.trim() : '';
+          const evidenceIds = Array.isArray(candidate.evidenceIds)
+            ? [...new Set(candidate.evidenceIds)]
+            : [];
+          if (
+            !fromLocalId ||
+            !toLocalId ||
+            fromLocalId === toLocalId ||
+            !localIds.has(fromLocalId) ||
+            !localIds.has(toLocalId) ||
+            !evidenceIds.length ||
+            evidenceIds.some((id) => typeof id !== 'string' || !knownEvidenceIds.has(id))
+          )
+            throw new Error('Invalid AI relation candidate');
+          const confidence =
+            typeof candidate.confidence === 'number' &&
+            candidate.confidence >= 0 &&
+            candidate.confidence <= 1
+              ? candidate.confidence
+              : null;
+          return {
+            fromLocalId,
+            toLocalId,
+            relationTypeId:
+              typeof candidate.relationTypeId === 'string' ? candidate.relationTypeId : null,
+            explanation: typeof candidate.explanation === 'string' ? candidate.explanation : null,
+            confidence,
+            evidenceIds,
+          };
+        })
+      : [];
+    return { proposals, entityCandidates, relationCandidates };
   }
 }

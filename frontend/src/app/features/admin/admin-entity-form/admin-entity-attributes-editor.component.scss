@@ -1,0 +1,63 @@
+@use './admin-entity-editor-controls';
+
+.attributes-editor {
+  display: grid;
+  gap: 0.7rem;
+}
+.attributes-editor__title {
+  font-weight: 700;
+}
+.attributes-editor__hint {
+  margin: -0.35rem 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.85rem;
+}
+.attributes-editor__current {
+  display: grid;
+  gap: 0.45rem;
+}
+.attributes-editor__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.7rem;
+}
+.attributes-editor__item div {
+  display: grid;
+  gap: 0.12rem;
+}
+.attributes-editor__item small {
+  opacity: 0.68;
+}
+.attributes-editor__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.attributes-editor__form select,
+.attributes-editor__form input {
+  min-width: 9rem;
+}
+.attributes-editor__form select:first-child {
+  min-width: 15rem;
+}
+
+.attributes-editor__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.attributes-editor__definition {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.7rem;
+}
+
+.attributes-editor__definition label {
+  font-size: 0.85rem;
+}

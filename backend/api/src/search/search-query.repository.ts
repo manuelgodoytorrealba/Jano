@@ -26,6 +26,7 @@ export class SearchQueryRepository {
       limit: number;
       types: string[];
       tag?: string;
+      kinds: string[];
       locale: string;
       includeDrafts: boolean;
     },
@@ -39,6 +40,9 @@ export class SearchQueryRepository {
 
     const typeFilter = options.types.length
       ? Prisma.sql`AND e."type"::text IN (${Prisma.join(options.types)})`
+      : Prisma.empty;
+    const kindFilter = options.kinds.length
+      ? Prisma.sql`AND e."kind"::text IN (${Prisma.join(options.kinds)})`
       : Prisma.empty;
     const visibilityFilter = options.includeDrafts
       ? Prisma.empty
@@ -239,6 +243,7 @@ export class SearchQueryRepository {
       WHERE 1 = 1
         ${visibilityFilter}
         ${typeFilter}
+        ${kindFilter}
         ${tagFilter}
         AND (
           ${fullTextPredicate}

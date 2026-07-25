@@ -5,7 +5,7 @@ import {
   selectRankedGraphLabels,
   shouldRenderGraphLabel,
 } from './graph-labels';
-import { GraphData, GraphEdge, GraphNode, GraphTypeMeta } from './graph.models';
+import { graphNodeTypeKey, GraphData, GraphEdge, GraphNode, GraphTypeMeta } from './graph.models';
 import { buildGraphTypeMeta, contextualGraphTypeMeta, graphEdgeMarkerId } from './graph-render';
 
 export interface GraphDerivedState {
@@ -67,7 +67,8 @@ export function buildGraphDerivedState(options: {
   }
 
   const baseFilteredNodes = graph.nodes.filter(
-    (node) => node.id === graph.centerId || options.entityTypeFilters[node.type] !== false,
+    (node) =>
+      node.id === graph.centerId || options.entityTypeFilters[graphNodeTypeKey(node)] !== false,
   );
   const baseVisibleNodeIds = new Set(baseFilteredNodes.map((node) => node.id));
   const baseFilteredEdges = graph.edges.filter(

@@ -20,6 +20,7 @@ type LocalizedEntityRecord = Parameters<typeof resolveLocalizedEntity>[0];
 type GraphEntityNodeRecord = LocalizedEntityRecord & {
   id: string;
   type: string;
+  kind?: string | null;
   slug: string;
   startYear?: number | null;
   endYear?: number | null;
@@ -29,6 +30,7 @@ type GraphNodePayload = {
   id: string;
   label: string;
   type: string;
+  kind: string | null;
   slug: string;
   image: string | null;
   resolvedMedia?: ResolvedMediaPayload;
@@ -54,19 +56,17 @@ type GraphEdgePayload = {
 export class EntityGraphService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private adminEntityTypeLabel(type: string): string {
+  private adminKnowledgeKindLabel(kind: string): string {
     const labels: Record<string, string> = {
-      ARTIST: 'Artists',
-      ARTWORK: 'Artworks',
-      ARTICLE: 'Articles',
-      TEXT: 'Articles',
-      CONCEPT: 'Concepts',
-      MOVEMENT: 'Movements',
-      PERIOD: 'Periods',
+      PERSON: 'People',
+      WORK: 'Works',
+      ABSTRACTION: 'Ideas & contexts',
+      EVENT: 'Events',
       PLACE: 'Places',
+      ORGANIZATION: 'Organizations',
     };
 
-    return labels[type] ?? type;
+    return labels[kind] ?? kind;
   }
 
   private graphMediaInclude(locale?: string) {
@@ -93,6 +93,7 @@ export class EntityGraphService {
       id: node.id,
       label: resolvedNode.title,
       type: node.type,
+      kind: node.kind ?? null,
       slug: node.slug,
       image: image ?? null,
       resolvedMedia: resolvedNode.resolvedMedia,
@@ -114,6 +115,7 @@ export class EntityGraphService {
       id: node.id,
       label: resolvedNode.title,
       type: node.type,
+      kind: node.kind ?? null,
       slug: node.slug,
       image: null,
       metadata: {
@@ -135,6 +137,7 @@ export class EntityGraphService {
 
     const relations = await this.prisma.relation.findMany({
       where: {
+        status: EntityStatus.PUBLISHED,
         OR: [
           { fromId: center.id, to: { status: EntityStatus.PUBLISHED } },
           { toId: center.id, from: { status: EntityStatus.PUBLISHED } },
@@ -206,6 +209,9 @@ export class EntityGraphService {
       edges,
       filters: {
         entityTypes: Array.from(new Set(nodes.map((node) => node.type))).sort(),
+        entityKinds: Array.from(
+          new Set(nodes.map((node) => node.kind).filter((kind): kind is string => !!kind)),
+        ).sort(),
         relationTypes: Array.from(new Set(edges.map((edge) => edge.relationType))).sort(),
       },
     };
@@ -218,6 +224,7 @@ export class EntityGraphService {
         id: true,
         title: true,
         type: true,
+        kind: true,
         slug: true,
         summary: true,
         startYear: true,
@@ -249,11 +256,11 @@ export class EntityGraphService {
           },
         })
       : [];
-    const entityTypes = Array.from(
+    const entityKinds = Array.from(
       new Set(
         entities
           .map((entity) =>
-            String(entity.type ?? 'ENTITY')
+            String(entity.kind ?? entity.type ?? 'ENTITY')
               .trim()
               .toUpperCase(),
           )
@@ -265,6 +272,7 @@ export class EntityGraphService {
         id: 'workspace-center-jano',
         label: 'JANO',
         type: 'CONCEPT',
+        kind: 'ABSTRACTION',
         slug: 'workspace-jano',
         image: null,
         metadata: {
@@ -273,14 +281,15 @@ export class EntityGraphService {
           endYear: null,
         },
       },
-      ...entityTypes.map((type) => ({
-        id: `workspace-type-${type}`,
-        label: this.adminEntityTypeLabel(type),
-        type,
-        slug: `workspace-type-${type.toLowerCase()}`,
+      ...entityKinds.map((kind) => ({
+        id: `workspace-kind-${kind}`,
+        label: this.adminKnowledgeKindLabel(kind),
+        type: kind,
+        kind,
+        slug: `workspace-kind-${kind.toLowerCase()}`,
         image: null,
         metadata: {
-          summary: `Cluster editorial de ${this.adminEntityTypeLabel(type)} en JANO.`,
+          summary: `Cluster editorial de ${this.adminKnowledgeKindLabel(kind)} en JANO.`,
           startYear: null,
           endYear: null,
         },
@@ -289,11 +298,11 @@ export class EntityGraphService {
     ];
     const edgesMap = new Map<string, GraphEdgePayload>();
 
-    for (const type of entityTypes) {
-      edgesMap.set(`workspace-center-${type}`, {
-        id: `workspace-center-${type}`,
+    for (const kind of entityKinds) {
+      edgesMap.set(`workspace-center-${kind}`, {
+        id: `workspace-center-${kind}`,
         source: 'workspace-center-jano',
-        target: `workspace-type-${type}`,
+        target: `workspace-kind-${kind}`,
         relationType: 'ASSOCIATED_WITH',
         label: relationLabel('ASSOCIATED_WITH'),
         directed: false,
@@ -303,19 +312,19 @@ export class EntityGraphService {
     }
 
     for (const entity of entities) {
-      const type =
-        String(entity.type ?? 'ENTITY')
+      const kind =
+        String(entity.kind ?? entity.type ?? 'ENTITY')
           .trim()
           .toUpperCase() || 'ENTITY';
       edgesMap.set(`workspace-hub-${entity.id}`, {
         id: `workspace-hub-${entity.id}`,
-        source: `workspace-type-${type}`,
+        source: `workspace-kind-${kind}`,
         target: entity.id,
         relationType: 'PART_OF',
         label: relationLabel('PART_OF'),
         directed: true,
         weight: 0.7,
-        justification: `${entity.title} pertenece al cluster ${this.adminEntityTypeLabel(type)}.`,
+        justification: `${entity.title} pertenece al cluster ${this.adminKnowledgeKindLabel(kind)}.`,
       });
     }
 
@@ -341,6 +350,9 @@ export class EntityGraphService {
       edges,
       filters: {
         entityTypes: Array.from(new Set(nodes.map((node) => node.type))).sort(),
+        entityKinds: Array.from(
+          new Set(nodes.map((node) => node.kind).filter((kind): kind is string => !!kind)),
+        ).sort(),
         relationTypes: Array.from(new Set(edges.map((edge) => edge.relationType))).sort(),
       },
     };

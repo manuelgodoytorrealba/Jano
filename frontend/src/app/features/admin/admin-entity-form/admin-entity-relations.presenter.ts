@@ -12,6 +12,10 @@ export type AdminEntityRelationDraft = {
   relationTypeId: string;
   justificationEs: string;
   justificationEn: string;
+  status: 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | 'REJECTED';
+  confidence: number | null;
+  validFromYear: number | null;
+  validToYear: number | null;
 };
 
 export function createEmptyRelationDraft(relationTypes: RelationType[]): AdminEntityRelationDraft {
@@ -24,6 +28,10 @@ export function createEmptyRelationDraft(relationTypes: RelationType[]): AdminEn
     relationTypeId: preferred?.id ?? '',
     justificationEs: '',
     justificationEn: '',
+    status: 'PUBLISHED',
+    confidence: null,
+    validFromYear: null,
+    validToYear: null,
   };
 }
 
@@ -54,6 +62,10 @@ export function buildCreateRelationPayload(
     relationTypeId: draft.relationTypeId || undefined,
     justificationEs: draft.justificationEs.trim() || undefined,
     justificationEn: draft.justificationEn.trim() || undefined,
+    status: draft.status,
+    confidence: draft.confidence,
+    validFromYear: draft.validFromYear,
+    validToYear: draft.validToYear,
   };
 }
 
@@ -67,6 +79,10 @@ export function buildUpdateRelationPayload(
       String(relation.justificationEs ?? relation.justification ?? '').trim() || undefined,
     justificationEn: String(relation.justificationEn ?? '').trim() || undefined,
     weight: relation.weight ?? undefined,
+    status: relation.status,
+    confidence: relation.confidence ?? null,
+    validFromYear: relation.validFromYear ?? null,
+    validToYear: relation.validToYear ?? null,
   };
 }
 

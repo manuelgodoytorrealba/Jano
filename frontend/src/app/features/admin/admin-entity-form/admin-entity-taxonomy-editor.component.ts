@@ -15,13 +15,16 @@ import {
   AdminEntitiesApi,
   AdminEntityAliasKind,
   AdminEntityAliasRecord,
+  AdminEntityClassificationRecord,
   AdminEntityTagRecord,
   AdminLocale,
 } from '../../../core/api/admin-entities.api';
 import { Tag, TagsApi } from '../../../core/api/tags.api';
+import { Taxonomy, TaxonomiesApi } from '../../../core/api/taxonomies.api';
 
 export type AdminEntityTaxonomyState = {
   tags: AdminEntityTagRecord[];
+  classifications: AdminEntityClassificationRecord[];
   aliases: AdminEntityAliasRecord[];
 };
 
@@ -36,14 +39,29 @@ export type AdminEntityTaxonomyState = {
 export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
   private readonly adminApi = inject(AdminEntitiesApi);
   private readonly tagsApi = inject(TagsApi);
+  private readonly taxonomiesApi = inject(TaxonomiesApi);
   private readonly cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true }) entityId = '';
   @Input() tags: AdminEntityTagRecord[] = [];
+  @Input() classifications: AdminEntityClassificationRecord[] = [];
   @Input() aliases: AdminEntityAliasRecord[] = [];
   @Output() stateChange = new EventEmitter<AdminEntityTaxonomyState>();
 
   availableTags: Tag[] = [];
+  taxonomies: Taxonomy[] = [];
+  selectedTaxonomyKey = '';
+  selectedTermId = '';
+  newTaxonomyKey = '';
+  newTaxonomyLabel = '';
+  newTermKey = '';
+  newTermLabel = '';
+  taxonomySaving = false;
+  taxonomyMessage = '';
+  taxonomyError = '';
+  classificationsSaving = false;
+  classificationsMessage = '';
+  classificationsError = '';
   selectedTagId = '';
   newTagLabel = '';
   newTagCategory = '';
@@ -76,11 +94,150 @@ export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
         this.cdr.markForCheck();
       },
     });
+    this.taxonomiesApi.list().subscribe({
+      next: (taxonomies) => {
+        this.taxonomies = taxonomies;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.taxonomies = [];
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tags']) this.tags = [...this.tags];
+    if (changes['classifications']) this.classifications = [...this.classifications];
     if (changes['aliases']) this.aliases = [...this.aliases];
+  }
+
+  createTaxonomy(): void {
+    const key = this.newTaxonomyKey.trim();
+    const label = this.newTaxonomyLabel.trim();
+    if (!key || !label || this.taxonomySaving) return;
+
+    this.taxonomySaving = true;
+    this.taxonomyMessage = '';
+    this.taxonomyError = '';
+    this.taxonomiesApi.create({ key, label }).subscribe({
+      next: (taxonomy) => {
+        this.taxonomies = [...this.taxonomies, { ...taxonomy, terms: [] }].sort((a, b) =>
+          a.label.localeCompare(b.label),
+        );
+        this.selectedTaxonomyKey = taxonomy.key;
+        this.newTaxonomyKey = '';
+        this.newTaxonomyLabel = '';
+        this.taxonomySaving = false;
+        this.taxonomyMessage = 'Taxonomía creada.';
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.taxonomySaving = false;
+        this.taxonomyError = error?.error?.message ?? 'No se pudo crear la taxonomía.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  createTerm(): void {
+    const key = this.newTermKey.trim();
+    const label = this.newTermLabel.trim();
+    if (!this.selectedTaxonomyKey || !key || !label || this.taxonomySaving) return;
+
+    this.taxonomySaving = true;
+    this.taxonomyMessage = '';
+    this.taxonomyError = '';
+    this.taxonomiesApi.createTerm(this.selectedTaxonomyKey, { key, label }).subscribe({
+      next: (term) => {
+        this.taxonomies = this.taxonomies.map((taxonomy) =>
+          taxonomy.key !== this.selectedTaxonomyKey
+            ? taxonomy
+            : {
+                ...taxonomy,
+                terms: [...taxonomy.terms, term].sort((a, b) => a.label.localeCompare(b.label)),
+              },
+        );
+        this.selectedTermId = term.id;
+        this.newTermKey = '';
+        this.newTermLabel = '';
+        this.taxonomySaving = false;
+        this.taxonomyMessage = 'Término creado.';
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.taxonomySaving = false;
+        this.taxonomyError = error?.error?.message ?? 'No se pudo crear el término.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  addClassification(): void {
+    if (!this.entityId || !this.selectedTermId || this.classificationsSaving) return;
+    this.classificationsSaving = true;
+    this.classificationsMessage = '';
+    this.classificationsError = '';
+    this.adminApi.addClassification(this.entityId, { termId: this.selectedTermId }).subscribe({
+      next: (classification) => {
+        this.classificationsSaving = false;
+        this.classifications = [
+          ...this.classifications.filter(
+            (item) => this.classificationTermId(item) !== this.selectedTermId,
+          ),
+          classification,
+        ];
+        this.selectedTermId = '';
+        this.classificationsMessage = 'Clasificación añadida.';
+        this.emitState();
+      },
+      error: (error) => {
+        this.classificationsSaving = false;
+        this.classificationsError = error?.error?.message ?? 'No se pudo añadir la clasificación.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  removeClassification(termId: string): void {
+    if (!this.entityId || this.classificationsSaving) return;
+    this.classificationsSaving = true;
+    this.classificationsMessage = '';
+    this.classificationsError = '';
+    this.adminApi.removeClassification(this.entityId, termId).subscribe({
+      next: () => {
+        this.classificationsSaving = false;
+        this.classifications = this.classifications.filter(
+          (item) => this.classificationTermId(item) !== termId,
+        );
+        this.classificationsMessage = 'Clasificación eliminada.';
+        this.emitState();
+      },
+      error: (error) => {
+        this.classificationsSaving = false;
+        this.classificationsError =
+          error?.error?.message ?? 'No se pudo eliminar la clasificación.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  availableTerms(): Taxonomy['terms'] {
+    return (
+      this.taxonomies.find((taxonomy) => taxonomy.key === this.selectedTaxonomyKey)?.terms ?? []
+    ).filter(
+      (term) => !this.classifications.some((item) => this.classificationTermId(item) === term.id),
+    );
+  }
+
+  classificationTermId(classification: AdminEntityClassificationRecord): string | null {
+    return classification.term?.id ?? null;
+  }
+
+  classificationLabel(classification: AdminEntityClassificationRecord): string {
+    const taxonomy = classification.term?.taxonomy?.label;
+    const term = classification.term?.label ?? classification.term?.key ?? 'Clasificación';
+    return taxonomy ? taxonomy + ' · ' + term : term;
   }
 
   addSelectedTag(): void {
@@ -230,7 +387,11 @@ export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
   }
 
   private emitState(): void {
-    this.stateChange.emit({ tags: [...this.tags], aliases: [...this.aliases] });
+    this.stateChange.emit({
+      tags: [...this.tags],
+      classifications: [...this.classifications],
+      aliases: [...this.aliases],
+    });
     this.cdr.markForCheck();
   }
 }

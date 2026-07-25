@@ -10,8 +10,13 @@ const TYPES = [
   'CONCEPT',
   'PLACE',
   'TEXT',
+  'EVENT',
+  'ORGANIZATION',
 ] as const;
 export type SearchEntityType = (typeof TYPES)[number];
+
+const KINDS = ['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'] as const;
+export type SearchKnowledgeEntityKind = (typeof KINDS)[number];
 
 export class SearchQuery {
   @IsOptional()
@@ -21,6 +26,11 @@ export class SearchQuery {
   @IsOptional()
   @IsString()
   locale?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : value ? [value] : undefined))
+  @IsIn(KINDS, { each: true })
+  kind?: SearchKnowledgeEntityKind[];
 
   @IsOptional()
   @Transform(({ value }) => (Array.isArray(value) ? value : value ? [value] : undefined))

@@ -1,0 +1,148 @@
+<section class="attributes-editor" aria-label="Atributos editoriales">
+  <span class="attributes-editor__title">Atributos editoriales</span>
+  <p class="attributes-editor__hint">Afirmaciones verificables sobre esta entidad.</p>
+
+  <button
+    class="btn"
+    type="button"
+    [disabled]="definitionSaving"
+    (click)="creatingDefinition = !creatingDefinition"
+  >
+    {{ creatingDefinition ? 'Cerrar definición' : 'Nueva definición' }}
+  </button>
+  @if (creatingDefinition || !definitions.length) {
+    <div class="attributes-editor__definition">
+      <strong>Definición global</strong>
+      <input
+        [(ngModel)]="definitionKey"
+        name="definitionKey"
+        placeholder="Clave, por ejemplo: altura_cm"
+      />
+      <input
+        [(ngModel)]="definitionLabel"
+        name="definitionLabel"
+        placeholder="Etiqueta, por ejemplo: Altura"
+      />
+      <select [(ngModel)]="definitionValueType" name="definitionValueType">
+        @for (type of definitionValueTypes; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+      <label
+        ><input type="checkbox" [(ngModel)]="definitionMultiple" name="definitionMultiple" /> Admite
+        varios valores publicados</label
+      >
+      <button
+        class="btn"
+        type="button"
+        [disabled]="!definitionKey.trim() || !definitionLabel.trim() || definitionSaving"
+        (click)="createDefinition()"
+      >
+        Crear definición
+      </button>
+    </div>
+  }
+  <div class="attributes-editor__current">
+    @if (attributes.length) {
+      @for (attribute of attributes; track attribute.id) {
+        <div class="attributes-editor__item">
+          <div>
+            <strong>{{ attribute.definition.label }}</strong>
+            <span>{{ valueLabel(attribute) }}</span>
+            <small>{{ attribute.status }} · {{ attribute.confidence ?? '—' }}</small>
+          </div>
+          <div class="attributes-editor__actions">
+            <button type="button" class="btn" [disabled]="saving" (click)="edit(attribute)">
+              Editar
+            </button>
+            <button
+              type="button"
+              class="btn btn--danger"
+              [disabled]="saving"
+              (click)="remove(attribute)"
+            >
+              Quitar
+            </button>
+          </div>
+        </div>
+        @if (editingId === attribute.id) {
+          <app-admin-citations-editor
+            target="attribute"
+            [targetId]="attribute.id"
+          ></app-admin-citations-editor>
+        }
+      }
+    } @else {
+      <span class="muted">Sin atributos editoriales.</span>
+    }
+  </div>
+
+  <div class="attributes-editor__form">
+    <select
+      [(ngModel)]="definitionId"
+      (ngModelChange)="onDefinitionChange()"
+      name="attributeDefinition"
+      [disabled]="!!editingId"
+    >
+      <option value="">Seleccionar definición</option>
+      @for (definition of definitions; track definition.id) {
+        <option [value]="definition.id">{{ definition.label }}</option>
+      }
+    </select>
+
+    @if (selectedValueType(); as valueType) {
+      @if (valueType === 'BOOLEAN') {
+        <select [(ngModel)]="value" name="attributeValue">
+          <option value="true">Sí</option>
+          <option value="false">No</option>
+        </select>
+      } @else {
+        <input
+          [(ngModel)]="value"
+          name="attributeValue"
+          [type]="
+            valueType === 'NUMBER' || valueType === 'YEAR'
+              ? 'number'
+              : valueType === 'DATE'
+                ? 'date'
+                : 'text'
+          "
+          [placeholder]="
+            valueType === 'JSON' ? '{ &quot;clave&quot;: &quot;valor&quot; }' : 'Valor'
+          "
+        />
+      }
+    }
+
+    <select [(ngModel)]="status" name="attributeStatus">
+      <option value="DRAFT">Borrador</option>
+      <option value="IN_REVIEW">En revisión</option>
+      <option value="PUBLISHED">Publicado</option>
+      <option value="REJECTED">Rechazado</option>
+    </select>
+    <input
+      [(ngModel)]="confidence"
+      name="attributeConfidence"
+      type="number"
+      min="0"
+      max="1"
+      step="0.1"
+      placeholder="Confianza"
+    />
+    <input [(ngModel)]="validFromYear" name="attributeFrom" type="number" placeholder="Desde" />
+    <input [(ngModel)]="validToYear" name="attributeTo" type="number" placeholder="Hasta" />
+    <button class="btn" type="button" [disabled]="!definitionId || saving" (click)="save()">
+      {{ editingId ? 'Guardar atributo' : 'Añadir atributo' }}
+    </button>
+    @if (editingId) {
+      <button class="btn" type="button" [disabled]="saving" (click)="cancel()">Cancelar</button>
+    }
+  </div>
+
+  @if (message) {
+    <small class="success-text">{{ message }}</small>
+  }
+  @if (error) {
+    <small class="error-text">{{ error }}</small>
+  }
+</section>

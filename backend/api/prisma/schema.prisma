@@ -25,6 +25,41 @@ enum EntityType {
   PERIOD
   TEXT
   PLACE
+  EVENT
+  ORGANIZATION
+}
+
+// Canonical graph behaviour. The legacy EntityType remains during the
+// incremental migration so existing consumers keep working.
+enum KnowledgeEntityKind {
+  PERSON
+  WORK
+  ABSTRACTION
+  EVENT
+  PLACE
+  ORGANIZATION
+}
+
+enum KnowledgeAssertionStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  REJECTED
+}
+
+enum CitationStance {
+  SUPPORTS
+  CONTRADICTS
+  MENTIONS
+}
+
+enum AttributeValueType {
+  TEXT
+  NUMBER
+  BOOLEAN
+  DATE
+  YEAR
+  JSON
 }
 
 enum EntityStatus {
@@ -162,14 +197,15 @@ enum ResearchMaterialStatus {
 }
 
 model Entity {
-  id           String        @id @default(cuid())
+  id           String               @id @default(cuid())
   type         EntityType
+  kind         KnowledgeEntityKind?
   title        String
-  slug         String        @unique
+  slug         String               @unique
   summary      String?
   content      String?
   contentLevel ContentLevel?
-  status       EntityStatus  @default(DRAFT)
+  status       EntityStatus         @default(DRAFT)
 
   startYear Int?
   endYear   Int?
@@ -203,17 +239,24 @@ model Entity {
   homeDeckItems HomeDeckItem[]
 
   // Taxonomy
-  tags EntityTag[]
+  tags            EntityTag[]
+  classifications EntityClassification[]
+
+  // Canonical editorial assertions and evidence
+  attributes         EntityAttribute[]
+  citations          Citation[]        @relation("CitationEntity")
+  researchPromotions ResearchFinding[] @relation("ResearchFindingPromotedEntity")
 
   // Editorial translations
   translations EntityTranslation[]
   aliases      EntityAlias[]
 
   // Type-specific details (1..1, optional)
-  artwork ArtworkDetails?
-  artist  ArtistDetails?
-  concept ConceptDetails?
-  period  PeriodDetails?
+  artwork                  ArtworkDetails?
+  artist                   ArtistDetails?
+  concept                  ConceptDetails?
+  period                   PeriodDetails?
+  researchEntityCandidates ResearchEntityCandidate[]
 }
 
 model EntityTranslation {
@@ -255,17 +298,24 @@ model EntityAlias {
 }
 
 model Relation {
-  id             String  @id @default(cuid())
+  id             String                   @id @default(cuid())
   fromId         String
   toId           String
   relationTypeId String
   weight         Float?
   justification  String?
+  status         KnowledgeAssertionStatus @default(DRAFT)
+  confidence     Float?
+  validFromYear  Int?
+  validToYear    Int?
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
 
   from         Entity                @relation("outgoing", fields: [fromId], references: [id])
   to           Entity                @relation("incoming", fields: [toId], references: [id])
   relationType RelationType          @relation(fields: [relationTypeId], references: [id])
   translations RelationTranslation[]
+  citations    Citation[]            @relation("CitationRelation")
 
   @@index([fromId])
   @@index([toId])
@@ -298,8 +348,9 @@ model RelationType {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  relations    Relation[]
-  translations RelationTypeTranslation[]
+  relations                  Relation[]
+  translations               RelationTypeTranslation[]
+  researchRelationCandidates ResearchRelationCandidate[]
 }
 
 model RelationTypeTranslation {
@@ -363,6 +414,178 @@ model EntityTag {
   @@index([entityId])
   @@index([tagId])
   @@index([source])
+}
+
+model Taxonomy {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  label       String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  terms TaxonomyTerm[]
+
+  @@index([isActive])
+}
+
+model TaxonomyTerm {
+  id          String   @id @default(cuid())
+  taxonomyId  String
+  key         String
+  label       String
+  description String?
+  parentId    String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  taxonomy        Taxonomy                  @relation(fields: [taxonomyId], references: [id], onDelete: Cascade)
+  parent          TaxonomyTerm?             @relation("TaxonomyTermHierarchy", fields: [parentId, taxonomyId], references: [id, taxonomyId], onDelete: Restrict)
+  children        TaxonomyTerm[]            @relation("TaxonomyTermHierarchy")
+  translations    TaxonomyTermTranslation[]
+  classifications EntityClassification[]
+
+  @@unique([taxonomyId, key])
+  @@unique([id, taxonomyId])
+  @@index([taxonomyId, sortOrder])
+  @@index([parentId])
+  @@index([isActive])
+}
+
+model TaxonomyTermTranslation {
+  id          String   @id @default(cuid())
+  termId      String
+  locale      String
+  label       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  term TaxonomyTerm @relation(fields: [termId], references: [id], onDelete: Cascade)
+
+  @@unique([termId, locale])
+  @@index([locale])
+}
+
+model EntityClassification {
+  entityId   String
+  termId     String
+  confidence Float?
+  source     String?
+  createdAt  DateTime @default(now())
+
+  entity Entity       @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  term   TaxonomyTerm @relation(fields: [termId], references: [id], onDelete: Cascade)
+
+  @@id([entityId, termId])
+  @@index([termId])
+  @@index([source])
+}
+
+model AttributeDefinition {
+  id          String             @id @default(cuid())
+  key         String             @unique
+  label       String
+  description String?
+  valueType   AttributeValueType
+  // Controls simultaneous published values; competing drafts remain valid assertions.
+  isMultiple  Boolean            @default(false)
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  attributes   EntityAttribute[]
+  translations AttributeDefinitionTranslation[]
+
+  @@index([isActive])
+}
+
+model AttributeDefinitionTranslation {
+  id           String   @id @default(cuid())
+  definitionId String
+  locale       String
+  label        String
+  description  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  definition AttributeDefinition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+
+  @@unique([definitionId, locale])
+  @@index([locale])
+}
+
+model EntityAttribute {
+  id            String                   @id @default(cuid())
+  entityId      String
+  definitionId  String
+  locale        String                   @default("und")
+  valueText     String?
+  valueNumber   Float?
+  valueBoolean  Boolean?
+  valueDate     DateTime?
+  valueYear     Int?
+  valueJson     Json?
+  status        KnowledgeAssertionStatus @default(DRAFT)
+  confidence    Float?
+  validFromYear Int?
+  validToYear   Int?
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+
+  entity     Entity              @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  definition AttributeDefinition @relation(fields: [definitionId], references: [id], onDelete: Restrict)
+  citations  Citation[]          @relation("CitationEntityAttribute")
+
+  @@index([entityId, definitionId])
+  @@index([definitionId])
+  @@index([status])
+}
+
+model Citation {
+  id                 String         @id @default(cuid())
+  sourceId           String
+  entityId           String?
+  relationId         String?
+  entityAttributeId  String?
+  researchEvidenceId String?
+  stance             CitationStance @default(MENTIONS)
+  locator            String?
+  quote              String?
+  note               String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  source           Source                @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  entity           Entity?               @relation("CitationEntity", fields: [entityId], references: [id], onDelete: Cascade)
+  relation         Relation?             @relation("CitationRelation", fields: [relationId], references: [id], onDelete: Cascade)
+  entityAttribute  EntityAttribute?      @relation("CitationEntityAttribute", fields: [entityAttributeId], references: [id], onDelete: Cascade)
+  researchEvidence ResearchEvidence?     @relation(fields: [researchEvidenceId], references: [id], onDelete: SetNull)
+  translations     CitationTranslation[]
+
+  @@index([sourceId])
+  @@index([entityId])
+  @@index([relationId])
+  @@index([entityAttributeId])
+  @@index([researchEvidenceId])
+}
+
+model CitationTranslation {
+  id         String   @id @default(cuid())
+  citationId String
+  locale     String
+  quote      String?
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  citation Citation @relation(fields: [citationId], references: [id], onDelete: Cascade)
+
+  @@unique([citationId, locale])
+  @@index([locale])
 }
 
 model Media {
@@ -440,6 +663,7 @@ model Source {
 
   refs         SourceRef[]
   translations SourceTranslation[]
+  citations    Citation[]
 
   researchProjects ResearchProjectSource[]
   researchEvidence ResearchEvidence[]
@@ -504,15 +728,17 @@ model ResearchProject {
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
 
-  sources          ResearchProjectSource[]
-  evidence         ResearchEvidence[]
-  findings         ResearchFinding[]
-  decisions        ResearchDecision[]
-  jobs             ResearchJob[]
-  aiExecutions     AIExecution[]
-  findingProposals ResearchFindingProposal[]
-  claims           ResearchClaim[]
-  materials        ResearchMaterial[]
+  sources            ResearchProjectSource[]
+  evidence           ResearchEvidence[]
+  findings           ResearchFinding[]
+  decisions          ResearchDecision[]
+  jobs               ResearchJob[]
+  aiExecutions       AIExecution[]
+  findingProposals   ResearchFindingProposal[]
+  claims             ResearchClaim[]
+  materials          ResearchMaterial[]
+  entityCandidates   ResearchEntityCandidate[]
+  relationCandidates ResearchRelationCandidate[]
 
   @@index([status, lastActiveAt])
   @@index([updatedAt])
@@ -544,33 +770,107 @@ model ResearchEvidence {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  project          ResearchProject                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  source           Source                            @relation(fields: [sourceId], references: [id], onDelete: Restrict)
-  findings         ResearchFindingEvidence[]
-  findingProposals ResearchFindingProposalEvidence[]
-  claims           ResearchClaimEvidence[]
+  project                   ResearchProject                     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  source                    Source                              @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  findings                  ResearchFindingEvidence[]
+  findingProposals          ResearchFindingProposalEvidence[]
+  claims                    ResearchClaimEvidence[]
+  citations                 Citation[]
+  entityCandidateEvidence   ResearchEntityCandidateEvidence[]
+  relationCandidateEvidence ResearchRelationCandidateEvidence[]
 
   @@unique([projectId, sourceId, fingerprint])
   @@index([projectId])
   @@index([sourceId])
 }
 
+model ResearchEntityCandidate {
+  id                String                      @id @default(cuid())
+  projectId         String
+  kind              KnowledgeEntityKind
+  title             String
+  aliases           Json?
+  summary           String?
+  confidence        Float?
+  mentionCount      Int                         @default(0)
+  suggestedEntityId String?
+  reviewState       ResearchProposalReviewState @default(PENDING)
+  createdAt         DateTime                    @default(now())
+  updatedAt         DateTime                    @updatedAt
+
+  project         ResearchProject                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  suggestedEntity Entity?                           @relation(fields: [suggestedEntityId], references: [id], onDelete: SetNull)
+  evidence        ResearchEntityCandidateEvidence[]
+  outgoing        ResearchRelationCandidate[]       @relation("ResearchRelationCandidateFrom")
+  incoming        ResearchRelationCandidate[]       @relation("ResearchRelationCandidateTo")
+
+  @@index([projectId, reviewState])
+  @@index([suggestedEntityId])
+}
+
+model ResearchEntityCandidateEvidence {
+  candidateId String
+  evidenceId  String
+  candidate   ResearchEntityCandidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  evidence    ResearchEvidence        @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@id([candidateId, evidenceId])
+  @@index([evidenceId])
+}
+
+model ResearchRelationCandidate {
+  id              String                      @id @default(cuid())
+  projectId       String
+  fromCandidateId String
+  toCandidateId   String
+  relationTypeId  String?
+  explanation     String?
+  confidence      Float?
+  reviewState     ResearchProposalReviewState @default(PENDING)
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @updatedAt
+
+  project       ResearchProject                     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fromCandidate ResearchEntityCandidate             @relation("ResearchRelationCandidateFrom", fields: [fromCandidateId], references: [id], onDelete: Cascade)
+  toCandidate   ResearchEntityCandidate             @relation("ResearchRelationCandidateTo", fields: [toCandidateId], references: [id], onDelete: Cascade)
+  relationType  RelationType?                       @relation(fields: [relationTypeId], references: [id], onDelete: SetNull)
+  evidence      ResearchRelationCandidateEvidence[]
+
+  @@index([projectId, reviewState])
+  @@index([fromCandidateId])
+  @@index([toCandidateId])
+  @@index([relationTypeId])
+}
+
+model ResearchRelationCandidateEvidence {
+  candidateId String
+  evidenceId  String
+  candidate   ResearchRelationCandidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  evidence    ResearchEvidence          @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@id([candidateId, evidenceId])
+  @@index([evidenceId])
+}
+
 model ResearchFinding {
-  id        String                @id @default(cuid())
-  projectId String
-  title     String
-  kind      String?
-  summary   String?
-  status    ResearchFindingStatus @default(PROPOSED)
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
+  id               String                @id @default(cuid())
+  projectId        String
+  promotedEntityId String?
+  title            String
+  kind             String?
+  summary          String?
+  status           ResearchFindingStatus @default(PROPOSED)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
 
   project            ResearchProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  promotedEntity     Entity?                   @relation("ResearchFindingPromotedEntity", fields: [promotedEntityId], references: [id], onDelete: SetNull)
   evidence           ResearchFindingEvidence[]
   decisions          ResearchDecision[]
   convertedProposals ResearchFindingProposal[] @relation("ConvertedFindingProposal")
 
   @@index([projectId, status])
+  @@index([promotedEntityId])
   @@index([updatedAt])
 }
 

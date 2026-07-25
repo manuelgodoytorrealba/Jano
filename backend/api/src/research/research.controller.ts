@@ -29,7 +29,10 @@ import {
 } from './dto/create-research-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { ReviewResearchFindingProposalDto } from './dto/review-research-finding-proposal.dto';
-import { SearchResearchSourcesQuery } from './dto/search-research-sources.query';
+import { PromoteResearchFindingDto } from './dto/promote-research-finding.dto';
+import { CreateResearchEntityCandidateDto } from './dto/create-research-entity-candidate.dto';
+import { CreateResearchRelationCandidateDto } from './dto/create-research-relation-candidate.dto';
+import { SearchSourcesQuery } from '../sources/dto/search-sources.query';
 import { ResearchJobRunnerService } from './research-job-runner.service';
 import {
   RESEARCH_PDF_UPLOAD_OPTIONS,
@@ -62,7 +65,7 @@ export class ResearchController {
   }
 
   @Get('sources')
-  searchSources(@Query() query: SearchResearchSourcesQuery) {
+  searchSources(@Query() query: SearchSourcesQuery) {
     return this.service.searchSources(query);
   }
 
@@ -140,6 +143,60 @@ export class ResearchController {
     @Body() dto: ReviewResearchFindingProposalDto,
   ) {
     return this.service.reviewFindingProposal(id, proposalId, dto);
+  }
+
+  @Post(':id/relation-candidates/:candidateId/promote/relation')
+  promoteRelationCandidate(@Param('id') id: string, @Param('candidateId') candidateId: string) {
+    return this.service.promoteRelationCandidate(id, candidateId);
+  }
+
+  @Post(':id/relation-candidates/:candidateId/review')
+  reviewRelationCandidate(
+    @Param('id') id: string,
+    @Param('candidateId') candidateId: string,
+    @Body() dto: ReviewResearchFindingProposalDto,
+  ) {
+    return this.service.reviewRelationCandidate(id, candidateId, dto);
+  }
+
+  @Post(':id/relation-candidates')
+  createRelationCandidate(
+    @Param('id') id: string,
+    @Body() dto: CreateResearchRelationCandidateDto,
+  ) {
+    return this.service.createRelationCandidate(id, dto);
+  }
+
+  @Post(':id/entity-candidates/:candidateId/promote/entity')
+  promoteEntityCandidate(
+    @Param('id') id: string,
+    @Param('candidateId') candidateId: string,
+    @Body() dto: PromoteResearchFindingDto,
+  ) {
+    return this.service.promoteEntityCandidate(id, candidateId, dto);
+  }
+
+  @Post(':id/entity-candidates/:candidateId/review')
+  reviewEntityCandidate(
+    @Param('id') id: string,
+    @Param('candidateId') candidateId: string,
+    @Body() dto: ReviewResearchFindingProposalDto,
+  ) {
+    return this.service.reviewEntityCandidate(id, candidateId, dto);
+  }
+
+  @Post(':id/entity-candidates')
+  createEntityCandidate(@Param('id') id: string, @Body() dto: CreateResearchEntityCandidateDto) {
+    return this.service.createEntityCandidate(id, dto);
+  }
+
+  @Post(':id/findings/:findingId/promote/entity')
+  promoteFindingToEntity(
+    @Param('id') id: string,
+    @Param('findingId') findingId: string,
+    @Body() dto: PromoteResearchFindingDto,
+  ) {
+    return this.service.promoteFindingToEntity(id, findingId, dto);
   }
 
   @Post(':id/evidence')

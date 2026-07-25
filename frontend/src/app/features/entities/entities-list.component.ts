@@ -25,6 +25,11 @@ import { EntitiesListPagerComponent } from './entities-list-pager.component';
 type ViewMode = 'explore' | 'list';
 
 const ENTITY_TYPE_LABEL_KEYS: Record<string, string> = {
+  PERSON: 'search.kind.people',
+  WORK: 'search.kind.works',
+  ABSTRACTION: 'search.kind.abstractions',
+  EVENT: 'search.kind.events',
+  ORGANIZATION: 'search.kind.organizations',
   ARTWORK: 'entities.type.artworkSingular',
   ARTICLE: 'entity.article',
   ARTIST: 'entities.type.artistSingular',

@@ -9,6 +9,7 @@ import {
   ResearchFindingStatus,
   ResearchProject,
   ResearchProjectSource,
+  PromoteResearchFindingPayload,
   ResearchSourceRecord,
 } from '../../../core/api/research.api';
 
@@ -27,8 +28,27 @@ export class ResearchFindingsSectionComponent {
 
   @Output() decisionNoteChange = new EventEmitter<{ findingId: string; note: string }>();
   @Output() decide = new EventEmitter<{ findingId: string; action: ResearchDecisionAction }>();
+  @Output() promote = new EventEmitter<{
+    findingId: string;
+    data: PromoteResearchFindingPayload;
+  }>();
+
+  promotionDrafts: Record<string, PromoteResearchFindingPayload> = {};
 
   readonly decisionActions: ResearchDecisionAction[] = ['INCORPORATE', 'REJECT', 'POSTPONE'];
+
+  promotionDraft(finding: ResearchFinding): PromoteResearchFindingPayload {
+    return (
+      this.promotionDrafts[finding.id] ??
+      (this.promotionDrafts[finding.id] = { type: 'CONCEPT', kind: 'ABSTRACTION', slug: '' })
+    );
+  }
+
+  promoteFinding(finding: ResearchFinding): void {
+    const data = this.promotionDraft(finding);
+    if (!data.slug.trim()) return;
+    this.promote.emit({ findingId: finding.id, data: { ...data, slug: data.slug.trim() } });
+  }
 
   findingStatusLabel(status: ResearchFindingStatus | string | null | undefined): string {
     const labels: Record<string, string> = {

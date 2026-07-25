@@ -18,6 +18,7 @@ import {
 import { Router } from '@angular/router';
 import * as THREE from 'three';
 import { getEntityTypeConfig, getRelationTypeConfig } from '../../graph/graph.config';
+import { graphNodeTypeKey } from '../../graph/graph.models';
 import { GraphNodeDto, GraphResponseDto } from '../../../core/api/graph.models';
 import { AdminGlobalGraphLayout, createAdminGlobalGraphLayout } from './admin-global-graph-layout';
 
@@ -158,6 +159,10 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     return getEntityTypeConfig(type).color;
   }
 
+  nodeTypeLabel(node: GraphNodeDto): string {
+    return this.entityTypeLabel(graphNodeTypeKey(node));
+  }
+
   relationTypeLabel(type: string): string {
     return getRelationTypeConfig(type).label;
   }
@@ -265,11 +270,13 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     this.initialPositions = Object.fromEntries(
       Object.entries(layout.positions).map(([id, point]) => [id, { ...point }]),
     );
-    this.nodeTypes = new Map(graph.nodes.map((node) => [node.id, node.type]));
+    this.nodeTypes = new Map(graph.nodes.map((node) => [node.id, graphNodeTypeKey(node)]));
     this.entityTypes.set(
       [
         ...new Set(
-          graph.nodes.filter((node) => !node.id.startsWith('workspace-')).map((node) => node.type),
+          graph.nodes
+            .filter((node) => !node.id.startsWith('workspace-'))
+            .map((node) => graphNodeTypeKey(node)),
         ),
       ].sort(),
     );
@@ -327,7 +334,7 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
   private layoutCacheKey(graph: GraphResponseDto): string {
     const topology = [
       graph.centerId,
-      ...graph.nodes.map(({ id, type }) => id + ':' + type),
+      ...graph.nodes.map((node) => node.id + ':' + graphNodeTypeKey(node)),
       ...graph.edges.map(
         ({ source, target, relationType }) => source + ':' + target + ':' + relationType,
       ),
@@ -352,11 +359,15 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
 
     nodes.forEach((node, index) => {
       const point = positions[node.id] ?? { x: 0, y: 0 };
-      const color = new THREE.Color(getEntityTypeConfig(node.type).color);
+      const color = new THREE.Color(getEntityTypeConfig(graphNodeTypeKey(node)).color);
       vertices.set([point.x, point.y, 0], index * 3);
       colors.set([color.r, color.g, color.b], index * 3);
       sizes[index] =
-        node.id === this.graphData?.centerId ? 15 : node.id.startsWith('workspace-type-') ? 11 : 7;
+        node.id === this.graphData?.centerId
+          ? 15
+          : node.id.startsWith('workspace-kind-') || node.id.startsWith('workspace-type-')
+            ? 11
+            : 7;
     });
 
     const geometry = new THREE.BufferGeometry();
@@ -421,10 +432,10 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
       const source = positions[edge.source] ?? { x: 0, y: 0 };
       const target = positions[edge.target] ?? { x: 0, y: 0 };
       const sourceColor = new THREE.Color(
-        getEntityTypeConfig(nodeMap.get(edge.source)?.type ?? '').color,
+        getEntityTypeConfig(graphNodeTypeKey(nodeMap.get(edge.source))).color,
       );
       const targetColor = new THREE.Color(
-        getEntityTypeConfig(nodeMap.get(edge.target)?.type ?? '').color,
+        getEntityTypeConfig(graphNodeTypeKey(nodeMap.get(edge.target))).color,
       );
       vertices.set([source.x, source.y, -0.2, target.x, target.y, -0.2], index * 6);
       colors.set(

@@ -29,6 +29,10 @@ describe('admin-entity-relations presenter', () => {
       relationTypeId: 'type-1',
       justificationEs: 'Contexto editorial',
       justificationEn: undefined,
+      status: 'PUBLISHED',
+      confidence: null,
+      validFromYear: null,
+      validToYear: null,
     });
   });
 });

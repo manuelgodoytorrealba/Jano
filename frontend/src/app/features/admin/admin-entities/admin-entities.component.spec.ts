@@ -11,6 +11,7 @@ describe('AdminEntitiesComponent', () => {
       convertToParamMap({
         q: 'memoria',
         type: 'ARTWORK',
+        kind: 'WORK',
         status: 'DRAFT',
         sort: 'title',
         page: '2',
@@ -29,7 +30,7 @@ describe('AdminEntitiesComponent', () => {
       remove: vi.fn(),
     };
     const router = {
-      url: '/admin/entities?q=memoria&type=ARTWORK&status=DRAFT&sort=title&page=2',
+      url: '/admin/entities?q=memoria&type=ARTWORK&kind=WORK&status=DRAFT&sort=title&page=2',
       navigate: vi.fn().mockResolvedValue(true),
     };
 
@@ -51,6 +52,7 @@ describe('AdminEntitiesComponent', () => {
       sort: 'title',
       q: 'memoria',
       type: 'ARTWORK',
+      kind: 'WORK',
       status: 'DRAFT',
     });
     expect(vm.totalPages).toBe(2);

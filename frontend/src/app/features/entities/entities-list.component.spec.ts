@@ -119,6 +119,7 @@ describe('EntitiesListComponent filters', () => {
           'entities.type.movement': 'Movements',
           'entities.type.period': 'Periods',
           'entities.type.concept': 'Concepts',
+          'search.kind.works': 'Works',
           'explorer.status': 'Status',
           'explorer.level': 'Level',
           'explorer.movement': 'Movement',
@@ -177,6 +178,22 @@ describe('EntitiesListComponent filters', () => {
         set: { template: '' },
       })
       .compileComponents();
+  });
+
+  it('loads the canonical kind catalog without applying a legacy type', async () => {
+    paramMap$.next(convertToParamMap({}));
+    queryParamMap$.next(convertToParamMap({ kind: 'WORK' }));
+
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const component = fixture.componentInstance;
+    let latest: EntitiesListPageVm | null = null;
+    component.pageVm$.subscribe((value) => (latest = value));
+
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    expect(latest).toBeTruthy();
+    expect(listCalls.some((params) => params?.kind === 'WORK' && !params?.type)).toBe(true);
+    fixture.destroy();
   });
 
   it('reads movement and period from query params when loading the catalog vm', async () => {

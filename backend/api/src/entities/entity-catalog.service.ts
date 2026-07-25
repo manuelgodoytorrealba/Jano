@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ContentLevel, EntityStatus, Prisma } from '@prisma/client';
 import { resolveEntityMediaSlot } from '../media/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
@@ -49,6 +49,10 @@ export class EntityCatalogService {
     const sort = (query.sort ?? 'recent').trim();
     const deck = (query.deck ?? '').trim();
     const tag = (query.tag ?? '').trim();
+    const taxonomy = (query.taxonomy ?? '').trim();
+    const term = (query.term ?? '').trim();
+    if (term && !taxonomy)
+      throw new BadRequestException('taxonomy is required when term is provided');
     const locale = normalizeLocale(query.locale);
 
     const where: Prisma.EntityWhereInput = {};
@@ -89,6 +93,7 @@ export class EntityCatalogService {
     }
 
     if (query.type) where.type = query.type;
+    if (query.kind) where.kind = query.kind;
 
     if (options.publicOnly) {
       where.status = EntityStatus.PUBLISHED;
@@ -180,6 +185,23 @@ export class EntityCatalogService {
       });
     }
 
+    if (taxonomy && taxonomy !== 'undefined' && taxonomy !== 'null') {
+      and.push({
+        classifications: {
+          some: {
+            term: {
+              ...(term ? { key: term } : {}),
+              ...(options.publicOnly ? { isActive: true } : {}),
+              taxonomy: {
+                key: taxonomy,
+                ...(options.publicOnly ? { isActive: true } : {}),
+              },
+            },
+          },
+        },
+      });
+    }
+
     if (and.length) {
       where.AND = and;
     }
@@ -210,6 +232,24 @@ export class EntityCatalogService {
           tags: {
             include: { tag: true },
             orderBy: [{ tag: { label: 'asc' } }],
+          },
+          classifications: {
+            ...(options.publicOnly
+              ? { where: { term: { isActive: true, taxonomy: { isActive: true } } } }
+              : {}),
+            select: {
+              confidence: true,
+              source: true,
+              term: {
+                select: {
+                  id: true,
+                  key: true,
+                  label: true,
+                  taxonomy: { select: { id: true, key: true, label: true } },
+                },
+              },
+            },
+            orderBy: [{ term: { taxonomy: { key: 'asc' } } }, { term: { key: 'asc' } }],
           },
           mediaLinks: {
             include: { media: true },
@@ -257,6 +297,24 @@ export class EntityCatalogService {
         tags: {
           include: { tag: true },
           orderBy: [{ tag: { label: 'asc' } }],
+        },
+        classifications: {
+          ...(options.publicOnly
+            ? { where: { term: { isActive: true, taxonomy: { isActive: true } } } }
+            : {}),
+          select: {
+            confidence: true,
+            source: true,
+            term: {
+              select: {
+                id: true,
+                key: true,
+                label: true,
+                taxonomy: { select: { id: true, key: true, label: true } },
+              },
+            },
+          },
+          orderBy: [{ term: { taxonomy: { key: 'asc' } } }, { term: { key: 'asc' } }],
         },
         mediaLinks: {
           include: { media: true },

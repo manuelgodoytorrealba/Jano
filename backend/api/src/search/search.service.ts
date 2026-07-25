@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { HomeDeckSurface } from '@prisma/client';
+import { HomeDeckSurface, KnowledgeAssertionStatus } from '@prisma/client';
 import { attachResolvedMedia } from '../media/media.resolver';
 import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
 import { PrismaService } from '../prisma/prisma.service';
@@ -15,6 +15,7 @@ type SearchItem = {
   id: string;
   slug: string;
   type: string;
+  kind: string | null;
   title: string;
   summary: string | null;
   [key: string]: unknown;
@@ -25,6 +26,7 @@ type SearchEntityRecord = Parameters<typeof resolveEntityTranslation>[0] & {
   slug: string;
   title: string;
   type: string;
+  kind?: string | null;
   status?: string | null;
   contentLevel?: string | null;
   startYear?: number | null;
@@ -138,6 +140,7 @@ export class SearchService {
     const locale = normalizeLocale(query.locale);
     const limit = Math.min(60, Math.max(1, Number(query.limit ?? 20)));
     const types = Array.isArray(query.type) ? query.type.filter(Boolean) : [];
+    const kinds = Array.isArray(query.kind) ? query.kind.filter(Boolean) : [];
 
     if (!q && !tag) {
       return {
@@ -157,6 +160,7 @@ export class SearchService {
       limit,
       types,
       tag,
+      kinds,
       locale,
       includeDrafts: options.includeDrafts,
     });
@@ -302,6 +306,7 @@ export class SearchService {
       id: entity.id,
       slug: entity.slug,
       type: resolvedEntity.type,
+      kind: resolvedEntity.kind ?? null,
       title: resolvedEntity.title,
       summary: resolvedEntity.summary,
       status: resolvedEntity.status,
@@ -339,16 +344,17 @@ export class SearchService {
       const relations = await this.prisma.relation.findMany({
         where: {
           AND: [
+            ...(includeDrafts ? [] : [{ status: KnowledgeAssertionStatus.PUBLISHED }]),
             canonicalRelationTypeFilter(DISCOVERY_RELATION_TYPES),
             {
               OR: [
                 {
                   fromId: { in: seedIds },
-                  to: includeDrafts ? undefined : { status: 'PUBLISHED' },
+                  to: includeDrafts ? undefined : { status: KnowledgeAssertionStatus.PUBLISHED },
                 },
                 {
                   toId: { in: seedIds },
-                  from: includeDrafts ? undefined : { status: 'PUBLISHED' },
+                  from: includeDrafts ? undefined : { status: KnowledgeAssertionStatus.PUBLISHED },
                 },
               ],
             },
@@ -670,6 +676,7 @@ export class SearchService {
     options: {
       limit: number;
       types: string[];
+      kinds: string[];
       tag?: string;
       locale: string;
       includeDrafts: boolean;

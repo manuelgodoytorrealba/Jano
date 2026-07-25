@@ -15,6 +15,7 @@ import {
 } from 'rxjs';
 import {
   ResearchApi,
+  CreateResearchEntityCandidatePayload,
   ResearchClaim,
   ResearchClaimKind,
   ResearchDecisionAction,
@@ -26,9 +27,11 @@ import {
   ResearchProjectStatus,
   ResearchProjectSummary,
   ResearchProjectSource,
+  PromoteResearchFindingPayload,
   ResearchSourceRecord,
 } from '../../../core/api/research.api';
 import { ResearchFindingsSectionComponent } from './research-findings-section.component';
+import { RelationType, RelationTypesApi } from '../../../core/api/relation-types.api';
 
 type ResearchStatusFilter = '' | ResearchProjectStatus;
 
@@ -61,6 +64,8 @@ export class AdminResearchComponent {
   private readonly api = inject(ResearchApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly relationTypesApi = inject(RelationTypesApi);
+  readonly relationTypes$ = this.relationTypesApi.list().pipe(catchError(() => of([])));
 
   @ViewChild('titleInput')
   set titleInputRef(value: ElementRef<HTMLInputElement> | undefined) {
@@ -125,6 +130,15 @@ export class AdminResearchComponent {
   findingSummary = '';
   selectedFindingEvidenceIds: string[] = [];
   findingDecisionNotes: Record<string, string> = {};
+  relationFromCandidateId = '';
+  relationToCandidateId = '';
+  relationExplanation = '';
+  relationTypeId = '';
+  selectedRelationEvidenceIds: string[] = [];
+  candidateTitle = '';
+  candidateKind: CreateResearchEntityCandidatePayload['kind'] = 'ABSTRACTION';
+  candidateSummary = '';
+  selectedCandidateEvidenceIds: string[] = [];
   actionBusy = false;
   actionFeedback = '';
   actionError = '';
@@ -438,6 +452,62 @@ export class AdminResearchComponent {
     });
   }
 
+  createRelationCandidate(projectId: string): void {
+    if (
+      !this.relationFromCandidateId ||
+      !this.relationToCandidateId ||
+      !this.selectedRelationEvidenceIds.length
+    )
+      return;
+    this.runProjectAction(
+      this.api.createRelationCandidate(projectId, {
+        fromCandidateId: this.relationFromCandidateId,
+        toCandidateId: this.relationToCandidateId,
+        relationTypeId: this.relationTypeId || undefined,
+        explanation: this.relationExplanation.trim() || undefined,
+        evidenceIds: this.selectedRelationEvidenceIds,
+      }),
+      'Relación candidata creada.',
+      () => {
+        this.relationFromCandidateId = '';
+        this.relationToCandidateId = '';
+        this.relationExplanation = '';
+        this.relationTypeId = '';
+        this.selectedRelationEvidenceIds = [];
+      },
+    );
+  }
+
+  toggleRelationEvidence(evidenceId: string, checked: boolean): void {
+    this.selectedRelationEvidenceIds = checked
+      ? [...new Set([...this.selectedRelationEvidenceIds, evidenceId])]
+      : this.selectedRelationEvidenceIds.filter((id) => id !== evidenceId);
+  }
+
+  createEntityCandidate(projectId: string): void {
+    if (!this.candidateTitle.trim() || !this.selectedCandidateEvidenceIds.length) return;
+    this.runProjectAction(
+      this.api.createEntityCandidate(projectId, {
+        kind: this.candidateKind,
+        title: this.candidateTitle.trim(),
+        summary: this.candidateSummary.trim() || undefined,
+        evidenceIds: this.selectedCandidateEvidenceIds,
+      }),
+      'Candidato de entidad creado.',
+      () => {
+        this.candidateTitle = '';
+        this.candidateSummary = '';
+        this.selectedCandidateEvidenceIds = [];
+      },
+    );
+  }
+
+  toggleCandidateEvidence(evidenceId: string, checked: boolean): void {
+    this.selectedCandidateEvidenceIds = checked
+      ? [...new Set([...this.selectedCandidateEvidenceIds, evidenceId])]
+      : this.selectedCandidateEvidenceIds.filter((id) => id !== evidenceId);
+  }
+
   createFinding(projectId: string): void {
     const title = this.findingTitle.trim();
     const evidenceIds = this.selectedFindingEvidenceIds;
@@ -510,6 +580,50 @@ export class AdminResearchComponent {
     this.runProjectAction(
       this.api.reviewFindingProposal(projectId, proposalId, { reviewState }),
       reviewState === 'REJECTED' ? 'Propuesta rechazada.' : 'Propuesta revisada.',
+      () => undefined,
+    );
+  }
+
+  promoteFindingToEntity(
+    projectId: string,
+    findingId: string,
+    data: PromoteResearchFindingPayload,
+  ): void {
+    this.runProjectAction(
+      this.api.promoteFindingToEntity(projectId, findingId, data),
+      'Borrador canónico creado con sus evidencias.',
+      () => undefined,
+    );
+  }
+
+  reviewRelationCandidate(
+    projectId: string,
+    candidateId: string,
+    reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
+  ): void {
+    this.runProjectAction(
+      this.api.reviewRelationCandidate(projectId, candidateId, reviewState),
+      reviewState === 'REVIEWED' ? 'Relación revisada.' : 'Relación rechazada.',
+      () => undefined,
+    );
+  }
+
+  promoteRelationCandidate(projectId: string, candidateId: string): void {
+    this.runProjectAction(
+      this.api.promoteRelationCandidate(projectId, candidateId),
+      'Relación canónica creada como borrador.',
+      () => undefined,
+    );
+  }
+
+  reviewEntityCandidate(
+    projectId: string,
+    candidateId: string,
+    reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
+  ): void {
+    this.runProjectAction(
+      this.api.reviewEntityCandidate(projectId, candidateId, reviewState),
+      reviewState === 'REVIEWED' ? 'Candidato revisado.' : 'Candidato rechazado.',
       () => undefined,
     );
   }

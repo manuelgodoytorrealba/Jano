@@ -90,7 +90,7 @@
       [style.top.px]="activeTooltip.y"
     >
       <strong>{{ activeTooltip.node.label }}</strong>
-      <span>{{ activeTooltip.node.type }}</span>
+      <span>{{ nodeTypeLabel(activeTooltip.node) }}</span>
     </div>
   }
 
@@ -102,7 +102,7 @@
       [disabled]="node.id.startsWith('workspace-')"
     >
       <span>{{ node.label }}</span>
-      <small>{{ node.type }}</small>
+      <small>{{ nodeTypeLabel(node) }}</small>
     </button>
   }
 </div>

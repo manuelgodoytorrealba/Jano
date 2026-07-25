@@ -24,7 +24,14 @@ import {
 } from './dto/create-research-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { ReviewResearchFindingProposalDto } from './dto/review-research-finding-proposal.dto';
-import { SearchResearchSourcesQuery } from './dto/search-research-sources.query';
+import { PromoteResearchFindingDto } from './dto/promote-research-finding.dto';
+import { CreateResearchEntityCandidateDto } from './dto/create-research-entity-candidate.dto';
+import { CreateResearchRelationCandidateDto } from './dto/create-research-relation-candidate.dto';
+import { SearchSourcesQuery } from '../sources/dto/search-sources.query';
+import { SourcesService } from '../sources/sources.service';
+import { CitationsService } from '../citations/citations.service';
+import { EntityEditorialService } from '../entities/entity-editorial.service';
+import { EntityTaxonomyService } from '../entities/entity-taxonomy.service';
 import type { UploadedResearchPdf } from './research-pdf-upload.config';
 
 const FINDING_STATUS_BY_DECISION: Record<ResearchDecisionAction, ResearchFindingStatus> = {
@@ -35,7 +42,13 @@ const FINDING_STATUS_BY_DECISION: Record<ResearchDecisionAction, ResearchFinding
 
 @Injectable()
 export class ResearchService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly sources: SourcesService,
+    private readonly editorial: EntityEditorialService,
+    private readonly citations: CitationsService,
+    private readonly taxonomy: EntityTaxonomyService,
+  ) {}
 
   getStudioStatus() {
     return {
@@ -71,32 +84,8 @@ export class ResearchService {
     });
   }
 
-  searchSources(query: SearchResearchSourcesQuery) {
-    const q = query.q?.trim();
-    const contains = q ? { contains: q, mode: 'insensitive' as const } : undefined;
-
-    return this.prisma.source.findMany({
-      where: contains
-        ? {
-            OR: [
-              { title: contains },
-              { author: contains },
-              { publisher: contains },
-              { url: contains },
-              {
-                translations: {
-                  some: {
-                    OR: [{ title: contains }, { author: contains }, { publisher: contains }],
-                  },
-                },
-              },
-            ],
-          }
-        : undefined,
-      orderBy: { createdAt: 'desc' },
-      take: query.limit ?? 8,
-      include: { translations: { orderBy: { locale: 'asc' } } },
-    });
+  searchSources(query: SearchSourcesQuery) {
+    return this.sources.search(query);
   }
 
   async getProject(id: string) {
@@ -130,6 +119,21 @@ export class ResearchService {
             createdAt: true,
             updatedAt: true,
           },
+        },
+        entityCandidates: {
+          include: {
+            evidence: { include: { evidence: true } },
+            suggestedEntity: { select: { id: true, title: true, kind: true } },
+          },
+          orderBy: { updatedAt: 'desc' },
+        },
+        relationCandidates: {
+          include: {
+            evidence: { include: { evidence: true } },
+            fromCandidate: { select: { id: true, title: true, kind: true } },
+            toCandidate: { select: { id: true, title: true, kind: true } },
+          },
+          orderBy: { updatedAt: 'desc' },
         },
         claims: {
           include: {
@@ -318,6 +322,247 @@ export class ResearchService {
     return this.getProject(projectId);
   }
 
+  async promoteRelationCandidate(projectId: string, candidateId: string) {
+    const candidate = await this.prisma.researchRelationCandidate.findFirst({
+      where: { id: candidateId, projectId },
+      include: {
+        fromCandidate: true,
+        toCandidate: true,
+        evidence: { include: { evidence: true } },
+      },
+    });
+    if (!candidate) throw new NotFoundException('Research relation candidate not found');
+    if (candidate.reviewState !== ResearchProposalReviewState.REVIEWED)
+      throw new BadRequestException(
+        'Research relation candidate must be reviewed before promotion',
+      );
+    if (!candidate.relationTypeId)
+      throw new BadRequestException('Research relation candidate needs a relation type');
+    if (!candidate.fromCandidate.suggestedEntityId || !candidate.toCandidate.suggestedEntityId)
+      throw new BadRequestException('Both relation candidates must resolve to canonical entities');
+    const relation = await this.taxonomy.createRelation(candidate.fromCandidate.suggestedEntityId, {
+      toId: candidate.toCandidate.suggestedEntityId,
+      relationTypeId: candidate.relationTypeId,
+      justification: candidate.explanation ?? undefined,
+      confidence: candidate.confidence,
+      status: 'DRAFT',
+    });
+    await Promise.all(
+      candidate.evidence.map(({ evidence }) =>
+        this.citations.create('relation', relation.id, {
+          sourceId: evidence.sourceId,
+          researchEvidenceId: evidence.id,
+          stance: 'SUPPORTS',
+          locator: evidence.locator,
+          quote: evidence.quote,
+        }),
+      ),
+    );
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async reviewRelationCandidate(
+    projectId: string,
+    candidateId: string,
+    dto: ReviewResearchFindingProposalDto,
+  ) {
+    if (
+      dto.reviewState !== ResearchProposalReviewState.REVIEWED &&
+      dto.reviewState !== ResearchProposalReviewState.REJECTED
+    )
+      throw new BadRequestException('Unsupported candidate review state');
+    const candidate = await this.prisma.researchRelationCandidate.findFirst({
+      where: { id: candidateId, projectId },
+      select: { id: true },
+    });
+    if (!candidate) throw new NotFoundException('Research relation candidate not found');
+    await this.prisma.researchRelationCandidate.update({
+      where: { id: candidateId },
+      data: { reviewState: dto.reviewState },
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async createRelationCandidate(projectId: string, dto: CreateResearchRelationCandidateDto) {
+    if (dto.fromCandidateId === dto.toCandidateId)
+      throw new BadRequestException('Relation candidates need two different entities');
+    const evidenceIds = [...new Set(dto.evidenceIds.map((id) => id.trim()).filter(Boolean))];
+    const [candidates, evidence, relationType] = await Promise.all([
+      this.prisma.researchEntityCandidate.count({
+        where: { projectId, id: { in: [dto.fromCandidateId, dto.toCandidateId] } },
+      }),
+      this.prisma.researchEvidence.count({ where: { projectId, id: { in: evidenceIds } } }),
+      dto.relationTypeId
+        ? this.prisma.relationType.findUnique({
+            where: { id: dto.relationTypeId },
+            select: { id: true },
+          })
+        : null,
+    ]);
+    if (candidates !== 2) throw new NotFoundException('Research entity candidate not found');
+    if (evidence !== evidenceIds.length) throw new NotFoundException('Research evidence not found');
+    if (dto.relationTypeId && !relationType) throw new NotFoundException('Relation type not found');
+    await this.prisma.researchRelationCandidate.create({
+      data: {
+        projectId,
+        fromCandidateId: dto.fromCandidateId,
+        toCandidateId: dto.toCandidateId,
+        relationTypeId: dto.relationTypeId || null,
+        explanation: dto.explanation?.trim() || null,
+        evidence: { create: evidenceIds.map((evidenceId) => ({ evidenceId })) },
+      },
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async promoteEntityCandidate(
+    projectId: string,
+    candidateId: string,
+    dto: PromoteResearchFindingDto,
+  ) {
+    const candidate = await this.prisma.researchEntityCandidate.findFirst({
+      where: { id: candidateId, projectId },
+      include: { evidence: { include: { evidence: true } } },
+    });
+    if (!candidate) throw new NotFoundException('Research entity candidate not found');
+    if (candidate.reviewState !== ResearchProposalReviewState.REVIEWED)
+      throw new BadRequestException('Research entity candidate must be reviewed before promotion');
+    if (candidate.suggestedEntityId)
+      throw new BadRequestException('Research entity candidate already matches an existing entity');
+    const entity = await this.editorial.create({
+      type: dto.type,
+      kind: candidate.kind,
+      slug: dto.slug.trim(),
+      title: dto.title?.trim() || candidate.title,
+      summary: dto.summary?.trim() || candidate.summary || undefined,
+      status: 'DRAFT',
+    });
+    await Promise.all(
+      candidate.evidence.map(({ evidence }) =>
+        this.citations.create('entity', entity.id, {
+          sourceId: evidence.sourceId,
+          researchEvidenceId: evidence.id,
+          stance: 'SUPPORTS',
+          locator: evidence.locator,
+          quote: evidence.quote,
+        }),
+      ),
+    );
+    await this.prisma.researchEntityCandidate.update({
+      where: { id: candidate.id },
+      data: { suggestedEntityId: entity.id },
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async reviewEntityCandidate(
+    projectId: string,
+    candidateId: string,
+    dto: ReviewResearchFindingProposalDto,
+  ) {
+    if (
+      dto.reviewState !== ResearchProposalReviewState.REVIEWED &&
+      dto.reviewState !== ResearchProposalReviewState.REJECTED
+    )
+      throw new BadRequestException('Unsupported candidate review state');
+    const candidate = await this.prisma.researchEntityCandidate.findFirst({
+      where: { id: candidateId, projectId },
+      select: { id: true },
+    });
+    if (!candidate) throw new NotFoundException('Research entity candidate not found');
+    await this.prisma.researchEntityCandidate.update({
+      where: { id: candidateId },
+      data: { reviewState: dto.reviewState },
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async createEntityCandidate(projectId: string, dto: CreateResearchEntityCandidateDto) {
+    await this.requireProject(projectId);
+    const evidenceIds = [...new Set(dto.evidenceIds.map((id) => id.trim()).filter(Boolean))];
+    const evidence = await this.prisma.researchEvidence.count({
+      where: { projectId, id: { in: evidenceIds } },
+    });
+    if (evidence !== evidenceIds.length) throw new NotFoundException('Research evidence not found');
+    if (dto.suggestedEntityId) {
+      const entity = await this.prisma.entity.findUnique({
+        where: { id: dto.suggestedEntityId },
+        select: { id: true },
+      });
+      if (!entity) throw new NotFoundException('Suggested entity not found');
+    }
+    await this.prisma.researchEntityCandidate.create({
+      data: {
+        projectId,
+        kind: dto.kind,
+        title: dto.title.trim(),
+        summary: dto.summary?.trim() || null,
+        suggestedEntityId: dto.suggestedEntityId?.trim() || null,
+        evidence: { create: evidenceIds.map((evidenceId) => ({ evidenceId })) },
+      },
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async promoteFindingToEntity(
+    projectId: string,
+    findingId: string,
+    dto: PromoteResearchFindingDto,
+  ) {
+    const finding = await this.prisma.researchFinding.findFirst({
+      where: { id: findingId, projectId },
+      select: {
+        id: true,
+        status: true,
+        title: true,
+        summary: true,
+        promotedEntityId: true,
+        evidence: {
+          select: {
+            evidence: { select: { id: true, sourceId: true, locator: true, quote: true } },
+          },
+        },
+      },
+    });
+    if (!finding) throw new NotFoundException('Research finding not found');
+    if (finding.status !== ResearchFindingStatus.ACCEPTED) {
+      throw new BadRequestException('Research finding must be accepted before promotion');
+    }
+    if (finding.promotedEntityId)
+      throw new BadRequestException('Research finding is already promoted');
+
+    const entity = await this.editorial.create({
+      type: dto.type,
+      kind: dto.kind,
+      slug: dto.slug.trim(),
+      title: dto.title?.trim() || finding.title,
+      summary: dto.summary?.trim() || finding.summary || undefined,
+      status: 'DRAFT',
+    });
+    await Promise.all(
+      finding.evidence.map(({ evidence }) =>
+        this.citations.create('entity', entity.id, {
+          sourceId: evidence.sourceId,
+          researchEvidenceId: evidence.id,
+          stance: 'SUPPORTS',
+          locator: evidence.locator,
+          quote: evidence.quote,
+        }),
+      ),
+    );
+    await this.prisma.researchFinding.update({
+      where: { id: finding.id },
+      data: { promotedEntityId: entity.id },
+    });
+    await this.touchProject(projectId);
+    return entity;
+  }
   async createMaterial(projectId: string, dto: CreateResearchMaterialDto) {
     await this.requireProject(projectId);
 

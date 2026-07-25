@@ -31,5 +31,6 @@ import { EntityMediaLifecycleService } from '../media/entity-media-lifecycle.ser
     EntityTaxonomyService,
     EntityCreditsService,
   ],
+  exports: [EntityEditorialService, EntityTaxonomyService],
 })
 export class EntitiesModule {}

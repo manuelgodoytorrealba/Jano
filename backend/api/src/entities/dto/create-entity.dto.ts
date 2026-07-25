@@ -1,9 +1,12 @@
 import { IsEnum, IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
-import { ContentLevel, EntityStatus, EntityType } from '@prisma/client';
+import { ContentLevel, EntityStatus, EntityType, KnowledgeEntityKind } from '@prisma/client';
 
 export class CreateEntityDto {
   @IsEnum(EntityType)
   type!: EntityType;
+  @IsOptional()
+  @IsEnum(KnowledgeEntityKind)
+  kind?: KnowledgeEntityKind;
 
   @IsString()
   @MaxLength(180)

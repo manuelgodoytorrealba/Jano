@@ -61,12 +61,13 @@ describe('ResearchService', () => {
       findMany: jest.fn(),
     },
   };
+  const sources = { search: jest.fn() };
   let service: ResearchService;
 
   beforeEach(() => {
     jest.resetAllMocks();
     prisma.$transaction.mockImplementation(async (callback) => callback(tx));
-    service = new ResearchService(prisma as unknown as PrismaService);
+    service = new ResearchService(prisma as unknown as PrismaService, sources as never);
   });
 
   it('creates a project as private research state, not a canonical entity', async () => {
@@ -168,6 +169,21 @@ describe('ResearchService', () => {
           },
           orderBy: { updatedAt: 'desc' },
         },
+        entityCandidates: {
+          include: {
+            evidence: { include: { evidence: true } },
+            suggestedEntity: { select: { id: true, title: true, kind: true } },
+          },
+          orderBy: { updatedAt: 'desc' },
+        },
+        relationCandidates: {
+          include: {
+            evidence: { include: { evidence: true } },
+            fromCandidate: { select: { id: true, title: true, kind: true } },
+            toCandidate: { select: { id: true, title: true, kind: true } },
+          },
+          orderBy: { updatedAt: 'desc' },
+        },
         findingProposals: {
           include: { evidence: { include: { evidence: true } } },
           orderBy: { createdAt: 'desc' },
@@ -192,34 +208,11 @@ describe('ResearchService', () => {
   });
 
   it('searches existing canonical sources without creating research-owned sources', async () => {
-    prisma.source.findMany.mockResolvedValue([]);
+    sources.search.mockResolvedValue([]);
 
     await service.searchSources({ q: '  Prado  ', limit: 5 });
 
-    expect(prisma.source.findMany).toHaveBeenCalledWith({
-      where: {
-        OR: [
-          { title: { contains: 'Prado', mode: 'insensitive' } },
-          { author: { contains: 'Prado', mode: 'insensitive' } },
-          { publisher: { contains: 'Prado', mode: 'insensitive' } },
-          { url: { contains: 'Prado', mode: 'insensitive' } },
-          {
-            translations: {
-              some: {
-                OR: [
-                  { title: { contains: 'Prado', mode: 'insensitive' } },
-                  { author: { contains: 'Prado', mode: 'insensitive' } },
-                  { publisher: { contains: 'Prado', mode: 'insensitive' } },
-                ],
-              },
-            },
-          },
-        ],
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 5,
-      include: { translations: { orderBy: { locale: 'asc' } } },
-    });
+    expect(sources.search).toHaveBeenCalledWith({ q: '  Prado  ', limit: 5 });
   });
 
   it('throws when a project does not exist', async () => {

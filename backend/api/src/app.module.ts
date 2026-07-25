@@ -11,6 +11,10 @@ import { HomeDecksModule } from './home-decks/home-decks.module';
 import { SearchModule } from './search/search.module';
 import { RelationTypesModule } from './relation-types/relation-types.module';
 import { TagsModule } from './tags/tags.module';
+import { TaxonomiesModule } from './taxonomies/taxonomies.module';
+import { AttributesModule } from './attributes/attributes.module';
+import { CitationsModule } from './citations/citations.module';
+import { SourcesModule } from './sources/sources.module';
 import { CuratedModule } from './curated/curated.module';
 import { ResearchModule } from './research/research.module';
 import { validateEnv } from './config/env.validation';
@@ -35,6 +39,10 @@ import { HealthController } from './health.controller';
     SearchModule,
     RelationTypesModule,
     TagsModule,
+    TaxonomiesModule,
+    AttributesModule,
+    CitationsModule,
+    SourcesModule,
     CuratedModule,
     ResearchModule,
   ],

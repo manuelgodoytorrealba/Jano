@@ -34,6 +34,7 @@ import {
   GraphRenderedNode,
   GraphTooltip,
   GraphViewport,
+  graphNodeTypeKey,
 } from './graph.models';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import { ExplorerPersistedState, saveExplorerState } from './graph-persistence';
@@ -1111,7 +1112,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       createNodeHoverTooltip({
         event,
         title: node.label,
-        type: node.type,
+        type: graphNodeTypeKey(node),
         body: node.metadata?.summary ?? null,
       }),
     );

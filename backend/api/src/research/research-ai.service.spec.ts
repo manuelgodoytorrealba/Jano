@@ -99,7 +99,7 @@ describe('ResearchAIService', () => {
 
     expect(provider.runStructured).toHaveBeenCalledWith({
       task: 'research.extract_findings',
-      schemaVersion: '1',
+      schemaVersion: '2',
       input: expect.objectContaining({ sourceId: 'source-1' }),
     });
     expect(tx.researchFindingProposal.create).toHaveBeenCalledWith({

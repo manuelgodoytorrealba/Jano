@@ -10,6 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import {
   AdminEntityAliasRecord,
+  AdminEntityClassificationRecord,
   AdminEntityDetailsPayload,
   AdminEntityResponse,
   AdminEntityTagRecord,
@@ -18,6 +19,8 @@ import {
 } from '../../../core/api/admin-entities.api';
 import { AdminEntityFormDraft } from './admin-entity-content.presenter';
 import { AdminEntityDetailsEditorComponent } from './admin-entity-details-editor.component';
+import { AdminCitationsEditorComponent } from './admin-citations-editor.component';
+import { AdminEntityAttributesEditorComponent } from './admin-entity-attributes-editor.component';
 import {
   AdminEntityPreviewLocalizedDetailsForm,
   AdminEntityPreviewTranslationForm,
@@ -37,6 +40,7 @@ export type AdminEntityGlobalDataDraft = {
   localizedDetails: Record<AdminLocale, AdminEntityPreviewLocalizedDetailsForm>;
   details: AdminEntityDetailsPayload;
   tags: AdminEntityTagRecord[];
+  classifications: AdminEntityClassificationRecord[];
   aliases: AdminEntityAliasRecord[];
 };
 
@@ -48,6 +52,8 @@ export type AdminEntityGlobalDataDraft = {
     AdminEntityTranslationEditorComponent,
     AdminEntityTaxonomyEditorComponent,
     AdminEntityDetailsEditorComponent,
+    AdminCitationsEditorComponent,
+    AdminEntityAttributesEditorComponent,
   ],
   templateUrl: './admin-entity-global-data.component.html',
   styleUrls: [
@@ -61,6 +67,7 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
   @Input() entityId = '';
   @Input({ required: true }) form: AdminEntityFormDraft = {
     type: 'ARTWORK',
+    kind: 'WORK',
     title: '',
     slug: '',
     summary: '',
@@ -77,12 +84,22 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
   >;
   @Input() details: AdminEntityDetailsPayload = {};
   @Input() tags: AdminEntityTagRecord[] = [];
+  @Input() classifications: AdminEntityClassificationRecord[] = [];
   @Input() aliases: AdminEntityAliasRecord[] = [];
 
   @Output() draftChange = new EventEmitter<AdminEntityGlobalDataDraft>();
   @Output() translationSaved = new EventEmitter<AdminEntityResponse>();
   @Output() detailsSaved = new EventEmitter<AdminEntityResponse>();
   @Output() detailsStatusChange = new EventEmitter<{ saving: boolean; error: string }>();
+
+  readonly kinds: NonNullable<AdminEntityPayload['kind']>[] = [
+    'PERSON',
+    'WORK',
+    'ABSTRACTION',
+    'EVENT',
+    'PLACE',
+    'ORGANIZATION',
+  ];
 
   readonly types: AdminEntityPayload['type'][] = [
     'ARTWORK',
@@ -104,9 +121,10 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
   private slugTouched = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['form']) this.form = { ...this.form };
+    if (changes['form']) this.form = { ...this.form, kind: this.form.kind ?? 'WORK' };
     if (changes['details']) this.details = { ...this.details };
     if (changes['tags']) this.tags = [...this.tags];
+    if (changes['classifications']) this.classifications = [...this.classifications];
     if (changes['aliases']) this.aliases = [...this.aliases];
     if (changes['translations']) {
       this.translations = {
@@ -152,6 +170,7 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
 
   onTaxonomyStateChange(state: AdminEntityTaxonomyState): void {
     this.tags = state.tags;
+    this.classifications = state.classifications;
     this.aliases = state.aliases;
     this.emitDraft();
   }
@@ -178,6 +197,7 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
       },
       details: { ...this.details },
       tags: [...this.tags],
+      classifications: [...this.classifications],
       aliases: [...this.aliases],
     });
   }

@@ -10,13 +10,22 @@ const TYPES = [
   'CONCEPT',
   'PLACE',
   'TEXT',
+  'EVENT',
+  'ORGANIZATION',
 ] as const;
 export type EntityType = (typeof TYPES)[number];
+
+const KINDS = ['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'] as const;
+export type KnowledgeEntityKind = (typeof KINDS)[number];
 
 export class ListEntitiesQuery {
   @IsOptional()
   @IsIn(TYPES)
   type?: EntityType;
+
+  @IsOptional()
+  @IsIn(KINDS)
+  kind?: KnowledgeEntityKind;
 
   @IsOptional()
   @IsString()
@@ -66,6 +75,14 @@ export class ListEntitiesQuery {
   @IsOptional()
   @IsString()
   nationality?: string;
+
+  @IsOptional()
+  @IsString()
+  taxonomy?: string;
+
+  @IsOptional()
+  @IsString()
+  term?: string;
 
   @IsOptional()
   @IsString()

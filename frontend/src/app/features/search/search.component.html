@@ -1,14 +1,14 @@
 <main class="search-page page-shell">
   @if (vm$ | async; as vm) {
     <nav class="type-chips ds-panel" [attr.aria-label]="i18n.t('search.filterAria')">
-      @for (type of types; track type || 'ALL') {
+      @for (kind of kinds; track kind || 'ALL') {
         <button
           type="button"
           class="type-chip"
-          [class.is-active]="vm.activeType === type"
-          (click)="setType(type)"
+          [class.is-active]="vm.activeKind === kind"
+          (click)="setKind(kind)"
         >
-          {{ typeLabel(type) }}
+          {{ kindLabel(kind) }}
         </button>
       }
       @if (vm.activeTag) {

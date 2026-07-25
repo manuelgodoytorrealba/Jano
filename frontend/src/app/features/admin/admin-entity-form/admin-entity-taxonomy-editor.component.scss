@@ -29,6 +29,10 @@
   cursor: pointer;
 }
 
+.tag-chip--classification {
+  border-color: rgba(168, 112, 255, 0.45);
+}
+
 .tag-chip--alias {
   display: inline-flex;
   align-items: center;

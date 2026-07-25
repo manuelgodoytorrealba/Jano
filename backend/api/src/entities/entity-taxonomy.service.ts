@@ -6,22 +6,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateEntityAliasDto, type EntityAliasKindValue } from './dto/create-entity-alias.dto';
+import { CreateEntityClassificationDto } from './dto/create-entity-classification.dto';
+import { RelationMutationDto } from './dto/relation-mutation.dto';
 import { UpdateEntityAliasDto } from './dto/update-entity-alias.dto';
 import { serializeRelation } from './entity.presenter';
 import { EntityReadService } from './entity-read.service';
 import { normalizeLocale } from './entity-translation.resolver';
 
 type PrismaKnownError = { code?: string };
-
-export type RelationMutationDto = {
-  toId?: string;
-  relationTypeId?: string;
-  type?: string;
-  justification?: string;
-  justificationEs?: string;
-  justificationEn?: string;
-  weight?: number | null;
-};
 
 @Injectable()
 export class EntityTaxonomyService {
@@ -116,6 +108,7 @@ export class EntityTaxonomyService {
 
     const relationType = await this.findRelationType(dto);
     if (!relationType) throw new BadRequestException('Valid relation type is required');
+    this.assertValidYears(dto.validFromYear, dto.validToYear);
 
     const relation = await this.prisma.relation.create({
       data: {
@@ -124,6 +117,10 @@ export class EntityTaxonomyService {
         relationTypeId: relationType.id,
         justification: dto.justificationEs?.trim() || dto.justification?.trim() || undefined,
         weight: dto.weight,
+        status: dto.status ?? 'PUBLISHED',
+        confidence: dto.confidence,
+        validFromYear: dto.validFromYear,
+        validToYear: dto.validToYear,
       },
     });
     await this.upsertRelationTranslations(relation.id, dto);
@@ -140,6 +137,10 @@ export class EntityTaxonomyService {
     const relationType =
       dto.relationTypeId || dto.type ? await this.findRelationType(dto) : existing.relationType;
     if (!relationType) throw new BadRequestException('Valid relation type is required');
+    this.assertValidYears(
+      dto.validFromYear !== undefined ? dto.validFromYear : existing.validFromYear,
+      dto.validToYear !== undefined ? dto.validToYear : existing.validToYear,
+    );
     await this.prisma.relation.update({
       where: { id: relationId },
       data: {
@@ -149,6 +150,10 @@ export class EntityTaxonomyService {
             ? dto.justificationEs?.trim() || dto.justification?.trim() || null
             : undefined,
         weight: dto.weight !== undefined ? dto.weight : undefined,
+        status: dto.status,
+        confidence: dto.confidence !== undefined ? dto.confidence : undefined,
+        validFromYear: dto.validFromYear !== undefined ? dto.validFromYear : undefined,
+        validToYear: dto.validToYear !== undefined ? dto.validToYear : undefined,
       },
     });
     await this.upsertRelationTranslations(relationId, dto);
@@ -163,6 +168,39 @@ export class EntityTaxonomyService {
     if (!relation) throw new NotFoundException('Relation not found');
 
     await this.prisma.relation.delete({ where: { id: relationId } });
+    return { ok: true };
+  }
+
+  async addClassification(entityId: string, dto: CreateEntityClassificationDto) {
+    const [entity, term] = await Promise.all([
+      this.prisma.entity.findUnique({ where: { id: entityId }, select: { id: true } }),
+      this.prisma.taxonomyTerm.findUnique({ where: { id: dto.termId }, select: { id: true } }),
+    ]);
+    if (!entity) throw new NotFoundException('Entity not found');
+    if (!term) throw new NotFoundException('Taxonomy term not found');
+
+    return this.prisma.entityClassification.upsert({
+      where: { entityId_termId: { entityId, termId: dto.termId } },
+      update: { confidence: dto.confidence ?? null, source: dto.source?.trim() || 'MANUAL' },
+      create: {
+        entityId,
+        termId: dto.termId,
+        confidence: dto.confidence ?? null,
+        source: dto.source?.trim() || 'MANUAL',
+      },
+      include: { term: { include: { taxonomy: true } } },
+    });
+  }
+
+  async removeClassification(entityId: string, termId: string) {
+    const where = { entityId_termId: { entityId, termId } };
+    const existing = await this.prisma.entityClassification.findUnique({
+      where,
+      select: { entityId: true },
+    });
+    if (!existing) throw new NotFoundException('Entity classification not found');
+
+    await this.prisma.entityClassification.delete({ where });
     return { ok: true };
   }
 
@@ -201,6 +239,18 @@ export class EntityTaxonomyService {
     return !value || value === 'und' ? 'und' : normalizeLocale(value);
   }
 
+  private assertValidYears(validFromYear?: number | null, validToYear?: number | null) {
+    if (
+      validFromYear !== null &&
+      validFromYear !== undefined &&
+      validToYear !== null &&
+      validToYear !== undefined &&
+      validFromYear > validToYear
+    ) {
+      throw new BadRequestException('validFromYear must not be after validToYear');
+    }
+  }
+
   private findRelationType(dto: RelationMutationDto) {
     if (dto.relationTypeId) {
       return this.prisma.relationType.findUnique({ where: { id: dto.relationTypeId } });
@@ -237,7 +287,7 @@ export class EntityTaxonomyService {
       include: {
         relationType: { include: { translations: { orderBy: { locale: 'asc' } } } },
         translations: { orderBy: { locale: 'asc' } },
-        to: { select: { id: true, title: true, slug: true, type: true } },
+        to: { select: { id: true, title: true, slug: true, type: true, kind: true } },
       },
     });
     return serializeRelation(relation, 'es');

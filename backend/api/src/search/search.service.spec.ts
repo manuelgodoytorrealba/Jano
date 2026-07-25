@@ -75,6 +75,7 @@ describe('SearchService', () => {
         slug: 'guernica',
         type: 'ARTWORK',
         title: 'Guernica',
+        kind: 'WORK',
         summary: 'Resumen base',
         content: 'Contenido base',
         status: 'PUBLISHED',
@@ -112,6 +113,7 @@ describe('SearchService', () => {
     expect(result.items).toEqual([
       expect.objectContaining({
         id: 'entity-1',
+        kind: 'WORK',
         title: 'Guernica (EN)',
         summary: 'English summary',
         matchedFields: ['title'],

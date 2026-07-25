@@ -9,6 +9,15 @@ export type PublicEntityType =
   | 'TEXT'
   | string;
 
+export type PublicKnowledgeEntityKind =
+  | 'PERSON'
+  | 'WORK'
+  | 'ABSTRACTION'
+  | 'EVENT'
+  | 'PLACE'
+  | 'ORGANIZATION'
+  | string;
+
 export interface PublicEntityMediaAsset {
   id?: string | null;
   url?: string | null;
@@ -45,6 +54,7 @@ export interface PublicEntityRelationEndpoint {
   slug: string;
   title: string;
   type: string;
+  kind?: PublicKnowledgeEntityKind | null;
   summary?: string | null;
 }
 
@@ -71,6 +81,21 @@ export interface PublicEntityTagItem {
   slug?: string | null;
   label?: string | null;
   category?: string | null;
+}
+
+export interface PublicEntityClassification {
+  confidence?: number | null;
+  source?: string | null;
+  term?: {
+    id?: string | null;
+    key?: string | null;
+    label?: string | null;
+    taxonomy?: {
+      id?: string | null;
+      key?: string | null;
+      label?: string | null;
+    } | null;
+  } | null;
 }
 
 export interface PublicEntityArtworkDetails {
@@ -126,6 +151,44 @@ export interface PublicEntitySourceRef {
   note?: string | null;
 }
 
+export interface PublicEntityCitation {
+  id: string;
+  stance: 'SUPPORTS' | 'CONTRADICTS' | 'MENTIONS' | string;
+  locator?: string | null;
+  quote?: string | null;
+  source: {
+    id: string;
+    type: string;
+    title: string;
+    author?: string | null;
+    publisher?: string | null;
+    year?: number | null;
+    url?: string | null;
+  };
+}
+
+export interface PublicEntityAttribute {
+  id: string;
+  locale?: string | null;
+  definition: {
+    id: string;
+    key: string;
+    label: string;
+    valueType: string;
+    isMultiple: boolean;
+  };
+  valueText?: string | null;
+  valueNumber?: number | null;
+  valueBoolean?: boolean | null;
+  valueDate?: string | null;
+  valueYear?: number | null;
+  valueJson?: unknown;
+  confidence?: number | null;
+  validFromYear?: number | null;
+  validToYear?: number | null;
+  citations?: PublicEntityCitation[] | null;
+}
+
 export interface PublicEntityMediaLibrary {
   resolvedSlots?: Array<{
     slotKey?: string | null;
@@ -150,6 +213,7 @@ export interface PublicEntity {
   slug: string;
   title: string;
   type: PublicEntityType;
+  kind?: PublicKnowledgeEntityKind | null;
   summary?: string | null;
   content?: string | null;
   status?: string | null;
@@ -166,6 +230,8 @@ export interface PublicEntity {
   outgoing?: PublicEntityRelation[] | null;
   incoming?: PublicEntityRelation[] | null;
   tags?: PublicEntityTagReference[] | PublicEntityTagItem[] | null;
+  classifications?: PublicEntityClassification[] | null;
+  attributes?: PublicEntityAttribute[] | null;
   sourceRefs?: PublicEntitySourceRef[] | null;
   translationMeta?: PublicEntityTranslationMeta | null;
   mediaLinks?: Array<{ media?: PublicEntityMediaAsset | null; [key: string]: unknown }> | null;

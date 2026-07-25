@@ -15,6 +15,7 @@ import {
   GraphRenderedNode,
   GraphTooltip,
   GraphTypeMeta,
+  graphNodeTypeKey,
 } from './graph.models';
 
 export function graphImageBackdrop(imageUrl: string | null): string | null {
@@ -87,7 +88,7 @@ export function buildRenderedGraphNodes(options: {
 
   return options.nodes.map((node) => {
     const point = options.positions[node.id] ?? { x: 0, y: 0 };
-    const nodeVisual = getEntityTypeConfig(node.type);
+    const nodeVisual = getEntityTypeConfig(graphNodeTypeKey(node));
     const size = graphNodeSize(node, options.centerId, options.selectedNodeId);
     const labelDirection = node.id === options.centerId || point.x >= centerPoint.x ? 1 : -1;
     const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
@@ -116,7 +117,7 @@ export function buildRenderedGraphNodes(options: {
       labelTextAnchor: labelDirection === 1 ? 'start' : 'end',
       nodeVisual,
       titleLabel: compactGraphLabel(node.label, isPrimaryLabel ? 34 : 30),
-      typeLabel: getEntityTypeConfig(node.type).label,
+      typeLabel: getEntityTypeConfig(graphNodeTypeKey(node)).label,
     };
   });
 }
@@ -137,7 +138,7 @@ export function contextualGraphTypeMeta(node: GraphNode | null): GraphTypeMeta |
     return null;
   }
 
-  const config = getEntityTypeConfig(node.type);
+  const config = getEntityTypeConfig(graphNodeTypeKey(node));
   return { label: config.label, color: config.color };
 }
 
@@ -164,12 +165,13 @@ export function buildGraphAmbientFields(options: {
     }
 
     const weight = 1 + Math.min(node.degree ?? 0, 6) * 0.35;
-    const bucket = groups.get(node.type) ?? { nodes: [], totalWeight: 0, weightX: 0, weightY: 0 };
+    const type = graphNodeTypeKey(node);
+    const bucket = groups.get(type) ?? { nodes: [], totalWeight: 0, weightX: 0, weightY: 0 };
     bucket.nodes.push(node);
     bucket.totalWeight += weight;
     bucket.weightX += point.x * weight;
     bucket.weightY += point.y * weight;
-    groups.set(node.type, bucket);
+    groups.set(type, bucket);
   }
 
   return Array.from(groups.entries())

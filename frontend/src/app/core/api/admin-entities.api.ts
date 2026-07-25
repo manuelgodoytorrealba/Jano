@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { apiUrl } from './api-base';
-import { PublicEntityResolvedMedia } from './entities.models';
+import { PublicEntityResolvedMedia, type PublicKnowledgeEntityKind } from './entities.models';
 import { GraphResponseDto } from './graph.models';
 
 export type AdminLocale = 'es' | 'en';
@@ -26,7 +26,18 @@ export type AdminEntityTranslation = AdminEntityTranslationPayload & {
 export type AdminTranslationStatus = Record<string, 'complete' | 'partial' | 'missing'>;
 
 export type AdminEntityPayload = {
-  type: 'ARTWORK' | 'ARTIST' | 'ARTICLE' | 'CONCEPT' | 'MOVEMENT' | 'PERIOD' | 'TEXT' | 'PLACE';
+  type:
+    | 'ARTWORK'
+    | 'ARTIST'
+    | 'ARTICLE'
+    | 'CONCEPT'
+    | 'MOVEMENT'
+    | 'PERIOD'
+    | 'TEXT'
+    | 'PLACE'
+    | 'EVENT'
+    | 'ORGANIZATION';
+  kind?: PublicKnowledgeEntityKind;
   title: string;
   slug: string;
   summary?: string;
@@ -131,6 +142,27 @@ export type AdminEntityTagRecord = {
   } | null;
 };
 
+export type AdminEntityClassificationRecord = {
+  confidence?: number | null;
+  source?: string | null;
+  term?: {
+    id?: string | null;
+    key?: string | null;
+    label?: string | null;
+    taxonomy?: {
+      id?: string | null;
+      key?: string | null;
+      label?: string | null;
+    } | null;
+  } | null;
+};
+
+export type AdminEntityClassificationPayload = {
+  termId: string;
+  confidence?: number;
+  source?: string;
+};
+
 export type AdminEntityAliasKind =
   | 'ALTERNATE_TITLE'
   | 'COMMON_NAME'
@@ -218,6 +250,7 @@ export type AdminEntitySearchListItem = {
   slug: string;
   title: string;
   type: string;
+  kind?: PublicKnowledgeEntityKind | null;
   summary?: string | null;
   status?: string | null;
   contentLevel?: string | null;
@@ -245,6 +278,7 @@ export type AdminEntityRelationEndpoint = {
   slug: string;
   title: string;
   type: string;
+  kind?: PublicKnowledgeEntityKind | null;
 };
 
 export type AdminEntityRelationRecord = {
@@ -262,6 +296,10 @@ export type AdminEntityRelationRecord = {
   justificationEs?: string | null;
   justificationEn?: string | null;
   weight?: number | null;
+  status?: 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | 'REJECTED';
+  confidence?: number | null;
+  validFromYear?: number | null;
+  validToYear?: number | null;
   from?: AdminEntityRelationEndpoint | null;
   to?: AdminEntityRelationEndpoint | null;
 };
@@ -274,6 +312,10 @@ export type AdminCreateRelationPayload = {
   justificationEs?: string;
   justificationEn?: string;
   weight?: number;
+  status?: 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | 'REJECTED';
+  confidence?: number | null;
+  validFromYear?: number | null;
+  validToYear?: number | null;
 };
 
 export type AdminUpdateRelationPayload = {
@@ -283,6 +325,10 @@ export type AdminUpdateRelationPayload = {
   justificationEs?: string;
   justificationEn?: string;
   weight?: number;
+  status?: 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | 'REJECTED';
+  confidence?: number | null;
+  validFromYear?: number | null;
+  validToYear?: number | null;
 };
 
 export type AdminMediaRole =
@@ -438,6 +484,7 @@ export type AdminMediaLibraryPayload = {
 export type AdminEntityResponse = {
   id: string;
   type: AdminEntityPayload['type'];
+  kind?: PublicKnowledgeEntityKind | null;
   title: string;
   slug: string;
   summary?: string | null;
@@ -456,6 +503,7 @@ export type AdminEntityResponse = {
   sourceRefs?: AdminEntitySourceRefRecord[];
   contributors?: AdminEntityContributorRecord[];
   tags?: AdminEntityTagRecord[];
+  classifications?: AdminEntityClassificationRecord[];
   aliases?: AdminEntityAliasRecord[];
   translations?: AdminEntityTranslation[];
   translationStatus?: AdminTranslationStatus;
@@ -517,6 +565,17 @@ export class AdminEntitiesApi {
 
   deleteAlias(id: string, aliasId: string) {
     return this.http.delete<AdminEntityResponse>(`${this.baseUrl}/${id}/aliases/${aliasId}`);
+  }
+
+  addClassification(id: string, data: AdminEntityClassificationPayload) {
+    return this.http.post<AdminEntityClassificationRecord>(
+      `${this.baseUrl}/${id}/classifications`,
+      data,
+    );
+  }
+
+  removeClassification(id: string, termId: string) {
+    return this.http.delete<{ ok: true }>(`${this.baseUrl}/${id}/classifications/${termId}`);
   }
 
   createMedia(entityId: string, data: AdminEntityMediaPayload) {

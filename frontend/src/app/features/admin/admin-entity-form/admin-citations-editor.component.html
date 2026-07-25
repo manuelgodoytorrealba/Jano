@@ -1,0 +1,79 @@
+<section class="citations-editor" aria-label="Evidencias">
+  <span class="citations-editor__title">Evidencias</span>
+  <p class="citations-editor__hint">
+    Fuentes que respaldan, contradicen o mencionan esta afirmación.
+  </p>
+
+  @if (citations.length) {
+    <div class="citations-editor__list">
+      @for (citation of citations; track citation.id) {
+        <article class="citations-editor__item">
+          <div>
+            <strong>{{ citation.source.title }}</strong>
+            <small
+              >{{ citation.stance }}{{ citation.locator ? ' · ' + citation.locator : '' }}</small
+            >
+            @if (citation.quote) {
+              <span>{{ citation.quote }}</span>
+            }
+          </div>
+          <button
+            class="btn btn--danger"
+            type="button"
+            [disabled]="saving"
+            (click)="remove(citation)"
+          >
+            Quitar
+          </button>
+        </article>
+      }
+    </div>
+  }
+
+  <div class="citations-editor__form">
+    <input
+      [(ngModel)]="sourceSearch"
+      (input)="searchSources()"
+      placeholder="Buscar fuente existente…"
+      name="citationSource"
+    />
+    @if (sourceResults.length) {
+      <div class="citations-editor__results">
+        @for (source of sourceResults; track source.id) {
+          <button type="button" (click)="selectSource(source)">
+            <strong>{{ source.title }}</strong>
+            <span>{{ source.author || source.publisher || source.type }}</span>
+          </button>
+        }
+      </div>
+    }
+    @if (selectedSource) {
+      <small class="success-text">Fuente: {{ selectedSource.title }}</small>
+    }
+    <select [(ngModel)]="stance" name="citationStance">
+      <option value="SUPPORTS">Respalda</option>
+      <option value="CONTRADICTS">Contradice</option>
+      <option value="MENTIONS">Menciona</option>
+    </select>
+    <input [(ngModel)]="locator" name="citationLocator" placeholder="Página, capítulo o minuto" />
+    <textarea
+      [(ngModel)]="quote"
+      name="citationQuote"
+      rows="2"
+      placeholder="Cita relevante"
+    ></textarea>
+    <textarea
+      [(ngModel)]="note"
+      name="citationNote"
+      rows="2"
+      placeholder="Nota editorial"
+    ></textarea>
+    <button class="btn" type="button" [disabled]="!selectedSource || saving" (click)="add()">
+      Añadir evidencia
+    </button>
+  </div>
+
+  @if (error) {
+    <small class="error-text">{{ error }}</small>
+  }
+</section>

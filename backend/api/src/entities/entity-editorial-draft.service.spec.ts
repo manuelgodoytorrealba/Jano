@@ -1,7 +1,13 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { EntityReadService } from './entity-read.service';
-import { EntityEditorialService } from './entity-editorial.service';
+import { kindForLegacyEntityType, EntityEditorialService } from './entity-editorial.service';
+
+describe('kindForLegacyEntityType', () => {
+  it('maps artists to people', () => {
+    expect(kindForLegacyEntityType('ARTIST')).toBe('PERSON');
+  });
+});
 
 describe('EntityEditorialService draft creation', () => {
   it('creates a Draft with server-owned provisional identity', async () => {
@@ -28,11 +34,12 @@ describe('EntityEditorialService draft creation', () => {
       ],
     }).compile();
 
-    await module.get(EntityEditorialService).createDraft({ type: 'ARTIST' });
+    await module.get(EntityEditorialService).createDraft({ type: 'ARTIST', kind: 'ORGANIZATION' });
 
     expect(tx.entity.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         type: 'ARTIST',
+        kind: 'ORGANIZATION',
         title: 'Sin título',
         slug: expect.stringMatching(/^_draft-/),
         status: 'DRAFT',

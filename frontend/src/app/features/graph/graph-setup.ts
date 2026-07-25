@@ -8,7 +8,7 @@ import {
   stepForceLayout,
 } from './graph-layout';
 import { GraphResponseDto } from '../../core/api/graph.models';
-import { GraphData, GraphPoint } from './graph.models';
+import { graphNodeTypeKey, GraphData, GraphPoint } from './graph.models';
 
 export interface PreparedGraphState {
   graph: GraphData;
@@ -30,7 +30,9 @@ export interface InitializedLoadedGraphState extends PreparedGraphState {
 
 export function toGraphData(response: GraphResponseDto): GraphData {
   const entityTypes = normalizeGraphFilterValues(
-    response.filters?.entityTypes ?? response.nodes.map((node) => node.type),
+    response.filters?.entityKinds ??
+      response.filters?.entityTypes ??
+      response.nodes.map(graphNodeTypeKey),
   );
   const relationTypes = normalizeGraphFilterValues(
     response.filters?.relationTypes ?? response.edges.map((edge) => edge.relationType),

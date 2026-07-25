@@ -52,6 +52,44 @@
             (ngModelChange)="decisionNoteChange.emit({ findingId: finding.id, note: $event })"
             placeholder="Nota opcional de decisión"
           />
+          @if (finding.status === 'ACCEPTED') {
+            <div class="research-finding-promotion">
+              <select
+                [(ngModel)]="promotionDraft(finding).kind"
+                [name]="'promotion-kind-' + finding.id"
+              >
+                <option value="PERSON">Persona</option>
+                <option value="WORK">Obra</option>
+                <option value="ABSTRACTION">Abstracción</option>
+                <option value="EVENT">Evento</option>
+                <option value="PLACE">Lugar</option>
+                <option value="ORGANIZATION">Organización</option>
+              </select>
+              <select
+                [(ngModel)]="promotionDraft(finding).type"
+                [name]="'promotion-type-' + finding.id"
+              >
+                <option value="ARTIST">Artista</option>
+                <option value="ARTWORK">Obra</option>
+                <option value="CONCEPT">Concepto</option>
+                <option value="EVENT">Evento</option>
+                <option value="PLACE">Lugar</option>
+                <option value="ORGANIZATION">Organización</option>
+              </select>
+              <input
+                [(ngModel)]="promotionDraft(finding).slug"
+                [name]="'promotion-slug-' + finding.id"
+                placeholder="slug-canónico"
+              />
+              <button
+                type="button"
+                [disabled]="actionBusy || !promotionDraft(finding).slug.trim()"
+                (click)="promoteFinding(finding)"
+              >
+                Crear borrador
+              </button>
+            </div>
+          }
           <div class="research-finding-card__actions">
             @for (action of decisionActions; track action) {
               <button

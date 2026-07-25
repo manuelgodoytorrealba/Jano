@@ -187,7 +187,7 @@
 
                   <div class="entity-card__body">
                     <div class="entity-card__badges">
-                      <span class="ds-badge">{{ typeLabel(entity.type) }}</span>
+                      <span class="ds-badge">{{ typeLabel(entity.kind ?? entity.type) }}</span>
                       @if (entity.status) {
                         <span class="ds-badge">{{ statusLabel(entity.status) }}</span>
                       }

@@ -63,6 +63,40 @@ export type CreateResearchFindingPayload = {
   evidenceIds: string[];
 };
 
+export type CreateResearchRelationCandidatePayload = {
+  fromCandidateId: string;
+  toCandidateId: string;
+  evidenceIds: string[];
+  relationTypeId?: string;
+  explanation?: string;
+};
+
+export type CreateResearchEntityCandidatePayload = {
+  kind: 'PERSON' | 'WORK' | 'ABSTRACTION' | 'EVENT' | 'PLACE' | 'ORGANIZATION';
+  title: string;
+  evidenceIds: string[];
+  summary?: string;
+  suggestedEntityId?: string;
+};
+
+export type PromoteResearchFindingPayload = {
+  type:
+    | 'ARTWORK'
+    | 'ARTIST'
+    | 'ARTICLE'
+    | 'CONCEPT'
+    | 'MOVEMENT'
+    | 'PERIOD'
+    | 'TEXT'
+    | 'PLACE'
+    | 'EVENT'
+    | 'ORGANIZATION';
+  kind: 'PERSON' | 'WORK' | 'ABSTRACTION' | 'EVENT' | 'PLACE' | 'ORGANIZATION';
+  slug: string;
+  title?: string;
+  summary?: string;
+};
+
 export type CreateResearchDecisionPayload = {
   action: ResearchDecisionAction;
   note?: string;
@@ -125,6 +159,34 @@ export type ResearchEvidence = {
   context: string | null;
   note: string | null;
   fingerprint: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ResearchRelationCandidate = {
+  id: string;
+  projectId: string;
+  fromCandidate?: { id: string; title: string; kind: string };
+  toCandidate?: { id: string; title: string; kind: string };
+  fromCandidateId: string;
+  toCandidateId: string;
+  relationTypeId: string | null;
+  explanation: string | null;
+  confidence: number | null;
+  reviewState: ResearchProposalReviewState;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ResearchEntityCandidate = {
+  id: string;
+  projectId: string;
+  kind: string;
+  title: string;
+  summary: string | null;
+  confidence: number | null;
+  mentionCount: number;
+  reviewState: ResearchProposalReviewState;
   createdAt: string;
   updatedAt: string;
 };
@@ -252,6 +314,8 @@ export type ResearchProject = ResearchProjectSummary & {
   sources: ResearchProjectSource[];
   evidence: ResearchEvidence[];
   findings: ResearchFinding[];
+  entityCandidates?: ResearchEntityCandidate[];
+  relationCandidates?: ResearchRelationCandidate[];
   findingProposals: ResearchFindingProposal[];
   aiExecutions: ResearchAIExecution[];
   decisions: ResearchDecision[];
@@ -285,6 +349,8 @@ export class ResearchApi {
         ...project,
         materials: project.materials ?? [],
         claims: project.claims ?? [],
+        entityCandidates: project.entityCandidates ?? [],
+        relationCandidates: project.relationCandidates ?? [],
       })),
     );
   }
@@ -353,6 +419,60 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(
       `${this.baseUrl}/${projectId}/finding-proposals/${proposalId}/convert-to-finding`,
       {},
+    );
+  }
+
+  promoteFindingToEntity(
+    projectId: string,
+    findingId: string,
+    data: PromoteResearchFindingPayload,
+  ) {
+    return this.http.post<ResearchProject>(
+      this.baseUrl + '/' + projectId + '/findings/' + findingId + '/promote/entity',
+      data,
+    );
+  }
+
+  createRelationCandidate(projectId: string, data: CreateResearchRelationCandidatePayload) {
+    return this.http.post<ResearchProject>(
+      this.baseUrl + '/' + projectId + '/relation-candidates',
+      data,
+    );
+  }
+
+  createEntityCandidate(projectId: string, data: CreateResearchEntityCandidatePayload) {
+    return this.http.post<ResearchProject>(
+      this.baseUrl + '/' + projectId + '/entity-candidates',
+      data,
+    );
+  }
+
+  reviewRelationCandidate(
+    projectId: string,
+    candidateId: string,
+    reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
+  ) {
+    return this.http.post<ResearchProject>(
+      this.baseUrl + '/' + projectId + '/relation-candidates/' + candidateId + '/review',
+      { reviewState },
+    );
+  }
+
+  promoteRelationCandidate(projectId: string, candidateId: string) {
+    return this.http.post<ResearchProject>(
+      this.baseUrl + '/' + projectId + '/relation-candidates/' + candidateId + '/promote/relation',
+      {},
+    );
+  }
+
+  reviewEntityCandidate(
+    projectId: string,
+    candidateId: string,
+    reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
+  ) {
+    return this.http.post<ResearchProject>(
+      this.baseUrl + '/' + projectId + '/entity-candidates/' + candidateId + '/review',
+      { reviewState },
     );
   }
 

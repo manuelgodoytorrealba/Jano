@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { EntityStatus } from '@prisma/client';
+import { EntityStatus, KnowledgeAssertionStatus } from '@prisma/client';
 import { attachResolvedMedia } from '../media/media.resolver';
 import { buildAdminMediaLibrary } from '../media/media-diagnostics';
 import { translationStatusSummary } from './entity-translation.resolver';
@@ -66,6 +66,36 @@ type SerializedSourceRefRecord = {
   translations?: SourceRefTranslationRecord[] | null;
 };
 
+type PublicEntityAttributeRecord = {
+  id: string;
+  locale?: string | null;
+  valueText?: string | null;
+  valueNumber?: number | null;
+  valueBoolean?: boolean | null;
+  valueDate?: Date | string | null;
+  valueYear?: number | null;
+  valueJson?: unknown;
+  confidence?: number | null;
+  validFromYear?: number | null;
+  validToYear?: number | null;
+  definition: { id: string; key: string; label: string; valueType: string; isMultiple: boolean };
+  citations?: Array<{
+    id: string;
+    stance: string;
+    locator?: string | null;
+    quote?: string | null;
+    source: {
+      id: string;
+      type: string;
+      title: string;
+      author?: string | null;
+      publisher?: string | null;
+      year?: number | null;
+      url?: string | null;
+    };
+  }> | null;
+};
+
 type EntityRecord = LocalizedEntityRecord & {
   id: string;
   type: string;
@@ -76,7 +106,7 @@ type EntityRecord = LocalizedEntityRecord & {
 
 type AdminEntityDetailRecord = EntityRecord &
   EntityTypedDetailsRecord & {
-    sourceRefs?: SerializedSourceRefRecord[] | null;
+    attributes?: PublicEntityAttributeRecord[] | null;
     outgoing?: Array<
       SerializedRelationRecord & { to?: (LocalizedEntityRecord & EntityTypedDetailsRecord) | null }
     > | null;
@@ -110,6 +140,37 @@ export class EntityReadService {
           include: { tag: true },
           orderBy: [{ tag: { label: 'asc' } }],
         },
+
+        classifications: {
+          include: { term: { include: { taxonomy: true } } },
+          orderBy: [{ term: { taxonomy: { key: 'asc' } } }, { term: { key: 'asc' } }],
+        },
+        attributes: {
+          where: { status: KnowledgeAssertionStatus.PUBLISHED },
+          include: {
+            definition: true,
+            citations: {
+              select: {
+                id: true,
+                stance: true,
+                locator: true,
+                quote: true,
+                source: {
+                  select: {
+                    id: true,
+                    type: true,
+                    title: true,
+                    author: true,
+                    publisher: true,
+                    year: true,
+                    url: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: [{ definition: { label: 'asc' } }, { id: 'asc' }],
+        },
         mediaLinks: {
           include: { media: true },
           orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
@@ -123,6 +184,7 @@ export class EntityReadService {
         },
         outgoing: {
           where: {
+            status: EntityStatus.PUBLISHED,
             to: {
               status: EntityStatus.PUBLISHED,
             },
@@ -143,6 +205,7 @@ export class EntityReadService {
         },
         incoming: {
           where: {
+            status: EntityStatus.PUBLISHED,
             from: {
               status: EntityStatus.PUBLISHED,
             },
@@ -170,7 +233,8 @@ export class EntityReadService {
 
     return {
       ...resolveLocalizedEntityWithDetails(detailedEntity, locale),
-      sourceRefs: (detailedEntity.sourceRefs ?? []).map((ref) => serializeSourceRef(ref, locale)),
+
+      attributes: detailedEntity.attributes ?? [],
       outgoing: (detailedEntity.outgoing ?? []).map((relation) => ({
         ...serializeRelation(relation, locale),
         to: relation.to ? resolveLocalizedEntityWithDetails(relation.to, locale) : relation.to,
@@ -217,6 +281,7 @@ export class EntityReadService {
         slug: true,
         title: true,
         type: true,
+        kind: true,
         summary: true,
         status: true,
         contentLevel: true,
@@ -299,6 +364,10 @@ export class EntityReadService {
           include: { tag: true },
           orderBy: [{ tag: { label: 'asc' } }],
         },
+        classifications: {
+          include: { term: { include: { taxonomy: true } } },
+          orderBy: [{ term: { taxonomy: { key: 'asc' } } }, { term: { key: 'asc' } }],
+        },
         mediaLinks: {
           include: {
             media: true,
@@ -325,6 +394,7 @@ export class EntityReadService {
                 title: true,
                 slug: true,
                 type: true,
+                kind: true,
                 summary: true,
               },
             },
@@ -341,6 +411,7 @@ export class EntityReadService {
                 title: true,
                 slug: true,
                 type: true,
+                kind: true,
                 summary: true,
               },
             },
@@ -388,6 +459,7 @@ export class EntityReadService {
             title: true,
             slug: true,
             type: true,
+            kind: true,
           },
         },
       },
@@ -418,6 +490,7 @@ export class EntityReadService {
             title: true,
             slug: true,
             type: true,
+            kind: true,
           },
         },
       },

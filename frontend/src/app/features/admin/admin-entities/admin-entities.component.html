@@ -42,6 +42,16 @@
     </label>
 
     <label class="archive-field">
+      <span>Clase</span>
+      <select [(ngModel)]="selectedKind" (ngModelChange)="setKind($event)">
+        <option value="">Todas las clases</option>
+        @for (kind of kinds; track kind) {
+          <option [value]="kind">{{ kind }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="archive-field">
       <span>Estado</span>
       <select [(ngModel)]="selectedStatus" (ngModelChange)="setStatus($event)">
         <option value="">Todos los estados</option>

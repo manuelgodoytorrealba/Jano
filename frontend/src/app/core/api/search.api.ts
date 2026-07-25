@@ -5,12 +5,14 @@ import {
   PublicEntityResolvedMedia,
   PublicEntityTagItem,
   PublicEntityTagReference,
+  type PublicKnowledgeEntityKind,
 } from './entities.models';
 
 export type SearchResult = {
   id: string;
   slug: string;
   type: string;
+  kind?: PublicKnowledgeEntityKind | null;
   title: string;
   summary: string | null;
   status: string;
@@ -80,6 +82,7 @@ export class SearchApi {
   search(params: {
     q: string;
     type?: string;
+    kind?: PublicKnowledgeEntityKind;
     tag?: string;
     limit?: number;
     includeDrafts?: boolean;
@@ -88,6 +91,10 @@ export class SearchApi {
 
     if (params.type) {
       httpParams = httpParams.set('type', params.type);
+    }
+
+    if (params.kind) {
+      httpParams = httpParams.set('kind', params.kind);
     }
 
     if (params.tag) {

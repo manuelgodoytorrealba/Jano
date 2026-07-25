@@ -14,6 +14,7 @@ export type TranslationCompleteness = 'complete' | 'partial' | 'missing';
 
 export type AdminEntityFormDraft = {
   type: AdminEntityPayload['type'];
+  kind?: AdminEntityPayload['kind'];
   title: string;
   slug: string;
   summary: string;
@@ -91,6 +92,7 @@ export function buildEntityPayload(
 
   return {
     type: form.type,
+    kind: form.kind ?? undefined,
     title,
     slug: (form.slug ?? '').trim(),
     summary: summary || undefined,

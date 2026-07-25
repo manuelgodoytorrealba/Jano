@@ -10,11 +10,12 @@ import {
   SearchRoute,
   SearchSection,
 } from '../../core/api/search.api';
+import { type PublicKnowledgeEntityKind } from '../../core/api/entities.models';
 import { SeoService } from '../../core/seo/seo.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 
-type SearchType =
+type LegacySearchType =
   | ''
   | 'ARTWORK'
   | 'ARTIST'
@@ -24,7 +25,12 @@ type SearchType =
   | 'PERIOD'
   | 'PLACE'
   | 'TEXT';
-type SearchViewModel = SearchResponse & { activeType: SearchType; activeTag: string };
+type SearchKind = '' | PublicKnowledgeEntityKind;
+type SearchViewModel = SearchResponse & {
+  activeKind: SearchKind;
+  activeType: LegacySearchType;
+  activeTag: string;
+};
 
 @Component({
   standalone: true,
@@ -40,15 +46,14 @@ export class SearchComponent {
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
   readonly i18n = inject(I18nService);
-  readonly types: SearchType[] = [
+  readonly kinds: SearchKind[] = [
     '',
-    'ARTIST',
-    'ARTWORK',
-    'MOVEMENT',
-    'CONCEPT',
-    'ARTICLE',
+    'PERSON',
+    'WORK',
+    'ABSTRACTION',
+    'EVENT',
     'PLACE',
-    'PERIOD',
+    'ORGANIZATION',
   ];
   searchInput = this.route.snapshot.queryParamMap.get('q') ?? '';
 
@@ -58,8 +63,14 @@ export class SearchComponent {
   );
 
   readonly type$ = this.route.queryParamMap.pipe(
-    map((params) => (params.get('type') ?? '').toUpperCase() as SearchType),
-    map((type) => (this.types.includes(type) ? type : '')),
+    map((params) => (params.get('type') ?? '').toUpperCase() as LegacySearchType),
+    map((type) => (this.isLegacyType(type) ? type : '')),
+    distinctUntilChanged(),
+  );
+
+  readonly kind$ = this.route.queryParamMap.pipe(
+    map((params) => (params.get('kind') ?? '').toUpperCase()),
+    map((kind) => (this.kinds.includes(kind) ? kind : '')),
     distinctUntilChanged(),
   );
 
@@ -68,20 +79,21 @@ export class SearchComponent {
     distinctUntilChanged(),
   );
 
-  readonly vm$ = combineLatest([this.q$, this.type$, this.tag$]).pipe(
-    switchMap(([q, type, tag]) => {
+  readonly vm$ = combineLatest([this.q$, this.kind$, this.type$, this.tag$]).pipe(
+    switchMap(([q, kind, type, tag]) => {
       this.searchInput = q;
       this.seo.setPageMeta({
         title: q ? `Search "${q}" | JANO` : 'Search | JANO',
         description: q
-          ? `Search JANO across artworks, artists, articles, movements, periods and concepts for "${q}".`
-          : 'Search JANO.',
+          ? `Search JANO across connected cultural knowledge for "${q}".`
+          : 'Search JANO across connected cultural knowledge.',
         path: q ? `/search?q=${encodeURIComponent(q)}` : '/search',
       });
 
       return this.api
         .search({
           q,
+          kind: kind || undefined,
           type: type || undefined,
           tag: tag || undefined,
           limit: 40,
@@ -89,6 +101,7 @@ export class SearchComponent {
         .pipe(
           map((response) => ({
             ...response,
+            activeKind: kind,
             activeType: type,
             activeTag: tag,
           })),
@@ -97,10 +110,22 @@ export class SearchComponent {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  setType(type: SearchType): void {
+  setKind(kind: SearchKind): void {
     void this.router.navigate(['/search'], {
       queryParams: {
         q: this.searchInput.trim() || null,
+        kind: kind || null,
+        type: null,
+        tag: this.route.snapshot.queryParamMap.get('tag') || null,
+      },
+    });
+  }
+
+  private setLegacyType(type: LegacySearchType): void {
+    void this.router.navigate(['/search'], {
+      queryParams: {
+        q: this.searchInput.trim() || null,
+        kind: null,
         type: type || null,
         tag: this.route.snapshot.queryParamMap.get('tag') || null,
       },
@@ -112,6 +137,7 @@ export class SearchComponent {
       queryParams: {
         q: this.searchInput.trim() || null,
         type: this.route.snapshot.queryParamMap.get('type') || null,
+        kind: this.route.snapshot.queryParamMap.get('kind') || null,
         tag: null,
       },
     });
@@ -146,7 +172,7 @@ export class SearchComponent {
   }
 
   isDiscoveryLayout(vm: SearchViewModel): boolean {
-    return !vm.activeType && !vm.activeTag;
+    return !vm.activeKind && !vm.activeType && !vm.activeTag;
   }
 
   heroItem(vm: SearchViewModel): SearchResult | null {
@@ -218,14 +244,23 @@ export class SearchComponent {
   }
 
   hasSectionAction(key: string, hero?: SearchResult | null): boolean {
-    return !!this.sectionActionType(key) || (key === 'routes' && this.canOpenGraph(hero));
+    return (
+      !!this.sectionActionKind(key) ||
+      !!this.sectionActionLegacyType(key) ||
+      (key === 'routes' && this.canOpenGraph(hero))
+    );
   }
 
   openSection(key: string, hero?: SearchResult | null): void {
-    const type = this.sectionActionType(key);
+    const kind = this.sectionActionKind(key);
+    if (kind) {
+      this.setKind(kind);
+      return;
+    }
 
+    const type = this.sectionActionLegacyType(key);
     if (type) {
-      this.setType(type);
+      this.setLegacyType(type);
       return;
     }
 
@@ -234,7 +269,7 @@ export class SearchComponent {
     }
   }
 
-  typeLabel(type: SearchType | string): string {
+  typeLabel(type: string): string {
     const labels: Record<string, string> = {
       '': this.i18n.t('search.type.all'),
       ARTIST: this.i18n.t('search.type.artists'),
@@ -251,6 +286,19 @@ export class SearchComponent {
         .toLowerCase()
         .replace(/^\w/, (char) => char.toUpperCase())
     );
+  }
+
+  kindLabel(kind: SearchKind): string {
+    const labels: Record<SearchKind, string> = {
+      '': this.i18n.t('search.type.all'),
+      PERSON: this.i18n.t('search.kind.people'),
+      WORK: this.i18n.t('search.kind.works'),
+      ABSTRACTION: this.i18n.t('search.kind.abstractions'),
+      EVENT: this.i18n.t('search.kind.events'),
+      PLACE: this.i18n.t('search.kind.places'),
+      ORGANIZATION: this.i18n.t('search.kind.organizations'),
+    };
+    return labels[kind];
   }
 
   sectionTitle(key: string, fallback = ''): string {
@@ -289,16 +337,32 @@ export class SearchComponent {
     return `${item.startYear ?? ''}${item.endYear ? `–${item.endYear}` : ''}`;
   }
 
-  private sectionActionType(key: string): SearchType | null {
+  private isLegacyType(type: string): type is LegacySearchType {
+    return [
+      '',
+      'ARTWORK',
+      'ARTIST',
+      'ARTICLE',
+      'CONCEPT',
+      'MOVEMENT',
+      'PERIOD',
+      'PLACE',
+      'TEXT',
+    ].includes(type);
+  }
+
+  private sectionActionKind(key: string): SearchKind | null {
     switch (key) {
       case 'keyWorks':
-        return 'ARTWORK';
+        return 'WORK';
       case 'concepts':
-        return 'CONCEPT';
-      case 'articles':
-        return 'ARTICLE';
+        return 'ABSTRACTION';
       default:
         return null;
     }
+  }
+
+  private sectionActionLegacyType(key: string): LegacySearchType | null {
+    return key === 'articles' ? 'ARTICLE' : null;
   }
 }

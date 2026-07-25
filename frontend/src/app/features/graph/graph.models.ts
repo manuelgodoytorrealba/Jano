@@ -30,6 +30,12 @@ export interface GraphNode extends GraphNodeDto {
   degree: number;
 }
 
+export function graphNodeTypeKey(
+  node: Pick<GraphNodeDto, 'type' | 'kind'> | null | undefined,
+): string {
+  return node?.kind ?? node?.type ?? '';
+}
+
 export interface GraphEdge extends GraphEdgeDto {
   label: string;
   directed: boolean;

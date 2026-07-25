@@ -41,9 +41,9 @@ export class HomeComponent {
 
   constructor() {
     this.seo.setPageMeta({
-      title: 'JANO | Discover Art Through Visual Exploration',
+      title: 'JANO | Connected Cultural Knowledge',
       description:
-        'Explore artworks, articles, artists, movements, periods, and concepts in JANO through an immersive, visual-first art discovery experience.',
+        'Explore connected cultural knowledge in JANO through an immersive, visual-first discovery experience.',
       path: '/',
       image: '/assets/home/artwork.jpg',
     });

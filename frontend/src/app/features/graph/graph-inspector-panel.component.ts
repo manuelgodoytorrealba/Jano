@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { getRelationTypeConfig } from './graph.config';
-import { GraphEdge, GraphNode, GraphTypeMeta } from './graph.models';
+import { graphNodeTypeKey, GraphEdge, GraphNode, GraphTypeMeta } from './graph.models';
 
 type MobileConnectionItem = {
   edgeId: string;
@@ -90,7 +90,8 @@ export class GraphInspectorPanelComponent {
 
     return new Set(
       this.contextualEdges
-        .map((edge) => this.resolveOtherNode(edge, this.selectedNode!.id)?.type)
+        .map((edge) => this.resolveOtherNode(edge, this.selectedNode!.id))
+        .map((node) => (node ? graphNodeTypeKey(node) : null))
         .filter((type): type is string => !!type),
     ).size;
   }
@@ -146,10 +147,11 @@ export class GraphInspectorPanelComponent {
         continue;
       }
 
-      const typeMeta = this.entityTypeMeta[otherNode.type];
-      const group = groups.get(otherNode.type) ?? {
-        type: otherNode.type,
-        typeLabel: typeMeta?.label ?? otherNode.type,
+      const type = graphNodeTypeKey(otherNode);
+      const typeMeta = this.entityTypeMeta[type];
+      const group = groups.get(type) ?? {
+        type,
+        typeLabel: typeMeta?.label ?? type,
         color: typeMeta?.color ?? '#94a3b8',
         count: 0,
         items: [],
@@ -162,7 +164,7 @@ export class GraphInspectorPanelComponent {
 
       group.count += 1;
       group.items.push(item);
-      groups.set(otherNode.type, group);
+      groups.set(type, group);
     }
 
     return Array.from(groups.values())
@@ -214,14 +216,15 @@ export class GraphInspectorPanelComponent {
     }
 
     const relationMeta = getRelationTypeConfig(edge.relationType);
-    const typeMeta = this.entityTypeMeta[otherNode.type];
+    const type = graphNodeTypeKey(otherNode);
+    const typeMeta = this.entityTypeMeta[type];
 
     return {
       edgeId: edge.id,
       relationLabel: relationMeta.label,
       relationColor: relationMeta.color,
       nodeLabel: otherNode.label,
-      nodeTypeLabel: typeMeta?.label ?? otherNode.type,
+      nodeTypeLabel: typeMeta?.label ?? type,
       relationJustification: edge.justification?.trim() || null,
     };
   }

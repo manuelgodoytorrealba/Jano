@@ -32,6 +32,7 @@ describe('admin-entity-content presenter', () => {
       buildEntityPayload(
         {
           type: 'ARTWORK',
+          kind: 'WORK',
           title: 'Legacy title',
           slug: '  guernica  ',
           summary: 'Legacy summary',
@@ -45,6 +46,7 @@ describe('admin-entity-content presenter', () => {
       ),
     ).toEqual({
       type: 'ARTWORK',
+      kind: 'WORK',
       title: 'Guernica',
       slug: 'guernica',
       summary: 'Una denuncia contra la guerra',

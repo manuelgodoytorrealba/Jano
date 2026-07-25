@@ -2,10 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { GraphResponseDto } from './graph.models';
 import { apiUrl } from './api-base';
-import { PublicEntity, PublicEntityListResponse, PublicEntityPreview } from './entities.models';
+import {
+  PublicEntity,
+  PublicEntityListResponse,
+  PublicEntityPreview,
+  type PublicKnowledgeEntityKind,
+} from './entities.models';
 
 export type EntitiesListParams = {
   type?: string;
+  kind?: PublicKnowledgeEntityKind;
   q?: string;
   deck?: string;
   page?: number;
@@ -18,6 +24,8 @@ export type EntitiesListParams = {
   institution?: string;
   nationality?: string;
   tag?: string;
+  taxonomy?: string;
+  term?: string;
 };
 
 @Injectable({ providedIn: 'root' })

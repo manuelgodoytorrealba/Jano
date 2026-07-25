@@ -77,6 +77,15 @@
           </label>
 
           <label class="field">
+            <span>Clase estructural</span>
+            <select [(ngModel)]="form.kind" (ngModelChange)="onFormChange()" name="kind">
+              @for (kind of kinds; track kind) {
+                <option [value]="kind">{{ kind }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="field">
             <span>Tipo</span>
             <select [(ngModel)]="form.type" (ngModelChange)="onFormChange()" name="type">
               @for (type of types; track type) {
@@ -137,9 +146,23 @@
             <app-admin-entity-taxonomy-editor
               [entityId]="entityId"
               [tags]="tags"
+              [classifications]="classifications"
               [aliases]="aliases"
               (stateChange)="onTaxonomyStateChange($event)"
             ></app-admin-entity-taxonomy-editor>
+          </section>
+
+          <section class="editorial-inspector__taxonomy" aria-label="Atributos editoriales">
+            <app-admin-entity-attributes-editor
+              [entityId]="entityId"
+            ></app-admin-entity-attributes-editor>
+          </section>
+
+          <section class="editorial-inspector__taxonomy" aria-label="Evidencias de entidad">
+            <app-admin-citations-editor
+              target="entity"
+              [targetId]="entityId"
+            ></app-admin-citations-editor>
           </section>
         }
       </div>

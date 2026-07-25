@@ -6,10 +6,16 @@ const graph: GraphResponseDto = {
   centerId: 'workspace-center-jano',
   nodes: [
     { id: 'workspace-center-jano', label: 'JANO', type: 'CONCEPT', slug: 'jano' },
-    { id: 'workspace-type-ARTIST', label: 'Artists', type: 'ARTIST', slug: 'artists' },
-    { id: 'workspace-type-ARTWORK', label: 'Artworks', type: 'ARTWORK', slug: 'artworks' },
-    { id: 'artist-1', label: 'Artist', type: 'ARTIST', slug: 'artist' },
-    { id: 'artwork-1', label: 'Artwork', type: 'ARTWORK', slug: 'artwork' },
+    {
+      id: 'workspace-kind-PERSON',
+      label: 'People',
+      type: 'PERSON',
+      kind: 'PERSON',
+      slug: 'people',
+    },
+    { id: 'workspace-kind-WORK', label: 'Works', type: 'WORK', kind: 'WORK', slug: 'works' },
+    { id: 'artist-1', label: 'Artist', type: 'ARTIST', kind: 'PERSON', slug: 'artist' },
+    { id: 'artwork-1', label: 'Artwork', type: 'ARTWORK', kind: 'WORK', slug: 'artwork' },
   ],
   edges: [
     { id: 'relation-1', source: 'artist-1', target: 'artwork-1', relationType: 'CREATED_BY' },
@@ -22,6 +28,7 @@ describe('createAdminGlobalGraphLayout', () => {
     const second = createAdminGlobalGraphLayout(graph);
 
     expect(Object.keys(first.positions)).toHaveLength(graph.nodes.length);
+    expect(first.positions['workspace-kind-PERSON']).toBeDefined();
     expect(first.positions).toEqual(second.positions);
     expect(first.width).toBeGreaterThan(0);
     expect(first.height).toBeGreaterThan(0);

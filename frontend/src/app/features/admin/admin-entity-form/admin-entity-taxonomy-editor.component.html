@@ -1,4 +1,95 @@
 <div class="field full">
+  <span>Clasificaciones canónicas</span>
+  <div class="tag-admin">
+    <div class="tag-admin__current">
+      @if (classifications.length) {
+        @for (classification of classifications; track classificationTermId(classification)) {
+          @if (classificationTermId(classification); as termId) {
+            <button
+              type="button"
+              class="tag-chip tag-chip--classification"
+              (click)="removeClassification(termId)"
+            >
+              {{ classificationLabel(classification) }} <span aria-hidden="true">×</span>
+            </button>
+          }
+        }
+      } @else {
+        <span class="muted">Sin clasificaciones canónicas.</span>
+      }
+    </div>
+
+    <div class="tag-admin__attach">
+      <select
+        [(ngModel)]="selectedTaxonomyKey"
+        (ngModelChange)="selectedTermId = ''"
+        name="selectedTaxonomyKey"
+      >
+        <option value="">Seleccionar taxonomía</option>
+        @for (taxonomy of taxonomies; track taxonomy.id) {
+          <option [value]="taxonomy.key">{{ taxonomy.label }}</option>
+        }
+      </select>
+      <select [(ngModel)]="selectedTermId" name="selectedTermId" [disabled]="!selectedTaxonomyKey">
+        <option value="">Seleccionar término</option>
+        @for (term of availableTerms(); track term.id) {
+          <option [value]="term.id">{{ term.label }}</option>
+        }
+      </select>
+      <button
+        class="btn"
+        type="button"
+        [disabled]="!selectedTermId || classificationsSaving"
+        (click)="addClassification()"
+      >
+        Añadir clasificación
+      </button>
+    </div>
+    <div class="tag-admin__create">
+      <input [(ngModel)]="newTaxonomyKey" name="newTaxonomyKey" placeholder="Clave de taxonomía" />
+      <input [(ngModel)]="newTaxonomyLabel" name="newTaxonomyLabel" placeholder="Nueva taxonomía" />
+      <button
+        class="btn"
+        type="button"
+        [disabled]="!newTaxonomyKey.trim() || !newTaxonomyLabel.trim() || taxonomySaving"
+        (click)="createTaxonomy()"
+      >
+        Crear taxonomía
+      </button>
+    </div>
+
+    @if (selectedTaxonomyKey) {
+      <div class="tag-admin__create">
+        <input [(ngModel)]="newTermKey" name="newTermKey" placeholder="Clave de término" />
+        <input [(ngModel)]="newTermLabel" name="newTermLabel" placeholder="Nuevo término" />
+        <button
+          class="btn"
+          type="button"
+          [disabled]="!newTermKey.trim() || !newTermLabel.trim() || taxonomySaving"
+          (click)="createTerm()"
+        >
+          Crear término
+        </button>
+      </div>
+    }
+
+    @if (taxonomyMessage) {
+      <small class="success-text">{{ taxonomyMessage }}</small>
+    }
+    @if (taxonomyError) {
+      <small class="error-text">{{ taxonomyError }}</small>
+    }
+
+    @if (classificationsMessage) {
+      <small class="success-text">{{ classificationsMessage }}</small>
+    }
+    @if (classificationsError) {
+      <small class="error-text">{{ classificationsError }}</small>
+    }
+  </div>
+</div>
+
+<div class="field full">
   <span>Tags</span>
   <div class="tag-admin">
     <div class="tag-admin__current">

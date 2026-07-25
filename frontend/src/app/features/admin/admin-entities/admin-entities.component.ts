@@ -17,6 +17,7 @@ import {
   tap,
 } from 'rxjs';
 import { AdminEntitiesApi, AdminEntitySearchListItem } from '../../../core/api/admin-entities.api';
+import type { PublicKnowledgeEntityKind } from '../../../core/api/entities.models';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import { getEntityTypeConfig } from '../../graph/graph.config';
 
@@ -30,12 +31,15 @@ type AdminType =
   | 'PERIOD'
   | 'TEXT'
   | 'PLACE';
+type AdminKind = '' | PublicKnowledgeEntityKind;
 type AdminStatus = '' | 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED';
+
 type ArchiveSort = 'updated' | 'title' | 'recent';
 
 type ArchiveQuery = {
   q: string;
   type: AdminType;
+  kind: AdminKind;
   status: AdminStatus;
   sort: ArchiveSort;
   page: number;
@@ -75,7 +79,17 @@ export class AdminEntitiesComponent {
     'TEXT',
     'PLACE',
   ];
+  readonly kinds: Exclude<AdminKind, ''>[] = [
+    'PERSON',
+    'WORK',
+    'ABSTRACTION',
+    'EVENT',
+    'PLACE',
+    'ORGANIZATION',
+  ];
+
   readonly statuses: Exclude<AdminStatus, ''>[] = ['DRAFT', 'IN_REVIEW', 'PUBLISHED'];
+
   readonly sorts: Array<{ value: ArchiveSort; label: string }> = [
     { value: 'updated', label: 'Última edición' },
     { value: 'title', label: 'Título A-Z' },
@@ -84,6 +98,7 @@ export class AdminEntitiesComponent {
 
   search = '';
   selectedType: AdminType = '';
+  selectedKind: AdminKind = '';
   selectedStatus: AdminStatus = '';
   selectedSort: ArchiveSort = 'updated';
   deletingId = '';
@@ -99,6 +114,7 @@ export class AdminEntitiesComponent {
     tap((query) => {
       this.search = query.q;
       this.selectedType = query.type;
+      this.selectedKind = query.kind;
       this.selectedStatus = query.status;
       this.selectedSort = query.sort;
     }),
@@ -113,6 +129,7 @@ export class AdminEntitiesComponent {
           sort: query.sort,
           q: query.q || undefined,
           type: query.type || undefined,
+          kind: query.kind || undefined,
           status: query.status || undefined,
         })
         .pipe(
@@ -159,6 +176,10 @@ export class AdminEntitiesComponent {
     this.searchChanges$.next(value ?? '');
   }
 
+  setKind(kind: AdminKind): void {
+    this.updateQuery({ kind: kind || null, page: null });
+  }
+
   setType(type: AdminType): void {
     this.updateQuery({ type: type || null, page: null });
   }
@@ -183,12 +204,13 @@ export class AdminEntitiesComponent {
   resetFilters(): void {
     this.search = '';
     this.selectedType = '';
+    this.selectedKind = '';
     this.selectedStatus = '';
-    this.updateQuery({ q: null, type: null, status: null, page: null });
+    this.updateQuery({ q: null, type: null, kind: null, status: null, page: null });
   }
 
   hasActiveFilters(): boolean {
-    return !!(this.search.trim() || this.selectedType || this.selectedStatus);
+    return !!(this.search.trim() || this.selectedType || this.selectedKind || this.selectedStatus);
   }
 
   adminListReturnUrl(): string {
@@ -304,6 +326,7 @@ export class AdminEntitiesComponent {
 
   private parseQuery(params: ParamMap): ArchiveQuery {
     const type = (params.get('type') ?? '').toUpperCase() as AdminType;
+    const kind = (params.get('kind') ?? '').toUpperCase();
     const status = (params.get('status') ?? '').toUpperCase() as AdminStatus;
     const sort = params.get('sort') as ArchiveSort | null;
     const page = Number(params.get('page'));
@@ -311,6 +334,7 @@ export class AdminEntitiesComponent {
     return {
       q: (params.get('q') ?? '').trim(),
       type: this.types.includes(type as Exclude<AdminType, ''>) ? type : '',
+      kind: this.kinds.includes(kind) ? kind : '',
       status: this.statuses.includes(status as Exclude<AdminStatus, ''>) ? status : '',
       sort: this.sorts.some((item) => item.value === sort) ? (sort as ArchiveSort) : 'updated',
       page: Number.isInteger(page) && page > 0 ? page : 1,
@@ -321,6 +345,7 @@ export class AdminEntitiesComponent {
     return (
       left.q === right.q &&
       left.type === right.type &&
+      left.kind === right.kind &&
       left.status === right.status &&
       left.sort === right.sort &&
       left.page === right.page

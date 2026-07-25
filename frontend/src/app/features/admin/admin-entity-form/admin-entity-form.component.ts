@@ -10,6 +10,7 @@ import {
 import {
   AdminAdditionalMediaItem,
   AdminEntityAliasRecord,
+  AdminEntityClassificationRecord,
   AdminEntityResponse,
   AdminEntityRelationRecord,
   AdminEntityTagRecord,
@@ -185,6 +186,7 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
   incomingRelations: AdminEntityRelationRecord[] = [];
 
   entityTags: AdminEntityTagRecord[] = [];
+  entityClassifications: AdminEntityClassificationRecord[] = [];
   entityAliases: AdminEntityAliasRecord[] = [];
 
   relations: AdminEntityRelationRecord[] = [];
@@ -210,6 +212,7 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
 
   form: AdminEntityFormDraft = {
     type: 'ARTWORK',
+    kind: 'WORK',
     title: '',
     slug: '',
     summary: '',
@@ -302,6 +305,7 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
     this.localizedDetailForms = state.localizedDetails;
     this.detailsForm = state.details;
     this.entityTags = state.tags;
+    this.entityClassifications = state.classifications;
     this.entityAliases = state.aliases;
     this.scheduleAutosave();
   }
@@ -338,6 +342,7 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
   ) {
     this.form = {
       type: entity.type ?? 'ARTWORK',
+      kind: entity.kind ?? undefined,
       title: entity.title ?? '',
       slug: entity.slug ?? '',
       summary: entity.summary ?? '',
@@ -360,6 +365,9 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
       ? entity.contributors.map((contributor) => normalizeContributor(contributor))
       : [];
     this.entityTags = Array.isArray(entity.tags) ? entity.tags : [];
+    this.entityClassifications = Array.isArray(entity.classifications)
+      ? entity.classifications
+      : [];
     this.entityAliases = Array.isArray(entity.aliases) ? entity.aliases : [];
   }
 

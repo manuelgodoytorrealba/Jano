@@ -45,6 +45,7 @@ type EntitiesListFilterOptionVm = { slug: string; label: string };
 type EntitiesListQueryState = {
   title: string;
   type: string;
+  kind: EntitiesListKind;
   q: string;
   deck: string;
   page: number;
@@ -136,6 +137,24 @@ const TYPE_ROUTE_LABELS: Record<string, string> = {
 };
 const VALID_TYPE_ROUTE_SLUGS = new Set(Object.keys(TYPE_ROUTE_LABELS));
 
+const KNOWLEDGE_KINDS = [
+  'PERSON',
+  'WORK',
+  'ABSTRACTION',
+  'EVENT',
+  'PLACE',
+  'ORGANIZATION',
+] as const;
+type EntitiesListKind = (typeof KNOWLEDGE_KINDS)[number] | '';
+const KIND_LABEL_KEYS: Record<Exclude<EntitiesListKind, ''>, string> = {
+  PERSON: 'search.kind.people',
+  WORK: 'search.kind.works',
+  ABSTRACTION: 'search.kind.abstractions',
+  EVENT: 'search.kind.events',
+  PLACE: 'search.kind.places',
+  ORGANIZATION: 'search.kind.organizations',
+};
+
 @Injectable()
 export class EntitiesListFacade {
   private readonly api = inject(EntitiesApi);
@@ -207,10 +226,20 @@ export class EntitiesListFacade {
     map(([paramMap, queryParamMap]) => {
       const typeSlug = (paramMap.get('type') ?? 'entities').toLowerCase();
       const type = VALID_TYPE_ROUTE_SLUGS.has(typeSlug) ? typeSlug.toUpperCase() : '';
+      const requestedKind = (queryParamMap.get('kind') ?? '').trim().toUpperCase();
+      const kind =
+        !type && KNOWLEDGE_KINDS.includes(requestedKind as (typeof KNOWLEDGE_KINDS)[number])
+          ? (requestedKind as EntitiesListKind)
+          : '';
 
       return {
-        title: type ? this.i18n.t(TYPE_ROUTE_LABELS[typeSlug]) : 'Explorar',
+        title: type
+          ? this.i18n.t(TYPE_ROUTE_LABELS[typeSlug])
+          : kind
+            ? this.i18n.t(KIND_LABEL_KEYS[kind])
+            : 'Explorar',
         type,
+        kind,
         q: (queryParamMap.get('q') ?? '').trim(),
         deck: (queryParamMap.get('deck') ?? '').trim(),
         page: this.toPositiveInt(queryParamMap.get('page')),
@@ -240,6 +269,7 @@ export class EntitiesListFacade {
     switchMap(([debouncedQuery, state]) =>
       this.api.list({
         type: state.type || undefined,
+        kind: state.kind || undefined,
         q: debouncedQuery || undefined,
         deck: state.deck || undefined,
         page: state.page,
@@ -491,9 +521,10 @@ export class EntitiesListFacade {
             : `Explore ${normalizedTitle.toLowerCase()} in JANO with visual browsing and editorial filters.`;
           const typeSlug = (state.type ?? '').trim().toLowerCase();
           const basePath = typeSlug ? `/entities/${typeSlug}` : '/entities';
-          const path = normalizedQuery
-            ? `${basePath}?q=${encodeURIComponent(normalizedQuery)}`
-            : basePath;
+          const params = new URLSearchParams();
+          if (state.kind) params.set('kind', state.kind);
+          if (normalizedQuery) params.set('q', normalizedQuery);
+          const path = params.size ? `${basePath}?${params}` : basePath;
 
           this.seo.setPageMeta({ title: pageTitle, description, path });
         }),

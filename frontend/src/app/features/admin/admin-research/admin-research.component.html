@@ -374,6 +374,103 @@
               </button>
             </form>
 
+            <form class="research-action-form" (ngSubmit)="createRelationCandidate(project.id)">
+              <h3>Nueva relación candidata</h3>
+              <select name="relationFrom" [(ngModel)]="relationFromCandidateId">
+                <option value="">Origen</option>
+                @for (candidate of project.entityCandidates ?? []; track candidate.id) {
+                  <option [value]="candidate.id">{{ candidate.title }}</option>
+                }
+              </select>
+              <select name="relationTo" [(ngModel)]="relationToCandidateId">
+                <option value="">Destino</option>
+                @for (candidate of project.entityCandidates ?? []; track candidate.id) {
+                  <option [value]="candidate.id">{{ candidate.title }}</option>
+                }
+              </select>
+              <select name="relationType" [(ngModel)]="relationTypeId">
+                <option value="">Tipo de relación (pendiente)</option>
+                @for (type of relationTypes$ | async; track type.id) {
+                  <option [value]="type.id">{{ type.label }}</option>
+                }
+              </select>
+              <textarea
+                name="relationExplanation"
+                [(ngModel)]="relationExplanation"
+                rows="2"
+                placeholder="Explicación editorial opcional"
+              ></textarea>
+              <div class="research-evidence-picker">
+                @for (evidence of project.evidence; track evidence.id) {
+                  <label class="research-evidence-option"
+                    ><input
+                      type="checkbox"
+                      [checked]="selectedRelationEvidenceIds.includes(evidence.id)"
+                      (change)="toggleRelationEvidence(evidence.id, $any($event.target).checked)"
+                    /><span
+                      ><strong>{{ evidenceSourceTitle(project, evidence) }}</strong
+                      ><small>{{ evidence.locator }}</small></span
+                    ></label
+                  >
+                }
+              </div>
+              <button
+                type="submit"
+                [disabled]="
+                  actionBusy ||
+                  !relationFromCandidateId ||
+                  !relationToCandidateId ||
+                  relationFromCandidateId === relationToCandidateId ||
+                  !selectedRelationEvidenceIds.length
+                "
+              >
+                Crear relación candidata
+              </button>
+            </form>
+            <form class="research-action-form" (ngSubmit)="createEntityCandidate(project.id)">
+              <h3>Nuevo candidato de entidad</h3>
+              <input
+                name="candidateTitle"
+                [(ngModel)]="candidateTitle"
+                placeholder="Nombre del referente"
+              />
+              <select name="candidateKind" [(ngModel)]="candidateKind">
+                <option value="PERSON">Persona</option>
+                <option value="WORK">Obra</option>
+                <option value="ABSTRACTION">Abstracción</option>
+                <option value="EVENT">Evento</option>
+                <option value="PLACE">Lugar</option>
+                <option value="ORGANIZATION">Organización</option>
+              </select>
+              <textarea
+                name="candidateSummary"
+                [(ngModel)]="candidateSummary"
+                rows="2"
+                placeholder="Resumen opcional"
+              ></textarea>
+              <div class="research-evidence-picker">
+                @for (evidence of project.evidence; track evidence.id) {
+                  <label class="research-evidence-option"
+                    ><input
+                      type="checkbox"
+                      [checked]="selectedCandidateEvidenceIds.includes(evidence.id)"
+                      (change)="toggleCandidateEvidence(evidence.id, $any($event.target).checked)"
+                    /><span
+                      ><strong>{{ evidenceSourceTitle(project, evidence) }}</strong
+                      ><small>{{ evidence.locator }} · {{ evidence.sourceVersion }}</small></span
+                    ></label
+                  >
+                }
+              </div>
+              <button
+                type="submit"
+                [disabled]="
+                  actionBusy || !candidateTitle.trim() || !selectedCandidateEvidenceIds.length
+                "
+              >
+                Crear candidato
+              </button>
+            </form>
             <form class="research-action-form" (ngSubmit)="createFinding(project.id)">
               <h3>Proponer hallazgo</h3>
               <input
@@ -913,6 +1010,82 @@
               }
             </section>
 
+            <section class="research-workspace-section">
+              <div class="research-section-head">
+                <h3>Candidatos de entidad</h3>
+                <small>{{ (project.entityCandidates ?? []).length }}</small>
+              </div>
+              @for (candidate of project.entityCandidates ?? []; track candidate.id) {
+                <div class="research-workspace-row">
+                  <strong>{{ candidate.title }}</strong
+                  ><small>{{ candidate.kind }} · {{ candidate.reviewState }}</small>
+                  @if (candidate.summary) {
+                    <span>{{ candidate.summary }}</span>
+                  }
+                  <div class="research-finding-card__actions">
+                    <button
+                      type="button"
+                      [disabled]="actionBusy || candidate.reviewState === 'REVIEWED'"
+                      (click)="reviewEntityCandidate(project.id, candidate.id, 'REVIEWED')"
+                    >
+                      Revisar
+                    </button>
+                    <button
+                      type="button"
+                      [disabled]="actionBusy || candidate.reviewState === 'REJECTED'"
+                      (click)="reviewEntityCandidate(project.id, candidate.id, 'REJECTED')"
+                    >
+                      Rechazar
+                    </button>
+                  </div>
+                </div>
+              } @empty {
+                <div class="admin-research__state">Sin candidatos de entidad.</div>
+              }
+            </section>
+            <section class="research-workspace-section">
+              <div class="research-section-head">
+                <h3>Relaciones candidatas</h3>
+                <small>{{ (project.relationCandidates ?? []).length }}</small>
+              </div>
+              @for (candidate of project.relationCandidates ?? []; track candidate.id) {
+                <div class="research-workspace-row">
+                  <strong
+                    >{{ candidate.fromCandidate?.title ?? 'Origen' }} →
+                    {{ candidate.toCandidate?.title ?? 'Destino' }}</strong
+                  >
+                  <small>{{ candidate.reviewState }}</small>
+                  @if (candidate.explanation) {
+                    <span>{{ candidate.explanation }}</span>
+                  }
+                  <div class="research-finding-card__actions">
+                    <button
+                      type="button"
+                      [disabled]="actionBusy || candidate.reviewState === 'REVIEWED'"
+                      (click)="reviewRelationCandidate(project.id, candidate.id, 'REVIEWED')"
+                    >
+                      Revisar
+                    </button>
+                    <button
+                      type="button"
+                      [disabled]="actionBusy || candidate.reviewState === 'REJECTED'"
+                      (click)="reviewRelationCandidate(project.id, candidate.id, 'REJECTED')"
+                    >
+                      Rechazar
+                    </button>
+                    <button
+                      type="button"
+                      [disabled]="actionBusy || candidate.reviewState !== 'REVIEWED'"
+                      (click)="promoteRelationCandidate(project.id, candidate.id)"
+                    >
+                      Crear relación
+                    </button>
+                  </div>
+                </div>
+              } @empty {
+                <div class="admin-research__state">Sin relaciones candidatas.</div>
+              }
+            </section>
             <app-research-findings-section
               id="research-findings"
               [project]="project"

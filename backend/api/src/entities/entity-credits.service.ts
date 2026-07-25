@@ -97,10 +97,6 @@ export class EntityCreditsService {
     if (!existing) throw new NotFoundException('Source reference not found');
 
     await this.prisma.sourceRef.delete({ where: { id: refId } });
-    const remaining = await this.prisma.sourceRef.count({
-      where: { sourceId: existing.sourceId },
-    });
-    if (remaining === 0) await this.prisma.source.delete({ where: { id: existing.sourceId } });
     return { ok: true };
   }
 

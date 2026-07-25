@@ -15,6 +15,11 @@ function graphLocale(): 'es' | 'en' {
 function localizedEntityTypeLabel(type: string): string | null {
   const locale = graphLocale();
   const labels: Record<string, { es: string; en: string }> = {
+    PERSON: { es: 'Persona', en: 'Person' },
+    WORK: { es: 'Obra', en: 'Work' },
+    ABSTRACTION: { es: 'Abstracción', en: 'Abstraction' },
+    EVENT: { es: 'Evento', en: 'Event' },
+    ORGANIZATION: { es: 'Organización', en: 'Organization' },
     ARTIST: { es: 'Artista', en: 'Artist' },
     ARTWORK: { es: 'Obra', en: 'Artwork' },
     ARTICLE: { es: 'Artículo', en: 'Article' },
@@ -72,6 +77,51 @@ const DEFAULT_RELATION_STYLE: GraphRelationVisualConfig = {
 };
 
 export const GRAPH_ENTITY_TYPE_CONFIG: Record<string, GraphEntityVisualConfig> = {
+  PERSON: {
+    label: 'Persona',
+    color: '#d97757',
+    accent: '#f8d7c8',
+    textColor: '#fff3ee',
+    halo: 'rgba(217, 119, 87, 0.22)',
+    icon: 'P',
+    shape: 'circle',
+  },
+  WORK: {
+    label: 'Obra',
+    color: '#4f8fba',
+    accent: '#d2edf9',
+    textColor: '#ecf8ff',
+    halo: 'rgba(79, 143, 186, 0.22)',
+    icon: 'O',
+    shape: 'square',
+  },
+  ABSTRACTION: {
+    label: 'Abstracción',
+    color: '#33a177',
+    accent: '#d8f5e9',
+    textColor: '#edfff8',
+    halo: 'rgba(51, 161, 119, 0.2)',
+    icon: 'A',
+    shape: 'diamond',
+  },
+  EVENT: {
+    label: 'Evento',
+    color: '#d0a248',
+    accent: '#f9ebc9',
+    textColor: '#fff8e8',
+    halo: 'rgba(208, 162, 72, 0.22)',
+    icon: 'E',
+    shape: 'triangle',
+  },
+  ORGANIZATION: {
+    label: 'Organización',
+    color: '#8f6ed5',
+    accent: '#efe4ff',
+    textColor: '#f7f2ff',
+    halo: 'rgba(143, 110, 213, 0.2)',
+    icon: 'O',
+    shape: 'hexagon',
+  },
   ARTIST: {
     label: 'Artista',
     color: '#d97757',

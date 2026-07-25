@@ -9,6 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AdminCitationsEditorComponent } from './admin-citations-editor.component';
 import {
   AdminEntitiesApi,
   AdminEntityRelationRecord,
@@ -37,7 +38,7 @@ export type AdminEntityRelationsState = {
 @Component({
   standalone: true,
   selector: 'app-admin-entity-relations-editor',
-  imports: [FormsModule],
+  imports: [FormsModule, AdminCitationsEditorComponent],
   templateUrl: './admin-entity-relations-editor.component.html',
   styleUrls: ['./admin-entity-relations-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,6 +60,7 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
   relationsLoading = false;
   incomingRelationsLoading = false;
   errorMessage = '';
+  citationRelationId = '';
   newRelation: AdminEntityRelationDraft = createEmptyRelationDraft([]);
 
   ngOnInit(): void {
@@ -142,6 +144,10 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
           this.emitState();
         },
       });
+  }
+
+  toggleCitations(relationId: string): void {
+    this.citationRelationId = this.citationRelationId === relationId ? '' : relationId;
   }
 
   removeRelation(relationId: string): void {

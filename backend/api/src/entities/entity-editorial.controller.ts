@@ -4,6 +4,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { CreateContributorDto } from './dto/create-contributor.dto';
 import { CreateEntityAliasDto } from './dto/create-entity-alias.dto';
+import { CreateEntityClassificationDto } from './dto/create-entity-classification.dto';
 import { CreateEntityDraftDto } from './dto/create-entity-draft.dto';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { CreateSourceRefDto } from './dto/create-source-ref.dto';
@@ -15,7 +16,8 @@ import { UpdateSourceRefDto } from './dto/update-source-ref.dto';
 import { UpsertEntityTranslationDto } from './dto/upsert-entity-translation.dto';
 import { EntityCreditsService } from './entity-credits.service';
 import { EntityEditorialService } from './entity-editorial.service';
-import { EntityTaxonomyService, type RelationMutationDto } from './entity-taxonomy.service';
+import { RelationMutationDto } from './dto/relation-mutation.dto';
+import { EntityTaxonomyService } from './entity-taxonomy.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
@@ -97,6 +99,16 @@ export class EntityEditorialController {
   @Delete(':id/relations/:relationId')
   deleteRelation(@Param('id') id: string, @Param('relationId') relationId: string) {
     return this.taxonomy.deleteRelation(id, relationId);
+  }
+
+  @Post(':id/classifications')
+  addClassification(@Param('id') id: string, @Body() dto: CreateEntityClassificationDto) {
+    return this.taxonomy.addClassification(id, dto);
+  }
+
+  @Delete(':id/classifications/:termId')
+  removeClassification(@Param('id') id: string, @Param('termId') termId: string) {
+    return this.taxonomy.removeClassification(id, termId);
   }
 
   @Post(':id/tags')

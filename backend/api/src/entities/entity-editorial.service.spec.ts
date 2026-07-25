@@ -49,6 +49,7 @@ describe('EntityEditorialService', () => {
         fromId: 'entity-1',
         toId: 'entity-2',
         relationTypeId: 'mentions-type',
+        status: 'PUBLISHED',
       },
     });
     expect(readService.adminGetById).toHaveBeenCalledWith('entity-1');

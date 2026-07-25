@@ -193,6 +193,55 @@ describe('EntityReadService.list filters', () => {
     });
   });
 
+  it('combines canonical kind with the legacy type filter', async () => {
+    await catalogService.list({
+      type: 'ARTWORK',
+      kind: 'WORK',
+      page: 1,
+      limit: 24,
+      sort: 'recent',
+    });
+
+    expect(prisma.entity.count).toHaveBeenCalledWith({
+      where: { type: 'ARTWORK', kind: 'WORK', status: 'PUBLISHED' },
+    });
+  });
+
+  it('filters by a canonical taxonomy term', async () => {
+    await catalogService.list({
+      taxonomy: 'person-role',
+      term: 'artist',
+      page: 1,
+      limit: 24,
+      sort: 'recent',
+    });
+
+    expect(prisma.entity.count).toHaveBeenCalledWith({
+      where: {
+        status: 'PUBLISHED',
+        AND: [
+          {
+            classifications: {
+              some: {
+                term: {
+                  key: 'artist',
+                  isActive: true,
+                  taxonomy: { key: 'person-role', isActive: true },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('requires a taxonomy when filtering by term', async () => {
+    await expect(
+      catalogService.list({ term: 'artist', page: 1, limit: 24, sort: 'recent' }),
+    ).rejects.toThrow('taxonomy is required when term is provided');
+  });
+
   it('combines text search with relation filters inside AND so filters remain composable', async () => {
     await catalogService.list({
       q: 'memoria',
@@ -262,12 +311,6 @@ describe('EntityReadService.list filters', () => {
 
   it('deletes dependent records before removing an entity in admin', async () => {
     prisma.entity.findUnique.mockResolvedValue({ id: 'entity-1' });
-    prisma.sourceRef.findMany.mockResolvedValue([
-      { sourceId: 'source-1' },
-      { sourceId: 'source-2' },
-      { sourceId: 'source-1' },
-    ]);
-
     await expect(editorialService.remove('entity-1')).resolves.toEqual({ ok: true });
 
     expect(prisma.$transaction).toHaveBeenCalled();
@@ -301,14 +344,7 @@ describe('EntityReadService.list filters', () => {
       where: { entityId: 'entity-1' },
     });
     expect(prisma.entity.delete).toHaveBeenCalledWith({ where: { id: 'entity-1' } });
-    expect(prisma.source.deleteMany).toHaveBeenCalledWith({
-      where: {
-        id: { in: ['source-1', 'source-2'] },
-        refs: {
-          none: {},
-        },
-      },
-    });
+    expect(prisma.source.deleteMany).not.toHaveBeenCalled();
   });
 
   it('keeps admin list unrestricted by default so drafts remain visible in admin workflows', async () => {
@@ -378,6 +414,18 @@ describe('EntityReadService.list filters', () => {
           },
         ],
         tags: [],
+        classifications: [
+          {
+            confidence: 0.9,
+            source: 'MANUAL',
+            term: {
+              id: 'term-1',
+              key: 'artist',
+              label: 'Artist',
+              taxonomy: { id: 'taxonomy-1', key: 'person-role', label: 'Person role' },
+            },
+          },
+        ],
         mediaLinks: [],
         _count: {
           outgoing: 2,
@@ -400,8 +448,24 @@ describe('EntityReadService.list filters', () => {
         sourceRefs: true,
       },
     });
+    expect(prisma.entity.findMany.mock.calls.at(-1)?.[0]?.include?.classifications).toEqual(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          confidence: true,
+          source: true,
+          term: expect.any(Object),
+        }),
+      }),
+    );
     expect(result.items[0]).toEqual(
       expect.objectContaining({
+        classifications: [
+          expect.objectContaining({
+            confidence: 0.9,
+            source: 'MANUAL',
+            term: expect.objectContaining({ key: 'artist' }),
+          }),
+        ],
         editorialSummary: {
           visualSource: 'empty',
           relationsCount: 3,
@@ -827,6 +891,78 @@ describe('EntityReadService.list filters', () => {
     );
   });
 
+  it('exposes published attributes and public citation evidence only', async () => {
+    prisma.entity.findFirst.mockResolvedValue({
+      id: 'entity-1',
+      slug: 'guernica',
+      title: 'Guernica',
+      type: 'ARTWORK',
+      summary: null,
+      content: null,
+      translations: [],
+      mediaLinks: [],
+      attributes: [
+        {
+          id: 'attribute-1',
+          locale: 'und',
+          valueText: 'Madrid',
+          valueNumber: null,
+          valueBoolean: null,
+          valueDate: null,
+          valueYear: null,
+          valueJson: null,
+          confidence: 0.9,
+          validFromYear: null,
+          validToYear: null,
+          definition: {
+            id: 'definition-1',
+            key: 'location',
+            label: 'Ubicación',
+            valueType: 'TEXT',
+            isMultiple: false,
+          },
+          citations: [
+            {
+              id: 'citation-1',
+              stance: 'SUPPORTS',
+              locator: 'p. 12',
+              quote: 'Madrid',
+              source: {
+                id: 'source-1',
+                type: 'BOOK',
+                title: 'Catálogo',
+                author: null,
+                publisher: null,
+                year: 1937,
+                url: null,
+              },
+            },
+          ],
+        },
+      ],
+      outgoing: [],
+      incoming: [],
+    });
+
+    const result = await service.getBySlug('guernica');
+    const include = prisma.entity.findFirst.mock.calls.at(-1)?.[0]?.include;
+
+    expect(include.attributes.where).toEqual({ status: 'PUBLISHED' });
+    expect(include.attributes.include.citations.select).not.toHaveProperty('note');
+    expect(result.attributes).toEqual([
+      expect.objectContaining({
+        id: 'attribute-1',
+        valueText: 'Madrid',
+        citations: [
+          expect.objectContaining({
+            stance: 'SUPPORTS',
+            source: expect.objectContaining({ title: 'Catálogo' }),
+          }),
+        ],
+      }),
+    ]);
+  });
+
   it('loads graph center and preview by slug from published entities only', async () => {
     prisma.entity.findFirst.mockResolvedValue({
       id: 'entity-1',
@@ -835,6 +971,7 @@ describe('EntityReadService.list filters', () => {
       type: 'ARTWORK',
       mediaLinks: [],
       summary: null,
+      kind: 'WORK',
       startYear: null,
       endYear: null,
     });
@@ -857,6 +994,7 @@ describe('EntityReadService.list filters', () => {
           id: 'entity-1',
           label: 'Guernica',
           type: 'ARTWORK',
+          kind: 'WORK',
           slug: 'guernica',
           image: expect.any(String),
           resolvedMedia: expect.any(Object),
@@ -870,6 +1008,7 @@ describe('EntityReadService.list filters', () => {
       edges: [],
       filters: {
         entityTypes: ['ARTWORK'],
+        entityKinds: ['WORK'],
         relationTypes: [],
       },
     });
