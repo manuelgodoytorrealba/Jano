@@ -23,6 +23,9 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
+  app.use('/uploads/research', (_req: express.Request, res: express.Response) => {
+    res.sendStatus(404);
+  });
   app.use(
     '/uploads',
     express.static(join(process.cwd(), 'uploads'), {

@@ -60,6 +60,36 @@ describe('AdminResearchComponent', () => {
               },
             },
           ],
+          materials: [
+            {
+              id: 'material-1',
+              projectId: 'research-1',
+              kind: 'TEXT',
+              status: 'READY',
+              title: 'Notas curatoriales',
+              content: 'Texto de trabajo para la investigación.',
+              url: null,
+              originalName: null,
+              mimeType: null,
+              sizeBytes: null,
+              createdAt: '2026-07-07T08:00:00.000Z',
+              updatedAt: '2026-07-07T08:00:00.000Z',
+            },
+            {
+              id: 'material-2',
+              projectId: 'research-1',
+              kind: 'PDF',
+              status: 'PENDING_PREPARATION',
+              title: 'Catálogo del Prado',
+              content: null,
+              url: null,
+              originalName: 'catalogo.pdf',
+              mimeType: 'application/pdf',
+              sizeBytes: 2048,
+              createdAt: '2026-07-07T08:00:00.000Z',
+              updatedAt: '2026-07-07T08:00:00.000Z',
+            },
+          ],
           evidence: [
             {
               id: 'evidence-1',
@@ -128,6 +158,61 @@ describe('AdminResearchComponent', () => {
               createdAt: '2026-07-07T08:00:00.000Z',
               updatedAt: '2026-07-07T08:00:00.000Z',
               evidence: [],
+            },
+          ],
+          claims: [
+            {
+              id: 'claim-1',
+              projectId: 'research-1',
+              kind: 'SUBJECT_CANDIDATE',
+              title: 'Francisco de Goya',
+              summary: 'Autor central del corpus.',
+              subjectClaimId: null,
+              objectClaimId: null,
+              readyForPromotion: true,
+              createdAt: '2026-07-07T08:00:00.000Z',
+              updatedAt: '2026-07-07T08:00:00.000Z',
+              evidence: [{ claimId: 'claim-1', evidenceId: 'evidence-1' }],
+              subject: null,
+              object: null,
+            },
+            {
+              id: 'claim-2',
+              projectId: 'research-1',
+              kind: 'CONCEPT',
+              title: 'Violencia moderna',
+              summary: 'Concepto recurrente en la serie.',
+              subjectClaimId: null,
+              objectClaimId: null,
+              readyForPromotion: false,
+              createdAt: '2026-07-07T08:00:00.000Z',
+              updatedAt: '2026-07-07T08:00:00.000Z',
+              evidence: [{ claimId: 'claim-2', evidenceId: 'evidence-2' }],
+              subject: null,
+              object: null,
+            },
+            {
+              id: 'claim-3',
+              projectId: 'research-1',
+              kind: 'CONNECTION_HYPOTHESIS',
+              title: 'Representa críticamente',
+              summary: null,
+              subjectClaimId: 'claim-1',
+              objectClaimId: 'claim-2',
+              readyForPromotion: false,
+              createdAt: '2026-07-07T08:00:00.000Z',
+              updatedAt: '2026-07-07T08:00:00.000Z',
+              evidence: [{ claimId: 'claim-3', evidenceId: 'evidence-1' }],
+              subject: {
+                id: 'claim-1',
+                title: 'Francisco de Goya',
+                kind: 'SUBJECT_CANDIDATE',
+              },
+              object: {
+                id: 'claim-2',
+                title: 'Violencia moderna',
+                kind: 'CONCEPT',
+              },
             },
           ],
           findingProposals: [
@@ -278,6 +363,10 @@ describe('AdminResearchComponent', () => {
         ]),
       ),
       addSource: vi.fn().mockReturnValue(of({})),
+      createMaterial: vi.fn().mockReturnValue(of({})),
+      createPdfMaterial: vi.fn().mockReturnValue(of({})),
+      createClaim: vi.fn().mockReturnValue(of({})),
+      setClaimReadiness: vi.fn().mockReturnValue(of({})),
       prepareSource: vi.fn().mockReturnValue(of({})),
       runNextJob: vi
         .fn()
@@ -313,7 +402,7 @@ describe('AdminResearchComponent', () => {
     expect(vm.selectedProject?.evidence.length).toBe(2);
     expect(vm.selectedProject?.findings.length).toBe(2);
     expect(vm.selectedProject?.decisions.length).toBe(2);
-    expect(component.projectMeta(vm.projects[0])).toBe('2 fuentes · 3 evidencias · 1 hallazgos');
+    expect(component.projectMeta(vm.projects[0])).toBe('0 materiales · 3 evidencias · 0 síntesis');
     expect(component.sourceTitle(vm.selectedProject!.sources[0])).toBe(
       'Los desastres de la guerra · Museo del Prado',
     );
@@ -381,6 +470,12 @@ describe('AdminResearchComponent', () => {
     expect(renderedText).toContain('Propuesta rechazada');
     expect(renderedText).toContain('Propuesta ya convertida');
     expect(renderedText).toContain('Convertida en hallazgo');
+    expect(renderedText).toContain('Materiales de investigación');
+    expect(renderedText).toContain('Notas curatoriales');
+    expect(renderedText).toContain('Síntesis y Canvas');
+    expect(renderedText).toContain('Francisco de Goya');
+    expect(renderedText).toContain('Francisco de Goya → Violencia moderna');
+    expect(renderedText).toContain('Lista para promoción');
 
     const convertButtons = Array.from(
       (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
@@ -485,9 +580,7 @@ describe('AdminResearchComponent', () => {
       objective: 'Objetivo',
       scope: undefined,
     });
-    expect(router.navigate).toHaveBeenCalledWith(['/admin/research'], {
-      queryParams: { project: 'research-2' },
-    });
+    expect(router.navigate).toHaveBeenCalledWith(['/admin/research', 'research-2']);
 
     component.sourceId = ' source-2 ';
     component.sourceNote = ' Nota ';
@@ -578,6 +671,70 @@ describe('AdminResearchComponent', () => {
     expect(component.sourceNote).toBe(' Nota sin guardar ');
   });
 
+  it('opens a research project on its own workspace route', async () => {
+    const project = {
+      id: 'research-detail',
+      title: 'Goya y el cuerpo',
+      objective: 'Revisar fuentes corporales',
+      scope: null,
+      status: 'ACTIVE',
+      lastActiveAt: '2026-07-10T08:00:00.000Z',
+      createdAt: '2026-07-10T08:00:00.000Z',
+      updatedAt: '2026-07-10T08:00:00.000Z',
+      _count: { sources: 0, evidence: 0, findings: 0 },
+      sources: [],
+      evidence: [],
+      findings: [],
+      findingProposals: [],
+      aiExecutions: [],
+      decisions: [],
+      jobs: [],
+      materials: [],
+      claims: [],
+    };
+    const api = {
+      list: vi.fn().mockReturnValue(of([])),
+      getById: vi.fn().mockReturnValue(of(project)),
+      searchSources: vi.fn().mockReturnValue(of([])),
+      addSource: vi.fn().mockReturnValue(of({})),
+      prepareSource: vi.fn().mockReturnValue(of({})),
+      runNextJob: vi.fn().mockReturnValue(of({ processed: false })),
+      createEvidence: vi.fn().mockReturnValue(of({})),
+      createFinding: vi.fn().mockReturnValue(of({})),
+      convertFindingProposalToFinding: vi.fn().mockReturnValue(of({})),
+      reviewFindingProposal: vi.fn().mockReturnValue(of({})),
+      decideFinding: vi.fn().mockReturnValue(of({})),
+    };
+
+    TestBed.configureTestingModule({
+      imports: [AdminResearchComponent],
+      providers: [
+        { provide: ResearchApi, useValue: api },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            url: of([{ path: 'research-detail' }]),
+            paramMap: of(convertToParamMap({ id: 'research-detail' })),
+            queryParamMap: of(convertToParamMap({})),
+          },
+        },
+        { provide: Router, useValue: { navigate: vi.fn().mockResolvedValue(true) } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(AdminResearchComponent);
+    await firstValueFrom(
+      fixture.componentInstance.vm$.pipe(filter((value) => value.state === 'ready')),
+    );
+    fixture.detectChanges();
+
+    expect(api.getById).toHaveBeenCalledWith('research-detail');
+    expect(api.list).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain('Goya y el cuerpo');
+    expect(fixture.nativeElement.querySelector('.admin-research__panel--compose')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Investigaciones recientes');
+  });
+
   it('shows a clear workspace empty state without a selected project', async () => {
     const api = {
       list: vi.fn().mockReturnValue(of([])),
@@ -633,6 +790,8 @@ describe('AdminResearchComponent', () => {
           aiExecutions: [],
           decisions: [],
           jobs: [],
+          materials: [],
+          claims: [],
         }),
       ),
       searchSources: vi.fn().mockReturnValue(of([])),
@@ -733,6 +892,8 @@ describe('AdminResearchComponent', () => {
           aiExecutions: [],
           decisions: [],
           jobs: [],
+          materials: [],
+          claims: [],
         }),
       ),
       searchSources: vi.fn().mockReturnValue(of([])),

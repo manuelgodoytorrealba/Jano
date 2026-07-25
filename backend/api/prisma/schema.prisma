@@ -140,6 +140,27 @@ enum ResearchProposalReviewState {
   REJECTED
 }
 
+enum ResearchClaimKind {
+  SUBJECT_CANDIDATE
+  CONNECTION_HYPOTHESIS
+  CONCEPT
+  CONTRADICTION
+  OPEN_QUESTION
+  SYNTHESIS_STATEMENT
+}
+
+enum ResearchMaterialKind {
+  TEXT
+  URL
+  PDF
+}
+
+enum ResearchMaterialStatus {
+  READY
+  PENDING_PREPARATION
+  FAILED
+}
+
 model Entity {
   id           String        @id @default(cuid())
   type         EntityType
@@ -490,6 +511,8 @@ model ResearchProject {
   jobs             ResearchJob[]
   aiExecutions     AIExecution[]
   findingProposals ResearchFindingProposal[]
+  claims           ResearchClaim[]
+  materials        ResearchMaterial[]
 
   @@index([status, lastActiveAt])
   @@index([updatedAt])
@@ -525,6 +548,7 @@ model ResearchEvidence {
   source           Source                            @relation(fields: [sourceId], references: [id], onDelete: Restrict)
   findings         ResearchFindingEvidence[]
   findingProposals ResearchFindingProposalEvidence[]
+  claims           ResearchClaimEvidence[]
 
   @@unique([projectId, sourceId, fingerprint])
   @@index([projectId])
@@ -656,6 +680,64 @@ model ResearchFindingProposalEvidence {
   evidence ResearchEvidence        @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
 
   @@id([proposalId, evidenceId])
+  @@index([evidenceId])
+}
+
+model ResearchMaterial {
+  id           String                 @id @default(cuid())
+  projectId    String
+  kind         ResearchMaterialKind
+  status       ResearchMaterialStatus
+  title        String
+  content      String?
+  url          String?
+  storageKey   String?
+  originalName String?
+  mimeType     String?
+  sizeBytes    Int?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  project ResearchProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([projectId, status])
+}
+
+model ResearchClaim {
+  id                String            @id @default(cuid())
+  projectId         String
+  kind              ResearchClaimKind
+  title             String
+  summary           String?
+  subjectClaimId    String?
+  objectClaimId     String?
+  readyForPromotion Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  project   ResearchProject         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  evidence  ResearchClaimEvidence[]
+  subject   ResearchClaim?          @relation("ResearchClaimSubject", fields: [subjectClaimId], references: [id], onDelete: SetNull)
+  subjectOf ResearchClaim[]         @relation("ResearchClaimSubject")
+  object    ResearchClaim?          @relation("ResearchClaimObject", fields: [objectClaimId], references: [id], onDelete: SetNull)
+  objectOf  ResearchClaim[]         @relation("ResearchClaimObject")
+
+  @@index([projectId, kind])
+  @@index([projectId, readyForPromotion])
+  @@index([subjectClaimId])
+  @@index([objectClaimId])
+  @@index([updatedAt])
+}
+
+model ResearchClaimEvidence {
+  claimId    String
+  evidenceId String
+
+  claim    ResearchClaim    @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  evidence ResearchEvidence @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@id([claimId, evidenceId])
   @@index([evidenceId])
 }
 

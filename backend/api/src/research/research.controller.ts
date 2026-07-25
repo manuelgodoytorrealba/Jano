@@ -1,16 +1,40 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import type { AuthenticatedRequest } from '../auth/authenticated-user.type';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
+import {
+  CreateResearchClaimDto,
+  SetResearchClaimReadinessDto,
+} from './dto/create-research-claim.dto';
 import { CreateResearchDecisionDto } from './dto/create-research-decision.dto';
 import { CreateResearchEvidenceDto } from './dto/create-research-evidence.dto';
 import { CreateResearchFindingDto } from './dto/create-research-finding.dto';
+import {
+  CreateResearchMaterialDto,
+  CreateResearchPdfMaterialDto,
+} from './dto/create-research-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { ReviewResearchFindingProposalDto } from './dto/review-research-finding-proposal.dto';
 import { SearchResearchSourcesQuery } from './dto/search-research-sources.query';
 import { ResearchJobRunnerService } from './research-job-runner.service';
+import {
+  RESEARCH_PDF_UPLOAD_OPTIONS,
+  type UploadedResearchPdf,
+} from './research-pdf-upload.config';
 import { ResearchService } from './research.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -55,6 +79,35 @@ export class ResearchController {
   @Post(':id/sources')
   addSource(@Param('id') id: string, @Body() dto: AddResearchProjectSourceDto) {
     return this.service.addProjectSource(id, dto);
+  }
+
+  @Post(':id/materials')
+  createMaterial(@Param('id') id: string, @Body() dto: CreateResearchMaterialDto) {
+    return this.service.createMaterial(id, dto);
+  }
+
+  @Post(':id/materials/pdf')
+  @UseInterceptors(FileInterceptor('file', RESEARCH_PDF_UPLOAD_OPTIONS))
+  createPdfMaterial(
+    @Param('id') id: string,
+    @UploadedFile() file: UploadedResearchPdf | undefined,
+    @Body() dto: CreateResearchPdfMaterialDto,
+  ) {
+    return this.service.createPdfMaterial(id, file, dto);
+  }
+
+  @Post(':id/claims')
+  createClaim(@Param('id') id: string, @Body() dto: CreateResearchClaimDto) {
+    return this.service.createClaim(id, dto);
+  }
+
+  @Post(':id/claims/:claimId/readiness')
+  setClaimReadiness(
+    @Param('id') id: string,
+    @Param('claimId') claimId: string,
+    @Body() dto: SetResearchClaimReadinessDto,
+  ) {
+    return this.service.setClaimReadiness(id, claimId, dto);
   }
 
   @Post(':id/sources/:sourceId/jobs/prepare')

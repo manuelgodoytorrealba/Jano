@@ -22,130 +22,133 @@
   </header>
 
   @if (vm$ | async; as vm) {
-    <section class="admin-research__layout">
-      <article class="admin-research__panel admin-research__panel--compose">
-        <div class="admin-research__panel-head">
-          <div>
-            <p class="admin-research__eyebrow">Crear</p>
-            <h2>Nueva investigación</h2>
-          </div>
-        </div>
-
-        <form class="admin-research__form" (ngSubmit)="createResearch()">
-          <label class="admin-research__field">
-            <span>Título</span>
-            <input
-              #titleInput
-              type="text"
-              name="title"
-              [(ngModel)]="title"
-              placeholder="Goya y la guerra"
-            />
-          </label>
-
-          <label class="admin-research__field">
-            <span>Objetivo</span>
-            <textarea
-              name="objective"
-              [(ngModel)]="objective"
-              rows="4"
-              placeholder="Qué pregunta editorial debe resolver esta investigación."
-            ></textarea>
-          </label>
-
-          <label class="admin-research__field">
-            <span>Alcance</span>
-            <input
-              type="text"
-              name="scope"
-              [(ngModel)]="scope"
-              placeholder="Corpus, periodo o institución"
-            />
-          </label>
-
-          @if (feedback) {
-            <div class="admin-research__feedback admin-research__feedback--success">
-              {{ feedback }}
+    <section class="admin-research__layout" [class.admin-research__layout--detail]="vm.detailMode">
+      @if (!vm.detailMode) {
+        <article class="admin-research__panel admin-research__panel--compose">
+          <div class="admin-research__panel-head">
+            <div>
+              <p class="admin-research__eyebrow">Crear</p>
+              <h2>Nueva investigación</h2>
             </div>
-          }
-
-          @if (error) {
-            <div class="admin-research__feedback admin-research__feedback--error">{{ error }}</div>
-          }
-
-          <button
-            class="admin-research__submit"
-            type="submit"
-            [disabled]="creating || !title.trim() || !objective.trim()"
-          >
-            @if (creating) {
-              Creando...
-            } @else {
-              Crear investigación
-            }
-          </button>
-        </form>
-      </article>
-
-      <article class="admin-research__panel">
-        <div class="admin-research__panel-head">
-          <div>
-            <p class="admin-research__eyebrow">Biblioteca de trabajo</p>
-            <h2>Investigaciones recientes</h2>
           </div>
-          <span>{{ vm.total }} total</span>
-        </div>
 
-        <div class="admin-research__filters" aria-label="Filtros de investigaciones">
-          <input
-            type="search"
-            name="researchSearch"
-            [(ngModel)]="search"
-            (ngModelChange)="applyFilters()"
-            placeholder="Buscar investigación"
-          />
-          <select name="researchStatus" [(ngModel)]="status" (ngModelChange)="applyFilters()">
-            @for (option of statuses; track option) {
-              <option [ngValue]="option">
-                {{ option ? statusLabel(option) : 'Todos los estados' }}
-              </option>
-            }
-          </select>
-        </div>
+          <form class="admin-research__form" (ngSubmit)="createResearch()">
+            <label class="admin-research__field">
+              <span>Título</span>
+              <input
+                #titleInput
+                type="text"
+                name="title"
+                [(ngModel)]="title"
+                placeholder="Goya y la guerra"
+              />
+            </label>
 
-        @if (vm.state === 'loading') {
-          <div class="admin-research__state">Cargando investigaciones.</div>
-        } @else if (vm.state === 'error') {
-          <div class="admin-research__state admin-research__state--error">{{ vm.error }}</div>
-        } @else if (vm.projects.length) {
-          <div class="admin-research__list" role="list">
-            @for (project of vm.projects; track project.id) {
-              <a
-                class="research-card"
-                role="listitem"
-                routerLink="/admin/research"
-                [queryParams]="{ project: project.id }"
-                [class.research-card--selected]="vm.selected?.id === project.id"
-              >
-                <span class="research-card__marker" aria-hidden="true">R</span>
-                <span class="research-card__body">
-                  <strong>{{ project.title }}</strong>
-                  <span>{{ project.objective }}</span>
-                  <small>{{ projectMeta(project) }}</small>
-                </span>
-                <span class="research-card__side">
-                  <strong>{{ statusLabel(project.status) }}</strong>
-                  <time [attr.datetime]="project.lastActiveAt">{{
-                    project.lastActiveAt | date: 'dd MMM yyyy'
-                  }}</time>
-                </span>
-              </a>
+            <label class="admin-research__field">
+              <span>Objetivo</span>
+              <textarea
+                name="objective"
+                [(ngModel)]="objective"
+                rows="4"
+                placeholder="Qué pregunta editorial debe resolver esta investigación."
+              ></textarea>
+            </label>
+
+            <label class="admin-research__field">
+              <span>Alcance</span>
+              <input
+                type="text"
+                name="scope"
+                [(ngModel)]="scope"
+                placeholder="Corpus, periodo o institución"
+              />
+            </label>
+
+            @if (feedback) {
+              <div class="admin-research__feedback admin-research__feedback--success">
+                {{ feedback }}
+              </div>
             }
+
+            @if (error) {
+              <div class="admin-research__feedback admin-research__feedback--error">
+                {{ error }}
+              </div>
+            }
+
+            <button
+              class="admin-research__submit"
+              type="submit"
+              [disabled]="creating || !title.trim() || !objective.trim()"
+            >
+              @if (creating) {
+                Creando...
+              } @else {
+                Crear investigación
+              }
+            </button>
+          </form>
+        </article>
+
+        <article class="admin-research__panel">
+          <div class="admin-research__panel-head">
+            <div>
+              <p class="admin-research__eyebrow">Biblioteca de trabajo</p>
+              <h2>Investigaciones recientes</h2>
+            </div>
+            <span>{{ vm.total }} total</span>
           </div>
-        } @else {
-          <div class="admin-research__state">No hay investigaciones con esos filtros.</div>
-        }
-      </article>
+
+          <div class="admin-research__filters" aria-label="Filtros de investigaciones">
+            <input
+              type="search"
+              name="researchSearch"
+              [(ngModel)]="search"
+              (ngModelChange)="applyFilters()"
+              placeholder="Buscar investigación"
+            />
+            <select name="researchStatus" [(ngModel)]="status" (ngModelChange)="applyFilters()">
+              @for (option of statuses; track option) {
+                <option [ngValue]="option">
+                  {{ option ? statusLabel(option) : 'Todos los estados' }}
+                </option>
+              }
+            </select>
+          </div>
+
+          @if (vm.state === 'loading') {
+            <div class="admin-research__state">Cargando investigaciones.</div>
+          } @else if (vm.state === 'error') {
+            <div class="admin-research__state admin-research__state--error">{{ vm.error }}</div>
+          } @else if (vm.projects.length) {
+            <div class="admin-research__list" role="list">
+              @for (project of vm.projects; track project.id) {
+                <a
+                  class="research-card"
+                  role="listitem"
+                  [routerLink]="['/admin/research', project.id]"
+                  [class.research-card--selected]="vm.selected?.id === project.id"
+                >
+                  <span class="research-card__marker" aria-hidden="true">R</span>
+                  <span class="research-card__body">
+                    <strong>{{ project.title }}</strong>
+                    <span>{{ project.objective }}</span>
+                    <small>{{ projectMeta(project) }}</small>
+                  </span>
+                  <span class="research-card__side">
+                    <strong>{{ statusLabel(project.status) }}</strong>
+                    <time [attr.datetime]="project.lastActiveAt">{{
+                      project.lastActiveAt | date: 'dd MMM yyyy'
+                    }}</time>
+                  </span>
+                </a>
+              }
+            </div>
+          } @else {
+            <div class="admin-research__state">No hay investigaciones con esos filtros.</div>
+          }
+        </article>
+      }
 
       <article class="admin-research__panel admin-research__workspace">
         @if (vm.selectedError) {
@@ -155,12 +158,47 @@
         } @else if (vm.selectedProject; as project) {
           <div class="admin-research__workspace-head">
             <div>
-              <p class="admin-research__eyebrow">Workspace</p>
+              <p class="admin-research__eyebrow">Research Studio</p>
               <h2>{{ project.title }}</h2>
               <p>{{ project.objective }}</p>
             </div>
             <span>{{ statusLabel(project.status) }}</span>
           </div>
+
+          <nav class="research-flow" aria-label="Flujo de investigación">
+            <a
+              href="#research-materials"
+              [class.research-flow__step--active]="project.materials.length"
+            >
+              <small>01</small>
+              <span>Materiales</span>
+              <strong>{{ project.materials.length }}</strong>
+            </a>
+            <a
+              href="#research-evidence"
+              [class.research-flow__step--active]="project.evidence.length"
+            >
+              <small>02</small>
+              <span>Evidencias</span>
+              <strong>{{ project.evidence.length }}</strong>
+            </a>
+            <a
+              href="#research-findings"
+              [class.research-flow__step--active]="project.findings.length"
+            >
+              <small>03</small>
+              <span>Hallazgos</span>
+              <strong>{{ project.findings.length }}</strong>
+            </a>
+            <a
+              href="#research-synthesis"
+              [class.research-flow__step--active]="project.claims.length"
+            >
+              <small>04</small>
+              <span>Síntesis y Canvas</span>
+              <strong>{{ project.claims.length }}</strong>
+            </a>
+          </nav>
 
           <div class="research-action-panel">
             @if (actionFeedback) {
@@ -174,6 +212,69 @@
                 {{ actionError }}
               </div>
             }
+
+            <form
+              id="research-materials"
+              class="research-action-form research-action-form--material"
+              (ngSubmit)="createMaterial(project.id)"
+            >
+              <div>
+                <p class="admin-research__eyebrow">Entrada documental</p>
+                <h3>Añadir material</h3>
+              </div>
+              <div class="research-segmented" aria-label="Tipo de material">
+                <button
+                  type="button"
+                  [class.research-segmented__active]="materialKind === 'TEXT'"
+                  (click)="materialKind = 'TEXT'"
+                >
+                  Texto
+                </button>
+                <button
+                  type="button"
+                  [class.research-segmented__active]="materialKind === 'URL'"
+                  (click)="materialKind = 'URL'"
+                >
+                  URL
+                </button>
+                <button
+                  type="button"
+                  [class.research-segmented__active]="materialKind === 'PDF'"
+                  (click)="materialKind = 'PDF'"
+                >
+                  PDF
+                </button>
+              </div>
+              <input
+                type="text"
+                name="materialTitle"
+                [(ngModel)]="materialTitle"
+                placeholder="Título del material"
+              />
+              @if (materialKind === 'TEXT') {
+                <textarea
+                  name="materialContent"
+                  [(ngModel)]="materialContent"
+                  rows="6"
+                  placeholder="Pega aquí el texto que quieres investigar"
+                ></textarea>
+              } @else if (materialKind === 'URL') {
+                <input
+                  type="url"
+                  name="materialUrl"
+                  [(ngModel)]="materialUrl"
+                  placeholder="https://..."
+                />
+              } @else {
+                <label class="research-file-input">
+                  <span>{{ materialPdf?.name || 'Seleccionar PDF · máximo 25 MB' }}</span>
+                  <input type="file" accept="application/pdf,.pdf" (change)="selectPdf($event)" />
+                </label>
+              }
+              <button type="submit" [disabled]="actionBusy || !canCreateMaterial()">
+                Añadir a la investigación
+              </button>
+            </form>
 
             <form class="research-action-form" (ngSubmit)="addSource(project.id)">
               <h3>Asociar fuente</h3>
@@ -344,6 +445,193 @@
           </div>
 
           <div class="research-workspace-grid">
+            <section class="research-workspace-section research-workspace-section--wide">
+              <div class="research-section-head">
+                <div>
+                  <p class="admin-research__eyebrow">Documentación privada</p>
+                  <h3>Materiales de investigación</h3>
+                </div>
+                <small>{{ project.materials.length }} materiales</small>
+              </div>
+              @if (project.materials.length) {
+                <div class="research-material-list">
+                  @for (material of project.materials; track material.id) {
+                    <article class="research-material">
+                      <span class="research-material__kind">{{
+                        materialKindLabel(material.kind)
+                      }}</span>
+                      <div>
+                        <strong>{{ material.title }}</strong>
+                        @if (material.url) {
+                          <a [href]="material.url" target="_blank" rel="noopener noreferrer">
+                            {{ material.url }}
+                          </a>
+                        } @else if (material.content) {
+                          <p>{{ material.content }}</p>
+                        } @else if (material.originalName) {
+                          <span>
+                            {{ material.originalName }}
+                            @if (materialSize(material.sizeBytes)) {
+                              · {{ materialSize(material.sizeBytes) }}
+                            }
+                          </span>
+                        }
+                      </div>
+                      <small>{{ materialStatusLabel(material.status) }}</small>
+                    </article>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">
+                  Añade texto, una URL o un PDF para iniciar la preparación documental.
+                </div>
+              }
+            </section>
+
+            <section
+              id="research-synthesis"
+              class="research-workspace-section research-workspace-section--wide research-synthesis"
+            >
+              <div class="research-section-head">
+                <div>
+                  <p class="admin-research__eyebrow">Conocimiento provisional</p>
+                  <h3>Síntesis y Canvas</h3>
+                </div>
+                <small>{{ project.claims.length }} claims privados</small>
+              </div>
+
+              <div class="research-synthesis__layout">
+                <form class="research-claim-form" (ngSubmit)="createClaim(project.id)">
+                  <select name="claimKind" [(ngModel)]="claimKind">
+                    @for (kind of claimKinds; track kind) {
+                      <option [value]="kind">{{ claimKindLabel(kind) }}</option>
+                    }
+                  </select>
+                  @if (claimKind === 'CONNECTION_HYPOTHESIS') {
+                    <div class="research-claim-form__connection">
+                      <select name="claimSubjectId" [(ngModel)]="claimSubjectId">
+                        <option value="">Origen</option>
+                        @for (claim of claimCandidates(project); track claim.id) {
+                          <option [value]="claim.id">{{ claim.title }}</option>
+                        }
+                      </select>
+                      <span aria-hidden="true">→</span>
+                      <select name="claimObjectId" [(ngModel)]="claimObjectId">
+                        <option value="">Destino</option>
+                        @for (claim of claimCandidates(project); track claim.id) {
+                          <option [value]="claim.id">{{ claim.title }}</option>
+                        }
+                      </select>
+                    </div>
+                  }
+                  <input
+                    type="text"
+                    name="claimTitle"
+                    [(ngModel)]="claimTitle"
+                    placeholder="Título de la síntesis"
+                  />
+                  <textarea
+                    name="claimSummary"
+                    [(ngModel)]="claimSummary"
+                    rows="4"
+                    placeholder="Qué sabemos y por qué importa"
+                  ></textarea>
+
+                  <div class="research-claim-evidence">
+                    <strong>Evidencias que la respaldan</strong>
+                    @for (evidence of project.evidence; track evidence.id) {
+                      <label>
+                        <input
+                          type="checkbox"
+                          [checked]="selectedClaimEvidenceIds.includes(evidence.id)"
+                          (change)="toggleClaimEvidence(evidence.id, $any($event.target).checked)"
+                        />
+                        <span> {{ evidence.locator }} · {{ evidence.quote }} </span>
+                      </label>
+                    } @empty {
+                      <small>Registra evidencias antes de sintetizar conocimiento.</small>
+                    }
+                  </div>
+                  <button
+                    type="submit"
+                    [disabled]="
+                      actionBusy ||
+                      !claimTitle.trim() ||
+                      !selectedClaimEvidenceIds.length ||
+                      (claimKind === 'CONNECTION_HYPOTHESIS' &&
+                        (!claimSubjectId || !claimObjectId || claimSubjectId === claimObjectId))
+                    "
+                  >
+                    Añadir al Canvas
+                  </button>
+                </form>
+
+                <div class="research-canvas">
+                  @if (project.claims.length) {
+                    <div class="research-canvas__nodes">
+                      @for (claim of project.claims; track claim.id) {
+                        @if (claim.kind !== 'CONNECTION_HYPOTHESIS') {
+                          <article
+                            class="research-canvas-node"
+                            [attr.data-kind]="claim.kind"
+                            [class.research-canvas-node--ready]="claim.readyForPromotion"
+                          >
+                            <small>{{ claimKindLabel(claim.kind) }}</small>
+                            <strong>{{ claim.title }}</strong>
+                            @if (claim.summary) {
+                              <p>{{ claim.summary }}</p>
+                            }
+                            <span>{{ claim.evidence?.length ?? 0 }} evidencias</span>
+                            <button
+                              type="button"
+                              [disabled]="actionBusy"
+                              (click)="setClaimReadiness(project.id, claim)"
+                            >
+                              {{
+                                claim.readyForPromotion
+                                  ? 'Devolver a revisión'
+                                  : 'Lista para promoción'
+                              }}
+                            </button>
+                          </article>
+                        }
+                      }
+                    </div>
+                    <div class="research-canvas__connections">
+                      @for (claim of project.claims; track claim.id) {
+                        @if (claim.kind === 'CONNECTION_HYPOTHESIS') {
+                          <article>
+                            <small>Relación provisional</small>
+                            <strong>
+                              {{ claim.subject?.title || 'Origen' }} →
+                              {{ claim.object?.title || 'Destino' }}
+                            </strong>
+                            <span>{{ claim.title }}</span>
+                            <button
+                              type="button"
+                              [disabled]="actionBusy"
+                              (click)="setClaimReadiness(project.id, claim)"
+                            >
+                              {{
+                                claim.readyForPromotion
+                                  ? 'Devolver a revisión'
+                                  : 'Lista para promoción'
+                              }}
+                            </button>
+                          </article>
+                        }
+                      }
+                    </div>
+                  } @else {
+                    <div class="research-canvas__empty">
+                      <strong>El Canvas se abrirá con la primera síntesis.</strong>
+                      <span>No representa documentos ni hallazgos sin estructurar.</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </section>
+
             <section class="research-workspace-section">
               <h3>Fuentes</h3>
               @if (project.sources.length) {
@@ -383,7 +671,7 @@
               }
             </section>
 
-            <section class="research-workspace-section">
+            <section id="research-evidence" class="research-workspace-section">
               <div class="research-section-head">
                 <h3>Evidencias</h3>
                 <small
@@ -626,6 +914,7 @@
             </section>
 
             <app-research-findings-section
+              id="research-findings"
               [project]="project"
               [actionBusy]="actionBusy"
               [decisionNotes]="findingDecisionNotes"

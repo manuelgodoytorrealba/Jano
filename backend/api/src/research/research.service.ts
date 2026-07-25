@@ -1,19 +1,31 @@
 import { createHash } from 'node:crypto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
+  ResearchClaimKind,
   ResearchDecisionAction,
   ResearchFindingStatus,
   ResearchJobType,
+  ResearchMaterialKind,
+  ResearchMaterialStatus,
   ResearchProposalReviewState,
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
+import {
+  CreateResearchClaimDto,
+  SetResearchClaimReadinessDto,
+} from './dto/create-research-claim.dto';
 import { CreateResearchDecisionDto } from './dto/create-research-decision.dto';
 import { CreateResearchEvidenceDto } from './dto/create-research-evidence.dto';
 import { CreateResearchFindingDto } from './dto/create-research-finding.dto';
+import {
+  CreateResearchMaterialDto,
+  CreateResearchPdfMaterialDto,
+} from './dto/create-research-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { ReviewResearchFindingProposalDto } from './dto/review-research-finding-proposal.dto';
 import { SearchResearchSourcesQuery } from './dto/search-research-sources.query';
+import type { UploadedResearchPdf } from './research-pdf-upload.config';
 
 const FINDING_STATUS_BY_DECISION: Record<ResearchDecisionAction, ResearchFindingStatus> = {
   [ResearchDecisionAction.INCORPORATE]: ResearchFindingStatus.ACCEPTED,
@@ -51,6 +63,8 @@ export class ResearchService {
             sources: true,
             evidence: true,
             findings: true,
+            materials: true,
+            claims: true,
           },
         },
       },
@@ -100,6 +114,31 @@ export class ResearchService {
         },
         decisions: { orderBy: { createdAt: 'desc' } },
         jobs: { orderBy: { updatedAt: 'desc' } },
+        materials: {
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            projectId: true,
+            kind: true,
+            status: true,
+            title: true,
+            content: true,
+            url: true,
+            originalName: true,
+            mimeType: true,
+            sizeBytes: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        claims: {
+          include: {
+            evidence: { include: { evidence: true } },
+            subject: { select: { id: true, title: true, kind: true } },
+            object: { select: { id: true, title: true, kind: true } },
+          },
+          orderBy: { updatedAt: 'desc' },
+        },
         findingProposals: {
           include: { evidence: { include: { evidence: true } } },
           orderBy: { createdAt: 'desc' },
@@ -279,6 +318,120 @@ export class ResearchService {
     return this.getProject(projectId);
   }
 
+  async createMaterial(projectId: string, dto: CreateResearchMaterialDto) {
+    await this.requireProject(projectId);
+
+    const content = dto.kind === ResearchMaterialKind.TEXT ? dto.content?.trim() : null;
+    const url = dto.kind === ResearchMaterialKind.URL ? dto.url?.trim() : null;
+    if (dto.kind === ResearchMaterialKind.TEXT && !content) {
+      throw new BadRequestException('Research text content is required');
+    }
+    if (dto.kind === ResearchMaterialKind.URL && !url) {
+      throw new BadRequestException('Research material URL is required');
+    }
+
+    await this.prisma.researchMaterial.create({
+      data: {
+        projectId,
+        kind: dto.kind,
+        status:
+          dto.kind === ResearchMaterialKind.TEXT
+            ? ResearchMaterialStatus.READY
+            : ResearchMaterialStatus.PENDING_PREPARATION,
+        title: dto.title.trim(),
+        content,
+        url,
+      },
+    });
+
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async createPdfMaterial(
+    projectId: string,
+    file: UploadedResearchPdf | undefined,
+    dto: CreateResearchPdfMaterialDto,
+  ) {
+    if (!file) throw new BadRequestException('Research PDF is required');
+    await this.requireProject(projectId);
+
+    await this.prisma.researchMaterial.create({
+      data: {
+        projectId,
+        kind: ResearchMaterialKind.PDF,
+        status: ResearchMaterialStatus.PENDING_PREPARATION,
+        title: dto.title?.trim() || file.originalname.replace(/\.pdf$/i, ''),
+        storageKey: `research/${file.filename}`,
+        originalName: file.originalname,
+        mimeType: file.mimetype,
+        sizeBytes: file.size,
+      },
+    });
+
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async createClaim(projectId: string, dto: CreateResearchClaimDto) {
+    await this.requireProject(projectId);
+    const evidenceIds = [...new Set(dto.evidenceIds.map((id) => id.trim()).filter(Boolean))];
+    if (!evidenceIds.length) throw new BadRequestException('Research claim evidence is required');
+
+    const evidence = await this.prisma.researchEvidence.findMany({
+      where: { projectId, id: { in: evidenceIds } },
+      select: { id: true },
+    });
+    if (evidence.length !== evidenceIds.length) {
+      throw new NotFoundException('Research evidence not found');
+    }
+
+    const isConnection = dto.kind === ResearchClaimKind.CONNECTION_HYPOTHESIS;
+    const subjectClaimId = isConnection ? dto.subjectClaimId?.trim() : null;
+    const objectClaimId = isConnection ? dto.objectClaimId?.trim() : null;
+    if (isConnection && (!subjectClaimId || !objectClaimId || subjectClaimId === objectClaimId)) {
+      throw new BadRequestException('A connection needs two different research claims');
+    }
+
+    if (isConnection) {
+      const relatedClaims = await this.prisma.researchClaim.count({
+        where: { projectId, id: { in: [subjectClaimId!, objectClaimId!] } },
+      });
+      if (relatedClaims !== 2) throw new NotFoundException('Related research claim not found');
+    }
+
+    await this.prisma.researchClaim.create({
+      data: {
+        projectId,
+        kind: dto.kind,
+        title: dto.title.trim(),
+        summary: dto.summary?.trim() || null,
+        subjectClaimId,
+        objectClaimId,
+        readyForPromotion: dto.readyForPromotion ?? false,
+        evidence: { create: evidenceIds.map((evidenceId) => ({ evidenceId })) },
+      },
+    });
+
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async setClaimReadiness(projectId: string, claimId: string, dto: SetResearchClaimReadinessDto) {
+    const claim = await this.prisma.researchClaim.findFirst({
+      where: { id: claimId, projectId },
+      select: { id: true },
+    });
+    if (!claim) throw new NotFoundException('Research claim not found');
+
+    await this.prisma.researchClaim.update({
+      where: { id: claimId },
+      data: { readyForPromotion: dto.readyForPromotion },
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
   async createEvidence(projectId: string, dto: CreateResearchEvidenceDto) {
     const projectSource = await this.prisma.researchProjectSource.findUnique({
       where: { projectId_sourceId: { projectId, sourceId: dto.sourceId } },
@@ -378,6 +531,14 @@ export class ResearchService {
     });
 
     return this.getProject(projectId);
+  }
+
+  private async requireProject(projectId: string) {
+    const project = await this.prisma.researchProject.findUnique({
+      where: { id: projectId },
+      select: { id: true },
+    });
+    if (!project) throw new NotFoundException('Research project not found');
   }
 
   private touchProject(projectId: string) {

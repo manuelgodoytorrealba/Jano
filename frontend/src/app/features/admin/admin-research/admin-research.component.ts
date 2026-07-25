@@ -1,7 +1,7 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, convertToParamMap } from '@angular/router';
 import {
   BehaviorSubject,
   catchError,
@@ -15,9 +15,12 @@ import {
 } from 'rxjs';
 import {
   ResearchApi,
+  ResearchClaim,
+  ResearchClaimKind,
   ResearchDecisionAction,
   ResearchEvidence,
   ResearchJob,
+  ResearchMaterialKind,
   ResearchProject,
   ResearchProposalReviewState,
   ResearchProjectStatus,
@@ -37,6 +40,7 @@ type ResearchListVm = {
   selectedError: string;
   total: number;
   error: string;
+  detailMode: boolean;
 };
 
 type ResearchEvidenceGroup = {
@@ -75,6 +79,14 @@ export class AdminResearchComponent {
     'ARCHIVED',
   ];
   readonly decisionActions: ResearchDecisionAction[] = ['INCORPORATE', 'REJECT', 'POSTPONE'];
+  readonly claimKinds: ResearchClaimKind[] = [
+    'SUBJECT_CANDIDATE',
+    'CONCEPT',
+    'CONNECTION_HYPOTHESIS',
+    'SYNTHESIS_STATEMENT',
+    'CONTRADICTION',
+    'OPEN_QUESTION',
+  ];
 
   title = '';
   objective = '';
@@ -97,6 +109,17 @@ export class AdminResearchComponent {
   evidenceQuote = '';
   evidenceContext = '';
   evidenceNote = '';
+  materialKind: ResearchMaterialKind = 'TEXT';
+  materialTitle = '';
+  materialContent = '';
+  materialUrl = '';
+  materialPdf: File | null = null;
+  claimKind: ResearchClaimKind = 'SUBJECT_CANDIDATE';
+  claimTitle = '';
+  claimSummary = '';
+  claimSubjectId = '';
+  claimObjectId = '';
+  selectedClaimEvidenceIds: string[] = [];
   findingTitle = '';
   findingKind = '';
   findingSummary = '';
@@ -110,10 +133,46 @@ export class AdminResearchComponent {
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
   private readonly sourceSearch$ = new BehaviorSubject('');
 
-  readonly vm$ = combineLatest([this.route.url, this.route.queryParamMap, this.refresh$]).pipe(
-    switchMap(([segments, params]) => {
+  readonly vm$ = combineLatest([
+    this.route.url,
+    this.route.paramMap ?? of(convertToParamMap({})),
+    this.route.queryParamMap,
+    this.refresh$,
+  ]).pipe(
+    switchMap(([segments, routeParams, params]) => {
       this.autoFocusCreate = segments.some((segment) => segment.path === 'new');
-      const selectedId = params.get('project');
+      const routeProjectId = routeParams.get('id');
+      const selectedId = routeProjectId ?? params.get('project');
+      const detailMode = !!routeProjectId;
+
+      if (detailMode && selectedId) {
+        return this.api.getById(selectedId).pipe(
+          map(
+            (selectedProject): ResearchListVm => ({
+              state: 'ready',
+              projects: [],
+              selected: null,
+              selectedProject,
+              selectedError: '',
+              total: 0,
+              error: '',
+              detailMode,
+            }),
+          ),
+          catchError(() =>
+            of<ResearchListVm>({
+              state: 'ready',
+              projects: [],
+              selected: null,
+              selectedProject: null,
+              selectedError: 'No se pudo abrir la investigación seleccionada.',
+              total: 0,
+              error: '',
+              detailMode,
+            }),
+          ),
+        );
+      }
 
       return this.api.list().pipe(
         switchMap((projects) => {
@@ -127,6 +186,7 @@ export class AdminResearchComponent {
             selectedError: '',
             total: projects.length,
             error: '',
+            detailMode,
           };
 
           if (!selected) return of<ResearchListVm>(base);
@@ -150,6 +210,7 @@ export class AdminResearchComponent {
             selectedError: '',
             total: 0,
             error: 'No se pudieron cargar las investigaciones.',
+            detailMode,
           }),
         ),
       );
@@ -196,7 +257,7 @@ export class AdminResearchComponent {
           this.objective = '';
           this.scope = '';
           this.refresh$.next();
-          void this.router.navigate(['/admin/research'], { queryParams: { project: project.id } });
+          void this.router.navigate(['/admin/research', project.id]);
         },
         error: (err) => {
           this.creating = false;
@@ -232,6 +293,85 @@ export class AdminResearchComponent {
     this.sourceId = source.id;
     this.selectedSourceLabel = this.sourceRecordLabel(source);
     this.sourceSearch = this.selectedSourceLabel;
+  }
+
+  createMaterial(projectId: string): void {
+    const title = this.materialTitle.trim();
+    if (!title) return;
+
+    const request =
+      this.materialKind === 'PDF'
+        ? this.materialPdf
+          ? this.api.createPdfMaterial(projectId, this.materialPdf, title)
+          : null
+        : this.api.createMaterial(projectId, {
+            kind: this.materialKind,
+            title,
+            content: this.materialKind === 'TEXT' ? this.materialContent.trim() : undefined,
+            url: this.materialKind === 'URL' ? this.materialUrl.trim() : undefined,
+          });
+    if (!request) return;
+
+    this.runProjectAction(request, 'Material añadido a la investigación.', () => {
+      this.materialTitle = '';
+      this.materialContent = '';
+      this.materialUrl = '';
+      this.materialPdf = null;
+    });
+  }
+
+  selectPdf(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.materialPdf = input.files?.[0] ?? null;
+    if (this.materialPdf && !this.materialTitle.trim()) {
+      this.materialTitle = this.materialPdf.name.replace(/\.pdf$/i, '');
+    }
+  }
+
+  canCreateMaterial(): boolean {
+    if (!this.materialTitle.trim()) return false;
+    if (this.materialKind === 'TEXT') return Boolean(this.materialContent.trim());
+    if (this.materialKind === 'URL') return Boolean(this.materialUrl.trim());
+    return Boolean(this.materialPdf);
+  }
+
+  createClaim(projectId: string): void {
+    const title = this.claimTitle.trim();
+    if (!title || !this.selectedClaimEvidenceIds.length) return;
+
+    this.runProjectAction(
+      this.api.createClaim(projectId, {
+        kind: this.claimKind,
+        title,
+        summary: this.claimSummary.trim() || undefined,
+        evidenceIds: this.selectedClaimEvidenceIds,
+        subjectClaimId:
+          this.claimKind === 'CONNECTION_HYPOTHESIS' ? this.claimSubjectId : undefined,
+        objectClaimId: this.claimKind === 'CONNECTION_HYPOTHESIS' ? this.claimObjectId : undefined,
+      }),
+      'Síntesis añadida al Canvas.',
+      () => {
+        this.claimTitle = '';
+        this.claimSummary = '';
+        this.claimSubjectId = '';
+        this.claimObjectId = '';
+        this.selectedClaimEvidenceIds = [];
+      },
+    );
+  }
+
+  toggleClaimEvidence(evidenceId: string, checked: boolean): void {
+    this.selectedClaimEvidenceIds = checked
+      ? [...new Set([...this.selectedClaimEvidenceIds, evidenceId])]
+      : this.selectedClaimEvidenceIds.filter((id) => id !== evidenceId);
+  }
+
+  setClaimReadiness(projectId: string, claim: ResearchClaim): void {
+    this.runProjectAction(
+      this.api.setClaimReadiness(projectId, claim.id, !claim.readyForPromotion),
+      claim.readyForPromotion ? 'Síntesis devuelta a revisión.' : 'Síntesis lista para promoción.',
+      () => undefined,
+    );
   }
 
   createEvidence(projectId: string): void {
@@ -440,6 +580,44 @@ export class AdminResearchComponent {
     return labels[(state ?? '').toUpperCase()] ?? 'Sin revisar';
   }
 
+  materialKindLabel(kind: ResearchMaterialKind | string): string {
+    return { TEXT: 'Texto', URL: 'Enlace', PDF: 'PDF' }[kind] ?? 'Material';
+  }
+
+  materialStatusLabel(status: string): string {
+    return (
+      {
+        READY: 'Listo',
+        PENDING_PREPARATION: 'Pendiente de preparación',
+        FAILED: 'Fallido',
+      }[status] ?? 'Pendiente'
+    );
+  }
+
+  claimKindLabel(kind: ResearchClaimKind | string): string {
+    return (
+      {
+        SUBJECT_CANDIDATE: 'Entidad candidata',
+        CONNECTION_HYPOTHESIS: 'Relación provisional',
+        CONCEPT: 'Concepto',
+        CONTRADICTION: 'Contradicción',
+        OPEN_QUESTION: 'Pregunta abierta',
+        SYNTHESIS_STATEMENT: 'Afirmación de síntesis',
+      }[kind] ?? 'Síntesis'
+    );
+  }
+
+  claimCandidates(project: ResearchProject): ResearchClaim[] {
+    return project.claims.filter((claim) => claim.kind !== 'CONNECTION_HYPOTHESIS');
+  }
+
+  materialSize(size: number | null): string {
+    if (!size) return '';
+    return size >= 1024 * 1024
+      ? `${(size / (1024 * 1024)).toFixed(1)} MB`
+      : `${Math.ceil(size / 1024)} KB`;
+  }
+
   aiExecutionStateLabel(error: string | null | undefined): string {
     return error ? 'Fallida' : 'Registrada';
   }
@@ -460,7 +638,7 @@ export class AdminResearchComponent {
   projectMeta(project: ResearchProjectSummary): string {
     const counts = project._count;
     if (!counts) return project.scope ?? 'Investigación documental';
-    return `${counts.sources} fuentes · ${counts.evidence} evidencias · ${counts.findings} hallazgos`;
+    return `${counts.materials ?? 0} materiales · ${counts.evidence} evidencias · ${counts.claims ?? 0} síntesis`;
   }
 
   sourceTitle(item: ResearchProjectSource): string {

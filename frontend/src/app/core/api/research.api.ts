@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { map } from 'rxjs';
 import { apiUrl } from './api-base';
 
 export type ResearchProjectStatus = 'ACTIVE' | 'PAUSED' | 'READY_TO_DECIDE' | 'ARCHIVED';
@@ -8,11 +9,37 @@ export type ResearchProposalReviewState = 'PENDING' | 'REVIEWED' | 'REJECTED';
 export type ResearchDecisionAction = 'INCORPORATE' | 'REJECT' | 'POSTPONE';
 export type ResearchJobStatus = 'QUEUED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED';
 export type ResearchJobType = 'PREPARE_SOURCE' | 'EXTRACT_FINDINGS';
+export type ResearchMaterialKind = 'TEXT' | 'URL' | 'PDF';
+export type ResearchMaterialStatus = 'READY' | 'PENDING_PREPARATION' | 'FAILED';
+export type ResearchClaimKind =
+  | 'SUBJECT_CANDIDATE'
+  | 'CONNECTION_HYPOTHESIS'
+  | 'CONCEPT'
+  | 'CONTRADICTION'
+  | 'OPEN_QUESTION'
+  | 'SYNTHESIS_STATEMENT';
 
 export type ResearchProjectPayload = {
   title: string;
   objective: string;
   scope?: string;
+};
+
+export type CreateResearchMaterialPayload = {
+  kind: Extract<ResearchMaterialKind, 'TEXT' | 'URL'>;
+  title: string;
+  content?: string;
+  url?: string;
+};
+
+export type CreateResearchClaimPayload = {
+  kind: ResearchClaimKind;
+  title: string;
+  summary?: string;
+  evidenceIds: string[];
+  subjectClaimId?: string;
+  objectClaimId?: string;
+  readyForPromotion?: boolean;
 };
 
 export type AddResearchProjectSourcePayload = {
@@ -58,6 +85,8 @@ export type ResearchProjectSummary = {
     sources: number;
     evidence: number;
     findings: number;
+    materials: number;
+    claims: number;
   };
 };
 
@@ -150,6 +179,49 @@ export type ResearchAIExecution = {
   jobId: string | null;
 };
 
+export type ResearchMaterial = {
+  id: string;
+  projectId: string;
+  kind: ResearchMaterialKind;
+  status: ResearchMaterialStatus;
+  title: string;
+  content: string | null;
+  url: string | null;
+  originalName: string | null;
+  mimeType: string | null;
+  sizeBytes: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ResearchClaimReference = {
+  id: string;
+  title: string;
+  kind: ResearchClaimKind;
+};
+
+export type ResearchClaimEvidence = {
+  claimId: string;
+  evidenceId: string;
+  evidence?: ResearchEvidence | null;
+};
+
+export type ResearchClaim = {
+  id: string;
+  projectId: string;
+  kind: ResearchClaimKind;
+  title: string;
+  summary: string | null;
+  subjectClaimId: string | null;
+  objectClaimId: string | null;
+  readyForPromotion: boolean;
+  createdAt: string;
+  updatedAt: string;
+  evidence?: ResearchClaimEvidence[];
+  subject?: ResearchClaimReference | null;
+  object?: ResearchClaimReference | null;
+};
+
 export type ResearchDecision = {
   id: string;
   projectId: string;
@@ -184,6 +256,8 @@ export type ResearchProject = ResearchProjectSummary & {
   aiExecutions: ResearchAIExecution[];
   decisions: ResearchDecision[];
   jobs: ResearchJob[];
+  materials: ResearchMaterial[];
+  claims: ResearchClaim[];
 };
 
 export type RunResearchJobResult =
@@ -206,7 +280,13 @@ export class ResearchApi {
   }
 
   getById(id: string) {
-    return this.http.get<ResearchProject>(`${this.baseUrl}/${id}`);
+    return this.http.get<ResearchProject>(`${this.baseUrl}/${id}`).pipe(
+      map((project) => ({
+        ...project,
+        materials: project.materials ?? [],
+        claims: project.claims ?? [],
+      })),
+    );
   }
 
   create(data: ResearchProjectPayload) {
@@ -215,6 +295,28 @@ export class ResearchApi {
 
   addSource(projectId: string, data: AddResearchProjectSourcePayload) {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/sources`, data);
+  }
+
+  createMaterial(projectId: string, data: CreateResearchMaterialPayload) {
+    return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/materials`, data);
+  }
+
+  createPdfMaterial(projectId: string, file: File, title?: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (title?.trim()) formData.append('title', title.trim());
+    return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/materials/pdf`, formData);
+  }
+
+  createClaim(projectId: string, data: CreateResearchClaimPayload) {
+    return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/claims`, data);
+  }
+
+  setClaimReadiness(projectId: string, claimId: string, readyForPromotion: boolean) {
+    return this.http.post<ResearchProject>(
+      `${this.baseUrl}/${projectId}/claims/${claimId}/readiness`,
+      { readyForPromotion },
+    );
   }
 
   prepareSource(projectId: string, sourceId: string) {

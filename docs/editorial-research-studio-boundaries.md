@@ -14,8 +14,18 @@ A `ResearchFinding` is a private finding incorporated into the research workspac
 
 It does not represent complete synthesis. It does not represent a canonical entity. It does not represent a canonical relation.
 
-## Future ResearchClaim
+## ResearchMaterial
 
-`ResearchClaim` is the future unit of structured synthesis. It should carry contradictions, open questions, concepts, candidates, and provisional relationships.
+`ResearchMaterial` is private input owned by a research project. Pasted text, URLs, and uploaded PDFs remain documentary working material and never create or modify a canonical `Source`.
 
-It is not implemented yet. It should become the basis for the future provisional Canvas, before any controlled canonical promotion.
+## ResearchClaim
+
+`ResearchClaim` is the private unit of structured synthesis. It carries subject candidates, provisional connection hypotheses, concepts, contradictions, open questions, and synthesis statements.
+
+It is still research state. It is not a canonical entity, relation, source reference, or publication.
+
+## Research Canvas
+
+The Research Canvas is a private projection of `ResearchClaim`. It can show candidate subjects, concepts, and evidence-backed provisional connections only after structured synthesis exists.
+
+Canvas edits update Research state. They never publish and never write to `Entity`, `Relation`, `SourceRef`, or `Publication`; canonical promotion remains a separate human-controlled transition.

@@ -1,8 +1,11 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
+  ResearchClaimKind,
   ResearchDecisionAction,
   ResearchFindingStatus,
   ResearchJobType,
+  ResearchMaterialKind,
+  ResearchMaterialStatus,
   ResearchProposalReviewState,
 } from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
@@ -33,6 +36,15 @@ describe('ResearchService', () => {
     researchEvidence: {
       findMany: jest.fn(),
       upsert: jest.fn(),
+    },
+    researchMaterial: {
+      create: jest.fn(),
+    },
+    researchClaim: {
+      count: jest.fn(),
+      create: jest.fn(),
+      findFirst: jest.fn(),
+      update: jest.fn(),
     },
     researchJob: {
       upsert: jest.fn(),
@@ -88,6 +100,8 @@ describe('ResearchService', () => {
             sources: true,
             evidence: true,
             findings: true,
+            materials: true,
+            claims: true,
           },
         },
       },
@@ -129,6 +143,31 @@ describe('ResearchService', () => {
         },
         decisions: { orderBy: { createdAt: 'desc' } },
         jobs: { orderBy: { updatedAt: 'desc' } },
+        materials: {
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            projectId: true,
+            kind: true,
+            status: true,
+            title: true,
+            content: true,
+            url: true,
+            originalName: true,
+            mimeType: true,
+            sizeBytes: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        claims: {
+          include: {
+            evidence: { include: { evidence: true } },
+            subject: { select: { id: true, title: true, kind: true } },
+            object: { select: { id: true, title: true, kind: true } },
+          },
+          orderBy: { updatedAt: 'desc' },
+        },
         findingProposals: {
           include: { evidence: { include: { evidence: true } } },
           orderBy: { createdAt: 'desc' },
@@ -187,6 +226,109 @@ describe('ResearchService', () => {
     prisma.researchProject.findUnique.mockResolvedValue(null);
 
     await expect(service.getProject('missing')).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('stores pasted text as ready private research material', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchMaterial.create.mockResolvedValue({ id: 'material-1' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+
+    await service.createMaterial('project-1', {
+      kind: ResearchMaterialKind.TEXT,
+      title: '  Notas del catálogo  ',
+      content: '  Pasaje documental  ',
+    });
+
+    expect(prisma.researchMaterial.create).toHaveBeenCalledWith({
+      data: {
+        projectId: 'project-1',
+        kind: ResearchMaterialKind.TEXT,
+        status: ResearchMaterialStatus.READY,
+        title: 'Notas del catálogo',
+        content: 'Pasaje documental',
+        url: null,
+      },
+    });
+  });
+
+  it('stores PDF metadata without exposing it as a canonical source', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchMaterial.create.mockResolvedValue({ id: 'material-1' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+
+    await service.createPdfMaterial(
+      'project-1',
+      {
+        filename: 'private-id.pdf',
+        originalname: 'Catálogo.pdf',
+        mimetype: 'application/pdf',
+        size: 2048,
+      },
+      {},
+    );
+
+    expect(prisma.researchMaterial.create).toHaveBeenCalledWith({
+      data: {
+        projectId: 'project-1',
+        kind: ResearchMaterialKind.PDF,
+        status: ResearchMaterialStatus.PENDING_PREPARATION,
+        title: 'Catálogo',
+        storageKey: 'research/private-id.pdf',
+        originalName: 'Catálogo.pdf',
+        mimeType: 'application/pdf',
+        sizeBytes: 2048,
+      },
+    });
+    expect(prisma.source.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('creates an evidence-backed provisional connection between project claims', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchEvidence.findMany.mockResolvedValue([{ id: 'evidence-1' }]);
+    prisma.researchClaim.count.mockResolvedValue(2);
+    prisma.researchClaim.create.mockResolvedValue({ id: 'claim-3' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+
+    await service.createClaim('project-1', {
+      kind: ResearchClaimKind.CONNECTION_HYPOTHESIS,
+      title: '  Influyó en  ',
+      summary: '  Hipótesis provisional  ',
+      evidenceIds: ['evidence-1'],
+      subjectClaimId: 'claim-1',
+      objectClaimId: 'claim-2',
+    });
+
+    expect(prisma.researchClaim.count).toHaveBeenCalledWith({
+      where: { projectId: 'project-1', id: { in: ['claim-1', 'claim-2'] } },
+    });
+    expect(prisma.researchClaim.create).toHaveBeenCalledWith({
+      data: {
+        projectId: 'project-1',
+        kind: ResearchClaimKind.CONNECTION_HYPOTHESIS,
+        title: 'Influyó en',
+        summary: 'Hipótesis provisional',
+        subjectClaimId: 'claim-1',
+        objectClaimId: 'claim-2',
+        readyForPromotion: false,
+        evidence: { create: [{ evidenceId: 'evidence-1' }] },
+      },
+    });
+  });
+
+  it('rejects provisional connections without two different project claims', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchEvidence.findMany.mockResolvedValue([{ id: 'evidence-1' }]);
+
+    await expect(
+      service.createClaim('project-1', {
+        kind: ResearchClaimKind.CONNECTION_HYPOTHESIS,
+        title: 'Relación inválida',
+        evidenceIds: ['evidence-1'],
+        subjectClaimId: 'claim-1',
+        objectClaimId: 'claim-1',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(prisma.researchClaim.create).not.toHaveBeenCalled();
   });
 
   it('associates an existing canonical source idempotently', async () => {

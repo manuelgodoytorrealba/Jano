@@ -202,8 +202,7 @@
                 <a
                   class="workspace-research-row"
                   role="listitem"
-                  routerLink="/admin/research"
-                  [queryParams]="{ project: project.id }"
+                  [routerLink]="['/admin/research', project.id]"
                 >
                   <span class="workspace-research-row__marker" aria-hidden="true">R</span>
                   <span class="workspace-research-row__identity">
