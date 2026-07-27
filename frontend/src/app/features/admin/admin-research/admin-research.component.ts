@@ -44,6 +44,7 @@ type ResearchListVm = {
   total: number;
   error: string;
   detailMode: boolean;
+  createMode: boolean;
 };
 
 type ResearchEvidenceGroup = {
@@ -154,10 +155,25 @@ export class AdminResearchComponent {
     this.refresh$,
   ]).pipe(
     switchMap(([segments, routeParams, params]) => {
-      this.autoFocusCreate = segments.some((segment) => segment.path === 'new');
+      const createMode = segments.some((segment) => segment.path === 'new');
+      this.autoFocusCreate = createMode;
       const routeProjectId = routeParams.get('id');
       const selectedId = routeProjectId ?? params.get('project');
       const detailMode = !!routeProjectId;
+
+      if (createMode) {
+        return of<ResearchListVm>({
+          state: 'ready',
+          projects: [],
+          selected: null,
+          selectedProject: null,
+          selectedError: '',
+          total: 0,
+          error: '',
+          detailMode: false,
+          createMode: true,
+        });
+      }
 
       if (detailMode && selectedId) {
         return this.api.getById(selectedId).pipe(
@@ -171,6 +187,7 @@ export class AdminResearchComponent {
               total: 0,
               error: '',
               detailMode,
+              createMode,
             }),
           ),
           catchError(() =>
@@ -183,6 +200,7 @@ export class AdminResearchComponent {
               total: 0,
               error: '',
               detailMode,
+              createMode,
             }),
           ),
         );
@@ -201,6 +219,7 @@ export class AdminResearchComponent {
             total: projects.length,
             error: '',
             detailMode,
+            createMode,
           };
 
           if (!selected) return of<ResearchListVm>(base);
@@ -225,6 +244,7 @@ export class AdminResearchComponent {
             total: 0,
             error: 'No se pudieron cargar las investigaciones.',
             detailMode,
+            createMode,
           }),
         ),
       );
