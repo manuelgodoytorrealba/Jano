@@ -396,6 +396,14 @@ describe('AdminResearchComponent', () => {
     const vm = await firstValueFrom(component.vm$.pipe(filter((value) => value.state === 'ready')));
     fixture.detectChanges();
 
+    const evidenceSection = fixture.nativeElement.querySelector('#research-evidence');
+    evidenceSection.scrollIntoView = vi.fn();
+    fixture.nativeElement.querySelectorAll('.research-flow button')[1].click();
+    expect(evidenceSection.scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'start',
+    });
+
     expect(api.getById).toHaveBeenCalledWith('research-1');
     expect(vm.selected?.id).toBe('research-1');
     expect(vm.selectedProject?.sources.length).toBe(2);

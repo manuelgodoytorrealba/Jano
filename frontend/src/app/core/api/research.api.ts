@@ -18,6 +18,11 @@ export type ResearchClaimKind =
   | 'CONTRADICTION'
   | 'OPEN_QUESTION'
   | 'SYNTHESIS_STATEMENT';
+export type ResearchOutlineSectionStatus =
+  | 'NOT_STARTED'
+  | 'IN_PROGRESS'
+  | 'READY_FOR_REVIEW'
+  | 'COMPLETED';
 
 export type ResearchProjectPayload = {
   title: string;
@@ -310,6 +315,41 @@ export type ResearchJob = {
   finishedAt: string | null;
 };
 
+export type ResearchQuestion = {
+  id: string;
+  sectionId: string;
+  text: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ResearchOutlineSection = {
+  id: string;
+  projectId: string;
+  parentSectionId: string | null;
+  title: string;
+  status: ResearchOutlineSectionStatus;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  objective: string | null;
+  notes: string | null;
+  questions: ResearchQuestion[];
+};
+
+export type CreateResearchOutlineSectionPayload = {
+  title: string;
+  parentSectionId?: string;
+};
+
+export type UpdateResearchOutlineSectionPayload = {
+  title?: string;
+  status?: ResearchOutlineSectionStatus;
+  objective?: string;
+  notes?: string;
+};
+
 export type ResearchProject = ResearchProjectSummary & {
   sources: ResearchProjectSource[];
   evidence: ResearchEvidence[];
@@ -322,6 +362,7 @@ export type ResearchProject = ResearchProjectSummary & {
   jobs: ResearchJob[];
   materials: ResearchMaterial[];
   claims: ResearchClaim[];
+  outlineSections: ResearchOutlineSection[];
 };
 
 export type RunResearchJobResult =
@@ -348,6 +389,7 @@ export class ResearchApi {
       map((project) => ({
         ...project,
         materials: project.materials ?? [],
+        outlineSections: project.outlineSections ?? [],
         claims: project.claims ?? [],
         entityCandidates: project.entityCandidates ?? [],
         relationCandidates: project.relationCandidates ?? [],
@@ -355,8 +397,57 @@ export class ResearchApi {
     );
   }
 
+  createOutlineSection(projectId: string, data: CreateResearchOutlineSectionPayload) {
+    return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/outline/sections`, data);
+  }
+
+  updateOutlineSection(
+    projectId: string,
+    sectionId: string,
+    data: UpdateResearchOutlineSectionPayload,
+  ) {
+    return this.http.patch<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}`,
+      data,
+    );
+  }
+
+  reorderOutlineSections(projectId: string, parentSectionId: string | null, sectionIds: string[]) {
+    return this.http.put<ResearchProject>(`${this.baseUrl}/${projectId}/outline/sections/order`, {
+      ...(parentSectionId ? { parentSectionId } : {}),
+      sectionIds,
+    });
+  }
+
   create(data: ResearchProjectPayload) {
     return this.http.post<ResearchProjectSummary>(this.baseUrl, data);
+  }
+
+  createQuestion(projectId: string, sectionId: string, text: string) {
+    return this.http.post<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/questions`,
+      { text },
+    );
+  }
+
+  updateQuestion(projectId: string, sectionId: string, questionId: string, text: string) {
+    return this.http.patch<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/questions/${questionId}`,
+      { text },
+    );
+  }
+
+  deleteQuestion(projectId: string, sectionId: string, questionId: string) {
+    return this.http.delete<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/questions/${questionId}`,
+    );
+  }
+
+  reorderQuestions(projectId: string, sectionId: string, questionIds: string[]) {
+    return this.http.put<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/questions/order`,
+      { questionIds },
+    );
   }
 
   addSource(projectId: string, data: AddResearchProjectSourcePayload) {

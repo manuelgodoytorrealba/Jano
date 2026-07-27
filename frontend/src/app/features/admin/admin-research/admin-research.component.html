@@ -166,38 +166,42 @@
           </div>
 
           <nav class="research-flow" aria-label="Flujo de investigación">
-            <a
-              href="#research-materials"
+            <button
+              type="button"
+              (click)="scrollToSection('research-materials')"
               [class.research-flow__step--active]="project.materials.length"
             >
               <small>01</small>
               <span>Materiales</span>
               <strong>{{ project.materials.length }}</strong>
-            </a>
-            <a
-              href="#research-evidence"
+            </button>
+            <button
+              type="button"
+              (click)="scrollToSection('research-evidence')"
               [class.research-flow__step--active]="project.evidence.length"
             >
               <small>02</small>
               <span>Evidencias</span>
               <strong>{{ project.evidence.length }}</strong>
-            </a>
-            <a
-              href="#research-findings"
+            </button>
+            <button
+              type="button"
+              (click)="scrollToSection('research-findings')"
               [class.research-flow__step--active]="project.findings.length"
             >
               <small>03</small>
               <span>Hallazgos</span>
               <strong>{{ project.findings.length }}</strong>
-            </a>
-            <a
-              href="#research-synthesis"
+            </button>
+            <button
+              type="button"
+              (click)="scrollToSection('research-synthesis')"
               [class.research-flow__step--active]="project.claims.length"
             >
               <small>04</small>
               <span>Síntesis y Canvas</span>
               <strong>{{ project.claims.length }}</strong>
-            </a>
+            </button>
           </nav>
 
           <div class="research-action-panel">

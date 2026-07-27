@@ -33,6 +33,13 @@ import { CitationsService } from '../citations/citations.service';
 import { EntityEditorialService } from '../entities/entity-editorial.service';
 import { EntityTaxonomyService } from '../entities/entity-taxonomy.service';
 import type { UploadedResearchPdf } from './research-pdf-upload.config';
+import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
+import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
+import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
+import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outline-sections.dto';
+import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dto';
+import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-section.dto';
+import { ResearchOutlineService } from './research-outline.service';
 
 const FINDING_STATUS_BY_DECISION: Record<ResearchDecisionAction, ResearchFindingStatus> = {
   [ResearchDecisionAction.INCORPORATE]: ResearchFindingStatus.ACCEPTED,
@@ -48,6 +55,7 @@ export class ResearchService {
     private readonly editorial: EntityEditorialService,
     private readonly citations: CitationsService,
     private readonly taxonomy: EntityTaxonomyService,
+    private readonly outline: ResearchOutlineService,
   ) {}
 
   getStudioStatus() {
@@ -65,6 +73,48 @@ export class ResearchService {
         scope: dto.scope?.trim() || null,
       },
     });
+  }
+
+  async createOutlineSection(projectId: string, dto: CreateResearchOutlineSectionDto) {
+    await this.outline.create(projectId, dto);
+    return this.getProject(projectId);
+  }
+
+  async updateOutlineSection(
+    projectId: string,
+    sectionId: string,
+    dto: UpdateResearchOutlineSectionDto,
+  ) {
+    await this.outline.update(projectId, sectionId, dto);
+    return this.getProject(projectId);
+  }
+
+  async reorderOutlineSections(projectId: string, dto: ReorderResearchOutlineSectionsDto) {
+    await this.outline.reorder(projectId, dto);
+    return this.getProject(projectId);
+  }
+
+  async createQuestion(projectId: string, sectionId: string, dto: CreateResearchQuestionDto) {
+    await this.outline.createQuestion(projectId, sectionId, dto);
+    return this.getProject(projectId);
+  }
+  async updateQuestion(
+    projectId: string,
+    sectionId: string,
+    questionId: string,
+    dto: UpdateResearchQuestionDto,
+  ) {
+    await this.outline.updateQuestion(projectId, sectionId, questionId, dto);
+    return this.getProject(projectId);
+  }
+  async deleteQuestion(projectId: string, sectionId: string, questionId: string) {
+    await this.outline.deleteQuestion(projectId, sectionId, questionId);
+    return this.getProject(projectId);
+  }
+
+  async reorderQuestions(projectId: string, sectionId: string, dto: ReorderResearchQuestionsDto) {
+    await this.outline.reorderQuestions(projectId, sectionId, dto);
+    return this.getProject(projectId);
   }
 
   listProjects() {
@@ -161,6 +211,10 @@ export class ResearchService {
             createdAt: true,
             jobId: true,
           },
+        },
+        outlineSections: {
+          include: { questions: { orderBy: { sortOrder: 'asc' } } },
+          orderBy: [{ parentSectionId: 'asc' }, { sortOrder: 'asc' }],
         },
       },
     });

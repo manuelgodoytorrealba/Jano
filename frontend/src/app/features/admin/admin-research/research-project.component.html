@@ -1,0 +1,197 @@
+<main class="research-project">
+  @if (vm$ | async; as vm) {
+    @if (vm.project; as project) {
+      <header class="research-project__header">
+        <nav class="research-project__breadcrumb" aria-label="Miga de pan">
+          <a routerLink="/admin/research">Investigaciones</a><span>/</span
+          ><span>{{ project.title }}</span>
+          @if (vm.activeSection; as section) {
+            <span>/</span><strong>{{ section.title }}</strong>
+          }
+        </nav>
+        <p class="research-project__eyebrow">Research Outline</p>
+        <h1>{{ project.title }}</h1>
+        <p>{{ project.objective }}</p>
+      </header>
+
+      <section class="research-project__layout">
+        <aside class="research-project__outline" aria-label="Outline de la investigación">
+          <div class="research-project__section-head">
+            <div>
+              <p class="research-project__eyebrow">Estructura</p>
+              <h2>Outline</h2>
+            </div>
+            <span>{{ project.outlineSections.length }} secciones</span>
+          </div>
+          <form class="research-project__create" (ngSubmit)="createSection(project)">
+            <input name="sectionTitle" [(ngModel)]="title" placeholder="Nueva sección" />
+            <button type="submit" [disabled]="!title.trim()">Añadir</button>
+          </form>
+          @if (error) {
+            <p class="research-project__error">{{ error }}</p>
+          }
+          @if (project.outlineSections.length) {
+            <ol class="research-project__tree">
+              @for (section of roots(project); track section.id) {
+                <li>
+                  <button
+                    type="button"
+                    [class.is-active]="section.id === vm.activeSection?.id"
+                    (click)="openSection(project, section)"
+                  >
+                    <span>{{ section.title }}</span
+                    ><small>{{ statusLabel(section.status) }}</small>
+                  </button>
+                  @if (children(project, section.id).length) {
+                    <ol>
+                      @for (child of children(project, section.id); track child.id) {
+                        <li>
+                          <button
+                            type="button"
+                            [class.is-active]="child.id === vm.activeSection?.id"
+                            (click)="openSection(project, child)"
+                          >
+                            <span>{{ child.title }}</span
+                            ><small>{{ statusLabel(child.status) }}</small>
+                          </button>
+                        </li>
+                      }
+                    </ol>
+                  }
+                </li>
+              }
+            </ol>
+          } @else {
+            <div class="research-project__empty-outline">
+              <h3>El argumento empieza aquí.</h3>
+              <p>Crea la primera sección para delimitar una cuestión editorial.</p>
+            </div>
+          }
+        </aside>
+
+        <section class="research-project__workspace" aria-live="polite">
+          @if (vm.activeSection; as section) {
+            <div class="research-project__workspace-header">
+              <p class="research-project__eyebrow">Research Section</p>
+              <div>
+                <h2>{{ section.title }}</h2>
+                <span>{{ statusLabel(section.status) }}</span>
+              </div>
+              <p>Un espacio privado para precisar la cuestión antes de empezar a redactar.</p>
+            </div>
+
+            <section class="research-project__block">
+              <h3>Objetivo</h3>
+              <p>¿Qué intenta resolver esta sección?</p>
+              <textarea
+                [(ngModel)]="workspaceObjective"
+                [ngModelOptions]="{ standalone: true }"
+                (blur)="saveWorkspace(project, section)"
+                placeholder="Formula la intención editorial de esta sección"
+              ></textarea>
+            </section>
+
+            <section class="research-project__block">
+              <div class="research-project__block-heading">
+                <div>
+                  <h3>Preguntas</h3>
+                  <p>Las líneas de investigación que mantienen el pensamiento en movimiento.</p>
+                </div>
+                <span>{{ section.questions.length }}</span>
+              </div>
+              <form
+                class="research-project__question-create"
+                (ngSubmit)="addQuestion(project, section)"
+              >
+                <input
+                  name="question"
+                  [(ngModel)]="questionText"
+                  placeholder="Añade una pregunta de investigación"
+                />
+                <button type="submit" [disabled]="!questionText.trim()">Añadir</button>
+              </form>
+              @if (section.questions.length) {
+                <ol class="research-project__questions">
+                  @for (question of section.questions; track question.id; let index = $index) {
+                    <li>
+                      <input
+                        [ngModel]="question.text"
+                        [ngModelOptions]="{ standalone: true }"
+                        (blur)="
+                          updateQuestion(project, section, question, $any($event.target).value)
+                        "
+                        aria-label="Pregunta de investigación"
+                      />
+                      <div class="research-project__question-actions">
+                        <button
+                          type="button"
+                          (click)="moveQuestion(project, section, index, -1)"
+                          [disabled]="index === 0"
+                          aria-label="Subir pregunta"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          (click)="moveQuestion(project, section, index, 1)"
+                          [disabled]="index === section.questions.length - 1"
+                          aria-label="Bajar pregunta"
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          (click)="deleteQuestion(project, section, question)"
+                          aria-label="Eliminar pregunta"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </li>
+                  }
+                </ol>
+              }
+            </section>
+
+            <section class="research-project__block">
+              <h3>Notas</h3>
+              <p>
+                Apuntes privados para conservar la intuición, el matiz y las decisiones todavía
+                abiertas.
+              </p>
+              <textarea
+                class="research-project__notes"
+                [(ngModel)]="workspaceNotes"
+                [ngModelOptions]="{ standalone: true }"
+                (blur)="saveWorkspace(project, section)"
+                placeholder="Escribe aquí sin estructurar todavía"
+              ></textarea>
+            </section>
+
+            <footer class="research-project__context">
+              <span
+                >Estado <strong>{{ statusLabel(section.status) }}</strong></span
+              >
+              <span
+                >{{ section.questions.length }}
+                {{ section.questions.length === 1 ? 'pregunta' : 'preguntas' }}</span
+              >
+              <span>Actualizada {{ section.updatedAt | date: 'd MMM y, HH:mm' }}</span>
+            </footer>
+          } @else {
+            <div class="research-project__workspace-empty">
+              <p class="research-project__eyebrow">Workspace editorial</p>
+              <h2>Elige una sección para comenzar</h2>
+              <p>
+                El Outline mantiene visible la dirección de la investigación. Abre una sección para
+                trabajar en su objetivo, preguntas y notas.
+              </p>
+            </div>
+          }
+        </section>
+      </section>
+    } @else {
+      <div class="research-project__error">{{ vm.error }}</div>
+    }
+  }
+</main>

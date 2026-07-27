@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Patch,
+  Put,
   Query,
   Req,
   UploadedFile,
@@ -28,6 +31,12 @@ import {
   CreateResearchPdfMaterialDto,
 } from './dto/create-research-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
+import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
+import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
+import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
+import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outline-sections.dto';
+import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dto';
+import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-section.dto';
 import { ReviewResearchFindingProposalDto } from './dto/review-research-finding-proposal.dto';
 import { PromoteResearchFindingDto } from './dto/promote-research-finding.dto';
 import { CreateResearchEntityCandidateDto } from './dto/create-research-entity-candidate.dto';
@@ -77,6 +86,61 @@ export class ResearchController {
   @Get(':id')
   get(@Param('id') id: string) {
     return this.service.getProject(id);
+  }
+  @Post(':id/outline/sections')
+  createOutlineSection(@Param('id') id: string, @Body() dto: CreateResearchOutlineSectionDto) {
+    return this.service.createOutlineSection(id, dto);
+  }
+
+  @Patch(':id/outline/sections/:sectionId')
+  updateOutlineSection(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Body() dto: UpdateResearchOutlineSectionDto,
+  ) {
+    return this.service.updateOutlineSection(id, sectionId, dto);
+  }
+
+  @Put(':id/outline/sections/order')
+  reorderOutlineSections(@Param('id') id: string, @Body() dto: ReorderResearchOutlineSectionsDto) {
+    return this.service.reorderOutlineSections(id, dto);
+  }
+
+  @Post(':id/outline/sections/:sectionId/questions')
+  createQuestion(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Body() dto: CreateResearchQuestionDto,
+  ) {
+    return this.service.createQuestion(id, sectionId, dto);
+  }
+
+  @Patch(':id/outline/sections/:sectionId/questions/:questionId')
+  updateQuestion(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Param('questionId') questionId: string,
+    @Body() dto: UpdateResearchQuestionDto,
+  ) {
+    return this.service.updateQuestion(id, sectionId, questionId, dto);
+  }
+
+  @Delete(':id/outline/sections/:sectionId/questions/:questionId')
+  deleteQuestion(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Param('questionId') questionId: string,
+  ) {
+    return this.service.deleteQuestion(id, sectionId, questionId);
+  }
+
+  @Put(':id/outline/sections/:sectionId/questions/order')
+  reorderQuestions(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Body() dto: ReorderResearchQuestionsDto,
+  ) {
+    return this.service.reorderQuestions(id, sectionId, dto);
   }
 
   @Post(':id/sources')

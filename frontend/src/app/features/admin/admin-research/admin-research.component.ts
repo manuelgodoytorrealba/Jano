@@ -653,6 +653,10 @@ export class AdminResearchComponent {
     this.evidenceSourceFilter = '';
   }
 
+  scrollToSection(sectionId: string): void {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   hasEvidenceFilters(): boolean {
     return Boolean(this.evidenceSearch.trim() || this.evidenceSourceFilter);
   }

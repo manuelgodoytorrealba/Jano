@@ -134,10 +134,17 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'research/:id/sections/:sectionId',
+        loadComponent: () =>
+          import('./features/admin/admin-research/research-project.component').then(
+            (m) => m.ResearchProjectComponent,
+          ),
+      },
+      {
         path: 'research/:id',
         loadComponent: () =>
-          import('./features/admin/admin-research/admin-research.component').then(
-            (m) => m.AdminResearchComponent,
+          import('./features/admin/admin-research/research-project.component').then(
+            (m) => m.ResearchProjectComponent,
           ),
       },
       {

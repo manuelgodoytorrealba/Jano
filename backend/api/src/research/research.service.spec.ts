@@ -62,12 +62,20 @@ describe('ResearchService', () => {
     },
   };
   const sources = { search: jest.fn() };
+  const outline = { create: jest.fn(), update: jest.fn(), reorder: jest.fn() };
   let service: ResearchService;
 
   beforeEach(() => {
     jest.resetAllMocks();
     prisma.$transaction.mockImplementation(async (callback) => callback(tx));
-    service = new ResearchService(prisma as unknown as PrismaService, sources as never);
+    service = new ResearchService(
+      prisma as unknown as PrismaService,
+      sources as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      outline as never,
+    );
   });
 
   it('creates a project as private research state, not a canonical entity', async () => {
@@ -202,6 +210,10 @@ describe('ResearchService', () => {
             createdAt: true,
             jobId: true,
           },
+        },
+        outlineSections: {
+          include: { questions: { orderBy: { sortOrder: 'asc' } } },
+          orderBy: [{ parentSectionId: 'asc' }, { sortOrder: 'asc' }],
         },
       },
     });

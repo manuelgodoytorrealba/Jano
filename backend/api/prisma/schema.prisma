@@ -144,6 +144,13 @@ enum ResearchProjectStatus {
   ARCHIVED
 }
 
+enum ResearchOutlineSectionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  READY_FOR_REVIEW
+  COMPLETED
+}
+
 enum ResearchFindingStatus {
   PROPOSED
   ACCEPTED
@@ -732,6 +739,7 @@ model ResearchProject {
   evidence           ResearchEvidence[]
   findings           ResearchFinding[]
   decisions          ResearchDecision[]
+  outlineSections    ResearchOutlineSection[]
   jobs               ResearchJob[]
   aiExecutions       AIExecution[]
   findingProposals   ResearchFindingProposal[]
@@ -742,6 +750,41 @@ model ResearchProject {
 
   @@index([status, lastActiveAt])
   @@index([updatedAt])
+}
+
+model ResearchOutlineSection {
+  id              String                       @id @default(cuid())
+  projectId       String
+  parentSectionId String?
+  title           String
+  status          ResearchOutlineSectionStatus @default(NOT_STARTED)
+  objective       String?
+  notes           String?
+  sortOrder       Int
+  createdAt       DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
+
+  project  ResearchProject          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parent   ResearchOutlineSection?  @relation("ResearchOutlineSectionHierarchy", fields: [parentSectionId], references: [id], onDelete: Cascade)
+  children ResearchOutlineSection[] @relation("ResearchOutlineSectionHierarchy")
+
+  questions ResearchQuestion[]
+
+  @@index([projectId, parentSectionId, sortOrder])
+  @@index([parentSectionId])
+}
+
+model ResearchQuestion {
+  id        String   @id @default(cuid())
+  sectionId String
+  text      String
+  sortOrder Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  section ResearchOutlineSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, sortOrder])
 }
 
 model ResearchProjectSource {

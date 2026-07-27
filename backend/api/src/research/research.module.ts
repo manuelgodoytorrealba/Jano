@@ -8,10 +8,11 @@ import { ResearchController } from './research.controller';
 import { ResearchAIService } from './research-ai.service';
 import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchService } from './research.service';
+import { ResearchOutlineService } from './research-outline.service';
 
 @Module({
   imports: [PrismaModule, AIModule, SourcesModule, EntitiesModule, CitationsModule],
   controllers: [ResearchController],
-  providers: [ResearchService, ResearchJobRunnerService, ResearchAIService],
+  providers: [ResearchOutlineService, ResearchService, ResearchJobRunnerService, ResearchAIService],
 })
 export class ResearchModule {}

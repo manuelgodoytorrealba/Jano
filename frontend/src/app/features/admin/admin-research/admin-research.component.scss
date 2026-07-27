@@ -84,7 +84,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none;
   font: inherit;
   font-size: 13px;
   cursor: pointer;
@@ -190,7 +189,6 @@
   grid-template-columns: 42px minmax(0, 1fr) 132px;
   align-items: center;
   gap: 13px;
-  text-decoration: none;
 }
 
 .research-card:last-child {
@@ -773,12 +771,17 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.research-flow a {
+.research-flow button {
   min-width: 0;
   min-height: 62px;
   padding: 10px 14px;
+  border: 0;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
   color: rgba(242, 238, 232, 0.54);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
@@ -786,7 +789,7 @@
   text-decoration: none;
 }
 
-.research-flow a:last-child {
+.research-flow button:last-child {
   border-right: 0;
 }
 
