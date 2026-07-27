@@ -71,7 +71,7 @@ export class AdminResearchComponent {
   @ViewChild('titleInput')
   set titleInputRef(value: ElementRef<HTMLInputElement> | undefined) {
     if (!value || !this.autoFocusCreate) return;
-    requestAnimationFrame(() => value.nativeElement.focus());
+    globalThis.requestAnimationFrame?.(() => value.nativeElement.focus());
   }
 
   @ViewChild('evidenceLocatorInput')
@@ -430,14 +430,14 @@ export class AdminResearchComponent {
         this.evidenceQuote = '';
         this.evidenceContext = '';
         this.evidenceNote = '';
-        requestAnimationFrame(() => this.evidenceLocatorInput?.nativeElement.focus());
+        globalThis.requestAnimationFrame?.(() => this.evidenceLocatorInput?.nativeElement.focus());
       },
     );
   }
 
   prepareEvidenceForSource(sourceId: string): void {
     this.evidenceSourceId = sourceId;
-    requestAnimationFrame(() => this.evidenceLocatorInput?.nativeElement.focus());
+    globalThis.requestAnimationFrame?.(() => this.evidenceLocatorInput?.nativeElement.focus());
   }
 
   prepareSource(projectId: string, sourceId: string): void {
@@ -661,7 +661,7 @@ export class AdminResearchComponent {
   }
 
   openCreateRoute(): void {
-    void this.router.navigate(['/admin/research/new']);
+    void this.router.navigate(['/admin/research/studio/new']);
   }
 
   applyFilters(): void {
