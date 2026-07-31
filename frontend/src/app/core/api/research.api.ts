@@ -37,6 +37,12 @@ export type CreateResearchDocumentPayload = {
   url?: string;
 };
 
+export type CreateResearchLibraryExcerptPayload = {
+  materialVersionId: string;
+  locator: string;
+  text: string;
+};
+
 export type CreateResearchClaimPayload = {
   kind: ResearchClaimKind;
   title: string;
@@ -219,6 +225,7 @@ export type ResearchAIExecution = {
 export type ResearchDocument = {
   id: string;
   projectId: string;
+  materialVersionId: string;
   kind: ResearchDocumentKind;
   status: ResearchDocumentStatus;
   title: string;
@@ -490,6 +497,10 @@ export class ResearchApi {
 
   runNextJob() {
     return this.http.post<RunResearchJobResult>(`${this.baseUrl}/jobs/run-next`, {});
+  }
+
+  createLibraryExcerpt(projectId: string, data: CreateResearchLibraryExcerptPayload) {
+    return this.http.post(this.baseUrl + '/' + projectId + '/library-excerpts', data);
   }
 
   createEvidence(projectId: string, data: CreateResearchEvidencePayload) {

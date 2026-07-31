@@ -25,6 +25,10 @@
             <h3>{{ material.title }}</h3>
           </header>
           <div class="research-reader__content">{{ material.content }}</div>
+          <app-research-excerpt-capture
+            [researchId]="researchId"
+            [materialVersionId]="material.materialVersionId"
+          />
         </article>
       }
     </div>

@@ -1,14 +1,17 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ResearchDocument } from '../../../core/api/research.api';
+import { ResearchExcerptCaptureComponent } from './research-excerpt-capture.component';
 
 @Component({
   standalone: true,
   selector: 'app-research-material-reader',
+  imports: [ResearchExcerptCaptureComponent],
   templateUrl: './research-material-reader.component.html',
   styleUrl: './research-material-reader.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchMaterialReaderComponent {
+  @Input({ required: true }) researchId = '';
   @Input() materials: ResearchDocument[] = [];
 
   selectedMaterialId = '';

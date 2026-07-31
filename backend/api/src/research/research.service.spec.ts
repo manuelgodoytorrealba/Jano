@@ -197,6 +197,45 @@ describe('ResearchService', () => {
     }
   });
 
+  it('exposes the current material version for versioned Library actions', async () => {
+    const createdAt = new Date('2026-07-31T10:00:00.000Z');
+    prisma.researchProject.findUnique.mockResolvedValue({
+      id: 'project-1',
+      libraryMaterials: [
+        {
+          material: {
+            id: 'material-1',
+            kind: LibraryMaterialKind.TEXT,
+            title: 'Cuaderno',
+            createdAt,
+            updatedAt: createdAt,
+            versions: [
+              {
+                id: 'version-2',
+                status: LibraryMaterialVersionStatus.READY,
+                content: 'Texto disponible',
+                url: null,
+                originalName: null,
+                mimeType: null,
+                sizeBytes: null,
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    const project = await service.getProject('project-1');
+
+    expect(project.materials).toEqual([
+      expect.objectContaining({
+        id: 'material-1',
+        materialVersionId: 'version-2',
+        content: 'Texto disponible',
+      }),
+    ]);
+  });
+
   it('derives deterministic knowledge without persisting it', async () => {
     prisma.researchProject.findUnique.mockResolvedValue({
       id: 'project-1',

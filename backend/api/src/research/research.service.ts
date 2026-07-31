@@ -684,6 +684,7 @@ export class ResearchService {
           return {
             id: material.id,
             projectId: project.id,
+            materialVersionId: version.id,
             kind: material.kind,
             status: version.status,
             title: material.title,

@@ -6,6 +6,7 @@ import { ResearchMaterialReaderComponent } from './research-material-reader.comp
 const textMaterial: ResearchDocument = {
   id: 'material-text',
   projectId: 'research-1',
+  materialVersionId: 'version-1',
   kind: 'TEXT' as const,
   status: 'READY' as const,
   title: 'Cuaderno de lectura',
@@ -23,6 +24,7 @@ async function createFixture(materials: ResearchDocument[] = [textMaterial]) {
     imports: [ResearchMaterialReaderComponent],
   }).compileComponents();
   const fixture = TestBed.createComponent(ResearchMaterialReaderComponent);
+  fixture.componentRef.setInput('researchId', 'research-1');
   fixture.componentRef.setInput('materials', materials);
   fixture.detectChanges();
   await fixture.whenStable();

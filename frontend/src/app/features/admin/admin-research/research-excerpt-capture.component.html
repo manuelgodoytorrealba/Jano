@@ -1,0 +1,20 @@
+<form class="research-excerpt" (ngSubmit)="save()">
+  <p>Extracto documental</p>
+  <div>
+    <input name="excerptLocator" [(ngModel)]="locator" placeholder="Localizador · párrafo 3" />
+    <button type="submit" [disabled]="busy || !locator.trim() || !text.trim()">
+      {{ busy ? 'Guardando…' : 'Registrar extracto' }}
+    </button>
+  </div>
+  <textarea
+    name="excerptText"
+    [(ngModel)]="text"
+    placeholder="Transcribe el pasaje verificable"
+  ></textarea>
+  @if (saved) {
+    <span>Extracto registrado en Library.</span>
+  }
+  @if (error) {
+    <span class="research-excerpt__error">{{ error }}</span>
+  }
+</form>
