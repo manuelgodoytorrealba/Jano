@@ -1,0 +1,34 @@
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ResearchDocument } from '../../../core/api/research.api';
+
+@Component({
+  standalone: true,
+  selector: 'app-research-material-reader',
+  templateUrl: './research-material-reader.component.html',
+  styleUrl: './research-material-reader.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ResearchMaterialReaderComponent {
+  @Input() materials: ResearchDocument[] = [];
+
+  selectedMaterialId = '';
+
+  get textMaterials(): ResearchDocument[] {
+    return this.materials.filter(
+      (material) =>
+        material.kind === 'TEXT' && material.status === 'READY' && material.content !== null,
+    );
+  }
+
+  get selectedMaterial(): ResearchDocument | null {
+    return (
+      this.textMaterials.find((material) => material.id === this.selectedMaterialId) ??
+      this.textMaterials[0] ??
+      null
+    );
+  }
+
+  selectMaterial(materialId: string): void {
+    this.selectedMaterialId = materialId;
+  }
+}

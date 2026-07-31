@@ -12,6 +12,7 @@ import {
 } from '../../../core/api/research.api';
 import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.component';
 import { ResearchGraphComponent } from './research-graph.component';
+import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 
 @Component({
   standalone: true,
@@ -23,6 +24,7 @@ import { ResearchGraphComponent } from './research-graph.component';
     RouterLink,
     ResearchEvidenceCaptureComponent,
     ResearchGraphComponent,
+    ResearchMaterialReaderComponent,
   ],
   templateUrl: './research-project.component.html',
   styleUrl: './research-project.component.scss',

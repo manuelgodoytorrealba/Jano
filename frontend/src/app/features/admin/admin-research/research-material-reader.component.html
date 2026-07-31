@@ -1,0 +1,34 @@
+<section class="research-reader" aria-label="Lectura documental">
+  <header>
+    <p>Lectura documental</p>
+    <h2>Vuelve al texto antes de interpretar.</h2>
+  </header>
+
+  @if (textMaterials.length) {
+    <div class="research-reader__layout">
+      <nav aria-label="Materiales de texto">
+        @for (material of textMaterials; track material.id) {
+          <button
+            type="button"
+            [class.is-selected]="selectedMaterial?.id === material.id"
+            (click)="selectMaterial(material.id)"
+          >
+            {{ material.title }}
+          </button>
+        }
+      </nav>
+
+      @if (selectedMaterial; as material) {
+        <article>
+          <header>
+            <p>Texto disponible</p>
+            <h3>{{ material.title }}</h3>
+          </header>
+          <div class="research-reader__content">{{ material.content }}</div>
+        </article>
+      }
+    </div>
+  } @else {
+    <p class="research-reader__empty">No hay materiales de texto disponibles para lectura.</p>
+  }
+</section>

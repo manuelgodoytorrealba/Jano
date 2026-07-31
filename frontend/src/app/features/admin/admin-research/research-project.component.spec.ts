@@ -92,7 +92,9 @@ describe('ResearchProjectComponent', () => {
     const input = fixture.nativeElement.querySelector('input[name="sectionTitle"]');
     input.value = 'Antes del cubismo';
     input.dispatchEvent(new Event('input'));
-    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    fixture.nativeElement
+      .querySelector('.research-project__create')
+      .dispatchEvent(new Event('submit'));
     expect(api.createOutlineSection).toHaveBeenCalledWith(project.id, {
       title: 'Antes del cubismo',
     });

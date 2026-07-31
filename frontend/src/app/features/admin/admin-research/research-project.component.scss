@@ -39,6 +39,7 @@
 
 .research-project__header,
 .research-project__evidence,
+.research-project__reader,
 .research-project__layout {
   max-width: 1200px;
   margin-inline: auto;
@@ -46,6 +47,10 @@
 
 .research-project__header {
   margin-bottom: 24px;
+}
+
+.research-project__reader {
+  margin: 0 auto 24px;
 }
 
 .research-project__evidence {
