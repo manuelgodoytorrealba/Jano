@@ -152,6 +152,12 @@ textarea {
 .research-evidence__form button {
   justify-self: start;
 }
+.research-evidence__excerpt {
+  color: var(--research-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 18px 0 0;
+}
 .research-evidence__error {
   color: #d97757;
   font-size: 13px;

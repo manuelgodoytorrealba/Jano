@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { ResearchDocument } from '../../../core/api/research.api';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ResearchDocument, ResearchLibraryExcerptReference } from '../../../core/api/research.api';
 import { ResearchExcerptCaptureComponent } from './research-excerpt-capture.component';
 
 @Component({
@@ -13,6 +13,7 @@ import { ResearchExcerptCaptureComponent } from './research-excerpt-capture.comp
 export class ResearchMaterialReaderComponent {
   @Input({ required: true }) researchId = '';
   @Input() materials: ResearchDocument[] = [];
+  @Output() excerptCreated = new EventEmitter<ResearchLibraryExcerptReference>();
 
   selectedMaterialId = '';
 

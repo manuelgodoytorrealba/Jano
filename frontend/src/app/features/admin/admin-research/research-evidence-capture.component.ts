@@ -12,6 +12,7 @@ import {
   ResearchEvidence,
   ResearchProjectSource,
   ResearchSourceRecord,
+  ResearchLibraryExcerptReference,
 } from '../../../core/api/research.api';
 
 @Component({
@@ -28,8 +29,14 @@ export class ResearchEvidenceCaptureComponent {
   @Input({ required: true }) researchId = '';
   @Input() sources: ResearchProjectSource[] = [];
   @Input() evidence: ResearchEvidence[] = [];
+  @Input() set excerpt(value: ResearchLibraryExcerptReference | null) {
+    this.preparedExcerpt = value;
+    if (value && !this.locator.trim()) this.locator = value.locator;
+  }
   @Output() saved = new EventEmitter<void>();
+  @Output() excerptUsed = new EventEmitter<void>();
 
+  preparedExcerpt: ResearchLibraryExcerptReference | null = null;
   sourceId = '';
   sourceVersion = '';
   locator = '';
@@ -109,7 +116,9 @@ export class ResearchEvidenceCaptureComponent {
     const sourceVersion = this.sourceVersion.trim();
     const locator = this.locator.trim();
     const quote = this.quote.trim();
-    if (!sourceId || !sourceVersion || !locator || !quote || this.busy) return;
+    const libraryExcerptId = this.preparedExcerpt?.id;
+    if (!sourceId || !sourceVersion || !locator || (!quote && !libraryExcerptId) || this.busy)
+      return;
 
     this.busy = true;
     this.error = '';
@@ -118,7 +127,8 @@ export class ResearchEvidenceCaptureComponent {
         sourceId,
         sourceVersion,
         locator,
-        quote,
+        ...(libraryExcerptId ? { libraryExcerptId } : {}),
+        ...(quote ? { quote } : {}),
         context: this.context.trim() || undefined,
         note: this.note.trim() || undefined,
       })
@@ -129,6 +139,7 @@ export class ResearchEvidenceCaptureComponent {
           this.context = '';
           this.note = '';
           this.busy = false;
+          if (libraryExcerptId) this.excerptUsed.emit();
           this.saved.emit();
         },
         error: () => {

@@ -18,17 +18,23 @@
         <app-research-graph [researchId]="project.id" />
       </section>
 
+      <section class="research-project__reader">
+        <app-research-material-reader
+          [researchId]="project.id"
+          [materials]="project.materials"
+          (excerptCreated)="prepareEvidenceFromExcerpt($event)"
+        />
+      </section>
+
       <section class="research-project__evidence">
         <app-research-evidence-capture
           [researchId]="project.id"
           [sources]="project.sources"
           [evidence]="project.evidence"
+          [excerpt]="preparedExcerpt"
           (saved)="refreshResearch()"
+          (excerptUsed)="clearPreparedExcerpt()"
         />
-      </section>
-
-      <section class="research-project__reader">
-        <app-research-material-reader [researchId]="project.id" [materials]="project.materials" />
       </section>
 
       <section class="research-project__layout">

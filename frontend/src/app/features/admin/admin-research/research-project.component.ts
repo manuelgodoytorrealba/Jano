@@ -9,6 +9,7 @@ import {
   ResearchOutlineSectionStatus,
   ResearchProject,
   ResearchQuestion,
+  ResearchLibraryExcerptReference,
 } from '../../../core/api/research.api';
 import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.component';
 import { ResearchGraphComponent } from './research-graph.component';
@@ -44,6 +45,7 @@ export class ResearchProjectComponent {
   workspaceObjective = '';
   workspaceNotes = '';
   error = '';
+  preparedExcerpt: ResearchLibraryExcerptReference | null = null;
   readonly statuses: ResearchOutlineSectionStatus[] = [
     'NOT_STARTED',
     'IN_PROGRESS',
@@ -183,6 +185,14 @@ export class ResearchProjectComponent {
 
   children(project: ResearchProject, parentId: string): ResearchOutlineSection[] {
     return project.outlineSections.filter((section) => section.parentSectionId === parentId);
+  }
+
+  prepareEvidenceFromExcerpt(excerpt: ResearchLibraryExcerptReference): void {
+    this.preparedExcerpt = excerpt;
+  }
+
+  clearPreparedExcerpt(): void {
+    this.preparedExcerpt = null;
   }
 
   refreshResearch(): void {

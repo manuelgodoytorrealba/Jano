@@ -37,6 +37,9 @@ function createApi() {
     createEvidence: vi.fn().mockReturnValue(of({ id: 'research-1' })),
     searchSources: vi.fn().mockReturnValue(of([])),
     addSource: vi.fn().mockReturnValue(of({ id: 'research-1' })),
+    createClaim: vi.fn(),
+    createEntity: vi.fn(),
+    createRelation: vi.fn(),
   };
 }
 
@@ -76,6 +79,47 @@ describe('ResearchEvidenceCaptureComponent', () => {
     expect(saved).toHaveBeenCalledOnce();
     expect(fixture.componentInstance.locator).toBe('');
     expect(fixture.componentInstance.quote).toBe('');
+  });
+
+  it('links a prepared LibraryExcerpt to Evidence without copying its text into quote', async () => {
+    const { fixture, api } = await createFixture();
+    const excerptUsed = vi.fn();
+    fixture.componentInstance.excerptUsed.subscribe(excerptUsed);
+    fixture.componentRef.setInput('excerpt', {
+      id: 'excerpt-1',
+      locator: 'párrafo 3',
+      text: 'Pasaje documental conservado en Library.',
+    });
+    fixture.componentInstance.selectSource('source-1');
+    fixture.componentInstance.sourceVersion = 'Edición de 2026';
+    fixture.componentInstance.save();
+
+    expect(api.createEvidence).toHaveBeenCalledWith('research-1', {
+      sourceId: 'source-1',
+      sourceVersion: 'Edición de 2026',
+      locator: 'párrafo 3',
+      libraryExcerptId: 'excerpt-1',
+      context: undefined,
+      note: undefined,
+    });
+    expect(excerptUsed).toHaveBeenCalledOnce();
+    expect(api.createClaim).not.toHaveBeenCalled();
+    expect(api.createEntity).not.toHaveBeenCalled();
+    expect(api.createRelation).not.toHaveBeenCalled();
+  });
+
+  it('keeps Source and sourceVersion mandatory when an excerpt is prepared', async () => {
+    const { fixture, api } = await createFixture();
+    fixture.componentRef.setInput('excerpt', {
+      id: 'excerpt-1',
+      locator: 'párrafo 3',
+      text: 'Pasaje documental conservado en Library.',
+    });
+    fixture.componentInstance.save();
+    fixture.componentInstance.selectSource('source-1');
+    fixture.componentInstance.save();
+
+    expect(api.createEvidence).not.toHaveBeenCalled();
   });
 
   it('searches existing Sources with ResearchApi.searchSources', async () => {

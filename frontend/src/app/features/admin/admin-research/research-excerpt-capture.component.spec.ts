@@ -6,7 +6,13 @@ import { ResearchExcerptCaptureComponent } from './research-excerpt-capture.comp
 
 function createApi() {
   return {
-    createLibraryExcerpt: vi.fn().mockReturnValue(of({ id: 'excerpt-1' })),
+    createLibraryExcerpt: vi.fn().mockReturnValue(
+      of({
+        id: 'excerpt-1',
+        locator: 'párrafo 3',
+        text: 'Pasaje verificable.',
+      }),
+    ),
     createEvidence: vi.fn(),
   };
 }
@@ -27,6 +33,8 @@ async function createFixture(api = createApi()) {
 describe('ResearchExcerptCaptureComponent', () => {
   it('creates a LibraryExcerpt with the selected material version', async () => {
     const { fixture, api } = await createFixture();
+    const created = vi.fn();
+    fixture.componentInstance.created.subscribe(created);
     fixture.componentInstance.locator = 'párrafo 3';
     fixture.componentInstance.text = 'Pasaje verificable.';
     fixture.componentInstance.save();
@@ -37,6 +45,11 @@ describe('ResearchExcerptCaptureComponent', () => {
       text: 'Pasaje verificable.',
     });
     expect(api.createEvidence).not.toHaveBeenCalled();
+    expect(created).toHaveBeenCalledWith({
+      id: 'excerpt-1',
+      locator: 'párrafo 3',
+      text: 'Pasaje verificable.',
+    });
     expect(fixture.componentInstance.saved).toBe(true);
   });
 

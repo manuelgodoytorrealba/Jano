@@ -57,6 +57,13 @@
     <p class="research-evidence__error">{{ sourceError }}</p>
   }
 
+  @if (preparedExcerpt) {
+    <p class="research-evidence__excerpt">
+      Extracto documental preparado · {{ preparedExcerpt.locator }}. Elige una Source y declara su
+      versión.
+    </p>
+  }
+
   @if (sources.length) {
     <div class="research-evidence__sources">
       @for (source of sources; track source.sourceId) {
@@ -91,8 +98,12 @@
         <textarea
           name="quote"
           [(ngModel)]="quote"
-          placeholder="Cita verificable"
-          required
+          [placeholder]="
+            preparedExcerpt
+              ? 'Cita opcional; el extracto ya conserva el pasaje'
+              : 'Cita verificable'
+          "
+          [required]="!preparedExcerpt"
         ></textarea>
         <textarea
           name="context"
@@ -105,7 +116,9 @@
         }
         <button
           type="submit"
-          [disabled]="busy || !sourceVersion.trim() || !locator.trim() || !quote.trim()"
+          [disabled]="
+            busy || !sourceVersion.trim() || !locator.trim() || (!quote.trim() && !preparedExcerpt)
+          "
         >
           {{ busy ? 'Guardando…' : 'Registrar Evidence' }}
         </button>

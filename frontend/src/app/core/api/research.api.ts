@@ -61,7 +61,8 @@ export type CreateResearchEvidencePayload = {
   sourceId: string;
   sourceVersion: string;
   locator: string;
-  quote: string;
+  libraryExcerptId?: string;
+  quote?: string;
   context?: string;
   note?: string;
 };
@@ -134,6 +135,12 @@ export type ResearchSourceReference = Pick<
   ResearchSourceRecord,
   'id' | 'type' | 'title' | 'author' | 'publisher' | 'year' | 'url'
 >;
+
+export type ResearchLibraryExcerptReference = {
+  id: string;
+  locator: string;
+  text: string;
+};
 
 export type ResearchLibraryExcerpt = {
   id: string;
@@ -500,7 +507,10 @@ export class ResearchApi {
   }
 
   createLibraryExcerpt(projectId: string, data: CreateResearchLibraryExcerptPayload) {
-    return this.http.post(this.baseUrl + '/' + projectId + '/library-excerpts', data);
+    return this.http.post<ResearchLibraryExcerptReference>(
+      this.baseUrl + '/' + projectId + '/library-excerpts',
+      data,
+    );
   }
 
   createEvidence(projectId: string, data: CreateResearchEvidencePayload) {

@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ResearchApi } from '../../../core/api/research.api';
+import { ResearchApi, ResearchLibraryExcerptReference } from '../../../core/api/research.api';
 
 @Component({
   standalone: true,
@@ -15,6 +22,7 @@ export class ResearchExcerptCaptureComponent {
 
   @Input({ required: true }) researchId = '';
   @Input({ required: true }) materialVersionId = '';
+  @Output() created = new EventEmitter<ResearchLibraryExcerptReference>();
 
   locator = '';
   text = '';
@@ -37,7 +45,8 @@ export class ResearchExcerptCaptureComponent {
         text,
       })
       .subscribe({
-        next: () => {
+        next: (excerpt) => {
+          this.created.emit(excerpt);
           this.locator = '';
           this.text = '';
           this.busy = false;
