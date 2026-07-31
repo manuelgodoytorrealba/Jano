@@ -17,10 +17,30 @@ const source = {
     publisher: null,
     year: null,
     url: null,
+    createdAt: '2026-07-31T10:00:00.000Z',
   },
 };
 
-async function createFixture(api: { createEvidence: ReturnType<typeof vi.fn> }) {
+const searchResult = {
+  id: 'source-2',
+  type: 'ARTICLE',
+  title: 'El Prado y Goya',
+  author: 'María Pérez',
+  publisher: null,
+  year: 2024,
+  url: null,
+  createdAt: '2026-07-31T10:00:00.000Z',
+};
+
+function createApi() {
+  return {
+    createEvidence: vi.fn().mockReturnValue(of({ id: 'research-1' })),
+    searchSources: vi.fn().mockReturnValue(of([])),
+    addSource: vi.fn().mockReturnValue(of({ id: 'research-1' })),
+  };
+}
+
+async function createFixture(api = createApi()) {
   await TestBed.configureTestingModule({
     imports: [ResearchEvidenceCaptureComponent],
     providers: [{ provide: ResearchApi, useValue: api }],
@@ -31,13 +51,12 @@ async function createFixture(api: { createEvidence: ReturnType<typeof vi.fn> }) 
   fixture.componentRef.setInput('evidence', []);
   fixture.detectChanges();
   await fixture.whenStable();
-  return fixture;
+  return { fixture, api };
 }
 
 describe('ResearchEvidenceCaptureComponent', () => {
   it('uses an associated Source to create manual Evidence and emits a refresh', async () => {
-    const api = { createEvidence: vi.fn().mockReturnValue(of({ id: 'research-1' })) };
-    const fixture = await createFixture(api);
+    const { fixture, api } = await createFixture();
     const saved = vi.fn();
     fixture.componentInstance.saved.subscribe(saved);
     fixture.componentInstance.selectSource('source-1');
@@ -45,6 +64,7 @@ describe('ResearchEvidenceCaptureComponent', () => {
     fixture.componentInstance.locator = 'p. 42';
     fixture.componentInstance.quote = 'Una cita verificable';
     fixture.componentInstance.save();
+
     expect(api.createEvidence).toHaveBeenCalledWith('research-1', {
       sourceId: 'source-1',
       sourceVersion: '1.ª edición',
@@ -58,11 +78,53 @@ describe('ResearchEvidenceCaptureComponent', () => {
     expect(fixture.componentInstance.quote).toBe('');
   });
 
-  it('does not submit an incomplete form', async () => {
-    const api = { createEvidence: vi.fn().mockReturnValue(of({})) };
-    const fixture = await createFixture(api);
+  it('searches existing Sources with ResearchApi.searchSources', async () => {
+    const { fixture, api } = await createFixture();
+    api.searchSources.mockReturnValue(of([searchResult]));
+    fixture.componentInstance.sourceSearch = '  Prado  ';
+    fixture.componentInstance.searchSources();
+
+    expect(api.searchSources).toHaveBeenCalledWith('Prado');
+    expect(fixture.componentInstance.sourceResults).toEqual([searchResult]);
+  });
+
+  it('associates a selected Source with its optional note and keeps it ready for Evidence', async () => {
+    const { fixture, api } = await createFixture();
+    const saved = vi.fn();
+    fixture.componentInstance.saved.subscribe(saved);
+    fixture.componentInstance.selectSearchResult(searchResult);
+    fixture.componentInstance.sourceNote = 'Contexto para el capítulo primero';
+    fixture.componentInstance.associateSource();
+
+    expect(api.addSource).toHaveBeenCalledWith('research-1', {
+      sourceId: 'source-2',
+      note: 'Contexto para el capítulo primero',
+    });
+    expect(saved).toHaveBeenCalledOnce();
+    expect(fixture.componentInstance.sourceId).toBe('source-2');
+
+    fixture.componentInstance.sourceVersion = 'Consulta 2026';
+    fixture.componentInstance.locator = 'apartado 3';
+    fixture.componentInstance.quote = 'Pasaje disponible para revisión';
+    fixture.componentInstance.save();
+    expect(api.createEvidence).toHaveBeenCalledWith(
+      'research-1',
+      expect.objectContaining({ sourceId: 'source-2' }),
+    );
+  });
+
+  it('does not submit blank searches, unselected Sources, duplicate Sources, or incomplete Evidence', async () => {
+    const { fixture, api } = await createFixture();
+    fixture.componentInstance.sourceSearch = '   ';
+    fixture.componentInstance.searchSources();
+    fixture.componentInstance.associateSource();
+    fixture.componentInstance.selectSearchResult(source.source);
+    fixture.componentInstance.associateSource();
     fixture.componentInstance.selectSource('source-1');
     fixture.componentInstance.save();
+
+    expect(api.searchSources).not.toHaveBeenCalled();
+    expect(api.addSource).not.toHaveBeenCalled();
     expect(api.createEvidence).not.toHaveBeenCalled();
   });
 });

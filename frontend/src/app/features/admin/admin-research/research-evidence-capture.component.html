@@ -7,6 +7,56 @@
     >
   </header>
 
+  <form class="research-evidence__source-search" (ngSubmit)="searchSources()">
+    <label for="sourceSearch">Incorpora una Source existente</label>
+    <div>
+      <input
+        id="sourceSearch"
+        name="sourceSearch"
+        [(ngModel)]="sourceSearch"
+        placeholder="Buscar por título, autor o referencia"
+      />
+      <button type="submit" [disabled]="searchingSources || !sourceSearch.trim()">
+        {{ searchingSources ? 'Buscando…' : 'Buscar Source' }}
+      </button>
+    </div>
+  </form>
+
+  @if (sourceResults.length) {
+    <div class="research-evidence__source-results" aria-label="Resultados de Sources">
+      @for (source of sourceResults; track source.id) {
+        <button
+          type="button"
+          [class.is-selected]="selectedSource?.id === source.id"
+          [disabled]="isAssociated(source.id)"
+          (click)="selectSearchResult(source)"
+        >
+          <strong>{{ source.title }}</strong>
+          <span>{{ source.author || source.publisher || source.type }}</span>
+          @if (isAssociated(source.id)) {
+            <em>Ya asociada</em>
+          }
+        </button>
+      }
+    </div>
+  }
+
+  @if (selectedSource) {
+    <form class="research-evidence__source-association" (ngSubmit)="associateSource()">
+      <p>
+        Asociar <strong>{{ selectedSource.title }}</strong> a esta investigación.
+      </p>
+      <input name="sourceNote" [(ngModel)]="sourceNote" placeholder="Nota editorial opcional" />
+      <button type="submit" [disabled]="associatingSource">
+        {{ associatingSource ? 'Asociando…' : 'Asociar Source' }}
+      </button>
+    </form>
+  }
+
+  @if (sourceError) {
+    <p class="research-evidence__error">{{ sourceError }}</p>
+  }
+
   @if (sources.length) {
     <div class="research-evidence__sources">
       @for (source of sources; track source.sourceId) {

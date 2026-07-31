@@ -11,6 +11,7 @@ import {
   ResearchApi,
   ResearchEvidence,
   ResearchProjectSource,
+  ResearchSourceRecord,
 } from '../../../core/api/research.api';
 
 @Component({
@@ -37,10 +38,70 @@ export class ResearchEvidenceCaptureComponent {
   note = '';
   error = '';
   busy = false;
+  sourceSearch = '';
+  sourceResults: ResearchSourceRecord[] = [];
+  selectedSource: ResearchSourceRecord | null = null;
+  sourceNote = '';
+  sourceError = '';
+  searchingSources = false;
+  associatingSource = false;
 
   selectSource(sourceId: string): void {
     this.sourceId = sourceId;
     this.error = '';
+  }
+
+  searchSources(): void {
+    const query = this.sourceSearch.trim();
+    if (!query || this.searchingSources) return;
+
+    this.searchingSources = true;
+    this.sourceError = '';
+    this.selectedSource = null;
+    this.api.searchSources(query).subscribe({
+      next: (sources) => {
+        this.sourceResults = sources;
+        this.searchingSources = false;
+      },
+      error: () => {
+        this.sourceResults = [];
+        this.searchingSources = false;
+        this.sourceError = 'No se pudieron buscar las Sources.';
+      },
+    });
+  }
+
+  selectSearchResult(source: ResearchSourceRecord): void {
+    this.selectedSource = source;
+    this.sourceError = '';
+  }
+
+  associateSource(): void {
+    const source = this.selectedSource;
+    if (!source || this.associatingSource || this.isAssociated(source.id)) return;
+
+    this.associatingSource = true;
+    this.sourceError = '';
+    this.api
+      .addSource(this.researchId, {
+        sourceId: source.id,
+        note: this.sourceNote.trim() || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.sourceId = source.id;
+          this.sourceSearch = '';
+          this.sourceResults = [];
+          this.selectedSource = null;
+          this.sourceNote = '';
+          this.associatingSource = false;
+          this.saved.emit();
+        },
+        error: () => {
+          this.associatingSource = false;
+          this.sourceError = 'No se pudo asociar la Source.';
+        },
+      });
   }
 
   save(): void {
@@ -83,5 +144,9 @@ export class ResearchEvidenceCaptureComponent {
 
   evidenceFor(sourceId: string): ResearchEvidence[] {
     return this.evidence.filter((item) => item.sourceId === sourceId);
+  }
+
+  isAssociated(sourceId: string): boolean {
+    return this.sources.some((source) => source.sourceId === sourceId);
   }
 }
