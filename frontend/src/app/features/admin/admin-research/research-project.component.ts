@@ -10,12 +10,20 @@ import {
   ResearchProject,
   ResearchQuestion,
 } from '../../../core/api/research.api';
+import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.component';
 import { ResearchGraphComponent } from './research-graph.component';
 
 @Component({
   standalone: true,
   selector: 'app-research-project',
-  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink, ResearchGraphComponent],
+  imports: [
+    AsyncPipe,
+    DatePipe,
+    FormsModule,
+    RouterLink,
+    ResearchEvidenceCaptureComponent,
+    ResearchGraphComponent,
+  ],
   templateUrl: './research-project.component.html',
   styleUrl: './research-project.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -173,6 +181,10 @@ export class ResearchProjectComponent {
 
   children(project: ResearchProject, parentId: string): ResearchOutlineSection[] {
     return project.outlineSections.filter((section) => section.parentSectionId === parentId);
+  }
+
+  refreshResearch(): void {
+    this.refresh$.next();
   }
 
   statusLabel(status: ResearchOutlineSectionStatus): string {

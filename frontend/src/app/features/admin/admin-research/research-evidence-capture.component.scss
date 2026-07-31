@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+.research-evidence {
+  border-top: 1px solid var(--research-border-soft);
+  padding-top: 30px;
+}
+.research-evidence header p {
+  color: var(--research-accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+.research-evidence h2 {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  margin: 0 0 8px;
+}
+.research-evidence header span,
+.research-evidence__form > p,
+.research-evidence__empty {
+  color: var(--research-text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.research-evidence__sources {
+  display: grid;
+  gap: 8px;
+  margin: 22px 0;
+}
+.research-evidence__sources article {
+  align-items: center;
+  border: 1px solid var(--research-border-soft);
+  border-radius: 10px;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 12px;
+}
+.research-evidence__sources article.is-selected {
+  border-color: var(--research-accent);
+  background: var(--research-accent-soft);
+}
+.research-evidence__sources strong,
+.research-evidence__sources small,
+.research-evidence__sources span {
+  display: block;
+}
+.research-evidence__sources small,
+.research-evidence__sources span,
+.research-evidence__sources em {
+  color: var(--research-text-muted);
+  display: block;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 3px;
+}
+button {
+  border: 0;
+  border-radius: 8px;
+  background: var(--research-accent);
+  color: #17131d;
+  cursor: pointer;
+  font: inherit;
+  padding: 8px 10px;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.research-evidence__form {
+  border-top: 1px solid var(--research-border-soft);
+  display: grid;
+  gap: 12px;
+  padding-top: 22px;
+}
+.research-evidence__metadata {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+}
+input,
+textarea {
+  border: 1px solid var(--research-border);
+  border-radius: 8px;
+  background: var(--research-control);
+  box-sizing: border-box;
+  color: inherit;
+  font: inherit;
+  padding: 10px;
+  width: 100%;
+}
+textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+.research-evidence__form button {
+  justify-self: start;
+}
+.research-evidence__error {
+  color: #d97757;
+  font-size: 13px;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .research-evidence__metadata {
+    grid-template-columns: 1fr;
+  }
+}

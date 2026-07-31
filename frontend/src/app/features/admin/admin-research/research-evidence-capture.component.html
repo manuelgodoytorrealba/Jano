@@ -1,0 +1,69 @@
+<section class="research-evidence" aria-label="Lectura y evidencia">
+  <header>
+    <p>Lectura y evidencia</p>
+    <h2>Vuelve de la fuente a la afirmación.</h2>
+    <span
+      >Registra el pasaje y su localización; la Evidence no acepta conocimiento por sí sola.</span
+    >
+  </header>
+
+  @if (sources.length) {
+    <div class="research-evidence__sources">
+      @for (source of sources; track source.sourceId) {
+        <article [class.is-selected]="source.sourceId === sourceId">
+          <div>
+            <strong>{{ sourceTitle(source) }}</strong>
+            @if (source.note) {
+              <small>{{ source.note }}</small>
+            }
+            <span>{{ evidenceFor(source.sourceId).length }} evidencias</span>
+            @for (item of evidenceFor(source.sourceId); track item.id) {
+              <em>{{ item.locator }} · {{ item.quote }}</em>
+            }
+          </div>
+          <button type="button" (click)="selectSource(source.sourceId)">Evidenciar</button>
+        </article>
+      }
+    </div>
+
+    @if (sourceId) {
+      <form class="research-evidence__form" (ngSubmit)="save()">
+        <p>Documenta el pasaje tal como está disponible para esta Source.</p>
+        <div class="research-evidence__metadata">
+          <input
+            name="sourceVersion"
+            [(ngModel)]="sourceVersion"
+            placeholder="Versión o edición"
+            required
+          />
+          <input name="locator" [(ngModel)]="locator" placeholder="Localizador · p. 42" required />
+        </div>
+        <textarea
+          name="quote"
+          [(ngModel)]="quote"
+          placeholder="Cita verificable"
+          required
+        ></textarea>
+        <textarea
+          name="context"
+          [(ngModel)]="context"
+          placeholder="Contexto editorial opcional"
+        ></textarea>
+        <input name="note" [(ngModel)]="note" placeholder="Nota de investigación opcional" />
+        @if (error) {
+          <p class="research-evidence__error">{{ error }}</p>
+        }
+        <button
+          type="submit"
+          [disabled]="busy || !sourceVersion.trim() || !locator.trim() || !quote.trim()"
+        >
+          {{ busy ? 'Guardando…' : 'Registrar Evidence' }}
+        </button>
+      </form>
+    }
+  } @else {
+    <p class="research-evidence__empty">
+      Asocia una Source al Research antes de registrar Evidence.
+    </p>
+  }
+</section>

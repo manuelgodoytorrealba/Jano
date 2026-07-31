@@ -18,6 +18,15 @@
         <app-research-graph [researchId]="project.id" />
       </section>
 
+      <section class="research-project__evidence">
+        <app-research-evidence-capture
+          [researchId]="project.id"
+          [sources]="project.sources"
+          [evidence]="project.evidence"
+          (saved)="refreshResearch()"
+        />
+      </section>
+
       <section class="research-project__layout">
         <aside class="research-project__outline" aria-label="Índice de la investigación">
           <div class="research-project__section-head">
