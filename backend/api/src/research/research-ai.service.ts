@@ -1,10 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import type { Prisma } from '@prisma/client';
+import { createHash } from 'node:crypto';
+import {
+  Prisma,
+  ResearchClaimKind,
+  ResearchFindingProposalType,
+  type KnowledgeEntityKind,
+} from '@prisma/client';
 import { AIProvider } from '../ai/ai.provider';
 import { PrismaService } from '../prisma/prisma.service';
 
 const EXTRACT_FINDINGS_TASK = 'research.extract_findings';
-const EXTRACT_FINDINGS_SCHEMA_VERSION = '2';
+const EXTRACT_FINDINGS_SCHEMA_VERSION = '3';
+const ENTITY_KINDS: KnowledgeEntityKind[] = [
+  'PERSON',
+  'WORK',
+  'ABSTRACTION',
+  'EVENT',
+  'PLACE',
+  'ORGANIZATION',
+];
 
 type ExtractFindingsJob = {
   id: string;
@@ -13,26 +27,26 @@ type ExtractFindingsJob = {
 };
 
 type FindingProposalOutput = {
-  proposals: Array<{
-    title: string;
-    summary?: string | null;
-    kind?: string | null;
-    evidenceIds: string[];
-  }>;
-  entities?: Array<{
+  claims: Array<{
     localId: string;
-    kind: 'PERSON' | 'WORK' | 'ABSTRACTION' | 'EVENT' | 'PLACE' | 'ORGANIZATION';
     title: string;
     summary?: string | null;
-    confidence?: number | null;
+    kind: ResearchClaimKind;
     evidenceIds: string[];
   }>;
-  relations?: Array<{
+  entities: Array<{
+    localId: string;
+    kind: KnowledgeEntityKind;
+    title: string;
+    summary?: string | null;
+    evidenceIds: string[];
+  }>;
+  relations: Array<{
+    localId: string;
     fromLocalId: string;
     toLocalId: string;
     relationTypeId?: string | null;
     explanation?: string | null;
-    confidence?: number | null;
     evidenceIds: string[];
   }>;
 };
@@ -91,72 +105,8 @@ export class ResearchAIService {
           },
         });
 
-        const entityIds = new Map<string, string>();
-        for (const entity of output.entities ?? []) {
-          const created = await tx.researchEntity.create({
-            data: {
-              projectId: job.projectId,
-              kind: entity.kind,
-              title: entity.title,
-              summary: entity.summary,
-              confidence: entity.confidence,
-            },
-            select: { id: true },
-          });
-          await tx.researchEntityEvidence.createMany({
-            data: entity.evidenceIds.map((evidenceId) => ({
-              entityId: created.id,
-              evidenceId,
-            })),
-          });
-          entityIds.set(entity.localId, created.id);
-        }
-        for (const relation of output.relations ?? []) {
-          const fromEntityId = entityIds.get(relation.fromLocalId);
-          const toEntityId = entityIds.get(relation.toLocalId);
-          if (!fromEntityId || !toEntityId)
-            throw new Error('AI relation references unknown research entity');
-          const claim = await tx.researchClaim.create({
-            data: {
-              projectId: job.projectId,
-              kind: 'ASSERTION',
-              title: relation.explanation?.trim() || 'Relación de investigación',
-              summary: relation.explanation,
-              evidence: { create: relation.evidenceIds.map((evidenceId) => ({ evidenceId })) },
-            },
-            select: { id: true },
-          });
-          await tx.researchRelation.create({
-            data: {
-              projectId: job.projectId,
-              fromEntityId,
-              toEntityId,
-              relationTypeId: relation.relationTypeId,
-              explanation: relation.explanation,
-              confidence: relation.confidence,
-              claims: { create: { claimId: claim.id } },
-            },
-          });
-        }
-
-        for (const proposal of output.proposals) {
-          const created = await tx.researchFindingProposal.create({
-            data: {
-              projectId: job.projectId,
-              aiExecutionId: execution.id,
-              title: proposal.title.trim(),
-              summary: proposal.summary?.trim() || null,
-              kind: proposal.kind?.trim() || null,
-            },
-            select: { id: true },
-          });
-
-          await tx.researchFindingProposalEvidence.createMany({
-            data: [...new Set(proposal.evidenceIds)].map((evidenceId) => ({
-              proposalId: created.id,
-              evidenceId,
-            })),
-          });
+        for (const proposal of this.proposalsFromOutput(output)) {
+          await this.persistProposal(tx, job, execution.id, proposal);
         }
       });
     } catch (error) {
@@ -208,104 +158,187 @@ export class ResearchAIService {
     output: unknown,
     evidenceIds: string[],
   ): FindingProposalOutput {
-    const knownEvidenceIds = new Set(evidenceIds);
+    if (!output || typeof output !== 'object')
+      throw new Error('Invalid AI output for finding extraction');
+    const raw = output as Record<string, unknown>;
     if (
-      !output ||
-      typeof output !== 'object' ||
-      !Array.isArray((output as FindingProposalOutput).proposals)
+      !Array.isArray(raw.claims) ||
+      !Array.isArray(raw.entities) ||
+      !Array.isArray(raw.relations)
     ) {
       throw new Error('Invalid AI output for finding extraction');
     }
-
-    const proposals = (output as FindingProposalOutput).proposals.map((proposal) => {
-      const title = typeof proposal.title === 'string' ? proposal.title.trim() : '';
-      if (!Array.isArray(proposal.evidenceIds)) throw new Error('Invalid AI finding proposal');
-
-      const rawIds = [...new Set(proposal.evidenceIds)];
-      if (rawIds.some((id) => typeof id !== 'string' || !knownEvidenceIds.has(id))) {
-        throw new Error('AI finding proposal references unknown evidence');
+    const knownEvidenceIds = new Set(evidenceIds);
+    const support = (value: unknown) => {
+      if (!Array.isArray(value)) throw new Error('Invalid AI proposal evidence');
+      const ids = [...new Set(value)];
+      if (!ids.length || ids.some((id) => typeof id !== 'string' || !knownEvidenceIds.has(id))) {
+        throw new Error('AI proposal references unknown evidence');
       }
-
-      const ids = rawIds;
-      if (!title || !ids.length) throw new Error('Invalid AI finding proposal');
-
+      return ids as string[];
+    };
+    const key = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
+    const claims = raw.claims.map((value) => {
+      const item = value as Record<string, unknown>;
+      const localId = key(item.localId);
+      const title = key(item.title);
+      if (
+        !localId ||
+        !title ||
+        !Object.values(ResearchClaimKind).includes(item.kind as ResearchClaimKind)
+      ) {
+        throw new Error('Invalid AI claim proposal');
+      }
       return {
+        localId,
         title,
-        summary: typeof proposal.summary === 'string' ? proposal.summary : null,
-        kind: typeof proposal.kind === 'string' ? proposal.kind : null,
-        evidenceIds: ids,
+        summary: typeof item.summary === 'string' ? item.summary : null,
+        kind: item.kind as ResearchClaimKind,
+        evidenceIds: support(item.evidenceIds),
       };
     });
+    const entities = raw.entities.map((value) => {
+      const item = value as Record<string, unknown>;
+      const localId = key(item.localId);
+      const title = key(item.title);
+      if (!localId || !title || !ENTITY_KINDS.includes(item.kind as KnowledgeEntityKind)) {
+        throw new Error('Invalid AI entity proposal');
+      }
+      return {
+        localId,
+        title,
+        summary: typeof item.summary === 'string' ? item.summary : null,
+        kind: item.kind as KnowledgeEntityKind,
+        evidenceIds: support(item.evidenceIds),
+      };
+    });
+    const entityKeys = new Set(entities.map((item) => item.localId));
+    const relations = raw.relations.map((value) => {
+      const item = value as Record<string, unknown>;
+      const localId = key(item.localId);
+      const fromLocalId = key(item.fromLocalId);
+      const toLocalId = key(item.toLocalId);
+      if (
+        !localId ||
+        !fromLocalId ||
+        !toLocalId ||
+        fromLocalId === toLocalId ||
+        !entityKeys.has(fromLocalId) ||
+        !entityKeys.has(toLocalId)
+      ) {
+        throw new Error('Invalid AI relation proposal');
+      }
+      return {
+        localId,
+        fromLocalId,
+        toLocalId,
+        relationTypeId: key(item.relationTypeId) || null,
+        explanation: typeof item.explanation === 'string' ? item.explanation : null,
+        evidenceIds: support(item.evidenceIds),
+      };
+    });
+    const proposalKeys = [...claims, ...entities, ...relations].map((item) => item.localId);
+    if (new Set(proposalKeys).size !== proposalKeys.length)
+      throw new Error('AI proposal keys must be unique');
+    return { claims, entities, relations };
+  }
 
-    const entities = Array.isArray((output as FindingProposalOutput).entities)
-      ? ((output as FindingProposalOutput).entities ?? []).map((entity) => {
-          const localId = typeof entity.localId === 'string' ? entity.localId.trim() : '';
-          const title = typeof entity.title === 'string' ? entity.title.trim() : '';
-          const evidenceIds = Array.isArray(entity.evidenceIds)
-            ? [...new Set(entity.evidenceIds)]
-            : [];
-          if (
-            !localId ||
-            !title ||
-            !['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'].includes(
-              entity.kind,
-            ) ||
-            !evidenceIds.length ||
-            evidenceIds.some((id) => typeof id !== 'string' || !knownEvidenceIds.has(id))
-          )
-            throw new Error('Invalid AI research entity');
-          const confidence =
-            typeof entity.confidence === 'number' &&
-            entity.confidence >= 0 &&
-            entity.confidence <= 1
-              ? entity.confidence
-              : null;
-          return {
-            localId,
-            kind: entity.kind,
-            title,
-            summary: typeof entity.summary === 'string' ? entity.summary : null,
-            confidence,
-            evidenceIds,
-          };
-        })
-      : [];
-    const localIds = new Set(entities.map((entity) => entity.localId));
-    const relations = Array.isArray((output as FindingProposalOutput).relations)
-      ? ((output as FindingProposalOutput).relations ?? []).map((entity) => {
-          const fromLocalId =
-            typeof entity.fromLocalId === 'string' ? entity.fromLocalId.trim() : '';
-          const toLocalId = typeof entity.toLocalId === 'string' ? entity.toLocalId.trim() : '';
-          const evidenceIds = Array.isArray(entity.evidenceIds)
-            ? [...new Set(entity.evidenceIds)]
-            : [];
-          if (
-            !fromLocalId ||
-            !toLocalId ||
-            fromLocalId === toLocalId ||
-            !localIds.has(fromLocalId) ||
-            !localIds.has(toLocalId) ||
-            !evidenceIds.length ||
-            evidenceIds.some((id) => typeof id !== 'string' || !knownEvidenceIds.has(id))
-          )
-            throw new Error('Invalid AI research relation');
-          const confidence =
-            typeof entity.confidence === 'number' &&
-            entity.confidence >= 0 &&
-            entity.confidence <= 1
-              ? entity.confidence
-              : null;
-          return {
-            fromLocalId,
-            toLocalId,
-            relationTypeId:
-              typeof entity.relationTypeId === 'string' ? entity.relationTypeId : null,
-            explanation: typeof entity.explanation === 'string' ? entity.explanation : null,
-            confidence,
-            evidenceIds,
-          };
-        })
-      : [];
-    return { proposals, entities, relations };
+  private proposalsFromOutput(output: FindingProposalOutput) {
+    return [
+      ...output.claims.map((item) => ({
+        type: ResearchFindingProposalType.CLAIM,
+        proposalKey: item.localId,
+        title: item.title,
+        summary: item.summary ?? null,
+        kind: item.kind,
+        claimKind: item.kind,
+        entityKind: null,
+        relationFromKey: null,
+        relationToKey: null,
+        relationTypeId: null,
+        explanation: null,
+        evidenceIds: item.evidenceIds,
+      })),
+      ...output.entities.map((item) => ({
+        type: ResearchFindingProposalType.ENTITY,
+        proposalKey: item.localId,
+        title: item.title,
+        summary: item.summary ?? null,
+        kind: null,
+        claimKind: null,
+        entityKind: item.kind,
+        relationFromKey: null,
+        relationToKey: null,
+        relationTypeId: null,
+        explanation: null,
+        evidenceIds: item.evidenceIds,
+      })),
+      ...output.relations.map((item) => ({
+        type: ResearchFindingProposalType.RELATION,
+        proposalKey: item.localId,
+        title: item.explanation?.trim() || 'Relación propuesta',
+        summary: null,
+        kind: null,
+        claimKind: null,
+        entityKind: null,
+        relationFromKey: item.fromLocalId,
+        relationToKey: item.toLocalId,
+        relationTypeId: item.relationTypeId,
+        explanation: item.explanation,
+        evidenceIds: item.evidenceIds,
+      })),
+    ];
+  }
+
+  private async persistProposal(
+    tx: Prisma.TransactionClient,
+    job: ExtractFindingsJob,
+    aiExecutionId: string,
+    proposal: ReturnType<ResearchAIService['proposalsFromOutput']>[number],
+  ) {
+    // ponytail: the job identity plus typed result and Evidence makes retries idempotent; add a
+    // dedicated result aggregate only if proposals later need cross-job reconciliation.
+    const resultFingerprint = createHash('sha256')
+      .update(
+        JSON.stringify({
+          type: proposal.type,
+          proposalKey: proposal.proposalKey,
+          title: proposal.title,
+          summary: proposal.summary,
+          explanation: proposal.explanation,
+          claimKind: proposal.claimKind,
+          entityKind: proposal.entityKind,
+          relationFromKey: proposal.relationFromKey,
+          relationToKey: proposal.relationToKey,
+          relationTypeId: proposal.relationTypeId,
+          evidenceIds: [...proposal.evidenceIds].sort(),
+        }),
+      )
+      .digest('hex');
+    const existing = await tx.researchFindingProposal.findFirst({
+      where: { jobId: job.id, resultFingerprint },
+      select: { id: true },
+    });
+    if (existing) return;
+    let created: { id: string };
+    try {
+      created = await tx.researchFindingProposal.create({
+        data: {
+          projectId: job.projectId,
+          jobId: job.id,
+          aiExecutionId,
+          resultFingerprint,
+          ...proposal,
+        },
+        select: { id: true },
+      });
+    } catch (error) {
+      // The partial unique index is the concurrency-safe half of the idempotency contract.
+      if ((error as { code?: unknown }).code === 'P2002') return;
+      throw error;
+    }
+    await tx.researchFindingProposalEvidence.createMany({
+      data: proposal.evidenceIds.map((evidenceId) => ({ proposalId: created.id, evidenceId })),
+    });
   }
 }
