@@ -75,7 +75,7 @@ describe('AdminDashboardComponent', () => {
             lastActiveAt: '2026-07-07T08:00:00.000Z',
             createdAt: '2026-07-06T08:00:00.000Z',
             updatedAt: '2026-07-07T08:00:00.000Z',
-            _count: { sources: 2, evidence: 3, findings: 1 },
+            _count: { sources: 2, evidence: 3, claims: 1 },
           },
         ]),
       ),
@@ -140,9 +140,7 @@ describe('AdminDashboardComponent', () => {
     expect(api.workspaceGraph).toHaveBeenCalledOnce();
     expect(researchApi.list).toHaveBeenCalledOnce();
     expect(vm.research.data[0].title).toBe('Goya y guerra');
-    expect(component.researchMeta(vm.research.data[0])).toBe(
-      '2 fuentes · 3 evidencias · 1 hallazgos',
-    );
+    expect(component.researchMeta(vm.research.data[0])).toBe('2 fuentes · 3 evidencias · 1 claims');
     expect(decksApi.list).toHaveBeenCalledOnce();
     expect(vm.sidebarGroups[0].items[0].count).toBe(1);
     expect(vm.attention).toEqual([

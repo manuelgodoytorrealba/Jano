@@ -1,0 +1,234 @@
+:host {
+  display: block;
+}
+
+.research-graph {
+  border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  padding-top: 2rem;
+}
+
+.research-graph__header,
+.research-graph__canvas-toolbar,
+.research-graph__meta,
+.research-graph__layout,
+.research-graph__inspector dl div {
+  display: flex;
+}
+
+.research-graph__header,
+.research-graph__canvas-toolbar {
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.research-graph__header h2,
+.research-graph__header p,
+.research-graph__inspector h3,
+.research-graph__inspector h4,
+.research-graph__inspector p {
+  margin: 0;
+}
+
+.research-graph__eyebrow {
+  color: var(--app-text-muted, #74706a);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.research-graph__header > div > p:last-child,
+.research-graph__inspector > p:not(.research-graph__eyebrow),
+.research-graph__muted {
+  color: var(--app-text-muted, #74706a);
+  line-height: 1.55;
+  margin-top: 0.5rem;
+}
+
+.research-graph__meta {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: end;
+}
+
+.research-graph__meta span,
+.research-graph__canvas-toolbar span {
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: 999px;
+  color: var(--app-text-muted, #74706a);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.55rem;
+}
+
+.research-graph__meta .research-graph__tension,
+.research-graph__unavailable {
+  color: #8b503c;
+}
+
+.research-graph__layout {
+  align-items: stretch;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.research-graph__canvas-wrap {
+  background: color-mix(in srgb, var(--app-surface, #fff) 88%, #e9e3da);
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 16px;
+  flex: 1 1 62%;
+  min-height: 440px;
+  padding: 0.75rem;
+}
+
+.research-graph__canvas-toolbar {
+  align-items: center;
+}
+
+.research-graph__canvas-toolbar button,
+.research-graph__inspector-link {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.research-graph__canvas-toolbar button {
+  color: var(--app-accent, #774d35);
+  font-size: 0.8rem;
+}
+
+.research-graph__canvas {
+  display: block;
+  height: 400px;
+  overflow: visible;
+  width: 100%;
+}
+
+.research-graph__edge {
+  cursor: pointer;
+  fill: none;
+  pointer-events: stroke;
+  stroke: color-mix(in srgb, currentColor 25%, transparent);
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.research-graph__edge:hover,
+.research-graph__edge.is-selected {
+  stroke: var(--app-accent, #774d35);
+  stroke-width: 5;
+}
+
+.research-graph__edge.has-tension {
+  stroke-dasharray: 7 5;
+}
+
+.research-graph__node {
+  cursor: pointer;
+}
+
+.research-graph__node circle {
+  fill: var(--app-surface, #fff);
+  stroke: color-mix(in srgb, currentColor 42%, transparent);
+  stroke-width: 2;
+}
+
+.research-graph__node:hover circle,
+.research-graph__node.is-selected circle {
+  fill: #efe2d4;
+  stroke: var(--app-accent, #774d35);
+  stroke-width: 3;
+}
+
+.research-graph__node text {
+  fill: currentColor;
+  font-size: 0.82rem;
+  pointer-events: none;
+}
+
+.research-graph__node .research-graph__node-label {
+  font-size: 0.68rem;
+}
+
+.research-graph__inspector {
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 16px;
+  flex: 0 1 320px;
+  min-width: 260px;
+  padding: 1.25rem;
+}
+
+.research-graph__inspector h3 {
+  font-size: 1.15rem;
+  margin-top: 0.35rem;
+}
+
+.research-graph__inspector h4 {
+  font-size: 0.82rem;
+  margin-top: 1.25rem;
+}
+
+.research-graph__inspector dl {
+  margin: 1rem 0;
+}
+
+.research-graph__inspector dl div {
+  border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.research-graph__inspector dt,
+.research-graph__inspector dd,
+.research-graph__inspector small {
+  color: var(--app-text-muted, #74706a);
+  font-size: 0.78rem;
+}
+
+.research-graph__inspector dd {
+  margin: 0;
+  text-align: right;
+}
+
+.research-graph__inspector-link {
+  border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  padding: 0.6rem 0;
+  width: 100%;
+}
+
+.research-graph__inspector-link:hover {
+  color: var(--app-accent, #774d35);
+}
+
+.research-graph__inspector blockquote {
+  border-left: 2px solid var(--app-accent, #774d35);
+  line-height: 1.55;
+  margin: 1rem 0;
+  padding-left: 0.75rem;
+}
+
+.research-graph__state {
+  color: var(--app-text-muted, #74706a);
+  margin: 1.25rem 0 0;
+}
+
+.research-graph__state--error {
+  color: #a53f37;
+}
+
+@media (max-width: 900px) {
+  .research-graph__layout {
+    flex-direction: column;
+  }
+
+  .research-graph__inspector {
+    min-width: 0;
+  }
+}

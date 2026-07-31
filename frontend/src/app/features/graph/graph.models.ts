@@ -1,4 +1,5 @@
 import { GraphEdgeDto, GraphNodeDto } from '../../core/api/graph.models';
+import { GraphPoint } from './graph-primitives';
 
 export type GraphEntityShape = 'circle' | 'square' | 'diamond' | 'hexagon' | 'triangle';
 export type GraphLineStyle = 'solid' | 'dashed' | 'dotted';
@@ -52,10 +53,7 @@ export interface GraphData {
   relationTypes: string[];
 }
 
-export interface GraphPoint {
-  x: number;
-  y: number;
-}
+export type { GraphPoint } from './graph-primitives';
 
 export interface GraphViewport {
   x: number;

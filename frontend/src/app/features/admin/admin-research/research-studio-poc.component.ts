@@ -124,7 +124,7 @@ export class ResearchStudioPocComponent {
   }
 
   go(screen: Screen): void {
-    void this.router.navigate(['/admin/research/studio', screen]);
+    void this.router.navigate(['/admin/research/prototype', screen]);
   }
 
   private isScreen(value: string | null): value is Screen {

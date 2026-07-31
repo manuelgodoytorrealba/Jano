@@ -1,12 +1,26 @@
 import { TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, filter, firstValueFrom, of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { ResearchApi } from '../../../core/api/research.api';
 import { AdminResearchComponent } from './admin-research.component';
-import { ResearchFindingsSectionComponent } from './research-findings-section.component';
 
+const emptyKnowledge = (projectId: string) => ({
+  projectId,
+  scope: 'complete' as const,
+  focus: null,
+  expansions: {
+    claims: 'LOADED' as const,
+    evidence: 'NOT_LOADED' as const,
+    traceability: 'NOT_LOADED' as const,
+  },
+  entities: [],
+  relations: [],
+  claims: [],
+  contradictions: [],
+
+  supportingEvidence: [],
+});
 describe('AdminResearchComponent', () => {
   it('lists, opens and creates research projects', async () => {
     const queryParams$ = new BehaviorSubject(convertToParamMap({ project: 'research-1' }));
@@ -19,7 +33,7 @@ describe('AdminResearchComponent', () => {
       lastActiveAt: '2026-07-07T08:00:00.000Z',
       createdAt: '2026-07-06T08:00:00.000Z',
       updatedAt: '2026-07-07T08:00:00.000Z',
-      _count: { sources: 2, evidence: 3, findings: 1 },
+      _count: { sources: 2, evidence: 3, claims: 1 },
     };
     const api = {
       list: vi.fn().mockReturnValue(of([projectSummary])),
@@ -118,6 +132,44 @@ describe('AdminResearchComponent', () => {
               updatedAt: '2026-07-07T08:00:00.000Z',
             },
           ],
+          knowledge: {
+            ...emptyKnowledge('research-1'),
+            claims: [
+              {
+                id: 'claim-1',
+                projectId: 'research-1',
+                kind: 'ASSERTION',
+                title: 'Francisco de Goya',
+                summary: 'Autor central del corpus.',
+                status: 'SUPPORTED',
+                evidence: [],
+                subject: null,
+                object: null,
+              },
+              {
+                id: 'claim-2',
+                projectId: 'research-1',
+                kind: 'CONCEPT',
+                title: 'Violencia moderna',
+                summary: 'Concepto recurrente en la serie.',
+                status: 'DRAFT',
+                evidence: [],
+                subject: null,
+                object: null,
+              },
+              {
+                id: 'claim-3',
+                projectId: 'research-1',
+                kind: 'CONNECTION_HYPOTHESIS',
+                title: 'Representa críticamente',
+                summary: null,
+                status: 'DRAFT',
+                evidence: [],
+                subject: { id: 'claim-1', title: 'Francisco de Goya', kind: 'ASSERTION' },
+                object: { id: 'claim-2', title: 'Violencia moderna', kind: 'CONCEPT' },
+              },
+            ],
+          },
           findings: [
             {
               id: 'finding-1',
@@ -164,12 +216,12 @@ describe('AdminResearchComponent', () => {
             {
               id: 'claim-1',
               projectId: 'research-1',
-              kind: 'SUBJECT_CANDIDATE',
+              kind: 'ASSERTION',
               title: 'Francisco de Goya',
               summary: 'Autor central del corpus.',
               subjectClaimId: null,
               objectClaimId: null,
-              readyForPromotion: true,
+              status: 'SUPPORTED',
               createdAt: '2026-07-07T08:00:00.000Z',
               updatedAt: '2026-07-07T08:00:00.000Z',
               evidence: [{ claimId: 'claim-1', evidenceId: 'evidence-1' }],
@@ -184,7 +236,7 @@ describe('AdminResearchComponent', () => {
               summary: 'Concepto recurrente en la serie.',
               subjectClaimId: null,
               objectClaimId: null,
-              readyForPromotion: false,
+              status: 'DRAFT',
               createdAt: '2026-07-07T08:00:00.000Z',
               updatedAt: '2026-07-07T08:00:00.000Z',
               evidence: [{ claimId: 'claim-2', evidenceId: 'evidence-2' }],
@@ -199,14 +251,14 @@ describe('AdminResearchComponent', () => {
               summary: null,
               subjectClaimId: 'claim-1',
               objectClaimId: 'claim-2',
-              readyForPromotion: false,
+              status: 'DRAFT',
               createdAt: '2026-07-07T08:00:00.000Z',
               updatedAt: '2026-07-07T08:00:00.000Z',
               evidence: [{ claimId: 'claim-3', evidenceId: 'evidence-1' }],
               subject: {
                 id: 'claim-1',
                 title: 'Francisco de Goya',
-                kind: 'SUBJECT_CANDIDATE',
+                kind: 'ASSERTION',
               },
               object: {
                 id: 'claim-2',
@@ -366,7 +418,7 @@ describe('AdminResearchComponent', () => {
       createMaterial: vi.fn().mockReturnValue(of({})),
       createPdfMaterial: vi.fn().mockReturnValue(of({})),
       createClaim: vi.fn().mockReturnValue(of({})),
-      setClaimReadiness: vi.fn().mockReturnValue(of({})),
+      setClaimStatus: vi.fn().mockReturnValue(of({})),
       prepareSource: vi.fn().mockReturnValue(of({})),
       runNextJob: vi
         .fn()
@@ -408,112 +460,22 @@ describe('AdminResearchComponent', () => {
     expect(vm.selected?.id).toBe('research-1');
     expect(vm.selectedProject?.sources.length).toBe(2);
     expect(vm.selectedProject?.evidence.length).toBe(2);
-    expect(vm.selectedProject?.findings.length).toBe(2);
-    expect(vm.selectedProject?.decisions.length).toBe(2);
-    expect(component.projectMeta(vm.projects[0])).toBe('0 materiales · 3 evidencias · 0 síntesis');
-    expect(component.sourceTitle(vm.selectedProject!.sources[0])).toBe(
-      'Los desastres de la guerra · Museo del Prado',
-    );
-    expect(component.evidenceBySource(vm.selectedProject!)).toEqual([
-      expect.objectContaining({
-        sourceId: 'source-1',
-        title: 'Los desastres de la guerra · Museo del Prado',
-        evidence: [expect.objectContaining({ quote: 'Fragmento' })],
-      }),
-      expect.objectContaining({
-        sourceId: 'source-2',
-        title: 'Catálogo razonado',
-        evidence: [
-          expect.objectContaining({
-            quote: 'Segundo fragmento',
-            context: 'Capítulo de procedencia',
-            note: 'Contrastar con inventario',
-          }),
-        ],
-      }),
-    ]);
-    expect(
-      component.evidenceSourceTitle(vm.selectedProject!, vm.selectedProject!.evidence[0]),
-    ).toBe('Los desastres de la guerra · Museo del Prado');
-    expect(component.findingCountForEvidence(vm.selectedProject!, 'evidence-1')).toBe(1);
-    expect(component.findingCountForEvidence(vm.selectedProject!, 'evidence-2')).toBe(0);
-
-    const findingsSection = fixture.debugElement.query(
-      By.directive(ResearchFindingsSectionComponent),
-    ).componentInstance as ResearchFindingsSectionComponent;
-    expect(findingsSection.visibleFindingEvidence(vm.selectedProject!.findings[0])).toEqual([
-      expect.objectContaining({ locator: 'p. 42', sourceVersion: 'v1', quote: 'Fragmento' }),
-    ]);
-    expect(findingsSection.hiddenFindingEvidenceCount(vm.selectedProject!.findings[0])).toBe(0);
-    expect(findingsSection.findingEvidence(vm.selectedProject!.findings[1])).toEqual([]);
-    expect(findingsSection.decisionsForFinding('finding-1')).toEqual([
-      expect.objectContaining({
-        id: 'decision-2',
-        action: 'REJECT',
-        note: 'Duplicado posterior',
-      }),
-      expect.objectContaining({
-        id: 'decision-1',
-        action: 'POSTPONE',
-        note: 'Falta contraste',
-      }),
-    ]);
-    expect(findingsSection.decisionsForFinding('finding-2')).toEqual([]);
     const renderedText = fixture.nativeElement.textContent as string;
-    expect(renderedText).toContain('Hipótesis');
     expect(renderedText).toContain('Fragmento');
     expect(renderedText).toContain('Duplicado posterior');
-    expect(renderedText).toContain('Sin decisiones registradas');
     expect(renderedText).toContain('Procesamiento');
     expect(renderedText).toContain('Preparar fuente');
     expect(renderedText).toContain('En cola');
-    expect(renderedText).toContain('Propuestas automáticas');
-    expect(renderedText).toContain('Propuesta automática sobre atribución');
-    expect(renderedText).toContain('Pendiente');
     expect(renderedText).toContain('Historial IA');
     expect(renderedText).toContain('research.extract_findings');
     expect(renderedText).toContain('Fallida');
     expect(renderedText).toContain('AI provider is not available');
-    expect(renderedText).toContain('Propuesta revisada');
-    expect(renderedText).toContain('Propuesta rechazada');
-    expect(renderedText).toContain('Propuesta ya convertida');
-    expect(renderedText).toContain('Convertida en hallazgo');
     expect(renderedText).toContain('Materiales de investigación');
     expect(renderedText).toContain('Notas curatoriales');
     expect(renderedText).toContain('Síntesis y Canvas');
     expect(renderedText).toContain('Francisco de Goya');
     expect(renderedText).toContain('Francisco de Goya → Violencia moderna');
-    expect(renderedText).toContain('Lista para promoción');
-
-    const convertButtons = Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
-        '.research-ai-proposal__actions button',
-      ),
-    ).filter((button) => button.textContent?.includes('Convertir en hallazgo'));
-    expect(convertButtons.length).toBe(1);
-    convertButtons[0].click();
-    expect(api.convertFindingProposalToFinding).toHaveBeenCalledWith(
-      'research-1',
-      'proposal-reviewed',
-    );
-    expect(component.actionFeedback).toBe('Propuesta convertida en hallazgo.');
-
-    const proposalButtons = Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
-        '.research-ai-proposal__actions button',
-      ),
-    );
-    proposalButtons.find((button) => button.textContent?.includes('Marcar revisada'))?.click();
-    expect(api.reviewFindingProposal).toHaveBeenCalledWith('research-1', 'proposal-1', {
-      reviewState: 'REVIEWED',
-    });
-    expect(component.actionFeedback).toBe('Propuesta revisada.');
-
-    proposalButtons.find((button) => button.textContent?.includes('Rechazar'))?.click();
-    expect(api.reviewFindingProposal).toHaveBeenLastCalledWith('research-1', 'proposal-1', {
-      reviewState: 'REJECTED',
-    });
-    expect(component.actionFeedback).toBe('Propuesta rechazada.');
+    expect(renderedText).toContain('Borrador');
 
     const runNextButton = Array.from(
       (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
@@ -579,6 +541,9 @@ describe('AdminResearchComponent', () => {
     expect(component.sourceId).toBe('source-2');
     expect(component.selectedSourceLabel).toBe('Goya en el Prado · Museo del Prado');
 
+    component.openCreateRoute();
+    expect(router.navigate).toHaveBeenCalledWith(['/admin/research/new']);
+
     component.title = ' Nueva investigación ';
     component.objective = ' Objetivo ';
     component.createResearch();
@@ -627,46 +592,6 @@ describe('AdminResearchComponent', () => {
     expect(component.evidenceContext).toBe('');
     expect(component.evidenceNote).toBe('');
 
-    component.findingTitle = ' Hipótesis ';
-    component.selectFindingEvidence('evidence-1');
-    component.selectFindingEvidence('evidence-1');
-    expect(component.selectedFindingEvidenceIds).toEqual(['evidence-1']);
-    component.selectFindingEvidenceGroup(['evidence-1', 'evidence-2']);
-    expect(component.selectedFindingEvidenceIds).toEqual(['evidence-1', 'evidence-2']);
-    component.removeFindingEvidence('evidence-1');
-    expect(component.selectedFindingEvidenceIds).toEqual(['evidence-2']);
-    component.selectFindingEvidence('evidence-1');
-    component.createFinding('research-1');
-    expect(api.createFinding).toHaveBeenCalledWith('research-1', {
-      title: 'Hipótesis',
-      evidenceIds: ['evidence-2', 'evidence-1'],
-      kind: undefined,
-      summary: undefined,
-    });
-    expect(component.selectedFindingEvidenceIds).toEqual([]);
-
-    component.setFindingDecisionNote('finding-1', ' Duplicado ');
-    component.decideFinding('research-1', 'finding-1', 'REJECT');
-    expect(api.decideFinding).toHaveBeenCalledWith('research-1', 'finding-1', {
-      action: 'REJECT',
-      note: 'Duplicado',
-    });
-    expect(component.findingDecisionNotes['finding-1']).toBe('');
-
-    component.setFindingDecisionNote('finding-1', '   ');
-    component.decideFinding('research-1', 'finding-1', 'POSTPONE');
-    expect(api.decideFinding).toHaveBeenLastCalledWith('research-1', 'finding-1', {
-      action: 'POSTPONE',
-      note: undefined,
-    });
-
-    findingsSection.decisionNoteChange.emit({ findingId: 'finding-1', note: ' Desde hijo ' });
-    findingsSection.decide.emit({ findingId: 'finding-1', action: 'INCORPORATE' });
-    expect(api.decideFinding).toHaveBeenLastCalledWith('research-1', 'finding-1', {
-      action: 'INCORPORATE',
-      note: 'Desde hijo',
-    });
-
     api.addSource.mockReturnValueOnce(throwError(() => ({})));
     component.sourceId = 'source-error';
     component.sourceNote = ' Nota sin guardar ';
@@ -689,7 +614,7 @@ describe('AdminResearchComponent', () => {
       lastActiveAt: '2026-07-10T08:00:00.000Z',
       createdAt: '2026-07-10T08:00:00.000Z',
       updatedAt: '2026-07-10T08:00:00.000Z',
-      _count: { sources: 0, evidence: 0, findings: 0 },
+      _count: { sources: 0, evidence: 0, claims: 0 },
       sources: [],
       evidence: [],
       findings: [],
@@ -699,6 +624,7 @@ describe('AdminResearchComponent', () => {
       jobs: [],
       materials: [],
       claims: [],
+      knowledge: emptyKnowledge('research-detail'),
     };
     const api = {
       list: vi.fn().mockReturnValue(of([])),
@@ -768,9 +694,7 @@ describe('AdminResearchComponent', () => {
     );
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain(
-      'Selecciona una investigación de la biblioteca o crea una nueva para abrir el workspace.',
-    );
+    expect(fixture.nativeElement.textContent).toContain('No hay investigaciones con esos filtros.');
     expect(api.getById).not.toHaveBeenCalled();
   });
 
@@ -784,7 +708,7 @@ describe('AdminResearchComponent', () => {
       lastActiveAt: '2026-07-07T08:00:00.000Z',
       createdAt: '2026-07-07T08:00:00.000Z',
       updatedAt: '2026-07-07T08:00:00.000Z',
-      _count: { sources: 0, evidence: 0, findings: 0 },
+      _count: { sources: 0, evidence: 0, claims: 0 },
     };
     const api = {
       list: vi.fn().mockReturnValue(of([summary])),
@@ -799,6 +723,7 @@ describe('AdminResearchComponent', () => {
           decisions: [],
           jobs: [],
           materials: [],
+          knowledge: emptyKnowledge('research-empty'),
           claims: [],
         }),
       ),
@@ -843,10 +768,8 @@ describe('AdminResearchComponent', () => {
     expect(text).toContain(
       'Sin evidencias registradas. Primero asocia una fuente canónica existente.',
     );
-    expect(text).toContain(
-      'Sin hallazgos propuestos. Registra evidencias antes de construir hallazgos.',
-    );
-    expect(text).toContain('Sin propuestas automáticas.');
+    expect(text).toContain('El Canvas se abrirá con la primera síntesis.');
+    expect(text).toContain('No representa documentos ni afirmaciones sin estructurar.');
     expect(text).toContain('Sin ejecuciones IA registradas.');
 
     const runNextButton = Array.from(
@@ -869,7 +792,7 @@ describe('AdminResearchComponent', () => {
       lastActiveAt: '2026-07-07T08:00:00.000Z',
       createdAt: '2026-07-07T08:00:00.000Z',
       updatedAt: '2026-07-07T08:00:00.000Z',
-      _count: { sources: 1, evidence: 0, findings: 0 },
+      _count: { sources: 1, evidence: 0, claims: 0 },
     };
     const api = {
       list: vi.fn().mockReturnValue(of([summary])),
@@ -902,6 +825,7 @@ describe('AdminResearchComponent', () => {
           jobs: [],
           materials: [],
           claims: [],
+          knowledge: emptyKnowledge('research-source-only'),
         }),
       ),
       searchSources: vi.fn().mockReturnValue(of([])),

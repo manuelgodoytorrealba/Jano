@@ -18,6 +18,7 @@ import { SourcesModule } from './sources/sources.module';
 import { CuratedModule } from './curated/curated.module';
 import { ResearchModule } from './research/research.module';
 import { validateEnv } from './config/env.validation';
+import { LibraryModule } from './library/library.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -45,6 +46,7 @@ import { HealthController } from './health.controller';
     SourcesModule,
     CuratedModule,
     ResearchModule,
+    LibraryModule,
   ],
 })
 export class AppModule {}

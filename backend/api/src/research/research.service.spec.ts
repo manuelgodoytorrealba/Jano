@@ -1,11 +1,10 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   ResearchClaimKind,
-  ResearchDecisionAction,
-  ResearchFindingStatus,
+  ResearchClaimStatus,
   ResearchJobType,
-  ResearchMaterialKind,
-  ResearchMaterialStatus,
+  LibraryMaterialKind,
+  LibraryMaterialVersionStatus,
   ResearchProposalReviewState,
 } from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
@@ -13,11 +12,14 @@ import { ResearchService } from './research.service';
 
 describe('ResearchService', () => {
   const tx = {
+    researchClaim: { create: jest.fn() },
     researchFinding: { create: jest.fn(), update: jest.fn() },
     researchFindingEvidence: { createMany: jest.fn() },
     researchFindingProposal: { update: jest.fn() },
     researchDecision: { create: jest.fn() },
-    researchProject: { update: jest.fn() },
+    researchProject: { findUnique: jest.fn(), update: jest.fn() },
+    libraryMaterial: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
+    researchLibraryMaterial: { upsert: jest.fn() },
   };
   const prisma = {
     $transaction: jest.fn(async (callback: (client: typeof tx) => Promise<unknown>) =>
@@ -34,12 +36,11 @@ describe('ResearchService', () => {
       upsert: jest.fn(),
     },
     researchEvidence: {
+      count: jest.fn(),
       findMany: jest.fn(),
       upsert: jest.fn(),
     },
-    researchMaterial: {
-      create: jest.fn(),
-    },
+    libraryExcerpt: { findFirst: jest.fn() },
     researchClaim: {
       count: jest.fn(),
       create: jest.fn(),
@@ -56,12 +57,22 @@ describe('ResearchService', () => {
       findFirst: jest.fn(),
       update: jest.fn(),
     },
+    researchEntity: {
+      count: jest.fn(),
+      create: jest.fn(),
+      findFirst: jest.fn(),
+      update: jest.fn(),
+    },
+    researchRelation: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+    relationType: { findUnique: jest.fn() },
+    entity: { findUnique: jest.fn() },
     source: {
       findUnique: jest.fn(),
       findMany: jest.fn(),
     },
   };
   const sources = { search: jest.fn() };
+  const library = { createInitialMaterial: jest.fn(), createInitialPdf: jest.fn() };
   const outline = { create: jest.fn(), update: jest.fn(), reorder: jest.fn() };
   let service: ResearchService;
 
@@ -71,17 +82,23 @@ describe('ResearchService', () => {
     service = new ResearchService(
       prisma as unknown as PrismaService,
       sources as never,
-      {} as never,
-      {} as never,
-      {} as never,
+      library as never,
       outline as never,
     );
+  });
+
+  it('has no direct Knowledge Core promotion capability', () => {
+    expect(ResearchService.prototype).not.toHaveProperty('promoteFindingToEntity');
+    expect(ResearchService.prototype).not.toHaveProperty('promoteEntity');
+    expect(ResearchService.prototype).not.toHaveProperty('promoteRelation');
+    expect(ResearchService.prototype).not.toHaveProperty('createFinding');
+    expect(ResearchService.prototype).not.toHaveProperty('decideFinding');
   });
 
   it('creates a project as private research state, not a canonical entity', async () => {
     prisma.researchProject.create.mockResolvedValue({ id: 'project-1' });
 
-    await service.createProject({
+    await service.createProject('user-1', {
       title: '  Goya y guerra  ',
       objective: '  Reunir evidencias documentales  ',
       scope: '  Prado  ',
@@ -89,6 +106,7 @@ describe('ResearchService', () => {
 
     expect(prisma.researchProject.create).toHaveBeenCalledWith({
       data: {
+        ownerId: 'user-1',
         title: 'Goya y guerra',
         objective: 'Reunir evidencias documentales',
         scope: 'Prado',
@@ -99,17 +117,17 @@ describe('ResearchService', () => {
   it('lists recent projects with lightweight research counts', async () => {
     prisma.researchProject.findMany.mockResolvedValue([]);
 
-    await service.listProjects();
+    await service.listProjects('user-1');
 
     expect(prisma.researchProject.findMany).toHaveBeenCalledWith({
+      where: { ownerId: 'user-1' },
       orderBy: [{ lastActiveAt: 'desc' }, { updatedAt: 'desc' }],
       include: {
         _count: {
           select: {
             sources: true,
             evidence: true,
-            findings: true,
-            materials: true,
+            libraryMaterials: true,
             claims: true,
           },
         },
@@ -130,6 +148,18 @@ describe('ResearchService', () => {
 
     await expect(service.getProject('project-1')).resolves.toEqual({
       id: 'project-1',
+      materials: [],
+      knowledge: {
+        projectId: 'project-1',
+        scope: 'complete',
+        focus: null,
+        expansions: { claims: 'LOADED', evidence: 'LOADED', traceability: 'LOADED' },
+        entities: [],
+        relations: [],
+        claims: [],
+        contradictions: [],
+        supportingEvidence: [],
+      },
       findings: [
         {
           id: 'finding-1',
@@ -138,87 +168,321 @@ describe('ResearchService', () => {
       ],
     });
 
-    expect(prisma.researchProject.findUnique).toHaveBeenCalledWith({
-      where: { id: 'project-1' },
-      include: {
-        sources: {
-          include: { source: { include: { translations: { orderBy: { locale: 'asc' } } } } },
-          orderBy: { createdAt: 'desc' },
-        },
-        evidence: { orderBy: { createdAt: 'desc' } },
-        findings: {
-          include: { evidence: { include: { evidence: true } } },
-          orderBy: { updatedAt: 'desc' },
-        },
-        decisions: { orderBy: { createdAt: 'desc' } },
-        jobs: { orderBy: { updatedAt: 'desc' } },
-        materials: {
-          orderBy: { createdAt: 'desc' },
+    const read = prisma.researchProject.findUnique.mock.calls[0][0];
+    const expectedSource = {
+      id: true,
+      type: true,
+      title: true,
+      author: true,
+      publisher: true,
+      year: true,
+      url: true,
+    };
+
+    for (const branch of [read.include.claims, read.include.entities]) {
+      const trace = branch.include.evidence.include.evidence.include;
+      expect(trace.source.select).toEqual(expectedSource);
+      expect(trace.libraryExcerpt.select).toMatchObject({
+        id: true,
+        locator: true,
+        text: true,
+        materialVersion: {
           select: {
             id: true,
-            projectId: true,
-            kind: true,
-            status: true,
-            title: true,
-            content: true,
-            url: true,
-            originalName: true,
-            mimeType: true,
-            sizeBytes: true,
-            createdAt: true,
-            updatedAt: true,
+            version: true,
+            material: { select: { id: true, title: true, source: { select: expectedSource } } },
           },
         },
-        claims: {
-          include: {
-            evidence: { include: { evidence: true } },
-            subject: { select: { id: true, title: true, kind: true } },
-            object: { select: { id: true, title: true, kind: true } },
-          },
-          orderBy: { updatedAt: 'desc' },
-        },
-        entityCandidates: {
-          include: {
-            evidence: { include: { evidence: true } },
-            suggestedEntity: { select: { id: true, title: true, kind: true } },
-          },
-          orderBy: { updatedAt: 'desc' },
-        },
-        relationCandidates: {
-          include: {
-            evidence: { include: { evidence: true } },
-            fromCandidate: { select: { id: true, title: true, kind: true } },
-            toCandidate: { select: { id: true, title: true, kind: true } },
-          },
-          orderBy: { updatedAt: 'desc' },
-        },
-        findingProposals: {
-          include: { evidence: { include: { evidence: true } } },
-          orderBy: { createdAt: 'desc' },
-        },
-        aiExecutions: {
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            task: true,
-            provider: true,
-            model: true,
-            providerVersion: true,
-            durationMs: true,
-            costCents: true,
-            error: true,
-            createdAt: true,
-            jobId: true,
-          },
-        },
-        outlineSections: {
-          include: { questions: { orderBy: { sortOrder: 'asc' } } },
-          orderBy: [{ parentSectionId: 'asc' }, { sortOrder: 'asc' }],
-        },
-      },
-    });
+      });
+    }
   });
 
+  it('derives deterministic knowledge without persisting it', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({
+      id: 'project-1',
+      entities: [{ id: 'entity-b' }, { id: 'entity-a' }],
+      relations: [{ id: 'relation-b' }, { id: 'relation-a' }],
+      claims: [
+        {
+          id: 'claim-b',
+          kind: 'ASSERTION',
+          status: 'SUPPORTED',
+          evidence: [{ evidence: { id: 'evidence-1' } }],
+        },
+        {
+          id: 'claim-a',
+          kind: 'CONTRADICTION',
+          status: 'CONTRADICTED',
+          evidence: [{ evidence: { id: 'evidence-1' } }, { evidence: { id: 'evidence-2' } }],
+        },
+      ],
+    });
+
+    const project = await service.getProject('project-1');
+
+    expect(project.knowledge).toEqual({
+      projectId: 'project-1',
+      scope: 'complete',
+      focus: null,
+      expansions: { claims: 'LOADED', evidence: 'LOADED', traceability: 'LOADED' },
+      entities: [
+        { id: 'entity-a', evidence: [] },
+        { id: 'entity-b', evidence: [] },
+      ],
+      relations: [{ id: 'relation-a' }, { id: 'relation-b' }],
+      claims: [
+        expect.objectContaining({ id: 'claim-a' }),
+        expect.objectContaining({ id: 'claim-b' }),
+      ],
+      contradictions: [expect.objectContaining({ id: 'claim-a' })],
+      supportingEvidence: [
+        { id: 'evidence-1', excerptStatus: 'UNAVAILABLE' },
+        { id: 'evidence-2', excerptStatus: 'UNAVAILABLE' },
+      ],
+    });
+    expect(ResearchService.prototype).not.toHaveProperty('createKnowledge');
+    expect(prisma.researchProject.update).not.toHaveBeenCalled();
+    expect(prisma.researchEntity.create).not.toHaveBeenCalled();
+    expect(prisma.researchRelation.create).not.toHaveBeenCalled();
+    expect(prisma.researchClaim.create).not.toHaveBeenCalled();
+    expect(prisma.researchEvidence.upsert).not.toHaveBeenCalled();
+  });
+  it('keeps complete and bibliographic evidence traceable in knowledge', async () => {
+    const source = { id: 'source-1', type: 'BOOK', title: 'Catálogo' };
+    const excerpt = {
+      id: 'excerpt-1',
+      locator: 'p. 4',
+      text: 'Pasaje documental',
+      materialVersion: {
+        id: 'version-1',
+        version: 1,
+        material: { id: 'material-1', title: 'PDF', source },
+      },
+    };
+    const complete = {
+      id: 'evidence-1',
+      source,
+      sourceVersion: 'ed. 1',
+      locator: 'p. 4',
+      quote: 'Pasaje documental',
+      libraryExcerpt: excerpt,
+    };
+    const bibliographic = {
+      id: 'evidence-2',
+      source,
+      sourceVersion: 'ed. 2',
+      locator: 'p. 8',
+      quote: 'Cita sin fragmento',
+      libraryExcerpt: null,
+    };
+    prisma.researchProject.findUnique.mockResolvedValue({
+      id: 'project-1',
+      entities: [{ id: 'entity-1', evidence: [{ evidence: complete }] }],
+      relations: [],
+      claims: [
+        {
+          id: 'claim-1',
+          kind: 'ASSERTION',
+          status: 'SUPPORTED',
+          evidence: [{ evidence: complete }, { evidence: bibliographic }],
+        },
+      ],
+    });
+
+    const { knowledge } = await service.getProject('project-1');
+
+    expect(knowledge.entities[0].evidence[0].evidence).toEqual(
+      expect.objectContaining({ excerptStatus: 'AVAILABLE', libraryExcerpt: excerpt }),
+    );
+    expect(knowledge.supportingEvidence).toEqual([
+      expect.objectContaining({
+        id: 'evidence-1',
+        excerptStatus: 'AVAILABLE',
+        source,
+        libraryExcerpt: excerpt,
+      }),
+      expect.objectContaining({
+        id: 'evidence-2',
+        excerptStatus: 'UNAVAILABLE',
+        source,
+        libraryExcerpt: null,
+        sourceVersion: 'ed. 2',
+        locator: 'p. 8',
+        quote: 'Cita sin fragmento',
+      }),
+    ]);
+  });
+
+  it('reads deterministic topology without Evidence or project detail', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({
+      id: 'project-1',
+      entities: [{ id: 'entity-b' }, { id: 'entity-a' }],
+      relations: [{ id: 'relation-b' }, { id: 'relation-a' }],
+    });
+    const knowledge = await service.getKnowledge('project-1', { scope: 'topology' });
+
+    expect(knowledge).toMatchObject({
+      scope: 'topology',
+      expansions: { claims: 'SUMMARY', evidence: 'NOT_LOADED', traceability: 'NOT_LOADED' },
+      entities: [{ id: 'entity-a' }, { id: 'entity-b' }],
+      relations: [{ id: 'relation-a' }, { id: 'relation-b' }],
+      supportingEvidence: [],
+    });
+    const read = prisma.researchProject.findUnique.mock.calls[0][0];
+    expect(read.select).not.toHaveProperty('outlineSections');
+    expect(read.select.entities).not.toHaveProperty('include');
+  });
+  it('resolves Entity and Relation focus within the requested Research', async () => {
+    const claim = { id: 'claim-1', kind: 'ASSERTION', status: 'SUPPORTED' };
+    const relation = {
+      id: 'relation-1',
+      fromEntity: { id: 'entity-1' },
+      toEntity: { id: 'entity-2' },
+      claims: [{ claim }],
+    };
+    prisma.researchProject.findUnique
+      .mockResolvedValueOnce({
+        id: 'project-1',
+        entities: [{ id: 'entity-1' }],
+        relations: [relation],
+        claims: [claim],
+        evidence: [],
+      })
+      .mockResolvedValueOnce({
+        id: 'project-1',
+        entities: [],
+        relations: [relation],
+        claims: [claim],
+        evidence: [],
+      })
+      .mockResolvedValueOnce({
+        id: 'project-1',
+        entities: [],
+        relations: [],
+        claims: [],
+        evidence: [],
+      });
+
+    const entity = await service.getKnowledge('project-1', {
+      scope: 'focus',
+      focusType: 'entity',
+      focusId: 'entity-1',
+    });
+    const relationFocus = await service.getKnowledge('project-1', {
+      scope: 'focus',
+      focusType: 'relation',
+      focusId: 'relation-1',
+    });
+    expect(entity).toMatchObject({
+      focus: { type: 'entity', id: 'entity-1' },
+      entities: [{ id: 'entity-1' }, { id: 'entity-2' }],
+      relations: [{ id: 'relation-1' }],
+    });
+    expect(relationFocus).toMatchObject({
+      focus: { type: 'relation', id: 'relation-1' },
+      relations: [{ id: 'relation-1' }],
+    });
+    await expect(
+      service.getKnowledge('project-1', {
+        scope: 'focus',
+        focusType: 'relation',
+        focusId: 'relation-other-project',
+      }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+  });
+  it('loads only requested traceability and preserves Evidence without an excerpt', async () => {
+    const source = { id: 'source-1', type: 'BOOK', title: 'Catálogo' };
+    const excerpt = {
+      id: 'excerpt-1',
+      locator: 'p. 4',
+      text: 'Pasaje',
+      materialVersion: {
+        id: 'version-1',
+        version: 1,
+        material: { id: 'material-1', title: 'PDF', source },
+      },
+    };
+    const available = { id: 'evidence-1', source, libraryExcerpt: excerpt };
+    const unavailable = {
+      id: 'evidence-2',
+      source,
+      libraryExcerpt: null,
+      sourceVersion: 'ed. 2',
+      locator: 'p. 8',
+      quote: 'Cita',
+    };
+    const claim = (evidence: object) => ({
+      id: 'claim-1',
+      kind: 'ASSERTION',
+      status: 'SUPPORTED',
+      evidence: [{ evidence }],
+    });
+    prisma.researchProject.findUnique
+      .mockResolvedValueOnce({
+        id: 'project-1',
+        entities: [],
+        relations: [],
+        claims: [claim(available)],
+        evidence: [available],
+      })
+      .mockResolvedValueOnce({
+        id: 'project-1',
+        entities: [],
+        relations: [],
+        claims: [claim(unavailable)],
+        evidence: [unavailable],
+      });
+
+    const complete = await service.getKnowledge('project-1', {
+      scope: 'traceability',
+      focusType: 'evidence',
+      focusId: 'evidence-1',
+    });
+    const bibliographic = await service.getKnowledge('project-1', {
+      scope: 'traceability',
+      focusType: 'evidence',
+      focusId: 'evidence-2',
+    });
+    expect(complete.supportingEvidence).toEqual([
+      expect.objectContaining({ excerptStatus: 'AVAILABLE', libraryExcerpt: excerpt }),
+    ]);
+    expect(bibliographic.supportingEvidence).toEqual([
+      expect.objectContaining({
+        excerptStatus: 'UNAVAILABLE',
+        libraryExcerpt: null,
+        sourceVersion: 'ed. 2',
+        locator: 'p. 8',
+        quote: 'Cita',
+      }),
+    ]);
+    expect(complete.expansions).toEqual({
+      claims: 'LOADED',
+      evidence: 'LOADED',
+      traceability: 'LOADED',
+    });
+    const read = prisma.researchProject.findUnique.mock.calls[0][0];
+    expect(read.select).not.toHaveProperty('outlineSections');
+    expect(read.select.evidence.include.libraryExcerpt).toBeDefined();
+  });
+  it('keeps a complete Knowledge response when no progressive scope is requested', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({
+      id: 'project-1',
+      entities: [],
+      relations: [],
+      claims: [],
+    });
+
+    const getProject = jest.spyOn(service, 'getProject');
+    const knowledge = await service.getKnowledge('project-1');
+
+    expect(knowledge).toMatchObject({
+      scope: 'complete',
+      focus: null,
+      expansions: { claims: 'LOADED', evidence: 'LOADED', traceability: 'LOADED' },
+    });
+    expect(prisma.researchProject.findUnique.mock.calls[0][0].select).not.toHaveProperty('jobs');
+    expect(getProject).not.toHaveBeenCalled();
+  });
   it('searches existing canonical sources without creating research-owned sources', async () => {
     sources.search.mockResolvedValue([]);
 
@@ -233,34 +497,54 @@ describe('ResearchService', () => {
     await expect(service.getProject('missing')).rejects.toBeInstanceOf(NotFoundException);
   });
 
-  it('stores pasted text as ready private research material', async () => {
+  it('delegates TEXT and URL material creation to Library and associates the result', async () => {
+    tx.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
-    prisma.researchMaterial.create.mockResolvedValue({ id: 'material-1' });
-    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
-
+    library.createInitialMaterial
+      .mockResolvedValueOnce({ id: 'material-text' })
+      .mockResolvedValueOnce({ id: 'material-url' });
     await service.createMaterial('project-1', {
-      kind: ResearchMaterialKind.TEXT,
+      kind: LibraryMaterialKind.TEXT,
       title: '  Notas del catálogo  ',
       content: '  Pasaje documental  ',
     });
-
-    expect(prisma.researchMaterial.create).toHaveBeenCalledWith({
-      data: {
-        projectId: 'project-1',
-        kind: ResearchMaterialKind.TEXT,
-        status: ResearchMaterialStatus.READY,
-        title: 'Notas del catálogo',
-        content: 'Pasaje documental',
-        url: null,
-      },
+    await service.createMaterial('project-1', {
+      kind: LibraryMaterialKind.URL,
+      title: '  Archivo del Prado  ',
+      url: 'https://www.museodelprado.es/',
     });
+
+    expect(library.createInitialMaterial).toHaveBeenNthCalledWith(1, tx, {
+      kind: LibraryMaterialKind.TEXT,
+      title: '  Notas del catálogo  ',
+      content: '  Pasaje documental  ',
+    });
+    expect(library.createInitialMaterial).toHaveBeenNthCalledWith(2, tx, {
+      kind: LibraryMaterialKind.URL,
+      title: '  Archivo del Prado  ',
+      url: 'https://www.museodelprado.es/',
+    });
+    expect(tx.researchLibraryMaterial.upsert).toHaveBeenCalledTimes(2);
   });
 
-  it('stores PDF metadata without exposing it as a canonical source', async () => {
-    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
-    prisma.researchMaterial.create.mockResolvedValue({ id: 'material-1' });
-    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+  it('does not create an association when the Library write fails', async () => {
+    tx.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    library.createInitialMaterial.mockRejectedValue(new Error('storage unavailable'));
 
+    await expect(
+      service.createMaterial('project-1', {
+        kind: LibraryMaterialKind.TEXT,
+        title: 'Notas',
+        content: 'Pasaje',
+      }),
+    ).rejects.toThrow('storage unavailable');
+    expect(tx.researchLibraryMaterial.upsert).not.toHaveBeenCalled();
+  });
+
+  it('delegates PDF creation to Library and preserves the legacy writer untouched', async () => {
+    tx.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    library.createInitialPdf.mockResolvedValue({ id: 'material-pdf' });
     await service.createPdfMaterial(
       'project-1',
       {
@@ -272,19 +556,112 @@ describe('ResearchService', () => {
       {},
     );
 
-    expect(prisma.researchMaterial.create).toHaveBeenCalledWith({
-      data: {
-        projectId: 'project-1',
-        kind: ResearchMaterialKind.PDF,
-        status: ResearchMaterialStatus.PENDING_PREPARATION,
-        title: 'Catálogo',
-        storageKey: 'research/private-id.pdf',
-        originalName: 'Catálogo.pdf',
-        mimeType: 'application/pdf',
-        sizeBytes: 2048,
+    expect(library.createInitialPdf).toHaveBeenCalledWith(
+      tx,
+      {
+        filename: 'private-id.pdf',
+        originalname: 'Catálogo.pdf',
+        mimetype: 'application/pdf',
+        size: 2048,
       },
+      undefined,
+    );
+    expect(tx.researchLibraryMaterial.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: { projectId: 'project-1', materialId: 'material-pdf' },
+      }),
+    );
+  });
+
+  it('does not associate a PDF when its Library write fails', async () => {
+    tx.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    library.createInitialPdf.mockRejectedValue(new Error('write failed'));
+
+    await expect(
+      service.createPdfMaterial(
+        'project-1',
+        {
+          filename: 'private-id.pdf',
+          originalname: 'Catálogo.pdf',
+          mimetype: 'application/pdf',
+          size: 1,
+        },
+        {},
+      ),
+    ).rejects.toThrow('write failed');
+
+    expect(tx.researchLibraryMaterial.upsert).not.toHaveBeenCalled();
+  });
+
+  it('keeps incompatible evidence-backed Claims private without writing to the Core', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchEvidence.findMany.mockResolvedValue([
+      { id: 'evidence-1' },
+      { id: 'evidence-2' },
+    ]);
+    prisma.researchClaim.create.mockResolvedValue({ id: 'claim-1' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+    prisma.researchEvidence.findMany
+      .mockResolvedValueOnce([{ id: 'evidence-1' }, { id: 'evidence-2' }])
+      .mockResolvedValueOnce([{ id: 'evidence-1' }]);
+    await service.createClaim('project-1', {
+      kind: ResearchClaimKind.ASSERTION,
+      title: 'La obra fue concebida en un contexto bélico',
+      evidenceIds: ['evidence-1', 'evidence-2'],
     });
-    expect(prisma.source.findUnique).not.toHaveBeenCalled();
+    await service.createClaim('project-1', {
+      kind: ResearchClaimKind.CONTRADICTION,
+      title: 'La datación sigue siendo discutida',
+      evidenceIds: ['evidence-1'],
+    });
+
+    expect(prisma.researchClaim.create).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          kind: ResearchClaimKind.ASSERTION,
+          status: ResearchClaimStatus.DRAFT,
+          evidence: { create: [{ evidenceId: 'evidence-1' }, { evidenceId: 'evidence-2' }] },
+        }),
+      }),
+    );
+    expect(prisma.researchClaim.create).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        data: expect.objectContaining({ kind: ResearchClaimKind.CONTRADICTION }),
+      }),
+    );
+    expect(prisma.entity).not.toHaveProperty('create');
+    expect(prisma.entity).not.toHaveProperty('update');
+  });
+
+  it('rejects Claim Evidence outside the Research', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchEvidence.findMany.mockResolvedValue([{ id: 'evidence-1' }]);
+
+    await expect(
+      service.createClaim('project-1', {
+        kind: ResearchClaimKind.ASSERTION,
+        title: 'Afirmación sin procedencia suficiente',
+        evidenceIds: ['evidence-1', 'evidence-outside'],
+      }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+
+    expect(prisma.researchClaim.create).not.toHaveBeenCalled();
+  });
+
+  it('updates Claim editorial status only inside its Research', async () => {
+    prisma.researchClaim.findFirst.mockResolvedValue({ id: 'claim-1' });
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+
+    await service.setClaimStatus('project-1', 'claim-1', {
+      status: ResearchClaimStatus.QUESTIONED,
+    });
+
+    expect(prisma.researchClaim.update).toHaveBeenCalledWith({
+      where: { id: 'claim-1' },
+      data: { status: ResearchClaimStatus.QUESTIONED },
+    });
   });
 
   it('creates an evidence-backed provisional connection between project claims', async () => {
@@ -314,7 +691,7 @@ describe('ResearchService', () => {
         summary: 'Hipótesis provisional',
         subjectClaimId: 'claim-1',
         objectClaimId: 'claim-2',
-        readyForPromotion: false,
+        status: ResearchClaimStatus.DRAFT,
         evidence: { create: [{ evidenceId: 'evidence-1' }] },
       },
     });
@@ -376,6 +753,46 @@ describe('ResearchService', () => {
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 
+  it('associates an existing Library material transactionally and idempotently', async () => {
+    tx.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    tx.libraryMaterial.findUnique.mockResolvedValue({ id: 'material-1' });
+    tx.researchLibraryMaterial.upsert.mockResolvedValue({
+      projectId: 'project-1',
+      materialId: 'material-1',
+    });
+
+    await service.associateLibraryMaterial('project-1', { materialId: 'material-1' });
+    await service.associateLibraryMaterial('project-1', { materialId: 'material-1' });
+
+    const expected = {
+      where: { projectId_materialId: { projectId: 'project-1', materialId: 'material-1' } },
+      create: { projectId: 'project-1', materialId: 'material-1' },
+      update: {},
+    };
+    expect(tx.researchLibraryMaterial.upsert).toHaveBeenCalledTimes(2);
+    expect(tx.researchLibraryMaterial.upsert).toHaveBeenNthCalledWith(1, expected);
+    expect(tx.researchLibraryMaterial.upsert).toHaveBeenNthCalledWith(2, expected);
+    expect(tx.libraryMaterial.create).not.toHaveBeenCalled();
+    expect(tx.libraryMaterial.update).not.toHaveBeenCalled();
+  });
+
+  it('rejects a Library association when either foreign key is missing', async () => {
+    tx.researchProject.findUnique.mockResolvedValue(null);
+    tx.libraryMaterial.findUnique.mockResolvedValue({ id: 'material-1' });
+
+    await expect(
+      service.associateLibraryMaterial('missing', { materialId: 'material-1' }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+
+    tx.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    tx.libraryMaterial.findUnique.mockResolvedValue(null);
+
+    await expect(
+      service.associateLibraryMaterial('project-1', { materialId: 'missing' }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(tx.researchLibraryMaterial.upsert).not.toHaveBeenCalled();
+  });
+
   it('creates a queued source preparation job idempotently', async () => {
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
     prisma.researchProjectSource.findUnique.mockResolvedValue({ sourceId: 'source-1' });
@@ -413,8 +830,8 @@ describe('ResearchService', () => {
     prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
 
-    await service.extractFindingsJob('project-1');
-    await service.extractFindingsJob('project-1');
+    await service.extractProposalsJob('project-1');
+    await service.extractProposalsJob('project-1');
 
     expect(prisma.researchJob.upsert).toHaveBeenCalledTimes(2);
     expect(prisma.researchJob.upsert).toHaveBeenNthCalledWith(1, {
@@ -442,7 +859,7 @@ describe('ResearchService', () => {
     prisma.researchProject.findUnique.mockResolvedValueOnce({ id: 'project-1' });
     prisma.researchProjectSource.findUnique.mockResolvedValueOnce(null);
 
-    await expect(service.extractFindingsJob('project-1', 'source-outside')).rejects.toBeInstanceOf(
+    await expect(service.extractProposalsJob('project-1', 'source-outside')).rejects.toBeInstanceOf(
       NotFoundException,
     );
     expect(prisma.researchJob.upsert).not.toHaveBeenCalled();
@@ -471,7 +888,7 @@ describe('ResearchService', () => {
     prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
 
-    await service.reviewFindingProposal('project-1', 'proposal-1', {
+    await service.reviewProposal('project-1', 'proposal-1', {
       reviewState: ResearchProposalReviewState.REVIEWED,
     });
 
@@ -483,7 +900,7 @@ describe('ResearchService', () => {
       where: { id: 'proposal-1' },
       data: { reviewState: ResearchProposalReviewState.REVIEWED },
     });
-    expect(tx.researchFinding.create).not.toHaveBeenCalled();
+    expect(tx.researchClaim.create).not.toHaveBeenCalled();
   });
 
   it('rejects an automatic finding proposal without creating a finding', async () => {
@@ -492,7 +909,7 @@ describe('ResearchService', () => {
     prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
 
-    await service.reviewFindingProposal('project-1', 'proposal-1', {
+    await service.reviewProposal('project-1', 'proposal-1', {
       reviewState: ResearchProposalReviewState.REJECTED,
     });
 
@@ -500,14 +917,14 @@ describe('ResearchService', () => {
       where: { id: 'proposal-1' },
       data: { reviewState: ResearchProposalReviewState.REJECTED },
     });
-    expect(tx.researchFinding.create).not.toHaveBeenCalled();
+    expect(tx.researchClaim.create).not.toHaveBeenCalled();
   });
 
   it('rejects proposal review when the proposal is missing or outside the project', async () => {
     prisma.researchFindingProposal.findFirst.mockResolvedValue(null);
 
     await expect(
-      service.reviewFindingProposal('project-1', 'proposal-outside', {
+      service.reviewProposal('project-1', 'proposal-outside', {
         reviewState: ResearchProposalReviewState.REJECTED,
       }),
     ).rejects.toBeInstanceOf(NotFoundException);
@@ -516,29 +933,28 @@ describe('ResearchService', () => {
 
   it('rejects unsupported automatic proposal review states', async () => {
     await expect(
-      service.reviewFindingProposal('project-1', 'proposal-1', {
+      service.reviewProposal('project-1', 'proposal-1', {
         reviewState: ResearchProposalReviewState.PENDING as never,
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(prisma.researchFindingProposal.findFirst).not.toHaveBeenCalled();
   });
 
-  it('converts a reviewed automatic finding proposal into a private finding', async () => {
+  it('converts a reviewed proposal into a supported private Claim', async () => {
     prisma.researchFindingProposal.findFirst.mockResolvedValue({
       id: 'proposal-1',
       title: 'Hallazgo revisado',
       summary: 'Resumen',
       kind: 'attribution',
       reviewState: ResearchProposalReviewState.REVIEWED,
-      convertedFindingId: null,
+      convertedClaimId: null,
       evidence: [{ evidenceId: 'evidence-1' }, { evidenceId: 'evidence-2' }],
     });
-    tx.researchFinding.create.mockResolvedValue({ id: 'finding-1' });
-    tx.researchFindingEvidence.createMany.mockResolvedValue({ count: 2 });
+    tx.researchClaim.create.mockResolvedValue({ id: 'claim-1' });
     tx.researchProject.update.mockResolvedValue({ id: 'project-1' });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
 
-    await service.convertFindingProposalToFinding('project-1', 'proposal-1');
+    await service.convertProposalToClaim('project-1', 'proposal-1');
 
     expect(prisma.researchFindingProposal.findFirst).toHaveBeenCalledWith({
       where: { id: 'proposal-1', projectId: 'project-1' },
@@ -548,28 +964,24 @@ describe('ResearchService', () => {
         summary: true,
         kind: true,
         reviewState: true,
-        convertedFindingId: true,
+        convertedClaimId: true,
         evidence: { select: { evidenceId: true } },
       },
     });
-    expect(tx.researchFinding.create).toHaveBeenCalledWith({
+    expect(tx.researchClaim.create).toHaveBeenCalledWith({
       data: {
         projectId: 'project-1',
         title: 'Hallazgo revisado',
         summary: 'Resumen',
-        kind: 'attribution',
+        kind: ResearchClaimKind.ASSERTION,
+        status: ResearchClaimStatus.SUPPORTED,
+        evidence: { create: [{ evidenceId: 'evidence-1' }, { evidenceId: 'evidence-2' }] },
       },
       select: { id: true },
     });
-    expect(tx.researchFindingEvidence.createMany).toHaveBeenCalledWith({
-      data: [
-        { findingId: 'finding-1', evidenceId: 'evidence-1' },
-        { findingId: 'finding-1', evidenceId: 'evidence-2' },
-      ],
-    });
     expect(tx.researchFindingProposal.update).toHaveBeenCalledWith({
       where: { id: 'proposal-1' },
-      data: { convertedFindingId: 'finding-1' },
+      data: { convertedClaimId: 'claim-1' },
     });
   });
 
@@ -580,16 +992,16 @@ describe('ResearchService', () => {
       summary: 'Resumen',
       kind: 'attribution',
       reviewState: ResearchProposalReviewState.REVIEWED,
-      convertedFindingId: 'finding-existing',
+      convertedClaimId: 'finding-existing',
       evidence: [{ evidenceId: 'evidence-1' }],
     });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
 
-    await service.convertFindingProposalToFinding('project-1', 'proposal-1');
-    await service.convertFindingProposalToFinding('project-1', 'proposal-1');
+    await service.convertProposalToClaim('project-1', 'proposal-1');
+    await service.convertProposalToClaim('project-1', 'proposal-1');
 
-    expect(tx.researchFinding.create).not.toHaveBeenCalled();
-    expect(tx.researchFindingEvidence.createMany).not.toHaveBeenCalled();
+    expect(tx.researchClaim.create).not.toHaveBeenCalled();
+    expect(tx.researchClaim.create).not.toHaveBeenCalled();
     expect(tx.researchFindingProposal.update).not.toHaveBeenCalled();
   });
 
@@ -597,34 +1009,34 @@ describe('ResearchService', () => {
     prisma.researchFindingProposal.findFirst.mockResolvedValueOnce({
       id: 'proposal-1',
       reviewState: ResearchProposalReviewState.PENDING,
-      convertedFindingId: null,
+      convertedClaimId: null,
       evidence: [],
     });
 
-    await expect(
-      service.convertFindingProposalToFinding('project-1', 'proposal-1'),
-    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(service.convertProposalToClaim('project-1', 'proposal-1')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
 
     prisma.researchFindingProposal.findFirst.mockResolvedValueOnce({
       id: 'proposal-2',
       reviewState: ResearchProposalReviewState.REJECTED,
-      convertedFindingId: null,
+      convertedClaimId: null,
       evidence: [],
     });
 
-    await expect(
-      service.convertFindingProposalToFinding('project-1', 'proposal-2'),
-    ).rejects.toBeInstanceOf(BadRequestException);
-    expect(tx.researchFinding.create).not.toHaveBeenCalled();
+    await expect(service.convertProposalToClaim('project-1', 'proposal-2')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+    expect(tx.researchClaim.create).not.toHaveBeenCalled();
   });
 
   it('rejects conversion when the proposal is missing or outside the project', async () => {
     prisma.researchFindingProposal.findFirst.mockResolvedValue(null);
 
     await expect(
-      service.convertFindingProposalToFinding('project-1', 'proposal-outside'),
+      service.convertProposalToClaim('project-1', 'proposal-outside'),
     ).rejects.toBeInstanceOf(NotFoundException);
-    expect(tx.researchFinding.create).not.toHaveBeenCalled();
+    expect(tx.researchClaim.create).not.toHaveBeenCalled();
   });
 
   it('creates evidence idempotently for a project source', async () => {
@@ -668,6 +1080,7 @@ describe('ResearchService', () => {
         note: 'Relevante para atribución',
       },
     });
+    expect(prisma.libraryExcerpt.findFirst).not.toHaveBeenCalled();
   });
 
   it('rejects evidence for sources outside the project library', async () => {
@@ -684,93 +1097,133 @@ describe('ResearchService', () => {
     expect(prisma.researchEvidence.upsert).not.toHaveBeenCalled();
   });
 
-  it('creates a proposed finding linked to project evidence', async () => {
-    prisma.researchEvidence.findMany.mockResolvedValue([
-      { id: 'evidence-1' },
-      { id: 'evidence-2' },
-    ]);
-    tx.researchFinding.create.mockResolvedValue({ id: 'finding-1' });
-    tx.researchFindingEvidence.createMany.mockResolvedValue({ count: 2 });
-    tx.researchProject.update.mockResolvedValue({ id: 'project-1' });
+  it('anchors Evidence to an excerpt associated with the same Research', async () => {
+    prisma.researchProjectSource.findUnique.mockResolvedValue({ projectId: 'project-1' });
+    prisma.libraryExcerpt.findFirst.mockResolvedValue({ id: 'excerpt-1' });
+    prisma.researchEvidence.upsert.mockResolvedValue({ id: 'evidence-1' });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
 
-    await service.createFinding('project-1', {
-      title: '  Una hipótesis  ',
-      kind: '  attribution  ',
-      summary: '  Depende de dos pasajes  ',
-      evidenceIds: ['evidence-1', 'evidence-2', 'evidence-1'],
+    await service.createEvidence('project-1', {
+      sourceId: 'source-1',
+      sourceVersion: 'v1',
+      locator: 'page=4',
+      libraryExcerptId: 'excerpt-1',
     });
 
-    expect(tx.researchFinding.create).toHaveBeenCalledWith({
-      data: {
-        projectId: 'project-1',
-        title: 'Una hipótesis',
-        kind: 'attribution',
-        summary: 'Depende de dos pasajes',
-      },
-      select: { id: true },
-    });
-    expect(tx.researchFindingEvidence.createMany).toHaveBeenCalledWith({
-      data: [
-        { findingId: 'finding-1', evidenceId: 'evidence-1' },
-        { findingId: 'finding-1', evidenceId: 'evidence-2' },
-      ],
-    });
+    expect(prisma.libraryExcerpt.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ id: 'excerpt-1' }),
+      }),
+    );
+    expect(prisma.researchEvidence.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ libraryExcerptId: 'excerpt-1', quote: null }),
+        update: expect.objectContaining({ libraryExcerptId: 'excerpt-1' }),
+      }),
+    );
   });
 
-  it('rejects findings without project evidence', async () => {
-    await expect(
-      service.createFinding('project-1', { title: 'Hipótesis' } as never),
-    ).rejects.toBeInstanceOf(BadRequestException);
+  it('rejects an excerpt that is not associated with the Research', async () => {
+    prisma.researchProjectSource.findUnique.mockResolvedValue({ projectId: 'project-1' });
+    prisma.libraryExcerpt.findFirst.mockResolvedValue(null);
 
-    prisma.researchEvidence.findMany.mockResolvedValue([{ id: 'evidence-1' }]);
     await expect(
-      service.createFinding('project-1', {
-        title: 'Hipótesis',
-        evidenceIds: ['evidence-1', 'missing-evidence'],
+      service.createEvidence('project-1', {
+        sourceId: 'source-1',
+        sourceVersion: 'v1',
+        locator: 'page=4',
+        libraryExcerptId: 'excerpt-outside',
       }),
     ).rejects.toBeInstanceOf(NotFoundException);
+    expect(prisma.researchEvidence.upsert).not.toHaveBeenCalled();
   });
 
-  it('records a human decision and updates only research finding state', async () => {
-    prisma.researchFinding.findFirst.mockResolvedValue({ id: 'finding-1' });
-    tx.researchFinding.update.mockResolvedValue({ id: 'finding-1' });
-    tx.researchDecision.create.mockResolvedValue({ id: 'decision-1' });
-    tx.researchProject.update.mockResolvedValue({ id: 'project-1' });
+  it('creates a private ResearchEntity with project-owned Evidence and a read-only canonical reference', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchEvidence.count.mockResolvedValue(1);
+    prisma.entity.findUnique.mockResolvedValue({ id: 'entity-core-1' });
+    prisma.researchEntity.create.mockResolvedValue({ id: 'research-entity-1' });
+
+    await service.createEntity('project-1', {
+      kind: 'PERSON',
+      title: '  Francisco de Goya  ',
+      summary: '  Referente privado  ',
+      evidenceIds: ['evidence-1'],
+      canonicalEntityId: 'entity-core-1',
+    });
+
+    expect(prisma.researchEntity.create).toHaveBeenCalledWith({
+      data: {
+        projectId: 'project-1',
+        kind: 'PERSON',
+        title: 'Francisco de Goya',
+        summary: 'Referente privado',
+        canonicalEntityId: 'entity-core-1',
+        evidence: { create: [{ evidenceId: 'evidence-1' }] },
+      },
+    });
+    expect(prisma.entity.findUnique).toHaveBeenCalledWith({
+      where: { id: 'entity-core-1' },
+      select: { id: true },
+    });
+    expect(prisma.entity).not.toHaveProperty('create');
+    expect(prisma.entity).not.toHaveProperty('update');
+  });
+
+  it('rejects Evidence outside the Research when creating a ResearchEntity', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchEvidence.count.mockResolvedValue(0);
+
+    await expect(
+      service.createEntity('project-1', {
+        kind: 'PERSON',
+        title: 'Francisco de Goya',
+        evidenceIds: ['evidence-from-another-research'],
+      }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+
+    expect(prisma.researchEntity.create).not.toHaveBeenCalled();
+  });
+
+  it('creates a ResearchRelation between project entities using multiple project Claims', async () => {
+    prisma.researchEntity.count.mockResolvedValue(2);
+    prisma.researchClaim.count.mockResolvedValue(2);
+    prisma.researchRelation.create.mockResolvedValue({ id: 'relation-1' });
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
 
-    await service.decideFinding('project-1', 'finding-1', 'user-1', {
-      action: ResearchDecisionAction.INCORPORATE,
-      note: '  Trabajar en borrador  ',
+    await service.createRelation('project-1', {
+      fromEntityId: 'entity-1',
+      toEntityId: 'entity-2',
+      claimIds: ['claim-1', 'claim-2'],
     });
 
-    expect(prisma.researchFinding.findFirst).toHaveBeenCalledWith({
-      where: { id: 'finding-1', projectId: 'project-1' },
-      select: { id: true },
-    });
-    expect(tx.researchFinding.update).toHaveBeenCalledWith({
-      where: { id: 'finding-1' },
-      data: { status: ResearchFindingStatus.ACCEPTED },
-    });
-    expect(tx.researchDecision.create).toHaveBeenCalledWith({
+    expect(prisma.researchRelation.create).toHaveBeenCalledWith({
       data: {
         projectId: 'project-1',
-        findingId: 'finding-1',
-        actorId: 'user-1',
-        action: ResearchDecisionAction.INCORPORATE,
-        note: 'Trabajar en borrador',
+        fromEntityId: 'entity-1',
+        toEntityId: 'entity-2',
+        relationTypeId: null,
+        explanation: null,
+        claims: { create: [{ claimId: 'claim-1' }, { claimId: 'claim-2' }] },
       },
     });
+    expect(prisma).not.toHaveProperty('researchRelationEvidence');
+    expect(prisma).not.toHaveProperty('relation');
   });
 
-  it('rejects decisions for findings outside the project', async () => {
-    prisma.researchFinding.findFirst.mockResolvedValue(null);
+  it('rejects external entities or Claims when creating a ResearchRelation', async () => {
+    prisma.researchEntity.count.mockResolvedValue(1);
+    prisma.researchClaim.count.mockResolvedValue(1);
 
     await expect(
-      service.decideFinding('project-1', 'finding-1', 'user-1', {
-        action: ResearchDecisionAction.REJECT,
+      service.createRelation('project-1', {
+        fromEntityId: 'entity-1',
+        toEntityId: 'entity-outside',
+        claimIds: ['claim-outside'],
       }),
     ).rejects.toBeInstanceOf(NotFoundException);
-    expect(tx.researchDecision.create).not.toHaveBeenCalled();
+
+    expect(prisma.researchRelation.create).not.toHaveBeenCalled();
   });
 });

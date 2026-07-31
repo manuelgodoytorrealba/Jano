@@ -1,0 +1,218 @@
+<section class="research-graph" aria-labelledby="research-graph-title">
+  @if (vm$ | async; as vm) {
+    <header class="research-graph__header">
+      <div>
+        <p class="research-graph__eyebrow">Conocimiento privado</p>
+        <h2 id="research-graph-title">Mapa de relaciones</h2>
+        <p>
+          Explora entidades privadas y vuelve siempre a las evidencias que sostienen la lectura.
+        </p>
+      </div>
+      @if (vm.visual) {
+        <div class="research-graph__meta">
+          <span>{{ vm.visual.nodes.length }} entidades</span>
+          <span>{{ vm.visual.edges.length }} relaciones</span>
+          @if (vm.visual.indicators.hasContradictions) {
+            <span class="research-graph__tension">Tensiones documentadas</span>
+          }
+        </div>
+      }
+    </header>
+
+    @if (vm.error) {
+      <p class="research-graph__state research-graph__state--error">{{ vm.error }}</p>
+    } @else if (vm.visual && vm.knowledge) {
+      <div class="research-graph__layout">
+        <div class="research-graph__canvas-wrap">
+          <div class="research-graph__canvas-toolbar">
+            <span>Vista {{ vm.visual.scope }}</span>
+            @if (vm.selection) {
+              <button type="button" (click)="showTopology()">Volver a la topología</button>
+            }
+          </div>
+          @if (vm.visual.nodes.length) {
+            <svg
+              class="research-graph__canvas"
+              viewBox="-260 -240 520 480"
+              role="img"
+              aria-label="Relaciones de investigación"
+            >
+              <g class="research-graph__edges">
+                @for (edge of vm.visual.edges; track edge.id) {
+                  <path
+                    class="research-graph__edge"
+                    [class.is-selected]="
+                      vm.selection?.kind === 'relation' && vm.selection?.id === edge.id
+                    "
+                    [class.has-tension]="edge.indicators.hasContradictions"
+                    [attr.d]="relationPath(edge, vm.positions)"
+                    (click)="selectRelation(edge.id)"
+                  />
+                }
+              </g>
+              <g class="research-graph__nodes">
+                @for (node of vm.visual.nodes; track node.id) {
+                  <g
+                    class="research-graph__node"
+                    [class.is-selected]="
+                      vm.selection?.kind === 'entity' && vm.selection?.id === node.id
+                    "
+                    [attr.transform]="
+                      'translate(' + vm.positions[node.id].x + ' ' + vm.positions[node.id].y + ')'
+                    "
+                    (click)="selectEntity(node.id)"
+                  >
+                    <circle r="24" />
+                    <text y="4" text-anchor="middle">{{ node.label.slice(0, 1) }}</text>
+                    <text class="research-graph__node-label" y="42" text-anchor="middle">
+                      {{ node.label }}
+                    </text>
+                  </g>
+                }
+              </g>
+            </svg>
+          } @else {
+            <p class="research-graph__state">Todavía no hay entidades privadas que explorar.</p>
+          }
+        </div>
+
+        <aside class="research-graph__inspector" aria-label="Inspector de investigación">
+          @if (vm.selectedEntity; as entity) {
+            <p class="research-graph__eyebrow">Entidad privada</p>
+            <h3>{{ entity.title }}</h3>
+            <dl>
+              <div>
+                <dt>Tipo</dt>
+                <dd>{{ entity.kind }}</dd>
+              </div>
+              <div>
+                <dt>Aliases</dt>
+                <dd>Sin aliases registrados.</dd>
+              </div>
+            </dl>
+            @if (entity.summary) {
+              <p>{{ entity.summary }}</p>
+            }
+            <h4>Relaciones visibles</h4>
+            @for (relation of vm.knowledge.relations; track relation.id) {
+              @if (relation.fromEntityId === entity.id || relation.toEntityId === entity.id) {
+                <button
+                  type="button"
+                  class="research-graph__inspector-link"
+                  (click)="selectRelation(relation.id)"
+                >
+                  {{ relation.fromEntity?.title ?? relation.fromEntityId }} →
+                  {{ relation.toEntity?.title ?? relation.toEntityId }}
+                </button>
+              }
+            } @empty {
+              <p class="research-graph__muted">Sin relaciones en este foco.</p>
+            }
+          } @else if (vm.selectedRelation; as relation) {
+            <p class="research-graph__eyebrow">Relación privada</p>
+            <h3>
+              {{ relation.fromEntity?.title ?? relation.fromEntityId }} →
+              {{ relation.toEntity?.title ?? relation.toEntityId }}
+            </h3>
+            <dl>
+              <div>
+                <dt>Predicado</dt>
+                <dd>{{ relation.relationTypeId ?? 'Relación privada' }}</dd>
+              </div>
+              <div>
+                <dt>Claims</dt>
+                <dd>{{ relation.claims?.length ?? 0 }}</dd>
+              </div>
+              @if (relationHasTension(relation.id, vm.visual)) {
+                <div>
+                  <dt>Tensión</dt>
+                  <dd>Claims coexistentes requieren lectura editorial.</dd>
+                </div>
+              }
+            </dl>
+            @if (relation.explanation) {
+              <p>{{ relation.explanation }}</p>
+            }
+            <h4>Claims asociados</h4>
+            @for (item of relation.claims ?? []; track item.claimId) {
+              <button
+                type="button"
+                class="research-graph__inspector-link"
+                (click)="selectClaim(item.claimId)"
+              >
+                {{ item.claim?.title ?? item.claimId }} · {{ item.claim?.status ?? 'Sin expandir' }}
+              </button>
+            } @empty {
+              <p class="research-graph__muted">Sin Claims asociados.</p>
+            }
+          } @else if (vm.selectedClaim; as claim) {
+            <p class="research-graph__eyebrow">Claim privado</p>
+            <h3>{{ claim.title }}</h3>
+            <dl>
+              <div>
+                <dt>Estado</dt>
+                <dd>{{ claim.status }}</dd>
+              </div>
+              <div>
+                <dt>Tipo</dt>
+                <dd>{{ claim.kind }}</dd>
+              </div>
+            </dl>
+            @if (claim.summary) {
+              <p>{{ claim.summary }}</p>
+            }
+            <h4>Evidencias</h4>
+            @for (item of claim.evidence ?? []; track item.evidenceId) {
+              <button
+                type="button"
+                class="research-graph__inspector-link"
+                (click)="selectEvidence(item.evidenceId)"
+              >
+                {{ item.evidence?.locator ?? item.evidenceId }} ·
+                {{ item.evidence?.quote ?? 'Abrir trazabilidad' }}
+              </button>
+            } @empty {
+              <p class="research-graph__muted">Sin Evidence expandida.</p>
+            }
+          } @else if (vm.selectedEvidence; as evidence) {
+            <p class="research-graph__eyebrow">Evidence</p>
+            <h3>{{ evidenceTitle(evidence) }}</h3>
+            <dl>
+              <div>
+                <dt>Locator</dt>
+                <dd>{{ evidence.locator }}</dd>
+              </div>
+              <div>
+                <dt>Versión</dt>
+                <dd>{{ evidence.sourceVersion }}</dd>
+              </div>
+            </dl>
+            @if (evidence.quote) {
+              <blockquote>{{ evidence.quote }}</blockquote>
+            }
+            @if (evidence.excerptStatus === 'UNAVAILABLE') {
+              <p class="research-graph__unavailable">
+                Fragmento no disponible. La referencia bibliográfica se conserva.
+              </p>
+            } @else if (evidence.libraryExcerpt; as excerpt) {
+              <h4>Library Excerpt</h4>
+              <p>{{ excerpt.text }}</p>
+              <small
+                >{{ excerpt.materialVersion.material.title }} · versión
+                {{ excerpt.materialVersion.version }}</small
+              >
+            }
+          } @else {
+            <p class="research-graph__eyebrow">Lectura progresiva</p>
+            <h3>Selecciona una entidad</h3>
+            <p>
+              El mapa abre sólo su topología. La evidencia se carga cuando la lectura la necesita.
+            </p>
+          }
+        </aside>
+      </div>
+    } @else {
+      <p class="research-graph__state">Cargando topología privada…</p>
+    }
+  }
+</section>

@@ -19,28 +19,23 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
-import {
-  CreateResearchClaimDto,
-  SetResearchClaimReadinessDto,
-} from './dto/create-research-claim.dto';
-import { CreateResearchDecisionDto } from './dto/create-research-decision.dto';
+import { AssociateResearchLibraryMaterialDto } from './dto/associate-research-library-material.dto';
+import { CreateResearchClaimDto, SetResearchClaimStatusDto } from './dto/create-research-claim.dto';
 import { CreateResearchEvidenceDto } from './dto/create-research-evidence.dto';
-import { CreateResearchFindingDto } from './dto/create-research-finding.dto';
-import {
-  CreateResearchMaterialDto,
-  CreateResearchPdfMaterialDto,
-} from './dto/create-research-material.dto';
+import { CreateResearchLibraryExcerptDto } from './dto/create-research-library-excerpt.dto';
+import { CreateLibraryMaterialDto } from '../library/dto/create-library-material.dto';
+import { CreateResearchPdfMaterialDto } from './dto/create-research-pdf-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
 import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
+import { ResearchKnowledgeQuery } from './dto/research-knowledge.query';
 import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
 import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outline-sections.dto';
 import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dto';
 import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-section.dto';
-import { ReviewResearchFindingProposalDto } from './dto/review-research-finding-proposal.dto';
-import { PromoteResearchFindingDto } from './dto/promote-research-finding.dto';
-import { CreateResearchEntityCandidateDto } from './dto/create-research-entity-candidate.dto';
-import { CreateResearchRelationCandidateDto } from './dto/create-research-relation-candidate.dto';
+import { ReviewResearchProposalDto } from './dto/review-research-proposal.dto';
+import { CreateResearchEntityDto } from './dto/create-research-entity.dto';
+import { CreateResearchRelationDto } from './dto/create-research-relation.dto';
 import { SearchSourcesQuery } from '../sources/dto/search-sources.query';
 import { ResearchJobRunnerService } from './research-job-runner.service';
 import {
@@ -49,7 +44,8 @@ import {
 } from './research-pdf-upload.config';
 import { ResearchService } from './research.service';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
+import { ResearchOwnerGuard } from './research-owner.guard';
+@UseGuards(JwtAuthGuard, RolesGuard, ResearchOwnerGuard)
 @Roles('ADMIN')
 @Controller('research')
 export class ResearchController {
@@ -59,13 +55,13 @@ export class ResearchController {
   ) {}
 
   @Get()
-  list() {
-    return this.service.listProjects();
+  list(@Req() req: AuthenticatedRequest) {
+    return this.service.listProjects(req.user.userId);
   }
 
   @Post()
-  create(@Body() dto: CreateResearchProjectDto) {
-    return this.service.createProject(dto);
+  create(@Req() req: AuthenticatedRequest, @Body() dto: CreateResearchProjectDto) {
+    return this.service.createProject(req.user.userId, dto);
   }
 
   @Get('studio/status')
@@ -83,10 +79,21 @@ export class ResearchController {
     return this.jobRunner.runNextQueuedJob();
   }
 
+  @Get(':id/knowledge')
+  knowledge(@Param('id') id: string, @Query() query: ResearchKnowledgeQuery) {
+    return this.service.getKnowledge(id, query);
+  }
+
   @Get(':id')
   get(@Param('id') id: string) {
     return this.service.getProject(id);
   }
+
+  @Post(':id/archive')
+  archive(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+    return this.service.archiveProject(id, req.user.userId);
+  }
+
   @Post(':id/outline/sections')
   createOutlineSection(@Param('id') id: string, @Body() dto: CreateResearchOutlineSectionDto) {
     return this.service.createOutlineSection(id, dto);
@@ -148,8 +155,16 @@ export class ResearchController {
     return this.service.addProjectSource(id, dto);
   }
 
+  @Post(':id/library-materials')
+  associateLibraryMaterial(
+    @Param('id') id: string,
+    @Body() dto: AssociateResearchLibraryMaterialDto,
+  ) {
+    return this.service.associateLibraryMaterial(id, dto);
+  }
+
   @Post(':id/materials')
-  createMaterial(@Param('id') id: string, @Body() dto: CreateResearchMaterialDto) {
+  createMaterial(@Param('id') id: string, @Body() dto: CreateLibraryMaterialDto) {
     return this.service.createMaterial(id, dto);
   }
 
@@ -168,13 +183,13 @@ export class ResearchController {
     return this.service.createClaim(id, dto);
   }
 
-  @Post(':id/claims/:claimId/readiness')
-  setClaimReadiness(
+  @Post(':id/claims/:claimId/status')
+  setClaimStatus(
     @Param('id') id: string,
     @Param('claimId') claimId: string,
-    @Body() dto: SetResearchClaimReadinessDto,
+    @Body() dto: SetResearchClaimStatusDto,
   ) {
-    return this.service.setClaimReadiness(id, claimId, dto);
+    return this.service.setClaimStatus(id, claimId, dto);
   }
 
   @Post(':id/sources/:sourceId/jobs/prepare')
@@ -182,104 +197,64 @@ export class ResearchController {
     return this.service.prepareSourceJob(id, sourceId);
   }
 
-  @Post(':id/jobs/extract-findings')
-  extractFindings(@Param('id') id: string) {
-    return this.service.extractFindingsJob(id);
+  @Post(':id/jobs/extract-proposals')
+  extractProposals(@Param('id') id: string) {
+    return this.service.extractProposalsJob(id);
   }
 
-  @Post(':id/sources/:sourceId/jobs/extract-findings')
-  extractFindingsForSource(@Param('id') id: string, @Param('sourceId') sourceId: string) {
-    return this.service.extractFindingsJob(id, sourceId);
+  @Post(':id/sources/:sourceId/jobs/extract-proposals')
+  extractProposalsForSource(@Param('id') id: string, @Param('sourceId') sourceId: string) {
+    return this.service.extractProposalsJob(id, sourceId);
   }
 
-  @Post(':id/finding-proposals/:proposalId/convert-to-finding')
-  convertFindingProposalToFinding(
+  @Post(':id/research-proposals/:proposalId/convert-to-claim')
+  convertProposalToClaim(@Param('id') id: string, @Param('proposalId') proposalId: string) {
+    return this.service.convertProposalToClaim(id, proposalId);
+  }
+
+  @Post(':id/research-proposals/:proposalId/review')
+  reviewProposal(
     @Param('id') id: string,
     @Param('proposalId') proposalId: string,
+    @Body() dto: ReviewResearchProposalDto,
   ) {
-    return this.service.convertFindingProposalToFinding(id, proposalId);
+    return this.service.reviewProposal(id, proposalId, dto);
   }
 
-  @Post(':id/finding-proposals/:proposalId/review')
-  reviewFindingProposal(
+  @Post(':id/relations/:relationId/review')
+  reviewRelation(
     @Param('id') id: string,
-    @Param('proposalId') proposalId: string,
-    @Body() dto: ReviewResearchFindingProposalDto,
+    @Param('relationId') relationId: string,
+    @Body() dto: ReviewResearchProposalDto,
   ) {
-    return this.service.reviewFindingProposal(id, proposalId, dto);
+    return this.service.reviewRelation(id, relationId, dto);
   }
 
-  @Post(':id/relation-candidates/:candidateId/promote/relation')
-  promoteRelationCandidate(@Param('id') id: string, @Param('candidateId') candidateId: string) {
-    return this.service.promoteRelationCandidate(id, candidateId);
+  @Post(':id/relations')
+  createRelation(@Param('id') id: string, @Body() dto: CreateResearchRelationDto) {
+    return this.service.createRelation(id, dto);
   }
 
-  @Post(':id/relation-candidates/:candidateId/review')
-  reviewRelationCandidate(
+  @Post(':id/entities/:entityId/review')
+  reviewEntity(
     @Param('id') id: string,
-    @Param('candidateId') candidateId: string,
-    @Body() dto: ReviewResearchFindingProposalDto,
+    @Param('entityId') entityId: string,
+    @Body() dto: ReviewResearchProposalDto,
   ) {
-    return this.service.reviewRelationCandidate(id, candidateId, dto);
+    return this.service.reviewEntity(id, entityId, dto);
   }
 
-  @Post(':id/relation-candidates')
-  createRelationCandidate(
-    @Param('id') id: string,
-    @Body() dto: CreateResearchRelationCandidateDto,
-  ) {
-    return this.service.createRelationCandidate(id, dto);
-  }
-
-  @Post(':id/entity-candidates/:candidateId/promote/entity')
-  promoteEntityCandidate(
-    @Param('id') id: string,
-    @Param('candidateId') candidateId: string,
-    @Body() dto: PromoteResearchFindingDto,
-  ) {
-    return this.service.promoteEntityCandidate(id, candidateId, dto);
-  }
-
-  @Post(':id/entity-candidates/:candidateId/review')
-  reviewEntityCandidate(
-    @Param('id') id: string,
-    @Param('candidateId') candidateId: string,
-    @Body() dto: ReviewResearchFindingProposalDto,
-  ) {
-    return this.service.reviewEntityCandidate(id, candidateId, dto);
-  }
-
-  @Post(':id/entity-candidates')
-  createEntityCandidate(@Param('id') id: string, @Body() dto: CreateResearchEntityCandidateDto) {
-    return this.service.createEntityCandidate(id, dto);
-  }
-
-  @Post(':id/findings/:findingId/promote/entity')
-  promoteFindingToEntity(
-    @Param('id') id: string,
-    @Param('findingId') findingId: string,
-    @Body() dto: PromoteResearchFindingDto,
-  ) {
-    return this.service.promoteFindingToEntity(id, findingId, dto);
+  @Post(':id/entities')
+  createEntity(@Param('id') id: string, @Body() dto: CreateResearchEntityDto) {
+    return this.service.createEntity(id, dto);
   }
 
   @Post(':id/evidence')
   createEvidence(@Param('id') id: string, @Body() dto: CreateResearchEvidenceDto) {
     return this.service.createEvidence(id, dto);
   }
-
-  @Post(':id/findings')
-  createFinding(@Param('id') id: string, @Body() dto: CreateResearchFindingDto) {
-    return this.service.createFinding(id, dto);
-  }
-
-  @Post(':id/findings/:findingId/decisions')
-  decideFinding(
-    @Req() req: AuthenticatedRequest,
-    @Param('id') id: string,
-    @Param('findingId') findingId: string,
-    @Body() dto: CreateResearchDecisionDto,
-  ) {
-    return this.service.decideFinding(id, findingId, req.user.userId, dto);
+  @Post(':id/library-excerpts')
+  createLibraryExcerpt(@Param('id') id: string, @Body() dto: CreateResearchLibraryExcerptDto) {
+    return this.service.createLibraryExcerpt(id, dto);
   }
 }

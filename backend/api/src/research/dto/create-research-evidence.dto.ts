@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength, ValidateIf } from 'class-validator';
 
 export class CreateResearchEvidenceDto {
   @IsString()
@@ -12,8 +12,14 @@ export class CreateResearchEvidenceDto {
   @MaxLength(120)
   locator!: string;
 
+  @IsOptional()
   @IsString()
-  quote!: string;
+  libraryExcerptId?: string;
+
+  @ValidateIf((dto: CreateResearchEvidenceDto) => !dto.libraryExcerptId)
+  @IsString()
+  @MinLength(1)
+  quote?: string;
 
   @IsOptional()
   @IsString()

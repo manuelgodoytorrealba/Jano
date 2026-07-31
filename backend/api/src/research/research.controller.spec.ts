@@ -1,4 +1,4 @@
-import { ResearchDecisionAction, ResearchProposalReviewState } from '@prisma/client';
+import { ResearchProposalReviewState } from '@prisma/client';
 import { ROLES_KEY } from '../auth/roles.decorator';
 import { ResearchController } from './research.controller';
 import { ResearchJobRunnerService } from './research-job-runner.service';
@@ -12,12 +12,14 @@ describe('ResearchController', () => {
     getProject: jest.fn(),
     searchSources: jest.fn(),
     addProjectSource: jest.fn(),
+    associateLibraryMaterial: jest.fn(),
     prepareSourceJob: jest.fn(),
-    extractFindingsJob: jest.fn(),
+    getKnowledge: jest.fn(),
+    extractProposalsJob: jest.fn(),
     createEvidence: jest.fn(),
     createFinding: jest.fn(),
-    convertFindingProposalToFinding: jest.fn(),
-    reviewFindingProposal: jest.fn(),
+    convertProposalToClaim: jest.fn(),
+    reviewProposal: jest.fn(),
     decideFinding: jest.fn(),
   } as unknown as jest.Mocked<ResearchService>;
   const jobRunner = {
@@ -46,15 +48,36 @@ describe('ResearchController', () => {
     });
   });
 
+  it('does not expose direct promotion routes into the Knowledge Core', () => {
+    expect(ResearchController.prototype).not.toHaveProperty('promoteFindingToEntity');
+    expect(ResearchController.prototype).not.toHaveProperty('promoteEntity');
+    expect(ResearchController.prototype).not.toHaveProperty('promoteRelation');
+    expect(ResearchController.prototype).not.toHaveProperty('createFinding');
+    expect(ResearchController.prototype).not.toHaveProperty('decideFinding');
+  });
+
   it('delegates project creation, list, and detail to the research service', async () => {
     const dto = { title: 'Goya', objective: 'Reunir fuentes' };
     service.createProject.mockResolvedValue({ id: 'project-1' } as never);
     service.listProjects.mockResolvedValue([{ id: 'project-1' }] as never);
     service.getProject.mockResolvedValue({ id: 'project-1' } as never);
 
-    await expect(controller.create(dto)).resolves.toEqual({ id: 'project-1' });
-    await expect(controller.list()).resolves.toEqual([{ id: 'project-1' }]);
+    await expect(controller.create({ user: { userId: 'user-1' } } as never, dto)).resolves.toEqual({
+      id: 'project-1',
+    });
+    await expect(controller.list({ user: { userId: 'user-1' } } as never)).resolves.toEqual([
+      { id: 'project-1' },
+    ]);
     await expect(controller.get('project-1')).resolves.toEqual({ id: 'project-1' });
+  });
+
+  it('delegates the derived knowledge read model to its dedicated reader', async () => {
+    service.getKnowledge.mockResolvedValue({ projectId: 'project-1' } as never);
+
+    await expect(controller.knowledge('project-1', {})).resolves.toEqual({
+      projectId: 'project-1',
+    });
+    expect(service.getKnowledge).toHaveBeenCalledWith('project-1', {});
   });
 
   it('delegates project source association to the research service', async () => {
@@ -63,6 +86,14 @@ describe('ResearchController', () => {
 
     await expect(controller.addSource('project-1', dto)).resolves.toEqual({ id: 'project-1' });
     expect(service.addProjectSource).toHaveBeenCalledWith('project-1', dto);
+  });
+
+  it('delegates Library material association to the research service', async () => {
+    const dto = { materialId: 'material-1' };
+    service.associateLibraryMaterial.mockResolvedValue(dto as never);
+
+    await expect(controller.associateLibraryMaterial('project-1', dto)).resolves.toEqual(dto);
+    expect(service.associateLibraryMaterial).toHaveBeenCalledWith('project-1', dto);
   });
 
   it('delegates canonical source search to the research service', async () => {
@@ -90,36 +121,34 @@ describe('ResearchController', () => {
   });
 
   it('delegates finding extraction job creation to the research service', async () => {
-    service.extractFindingsJob.mockResolvedValue({ id: 'project-1' } as never);
+    service.extractProposalsJob.mockResolvedValue({ id: 'project-1' } as never);
 
-    await expect(controller.extractFindings('project-1')).resolves.toEqual({ id: 'project-1' });
-    expect(service.extractFindingsJob).toHaveBeenCalledWith('project-1');
+    await expect(controller.extractProposals('project-1')).resolves.toEqual({ id: 'project-1' });
+    expect(service.extractProposalsJob).toHaveBeenCalledWith('project-1');
 
-    await expect(controller.extractFindingsForSource('project-1', 'source-1')).resolves.toEqual({
+    await expect(controller.extractProposalsForSource('project-1', 'source-1')).resolves.toEqual({
       id: 'project-1',
     });
-    expect(service.extractFindingsJob).toHaveBeenCalledWith('project-1', 'source-1');
+    expect(service.extractProposalsJob).toHaveBeenCalledWith('project-1', 'source-1');
   });
 
   it('delegates automatic proposal conversion to the research service', async () => {
-    service.convertFindingProposalToFinding.mockResolvedValue({ id: 'project-1' } as never);
+    service.convertProposalToClaim.mockResolvedValue({ id: 'project-1' } as never);
 
-    await expect(
-      controller.convertFindingProposalToFinding('project-1', 'proposal-1'),
-    ).resolves.toEqual({ id: 'project-1' });
-    expect(service.convertFindingProposalToFinding).toHaveBeenCalledWith('project-1', 'proposal-1');
+    await expect(controller.convertProposalToClaim('project-1', 'proposal-1')).resolves.toEqual({
+      id: 'project-1',
+    });
+    expect(service.convertProposalToClaim).toHaveBeenCalledWith('project-1', 'proposal-1');
   });
 
   it('delegates automatic proposal review to the research service', async () => {
     const dto = { reviewState: ResearchProposalReviewState.REVIEWED };
-    service.reviewFindingProposal.mockResolvedValue({ id: 'project-1' } as never);
+    service.reviewProposal.mockResolvedValue({ id: 'project-1' } as never);
 
-    await expect(controller.reviewFindingProposal('project-1', 'proposal-1', dto)).resolves.toEqual(
-      {
-        id: 'project-1',
-      },
-    );
-    expect(service.reviewFindingProposal).toHaveBeenCalledWith('project-1', 'proposal-1', dto);
+    await expect(controller.reviewProposal('project-1', 'proposal-1', dto)).resolves.toEqual({
+      id: 'project-1',
+    });
+    expect(service.reviewProposal).toHaveBeenCalledWith('project-1', 'proposal-1', dto);
   });
 
   it('delegates evidence creation to the research service', async () => {
@@ -133,24 +162,5 @@ describe('ResearchController', () => {
 
     await expect(controller.createEvidence('project-1', dto)).resolves.toEqual({ id: 'project-1' });
     expect(service.createEvidence).toHaveBeenCalledWith('project-1', dto);
-  });
-
-  it('delegates finding creation to the research service', async () => {
-    const dto = { title: 'Hipótesis', evidenceIds: ['evidence-1'] };
-    service.createFinding.mockResolvedValue({ id: 'project-1' } as never);
-
-    await expect(controller.createFinding('project-1', dto)).resolves.toEqual({ id: 'project-1' });
-    expect(service.createFinding).toHaveBeenCalledWith('project-1', dto);
-  });
-
-  it('delegates finding decisions with the authenticated actor', async () => {
-    const req = { user: { userId: 'user-1' } } as never;
-    const dto = { action: ResearchDecisionAction.REJECT, note: 'Duplicado' };
-    service.decideFinding.mockResolvedValue({ id: 'project-1' } as never);
-
-    await expect(controller.decideFinding(req, 'project-1', 'finding-1', dto)).resolves.toEqual({
-      id: 'project-1',
-    });
-    expect(service.decideFinding).toHaveBeenCalledWith('project-1', 'finding-1', 'user-1', dto);
   });
 });

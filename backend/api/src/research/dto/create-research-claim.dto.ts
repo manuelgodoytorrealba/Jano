@@ -1,8 +1,7 @@
-import { ResearchClaimKind } from '@prisma/client';
+import { ResearchClaimKind, ResearchClaimStatus } from '@prisma/client';
 import {
   ArrayNotEmpty,
   IsArray,
-  IsBoolean,
   IsEnum,
   IsOptional,
   IsString,
@@ -36,13 +35,9 @@ export class CreateResearchClaimDto {
   @IsOptional()
   @IsString()
   objectClaimId?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  readyForPromotion?: boolean;
 }
 
-export class SetResearchClaimReadinessDto {
-  @IsBoolean()
-  readyForPromotion!: boolean;
+export class SetResearchClaimStatusDto {
+  @IsEnum(ResearchClaimStatus)
+  status!: ResearchClaimStatus;
 }

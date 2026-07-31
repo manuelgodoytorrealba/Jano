@@ -15,22 +15,21 @@ import {
 } from 'rxjs';
 import {
   ResearchApi,
-  CreateResearchEntityCandidatePayload,
+  CreateResearchEntityPayload,
   ResearchClaim,
   ResearchClaimKind,
+  ResearchClaimStatus,
   ResearchDecisionAction,
   ResearchEvidence,
   ResearchJob,
-  ResearchMaterialKind,
+  ResearchDocumentKind,
   ResearchProject,
   ResearchProposalReviewState,
   ResearchProjectStatus,
   ResearchProjectSummary,
   ResearchProjectSource,
-  PromoteResearchFindingPayload,
   ResearchSourceRecord,
 } from '../../../core/api/research.api';
-import { ResearchFindingsSectionComponent } from './research-findings-section.component';
 import { RelationType, RelationTypesApi } from '../../../core/api/relation-types.api';
 
 type ResearchStatusFilter = '' | ResearchProjectStatus;
@@ -56,7 +55,7 @@ type ResearchEvidenceGroup = {
 @Component({
   standalone: true,
   selector: 'app-admin-research',
-  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink, ResearchFindingsSectionComponent],
+  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink],
   templateUrl: './admin-research.component.html',
   styleUrl: './admin-research.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,7 +85,7 @@ export class AdminResearchComponent {
   ];
   readonly decisionActions: ResearchDecisionAction[] = ['INCORPORATE', 'REJECT', 'POSTPONE'];
   readonly claimKinds: ResearchClaimKind[] = [
-    'SUBJECT_CANDIDATE',
+    'ASSERTION',
     'CONCEPT',
     'CONNECTION_HYPOTHESIS',
     'SYNTHESIS_STATEMENT',
@@ -115,31 +114,26 @@ export class AdminResearchComponent {
   evidenceQuote = '';
   evidenceContext = '';
   evidenceNote = '';
-  materialKind: ResearchMaterialKind = 'TEXT';
+  materialKind: ResearchDocumentKind = 'TEXT';
   materialTitle = '';
   materialContent = '';
   materialUrl = '';
   materialPdf: File | null = null;
-  claimKind: ResearchClaimKind = 'SUBJECT_CANDIDATE';
+  claimKind: ResearchClaimKind = 'ASSERTION';
   claimTitle = '';
   claimSummary = '';
   claimSubjectId = '';
   claimObjectId = '';
   selectedClaimEvidenceIds: string[] = [];
-  findingTitle = '';
-  findingKind = '';
-  findingSummary = '';
-  selectedFindingEvidenceIds: string[] = [];
-  findingDecisionNotes: Record<string, string> = {};
-  relationFromCandidateId = '';
-  relationToCandidateId = '';
+  relationFromEntityId = '';
+  relationToEntityId = '';
   relationExplanation = '';
   relationTypeId = '';
-  selectedRelationEvidenceIds: string[] = [];
-  candidateTitle = '';
-  candidateKind: CreateResearchEntityCandidatePayload['kind'] = 'ABSTRACTION';
-  candidateSummary = '';
-  selectedCandidateEvidenceIds: string[] = [];
+  selectedRelationClaimIds: string[] = [];
+  entityTitle = '';
+  entityKind: CreateResearchEntityPayload['kind'] = 'ABSTRACTION';
+  entitySummary = '';
+  selectedEntityEvidenceIds: string[] = [];
   actionBusy = false;
   actionFeedback = '';
   actionError = '';
@@ -378,7 +372,7 @@ export class AdminResearchComponent {
         kind: this.claimKind,
         title,
         summary: this.claimSummary.trim() || undefined,
-        evidenceIds: this.selectedClaimEvidenceIds,
+        claimIds: this.selectedClaimEvidenceIds,
         subjectClaimId:
           this.claimKind === 'CONNECTION_HYPOTHESIS' ? this.claimSubjectId : undefined,
         objectClaimId: this.claimKind === 'CONNECTION_HYPOTHESIS' ? this.claimObjectId : undefined,
@@ -400,10 +394,10 @@ export class AdminResearchComponent {
       : this.selectedClaimEvidenceIds.filter((id) => id !== evidenceId);
   }
 
-  setClaimReadiness(projectId: string, claim: ResearchClaim): void {
+  setClaimStatus(projectId: string, claimId: string, status: ResearchClaimStatus): void {
     this.runProjectAction(
-      this.api.setClaimReadiness(projectId, claim.id, !claim.readyForPromotion),
-      claim.readyForPromotion ? 'Síntesis devuelta a revisión.' : 'Síntesis lista para promoción.',
+      this.api.setClaimStatus(projectId, claimId, status),
+      'Estado del Claim actualizado.',
       () => undefined,
     );
   }
@@ -472,196 +466,88 @@ export class AdminResearchComponent {
     });
   }
 
-  createRelationCandidate(projectId: string): void {
+  createRelation(projectId: string): void {
     if (
-      !this.relationFromCandidateId ||
-      !this.relationToCandidateId ||
-      !this.selectedRelationEvidenceIds.length
+      !this.relationFromEntityId ||
+      !this.relationToEntityId ||
+      !this.selectedRelationClaimIds.length
     )
       return;
     this.runProjectAction(
-      this.api.createRelationCandidate(projectId, {
-        fromCandidateId: this.relationFromCandidateId,
-        toCandidateId: this.relationToCandidateId,
+      this.api.createRelation(projectId, {
+        fromEntityId: this.relationFromEntityId,
+        toEntityId: this.relationToEntityId,
         relationTypeId: this.relationTypeId || undefined,
         explanation: this.relationExplanation.trim() || undefined,
-        evidenceIds: this.selectedRelationEvidenceIds,
+        claimIds: this.selectedRelationClaimIds,
       }),
-      'Relación candidata creada.',
+      'Relación creada.',
       () => {
-        this.relationFromCandidateId = '';
-        this.relationToCandidateId = '';
+        this.relationFromEntityId = '';
+        this.relationToEntityId = '';
         this.relationExplanation = '';
         this.relationTypeId = '';
-        this.selectedRelationEvidenceIds = [];
+        this.selectedRelationClaimIds = [];
       },
     );
   }
 
-  toggleRelationEvidence(evidenceId: string, checked: boolean): void {
-    this.selectedRelationEvidenceIds = checked
-      ? [...new Set([...this.selectedRelationEvidenceIds, evidenceId])]
-      : this.selectedRelationEvidenceIds.filter((id) => id !== evidenceId);
+  toggleRelationClaim(evidenceId: string, checked: boolean): void {
+    this.selectedRelationClaimIds = checked
+      ? [...new Set([...this.selectedRelationClaimIds, evidenceId])]
+      : this.selectedRelationClaimIds.filter((id) => id !== evidenceId);
   }
 
-  createEntityCandidate(projectId: string): void {
-    if (!this.candidateTitle.trim() || !this.selectedCandidateEvidenceIds.length) return;
+  createEntity(projectId: string): void {
+    if (!this.entityTitle.trim() || !this.selectedEntityEvidenceIds.length) return;
     this.runProjectAction(
-      this.api.createEntityCandidate(projectId, {
-        kind: this.candidateKind,
-        title: this.candidateTitle.trim(),
-        summary: this.candidateSummary.trim() || undefined,
-        evidenceIds: this.selectedCandidateEvidenceIds,
+      this.api.createEntity(projectId, {
+        kind: this.entityKind,
+        title: this.entityTitle.trim(),
+        summary: this.entitySummary.trim() || undefined,
+        evidenceIds: this.selectedEntityEvidenceIds,
       }),
-      'Candidato de entidad creado.',
+      'Entidad de investigación creada.',
       () => {
-        this.candidateTitle = '';
-        this.candidateSummary = '';
-        this.selectedCandidateEvidenceIds = [];
+        this.entityTitle = '';
+        this.entitySummary = '';
+        this.selectedEntityEvidenceIds = [];
       },
     );
   }
 
-  toggleCandidateEvidence(evidenceId: string, checked: boolean): void {
-    this.selectedCandidateEvidenceIds = checked
-      ? [...new Set([...this.selectedCandidateEvidenceIds, evidenceId])]
-      : this.selectedCandidateEvidenceIds.filter((id) => id !== evidenceId);
+  toggleEntityEvidence(evidenceId: string, checked: boolean): void {
+    this.selectedEntityEvidenceIds = checked
+      ? [...new Set([...this.selectedEntityEvidenceIds, evidenceId])]
+      : this.selectedEntityEvidenceIds.filter((id) => id !== evidenceId);
   }
 
-  createFinding(projectId: string): void {
-    const title = this.findingTitle.trim();
-    const evidenceIds = this.selectedFindingEvidenceIds;
-    if (!title || !evidenceIds.length) return;
-
-    this.runProjectAction(
-      this.api.createFinding(projectId, {
-        title,
-        evidenceIds,
-        kind: this.findingKind.trim() || undefined,
-        summary: this.findingSummary.trim() || undefined,
-      }),
-      'Hallazgo propuesto.',
-      () => {
-        this.findingTitle = '';
-        this.findingKind = '';
-        this.findingSummary = '';
-        this.selectedFindingEvidenceIds = [];
-      },
-    );
-  }
-
-  toggleFindingEvidence(evidenceId: string, checked: boolean): void {
-    if (checked) {
-      this.selectFindingEvidence(evidenceId);
-    } else {
-      this.removeFindingEvidence(evidenceId);
-    }
-  }
-
-  selectFindingEvidence(evidenceId: string): void {
-    this.selectedFindingEvidenceIds = [
-      ...new Set([...this.selectedFindingEvidenceIds, evidenceId]),
-    ];
-  }
-
-  selectFindingEvidenceGroup(evidenceIds: string[]): void {
-    this.selectedFindingEvidenceIds = [
-      ...new Set([...this.selectedFindingEvidenceIds, ...evidenceIds]),
-    ];
-  }
-
-  removeFindingEvidence(evidenceId: string): void {
-    this.selectedFindingEvidenceIds = this.selectedFindingEvidenceIds.filter(
-      (id) => id !== evidenceId,
-    );
-  }
-
-  isFindingEvidenceSelected(evidenceId: string): boolean {
-    return this.selectedFindingEvidenceIds.includes(evidenceId);
-  }
-
-  setFindingDecisionNote(findingId: string, note: string): void {
-    this.findingDecisionNotes = { ...this.findingDecisionNotes, [findingId]: note };
-  }
-
-  convertFindingProposalToFinding(projectId: string, proposalId: string): void {
-    this.runProjectAction(
-      this.api.convertFindingProposalToFinding(projectId, proposalId),
-      'Propuesta convertida en hallazgo.',
-      () => undefined,
-    );
-  }
-
-  reviewFindingProposal(
+  reviewRelation(
     projectId: string,
-    proposalId: string,
+    entityId: string,
     reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
   ): void {
     this.runProjectAction(
-      this.api.reviewFindingProposal(projectId, proposalId, { reviewState }),
-      reviewState === 'REJECTED' ? 'Propuesta rechazada.' : 'Propuesta revisada.',
-      () => undefined,
-    );
-  }
-
-  promoteFindingToEntity(
-    projectId: string,
-    findingId: string,
-    data: PromoteResearchFindingPayload,
-  ): void {
-    this.runProjectAction(
-      this.api.promoteFindingToEntity(projectId, findingId, data),
-      'Borrador canónico creado con sus evidencias.',
-      () => undefined,
-    );
-  }
-
-  reviewRelationCandidate(
-    projectId: string,
-    candidateId: string,
-    reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
-  ): void {
-    this.runProjectAction(
-      this.api.reviewRelationCandidate(projectId, candidateId, reviewState),
+      this.api.reviewRelation(projectId, entityId, reviewState),
       reviewState === 'REVIEWED' ? 'Relación revisada.' : 'Relación rechazada.',
       () => undefined,
     );
   }
 
-  promoteRelationCandidate(projectId: string, candidateId: string): void {
-    this.runProjectAction(
-      this.api.promoteRelationCandidate(projectId, candidateId),
-      'Relación canónica creada como borrador.',
-      () => undefined,
-    );
-  }
-
-  reviewEntityCandidate(
+  reviewEntity(
     projectId: string,
-    candidateId: string,
+    entityId: string,
     reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
   ): void {
     this.runProjectAction(
-      this.api.reviewEntityCandidate(projectId, candidateId, reviewState),
+      this.api.reviewEntity(projectId, entityId, reviewState),
       reviewState === 'REVIEWED' ? 'Candidato revisado.' : 'Candidato rechazado.',
       () => undefined,
     );
   }
 
-  decideFinding(projectId: string, findingId: string, action: ResearchDecisionAction): void {
-    const note = this.findingDecisionNotes[findingId]?.trim() || undefined;
-
-    this.runProjectAction(
-      this.api.decideFinding(projectId, findingId, { action, note }),
-      'Decisión registrada.',
-      () => {
-        this.findingDecisionNotes = { ...this.findingDecisionNotes, [findingId]: '' };
-      },
-    );
-  }
-
   openCreateRoute(): void {
-    void this.router.navigate(['/admin/research/studio/new']);
+    void this.router.navigate(['/admin/research/new']);
   }
 
   applyFilters(): void {
@@ -718,7 +604,7 @@ export class AdminResearchComponent {
     return labels[(state ?? '').toUpperCase()] ?? 'Sin revisar';
   }
 
-  materialKindLabel(kind: ResearchMaterialKind | string): string {
+  materialKindLabel(kind: ResearchDocumentKind | string): string {
     return { TEXT: 'Texto', URL: 'Enlace', PDF: 'PDF' }[kind] ?? 'Material';
   }
 
@@ -735,7 +621,7 @@ export class AdminResearchComponent {
   claimKindLabel(kind: ResearchClaimKind | string): string {
     return (
       {
-        SUBJECT_CANDIDATE: 'Entidad candidata',
+        ASSERTION: 'Afirmación',
         CONNECTION_HYPOTHESIS: 'Relación provisional',
         CONCEPT: 'Concepto',
         CONTRADICTION: 'Contradicción',
@@ -745,8 +631,17 @@ export class AdminResearchComponent {
     );
   }
 
-  claimCandidates(project: ResearchProject): ResearchClaim[] {
-    return project.claims.filter((claim) => claim.kind !== 'CONNECTION_HYPOTHESIS');
+  claimStatusLabel(status: ResearchClaimStatus): string {
+    return {
+      DRAFT: 'Borrador',
+      SUPPORTED: 'Respaldado',
+      QUESTIONED: 'Cuestionado',
+      CONTRADICTED: 'Contradicho',
+    }[status];
+  }
+
+  displayedClaims(project: ResearchProject): ResearchClaim[] {
+    return project.knowledge.claims.filter((claim) => claim.kind !== 'CONNECTION_HYPOTHESIS');
   }
 
   materialSize(size: number | null): string {
@@ -835,19 +730,13 @@ export class AdminResearchComponent {
     });
   }
 
-  findingCountForEvidence(project: ResearchProject, evidenceId: string): number {
-    return project.findings.filter((finding) =>
-      (finding.evidence ?? []).some((item) => item.evidenceId === evidenceId),
-    ).length;
-  }
-
-  evidenceByIds(project: ResearchProject, evidenceIds: string[]): ResearchEvidence[] {
-    return evidenceIds
+  evidenceByIds(project: ResearchProject, claimIds: string[]): ResearchEvidence[] {
+    return claimIds
       .map((id) => project.evidence.find((evidence) => evidence.id === id))
       .filter((evidence): evidence is ResearchEvidence => Boolean(evidence));
   }
 
-  evidenceIds(evidence: ResearchEvidence[]): string[] {
+  claimIds(evidence: ResearchEvidence[]): string[] {
     return evidence.map((item) => item.id);
   }
 

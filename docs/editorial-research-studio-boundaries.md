@@ -1,5 +1,7 @@
 # Editorial Research Studio Boundaries
 
+> Estado: **HISTÓRICO**. La autoridad vigente para nueva implementación es [`docs/architecture/README.md`](./architecture/README.md). Esta nota se conserva como antecedente de límites previos.
+
 This note records the minimum product boundary between automatic proposals, human findings, and future structured synthesis. ADR-ERS-001 remains the architectural authority.
 
 ## ResearchFindingProposal

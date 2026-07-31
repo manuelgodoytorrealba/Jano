@@ -10,11 +10,12 @@ import {
   ResearchProject,
   ResearchQuestion,
 } from '../../../core/api/research.api';
+import { ResearchGraphComponent } from './research-graph.component';
 
 @Component({
   standalone: true,
   selector: 'app-research-project',
-  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink],
+  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink, ResearchGraphComponent],
   templateUrl: './research-project.component.html',
   styleUrl: './research-project.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

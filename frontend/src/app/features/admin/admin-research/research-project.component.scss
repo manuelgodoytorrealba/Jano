@@ -61,6 +61,15 @@
 .research-project__eyebrow {
   margin: 22px 0 6px;
   color: var(--research-accent);
+
+  .research-project__graph {
+    --app-accent: var(--research-accent);
+    --app-surface: var(--research-surface);
+    --app-text-muted: var(--research-text-muted);
+    color: var(--research-text);
+    margin: 0 auto 24px;
+    max-width: 1200px;
+  }
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.16em;

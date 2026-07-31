@@ -17,8 +17,8 @@ const project = {
   sources: [],
   evidence: [],
   findings: [],
-  entityCandidates: [],
-  relationCandidates: [],
+  entities: [],
+  relations: [],
   findingProposals: [],
   aiExecutions: [],
   decisions: [],
@@ -42,7 +42,23 @@ const section = (): ResearchOutlineSection => ({
   questions: [],
 });
 
+const topology = {
+  projectId: project.id,
+  scope: 'topology' as const,
+  focus: null,
+  expansions: {
+    claims: 'SUMMARY' as const,
+    evidence: 'NOT_LOADED' as const,
+    traceability: 'NOT_LOADED' as const,
+  },
+  entities: [],
+  relations: [],
+  claims: [],
+  contradictions: [],
+  supportingEvidence: [],
+};
 async function createFixture(api: Record<string, ReturnType<typeof vi.fn>>, active = false) {
+  api['getKnowledge'] ??= vi.fn().mockReturnValue(of(topology));
   await TestBed.configureTestingModule({
     imports: [ResearchProjectComponent],
     providers: [

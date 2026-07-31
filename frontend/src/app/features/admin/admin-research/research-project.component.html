@@ -14,6 +14,10 @@
         <p>{{ project.objective }}</p>
       </header>
 
+      <section class="research-project__graph">
+        <app-research-graph [researchId]="project.id" />
+      </section>
+
       <section class="research-project__layout">
         <aside class="research-project__outline" aria-label="Índice de la investigación">
           <div class="research-project__section-head">

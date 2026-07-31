@@ -1,12 +1,12 @@
 # ADR-ERS-001 — Editorial Research Studio
 
-Estado: **ACCEPTED**
+Estado: **HISTÓRICO — sustituido como autoridad por `docs/architecture/`**
 
 Fecha: **2026-07-06**
 
 Ámbito: arquitectura conceptual, límites de dominio y reglas de evolución del Editorial Research Studio de JANO.
 
-Autoridad: este ADR es la fuente de verdad para toda implementación del Editorial Research Studio. El roadmap determina el orden de entrega, pero no modifica estas decisiones. Una excepción exige un nuevo ADR que identifique y sustituya explícitamente la decisión afectada. Ninguna Pull Request, incidencia, refactorización o integración de proveedor puede contradecir este documento de forma implícita.
+> Autoridad vigente: [`docs/architecture/README.md`](./architecture/README.md) y sus documentos vinculados son la North Star para nueva implementación. Este ADR se conserva como registro histórico de decisiones anteriores; las contradicciones de dominio están registradas en [`01-domain-overview.md`](./architecture/01-domain-overview.md).
 
 Los términos **DEBE**, **NO DEBE**, **SIEMPRE** y **NUNCA** son vinculantes.
 

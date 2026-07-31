@@ -217,7 +217,7 @@ export class AdminDashboardComponent {
     const counts = project._count;
     if (!counts) return project.scope ?? 'Investigación documental';
 
-    return `${counts.sources} fuentes · ${counts.evidence} evidencias · ${counts.findings} hallazgos`;
+    return `${counts.sources} fuentes · ${counts.evidence} evidencias · ${counts.claims} claims`;
   }
 
   deckPreviewEntities(deck: AdminHomeDeck) {

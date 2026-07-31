@@ -120,7 +120,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'research/studio/:screen',
+        path: 'research/prototype/:screen',
         loadComponent: () =>
           import('./features/admin/admin-research/research-studio-poc.component').then(
             (m) => m.ResearchStudioPocComponent,

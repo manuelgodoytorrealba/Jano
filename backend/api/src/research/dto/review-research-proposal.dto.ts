@@ -1,7 +1,7 @@
 import { ResearchProposalReviewState } from '@prisma/client';
 import { IsEnum } from 'class-validator';
 
-export class ReviewResearchFindingProposalDto {
+export class ReviewResearchProposalDto {
   @IsEnum(ResearchProposalReviewState)
   reviewState!: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>;
 }

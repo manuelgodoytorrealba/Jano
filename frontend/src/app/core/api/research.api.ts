@@ -1,23 +1,23 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import { apiUrl } from './api-base';
 
 export type ResearchProjectStatus = 'ACTIVE' | 'PAUSED' | 'READY_TO_DECIDE' | 'ARCHIVED';
-export type ResearchFindingStatus = 'PROPOSED' | 'ACCEPTED' | 'REJECTED' | 'POSTPONED';
 export type ResearchProposalReviewState = 'PENDING' | 'REVIEWED' | 'REJECTED';
 export type ResearchDecisionAction = 'INCORPORATE' | 'REJECT' | 'POSTPONE';
 export type ResearchJobStatus = 'QUEUED' | 'RUNNING' | 'SUCCEEDED' | 'FAILED';
 export type ResearchJobType = 'PREPARE_SOURCE' | 'EXTRACT_FINDINGS';
-export type ResearchMaterialKind = 'TEXT' | 'URL' | 'PDF';
-export type ResearchMaterialStatus = 'READY' | 'PENDING_PREPARATION' | 'FAILED';
+export type ResearchDocumentKind = 'TEXT' | 'URL' | 'PDF';
+export type ResearchDocumentStatus = 'READY' | 'PENDING_PREPARATION' | 'FAILED';
 export type ResearchClaimKind =
-  | 'SUBJECT_CANDIDATE'
+  | 'ASSERTION'
   | 'CONNECTION_HYPOTHESIS'
   | 'CONCEPT'
   | 'CONTRADICTION'
   | 'OPEN_QUESTION'
   | 'SYNTHESIS_STATEMENT';
+export type ResearchClaimStatus = 'DRAFT' | 'SUPPORTED' | 'QUESTIONED' | 'CONTRADICTED';
 export type ResearchOutlineSectionStatus =
   | 'NOT_STARTED'
   | 'IN_PROGRESS'
@@ -30,8 +30,8 @@ export type ResearchProjectPayload = {
   scope?: string;
 };
 
-export type CreateResearchMaterialPayload = {
-  kind: Extract<ResearchMaterialKind, 'TEXT' | 'URL'>;
+export type CreateResearchDocumentPayload = {
+  kind: Extract<ResearchDocumentKind, 'TEXT' | 'URL'>;
   title: string;
   content?: string;
   url?: string;
@@ -41,10 +41,9 @@ export type CreateResearchClaimPayload = {
   kind: ResearchClaimKind;
   title: string;
   summary?: string;
-  evidenceIds: string[];
+  claimIds: string[];
   subjectClaimId?: string;
   objectClaimId?: string;
-  readyForPromotion?: boolean;
 };
 
 export type AddResearchProjectSourcePayload = {
@@ -61,53 +60,23 @@ export type CreateResearchEvidencePayload = {
   note?: string;
 };
 
-export type CreateResearchFindingPayload = {
-  title: string;
-  kind?: string;
-  summary?: string;
-  evidenceIds: string[];
-};
-
-export type CreateResearchRelationCandidatePayload = {
-  fromCandidateId: string;
-  toCandidateId: string;
-  evidenceIds: string[];
+export type CreateResearchRelationPayload = {
+  fromEntityId: string;
+  toEntityId: string;
+  claimIds: string[];
   relationTypeId?: string;
   explanation?: string;
 };
 
-export type CreateResearchEntityCandidatePayload = {
+export type CreateResearchEntityPayload = {
   kind: 'PERSON' | 'WORK' | 'ABSTRACTION' | 'EVENT' | 'PLACE' | 'ORGANIZATION';
   title: string;
   evidenceIds: string[];
   summary?: string;
-  suggestedEntityId?: string;
+  canonicalEntityId?: string;
 };
 
-export type PromoteResearchFindingPayload = {
-  type:
-    | 'ARTWORK'
-    | 'ARTIST'
-    | 'ARTICLE'
-    | 'CONCEPT'
-    | 'MOVEMENT'
-    | 'PERIOD'
-    | 'TEXT'
-    | 'PLACE'
-    | 'EVENT'
-    | 'ORGANIZATION';
-  kind: 'PERSON' | 'WORK' | 'ABSTRACTION' | 'EVENT' | 'PLACE' | 'ORGANIZATION';
-  slug: string;
-  title?: string;
-  summary?: string;
-};
-
-export type CreateResearchDecisionPayload = {
-  action: ResearchDecisionAction;
-  note?: string;
-};
-
-export type ReviewResearchFindingProposalPayload = {
+export type ReviewResearchProposalPayload = {
   reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>;
 };
 
@@ -123,7 +92,6 @@ export type ResearchProjectSummary = {
   _count?: {
     sources: number;
     evidence: number;
-    findings: number;
     materials: number;
     claims: number;
   };
@@ -154,38 +122,77 @@ export type ResearchProjectSource = {
   source?: ResearchSourceRecord | null;
 };
 
+export type ResearchEvidenceExcerptStatus = 'NOT_LOADED' | 'AVAILABLE' | 'UNAVAILABLE';
+
+export type ResearchSourceReference = Pick<
+  ResearchSourceRecord,
+  'id' | 'type' | 'title' | 'author' | 'publisher' | 'year' | 'url'
+>;
+
+export type ResearchLibraryExcerpt = {
+  id: string;
+  locator: string;
+  text: string;
+  materialVersion: {
+    id: string;
+    version: number;
+    material: {
+      id: string;
+      title: string;
+      source: ResearchSourceReference | null;
+    };
+  };
+};
+
 export type ResearchEvidence = {
   id: string;
   projectId: string;
   sourceId: string;
   sourceVersion: string;
   locator: string;
-  quote: string;
+  libraryExcerptId: string | null;
+  excerptStatus?: ResearchEvidenceExcerptStatus;
+  source?: ResearchSourceReference;
+  libraryExcerpt?: ResearchLibraryExcerpt | null;
+  quote: string | null;
   context: string | null;
   note: string | null;
   fingerprint: string;
   createdAt: string;
   updatedAt: string;
 };
+export type ResearchRelationClaim = {
+  relationId: string;
+  claimId: string;
+  claim?: ResearchClaimReference & { status: ResearchClaimStatus };
+};
 
-export type ResearchRelationCandidate = {
+export type ResearchRelation = {
   id: string;
   projectId: string;
-  fromCandidate?: { id: string; title: string; kind: string };
-  toCandidate?: { id: string; title: string; kind: string };
-  fromCandidateId: string;
-  toCandidateId: string;
+  fromEntity?: { id: string; title: string; kind: string };
+  toEntity?: { id: string; title: string; kind: string };
+  fromEntityId: string;
+  toEntityId: string;
   relationTypeId: string | null;
   explanation: string | null;
+  claims?: ResearchRelationClaim[];
   confidence: number | null;
   reviewState: ResearchProposalReviewState;
   createdAt: string;
   updatedAt: string;
 };
 
-export type ResearchEntityCandidate = {
+export type ResearchEntityEvidence = {
+  entityId: string;
+  evidenceId: string;
+  evidence?: ResearchEvidence | null;
+};
+
+export type ResearchEntity = {
   id: string;
   projectId: string;
+  evidence?: ResearchEntityEvidence[];
   kind: string;
   title: string;
   summary: string | null;
@@ -194,43 +201,6 @@ export type ResearchEntityCandidate = {
   reviewState: ResearchProposalReviewState;
   createdAt: string;
   updatedAt: string;
-};
-
-export type ResearchFinding = {
-  id: string;
-  projectId: string;
-  title: string;
-  kind: string | null;
-  summary: string | null;
-  status: ResearchFindingStatus;
-  createdAt: string;
-  updatedAt: string;
-  evidence?: ResearchFindingEvidence[];
-};
-
-export type ResearchFindingEvidence = {
-  findingId: string;
-  evidenceId: string;
-  evidence?: ResearchEvidence | null;
-};
-
-export type ResearchFindingProposal = {
-  id: string;
-  projectId: string;
-  aiExecutionId: string;
-  convertedFindingId: string | null;
-  title: string;
-  summary: string | null;
-  kind: string | null;
-  reviewState: ResearchProposalReviewState;
-  createdAt: string;
-  evidence?: ResearchFindingProposalEvidence[];
-};
-
-export type ResearchFindingProposalEvidence = {
-  proposalId: string;
-  evidenceId: string;
-  evidence?: ResearchEvidence | null;
 };
 
 export type ResearchAIExecution = {
@@ -246,11 +216,11 @@ export type ResearchAIExecution = {
   jobId: string | null;
 };
 
-export type ResearchMaterial = {
+export type ResearchDocument = {
   id: string;
   projectId: string;
-  kind: ResearchMaterialKind;
-  status: ResearchMaterialStatus;
+  kind: ResearchDocumentKind;
+  status: ResearchDocumentStatus;
   title: string;
   content: string | null;
   url: string | null;
@@ -272,7 +242,6 @@ export type ResearchClaimEvidence = {
   evidenceId: string;
   evidence?: ResearchEvidence | null;
 };
-
 export type ResearchClaim = {
   id: string;
   projectId: string;
@@ -281,7 +250,7 @@ export type ResearchClaim = {
   summary: string | null;
   subjectClaimId: string | null;
   objectClaimId: string | null;
-  readyForPromotion: boolean;
+  status: ResearchClaimStatus;
   createdAt: string;
   updatedAt: string;
   evidence?: ResearchClaimEvidence[];
@@ -350,17 +319,42 @@ export type UpdateResearchOutlineSectionPayload = {
   notes?: string;
 };
 
+export type ResearchKnowledgeScope = 'topology' | 'focus' | 'traceability' | 'complete';
+export type ResearchKnowledgeFocusType = 'entity' | 'relation' | 'claim' | 'evidence';
+export type ResearchKnowledgeLoadState = 'NOT_LOADED' | 'SUMMARY' | 'LOADED';
+
+export type ResearchKnowledgeRequest = {
+  scope?: Exclude<ResearchKnowledgeScope, 'complete'>;
+  focusType?: ResearchKnowledgeFocusType;
+  focusId?: string;
+};
+
+export type ResearchKnowledge = {
+  scope: ResearchKnowledgeScope;
+  focus: { type: ResearchKnowledgeFocusType; id: string } | null;
+  expansions: {
+    claims: ResearchKnowledgeLoadState;
+    evidence: ResearchKnowledgeLoadState;
+    traceability: ResearchKnowledgeLoadState;
+  };
+  projectId: string;
+  entities: ResearchEntity[];
+  relations: ResearchRelation[];
+  claims: ResearchClaim[];
+  contradictions: ResearchClaim[];
+  supportingEvidence: ResearchEvidence[];
+};
+
 export type ResearchProject = ResearchProjectSummary & {
+  knowledge: ResearchKnowledge;
   sources: ResearchProjectSource[];
   evidence: ResearchEvidence[];
-  findings: ResearchFinding[];
-  entityCandidates?: ResearchEntityCandidate[];
-  relationCandidates?: ResearchRelationCandidate[];
-  findingProposals: ResearchFindingProposal[];
+  entities?: ResearchEntity[];
+  relations?: ResearchRelation[];
   aiExecutions: ResearchAIExecution[];
   decisions: ResearchDecision[];
   jobs: ResearchJob[];
-  materials: ResearchMaterial[];
+  materials: ResearchDocument[];
   claims: ResearchClaim[];
   outlineSections: ResearchOutlineSection[];
 };
@@ -384,15 +378,26 @@ export class ResearchApi {
     });
   }
 
+  getKnowledge(projectId: string, request: ResearchKnowledgeRequest = {}) {
+    let params = new HttpParams();
+    if (request.scope) params = params.set('scope', request.scope);
+    if (request.focusType) params = params.set('focusType', request.focusType);
+    if (request.focusId) params = params.set('focusId', request.focusId);
+    return this.http.get<ResearchKnowledge>(`${this.baseUrl}/${projectId}/knowledge`, {
+      params,
+    });
+  }
+
   getById(id: string) {
     return this.http.get<ResearchProject>(`${this.baseUrl}/${id}`).pipe(
       map((project) => ({
         ...project,
         materials: project.materials ?? [],
+        knowledge: project.knowledge,
         outlineSections: project.outlineSections ?? [],
         claims: project.claims ?? [],
-        entityCandidates: project.entityCandidates ?? [],
-        relationCandidates: project.relationCandidates ?? [],
+        entities: project.entities ?? [],
+        relations: project.relations ?? [],
       })),
     );
   }
@@ -454,7 +459,7 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/sources`, data);
   }
 
-  createMaterial(projectId: string, data: CreateResearchMaterialPayload) {
+  createMaterial(projectId: string, data: CreateResearchDocumentPayload) {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/materials`, data);
   }
 
@@ -469,10 +474,10 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/claims`, data);
   }
 
-  setClaimReadiness(projectId: string, claimId: string, readyForPromotion: boolean) {
+  setClaimStatus(projectId: string, claimId: string, status: ResearchClaimStatus) {
     return this.http.post<ResearchProject>(
-      `${this.baseUrl}/${projectId}/claims/${claimId}/readiness`,
-      { readyForPromotion },
+      `${this.baseUrl}/${projectId}/claims/${claimId}/status`,
+      { status },
     );
   }
 
@@ -491,86 +496,41 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/evidence`, data);
   }
 
-  createFinding(projectId: string, data: CreateResearchFindingPayload) {
-    return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/findings`, data);
+  reviewProposal(projectId: string, proposalId: string, data: ReviewResearchProposalPayload) {
+    return this.http.post<ResearchProject>(`//research-proposals//review`, data);
   }
 
-  reviewFindingProposal(
+  convertProposalToClaim(projectId: string, proposalId: string) {
+    return this.http.post<ResearchProject>(`//research-proposals//convert-to-claim`, {});
+  }
+
+  createRelation(projectId: string, data: CreateResearchRelationPayload) {
+    return this.http.post<ResearchProject>(this.baseUrl + '/' + projectId + '/relations', data);
+  }
+
+  createEntity(projectId: string, data: CreateResearchEntityPayload) {
+    return this.http.post<ResearchProject>(this.baseUrl + '/' + projectId + '/entities', data);
+  }
+
+  reviewRelation(
     projectId: string,
-    proposalId: string,
-    data: ReviewResearchFindingProposalPayload,
-  ) {
-    return this.http.post<ResearchProject>(
-      `${this.baseUrl}/${projectId}/finding-proposals/${proposalId}/review`,
-      data,
-    );
-  }
-
-  convertFindingProposalToFinding(projectId: string, proposalId: string) {
-    return this.http.post<ResearchProject>(
-      `${this.baseUrl}/${projectId}/finding-proposals/${proposalId}/convert-to-finding`,
-      {},
-    );
-  }
-
-  promoteFindingToEntity(
-    projectId: string,
-    findingId: string,
-    data: PromoteResearchFindingPayload,
-  ) {
-    return this.http.post<ResearchProject>(
-      this.baseUrl + '/' + projectId + '/findings/' + findingId + '/promote/entity',
-      data,
-    );
-  }
-
-  createRelationCandidate(projectId: string, data: CreateResearchRelationCandidatePayload) {
-    return this.http.post<ResearchProject>(
-      this.baseUrl + '/' + projectId + '/relation-candidates',
-      data,
-    );
-  }
-
-  createEntityCandidate(projectId: string, data: CreateResearchEntityCandidatePayload) {
-    return this.http.post<ResearchProject>(
-      this.baseUrl + '/' + projectId + '/entity-candidates',
-      data,
-    );
-  }
-
-  reviewRelationCandidate(
-    projectId: string,
-    candidateId: string,
+    relationId: string,
     reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
   ) {
     return this.http.post<ResearchProject>(
-      this.baseUrl + '/' + projectId + '/relation-candidates/' + candidateId + '/review',
+      this.baseUrl + '/' + projectId + '/relations/' + relationId + '/review',
       { reviewState },
     );
   }
 
-  promoteRelationCandidate(projectId: string, candidateId: string) {
-    return this.http.post<ResearchProject>(
-      this.baseUrl + '/' + projectId + '/relation-candidates/' + candidateId + '/promote/relation',
-      {},
-    );
-  }
-
-  reviewEntityCandidate(
+  reviewEntity(
     projectId: string,
-    candidateId: string,
+    entityId: string,
     reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
   ) {
     return this.http.post<ResearchProject>(
-      this.baseUrl + '/' + projectId + '/entity-candidates/' + candidateId + '/review',
+      this.baseUrl + '/' + projectId + '/entities/' + entityId + '/review',
       { reviewState },
-    );
-  }
-
-  decideFinding(projectId: string, findingId: string, data: CreateResearchDecisionPayload) {
-    return this.http.post<ResearchProject>(
-      `${this.baseUrl}/${projectId}/findings/${findingId}/decisions`,
-      data,
     );
   }
 }

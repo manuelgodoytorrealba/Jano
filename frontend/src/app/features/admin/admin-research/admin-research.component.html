@@ -123,7 +123,7 @@
                   <a
                     class="research-card"
                     role="listitem"
-                    routerLink="/admin/research/studio/overview"
+                    [routerLink]="['/admin/research', project.id]"
                     [class.research-card--selected]="vm.selected?.id === project.id"
                   >
                     <span class="research-card__marker" aria-hidden="true">R</span>
@@ -184,21 +184,12 @@
                 </button>
                 <button
                   type="button"
-                  (click)="scrollToSection('research-findings')"
-                  [class.research-flow__step--active]="project.findings.length"
-                >
-                  <small>03</small>
-                  <span>Hallazgos</span>
-                  <strong>{{ project.findings.length }}</strong>
-                </button>
-                <button
-                  type="button"
                   (click)="scrollToSection('research-synthesis')"
-                  [class.research-flow__step--active]="project.claims.length"
+                  [class.research-flow__step--active]="project.knowledge.claims.length"
                 >
                   <small>04</small>
                   <span>Síntesis y Canvas</span>
-                  <strong>{{ project.claims.length }}</strong>
+                  <strong>{{ project.knowledge.claims.length }}</strong>
                 </button>
               </nav>
 
@@ -380,22 +371,22 @@
                   </button>
                 </form>
 
-                <form class="research-action-form" (ngSubmit)="createRelationCandidate(project.id)">
-                  <h3>Nueva relación candidata</h3>
-                  <select name="relationFrom" [(ngModel)]="relationFromCandidateId">
+                <form class="research-action-form" (ngSubmit)="createRelation(project.id)">
+                  <h3>Nueva relación</h3>
+                  <select name="relationFrom" [(ngModel)]="relationFromEntityId">
                     <option value="">Origen</option>
-                    @for (candidate of project.entityCandidates ?? []; track candidate.id) {
-                      <option [value]="candidate.id">{{ candidate.title }}</option>
+                    @for (entity of project.knowledge.entities; track entity.id) {
+                      <option [value]="entity.id">{{ entity.title }}</option>
                     }
                   </select>
-                  <select name="relationTo" [(ngModel)]="relationToCandidateId">
+                  <select name="relationTo" [(ngModel)]="relationToEntityId">
                     <option value="">Destino</option>
-                    @for (candidate of project.entityCandidates ?? []; track candidate.id) {
-                      <option [value]="candidate.id">{{ candidate.title }}</option>
+                    @for (entity of project.knowledge.entities; track entity.id) {
+                      <option [value]="entity.id">{{ entity.title }}</option>
                     }
                   </select>
                   <select name="relationType" [(ngModel)]="relationTypeId">
-                    <option value="">Tipo de relación (pendiente)</option>
+                    <option value="">Vocabulario canónico opcional</option>
                     @for (type of relationTypes$ | async; track type.id) {
                       <option [value]="type.id">{{ type.label }}</option>
                     }
@@ -407,17 +398,15 @@
                     placeholder="Explicación editorial opcional"
                   ></textarea>
                   <div class="research-evidence-picker">
-                    @for (evidence of project.evidence; track evidence.id) {
+                    @for (claim of project.knowledge.claims; track claim.id) {
                       <label class="research-evidence-option"
                         ><input
                           type="checkbox"
-                          [checked]="selectedRelationEvidenceIds.includes(evidence.id)"
-                          (change)="
-                            toggleRelationEvidence(evidence.id, $any($event.target).checked)
-                          "
+                          [checked]="selectedRelationClaimIds.includes(claim.id)"
+                          (change)="toggleRelationClaim(claim.id, $any($event.target).checked)"
                         /><span
-                          ><strong>{{ evidenceSourceTitle(project, evidence) }}</strong
-                          ><small>{{ evidence.locator }}</small></span
+                          ><strong>{{ claim.title }}</strong
+                          ><small>{{ claim.status }}</small></span
                         ></label
                       >
                     }
@@ -426,23 +415,23 @@
                     type="submit"
                     [disabled]="
                       actionBusy ||
-                      !relationFromCandidateId ||
-                      !relationToCandidateId ||
-                      relationFromCandidateId === relationToCandidateId ||
-                      !selectedRelationEvidenceIds.length
+                      !relationFromEntityId ||
+                      !relationToEntityId ||
+                      relationFromEntityId === relationToEntityId ||
+                      !selectedRelationClaimIds.length
                     "
                   >
-                    Crear relación candidata
+                    Crear relación
                   </button>
                 </form>
-                <form class="research-action-form" (ngSubmit)="createEntityCandidate(project.id)">
-                  <h3>Nuevo candidato de entidad</h3>
+                <form class="research-action-form" (ngSubmit)="createEntity(project.id)">
+                  <h3>Nueva entidad de investigación</h3>
                   <input
-                    name="candidateTitle"
-                    [(ngModel)]="candidateTitle"
+                    name="entityTitle"
+                    [(ngModel)]="entityTitle"
                     placeholder="Nombre del referente"
                   />
-                  <select name="candidateKind" [(ngModel)]="candidateKind">
+                  <select name="entityKind" [(ngModel)]="entityKind">
                     <option value="PERSON">Persona</option>
                     <option value="WORK">Obra</option>
                     <option value="ABSTRACTION">Abstracción</option>
@@ -451,8 +440,8 @@
                     <option value="ORGANIZATION">Organización</option>
                   </select>
                   <textarea
-                    name="candidateSummary"
-                    [(ngModel)]="candidateSummary"
+                    name="entitySummary"
+                    [(ngModel)]="entitySummary"
                     rows="2"
                     placeholder="Resumen opcional"
                   ></textarea>
@@ -461,10 +450,8 @@
                       <label class="research-evidence-option"
                         ><input
                           type="checkbox"
-                          [checked]="selectedCandidateEvidenceIds.includes(evidence.id)"
-                          (change)="
-                            toggleCandidateEvidence(evidence.id, $any($event.target).checked)
-                          "
+                          [checked]="selectedEntityEvidenceIds.includes(evidence.id)"
+                          (change)="toggleEntityEvidence(evidence.id, $any($event.target).checked)"
                         /><span
                           ><strong>{{ evidenceSourceTitle(project, evidence) }}</strong
                           ><small
@@ -477,78 +464,10 @@
                   <button
                     type="submit"
                     [disabled]="
-                      actionBusy || !candidateTitle.trim() || !selectedCandidateEvidenceIds.length
+                      actionBusy || !entityTitle.trim() || !selectedEntityEvidenceIds.length
                     "
                   >
-                    Crear candidato
-                  </button>
-                </form>
-                <form class="research-action-form" (ngSubmit)="createFinding(project.id)">
-                  <h3>Proponer hallazgo</h3>
-                  <input
-                    type="text"
-                    name="findingTitle"
-                    [(ngModel)]="findingTitle"
-                    placeholder="Título del hallazgo"
-                  />
-                  <input
-                    type="text"
-                    name="findingKind"
-                    [(ngModel)]="findingKind"
-                    placeholder="Tipo opcional"
-                  />
-                  <textarea
-                    name="findingSummary"
-                    [(ngModel)]="findingSummary"
-                    rows="3"
-                    placeholder="Resumen"
-                  ></textarea>
-                  <div class="research-evidence-picker" aria-label="Evidencias del hallazgo">
-                    @for (evidence of project.evidence; track evidence.id) {
-                      <label class="research-evidence-option">
-                        <input
-                          type="checkbox"
-                          name="findingEvidence"
-                          [checked]="isFindingEvidenceSelected(evidence.id)"
-                          (change)="toggleFindingEvidence(evidence.id, $any($event.target).checked)"
-                        />
-                        <span>
-                          <strong>{{ evidenceSourceTitle(project, evidence) }}</strong>
-                          <small>{{ evidence.locator }} · {{ evidence.sourceVersion }}</small>
-                          <em>{{ evidence.quote }}</em>
-                        </span>
-                      </label>
-                    } @empty {
-                      <div class="admin-research__state">
-                        Los hallazgos necesitan evidencias vinculadas antes de proponerse.
-                      </div>
-                    }
-                  </div>
-                  @if (selectedFindingEvidenceIds.length) {
-                    <div class="research-selected-evidence">
-                      @for (
-                        evidence of evidenceByIds(project, selectedFindingEvidenceIds);
-                        track evidence.id
-                      ) {
-                        <div class="research-selected-evidence__item">
-                          <span>
-                            <strong>{{ evidenceSourceTitle(project, evidence) }}</strong>
-                            <small>{{ evidence.locator }} · {{ evidence.sourceVersion }}</small>
-                          </span>
-                          <button type="button" (click)="removeFindingEvidence(evidence.id)">
-                            Quitar
-                          </button>
-                        </div>
-                      }
-                    </div>
-                  }
-                  <button
-                    type="submit"
-                    [disabled]="
-                      actionBusy || !findingTitle.trim() || !selectedFindingEvidenceIds.length
-                    "
-                  >
-                    Proponer
+                    Crear entidad
                   </button>
                 </form>
               </div>
@@ -603,10 +522,10 @@
                 >
                   <div class="research-section-head">
                     <div>
-                      <p class="admin-research__eyebrow">Conocimiento provisional</p>
+                      <p class="admin-research__eyebrow">Conocimiento privado</p>
                       <h3>Síntesis y Canvas</h3>
                     </div>
-                    <small>{{ project.claims.length }} claims privados</small>
+                    <small>{{ project.knowledge.claims.length }} claims privados</small>
                   </div>
 
                   <div class="research-synthesis__layout">
@@ -620,14 +539,14 @@
                         <div class="research-claim-form__connection">
                           <select name="claimSubjectId" [(ngModel)]="claimSubjectId">
                             <option value="">Origen</option>
-                            @for (claim of claimCandidates(project); track claim.id) {
+                            @for (claim of displayedClaims(project); track claim.id) {
                               <option [value]="claim.id">{{ claim.title }}</option>
                             }
                           </select>
                           <span aria-hidden="true">→</span>
                           <select name="claimObjectId" [(ngModel)]="claimObjectId">
                             <option value="">Destino</option>
-                            @for (claim of claimCandidates(project); track claim.id) {
+                            @for (claim of displayedClaims(project); track claim.id) {
                               <option [value]="claim.id">{{ claim.title }}</option>
                             }
                           </select>
@@ -678,14 +597,14 @@
                     </form>
 
                     <div class="research-canvas">
-                      @if (project.claims.length) {
+                      @if (project.knowledge.claims.length) {
                         <div class="research-canvas__nodes">
-                          @for (claim of project.claims; track claim.id) {
+                          @for (claim of project.knowledge.claims; track claim.id) {
                             @if (claim.kind !== 'CONNECTION_HYPOTHESIS') {
                               <article
                                 class="research-canvas-node"
                                 [attr.data-kind]="claim.kind"
-                                [class.research-canvas-node--ready]="claim.readyForPromotion"
+                                [class.research-canvas-node--ready]="claim.status === 'SUPPORTED'"
                               >
                                 <small>{{ claimKindLabel(claim.kind) }}</small>
                                 <strong>{{ claim.title }}</strong>
@@ -693,23 +612,22 @@
                                   <p>{{ claim.summary }}</p>
                                 }
                                 <span>{{ claim.evidence?.length ?? 0 }} evidencias</span>
-                                <button
-                                  type="button"
+                                <select
+                                  [ngModel]="claim.status"
+                                  (ngModelChange)="setClaimStatus(project.id, claim.id, $event)"
                                   [disabled]="actionBusy"
-                                  (click)="setClaimReadiness(project.id, claim)"
                                 >
-                                  {{
-                                    claim.readyForPromotion
-                                      ? 'Devolver a revisión'
-                                      : 'Lista para promoción'
-                                  }}
-                                </button>
+                                  <option value="DRAFT">Borrador</option>
+                                  <option value="SUPPORTED">Respaldado</option>
+                                  <option value="QUESTIONED">Cuestionado</option>
+                                  <option value="CONTRADICTED">Contradicho</option>
+                                </select>
                               </article>
                             }
                           }
                         </div>
                         <div class="research-canvas__connections">
-                          @for (claim of project.claims; track claim.id) {
+                          @for (claim of project.knowledge.claims; track claim.id) {
                             @if (claim.kind === 'CONNECTION_HYPOTHESIS') {
                               <article>
                                 <small>Relación provisional</small>
@@ -718,17 +636,16 @@
                                   {{ claim.object?.title || 'Destino' }}
                                 </strong>
                                 <span>{{ claim.title }}</span>
-                                <button
-                                  type="button"
+                                <select
+                                  [ngModel]="claim.status"
+                                  (ngModelChange)="setClaimStatus(project.id, claim.id, $event)"
                                   [disabled]="actionBusy"
-                                  (click)="setClaimReadiness(project.id, claim)"
                                 >
-                                  {{
-                                    claim.readyForPromotion
-                                      ? 'Devolver a revisión'
-                                      : 'Lista para promoción'
-                                  }}
-                                </button>
+                                  <option value="DRAFT">Borrador</option>
+                                  <option value="SUPPORTED">Respaldado</option>
+                                  <option value="QUESTIONED">Cuestionado</option>
+                                  <option value="CONTRADICTED">Contradicho</option>
+                                </select>
                               </article>
                             }
                           }
@@ -736,7 +653,7 @@
                       } @else {
                         <div class="research-canvas__empty">
                           <strong>El Canvas se abrirá con la primera síntesis.</strong>
-                          <span>No representa documentos ni hallazgos sin estructurar.</span>
+                          <span>No representa documentos ni afirmaciones sin estructurar.</span>
                         </div>
                       }
                     </div>
@@ -820,12 +737,6 @@
                               >
                                 Añadir evidencia
                               </button>
-                              <button
-                                type="button"
-                                (click)="selectFindingEvidenceGroup(evidenceIds(group.evidence))"
-                              >
-                                Usar visibles en hallazgo
-                              </button>
                             </div>
                             <div class="research-workspace-list">
                               @for (evidence of group.evidence; track evidence.id) {
@@ -844,21 +755,6 @@
                                       Nota editorial: {{ evidence.note }}
                                     </small>
                                   }
-                                  <small>
-                                    @if (findingCountForEvidence(project, evidence.id); as count) {
-                                      Usada en {{ count }} hallazgos
-                                    } @else {
-                                      Sin hallazgos vinculados
-                                    }
-                                  </small>
-                                  <button
-                                    type="button"
-                                    class="research-evidence-row__action"
-                                    (click)="selectFindingEvidence(evidence.id)"
-                                    [disabled]="isFindingEvidenceSelected(evidence.id)"
-                                  >
-                                    Usar en hallazgo
-                                  </button>
                                 </div>
                               }
                             </div>
@@ -921,80 +817,6 @@
                   }
                 </section>
 
-                <section class="research-workspace-section research-workspace-section--wide">
-                  <div class="research-section-head">
-                    <h3>Propuestas automáticas</h3>
-                    <small>{{ project.findingProposals.length }} privadas</small>
-                  </div>
-                  @if (project.findingProposals.length) {
-                    <div class="research-workspace-list">
-                      @for (proposal of project.findingProposals; track proposal.id) {
-                        <div class="research-workspace-row research-ai-proposal">
-                          <div class="research-ai-proposal__head">
-                            <strong>{{ proposal.title }}</strong>
-                            <small>{{ proposalReviewStateLabel(proposal.reviewState) }}</small>
-                          </div>
-                          @if (proposal.kind) {
-                            <small>{{ proposal.kind }}</small>
-                          }
-                          @if (proposal.summary) {
-                            <span>{{ proposal.summary }}</span>
-                          }
-                          <time [attr.datetime]="proposal.createdAt">
-                            {{ proposal.createdAt | date: 'dd MMM yyyy · HH:mm' }}
-                          </time>
-                          <div class="research-ai-proposal__actions">
-                            @if (proposal.convertedFindingId) {
-                              <small>Convertida en hallazgo</small>
-                            } @else if (proposal.reviewState === 'REVIEWED') {
-                              <button
-                                type="button"
-                                [disabled]="actionBusy"
-                                (click)="convertFindingProposalToFinding(project.id, proposal.id)"
-                              >
-                                Convertir en hallazgo
-                              </button>
-                            }
-                            <button
-                              type="button"
-                              [disabled]="actionBusy || proposal.reviewState === 'REVIEWED'"
-                              (click)="reviewFindingProposal(project.id, proposal.id, 'REVIEWED')"
-                            >
-                              Marcar revisada
-                            </button>
-                            <button
-                              type="button"
-                              [disabled]="actionBusy || proposal.reviewState === 'REJECTED'"
-                              (click)="reviewFindingProposal(project.id, proposal.id, 'REJECTED')"
-                            >
-                              Rechazar
-                            </button>
-                          </div>
-                          <div class="research-ai-evidence">
-                            @for (item of proposal.evidence ?? []; track item.evidenceId) {
-                              @if (item.evidence; as evidence) {
-                                <div class="research-ai-evidence__item">
-                                  <strong>{{ evidenceSourceTitle(project, evidence) }}</strong>
-                                  <small
-                                    >{{ evidence.locator }} · {{ evidence.sourceVersion }}</small
-                                  >
-                                  <span>{{ evidence.quote }}</span>
-                                </div>
-                              }
-                            } @empty {
-                              <div class="research-ai-evidence__empty">
-                                Sin evidencias vinculadas
-                              </div>
-                            }
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  } @else {
-                    <div class="admin-research__state">Sin propuestas automáticas.</div>
-                  }
-                </section>
-
                 <section class="research-workspace-section">
                   <div class="research-section-head">
                     <h3>Historial IA</h3>
@@ -1039,88 +861,73 @@
 
                 <section class="research-workspace-section">
                   <div class="research-section-head">
-                    <h3>Candidatos de entidad</h3>
-                    <small>{{ (project.entityCandidates ?? []).length }}</small>
+                    <h3>Entidades de investigación</h3>
+                    <small>{{ project.knowledge.entities.length }}</small>
                   </div>
-                  @for (candidate of project.entityCandidates ?? []; track candidate.id) {
+                  @for (entity of project.knowledge.entities; track entity.id) {
                     <div class="research-workspace-row">
-                      <strong>{{ candidate.title }}</strong
-                      ><small>{{ candidate.kind }} · {{ candidate.reviewState }}</small>
-                      @if (candidate.summary) {
-                        <span>{{ candidate.summary }}</span>
+                      <strong>{{ entity.title }}</strong
+                      ><small>{{ entity.kind }} · {{ entity.reviewState }}</small>
+                      @if (entity.summary) {
+                        <span>{{ entity.summary }}</span>
                       }
                       <div class="research-finding-card__actions">
                         <button
                           type="button"
-                          [disabled]="actionBusy || candidate.reviewState === 'REVIEWED'"
-                          (click)="reviewEntityCandidate(project.id, candidate.id, 'REVIEWED')"
+                          [disabled]="actionBusy || entity.reviewState === 'REVIEWED'"
+                          (click)="reviewEntity(project.id, entity.id, 'REVIEWED')"
                         >
                           Revisar
                         </button>
                         <button
                           type="button"
-                          [disabled]="actionBusy || candidate.reviewState === 'REJECTED'"
-                          (click)="reviewEntityCandidate(project.id, candidate.id, 'REJECTED')"
+                          [disabled]="actionBusy || entity.reviewState === 'REJECTED'"
+                          (click)="reviewEntity(project.id, entity.id, 'REJECTED')"
                         >
                           Rechazar
                         </button>
                       </div>
                     </div>
                   } @empty {
-                    <div class="admin-research__state">Sin candidatos de entidad.</div>
+                    <div class="admin-research__state">Sin entidades de investigación.</div>
                   }
                 </section>
                 <section class="research-workspace-section">
                   <div class="research-section-head">
-                    <h3>Relaciones candidatas</h3>
-                    <small>{{ (project.relationCandidates ?? []).length }}</small>
+                    <h3>Relaciones de investigación</h3>
+                    <small>{{ project.knowledge.relations.length }}</small>
                   </div>
-                  @for (candidate of project.relationCandidates ?? []; track candidate.id) {
+                  @for (relation of project.knowledge.relations; track relation.id) {
                     <div class="research-workspace-row">
                       <strong
-                        >{{ candidate.fromCandidate?.title ?? 'Origen' }} →
-                        {{ candidate.toCandidate?.title ?? 'Destino' }}</strong
+                        >{{ relation.fromEntity?.title ?? 'Origen' }} →
+                        {{ relation.toEntity?.title ?? 'Destino' }}</strong
                       >
-                      <small>{{ candidate.reviewState }}</small>
-                      @if (candidate.explanation) {
-                        <span>{{ candidate.explanation }}</span>
+                      <small>{{ relation.reviewState }}</small>
+                      @if (relation.explanation) {
+                        <span>{{ relation.explanation }}</span>
                       }
                       <div class="research-finding-card__actions">
                         <button
                           type="button"
-                          [disabled]="actionBusy || candidate.reviewState === 'REVIEWED'"
-                          (click)="reviewRelationCandidate(project.id, candidate.id, 'REVIEWED')"
+                          [disabled]="actionBusy || relation.reviewState === 'REVIEWED'"
+                          (click)="reviewRelation(project.id, relation.id, 'REVIEWED')"
                         >
                           Revisar
                         </button>
                         <button
                           type="button"
-                          [disabled]="actionBusy || candidate.reviewState === 'REJECTED'"
-                          (click)="reviewRelationCandidate(project.id, candidate.id, 'REJECTED')"
+                          [disabled]="actionBusy || relation.reviewState === 'REJECTED'"
+                          (click)="reviewRelation(project.id, relation.id, 'REJECTED')"
                         >
                           Rechazar
-                        </button>
-                        <button
-                          type="button"
-                          [disabled]="actionBusy || candidate.reviewState !== 'REVIEWED'"
-                          (click)="promoteRelationCandidate(project.id, candidate.id)"
-                        >
-                          Crear relación
                         </button>
                       </div>
                     </div>
                   } @empty {
-                    <div class="admin-research__state">Sin relaciones candidatas.</div>
+                    <div class="admin-research__state">Sin relaciones de investigación.</div>
                   }
                 </section>
-                <app-research-findings-section
-                  id="research-findings"
-                  [project]="project"
-                  [actionBusy]="actionBusy"
-                  [decisionNotes]="findingDecisionNotes"
-                  (decisionNoteChange)="setFindingDecisionNote($event.findingId, $event.note)"
-                  (decide)="decideFinding(project.id, $event.findingId, $event.action)"
-                />
 
                 <section class="research-workspace-section">
                   <h3>Decisiones</h3>
