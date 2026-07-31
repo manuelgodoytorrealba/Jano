@@ -1,11 +1,13 @@
 # JANO — Arquitectura vigente
 
-Estado: **ACTIVE**
+Estado: **ACTIVE — visión técnica operativa**
 
 Última revisión: 2026-06-30
 
 Este documento describe la arquitectura que existe hoy. Las decisiones, límites y métricas del
 refactor están en [`architectural-refactoring-audit.md`](./architectural-refactoring-audit.md).
+
+Las decisiones normativas de Research Studio, sus límites de dominio y su experiencia editorial viven en [`docs/architecture/README.md`](./architecture/README.md). Este documento no es una segunda fuente de verdad para Research.
 
 ## 1. Principios
 

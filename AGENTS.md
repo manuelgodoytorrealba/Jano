@@ -11,6 +11,10 @@ They should feel like they are exploring culture.
 
 Everything built inside JANO must reinforce that vision.
 
+## Research Studio documentation
+
+Before changing Research, Library, Research Knowledge, Research Graph, document processing or AI proposals, read [`docs/architecture/README.md`](docs/architecture/README.md), [`15-research-studio-experience.md`](docs/architecture/15-research-studio-experience.md) and [`16-editorial-pipeline.md`](docs/architecture/16-editorial-pipeline.md). They are the normative product and functional references; domain ownership remains in the linked architecture documents.
+
 Product Principles
 
 JANO is not:

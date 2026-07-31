@@ -90,6 +90,7 @@ npm run docker:down
 
 ## Docs adicionales
 
+- [Research Studio architecture North Star](docs/architecture/README.md)
 - [docs/deployment.md](docs/deployment.md)
 - [docs/commands.md](docs/commands.md)
 - [docs/architecture-overview.md](docs/architecture-overview.md)
