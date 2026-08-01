@@ -11,6 +11,7 @@ import {
   ResearchQuestion,
   ResearchLibraryExcerptReference,
 } from '../../../core/api/research.api';
+import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.component';
 import { ResearchGraphComponent } from './research-graph.component';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
@@ -23,6 +24,7 @@ import { ResearchMaterialReaderComponent } from './research-material-reader.comp
     DatePipe,
     FormsModule,
     RouterLink,
+    ResearchClaimCaptureComponent,
     ResearchEvidenceCaptureComponent,
     ResearchGraphComponent,
     ResearchMaterialReaderComponent,

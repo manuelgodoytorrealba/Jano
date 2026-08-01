@@ -30,7 +30,7 @@ import {
   ResearchProjectSource,
   ResearchSourceRecord,
 } from '../../../core/api/research.api';
-import { RelationType, RelationTypesApi } from '../../../core/api/relation-types.api';
+import { RelationTypesApi } from '../../../core/api/relation-types.api';
 
 type ResearchStatusFilter = '' | ResearchProjectStatus;
 
@@ -372,7 +372,7 @@ export class AdminResearchComponent {
         kind: this.claimKind,
         title,
         summary: this.claimSummary.trim() || undefined,
-        claimIds: this.selectedClaimEvidenceIds,
+        evidenceIds: this.selectedClaimEvidenceIds,
         subjectClaimId:
           this.claimKind === 'CONNECTION_HYPOTHESIS' ? this.claimSubjectId : undefined,
         objectClaimId: this.claimKind === 'CONNECTION_HYPOTHESIS' ? this.claimObjectId : undefined,

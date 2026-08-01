@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+.research-claim {
+  border-top: 1px solid var(--research-border-soft);
+  padding-top: 30px;
+}
+.research-claim header p {
+  color: var(--research-accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+.research-claim h2 {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  margin: 0 0 18px;
+}
+.research-claim form {
+  display: grid;
+  gap: 12px;
+}
+input:not([type='checkbox']),
+textarea {
+  background: var(--research-control);
+  border: 1px solid var(--research-border);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: inherit;
+  font: inherit;
+  padding: 10px;
+  width: 100%;
+}
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+fieldset {
+  border: 0;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+legend {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+label {
+  align-items: flex-start;
+  border: 1px solid var(--research-border-soft);
+  border-radius: 8px;
+  display: flex;
+  gap: 9px;
+  padding: 10px;
+}
+label span,
+label small {
+  display: block;
+}
+label small,
+.research-claim__empty {
+  color: var(--research-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  margin-top: 3px;
+}
+button {
+  background: var(--research-accent);
+  border: 0;
+  border-radius: 8px;
+  color: #17131d;
+  cursor: pointer;
+  font: inherit;
+  justify-self: start;
+  padding: 8px 10px;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.research-claim__error {
+  color: #d97757;
+  font-size: 13px;
+  margin: 0;
+}

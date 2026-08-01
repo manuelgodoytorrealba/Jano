@@ -1,0 +1,50 @@
+<section class="research-claim" aria-label="Formular una afirmación privada">
+  <header>
+    <p>Formular una afirmación</p>
+    <h2>La Evidence respalda el Claim; no lo convierte en verdad.</h2>
+  </header>
+
+  @if (evidence.length) {
+    <form (ngSubmit)="save()">
+      <input
+        name="claimTitle"
+        [(ngModel)]="title"
+        placeholder="Formula una afirmación privada"
+        required
+      />
+      <textarea
+        name="claimSummary"
+        [(ngModel)]="summary"
+        placeholder="Matiz editorial opcional"
+      ></textarea>
+
+      <fieldset>
+        <legend>Evidence que respalda esta afirmación</legend>
+        @for (item of evidence; track item.id) {
+          <label>
+            <input
+              type="checkbox"
+              [checked]="isSelected(item.id)"
+              (change)="toggleEvidence(item.id, $any($event.target).checked)"
+            />
+            <span>
+              <strong>{{ evidenceLabel(item) }}</strong>
+              <small
+                >{{ item.locator }} · {{ item.quote || 'Extracto documental disponible' }}</small
+              >
+            </span>
+          </label>
+        }
+      </fieldset>
+
+      @if (error) {
+        <p class="research-claim__error">{{ error }}</p>
+      }
+      <button type="submit" [disabled]="busy || !title.trim() || !selectedEvidenceIds.length">
+        {{ busy ? 'Guardando…' : 'Crear Claim en borrador' }}
+      </button>
+    </form>
+  } @else {
+    <p class="research-claim__empty">Registra Evidence antes de formular una afirmación privada.</p>
+  }
+</section>

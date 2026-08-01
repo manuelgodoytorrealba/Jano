@@ -47,7 +47,7 @@ export type CreateResearchClaimPayload = {
   kind: ResearchClaimKind;
   title: string;
   summary?: string;
-  claimIds: string[];
+  evidenceIds: string[];
   subjectClaimId?: string;
   objectClaimId?: string;
 };

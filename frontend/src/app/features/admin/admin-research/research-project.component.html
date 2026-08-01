@@ -37,6 +37,14 @@
         />
       </section>
 
+      <section class="research-project__claims">
+        <app-research-claim-capture
+          [researchId]="project.id"
+          [evidence]="project.evidence"
+          (saved)="refreshResearch()"
+        />
+      </section>
+
       <section class="research-project__layout">
         <aside class="research-project__outline" aria-label="Índice de la investigación">
           <div class="research-project__section-head">

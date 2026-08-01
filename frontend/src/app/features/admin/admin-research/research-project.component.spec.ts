@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { ResearchApi, ResearchOutlineSection } from '../../../core/api/research.api';
+import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchProjectComponent } from './research-project.component';
 
 const project = {
@@ -186,5 +188,17 @@ describe('ResearchProjectComponent', () => {
     expect(api.reorderQuestions).toHaveBeenCalledWith(project.id, active.id, ['q2', 'q1']);
     fixture.nativeElement.querySelector('[aria-label="Eliminar pregunta"]').click();
     expect(api.deleteQuestion).toHaveBeenCalledWith(project.id, active.id, 'q1');
+  });
+
+  it('refreshes the workspace after a Claim is saved', async () => {
+    const api = { getById: vi.fn().mockReturnValue(of(project)) };
+    const fixture = await createFixture(api);
+    const callsBeforeSave = api.getById.mock.calls.length;
+
+    fixture.debugElement
+      .query(By.directive(ResearchClaimCaptureComponent))
+      .componentInstance.saved.emit();
+
+    expect(api.getById).toHaveBeenCalledTimes(callsBeforeSave + 1);
   });
 });

@@ -32,4 +32,30 @@ describe('ResearchApi', () => {
     runReq.flush({ processed: false });
     http.verify();
   });
+
+  it('sends Claim support through the backend evidenceIds contract', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting(), ResearchApi],
+    });
+
+    const api = TestBed.inject(ResearchApi);
+    const http = TestBed.inject(HttpTestingController);
+    api
+      .createClaim('project-1', {
+        kind: 'ASSERTION',
+        title: 'Una afirmación privada',
+        evidenceIds: ['evidence-1'],
+      })
+      .subscribe();
+
+    const req = http.expectOne('/api/research/project-1/claims');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      kind: 'ASSERTION',
+      title: 'Una afirmación privada',
+      evidenceIds: ['evidence-1'],
+    });
+    req.flush({ id: 'project-1', claims: [{ id: 'claim-1', status: 'DRAFT' }] });
+    http.verify();
+  });
 });
