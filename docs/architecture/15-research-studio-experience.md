@@ -9,6 +9,8 @@ Research Studio es el entorno privado donde una investigadora transforma una pre
 
 No es un gestor de archivos, una colección de formularios, un CMS público ni un visor de grafos. Es un flujo continuo de investigación: reunir, leer, seleccionar evidencia, formular interpretaciones, revisar conexiones y escribir con fundamento.
 
+Research conserva el trabajo completo, pero el punto de trabajo diario es la **Research Section** activa. La Section orienta el objetivo, las preguntas, las notas, el estado, el trabajo pendiente y su dossier editorial; no adquiere ownership de corpus ni de conocimiento. La investigadora organiza el conocimiento necesario para responder una pregunta sin copiarlo ni convertirlo en una segunda fuente de verdad.
+
 Los límites de ownership y los contratos de dominio viven en [Research](./02-research.md), [Biblioteca](./03-library.md), [Research Knowledge](./04-research-knowledge.md), [Publication](./05-publication.md) y [Knowledge Core](./06-knowledge-core.md). El procesamiento que alimenta este flujo vive en el [Editorial Pipeline](./16-editorial-pipeline.md).
 
 ## Qué problema resuelve
@@ -76,6 +78,12 @@ Cuando existe conocimiento revisado suficiente, la investigadora lo convierte en
 ### Research Desk
 
 Es el punto de retorno de una investigación: muestra propósito, preguntas, estado, trabajo pendiente y accesos contextuales. Debe orientar, no sustituir la lectura ni la revisión.
+
+### Section y dossier editorial
+
+Una Section es la unidad cotidiana de trabajo editorial: concentra una pregunta y el contexto para resolverla. Su dossier organiza referencias ya existentes a corpus y conocimiento privado —sin poseerlas ni duplicarlas— para que la investigadora pueda leer, evidenciar, formular, revisar y posteriormente escribir desde una cuestión concreta.
+
+El dossier no es un agregado, una copia de Library ni un segundo Research Knowledge. Sources, Materials y LibraryExcerpt siguen en Biblioteca; Evidence, Claims, Entities y Relations siguen en Research Knowledge. Una misma referencia puede aparecer en varios dossiers y el Graph continúa siendo una lectura global derivada del conocimiento privado.
 
 ### Biblioteca documental
 

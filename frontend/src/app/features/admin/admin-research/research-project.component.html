@@ -14,37 +14,6 @@
         <p>{{ project.objective }}</p>
       </header>
 
-      <section class="research-project__graph">
-        <app-research-graph [researchId]="project.id" />
-      </section>
-
-      <section class="research-project__reader">
-        <app-research-material-reader
-          [researchId]="project.id"
-          [materials]="project.materials"
-          (excerptCreated)="prepareEvidenceFromExcerpt($event)"
-        />
-      </section>
-
-      <section class="research-project__evidence">
-        <app-research-evidence-capture
-          [researchId]="project.id"
-          [sources]="project.sources"
-          [evidence]="project.evidence"
-          [excerpt]="preparedExcerpt"
-          (saved)="refreshResearch()"
-          (excerptUsed)="clearPreparedExcerpt()"
-        />
-      </section>
-
-      <section class="research-project__claims">
-        <app-research-claim-capture
-          [researchId]="project.id"
-          [evidence]="project.evidence"
-          (saved)="refreshResearch()"
-        />
-      </section>
-
       <section class="research-project__layout">
         <aside class="research-project__outline" aria-label="Índice de la investigación">
           <div class="research-project__section-head">
@@ -110,6 +79,14 @@
               </div>
               <p>Un espacio privado para precisar la cuestión antes de empezar a redactar.</p>
             </div>
+
+            <section class="research-project__section-context">
+              <h3>Contexto de trabajo</h3>
+              <p>
+                Esta sección organiza la pregunta que estás resolviendo. El corpus y el conocimiento
+                siguen siendo compartidos por toda la investigación.
+              </p>
+            </section>
 
             <section class="research-project__block">
               <h3>Objetivo</h3>
@@ -197,6 +174,50 @@
                 (blur)="saveWorkspace(project, section)"
                 placeholder="Escribe aquí sin estructurar todavía"
               ></textarea>
+            </section>
+
+            <section class="research-project__editorial-work">
+              <div class="research-project__work-heading">
+                <p class="research-project__eyebrow">Trabajo para esta sección</p>
+                <h3>Leer, evidenciar y formular</h3>
+                <p>
+                  Utiliza el corpus y conocimiento disponibles para responder las preguntas de esta
+                  sección. Sus objetos siguen perteneciendo a la investigación completa.
+                </p>
+              </div>
+
+              <app-research-material-reader
+                [researchId]="project.id"
+                [materials]="project.materials"
+                (excerptCreated)="prepareEvidenceFromExcerpt($event)"
+              />
+
+              <app-research-evidence-capture
+                [researchId]="project.id"
+                [sources]="project.sources"
+                [evidence]="project.evidence"
+                [excerpt]="preparedExcerpt"
+                (saved)="refreshResearch()"
+                (excerptUsed)="clearPreparedExcerpt()"
+              />
+
+              <app-research-claim-capture
+                [researchId]="project.id"
+                [evidence]="project.evidence"
+                (saved)="refreshResearch()"
+              />
+            </section>
+
+            <section class="research-project__research-knowledge">
+              <div class="research-project__work-heading">
+                <p class="research-project__eyebrow">Conocimiento de la investigación</p>
+                <h3>Explorar conexiones existentes</h3>
+                <p>
+                  El Graph muestra la estructura privada de toda la investigación; no pertenece a
+                  esta sección ni crea conocimiento nuevo.
+                </p>
+              </div>
+              <app-research-graph [researchId]="project.id" />
             </section>
 
             <footer class="research-project__context">

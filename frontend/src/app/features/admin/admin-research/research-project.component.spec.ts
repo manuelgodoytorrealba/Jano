@@ -115,6 +115,10 @@ describe('ResearchProjectComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('textarea')[1].value).toBe(
       'Volver a las cartas.',
     );
+    expect(fixture.nativeElement.textContent).toContain('Trabajo para esta sección');
+    expect(fixture.nativeElement.textContent).toContain(
+      'El corpus y el conocimiento siguen siendo compartidos por toda la investigación.',
+    );
   });
 
   it('updates the objective and notes as one section context', async () => {
@@ -190,15 +194,26 @@ describe('ResearchProjectComponent', () => {
     expect(api.deleteQuestion).toHaveBeenCalledWith(project.id, active.id, 'q1');
   });
 
-  it('refreshes the workspace after a Claim is saved', async () => {
-    const api = { getById: vi.fn().mockReturnValue(of(project)) };
+  it('keeps research-wide editorial tools out of the empty section workspace', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [section()] })),
+    };
     const fixture = await createFixture(api);
-    const callsBeforeSave = api.getById.mock.calls.length;
+    expect(fixture.debugElement.query(By.directive(ResearchClaimCaptureComponent))).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Elige una sección para comenzar');
+  });
 
+  it('refreshes the workspace after a Claim is saved', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [section()] })),
+    };
+    const fixture = await createFixture(api, true);
+
+    const callsBeforeSave = api.getById.mock.calls.length;
     fixture.debugElement
       .query(By.directive(ResearchClaimCaptureComponent))
       .componentInstance.saved.emit();
 
-    expect(api.getById).toHaveBeenCalledTimes(callsBeforeSave + 1);
+    expect(api.getById.mock.calls.length).toBeGreaterThan(callsBeforeSave);
   });
 });

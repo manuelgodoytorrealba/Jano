@@ -38,8 +38,6 @@
 }
 
 .research-project__header,
-.research-project__evidence,
-.research-project__reader,
 .research-project__layout {
   max-width: 1200px;
   margin-inline: auto;
@@ -47,20 +45,6 @@
 
 .research-project__header {
   margin-bottom: 24px;
-}
-
-.research-project__reader {
-  margin: 0 auto 24px;
-}
-
-.research-project__evidence {
-  max-width: 1200px;
-  margin: 0 auto 24px;
-  padding: clamp(28px, 4vw, 44px);
-  border: 1px solid var(--research-border);
-  border-radius: 18px;
-  background: var(--research-surface);
-  box-shadow: var(--research-shadow);
 }
 
 .research-project__breadcrumb {
