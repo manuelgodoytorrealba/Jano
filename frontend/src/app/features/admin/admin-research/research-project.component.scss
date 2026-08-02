@@ -256,6 +256,21 @@ h1 {
   font-size: 13px;
 }
 
+.research-project__section-status {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+}
+
+.research-project__section-status select {
+  border: 1px solid var(--research-border);
+  border-radius: 8px;
+  background: var(--research-control);
+  color: inherit;
+  padding: 7px 9px;
+  font: inherit;
+}
+
 .research-project__block {
   padding: 30px 0;
   border-bottom: 1px solid var(--research-border-soft);

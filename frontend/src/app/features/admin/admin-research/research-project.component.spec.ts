@@ -138,6 +138,21 @@ describe('ResearchProjectComponent', () => {
     });
   });
 
+  it('updates the editorial status of the active section', async () => {
+    const active = section();
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })),
+      updateOutlineSection: vi.fn().mockReturnValue(of(project)),
+    };
+    const fixture = await createFixture(api, true);
+    const select = fixture.nativeElement.querySelector('select[name="sectionStatus"]');
+    select.value = 'READY_FOR_REVIEW';
+    select.dispatchEvent(new Event('change'));
+
+    expect(api.updateOutlineSection).toHaveBeenCalledWith(project.id, active.id, {
+      status: 'READY_FOR_REVIEW',
+    });
+  });
   it('creates, edits, deletes and reorders research questions in the active section', async () => {
     const active = {
       ...section(),

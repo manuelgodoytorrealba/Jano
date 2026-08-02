@@ -26,6 +26,20 @@ El **dossier editorial de una Section** es una selección contextual y trazable 
 - Un mismo objeto puede ser relevante para varias Sections sin duplicarse.
 - El dossier organiza el trabajo editorial; no acepta, promociona ni transforma conocimiento.
 
+### Contrato de selección
+
+El dossier separa contexto propio, anclas editoriales explícitas y soporte derivado:
+
+- Objetivo, preguntas, notas y estado pertenecen a la Section y siempre se muestran; no son referencias del dossier.
+- Las anclas editoriales son opcionales y la investigadora las selecciona explícitamente: Source, MaterialVersion, LibraryExcerpt, Evidence, Claim, Entity, Relation o propuesta asistida disponible.
+- El dossier efectivo reúne las anclas explícitas y las deduplica; nunca exige que una Section tenga una referencia antes de empezar.
+- Procedencia y soporte se reconstruyen desde las anclas: Source y MaterialVersion de un Extracto o una Evidence, Evidence de un Claim, Claims de una Relation y Evidence de una Entity.
+- Trabajo pendiente y revisión se derivan del estado de la Section y de los estados de los objetos referidos; no constituyen estados duplicados dentro del dossier.
+
+Cada ancla persistida conserva únicamente la intención editorial de incluir una referencia y su orden. No conserva snapshots, copia de texto, estado de revisión, procedencia duplicada ni resultados derivados. Una referencia puede ser ancla explícita aunque también aparezca como soporte derivado de otra.
+
+Un dossier puede comenzar vacío. La selección de anclas se implementa sólo cuando pueda validar que cada referencia pertenece al mismo Research o, en Biblioteca, que es accesible desde él.
+
 ## Invariantes
 
 - Todo objeto privado tiene un Research propietario.

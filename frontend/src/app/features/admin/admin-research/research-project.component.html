@@ -73,11 +73,23 @@
           @if (vm.activeSection; as section) {
             <div class="research-project__workspace-header">
               <p class="research-project__eyebrow">Research Section</p>
-              <div>
+              <div class="research-project__section-title">
                 <h2>{{ section.title }}</h2>
-                <span>{{ statusLabel(section.status) }}</span>
+                <label class="research-project__section-status">
+                  <span>Estado editorial</span>
+                  <select
+                    name="sectionStatus"
+                    [ngModel]="section.status"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="updateStatus(project, section, $any($event))"
+                  >
+                    @for (status of statuses; track status) {
+                      <option [value]="status">{{ statusLabel(status) }}</option>
+                    }
+                  </select>
+                </label>
+                <p>Un espacio privado para precisar la cuestión antes de empezar a redactar.</p>
               </div>
-              <p>Un espacio privado para precisar la cuestión antes de empezar a redactar.</p>
             </div>
 
             <section class="research-project__section-context">
