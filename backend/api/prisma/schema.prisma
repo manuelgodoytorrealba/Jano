@@ -825,8 +825,9 @@ model LibraryExcerpt {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  materialVersion LibraryMaterialVersion @relation(fields: [materialVersionId], references: [id], onDelete: Cascade)
-  evidence        ResearchEvidence[]
+  materialVersion   LibraryMaterialVersion          @relation(fields: [materialVersionId], references: [id], onDelete: Cascade)
+  evidence          ResearchEvidence[]
+  sectionReferences ResearchOutlineSectionExcerpt[]
 
   @@unique([materialVersionId, fingerprint])
   @@index([materialVersionId])
@@ -860,7 +861,8 @@ model ResearchOutlineSection {
   parent   ResearchOutlineSection?  @relation("ResearchOutlineSectionHierarchy", fields: [parentSectionId], references: [id], onDelete: Cascade)
   children ResearchOutlineSection[] @relation("ResearchOutlineSectionHierarchy")
 
-  questions ResearchQuestion[]
+  questions         ResearchQuestion[]
+  excerptReferences ResearchOutlineSectionExcerpt[]
 
   @@index([projectId, parentSectionId, sortOrder])
   @@index([parentSectionId])
@@ -1457,4 +1459,18 @@ model HomeDeckItem {
   @@index([deckId])
   @@index([deckId, sortOrder])
   @@index([entityId])
+}
+
+model ResearchOutlineSectionExcerpt {
+  sectionId        String
+  libraryExcerptId String
+  sortOrder        Int
+  createdAt        DateTime @default(now())
+
+  section        ResearchOutlineSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  libraryExcerpt LibraryExcerpt         @relation(fields: [libraryExcerptId], references: [id], onDelete: Cascade)
+
+  @@id([sectionId, libraryExcerptId])
+  @@index([libraryExcerptId])
+  @@index([sectionId, sortOrder])
 }

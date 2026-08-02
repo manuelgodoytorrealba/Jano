@@ -9,6 +9,13 @@ describe('ResearchOutlineService workspace', () => {
       findFirst: jest.fn(),
       update: jest.fn(),
     },
+    researchOutlineSectionExcerpt: {
+      findUnique: jest.fn(),
+      aggregate: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
+    },
+    libraryExcerpt: { findFirst: jest.fn() },
     researchQuestion: {
       aggregate: jest.fn(),
       create: jest.fn(),
@@ -66,6 +73,27 @@ describe('ResearchOutlineService workspace', () => {
       data: { text: '¿Qué se transforma?' },
     });
     expect(prisma.researchQuestion.delete).toHaveBeenCalledWith({ where: { id: 'question-1' } });
+  });
+
+  it('adds an accessible excerpt once with a stable section order', async () => {
+    prisma.libraryExcerpt.findFirst.mockResolvedValue({ id: 'excerpt-1' });
+    prisma.researchOutlineSectionExcerpt.findUnique.mockResolvedValue(null);
+    prisma.researchOutlineSectionExcerpt.aggregate.mockResolvedValue({ _max: { sortOrder: 2 } });
+
+    await service.addExcerpt('project-1', 'section-1', { libraryExcerptId: ' excerpt-1 ' });
+
+    expect(prisma.researchOutlineSectionExcerpt.create).toHaveBeenCalledWith({
+      data: { sectionId: 'section-1', libraryExcerptId: 'excerpt-1', sortOrder: 3 },
+    });
+  });
+
+  it('does not duplicate an excerpt already anchored to the section', async () => {
+    prisma.libraryExcerpt.findFirst.mockResolvedValue({ id: 'excerpt-1' });
+    prisma.researchOutlineSectionExcerpt.findUnique.mockResolvedValue({ sectionId: 'section-1' });
+
+    await service.addExcerpt('project-1', 'section-1', { libraryExcerptId: 'excerpt-1' });
+
+    expect(prisma.researchOutlineSectionExcerpt.create).not.toHaveBeenCalled();
   });
 
   it('reorders exactly the questions belonging to the active section', async () => {

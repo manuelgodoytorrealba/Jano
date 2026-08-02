@@ -193,6 +193,25 @@ export class ResearchProjectComponent {
     this.preparedExcerpt = excerpt;
   }
 
+  addExcerptToSection(project: ResearchProject, section: ResearchOutlineSection): void {
+    if (!this.preparedExcerpt) return;
+    this.api.addOutlineSectionExcerpt(project.id, section.id, this.preparedExcerpt.id).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => (this.error = 'No se pudo añadir el extracto a esta sección.'),
+    });
+  }
+
+  removeExcerptFromSection(
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+    excerptId: string,
+  ): void {
+    this.api.removeOutlineSectionExcerpt(project.id, section.id, excerptId).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => (this.error = 'No se pudo eliminar el extracto asociado.'),
+    });
+  }
+
   clearPreparedExcerpt(): void {
     this.preparedExcerpt = null;
   }

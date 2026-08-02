@@ -27,6 +27,7 @@ import { CreateLibraryMaterialDto } from '../library/dto/create-library-material
 import { CreateResearchPdfMaterialDto } from './dto/create-research-pdf-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
+import { AddResearchOutlineSectionExcerptDto } from './dto/add-research-outline-section-excerpt.dto';
 import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
 import { ResearchKnowledgeQuery } from './dto/research-knowledge.query';
 import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';

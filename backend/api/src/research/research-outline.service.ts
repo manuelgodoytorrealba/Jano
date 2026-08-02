@@ -7,6 +7,7 @@ import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dt
 import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-section.dto';
 import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
 import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
+import { AddResearchOutlineSectionExcerptDto } from './dto/add-research-outline-section-excerpt.dto';
 
 @Injectable()
 export class ResearchOutlineService {
@@ -154,6 +155,44 @@ export class ResearchOutlineService {
         this.prisma.researchQuestion.update({ where: { id }, data: { sortOrder } }),
       ),
     );
+  }
+
+  async addExcerpt(projectId: string, sectionId: string, dto: AddResearchOutlineSectionExcerptDto) {
+    const libraryExcerptId = dto.libraryExcerptId.trim();
+    if (!libraryExcerptId) throw new BadRequestException('Library excerpt is required');
+    await this.requireSection(projectId, sectionId);
+    const excerpt = await this.prisma.libraryExcerpt.findFirst({
+      where: {
+        id: libraryExcerptId,
+        materialVersion: { material: { research: { some: { projectId } } } },
+      },
+      select: { id: true },
+    });
+    if (!excerpt) throw new NotFoundException('Library excerpt not found');
+    const existing = await this.prisma.researchOutlineSectionExcerpt.findUnique({
+      where: { sectionId_libraryExcerptId: { sectionId, libraryExcerptId } },
+      select: { sectionId: true },
+    });
+    if (existing) return;
+    const last = await this.prisma.researchOutlineSectionExcerpt.aggregate({
+      where: { sectionId },
+      _max: { sortOrder: true },
+    });
+    await this.prisma.researchOutlineSectionExcerpt.create({
+      data: { sectionId, libraryExcerptId, sortOrder: (last._max.sortOrder ?? -1) + 1 },
+    });
+  }
+
+  async removeExcerpt(projectId: string, sectionId: string, libraryExcerptId: string) {
+    await this.requireSection(projectId, sectionId);
+    const reference = await this.prisma.researchOutlineSectionExcerpt.findUnique({
+      where: { sectionId_libraryExcerptId: { sectionId, libraryExcerptId } },
+      select: { sectionId: true },
+    });
+    if (!reference) throw new NotFoundException('Research outline section excerpt not found');
+    await this.prisma.researchOutlineSectionExcerpt.delete({
+      where: { sectionId_libraryExcerptId: { sectionId, libraryExcerptId } },
+    });
   }
 
   private async requireProject(projectId: string) {

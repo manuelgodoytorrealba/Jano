@@ -382,3 +382,31 @@ h1 {
     margin-left: auto;
   }
 }
+
+.research-project__add-excerpt {
+  margin: 16px 0;
+}
+.research-project__excerpts ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.research-project__excerpts li {
+  border-top: 1px solid var(--research-border-soft);
+  padding: 16px 0;
+}
+.research-project__excerpts blockquote {
+  color: var(--research-text-soft);
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  margin: 0 0 8px;
+  white-space: pre-wrap;
+}
+.research-project__excerpts small {
+  color: var(--research-text-muted);
+}
+.research-project__excerpts li button {
+  background: transparent;
+  color: var(--research-text-muted);
+  float: right;
+}

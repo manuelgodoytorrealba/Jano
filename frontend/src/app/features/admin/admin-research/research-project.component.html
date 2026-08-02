@@ -188,6 +188,41 @@
               ></textarea>
             </section>
 
+            <section class="research-project__block research-project__excerpts">
+              <div class="research-project__block-heading">
+                <div>
+                  <h3>Extractos asociados</h3>
+                  <p>
+                    Pasajes seleccionados para responder esta pregunta. Siguen perteneciendo a
+                    Biblioteca.
+                  </p>
+                </div>
+                <span>{{ section.excerptReferences.length }}</span>
+              </div>
+              @if (section.excerptReferences.length) {
+                <ol>
+                  @for (reference of section.excerptReferences; track reference.libraryExcerptId) {
+                    <li>
+                      <blockquote>{{ reference.libraryExcerpt.text }}</blockquote>
+                      <small
+                        >{{ reference.libraryExcerpt.materialVersion.material.title }} ·
+                        {{ reference.libraryExcerpt.locator }}</small
+                      ><button
+                        type="button"
+                        (click)="
+                          removeExcerptFromSection(project, section, reference.libraryExcerptId)
+                        "
+                      >
+                        Eliminar
+                      </button>
+                    </li>
+                  }
+                </ol>
+              } @else {
+                <p>No has seleccionado extractos todavía.</p>
+              }
+            </section>
+
             <section class="research-project__editorial-work">
               <div class="research-project__work-heading">
                 <p class="research-project__eyebrow">Trabajo para esta sección</p>
@@ -203,6 +238,16 @@
                 [materials]="project.materials"
                 (excerptCreated)="prepareEvidenceFromExcerpt($event)"
               />
+
+              @if (preparedExcerpt) {
+                <button
+                  type="button"
+                  class="research-project__add-excerpt"
+                  (click)="addExcerptToSection(project, section)"
+                >
+                  Añadir a esta Section
+                </button>
+              }
 
               <app-research-evidence-capture
                 [researchId]="project.id"

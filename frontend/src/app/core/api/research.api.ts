@@ -307,6 +307,14 @@ export type ResearchQuestion = {
   updatedAt: string;
 };
 
+export type ResearchOutlineSectionExcerpt = {
+  sectionId: string;
+  libraryExcerptId: string;
+  sortOrder: number;
+  createdAt: string;
+  libraryExcerpt: ResearchLibraryExcerpt;
+};
+
 export type ResearchOutlineSection = {
   id: string;
   projectId: string;
@@ -319,6 +327,7 @@ export type ResearchOutlineSection = {
   objective: string | null;
   notes: string | null;
   questions: ResearchQuestion[];
+  excerptReferences: ResearchOutlineSectionExcerpt[];
 };
 
 export type CreateResearchOutlineSectionPayload = {
@@ -440,6 +449,25 @@ export class ResearchApi {
 
   create(data: ResearchProjectPayload) {
     return this.http.post<ResearchProjectSummary>(this.baseUrl, data);
+  }
+
+  addOutlineSectionExcerpt(projectId: string, sectionId: string, libraryExcerptId: string) {
+    return this.http.post<ResearchProject>(
+      this.baseUrl + '/' + projectId + '/outline/sections/' + sectionId + '/library-excerpts',
+      { libraryExcerptId },
+    );
+  }
+
+  removeOutlineSectionExcerpt(projectId: string, sectionId: string, libraryExcerptId: string) {
+    return this.http.delete<ResearchProject>(
+      this.baseUrl +
+        '/' +
+        projectId +
+        '/outline/sections/' +
+        sectionId +
+        '/library-excerpts/' +
+        libraryExcerptId,
+    );
   }
 
   createQuestion(projectId: string, sectionId: string, text: string) {

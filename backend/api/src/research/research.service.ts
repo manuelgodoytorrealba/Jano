@@ -29,6 +29,7 @@ import type {
 } from './dto/research-knowledge.query';
 import type { UploadedResearchPdf } from './research-pdf-upload.config';
 import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
+import { AddResearchOutlineSectionExcerptDto } from './dto/add-research-outline-section-excerpt.dto';
 import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
 import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
 import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outline-sections.dto';
@@ -168,6 +169,24 @@ export class ResearchService {
 
   async reorderOutlineSections(projectId: string, dto: ReorderResearchOutlineSectionsDto) {
     await this.outline.reorder(projectId, dto);
+    return this.getProject(projectId);
+  }
+
+  async addOutlineSectionExcerpt(
+    projectId: string,
+    sectionId: string,
+    dto: AddResearchOutlineSectionExcerptDto,
+  ) {
+    await this.outline.addExcerpt(projectId, sectionId, dto);
+    return this.getProject(projectId);
+  }
+
+  async removeOutlineSectionExcerpt(
+    projectId: string,
+    sectionId: string,
+    libraryExcerptId: string,
+  ) {
+    await this.outline.removeExcerpt(projectId, sectionId, libraryExcerptId);
     return this.getProject(projectId);
   }
 
@@ -630,7 +649,19 @@ export class ResearchService {
           },
         },
         outlineSections: {
-          include: { questions: { orderBy: { sortOrder: 'asc' } } },
+          include: {
+            questions: { orderBy: { sortOrder: 'asc' } },
+            excerptReferences: {
+              include: {
+                libraryExcerpt: {
+                  include: {
+                    materialVersion: { include: { material: { include: { source: true } } } },
+                  },
+                },
+              },
+              orderBy: { sortOrder: 'asc' },
+            },
+          },
           orderBy: [{ parentSectionId: 'asc' }, { sortOrder: 'asc' }],
         },
       },
