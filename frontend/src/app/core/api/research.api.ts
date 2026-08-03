@@ -315,12 +315,19 @@ export type ResearchOutlineSectionExcerpt = {
   libraryExcerpt: ResearchLibraryExcerpt;
 };
 
+export type ResearchSectionReviewTask = {
+  kind: 'SELECT_EXCERPT' | 'CREATE_EVIDENCE' | 'CREATE_CLAIM' | 'REVIEW_CLAIM' | 'READY';
+  title: string;
+  claimId?: string;
+};
+
 export type ResearchSectionDossier = {
   excerpts: ResearchLibraryExcerpt[];
   evidence: ResearchEvidence[];
   claims: ResearchClaim[];
   entities: ResearchEntity[];
   relations: ResearchRelation[];
+  review: { nextTask: ResearchSectionReviewTask };
 };
 
 export type ResearchOutlineSection = {

@@ -14,8 +14,18 @@ describe('presentSectionDossiers', () => {
         { id: 'evidence-a', libraryExcerptId: 'other' },
       ],
       [
-        { id: 'claim-b', evidence: [{ evidenceId: 'evidence-b' }] },
-        { id: 'claim-a', evidence: [{ evidenceId: 'evidence-a' }] },
+        {
+          id: 'claim-b',
+          title: 'Claim B',
+          status: 'DRAFT',
+          evidence: [{ evidenceId: 'evidence-b' }],
+        },
+        {
+          id: 'claim-a',
+          title: 'Claim A',
+          status: 'SUPPORTED',
+          evidence: [{ evidenceId: 'evidence-a' }],
+        },
       ],
       [
         { id: 'entity-b', evidence: [] },
@@ -42,6 +52,7 @@ describe('presentSectionDossiers', () => {
       claims: [{ id: 'claim-b' }],
       entities: [{ id: 'entity-a' }, { id: 'entity-b' }],
       relations: [{ id: 'relation-b' }],
+      review: { nextTask: { kind: 'REVIEW_CLAIM', claimId: 'claim-b' } },
     });
   });
 });

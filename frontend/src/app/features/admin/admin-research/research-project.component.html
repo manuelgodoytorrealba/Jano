@@ -188,6 +188,41 @@
               ></textarea>
             </section>
 
+            <section class="research-project__block research-project__review">
+              <p class="research-project__eyebrow">Siguiente decisión editorial</p>
+              <h3>{{ section.dossier.review.nextTask.title }}</h3>
+              @if (section.dossier.review.nextTask.kind === 'REVIEW_CLAIM') {
+                <p>
+                  Decide si el argumento ya está suficientemente respaldado o si requiere más
+                  contraste.
+                </p>
+                <button
+                  type="button"
+                  (click)="
+                    reviewClaim(project, section.dossier.review.nextTask.claimId!, 'SUPPORTED')
+                  "
+                >
+                  Confirmar respaldo
+                </button>
+                <button
+                  type="button"
+                  class="research-project__quiet-action"
+                  (click)="
+                    reviewClaim(project, section.dossier.review.nextTask.claimId!, 'QUESTIONED')
+                  "
+                >
+                  Mantener en revisión
+                </button>
+              } @else if (section.dossier.review.nextTask.kind === 'READY') {
+                <p>
+                  El dossier conecta corpus, evidencia y argumento. Puedes continuar contrastando o
+                  empezar a escribir.
+                </p>
+              } @else {
+                <p>El siguiente espacio de trabajo está justo debajo.</p>
+              }
+            </section>
+
             <section class="research-project__block research-project__excerpts">
               <div class="research-project__block-heading">
                 <div>

@@ -428,3 +428,17 @@ h1 {
 .research-project__dossier small {
   display: block;
 }
+.research-project__review {
+  background: var(--research-accent-soft);
+  margin: 30px -20px 0;
+  padding: 24px 20px;
+}
+.research-project__review h3 {
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.research-project__quiet-action {
+  background: transparent !important;
+  color: var(--research-text-soft) !important;
+}

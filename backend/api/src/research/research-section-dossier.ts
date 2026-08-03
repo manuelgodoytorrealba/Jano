@@ -1,5 +1,5 @@
 type Evidence = { id: string; libraryExcerptId: string | null };
-type Claim = { id: string; evidence: Array<{ evidenceId: string }> };
+type Claim = { id: string; title: string; status: string; evidence: Array<{ evidenceId: string }> };
 type Entity = { id: string; evidence: Array<{ evidenceId: string }> };
 type Relation = {
   id: string;
@@ -45,6 +45,34 @@ export function presentSectionDossiers<
     const relationEntityIds = new Set(
       selectedRelations.flatMap((relation) => [relation.fromEntityId, relation.toEntityId]),
     );
+    const evidenceByExcerpt = new Set(selectedEvidence.map((item) => item.libraryExcerptId));
+    const claimEvidenceIds = new Set(
+      selectedClaims.flatMap((claim) => claim.evidence.map((item) => item.evidenceId)),
+    );
+    const pendingClaim = selectedClaims.find((claim) => claim.status !== 'SUPPORTED');
+    const nextTask = !section.excerptReferences.length
+      ? { kind: 'SELECT_EXCERPT' as const, title: 'Selecciona un pasaje para esta pregunta' }
+      : section.excerptReferences.find((item) => !evidenceByExcerpt.has(item.libraryExcerptId))
+        ? {
+            kind: 'CREATE_EVIDENCE' as const,
+            title: 'Convierte un pasaje seleccionado en evidencia',
+          }
+        : selectedEvidence.find((item) => !claimEvidenceIds.has(item.id))
+          ? {
+              kind: 'CREATE_CLAIM' as const,
+              title: 'Formula el argumento que sostiene esta evidencia',
+            }
+          : pendingClaim
+            ? {
+                kind: 'REVIEW_CLAIM' as const,
+                title: `Revisa el respaldo de «${pendingClaim.title}»`,
+                claimId: pendingClaim.id,
+              }
+            : {
+                kind: 'READY' as const,
+                title: 'Esta Section tiene un recorrido editorial consolidado',
+              };
+
     return {
       ...section,
       dossier: {
@@ -59,6 +87,7 @@ export function presentSectionDossiers<
           ),
         ),
         relations: selectedRelations,
+        review: { nextTask },
       },
     };
   });

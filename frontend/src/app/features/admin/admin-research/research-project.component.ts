@@ -7,6 +7,7 @@ import {
   ResearchApi,
   ResearchOutlineSection,
   ResearchOutlineSectionStatus,
+  ResearchClaimStatus,
   ResearchProject,
   ResearchQuestion,
   ResearchLibraryExcerptReference,
@@ -198,6 +199,13 @@ export class ResearchProjectComponent {
     this.api.addOutlineSectionExcerpt(project.id, section.id, this.preparedExcerpt.id).subscribe({
       next: () => this.refresh$.next(),
       error: () => (this.error = 'No se pudo añadir el extracto a esta sección.'),
+    });
+  }
+
+  reviewClaim(project: ResearchProject, claimId: string, status: ResearchClaimStatus): void {
+    this.api.setClaimStatus(project.id, claimId, status).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => (this.error = 'No se pudo actualizar el estado del Claim.'),
     });
   }
 
