@@ -65,6 +65,7 @@ export class ResearchProjectComponent {
         map((project) => {
           const activeSection =
             project.outlineSections.find((section) => section.id === params.get('sectionId')) ??
+            project.outlineSections[0] ??
             null;
           this.syncWorkspace(activeSection);
           return { project, activeSection, error: '' };

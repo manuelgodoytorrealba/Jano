@@ -121,20 +121,18 @@ export const routes: Routes = [
       },
       {
         path: 'research/prototype/:screen',
-        loadComponent: () =>
-          import('./features/admin/admin-research/research-studio-poc.component').then(
-            (m) => m.ResearchStudioPocComponent,
-          ),
+        redirectTo: 'research',
+        pathMatch: 'full',
       },
       {
-        path: 'research',
+        path: 'research/new',
         loadComponent: () =>
           import('./features/admin/admin-research/admin-research.component').then(
             (m) => m.AdminResearchComponent,
           ),
       },
       {
-        path: 'research/new',
+        path: 'research',
         loadComponent: () =>
           import('./features/admin/admin-research/admin-research.component').then(
             (m) => m.AdminResearchComponent,

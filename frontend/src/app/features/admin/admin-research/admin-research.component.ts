@@ -245,6 +245,19 @@ export class AdminResearchComponent {
     }),
   );
 
+  constructor() {
+    this.route.queryParamMap
+      .pipe(
+        map((params) => params.get('project')),
+        distinctUntilChanged(),
+      )
+      .subscribe((projectId) => {
+        if (projectId) {
+          void this.router.navigate(['/admin/research', projectId], { replaceUrl: true });
+        }
+      });
+  }
+
   readonly sourceResults$ = this.sourceSearch$.pipe(
     debounceTime(180),
     distinctUntilChanged(),
@@ -272,20 +285,32 @@ export class AdminResearchComponent {
     this.error = '';
 
     this.api
-      .create({
-        title,
-        objective,
-        scope: scope || undefined,
-      })
+      .create({ title, objective, scope: scope || undefined })
+      .pipe(
+        switchMap((project) =>
+          this.api.createOutlineSection(project.id, { title: 'Primera Section' }).pipe(
+            map((workspace) => ({
+              project,
+              section: workspace.outlineSections.find(
+                (section) => !section.parentSectionId && section.title === 'Primera Section',
+              ),
+            })),
+          ),
+        ),
+      )
       .subscribe({
-        next: (project) => {
+        next: ({ project, section }) => {
           this.creating = false;
           this.feedback = `Investigación "${project.title}" creada.`;
           this.title = '';
           this.objective = '';
           this.scope = '';
           this.refresh$.next();
-          void this.router.navigate(['/admin/research', project.id]);
+          void this.router.navigate(
+            section
+              ? ['/admin/research', project.id, 'sections', section.id]
+              : ['/admin/research', project.id],
+          );
         },
         error: (err) => {
           this.creating = false;

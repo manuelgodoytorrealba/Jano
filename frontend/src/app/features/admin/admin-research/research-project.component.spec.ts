@@ -156,6 +156,14 @@ describe('ResearchProjectComponent', () => {
     });
   });
 
+  it('opens the first section from a direct research route', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [section()] })),
+    };
+    const fixture = await createFixture(api);
+    expect(fixture.nativeElement.textContent).toContain('Cubismo analítico');
+  });
+
   it('restores the opened section and its editorial context from the URL', async () => {
     const api = {
       getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [section()] })),
@@ -269,9 +277,9 @@ describe('ResearchProjectComponent', () => {
     expect(api.deleteQuestion).toHaveBeenCalledWith(project.id, active.id, 'q1');
   });
 
-  it('keeps research-wide editorial tools out of the empty section workspace', async () => {
+  it('keeps research-wide editorial tools out of a project without Sections', async () => {
     const api = {
-      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [section()] })),
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [] })),
     };
     const fixture = await createFixture(api);
     expect(fixture.debugElement.query(By.directive(ResearchClaimCaptureComponent))).toBeNull();

@@ -3,7 +3,7 @@
     @if (vm.project; as project) {
       <header class="research-project__header">
         <nav class="research-project__breadcrumb" aria-label="Miga de pan">
-          <a routerLink="/admin/research">Investigaciones</a><span>/</span
+          <a routerLink="/admin/research">Research Studio</a><span>/</span
           ><span>{{ project.title }}</span>
           @if (vm.activeSection; as section) {
             <span>/</span><strong>{{ section.title }}</strong>
@@ -36,7 +36,7 @@
                 <li>
                   <button
                     type="button"
-                    [class.is-active]="section.id === vm.activeSection?.id"
+                    [class.is-active]="section.id === vm.activeSection.id"
                     (click)="openSection(project, section)"
                   >
                     <span>{{ section.title }}</span
@@ -48,7 +48,7 @@
                         <li>
                           <button
                             type="button"
-                            [class.is-active]="child.id === vm.activeSection?.id"
+                            [class.is-active]="child.id === vm.activeSection.id"
                             (click)="openSection(project, child)"
                           >
                             <span>{{ child.title }}</span
