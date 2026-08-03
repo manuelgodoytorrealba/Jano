@@ -5,6 +5,98 @@
         <nav class="research-project__breadcrumb" aria-label="Miga de pan">
           <a routerLink="/admin/research">Research Studio</a><span>/</span
           ><span>{{ project.title }}</span>
+          <ng-template #materialIntake let-project>
+            <div class="research-project__workspace-empty">
+              <p class="research-project__eyebrow">Corpus de investigación</p>
+              <h2>Reúne primero los materiales con los que vas a pensar.</h2>
+              <p>
+                Incorpora texto, una URL o un PDF al corpus privado. Después crea un índice con
+                secciones nombradas por ti desde el panel de la izquierda.
+              </p>
+
+              <form class="research-project__material-intake" (ngSubmit)="createMaterial(project)">
+                <div class="research-project__material-kinds" aria-label="Tipo de material">
+                  @for (kind of ['TEXT', 'URL', 'PDF']; track kind) {
+                    <button
+                      type="button"
+                      [class.is-active]="materialKind === kind"
+                      (click)="materialKind = $any(kind)"
+                    >
+                      {{ kind === 'TEXT' ? 'Texto' : kind === 'URL' ? 'URL' : 'PDF' }}
+                    </button>
+                  }
+                </div>
+                <input
+                  type="text"
+                  name="materialTitle"
+                  [(ngModel)]="materialTitle"
+                  placeholder="Título del material"
+                />
+                @if (materialKind === 'TEXT') {
+                  <textarea
+                    name="materialContent"
+                    [(ngModel)]="materialContent"
+                    rows="8"
+                    placeholder="Pega aquí el texto que quieres investigar"
+                  ></textarea>
+                } @else if (materialKind === 'URL') {
+                  <input
+                    type="url"
+                    name="materialUrl"
+                    [(ngModel)]="materialUrl"
+                    placeholder="https://…"
+                  />
+                } @else {
+                  <label class="research-project__pdf-input">
+                    <span>{{ materialPdf?.name || 'Seleccionar PDF · máximo 25 MB' }}</span>
+                    <input type="file" accept="application/pdf,.pdf" (change)="selectPdf($event)" />
+                  </label>
+                  <p class="research-project__material-limit">
+                    El PDF se conserva en el corpus, pero aún no se puede leer ni extraer dentro de
+                    JANO.
+                  </p>
+                }
+                <button type="submit" [disabled]="addingMaterial || !canCreateMaterial()">
+                  {{ addingMaterial ? 'Incorporando…' : 'Incorporar al corpus' }}
+                </button>
+              </form>
+
+              @if (materialMessage) {
+                <p class="research-project__material-message">{{ materialMessage }}</p>
+              }
+
+              @if (project.materials.length) {
+                <section class="research-project__corpus-list">
+                  <h3>Corpus incorporado</h3>
+                  <ul>
+                    @for (material of project.materials; track material.id) {
+                      <li>
+                        <strong>{{ material.title }}</strong>
+                        <span>{{
+                          material.kind === 'TEXT' && material.status === 'READY'
+                            ? 'Disponible para lectura al abrir una Section'
+                            : 'Registrado; pendiente de preparación'
+                        }}</span>
+                      </li>
+                    }
+                  </ul>
+                </section>
+              }
+
+              <p class="research-project__next-step">
+                Cuando tengas el corpus inicial, crea en el índice la primera sección real de tu
+                investigación.
+              </p>
+            </div>
+          </ng-template>
+
+          @if (!project.materials.length) {
+            <ng-container
+              [ngTemplateOutlet]="materialIntake"
+              [ngTemplateOutletContext]="{ $implicit: project }"
+            />
+          }
+
           @if (vm.activeSection; as section) {
             <span>/</span><strong>{{ section.title }}</strong>
           }
@@ -104,6 +196,7 @@
               <h3>Objetivo</h3>
               <p>¿Qué intenta resolver esta sección?</p>
               <textarea
+                name="sectionObjective"
                 [(ngModel)]="workspaceObjective"
                 [ngModelOptions]="{ standalone: true }"
                 (blur)="saveWorkspace(project, section)"
@@ -302,6 +395,7 @@
               </p>
               <textarea
                 class="research-project__notes"
+                name="sectionNotes"
                 [(ngModel)]="workspaceNotes"
                 [ngModelOptions]="{ standalone: true }"
                 (blur)="saveWorkspace(project, section)"
@@ -562,11 +656,11 @@
             </footer>
           } @else {
             <div class="research-project__workspace-empty">
-              <p class="research-project__eyebrow">Workspace editorial</p>
-              <h2>Elige una sección para comenzar</h2>
+              <p class="research-project__eyebrow">Índice de investigación</p>
+              <h2>Crea el índice cuando estés listo para organizar el corpus.</h2>
               <p>
-                El índice mantiene visible la dirección de la investigación. Abre una sección para
-                trabajar en su objetivo, preguntas y notas.
+                Nombra la primera Section según la cuestión real que quieras resolver; JANO no crea
+                secciones genéricas por ti.
               </p>
             </div>
           }

@@ -400,11 +400,6 @@ describe('AdminResearchComponent', () => {
           updatedAt: '2026-07-07T09:00:00.000Z',
         }),
       ),
-      createOutlineSection: vi.fn().mockReturnValue(
-        of({
-          outlineSections: [{ id: 'section-2', parentSectionId: null, title: 'Primera Section' }],
-        }),
-      ),
       searchSources: vi.fn().mockReturnValue(
         of([
           {
@@ -558,15 +553,8 @@ describe('AdminResearchComponent', () => {
       objective: 'Objetivo',
       scope: undefined,
     });
-    expect(api.createOutlineSection).toHaveBeenCalledWith('research-2', {
-      title: 'Primera Section',
-    });
-    expect(router.navigate).toHaveBeenCalledWith([
-      '/admin/research',
-      'research-2',
-      'sections',
-      'section-2',
-    ]);
+    expect(api).not.toHaveProperty('createOutlineSection');
+    expect(router.navigate).toHaveBeenCalledWith(['/admin/research', 'research-2']);
 
     component.sourceId = ' source-2 ';
     component.sourceNote = ' Nota ';

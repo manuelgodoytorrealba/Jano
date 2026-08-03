@@ -156,6 +156,30 @@ describe('ResearchProjectComponent', () => {
     });
   });
 
+  it('incorporates corpus before creating an outline section', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(of(project)),
+      createMaterial: vi.fn().mockReturnValue(of(project)),
+    };
+    const fixture = await createFixture(api);
+    expect(fixture.nativeElement.textContent).toContain('Reúne primero los materiales');
+    const title = fixture.nativeElement.querySelector('input[name=materialTitle]');
+    const content = fixture.nativeElement.querySelector('textarea[name=materialContent]');
+    title.value = 'Carta de Apollinaire';
+    title.dispatchEvent(new Event('input'));
+    content.value = 'Texto de trabajo';
+    content.dispatchEvent(new Event('input'));
+    fixture.nativeElement
+      .querySelector('.research-project__material-intake')
+      .dispatchEvent(new Event('submit'));
+    expect(api.createMaterial).toHaveBeenCalledWith(project.id, {
+      kind: 'TEXT',
+      title: 'Carta de Apollinaire',
+      content: 'Texto de trabajo',
+      url: undefined,
+    });
+  });
+
   it('opens the first section from a direct research route', async () => {
     const api = {
       getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [section()] })),
@@ -171,10 +195,10 @@ describe('ResearchProjectComponent', () => {
     const fixture = await createFixture(api, true);
     expect(fixture.nativeElement.textContent).toContain('Cubismo analítico');
     expect(fixture.nativeElement.textContent).toContain('En desarrollo');
-    expect(fixture.nativeElement.querySelectorAll('textarea')[0].value).toBe(
+    expect(fixture.nativeElement.querySelector('textarea[name=sectionObjective]').value).toBe(
       'Comprender la fragmentación.',
     );
-    expect(fixture.nativeElement.querySelectorAll('textarea')[1].value).toBe(
+    expect(fixture.nativeElement.querySelector('textarea[name=sectionNotes]').value).toBe(
       'Volver a las cartas.',
     );
     expect(fixture.nativeElement.textContent).toContain('Trabajo para esta sección');
@@ -192,7 +216,7 @@ describe('ResearchProjectComponent', () => {
       updateOutlineSection: vi.fn().mockReturnValue(of(project)),
     };
     const fixture = await createFixture(api, true);
-    const textarea = fixture.nativeElement.querySelectorAll('textarea')[0];
+    const textarea = fixture.nativeElement.querySelector('textarea[name=sectionObjective]');
     textarea.value = 'Explicar el método analítico';
     textarea.dispatchEvent(new Event('input'));
     textarea.dispatchEvent(new Event('blur'));
@@ -283,7 +307,7 @@ describe('ResearchProjectComponent', () => {
     };
     const fixture = await createFixture(api);
     expect(fixture.debugElement.query(By.directive(ResearchClaimCaptureComponent))).toBeNull();
-    expect(fixture.nativeElement.textContent).toContain('Elige una sección para comenzar');
+    expect(fixture.nativeElement.textContent).toContain('Reúne primero los materiales');
   });
 
   it('offers only the active Section evidence when formulating an assertion', async () => {

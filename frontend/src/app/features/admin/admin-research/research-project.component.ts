@@ -1,4 +1,4 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -13,6 +13,7 @@ import {
   ResearchLibraryExcerpt,
   ResearchLibraryExcerptReference,
   ResearchClaim,
+  ResearchDocumentKind,
 } from '../../../core/api/research.api';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.component';
@@ -25,6 +26,7 @@ import { ResearchMaterialReaderComponent } from './research-material-reader.comp
   imports: [
     AsyncPipe,
     DatePipe,
+    NgTemplateOutlet,
     FormsModule,
     RouterLink,
     ResearchClaimCaptureComponent,
@@ -52,6 +54,13 @@ export class ResearchProjectComponent {
   error = '';
   preparedExcerpt: ResearchLibraryExcerptReference | null = null;
   reviewExcerpt: ResearchLibraryExcerpt | null = null;
+  materialKind: ResearchDocumentKind = 'TEXT';
+  materialTitle = '';
+  materialContent = '';
+  materialUrl = '';
+  materialPdf: File | null = null;
+  addingMaterial = false;
+  materialMessage = '';
   readonly statuses: ResearchOutlineSectionStatus[] = [
     'NOT_STARTED',
     'IN_PROGRESS',
@@ -76,6 +85,56 @@ export class ResearchProjectComponent {
       ),
     ),
   );
+
+  createMaterial(project: ResearchProject): void {
+    if (!this.canCreateMaterial() || this.addingMaterial) return;
+    const title = this.materialTitle.trim();
+    const request =
+      this.materialKind === 'PDF'
+        ? this.materialPdf
+          ? this.api.createPdfMaterial(project.id, this.materialPdf, title)
+          : null
+        : this.api.createMaterial(project.id, {
+            kind: this.materialKind,
+            title,
+            content: this.materialKind === 'TEXT' ? this.materialContent.trim() : undefined,
+            url: this.materialKind === 'URL' ? this.materialUrl.trim() : undefined,
+          });
+    if (!request) return;
+
+    this.addingMaterial = true;
+    this.materialMessage = '';
+    request.subscribe({
+      next: () => {
+        this.addingMaterial = false;
+        this.materialTitle = '';
+        this.materialContent = '';
+        this.materialUrl = '';
+        this.materialPdf = null;
+        this.materialMessage = 'Material incorporado al corpus.';
+        this.refresh$.next();
+      },
+      error: () => {
+        this.addingMaterial = false;
+        this.materialMessage = 'No se pudo incorporar el material.';
+      },
+    });
+  }
+
+  selectPdf(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.materialPdf = input.files?.[0] ?? null;
+    if (this.materialPdf && !this.materialTitle.trim()) {
+      this.materialTitle = this.materialPdf.name.replace(/\.pdf$/i, '');
+    }
+  }
+
+  canCreateMaterial(): boolean {
+    if (!this.materialTitle.trim()) return false;
+    if (this.materialKind === 'TEXT') return Boolean(this.materialContent.trim());
+    if (this.materialKind === 'URL') return Boolean(this.materialUrl.trim());
+    return Boolean(this.materialPdf);
+  }
 
   createSection(project: ResearchProject, parentSectionId?: string): void {
     const title = this.title.trim();

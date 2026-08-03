@@ -284,39 +284,21 @@ export class AdminResearchComponent {
     this.feedback = '';
     this.error = '';
 
-    this.api
-      .create({ title, objective, scope: scope || undefined })
-      .pipe(
-        switchMap((project) =>
-          this.api.createOutlineSection(project.id, { title: 'Primera Section' }).pipe(
-            map((workspace) => ({
-              project,
-              section: workspace.outlineSections.find(
-                (section) => !section.parentSectionId && section.title === 'Primera Section',
-              ),
-            })),
-          ),
-        ),
-      )
-      .subscribe({
-        next: ({ project, section }) => {
-          this.creating = false;
-          this.feedback = `Investigación "${project.title}" creada.`;
-          this.title = '';
-          this.objective = '';
-          this.scope = '';
-          this.refresh$.next();
-          void this.router.navigate(
-            section
-              ? ['/admin/research', project.id, 'sections', section.id]
-              : ['/admin/research', project.id],
-          );
-        },
-        error: (err) => {
-          this.creating = false;
-          this.error = err?.error?.message ?? 'No se pudo crear la investigación.';
-        },
-      });
+    this.api.create({ title, objective, scope: scope || undefined }).subscribe({
+      next: (project) => {
+        this.creating = false;
+        this.feedback = `Investigación "${project.title}" creada.`;
+        this.title = '';
+        this.objective = '';
+        this.scope = '';
+        this.refresh$.next();
+        void this.router.navigate(['/admin/research', project.id]);
+      },
+      error: (err) => {
+        this.creating = false;
+        this.error = err?.error?.message ?? 'No se pudo crear la investigación.';
+      },
+    });
   }
 
   addSource(projectId: string): void {
