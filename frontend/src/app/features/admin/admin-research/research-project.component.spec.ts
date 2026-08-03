@@ -239,6 +239,10 @@ describe('ResearchProjectComponent', () => {
       reorderQuestions: vi.fn().mockReturnValue(of(project)),
     };
     const fixture = await createFixture(api, true);
+    expect(fixture.nativeElement.textContent).toContain('Este contexto pertenece a la Section.');
+    expect(fixture.nativeElement.textContent).toContain(
+      'No existe todavía suficiente contexto para responder esta pregunta.',
+    );
     const questionInput = fixture.nativeElement.querySelector('input[name="question"]');
     questionInput.value = '¿Cómo cambia la mirada?';
     questionInput.dispatchEvent(new Event('input'));

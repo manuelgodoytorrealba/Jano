@@ -173,6 +173,59 @@
               }
             </section>
 
+            @if (section.questions.length) {
+              <section class="research-project__question-threads" aria-label="Hilos de preguntas">
+                @for (question of section.questions; track question.id) {
+                  <details>
+                    <summary>{{ question.text }}</summary>
+                    <p>
+                      Este contexto pertenece a la Section. JANO todavía no puede demostrar qué
+                      Extracto, Evidence o Claim responde específicamente a esta pregunta.
+                    </p>
+                    <dl>
+                      <div>
+                        <dt>Extractos seleccionados</dt>
+                        <dd>{{ section.dossier.excerpts.length }}</dd>
+                      </div>
+                      <div>
+                        <dt>Evidence disponibles</dt>
+                        <dd>{{ section.dossier.evidence.length }}</dd>
+                      </div>
+                      <div>
+                        <dt>Claims en contexto</dt>
+                        <dd>{{ section.dossier.claims.length }}</dd>
+                      </div>
+                      <div>
+                        <dt>Contradicciones abiertas</dt>
+                        <dd>{{ section.dossier.summary.contradictionCount }}</dd>
+                      </div>
+                    </dl>
+                    @if (section.dossier.claims.length) {
+                      <p class="research-project__thread-label">
+                        Claims que requieren contraste en esta Section
+                      </p>
+                      <ul>
+                        @for (claim of section.dossier.claims; track claim.id) {
+                          <li>{{ claim.title }} · {{ claimStatusLabel(claim.status) }}</li>
+                        }
+                      </ul>
+                    }
+                    <p class="research-project__thread-next">
+                      <strong>Para avanzar:</strong> {{ section.dossier.review.nextTask.title }}
+                    </p>
+                    @if (
+                      !section.dossier.excerpts.length ||
+                      !section.dossier.evidence.length ||
+                      !section.dossier.claims.length
+                    ) {
+                      <p class="research-project__thread-gap">
+                        No existe todavía suficiente contexto para responder esta pregunta.
+                      </p>
+                    }
+                  </details>
+                }
+              </section>
+            }
             <section class="research-project__block research-project__summary">
               <p class="research-project__eyebrow">Section Editorial Summary</p>
               <h3>Cómo continuar esta Section</h3>
