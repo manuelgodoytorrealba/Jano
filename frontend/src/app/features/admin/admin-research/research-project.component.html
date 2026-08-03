@@ -223,6 +223,86 @@
               }
             </section>
 
+            <section class="research-project__block research-project__dossier">
+              <div class="research-project__block-heading">
+                <div>
+                  <h3>Evidencias derivadas</h3>
+                  <p>Usos investigadores ya existentes de estos extractos.</p>
+                </div>
+                <span>{{ section.dossier.evidence.length }}</span>
+              </div>
+              @if (section.dossier.evidence.length) {
+                <ol>
+                  @for (evidence of section.dossier.evidence; track evidence.id) {
+                    <li>
+                      <strong>{{ evidence.locator }}</strong>
+                      <p>{{ evidence.context || evidence.note || 'Sin contexto adicional.' }}</p>
+                    </li>
+                  }
+                </ol>
+              } @else {
+                <p>Estos extractos todavía no sostienen Evidence.</p>
+              }
+            </section>
+
+            <section class="research-project__block research-project__dossier">
+              <div class="research-project__block-heading">
+                <div>
+                  <h3>Argumentos derivados</h3>
+                  <p>Claims del Research sostenidos por las evidencias seleccionadas.</p>
+                </div>
+                <span>{{ section.dossier.claims.length }}</span>
+              </div>
+              @if (section.dossier.claims.length) {
+                <ol>
+                  @for (claim of section.dossier.claims; track claim.id) {
+                    <li>
+                      <strong>{{ claim.title }}</strong>
+                      <p>{{ claim.summary || 'Sin resumen adicional.' }}</p>
+                    </li>
+                  }
+                </ol>
+              } @else {
+                <p>Aún no hay Claims derivados.</p>
+              }
+            </section>
+
+            <section class="research-project__block research-project__dossier">
+              <div class="research-project__block-heading">
+                <div>
+                  <h3>Conocimiento relacionado</h3>
+                  <p>
+                    Entities y Relations reutilizadas del conocimiento privado de esta
+                    investigación.
+                  </p>
+                </div>
+                <span>{{
+                  section.dossier.entities.length + section.dossier.relations.length
+                }}</span>
+              </div>
+              @if (section.dossier.entities.length || section.dossier.relations.length) {
+                <ol>
+                  @for (entity of section.dossier.entities; track entity.id) {
+                    <li>
+                      <strong>{{ entity.title }}</strong
+                      ><small>Entidad privada</small>
+                    </li>
+                  }
+                  @for (relation of section.dossier.relations; track relation.id) {
+                    <li>
+                      <strong
+                        >{{ relation.fromEntity?.title }} → {{ relation.toEntity?.title }}</strong
+                      ><small>{{
+                        relation.explanation || 'Relación explicada por los Claims derivados.'
+                      }}</small>
+                    </li>
+                  }
+                </ol>
+              } @else {
+                <p>Aún no hay Entities o Relations implicadas.</p>
+              }
+            </section>
+
             <section class="research-project__editorial-work">
               <div class="research-project__work-heading">
                 <p class="research-project__eyebrow">Trabajo para esta sección</p>

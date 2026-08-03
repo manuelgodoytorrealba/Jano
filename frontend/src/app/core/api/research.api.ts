@@ -315,6 +315,14 @@ export type ResearchOutlineSectionExcerpt = {
   libraryExcerpt: ResearchLibraryExcerpt;
 };
 
+export type ResearchSectionDossier = {
+  excerpts: ResearchLibraryExcerpt[];
+  evidence: ResearchEvidence[];
+  claims: ResearchClaim[];
+  entities: ResearchEntity[];
+  relations: ResearchRelation[];
+};
+
 export type ResearchOutlineSection = {
   id: string;
   projectId: string;
@@ -328,6 +336,7 @@ export type ResearchOutlineSection = {
   notes: string | null;
   questions: ResearchQuestion[];
   excerptReferences: ResearchOutlineSectionExcerpt[];
+  dossier: ResearchSectionDossier;
 };
 
 export type CreateResearchOutlineSectionPayload = {

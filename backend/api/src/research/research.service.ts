@@ -36,6 +36,7 @@ import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outlin
 import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dto';
 import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-section.dto';
 import { ResearchOutlineService } from './research-outline.service';
+import { presentSectionDossiers } from './research-section-dossier';
 const researchSourceSelect = {
   id: true,
   type: true,
@@ -708,6 +709,13 @@ export class ResearchService {
     };
     return {
       ...research,
+      outlineSections: presentSectionDossiers(
+        research.outlineSections,
+        research.evidence,
+        claims,
+        entities,
+        relations,
+      ),
       knowledge,
       materials: (libraryMaterials ?? [])
         .map(({ material }) => {
