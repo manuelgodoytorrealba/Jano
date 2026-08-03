@@ -321,6 +321,27 @@ export type ResearchSectionReviewTask = {
   claimId?: string;
 };
 
+export type ResearchSectionEditorialSummary = {
+  excerptCount: number;
+  evidenceCount: number;
+  claimCount: number;
+  supportedClaimCount: number;
+  questionedClaimCount: number;
+  contradictionCount: number;
+  questionsWithoutExplicitSupport: ResearchQuestion[];
+  state: {
+    kind:
+      | 'NEEDS_CORPUS'
+      | 'NEEDS_EVIDENCE'
+      | 'NEEDS_ARGUMENT'
+      | 'HAS_TENSION'
+      | 'NEEDS_REVIEW'
+      | 'SUPPORTED';
+    title: string;
+    description: string;
+  };
+};
+
 export type ResearchSectionDossier = {
   excerpts: ResearchLibraryExcerpt[];
   evidence: ResearchEvidence[];
@@ -328,6 +349,7 @@ export type ResearchSectionDossier = {
   entities: ResearchEntity[];
   relations: ResearchRelation[];
   review: { nextTask: ResearchSectionReviewTask };
+  summary: ResearchSectionEditorialSummary;
 };
 
 export type ResearchOutlineSection = {

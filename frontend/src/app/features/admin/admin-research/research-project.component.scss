@@ -442,3 +442,38 @@ h1 {
   background: transparent !important;
   color: var(--research-text-soft) !important;
 }
+.research-project__summary {
+  padding-top: 30px;
+}
+.research-project__summary h3 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 7px;
+}
+.research-project__summary dl {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 22px 0;
+}
+.research-project__summary dl div {
+  border-top: 1px solid var(--research-border-soft);
+  padding-top: 9px;
+}
+.research-project__summary dt {
+  color: var(--research-text-muted);
+  font-size: 11px;
+}
+.research-project__summary dd {
+  font-size: 18px;
+  margin: 3px 0 0;
+}
+.research-project__summary-note,
+.research-project__summary ul {
+  color: var(--research-text-muted);
+  font-size: 13px;
+}
+.research-project__summary ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}

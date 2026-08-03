@@ -6,6 +6,7 @@ describe('presentSectionDossiers', () => {
       [
         {
           id: 'section',
+          questions: [{ id: 'question-1', text: '¿Qué cambia?' }],
           excerptReferences: [{ libraryExcerptId: 'excerpt', libraryExcerpt: { id: 'excerpt' } }],
         },
       ],
@@ -17,12 +18,14 @@ describe('presentSectionDossiers', () => {
         {
           id: 'claim-b',
           title: 'Claim B',
+          kind: 'ASSERTION',
           status: 'DRAFT',
           evidence: [{ evidenceId: 'evidence-b' }],
         },
         {
           id: 'claim-a',
           title: 'Claim A',
+          kind: 'ASSERTION',
           status: 'SUPPORTED',
           evidence: [{ evidenceId: 'evidence-a' }],
         },
@@ -53,6 +56,15 @@ describe('presentSectionDossiers', () => {
       entities: [{ id: 'entity-a' }, { id: 'entity-b' }],
       relations: [{ id: 'relation-b' }],
       review: { nextTask: { kind: 'REVIEW_CLAIM', claimId: 'claim-b' } },
+      summary: {
+        excerptCount: 1,
+        evidenceCount: 1,
+        claimCount: 1,
+        supportedClaimCount: 0,
+        questionedClaimCount: 0,
+        contradictionCount: 0,
+        questionsWithoutExplicitSupport: [{ id: 'question-1' }],
+      },
     });
   });
 });
