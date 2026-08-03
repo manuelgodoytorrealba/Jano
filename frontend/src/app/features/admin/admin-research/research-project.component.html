@@ -426,7 +426,9 @@
 
               <app-research-claim-capture
                 [researchId]="project.id"
-                [evidence]="project.evidence"
+                [evidence]="
+                  section.dossier.evidence.length ? section.dossier.evidence : project.evidence
+                "
                 (saved)="refreshResearch()"
               />
             </section>

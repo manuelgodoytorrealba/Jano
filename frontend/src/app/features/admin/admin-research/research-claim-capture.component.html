@@ -1,7 +1,7 @@
 <section class="research-claim" aria-label="Formular una afirmación privada">
   <header>
-    <p>Formular una afirmación</p>
-    <h2>La Evidence respalda el Claim; no lo convierte en verdad.</h2>
+    <p>Razonar desde esta Section</p>
+    <h2>¿Qué puedes afirmar con estas evidencias?</h2>
   </header>
 
   @if (evidence.length) {
@@ -19,7 +19,7 @@
       ></textarea>
 
       <fieldset>
-        <legend>Evidence que respalda esta afirmación</legend>
+        <legend>Elige sólo las evidencias que sostienen esta afirmación</legend>
         @for (item of evidence; track item.id) {
           <label>
             <input
@@ -41,10 +41,12 @@
         <p class="research-claim__error">{{ error }}</p>
       }
       <button type="submit" [disabled]="busy || !title.trim() || !selectedEvidenceIds.length">
-        {{ busy ? 'Guardando…' : 'Crear Claim en borrador' }}
+        {{ busy ? 'Guardando…' : 'Guardar afirmación en borrador' }}
       </button>
     </form>
   } @else {
-    <p class="research-claim__empty">Registra Evidence antes de formular una afirmación privada.</p>
+    <p class="research-claim__empty">
+      Selecciona extractos y registra sus evidencias antes de formular una afirmación.
+    </p>
   }
 </section>

@@ -3,7 +3,11 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
-import { ResearchApi, ResearchOutlineSection } from '../../../core/api/research.api';
+import {
+  ResearchApi,
+  ResearchEvidence,
+  ResearchOutlineSection,
+} from '../../../core/api/research.api';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchProjectComponent } from './research-project.component';
 
@@ -30,6 +34,21 @@ const project = {
   outlineSections: [],
 };
 
+const sectionEvidence: ResearchEvidence = {
+  id: 'evidence-section-1',
+  projectId: project.id,
+  sourceId: 'source-1',
+  sourceVersion: 'edición',
+  locator: 'p. 42',
+  libraryExcerptId: 'excerpt-1',
+  quote: null,
+  context: null,
+  note: null,
+  fingerprint: 'fingerprint-1',
+  createdAt: project.createdAt,
+  updatedAt: project.updatedAt,
+};
+
 const section = (): ResearchOutlineSection => ({
   id: 'section-1',
   projectId: project.id,
@@ -42,6 +61,29 @@ const section = (): ResearchOutlineSection => ({
   objective: 'Comprender la fragmentación.',
   notes: 'Volver a las cartas.',
   questions: [],
+  excerptReferences: [],
+  dossier: {
+    excerpts: [],
+    evidence: [sectionEvidence],
+    claims: [],
+    entities: [],
+    relations: [],
+    review: { nextTask: { kind: 'CREATE_CLAIM', title: 'Formula una afirmación.' } },
+    summary: {
+      excerptCount: 0,
+      evidenceCount: 1,
+      claimCount: 0,
+      supportedClaimCount: 0,
+      questionedClaimCount: 0,
+      contradictionCount: 0,
+      questionsWithoutExplicitSupport: [],
+      state: {
+        kind: 'NEEDS_ARGUMENT',
+        title: 'Formula un argumento',
+        description: 'Hay evidencia disponible.',
+      },
+    },
+  },
 });
 
 const topology = {
@@ -216,6 +258,24 @@ describe('ResearchProjectComponent', () => {
     const fixture = await createFixture(api);
     expect(fixture.debugElement.query(By.directive(ResearchClaimCaptureComponent))).toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Elige una sección para comenzar');
+  });
+
+  it('offers only the active Section evidence when formulating an assertion', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(
+        of({
+          ...project,
+          evidence: [{ ...sectionEvidence, id: 'evidence-global' }],
+          outlineSections: [section()],
+        }),
+      ),
+    };
+    const fixture = await createFixture(api, true);
+
+    expect(
+      fixture.debugElement.query(By.directive(ResearchClaimCaptureComponent)).componentInstance
+        .evidence,
+    ).toEqual([sectionEvidence]);
   });
 
   it('refreshes the workspace after a Claim is saved', async () => {
