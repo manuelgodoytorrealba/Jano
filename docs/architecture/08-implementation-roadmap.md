@@ -28,7 +28,7 @@ flowchart LR
 | 2    | Claims, evidencia, entidades y relaciones privadas  | Biblioteca → Knowledge                     |
 | 3    | exploración conectada trazable                      | Knowledge → Graph                          |
 | 4    | secciones y dossier editorial                       | Research → Section                         |
-| 5    | Draft y Review investigador                         | Contexto → Writing → Review                |
+| 5    | escritura investigadora incremental y Review        | Section → Draft → Review                   |
 | 6    | Publication y versiones inmutables                  | Research → Publication                     |
 | 7    | promoción explícita al Core                         | Knowledge → Proposal → Core                |
 | 8    | Editions autónomas                                  | Publication Version → Edition              |
@@ -38,3 +38,5 @@ flowchart LR
 ## Simplificaciones autorizadas
 
 Comenzar con permisos simples, historial lineal, revisión humana, procesamiento manual, subgrafos limitados, una edición creada manualmente y sin IA. No simplificar ownership, trazabilidad, privacidad, inmutabilidad publicada ni promoción explícita.
+
+La fase 5 se entrega en este orden: identidad y primera revisión de Draft; escritura situada en una Section; referencias editoriales selectivas; revisión de revisiones; incorporación explícita a Publication. La Review de conocimiento ya operativa no sustituye estas piezas de escritura.

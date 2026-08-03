@@ -14,6 +14,8 @@ Research es el agregado privado que contiene el proceso investigador: propósito
 
 Research se presenta a la investigadora como un flujo editorial continuo, no como una colección de herramientas. La experiencia de ese flujo pertenece a [Research Studio](./15-research-studio-experience.md); la preparación de corpus y propuestas pertenece al [Editorial Pipeline](./16-editorial-pipeline.md).
 
+El contrato de identidad, revisiones, referencias y derivación de un Draft pertenece a [Drafts de Research](./11-research-drafts.md). Research conserva su ownership; este documento evita duplicar esas reglas.
+
 ## Section y dossier editorial
 
 Research conserva el trabajo completo y sus objetos privados. En la experiencia diaria, la investigadora trabaja desde una `ResearchOutlineSection`: su objetivo, preguntas, notas, estado, trabajo pendiente y dossier editorial orientan la siguiente decisión útil.

@@ -257,7 +257,7 @@ Pueden esperar OCR avanzado, ingestión completa de DOCX/EPUB/imágenes, colabor
 4. **Cola editorial unificada:** decisiones pendientes visibles y priorizadas.
 5. **Asistencia local con Ollama:** propuestas trazables de análisis documental.
 6. **Consolidación de Knowledge y Graph:** cobertura, huecos y tensiones a partir de conocimiento revisado.
-7. **Ampliación documental y escritura:** URL procesable, formatos adicionales y escritura fundamentada.
+7. **Ampliación documental y asistencia a la escritura:** URL procesable, formatos adicionales y asistencia fundamentada. La narrativa privada básica, sus revisiones y sus referencias editoriales pertenecen a [Drafts de Research](./11-research-drafts.md) y no dependen de esta ampliación.
 
 ## Referencias normativas
 

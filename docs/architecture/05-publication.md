@@ -24,7 +24,7 @@ flowchart LR
 
 ## Derivación e incorporación
 
-Crear Publication produce una derivación editorial selectiva: procedencia conocida, selección de contenido y composición editorial autónoma. Puede importarse explícitamente un Draft o fragmento de Research para inicializar contenido de una versión; desde entonces es contenido propio de Publication.
+Crear Publication produce una derivación editorial selectiva: procedencia conocida, selección de contenido y composición editorial autónoma. Puede importarse explícitamente una `DraftRevision` o fragmento identificable de ella para inicializar contenido de una versión; desde entonces es contenido propio de Publication. El contrato de Draft vive en [Drafts de Research](./11-research-drafts.md).
 
 Research puede alimentar de nuevo una versión no publicada mediante incorporaciones editoriales manuales, selectivas y trazables. Nunca altera una versión publicada ni devuelve cambios a Research.
 

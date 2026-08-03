@@ -32,6 +32,8 @@ flowchart TB
 | Editorial Edition  | expresión editorial de una versión                             | Research u otras Editions                 |
 | Knowledge Core     | entidades y relaciones canónicas                               | hipótesis y notas privadas                |
 
+El contrato de Draft —narrativa privada, revisiones y referencias editoriales— vive en [Drafts de Research](./11-research-drafts.md). Este mapa sólo conserva su frontera de ownership.
+
 ## Contradicciones históricas registradas
 
 `editorial-research-studio-adr.md` afirma que Publication establece conocimiento canónico y que Research no duplica Entity, Relation, Source ni Publication. Las decisiones posteriores aprobadas separan explícitamente Publication de Knowledge Core y definen entidades y relaciones privadas de Research. Esta carpeta adopta la decisión posterior: **sólo Promotion Proposal y Knowledge Review pueden modificar el Core**. El documento histórico se conserva sin reescribir.

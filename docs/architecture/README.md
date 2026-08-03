@@ -10,7 +10,7 @@ Esta carpeta es la fuente de verdad arquitectónica para el Research Studio. Tod
 1. [Visión de producto](./00-product-vision.md)
 2. [Visión general del dominio](./01-domain-overview.md)
 3. [Research Studio: experiencia editorial](./15-research-studio-experience.md) y [Editorial Pipeline](./16-editorial-pipeline.md)
-4. Dominios: [Research](./02-research.md), [Biblioteca](./03-library.md), [Research Knowledge](./04-research-knowledge.md), [Publication](./05-publication.md) y [Knowledge Core](./06-knowledge-core.md)
+4. Dominios: [Research](./02-research.md), [Biblioteca](./03-library.md), [Research Knowledge](./04-research-knowledge.md), [Publication](./05-publication.md), [Knowledge Core](./06-knowledge-core.md) y [Drafts de Research](./11-research-drafts.md)
 5. [Contratos](./07-contracts.md)
 6. [Roadmap](./08-implementation-roadmap.md)
 7. [Principios de ingeniería](./09-engineering-principles.md)

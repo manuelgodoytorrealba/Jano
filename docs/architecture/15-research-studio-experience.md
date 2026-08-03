@@ -107,7 +107,7 @@ Es una vista de exploración de Research Knowledge. Permite enfocar Entities y R
 
 ### Escritura y publicación
 
-La escritura transforma conocimiento revisado en narrativa editorial. Publication es una derivación selectiva y explícita, nunca una vista viva de Research. Sus responsabilidades pertenecen a [Publication](./05-publication.md).
+La escritura transforma conocimiento revisado en narrativa editorial privada situada en una Section. El Draft conserva el texto propio y referencias selectivas a su soporte; no copia el dossier ni adquiere ownership de conocimiento. Publication es una derivación selectiva y explícita desde una revisión identificable, nunca una vista viva de Research. Sus responsabilidades pertenecen a [Drafts de Research](./11-research-drafts.md) y [Publication](./05-publication.md).
 
 ## Estados editoriales de una investigación
 
@@ -152,6 +152,7 @@ Todavía no existe una experiencia continua y completa de captura, revisión, es
 - [Research](./02-research.md)
 - [Biblioteca](./03-library.md)
 - [Research Knowledge y Research Graph](./04-research-knowledge.md)
+- [Drafts de Research](./11-research-drafts.md)
 - [Publication](./05-publication.md)
 - [Knowledge Core](./06-knowledge-core.md)
 - [Contratos entre dominios](./07-contracts.md)
