@@ -170,6 +170,8 @@ describe('ResearchProjectComponent', () => {
       'Volver a las cartas.',
     );
     expect(fixture.nativeElement.textContent).toContain('Trabajo para esta sección');
+    expect(fixture.nativeElement.textContent).toContain('Cómo continuar esta Section');
+    expect(fixture.nativeElement.textContent).toContain('Siguiente paso razonable:');
     expect(fixture.nativeElement.textContent).toContain(
       'El corpus y el conocimiento siguen siendo compartidos por toda la investigación.',
     );

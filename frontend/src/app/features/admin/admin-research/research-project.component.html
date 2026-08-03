@@ -175,8 +175,25 @@
 
             <section class="research-project__block research-project__summary">
               <p class="research-project__eyebrow">Section Editorial Summary</p>
-              <h3>{{ section.dossier.summary.state.title }}</h3>
+              <h3>Cómo continuar esta Section</h3>
+              <p class="research-project__resume-intent">
+                Estabas intentando responder:
+                <strong>{{ section.objective || section.title }}</strong>
+              </p>
+              @if (section.questions.length) {
+                <p class="research-project__resume-label">Preguntas abiertas</p>
+                <ul class="research-project__resume-questions">
+                  @for (question of section.questions; track question.id) {
+                    <li>{{ question.text }}</li>
+                  }
+                </ul>
+              }
+              <p class="research-project__resume-label">Dónde quedó</p>
               <p>{{ section.dossier.summary.state.description }}</p>
+              <p class="research-project__resume-next">
+                <strong>Siguiente paso razonable:</strong>
+                {{ section.dossier.review.nextTask.title }}
+              </p>
               <dl>
                 <div>
                   <dt>Extractos</dt>

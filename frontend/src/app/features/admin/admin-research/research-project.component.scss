@@ -524,3 +524,24 @@ h1 {
   margin: 8px 0;
   white-space: pre-wrap;
 }
+.research-project__resume-intent {
+  color: var(--research-text-soft) !important;
+  margin-bottom: 18px;
+}
+.research-project__resume-label {
+  color: var(--research-text-muted) !important;
+  font-size: 12px !important;
+  margin: 14px 0 5px !important;
+}
+.research-project__resume-questions {
+  color: var(--research-text-soft);
+  font-size: 13px;
+  margin: 0;
+  padding-left: 18px;
+}
+.research-project__resume-next {
+  border-top: 1px solid var(--research-border-soft);
+  color: var(--research-text-soft) !important;
+  margin: 20px 0 0 !important;
+  padding-top: 14px;
+}
