@@ -7,64 +7,70 @@
     >
   </header>
 
-  <form class="research-evidence__source-search" (ngSubmit)="searchSources()">
-    <label for="sourceSearch">Incorpora una Source existente</label>
-    <div>
-      <input
-        id="sourceSearch"
-        name="sourceSearch"
-        [(ngModel)]="sourceSearch"
-        placeholder="Buscar por título, autor o referencia"
-      />
-      <button type="submit" [disabled]="searchingSources || !sourceSearch.trim()">
-        {{ searchingSources ? 'Buscando…' : 'Buscar Source' }}
-      </button>
-    </div>
-  </form>
-
-  @if (sourceResults.length) {
-    <div class="research-evidence__source-results" aria-label="Resultados de Sources">
-      @for (source of sourceResults; track source.id) {
-        <button
-          type="button"
-          [class.is-selected]="selectedSource?.id === source.id"
-          [disabled]="isAssociated(source.id)"
-          (click)="selectSearchResult(source)"
-        >
-          <strong>{{ source.title }}</strong>
-          <span>{{ source.author || source.publisher || source.type }}</span>
-          @if (isAssociated(source.id)) {
-            <em>Ya asociada</em>
-          }
+  @if (!preparedSource) {
+    <form class="research-evidence__source-search" (ngSubmit)="searchSources()">
+      <label for="sourceSearch">Incorpora una Source existente</label>
+      <div>
+        <input
+          id="sourceSearch"
+          name="sourceSearch"
+          [(ngModel)]="sourceSearch"
+          placeholder="Buscar por título, autor o referencia"
+        />
+        <button type="submit" [disabled]="searchingSources || !sourceSearch.trim()">
+          {{ searchingSources ? 'Buscando…' : 'Buscar Source' }}
         </button>
-      }
-    </div>
-  }
-
-  @if (selectedSource) {
-    <form class="research-evidence__source-association" (ngSubmit)="associateSource()">
-      <p>
-        Asociar <strong>{{ selectedSource.title }}</strong> a esta investigación.
-      </p>
-      <input name="sourceNote" [(ngModel)]="sourceNote" placeholder="Nota editorial opcional" />
-      <button type="submit" [disabled]="associatingSource">
-        {{ associatingSource ? 'Asociando…' : 'Asociar Source' }}
-      </button>
+      </div>
     </form>
-  }
 
-  @if (sourceError) {
-    <p class="research-evidence__error">{{ sourceError }}</p>
+    @if (sourceResults.length) {
+      <div class="research-evidence__source-results" aria-label="Resultados de Sources">
+        @for (source of sourceResults; track source.id) {
+          <button
+            type="button"
+            [class.is-selected]="selectedSource?.id === source.id"
+            [disabled]="isAssociated(source.id)"
+            (click)="selectSearchResult(source)"
+          >
+            <strong>{{ source.title }}</strong>
+            <span>{{ source.author || source.publisher || source.type }}</span>
+            @if (isAssociated(source.id)) {
+              <em>Ya asociada</em>
+            }
+          </button>
+        }
+      </div>
+    }
+
+    @if (selectedSource) {
+      <form class="research-evidence__source-association" (ngSubmit)="associateSource()">
+        <p>
+          Asociar <strong>{{ selectedSource.title }}</strong> a esta investigación.
+        </p>
+        <input name="sourceNote" [(ngModel)]="sourceNote" placeholder="Nota editorial opcional" />
+        <button type="submit" [disabled]="associatingSource">
+          {{ associatingSource ? 'Asociando…' : 'Asociar Source' }}
+        </button>
+      </form>
+    }
+
+    @if (sourceError) {
+      <p class="research-evidence__error">{{ sourceError }}</p>
+    }
   }
 
   @if (preparedExcerpt) {
     <p class="research-evidence__excerpt">
-      Extracto documental preparado · {{ preparedExcerpt.locator }}. Elige una Source y declara su
-      versión.
+      Extracto documental preparado · {{ preparedExcerpt.locator }}.
+      @if (preparedSource) {
+        Source vinculada: {{ sourceTitle(preparedSource) }}. Declara la versión consultada.
+      } @else {
+        Elige una Source y declara su versión.
+      }
     </p>
   }
 
-  @if (sources.length) {
+  @if (sources.length && !preparedSource) {
     <div class="research-evidence__sources">
       @for (source of sources; track source.sourceId) {
         <article [class.is-selected]="source.sourceId === sourceId">
@@ -82,49 +88,49 @@
         </article>
       }
     </div>
+  }
 
-    @if (sourceId) {
-      <form class="research-evidence__form" (ngSubmit)="save()">
-        <p>Documenta el pasaje tal como está disponible para esta Source.</p>
-        <div class="research-evidence__metadata">
-          <input
-            name="sourceVersion"
-            [(ngModel)]="sourceVersion"
-            placeholder="Versión o edición"
-            required
-          />
+  @if (sourceId) {
+    <form class="research-evidence__form" (ngSubmit)="save()">
+      <p>Documenta el pasaje tal como está disponible para esta Source.</p>
+      <div class="research-evidence__metadata">
+        <input
+          name="sourceVersion"
+          [(ngModel)]="sourceVersion"
+          placeholder="Versión o edición"
+          required
+        />
+        @if (!preparedExcerpt) {
           <input name="locator" [(ngModel)]="locator" placeholder="Localizador · p. 42" required />
-        </div>
-        <textarea
-          name="quote"
-          [(ngModel)]="quote"
-          [placeholder]="
-            preparedExcerpt
-              ? 'Cita opcional; el extracto ya conserva el pasaje'
-              : 'Cita verificable'
-          "
-          [required]="!preparedExcerpt"
-        ></textarea>
-        <textarea
-          name="context"
-          [(ngModel)]="context"
-          placeholder="Contexto editorial opcional"
-        ></textarea>
-        <input name="note" [(ngModel)]="note" placeholder="Nota de investigación opcional" />
-        @if (error) {
-          <p class="research-evidence__error">{{ error }}</p>
         }
-        <button
-          type="submit"
-          [disabled]="
-            busy || !sourceVersion.trim() || !locator.trim() || (!quote.trim() && !preparedExcerpt)
-          "
-        >
-          {{ busy ? 'Guardando…' : 'Registrar Evidence' }}
-        </button>
-      </form>
-    }
-  } @else {
+      </div>
+      <textarea
+        name="quote"
+        [(ngModel)]="quote"
+        [placeholder]="
+          preparedExcerpt ? 'Cita opcional; el extracto ya conserva el pasaje' : 'Cita verificable'
+        "
+        [required]="!preparedExcerpt"
+      ></textarea>
+      <textarea
+        name="context"
+        [(ngModel)]="context"
+        placeholder="Contexto editorial opcional"
+      ></textarea>
+      <input name="note" [(ngModel)]="note" placeholder="Nota de investigación opcional" />
+      @if (error) {
+        <p class="research-evidence__error">{{ error }}</p>
+      }
+      <button
+        type="submit"
+        [disabled]="
+          busy || !sourceVersion.trim() || !locator.trim() || (!quote.trim() && !preparedExcerpt)
+        "
+      >
+        {{ busy ? 'Guardando…' : 'Registrar Evidence' }}
+      </button>
+    </form>
+  } @else if (!sources.length) {
     <p class="research-evidence__empty">
       Asocia una Source al Research antes de registrar Evidence.
     </p>

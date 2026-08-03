@@ -25,13 +25,21 @@ import {
 })
 export class ResearchEvidenceCaptureComponent {
   private readonly api = inject(ResearchApi);
+  private _sources: ResearchProjectSource[] = [];
 
   @Input({ required: true }) researchId = '';
-  @Input() sources: ResearchProjectSource[] = [];
+  @Input() set sources(value: ResearchProjectSource[]) {
+    this._sources = value;
+    this.selectPreparedSource();
+  }
+  get sources(): ResearchProjectSource[] {
+    return this._sources;
+  }
   @Input() evidence: ResearchEvidence[] = [];
   @Input() set excerpt(value: ResearchLibraryExcerptReference | null) {
     this.preparedExcerpt = value;
-    if (value && !this.locator.trim()) this.locator = value.locator;
+    if (value) this.locator = value.locator;
+    this.selectPreparedSource();
   }
   @Output() saved = new EventEmitter<void>();
   @Output() excerptUsed = new EventEmitter<void>();
@@ -52,6 +60,11 @@ export class ResearchEvidenceCaptureComponent {
   sourceError = '';
   searchingSources = false;
   associatingSource = false;
+
+  get preparedSource(): ResearchProjectSource | undefined {
+    const sourceId = this.preparedExcerpt?.sourceId;
+    return sourceId ? this.sources.find((source) => source.sourceId === sourceId) : undefined;
+  }
 
   selectSource(sourceId: string): void {
     this.sourceId = sourceId;
@@ -159,5 +172,9 @@ export class ResearchEvidenceCaptureComponent {
 
   isAssociated(sourceId: string): boolean {
     return this.sources.some((source) => source.sourceId === sourceId);
+  }
+
+  private selectPreparedSource(): void {
+    if (this.preparedSource) this.sourceId = this.preparedSource.sourceId;
   }
 }

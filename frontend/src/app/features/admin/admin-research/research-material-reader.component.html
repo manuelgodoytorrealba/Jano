@@ -28,7 +28,7 @@
           <app-research-excerpt-capture
             [researchId]="researchId"
             [materialVersionId]="material.materialVersionId"
-            (created)="excerptCreated.emit($event)"
+            (created)="onExcerptCreated($event, material)"
           />
         </article>
       }

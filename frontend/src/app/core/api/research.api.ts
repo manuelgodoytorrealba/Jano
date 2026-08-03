@@ -140,6 +140,7 @@ export type ResearchLibraryExcerptReference = {
   id: string;
   locator: string;
   text: string;
+  sourceId?: string | null;
 };
 
 export type ResearchLibraryExcerpt = {
@@ -233,6 +234,7 @@ export type ResearchDocument = {
   id: string;
   projectId: string;
   materialVersionId: string;
+  sourceId: string | null;
   kind: ResearchDocumentKind;
   status: ResearchDocumentStatus;
   title: string;

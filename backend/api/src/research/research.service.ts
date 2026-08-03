@@ -724,6 +724,7 @@ export class ResearchService {
             id: material.id,
             projectId: project.id,
             materialVersionId: version.id,
+            sourceId: material.sourceId,
             kind: material.kind,
             status: version.status,
             title: material.title,

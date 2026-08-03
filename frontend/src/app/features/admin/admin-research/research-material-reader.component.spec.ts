@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ResearchDocument } from '../../../core/api/research.api';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 
@@ -7,6 +7,7 @@ const textMaterial: ResearchDocument = {
   id: 'material-text',
   projectId: 'research-1',
   materialVersionId: 'version-1',
+  sourceId: 'source-1',
   kind: 'TEXT' as const,
   status: 'READY' as const,
   title: 'Cuaderno de lectura',
@@ -51,6 +52,24 @@ describe('ResearchMaterialReaderComponent', () => {
 
     expect(fixture.componentInstance.selectedMaterialId).toBe('material-text-2');
     expect(fixture.nativeElement.textContent).toContain('Otro pasaje.');
+  });
+
+  it('preserves the material Source when an excerpt leaves the Reader', async () => {
+    const fixture = await createFixture();
+    const created = vi.fn();
+    fixture.componentInstance.excerptCreated.subscribe(created);
+
+    fixture.componentInstance.onExcerptCreated(
+      { id: 'excerpt-1', locator: 'p. 3', text: 'Pasaje' },
+      textMaterial,
+    );
+
+    expect(created).toHaveBeenCalledWith({
+      id: 'excerpt-1',
+      locator: 'p. 3',
+      text: 'Pasaje',
+      sourceId: 'source-1',
+    });
   });
 
   it('explains when no TEXT material is available and does not expose URL or PDF content', async () => {

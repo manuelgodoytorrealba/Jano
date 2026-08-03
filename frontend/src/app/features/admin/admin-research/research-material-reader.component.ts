@@ -35,4 +35,8 @@ export class ResearchMaterialReaderComponent {
   selectMaterial(materialId: string): void {
     this.selectedMaterialId = materialId;
   }
+
+  onExcerptCreated(excerpt: ResearchLibraryExcerptReference, material: ResearchDocument): void {
+    this.excerptCreated.emit({ ...excerpt, sourceId: material.sourceId });
+  }
 }

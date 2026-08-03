@@ -89,8 +89,12 @@ describe('ResearchEvidenceCaptureComponent', () => {
       id: 'excerpt-1',
       locator: 'párrafo 3',
       text: 'Pasaje documental conservado en Library.',
+      sourceId: 'source-1',
     });
-    fixture.componentInstance.selectSource('source-1');
+    fixture.detectChanges();
+    expect(fixture.componentInstance.sourceId).toBe('source-1');
+    expect(fixture.nativeElement.textContent).toContain('Source vinculada: Goya');
+    expect(fixture.nativeElement.textContent).not.toContain('Incorpora una Source existente');
     fixture.componentInstance.sourceVersion = 'Edición de 2026';
     fixture.componentInstance.save();
 
