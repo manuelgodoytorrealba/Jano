@@ -10,7 +10,9 @@ import {
   ResearchClaimStatus,
   ResearchProject,
   ResearchQuestion,
+  ResearchLibraryExcerpt,
   ResearchLibraryExcerptReference,
+  ResearchClaim,
 } from '../../../core/api/research.api';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.component';
@@ -49,6 +51,7 @@ export class ResearchProjectComponent {
   workspaceNotes = '';
   error = '';
   preparedExcerpt: ResearchLibraryExcerptReference | null = null;
+  reviewExcerpt: ResearchLibraryExcerpt | null = null;
   readonly statuses: ResearchOutlineSectionStatus[] = [
     'NOT_STARTED',
     'IN_PROGRESS',
@@ -209,6 +212,29 @@ export class ResearchProjectComponent {
     });
   }
 
+  reviewClaimFor(section: ResearchOutlineSection): ResearchClaim | null {
+    const claimId = section.dossier.review.nextTask.claimId;
+    return section.dossier.claims.find((claim) => claim.id === claimId) ?? null;
+  }
+
+  openExcerptInReader(excerpt: ResearchLibraryExcerpt): void {
+    this.reviewExcerpt = excerpt;
+    setTimeout(() =>
+      document
+        .getElementById('research-reader')
+        ?.scrollIntoView?.({ behavior: 'smooth', block: 'start' }),
+    );
+  }
+
+  claimStatusLabel(status: ResearchClaimStatus): string {
+    return {
+      DRAFT: 'En borrador',
+      SUPPORTED: 'Respaldada',
+      QUESTIONED: 'Cuestionada',
+      CONTRADICTED: 'En contradicción',
+    }[status];
+  }
+
   removeExcerptFromSection(
     project: ResearchProject,
     section: ResearchOutlineSection,
@@ -245,5 +271,6 @@ export class ResearchProjectComponent {
     this.savedObjective = this.workspaceObjective;
     this.savedNotes = this.workspaceNotes;
     this.questionText = '';
+    this.reviewExcerpt = null;
   }
 }

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
-import { ResearchDocument } from '../../../core/api/research.api';
+import { ResearchDocument, ResearchLibraryExcerpt } from '../../../core/api/research.api';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 
 const textMaterial: ResearchDocument = {
@@ -70,6 +70,26 @@ describe('ResearchMaterialReaderComponent', () => {
       text: 'Pasaje',
       sourceId: 'source-1',
     });
+  });
+
+  it('focuses a reviewed excerpt in its source material', async () => {
+    const fixture = await createFixture();
+    const excerpt: ResearchLibraryExcerpt = {
+      id: 'excerpt-1',
+      locator: 'p. 3',
+      text: 'Pasaje revisado.',
+      materialVersion: {
+        id: 'version-1',
+        version: 1,
+        material: { id: 'material-text', title: textMaterial.title, source: null },
+      },
+    };
+
+    fixture.componentRef.setInput('focusExcerpt', excerpt);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.selectedMaterialId).toBe('material-text');
+    expect(fixture.nativeElement.textContent).toContain('Pasaje revisado.');
   });
 
   it('explains when no TEXT material is available and does not expose URL or PDF content', async () => {

@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   ResearchApi,
   ResearchEvidence,
+  ResearchLibraryExcerpt,
   ResearchOutlineSection,
 } from '../../../core/api/research.api';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
@@ -85,6 +86,17 @@ const section = (): ResearchOutlineSection => ({
     },
   },
 });
+
+const reviewExcerpt: ResearchLibraryExcerpt = {
+  id: 'excerpt-1',
+  locator: 'p. 42',
+  text: 'Pasaje para revisión.',
+  materialVersion: {
+    id: 'version-1',
+    version: 1,
+    material: { id: 'material-1', title: 'Cuaderno', source: null },
+  },
+};
 
 const topology = {
   projectId: project.id,
@@ -276,6 +288,17 @@ describe('ResearchProjectComponent', () => {
       fixture.debugElement.query(By.directive(ResearchClaimCaptureComponent)).componentInstance
         .evidence,
     ).toEqual([sectionEvidence]);
+  });
+
+  it('returns a review to its exact LibraryExcerpt', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [section()] })),
+    };
+    const fixture = await createFixture(api, true);
+
+    fixture.componentInstance.openExcerptInReader(reviewExcerpt);
+
+    expect(fixture.componentInstance.reviewExcerpt).toEqual(reviewExcerpt);
   });
 
   it('refreshes the workspace after a Claim is saved', async () => {

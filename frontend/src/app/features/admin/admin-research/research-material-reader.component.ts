@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ResearchDocument, ResearchLibraryExcerptReference } from '../../../core/api/research.api';
+import {
+  ResearchDocument,
+  ResearchLibraryExcerpt,
+  ResearchLibraryExcerptReference,
+} from '../../../core/api/research.api';
 import { ResearchExcerptCaptureComponent } from './research-excerpt-capture.component';
 
 @Component({
@@ -11,11 +15,24 @@ import { ResearchExcerptCaptureComponent } from './research-excerpt-capture.comp
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchMaterialReaderComponent {
+  private _materials: ResearchDocument[] = [];
+
   @Input({ required: true }) researchId = '';
-  @Input() materials: ResearchDocument[] = [];
+  @Input() set materials(value: ResearchDocument[]) {
+    this._materials = value;
+    this.focusMaterial();
+  }
+  get materials(): ResearchDocument[] {
+    return this._materials;
+  }
+  @Input() set focusExcerpt(value: ResearchLibraryExcerpt | null) {
+    this.focusedExcerpt = value;
+    this.focusMaterial();
+  }
   @Output() excerptCreated = new EventEmitter<ResearchLibraryExcerptReference>();
 
   selectedMaterialId = '';
+  focusedExcerpt: ResearchLibraryExcerpt | null = null;
 
   get textMaterials(): ResearchDocument[] {
     return this.materials.filter(
@@ -38,5 +55,13 @@ export class ResearchMaterialReaderComponent {
 
   onExcerptCreated(excerpt: ResearchLibraryExcerptReference, material: ResearchDocument): void {
     this.excerptCreated.emit({ ...excerpt, sourceId: material.sourceId });
+  }
+
+  private focusMaterial(): void {
+    const versionId = this.focusedExcerpt?.materialVersion.id;
+    const material = versionId
+      ? this.textMaterials.find((item) => item.materialVersionId === versionId)
+      : undefined;
+    if (material) this.selectedMaterialId = material.id;
   }
 }

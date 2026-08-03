@@ -477,3 +477,50 @@ h1 {
   margin: 8px 0 0;
   padding-left: 18px;
 }
+.research-project__review-question,
+.research-project__claim-review > div > p {
+  color: var(--research-text-muted);
+  font-size: 12px;
+  margin: 18px 0 6px;
+}
+.research-project__review-questions,
+.research-project__review-evidence {
+  margin: 0;
+  padding-left: 18px;
+}
+.research-project__review-questions {
+  color: var(--research-text-soft);
+  font-size: 13px;
+}
+.research-project__claim-review {
+  align-items: start;
+  border-top: 1px solid var(--research-border-soft);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 14px;
+}
+.research-project__claim-review strong,
+.research-project__claim-review span {
+  display: block;
+}
+.research-project__claim-review > span,
+.research-project__claim-review div > span,
+.research-project__review-evidence p {
+  color: var(--research-text-muted);
+  font-size: 13px;
+  margin-top: 5px;
+}
+.research-project__review-evidence li {
+  border-top: 1px solid var(--research-border-soft);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.research-project__review-evidence blockquote {
+  color: var(--research-text-soft);
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  margin: 8px 0;
+  white-space: pre-wrap;
+}

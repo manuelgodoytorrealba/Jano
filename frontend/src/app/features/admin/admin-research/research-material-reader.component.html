@@ -1,8 +1,18 @@
-<section class="research-reader" aria-label="Lectura documental">
+<section class="research-reader" id="research-reader" aria-label="Lectura documental">
   <header>
     <p>Lectura documental</p>
     <h2>Vuelve al texto antes de interpretar.</h2>
   </header>
+
+  @if (focusedExcerpt) {
+    <aside class="research-reader__focus" aria-live="polite">
+      <p>Pasaje en revisión</p>
+      <blockquote>{{ focusedExcerpt.text }}</blockquote>
+      <small
+        >{{ focusedExcerpt.materialVersion.material.title }} · {{ focusedExcerpt.locator }}</small
+      >
+    </aside>
+  }
 
   @if (textMaterials.length) {
     <div class="research-reader__layout">
