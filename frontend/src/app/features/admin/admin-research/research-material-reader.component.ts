@@ -18,6 +18,8 @@ export class ResearchMaterialReaderComponent {
   private _materials: ResearchDocument[] = [];
 
   @Input({ required: true }) researchId = '';
+  @Input() selectedMaterialId = '';
+  @Input() showMaterialList = true;
   @Input() set materials(value: ResearchDocument[]) {
     this._materials = value;
     this.focusMaterial();
@@ -32,7 +34,6 @@ export class ResearchMaterialReaderComponent {
   @Output() excerptCreated = new EventEmitter<ResearchLibraryExcerptReference>();
   @Output() retryRequested = new EventEmitter<string>();
 
-  selectedMaterialId = '';
   focusedExcerpt: ResearchLibraryExcerpt | null = null;
 
   get textMaterials(): ResearchDocument[] {

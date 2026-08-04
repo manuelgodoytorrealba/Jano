@@ -1,5 +1,5 @@
-import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AsyncPipe, DatePipe, DOCUMENT, NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, HostListener, inject, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
@@ -13,6 +13,7 @@ import {
   ResearchLibraryExcerpt,
   ResearchLibraryExcerptReference,
   ResearchClaim,
+  ResearchDocument,
   ResearchDocumentKind,
 } from '../../../core/api/research.api';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
@@ -38,14 +39,23 @@ import { ResearchMaterialReaderComponent } from './research-material-reader.comp
   styleUrl: './research-project.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ResearchProjectComponent {
+export class ResearchProjectComponent implements OnDestroy {
   private readonly api = inject(ResearchApi);
+  private readonly document = inject(DOCUMENT);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
   private workspaceSectionId: string | null = null;
   private savedObjective = '';
   private savedNotes = '';
+
+  readonly modes = [
+    { id: 'corpus', label: 'Corpus', available: true },
+    { id: 'index', label: 'Índice', available: true },
+    { id: 'argument', label: 'Argumento', available: false },
+    { id: 'entities', label: 'Entidades', available: false },
+    { id: 'publication', label: 'Publicación', available: false },
+  ] as const;
 
   title = '';
   questionText = '';
@@ -61,6 +71,8 @@ export class ResearchProjectComponent {
   materialPdf: File | null = null;
   addingMaterial = false;
   materialMessage = '';
+  selectedMaterialId = '';
+  focusMode = false;
   readonly statuses: ResearchOutlineSectionStatus[] = [
     'NOT_STARTED',
     'IN_PROGRESS',
@@ -68,19 +80,31 @@ export class ResearchProjectComponent {
     'COMPLETED',
   ];
 
-  readonly vm$ = combineLatest([this.route.paramMap, this.refresh$]).pipe(
-    switchMap(([params]) =>
-      this.api.getById(params.get('id')!).pipe(
-        map((project) => {
+  readonly vm$ = combineLatest([
+    this.route.paramMap,
+    this.route.queryParamMap ?? this.route.paramMap,
+    this.refresh$,
+  ]).pipe(
+    switchMap(([params, query]) =>
+      combineLatest([this.api.getById(params.get('id')!), this.api.list()]).pipe(
+        map(([project, projects]) => {
+          const mode = this.workspaceMode(query.get('mode'), params.get('sectionId'));
+          const sectionId = query.get('section') ?? params.get('sectionId');
           const activeSection =
-            project.outlineSections.find((section) => section.id === params.get('sectionId')) ??
-            project.outlineSections[0] ??
+            project.outlineSections.find((section) => section.id === sectionId) ??
+            (mode === 'index' ? project.outlineSections[0] : null) ??
             null;
           this.syncWorkspace(activeSection);
-          return { project, activeSection, error: '' };
+          return { project, projects, activeSection, mode, error: '' };
         }),
         catchError(() =>
-          of({ project: null, activeSection: null, error: 'No se pudo abrir esta investigación.' }),
+          of({
+            project: null,
+            projects: [],
+            activeSection: null,
+            mode: 'corpus',
+            error: 'No se pudo abrir esta investigación.',
+          }),
         ),
       ),
     ),
@@ -249,7 +273,59 @@ export class ResearchProjectComponent {
   }
 
   openSection(project: ResearchProject, section: ResearchOutlineSection): void {
-    void this.router.navigate(['/admin/research', project.id, 'sections', section.id]);
+    void this.router.navigate(['/admin/research', project.id], {
+      queryParams: { mode: 'index', section: section.id },
+    });
+  }
+
+  openMode(mode: (typeof this.modes)[number]): void {
+    if (!mode.available) return;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { mode: mode.id, section: mode.id === 'index' ? undefined : null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  switchResearch(projectId: string): void {
+    if (!projectId) return;
+    void this.router.navigate(['/admin/research', projectId], { queryParams: { mode: 'corpus' } });
+  }
+
+  readerMaterialId(project: ResearchProject): string {
+    return (
+      project.materials.find(
+        (material) => material.id === this.selectedMaterialId && this.isReadableMaterial(material),
+      )?.id ??
+      project.materials.find((material) => this.isReadableMaterial(material))?.id ??
+      ''
+    );
+  }
+
+  isReadableMaterial(material: ResearchDocument): boolean {
+    return material.status === 'READY' && material.content !== null;
+  }
+
+  materialStatusLabel(material: ResearchDocument): string {
+    if (material.status === 'READY') return 'Disponible';
+    if (material.status === 'FAILED') return 'Preparación fallida';
+    return 'Preparando contenido';
+  }
+
+  toggleFocus(): void {
+    this.focusMode = !this.focusMode;
+    this.document.body.classList.toggle('app-stage-immersive', this.focusMode);
+  }
+
+  @HostListener('document:keydown.escape')
+  exitFocus(): void {
+    if (!this.focusMode) return;
+    this.focusMode = false;
+    this.document.body.classList.remove('app-stage-immersive');
+  }
+
+  ngOnDestroy(): void {
+    this.document.body.classList.remove('app-stage-immersive');
   }
 
   roots(project: ResearchProject): ResearchOutlineSection[] {
@@ -339,5 +415,10 @@ export class ResearchProjectComponent {
     this.savedNotes = this.workspaceNotes;
     this.questionText = '';
     this.reviewExcerpt = null;
+  }
+
+  private workspaceMode(mode: string | null, sectionId: string | null) {
+    if (sectionId) return 'index';
+    return this.modes.some((item) => item.id === mode) ? mode! : 'corpus';
   }
 }

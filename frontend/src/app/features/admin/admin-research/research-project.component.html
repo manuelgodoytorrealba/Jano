@@ -52,8 +52,8 @@
                     <input type="file" accept="application/pdf,.pdf" (change)="selectPdf($event)" />
                   </label>
                   <p class="research-project__material-limit">
-                    El PDF se conserva en el corpus, pero aún no se puede leer ni extraer dentro de
-                    JANO.
+                    Se intentará extraer texto y aplicar OCR limitado. Si el PDF no contiene texto
+                    legible, JANO lo marcará para revisión.
                   </p>
                 }
                 <button type="submit" [disabled]="addingMaterial || !canCreateMaterial()">
@@ -64,38 +64,8 @@
               @if (materialMessage) {
                 <p class="research-project__material-message">{{ materialMessage }}</p>
               }
-
-              @if (project.materials.length) {
-                <section class="research-project__corpus-list">
-                  <h3>Corpus incorporado</h3>
-                  <ul>
-                    @for (material of project.materials; track material.id) {
-                      <li>
-                        <strong>{{ material.title }}</strong>
-                        <span>{{
-                          material.kind === 'TEXT' && material.status === 'READY'
-                            ? 'Disponible para lectura al abrir una Section'
-                            : 'Registrado; pendiente de preparación'
-                        }}</span>
-                      </li>
-                    }
-                  </ul>
-                </section>
-              }
-
-              <p class="research-project__next-step">
-                Cuando tengas el corpus inicial, crea en el índice la primera sección real de tu
-                investigación.
-              </p>
             </div>
           </ng-template>
-
-          @if (!project.materials.length) {
-            <ng-container
-              [ngTemplateOutlet]="materialIntake"
-              [ngTemplateOutletContext]="{ $implicit: project }"
-            />
-          }
 
           @if (vm.activeSection; as section) {
             <span>/</span><strong>{{ section.title }}</strong>
@@ -104,65 +74,157 @@
         <p class="research-project__eyebrow">Índice de investigación</p>
         <h1>{{ project.title }}</h1>
         <p>{{ project.objective }}</p>
+        <nav class="research-project__modes" aria-label="Modo de trabajo">
+          @for (mode of modes; track mode.id) {
+            <button
+              type="button"
+              [class.is-active]="vm.mode === mode.id"
+              [class.is-soon]="!mode.available"
+              (click)="openMode(mode)"
+            >
+              {{ mode.label }}
+              @if (!mode.available) {
+                <small>Próximamente</small>
+              }
+            </button>
+          }
+        </nav>
+        <button type="button" class="research-project__focus-toggle" (click)="toggleFocus()">
+          <span aria-hidden="true">{{ focusMode ? '×' : '⌗' }}</span>
+          {{ focusMode ? 'Salir del enfoque' : 'Modo enfoque' }}
+          @if (focusMode) {
+            <kbd>esc</kbd>
+          }
+        </button>
       </header>
 
       <section class="research-project__layout">
         <aside class="research-project__outline" aria-label="Índice de la investigación">
-          <div class="research-project__section-head">
-            <div>
-              <p class="research-project__eyebrow">Estructura</p>
-              <h2>Índice</h2>
-            </div>
-            <span>{{ project.outlineSections.length }} secciones</span>
+          <div class="research-project__studio-brand">
+            <span class="research-project__studio-mark">J</span>
+            <div><strong>JANO</strong><small>Research Studio</small></div>
           </div>
-          <form class="research-project__create" (ngSubmit)="createSection(project)">
-            <input name="sectionTitle" [(ngModel)]="title" placeholder="Nueva sección" />
-            <button type="submit" [disabled]="!title.trim()">Añadir</button>
-          </form>
-          @if (error) {
-            <p class="research-project__error">{{ error }}</p>
-          }
-          @if (project.outlineSections.length) {
-            <ol class="research-project__tree">
-              @for (section of roots(project); track section.id) {
-                <li>
-                  <button
-                    type="button"
-                    [class.is-active]="section.id === vm.activeSection.id"
-                    (click)="openSection(project, section)"
-                  >
-                    <span>{{ section.title }}</span
-                    ><small>{{ statusLabel(section.status) }}</small>
-                  </button>
-                  @if (children(project, section.id).length) {
-                    <ol>
-                      @for (child of children(project, section.id); track child.id) {
-                        <li>
-                          <button
-                            type="button"
-                            [class.is-active]="child.id === vm.activeSection.id"
-                            (click)="openSection(project, child)"
-                          >
-                            <span>{{ child.title }}</span
-                            ><small>{{ statusLabel(child.status) }}</small>
-                          </button>
-                        </li>
-                      }
-                    </ol>
-                  }
-                </li>
+          <div class="research-project__active-research">
+            <small>Investigación activa</small>
+            <select
+              [ngModel]="project.id"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="switchResearch($event)"
+              aria-label="Cambiar investigación activa"
+            >
+              @if (!vm.projects.length) {
+                <option [value]="project.id">{{ project.title }}</option>
               }
-            </ol>
-          } @else {
-            <div class="research-project__empty-outline">
-              <h3>El argumento empieza aquí.</h3>
-              <p>Crea la primera sección para delimitar una cuestión editorial.</p>
+              @for (research of vm.projects; track research.id) {
+                <option [value]="research.id">{{ research.title }}</option>
+              }
+            </select>
+          </div>
+          @if (vm.mode === 'index') {
+            <div class="research-project__section-head">
+              <div>
+                <p class="research-project__eyebrow">Estructura</p>
+                <h2>Índice</h2>
+              </div>
+              <span>{{ project.outlineSections.length }} secciones</span>
             </div>
+            <form class="research-project__create" (ngSubmit)="createSection(project)">
+              <input name="sectionTitle" [(ngModel)]="title" placeholder="Nueva sección" />
+              <button type="submit" [disabled]="!title.trim()">Añadir</button>
+            </form>
+            @if (error) {
+              <p class="research-project__error">{{ error }}</p>
+            }
+            @if (project.outlineSections.length) {
+              <ol class="research-project__tree">
+                @for (section of roots(project); track section.id) {
+                  <li>
+                    <button
+                      type="button"
+                      [class.is-active]="section.id === vm.activeSection?.id"
+                      (click)="openSection(project, section)"
+                    >
+                      <span>{{ section.title }}</span
+                      ><small>{{ statusLabel(section.status) }}</small>
+                    </button>
+                    @if (children(project, section.id).length) {
+                      <ol>
+                        @for (child of children(project, section.id); track child.id) {
+                          <li>
+                            <button
+                              type="button"
+                              [class.is-active]="child.id === vm.activeSection?.id"
+                              (click)="openSection(project, child)"
+                            >
+                              <span>{{ child.title }}</span
+                              ><small>{{ statusLabel(child.status) }}</small>
+                            </button>
+                          </li>
+                        }
+                      </ol>
+                    }
+                  </li>
+                }
+              </ol>
+            } @else {
+              <div class="research-project__empty-outline">
+                <h3>El argumento empieza aquí.</h3>
+                <p>Crea la primera sección para delimitar una cuestión editorial.</p>
+              </div>
+            }
+          } @else if (vm.mode === 'corpus') {
+            <section class="research-project__corpus-context">
+              <small>Corpus asociado</small>
+              <strong>{{ project.materials.length }} materiales</strong>
+              <p>
+                Esta selección pertenece a la investigación. Los materiales viven en Biblioteca y
+                pueden reutilizarse en otros Research sin duplicarlos.
+              </p>
+              @if (project.materials.length) {
+                <nav class="research-project__corpus-materials" aria-label="Materiales del corpus">
+                  @for (material of project.materials; track material.id) {
+                    <button
+                      type="button"
+                      [class.is-selected]="readerMaterialId(project) === material.id"
+                      [disabled]="!isReadableMaterial(material)"
+                      (click)="selectedMaterialId = material.id"
+                    >
+                      <span aria-hidden="true">{{ material.kind }}</span>
+                      <span>
+                        <strong>{{ material.title }}</strong>
+                        <small>{{ materialStatusLabel(material) }}</small>
+                      </span>
+                    </button>
+                  }
+                </nav>
+              }
+            </section>
           }
         </aside>
 
         <section class="research-project__workspace" aria-live="polite">
-          @if (vm.activeSection; as section) {
+          @if (vm.mode === 'corpus') {
+            <header class="research-project__mode-heading">
+              <div>
+                <h2>Corpus</h2>
+                <p>Fuentes y materiales de investigación</p>
+              </div>
+            </header>
+            <div class="research-project__corpus-workspace">
+              <ng-container
+                [ngTemplateOutlet]="materialIntake"
+                [ngTemplateOutletContext]="{ $implicit: project }"
+              />
+              <app-research-material-reader
+                [researchId]="project.id"
+                [materials]="project.materials"
+                [selectedMaterialId]="readerMaterialId(project)"
+                [showMaterialList]="false"
+                (excerptCreated)="refreshResearch()"
+                (retryRequested)="retryMaterial(project, $event)"
+              />
+            </div>
+          } @else if (vm.mode === 'index' && vm.activeSection; as section) {
             <div class="research-project__workspace-header">
               <p class="research-project__eyebrow">Research Section</p>
               <div class="research-project__section-title">
@@ -657,11 +719,26 @@
             </footer>
           } @else {
             <div class="research-project__workspace-empty">
-              <p class="research-project__eyebrow">Índice de investigación</p>
-              <h2>Crea el índice cuando estés listo para organizar el corpus.</h2>
+              <p class="research-project__eyebrow">
+                {{ vm.mode === 'index' ? 'Índice de investigación' : 'Próximamente' }}
+              </p>
+              <h2>
+                {{
+                  vm.mode === 'index'
+                    ? 'Crea el índice cuando estés listo para organizar el corpus.'
+                    : vm.mode === 'argument'
+                      ? 'Argumento'
+                      : vm.mode === 'entities'
+                        ? 'Entidades'
+                        : 'Publicación'
+                }}
+              </h2>
               <p>
-                Nombra la primera Section según la cuestión real que quieras resolver; JANO no crea
-                secciones genéricas por ti.
+                {{
+                  vm.mode === 'index'
+                    ? 'Nombra la primera Section según la cuestión real que quieras resolver; JANO no crea secciones genéricas por ti.'
+                    : 'Este espacio se activará cuando exista una experiencia editorial completa y contextual.'
+                }}
               </p>
             </div>
           }

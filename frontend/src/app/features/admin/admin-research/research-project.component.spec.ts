@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import {
   ResearchApi,
+  ResearchDocument,
   ResearchEvidence,
   ResearchLibraryExcerpt,
   ResearchOutlineSection,
@@ -33,6 +34,23 @@ const project = {
   materials: [],
   claims: [],
   outlineSections: [],
+};
+
+const corpusMaterial: ResearchDocument = {
+  id: 'material-1',
+  projectId: project.id,
+  materialVersionId: 'version-1',
+  sourceId: null,
+  kind: 'TEXT',
+  status: 'READY',
+  title: 'Cuaderno de lectura',
+  content: 'Primer pasaje.',
+  url: null,
+  originalName: null,
+  mimeType: null,
+  sizeBytes: null,
+  createdAt: project.createdAt,
+  updatedAt: project.updatedAt,
 };
 
 const sectionEvidence: ResearchEvidence = {
@@ -113,8 +131,13 @@ const topology = {
   contradictions: [],
   supportingEvidence: [],
 };
-async function createFixture(api: Record<string, ReturnType<typeof vi.fn>>, active = false) {
+async function createFixture(
+  api: Record<string, ReturnType<typeof vi.fn>>,
+  active = false,
+  mode = 'corpus',
+) {
   api['getKnowledge'] ??= vi.fn().mockReturnValue(of(topology));
+  api['list'] ??= vi.fn().mockReturnValue(of([project]));
   await TestBed.configureTestingModule({
     imports: [ResearchProjectComponent],
     providers: [
@@ -125,6 +148,7 @@ async function createFixture(api: Record<string, ReturnType<typeof vi.fn>>, acti
           paramMap: of(
             convertToParamMap({ id: project.id, ...(active ? { sectionId: 'section-1' } : {}) }),
           ),
+          queryParamMap: of(convertToParamMap({ mode })),
         },
       },
       { provide: Router, useValue: { navigate: vi.fn() } },
@@ -138,12 +162,36 @@ async function createFixture(api: Record<string, ReturnType<typeof vi.fn>>, acti
 }
 
 describe('ResearchProjectComponent', () => {
+  it('switches research and enters and exits focus mode', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(of(project)),
+      list: vi
+        .fn()
+        .mockReturnValue(of([project, { ...project, id: 'research-2', title: 'Surrealismo' }])),
+    };
+    const fixture = await createFixture(api);
+    const router = TestBed.inject(Router);
+    const selector = fixture.nativeElement.querySelector(
+      '[aria-label="Cambiar investigación activa"]',
+    );
+    selector.value = 'research-2';
+    selector.dispatchEvent(new Event('change'));
+    expect(router.navigate).toHaveBeenCalledWith(['/admin/research', 'research-2'], {
+      queryParams: { mode: 'corpus' },
+    });
+
+    fixture.nativeElement.querySelector('.research-project__focus-toggle').click();
+    expect(document.body.classList.contains('app-stage-immersive')).toBe(true);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(document.body.classList.contains('app-stage-immersive')).toBe(false);
+  });
+
   it('orients an empty outline and creates its first section', async () => {
     const api = {
       getById: vi.fn().mockReturnValue(of(project)),
       createOutlineSection: vi.fn().mockReturnValue(of(project)),
     };
-    const fixture = await createFixture(api);
+    const fixture = await createFixture(api, false, 'index');
     expect(fixture.nativeElement.textContent).toContain('El argumento empieza aquí.');
     const input = fixture.nativeElement.querySelector('input[name="sectionTitle"]');
     input.value = 'Antes del cubismo';
@@ -180,11 +228,40 @@ describe('ResearchProjectComponent', () => {
     });
   });
 
-  it('opens the first section from a direct research route', async () => {
+  it('uses the sidebar as the compact corpus material selector', async () => {
+    const materials = [
+      corpusMaterial,
+      {
+        ...corpusMaterial,
+        id: 'material-2',
+        materialVersionId: 'version-2',
+        title: 'Segunda lectura',
+        content: 'Segundo pasaje.',
+      },
+    ];
+    const research = { ...project, materials };
+    const fixture = await createFixture({
+      getById: vi.fn().mockReturnValue(of(research)),
+      list: vi.fn().mockReturnValue(of([research])),
+    });
+    const buttons = fixture.nativeElement.querySelectorAll(
+      '.research-project__corpus-materials button',
+    );
+
+    expect(buttons).toHaveLength(2);
+    expect(fixture.nativeElement.querySelector('app-research-material-reader nav')).toBeNull();
+    buttons[1].click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.selectedMaterialId).toBe('material-2');
+    expect(fixture.nativeElement.textContent).toContain('Segundo pasaje.');
+  });
+
+  it('opens the first section from Index', async () => {
     const api = {
       getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [section()] })),
     };
-    const fixture = await createFixture(api);
+    const fixture = await createFixture(api, false, 'index');
     expect(fixture.nativeElement.textContent).toContain('Cubismo analítico');
   });
 

@@ -4,3 +4,14 @@
 @use './styles/utilities';
 @use './styles/components';
 @use './styles/features/entities-explorer-shell';
+
+body.app-stage-immersive .app-shell {
+  height: var(--app-viewport-height);
+  overflow: hidden;
+}
+
+body.app-stage-immersive .app-shell__content {
+  min-height: var(--app-viewport-height);
+  padding: 0;
+  overflow: hidden;
+}

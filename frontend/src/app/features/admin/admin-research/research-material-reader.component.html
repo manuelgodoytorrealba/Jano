@@ -1,7 +1,7 @@
 <section class="research-reader" id="research-reader" aria-label="Lectura documental">
   <header>
-    <p>Lectura documental</p>
-    <h2>Vuelve al texto antes de interpretar.</h2>
+    <p>Reader</p>
+    <h2>Material seleccionado</h2>
   </header>
 
   @if (focusedExcerpt) {
@@ -16,22 +16,25 @@
 
   @if (textMaterials.length) {
     <div class="research-reader__layout">
-      <nav aria-label="Materiales de texto">
-        @for (material of textMaterials; track material.id) {
-          <button
-            type="button"
-            [class.is-selected]="selectedMaterial?.id === material.id"
-            (click)="selectMaterial(material.id)"
-          >
-            {{ material.title }}
-          </button>
-        }
-      </nav>
+      @if (showMaterialList) {
+        <nav aria-label="Materiales de texto">
+          @for (material of textMaterials; track material.id) {
+            <button
+              type="button"
+              [class.is-selected]="selectedMaterial?.id === material.id"
+              (click)="selectMaterial(material.id)"
+            >
+              <strong>{{ material.title }}</strong>
+              <small>{{ material.kind }} · Disponible</small>
+            </button>
+          }
+        </nav>
+      }
 
       @if (selectedMaterial; as material) {
-        <article>
+        <article class="research-reader__document">
           <header>
-            <p>Texto disponible</p>
+            <p>{{ material.kind }} · Texto preparado</p>
             <h3>{{ material.title }}</h3>
           </header>
           <div class="research-reader__content">{{ material.content }}</div>
@@ -44,7 +47,7 @@
       }
     </div>
   } @else {
-    <p class="research-reader__empty">No hay materiales disponibles para lectura.</p>
+    <p class="research-reader__empty">No hay materiales de texto disponibles para lectura.</p>
   }
 
   @if (failedMaterials.length) {

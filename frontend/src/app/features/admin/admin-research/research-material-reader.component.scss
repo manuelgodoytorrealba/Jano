@@ -2,11 +2,12 @@
   display: block;
 }
 .research-reader {
+  margin-top: 20px;
   border: 1px solid var(--research-border);
-  border-radius: 18px;
-  background: var(--research-surface);
-  box-shadow: var(--research-shadow);
-  padding: clamp(28px, 4vw, 44px);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.018);
+  box-shadow: none;
+  padding: 22px;
 }
 .research-reader > header > p,
 .research-reader article header p {
@@ -32,13 +33,14 @@
 }
 .research-reader__layout {
   display: grid;
-  gap: clamp(24px, 4vw, 48px);
-  grid-template-columns: minmax(180px, 0.3fr) minmax(0, 1fr);
+  gap: 18px;
+  grid-template-columns: 1fr;
   margin-top: 24px;
 }
 .research-reader nav {
   align-self: start;
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 4px;
 }
 .research-reader nav button {
@@ -51,18 +53,41 @@
   padding: 9px 10px;
   text-align: left;
 }
+.research-reader nav button strong,
+.research-reader nav button small {
+  display: block;
+}
+.research-reader nav button strong {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.research-reader nav button small {
+  margin-top: 4px;
+  color: var(--research-text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+}
 .research-reader nav button:hover,
 .research-reader nav button.is-selected {
   background: var(--research-accent-soft);
   color: var(--research-text);
 }
 .research-reader article {
-  border-left: 1px solid var(--research-border-soft);
+  border-top: 1px solid var(--research-border-soft);
   min-width: 0;
-  padding-left: clamp(24px, 4vw, 48px);
+  padding-top: 18px;
 }
 .research-reader__content {
-  color: var(--research-text-soft);
+  min-height: 420px;
+  max-height: 620px;
+  padding: clamp(28px, 4vw, 52px);
+  overflow: auto;
+  border-radius: 4px;
+  background: #f0eee9;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  color: #26231f;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 17px;
   line-height: 1.8;
@@ -77,12 +102,7 @@
   margin: 20px 0 0;
 }
 @media (max-width: 760px) {
-  .research-reader__layout {
-    grid-template-columns: 1fr;
-  }
   .research-reader article {
-    border-left: 0;
-    border-top: 1px solid var(--research-border-soft);
     padding: 24px 0 0;
   }
 }
