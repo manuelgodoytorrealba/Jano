@@ -30,6 +30,7 @@ export class ResearchMaterialReaderComponent {
     this.focusMaterial();
   }
   @Output() excerptCreated = new EventEmitter<ResearchLibraryExcerptReference>();
+  @Output() retryRequested = new EventEmitter<string>();
 
   selectedMaterialId = '';
   focusedExcerpt: ResearchLibraryExcerpt | null = null;
@@ -40,12 +41,20 @@ export class ResearchMaterialReaderComponent {
     );
   }
 
+  get failedMaterials(): ResearchDocument[] {
+    return this.materials.filter((material) => material.status === 'FAILED');
+  }
+
   get selectedMaterial(): ResearchDocument | null {
     return (
       this.textMaterials.find((material) => material.id === this.selectedMaterialId) ??
       this.textMaterials[0] ??
       null
     );
+  }
+
+  retry(materialId: string): void {
+    this.retryRequested.emit(materialId);
   }
 
   selectMaterial(materialId: string): void {

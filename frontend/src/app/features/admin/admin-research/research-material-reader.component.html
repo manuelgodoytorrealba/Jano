@@ -44,6 +44,18 @@
       }
     </div>
   } @else {
-    <p class="research-reader__empty">No hay materiales de texto disponibles para lectura.</p>
+    <p class="research-reader__empty">No hay materiales disponibles para lectura.</p>
+  }
+
+  @if (failedMaterials.length) {
+    <aside class="research-reader__failed">
+      <p>Materiales que requieren atención</p>
+      @for (material of failedMaterials; track material.id) {
+        <div>
+          <span>{{ material.title }}</span
+          ><button type="button" (click)="retry(material.id)">Reintentar preparación</button>
+        </div>
+      }
+    </aside>
   }
 </section>

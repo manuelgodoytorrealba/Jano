@@ -3,9 +3,10 @@ import { LibraryMaterialKind, LibraryMaterialVersionStatus } from '@prisma/clien
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { lookup } from 'node:dns/promises';
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
 import { isIP } from 'node:net';
 import { join, normalize, relative } from 'node:path';
+import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -85,7 +86,35 @@ export class LibraryMaterialPreparationService {
       maxBuffer: MAX_DOCUMENT_BYTES,
       timeout: FETCH_TIMEOUT_MS,
     });
-    return stdout.trim();
+    const extracted = stdout.trim();
+    return extracted || this.ocrPdf(path);
+  }
+
+  private async ocrPdf(path: string) {
+    const directory = await mkdtemp(join(tmpdir(), 'jano-ocr-'));
+    const prefix = join(directory, 'page');
+    try {
+      await execFileAsync('pdftoppm', ['-f', '1', '-l', '20', '-r', '150', '-jpeg', path, prefix], {
+        timeout: 120_000,
+      });
+      const pages = (await readdir(directory)).filter((file) => file.endsWith('.jpg')).sort();
+      const text = await Promise.all(
+        pages.map(async (page) => {
+          const { stdout } = await execFileAsync(
+            'tesseract',
+            [join(directory, page), 'stdout', '-l', 'spa+eng'],
+            {
+              maxBuffer: MAX_DOCUMENT_BYTES,
+              timeout: FETCH_TIMEOUT_MS,
+            },
+          );
+          return stdout.trim();
+        }),
+      );
+      return text.filter(Boolean).join('\n\n').trim();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   }
 
   private async fetchUrl(rawUrl: string | null) {

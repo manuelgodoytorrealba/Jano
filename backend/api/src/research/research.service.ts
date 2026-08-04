@@ -1026,6 +1026,25 @@ export class ResearchService {
     });
   }
 
+  async prepareMaterial(projectId: string, materialId: string) {
+    const material = await this.prisma.libraryMaterial.findFirst({
+      where: { id: materialId, research: { some: { projectId } } },
+      select: {
+        id: true,
+        versions: { orderBy: { version: 'desc' }, take: 1, select: { id: true } },
+      },
+    });
+    const version = material?.versions[0];
+    if (!version) throw new NotFoundException('Research material not found');
+    await this.prisma.libraryMaterialVersion.update({
+      where: { id: version.id },
+      data: { status: 'PENDING_PREPARATION' },
+    });
+    await this.queueMaterialPreparation(projectId, material.id);
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
   async createMaterial(projectId: string, dto: CreateLibraryMaterialDto) {
     let materialId = '';
     await this.prisma.$transaction(async (tx) => {

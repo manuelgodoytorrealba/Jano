@@ -169,6 +169,11 @@ export class ResearchController {
     return this.service.createMaterial(id, dto);
   }
 
+  @Post(':id/materials/:materialId/jobs/prepare')
+  prepareMaterial(@Param('id') id: string, @Param('materialId') materialId: string) {
+    return this.service.prepareMaterial(id, materialId);
+  }
+
   @Post(':id/materials/pdf')
   @UseInterceptors(FileInterceptor('file', RESEARCH_PDF_UPLOAD_OPTIONS))
   createPdfMaterial(

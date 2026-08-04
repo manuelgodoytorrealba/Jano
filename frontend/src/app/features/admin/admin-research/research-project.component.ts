@@ -86,6 +86,13 @@ export class ResearchProjectComponent {
     ),
   );
 
+  retryMaterial(project: ResearchProject, materialId: string): void {
+    this.api.prepareMaterial(project.id, materialId).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => (this.error = 'No se pudo reintentar la preparación.'),
+    });
+  }
+
   createMaterial(project: ResearchProject): void {
     if (!this.canCreateMaterial() || this.addingMaterial) return;
     const title = this.materialTitle.trim();

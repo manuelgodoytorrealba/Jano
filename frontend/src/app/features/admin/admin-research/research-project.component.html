@@ -602,6 +602,7 @@
                 [materials]="project.materials"
                 [focusExcerpt]="reviewExcerpt"
                 (excerptCreated)="prepareEvidenceFromExcerpt($event)"
+                (retryRequested)="retryMaterial(project, $event)"
               />
 
               @if (preparedExcerpt) {

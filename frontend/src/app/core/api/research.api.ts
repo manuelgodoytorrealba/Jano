@@ -552,6 +552,13 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/materials/pdf`, formData);
   }
 
+  prepareMaterial(projectId: string, materialId: string) {
+    return this.http.post<ResearchProject>(
+      `${this.baseUrl}/${projectId}/materials/${materialId}/jobs/prepare`,
+      {},
+    );
+  }
+
   createClaim(projectId: string, data: CreateResearchClaimPayload) {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/claims`, data);
   }
