@@ -1006,7 +1006,28 @@ export class ResearchService {
     return this.getProject(projectId);
   }
 
+  private async queueMaterialPreparation(projectId: string, materialId: string) {
+    const version = await this.prisma.libraryMaterialVersion.findFirst({
+      where: { materialId },
+      orderBy: { version: 'desc' },
+      select: { id: true, status: true },
+    });
+    if (!version || version.status !== 'PENDING_PREPARATION') return;
+    const type = ResearchJobType.PREPARE_MATERIAL;
+    const inputFingerprint = this.jobFingerprint({
+      projectId,
+      materialVersionId: version.id,
+      type,
+    });
+    await this.prisma.researchJob.upsert({
+      where: { projectId_type_inputFingerprint: { projectId, type, inputFingerprint } },
+      create: { projectId, materialVersionId: version.id, type, inputFingerprint },
+      update: {},
+    });
+  }
+
   async createMaterial(projectId: string, dto: CreateLibraryMaterialDto) {
+    let materialId = '';
     await this.prisma.$transaction(async (tx) => {
       const project = await tx.researchProject.findUnique({
         where: { id: projectId },
@@ -1015,12 +1036,14 @@ export class ResearchService {
       if (!project) throw new NotFoundException('Research project not found');
 
       const material = await this.library.createInitialMaterial(tx, dto);
+      materialId = material.id;
       await tx.researchLibraryMaterial.upsert({
         where: { projectId_materialId: { projectId, materialId: material.id } },
         create: { projectId, materialId: material.id },
         update: {},
       });
     });
+    await this.queueMaterialPreparation(projectId, materialId);
 
     return this.getProject(projectId);
   }
@@ -1031,6 +1054,7 @@ export class ResearchService {
     dto: CreateResearchPdfMaterialDto,
   ) {
     if (!file) throw new BadRequestException('Research PDF is required');
+    let materialId = '';
     await this.prisma.$transaction(async (tx) => {
       const project = await tx.researchProject.findUnique({
         where: { id: projectId },
@@ -1039,12 +1063,14 @@ export class ResearchService {
       if (!project) throw new NotFoundException('Research project not found');
 
       const material = await this.library.createInitialPdf(tx, file, dto.title);
+      materialId = material.id;
       await tx.researchLibraryMaterial.upsert({
         where: { projectId_materialId: { projectId, materialId: material.id } },
         create: { projectId, materialId: material.id },
         update: {},
       });
     });
+    await this.queueMaterialPreparation(projectId, materialId);
 
     return this.getProject(projectId);
   }
@@ -1176,9 +1202,18 @@ export class ResearchService {
     });
   }
 
-  private jobFingerprint(input: { projectId: string; sourceId: string; type: ResearchJobType }) {
+  private jobFingerprint(input: {
+    projectId: string;
+    type: ResearchJobType;
+    sourceId?: string;
+    materialVersionId?: string;
+  }) {
     return createHash('sha256')
-      .update([input.projectId, input.sourceId, input.type].join('\u001f'))
+      .update(
+        [input.projectId, input.sourceId ?? input.materialVersionId ?? '', input.type].join(
+          '\u001f',
+        ),
+      )
       .digest('hex');
   }
 

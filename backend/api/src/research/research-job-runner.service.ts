@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ResearchJobStatus, ResearchJobType } from '@prisma/client';
+import { LibraryMaterialPreparationService } from '../library/library-material-preparation.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ResearchAIService } from './research-ai.service';
 
@@ -7,6 +8,7 @@ type QueuedResearchJob = {
   id: string;
   projectId: string;
   sourceId: string | null;
+  materialVersionId: string | null;
   type: ResearchJobType;
   attempts: number;
 };
@@ -16,11 +18,17 @@ type RunNextResult =
   | { processed: true; jobId: string; status: ResearchJobStatus };
 
 @Injectable()
-export class ResearchJobRunnerService {
+export class ResearchJobRunnerService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly researchAI: ResearchAIService,
+    private readonly preparation: LibraryMaterialPreparationService,
   ) {}
+
+  onModuleInit() {
+    // ponytail: in-process worker; move to a dedicated worker when throughput requires it.
+    setInterval(() => void this.runNextQueuedJob(), 1_000).unref();
+  }
 
   async runNextQueuedJob(): Promise<RunNextResult> {
     const job = await this.prisma.researchJob.findFirst({
@@ -30,6 +38,7 @@ export class ResearchJobRunnerService {
         id: true,
         projectId: true,
         sourceId: true,
+        materialVersionId: true,
         type: true,
         attempts: true,
       },
@@ -49,7 +58,6 @@ export class ResearchJobRunnerService {
     if (!claimed.count) return { processed: false };
 
     const runningJob = { ...job, attempts: job.attempts + 1 };
-
     try {
       await this.runJobWork(runningJob);
       await this.prisma.researchJob.update({
@@ -58,6 +66,8 @@ export class ResearchJobRunnerService {
       });
       return { processed: true, jobId: job.id, status: ResearchJobStatus.SUCCEEDED };
     } catch (error) {
+      if (runningJob.materialVersionId)
+        await this.preparation.markFailed(runningJob.materialVersionId);
       await this.prisma.researchJob.update({
         where: { id: job.id },
         data: {
@@ -71,26 +81,19 @@ export class ResearchJobRunnerService {
   }
 
   private async runJobWork(job: QueuedResearchJob): Promise<void> {
-    if (job.type === ResearchJobType.EXTRACT_FINDINGS) {
-      await this.researchAI.extractFindings(job);
-      return;
+    if (job.type === ResearchJobType.EXTRACT_FINDINGS) return this.researchAI.extractFindings(job);
+    if (job.type === ResearchJobType.PREPARE_MATERIAL) {
+      if (!job.materialVersionId) throw new Error('Research material version not found');
+      return this.preparation.prepare(job.materialVersionId);
     }
-
     if (job.type !== ResearchJobType.PREPARE_SOURCE) {
       throw new Error(`Unsupported research job type: ${job.type}`);
     }
-
-    if (!job.sourceId) {
-      throw new Error('Research job source not found');
-    }
-
+    if (!job.sourceId) throw new Error('Research job source not found');
     const projectSource = await this.prisma.researchProjectSource.findUnique({
       where: { projectId_sourceId: { projectId: job.projectId, sourceId: job.sourceId } },
       select: { sourceId: true },
     });
-
-    if (!projectSource) {
-      throw new Error('Research project source not found');
-    }
+    if (!projectSource) throw new Error('Research project source not found');
   }
 }

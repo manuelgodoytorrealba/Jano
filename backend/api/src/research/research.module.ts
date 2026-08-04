@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AIModule } from '../ai/ai.module';
 import { LibraryModule } from '../library/library.module';
+import { LibraryMaterialPreparationService } from '../library/library-material-preparation.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { SourcesModule } from '../sources/sources.module';
 import { ResearchController } from './research.controller';
@@ -19,6 +20,7 @@ import { ResearchOwnerGuard } from './research-owner.guard';
     ResearchService,
     ResearchJobRunnerService,
     ResearchAIService,
+    LibraryMaterialPreparationService,
   ],
 })
 export class ResearchModule {}

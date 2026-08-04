@@ -137,7 +137,7 @@ Los siguientes estados describen madurez editorial; no crean un nuevo owner ni s
 
 El código actual ya permite crear Research, definir Outline y preguntas, asociar corpus, crear Evidence, construir conocimiento privado y explorar su Graph trazable. La lectura progresiva evita cargar más detalle del necesario para esa exploración.
 
-Todavía no existe una experiencia continua y completa de captura, revisión, escritura y publicación: la incorporación editorial permanece parcialmente separada de la ruta principal de Studio; PDF y URL se almacenan pero no disponen aún de procesamiento documental real; la escritura asistida y la publicación integrada no forman parte del flujo actual. Estas limitaciones deben comunicarse sin prometer capacidades inexistentes.
+Todavía no existe una experiencia continua y completa de captura, revisión, escritura y publicación: la incorporación editorial permanece parcialmente separada de la ruta principal de Studio; los PDF con texto y las URL públicas estáticas se preparan de forma asíncrona; OCR, contenido protegido y páginas dependientes de JavaScript siguen fuera del flujo actual; la escritura asistida y la publicación integrada no forman parte del flujo actual. Estas limitaciones deben comunicarse sin prometer capacidades inexistentes.
 
 ## Decisiones descartadas
 

@@ -48,6 +48,7 @@ describe('ResearchJobRunnerService', () => {
         id: true,
         projectId: true,
         sourceId: true,
+        materialVersionId: true,
         type: true,
         attempts: true,
       },

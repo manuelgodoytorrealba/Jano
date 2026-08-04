@@ -167,6 +167,7 @@ enum ResearchDecisionAction {
 enum ResearchJobType {
   PREPARE_SOURCE
   EXTRACT_FINDINGS
+  PREPARE_MATERIAL
 }
 
 enum ResearchJobStatus {
@@ -811,6 +812,7 @@ model LibraryMaterialVersion {
 
   material LibraryMaterial  @relation(fields: [materialId], references: [id], onDelete: Cascade)
   excerpts LibraryExcerpt[]
+  researchJobs ResearchJob[]
 
   @@unique([materialId, version])
   @@index([materialId, createdAt])
@@ -1051,6 +1053,7 @@ model ResearchJob {
   id               String            @id @default(cuid())
   projectId        String
   sourceId         String?
+  materialVersionId String?
   type             ResearchJobType
   status           ResearchJobStatus @default(QUEUED)
   inputFingerprint String
@@ -1064,12 +1067,14 @@ model ResearchJob {
 
   project          ResearchProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
   source           Source?                   @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  materialVersion  LibraryMaterialVersion?    @relation(fields: [materialVersionId], references: [id], onDelete: SetNull)
   aiExecutions     AIExecution[]
   findingProposals ResearchFindingProposal[]
 
   @@unique([projectId, type, inputFingerprint])
   @@index([projectId, status])
   @@index([sourceId])
+  @@index([materialVersionId])
 }
 
 model AIExecution {

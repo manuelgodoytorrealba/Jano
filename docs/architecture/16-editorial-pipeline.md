@@ -34,17 +34,17 @@ Este documento define el comportamiento editorial del pipeline. Los owners de co
 
 ## Tipos de entrada y disponibilidad actual
 
-| Entrada                     | Tratamiento editorial                                                     | Disponibilidad actual                                      |
-| --------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Texto pegado                | Material textual con contexto y procedencia declarada.                    | Disponible.                                                |
-| Source o artículo existente | Referencia bibliográfica asociada al Research; puede sostener Evidence.   | Disponible como asociación.                                |
-| PDF                         | Archivo, versión y localización por páginas cuando puedan prepararse.     | Se admite y almacena; no hay extracción u OCR demostrados. |
-| URL                         | Referencia web con fecha de consulta y versión recuperable cuando exista. | Se registra; no hay recuperación o parsing demostrados.    |
-| Markdown                    | Texto con estructura preservable cuando se soporte.                       | Sólo como texto pegado.                                    |
-| HTML                        | Contenido o URL con procedencia y versión.                                | Sólo como texto pegado; no hay parsing demostrado.         |
-| Imagen                      | Material visual con procedencia, contexto y anotación humana.             | No soportado directamente.                                 |
-| DOCX                        | Documento estructurado con contenido y referencias preservadas.           | No soportado directamente.                                 |
-| EPUB                        | Publicación digital con capítulos y locators internos.                    | No soportado directamente.                                 |
+| Entrada                     | Tratamiento editorial                                                   | Disponibilidad actual                                         |
+| --------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Texto pegado                | Material textual con contexto y procedencia declarada.                  | Disponible.                                                   |
+| Source o artículo existente | Referencia bibliográfica asociada al Research; puede sostener Evidence. | Disponible como asociación.                                   |
+| PDF                         | Archivo, versión y texto extraído cuando el PDF contiene texto.         | Se prepara asíncronamente con extracción textual; sin OCR.    |
+| URL                         | Referencia web recuperable con contenido textual disponible.            | Se prepara asíncronamente para HTML o texto público estático. |
+| Markdown                    | Texto con estructura preservable cuando se soporte.                     | Sólo como texto pegado.                                       |
+| HTML                        | Contenido o URL con procedencia y versión.                              | Sólo como texto pegado; no hay parsing demostrado.            |
+| Imagen                      | Material visual con procedencia, contexto y anotación humana.           | No soportado directamente.                                    |
+| DOCX                        | Documento estructurado con contenido y referencias preservadas.         | No soportado directamente.                                    |
+| EPUB                        | Publicación digital con capítulos y locators internos.                  | No soportado directamente.                                    |
 
 Un material registrado no debe presentarse como disponible para evidencia hasta que su estado documental lo permita.
 

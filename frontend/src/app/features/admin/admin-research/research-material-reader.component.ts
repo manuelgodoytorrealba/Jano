@@ -36,8 +36,7 @@ export class ResearchMaterialReaderComponent {
 
   get textMaterials(): ResearchDocument[] {
     return this.materials.filter(
-      (material) =>
-        material.kind === 'TEXT' && material.status === 'READY' && material.content !== null,
+      (material) => material.status === 'READY' && material.content !== null,
     );
   }
 
