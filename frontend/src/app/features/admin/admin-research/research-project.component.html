@@ -200,8 +200,11 @@
                     <button
                       type="button"
                       [class.is-selected]="readerMaterialId(project) === material.id"
-                      [disabled]="!isReadableMaterial(material)"
-                      (click)="selectedMaterialId = material.id"
+                      [class.is-unavailable]="!isReadableMaterial(material)"
+                      [attr.aria-disabled]="!isReadableMaterial(material)"
+                      aria-haspopup="menu"
+                      (click)="selectMaterial(material)"
+                      (contextmenu)="openMaterialMenu($event, material)"
                     >
                       <span aria-hidden="true">{{ material.kind }}</span>
                       <span>
@@ -758,6 +761,19 @@
           }
         </section>
       </section>
+      @if (materialMenu; as menu) {
+        <div
+          class="research-project__material-menu"
+          role="menu"
+          [style.left.px]="menu.x"
+          [style.top.px]="menu.y"
+        >
+          <p>{{ menu.title }}</p>
+          <button type="button" role="menuitem" (click)="removeMaterial(project, menu.materialId)">
+            Quitar de esta investigación
+          </button>
+        </div>
+      }
     } @else {
       <div class="research-project__error">{{ vm.error }}</div>
     }

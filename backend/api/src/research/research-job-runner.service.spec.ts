@@ -16,11 +16,16 @@ describe('ResearchJobRunnerService', () => {
   const researchAI = {
     extractFindings: jest.fn(),
   };
+  const preparation = { prepare: jest.fn(), markFailed: jest.fn() };
   let service: ResearchJobRunnerService;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    service = new ResearchJobRunnerService(prisma as unknown as PrismaService, researchAI as never);
+    service = new ResearchJobRunnerService(
+      prisma as unknown as PrismaService,
+      researchAI as never,
+      preparation as never,
+    );
   });
 
   it('runs the next queued source preparation job to success', async () => {

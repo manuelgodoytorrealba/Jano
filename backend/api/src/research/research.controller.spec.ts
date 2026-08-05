@@ -13,6 +13,7 @@ describe('ResearchController', () => {
     searchSources: jest.fn(),
     addProjectSource: jest.fn(),
     associateLibraryMaterial: jest.fn(),
+    removeLibraryMaterial: jest.fn(),
     prepareSourceJob: jest.fn(),
     getKnowledge: jest.fn(),
     extractProposalsJob: jest.fn(),
@@ -94,6 +95,15 @@ describe('ResearchController', () => {
 
     await expect(controller.associateLibraryMaterial('project-1', dto)).resolves.toEqual(dto);
     expect(service.associateLibraryMaterial).toHaveBeenCalledWith('project-1', dto);
+  });
+
+  it('delegates removal from the research corpus without deleting the Library material', async () => {
+    service.removeLibraryMaterial.mockResolvedValue({ id: 'project-1' } as never);
+
+    await expect(controller.removeLibraryMaterial('project-1', 'material-1')).resolves.toEqual({
+      id: 'project-1',
+    });
+    expect(service.removeLibraryMaterial).toHaveBeenCalledWith('project-1', 'material-1');
   });
 
   it('delegates canonical source search to the research service', async () => {

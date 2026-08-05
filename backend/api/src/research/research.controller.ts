@@ -164,6 +164,11 @@ export class ResearchController {
     return this.service.associateLibraryMaterial(id, dto);
   }
 
+  @Delete(':id/library-materials/:materialId')
+  removeLibraryMaterial(@Param('id') id: string, @Param('materialId') materialId: string) {
+    return this.service.removeLibraryMaterial(id, materialId);
+  }
+
   @Post(':id/materials')
   createMaterial(@Param('id') id: string, @Body() dto: CreateLibraryMaterialDto) {
     return this.service.createMaterial(id, dto);

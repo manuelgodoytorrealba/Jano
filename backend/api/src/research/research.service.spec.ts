@@ -35,6 +35,7 @@ describe('ResearchService', () => {
       findUnique: jest.fn(),
       upsert: jest.fn(),
     },
+    researchLibraryMaterial: { deleteMany: jest.fn() },
     researchEvidence: {
       count: jest.fn(),
       findMany: jest.fn(),
@@ -578,6 +579,23 @@ describe('ResearchService', () => {
       }),
     ).rejects.toThrow('storage unavailable');
     expect(tx.researchLibraryMaterial.upsert).not.toHaveBeenCalled();
+  });
+
+  it('removes only the Research association to a Library material', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchLibraryMaterial.deleteMany.mockResolvedValue({ count: 1 });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.removeLibraryMaterial('project-1', 'material-1');
+
+    expect(prisma.researchLibraryMaterial.deleteMany).toHaveBeenCalledWith({
+      where: { projectId: 'project-1', materialId: 'material-1' },
+    });
+
+    prisma.researchLibraryMaterial.deleteMany.mockResolvedValue({ count: 0 });
+    await expect(service.removeLibraryMaterial('project-1', 'missing')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 
   it('delegates PDF creation to Library and preserves the legacy writer untouched', async () => {

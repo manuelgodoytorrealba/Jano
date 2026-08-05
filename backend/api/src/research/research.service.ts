@@ -782,6 +782,15 @@ export class ResearchService {
     });
   }
 
+  async removeLibraryMaterial(projectId: string, materialId: string) {
+    await this.requireProject(projectId);
+    const { count } = await this.prisma.researchLibraryMaterial.deleteMany({
+      where: { projectId, materialId },
+    });
+    if (!count) throw new NotFoundException('Research material not found');
+    return this.getProject(projectId);
+  }
+
   async prepareSourceJob(projectId: string, sourceId: string) {
     const project = await this.prisma.researchProject.findUnique({
       where: { id: projectId },

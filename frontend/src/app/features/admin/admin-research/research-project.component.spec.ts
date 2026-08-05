@@ -273,6 +273,35 @@ describe('ResearchProjectComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Segundo pasaje.');
   });
 
+  it('opens a material context menu and removes only its research association', async () => {
+    const failedMaterial = {
+      ...corpusMaterial,
+      status: 'FAILED' as const,
+      content: null,
+    };
+    const research = { ...project, materials: [failedMaterial] };
+    const api = {
+      getById: vi.fn().mockReturnValue(of(research)),
+      list: vi.fn().mockReturnValue(of([research])),
+      removeMaterial: vi.fn().mockReturnValue(of({ ...research, materials: [] })),
+    };
+    const fixture = await createFixture(api);
+    const material = fixture.nativeElement.querySelector(
+      '.research-project__corpus-materials button',
+    );
+
+    material.dispatchEvent(
+      new MouseEvent('contextmenu', { bubbles: true, clientX: 120, clientY: 180 }),
+    );
+    fixture.detectChanges();
+
+    const action = fixture.nativeElement.querySelector('.research-project__material-menu button');
+    expect(action.textContent).toContain('Quitar de esta investigación');
+    action.click();
+
+    expect(api.removeMaterial).toHaveBeenCalledWith(project.id, corpusMaterial.id);
+  });
+
   it('refreshes automatically while a material is preparing', async () => {
     vi.useFakeTimers();
     try {

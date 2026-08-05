@@ -545,6 +545,12 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/materials`, data);
   }
 
+  removeMaterial(projectId: string, materialId: string) {
+    return this.http.delete<ResearchProject>(
+      `${this.baseUrl}/${projectId}/library-materials/${materialId}`,
+    );
+  }
+
   createPdfMaterial(projectId: string, file: File, title?: string) {
     const formData = new FormData();
     formData.append('file', file);

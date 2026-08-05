@@ -77,6 +77,7 @@ export class ResearchProjectComponent implements OnDestroy {
   addingMaterial = false;
   materialMessage = '';
   selectedMaterialId = '';
+  materialMenu: { materialId: string; title: string; x: number; y: number } | null = null;
   focusMode = false;
   readonly statuses: ResearchOutlineSectionStatus[] = [
     'NOT_STARTED',
@@ -340,6 +341,39 @@ export class ResearchProjectComponent implements OnDestroy {
     );
   }
 
+  selectMaterial(material: ResearchDocument): void {
+    if (this.isReadableMaterial(material)) this.selectedMaterialId = material.id;
+  }
+
+  openMaterialMenu(event: MouseEvent, material: ResearchDocument): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const view = this.document.defaultView;
+    this.materialMenu = {
+      materialId: material.id,
+      title: material.title,
+      x: Math.max(8, Math.min(event.clientX, (view?.innerWidth ?? event.clientX + 220) - 220)),
+      y: Math.max(8, Math.min(event.clientY, (view?.innerHeight ?? event.clientY + 110) - 110)),
+    };
+  }
+
+  removeMaterial(project: ResearchProject, materialId: string): void {
+    this.materialMenu = null;
+    this.api.removeMaterial(project.id, materialId).subscribe({
+      next: () => {
+        if (this.selectedMaterialId === materialId) this.selectedMaterialId = '';
+        this.materialMessage = 'Material retirado de esta investigación.';
+        this.refresh$.next();
+      },
+      error: () => (this.error = 'No se pudo retirar el material del corpus.'),
+    });
+  }
+
+  @HostListener('document:click')
+  closeMaterialMenu(): void {
+    this.materialMenu = null;
+  }
+
   isReadableMaterial(material: ResearchDocument): boolean {
     return material.status === 'READY' && material.content !== null;
   }
@@ -357,6 +391,7 @@ export class ResearchProjectComponent implements OnDestroy {
 
   @HostListener('document:keydown.escape')
   exitFocus(): void {
+    this.materialMenu = null;
     if (!this.focusMode) return;
     this.focusMode = false;
     this.document.body.classList.remove('app-stage-immersive');

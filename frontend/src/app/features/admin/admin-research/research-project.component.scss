@@ -932,11 +932,52 @@ h1 {
   font-size: 9px;
 }
 
-.research-project__corpus-materials button:hover:not(:disabled),
+.research-project__corpus-materials button:hover,
 .research-project__corpus-materials button.is-selected {
   border-color: rgba(143, 110, 213, 0.28);
   background: var(--research-accent-soft);
   color: var(--research-text);
+}
+
+.research-project__corpus-materials button.is-unavailable {
+  opacity: 0.58;
+}
+
+.research-project__material-menu {
+  position: fixed;
+  z-index: 1000;
+  width: 204px;
+  padding: 6px;
+  border: 1px solid var(--research-border);
+  border-radius: 10px;
+  background: rgba(24, 23, 28, 0.98);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(18px);
+}
+
+.research-project__material-menu p {
+  margin: 0;
+  padding: 7px 9px 8px;
+  overflow: hidden;
+  color: var(--research-text-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.research-project__material-menu button {
+  width: 100%;
+  padding: 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #f3a6a6;
+  text-align: left;
+}
+
+.research-project__material-menu button:hover,
+.research-project__material-menu button:focus-visible {
+  background: rgba(210, 74, 74, 0.14);
 }
 
 .research-project__section-head {
