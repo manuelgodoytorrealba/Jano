@@ -21,6 +21,8 @@ import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.co
 import { ResearchGraphComponent } from './research-graph.component';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 
+const MAX_PDF_SIZE_BYTES = 300 * 1024 * 1024;
+
 @Component({
   standalone: true,
   selector: 'app-research-project',
@@ -69,6 +71,7 @@ export class ResearchProjectComponent implements OnDestroy {
   materialContent = '';
   materialUrl = '';
   materialPdf: File | null = null;
+  pdfDragActive = false;
   addingMaterial = false;
   materialMessage = '';
   selectedMaterialId = '';
@@ -154,10 +157,25 @@ export class ResearchProjectComponent implements OnDestroy {
 
   selectPdf(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.materialPdf = input.files?.[0] ?? null;
-    if (this.materialPdf && !this.materialTitle.trim()) {
-      this.materialTitle = this.materialPdf.name.replace(/\.pdf$/i, '');
-    }
+    this.setPdf(input.files?.[0] ?? null);
+  }
+
+  dragPdfOver(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+    this.pdfDragActive = true;
+  }
+
+  leavePdfDropZone(event: DragEvent): void {
+    const zone = event.currentTarget as HTMLElement;
+    if (event.relatedTarget instanceof Node && zone.contains(event.relatedTarget)) return;
+    this.pdfDragActive = false;
+  }
+
+  dropPdf(event: DragEvent): void {
+    event.preventDefault();
+    this.pdfDragActive = false;
+    this.setPdf(event.dataTransfer?.files.item(0) ?? null);
   }
 
   canCreateMaterial(): boolean {
@@ -165,6 +183,22 @@ export class ResearchProjectComponent implements OnDestroy {
     if (this.materialKind === 'TEXT') return Boolean(this.materialContent.trim());
     if (this.materialKind === 'URL') return Boolean(this.materialUrl.trim());
     return Boolean(this.materialPdf);
+  }
+
+  private setPdf(file: File | null): void {
+    this.materialPdf = null;
+    if (!file) return;
+    if (file.type !== 'application/pdf' || !/\.pdf$/i.test(file.name)) {
+      this.materialMessage = 'Selecciona un archivo PDF válido.';
+      return;
+    }
+    if (file.size > MAX_PDF_SIZE_BYTES) {
+      this.materialMessage = 'El PDF supera el máximo de 300 MB.';
+      return;
+    }
+    this.materialPdf = file;
+    this.materialMessage = '';
+    if (!this.materialTitle.trim()) this.materialTitle = file.name.replace(/\.pdf$/i, '');
   }
 
   createSection(project: ResearchProject, parentSectionId?: string): void {

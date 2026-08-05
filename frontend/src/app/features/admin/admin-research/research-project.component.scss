@@ -653,7 +653,25 @@ h1 {
 }
 .research-project__pdf-input {
   cursor: pointer;
-  display: block;
+  display: grid;
+  min-height: 112px;
+  place-content: center;
+  gap: 6px;
+  border-style: dashed;
+  text-align: center;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+.research-project__pdf-input small {
+  color: var(--research-text-muted);
+  font-size: 11px;
+}
+.research-project__pdf-input.is-dragging {
+  border-color: var(--research-accent);
+  background: var(--research-accent-soft);
+  transform: scale(1.01);
 }
 .research-project__pdf-input input {
   display: none;

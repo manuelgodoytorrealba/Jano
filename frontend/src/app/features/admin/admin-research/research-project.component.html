@@ -47,8 +47,22 @@
                     placeholder="https://…"
                   />
                 } @else {
-                  <label class="research-project__pdf-input">
-                    <span>{{ materialPdf?.name || 'Seleccionar PDF · máximo 300 MB' }}</span>
+                  <label
+                    class="research-project__pdf-input"
+                    [class.is-dragging]="pdfDragActive"
+                    (dragover)="dragPdfOver($event)"
+                    (dragleave)="leavePdfDropZone($event)"
+                    (drop)="dropPdf($event)"
+                  >
+                    <span>{{
+                      materialPdf?.name ||
+                        (pdfDragActive ? 'Suelta el PDF' : 'Arrastra un PDF aquí')
+                    }}</span>
+                    <small>{{
+                      materialPdf
+                        ? 'PDF listo para incorporar'
+                        : 'o haz clic para seleccionarlo · máximo 300 MB'
+                    }}</small>
                     <input type="file" accept="application/pdf,.pdf" (change)="selectPdf($event)" />
                   </label>
                   <p class="research-project__material-limit">

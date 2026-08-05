@@ -228,6 +228,21 @@ describe('ResearchProjectComponent', () => {
     });
   });
 
+  it('accepts a PDF dropped into the corpus intake', async () => {
+    const fixture = await createFixture({ getById: vi.fn().mockReturnValue(of(project)) });
+    const file = new File(['pdf'], 'catalogo.pdf', { type: 'application/pdf' });
+    const preventDefault = vi.fn();
+
+    fixture.componentInstance.dropPdf({
+      preventDefault,
+      dataTransfer: { files: { item: () => file } },
+    } as unknown as DragEvent);
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(fixture.componentInstance.materialPdf).toBe(file);
+    expect(fixture.componentInstance.materialTitle).toBe('catalogo');
+  });
+
   it('uses the sidebar as the compact corpus material selector', async () => {
     const materials = [
       corpusMaterial,
