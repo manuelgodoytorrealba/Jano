@@ -135,6 +135,7 @@ async function createFixture(
   api: Record<string, ReturnType<typeof vi.fn>>,
   active = false,
   mode = 'corpus',
+  waitForStable = true,
 ) {
   api['getKnowledge'] ??= vi.fn().mockReturnValue(of(topology));
   api['list'] ??= vi.fn().mockReturnValue(of([project]));
@@ -156,7 +157,7 @@ async function createFixture(
   }).compileComponents();
   const fixture = TestBed.createComponent(ResearchProjectComponent);
   fixture.detectChanges();
-  await fixture.whenStable();
+  if (waitForStable) await fixture.whenStable();
   fixture.detectChanges();
   return fixture;
 }
@@ -270,6 +271,32 @@ describe('ResearchProjectComponent', () => {
 
     expect(fixture.componentInstance.selectedMaterialId).toBe('material-2');
     expect(fixture.nativeElement.textContent).toContain('Segundo pasaje.');
+  });
+
+  it('refreshes automatically while a material is preparing', async () => {
+    vi.useFakeTimers();
+    try {
+      const pending = {
+        ...project,
+        materials: [{ ...corpusMaterial, status: 'PENDING_PREPARATION' as const, content: null }],
+      };
+      const ready = { ...project, materials: [corpusMaterial] };
+      const api = {
+        getById: vi.fn().mockReturnValueOnce(of(pending)).mockReturnValue(of(ready)),
+        list: vi.fn().mockReturnValue(of([project])),
+      };
+      const fixture = await createFixture(api, false, 'corpus', false);
+
+      expect(fixture.nativeElement.textContent).toContain('Preparando contenido');
+      await vi.advanceTimersByTimeAsync(2000);
+      fixture.detectChanges();
+
+      expect(api.getById).toHaveBeenCalledTimes(2);
+      expect(fixture.nativeElement.textContent).toContain('Disponible');
+      fixture.destroy();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('opens the first section from Index', async () => {

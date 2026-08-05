@@ -22,6 +22,7 @@ import { ResearchGraphComponent } from './research-graph.component';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 
 const MAX_PDF_SIZE_BYTES = 300 * 1024 * 1024;
+const MATERIAL_POLL_INTERVAL_MS = 2000;
 
 @Component({
   standalone: true,
@@ -47,6 +48,7 @@ export class ResearchProjectComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
+  private materialPollTimer: ReturnType<typeof setTimeout> | null = null;
   private workspaceSectionId: string | null = null;
   private savedObjective = '';
   private savedNotes = '';
@@ -91,6 +93,7 @@ export class ResearchProjectComponent implements OnDestroy {
     switchMap(([params, query]) =>
       combineLatest([this.api.getById(params.get('id')!), this.api.list()]).pipe(
         map(([project, projects]) => {
+          this.scheduleMaterialPoll(project);
           const mode = this.workspaceMode(query.get('mode'), params.get('sectionId'));
           const sectionId = query.get('section') ?? params.get('sectionId');
           const activeSection =
@@ -100,15 +103,16 @@ export class ResearchProjectComponent implements OnDestroy {
           this.syncWorkspace(activeSection);
           return { project, projects, activeSection, mode, error: '' };
         }),
-        catchError(() =>
-          of({
+        catchError(() => {
+          this.stopMaterialPolling();
+          return of({
             project: null,
             projects: [],
             activeSection: null,
             mode: 'corpus',
             error: 'No se pudo abrir esta investigación.',
-          }),
-        ),
+          });
+        }),
       ),
     ),
   );
@@ -359,6 +363,7 @@ export class ResearchProjectComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.stopMaterialPolling();
     this.document.body.classList.remove('app-stage-immersive');
   }
 
@@ -438,6 +443,21 @@ export class ResearchProjectComponent implements OnDestroy {
       READY_FOR_REVIEW: 'Lista para revisión',
       COMPLETED: 'Completada',
     }[status];
+  }
+
+  private scheduleMaterialPoll(project: ResearchProject): void {
+    this.stopMaterialPolling();
+    if (!project.materials.some((material) => material.status === 'PENDING_PREPARATION')) return;
+    this.materialPollTimer = setTimeout(() => {
+      this.materialPollTimer = null;
+      this.refresh$.next();
+    }, MATERIAL_POLL_INTERVAL_MS);
+  }
+
+  private stopMaterialPolling(): void {
+    if (this.materialPollTimer === null) return;
+    clearTimeout(this.materialPollTimer);
+    this.materialPollTimer = null;
   }
 
   private syncWorkspace(section: ResearchOutlineSection | null): void {
