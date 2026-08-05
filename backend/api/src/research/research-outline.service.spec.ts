@@ -8,6 +8,7 @@ describe('ResearchOutlineService workspace', () => {
     researchOutlineSection: {
       findFirst: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     },
     researchOutlineSectionExcerpt: {
       findUnique: jest.fn(),
@@ -15,6 +16,13 @@ describe('ResearchOutlineService workspace', () => {
       create: jest.fn(),
       delete: jest.fn(),
     },
+    researchOutlineSectionMaterial: {
+      findUnique: jest.fn(),
+      aggregate: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
+    },
+    libraryMaterialVersion: { findFirst: jest.fn() },
     libraryExcerpt: { findFirst: jest.fn() },
     researchQuestion: {
       aggregate: jest.fn(),
@@ -48,6 +56,19 @@ describe('ResearchOutlineService workspace', () => {
     expect(prisma.researchOutlineSection.update).toHaveBeenCalledWith({
       where: { id: 'section-1' },
       data: { objective: 'Explicar la ruptura de Cézanne', notes: 'Contrastar con Braque' },
+    });
+  });
+
+  it('deletes only a section belonging to the research', async () => {
+    prisma.researchOutlineSection.delete.mockResolvedValue({ id: 'section-1' });
+
+    await service.delete('project-1', 'section-1');
+
+    expect(prisma.researchOutlineSection.findFirst).toHaveBeenCalledWith({
+      where: { id: 'section-1', projectId: 'project-1' },
+    });
+    expect(prisma.researchOutlineSection.delete).toHaveBeenCalledWith({
+      where: { id: 'section-1' },
     });
   });
 
@@ -94,6 +115,25 @@ describe('ResearchOutlineService workspace', () => {
     await service.addExcerpt('project-1', 'section-1', { libraryExcerptId: 'excerpt-1' });
 
     expect(prisma.researchOutlineSectionExcerpt.create).not.toHaveBeenCalled();
+  });
+
+  it('anchors an accessible Library material version once to the Section', async () => {
+    prisma.libraryMaterialVersion.findFirst.mockResolvedValue({ id: 'version-1' });
+    prisma.researchOutlineSectionMaterial.findUnique.mockResolvedValue(null);
+    prisma.researchOutlineSectionMaterial.aggregate.mockResolvedValue({ _max: { sortOrder: 1 } });
+
+    await service.addMaterial('project-1', 'section-1', { materialVersionId: ' version-1 ' });
+
+    expect(prisma.libraryMaterialVersion.findFirst).toHaveBeenCalledWith({
+      where: {
+        id: 'version-1',
+        material: { research: { some: { projectId: 'project-1' } } },
+      },
+      select: { id: true },
+    });
+    expect(prisma.researchOutlineSectionMaterial.create).toHaveBeenCalledWith({
+      data: { sectionId: 'section-1', materialVersionId: 'version-1', sortOrder: 2 },
+    });
   });
 
   it('reorders exactly the questions belonging to the active section', async () => {

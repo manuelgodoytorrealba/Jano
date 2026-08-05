@@ -764,6 +764,7 @@ model ResearchProject {
   legacyFindings   ResearchFinding[] // Legacy compatibility; never queried by active Research flows
   decisions        ResearchDecision[]
   outlineSections  ResearchOutlineSection[]
+  drafts           ResearchDraft[]
   jobs             ResearchJob[]
   aiExecutions     AIExecution[]
   findingProposals ResearchFindingProposal[]
@@ -813,6 +814,7 @@ model LibraryMaterialVersion {
   material LibraryMaterial  @relation(fields: [materialId], references: [id], onDelete: Cascade)
   excerpts LibraryExcerpt[]
   researchJobs ResearchJob[]
+  sectionReferences ResearchOutlineSectionMaterial[]
 
   @@unique([materialId, version])
   @@index([materialId, createdAt])
@@ -865,9 +867,47 @@ model ResearchOutlineSection {
 
   questions         ResearchQuestion[]
   excerptReferences ResearchOutlineSectionExcerpt[]
+  materialReferences ResearchOutlineSectionMaterial[]
+  drafts             ResearchDraft[]
 
   @@index([projectId, parentSectionId, sortOrder])
   @@index([parentSectionId])
+}
+
+model ResearchDraft {
+  id                String    @id @default(cuid())
+  projectId         String
+  sectionId         String
+  title             String?
+  currentRevisionId String?   @unique
+  archivedAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  project         ResearchProject         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  section         ResearchOutlineSection  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  revisions       ResearchDraftRevision[] @relation("ResearchDraftRevisions")
+  currentRevision ResearchDraftRevision?  @relation("ResearchDraftCurrentRevision", fields: [currentRevisionId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, sectionId, updatedAt])
+  @@index([sectionId, archivedAt])
+}
+
+model ResearchDraftRevision {
+  id        String   @id @default(cuid())
+  draftId   String
+  authorId  String
+  number    Int
+  content   String
+  createdAt DateTime @default(now())
+
+  draft      ResearchDraft  @relation("ResearchDraftRevisions", fields: [draftId], references: [id], onDelete: Cascade)
+  currentFor ResearchDraft? @relation("ResearchDraftCurrentRevision")
+  author     User           @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@unique([draftId, number])
+  @@index([draftId, createdAt])
+  @@index([authorId])
 }
 
 model ResearchQuestion {
@@ -1345,6 +1385,7 @@ model User {
   researchDecisions ResearchDecision[]
   ownedResearch     ResearchProject[]  @relation("ResearchProjectOwner")
   archivedResearch  ResearchProject[]  @relation("ResearchProjectArchivedBy")
+  researchDraftRevisions ResearchDraftRevision[]
 }
 
 model AppSetting {
@@ -1477,5 +1518,19 @@ model ResearchOutlineSectionExcerpt {
 
   @@id([sectionId, libraryExcerptId])
   @@index([libraryExcerptId])
+  @@index([sectionId, sortOrder])
+}
+
+model ResearchOutlineSectionMaterial {
+  sectionId         String
+  materialVersionId String
+  sortOrder         Int
+  createdAt         DateTime @default(now())
+
+  section         ResearchOutlineSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  materialVersion LibraryMaterialVersion @relation(fields: [materialVersionId], references: [id], onDelete: Cascade)
+
+  @@id([sectionId, materialVersionId])
+  @@index([materialVersionId])
   @@index([sectionId, sortOrder])
 }

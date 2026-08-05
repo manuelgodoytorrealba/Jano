@@ -1,7 +1,7 @@
 # 15 — Research Studio: experiencia editorial
 
 Estado: **NORMATIVA**
-Última consolidación: 2026-07-31
+Última consolidación: 2026-08-05
 
 ## Propósito y alcance
 
@@ -84,6 +84,29 @@ Es el punto de retorno de una investigación: muestra propósito, preguntas, est
 Una Section es la unidad cotidiana de trabajo editorial: concentra una pregunta y el contexto para resolverla. Su dossier organiza referencias ya existentes a corpus y conocimiento privado —sin poseerlas ni duplicarlas— para que la investigadora pueda leer, evidenciar, formular, revisar y posteriormente escribir desde una cuestión concreta.
 
 El dossier no es un agregado, una copia de Library ni un segundo Research Knowledge. Sources, Materials y LibraryExcerpt siguen en Biblioteca; Evidence, Claims, Entities y Relations siguen en Research Knowledge. Una misma referencia puede aparecer en varios dossiers y el Graph continúa siendo una lectura global derivada del conocimiento privado.
+
+#### Diseño objetivo del workspace de Section
+
+Al abrir una Section, la escritura debe ocupar el centro de la experiencia. El workspace objetivo evita convertir contexto, lectura, métricas y formularios en una única página vertical:
+
+```text
+Section y estado
+┌──────────────────────────────┬──────────────────────┬──────────────────────┐
+│ Draft activo                 │ Dossier contextual   │ Asistencia editorial │
+│ escritura y revisiones       │ preguntas            │ sugerencias trazables│
+│ referencias seleccionadas    │ Materials y Extractos│ acciones explícitas  │
+│                              │ Evidence y Claims     │ aceptación humana    │
+└──────────────────────────────┴──────────────────────┴──────────────────────┘
+```
+
+- El **Draft activo** es la superficie principal. Objetivo y notas orientan la escritura, pero nunca sustituyen ni almacenan su contenido.
+- El **dossier contextual** reúne preguntas abiertas y referencias seleccionadas a Materials, LibraryExcerpt, Evidence y Claims del mismo Research. Permite abrir el lector sin desplazar permanentemente el Draft.
+- La **asistencia editorial** trabaja sólo con el contexto visible de la Section y conserva procedencia. Sugiere preguntas, estructura, contrastes o continuaciones; nunca modifica el Draft ni acepta conocimiento sin una acción humana.
+- El resumen editorial se presenta como orientación compacta, no como una sucesión de bloques que antecede a la escritura.
+- Research Graph permanece como exploración bajo demanda; no comparte el plano principal con el editor salvo cuando una decisión exige comprobar una conexión.
+- Entre 1100 y 1500 px se priorizan Draft y dossier; la asistencia aparece como panel conmutable. En anchuras mayores puede mantenerse visible como tercera columna.
+
+Este diseño es objetivo de experiencia, no disponibilidad actual. Su implementación exige primero el contrato real de Draft y sus revisiones; un editor visual sin persistencia autoral no satisface este diseño.
 
 ### Biblioteca documental
 

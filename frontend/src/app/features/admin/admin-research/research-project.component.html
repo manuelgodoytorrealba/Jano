@@ -2,6 +2,10 @@
   @if (vm$ | async; as vm) {
     @if (vm.project; as project) {
       <header class="research-project__header">
+        <a class="research-project__back" routerLink="/admin/research">
+          <span aria-hidden="true">←</span>
+          Investigaciones
+        </a>
         <nav class="research-project__breadcrumb" aria-label="Miga de pan">
           <a routerLink="/admin/research">Research Studio</a><span>/</span
           ><span>{{ project.title }}</span>
@@ -142,10 +146,12 @@
               </div>
               <span>{{ project.outlineSections.length }} secciones</span>
             </div>
-            <form class="research-project__create" (ngSubmit)="createSection(project)">
-              <input name="sectionTitle" [(ngModel)]="title" placeholder="Nueva sección" />
-              <button type="submit" [disabled]="!title.trim()">Añadir</button>
-            </form>
+            @if (!subsectionParentId) {
+              <form class="research-project__create" (ngSubmit)="createSection(project)">
+                <input name="sectionTitle" [(ngModel)]="title" placeholder="Nueva sección" />
+                <button type="submit" [disabled]="!title.trim()">Añadir</button>
+              </form>
+            }
             @if (error) {
               <p class="research-project__error">{{ error }}</p>
             }
@@ -153,26 +159,181 @@
               <ol class="research-project__tree">
                 @for (section of roots(project); track section.id) {
                   <li>
-                    <button
-                      type="button"
-                      [class.is-active]="section.id === vm.activeSection?.id"
-                      (click)="openSection(project, section)"
+                    <div
+                      class="research-project__tree-row"
+                      draggable="true"
+                      [class.is-dragging]="draggedSection?.id === section.id"
+                      [class.is-drop-before]="
+                        dropTargetSectionId === section.id && !dropAfterTarget
+                      "
+                      [class.is-drop-after]="dropTargetSectionId === section.id && dropAfterTarget"
+                      (dragstart)="startSectionDrag($event, section)"
+                      (dragover)="dragSectionOver($event, section)"
+                      (drop)="dropSection($event, project, section)"
+                      (dragend)="finishSectionDrag()"
                     >
-                      <span>{{ section.title }}</span
-                      ><small>{{ statusLabel(section.status) }}</small>
-                    </button>
-                    @if (children(project, section.id).length) {
+                      @if (
+                        children(project, section.id).length || subsectionParentId === section.id
+                      ) {
+                        <button
+                          type="button"
+                          class="research-project__tree-toggle"
+                          [attr.aria-label]="
+                            (isSectionCollapsed(section.id) ? 'Expandir ' : 'Contraer ') +
+                            section.title
+                          "
+                          [attr.aria-expanded]="!isSectionCollapsed(section.id)"
+                          (click)="toggleSection(section.id)"
+                        >
+                          <span aria-hidden="true">›</span>
+                        </button>
+                      } @else {
+                        <span class="research-project__tree-toggle-spacer"></span>
+                      }
+                      <button
+                        type="button"
+                        class="research-project__tree-entry"
+                        [class.is-active]="section.id === vm.activeSection?.id"
+                        (click)="openSection(project, section)"
+                      >
+                        <span class="research-project__tree-label">
+                          <span>{{ section.title }}</span>
+                        </span>
+                        <span
+                          class="research-project__tree-status"
+                          [class.is-completed]="section.status === 'COMPLETED'"
+                          [class.is-in-progress]="section.status === 'IN_PROGRESS'"
+                          [attr.aria-label]="statusLabel(section.status)"
+                          [title]="statusLabel(section.status)"
+                          >{{ section.status === 'COMPLETED' ? '✓' : '•' }}</span
+                        >
+                      </button>
+                      <span class="research-project__tree-actions">
+                        <button
+                          type="button"
+                          [attr.aria-label]="'Subir ' + section.title"
+                          [disabled]="!canMoveSection(project, section, -1)"
+                          (click)="moveSection(project, section, -1)"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          [attr.aria-label]="'Bajar ' + section.title"
+                          [disabled]="!canMoveSection(project, section, 1)"
+                          (click)="moveSection(project, section, 1)"
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          [attr.aria-label]="'Añadir subsección a ' + section.title"
+                          (click)="startSubsection(section.id)"
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          class="research-project__tree-delete"
+                          [attr.aria-label]="'Eliminar ' + section.title"
+                          (click)="deleteSection(project, section)"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    </div>
+                    @if (
+                      !isSectionCollapsed(section.id) &&
+                      (children(project, section.id).length || subsectionParentId === section.id)
+                    ) {
                       <ol>
                         @for (child of children(project, section.id); track child.id) {
                           <li>
-                            <button
-                              type="button"
-                              [class.is-active]="child.id === vm.activeSection?.id"
-                              (click)="openSection(project, child)"
+                            <div
+                              class="research-project__tree-row"
+                              draggable="true"
+                              [class.is-dragging]="draggedSection?.id === child.id"
+                              [class.is-drop-before]="
+                                dropTargetSectionId === child.id && !dropAfterTarget
+                              "
+                              [class.is-drop-after]="
+                                dropTargetSectionId === child.id && dropAfterTarget
+                              "
+                              (dragstart)="startSectionDrag($event, child)"
+                              (dragover)="dragSectionOver($event, child)"
+                              (drop)="dropSection($event, project, child)"
+                              (dragend)="finishSectionDrag()"
                             >
-                              <span>{{ child.title }}</span
-                              ><small>{{ statusLabel(child.status) }}</small>
-                            </button>
+                              <span class="research-project__tree-toggle-spacer"></span>
+                              <button
+                                type="button"
+                                class="research-project__tree-entry"
+                                [class.is-active]="child.id === vm.activeSection?.id"
+                                (click)="openSection(project, child)"
+                              >
+                                <span class="research-project__tree-label">
+                                  <span>{{ child.title }}</span>
+                                </span>
+                                <span
+                                  class="research-project__tree-status"
+                                  [class.is-completed]="child.status === 'COMPLETED'"
+                                  [class.is-in-progress]="child.status === 'IN_PROGRESS'"
+                                  [attr.aria-label]="statusLabel(child.status)"
+                                  [title]="statusLabel(child.status)"
+                                  >{{ child.status === 'COMPLETED' ? '✓' : '•' }}</span
+                                >
+                              </button>
+                              <span class="research-project__tree-actions">
+                                <button
+                                  type="button"
+                                  [attr.aria-label]="'Subir ' + child.title"
+                                  [disabled]="!canMoveSection(project, child, -1)"
+                                  (click)="moveSection(project, child, -1)"
+                                >
+                                  ↑
+                                </button>
+                                <button
+                                  type="button"
+                                  [attr.aria-label]="'Bajar ' + child.title"
+                                  [disabled]="!canMoveSection(project, child, 1)"
+                                  (click)="moveSection(project, child, 1)"
+                                >
+                                  ↓
+                                </button>
+                                <button
+                                  type="button"
+                                  class="research-project__tree-delete"
+                                  [attr.aria-label]="'Eliminar ' + child.title"
+                                  (click)="deleteSection(project, child)"
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            </div>
+                          </li>
+                        }
+                        @if (subsectionParentId === section.id) {
+                          <li>
+                            <form
+                              class="research-project__create research-project__create--nested"
+                              (ngSubmit)="createSection(project, section.id)"
+                            >
+                              <input
+                                name="subsectionTitle"
+                                [(ngModel)]="title"
+                                placeholder="Nueva subsección"
+                                autofocus
+                              />
+                              <button type="submit" [disabled]="!title.trim()">Añadir</button>
+                              <button
+                                type="button"
+                                class="research-project__create-cancel"
+                                aria-label="Cancelar subsección"
+                                (click)="cancelSubsection()"
+                              >
+                                ×
+                              </button>
+                            </form>
                           </li>
                         }
                       </ol>
@@ -246,487 +407,804 @@
               />
             </div>
           } @else if (vm.mode === 'index' && vm.activeSection; as section) {
-            <div class="research-project__workspace-header">
-              <p class="research-project__eyebrow">Research Section</p>
-              <div class="research-project__section-title">
-                <h2>{{ section.title }}</h2>
-                <label class="research-project__section-status">
-                  <span>Estado editorial</span>
-                  <select
-                    name="sectionStatus"
-                    [ngModel]="section.status"
-                    [ngModelOptions]="{ standalone: true }"
-                    (ngModelChange)="updateStatus(project, section, $any($event))"
-                  >
-                    @for (status of statuses; track status) {
-                      <option [value]="status">{{ statusLabel(status) }}</option>
-                    }
-                  </select>
-                </label>
-                <p>Un espacio privado para precisar la cuestión antes de empezar a redactar.</p>
-              </div>
-            </div>
-
-            <section class="research-project__section-context">
-              <h3>Contexto de trabajo</h3>
-              <p>
-                Esta sección organiza la pregunta que estás resolviendo. El corpus y el conocimiento
-                siguen siendo compartidos por toda la investigación.
-              </p>
-            </section>
-
-            <section class="research-project__block">
-              <h3>Objetivo</h3>
-              <p>¿Qué intenta resolver esta sección?</p>
-              <textarea
-                name="sectionObjective"
-                [(ngModel)]="workspaceObjective"
-                [ngModelOptions]="{ standalone: true }"
-                (blur)="saveWorkspace(project, section)"
-                placeholder="Formula la intención editorial de esta sección"
-              ></textarea>
-            </section>
-
-            <section class="research-project__block">
-              <div class="research-project__block-heading">
-                <div>
-                  <h3>Preguntas</h3>
-                  <p>Las líneas de investigación que mantienen el pensamiento en movimiento.</p>
-                </div>
-                <span>{{ section.questions.length }}</span>
-              </div>
-              <form
-                class="research-project__question-create"
-                (ngSubmit)="addQuestion(project, section)"
-              >
-                <input
-                  name="question"
-                  [(ngModel)]="questionText"
-                  placeholder="Añade una pregunta de investigación"
-                />
-                <button type="submit" [disabled]="!questionText.trim()">Añadir</button>
-              </form>
-              @if (section.questions.length) {
-                <ol class="research-project__questions">
-                  @for (question of section.questions; track question.id; let index = $index) {
-                    <li>
-                      <input
-                        [ngModel]="question.text"
-                        [ngModelOptions]="{ standalone: true }"
-                        (blur)="
-                          updateQuestion(project, section, question, $any($event.target).value)
-                        "
-                        aria-label="Pregunta de investigación"
-                      />
-                      <div class="research-project__question-actions">
-                        <button
-                          type="button"
-                          (click)="moveQuestion(project, section, index, -1)"
-                          [disabled]="index === 0"
-                          aria-label="Subir pregunta"
-                        >
-                          ↑
-                        </button>
-                        <button
-                          type="button"
-                          (click)="moveQuestion(project, section, index, 1)"
-                          [disabled]="index === section.questions.length - 1"
-                          aria-label="Bajar pregunta"
-                        >
-                          ↓
-                        </button>
-                        <button
-                          type="button"
-                          (click)="deleteQuestion(project, section, question)"
-                          aria-label="Eliminar pregunta"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </li>
-                  }
-                </ol>
-              }
-            </section>
-
-            @if (section.questions.length) {
-              <section class="research-project__question-threads" aria-label="Hilos de preguntas">
-                @for (question of section.questions; track question.id) {
-                  <details>
-                    <summary>{{ question.text }}</summary>
-                    <p>
-                      Este contexto pertenece a la Section. JANO todavía no puede demostrar qué
-                      Extracto, Evidence o Claim responde específicamente a esta pregunta.
-                    </p>
-                    <dl>
-                      <div>
-                        <dt>Extractos seleccionados</dt>
-                        <dd>{{ section.dossier.excerpts.length }}</dd>
-                      </div>
-                      <div>
-                        <dt>Evidence disponibles</dt>
-                        <dd>{{ section.dossier.evidence.length }}</dd>
-                      </div>
-                      <div>
-                        <dt>Claims en contexto</dt>
-                        <dd>{{ section.dossier.claims.length }}</dd>
-                      </div>
-                      <div>
-                        <dt>Contradicciones abiertas</dt>
-                        <dd>{{ section.dossier.summary.contradictionCount }}</dd>
-                      </div>
-                    </dl>
-                    @if (section.dossier.claims.length) {
-                      <p class="research-project__thread-label">
-                        Claims que requieren contraste en esta Section
-                      </p>
-                      <ul>
-                        @for (claim of section.dossier.claims; track claim.id) {
-                          <li>{{ claim.title }} · {{ claimStatusLabel(claim.status) }}</li>
-                        }
-                      </ul>
-                    }
-                    <p class="research-project__thread-next">
-                      <strong>Para avanzar:</strong> {{ section.dossier.review.nextTask.title }}
-                    </p>
-                    @if (
-                      !section.dossier.excerpts.length ||
-                      !section.dossier.evidence.length ||
-                      !section.dossier.claims.length
-                    ) {
-                      <p class="research-project__thread-gap">
-                        No existe todavía suficiente contexto para responder esta pregunta.
-                      </p>
-                    }
-                  </details>
-                }
-              </section>
-            }
-            <section class="research-project__block research-project__summary">
-              <p class="research-project__eyebrow">Section Editorial Summary</p>
-              <h3>Cómo continuar esta Section</h3>
-              <p class="research-project__resume-intent">
-                Estabas intentando responder:
-                <strong>{{ section.objective || section.title }}</strong>
-              </p>
-              @if (section.questions.length) {
-                <p class="research-project__resume-label">Preguntas abiertas</p>
-                <ul class="research-project__resume-questions">
-                  @for (question of section.questions; track question.id) {
-                    <li>{{ question.text }}</li>
-                  }
-                </ul>
-              }
-              <p class="research-project__resume-label">Dónde quedó</p>
-              <p>{{ section.dossier.summary.state.description }}</p>
-              <p class="research-project__resume-next">
-                <strong>Siguiente paso razonable:</strong>
-                {{ section.dossier.review.nextTask.title }}
-              </p>
-              <dl>
-                <div>
-                  <dt>Extractos</dt>
-                  <dd>{{ section.dossier.summary.excerptCount }}</dd>
-                </div>
-                <div>
-                  <dt>Evidencias</dt>
-                  <dd>{{ section.dossier.summary.evidenceCount }}</dd>
-                </div>
-                <div>
-                  <dt>Claims</dt>
-                  <dd>{{ section.dossier.summary.claimCount }}</dd>
-                </div>
-                <div>
-                  <dt>Respaldados</dt>
-                  <dd>{{ section.dossier.summary.supportedClaimCount }}</dd>
-                </div>
-                <div>
-                  <dt>En revisión</dt>
-                  <dd>{{ section.dossier.summary.questionedClaimCount }}</dd>
-                </div>
-                <div>
-                  <dt>Contradicciones</dt>
-                  <dd>{{ section.dossier.summary.contradictionCount }}</dd>
-                </div>
-              </dl>
-              @if (section.dossier.summary.questionsWithoutExplicitSupport.length) {
-                <p class="research-project__summary-note">
-                  {{ section.dossier.summary.questionsWithoutExplicitSupport.length }}
-                  {{
-                    section.dossier.summary.questionsWithoutExplicitSupport.length === 1
-                      ? 'pregunta necesita'
-                      : 'preguntas necesitan'
-                  }}
-                  trazabilidad explícita hacia un Claim.
-                </p>
-                <ul>
-                  @for (
-                    question of section.dossier.summary.questionsWithoutExplicitSupport;
-                    track question.id
-                  ) {
-                    <li>{{ question.text }}</li>
-                  }
-                </ul>
-              }
-            </section>
-
-            <section class="research-project__block">
-              <h3>Notas</h3>
-              <p>
-                Apuntes privados para conservar la intuición, el matiz y las decisiones todavía
-                abiertas.
-              </p>
-              <textarea
-                class="research-project__notes"
-                name="sectionNotes"
-                [(ngModel)]="workspaceNotes"
-                [ngModelOptions]="{ standalone: true }"
-                (blur)="saveWorkspace(project, section)"
-                placeholder="Escribe aquí sin estructurar todavía"
-              ></textarea>
-            </section>
-
-            <section class="research-project__block research-project__excerpts">
-              <div class="research-project__block-heading">
-                <div>
-                  <h3>Extractos asociados</h3>
-                  <p>
-                    Pasajes seleccionados para responder esta pregunta. Siguen perteneciendo a
-                    Biblioteca.
-                  </p>
-                </div>
-                <span>{{ section.excerptReferences.length }}</span>
-              </div>
-              @if (section.excerptReferences.length) {
-                <ol>
-                  @for (reference of section.excerptReferences; track reference.libraryExcerptId) {
-                    <li>
-                      <blockquote>{{ reference.libraryExcerpt.text }}</blockquote>
-                      <small
-                        >{{ reference.libraryExcerpt.materialVersion.material.title }} ·
-                        {{ reference.libraryExcerpt.locator }}</small
-                      ><button
-                        type="button"
-                        (click)="
-                          removeExcerptFromSection(project, section, reference.libraryExcerptId)
-                        "
-                      >
-                        Eliminar
-                      </button>
-                    </li>
-                  }
-                </ol>
-              } @else {
-                <p>No has seleccionado extractos todavía.</p>
-              }
-            </section>
-
-            <section class="research-project__block research-project__review">
-              <p class="research-project__eyebrow">Siguiente decisión editorial</p>
-              <h3>{{ section.dossier.review.nextTask.title }}</h3>
-              @if (section.dossier.review.nextTask.kind === 'REVIEW_CLAIM') {
-                @if (reviewClaimFor(section); as claim) {
-                  <p class="research-project__review-question">Preguntas de esta Section</p>
-                  <ul class="research-project__review-questions">
-                    @for (question of section.questions; track question.id) {
-                      <li>{{ question.text }}</li>
-                    }
-                  </ul>
-                  <div class="research-project__claim-review">
-                    <div>
-                      <p>La afirmación</p>
-                      <strong>{{ claim.title }}</strong>
-                      @if (claim.summary) {
-                        <span>{{ claim.summary }}</span>
-                      }
-                    </div>
-                    <span>Estado: {{ claimStatusLabel(claim.status) }}</span>
+            <div class="research-project__section-workspace">
+              <section class="research-project__draft" aria-labelledby="section-draft-title">
+                <div class="research-project__draft-heading">
+                  <div>
+                    <p class="research-project__eyebrow">Draft activo</p>
+                    <input
+                      id="section-draft-title"
+                      class="research-project__draft-title"
+                      [ngModel]="section.title"
+                      [ngModelOptions]="{ standalone: true }"
+                      (blur)="saveSectionTitle(project, section, $any($event.target))"
+                      aria-label="Título de la Section"
+                    />
                   </div>
-                  <ol class="research-project__review-evidence">
-                    @for (item of claim.evidence || []; track item.evidenceId) {
-                      @if (item.evidence; as evidence) {
-                        <li>
-                          <strong
-                            >{{ evidence.source?.title || 'Source asociada' }} ·
-                            {{ evidence.locator }}</strong
-                          >
-                          @if (evidence.libraryExcerpt; as excerpt) {
-                            <blockquote>{{ excerpt.text }}</blockquote>
-                            <button
-                              type="button"
-                              class="research-project__quiet-action"
-                              (click)="openExcerptInReader(excerpt)"
-                            >
-                              Volver al pasaje
-                            </button>
-                          } @else {
-                            <p>{{ evidence.quote || 'Fragmento documental no disponible.' }}</p>
-                          }
-                        </li>
-                      }
+                  <div class="research-project__draft-meta">
+                    @if (activeDraft(section)?.currentRevision; as revision) {
+                      <span>Revisión {{ revision.number }}</span>
                     }
-                  </ol>
-                  <p>
-                    Decide si este soporte basta o si necesitas volver al texto antes de cerrarlo.
-                  </p>
-                  <button type="button" (click)="reviewClaim(project, claim.id, 'SUPPORTED')">
-                    Está suficientemente respaldada
+                    <select
+                      name="sectionStatus"
+                      [ngModel]="section.status"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="updateStatus(project, section, $any($event))"
+                      aria-label="Estado editorial"
+                    >
+                      @for (status of statuses; track status) {
+                        <option [value]="status">{{ statusLabel(status) }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+                <div
+                  class="research-project__draft-toolbar"
+                  role="toolbar"
+                  aria-label="Formato del Draft"
+                >
+                  <button
+                    type="button"
+                    (mousedown)="$event.preventDefault()"
+                    (click)="formatDraft(draftEditor, 'heading')"
+                    [class.is-active]="draftEditor.isFormatActive('heading')"
+                    [attr.aria-pressed]="draftEditor.isFormatActive('heading')"
+                    aria-label="Encabezado nivel 2"
+                  >
+                    H2
                   </button>
                   <button
                     type="button"
-                    class="research-project__quiet-action"
-                    (click)="reviewClaim(project, claim.id, 'QUESTIONED')"
+                    (mousedown)="$event.preventDefault()"
+                    (click)="formatDraft(draftEditor, 'bold')"
+                    [class.is-active]="draftEditor.isFormatActive('bold')"
+                    [attr.aria-pressed]="draftEditor.isFormatActive('bold')"
+                    aria-label="Negrita"
                   >
-                    Permanece cuestionada
+                    <strong>B</strong>
                   </button>
-                }
-              } @else if (section.dossier.review.nextTask.kind === 'READY') {
-                <p>
-                  El dossier conecta corpus, evidencia y argumento. Puedes continuar contrastando o
-                  empezar a escribir.
-                </p>
-              } @else {
-                <p>El siguiente espacio de trabajo está justo debajo.</p>
-              }
-            </section>
-
-            <section class="research-project__block research-project__dossier">
-              <div class="research-project__block-heading">
-                <div>
-                  <h3>Evidencias derivadas</h3>
-                  <p>Usos investigadores ya existentes de estos extractos.</p>
+                  <button
+                    type="button"
+                    (mousedown)="$event.preventDefault()"
+                    (click)="formatDraft(draftEditor, 'italic')"
+                    [class.is-active]="draftEditor.isFormatActive('italic')"
+                    [attr.aria-pressed]="draftEditor.isFormatActive('italic')"
+                    aria-label="Cursiva"
+                  >
+                    <em>I</em>
+                  </button>
+                  <button
+                    type="button"
+                    (mousedown)="$event.preventDefault()"
+                    (click)="formatDraft(draftEditor, 'bullet-list')"
+                    [class.is-active]="draftEditor.isFormatActive('bullet-list')"
+                    [attr.aria-pressed]="draftEditor.isFormatActive('bullet-list')"
+                    aria-label="Lista con viñetas"
+                  >
+                    • Lista
+                  </button>
+                  <button
+                    type="button"
+                    (mousedown)="$event.preventDefault()"
+                    (click)="formatDraft(draftEditor, 'number-list')"
+                    [class.is-active]="draftEditor.isFormatActive('number-list')"
+                    [attr.aria-pressed]="draftEditor.isFormatActive('number-list')"
+                    aria-label="Lista numerada"
+                  >
+                    1. Lista
+                  </button>
+                  <button
+                    type="button"
+                    (mousedown)="$event.preventDefault()"
+                    (click)="formatDraft(draftEditor, 'quote')"
+                    [class.is-active]="draftEditor.isFormatActive('quote')"
+                    [attr.aria-pressed]="draftEditor.isFormatActive('quote')"
+                    aria-label="Cita"
+                  >
+                    “ ”
+                  </button>
+                  <button
+                    type="button"
+                    (mousedown)="$event.preventDefault()"
+                    (click)="draftEditor.openEntityPicker($any($event.currentTarget))"
+                    [class.is-active]="draftEditor.isFormatActive('link')"
+                    [attr.aria-pressed]="draftEditor.isFormatActive('link')"
+                    aria-label="Enlace a Entidad"
+                  >
+                    ↗
+                  </button>
+                  <details class="research-project__toolbar-help">
+                    <summary aria-label="Abrir ayuda de formato">?</summary>
+                    <div>
+                      <strong>Ayudas de escritura</strong>
+                      <p>Selecciona texto y pulsa una acción. El formato se guarda con el Draft.</p>
+                      <dl>
+                        <div>
+                          <dt>H2</dt>
+                          <dd>Encabezado de sección</dd>
+                        </div>
+                        <div>
+                          <dt>B / I</dt>
+                          <dd>Negrita y cursiva</dd>
+                        </div>
+                        <div>
+                          <dt>Listas</dt>
+                          <dd>Viñetas o pasos numerados</dd>
+                        </div>
+                        <div>
+                          <dt>“ ”</dt>
+                          <dd>Cita o pasaje destacado</dd>
+                        </div>
+                        <div>
+                          <dt>↗</dt>
+                          <dd>Enlace interno a una Entidad</dd>
+                        </div>
+                      </dl>
+                    </div>
+                  </details>
                 </div>
-                <span>{{ section.dossier.evidence.length }}</span>
-              </div>
-              @if (section.dossier.evidence.length) {
-                <ol>
-                  @for (evidence of section.dossier.evidence; track evidence.id) {
-                    <li>
-                      <strong>{{ evidence.locator }}</strong>
-                      <p>{{ evidence.context || evidence.note || 'Sin contexto adicional.' }}</p>
-                    </li>
+                <app-rich-text
+                  #draftEditor
+                  class="research-project__draft-editor"
+                  [text]="draftEditorContent"
+                  [editable]="true"
+                  placeholder="Empieza a articular aquí la narrativa de esta sección…"
+                  previewAccess="admin"
+                  (textChange)="draftContent = $event"
+                  (keydown)="handleDraftShortcut($event, draftEditor)"
+                />
+                <footer>
+                  <p aria-live="polite">{{ draftMessage }}</p>
+                  <button
+                    type="button"
+                    (click)="saveDraft(project, section)"
+                    [disabled]="savingDraft || draftContent === savedDraftContent"
+                  >
+                    {{
+                      savingDraft
+                        ? 'Guardando…'
+                        : activeDraft(section)
+                          ? 'Guardar revisión'
+                          : 'Crear borrador'
+                    }}
+                  </button>
+                </footer>
+              </section>
+
+              <aside class="research-project__section-dossier" aria-label="Contexto de la Section">
+                <section class="research-project__dossier-panel research-project__objective-panel">
+                  <p class="research-project__eyebrow">Objetivo</p>
+                  <textarea
+                    name="sectionObjective"
+                    [(ngModel)]="workspaceObjective"
+                    [ngModelOptions]="{ standalone: true }"
+                    (blur)="saveWorkspace(project, section)"
+                    placeholder="¿Qué intenta resolver esta sección?"
+                  ></textarea>
+                </section>
+
+                <section class="research-project__dossier-panel">
+                  <div class="research-project__dossier-heading">
+                    <h3>Materiales en uso</h3>
+                    <span>{{ section.materialReferences.length }}</span>
+                  </div>
+                  @if (availableSectionMaterials(vm.libraryMaterials, section).length) {
+                    <form
+                      class="research-project__material-picker"
+                      (ngSubmit)="addSectionMaterial(project, section, vm.libraryMaterials)"
+                    >
+                      <select
+                        name="sectionMaterial"
+                        [(ngModel)]="selectedSectionMaterialVersionId"
+                        aria-label="Material de Biblioteca"
+                      >
+                        <option value="">Añadir desde Biblioteca…</option>
+                        @for (
+                          material of availableSectionMaterials(vm.libraryMaterials, section);
+                          track material.id
+                        ) {
+                          <option [value]="material.version?.id">{{ material.title }}</option>
+                        }
+                      </select>
+                      <button type="submit" [disabled]="!selectedSectionMaterialVersionId">
+                        +
+                      </button>
+                    </form>
                   }
-                </ol>
-              } @else {
-                <p>Estos extractos todavía no sostienen Evidence.</p>
-              }
-            </section>
-
-            <section class="research-project__block research-project__dossier">
-              <div class="research-project__block-heading">
-                <div>
-                  <h3>Argumentos derivados</h3>
-                  <p>Claims del Research sostenidos por las evidencias seleccionadas.</p>
-                </div>
-                <span>{{ section.dossier.claims.length }}</span>
-              </div>
-              @if (section.dossier.claims.length) {
-                <ol>
-                  @for (claim of section.dossier.claims; track claim.id) {
-                    <li>
-                      <strong>{{ claim.title }}</strong>
-                      <p>{{ claim.summary || 'Sin resumen adicional.' }}</p>
-                    </li>
+                  @if (section.materialReferences.length) {
+                    <ol class="research-project__used-materials">
+                      @for (
+                        reference of section.materialReferences;
+                        track reference.materialVersionId
+                      ) {
+                        <li>
+                          <div>
+                            <strong>{{ reference.materialVersion.material.title }}</strong>
+                            <small>
+                              {{ reference.materialVersion.material.kind }} · versión
+                              {{ reference.materialVersion.version }}
+                            </small>
+                          </div>
+                          <button
+                            type="button"
+                            (click)="
+                              removeSectionMaterial(project, section, reference.materialVersionId)
+                            "
+                            [attr.aria-label]="
+                              'Retirar ' + reference.materialVersion.material.title
+                            "
+                          >
+                            ×
+                          </button>
+                        </li>
+                      }
+                    </ol>
+                  } @else {
+                    <p class="research-project__empty-context">
+                      Añade el material que sostiene esta escritura.
+                    </p>
                   }
-                </ol>
-              } @else {
-                <p>Aún no hay Claims derivados.</p>
-              }
-            </section>
+                </section>
 
-            <section class="research-project__block research-project__dossier">
-              <div class="research-project__block-heading">
-                <div>
-                  <h3>Conocimiento relacionado</h3>
-                  <p>
-                    Entities y Relations reutilizadas del conocimiento privado de esta
-                    investigación.
-                  </p>
-                </div>
-                <span>{{
-                  section.dossier.entities.length + section.dossier.relations.length
-                }}</span>
-              </div>
-              @if (section.dossier.entities.length || section.dossier.relations.length) {
-                <ol>
-                  @for (entity of section.dossier.entities; track entity.id) {
-                    <li>
-                      <strong>{{ entity.title }}</strong
-                      ><small>Entidad privada</small>
-                    </li>
+                <section class="research-project__dossier-panel">
+                  <div class="research-project__dossier-heading">
+                    <h3>Preguntas abiertas</h3>
+                    <span>{{ section.questions.length }}</span>
+                  </div>
+                  <form
+                    class="research-project__question-create research-project__question-create--compact"
+                    (ngSubmit)="addQuestion(project, section)"
+                  >
+                    <input
+                      name="question"
+                      [(ngModel)]="questionText"
+                      placeholder="Añadir una pregunta…"
+                    />
+                    <button type="submit" [disabled]="!questionText.trim()">+</button>
+                  </form>
+                  @if (section.questions.length) {
+                    <ol class="research-project__open-questions">
+                      @for (question of section.questions; track question.id) {
+                        <li>
+                          <input
+                            [ngModel]="question.text"
+                            [ngModelOptions]="{ standalone: true }"
+                            (blur)="
+                              updateQuestion(project, section, question, $any($event.target).value)
+                            "
+                            aria-label="Pregunta abierta"
+                          />
+                          <button
+                            type="button"
+                            (click)="deleteQuestion(project, section, question)"
+                            aria-label="Eliminar pregunta"
+                          >
+                            ×
+                          </button>
+                        </li>
+                      }
+                    </ol>
+                  } @else {
+                    <p class="research-project__empty-context">
+                      Todavía no hay preguntas abiertas.
+                    </p>
                   }
-                  @for (relation of section.dossier.relations; track relation.id) {
-                    <li>
-                      <strong
-                        >{{ relation.fromEntity?.title }} → {{ relation.toEntity?.title }}</strong
-                      ><small>{{
-                        relation.explanation || 'Relación explicada por los Claims derivados.'
-                      }}</small>
-                    </li>
-                  }
-                </ol>
-              } @else {
-                <p>Aún no hay Entities o Relations implicadas.</p>
-              }
-            </section>
+                </section>
 
-            <section class="research-project__editorial-work">
-              <div class="research-project__work-heading">
-                <p class="research-project__eyebrow">Trabajo para esta sección</p>
-                <h3>Leer, evidenciar y formular</h3>
-                <p>
-                  Utiliza el corpus y conocimiento disponibles para responder las preguntas de esta
-                  sección. Sus objetos siguen perteneciendo a la investigación completa.
-                </p>
-              </div>
-
-              <app-research-material-reader
-                [researchId]="project.id"
-                [materials]="project.materials"
-                [focusExcerpt]="reviewExcerpt"
-                (excerptCreated)="prepareEvidenceFromExcerpt($event)"
-                (retryRequested)="retryMaterial(project, $event)"
-              />
-
-              @if (preparedExcerpt) {
-                <button
-                  type="button"
-                  class="research-project__add-excerpt"
-                  (click)="addExcerptToSection(project, section)"
+                <details
+                  class="research-project__dossier-panel research-project__material-excerpts"
                 >
-                  Añadir a esta Section
-                </button>
-              }
+                  <summary>
+                    <span>Library Excerpts</span>
+                    <span>{{ sectionMaterialExcerptCount(section) }}</span>
+                  </summary>
+                  @if (section.materialReferences.length) {
+                    @for (
+                      reference of section.materialReferences;
+                      track reference.materialVersionId
+                    ) {
+                      <section>
+                        <h4>{{ reference.materialVersion.material.title }}</h4>
+                        @if (reference.materialVersion.excerpts.length) {
+                          <ol>
+                            @for (excerpt of reference.materialVersion.excerpts; track excerpt.id) {
+                              <li>
+                                <blockquote>{{ excerpt.text }}</blockquote>
+                                <small>{{ excerpt.locator }}</small>
+                              </li>
+                            }
+                          </ol>
+                        } @else {
+                          <p class="research-project__empty-context">
+                            Este material todavía no tiene extractos.
+                          </p>
+                        }
+                      </section>
+                    }
+                  } @else {
+                    <p class="research-project__empty-context">
+                      Añade materiales para consultar sus extractos.
+                    </p>
+                  }
+                </details>
+              </aside>
+            </div>
 
-              <app-research-evidence-capture
-                [researchId]="project.id"
-                [sources]="project.sources"
-                [evidence]="project.evidence"
-                [excerpt]="preparedExcerpt"
-                (saved)="refreshResearch()"
-                (excerptUsed)="clearPreparedExcerpt()"
-              />
+            <details class="research-project__advanced-work">
+              <summary>Herramientas de investigación y revisión</summary>
+              <div>
+                <section class="research-project__section-context">
+                  <h3>Contexto de trabajo</h3>
+                  <p>
+                    Esta sección organiza la pregunta que estás resolviendo. El corpus y el
+                    conocimiento siguen siendo compartidos por toda la investigación.
+                  </p>
+                </section>
 
-              <app-research-claim-capture
-                [researchId]="project.id"
-                [evidence]="
-                  section.dossier.evidence.length ? section.dossier.evidence : project.evidence
-                "
-                (saved)="refreshResearch()"
-              />
-            </section>
+                <section class="research-project__block">
+                  <h3>Objetivo</h3>
+                  <p>¿Qué intenta resolver esta sección?</p>
+                  <textarea
+                    name="sectionObjective"
+                    [(ngModel)]="workspaceObjective"
+                    [ngModelOptions]="{ standalone: true }"
+                    (blur)="saveWorkspace(project, section)"
+                    placeholder="Formula la intención editorial de esta sección"
+                  ></textarea>
+                </section>
 
-            <section class="research-project__research-knowledge">
-              <div class="research-project__work-heading">
-                <p class="research-project__eyebrow">Conocimiento de la investigación</p>
-                <h3>Explorar conexiones existentes</h3>
-                <p>
-                  El Graph muestra la estructura privada de toda la investigación; no pertenece a
-                  esta sección ni crea conocimiento nuevo.
-                </p>
+                <section class="research-project__block">
+                  <div class="research-project__block-heading">
+                    <div>
+                      <h3>Preguntas</h3>
+                      <p>Las líneas de investigación que mantienen el pensamiento en movimiento.</p>
+                    </div>
+                    <span>{{ section.questions.length }}</span>
+                  </div>
+                  <form
+                    class="research-project__question-create"
+                    (ngSubmit)="addQuestion(project, section)"
+                  >
+                    <input
+                      name="question"
+                      [(ngModel)]="questionText"
+                      placeholder="Añade una pregunta de investigación"
+                    />
+                    <button type="submit" [disabled]="!questionText.trim()">Añadir</button>
+                  </form>
+                  @if (section.questions.length) {
+                    <ol class="research-project__questions">
+                      @for (question of section.questions; track question.id; let index = $index) {
+                        <li>
+                          <input
+                            [ngModel]="question.text"
+                            [ngModelOptions]="{ standalone: true }"
+                            (blur)="
+                              updateQuestion(project, section, question, $any($event.target).value)
+                            "
+                            aria-label="Pregunta de investigación"
+                          />
+                          <div class="research-project__question-actions">
+                            <button
+                              type="button"
+                              (click)="moveQuestion(project, section, index, -1)"
+                              [disabled]="index === 0"
+                              aria-label="Subir pregunta"
+                            >
+                              ↑
+                            </button>
+                            <button
+                              type="button"
+                              (click)="moveQuestion(project, section, index, 1)"
+                              [disabled]="index === section.questions.length - 1"
+                              aria-label="Bajar pregunta"
+                            >
+                              ↓
+                            </button>
+                            <button
+                              type="button"
+                              (click)="deleteQuestion(project, section, question)"
+                              aria-label="Eliminar pregunta"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </li>
+                      }
+                    </ol>
+                  }
+                </section>
+
+                @if (section.questions.length) {
+                  <section
+                    class="research-project__question-threads"
+                    aria-label="Hilos de preguntas"
+                  >
+                    @for (question of section.questions; track question.id) {
+                      <details>
+                        <summary>{{ question.text }}</summary>
+                        <p>
+                          Este contexto pertenece a la Section. JANO todavía no puede demostrar qué
+                          Extracto, Evidence o Claim responde específicamente a esta pregunta.
+                        </p>
+                        <dl>
+                          <div>
+                            <dt>Extractos seleccionados</dt>
+                            <dd>{{ section.dossier.excerpts.length }}</dd>
+                          </div>
+                          <div>
+                            <dt>Evidence disponibles</dt>
+                            <dd>{{ section.dossier.evidence.length }}</dd>
+                          </div>
+                          <div>
+                            <dt>Claims en contexto</dt>
+                            <dd>{{ section.dossier.claims.length }}</dd>
+                          </div>
+                          <div>
+                            <dt>Contradicciones abiertas</dt>
+                            <dd>{{ section.dossier.summary.contradictionCount }}</dd>
+                          </div>
+                        </dl>
+                        @if (section.dossier.claims.length) {
+                          <p class="research-project__thread-label">
+                            Claims que requieren contraste en esta Section
+                          </p>
+                          <ul>
+                            @for (claim of section.dossier.claims; track claim.id) {
+                              <li>{{ claim.title }} · {{ claimStatusLabel(claim.status) }}</li>
+                            }
+                          </ul>
+                        }
+                        <p class="research-project__thread-next">
+                          <strong>Para avanzar:</strong> {{ section.dossier.review.nextTask.title }}
+                        </p>
+                        @if (
+                          !section.dossier.excerpts.length ||
+                          !section.dossier.evidence.length ||
+                          !section.dossier.claims.length
+                        ) {
+                          <p class="research-project__thread-gap">
+                            No existe todavía suficiente contexto para responder esta pregunta.
+                          </p>
+                        }
+                      </details>
+                    }
+                  </section>
+                }
+                <section class="research-project__block research-project__summary">
+                  <p class="research-project__eyebrow">Section Editorial Summary</p>
+                  <h3>Cómo continuar esta Section</h3>
+                  <p class="research-project__resume-intent">
+                    Estabas intentando responder:
+                    <strong>{{ section.objective || section.title }}</strong>
+                  </p>
+                  @if (section.questions.length) {
+                    <p class="research-project__resume-label">Preguntas abiertas</p>
+                    <ul class="research-project__resume-questions">
+                      @for (question of section.questions; track question.id) {
+                        <li>{{ question.text }}</li>
+                      }
+                    </ul>
+                  }
+                  <p class="research-project__resume-label">Dónde quedó</p>
+                  <p>{{ section.dossier.summary.state.description }}</p>
+                  <p class="research-project__resume-next">
+                    <strong>Siguiente paso razonable:</strong>
+                    {{ section.dossier.review.nextTask.title }}
+                  </p>
+                  <dl>
+                    <div>
+                      <dt>Extractos</dt>
+                      <dd>{{ section.dossier.summary.excerptCount }}</dd>
+                    </div>
+                    <div>
+                      <dt>Evidencias</dt>
+                      <dd>{{ section.dossier.summary.evidenceCount }}</dd>
+                    </div>
+                    <div>
+                      <dt>Claims</dt>
+                      <dd>{{ section.dossier.summary.claimCount }}</dd>
+                    </div>
+                    <div>
+                      <dt>Respaldados</dt>
+                      <dd>{{ section.dossier.summary.supportedClaimCount }}</dd>
+                    </div>
+                    <div>
+                      <dt>En revisión</dt>
+                      <dd>{{ section.dossier.summary.questionedClaimCount }}</dd>
+                    </div>
+                    <div>
+                      <dt>Contradicciones</dt>
+                      <dd>{{ section.dossier.summary.contradictionCount }}</dd>
+                    </div>
+                  </dl>
+                  @if (section.dossier.summary.questionsWithoutExplicitSupport.length) {
+                    <p class="research-project__summary-note">
+                      {{ section.dossier.summary.questionsWithoutExplicitSupport.length }}
+                      {{
+                        section.dossier.summary.questionsWithoutExplicitSupport.length === 1
+                          ? 'pregunta necesita'
+                          : 'preguntas necesitan'
+                      }}
+                      trazabilidad explícita hacia un Claim.
+                    </p>
+                    <ul>
+                      @for (
+                        question of section.dossier.summary.questionsWithoutExplicitSupport;
+                        track question.id
+                      ) {
+                        <li>{{ question.text }}</li>
+                      }
+                    </ul>
+                  }
+                </section>
+
+                <section class="research-project__block">
+                  <h3>Notas</h3>
+                  <p>
+                    Apuntes privados para conservar la intuición, el matiz y las decisiones todavía
+                    abiertas.
+                  </p>
+                  <textarea
+                    class="research-project__notes"
+                    name="sectionNotes"
+                    [(ngModel)]="workspaceNotes"
+                    [ngModelOptions]="{ standalone: true }"
+                    (blur)="saveWorkspace(project, section)"
+                    placeholder="Escribe aquí sin estructurar todavía"
+                  ></textarea>
+                </section>
+
+                <section class="research-project__block research-project__excerpts">
+                  <div class="research-project__block-heading">
+                    <div>
+                      <h3>Extractos asociados</h3>
+                      <p>
+                        Pasajes seleccionados para responder esta pregunta. Siguen perteneciendo a
+                        Biblioteca.
+                      </p>
+                    </div>
+                    <span>{{ section.excerptReferences.length }}</span>
+                  </div>
+                  @if (section.excerptReferences.length) {
+                    <ol>
+                      @for (
+                        reference of section.excerptReferences;
+                        track reference.libraryExcerptId
+                      ) {
+                        <li>
+                          <blockquote>{{ reference.libraryExcerpt.text }}</blockquote>
+                          <small
+                            >{{ reference.libraryExcerpt.materialVersion.material.title }} ·
+                            {{ reference.libraryExcerpt.locator }}</small
+                          ><button
+                            type="button"
+                            (click)="
+                              removeExcerptFromSection(project, section, reference.libraryExcerptId)
+                            "
+                          >
+                            Eliminar
+                          </button>
+                        </li>
+                      }
+                    </ol>
+                  } @else {
+                    <p>No has seleccionado extractos todavía.</p>
+                  }
+                </section>
+
+                <section class="research-project__block research-project__review">
+                  <p class="research-project__eyebrow">Siguiente decisión editorial</p>
+                  <h3>{{ section.dossier.review.nextTask.title }}</h3>
+                  @if (section.dossier.review.nextTask.kind === 'REVIEW_CLAIM') {
+                    @if (reviewClaimFor(section); as claim) {
+                      <p class="research-project__review-question">Preguntas de esta Section</p>
+                      <ul class="research-project__review-questions">
+                        @for (question of section.questions; track question.id) {
+                          <li>{{ question.text }}</li>
+                        }
+                      </ul>
+                      <div class="research-project__claim-review">
+                        <div>
+                          <p>La afirmación</p>
+                          <strong>{{ claim.title }}</strong>
+                          @if (claim.summary) {
+                            <span>{{ claim.summary }}</span>
+                          }
+                        </div>
+                        <span>Estado: {{ claimStatusLabel(claim.status) }}</span>
+                      </div>
+                      <ol class="research-project__review-evidence">
+                        @for (item of claim.evidence || []; track item.evidenceId) {
+                          @if (item.evidence; as evidence) {
+                            <li>
+                              <strong
+                                >{{ evidence.source?.title || 'Source asociada' }} ·
+                                {{ evidence.locator }}</strong
+                              >
+                              @if (evidence.libraryExcerpt; as excerpt) {
+                                <blockquote>{{ excerpt.text }}</blockquote>
+                                <button
+                                  type="button"
+                                  class="research-project__quiet-action"
+                                  (click)="openExcerptInReader(excerpt)"
+                                >
+                                  Volver al pasaje
+                                </button>
+                              } @else {
+                                <p>{{ evidence.quote || 'Fragmento documental no disponible.' }}</p>
+                              }
+                            </li>
+                          }
+                        }
+                      </ol>
+                      <p>
+                        Decide si este soporte basta o si necesitas volver al texto antes de
+                        cerrarlo.
+                      </p>
+                      <button type="button" (click)="reviewClaim(project, claim.id, 'SUPPORTED')">
+                        Está suficientemente respaldada
+                      </button>
+                      <button
+                        type="button"
+                        class="research-project__quiet-action"
+                        (click)="reviewClaim(project, claim.id, 'QUESTIONED')"
+                      >
+                        Permanece cuestionada
+                      </button>
+                    }
+                  } @else if (section.dossier.review.nextTask.kind === 'READY') {
+                    <p>
+                      El dossier conecta corpus, evidencia y argumento. Puedes continuar
+                      contrastando o empezar a escribir.
+                    </p>
+                  } @else {
+                    <p>El siguiente espacio de trabajo está justo debajo.</p>
+                  }
+                </section>
+
+                <section class="research-project__block research-project__dossier">
+                  <div class="research-project__block-heading">
+                    <div>
+                      <h3>Evidencias derivadas</h3>
+                      <p>Usos investigadores ya existentes de estos extractos.</p>
+                    </div>
+                    <span>{{ section.dossier.evidence.length }}</span>
+                  </div>
+                  @if (section.dossier.evidence.length) {
+                    <ol>
+                      @for (evidence of section.dossier.evidence; track evidence.id) {
+                        <li>
+                          <strong>{{ evidence.locator }}</strong>
+                          <p>
+                            {{ evidence.context || evidence.note || 'Sin contexto adicional.' }}
+                          </p>
+                        </li>
+                      }
+                    </ol>
+                  } @else {
+                    <p>Estos extractos todavía no sostienen Evidence.</p>
+                  }
+                </section>
+
+                <section class="research-project__block research-project__dossier">
+                  <div class="research-project__block-heading">
+                    <div>
+                      <h3>Argumentos derivados</h3>
+                      <p>Claims del Research sostenidos por las evidencias seleccionadas.</p>
+                    </div>
+                    <span>{{ section.dossier.claims.length }}</span>
+                  </div>
+                  @if (section.dossier.claims.length) {
+                    <ol>
+                      @for (claim of section.dossier.claims; track claim.id) {
+                        <li>
+                          <strong>{{ claim.title }}</strong>
+                          <p>{{ claim.summary || 'Sin resumen adicional.' }}</p>
+                        </li>
+                      }
+                    </ol>
+                  } @else {
+                    <p>Aún no hay Claims derivados.</p>
+                  }
+                </section>
+
+                <section class="research-project__block research-project__dossier">
+                  <div class="research-project__block-heading">
+                    <div>
+                      <h3>Conocimiento relacionado</h3>
+                      <p>
+                        Entities y Relations reutilizadas del conocimiento privado de esta
+                        investigación.
+                      </p>
+                    </div>
+                    <span>{{
+                      section.dossier.entities.length + section.dossier.relations.length
+                    }}</span>
+                  </div>
+                  @if (section.dossier.entities.length || section.dossier.relations.length) {
+                    <ol>
+                      @for (entity of section.dossier.entities; track entity.id) {
+                        <li>
+                          <strong>{{ entity.title }}</strong
+                          ><small>Entidad privada</small>
+                        </li>
+                      }
+                      @for (relation of section.dossier.relations; track relation.id) {
+                        <li>
+                          <strong
+                            >{{ relation.fromEntity?.title }} →
+                            {{ relation.toEntity?.title }}</strong
+                          ><small>{{
+                            relation.explanation || 'Relación explicada por los Claims derivados.'
+                          }}</small>
+                        </li>
+                      }
+                    </ol>
+                  } @else {
+                    <p>Aún no hay Entities o Relations implicadas.</p>
+                  }
+                </section>
+
+                <section class="research-project__editorial-work">
+                  <div class="research-project__work-heading">
+                    <p class="research-project__eyebrow">Trabajo para esta sección</p>
+                    <h3>Leer, evidenciar y formular</h3>
+                    <p>
+                      Utiliza el corpus y conocimiento disponibles para responder las preguntas de
+                      esta sección. Sus objetos siguen perteneciendo a la investigación completa.
+                    </p>
+                  </div>
+
+                  <app-research-material-reader
+                    [researchId]="project.id"
+                    [materials]="project.materials"
+                    [focusExcerpt]="reviewExcerpt"
+                    (excerptCreated)="prepareEvidenceFromExcerpt($event)"
+                    (retryRequested)="retryMaterial(project, $event)"
+                  />
+
+                  @if (preparedExcerpt) {
+                    <button
+                      type="button"
+                      class="research-project__add-excerpt"
+                      (click)="addExcerptToSection(project, section)"
+                    >
+                      Añadir a esta Section
+                    </button>
+                  }
+
+                  <app-research-evidence-capture
+                    [researchId]="project.id"
+                    [sources]="project.sources"
+                    [evidence]="project.evidence"
+                    [excerpt]="preparedExcerpt"
+                    (saved)="refreshResearch()"
+                    (excerptUsed)="clearPreparedExcerpt()"
+                  />
+
+                  <app-research-claim-capture
+                    [researchId]="project.id"
+                    [evidence]="
+                      section.dossier.evidence.length ? section.dossier.evidence : project.evidence
+                    "
+                    (saved)="refreshResearch()"
+                  />
+                </section>
+
+                <section class="research-project__research-knowledge">
+                  <div class="research-project__work-heading">
+                    <p class="research-project__eyebrow">Conocimiento de la investigación</p>
+                    <h3>Explorar conexiones existentes</h3>
+                    <p>
+                      El Graph muestra la estructura privada de toda la investigación; no pertenece
+                      a esta sección ni crea conocimiento nuevo.
+                    </p>
+                  </div>
+                  <app-research-graph [researchId]="project.id" />
+                </section>
               </div>
-              <app-research-graph [researchId]="project.id" />
-            </section>
+            </details>
 
             <footer class="research-project__context">
               <span

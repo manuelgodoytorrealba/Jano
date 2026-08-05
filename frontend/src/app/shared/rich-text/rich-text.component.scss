@@ -1,9 +1,13 @@
 :host {
+  position: relative;
+  display: block;
   --rt-heading-color: rgba(244, 245, 243, 0.94);
   --rt-lead-color: rgba(226, 229, 234, 0.9);
   --rt-strong-color: rgba(248, 249, 246, 0.96);
-  --rt-quote-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  --rt-quote-bg: rgba(12, 13, 15, 0.72);
   --rt-quote-color: rgba(228, 231, 236, 0.9);
+  --rt-quote-mark: rgba(255, 255, 255, 0.92);
+  --rt-quote-border: rgba(255, 255, 255, 0.14);
   --rt-quote-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 28px rgba(0, 0, 0, 0.18);
   --rt-tooltip-bg:
     radial-gradient(circle at 16% 0%, rgba(255, 255, 255, 0.12), transparent 34%),
@@ -20,8 +24,10 @@
   --rt-heading-color: rgba(17, 21, 30, 0.96);
   --rt-lead-color: rgba(22, 26, 36, 0.96);
   --rt-strong-color: rgba(24, 28, 37, 0.96);
-  --rt-quote-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.24));
+  --rt-quote-bg: rgba(255, 255, 255, 0.88);
   --rt-quote-color: rgba(19, 23, 32, 0.96);
+  --rt-quote-mark: rgba(17, 21, 30, 0.92);
+  --rt-quote-border: rgba(17, 21, 30, 0.12);
   --rt-quote-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58), 0 12px 28px rgba(17, 24, 39, 0.06);
   --rt-tooltip-bg: #fff;
   --rt-tooltip-border: rgba(0, 0, 0, 0.1);
@@ -30,6 +36,96 @@
   --rt-tooltip-meta: #666;
   --rt-tooltip-summary: #555;
   --rt-tooltip-loading: #666;
+}
+
+.entity-picker {
+  position: absolute;
+  z-index: 500;
+  display: grid;
+  width: min(348px, calc(100vw - 24px));
+  max-height: min(420px, calc(100dvh - 140px));
+  overflow: hidden;
+  border: 1px solid var(--rt-tooltip-border);
+  border-radius: 14px;
+  padding: 12px;
+  background: var(--rt-tooltip-bg);
+  box-shadow: var(--rt-tooltip-shadow);
+  color: var(--rt-tooltip-title);
+  font-family: var(--font-sans);
+  backdrop-filter: blur(18px);
+}
+
+.entity-picker header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.entity-picker header strong {
+  font-size: 13px;
+}
+
+.entity-picker header button {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--rt-tooltip-meta);
+}
+
+.entity-picker input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--rt-tooltip-border);
+  border-radius: 9px;
+  outline: 0;
+  padding: 10px 11px;
+  background: rgba(127, 127, 127, 0.12);
+  color: inherit;
+  font: inherit;
+}
+
+.entity-picker__results {
+  display: grid;
+  gap: 3px;
+  margin-top: 8px;
+  overflow-y: auto;
+}
+
+.entity-picker__results > button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.entity-picker__results > button:hover,
+.entity-picker__results > button.is-active {
+  background: rgba(127, 127, 127, 0.18);
+}
+
+.entity-picker__results span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entity-picker__results small,
+.entity-picker__results p {
+  color: var(--rt-tooltip-meta);
+  font-size: 11px;
+}
+
+.entity-picker__results p {
+  margin: 8px 4px 2px;
 }
 
 .rt {
@@ -44,6 +140,28 @@
   overflow: visible;
 }
 
+.rt-editable {
+  display: block;
+  min-height: inherit;
+  outline: 0;
+  cursor: text;
+  line-height: 1.62;
+}
+
+:host ::ng-deep .rt-editable > * {
+  margin: 0;
+}
+
+:host ::ng-deep .rt-editable > * + * {
+  margin-top: 0.8em;
+}
+
+.rt-editable:empty::before {
+  color: rgba(200, 205, 213, 0.52);
+  content: attr(data-placeholder);
+  pointer-events: none;
+}
+
 .rt-block {
   margin: 0;
 }
@@ -54,7 +172,10 @@
 
 .rt-h1,
 .rt-h2,
-.rt-h3 {
+.rt-h3,
+:host ::ng-deep .rt-editable h1,
+:host ::ng-deep .rt-editable h2,
+:host ::ng-deep .rt-editable h3 {
   font-family: var(--font-serif);
   font-weight: 400;
   color: var(--rt-heading-color);
@@ -63,17 +184,20 @@
   text-wrap: balance;
 }
 
-.rt-h1 {
+.rt-h1,
+:host ::ng-deep .rt-editable h1 {
   margin-top: 1.2rem;
   font-size: clamp(2rem, 4vw, 3.3rem);
 }
 
-.rt-h2 {
+.rt-h2,
+:host ::ng-deep .rt-editable h2 {
   margin-top: 1rem;
   font-size: clamp(1.55rem, 2.8vw, 2.35rem);
 }
 
-.rt-h3 {
+.rt-h3,
+:host ::ng-deep .rt-editable h3 {
   margin-top: 0.8rem;
   font-size: clamp(1.2rem, 2vw, 1.55rem);
 }
@@ -85,16 +209,47 @@
   text-wrap: pretty;
 }
 
-.rt-quote {
-  padding: 1.15rem 1.2rem 1.1rem 1.35rem;
-  border-left: 3px solid var(--color-reference-accent);
+.rt-quote,
+:host ::ng-deep .rt-editable blockquote {
+  position: relative;
+  box-sizing: border-box;
+  width: min(100%, 760px);
+  padding: 1.35rem 1.5rem 1.35rem 4.6rem;
+  border: 1px solid var(--rt-quote-border);
+  border-left: 2px solid var(--rt-quote-mark);
   background: var(--rt-quote-bg);
-  border-radius: 20px;
+  border-radius: 14px;
   font-size: 1.14em;
-  font-style: italic;
-  line-height: 1.85;
+  font-style: normal;
+  line-height: 1.65;
   color: var(--rt-quote-color);
   box-shadow: var(--rt-quote-shadow);
+}
+
+.rt-quote::before,
+:host ::ng-deep .rt-editable blockquote::before {
+  position: absolute;
+  top: 0.65rem;
+  left: 1.25rem;
+  color: var(--rt-quote-mark);
+  content: '“';
+  font-family: Georgia, serif;
+  font-size: 3.8rem;
+  line-height: 1;
+}
+
+.rt-list,
+:host ::ng-deep .rt-editable ul,
+:host ::ng-deep .rt-editable ol {
+  display: grid;
+  gap: 0.45rem;
+  padding-left: 1.4rem;
+  color: inherit;
+}
+
+.rt-list li::marker,
+:host ::ng-deep .rt-editable li::marker {
+  color: var(--color-reference-accent);
 }
 
 .link-wrap {
@@ -103,19 +258,21 @@
   z-index: 3;
 }
 
-.rt strong {
+.rt strong,
+:host ::ng-deep .rt-editable b {
   font-weight: 600;
   color: var(--rt-strong-color);
 }
 
-.rt em {
+.rt em,
+:host ::ng-deep .rt-editable i {
   font-style: italic;
 }
 
 .link {
   color: var(--color-reference-accent);
   text-decoration: underline;
-  text-decoration-color: rgba(47, 98, 70, 0.68);
+  text-decoration-color: color-mix(in srgb, var(--color-reference-accent) 72%, transparent);
   text-decoration-thickness: 1.5px;
   font-weight: 500;
   text-underline-offset: 2px;
@@ -148,6 +305,23 @@
   gap: 10px;
   overflow: visible;
   backdrop-filter: blur(16px);
+}
+
+.rt-editable .tooltip {
+  top: calc(100% + 12px);
+  bottom: auto;
+  left: 0;
+  transform: none;
+}
+
+.rt-editable .tooltip::after {
+  top: auto;
+  bottom: 100%;
+  left: 20px;
+  border: 0;
+  border-top: 1px solid var(--rt-tooltip-border);
+  border-left: 1px solid var(--rt-tooltip-border);
+  transform: translateY(50%) rotate(45deg);
 }
 
 .tooltip::after {

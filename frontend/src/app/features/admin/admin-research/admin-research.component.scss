@@ -1,23 +1,50 @@
 :host {
   display: block;
-  color: rgba(247, 244, 238, 0.96);
+  --admin-research-surface: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.08)
+  );
+  --admin-research-border: rgba(255, 255, 255, 0.22);
+  --admin-research-control: rgba(255, 255, 255, 0.08);
+  --admin-research-active: rgba(255, 255, 255, 0.1);
+  --admin-research-primary: rgba(255, 255, 255, 0.94);
+  --admin-research-primary-text: rgba(22, 20, 18, 0.96);
+  --admin-research-eyebrow: rgba(189, 175, 162, 0.72);
+  --admin-research-shadow: rgba(9, 10, 16, 0.16);
+  color: var(--color-text);
+}
+
+:host-context([data-theme='light']) {
+  --admin-research-surface: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.64),
+    rgba(255, 255, 255, 0.36)
+  );
+  --admin-research-border: rgba(20, 20, 20, 0.14);
+  --admin-research-control: rgba(255, 255, 255, 0.36);
+  --admin-research-active: rgba(22, 20, 18, 0.08);
+  --admin-research-primary: rgba(22, 20, 18, 0.92);
+  --admin-research-primary-text: rgba(247, 244, 240, 0.96);
+  --admin-research-eyebrow: rgba(40, 45, 52, 0.76);
+  --admin-research-shadow: rgba(31, 28, 23, 0.1);
 }
 
 .admin-research {
   min-height: var(--app-content-height);
-  padding: clamp(18px, 2vw, 28px);
+  padding: 34px 28px 48px;
 }
 
 .admin-research__hero,
 .admin-research__panel {
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.028)),
-    rgba(15, 15, 17, 0.86);
+  border: 1px solid var(--admin-research-border);
+  border-radius: 28px;
+  background: var(--admin-research-surface);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 22px 62px rgba(0, 0, 0, 0.22);
+    0 18px 48px var(--admin-research-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(26px) saturate(1.1);
+  -webkit-backdrop-filter: blur(26px) saturate(1.1);
 }
 
 .admin-research__hero {
@@ -29,10 +56,10 @@
 
 .admin-research__eyebrow {
   margin: 0 0 7px;
-  color: #8f6ed5;
-  font-size: 10px;
-  font-weight: 750;
-  letter-spacing: 0.16em;
+  color: var(--admin-research-eyebrow);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -41,21 +68,25 @@
 .research-card strong {
   margin: 0;
   font-family: var(--font-sans);
-  font-weight: 500;
 }
 
 .admin-research h1 {
-  font-size: 32px;
+  font-size: clamp(2.2rem, 3.2vw, 3.7rem);
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: var(--tracking-tight);
 }
 
 .admin-research h2 {
-  font-size: 20px;
+  font-size: clamp(1.45rem, 2vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.02;
 }
 
 .admin-research p {
   max-width: 720px;
   margin: 8px 0 0;
-  color: rgba(242, 238, 232, 0.68);
+  color: var(--color-text-muted);
   font-size: 14px;
   line-height: 1.55;
 }
@@ -77,10 +108,10 @@
 .admin-research__submit {
   min-height: 38px;
   padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--admin-research-border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.055);
-  color: rgba(247, 244, 238, 0.96);
+  background: var(--admin-research-control);
+  color: var(--color-text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -91,8 +122,9 @@
 
 .admin-research__btn--primary,
 .admin-research__submit {
-  border-color: color-mix(in srgb, #8f6ed5 52%, transparent);
-  background: color-mix(in srgb, #8f6ed5 92%, white 8%);
+  border-color: var(--admin-research-primary);
+  background: var(--admin-research-primary);
+  color: var(--admin-research-primary-text);
   font-weight: 750;
 }
 
@@ -102,10 +134,10 @@
 }
 
 .admin-research__layout {
-  margin-top: 16px;
+  margin-top: 20px;
   display: grid;
   grid-template-columns: minmax(320px, 0.42fr) minmax(0, 1fr);
-  gap: 16px;
+  gap: 20px;
   align-items: start;
 }
 
@@ -118,7 +150,7 @@
 }
 
 .admin-research__panel-head > span {
-  color: rgba(232, 228, 220, 0.52);
+  color: var(--color-text-faint);
   font-size: 13px;
 }
 
@@ -138,7 +170,7 @@
 }
 
 .admin-research__field span {
-  color: rgba(242, 238, 232, 0.75);
+  color: var(--color-text-soft);
   font-size: 12px;
   font-weight: 650;
 }
@@ -147,9 +179,9 @@
 .admin-research textarea,
 .admin-research select {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--admin-research-border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--admin-research-control);
   color: inherit;
   font: inherit;
   font-size: 14px;
@@ -175,7 +207,7 @@
 }
 
 .admin-research__list {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-border);
   border-radius: 13px;
   overflow: hidden;
 }
@@ -183,7 +215,7 @@
 .research-card {
   min-height: 82px;
   padding: 11px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--color-border);
   color: inherit;
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr) 132px;
@@ -197,15 +229,15 @@
 
 .research-card:hover,
 .research-card--selected {
-  background: rgba(143, 110, 213, 0.16);
+  background: var(--admin-research-active);
 }
 
 .research-card__marker {
   width: 42px;
   height: 46px;
   border-radius: 8px;
-  background: rgba(143, 110, 213, 0.16);
-  color: rgba(242, 238, 232, 0.75);
+  background: var(--admin-research-active);
+  color: var(--color-text-soft);
   display: grid;
   place-items: center;
   font-size: 13px;
@@ -234,23 +266,23 @@
 
 .research-card__body span,
 .research-card__side time {
-  color: rgba(242, 238, 232, 0.68);
+  color: var(--color-text-muted);
   font-size: 13px;
 }
 
 .research-card__body small,
 .research-card__side strong {
-  color: rgba(232, 228, 220, 0.52);
+  color: var(--color-text-faint);
   font-size: 12px;
 }
 
 .admin-research__feedback,
 .admin-research__state {
   padding: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.035);
-  color: rgba(242, 238, 232, 0.68);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
   font-size: 13px;
 }
 
@@ -263,10 +295,10 @@
   justify-self: start;
   min-height: 30px;
   padding: 0 10px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--color-border-strong);
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.045);
-  color: rgba(247, 244, 238, 0.92);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
   font: inherit;
   font-size: 12px;
   cursor: pointer;

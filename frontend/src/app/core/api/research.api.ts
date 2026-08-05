@@ -309,12 +309,56 @@ export type ResearchQuestion = {
   updatedAt: string;
 };
 
+export type ResearchDraftRevision = {
+  id: string;
+  draftId: string;
+  authorId: string;
+  number: number;
+  content: string;
+  createdAt: string;
+};
+
+export type ResearchDraft = {
+  id: string;
+  projectId: string;
+  sectionId: string;
+  title: string | null;
+  currentRevisionId: string | null;
+  archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  currentRevision: ResearchDraftRevision | null;
+};
+
 export type ResearchOutlineSectionExcerpt = {
   sectionId: string;
   libraryExcerptId: string;
   sortOrder: number;
   createdAt: string;
   libraryExcerpt: ResearchLibraryExcerpt;
+};
+
+export type ResearchOutlineSectionMaterial = {
+  sectionId: string;
+  materialVersionId: string;
+  sortOrder: number;
+  createdAt: string;
+  materialVersion: {
+    id: string;
+    version: number;
+    status: ResearchDocumentStatus;
+    material: {
+      id: string;
+      title: string;
+      kind: ResearchDocumentKind;
+      source: ResearchSourceReference | null;
+    };
+    excerpts: Array<{
+      id: string;
+      locator: string;
+      text: string;
+    }>;
+  };
 };
 
 export type ResearchSectionReviewTask = {
@@ -366,7 +410,9 @@ export type ResearchOutlineSection = {
   objective: string | null;
   notes: string | null;
   questions: ResearchQuestion[];
+  drafts: ResearchDraft[];
   excerptReferences: ResearchOutlineSectionExcerpt[];
+  materialReferences: ResearchOutlineSectionMaterial[];
   dossier: ResearchSectionDossier;
 };
 
@@ -457,7 +503,11 @@ export class ResearchApi {
         ...project,
         materials: project.materials ?? [],
         knowledge: project.knowledge,
-        outlineSections: project.outlineSections ?? [],
+        outlineSections: (project.outlineSections ?? []).map((section) => ({
+          ...section,
+          drafts: section.drafts ?? [],
+          materialReferences: section.materialReferences ?? [],
+        })),
         claims: project.claims ?? [],
         entities: project.entities ?? [],
         relations: project.relations ?? [],
@@ -477,6 +527,12 @@ export class ResearchApi {
     return this.http.patch<ResearchProject>(
       `${this.baseUrl}/${projectId}/outline/sections/${sectionId}`,
       data,
+    );
+  }
+
+  deleteOutlineSection(projectId: string, sectionId: string) {
+    return this.http.delete<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}`,
     );
   }
 
@@ -510,10 +566,37 @@ export class ResearchApi {
     );
   }
 
+  addOutlineSectionMaterial(projectId: string, sectionId: string, materialVersionId: string) {
+    return this.http.post<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/materials`,
+      { materialVersionId },
+    );
+  }
+
+  removeOutlineSectionMaterial(projectId: string, sectionId: string, materialVersionId: string) {
+    return this.http.delete<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/materials/${materialVersionId}`,
+    );
+  }
+
   createQuestion(projectId: string, sectionId: string, text: string) {
     return this.http.post<ResearchProject>(
       `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/questions`,
       { text },
+    );
+  }
+
+  createDraft(projectId: string, sectionId: string, content: string) {
+    return this.http.post<ResearchDraft>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/drafts`,
+      { content },
+    );
+  }
+
+  reviseDraft(projectId: string, draftId: string, content: string) {
+    return this.http.post<ResearchDraft>(
+      `${this.baseUrl}/${projectId}/drafts/${draftId}/revisions`,
+      { content },
     );
   }
 

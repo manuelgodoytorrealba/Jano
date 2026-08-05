@@ -36,6 +36,7 @@ import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outlin
 import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dto';
 import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-section.dto';
 import { ResearchOutlineService } from './research-outline.service';
+import { AddResearchOutlineSectionMaterialDto } from './dto/add-research-outline-section-material.dto';
 import { presentSectionDossiers } from './research-section-dossier';
 const researchSourceSelect = {
   id: true,
@@ -168,6 +169,11 @@ export class ResearchService {
     return this.getProject(projectId);
   }
 
+  async deleteOutlineSection(projectId: string, sectionId: string) {
+    await this.outline.delete(projectId, sectionId);
+    return this.getProject(projectId);
+  }
+
   async reorderOutlineSections(projectId: string, dto: ReorderResearchOutlineSectionsDto) {
     await this.outline.reorder(projectId, dto);
     return this.getProject(projectId);
@@ -188,6 +194,24 @@ export class ResearchService {
     libraryExcerptId: string,
   ) {
     await this.outline.removeExcerpt(projectId, sectionId, libraryExcerptId);
+    return this.getProject(projectId);
+  }
+
+  async addOutlineSectionMaterial(
+    projectId: string,
+    sectionId: string,
+    dto: AddResearchOutlineSectionMaterialDto,
+  ) {
+    await this.outline.addMaterial(projectId, sectionId, dto);
+    return this.getProject(projectId);
+  }
+
+  async removeOutlineSectionMaterial(
+    projectId: string,
+    sectionId: string,
+    materialVersionId: string,
+  ) {
+    await this.outline.removeMaterial(projectId, sectionId, materialVersionId);
     return this.getProject(projectId);
   }
 
@@ -652,11 +676,27 @@ export class ResearchService {
         outlineSections: {
           include: {
             questions: { orderBy: { sortOrder: 'asc' } },
+            drafts: {
+              where: { archivedAt: null },
+              include: { currentRevision: true },
+              orderBy: { updatedAt: 'desc' },
+            },
             excerptReferences: {
               include: {
                 libraryExcerpt: {
                   include: {
                     materialVersion: { include: { material: { include: { source: true } } } },
+                  },
+                },
+              },
+              orderBy: { sortOrder: 'asc' },
+            },
+            materialReferences: {
+              include: {
+                materialVersion: {
+                  include: {
+                    material: { include: { source: true } },
+                    excerpts: { orderBy: { createdAt: 'asc' } },
                   },
                 },
               },

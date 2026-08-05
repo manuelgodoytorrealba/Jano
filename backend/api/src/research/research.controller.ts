@@ -27,8 +27,8 @@ import { CreateLibraryMaterialDto } from '../library/dto/create-library-material
 import { CreateResearchPdfMaterialDto } from './dto/create-research-pdf-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
-import { AddResearchOutlineSectionExcerptDto } from './dto/add-research-outline-section-excerpt.dto';
 import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
+import { AddResearchOutlineSectionMaterialDto } from './dto/add-research-outline-section-material.dto';
 import { ResearchKnowledgeQuery } from './dto/research-knowledge.query';
 import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
 import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outline-sections.dto';
@@ -39,6 +39,11 @@ import { CreateResearchEntityDto } from './dto/create-research-entity.dto';
 import { CreateResearchRelationDto } from './dto/create-research-relation.dto';
 import { SearchSourcesQuery } from '../sources/dto/search-sources.query';
 import { ResearchJobRunnerService } from './research-job-runner.service';
+import { ResearchDraftService } from './research-draft.service';
+import {
+  CreateResearchDraftDto,
+  CreateResearchDraftRevisionDto,
+} from './dto/create-research-draft.dto';
 import {
   RESEARCH_PDF_UPLOAD_OPTIONS,
   type UploadedResearchPdf,
@@ -53,6 +58,7 @@ export class ResearchController {
   constructor(
     private readonly service: ResearchService,
     private readonly jobRunner: ResearchJobRunnerService,
+    private readonly drafts: ResearchDraftService,
   ) {}
 
   @Get()
@@ -109,6 +115,11 @@ export class ResearchController {
     return this.service.updateOutlineSection(id, sectionId, dto);
   }
 
+  @Delete(':id/outline/sections/:sectionId')
+  deleteOutlineSection(@Param('id') id: string, @Param('sectionId') sectionId: string) {
+    return this.service.deleteOutlineSection(id, sectionId);
+  }
+
   @Put(':id/outline/sections/order')
   reorderOutlineSections(@Param('id') id: string, @Body() dto: ReorderResearchOutlineSectionsDto) {
     return this.service.reorderOutlineSections(id, dto);
@@ -121,6 +132,24 @@ export class ResearchController {
     @Body() dto: CreateResearchQuestionDto,
   ) {
     return this.service.createQuestion(id, sectionId, dto);
+  }
+
+  @Post(':id/outline/sections/:sectionId/materials')
+  addOutlineSectionMaterial(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Body() dto: AddResearchOutlineSectionMaterialDto,
+  ) {
+    return this.service.addOutlineSectionMaterial(id, sectionId, dto);
+  }
+
+  @Delete(':id/outline/sections/:sectionId/materials/:materialVersionId')
+  removeOutlineSectionMaterial(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Param('materialVersionId') materialVersionId: string,
+  ) {
+    return this.service.removeOutlineSectionMaterial(id, sectionId, materialVersionId);
   }
 
   @Patch(':id/outline/sections/:sectionId/questions/:questionId')
@@ -149,6 +178,26 @@ export class ResearchController {
     @Body() dto: ReorderResearchQuestionsDto,
   ) {
     return this.service.reorderQuestions(id, sectionId, dto);
+  }
+
+  @Post(':id/outline/sections/:sectionId/drafts')
+  createDraft(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Body() dto: CreateResearchDraftDto,
+  ) {
+    return this.drafts.create(id, sectionId, req.user.userId, dto);
+  }
+
+  @Post(':id/drafts/:draftId/revisions')
+  reviseDraft(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Param('draftId') draftId: string,
+    @Body() dto: CreateResearchDraftRevisionDto,
+  ) {
+    return this.drafts.revise(id, draftId, req.user.userId, dto);
   }
 
   @Post(':id/sources')

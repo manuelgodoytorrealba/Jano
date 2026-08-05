@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, convertToParamMap } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
@@ -9,8 +9,11 @@ import {
   ResearchEvidence,
   ResearchLibraryExcerpt,
   ResearchOutlineSection,
+  ResearchProject,
 } from '../../../core/api/research.api';
 import { LibraryApi } from '../../../core/api/library.api';
+import { EntitiesApi } from '../../../core/api/entities.api';
+import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchProjectComponent } from './research-project.component';
 
@@ -80,6 +83,8 @@ const section = (): ResearchOutlineSection => ({
   updatedAt: project.updatedAt,
   objective: 'Comprender la fragmentación.',
   notes: 'Volver a las cartas.',
+  drafts: [],
+  materialReferences: [],
   questions: [],
   excerptReferences: [],
   dossier: {
@@ -146,7 +151,30 @@ async function createFixture(
       { provide: ResearchApi, useValue: api },
       {
         provide: LibraryApi,
-        useValue: { delete: vi.fn().mockReturnValue(of({ deleted: true })) },
+        useValue: {
+          list: vi.fn().mockReturnValue(of([])),
+          delete: vi.fn().mockReturnValue(of({ deleted: true })),
+        },
+      },
+      {
+        provide: EntitiesApi,
+        useValue: {
+          list: vi
+            .fn()
+            .mockReturnValue(of({ items: [], page: 1, limit: 8, total: 0, totalPages: 0 })),
+          adminList: vi
+            .fn()
+            .mockReturnValue(of({ items: [], page: 1, limit: 8, total: 0, totalPages: 0 })),
+          preview: vi.fn().mockReturnValue(
+            of({
+              id: 'entity-1',
+              slug: 'pablo-picasso',
+              title: 'Pablo Picasso',
+              type: 'ARTIST',
+              summary: 'Pintor y figura central del cubismo.',
+            }),
+          ),
+        },
       },
       {
         provide: ActivatedRoute,
@@ -168,6 +196,14 @@ async function createFixture(
 }
 
 describe('ResearchProjectComponent', () => {
+  it('offers a direct return to the research list', async () => {
+    const fixture = await createFixture({ getById: vi.fn().mockReturnValue(of(project)) });
+    const backLink = fixture.debugElement.query(By.css('.research-project__back'));
+
+    expect(backLink.injector.get(RouterLink)).toBeTruthy();
+    expect(backLink.nativeElement.textContent).toContain('Investigaciones');
+  });
+
   it('switches research and enters and exits focus mode', async () => {
     const api = {
       getById: vi.fn().mockReturnValue(of(project)),
@@ -208,6 +244,155 @@ describe('ResearchProjectComponent', () => {
     expect(api.createOutlineSection).toHaveBeenCalledWith(project.id, {
       title: 'Antes del cubismo',
     });
+  });
+
+  it('creates a subsection without imposing numbering on authorial titles', async () => {
+    const parent = section();
+    const child = {
+      ...section(),
+      id: 'section-1-1',
+      parentSectionId: parent.id,
+      title: 'La fragmentación de la forma',
+    };
+    const research = { ...project, outlineSections: [parent, child] };
+    const api = {
+      getById: vi.fn().mockReturnValue(of(research)),
+      list: vi.fn().mockReturnValue(of([research])),
+      createOutlineSection: vi.fn().mockReturnValue(of(research)),
+    };
+    const fixture = await createFixture(api, false, 'index');
+
+    expect(fixture.nativeElement.querySelector('.research-project__tree-number')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Cubismo analítico');
+    expect(fixture.nativeElement.textContent).toContain('La fragmentación de la forma');
+
+    fixture.nativeElement
+      .querySelector('[aria-label="Añadir subsección a Cubismo analítico"]')
+      .click();
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input[name="subsectionTitle"]');
+    expect(input).not.toBeNull();
+    fixture.componentInstance.title = 'Influencia africana';
+    fixture.detectChanges();
+    fixture.debugElement
+      .query(By.css('.research-project__create--nested'))
+      .triggerEventHandler('ngSubmit');
+
+    expect(api.createOutlineSection).toHaveBeenCalledWith(project.id, {
+      title: 'Influencia africana',
+      parentSectionId: parent.id,
+    });
+  });
+
+  it('reorders sections only among their siblings', async () => {
+    const firstRoot = section();
+    const secondRoot = { ...section(), id: 'section-2', title: 'Cubismo sintético', sortOrder: 1 };
+    const firstChild = {
+      ...section(),
+      id: 'section-1-1',
+      parentSectionId: firstRoot.id,
+      title: 'Fragmentación',
+    };
+    const secondChild = {
+      ...firstChild,
+      id: 'section-1-2',
+      title: 'Perspectiva múltiple',
+      sortOrder: 1,
+    };
+    const research = {
+      ...project,
+      outlineSections: [firstRoot, secondRoot, firstChild, secondChild],
+    };
+    const api = {
+      getById: vi.fn().mockReturnValue(of(research)),
+      list: vi.fn().mockReturnValue(of([research])),
+      reorderOutlineSections: vi.fn().mockReturnValue(of(research)),
+    };
+    const fixture = await createFixture(api, false, 'index');
+    const dataTransfer = { effectAllowed: '', dropEffect: '', setData: vi.fn() };
+    const preventDefault = vi.fn();
+
+    fixture.componentInstance.startSectionDrag({ dataTransfer } as unknown as DragEvent, firstRoot);
+    fixture.componentInstance.dragSectionOver(
+      {
+        preventDefault,
+        dataTransfer,
+        clientY: 80,
+        currentTarget: { getBoundingClientRect: () => ({ top: 0, height: 100 }) },
+      } as unknown as DragEvent,
+      secondRoot,
+    );
+    fixture.componentInstance.dropSection(
+      { preventDefault } as unknown as DragEvent,
+      research as unknown as ResearchProject,
+      secondRoot,
+    );
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(dataTransfer.setData).toHaveBeenCalledWith('text/plain', firstRoot.id);
+    expect(api.reorderOutlineSections).toHaveBeenNthCalledWith(1, project.id, null, [
+      secondRoot.id,
+      firstRoot.id,
+    ]);
+
+    fixture.nativeElement.querySelector('[aria-label="Bajar Fragmentación"]').click();
+    expect(api.reorderOutlineSections).toHaveBeenNthCalledWith(2, project.id, firstRoot.id, [
+      secondChild.id,
+      firstChild.id,
+    ]);
+  });
+
+  it('collapses and expands the subsections of a parent section', async () => {
+    const parent = section();
+    const child = {
+      ...section(),
+      id: 'section-1-1',
+      parentSectionId: parent.id,
+      title: 'Fragmentación',
+    };
+    const research = { ...project, outlineSections: [parent, child] };
+    const fixture = await createFixture(
+      {
+        getById: vi.fn().mockReturnValue(of(research)),
+        list: vi.fn().mockReturnValue(of([research])),
+      },
+      false,
+      'index',
+    );
+
+    expect(
+      fixture.nativeElement.querySelector('[aria-label="Bajar Fragmentación"]'),
+    ).not.toBeNull();
+    fixture.nativeElement.querySelector('[aria-label="Contraer Cubismo analítico"]').click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[aria-label="Bajar Fragmentación"]')).toBeNull();
+
+    fixture.nativeElement.querySelector('[aria-label="Expandir Cubismo analítico"]').click();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[aria-label="Bajar Fragmentación"]'),
+    ).not.toBeNull();
+  });
+
+  it('confirms deletion of a parent and its subsections', async () => {
+    const parent = section();
+    const child = { ...section(), id: 'section-1-1', parentSectionId: parent.id };
+    const research = { ...project, outlineSections: [parent, child] };
+    const api = {
+      getById: vi.fn().mockReturnValue(of(research)),
+      list: vi.fn().mockReturnValue(of([research])),
+      deleteOutlineSection: vi.fn().mockReturnValue(of(project)),
+    };
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const fixture = await createFixture(api, false, 'index');
+
+    fixture.nativeElement.querySelector('[aria-label="Eliminar Cubismo analítico"]').click();
+
+    expect(confirm).toHaveBeenCalledWith(
+      '¿Eliminar “Cubismo analítico”? También se eliminarán 1 subsección.',
+    );
+    expect(api.deleteOutlineSection).toHaveBeenCalledWith(project.id, parent.id);
+    confirm.mockRestore();
   });
 
   it('incorporates corpus before creating an outline section', async () => {
@@ -380,6 +565,82 @@ describe('ResearchProjectComponent', () => {
     });
   });
 
+  it('creates the first authorial Draft from the active Section', async () => {
+    const active = section();
+    const saved = {
+      id: 'draft-1',
+      projectId: project.id,
+      sectionId: active.id,
+      title: active.title,
+      currentRevisionId: 'revision-1',
+      archivedAt: null,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      currentRevision: {
+        id: 'revision-1',
+        draftId: 'draft-1',
+        authorId: 'user-1',
+        number: 1,
+        content: 'Una nueva representación del espacio.',
+        createdAt: project.createdAt,
+      },
+    };
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })),
+      createDraft: vi.fn().mockReturnValue(of(saved)),
+    };
+    const fixture = await createFixture(api, true);
+    const editor = fixture.nativeElement.querySelector('.rt-editable');
+    editor.innerHTML = `<p>${saved.currentRevision.content}</p>`;
+    editor.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('.research-project__draft footer button').click();
+
+    expect(api.createDraft).toHaveBeenCalledWith(
+      project.id,
+      active.id,
+      saved.currentRevision.content,
+    );
+  });
+
+  it('associates a Library material with the Research before adding it to the Section', async () => {
+    const active = section();
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })),
+      associateLibraryMaterial: vi.fn().mockReturnValue(of(project)),
+      addOutlineSectionMaterial: vi.fn().mockReturnValue(of(project)),
+    };
+    const fixture = await createFixture(api, true);
+    const component = fixture.componentInstance;
+    const material = {
+      id: 'material-1',
+      sourceId: null,
+      kind: 'TEXT' as const,
+      title: 'Cartas a Émile Bernard',
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      version: {
+        id: 'version-1',
+        status: 'READY' as const,
+        url: null,
+        originalName: null,
+        mimeType: null,
+        sizeBytes: null,
+      },
+      research: [],
+    };
+    component.selectedSectionMaterialVersionId = material.version.id;
+
+    component.addSectionMaterial(project as unknown as ResearchProject, active, [material]);
+
+    expect(api.associateLibraryMaterial).toHaveBeenCalledWith(project.id, material.id);
+    expect(api.addOutlineSectionMaterial).toHaveBeenCalledWith(
+      project.id,
+      active.id,
+      material.version.id,
+    );
+  });
+
   it('updates the editorial status of the active section', async () => {
     const active = section();
     const api = {
@@ -394,6 +655,136 @@ describe('ResearchProjectComponent', () => {
     expect(api.updateOutlineSection).toHaveBeenCalledWith(project.id, active.id, {
       status: 'READY_FOR_REVIEW',
     });
+  });
+
+  it('edits the Section title and applies Draft formatting without changing knowledge', async () => {
+    const active = section();
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })),
+      updateOutlineSection: vi.fn().mockReturnValue(of(project)),
+    };
+    const fixture = await createFixture(api, true);
+    const component = fixture.componentInstance;
+
+    const titleInput = document.createElement('input');
+    titleInput.value = ' Nueva mirada ';
+    component.saveSectionTitle(project as unknown as ResearchProject, active, titleInput);
+    expect(api.updateOutlineSection).toHaveBeenCalledWith(project.id, active.id, {
+      title: 'Nueva mirada',
+    });
+
+    const editor = fixture.debugElement.query(By.directive(RichTextComponent)).componentInstance;
+    const editable = fixture.nativeElement.querySelector('.rt-editable');
+    editable.innerHTML = '<h2>Una nueva mirada</h2>';
+    const range = document.createRange();
+    range.selectNodeContents(editable.firstElementChild);
+    document.getSelection()?.removeAllRanges();
+    document.getSelection()?.addRange(range);
+    editor.updateFormatState();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement
+        .querySelector('button[aria-label="Encabezado nivel 2"]')
+        .classList.contains('is-active'),
+    ).toBe(true);
+
+    const originalExecCommand = document.execCommand;
+    document.execCommand = vi.fn();
+    component.formatDraft(editor, 'heading');
+    expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, 'p');
+    document.execCommand = originalExecCommand;
+  });
+
+  it('renders headings, citations and lists with the shared editorial renderer', async () => {
+    const content =
+      '## Una nueva mirada\n\n> El arte es una armonía paralela.\n> — Paul Cézanne\n\n- Cézanne\n- Braque';
+    const active = {
+      ...section(),
+      drafts: [
+        {
+          id: 'draft-1',
+          projectId: project.id,
+          sectionId: 'section-1',
+          title: 'Cubismo analítico',
+          currentRevisionId: 'revision-1',
+          archivedAt: null,
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt,
+          currentRevision: {
+            id: 'revision-1',
+            draftId: 'draft-1',
+            authorId: 'user-1',
+            number: 1,
+            content,
+            createdAt: project.createdAt,
+          },
+        },
+      ],
+    };
+    const fixture = await createFixture(
+      { getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })) },
+      true,
+    );
+
+    expect(fixture.nativeElement.querySelector('.rt-h2').textContent).toContain('Una nueva mirada');
+    expect(fixture.nativeElement.querySelector('.rt-quote').textContent).toContain(
+      'El arte es una armonía paralela.',
+    );
+    expect(fixture.nativeElement.querySelector('.rt-quote br')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('.rt-list li')).toHaveLength(2);
+
+    const editor = fixture.nativeElement.querySelector('.rt-editable');
+    const quote = editor.querySelector('blockquote');
+    const range = document.createRange();
+    range.selectNodeContents(quote);
+    range.collapse(false);
+    document.getSelection()?.removeAllRanges();
+    document.getSelection()?.addRange(range);
+    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    expect(editor.querySelectorAll('blockquote')).toHaveLength(1);
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }),
+    );
+    expect(quote.nextElementSibling?.tagName).toBe('P');
+
+    editor.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(editor.lastElementChild?.tagName).toBe('P');
+    expect(document.getSelection()?.anchorNode?.parentElement?.closest('blockquote')).toBeNull();
+  });
+
+  it('links an existing entity from the visual picker and keeps the shared preview', async () => {
+    const active = section();
+    const fixture = await createFixture(
+      { getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })) },
+      true,
+    );
+    const editor = fixture.debugElement.query(By.directive(RichTextComponent)).componentInstance;
+    fixture.nativeElement.querySelector('button[aria-label="Enlace a Entidad"]').click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.entity-picker input')).toBeTruthy();
+
+    editor.chooseEntity({
+      id: 'entity-1',
+      slug: 'pablo-picasso',
+      title: 'Pablo Picasso',
+      type: 'ARTIST',
+    });
+    fixture.detectChanges();
+    expect(fixture.componentInstance.draftContent).toContain('[[pablo-picasso|Pablo Picasso]]');
+
+    expect(fixture.nativeElement.querySelectorAll('.rt-editable .link')).toHaveLength(1);
+    const link = fixture.nativeElement.querySelector('.rt-editable .link');
+    link.dispatchEvent(new MouseEvent('mouseenter'));
+    fixture.detectChanges();
+    expect(TestBed.inject(EntitiesApi).preview).toHaveBeenCalledWith('pablo-picasso', {
+      includeDrafts: true,
+    });
+    expect(fixture.nativeElement.querySelector('.tooltip .tt-title').textContent).toContain(
+      'Pablo Picasso',
+    );
+    expect(fixture.nativeElement.querySelector('.tooltip .tt-summary').textContent).toContain(
+      'figura central del cubismo',
+    );
   });
   it('creates, edits, deletes and reorders research questions in the active section', async () => {
     const active = {

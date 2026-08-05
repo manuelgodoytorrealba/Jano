@@ -1,4 +1,18 @@
-<div class="rt">
+<div
+  #editor
+  class="rt"
+  [class.rt-editable]="editable"
+  [attr.contenteditable]="editable ? 'true' : null"
+  [attr.data-placeholder]="placeholder"
+  [attr.role]="editable ? 'textbox' : null"
+  [attr.aria-multiline]="editable ? 'true' : null"
+  [attr.aria-label]="editable ? 'Borrador de la sección' : null"
+  (input)="onInput($event)"
+  (click)="onEditorClick($event)"
+  (keydown)="onEditorKeydown($event)"
+  (keyup)="updateFormatState()"
+  (mouseup)="updateFormatState()"
+>
   @for (block of blocks; track $index; let blockIndex = $index) {
     @if (block.kind === 'heading' && block.level === 1) {
       <h1 class="rt-block rt-h1">
@@ -45,6 +59,32 @@
           "
         />
       </blockquote>
+    } @else if (block.kind === 'list' && block.ordered) {
+      <ol class="rt-block rt-list">
+        @for (item of block.items; track $index; let itemIndex = $index) {
+          <li>
+            <ng-container
+              *ngTemplateOutlet="
+                inlineTokens;
+                context: { $implicit: item, keyPrefix: blockIndex + ':' + itemIndex }
+              "
+            />
+          </li>
+        }
+      </ol>
+    } @else if (block.kind === 'list') {
+      <ul class="rt-block rt-list">
+        @for (item of block.items; track $index; let itemIndex = $index) {
+          <li>
+            <ng-container
+              *ngTemplateOutlet="
+                inlineTokens;
+                context: { $implicit: item, keyPrefix: blockIndex + ':' + itemIndex }
+              "
+            />
+          </li>
+        }
+      </ul>
     } @else {
       <p class="rt-block rt-paragraph">
         <ng-container
@@ -58,6 +98,55 @@
   }
 </div>
 
+@if (entityPickerOpen()) {
+  <section
+    class="entity-picker"
+    [style.top.px]="entityPickerTop()"
+    [style.left.px]="entityPickerLeft()"
+    aria-label="Enlazar una entidad"
+  >
+    <header>
+      <strong>Enlazar entidad</strong>
+      <button type="button" aria-label="Cerrar" (click)="closeEntityPicker()">×</button>
+    </header>
+    <input
+      #entitySearch
+      type="search"
+      autocomplete="off"
+      role="combobox"
+      placeholder="Busca artistas, obras, conceptos…"
+      [value]="entityQuery()"
+      [attr.aria-expanded]="true"
+      [attr.aria-controls]="'entity-link-results'"
+      (input)="onEntitySearch(entitySearch.value)"
+      (keydown)="onEntityPickerKeydown($event)"
+    />
+    <div id="entity-link-results" class="entity-picker__results" role="listbox">
+      @if (entityLoading()) {
+        <p>Buscando…</p>
+      } @else if (entityResults().length) {
+        @for (entity of entityResults(); track entity.id; let index = $index) {
+          <button
+            type="button"
+            role="option"
+            [class.is-active]="activeEntityIndex() === index"
+            [attr.aria-selected]="activeEntityIndex() === index"
+            (mouseenter)="activeEntityIndex.set(index)"
+            (mousedown)="$event.preventDefault(); chooseEntity(entity)"
+          >
+            <span>{{ entity.title }}</span>
+            <small>{{ entity.type }}</small>
+          </button>
+        }
+      } @else if (entityQuery().trim()) {
+        <p>No hay entidades que coincidan.</p>
+      } @else {
+        <p>Escribe para buscar en la base de conocimiento.</p>
+      }
+    </div>
+  </section>
+}
+
 <ng-template #inlineTokens let-tokens let-keyPrefix="keyPrefix">
   @for (t of tokens; track $index; let tokenIndex = $index) {
     @if (t.kind === 'text') {
@@ -66,11 +155,14 @@
       <strong>{{ t.value }}</strong>
     } @else if (t.kind === 'em') {
       <em>{{ t.value }}</em>
+    } @else if (t.kind === 'break') {
+      <br />
     } @else {
       <span class="link-wrap">
         <a
           class="link"
-          [routerLink]="['/entity', t.slug]"
+          [routerLink]="editable ? null : ['/entity', t.slug]"
+          (click)="onEditableLinkClick($event)"
           (mouseenter)="onLinkEnter(t.slug, keyPrefix + ':' + tokenIndex)"
           (focus)="onLinkFocus(t.slug, keyPrefix + ':' + tokenIndex)"
           (mouseleave)="onLinkLeave()"

@@ -15,13 +15,15 @@ import {
   ResearchClaim,
   ResearchDocument,
   ResearchDocumentKind,
+  ResearchDraft,
 } from '../../../core/api/research.api';
-import { LibraryApi } from '../../../core/api/library.api';
+import { LibraryApi, LibraryMaterial } from '../../../core/api/library.api';
 import { MaterialContextMenuComponent, MaterialMenuState } from './material-context-menu.component';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.component';
 import { ResearchGraphComponent } from './research-graph.component';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
+import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
 
 const MAX_PDF_SIZE_BYTES = 300 * 1024 * 1024;
 const MATERIAL_POLL_INTERVAL_MS = 2000;
@@ -40,6 +42,7 @@ const MATERIAL_POLL_INTERVAL_MS = 2000;
     ResearchGraphComponent,
     ResearchMaterialReaderComponent,
     MaterialContextMenuComponent,
+    RichTextComponent,
   ],
   templateUrl: './research-project.component.html',
   styleUrl: './research-project.component.scss',
@@ -56,6 +59,7 @@ export class ResearchProjectComponent implements OnDestroy {
   private workspaceSectionId: string | null = null;
   private savedObjective = '';
   private savedNotes = '';
+  savedDraftContent = '';
 
   readonly modes = [
     { id: 'corpus', label: 'Corpus', available: true },
@@ -66,9 +70,18 @@ export class ResearchProjectComponent implements OnDestroy {
   ] as const;
 
   title = '';
+  subsectionParentId: string | null = null;
+  readonly collapsedSectionIds = new Set<string>();
+  draggedSection: ResearchOutlineSection | null = null;
+  dropTargetSectionId: string | null = null;
+  dropAfterTarget = false;
   questionText = '';
   workspaceObjective = '';
   workspaceNotes = '';
+  draftContent = '';
+  draftEditorContent = '';
+  savingDraft = false;
+  draftMessage = '';
   error = '';
   preparedExcerpt: ResearchLibraryExcerptReference | null = null;
   reviewExcerpt: ResearchLibraryExcerpt | null = null;
@@ -81,6 +94,7 @@ export class ResearchProjectComponent implements OnDestroy {
   addingMaterial = false;
   materialMessage = '';
   selectedMaterialId = '';
+  selectedSectionMaterialVersionId = '';
   materialMenu: MaterialMenuState | null = null;
   focusMode = false;
   readonly statuses: ResearchOutlineSectionStatus[] = [
@@ -96,8 +110,12 @@ export class ResearchProjectComponent implements OnDestroy {
     this.refresh$,
   ]).pipe(
     switchMap(([params, query]) =>
-      combineLatest([this.api.getById(params.get('id')!), this.api.list()]).pipe(
-        map(([project, projects]) => {
+      combineLatest([
+        this.api.getById(params.get('id')!),
+        this.api.list(),
+        this.libraryApi.list().pipe(catchError(() => of([]))),
+      ]).pipe(
+        map(([project, projects, libraryMaterials]) => {
           this.scheduleMaterialPoll(project);
           const mode = this.workspaceMode(query.get('mode'), params.get('sectionId'));
           const sectionId = query.get('section') ?? params.get('sectionId');
@@ -106,13 +124,14 @@ export class ResearchProjectComponent implements OnDestroy {
             (mode === 'index' ? project.outlineSections[0] : null) ??
             null;
           this.syncWorkspace(activeSection);
-          return { project, projects, activeSection, mode, error: '' };
+          return { project, projects, libraryMaterials, activeSection, mode, error: '' };
         }),
         catchError(() => {
           this.stopMaterialPolling();
           return of({
             project: null,
             projects: [],
+            libraryMaterials: [],
             activeSection: null,
             mode: 'corpus',
             error: 'No se pudo abrir esta investigación.',
@@ -218,9 +237,135 @@ export class ResearchProjectComponent implements OnDestroy {
       .subscribe({
         next: () => {
           this.title = '';
+          this.subsectionParentId = null;
           this.refresh$.next();
         },
         error: () => (this.error = 'No se pudo crear la sección.'),
+      });
+  }
+
+  startSubsection(parentSectionId: string): void {
+    this.title = '';
+    this.subsectionParentId = parentSectionId;
+    this.collapsedSectionIds.delete(parentSectionId);
+  }
+
+  cancelSubsection(): void {
+    this.title = '';
+    this.subsectionParentId = null;
+  }
+
+  deleteSection(project: ResearchProject, section: ResearchOutlineSection): void {
+    const childCount = this.children(project, section.id).length;
+    const detail = childCount
+      ? ` También se eliminarán ${childCount} ${childCount === 1 ? 'subsección' : 'subsecciones'}.`
+      : '';
+    if (!this.document.defaultView?.confirm(`¿Eliminar “${section.title}”?${detail}`)) return;
+    this.api.deleteOutlineSection(project.id, section.id).subscribe({
+      next: () => {
+        this.collapsedSectionIds.delete(section.id);
+        if (this.subsectionParentId === section.id) this.cancelSubsection();
+        this.refresh$.next();
+      },
+      error: () => (this.error = 'No se pudo eliminar la sección.'),
+    });
+  }
+
+  toggleSection(sectionId: string): void {
+    if (this.collapsedSectionIds.has(sectionId)) this.collapsedSectionIds.delete(sectionId);
+    else this.collapsedSectionIds.add(sectionId);
+  }
+
+  isSectionCollapsed(sectionId: string): boolean {
+    return this.collapsedSectionIds.has(sectionId);
+  }
+
+  moveSection(project: ResearchProject, section: ResearchOutlineSection, direction: -1 | 1): void {
+    const siblings = section.parentSectionId
+      ? this.children(project, section.parentSectionId)
+      : this.roots(project);
+    const index = siblings.findIndex((item) => item.id === section.id);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= siblings.length) return;
+    [siblings[index], siblings[target]] = [siblings[target], siblings[index]];
+    this.saveSectionOrder(project, section.parentSectionId, siblings);
+  }
+
+  canMoveSection(
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+    direction: -1 | 1,
+  ): boolean {
+    const siblings = section.parentSectionId
+      ? this.children(project, section.parentSectionId)
+      : this.roots(project);
+    const target = siblings.findIndex((item) => item.id === section.id) + direction;
+    return target >= 0 && target < siblings.length;
+  }
+
+  startSectionDrag(event: DragEvent, section: ResearchOutlineSection): void {
+    this.draggedSection = section;
+    if (!event.dataTransfer) return;
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', section.id);
+  }
+
+  dragSectionOver(event: DragEvent, target: ResearchOutlineSection): void {
+    if (
+      !this.draggedSection ||
+      this.draggedSection.id === target.id ||
+      this.draggedSection.parentSectionId !== target.parentSectionId
+    )
+      return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.dropTargetSectionId = target.id;
+    this.dropAfterTarget = event.clientY >= bounds.top + bounds.height / 2;
+  }
+
+  dropSection(event: DragEvent, project: ResearchProject, target: ResearchOutlineSection): void {
+    event.preventDefault();
+    const dragged = this.draggedSection;
+    if (
+      !dragged ||
+      dragged.parentSectionId !== target.parentSectionId ||
+      dragged.id === target.id
+    ) {
+      this.finishSectionDrag();
+      return;
+    }
+    const siblings = target.parentSectionId
+      ? this.children(project, target.parentSectionId)
+      : this.roots(project);
+    const reordered = siblings.filter((section) => section.id !== dragged.id);
+    const targetIndex = reordered.findIndex((section) => section.id === target.id);
+    reordered.splice(targetIndex + (this.dropAfterTarget ? 1 : 0), 0, dragged);
+    this.finishSectionDrag();
+    if (siblings.every((section, index) => section.id === reordered[index]?.id)) return;
+    this.saveSectionOrder(project, target.parentSectionId, reordered);
+  }
+
+  finishSectionDrag(): void {
+    this.draggedSection = null;
+    this.dropTargetSectionId = null;
+    this.dropAfterTarget = false;
+  }
+
+  private saveSectionOrder(
+    project: ResearchProject,
+    parentSectionId: string | null,
+    sections: ResearchOutlineSection[],
+  ): void {
+    this.api
+      .reorderOutlineSections(
+        project.id,
+        parentSectionId,
+        sections.map((section) => section.id),
+      )
+      .subscribe({
+        next: () => this.refresh$.next(),
+        error: () => (this.error = 'No se pudo reordenar el índice.'),
       });
   }
 
@@ -232,6 +377,68 @@ export class ResearchProjectComponent implements OnDestroy {
     this.api.updateOutlineSection(project.id, section.id, { status }).subscribe({
       next: () => this.refresh$.next(),
       error: () => (this.error = 'No se pudo actualizar el estado.'),
+    });
+  }
+
+  saveSectionTitle(
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+    input: HTMLInputElement,
+  ): void {
+    const title = input.value.trim();
+    if (!title) {
+      input.value = section.title;
+      return;
+    }
+    if (title === section.title) return;
+    this.api.updateOutlineSection(project.id, section.id, { title }).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => {
+        input.value = section.title;
+        this.error = 'No se pudo actualizar el título de la Section.';
+      },
+    });
+  }
+
+  formatDraft(
+    editor: RichTextComponent,
+    format: 'heading' | 'bold' | 'italic' | 'bullet-list' | 'number-list' | 'quote' | 'link',
+  ): void {
+    editor.format(format);
+  }
+
+  handleDraftShortcut(event: KeyboardEvent, editor: RichTextComponent): void {
+    if (!(event.ctrlKey || event.metaKey)) return;
+    const format =
+      event.key.toLowerCase() === 'b' ? 'bold' : event.key.toLowerCase() === 'i' ? 'italic' : null;
+    if (!format) return;
+    event.preventDefault();
+    this.formatDraft(editor, format);
+  }
+
+  activeDraft(section: ResearchOutlineSection): ResearchDraft | null {
+    return section.drafts[0] ?? null;
+  }
+
+  saveDraft(project: ResearchProject, section: ResearchOutlineSection): void {
+    if (this.savingDraft || this.draftContent === this.savedDraftContent) return;
+    const draft = this.activeDraft(section);
+    this.savingDraft = true;
+    this.draftMessage = '';
+    const request = draft
+      ? this.api.reviseDraft(project.id, draft.id, this.draftContent)
+      : this.api.createDraft(project.id, section.id, this.draftContent);
+    request.subscribe({
+      next: (saved) => {
+        this.savingDraft = false;
+        this.savedDraftContent = saved.currentRevision?.content ?? '';
+        this.draftMessage = draft ? 'Revisión guardada.' : 'Borrador creado.';
+        this.refresh$.next();
+      },
+      error: () => {
+        this.savingDraft = false;
+        this.draftMessage = 'No se pudo guardar el borrador.';
+      },
     });
   }
 
@@ -265,6 +472,62 @@ export class ResearchProjectComponent implements OnDestroy {
         this.refresh$.next();
       },
       error: () => (this.error = 'No se pudo añadir la pregunta.'),
+    });
+  }
+
+  availableSectionMaterials(
+    libraryMaterials: LibraryMaterial[],
+    section: ResearchOutlineSection,
+  ): LibraryMaterial[] {
+    const selected = new Set(section.materialReferences.map((item) => item.materialVersionId));
+    return libraryMaterials.filter(
+      (material) => material.version && !selected.has(material.version.id),
+    );
+  }
+
+  addSectionMaterial(
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+    libraryMaterials: LibraryMaterial[],
+  ): void {
+    if (!this.selectedSectionMaterialVersionId) return;
+    const materialVersionId = this.selectedSectionMaterialVersionId;
+    const material = libraryMaterials.find((item) => item.version?.id === materialVersionId);
+    if (!material) return;
+    const alreadyInResearch = project.materials.some((item) => item.id === material.id);
+    const request = alreadyInResearch
+      ? this.api.addOutlineSectionMaterial(project.id, section.id, materialVersionId)
+      : this.api
+          .associateLibraryMaterial(project.id, material.id)
+          .pipe(
+            switchMap(() =>
+              this.api.addOutlineSectionMaterial(project.id, section.id, materialVersionId),
+            ),
+          );
+    request.subscribe({
+      next: () => {
+        this.selectedSectionMaterialVersionId = '';
+        this.refresh$.next();
+      },
+      error: () => (this.error = 'No se pudo añadir el material a esta Section.'),
+    });
+  }
+
+  sectionMaterialExcerptCount(section: ResearchOutlineSection): number {
+    return section.materialReferences.reduce(
+      (count, reference) => count + reference.materialVersion.excerpts.length,
+      0,
+    );
+  }
+
+  removeSectionMaterial(
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+    materialVersionId: string,
+  ): void {
+    this.api.removeOutlineSectionMaterial(project.id, section.id, materialVersionId).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => (this.error = 'No se pudo retirar el material de esta Section.'),
     });
   }
 
@@ -525,6 +788,11 @@ export class ResearchProjectComponent implements OnDestroy {
     this.workspaceNotes = section.notes ?? '';
     this.savedObjective = this.workspaceObjective;
     this.savedNotes = this.workspaceNotes;
+    this.draftContent = section.drafts[0]?.currentRevision?.content ?? '';
+    this.draftEditorContent = this.draftContent;
+    this.savedDraftContent = this.draftContent;
+    this.draftMessage = '';
+    this.selectedSectionMaterialVersionId = '';
     this.questionText = '';
     this.reviewExcerpt = null;
   }

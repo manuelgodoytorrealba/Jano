@@ -9,6 +9,7 @@ import { ResearchAIService } from './research-ai.service';
 import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchService } from './research.service';
 import { ResearchOutlineService } from './research-outline.service';
+import { ResearchDraftService } from './research-draft.service';
 
 import { ResearchOwnerGuard } from './research-owner.guard';
 @Module({
@@ -17,6 +18,7 @@ import { ResearchOwnerGuard } from './research-owner.guard';
   providers: [
     ResearchOwnerGuard,
     ResearchOutlineService,
+    ResearchDraftService,
     ResearchService,
     ResearchJobRunnerService,
     ResearchAIService,

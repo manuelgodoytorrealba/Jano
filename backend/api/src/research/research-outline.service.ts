@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ResearchOutlineSectionStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
 import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outline-sections.dto';
@@ -8,6 +7,7 @@ import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-s
 import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
 import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
 import { AddResearchOutlineSectionExcerptDto } from './dto/add-research-outline-section-excerpt.dto';
+import { AddResearchOutlineSectionMaterialDto } from './dto/add-research-outline-section-material.dto';
 
 @Injectable()
 export class ResearchOutlineService {
@@ -56,6 +56,11 @@ export class ResearchOutlineService {
         ...(dto.notes !== undefined ? { notes: dto.notes.trim() || null } : {}),
       },
     });
+  }
+
+  async delete(projectId: string, sectionId: string) {
+    const section = await this.requireSection(projectId, sectionId);
+    return this.prisma.researchOutlineSection.delete({ where: { id: section.id } });
   }
 
   async reorder(projectId: string, dto: ReorderResearchOutlineSectionsDto) {
@@ -192,6 +197,44 @@ export class ResearchOutlineService {
     if (!reference) throw new NotFoundException('Research outline section excerpt not found');
     await this.prisma.researchOutlineSectionExcerpt.delete({
       where: { sectionId_libraryExcerptId: { sectionId, libraryExcerptId } },
+    });
+  }
+
+  async addMaterial(
+    projectId: string,
+    sectionId: string,
+    dto: AddResearchOutlineSectionMaterialDto,
+  ) {
+    const materialVersionId = dto.materialVersionId.trim();
+    await this.requireSection(projectId, sectionId);
+    const version = await this.prisma.libraryMaterialVersion.findFirst({
+      where: { id: materialVersionId, material: { research: { some: { projectId } } } },
+      select: { id: true },
+    });
+    if (!version) throw new NotFoundException('Library material version not found');
+    const existing = await this.prisma.researchOutlineSectionMaterial.findUnique({
+      where: { sectionId_materialVersionId: { sectionId, materialVersionId } },
+      select: { sectionId: true },
+    });
+    if (existing) return;
+    const last = await this.prisma.researchOutlineSectionMaterial.aggregate({
+      where: { sectionId },
+      _max: { sortOrder: true },
+    });
+    await this.prisma.researchOutlineSectionMaterial.create({
+      data: { sectionId, materialVersionId, sortOrder: (last._max.sortOrder ?? -1) + 1 },
+    });
+  }
+
+  async removeMaterial(projectId: string, sectionId: string, materialVersionId: string) {
+    await this.requireSection(projectId, sectionId);
+    const reference = await this.prisma.researchOutlineSectionMaterial.findUnique({
+      where: { sectionId_materialVersionId: { sectionId, materialVersionId } },
+      select: { sectionId: true },
+    });
+    if (!reference) throw new NotFoundException('Research outline section material not found');
+    await this.prisma.researchOutlineSectionMaterial.delete({
+      where: { sectionId_materialVersionId: { sectionId, materialVersionId } },
     });
   }
 

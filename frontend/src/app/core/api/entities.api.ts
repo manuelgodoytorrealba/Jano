@@ -53,6 +53,10 @@ export class EntitiesApi {
     return this.http.get<PublicEntityListResponse>(apiUrl('/entities'), { params: clean });
   }
 
+  adminList(params: EntitiesListParams) {
+    return this.http.get<PublicEntityListResponse>(apiUrl('/entities/admin'), { params });
+  }
+
   institutions() {
     return this.http.get<string[]>(apiUrl('/entities/institutions'));
   }

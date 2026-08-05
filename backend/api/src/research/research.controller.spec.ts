@@ -3,6 +3,7 @@ import { ROLES_KEY } from '../auth/roles.decorator';
 import { ResearchController } from './research.controller';
 import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchService } from './research.service';
+import { ResearchDraftService } from './research-draft.service';
 
 describe('ResearchController', () => {
   const service = {
@@ -26,11 +27,15 @@ describe('ResearchController', () => {
   const jobRunner = {
     runNextQueuedJob: jest.fn(),
   } as unknown as jest.Mocked<ResearchJobRunnerService>;
+  const drafts = {
+    create: jest.fn(),
+    revise: jest.fn(),
+  } as unknown as jest.Mocked<ResearchDraftService>;
   let controller: ResearchController;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    controller = new ResearchController(service, jobRunner);
+    controller = new ResearchController(service, jobRunner, drafts);
   });
 
   it('is admin-only', () => {
