@@ -15,98 +15,100 @@
         </div>
       </div>
 
-      @if (!isEdit) {
-        <div class="admin-sidebar__create-hint">
-          Completa título, slug y contenido inicial. Guarda la entidad para desbloquear media,
-          relaciones, fuentes y colaboradores.
-        </div>
-      }
-
-      <nav class="admin-dashboard-nav">
-        @for (section of isEdit ? navItems : navItems.slice(0, 2); track section.id) {
-          <button
-            type="button"
-            class="admin-dashboard-nav__item"
-            [class.is-active]="section.isActive"
-            [attr.aria-current]="section.isActive ? 'location' : null"
-            (click)="selectSection.emit(section.id)"
-          >
-            <span class="admin-dashboard-nav__item-main">
-              <span class="admin-dashboard-nav__item-label">
-                {{ section.label }}
-              </span>
-
-              @if (section.count) {
-                <span class="admin-dashboard-nav__item-count">
-                  {{ section.count }}
-                </span>
-              }
-            </span>
-
-            <span class="admin-dashboard-nav__item-meta">
-              <span>{{ section.meta }}</span>
-
-              @if (section.statusLabel) {
-                <span [class]="section.statusClass">
-                  {{ section.statusLabel }}
-                </span>
-              }
-            </span>
-          </button>
+      <div class="admin-sidebar__scroll">
+        @if (!isEdit) {
+          <div class="admin-sidebar__create-hint">
+            Completa título, slug y contenido inicial. Guarda la entidad para desbloquear media,
+            relaciones, fuentes y colaboradores.
+          </div>
         }
-      </nav>
 
-      <div class="admin-sidebar__summary">
-        <span class="admin-sidebar__eyebrow"> Pieza editorial </span>
+        <nav class="admin-dashboard-nav">
+          @for (section of isEdit ? navItems : navItems.slice(0, 2); track section.id) {
+            <button
+              type="button"
+              class="admin-dashboard-nav__item"
+              [class.is-active]="section.isActive"
+              [attr.aria-current]="section.isActive ? 'location' : null"
+              (click)="selectSection.emit(section.id)"
+            >
+              <span class="admin-dashboard-nav__item-main">
+                <span class="admin-dashboard-nav__item-label">
+                  {{ section.label }}
+                </span>
 
-        <h2 class="admin-sidebar__title">
-          {{ title || (isEdit ? 'Entity sin título' : 'Nueva entidad') }}
-        </h2>
-
-        <span [class]="saveStatusClass">
-          {{ saveStatusLabel }}
-        </span>
-
-        @if (isEdit) {
-          <section
-            class="admin-discovery-card"
-            [class.admin-discovery-card--strong]="discoverabilityTone === 'strong'"
-            [class.admin-discovery-card--partial]="discoverabilityTone === 'partial'"
-          >
-            <div class="admin-discovery-card__head">
-              <span class="admin-discovery-card__eyebrow"> Search discoverability </span>
-
-              <span class="admin-discovery-card__score">
-                {{ discoverabilityScoreLabel }}
-              </span>
-            </div>
-
-            <p class="admin-discovery-card__summary">
-              {{ discoverabilitySummary }}
-            </p>
-
-            <div class="admin-discovery-card__list">
-              @for (item of discoverabilityItems.slice(0, 3); track item.label) {
-                <div class="admin-discovery-card__item" [class.is-done]="item.done">
-                  <span class="admin-discovery-card__mark">
-                    {{ item.done ? 'OK' : 'TODO' }}
+                @if (section.count) {
+                  <span class="admin-dashboard-nav__item-count">
+                    {{ section.count }}
                   </span>
+                }
+              </span>
 
-                  <div class="admin-discovery-card__copy">
-                    <strong>{{ item.label }}</strong>
-                    <span>{{ item.detail }}</span>
+              <span class="admin-dashboard-nav__item-meta">
+                <span>{{ section.meta }}</span>
+
+                @if (section.statusLabel) {
+                  <span [class]="section.statusClass">
+                    {{ section.statusLabel }}
+                  </span>
+                }
+              </span>
+            </button>
+          }
+        </nav>
+
+        <div class="admin-sidebar__summary">
+          <span class="admin-sidebar__eyebrow"> Pieza editorial </span>
+
+          <h2 class="admin-sidebar__title">
+            {{ title || (isEdit ? 'Entity sin título' : 'Nueva entidad') }}
+          </h2>
+
+          <span [class]="saveStatusClass">
+            {{ saveStatusLabel }}
+          </span>
+
+          @if (isEdit) {
+            <section
+              class="admin-discovery-card"
+              [class.admin-discovery-card--strong]="discoverabilityTone === 'strong'"
+              [class.admin-discovery-card--partial]="discoverabilityTone === 'partial'"
+            >
+              <div class="admin-discovery-card__head">
+                <span class="admin-discovery-card__eyebrow"> Search discoverability </span>
+
+                <span class="admin-discovery-card__score">
+                  {{ discoverabilityScoreLabel }}
+                </span>
+              </div>
+
+              <p class="admin-discovery-card__summary">
+                {{ discoverabilitySummary }}
+              </p>
+
+              <div class="admin-discovery-card__list">
+                @for (item of discoverabilityItems.slice(0, 3); track item.label) {
+                  <div class="admin-discovery-card__item" [class.is-done]="item.done">
+                    <span class="admin-discovery-card__mark">
+                      {{ item.done ? 'OK' : 'TODO' }}
+                    </span>
+
+                    <div class="admin-discovery-card__copy">
+                      <strong>{{ item.label }}</strong>
+                      <span>{{ item.detail }}</span>
+                    </div>
                   </div>
+                }
+              </div>
+
+              @if (publishWarning) {
+                <div class="admin-discovery-card__warning">
+                  {{ publishWarning }}
                 </div>
               }
-            </div>
-
-            @if (publishWarning) {
-              <div class="admin-discovery-card__warning">
-                {{ publishWarning }}
-              </div>
-            }
-          </section>
-        }
+            </section>
+          }
+        </div>
       </div>
 
       <div class="admin-sidebar__actions">

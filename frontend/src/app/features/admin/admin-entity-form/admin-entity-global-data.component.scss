@@ -8,8 +8,8 @@
   overflow: visible;
   scroll-margin-top: 96px;
   background:
-    radial-gradient(circle at 88% 0%, rgba(143, 110, 213, 0.12), transparent 30%),
-    color-mix(in srgb, var(--color-surface) 90%, transparent);
+    radial-gradient(circle at 88% 0%, var(--color-reference-accent-soft), transparent 30%),
+    var(--entity-editor-panel-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
 }
@@ -51,7 +51,7 @@
 
 .editorial-eyebrow {
   margin: 0 0 7px;
-  color: #9d78e6;
+  color: var(--entity-editor-accent);
   font-size: 11px;
   font-weight: 750;
   letter-spacing: 0.16em;
@@ -134,7 +134,7 @@ app-admin-entity-details-editor {
 
 .editorial-inspector summary::after {
   content: '+';
-  color: #9d78e6;
+  color: var(--entity-editor-accent);
   font-size: 17px;
 }
 
@@ -170,8 +170,8 @@ app-admin-entity-details-editor {
   border-top: 0;
   border-radius: 0 0 18px 18px;
   background:
-    radial-gradient(circle at 90% 0%, rgba(143, 110, 213, 0.12), transparent 28%),
-    color-mix(in srgb, var(--color-surface) 96%, transparent);
+    radial-gradient(circle at 90% 0%, var(--color-reference-accent-soft), transparent 28%),
+    var(--entity-editor-panel-bg);
   box-shadow: 0 26px 64px rgba(12, 10, 18, 0.2);
   backdrop-filter: blur(22px) saturate(1.16);
 }

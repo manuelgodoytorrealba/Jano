@@ -20,35 +20,34 @@
   display: grid;
   width: var(--editor-sidebar-width, 300px);
   box-sizing: border-box;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 16px;
   align-self: start;
   max-height: calc(var(--app-content-height) - 36px);
 
   overflow: hidden;
 
-  border: 1px solid rgba(255, 255, 255, 0.48);
+  border: 1px solid var(--entity-editor-glass-border);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(252, 251, 248, 0.98), rgba(242, 239, 233, 0.96));
-
-  box-shadow:
-    0 22px 54px rgba(25, 20, 14, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  background: var(--entity-editor-glass-bg);
+  box-shadow: var(--entity-editor-shadow);
+  color: var(--color-text);
 
   padding: 18px;
   backdrop-filter: blur(18px);
 }
 
 .admin-sidebar__create-hint {
+  margin-bottom: 14px;
   padding: 12px;
   border-radius: 14px;
 
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-control-bg);
 
   font-size: 12px;
   line-height: 1.45;
-  color: #5d554d;
+  color: var(--color-text-muted);
 }
 
 .admin-sidebar__toolhead {
@@ -57,7 +56,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 2px 2px 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--entity-editor-control-border);
 }
 
 .admin-sidebar__tooltitle {
@@ -65,7 +64,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #6f665e;
+  color: var(--color-text-muted);
 }
 
 .admin-sidebar__toolbar {
@@ -83,14 +82,14 @@
   min-height: 34px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.82);
-  color: #38322d;
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-control-bg);
+  color: var(--color-text-soft);
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition:
     transform 0.14s ease,
     border-color 0.14s ease,
@@ -100,23 +99,26 @@
 
 .admin-sidebar__control:hover {
   transform: translateY(-1px);
-  border-color: rgba(0, 0, 0, 0.14);
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 10px 22px rgba(20, 18, 16, 0.08);
+  border-color: var(--color-border-strong);
+  background: color-mix(in srgb, var(--entity-editor-control-bg) 76%, var(--color-text) 8%);
+  box-shadow: 0 10px 22px rgba(10, 12, 18, 0.1);
 }
 
 .admin-sidebar__control--quiet {
-  color: #625a53;
+  color: var(--color-text-muted);
+}
+
+.admin-sidebar__scroll {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
 }
 
 .admin-dashboard-nav {
   display: grid;
   gap: 6px;
-
-  min-height: 0;
-
-  overflow-y: auto;
-  overflow-x: hidden;
 
   padding-right: 2px;
 }
@@ -125,9 +127,9 @@
   text-align: left;
   padding: 8px 10px;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.72);
-  color: #2a2a2a;
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-control-bg);
+  color: var(--color-text);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -139,7 +141,7 @@
     box-shadow 0.14s ease;
   display: grid;
   gap: 7px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .admin-dashboard-nav__item-main,
@@ -157,7 +159,7 @@
 
 .admin-dashboard-nav__item-meta {
   font-size: 12px;
-  color: #6f6a65;
+  color: var(--color-text-muted);
   align-items: start;
   line-height: 1.34;
 }
@@ -172,48 +174,49 @@
   text-align: center;
   padding: 5px 9px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-control-bg);
   white-space: nowrap;
 }
 
 .admin-dashboard-nav__item:hover {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(0, 0, 0, 0.14);
+  background: color-mix(in srgb, var(--entity-editor-control-bg) 76%, var(--color-text) 8%);
+  border-color: var(--color-border-strong);
   transform: translateX(2px);
   box-shadow: 0 8px 18px rgba(20, 18, 16, 0.08);
 }
 
 .admin-dashboard-nav__item.is-active {
-  background: linear-gradient(180deg, rgba(24, 24, 24, 0.98), rgba(12, 12, 12, 0.96));
-  color: #fff;
-  border-color: #111;
+  background: var(--entity-editor-active-bg);
+  color: var(--entity-editor-active-color);
+  border-color: var(--entity-editor-control-border);
   box-shadow: 0 10px 24px rgba(17, 17, 17, 0.14);
 }
 
 .admin-dashboard-nav__item.is-active .admin-dashboard-nav__item-meta {
-  color: rgba(255, 255, 255, 0.72);
+  color: color-mix(in srgb, var(--entity-editor-active-color) 72%, transparent);
 }
 
 .admin-dashboard-nav__item.is-active .admin-dashboard-nav__item-count {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.18);
-  color: #fff;
+  color: var(--entity-editor-active-color);
 }
 
 .admin-sidebar__summary {
   display: grid;
   gap: 10px;
   padding: 12px 2px 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  color: #171717;
+  margin-top: 14px;
+  border-top: 1px solid var(--entity-editor-control-border);
+  color: var(--color-text);
 }
 
 .admin-sidebar__eyebrow {
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8b7662;
+  color: var(--entity-editor-accent);
   font-weight: 700;
 }
 
@@ -222,16 +225,16 @@
   font-size: 18px;
   line-height: 1.12;
   letter-spacing: -0.02em;
-  color: #171717;
+  color: var(--color-text);
 }
 
 .entity-save-status {
   justify-self: start;
   padding: 7px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.68);
-  color: #5d554d;
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-control-bg);
+  color: var(--color-text-muted);
   font-size: 12px;
   font-weight: 750;
 }
@@ -259,8 +262,8 @@
   gap: 12px;
   padding: 14px;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-control-bg);
 }
 
 .admin-discovery-card--strong {
@@ -284,19 +287,19 @@
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8b7662;
+  color: var(--entity-editor-accent);
   font-weight: 800;
 }
 
 .admin-discovery-card__score {
   font-size: 12px;
   font-weight: 800;
-  color: #3f3933;
+  color: var(--color-text-soft);
 }
 
 .admin-discovery-card__summary {
   margin: 0;
-  color: #5d554d;
+  color: var(--color-text-muted);
   font-size: 13px;
   line-height: 1.45;
 }
@@ -323,9 +326,9 @@
   min-width: 48px;
   padding: 4px 8px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.72);
-  color: #8b7662;
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-control-bg);
+  color: var(--color-text-muted);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -340,12 +343,12 @@
 
 .admin-discovery-card__copy strong {
   font-size: 12px;
-  color: #28231f;
+  color: var(--color-text);
 }
 
 .admin-discovery-card__copy span {
   font-size: 12px;
-  color: #6b635b;
+  color: var(--color-text-muted);
   line-height: 1.35;
 }
 
@@ -371,7 +374,7 @@
 
   padding-top: 12px;
 
-  background: linear-gradient(180deg, rgba(242, 239, 233, 0), rgba(242, 239, 233, 1) 40%);
+  background: transparent;
 }
 
 .admin-sidebar__action {
@@ -381,7 +384,7 @@
   justify-content: center;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--entity-editor-control-border);
   font-size: 12px;
   font-weight: 750;
   text-decoration: none;
@@ -404,9 +407,9 @@
 }
 
 .admin-sidebar__action--primary {
-  background: #111;
-  border-color: #111;
-  color: #fff;
+  background: var(--entity-editor-active-bg);
+  border-color: var(--entity-editor-control-border);
+  color: var(--entity-editor-active-color);
   box-shadow: 0 12px 26px rgba(17, 17, 17, 0.16);
 }
 

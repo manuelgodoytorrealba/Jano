@@ -5,12 +5,11 @@
   display: grid;
   gap: 16px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.46);
+  border: 1px solid var(--entity-editor-glass-border);
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(245, 242, 236, 0.58));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    0 14px 34px rgba(22, 18, 14, 0.06);
+  background: var(--entity-editor-panel-bg);
+  box-shadow: var(--entity-editor-shadow);
+  color: var(--color-text);
   backdrop-filter: blur(18px) saturate(1.06);
 }
 
@@ -20,7 +19,7 @@
   justify-content: center;
   gap: 14px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--entity-editor-control-border);
   text-align: center;
 }
 
@@ -32,10 +31,10 @@
 
 .admin-dashboard-panel__pill {
   padding: 7px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--entity-editor-control-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #6a625d;
+  background: var(--entity-editor-control-bg);
+  color: var(--color-text-muted);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -63,9 +62,9 @@
   display: grid;
   gap: 14px;
   padding: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--entity-editor-control-border);
   border-radius: 16px;
-  background: #fff;
+  background: var(--entity-editor-control-bg);
 }
 
 .relations-actions,

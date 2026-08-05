@@ -4,7 +4,7 @@
 
 .muted {
   margin: 6px 0 0;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .field {
@@ -25,11 +25,11 @@
 input,
 select,
 textarea {
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--entity-editor-control-border);
   border-radius: 12px;
   padding: 12px;
-  background: #fff;
-  color: #15120f;
+  background: var(--entity-editor-control-bg);
+  color: var(--color-text);
   font: inherit;
   outline: none;
 }
@@ -39,7 +39,7 @@ textarea {
 }
 
 .hint {
-  color: #777;
+  color: var(--color-text-muted);
   font-size: 12px;
 }
 
@@ -48,18 +48,18 @@ textarea {
   align-items: center;
   height: 40px;
   padding: 0 14px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--entity-editor-control-border);
   border-radius: 12px;
-  background: #fff;
-  color: #111;
+  background: var(--entity-editor-control-bg);
+  color: var(--color-text);
   cursor: pointer;
   text-decoration: none;
 }
 
 .btn.primary {
-  border-color: #111;
-  background: #111;
-  color: #fff;
+  border-color: var(--entity-editor-control-border);
+  background: var(--entity-editor-active-bg);
+  color: var(--entity-editor-active-color);
 }
 
 .btn.danger {
@@ -73,10 +73,4 @@ textarea {
 
 .error-text {
   color: #9f2f2f;
-}
-
-:host-context([data-theme='dark']) input,
-:host-context([data-theme='dark']) select,
-:host-context([data-theme='dark']) textarea {
-  color: #201d19;
 }

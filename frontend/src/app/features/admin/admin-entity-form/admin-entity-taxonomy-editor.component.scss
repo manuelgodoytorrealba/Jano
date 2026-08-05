@@ -30,7 +30,7 @@
 }
 
 .tag-chip--classification {
-  border-color: rgba(168, 112, 255, 0.45);
+  border-color: color-mix(in srgb, var(--entity-editor-accent) 45%, transparent);
 }
 
 .tag-chip--alias {

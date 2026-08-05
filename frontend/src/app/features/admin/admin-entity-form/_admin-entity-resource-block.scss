@@ -3,8 +3,8 @@
   padding: 24px;
   scroll-margin-top: 96px;
   background:
-    radial-gradient(circle at 90% 0%, rgba(143, 110, 213, 0.1), transparent 28%),
-    color-mix(in srgb, var(--color-surface) 90%, transparent);
+    radial-gradient(circle at 90% 0%, var(--color-reference-accent-soft), transparent 28%),
+    var(--entity-editor-panel-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
 }
@@ -24,7 +24,7 @@
 
 .resource-block__eyebrow {
   margin: 0 0 7px;
-  color: #9d78e6;
+  color: var(--entity-editor-accent);
   font-size: 11px;
   font-weight: 750;
   letter-spacing: 0.16em;
@@ -83,7 +83,7 @@
 
 .resource-composer > summary::after {
   content: '+';
-  color: #9d78e6;
+  color: var(--entity-editor-accent);
   font-size: 19px;
 }
 
