@@ -11,6 +11,8 @@ export type UploadedResearchPdf = {
   size: number;
 };
 
+export const RESEARCH_PDF_MAX_SIZE_BYTES = 300 * 1024 * 1024;
+
 export const RESEARCH_PDF_UPLOAD_OPTIONS = {
   storage: diskStorage({
     destination: (
@@ -42,5 +44,5 @@ export const RESEARCH_PDF_UPLOAD_OPTIONS = {
     }
     callback(null, true);
   },
-  limits: { fileSize: 25 * 1024 * 1024 },
+  limits: { fileSize: RESEARCH_PDF_MAX_SIZE_BYTES },
 };

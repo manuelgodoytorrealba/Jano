@@ -48,7 +48,7 @@
                   />
                 } @else {
                   <label class="research-project__pdf-input">
-                    <span>{{ materialPdf?.name || 'Seleccionar PDF · máximo 25 MB' }}</span>
+                    <span>{{ materialPdf?.name || 'Seleccionar PDF · máximo 300 MB' }}</span>
                     <input type="file" accept="application/pdf,.pdf" (change)="selectPdf($event)" />
                   </label>
                   <p class="research-project__material-limit">

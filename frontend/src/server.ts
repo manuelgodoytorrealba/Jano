@@ -112,7 +112,7 @@ function hasFingerprint(assetPath: string): boolean {
   return /-[A-Z0-9]{6,}\.(?:js|mjs|css|woff2?|png|jpg|jpeg|webp|avif|svg)$/i.test(assetPath);
 }
 
-app.use(['/api', '/uploads'], express.raw({ type: '*/*', limit: '25mb' }));
+app.use(['/api', '/uploads'], express.raw({ type: '*/*', limit: '300mb' }));
 
 app.use(['/api', '/uploads'], (req, res, next) => {
   void (async () => {
