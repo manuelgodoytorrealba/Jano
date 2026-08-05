@@ -1,20 +1,42 @@
-<form class="research-excerpt" (ngSubmit)="save()">
-  <p>Extracto documental</p>
-  <div>
-    <input name="excerptLocator" [(ngModel)]="locator" placeholder="Localizador · párrafo 3" />
-    <button type="submit" [disabled]="busy || !locator.trim() || !text.trim()">
-      {{ busy ? 'Guardando…' : 'Registrar extracto' }}
+<aside class="research-excerpt" aria-label="Nuevo Library Excerpt">
+  <header>
+    <div>
+      <p>Library</p>
+      <h3>Nuevo extracto</h3>
+    </div>
+    <button
+      type="button"
+      class="research-excerpt__close"
+      (click)="cancelled.emit()"
+      aria-label="Cerrar"
+    >
+      ×
     </button>
-  </div>
-  <textarea
-    name="excerptText"
-    [(ngModel)]="text"
-    placeholder="Transcribe el pasaje verificable"
-  ></textarea>
-  @if (saved) {
-    <span>Extracto registrado en Library.</span>
-  }
-  @if (error) {
-    <span class="research-excerpt__error">{{ error }}</span>
-  }
-</form>
+  </header>
+
+  <form (ngSubmit)="save()">
+    <label>
+      <span>Fuente</span>
+      <output>{{ sourceTitle }}</output>
+    </label>
+    <label>
+      <span>Localizador</span>
+      <input name="excerptLocator" [(ngModel)]="locator" placeholder="Posición verificable" />
+    </label>
+    <label>
+      <span>Cita</span>
+      <textarea name="excerptText" [(ngModel)]="text" placeholder="Pasaje verificable"></textarea>
+    </label>
+    @if (error) {
+      <span class="research-excerpt__error">{{ error }}</span>
+    }
+    <footer>
+      <button type="button" class="research-excerpt__cancel" (click)="cancelled.emit()">
+        Cancelar
+      </button>
+      <button type="submit" [disabled]="busy || !locator.trim() || !text.trim()">
+        {{ busy ? 'Guardando…' : 'Guardar extracto' }}
+      </button>
+    </footer>
+  </form>
+</aside>

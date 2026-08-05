@@ -43,12 +43,38 @@
               {{ fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa' }}
             </button>
           </header>
-          <div class="research-reader__content">{{ material.content }}</div>
-          <app-research-excerpt-capture
-            [researchId]="researchId"
-            [materialVersionId]="material.materialVersionId"
-            (created)="onExcerptCreated($event, material)"
-          />
+          <p class="research-reader__selection-hint">
+            Selecciona un pasaje para convertirlo en extracto documental.
+          </p>
+          <div
+            class="research-reader__content"
+            #documentContent
+            [textContent]="material.content"
+            (mouseup)="captureSelection(documentContent)"
+          ></div>
+          @if (!excerptComposerOpen) {
+            @if (selectionDraft; as selection) {
+              <aside
+                class="research-reader__selection-action"
+                [style.left.px]="selection.x"
+                [style.top.px]="selection.y"
+                aria-live="polite"
+              >
+                <span>{{ selection.locator }}</span>
+                <button type="button" (click)="openExcerptComposer()">Crear extracto</button>
+              </aside>
+            }
+          }
+          @if (excerptComposerOpen) {
+            <app-research-excerpt-capture
+              [researchId]="researchId"
+              [materialVersionId]="material.materialVersionId"
+              [sourceTitle]="material.title"
+              [selection]="selectionDraft"
+              (cancelled)="cancelExcerptComposer()"
+              (created)="onExcerptCreated($event, material)"
+            />
+          }
         </article>
       }
     </div>

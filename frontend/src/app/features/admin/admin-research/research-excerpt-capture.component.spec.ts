@@ -25,6 +25,7 @@ async function createFixture(api = createApi()) {
   const fixture = TestBed.createComponent(ResearchExcerptCaptureComponent);
   fixture.componentRef.setInput('researchId', 'research-1');
   fixture.componentRef.setInput('materialVersionId', 'version-1');
+  fixture.componentRef.setInput('sourceTitle', 'Cuaderno de lectura');
   fixture.detectChanges();
   await fixture.whenStable();
   return { fixture, api };
@@ -59,5 +60,17 @@ describe('ResearchExcerptCaptureComponent', () => {
 
     expect(api.createLibraryExcerpt).not.toHaveBeenCalled();
     expect(api.createEvidence).not.toHaveBeenCalled();
+  });
+
+  it('prefills the editable fields from a Reader selection', async () => {
+    const { fixture } = await createFixture();
+    fixture.componentRef.setInput('selection', {
+      locator: 'caracteres 4–18',
+      text: 'Pasaje elegido',
+    });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.locator).toBe('caracteres 4–18');
+    expect(fixture.componentInstance.text).toBe('Pasaje elegido');
   });
 });

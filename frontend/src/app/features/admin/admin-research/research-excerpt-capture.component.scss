@@ -1,24 +1,77 @@
 :host {
-  display: block;
+  position: fixed;
+  z-index: 130;
+  top: 120px;
+  right: 108px;
+  bottom: 20px;
+  width: min(430px, calc(100vw - 24px));
 }
 .research-excerpt {
-  border-top: 1px solid var(--research-border-soft);
-  display: grid;
-  gap: 10px;
-  margin-top: 28px;
-  padding-top: 22px;
+  box-sizing: border-box;
+  height: 100%;
+  overflow: auto;
+  border: 1px solid var(--research-border);
+  border-radius: 14px;
+  background: rgba(14, 13, 17, 0.98);
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.42);
+  color: var(--research-text);
+  padding: 26px;
+  scrollbar-width: none;
 }
-.research-excerpt > p {
+:host-context(.app-stage-immersive) {
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+:host-context(.app-stage-immersive) .research-excerpt {
+  border-block: 0;
+  border-right: 0;
+  border-radius: 0;
+}
+.research-excerpt::-webkit-scrollbar {
+  display: none;
+}
+.research-excerpt > header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--research-border-soft);
+  padding-bottom: 20px;
+}
+.research-excerpt header p {
   color: var(--research-accent);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.16em;
-  margin: 0;
+  margin: 0 0 6px;
   text-transform: uppercase;
 }
-.research-excerpt > div {
-  display: flex;
+.research-excerpt h3 {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+}
+.research-excerpt form {
+  display: grid;
+  gap: 20px;
+  padding-top: 24px;
+}
+.research-excerpt label {
+  display: grid;
   gap: 8px;
+}
+.research-excerpt label > span {
+  color: var(--research-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+output {
+  border: 1px solid var(--research-border);
+  border-radius: 10px;
+  color: var(--research-text-soft);
+  padding: 14px;
 }
 input,
 textarea {
@@ -32,7 +85,7 @@ textarea {
   width: 100%;
 }
 textarea {
-  min-height: 96px;
+  min-height: 180px;
   resize: vertical;
 }
 button {
@@ -45,19 +98,39 @@ button {
   padding: 8px 10px;
   white-space: nowrap;
 }
+.research-excerpt__close,
+.research-excerpt__cancel {
+  border: 1px solid var(--research-border);
+  background: transparent;
+  color: var(--research-text-soft);
+}
+.research-excerpt__close {
+  min-width: 34px;
+  padding: 6px;
+}
 button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
-span {
-  color: var(--research-text-muted);
-  font-size: 13px;
+.research-excerpt footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid var(--research-border-soft);
+  margin-top: 4px;
+  padding-top: 20px;
 }
 .research-excerpt__error {
   color: #d97757;
+  font-size: 13px;
 }
 @media (max-width: 640px) {
-  .research-excerpt > div {
-    display: grid;
+  :host {
+    top: 12px;
+    right: 12px;
+    bottom: 12px;
+  }
+  .research-excerpt {
+    padding: 20px;
   }
 }

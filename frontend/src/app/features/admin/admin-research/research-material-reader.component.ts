@@ -48,6 +48,8 @@ export class ResearchMaterialReaderComponent {
 
   focusedExcerpt: ResearchLibraryExcerpt | null = null;
   fullscreen = false;
+  excerptComposerOpen = false;
+  selectionDraft: { locator: string; text: string; x: number; y: number } | null = null;
 
   get textMaterials(): ResearchDocument[] {
     return this.materials.filter(
@@ -73,6 +75,42 @@ export class ResearchMaterialReaderComponent {
 
   selectMaterial(materialId: string): void {
     this.selectedMaterialId = materialId;
+    this.clearSelection();
+  }
+
+  captureSelection(content: HTMLElement): void {
+    const selection = this.document.getSelection();
+    if (!selection?.rangeCount || selection.isCollapsed) return;
+    const range = selection.getRangeAt(0);
+    if (!content.contains(range.startContainer) || !content.contains(range.endContainer)) return;
+
+    const rawText = range.toString();
+    const text = rawText.trim();
+    if (!text) return;
+    const prefix = range.cloneRange();
+    prefix.selectNodeContents(content);
+    prefix.setEnd(range.startContainer, range.startOffset);
+    const start = prefix.toString().length + rawText.length - rawText.trimStart().length;
+    const end = start + text.length;
+    const rect = range.getBoundingClientRect?.() ?? content.getBoundingClientRect();
+    const view = this.document.defaultView;
+    const width = view?.innerWidth ?? 1280;
+    const height = view?.innerHeight ?? 800;
+    this.selectionDraft = {
+      locator: `caracteres ${start + 1}–${end}`,
+      text,
+      x: Math.max(12, Math.min(rect.left, width - 220)),
+      y: rect.bottom + 58 < height ? rect.bottom + 10 : Math.max(12, rect.top - 48),
+    };
+    this.excerptComposerOpen = false;
+  }
+
+  openExcerptComposer(): void {
+    if (this.selectionDraft) this.excerptComposerOpen = true;
+  }
+
+  cancelExcerptComposer(): void {
+    this.clearSelection();
   }
 
   async toggleFullscreen(): Promise<void> {
@@ -89,7 +127,14 @@ export class ResearchMaterialReaderComponent {
   }
 
   onExcerptCreated(excerpt: ResearchLibraryExcerptReference, material: ResearchDocument): void {
+    this.clearSelection();
     this.excerptCreated.emit({ ...excerpt, sourceId: material.sourceId });
+  }
+
+  private clearSelection(): void {
+    this.excerptComposerOpen = false;
+    this.selectionDraft = null;
+    this.document.getSelection()?.removeAllRanges();
   }
 
   private focusMaterial(): void {

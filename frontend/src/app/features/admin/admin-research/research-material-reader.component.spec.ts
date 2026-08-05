@@ -84,6 +84,36 @@ describe('ResearchMaterialReaderComponent', () => {
     });
   });
 
+  it('prepares a LibraryExcerpt from text selected inside the Reader', async () => {
+    const fixture = await createFixture();
+    const content = fixture.nativeElement.querySelector('.research-reader__content') as HTMLElement;
+    const text = content.firstChild as Text;
+    const range = document.createRange();
+    range.setStart(text, 0);
+    range.setEnd(text, 10);
+    const selection = document.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
+    content.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.selectionDraft).toMatchObject({
+      locator: 'caracteres 1–9',
+      text: 'Un pasaje',
+    });
+    expect(fixture.nativeElement.textContent).toContain('Crear extracto');
+
+    fixture.nativeElement.querySelector('.research-reader__selection-action button').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('textarea').value).toBe('Un pasaje');
+    expect(fixture.nativeElement.textContent).toContain('Cuaderno de lectura');
+    expect(fixture.nativeElement.textContent).toContain('Guardar extracto');
+  });
+
   it('focuses a reviewed excerpt in its source material', async () => {
     const fixture = await createFixture();
     const excerpt: ResearchLibraryExcerpt = {
