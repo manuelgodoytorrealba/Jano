@@ -10,6 +10,7 @@ import {
   ResearchLibraryExcerpt,
   ResearchOutlineSection,
 } from '../../../core/api/research.api';
+import { LibraryApi } from '../../../core/api/library.api';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchProjectComponent } from './research-project.component';
 
@@ -143,6 +144,10 @@ async function createFixture(
     imports: [ResearchProjectComponent],
     providers: [
       { provide: ResearchApi, useValue: api },
+      {
+        provide: LibraryApi,
+        useValue: { delete: vi.fn().mockReturnValue(of({ deleted: true })) },
+      },
       {
         provide: ActivatedRoute,
         useValue: {
@@ -295,8 +300,9 @@ describe('ResearchProjectComponent', () => {
     );
     fixture.detectChanges();
 
-    const action = fixture.nativeElement.querySelector('.research-project__material-menu button');
+    const action = fixture.nativeElement.querySelector('.material-menu button');
     expect(action.textContent).toContain('Quitar de esta investigación');
+    expect(fixture.nativeElement.textContent).toContain('Eliminar de Biblioteca');
     action.click();
 
     expect(api.removeMaterial).toHaveBeenCalledWith(project.id, corpusMaterial.id);

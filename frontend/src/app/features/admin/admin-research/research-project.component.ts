@@ -16,6 +16,8 @@ import {
   ResearchDocument,
   ResearchDocumentKind,
 } from '../../../core/api/research.api';
+import { LibraryApi } from '../../../core/api/library.api';
+import { MaterialContextMenuComponent, MaterialMenuState } from './material-context-menu.component';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
 import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.component';
 import { ResearchGraphComponent } from './research-graph.component';
@@ -37,6 +39,7 @@ const MATERIAL_POLL_INTERVAL_MS = 2000;
     ResearchEvidenceCaptureComponent,
     ResearchGraphComponent,
     ResearchMaterialReaderComponent,
+    MaterialContextMenuComponent,
   ],
   templateUrl: './research-project.component.html',
   styleUrl: './research-project.component.scss',
@@ -44,6 +47,7 @@ const MATERIAL_POLL_INTERVAL_MS = 2000;
 })
 export class ResearchProjectComponent implements OnDestroy {
   private readonly api = inject(ResearchApi);
+  private readonly libraryApi = inject(LibraryApi);
   private readonly document = inject(DOCUMENT);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -77,7 +81,7 @@ export class ResearchProjectComponent implements OnDestroy {
   addingMaterial = false;
   materialMessage = '';
   selectedMaterialId = '';
-  materialMenu: { materialId: string; title: string; x: number; y: number } | null = null;
+  materialMenu: MaterialMenuState | null = null;
   focusMode = false;
   readonly statuses: ResearchOutlineSectionStatus[] = [
     'NOT_STARTED',
@@ -366,6 +370,25 @@ export class ResearchProjectComponent implements OnDestroy {
         this.refresh$.next();
       },
       error: () => (this.error = 'No se pudo retirar el material del corpus.'),
+    });
+  }
+
+  deleteLibraryMaterial(project: ResearchProject, materialId: string, title: string): void {
+    this.materialMenu = null;
+    if (
+      !this.document.defaultView?.confirm(
+        `¿Eliminar “${title}” de Biblioteca? Se quitará también de todas las investigaciones.`,
+      )
+    )
+      return;
+    this.libraryApi.delete(materialId).subscribe({
+      next: () => {
+        if (this.selectedMaterialId === materialId) this.selectedMaterialId = '';
+        this.materialMessage = 'Material eliminado de Biblioteca.';
+        this.refresh$.next();
+      },
+      error: (err) =>
+        (this.error = err?.error?.message ?? 'No se pudo eliminar el material de Biblioteca.'),
     });
   }
 

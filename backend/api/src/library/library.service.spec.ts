@@ -1,15 +1,25 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 import { LibraryMaterialKind, LibraryMaterialVersionStatus } from '@prisma/client';
 import { LibraryService } from './library.service';
 
 describe('LibraryService', () => {
   const tx = {
-    libraryMaterial: { create: jest.fn() },
+    libraryMaterial: { create: jest.fn(), delete: jest.fn() },
     libraryExcerpt: { upsert: jest.fn() },
+    researchLibraryMaterial: { deleteMany: jest.fn() },
   };
-  const service = new LibraryService();
+  const prisma = {
+    libraryMaterial: { findMany: jest.fn(), findUnique: jest.fn() },
+    $transaction: jest.fn(async (callback: (client: typeof tx) => Promise<unknown>) =>
+      callback(tx),
+    ),
+  };
+  const service = new LibraryService(prisma as never);
 
-  beforeEach(() => jest.resetAllMocks());
+  beforeEach(() => {
+    jest.resetAllMocks();
+    prisma.$transaction.mockImplementation(async (callback) => callback(tx));
+  });
 
   it('creates TEXT and URL Materials with their first version', async () => {
     tx.libraryMaterial.create
@@ -128,5 +138,49 @@ describe('LibraryService', () => {
       }),
       update: {},
     });
+  });
+
+  it('lists Library materials once and exposes their Research associations', async () => {
+    prisma.libraryMaterial.findMany.mockResolvedValue([
+      {
+        id: 'material-1',
+        sourceId: null,
+        kind: LibraryMaterialKind.PDF,
+        title: 'Catálogo',
+        createdAt: new Date('2026-08-01'),
+        updatedAt: new Date('2026-08-02'),
+        versions: [{ id: 'version-1', status: LibraryMaterialVersionStatus.READY }],
+        research: [{ project: { id: 'research-1', title: 'Goya' } }],
+      },
+    ]);
+
+    await expect(service.listMaterials()).resolves.toEqual([
+      expect.objectContaining({
+        id: 'material-1',
+        version: expect.objectContaining({ id: 'version-1' }),
+        research: [{ id: 'research-1', title: 'Goya' }],
+      }),
+    ]);
+  });
+
+  it('deletes an unused material and blocks deletion when it supports editorial work', async () => {
+    prisma.libraryMaterial.findUnique.mockResolvedValueOnce({
+      versions: [{ storageKey: null, excerpts: [] }],
+    });
+
+    await expect(service.deleteMaterial('material-1')).resolves.toEqual({ deleted: true });
+    expect(tx.researchLibraryMaterial.deleteMany).toHaveBeenCalledWith({
+      where: { materialId: 'material-1' },
+    });
+    expect(tx.libraryMaterial.delete).toHaveBeenCalledWith({ where: { id: 'material-1' } });
+
+    prisma.libraryMaterial.findUnique.mockResolvedValueOnce({
+      versions: [
+        { storageKey: null, excerpts: [{ _count: { evidence: 1, sectionReferences: 0 } }] },
+      ],
+    });
+    await expect(service.deleteMaterial('material-in-use')).rejects.toBeInstanceOf(
+      ConflictException,
+    );
   });
 });

@@ -541,6 +541,12 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/sources`, data);
   }
 
+  associateLibraryMaterial(projectId: string, materialId: string) {
+    return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/library-materials`, {
+      materialId,
+    });
+  }
+
   createMaterial(projectId: string, data: CreateResearchDocumentPayload) {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/materials`, data);
   }

@@ -62,15 +62,25 @@
       <header class="admin-research__hero">
         <div>
           <p class="admin-research__eyebrow">Research Studio</p>
-          <h1>Investigaciones</h1>
+          <h1>{{ vm.libraryMode ? 'Biblioteca' : 'Investigaciones' }}</h1>
           <p>
-            Tu memoria editorial privada. Reúne las investigaciones activas y vuelve al punto exacto
-            donde estabas pensando.
+            {{
+              vm.libraryMode
+                ? 'Todos los materiales documentales disponibles para reutilizar en tus investigaciones.'
+                : 'Tu memoria editorial privada. Reúne las investigaciones activas y vuelve al punto exacto donde estabas pensando.'
+            }}
           </p>
         </div>
 
         <div class="admin-research__actions">
           <a class="admin-research__btn" routerLink="/admin">Volver al workspace</a>
+          <a class="admin-research__btn" routerLink="/admin/research">Investigaciones</a>
+          <a
+            class="admin-research__btn"
+            routerLink="/admin/research"
+            [queryParams]="{ view: 'library' }"
+            >Biblioteca</a
+          >
           <button
             class="admin-research__btn admin-research__btn--primary"
             type="button"
@@ -86,7 +96,113 @@
         [class.admin-research__layout--detail]="vm.detailMode"
         [class.admin-research__layout--library]="!vm.detailMode"
       >
-        @if (!vm.detailMode) {
+        @if (vm.libraryMode) {
+          <article class="admin-research__panel admin-research__library">
+            <div class="admin-research__panel-head">
+              <div>
+                <p class="admin-research__eyebrow">Corpus documental</p>
+                <h2>Materiales de Biblioteca</h2>
+              </div>
+              <span>{{ vm.libraryMaterials.length }} total</span>
+            </div>
+
+            <div class="admin-research__library-association">
+              <label for="libraryResearch">Asociar materiales a</label>
+              <select id="libraryResearch" name="libraryResearch" [(ngModel)]="libraryProjectId">
+                @for (project of vm.projects; track project.id) {
+                  <option [value]="project.id">{{ project.title }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="admin-research__library-filters" aria-label="Filtros de Biblioteca">
+              <input
+                type="search"
+                name="librarySearch"
+                [(ngModel)]="librarySearch"
+                placeholder="Buscar por título, archivo o URL"
+              />
+              <select name="libraryKind" [(ngModel)]="libraryKind">
+                <option value="">Todos los tipos</option>
+                <option value="TEXT">Texto</option>
+                <option value="URL">URL</option>
+                <option value="PDF">PDF</option>
+              </select>
+              <select name="libraryStatus" [(ngModel)]="libraryStatus">
+                <option value="">Todos los estados</option>
+                <option value="READY">Disponible</option>
+                <option value="PENDING_PREPARATION">Preparando</option>
+                <option value="FAILED">Fallido</option>
+              </select>
+            </div>
+
+            @if (actionFeedback) {
+              <div class="admin-research__feedback admin-research__feedback--success">
+                {{ actionFeedback }}
+              </div>
+            }
+            @if (actionError) {
+              <div class="admin-research__feedback admin-research__feedback--error">
+                {{ actionError }}
+              </div>
+            }
+
+            @if (vm.state === 'error') {
+              <div class="admin-research__state admin-research__state--error">{{ vm.error }}</div>
+            } @else {
+              @let materials = filteredLibraryMaterials(vm.libraryMaterials);
+              @if (materials.length) {
+                <div class="library-materials" role="list">
+                  @for (material of materials; track material.id) {
+                    <article
+                      class="library-material"
+                      role="listitem"
+                      aria-haspopup="menu"
+                      (contextmenu)="openLibraryMaterialMenu($event, material)"
+                    >
+                      <span class="library-material__kind">{{ material.kind }}</span>
+                      <div class="library-material__body">
+                        <strong>{{ material.title }}</strong>
+                        <span>
+                          {{ materialKindLabel(material.kind) }} ·
+                          {{ materialStatusLabel(material.version?.status || '') }}
+                          @if (material.version?.sizeBytes) {
+                            · {{ materialSize(material.version!.sizeBytes) }}
+                          }
+                        </span>
+                        <small>
+                          @if (material.research.length) {
+                            En {{ material.research.length }}
+                            {{
+                              material.research.length === 1 ? 'investigación' : 'investigaciones'
+                            }}:
+                            {{ material.research[0].title }}
+                          } @else {
+                            Sin investigación asociada
+                          }
+                        </small>
+                      </div>
+                      <button
+                        type="button"
+                        [disabled]="
+                          actionBusy || !libraryProjectId || isMaterialAssociated(material)
+                        "
+                        (click)="associateLibraryMaterial(material)"
+                      >
+                        {{ isMaterialAssociated(material) ? 'Ya asociado' : 'Asociar' }}
+                      </button>
+                    </article>
+                  }
+                </div>
+              } @else {
+                <div class="admin-research__state">No hay materiales con esos filtros.</div>
+              }
+            }
+            <p class="admin-research__library-hint">
+              Clic derecho sobre un material para eliminarlo de Biblioteca.
+            </p>
+          </article>
+        } @else if (!vm.detailMode) {
           <article class="admin-research__panel">
             <div class="admin-research__panel-head">
               <div>
@@ -960,5 +1076,13 @@
         }
       </section>
     }
+  }
+  @if (materialMenu; as menu) {
+    <app-material-context-menu
+      [title]="menu.title"
+      [x]="menu.x"
+      [y]="menu.y"
+      (deleteFromLibrary)="deleteLibraryMaterial(menu.materialId, menu.title)"
+    />
   }
 </main>

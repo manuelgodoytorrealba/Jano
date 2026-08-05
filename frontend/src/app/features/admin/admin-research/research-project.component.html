@@ -219,7 +219,11 @@
           }
         </aside>
 
-        <section class="research-project__workspace" aria-live="polite">
+        <section
+          class="research-project__workspace"
+          [class.research-project__workspace--corpus]="vm.mode === 'corpus'"
+          aria-live="polite"
+        >
           @if (vm.mode === 'corpus') {
             <header class="research-project__mode-heading">
               <div>
@@ -762,17 +766,14 @@
         </section>
       </section>
       @if (materialMenu; as menu) {
-        <div
-          class="research-project__material-menu"
-          role="menu"
-          [style.left.px]="menu.x"
-          [style.top.px]="menu.y"
-        >
-          <p>{{ menu.title }}</p>
-          <button type="button" role="menuitem" (click)="removeMaterial(project, menu.materialId)">
-            Quitar de esta investigación
-          </button>
-        </div>
+        <app-material-context-menu
+          [title]="menu.title"
+          [x]="menu.x"
+          [y]="menu.y"
+          [showRemoveFromResearch]="true"
+          (removeFromResearch)="removeMaterial(project, menu.materialId)"
+          (deleteFromLibrary)="deleteLibraryMaterial(project, menu.materialId, menu.title)"
+        />
       }
     } @else {
       <div class="research-project__error">{{ vm.error }}</div>

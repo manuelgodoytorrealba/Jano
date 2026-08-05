@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+  inject,
+} from '@angular/core';
 import {
   ResearchDocument,
   ResearchLibraryExcerpt,
@@ -15,6 +25,8 @@ import { ResearchExcerptCaptureComponent } from './research-excerpt-capture.comp
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchMaterialReaderComponent {
+  private readonly document = inject(DOCUMENT);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private _materials: ResearchDocument[] = [];
 
   @Input({ required: true }) researchId = '';
@@ -35,6 +47,7 @@ export class ResearchMaterialReaderComponent {
   @Output() retryRequested = new EventEmitter<string>();
 
   focusedExcerpt: ResearchLibraryExcerpt | null = null;
+  fullscreen = false;
 
   get textMaterials(): ResearchDocument[] {
     return this.materials.filter(
@@ -60,6 +73,19 @@ export class ResearchMaterialReaderComponent {
 
   selectMaterial(materialId: string): void {
     this.selectedMaterialId = materialId;
+  }
+
+  async toggleFullscreen(): Promise<void> {
+    if (this.document.fullscreenElement === this.host.nativeElement) {
+      await this.document.exitFullscreen();
+      return;
+    }
+    await this.host.nativeElement.requestFullscreen();
+  }
+
+  @HostListener('document:fullscreenchange')
+  syncFullscreen(): void {
+    this.fullscreen = this.document.fullscreenElement === this.host.nativeElement;
   }
 
   onExcerptCreated(excerpt: ResearchLibraryExcerptReference, material: ResearchDocument): void {

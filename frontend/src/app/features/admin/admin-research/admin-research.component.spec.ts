@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, filter, firstValueFrom, of, throwError } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { ResearchApi } from '../../../core/api/research.api';
+import { LibraryApi } from '../../../core/api/library.api';
 import { AdminResearchComponent } from './admin-research.component';
 
 const emptyKnowledge = (projectId: string) => ({
@@ -435,6 +436,7 @@ describe('AdminResearchComponent', () => {
       imports: [AdminResearchComponent],
       providers: [
         { provide: ResearchApi, useValue: api },
+        { provide: LibraryApi, useValue: { list: vi.fn().mockReturnValue(of([])) } },
         {
           provide: ActivatedRoute,
           useValue: { url: of([]), queryParamMap: queryParams$ },
@@ -645,6 +647,7 @@ describe('AdminResearchComponent', () => {
       imports: [AdminResearchComponent],
       providers: [
         { provide: ResearchApi, useValue: api },
+        { provide: LibraryApi, useValue: { list: vi.fn().mockReturnValue(of([])) } },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -681,6 +684,7 @@ describe('AdminResearchComponent', () => {
       imports: [AdminResearchComponent],
       providers: [
         { provide: ResearchApi, useValue: api },
+        { provide: LibraryApi, useValue: { list: vi.fn().mockReturnValue(of([])) } },
         {
           provide: ActivatedRoute,
           useValue: { url: of([]), queryParamMap: of(convertToParamMap({})) },
@@ -745,6 +749,7 @@ describe('AdminResearchComponent', () => {
       imports: [AdminResearchComponent],
       providers: [
         { provide: ResearchApi, useValue: api },
+        { provide: LibraryApi, useValue: { list: vi.fn().mockReturnValue(of([])) } },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -846,6 +851,7 @@ describe('AdminResearchComponent', () => {
       imports: [AdminResearchComponent],
       providers: [
         { provide: ResearchApi, useValue: api },
+        { provide: LibraryApi, useValue: { list: vi.fn().mockReturnValue(of([])) } },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -870,5 +876,79 @@ describe('AdminResearchComponent', () => {
     sourceAction.click();
 
     expect(component.evidenceSourceId).toBe('source-empty');
+  });
+
+  it('filters Library materials, reassociates them, and exposes global deletion', async () => {
+    const project = {
+      id: 'research-1',
+      title: 'Goya',
+      objective: 'Investigar',
+      scope: null,
+      status: 'ACTIVE',
+      lastActiveAt: '2026-08-01T08:00:00.000Z',
+      createdAt: '2026-08-01T08:00:00.000Z',
+      updatedAt: '2026-08-01T08:00:00.000Z',
+    };
+    const material = {
+      id: 'material-1',
+      sourceId: null,
+      kind: 'PDF' as const,
+      title: 'Catálogo retirado',
+      createdAt: '2026-08-01T08:00:00.000Z',
+      updatedAt: '2026-08-01T08:00:00.000Z',
+      version: {
+        id: 'version-1',
+        status: 'READY' as const,
+        url: null,
+        originalName: 'catalogo.pdf',
+        mimeType: 'application/pdf',
+        sizeBytes: 2048,
+      },
+      research: [],
+    };
+    const api = {
+      list: vi.fn().mockReturnValue(of([project])),
+      associateLibraryMaterial: vi.fn().mockReturnValue(of({})),
+    };
+    const libraryApi = {
+      list: vi.fn().mockReturnValue(of([material])),
+      delete: vi.fn().mockReturnValue(of({ deleted: true })),
+    };
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    TestBed.configureTestingModule({
+      imports: [AdminResearchComponent],
+      providers: [
+        { provide: ResearchApi, useValue: api },
+        { provide: LibraryApi, useValue: libraryApi },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            url: of([]),
+            paramMap: of(convertToParamMap({})),
+            queryParamMap: of(convertToParamMap({ view: 'library' })),
+          },
+        },
+        { provide: Router, useValue: { navigate: vi.fn().mockResolvedValue(true) } },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(AdminResearchComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Catálogo retirado');
+    fixture.nativeElement.querySelector('.library-material > button').click();
+    expect(api.associateLibraryMaterial).toHaveBeenCalledWith('research-1', 'material-1');
+
+    fixture.nativeElement
+      .querySelector('.library-material')
+      .dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, clientX: 100, clientY: 120 }));
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('.material-menu__danger').click();
+
+    expect(confirm).toHaveBeenCalled();
+    expect(libraryApi.delete).toHaveBeenCalledWith('material-1');
   });
 });

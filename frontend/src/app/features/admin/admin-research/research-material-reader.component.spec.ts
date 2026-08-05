@@ -41,6 +41,18 @@ describe('ResearchMaterialReaderComponent', () => {
     );
   });
 
+  it('opens the Reader with the native fullscreen API', async () => {
+    const fixture = await createFixture();
+    const requestFullscreen = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(fixture.nativeElement, 'requestFullscreen', {
+      value: requestFullscreen,
+    });
+
+    await fixture.componentInstance.toggleFullscreen();
+
+    expect(requestFullscreen).toHaveBeenCalledWith();
+  });
+
   it('switches between available TEXT materials without writing', async () => {
     const fixture = await createFixture([
       textMaterial,

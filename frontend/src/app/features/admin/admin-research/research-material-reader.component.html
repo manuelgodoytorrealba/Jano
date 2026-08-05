@@ -34,8 +34,14 @@
       @if (selectedMaterial; as material) {
         <article class="research-reader__document">
           <header>
-            <p>{{ material.kind }} · Texto preparado</p>
-            <h3>{{ material.title }}</h3>
+            <div>
+              <p>{{ material.kind }} · Texto preparado</p>
+              <h3>{{ material.title }}</h3>
+            </div>
+            <button type="button" class="research-reader__fullscreen" (click)="toggleFullscreen()">
+              <span aria-hidden="true">{{ fullscreen ? '×' : '⛶' }}</span>
+              {{ fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa' }}
+            </button>
           </header>
           <div class="research-reader__content">{{ material.content }}</div>
           <app-research-excerpt-capture

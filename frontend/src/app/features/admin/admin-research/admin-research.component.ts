@@ -1,5 +1,12 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { AsyncPipe, DatePipe, DOCUMENT } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostListener,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, convertToParamMap } from '@angular/router';
 import {
@@ -31,6 +38,8 @@ import {
   ResearchSourceRecord,
 } from '../../../core/api/research.api';
 import { RelationTypesApi } from '../../../core/api/relation-types.api';
+import { LibraryApi, LibraryMaterial } from '../../../core/api/library.api';
+import { MaterialContextMenuComponent, MaterialMenuState } from './material-context-menu.component';
 
 type ResearchStatusFilter = '' | ResearchProjectStatus;
 
@@ -44,6 +53,8 @@ type ResearchListVm = {
   error: string;
   detailMode: boolean;
   createMode: boolean;
+  libraryMode: boolean;
+  libraryMaterials: LibraryMaterial[];
 };
 
 type ResearchEvidenceGroup = {
@@ -55,13 +66,15 @@ type ResearchEvidenceGroup = {
 @Component({
   standalone: true,
   selector: 'app-admin-research',
-  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink],
+  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink, MaterialContextMenuComponent],
   templateUrl: './admin-research.component.html',
   styleUrl: './admin-research.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminResearchComponent {
   private readonly api = inject(ResearchApi);
+  private readonly libraryApi = inject(LibraryApi);
+  private readonly document = inject(DOCUMENT);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly relationTypesApi = inject(RelationTypesApi);
@@ -137,6 +150,11 @@ export class AdminResearchComponent {
   actionBusy = false;
   actionFeedback = '';
   actionError = '';
+  librarySearch = '';
+  libraryKind: '' | ResearchDocumentKind = '';
+  libraryStatus = '';
+  libraryProjectId = '';
+  materialMenu: MaterialMenuState | null = null;
 
   private autoFocusCreate = false;
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
@@ -154,6 +172,7 @@ export class AdminResearchComponent {
       const routeProjectId = routeParams.get('id');
       const selectedId = routeProjectId ?? params.get('project');
       const detailMode = !!routeProjectId;
+      const libraryMode = !detailMode && params.get('view') === 'library';
 
       if (createMode) {
         return of<ResearchListVm>({
@@ -166,6 +185,8 @@ export class AdminResearchComponent {
           error: '',
           detailMode: false,
           createMode: true,
+          libraryMode: false,
+          libraryMaterials: [],
         });
       }
 
@@ -182,6 +203,8 @@ export class AdminResearchComponent {
               error: '',
               detailMode,
               createMode,
+              libraryMode: false,
+              libraryMaterials: [],
             }),
           ),
           catchError(() =>
@@ -195,6 +218,49 @@ export class AdminResearchComponent {
               error: '',
               detailMode,
               createMode,
+              libraryMode: false,
+              libraryMaterials: [],
+            }),
+          ),
+        );
+      }
+
+      if (libraryMode) {
+        return combineLatest([this.api.list(), this.libraryApi.list()]).pipe(
+          map(([projects, libraryMaterials]): ResearchListVm => {
+            if (!this.libraryProjectId) {
+              this.libraryProjectId =
+                projects.find((project) => project.status === 'ACTIVE')?.id ??
+                projects[0]?.id ??
+                '';
+            }
+            return {
+              state: 'ready',
+              projects,
+              selected: null,
+              selectedProject: null,
+              selectedError: '',
+              total: projects.length,
+              error: '',
+              detailMode: false,
+              createMode: false,
+              libraryMode: true,
+              libraryMaterials,
+            };
+          }),
+          catchError(() =>
+            of<ResearchListVm>({
+              state: 'error',
+              projects: [],
+              selected: null,
+              selectedProject: null,
+              selectedError: '',
+              total: 0,
+              error: 'No se pudo cargar la Biblioteca.',
+              detailMode: false,
+              createMode: false,
+              libraryMode: true,
+              libraryMaterials: [],
             }),
           ),
         );
@@ -214,6 +280,8 @@ export class AdminResearchComponent {
             error: '',
             detailMode,
             createMode,
+            libraryMode: false,
+            libraryMaterials: [],
           };
 
           if (!selected) return of<ResearchListVm>(base);
@@ -239,6 +307,8 @@ export class AdminResearchComponent {
             error: 'No se pudieron cargar las investigaciones.',
             detailMode,
             createMode,
+            libraryMode: false,
+            libraryMaterials: [],
           }),
         ),
       );
@@ -559,6 +629,71 @@ export class AdminResearchComponent {
 
   applyFilters(): void {
     this.refresh$.next();
+  }
+
+  filteredLibraryMaterials(materials: LibraryMaterial[]): LibraryMaterial[] {
+    const query = this.librarySearch.trim().toLowerCase();
+    return materials.filter((material) => {
+      const matchesKind = !this.libraryKind || material.kind === this.libraryKind;
+      const matchesStatus = !this.libraryStatus || material.version?.status === this.libraryStatus;
+      const text = [material.title, material.version?.originalName, material.version?.url]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return matchesKind && matchesStatus && (!query || text.includes(query));
+    });
+  }
+
+  associateLibraryMaterial(material: LibraryMaterial): void {
+    if (!this.libraryProjectId || this.isMaterialAssociated(material)) return;
+    this.runProjectAction(
+      this.api.associateLibraryMaterial(this.libraryProjectId, material.id),
+      'Material asociado a la investigación.',
+      () => undefined,
+    );
+  }
+
+  isMaterialAssociated(material: LibraryMaterial): boolean {
+    return material.research.some((project) => project.id === this.libraryProjectId);
+  }
+
+  openLibraryMaterialMenu(event: MouseEvent, material: LibraryMaterial): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const view = this.document.defaultView;
+    this.materialMenu = {
+      materialId: material.id,
+      title: material.title,
+      x: Math.max(8, Math.min(event.clientX, (view?.innerWidth ?? event.clientX + 228) - 228)),
+      y: Math.max(8, Math.min(event.clientY, (view?.innerHeight ?? event.clientY + 110) - 110)),
+    };
+  }
+
+  deleteLibraryMaterial(materialId: string, title: string): void {
+    this.materialMenu = null;
+    if (
+      !this.document.defaultView?.confirm(
+        `¿Eliminar “${title}” de Biblioteca? Se quitará también de todas las investigaciones.`,
+      )
+    )
+      return;
+    this.actionBusy = true;
+    this.libraryApi.delete(materialId).subscribe({
+      next: () => {
+        this.actionBusy = false;
+        this.actionFeedback = 'Material eliminado de Biblioteca.';
+        this.refresh$.next();
+      },
+      error: (err) => {
+        this.actionBusy = false;
+        this.actionError = err?.error?.message ?? 'No se pudo eliminar el material de Biblioteca.';
+      },
+    });
+  }
+
+  @HostListener('document:click')
+  closeMaterialMenu(): void {
+    this.materialMenu = null;
   }
 
   clearEvidenceFilters(): void {

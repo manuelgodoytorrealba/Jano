@@ -1163,6 +1163,134 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+.admin-research__library {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-research__library-association {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(143, 110, 213, 0.24);
+  border-radius: 12px;
+  background: rgba(143, 110, 213, 0.08);
+}
+
+.admin-research__library-association label {
+  color: rgba(242, 238, 232, 0.68);
+  font-size: 13px;
+}
+
+.admin-research__library-association select {
+  width: min(360px, 100%);
+}
+
+.admin-research__library-filters {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 170px 190px;
+  gap: 10px;
+}
+
+.library-materials {
+  display: grid;
+  gap: 8px;
+}
+
+.library-material {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.028);
+}
+
+.library-material:hover {
+  border-color: rgba(143, 110, 213, 0.28);
+  background: rgba(143, 110, 213, 0.08);
+}
+
+.library-material__kind {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(232, 228, 220, 0.58);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.library-material__body {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.library-material__body strong,
+.library-material__body span,
+.library-material__body small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library-material__body strong {
+  font-size: 14px;
+  font-weight: 550;
+}
+
+.library-material__body span,
+.library-material__body small {
+  color: rgba(232, 228, 220, 0.52);
+  font-size: 12px;
+}
+
+.library-material > button {
+  min-width: 92px;
+  min-height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(247, 244, 238, 0.92);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.library-material > button:disabled {
+  cursor: default;
+  opacity: 0.46;
+}
+
+.admin-research__library-hint {
+  margin: 0 !important;
+  font-size: 12px !important;
+}
+
+@media (max-width: 800px) {
+  .admin-research__library-association,
+  .library-material {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-research__library-association {
+    display: grid;
+  }
+
+  .admin-research__library-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
 .research-create {
   width: min(860px, 100%);
   box-sizing: border-box;
