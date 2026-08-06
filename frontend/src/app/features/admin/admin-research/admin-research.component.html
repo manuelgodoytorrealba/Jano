@@ -242,7 +242,11 @@
                     [routerLink]="['/admin/research', project.id]"
                     [class.research-card--selected]="vm.selected?.id === project.id"
                   >
-                    <span class="research-card__marker" aria-hidden="true">R</span>
+                    @if (project.coverImageUrl) {
+                      <img class="research-card__cover" [src]="project.coverImageUrl" alt="" />
+                    } @else {
+                      <span class="research-card__marker" aria-hidden="true">R</span>
+                    }
                     <span class="research-card__body">
                       <strong>{{ project.title }}</strong>
                       <span>{{ project.objective }}</span>

@@ -244,6 +244,13 @@
   font-weight: 750;
 }
 
+.research-card__cover {
+  width: 42px;
+  height: 46px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
 .research-card__body,
 .research-card__side {
   min-width: 0;

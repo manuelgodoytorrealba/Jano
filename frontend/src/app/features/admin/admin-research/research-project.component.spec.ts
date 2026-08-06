@@ -22,6 +22,7 @@ const project = {
   title: 'Cubismo',
   objective: 'Comprender la invención del cubismo.',
   scope: null,
+  coverImageUrl: null,
   status: 'ACTIVE',
   lastActiveAt: '2026-07-27T08:00:00.000Z',
   createdAt: '2026-07-27T08:00:00.000Z',
@@ -83,6 +84,7 @@ const section = (): ResearchOutlineSection => ({
   updatedAt: project.updatedAt,
   objective: 'Comprender la fragmentación.',
   notes: 'Volver a las cartas.',
+  imageUrl: null,
   drafts: [],
   materialReferences: [],
   questions: [],
@@ -226,6 +228,20 @@ describe('ResearchProjectComponent', () => {
     expect(document.body.classList.contains('app-stage-immersive')).toBe(true);
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(document.body.classList.contains('app-stage-immersive')).toBe(false);
+  });
+
+  it('keeps intake and reading as separate corpus views', async () => {
+    const fixture = await createFixture({
+      getById: vi.fn().mockReturnValue(of({ ...project, materials: [corpusMaterial] })),
+    });
+
+    expect(fixture.nativeElement.querySelector('app-research-material-reader')).toBeNull();
+    fixture.nativeElement.querySelectorAll('.research-project__corpus-views button')[1].click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-research-material-reader')).not.toBeNull();
+
+    fixture.componentInstance.selectMaterial(corpusMaterial);
+    expect(fixture.componentInstance.corpusView).toBe('reader');
   });
 
   it('orients an empty outline and creates its first section', async () => {
@@ -461,6 +477,13 @@ describe('ResearchProjectComponent', () => {
 
     expect(fixture.componentInstance.selectedMaterialId).toBe('material-2');
     expect(fixture.nativeElement.textContent).toContain('Segundo pasaje.');
+
+    expect(
+      fixture.componentInstance.readerMaterialId({
+        ...research,
+        materials: [{ ...materials[1], status: 'PENDING_PREPARATION' }, materials[0]],
+      } as unknown as ResearchProject),
+    ).toBe('material-2');
   });
 
   it('opens a material context menu and removes only its research association', async () => {
@@ -563,6 +586,26 @@ describe('ResearchProjectComponent', () => {
       objective: 'Explicar el método analítico',
       notes: active.notes,
     });
+  });
+
+  it('uploads an optional editorial image for the active section', async () => {
+    const active = section();
+    const api = {
+      getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })),
+      uploadOutlineSectionImage: vi.fn().mockReturnValue(of(project)),
+    };
+    const fixture = await createFixture(api, true, 'index');
+    const image = new File(['image'], 'section.jpg', { type: 'image/jpeg' });
+    fixture.componentInstance.dropSectionImage(
+      {
+        preventDefault: vi.fn(),
+        dataTransfer: { files: { item: () => image } },
+      } as unknown as DragEvent,
+      { ...project, outlineSections: [active] } as unknown as ResearchProject,
+      active,
+    );
+
+    expect(api.uploadOutlineSectionImage).toHaveBeenCalledWith(project.id, active.id, image);
   });
 
   it('creates the first authorial Draft from the active Section', async () => {

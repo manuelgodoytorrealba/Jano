@@ -3,6 +3,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import {
   ResearchClaimKind,
   ResearchClaimStatus,
+  ResearchJobStatus,
   ResearchJobType,
   ResearchProposalReviewState,
   type Prisma,
@@ -37,6 +38,8 @@ import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dt
 import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-section.dto';
 import { ResearchOutlineService } from './research-outline.service';
 import { AddResearchOutlineSectionMaterialDto } from './dto/add-research-outline-section-material.dto';
+import type { UploadedImageFile } from '../media/entity-media.service';
+import { buildPublicUploadUrl, resolveMediaPublicBaseUrl } from '../common/media-url.util';
 import { presentSectionDossiers } from './research-section-dossier';
 const researchSourceSelect = {
   id: true,
@@ -130,6 +133,10 @@ function sortById<T extends { id: string }>(items: T[]) {
 
 @Injectable()
 export class ResearchService {
+  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(
+    process.env.MEDIA_PUBLIC_BASE_URL,
+  );
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly sources: SourcesService,
@@ -155,6 +162,28 @@ export class ResearchService {
     });
   }
 
+  async uploadProjectCover(projectId: string, file: UploadedImageFile | undefined) {
+    if (!file?.mimetype.startsWith('image/')) {
+      throw new BadRequestException('Solo se permiten imágenes válidas');
+    }
+
+    await this.prisma.researchProject.update({
+      where: { id: projectId },
+      data: {
+        coverImageUrl: buildPublicUploadUrl(`media/${file.filename}`, this.mediaPublicBaseUrl),
+      },
+    });
+    return this.getProject(projectId);
+  }
+
+  async clearProjectCover(projectId: string) {
+    await this.prisma.researchProject.update({
+      where: { id: projectId },
+      data: { coverImageUrl: null },
+    });
+    return this.getProject(projectId);
+  }
+
   async createOutlineSection(projectId: string, dto: CreateResearchOutlineSectionDto) {
     await this.outline.create(projectId, dto);
     return this.getProject(projectId);
@@ -166,6 +195,20 @@ export class ResearchService {
     dto: UpdateResearchOutlineSectionDto,
   ) {
     await this.outline.update(projectId, sectionId, dto);
+    return this.getProject(projectId);
+  }
+
+  async uploadOutlineSectionImage(
+    projectId: string,
+    sectionId: string,
+    file: UploadedImageFile | undefined,
+  ) {
+    await this.outline.setImage(projectId, sectionId, file);
+    return this.getProject(projectId);
+  }
+
+  async clearOutlineSectionImage(projectId: string, sectionId: string) {
+    await this.outline.clearImage(projectId, sectionId);
     return this.getProject(projectId);
   }
 
@@ -1068,10 +1111,20 @@ export class ResearchService {
       materialVersionId: version.id,
       type,
     });
-    await this.prisma.researchJob.upsert({
+    const job = await this.prisma.researchJob.upsert({
       where: { projectId_type_inputFingerprint: { projectId, type, inputFingerprint } },
       create: { projectId, materialVersionId: version.id, type, inputFingerprint },
       update: {},
+      select: { id: true },
+    });
+    await this.prisma.researchJob.updateMany({
+      where: { id: job.id, status: { not: ResearchJobStatus.RUNNING } },
+      data: {
+        status: ResearchJobStatus.QUEUED,
+        startedAt: null,
+        finishedAt: null,
+        lastError: null,
+      },
     });
   }
 

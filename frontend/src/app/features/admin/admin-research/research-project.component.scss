@@ -439,6 +439,104 @@ h1 {
   border-color: var(--research-border);
 }
 
+.research-project__section-image {
+  height: 180px;
+  margin: 18px 0 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--research-control);
+}
+
+.research-project__section-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.research-project__section-image-control {
+  margin-top: 12px;
+  color: var(--research-text-muted);
+  font-size: 12px;
+}
+
+.research-project__section-image-control summary {
+  width: fit-content;
+  cursor: pointer;
+}
+
+.research-project__section-image-control label {
+  max-width: 480px;
+  margin-top: 10px;
+}
+
+.research-project__section-image-dropzone {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--research-border-soft);
+  border-radius: 8px;
+  background: var(--research-control);
+  color: inherit;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.research-project__section-image-dropzone input {
+  max-width: 100%;
+  color: var(--research-text-muted);
+}
+
+.research-project__section-image-control small {
+  display: block;
+  margin-top: 7px;
+}
+
+.research-project__section-image-remove {
+  margin-top: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--research-text-muted);
+  font: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+.research-project__cover-control {
+  margin-top: 10px;
+  color: var(--research-text-muted);
+  font-size: 12px;
+}
+
+.research-project__cover-control summary {
+  width: fit-content;
+  cursor: pointer;
+}
+
+.research-project__cover-dropzone {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  border: 1px dashed var(--research-border-soft);
+  border-radius: 8px;
+  background: var(--research-control);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.research-project__cover-dropzone input {
+  max-width: 100%;
+  color: var(--research-text-muted);
+}
+
+.research-project__cover-control button {
+  margin-top: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--research-text-muted);
+  font: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
 .research-project__draft footer p {
   color: var(--research-text-muted);
   font-size: 12px;
@@ -1097,6 +1195,8 @@ h1 {
   border-radius: 11px;
   background: linear-gradient(145deg, #8a6f50, #171719);
   font-family: Georgia, serif;
+  object-fit: cover;
+  overflow: hidden;
 }
 
 .research-project__studio-brand strong,
@@ -1284,6 +1384,8 @@ h1 {
 .research-project__mode-heading {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--research-border-soft);
 }
@@ -1301,29 +1403,44 @@ h1 {
   font-size: 13px;
 }
 
+.research-project__corpus-views {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--research-border-soft);
+  border-radius: 9px;
+  background: var(--research-control);
+}
+
+.research-project__corpus-views button {
+  padding: 6px 9px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--research-text-muted);
+  font-size: 11px;
+}
+
+.research-project__corpus-views button.is-active {
+  background: var(--research-accent-soft);
+  color: var(--research-text);
+}
+
 .research-project__corpus-workspace {
-  display: grid;
-  grid-template-columns: minmax(280px, 0.78fr) minmax(360px, 1fr);
-  align-items: start;
-  gap: 24px;
-  max-width: 1180px;
+  max-width: 980px;
   margin: 0 auto;
 }
 
 .research-project__corpus-workspace > app-research-material-reader {
-  position: sticky;
-  top: 0;
-  grid-column: 2;
-  grid-row: 1;
+  display: block;
 }
 
 .research-project__corpus-workspace .research-project__workspace-empty {
-  grid-column: 1;
-  grid-row: 1;
   display: block;
-  max-width: none;
+  max-width: 680px;
   min-height: 0;
-  padding: 20px 0 0;
+  margin: 0 auto;
+  padding: 28px 0 0;
 }
 
 .research-project__corpus-workspace .research-project__workspace-empty > h2,
@@ -1389,10 +1506,6 @@ h1 {
 @media (max-width: 900px) {
   .research-project__corpus-workspace {
     display: block;
-  }
-
-  .research-project__corpus-workspace > app-research-material-reader {
-    position: static;
   }
 }
 

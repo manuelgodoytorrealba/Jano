@@ -66,6 +66,33 @@ describe('ResearchMaterialReaderComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Otro pasaje.');
   });
 
+  it('allows a prepared URL to be refreshed from the Reader', async () => {
+    const fixture = await createFixture([
+      { ...textMaterial, kind: 'URL', url: 'https://example.com' },
+    ]);
+    const retry = vi.fn();
+    fixture.componentInstance.retryRequested.subscribe(retry);
+
+    fixture.nativeElement.querySelector('.research-reader__document-actions button').click();
+
+    expect(retry).toHaveBeenCalledWith(textMaterial.id);
+  });
+
+  it('keeps the selected material visible while it updates', async () => {
+    const fixture = await createFixture([
+      { ...textMaterial, kind: 'URL', status: 'PENDING_PREPARATION' },
+      { ...textMaterial, id: 'material-pdf', kind: 'PDF', title: 'Otro material' },
+    ]);
+    fixture.componentRef.setInput('selectedMaterialId', textMaterial.id);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Actualizando contenido');
+    expect(fixture.nativeElement.textContent).toContain('Cuaderno de lectura');
+    expect(
+      fixture.nativeElement.querySelector('.research-reader__document h3').textContent,
+    ).toContain('Cuaderno de lectura');
+  });
+
   it('preserves the material Source when an excerpt leaves the Reader', async () => {
     const fixture = await createFixture();
     const created = vi.fn();
@@ -103,6 +130,14 @@ describe('ResearchMaterialReaderComponent', () => {
       text: 'Un pasaje',
     });
     expect(fixture.nativeElement.textContent).toContain('Crear extracto');
+
+    fixture.nativeElement.querySelector('[aria-label="Descartar selección"]').click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectionDraft).toBeNull();
+
+    selection?.addRange(range);
+    content.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+    fixture.detectChanges();
 
     fixture.nativeElement.querySelector('.research-reader__selection-action button').click();
     fixture.detectChanges();

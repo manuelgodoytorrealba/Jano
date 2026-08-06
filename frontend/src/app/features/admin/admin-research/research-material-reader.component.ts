@@ -63,7 +63,9 @@ export class ResearchMaterialReaderComponent {
 
   get selectedMaterial(): ResearchDocument | null {
     return (
-      this.textMaterials.find((material) => material.id === this.selectedMaterialId) ??
+      this.materials.find(
+        (material) => material.id === this.selectedMaterialId && material.content !== null,
+      ) ??
       this.textMaterials[0] ??
       null
     );

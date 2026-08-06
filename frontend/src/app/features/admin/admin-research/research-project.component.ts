@@ -78,6 +78,8 @@ export class ResearchProjectComponent implements OnDestroy {
   questionText = '';
   workspaceObjective = '';
   workspaceNotes = '';
+  sectionImageUploading = false;
+  projectCoverUploading = false;
   draftContent = '';
   draftEditorContent = '';
   savingDraft = false;
@@ -97,6 +99,7 @@ export class ResearchProjectComponent implements OnDestroy {
   selectedSectionMaterialVersionId = '';
   materialMenu: MaterialMenuState | null = null;
   focusMode = false;
+  corpusView: 'intake' | 'reader' = 'intake';
   readonly statuses: ResearchOutlineSectionStatus[] = [
     'NOT_STARTED',
     'IN_PROGRESS',
@@ -463,6 +466,63 @@ export class ResearchProjectComponent implements OnDestroy {
       });
   }
 
+  selectSectionImage(
+    event: Event,
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+  ): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.item(0) ?? null;
+    input.value = '';
+    if (file) this.uploadSectionImage(project, section, file);
+  }
+
+  dragSectionImageOver(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+  }
+
+  dragProjectCoverOver(event: DragEvent): void {
+    this.dragSectionImageOver(event);
+  }
+
+  dropSectionImage(
+    event: DragEvent,
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+  ): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files.item(0) ?? null;
+    if (file) this.uploadSectionImage(project, section, file);
+  }
+
+  clearSectionImage(project: ResearchProject, section: ResearchOutlineSection): void {
+    this.api.clearOutlineSectionImage(project.id, section.id).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => (this.error = 'No se pudo retirar la imagen editorial.'),
+    });
+  }
+
+  selectProjectCover(event: Event, project: ResearchProject): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.item(0) ?? null;
+    input.value = '';
+    if (file) this.uploadProjectCover(project, file);
+  }
+
+  dropProjectCover(event: DragEvent, project: ResearchProject): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files.item(0) ?? null;
+    if (file) this.uploadProjectCover(project, file);
+  }
+
+  clearProjectCover(project: ResearchProject): void {
+    this.api.clearProjectCover(project.id).subscribe({
+      next: () => this.refresh$.next(),
+      error: () => (this.error = 'No se pudo retirar la portada de la investigación.'),
+    });
+  }
+
   addQuestion(project: ResearchProject, section: ResearchOutlineSection | null): void {
     const text = this.questionText.trim();
     if (!section || !text) return;
@@ -600,16 +660,20 @@ export class ResearchProjectComponent implements OnDestroy {
 
   readerMaterialId(project: ResearchProject): string {
     return (
-      project.materials.find(
-        (material) => material.id === this.selectedMaterialId && this.isReadableMaterial(material),
-      )?.id ??
+      project.materials.find((material) => material.id === this.selectedMaterialId)?.id ??
       project.materials.find((material) => this.isReadableMaterial(material))?.id ??
       ''
     );
   }
 
   selectMaterial(material: ResearchDocument): void {
-    if (this.isReadableMaterial(material)) this.selectedMaterialId = material.id;
+    if (!this.isReadableMaterial(material)) return;
+    this.selectedMaterialId = material.id;
+    this.corpusView = 'reader';
+  }
+
+  openCorpusView(view: 'intake' | 'reader'): void {
+    this.corpusView = view;
   }
 
   openMaterialMenu(event: MouseEvent, material: ResearchDocument): void {
@@ -795,6 +859,38 @@ export class ResearchProjectComponent implements OnDestroy {
     this.selectedSectionMaterialVersionId = '';
     this.questionText = '';
     this.reviewExcerpt = null;
+  }
+
+  private uploadSectionImage(
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+    file: File,
+  ): void {
+    this.sectionImageUploading = true;
+    this.api.uploadOutlineSectionImage(project.id, section.id, file).subscribe({
+      next: () => {
+        this.sectionImageUploading = false;
+        this.refresh$.next();
+      },
+      error: () => {
+        this.sectionImageUploading = false;
+        this.error = 'No se pudo subir la imagen. Usa JPEG, PNG, WEBP, GIF o AVIF (máx. 15 MB).';
+      },
+    });
+  }
+
+  private uploadProjectCover(project: ResearchProject, file: File): void {
+    this.projectCoverUploading = true;
+    this.api.uploadProjectCover(project.id, file).subscribe({
+      next: () => {
+        this.projectCoverUploading = false;
+        this.refresh$.next();
+      },
+      error: () => {
+        this.projectCoverUploading = false;
+        this.error = 'No se pudo subir la portada. Usa JPEG, PNG, WEBP, GIF o AVIF (máx. 15 MB).';
+      },
+    });
   }
 
   private workspaceMode(mode: string | null, sectionId: string | null) {

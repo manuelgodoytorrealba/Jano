@@ -49,6 +49,9 @@ import {
   type UploadedResearchPdf,
 } from './research-pdf-upload.config';
 import { ResearchService } from './research.service';
+import { unlink } from 'fs/promises';
+import { MEDIA_IMAGE_UPLOAD_OPTIONS } from '../media/image-upload.config';
+import type { UploadedImageFile } from '../media/entity-media.service';
 
 import { ResearchOwnerGuard } from './research-owner.guard';
 @UseGuards(JwtAuthGuard, RolesGuard, ResearchOwnerGuard)
@@ -69,6 +72,25 @@ export class ResearchController {
   @Post()
   create(@Req() req: AuthenticatedRequest, @Body() dto: CreateResearchProjectDto) {
     return this.service.createProject(req.user.userId, dto);
+  }
+
+  @Post(':id/cover')
+  @UseInterceptors(FileInterceptor('file', MEDIA_IMAGE_UPLOAD_OPTIONS))
+  async uploadProjectCover(
+    @Param('id') id: string,
+    @UploadedFile() file: UploadedImageFile | undefined,
+  ) {
+    try {
+      return await this.service.uploadProjectCover(id, file);
+    } catch (error) {
+      if (file?.path) await unlink(file.path).catch(() => undefined);
+      throw error;
+    }
+  }
+
+  @Delete(':id/cover')
+  clearProjectCover(@Param('id') id: string) {
+    return this.service.clearProjectCover(id);
   }
 
   @Get('studio/status')
@@ -113,6 +135,26 @@ export class ResearchController {
     @Body() dto: UpdateResearchOutlineSectionDto,
   ) {
     return this.service.updateOutlineSection(id, sectionId, dto);
+  }
+
+  @Post(':id/outline/sections/:sectionId/image')
+  @UseInterceptors(FileInterceptor('file', MEDIA_IMAGE_UPLOAD_OPTIONS))
+  async uploadOutlineSectionImage(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @UploadedFile() file: UploadedImageFile | undefined,
+  ) {
+    try {
+      return await this.service.uploadOutlineSectionImage(id, sectionId, file);
+    } catch (error) {
+      if (file?.path) await unlink(file.path).catch(() => undefined);
+      throw error;
+    }
+  }
+
+  @Delete(':id/outline/sections/:sectionId/image')
+  clearOutlineSectionImage(@Param('id') id: string, @Param('sectionId') sectionId: string) {
+    return this.service.clearOutlineSectionImage(id, sectionId);
   }
 
   @Delete(':id/outline/sections/:sectionId')

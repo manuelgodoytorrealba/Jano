@@ -35,13 +35,32 @@
         <article class="research-reader__document">
           <header>
             <div>
-              <p>{{ material.kind }} · Texto preparado</p>
+              <p>
+                {{ material.kind }} ·
+                {{ material.status === 'READY' ? 'Texto preparado' : 'Actualizando contenido' }}
+              </p>
               <h3>{{ material.title }}</h3>
             </div>
-            <button type="button" class="research-reader__fullscreen" (click)="toggleFullscreen()">
-              <span aria-hidden="true">{{ fullscreen ? '×' : '⛶' }}</span>
-              {{ fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa' }}
-            </button>
+            <div class="research-reader__document-actions">
+              @if (material.kind !== 'TEXT') {
+                <button
+                  type="button"
+                  class="research-reader__fullscreen"
+                  [disabled]="material.status !== 'READY'"
+                  (click)="retry(material.id)"
+                >
+                  {{ material.status === 'READY' ? 'Actualizar contenido' : 'Actualizando…' }}
+                </button>
+              }
+              <button
+                type="button"
+                class="research-reader__fullscreen"
+                (click)="toggleFullscreen()"
+              >
+                <span aria-hidden="true">{{ fullscreen ? '×' : '⛶' }}</span>
+                {{ fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa' }}
+              </button>
+            </div>
           </header>
           <p class="research-reader__selection-hint">
             Selecciona un pasaje para convertirlo en extracto documental.
@@ -62,6 +81,14 @@
               >
                 <span>{{ selection.locator }}</span>
                 <button type="button" (click)="openExcerptComposer()">Crear extracto</button>
+                <button
+                  type="button"
+                  class="research-reader__selection-dismiss"
+                  (click)="cancelExcerptComposer()"
+                  aria-label="Descartar selección"
+                >
+                  ×
+                </button>
               </aside>
             }
           }

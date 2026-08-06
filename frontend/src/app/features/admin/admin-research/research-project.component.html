@@ -119,7 +119,11 @@
       <section class="research-project__layout">
         <aside class="research-project__outline" aria-label="Índice de la investigación">
           <div class="research-project__studio-brand">
-            <span class="research-project__studio-mark">J</span>
+            @if (project.coverImageUrl) {
+              <img class="research-project__studio-mark" [src]="project.coverImageUrl" alt="" />
+            } @else {
+              <span class="research-project__studio-mark">J</span>
+            }
             <div><strong>JANO</strong><small>Research Studio</small></div>
           </div>
           <div class="research-project__active-research">
@@ -137,6 +141,27 @@
                 <option [value]="research.id">{{ research.title }}</option>
               }
             </select>
+            <details class="research-project__cover-control">
+              <summary>{{ project.coverImageUrl ? 'Cambiar portada' : 'Añadir portada' }}</summary>
+              <label
+                class="research-project__cover-dropzone"
+                (dragover)="dragProjectCoverOver($event)"
+                (drop)="dropProjectCover($event, project)"
+              >
+                <span>{{
+                  projectCoverUploading ? 'Subiendo portada…' : 'Arrastra una imagen o selecciónala'
+                }}</span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                  [disabled]="projectCoverUploading"
+                  (change)="selectProjectCover($event, project)"
+                />
+              </label>
+              @if (project.coverImageUrl) {
+                <button type="button" (click)="clearProjectCover(project)">Retirar portada</button>
+              }
+            </details>
           </div>
           @if (vm.mode === 'index') {
             <div class="research-project__section-head">
@@ -391,20 +416,39 @@
                 <h2>Corpus</h2>
                 <p>Fuentes y materiales de investigación</p>
               </div>
+              <div class="research-project__corpus-views" aria-label="Vista del corpus">
+                <button
+                  type="button"
+                  [class.is-active]="corpusView === 'intake'"
+                  (click)="openCorpusView('intake')"
+                >
+                  Incorporar
+                </button>
+                <button
+                  type="button"
+                  [class.is-active]="corpusView === 'reader'"
+                  (click)="openCorpusView('reader')"
+                >
+                  Lectura
+                </button>
+              </div>
             </header>
             <div class="research-project__corpus-workspace">
-              <ng-container
-                [ngTemplateOutlet]="materialIntake"
-                [ngTemplateOutletContext]="{ $implicit: project }"
-              />
-              <app-research-material-reader
-                [researchId]="project.id"
-                [materials]="project.materials"
-                [selectedMaterialId]="readerMaterialId(project)"
-                [showMaterialList]="false"
-                (excerptCreated)="refreshResearch()"
-                (retryRequested)="retryMaterial(project, $event)"
-              />
+              @if (corpusView === 'intake') {
+                <ng-container
+                  [ngTemplateOutlet]="materialIntake"
+                  [ngTemplateOutletContext]="{ $implicit: project }"
+                />
+              } @else {
+                <app-research-material-reader
+                  [researchId]="project.id"
+                  [materials]="project.materials"
+                  [selectedMaterialId]="readerMaterialId(project)"
+                  [showMaterialList]="false"
+                  (excerptCreated)="refreshResearch()"
+                  (retryRequested)="retryMaterial(project, $event)"
+                />
+              }
             </div>
           } @else if (vm.mode === 'index' && vm.activeSection; as section) {
             <div class="research-project__section-workspace">
@@ -438,6 +482,43 @@
                     </select>
                   </div>
                 </div>
+                @if (section.imageUrl) {
+                  <figure class="research-project__section-image">
+                    <img [src]="section.imageUrl" alt="" />
+                  </figure>
+                }
+                <details class="research-project__section-image-control">
+                  <summary>
+                    {{ section.imageUrl ? 'Cambiar imagen editorial' : 'Añadir imagen editorial' }}
+                  </summary>
+                  <label
+                    class="research-project__section-image-dropzone"
+                    (dragover)="dragSectionImageOver($event)"
+                    (drop)="dropSectionImage($event, project, section)"
+                  >
+                    <span>{{
+                      sectionImageUploading
+                        ? 'Subiendo imagen…'
+                        : 'Arrastra una imagen o selecciónala'
+                    }}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                      [disabled]="sectionImageUploading"
+                      (change)="selectSectionImage($event, project, section)"
+                    />
+                  </label>
+                  <small>Opcional · JPEG, PNG, WEBP, GIF o AVIF · máx. 15 MB.</small>
+                  @if (section.imageUrl) {
+                    <button
+                      type="button"
+                      class="research-project__section-image-remove"
+                      (click)="clearSectionImage(project, section)"
+                    >
+                      Retirar imagen
+                    </button>
+                  }
+                </details>
                 <div
                   class="research-project__draft-toolbar"
                   role="toolbar"

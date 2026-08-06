@@ -28,16 +28,73 @@ function isPrivateAddress(address: string) {
   );
 }
 
-function textFromHtml(value: string) {
-  return value
+const HTML_ENTITIES: Record<string, string> = {
+  amp: '&',
+  apos: "'",
+  copy: '©',
+  gt: '>',
+  hellip: '…',
+  laquo: '«',
+  lt: '<',
+  mdash: '—',
+  nbsp: ' ',
+  ndash: '–',
+  quot: '"',
+  raquo: '»',
+  reg: '®',
+  Aacute: 'Á',
+  Eacute: 'É',
+  Iacute: 'Í',
+  Ntilde: 'Ñ',
+  Oacute: 'Ó',
+  Uacute: 'Ú',
+  aacute: 'á',
+  eacute: 'é',
+  iacute: 'í',
+  ntilde: 'ñ',
+  oacute: 'ó',
+  uacute: 'ú',
+  Auml: 'Ä',
+  Euml: 'Ë',
+  Iuml: 'Ï',
+  Ouml: 'Ö',
+  Uuml: 'Ü',
+  auml: 'ä',
+  euml: 'ë',
+  iuml: 'ï',
+  ouml: 'ö',
+  uuml: 'ü',
+  iquest: '¿',
+  iexcl: '¡',
+};
+
+function decodeHtmlEntities(value: string) {
+  return value.replace(/&(#x[\da-f]+|#\d+|[a-z][\da-z]+);/gi, (entity, code) => {
+    if (code[0] === '#') {
+      const point = Number.parseInt(
+        code.slice(code[1].toLowerCase() === 'x' ? 2 : 1),
+        code[1].toLowerCase() === 'x' ? 16 : 10,
+      );
+      return Number.isInteger(point) && point >= 0 && point <= 0x10ffff
+        ? String.fromCodePoint(point)
+        : entity;
+    }
+    return HTML_ENTITIES[code] ?? entity;
+  });
+}
+
+export function textFromHtml(value: string) {
+  const main =
+    value.match(/<(?:article|main)\b[^>]*>([\s\S]*?)<\/(?:article|main)>/i)?.[1] ?? value;
+  return decodeHtmlEntities(main)
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<(?:header|nav|footer|aside)\b[^>]*>[\s\S]*?<\/(?:header|nav|footer|aside)>/gi, ' ')
+    .replace(/<\/?(?:p|h[1-6]|li|blockquote|figcaption|br)\b[^>]*>/gi, '\n')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/\s+/g, ' ')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n\s*/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 

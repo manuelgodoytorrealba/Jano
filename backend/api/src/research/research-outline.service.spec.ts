@@ -59,6 +59,20 @@ describe('ResearchOutlineService workspace', () => {
     });
   });
 
+  it('stores an uploaded editorial image on the section', async () => {
+    prisma.researchOutlineSection.update.mockResolvedValue({ id: 'section-1' });
+
+    await service.setImage('project-1', 'section-1', {
+      filename: 'section-cover.webp',
+      mimetype: 'image/webp',
+    });
+
+    expect(prisma.researchOutlineSection.update).toHaveBeenCalledWith({
+      where: { id: 'section-1' },
+      data: { imageUrl: '/uploads/media/section-cover.webp' },
+    });
+  });
+
   it('deletes only a section belonging to the research', async () => {
     prisma.researchOutlineSection.delete.mockResolvedValue({ id: 'section-1' });
 

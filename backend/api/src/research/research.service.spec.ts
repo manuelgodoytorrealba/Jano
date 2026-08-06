@@ -3,6 +3,7 @@ import {
   ResearchClaimKind,
   ResearchClaimStatus,
   ResearchJobType,
+  ResearchJobStatus,
   LibraryMaterialKind,
   LibraryMaterialVersionStatus,
   ResearchProposalReviewState,
@@ -42,6 +43,7 @@ describe('ResearchService', () => {
       upsert: jest.fn(),
     },
     libraryExcerpt: { findFirst: jest.fn() },
+    libraryMaterial: { findFirst: jest.fn() },
     researchClaim: {
       count: jest.fn(),
       create: jest.fn(),
@@ -50,7 +52,9 @@ describe('ResearchService', () => {
     },
     researchJob: {
       upsert: jest.fn(),
+      updateMany: jest.fn(),
     },
+    libraryMaterialVersion: { findFirst: jest.fn(), update: jest.fn() },
     researchFinding: {
       findFirst: jest.fn(),
     },
@@ -112,6 +116,24 @@ describe('ResearchService', () => {
         objective: 'Reunir evidencias documentales',
         scope: 'Prado',
       },
+    });
+  });
+
+  it('stores a project cover in the shared image upload storage', async () => {
+    prisma.researchProject.update.mockResolvedValue({ id: 'project-1' });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.uploadProjectCover('project-1', {
+      filename: 'research-cover.webp',
+      originalname: 'cover.webp',
+      mimetype: 'image/webp',
+      size: 42,
+      path: '/tmp/research-cover.webp',
+    });
+
+    expect(prisma.researchProject.update).toHaveBeenCalledWith({
+      where: { id: 'project-1' },
+      data: { coverImageUrl: '/uploads/media/research-cover.webp' },
     });
   });
 
@@ -235,6 +257,33 @@ describe('ResearchService', () => {
         content: 'Texto disponible',
       }),
     ]);
+  });
+
+  it('requeues an already completed material preparation without interrupting a running job', async () => {
+    prisma.libraryMaterial.findFirst.mockResolvedValue({
+      id: 'material-1',
+      versions: [{ id: 'version-1' }],
+    });
+    prisma.libraryMaterialVersion.update.mockResolvedValue({});
+    prisma.libraryMaterialVersion.findFirst.mockResolvedValue({
+      id: 'version-1',
+      status: LibraryMaterialVersionStatus.PENDING_PREPARATION,
+    });
+    prisma.researchJob.upsert.mockResolvedValue({ id: 'job-1' });
+    prisma.researchJob.updateMany.mockResolvedValue({ count: 1 });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.prepareMaterial('project-1', 'material-1');
+
+    expect(prisma.researchJob.updateMany).toHaveBeenCalledWith({
+      where: { id: 'job-1', status: { not: ResearchJobStatus.RUNNING } },
+      data: {
+        status: ResearchJobStatus.QUEUED,
+        startedAt: null,
+        finishedAt: null,
+        lastError: null,
+      },
+    });
   });
 
   it('derives deterministic knowledge without persisting it', async () => {

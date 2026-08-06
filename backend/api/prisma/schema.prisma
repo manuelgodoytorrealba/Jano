@@ -754,6 +754,7 @@ model ResearchProject {
   archivedById String?
   objective    String
   scope        String?
+  coverImageUrl String?
   status       ResearchProjectStatus @default(ACTIVE)
   lastActiveAt DateTime              @default(now())
   createdAt    DateTime              @default(now())
@@ -857,6 +858,7 @@ model ResearchOutlineSection {
   status          ResearchOutlineSectionStatus @default(NOT_STARTED)
   objective       String?
   notes           String?
+  imageUrl        String?
   sortOrder       Int
   createdAt       DateTime                     @default(now())
   updatedAt       DateTime                     @updatedAt

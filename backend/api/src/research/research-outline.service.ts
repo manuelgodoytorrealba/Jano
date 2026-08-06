@@ -8,9 +8,19 @@ import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
 import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
 import { AddResearchOutlineSectionExcerptDto } from './dto/add-research-outline-section-excerpt.dto';
 import { AddResearchOutlineSectionMaterialDto } from './dto/add-research-outline-section-material.dto';
+import { buildPublicUploadUrl, resolveMediaPublicBaseUrl } from '../common/media-url.util';
+
+type UploadedSectionImage = {
+  filename: string;
+  mimetype: string;
+};
 
 @Injectable()
 export class ResearchOutlineService {
+  private readonly mediaPublicBaseUrl = resolveMediaPublicBaseUrl(
+    process.env.MEDIA_PUBLIC_BASE_URL,
+  );
+
   constructor(private readonly prisma: PrismaService) {}
 
   async create(projectId: string, dto: CreateResearchOutlineSectionDto) {
@@ -55,6 +65,26 @@ export class ResearchOutlineService {
         ...(dto.objective !== undefined ? { objective: dto.objective.trim() || null } : {}),
         ...(dto.notes !== undefined ? { notes: dto.notes.trim() || null } : {}),
       },
+    });
+  }
+
+  async setImage(projectId: string, sectionId: string, file: UploadedSectionImage | undefined) {
+    const section = await this.requireSection(projectId, sectionId);
+    if (!file?.mimetype.startsWith('image/')) {
+      throw new BadRequestException('Solo se permiten imágenes válidas');
+    }
+
+    return this.prisma.researchOutlineSection.update({
+      where: { id: section.id },
+      data: { imageUrl: buildPublicUploadUrl(`media/${file.filename}`, this.mediaPublicBaseUrl) },
+    });
+  }
+
+  async clearImage(projectId: string, sectionId: string) {
+    const section = await this.requireSection(projectId, sectionId);
+    return this.prisma.researchOutlineSection.update({
+      where: { id: section.id },
+      data: { imageUrl: null },
     });
   }
 

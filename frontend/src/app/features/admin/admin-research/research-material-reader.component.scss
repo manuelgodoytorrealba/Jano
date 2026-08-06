@@ -99,6 +99,13 @@
   font-size: 11px;
   cursor: pointer;
 }
+.research-reader__document-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
 .research-reader__selection-hint {
   color: var(--research-text-muted);
   font-size: 12px;
@@ -147,6 +154,14 @@
   font: inherit;
   padding: 7px 9px;
 }
+.research-reader__selection-action .research-reader__selection-dismiss {
+  width: 28px;
+  padding: 5px;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+  line-height: 1;
+}
 .research-reader__empty {
   color: var(--research-text-muted);
   font-size: 14px;
@@ -179,7 +194,13 @@
 
 :host:fullscreen {
   overflow: auto;
-  background: #0d0d10;
+  background:
+    radial-gradient(circle at 18% -8%, rgba(242, 241, 238, 0.13), transparent 34%),
+    radial-gradient(circle at 86% 4%, rgba(198, 178, 142, 0.1), transparent 28%),
+    linear-gradient(180deg, rgba(16, 14, 13, 0.28), rgba(10, 10, 10, 0.72)),
+    var(--app-root-background-image);
+  background-attachment: fixed;
+  background-color: #101010;
   color: rgba(247, 244, 238, 0.96);
   scrollbar-width: none;
   --research-border: rgba(255, 255, 255, 0.13);
@@ -195,10 +216,17 @@
 }
 
 :host:fullscreen .research-reader {
-  min-height: 100dvh;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
+  width: min(100% - clamp(32px, 6vw, 96px), 1440px);
+  min-height: calc(100dvh - clamp(32px, 6vw, 96px));
+  margin: clamp(16px, 3vw, 48px) auto;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
+  box-shadow:
+    0 18px 48px rgba(9, 10, 16, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(26px) saturate(1.1);
+  -webkit-backdrop-filter: blur(26px) saturate(1.1);
   padding: clamp(24px, 4vw, 64px);
 }
 

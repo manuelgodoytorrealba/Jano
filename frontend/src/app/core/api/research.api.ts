@@ -92,6 +92,7 @@ export type ResearchProjectSummary = {
   title: string;
   objective: string;
   scope: string | null;
+  coverImageUrl: string | null;
   status: ResearchProjectStatus;
   lastActiveAt: string;
   createdAt: string;
@@ -409,6 +410,7 @@ export type ResearchOutlineSection = {
   updatedAt: string;
   objective: string | null;
   notes: string | null;
+  imageUrl: string | null;
   questions: ResearchQuestion[];
   drafts: ResearchDraft[];
   excerptReferences: ResearchOutlineSectionExcerpt[];
@@ -519,6 +521,16 @@ export class ResearchApi {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/outline/sections`, data);
   }
 
+  uploadProjectCover(projectId: string, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/cover`, formData);
+  }
+
+  clearProjectCover(projectId: string) {
+    return this.http.delete<ResearchProject>(`${this.baseUrl}/${projectId}/cover`);
+  }
+
   updateOutlineSection(
     projectId: string,
     sectionId: string,
@@ -527,6 +539,21 @@ export class ResearchApi {
     return this.http.patch<ResearchProject>(
       `${this.baseUrl}/${projectId}/outline/sections/${sectionId}`,
       data,
+    );
+  }
+
+  uploadOutlineSectionImage(projectId: string, sectionId: string, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/image`,
+      formData,
+    );
+  }
+
+  clearOutlineSectionImage(projectId: string, sectionId: string) {
+    return this.http.delete<ResearchProject>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/image`,
     );
   }
 
