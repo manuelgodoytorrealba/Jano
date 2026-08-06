@@ -7,13 +7,12 @@ const graph: GraphResponseDto = {
   nodes: [
     { id: 'workspace-center-jano', label: 'JANO', type: 'CONCEPT', slug: 'jano' },
     {
-      id: 'workspace-kind-PERSON',
-      label: 'People',
-      type: 'PERSON',
-      kind: 'PERSON',
-      slug: 'people',
+      id: 'workspace-type-ARTIST',
+      label: 'Artista',
+      type: 'ARTIST',
+      slug: 'artist',
     },
-    { id: 'workspace-kind-WORK', label: 'Works', type: 'WORK', kind: 'WORK', slug: 'works' },
+    { id: 'workspace-type-ARTWORK', label: 'Obra', type: 'ARTWORK', slug: 'artwork' },
     { id: 'artist-1', label: 'Artist', type: 'ARTIST', kind: 'PERSON', slug: 'artist' },
     { id: 'artwork-1', label: 'Artwork', type: 'ARTWORK', kind: 'WORK', slug: 'artwork' },
   ],
@@ -28,7 +27,7 @@ describe('createAdminGlobalGraphLayout', () => {
     const second = createAdminGlobalGraphLayout(graph);
 
     expect(Object.keys(first.positions)).toHaveLength(graph.nodes.length);
-    expect(first.positions['workspace-kind-PERSON']).toBeDefined();
+    expect(first.positions['workspace-type-ARTIST']).toBeDefined();
     expect(first.positions).toEqual(second.positions);
     expect(first.width).toBeGreaterThan(0);
     expect(first.height).toBeGreaterThan(0);

@@ -110,6 +110,8 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
     'PERIOD',
     'TEXT',
     'PLACE',
+    'EVENT',
+    'ORGANIZATION',
   ];
   readonly statuses: NonNullable<AdminEntityPayload['status']>[] = ['DRAFT', 'IN_REVIEW'];
   readonly levels: NonNullable<AdminEntityPayload['contentLevel']>[] = [

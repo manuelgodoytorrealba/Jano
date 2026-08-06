@@ -116,10 +116,16 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     });
     this.entityTypeFilters.set(this.enabledMap(this.entityTypes()));
     this.relationTypeFilters.set(this.enabledMap(this.relationTypes()));
-    this.selectedNode.set(null);
+    const centerIndex = this.pointNodes.findIndex((node) => node.id === this.graphData?.centerId);
+    const center = this.pointNodes[centerIndex] ?? null;
+    this.selectedNode.set(center);
     this.selectionChange.emit(null);
-    if (this.selectionRing) this.selectionRing.visible = false;
-    this.updateFocus(null);
+    if (center && this.selectionRing && this.points) {
+      const position = this.points.geometry.getAttribute('position');
+      this.selectionRing.position.set(position.getX(centerIndex), position.getY(centerIndex), 0.5);
+      this.selectionRing.visible = true;
+    }
+    this.updateFocus(center?.id ?? null);
     this.applyFilters();
     this.userAdjusted = false;
     this.applyFilters();
@@ -160,7 +166,7 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
   }
 
   nodeTypeLabel(node: GraphNodeDto): string {
-    return this.entityTypeLabel(graphNodeTypeKey(node));
+    return this.entityTypeLabel(node.type);
   }
 
   relationTypeLabel(type: string): string {
@@ -270,13 +276,11 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     this.initialPositions = Object.fromEntries(
       Object.entries(layout.positions).map(([id, point]) => [id, { ...point }]),
     );
-    this.nodeTypes = new Map(graph.nodes.map((node) => [node.id, graphNodeTypeKey(node)]));
+    this.nodeTypes = new Map(graph.nodes.map((node) => [node.id, node.type]));
     this.entityTypes.set(
       [
         ...new Set(
-          graph.nodes
-            .filter((node) => !node.id.startsWith('workspace-'))
-            .map((node) => graphNodeTypeKey(node)),
+          graph.nodes.filter((node) => !node.id.startsWith('workspace-')).map((node) => node.type),
         ),
       ].sort(),
     );
@@ -313,10 +317,17 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     this.graphGroup.add(this.selectionRing);
 
     this.graphGroup.userData['layout'] = layout;
-    this.selectedNode.set(null);
-    this.selectionChange.emit(null);
+    const centerIndex = this.pointNodes.findIndex((node) => node.id === graph.centerId);
+    const center = this.pointNodes[centerIndex] ?? null;
+    this.selectedNode.set(center);
     this.tooltip.set(null);
     this.userAdjusted = false;
+    if (center && this.selectionRing) {
+      const position = this.points.geometry.getAttribute('position');
+      this.selectionRing.position.set(position.getX(centerIndex), position.getY(centerIndex), 0.5);
+      this.selectionRing.visible = true;
+      this.updateFocus(center.id);
+    }
     this.fitGraph();
     this.animateEntrance();
   }
@@ -359,7 +370,7 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
 
     nodes.forEach((node, index) => {
       const point = positions[node.id] ?? { x: 0, y: 0 };
-      const color = new THREE.Color(getEntityTypeConfig(graphNodeTypeKey(node)).color);
+      const color = new THREE.Color(getEntityTypeConfig(node.type).color);
       vertices.set([point.x, point.y, 0], index * 3);
       colors.set([color.r, color.g, color.b], index * 3);
       sizes[index] =
@@ -432,10 +443,10 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
       const source = positions[edge.source] ?? { x: 0, y: 0 };
       const target = positions[edge.target] ?? { x: 0, y: 0 };
       const sourceColor = new THREE.Color(
-        getEntityTypeConfig(graphNodeTypeKey(nodeMap.get(edge.source))).color,
+        getEntityTypeConfig(nodeMap.get(edge.source)?.type ?? '').color,
       );
       const targetColor = new THREE.Color(
-        getEntityTypeConfig(graphNodeTypeKey(nodeMap.get(edge.target))).color,
+        getEntityTypeConfig(nodeMap.get(edge.target)?.type ?? '').color,
       );
       vertices.set([source.x, source.y, -0.2, target.x, target.y, -0.2], index * 6);
       colors.set(

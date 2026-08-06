@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EntityStatus } from '@prisma/client';
+import { EntityStatus, EntityType } from '@prisma/client';
 import { resolvedMediaUrl, type ResolvedMediaPayload } from '../media/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -56,17 +56,21 @@ type GraphEdgePayload = {
 export class EntityGraphService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private adminKnowledgeKindLabel(kind: string): string {
-    const labels: Record<string, string> = {
-      PERSON: 'People',
-      WORK: 'Works',
-      ABSTRACTION: 'Ideas & contexts',
-      EVENT: 'Events',
-      PLACE: 'Places',
-      ORGANIZATION: 'Organizations',
+  private workspaceEntityTypeLabel(type: EntityType, locale?: string): string {
+    const labels: Record<EntityType, [string, string]> = {
+      ARTWORK: ['Obra', 'Artwork'],
+      ARTIST: ['Artista', 'Artist'],
+      ARTICLE: ['Artículo', 'Article'],
+      CONCEPT: ['Concepto', 'Concept'],
+      MOVEMENT: ['Movimiento', 'Movement'],
+      PERIOD: ['Periodo', 'Period'],
+      TEXT: ['Texto', 'Text'],
+      PLACE: ['Lugar', 'Place'],
+      EVENT: ['Evento', 'Event'],
+      ORGANIZATION: ['Organización', 'Organization'],
     };
 
-    return labels[kind] ?? kind;
+    return labels[type][locale?.toLowerCase().startsWith('en') ? 1 : 0];
   }
 
   private graphMediaInclude(locale?: string) {
@@ -256,17 +260,7 @@ export class EntityGraphService {
           },
         })
       : [];
-    const entityKinds = Array.from(
-      new Set(
-        entities
-          .map((entity) =>
-            String(entity.kind ?? entity.type ?? 'ENTITY')
-              .trim()
-              .toUpperCase(),
-          )
-          .filter(Boolean),
-      ),
-    ).sort();
+    const entityTypes = Object.values(EntityType);
     const nodes: GraphNodePayload[] = [
       {
         id: 'workspace-center-jano',
@@ -281,15 +275,15 @@ export class EntityGraphService {
           endYear: null,
         },
       },
-      ...entityKinds.map((kind) => ({
-        id: `workspace-kind-${kind}`,
-        label: this.adminKnowledgeKindLabel(kind),
-        type: kind,
-        kind,
-        slug: `workspace-kind-${kind.toLowerCase()}`,
+      ...entityTypes.map((type) => ({
+        id: `workspace-type-${type}`,
+        label: this.workspaceEntityTypeLabel(type, locale),
+        type,
+        kind: null,
+        slug: `workspace-type-${type.toLowerCase()}`,
         image: null,
         metadata: {
-          summary: `Cluster editorial de ${this.adminKnowledgeKindLabel(kind)} en JANO.`,
+          summary: `Tipo editorial ${this.workspaceEntityTypeLabel(type, locale)} en JANO.`,
           startYear: null,
           endYear: null,
         },
@@ -298,11 +292,11 @@ export class EntityGraphService {
     ];
     const edgesMap = new Map<string, GraphEdgePayload>();
 
-    for (const kind of entityKinds) {
-      edgesMap.set(`workspace-center-${kind}`, {
-        id: `workspace-center-${kind}`,
+    for (const type of entityTypes) {
+      edgesMap.set(`workspace-center-${type}`, {
+        id: `workspace-center-${type}`,
         source: 'workspace-center-jano',
-        target: `workspace-kind-${kind}`,
+        target: `workspace-type-${type}`,
         relationType: 'ASSOCIATED_WITH',
         label: relationLabel('ASSOCIATED_WITH'),
         directed: false,
@@ -312,19 +306,15 @@ export class EntityGraphService {
     }
 
     for (const entity of entities) {
-      const kind =
-        String(entity.kind ?? entity.type ?? 'ENTITY')
-          .trim()
-          .toUpperCase() || 'ENTITY';
       edgesMap.set(`workspace-hub-${entity.id}`, {
         id: `workspace-hub-${entity.id}`,
-        source: `workspace-kind-${kind}`,
+        source: `workspace-type-${entity.type}`,
         target: entity.id,
         relationType: 'PART_OF',
         label: relationLabel('PART_OF'),
         directed: true,
         weight: 0.7,
-        justification: `${entity.title} pertenece al cluster ${this.adminKnowledgeKindLabel(kind)}.`,
+        justification: `${entity.title} pertenece al tipo editorial ${this.workspaceEntityTypeLabel(entity.type, locale)}.`,
       });
     }
 

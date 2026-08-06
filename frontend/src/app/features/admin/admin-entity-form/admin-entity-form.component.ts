@@ -121,6 +121,16 @@ const DRAFT_TYPES: Array<{
   },
   { type: 'PLACE', label: 'Lugar', description: 'Un lugar cultural, geográfico o institucional.' },
   { type: 'TEXT', label: 'Texto', description: 'Un documento, manifiesto o referencia escrita.' },
+  {
+    type: 'EVENT',
+    label: 'Evento',
+    description: 'Un acontecimiento que sitúa y conecta la cultura.',
+  },
+  {
+    type: 'ORGANIZATION',
+    label: 'Organización',
+    description: 'Una institución, colectivo o agente cultural.',
+  },
 ];
 
 @Component({

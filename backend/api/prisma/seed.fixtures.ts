@@ -51,6 +51,26 @@ export type ExplicitEntityTranslation = {
 } & ExplicitDetailTranslation;
 
 export const ENTITY_EN_BY_SLUG: Record<string, ExplicitEntityTranslation> = {
+  'manifiesto-del-surrealismo': {
+    title: 'Manifesto of Surrealism',
+    shortDescription: "André Breton's foundational text for the formulation of Surrealism.",
+    essay:
+      'Published in 1924, the manifesto formulates the exploration of dreams, automatism, and the unconscious as a path of poetic and cultural transformation.',
+  },
+  'exposicion-internacional-del-surrealismo-1938': {
+    title: 'International Surrealist Exhibition',
+    shortDescription:
+      'A 1938 exhibition that made Surrealism visible as a collective and scenographic practice.',
+    essay:
+      'The Paris exhibition brought together works, objects, and spatial devices to turn the display into a shared surrealist experience.',
+  },
+  bauhaus: {
+    title: 'Bauhaus',
+    shortDescription:
+      'A German school that brought together art, design, architecture, and modern production.',
+    essay:
+      'The Bauhaus combined teaching, workshops, and experimentation to reconsider the relationship between form, technique, industry, and everyday life.',
+  },
   'siglo-xix': {
     title: '19th Century',
     shortDescription: 'Historical and artistic period between 1801 and 1900.',

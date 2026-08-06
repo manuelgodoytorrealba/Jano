@@ -207,6 +207,27 @@ describe('EntityReadService.list filters', () => {
     });
   });
 
+  it('connects every entity type to the JANO workspace center before entity nodes', async () => {
+    const graph = await graphService.adminWorkspaceGraph('es');
+    const typeHubs = graph.nodes.filter((node) => node.id.startsWith('workspace-type-'));
+
+    expect(typeHubs.map((node) => node.type)).toEqual([
+      'ARTWORK',
+      'ARTIST',
+      'ARTICLE',
+      'CONCEPT',
+      'MOVEMENT',
+      'PERIOD',
+      'TEXT',
+      'PLACE',
+      'EVENT',
+      'ORGANIZATION',
+    ]);
+    expect(graph.edges.filter((edge) => edge.source === 'workspace-center-jano')).toHaveLength(
+      typeHubs.length,
+    );
+  });
+
   it('filters by a canonical taxonomy term', async () => {
     await catalogService.list({
       taxonomy: 'person-role',

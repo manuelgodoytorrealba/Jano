@@ -1,5 +1,5 @@
 import { GraphResponseDto } from '../../../core/api/graph.models';
-import { graphNodeTypeKey, GraphPoint } from '../../graph/graph.models';
+import { GraphPoint } from '../../graph/graph.models';
 
 const FULL_CIRCLE = Math.PI * 2;
 
@@ -17,19 +17,22 @@ export function createAdminGlobalGraphLayout(graph: GraphResponseDto): AdminGlob
   const groups = new Map<string, typeof entities>();
 
   for (const node of entities) {
-    const group = groups.get(graphNodeTypeKey(node)) ?? [];
+    const group = groups.get(node.type) ?? [];
     group.push(node);
-    groups.set(graphNodeTypeKey(node), group);
+    groups.set(node.type, group);
   }
 
-  const types = [...groups.keys()].sort();
+  const types = graph.nodes
+    .filter((node) => node.id.startsWith('workspace-type-'))
+    .map((node) => node.type)
+    .sort();
   const orbit = Math.max(300, 170 + Math.sqrt(entities.length) * 42);
   const sectorSize = FULL_CIRCLE / Math.max(types.length, 1);
 
   types.forEach((type, typeIndex) => {
     const angle = typeIndex * sectorSize - Math.PI / 2;
-    const anchor = { x: Math.cos(angle) * orbit * 0.38, y: Math.sin(angle) * orbit * 0.38 };
-    const hubId = `workspace-kind-${type}`;
+    const anchor = { x: Math.cos(angle) * orbit * 0.3, y: Math.sin(angle) * orbit * 0.3 };
+    const hubId = `workspace-type-${type}`;
     positions[hubId] = anchor;
 
     [...(groups.get(type) ?? [])]

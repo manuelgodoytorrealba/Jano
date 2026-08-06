@@ -7,6 +7,8 @@ export type PublicEntityType =
   | 'CONCEPT'
   | 'PLACE'
   | 'TEXT'
+  | 'EVENT'
+  | 'ORGANIZATION'
   | string;
 
 export type PublicKnowledgeEntityKind =

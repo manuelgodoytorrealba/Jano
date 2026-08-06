@@ -39,7 +39,17 @@ function getAdminCredentials() {
 type BaseEntity = { id: string; slug: string; title: string };
 
 type CreateEntityWithMediaInput = {
-  type: 'ARTWORK' | 'ARTIST' | 'ARTICLE' | 'MOVEMENT' | 'PERIOD' | 'CONCEPT' | 'PLACE' | 'TEXT';
+  type:
+    | 'ARTWORK'
+    | 'ARTIST'
+    | 'ARTICLE'
+    | 'MOVEMENT'
+    | 'PERIOD'
+    | 'CONCEPT'
+    | 'PLACE'
+    | 'TEXT'
+    | 'EVENT'
+    | 'ORGANIZATION';
   title: string;
   slug: string;
   summary?: string;
@@ -2221,6 +2231,40 @@ async function main() {
       'Las vanguardias modernas conectan Picasso, Miró, Dalí, Duchamp y Warhol con cubismo, surrealismo, dadaísmo, ciudad y cultura de masas.',
     contentLevel: 'BASIC',
   });
+  const surrealismManifesto = await createEntityWithOptionalPrimaryMedia({
+    type: 'TEXT',
+    title: 'Manifiesto del surrealismo',
+    slug: 'manifiesto-del-surrealismo',
+    summary: 'Texto fundacional de André Breton para la formulación del Surrealismo.',
+    content:
+      'Publicado en 1924, el manifiesto formula la exploración del sueño, el automatismo y el inconsciente como una vía de transformación poética y cultural.',
+    startYear: 1924,
+    endYear: 1924,
+    contentLevel: 'INTERMEDIATE',
+  });
+  const surrealismExhibition = await createEntityWithOptionalPrimaryMedia({
+    type: 'EVENT',
+    title: 'Exposición Internacional del Surrealismo',
+    slug: 'exposicion-internacional-del-surrealismo-1938',
+    summary:
+      'Exposición de 1938 que hizo visible la dimensión colectiva y escenográfica del Surrealismo.',
+    content:
+      'La exposición parisina reunió obras, objetos y dispositivos espaciales para convertir la muestra en una experiencia surrealista compartida.',
+    startYear: 1938,
+    endYear: 1938,
+    contentLevel: 'INTERMEDIATE',
+  });
+  const bauhaus = await createEntityWithOptionalPrimaryMedia({
+    type: 'ORGANIZATION',
+    title: 'Bauhaus',
+    slug: 'bauhaus',
+    summary: 'Escuela alemana que articuló arte, diseño, arquitectura y producción moderna.',
+    content:
+      'La Bauhaus reunió enseñanza, talleres y experimentación para reconsiderar la relación entre forma, técnica, industria y vida cotidiana.',
+    startYear: 1919,
+    endYear: 1933,
+    contentLevel: 'INTERMEDIATE',
+  });
 
   console.log('🔗 Creating source refs...');
 
@@ -3031,6 +3075,27 @@ async function main() {
   );
   await rel(articleAvant.id, dadaismo.id, 'MENTIONS', 0.8, 'El Dadaísmo es una ruta de entrada.');
   await rel(articleAvant.id, popArt.id, 'MENTIONS', 0.8, 'El Pop Art es una ruta de entrada.');
+  await rel(
+    surrealismManifesto.id,
+    surrealismo.id,
+    'RELATED_TO',
+    1,
+    'El manifiesto formula una de las bases textuales del movimiento.',
+  );
+  await rel(
+    surrealismExhibition.id,
+    surrealismo.id,
+    'RELATED_TO',
+    0.95,
+    'La exposición llevó el lenguaje surrealista al espacio público.',
+  );
+  await rel(
+    bauhaus.id,
+    arteModerno.id,
+    'RELATED_TO',
+    0.95,
+    'La escuela es una institución decisiva para el desarrollo del arte y diseño modernos.',
+  );
 
   const discoveryTags = [
     ['guerra', 'Guerra', [guerra, guernica, tresDeMayo, saturno, articleWar]],
@@ -3212,6 +3277,65 @@ async function main() {
       },
       sortOrder: 6,
       entities: [prado, reinaSofia, moma, guggenheimBilbao],
+    },
+    {
+      slug: 'text',
+      title: 'Textos',
+      subtitle: 'Fuentes escritas',
+      description: 'Manifiestos, crítica y documentos que amplían la conversación cultural.',
+      ctaLabel: 'Explorar textos',
+      ctaRoute: '/entities/text',
+      imageUrl: '/assets/home/concept.jpg',
+      translations: {
+        en: {
+          title: 'Texts',
+          subtitle: 'Written sources',
+          description: 'Manifestos, criticism and documents that extend the cultural conversation.',
+          ctaLabel: 'Explore texts',
+        },
+      },
+      sortOrder: 7,
+      entities: [surrealismManifesto],
+    },
+    {
+      slug: 'event',
+      title: 'Eventos',
+      subtitle: 'Momentos culturales',
+      description: 'Exposiciones, encuentros y momentos que sitúan la cultura en el tiempo.',
+      ctaLabel: 'Explorar eventos',
+      ctaRoute: '/entities/event',
+      imageUrl: '/assets/home/movement.jpg',
+      translations: {
+        en: {
+          title: 'Events',
+          subtitle: 'Cultural moments',
+          description: 'Exhibitions, encounters and moments that place culture in time.',
+          ctaLabel: 'Explore events',
+        },
+      },
+      sortOrder: 8,
+      entities: [surrealismExhibition],
+    },
+    {
+      slug: 'organization',
+      title: 'Organizaciones',
+      subtitle: 'Agentes culturales',
+      description:
+        'Instituciones, colectivos y agentes culturales que hacen posibles las conexiones.',
+      ctaLabel: 'Explorar organizaciones',
+      ctaRoute: '/entities/organization',
+      imageUrl: '/assets/home/museum-room.jpg',
+      translations: {
+        en: {
+          title: 'Organizations',
+          subtitle: 'Cultural agents',
+          description:
+            'Institutions, collectives and cultural agents that make connections possible.',
+          ctaLabel: 'Explore organizations',
+        },
+      },
+      sortOrder: 9,
+      entities: [bauhaus],
     },
   ];
 

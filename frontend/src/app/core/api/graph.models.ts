@@ -8,6 +8,8 @@ export type GraphEntityType =
   | 'PERIOD'
   | 'PLACE'
   | 'TEXT'
+  | 'EVENT'
+  | 'ORGANIZATION'
   | string;
 
 export interface GraphNodeMetadata {
