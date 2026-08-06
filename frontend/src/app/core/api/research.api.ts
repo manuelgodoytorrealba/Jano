@@ -470,6 +470,32 @@ export type ResearchProject = ResearchProjectSummary & {
   outlineSections: ResearchOutlineSection[];
 };
 
+export type ResearchAssistantSuggestion = {
+  title: string;
+  rationale: string;
+  excerptIds: string[];
+};
+
+export type ResearchAssistantMessage = {
+  id: string;
+  role: 'USER' | 'ASSISTANT';
+  content: string;
+  snapshot: unknown;
+  createdAt: string;
+};
+
+export type ResearchSectionAssistant = {
+  threadId: string;
+  provider: { provider: string; model: string; version?: string };
+  messages: ResearchAssistantMessage[];
+};
+
+export type ResearchAssistantResponse = {
+  message: ResearchAssistantMessage | null;
+  output: { answer: string; suggestions: ResearchAssistantSuggestion[] };
+  provider: { provider: string; model: string; version?: string };
+};
+
 export type RunResearchJobResult =
   | { processed: false }
   | { processed: true; jobId: string; status: ResearchJobStatus };
@@ -529,6 +555,31 @@ export class ResearchApi {
 
   clearProjectCover(projectId: string) {
     return this.http.delete<ResearchProject>(`${this.baseUrl}/${projectId}/cover`);
+  }
+
+  getSectionAssistant(projectId: string, sectionId: string) {
+    return this.http.get<ResearchSectionAssistant>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/assistant`,
+    );
+  }
+
+  suggestForSection(projectId: string, sectionId: string) {
+    return this.http.post<ResearchAssistantResponse>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/assistant/suggestions`,
+      {},
+    );
+  }
+
+  askSectionAssistant(
+    projectId: string,
+    sectionId: string,
+    message: string,
+    conversationStartedAt?: string,
+  ) {
+    return this.http.post<ResearchAssistantResponse>(
+      `${this.baseUrl}/${projectId}/outline/sections/${sectionId}/assistant/messages`,
+      { message, conversationStartedAt },
+    );
   }
 
   updateOutlineSection(

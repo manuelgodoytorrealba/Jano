@@ -1,0 +1,91 @@
+<section class="section-assistant" aria-label="Asistente IA de la sección">
+  <div class="section-assistant__intro">
+    <span aria-hidden="true">✦</span>
+    <p>
+      Trabajo con el objetivo, {{ materialCount }} materiales, {{ questionCount }} preguntas y
+      {{ excerptCount }} extractos de esta sección.
+    </p>
+  </div>
+
+  @if (conversationStarted) {
+    <div class="section-assistant__actions">
+      <button type="button" (click)="newConversation()" [disabled]="loading">
+        Nueva conversación
+      </button>
+      <button type="button" (click)="generateOtherQuestions()" [disabled]="loading">
+        Generar otras 3
+      </button>
+    </div>
+  }
+
+  @if (!conversationStarted) {
+    @if (suggestions.length) {
+      <div class="section-assistant__suggestions">
+        <p>Preguntas para abrir la investigación</p>
+        @for (suggestion of suggestions; track suggestion.title) {
+          <button type="button" (click)="askSuggestion(suggestion)" [disabled]="loading">
+            <strong>{{ suggestion.title }}</strong>
+          </button>
+        }
+      </div>
+      <button
+        type="button"
+        class="section-assistant__other"
+        (click)="generateOtherQuestions()"
+        [disabled]="loading"
+      >
+        Generar otras 3 preguntas
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="section-assistant__generate"
+        (click)="generateSuggestions()"
+        [disabled]="loading"
+      >
+        @if (loading) {
+          <span>Generando preguntas</span
+          ><span class="section-assistant__dots" aria-label="Generando preguntas"
+            ><i></i><i></i><i></i
+          ></span>
+        } @else {
+          Generar preguntas
+        }
+      </button>
+    }
+  }
+
+  @if (conversationStarted && (messages.length || loading)) {
+    <ol class="section-assistant__messages">
+      @for (message of messages; track message.id) {
+        <li [class.section-assistant__message--user]="message.role === 'USER'">
+          {{ message.content }}
+        </li>
+      }
+      @if (loading) {
+        <li class="section-assistant__thinking" aria-label="El asistente está respondiendo">
+          <span></span><span></span><span></span>
+        </li>
+      }
+    </ol>
+  }
+
+  @if (error) {
+    <p class="section-assistant__error">{{ error }}</p>
+  }
+  <form (ngSubmit)="ask()">
+    <textarea
+      name="assistantPrompt"
+      [(ngModel)]="prompt"
+      (keydown.enter)="submitOnEnter($event)"
+      placeholder="Pregunta lo que necesites sobre esta sección o sus fuentes…"
+    ></textarea>
+    <button type="submit" [disabled]="loading || !prompt.trim()">↑</button>
+  </form>
+  <small
+    >IA contextual
+    @if (provider) {
+      · {{ provider }}
+    }
+  </small>
+</section>

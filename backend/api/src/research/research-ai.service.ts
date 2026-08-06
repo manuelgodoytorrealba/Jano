@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import {
   Prisma,
@@ -6,7 +6,7 @@ import {
   ResearchFindingProposalType,
   type KnowledgeEntityKind,
 } from '@prisma/client';
-import { AIProvider } from '../ai/ai.provider';
+import { AIProvider, type AIProviderPort } from '../ai/ai.provider';
 import { PrismaService } from '../prisma/prisma.service';
 
 const EXTRACT_FINDINGS_TASK = 'research.extract_findings';
@@ -55,7 +55,7 @@ type FindingProposalOutput = {
 export class ResearchAIService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly provider: AIProvider,
+    @Inject(AIProvider) private readonly provider: AIProviderPort,
   ) {}
 
   async extractFindings(job: ExtractFindingsJob): Promise<void> {

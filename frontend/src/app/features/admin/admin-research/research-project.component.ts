@@ -24,6 +24,7 @@ import { ResearchEvidenceCaptureComponent } from './research-evidence-capture.co
 import { ResearchGraphComponent } from './research-graph.component';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
+import { ResearchSectionAssistantComponent } from './research-section-assistant.component';
 
 const MAX_PDF_SIZE_BYTES = 300 * 1024 * 1024;
 const MATERIAL_POLL_INTERVAL_MS = 2000;
@@ -43,6 +44,7 @@ const MATERIAL_POLL_INTERVAL_MS = 2000;
     ResearchMaterialReaderComponent,
     MaterialContextMenuComponent,
     RichTextComponent,
+    ResearchSectionAssistantComponent,
   ],
   templateUrl: './research-project.component.html',
   styleUrl: './research-project.component.scss',
@@ -80,6 +82,7 @@ export class ResearchProjectComponent implements OnDestroy {
   workspaceNotes = '';
   sectionImageUploading = false;
   projectCoverUploading = false;
+  sectionSidePanel: 'context' | 'assistant' = 'context';
   draftContent = '';
   draftEditorContent = '';
   savingDraft = false;
@@ -859,6 +862,7 @@ export class ResearchProjectComponent implements OnDestroy {
     this.selectedSectionMaterialVersionId = '';
     this.questionText = '';
     this.reviewExcerpt = null;
+    this.sectionSidePanel = 'context';
   }
 
   private uploadSectionImage(

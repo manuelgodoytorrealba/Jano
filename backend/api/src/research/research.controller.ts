@@ -49,6 +49,8 @@ import {
   type UploadedResearchPdf,
 } from './research-pdf-upload.config';
 import { ResearchService } from './research.service';
+import { AskResearchAssistantDto } from './dto/ask-research-assistant.dto';
+import { ResearchSectionAssistantService } from './research-section-assistant.service';
 import { unlink } from 'fs/promises';
 import { MEDIA_IMAGE_UPLOAD_OPTIONS } from '../media/image-upload.config';
 import type { UploadedImageFile } from '../media/entity-media.service';
@@ -62,6 +64,7 @@ export class ResearchController {
     private readonly service: ResearchService,
     private readonly jobRunner: ResearchJobRunnerService,
     private readonly drafts: ResearchDraftService,
+    private readonly assistant: ResearchSectionAssistantService,
   ) {}
 
   @Get()
@@ -174,6 +177,25 @@ export class ResearchController {
     @Body() dto: CreateResearchQuestionDto,
   ) {
     return this.service.createQuestion(id, sectionId, dto);
+  }
+
+  @Get(':id/outline/sections/:sectionId/assistant')
+  getSectionAssistant(@Param('id') id: string, @Param('sectionId') sectionId: string) {
+    return this.assistant.get(id, sectionId);
+  }
+
+  @Post(':id/outline/sections/:sectionId/assistant/suggestions')
+  suggestForSection(@Param('id') id: string, @Param('sectionId') sectionId: string) {
+    return this.assistant.suggest(id, sectionId);
+  }
+
+  @Post(':id/outline/sections/:sectionId/assistant/messages')
+  askSectionAssistant(
+    @Param('id') id: string,
+    @Param('sectionId') sectionId: string,
+    @Body() dto: AskResearchAssistantDto,
+  ) {
+    return this.assistant.ask(id, sectionId, dto.message, dto.conversationStartedAt);
   }
 
   @Post(':id/outline/sections/:sectionId/materials')

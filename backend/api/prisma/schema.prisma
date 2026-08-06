@@ -151,6 +151,11 @@ enum ResearchOutlineSectionStatus {
   COMPLETED
 }
 
+enum ResearchAssistantMessageRole {
+  USER
+  ASSISTANT
+}
+
 enum ResearchFindingStatus {
   PROPOSED
   ACCEPTED
@@ -773,6 +778,7 @@ model ResearchProject {
   entities         ResearchEntity[]
   libraryMaterials ResearchLibraryMaterial[]
   relations        ResearchRelation[]
+  assistantThreads ResearchAssistantThread[]
 
   owner      User  @relation("ResearchProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
   archivedBy User? @relation("ResearchProjectArchivedBy", fields: [archivedById], references: [id], onDelete: SetNull)
@@ -871,9 +877,38 @@ model ResearchOutlineSection {
   excerptReferences ResearchOutlineSectionExcerpt[]
   materialReferences ResearchOutlineSectionMaterial[]
   drafts             ResearchDraft[]
+  assistantThreads   ResearchAssistantThread[]
 
   @@index([projectId, parentSectionId, sortOrder])
   @@index([parentSectionId])
+}
+
+model ResearchAssistantThread {
+  id        String   @id @default(cuid())
+  projectId String
+  sectionId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project  ResearchProject        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  section  ResearchOutlineSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  messages ResearchAssistantMessage[]
+
+  @@unique([projectId, sectionId])
+  @@index([sectionId, updatedAt])
+}
+
+model ResearchAssistantMessage {
+  id        String                      @id @default(cuid())
+  threadId  String
+  role      ResearchAssistantMessageRole
+  content   String
+  snapshot  Json
+  createdAt DateTime                    @default(now())
+
+  thread ResearchAssistantThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
 }
 
 model ResearchDraft {

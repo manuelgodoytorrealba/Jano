@@ -654,13 +654,41 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
   gap: 18px;
-  align-items: start;
+  align-items: stretch;
   margin-top: 28px;
 }
 
 .research-project__section-dossier {
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: max(680px, calc(100vh - 280px));
+  min-height: 0;
   gap: 12px;
+}
+
+.research-project__section-side-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--research-border-soft);
+  border-radius: 10px;
+  background: var(--research-control);
+}
+
+.research-project__section-side-tabs button {
+  padding: 7px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--research-text-muted);
+  font: inherit;
+  font-size: 11px;
+}
+
+.research-project__section-side-tabs button.is-active {
+  background: var(--research-control-hover);
+  color: var(--research-text);
 }
 
 .research-project__dossier-panel {
@@ -700,6 +728,11 @@ h1 {
 .research-project__objective-panel textarea {
   min-height: 64px;
   font-size: 13px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.research-project__objective-panel textarea::-webkit-scrollbar {
+  display: none;
 }
 
 .research-project__material-picker {
@@ -850,6 +883,10 @@ h1 {
 @media (max-width: 980px) {
   .research-project__section-workspace {
     grid-template-columns: 1fr;
+  }
+
+  .research-project__section-dossier {
+    height: auto;
   }
 
   .research-project__draft {

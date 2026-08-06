@@ -27,6 +27,9 @@ El **dossier editorial de una Section** es una selección contextual y trazable 
 - Sources, Materials y LibraryExcerpt conservan su ownership en Biblioteca; Evidence, Claims, Entities y Relations lo conservan en Research Knowledge.
 - Un mismo objeto puede ser relevante para varias Sections sin duplicarse.
 - El dossier organiza el trabajo editorial; no acepta, promociona ni transforma conocimiento.
+- La asistencia editorial puede conservar un hilo privado por Section. Cada interacción conserva el
+  snapshot del dossier efectivo con el que se generó, incluidas sus referencias documentales; no es
+  Knowledge, no modifica Drafts y no sustituye la revisión humana.
 
 ### Contrato de selección
 

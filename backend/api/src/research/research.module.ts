@@ -10,6 +10,7 @@ import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchService } from './research.service';
 import { ResearchOutlineService } from './research-outline.service';
 import { ResearchDraftService } from './research-draft.service';
+import { ResearchSectionAssistantService } from './research-section-assistant.service';
 
 import { ResearchOwnerGuard } from './research-owner.guard';
 @Module({
@@ -19,6 +20,7 @@ import { ResearchOwnerGuard } from './research-owner.guard';
     ResearchOwnerGuard,
     ResearchOutlineService,
     ResearchDraftService,
+    ResearchSectionAssistantService,
     ResearchService,
     ResearchJobRunnerService,
     ResearchAIService,

@@ -4,6 +4,7 @@ import { ResearchController } from './research.controller';
 import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchService } from './research.service';
 import { ResearchDraftService } from './research-draft.service';
+import { ResearchSectionAssistantService } from './research-section-assistant.service';
 
 describe('ResearchController', () => {
   const service = {
@@ -31,11 +32,16 @@ describe('ResearchController', () => {
     create: jest.fn(),
     revise: jest.fn(),
   } as unknown as jest.Mocked<ResearchDraftService>;
+  const assistant = {
+    get: jest.fn(),
+    suggest: jest.fn(),
+    ask: jest.fn(),
+  } as unknown as jest.Mocked<ResearchSectionAssistantService>;
   let controller: ResearchController;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    controller = new ResearchController(service, jobRunner, drafts);
+    controller = new ResearchController(service, jobRunner, drafts, assistant);
   });
 
   it('is admin-only', () => {

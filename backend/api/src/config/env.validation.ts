@@ -10,6 +10,9 @@ type AppEnv = {
   DATABASE_URL: string;
   MEDIA_PUBLIC_BASE_URL: string;
   JWT_SECRET: string;
+  AI_PROVIDER: 'noop' | 'ollama';
+  OLLAMA_BASE_URL: string;
+  OLLAMA_MODEL: string;
 };
 
 const DEV_FALLBACK_JWT_SECRET = 'dev-secret-change-me';
@@ -60,6 +63,12 @@ function readNodeEnv(env: RawEnv): AppEnv['NODE_ENV'] {
   throw new Error(error(`Invalid env var: NODE_ENV must be development, production or test`));
 }
 
+function readAIProvider(env: RawEnv): AppEnv['AI_PROVIDER'] {
+  const provider = readString(env, 'AI_PROVIDER') ?? 'noop';
+  if (provider === 'noop' || provider === 'ollama') return provider;
+  throw new Error(error('Invalid env var: AI_PROVIDER must be noop or ollama'));
+}
+
 function logEnvSummary(env: AppEnv, usingFallbackJwtSecret: boolean) {
   if (hasLoggedEnvSummary) {
     return;
@@ -88,6 +97,9 @@ export function validateEnv(env: RawEnv): AppEnv {
   const DATABASE_URL = requireString(env, 'DATABASE_URL');
   const MEDIA_PUBLIC_BASE_URL =
     readString(env, 'MEDIA_PUBLIC_BASE_URL') ?? `http://localhost:${PORT}`;
+  const AI_PROVIDER = readAIProvider(env);
+  const OLLAMA_BASE_URL = readString(env, 'OLLAMA_BASE_URL') ?? 'http://127.0.0.1:11434';
+  const OLLAMA_MODEL = readString(env, 'OLLAMA_MODEL') ?? 'qwen2.5:7b';
 
   let JWT_SECRET = readString(env, 'JWT_SECRET');
   let usingFallbackJwtSecret = false;
@@ -109,6 +121,9 @@ export function validateEnv(env: RawEnv): AppEnv {
     DATABASE_URL,
     MEDIA_PUBLIC_BASE_URL,
     JWT_SECRET,
+    AI_PROVIDER,
+    OLLAMA_BASE_URL,
+    OLLAMA_MODEL,
   };
 
   logEnvSummary(validatedEnv, usingFallbackJwtSecret);
