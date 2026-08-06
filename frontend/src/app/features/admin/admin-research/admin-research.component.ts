@@ -631,6 +631,44 @@ export class AdminResearchComponent {
     this.refresh$.next();
   }
 
+  setProjectStatus(project: ResearchProjectSummary, status: ResearchProjectStatus): void {
+    if (project.status === status || this.actionBusy) return;
+    this.actionBusy = true;
+    this.actionError = '';
+    this.api.updateProjectStatus(project.id, status).subscribe({
+      next: () => {
+        this.actionBusy = false;
+        this.refresh$.next();
+      },
+      error: (err) => {
+        this.actionBusy = false;
+        this.actionError = err?.error?.message ?? 'No se pudo cambiar el estado.';
+      },
+    });
+  }
+
+  deleteProject(project: ResearchProjectSummary): void {
+    if (
+      this.actionBusy ||
+      !this.document.defaultView?.confirm(
+        `Eliminar “${project.title}” y todo su trabajo privado? Esta acción no se puede deshacer.`,
+      )
+    )
+      return;
+    this.actionBusy = true;
+    this.actionError = '';
+    this.api.deleteProject(project.id).subscribe({
+      next: () => {
+        this.actionBusy = false;
+        this.refresh$.next();
+      },
+      error: (err) => {
+        this.actionBusy = false;
+        this.actionError = err?.error?.message ?? 'No se pudo eliminar la investigación.';
+      },
+    });
+  }
+
   filteredLibraryMaterials(materials: LibraryMaterial[]): LibraryMaterial[] {
     const query = this.librarySearch.trim().toLowerCase();
     return materials.filter((material) => {

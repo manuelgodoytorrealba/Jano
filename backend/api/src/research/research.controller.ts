@@ -26,6 +26,7 @@ import { CreateResearchLibraryExcerptDto } from './dto/create-research-library-e
 import { CreateLibraryMaterialDto } from '../library/dto/create-library-material.dto';
 import { CreateResearchPdfMaterialDto } from './dto/create-research-pdf-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
+import { UpdateResearchProjectStatusDto } from './dto/update-research-project-status.dto';
 import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
 import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
 import { AddResearchOutlineSectionMaterialDto } from './dto/add-research-outline-section-material.dto';
@@ -124,6 +125,20 @@ export class ResearchController {
   @Post(':id/archive')
   archive(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     return this.service.archiveProject(id, req.user.userId);
+  }
+
+  @Patch(':id/status')
+  updateStatus(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: UpdateResearchProjectStatusDto,
+  ) {
+    return this.service.updateProjectStatus(id, req.user.userId, dto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.service.deleteProject(id);
   }
 
   @Post(':id/outline/sections')

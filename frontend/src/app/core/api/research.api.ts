@@ -625,6 +625,14 @@ export class ResearchApi {
     return this.http.post<ResearchProjectSummary>(this.baseUrl, data);
   }
 
+  updateProjectStatus(projectId: string, status: ResearchProjectStatus) {
+    return this.http.patch<ResearchProject>(`${this.baseUrl}/${projectId}/status`, { status });
+  }
+
+  deleteProject(projectId: string) {
+    return this.http.delete<{ deleted: true }>(`${this.baseUrl}/${projectId}`);
+  }
+
   addOutlineSectionExcerpt(projectId: string, sectionId: string, libraryExcerptId: string) {
     return this.http.post<ResearchProject>(
       this.baseUrl + '/' + projectId + '/outline/sections/' + sectionId + '/library-excerpts',

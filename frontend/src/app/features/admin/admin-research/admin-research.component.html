@@ -229,6 +229,12 @@
               </select>
             </div>
 
+            @if (actionError) {
+              <div class="admin-research__feedback admin-research__feedback--error">
+                {{ actionError }}
+              </div>
+            }
+
             @if (vm.state === 'loading') {
               <div class="admin-research__state">Cargando investigaciones.</div>
             } @else if (vm.state === 'error') {
@@ -236,29 +242,47 @@
             } @else if (vm.projects.length) {
               <div class="admin-research__list" role="list">
                 @for (project of vm.projects; track project.id) {
-                  <a
+                  <article
                     class="research-card"
                     role="listitem"
-                    [routerLink]="['/admin/research', project.id]"
                     [class.research-card--selected]="vm.selected?.id === project.id"
                   >
-                    @if (project.coverImageUrl) {
-                      <img class="research-card__cover" [src]="project.coverImageUrl" alt="" />
-                    } @else {
-                      <span class="research-card__marker" aria-hidden="true">R</span>
-                    }
-                    <span class="research-card__body">
-                      <strong>{{ project.title }}</strong>
-                      <span>{{ project.objective }}</span>
-                      <small>{{ projectMeta(project) }}</small>
-                    </span>
+                    <a class="research-card__open" [routerLink]="['/admin/research', project.id]">
+                      @if (project.coverImageUrl) {
+                        <img class="research-card__cover" [src]="project.coverImageUrl" alt="" />
+                      } @else {
+                        <span class="research-card__marker" aria-hidden="true">R</span>
+                      }
+                      <span class="research-card__body">
+                        <strong>{{ project.title }}</strong>
+                        <span>{{ project.objective }}</span>
+                        <small>{{ projectMeta(project) }}</small>
+                      </span>
+                    </a>
                     <span class="research-card__side">
-                      <strong>{{ statusLabel(project.status) }}</strong>
+                      <select
+                        [ngModel]="project.status"
+                        [ngModelOptions]="{ standalone: true }"
+                        [disabled]="actionBusy"
+                        [attr.aria-label]="'Estado de ' + project.title"
+                        (ngModelChange)="setProjectStatus(project, $event)"
+                      >
+                        @for (option of statuses.slice(1); track option) {
+                          <option [value]="option">{{ statusLabel(option) }}</option>
+                        }
+                      </select>
                       <time [attr.datetime]="project.lastActiveAt">{{
                         project.lastActiveAt | date: 'dd MMM yyyy'
                       }}</time>
+                      <button
+                        type="button"
+                        [disabled]="actionBusy"
+                        (click)="deleteProject(project)"
+                      >
+                        Eliminar
+                      </button>
                     </span>
-                  </a>
+                  </article>
                 }
               </div>
             } @else {

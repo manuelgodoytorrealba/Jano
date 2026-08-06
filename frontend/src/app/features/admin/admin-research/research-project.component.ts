@@ -99,6 +99,7 @@ export class ResearchProjectComponent implements OnDestroy {
   addingMaterial = false;
   materialMessage = '';
   selectedMaterialId = '';
+  selectedLibraryMaterialId = '';
   selectedSectionMaterialVersionId = '';
   materialMenu: MaterialMenuState | null = null;
   focusMode = false;
@@ -186,6 +187,31 @@ export class ResearchProjectComponent implements OnDestroy {
         this.addingMaterial = false;
         this.materialMessage = 'No se pudo incorporar el material.';
       },
+    });
+  }
+
+  availableLibraryMaterials(
+    project: ResearchProject,
+    materials: LibraryMaterial[],
+  ): LibraryMaterial[] {
+    const associated = new Set(project.materials.map((material) => material.id));
+    return materials.filter((material) => !associated.has(material.id));
+  }
+
+  associateLibraryMaterial(project: ResearchProject, materials: LibraryMaterial[]): void {
+    const materialId = this.selectedLibraryMaterialId;
+    if (
+      !materialId ||
+      !this.availableLibraryMaterials(project, materials).some((item) => item.id === materialId)
+    )
+      return;
+    this.api.associateLibraryMaterial(project.id, materialId).subscribe({
+      next: () => {
+        this.selectedLibraryMaterialId = '';
+        this.materialMessage = 'Material añadido al corpus.';
+        this.refresh$.next();
+      },
+      error: () => (this.materialMessage = 'No se pudo añadir el material al corpus.'),
     });
   }
 
@@ -389,7 +415,7 @@ export class ResearchProjectComponent implements OnDestroy {
   saveSectionTitle(
     project: ResearchProject,
     section: ResearchOutlineSection,
-    input: HTMLInputElement,
+    input: HTMLInputElement | HTMLTextAreaElement,
   ): void {
     const title = input.value.trim();
     if (!title) {

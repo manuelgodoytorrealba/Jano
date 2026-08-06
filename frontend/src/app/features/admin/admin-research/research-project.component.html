@@ -9,7 +9,7 @@
         <nav class="research-project__breadcrumb" aria-label="Miga de pan">
           <a routerLink="/admin/research">Research Studio</a><span>/</span
           ><span>{{ project.title }}</span>
-          <ng-template #materialIntake let-project>
+          <ng-template #materialIntake let-project let-libraryMaterials="libraryMaterials">
             <div class="research-project__workspace-empty">
               <p class="research-project__eyebrow">Corpus de investigación</p>
               <h2>Reúne primero los materiales con los que vas a pensar.</h2>
@@ -17,6 +17,26 @@
                 Incorpora texto, una URL o un PDF al corpus privado. Después crea un índice con
                 secciones nombradas por ti desde el panel de la izquierda.
               </p>
+
+              <form
+                class="research-project__material-picker"
+                (ngSubmit)="associateLibraryMaterial(project, libraryMaterials)"
+              >
+                <select
+                  name="libraryMaterial"
+                  [(ngModel)]="selectedLibraryMaterialId"
+                  aria-label="Añadir material desde Biblioteca"
+                >
+                  <option value="">Añadir desde Biblioteca…</option>
+                  @for (
+                    material of availableLibraryMaterials(project, libraryMaterials);
+                    track material.id
+                  ) {
+                    <option [value]="material.id">{{ material.title }}</option>
+                  }
+                </select>
+                <button type="submit" [disabled]="!selectedLibraryMaterialId">+</button>
+              </form>
 
               <form class="research-project__material-intake" (ngSubmit)="createMaterial(project)">
                 <div class="research-project__material-kinds" aria-label="Tipo de material">
@@ -437,7 +457,10 @@
               @if (corpusView === 'intake') {
                 <ng-container
                   [ngTemplateOutlet]="materialIntake"
-                  [ngTemplateOutletContext]="{ $implicit: project }"
+                  [ngTemplateOutletContext]="{
+                    $implicit: project,
+                    libraryMaterials: vm.libraryMaterials,
+                  }"
                 />
               } @else {
                 <app-research-material-reader
@@ -456,14 +479,16 @@
                 <div class="research-project__draft-heading">
                   <div>
                     <p class="research-project__eyebrow">Draft activo</p>
-                    <input
+                    <textarea
                       id="section-draft-title"
                       class="research-project__draft-title"
                       [ngModel]="section.title"
                       [ngModelOptions]="{ standalone: true }"
                       (blur)="saveSectionTitle(project, section, $any($event.target))"
+                      (keydown.enter)="$event.preventDefault()"
                       aria-label="Título de la Section"
-                    />
+                      rows="2"
+                    ></textarea>
                   </div>
                   <div class="research-project__draft-meta">
                     @if (activeDraft(section)?.currentRevision; as revision) {
@@ -678,171 +703,177 @@
                     [excerptCount]="sectionMaterialExcerptCount(section)"
                   />
                 } @else {
-                  <section
-                    class="research-project__dossier-panel research-project__objective-panel"
-                  >
-                    <p class="research-project__eyebrow">Objetivo</p>
-                    <textarea
-                      name="sectionObjective"
-                      [(ngModel)]="workspaceObjective"
-                      [ngModelOptions]="{ standalone: true }"
-                      (blur)="saveWorkspace(project, section)"
-                      placeholder="¿Qué intenta resolver esta sección?"
-                    ></textarea>
-                  </section>
+                  <div class="research-project__section-context-panels">
+                    <section
+                      class="research-project__dossier-panel research-project__objective-panel"
+                    >
+                      <p class="research-project__eyebrow">Objetivo</p>
+                      <textarea
+                        name="sectionObjective"
+                        [(ngModel)]="workspaceObjective"
+                        [ngModelOptions]="{ standalone: true }"
+                        (blur)="saveWorkspace(project, section)"
+                        placeholder="¿Qué intenta resolver esta sección?"
+                      ></textarea>
+                    </section>
 
-                  <section class="research-project__dossier-panel">
-                    <div class="research-project__dossier-heading">
-                      <h3>Materiales en uso</h3>
-                      <span>{{ section.materialReferences.length }}</span>
-                    </div>
-                    @if (availableSectionMaterials(vm.libraryMaterials, section).length) {
-                      <form
-                        class="research-project__material-picker"
-                        (ngSubmit)="addSectionMaterial(project, section, vm.libraryMaterials)"
-                      >
-                        <select
-                          name="sectionMaterial"
-                          [(ngModel)]="selectedSectionMaterialVersionId"
-                          aria-label="Material de Biblioteca"
+                    <section class="research-project__dossier-panel">
+                      <div class="research-project__dossier-heading">
+                        <h3>Materiales en uso</h3>
+                        <span>{{ section.materialReferences.length }}</span>
+                      </div>
+                      @if (availableSectionMaterials(vm.libraryMaterials, section).length) {
+                        <form
+                          class="research-project__material-picker"
+                          (ngSubmit)="addSectionMaterial(project, section, vm.libraryMaterials)"
                         >
-                          <option value="">Añadir desde Biblioteca…</option>
+                          <select
+                            name="sectionMaterial"
+                            [(ngModel)]="selectedSectionMaterialVersionId"
+                            aria-label="Material de Biblioteca"
+                          >
+                            <option value="">Añadir desde Biblioteca…</option>
+                            @for (
+                              material of availableSectionMaterials(vm.libraryMaterials, section);
+                              track material.id
+                            ) {
+                              <option [value]="material.version?.id">{{ material.title }}</option>
+                            }
+                          </select>
+                          <button type="submit" [disabled]="!selectedSectionMaterialVersionId">
+                            +
+                          </button>
+                        </form>
+                      }
+                      @if (section.materialReferences.length) {
+                        <ol class="research-project__used-materials">
                           @for (
-                            material of availableSectionMaterials(vm.libraryMaterials, section);
-                            track material.id
+                            reference of section.materialReferences;
+                            track reference.materialVersionId
                           ) {
-                            <option [value]="material.version?.id">{{ material.title }}</option>
+                            <li>
+                              <div>
+                                <strong>{{ reference.materialVersion.material.title }}</strong>
+                                <small>
+                                  {{ reference.materialVersion.material.kind }} · versión
+                                  {{ reference.materialVersion.version }}
+                                </small>
+                              </div>
+                              <button
+                                type="button"
+                                (click)="
+                                  removeSectionMaterial(
+                                    project,
+                                    section,
+                                    reference.materialVersionId
+                                  )
+                                "
+                                [attr.aria-label]="
+                                  'Retirar ' + reference.materialVersion.material.title
+                                "
+                              >
+                                ×
+                              </button>
+                            </li>
                           }
-                        </select>
-                        <button type="submit" [disabled]="!selectedSectionMaterialVersionId">
-                          +
-                        </button>
+                        </ol>
+                      } @else {
+                        <p class="research-project__empty-context">
+                          Añade el material que sostiene esta escritura.
+                        </p>
+                      }
+                    </section>
+
+                    <section class="research-project__dossier-panel">
+                      <div class="research-project__dossier-heading">
+                        <h3>Preguntas abiertas</h3>
+                        <span>{{ section.questions.length }}</span>
+                      </div>
+                      <form
+                        class="research-project__question-create research-project__question-create--compact"
+                        (ngSubmit)="addQuestion(project, section)"
+                      >
+                        <input
+                          name="question"
+                          [(ngModel)]="questionText"
+                          placeholder="Añadir una pregunta…"
+                        />
+                        <button type="submit" [disabled]="!questionText.trim()">+</button>
                       </form>
-                    }
-                    @if (section.materialReferences.length) {
-                      <ol class="research-project__used-materials">
+                      @if (section.questions.length) {
+                        <ol class="research-project__open-questions">
+                          @for (question of section.questions; track question.id) {
+                            <li>
+                              <input
+                                [ngModel]="question.text"
+                                [ngModelOptions]="{ standalone: true }"
+                                (blur)="
+                                  updateQuestion(
+                                    project,
+                                    section,
+                                    question,
+                                    $any($event.target).value
+                                  )
+                                "
+                                aria-label="Pregunta abierta"
+                              />
+                              <button
+                                type="button"
+                                (click)="deleteQuestion(project, section, question)"
+                                aria-label="Eliminar pregunta"
+                              >
+                                ×
+                              </button>
+                            </li>
+                          }
+                        </ol>
+                      } @else {
+                        <p class="research-project__empty-context">
+                          Todavía no hay preguntas abiertas.
+                        </p>
+                      }
+                    </section>
+
+                    <details
+                      class="research-project__dossier-panel research-project__material-excerpts"
+                    >
+                      <summary>
+                        <span>Library Excerpts</span>
+                        <span>{{ sectionMaterialExcerptCount(section) }}</span>
+                      </summary>
+                      @if (section.materialReferences.length) {
                         @for (
                           reference of section.materialReferences;
                           track reference.materialVersionId
                         ) {
-                          <li>
-                            <div>
-                              <strong>{{ reference.materialVersion.material.title }}</strong>
-                              <small>
-                                {{ reference.materialVersion.material.kind }} · versión
-                                {{ reference.materialVersion.version }}
-                              </small>
-                            </div>
-                            <button
-                              type="button"
-                              (click)="
-                                removeSectionMaterial(project, section, reference.materialVersionId)
-                              "
-                              [attr.aria-label]="
-                                'Retirar ' + reference.materialVersion.material.title
-                              "
-                            >
-                              ×
-                            </button>
-                          </li>
+                          <section>
+                            <h4>{{ reference.materialVersion.material.title }}</h4>
+                            @if (reference.materialVersion.excerpts.length) {
+                              <ol>
+                                @for (
+                                  excerpt of reference.materialVersion.excerpts;
+                                  track excerpt.id
+                                ) {
+                                  <li>
+                                    <blockquote>{{ excerpt.text }}</blockquote>
+                                    <small>{{ excerpt.locator }}</small>
+                                  </li>
+                                }
+                              </ol>
+                            } @else {
+                              <p class="research-project__empty-context">
+                                Este material todavía no tiene extractos.
+                              </p>
+                            }
+                          </section>
                         }
-                      </ol>
-                    } @else {
-                      <p class="research-project__empty-context">
-                        Añade el material que sostiene esta escritura.
-                      </p>
-                    }
-                  </section>
-
-                  <section class="research-project__dossier-panel">
-                    <div class="research-project__dossier-heading">
-                      <h3>Preguntas abiertas</h3>
-                      <span>{{ section.questions.length }}</span>
-                    </div>
-                    <form
-                      class="research-project__question-create research-project__question-create--compact"
-                      (ngSubmit)="addQuestion(project, section)"
-                    >
-                      <input
-                        name="question"
-                        [(ngModel)]="questionText"
-                        placeholder="Añadir una pregunta…"
-                      />
-                      <button type="submit" [disabled]="!questionText.trim()">+</button>
-                    </form>
-                    @if (section.questions.length) {
-                      <ol class="research-project__open-questions">
-                        @for (question of section.questions; track question.id) {
-                          <li>
-                            <input
-                              [ngModel]="question.text"
-                              [ngModelOptions]="{ standalone: true }"
-                              (blur)="
-                                updateQuestion(
-                                  project,
-                                  section,
-                                  question,
-                                  $any($event.target).value
-                                )
-                              "
-                              aria-label="Pregunta abierta"
-                            />
-                            <button
-                              type="button"
-                              (click)="deleteQuestion(project, section, question)"
-                              aria-label="Eliminar pregunta"
-                            >
-                              ×
-                            </button>
-                          </li>
-                        }
-                      </ol>
-                    } @else {
-                      <p class="research-project__empty-context">
-                        Todavía no hay preguntas abiertas.
-                      </p>
-                    }
-                  </section>
-
-                  <details
-                    class="research-project__dossier-panel research-project__material-excerpts"
-                  >
-                    <summary>
-                      <span>Library Excerpts</span>
-                      <span>{{ sectionMaterialExcerptCount(section) }}</span>
-                    </summary>
-                    @if (section.materialReferences.length) {
-                      @for (
-                        reference of section.materialReferences;
-                        track reference.materialVersionId
-                      ) {
-                        <section>
-                          <h4>{{ reference.materialVersion.material.title }}</h4>
-                          @if (reference.materialVersion.excerpts.length) {
-                            <ol>
-                              @for (
-                                excerpt of reference.materialVersion.excerpts;
-                                track excerpt.id
-                              ) {
-                                <li>
-                                  <blockquote>{{ excerpt.text }}</blockquote>
-                                  <small>{{ excerpt.locator }}</small>
-                                </li>
-                              }
-                            </ol>
-                          } @else {
-                            <p class="research-project__empty-context">
-                              Este material todavía no tiene extractos.
-                            </p>
-                          }
-                        </section>
+                      } @else {
+                        <p class="research-project__empty-context">
+                          Añade materiales para consultar sus extractos.
+                        </p>
                       }
-                    } @else {
-                      <p class="research-project__empty-context">
-                        Añade materiales para consultar sus extractos.
-                      </p>
-                    }
-                  </details>
+                    </details>
+                  </div>
                 }
               </aside>
             </div>

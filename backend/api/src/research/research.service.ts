@@ -5,6 +5,7 @@ import {
   ResearchClaimStatus,
   ResearchJobStatus,
   ResearchJobType,
+  ResearchProjectStatus,
   ResearchProposalReviewState,
   type Prisma,
 } from '@prisma/client';
@@ -18,6 +19,7 @@ import { CreateResearchLibraryExcerptDto } from './dto/create-research-library-e
 import { CreateLibraryMaterialDto } from '../library/dto/create-library-material.dto';
 import { CreateResearchPdfMaterialDto } from './dto/create-research-pdf-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
+import { UpdateResearchProjectStatusDto } from './dto/update-research-project-status.dto';
 import { ReviewResearchProposalDto } from './dto/review-research-proposal.dto';
 import { CreateResearchEntityDto } from './dto/create-research-entity.dto';
 import { CreateResearchRelationDto } from './dto/create-research-relation.dto';
@@ -312,6 +314,26 @@ export class ResearchService {
       data: { status: 'ARCHIVED', archivedAt: new Date(), archivedById: actorId },
     });
     return this.getProject(projectId);
+  }
+
+  async updateProjectStatus(
+    projectId: string,
+    actorId: string,
+    dto: UpdateResearchProjectStatusDto,
+  ) {
+    await this.prisma.researchProject.update({
+      where: { id: projectId },
+      data:
+        dto.status === ResearchProjectStatus.ARCHIVED
+          ? { status: dto.status, archivedAt: new Date(), archivedById: actorId }
+          : { status: dto.status, archivedAt: null, archivedById: null },
+    });
+    return this.getProject(projectId);
+  }
+
+  async deleteProject(projectId: string) {
+    await this.prisma.researchProject.delete({ where: { id: projectId } });
+    return { deleted: true };
   }
 
   async getKnowledge(projectId: string, query: ResearchKnowledgeQuery = {}) {

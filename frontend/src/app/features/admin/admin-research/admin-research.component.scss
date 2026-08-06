@@ -1,5 +1,6 @@
 :host {
   display: block;
+  color-scheme: dark;
   --admin-research-surface: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.16),
@@ -16,6 +17,7 @@
 }
 
 :host-context([data-theme='light']) {
+  color-scheme: light;
   --admin-research-surface: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.64),
@@ -28,6 +30,16 @@
   --admin-research-primary-text: rgba(247, 244, 240, 0.96);
   --admin-research-eyebrow: rgba(40, 45, 52, 0.76);
   --admin-research-shadow: rgba(31, 28, 23, 0.1);
+}
+
+.admin-research select option {
+  background: #242427;
+  color: #f7f4f0;
+}
+
+:host-context([data-theme='light']) .admin-research select option {
+  background: #fff;
+  color: #161412;
 }
 
 .admin-research {
@@ -218,7 +230,7 @@
   border-bottom: 1px solid var(--color-border);
   color: inherit;
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) 132px;
+  grid-template-columns: minmax(0, 1fr) 150px;
   align-items: center;
   gap: 13px;
 }
@@ -242,6 +254,16 @@
   place-items: center;
   font-size: 13px;
   font-weight: 750;
+}
+
+.research-card__open {
+  min-width: 0;
+  color: inherit;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 13px;
+  text-decoration: none;
 }
 
 .research-card__cover {
@@ -281,6 +303,22 @@
 .research-card__side strong {
   color: var(--color-text-faint);
   font-size: 12px;
+}
+
+.research-card__side select,
+.research-card__side button {
+  min-height: 28px;
+  border: 1px solid var(--admin-research-border);
+  border-radius: 7px;
+  background: var(--admin-research-control);
+  color: var(--color-text-soft);
+  font: inherit;
+  font-size: 12px;
+}
+
+.research-card__side button {
+  color: #dca193;
+  cursor: pointer;
 }
 
 .admin-research__feedback,

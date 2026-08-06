@@ -1,5 +1,6 @@
 :host {
   display: block;
+  color-scheme: dark;
   --research-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
   --research-shell: rgba(15, 15, 17, 0.88);
   --research-sidebar: rgba(255, 255, 255, 0.04);
@@ -20,6 +21,7 @@
 }
 
 :host-context([data-theme='light']) {
+  color-scheme: light;
   --research-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.24));
   --research-shell: linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.36));
   --research-sidebar: rgba(255, 255, 255, 0.16);
@@ -33,6 +35,16 @@
   --research-primary-text: rgba(247, 244, 240, 0.96);
   --research-eyebrow: rgba(40, 45, 52, 0.76);
   --research-shadow: 0 18px 48px rgba(31, 28, 23, 0.1);
+}
+
+.research-project select option {
+  background: #242427;
+  color: #f7f4f0;
+}
+
+:host-context([data-theme='light']) .research-project select option {
+  background: #fff;
+  color: #161412;
 }
 
 .research-project {
@@ -420,9 +432,17 @@ h1 {
   margin: 0;
 }
 
+.research-project__draft-heading > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
 .research-project__draft-title {
   display: block;
-  width: min(720px, 100%);
+  width: 100%;
+  max-width: 720px;
+  height: 60px;
+  min-height: 0 !important;
   margin-top: 5px;
   padding: 0;
   border: 0;
@@ -433,6 +453,9 @@ h1 {
   font-family: Georgia, serif;
   font-size: 24px;
   font-weight: 400;
+  line-height: 1.25;
+  overflow: hidden;
+  resize: none;
 }
 
 .research-project__draft-title:focus {
@@ -551,10 +574,10 @@ h1 {
 }
 
 .research-project__draft-meta select {
-  border: 0;
+  border: 1px solid var(--research-border-soft);
   border-radius: 7px;
-  background: var(--research-control);
-  color: var(--research-text-muted);
+  background: var(--research-control-hover);
+  color: var(--research-text);
   padding: 5px 7px;
   font: inherit;
 }
@@ -661,9 +684,17 @@ h1 {
 .research-project__section-dossier {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  height: max(680px, calc(100vh - 280px));
+  height: calc(100dvh - 176px);
   min-height: 0;
   gap: 12px;
+}
+
+.research-project__section-context-panels {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .research-project__section-side-tabs {
@@ -726,8 +757,9 @@ h1 {
 }
 
 .research-project__objective-panel textarea {
-  min-height: 64px;
+  height: 84px;
   font-size: 13px;
+  resize: none;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -740,6 +772,10 @@ h1 {
   grid-template-columns: minmax(0, 1fr) 34px;
   gap: 6px;
   margin-top: 14px;
+}
+
+.research-project__workspace-empty > .research-project__material-picker {
+  margin: 0 0 18px;
 }
 
 .research-project__material-picker select {
@@ -1405,12 +1441,14 @@ h1 {
 }
 
 .research-project__outline,
-.research-project__workspace {
+.research-project__workspace,
+.research-project__section-context-panels {
   scrollbar-width: none;
 }
 
 .research-project__outline::-webkit-scrollbar,
-.research-project__workspace::-webkit-scrollbar {
+.research-project__workspace::-webkit-scrollbar,
+.research-project__section-context-panels::-webkit-scrollbar {
   display: none;
 }
 

@@ -11,7 +11,7 @@ import {
   ResearchOutlineSection,
   ResearchProject,
 } from '../../../core/api/research.api';
-import { LibraryApi } from '../../../core/api/library.api';
+import { LibraryApi, LibraryMaterial } from '../../../core/api/library.api';
 import { EntitiesApi } from '../../../core/api/entities.api';
 import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
 import { ResearchClaimCaptureComponent } from './research-claim-capture.component';
@@ -682,6 +682,30 @@ describe('ResearchProjectComponent', () => {
       active.id,
       material.version.id,
     );
+  });
+
+  it('adds an available Library material to the corpus', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(of(project)),
+      associateLibraryMaterial: vi.fn().mockReturnValue(of(project)),
+    };
+    const fixture = await createFixture(api);
+    const component = fixture.componentInstance;
+    const material: LibraryMaterial = {
+      id: 'material-1',
+      sourceId: null,
+      kind: 'TEXT',
+      title: 'Cartas a Émile Bernard',
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      version: null,
+      research: [],
+    };
+    component.selectedLibraryMaterialId = material.id;
+
+    component.associateLibraryMaterial(project as unknown as ResearchProject, [material]);
+
+    expect(api.associateLibraryMaterial).toHaveBeenCalledWith(project.id, material.id);
   });
 
   it('updates the editorial status of the active section', async () => {

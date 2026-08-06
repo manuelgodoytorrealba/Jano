@@ -11,6 +11,8 @@ describe('ResearchController', () => {
     getStudioStatus: jest.fn(),
     listProjects: jest.fn(),
     createProject: jest.fn(),
+    updateProjectStatus: jest.fn(),
+    deleteProject: jest.fn(),
     getProject: jest.fn(),
     searchSources: jest.fn(),
     addProjectSource: jest.fn(),
@@ -81,6 +83,23 @@ describe('ResearchController', () => {
       { id: 'project-1' },
     ]);
     await expect(controller.get('project-1')).resolves.toEqual({ id: 'project-1' });
+  });
+
+  it('delegates status changes and deletion to the Research service', async () => {
+    service.updateProjectStatus.mockResolvedValue({ id: 'project-1', status: 'PAUSED' } as never);
+    service.deleteProject.mockResolvedValue({ deleted: true });
+
+    await expect(
+      controller.updateStatus({ user: { userId: 'user-1' } } as never, 'project-1', {
+        status: 'PAUSED',
+      } as never),
+    ).resolves.toEqual({ id: 'project-1', status: 'PAUSED' });
+    await expect(controller.delete('project-1')).resolves.toEqual({ deleted: true });
+
+    expect(service.updateProjectStatus).toHaveBeenCalledWith('project-1', 'user-1', {
+      status: 'PAUSED',
+    });
+    expect(service.deleteProject).toHaveBeenCalledWith('project-1');
   });
 
   it('delegates the derived knowledge read model to its dedicated reader', async () => {
