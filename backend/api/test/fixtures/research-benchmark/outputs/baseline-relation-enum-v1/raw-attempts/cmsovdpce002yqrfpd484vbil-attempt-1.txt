@@ -1,0 +1,82 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones y cambios en la percepción del estudiante.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovckxr0016qrfpi19y48qc",
+        "cmsovckxt0018qrfppjfi8z7e",
+        "cmsovckxv001aqrfpidq2mbn3",
+        "cmsovckxw001cqrfpe3gr1tvn",
+        "cmsovckxy001eqrfphtareu66"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "El cuaderno de proceso",
+      "evidenceIds": [
+        "cmsovckxr0016qrfpi19y48qc",
+        "cmsovckxt0018qrfppjfi8z7e",
+        "cmsovckxv001aqrfpidq2mbn3",
+        "cmsovckxw001cqrfpe3gr1tvn",
+        "cmsovckxy001eqrfphtareu66"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Noa Mir",
+      "evidenceIds": [
+        "cmsovckxr0016qrfpi19y48qc",
+        "cmsovckxt0018qrfppjfi8z7e",
+        "cmsovckxv001aqrfpidq2mbn3",
+        "cmsovckxw001cqrfpe3gr1tvn",
+        "cmsovckxy001eqrfphtareu66"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "ORGANIZATION",
+      "title": "Escuela Delta",
+      "evidenceIds": [
+        "cmsovckxr0016qrfpi19y48qc",
+        "cmsovckxt0018qrfppjfi8z7e",
+        "cmsovckxv001aqrfpidq2mbn3",
+        "cmsovckxw001cqrfpe3gr1tvn",
+        "cmsovckxy001eqrfphtareu66"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovckxr0016qrfpi19y48qc",
+        "cmsovckxt0018qrfppjfi8z7e",
+        "cmsovckxv001aqrfpidq2mbn3",
+        "cmsovckxw001cqrfpe3gr1tvn",
+        "cmsovckxy001eqrfphtareu66"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovckxr0016qrfpi19y48qc",
+        "cmsovckxt0018qrfppjfi8z7e",
+        "cmsovckxv001aqrfpidq2mbn3",
+        "cmsovckxw001cqrfpe3gr1tvn",
+        "cmsovckxy001eqrfphtareu66"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    }
+  ]
+}

@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { Observable, catchError, combineLatest, map, of, startWith } from 'rxjs';
 import { AdminEntitiesApi, AdminEntitySearchListItem } from '../../../core/api/admin-entities.api';
 import { GraphNodeDto, GraphResponseDto } from '../../../core/api/graph.models';
-import { AdminHomeDeck, AdminHomeDecksApi } from '../../../core/api/admin-home-decks.api';
 import { ResearchApi, ResearchProjectSummary } from '../../../core/api/research.api';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import { getEntityTypeConfig, getRelationTypeConfig } from '../../graph/graph.config';
@@ -60,7 +59,6 @@ type WorkspaceVm = {
   research: WorkspaceSection<ResearchProjectSummary[]>;
   attention: WorkspaceAttentionItem[];
   recentSignals: WorkspaceRecentSignal[];
-  decks: WorkspaceSection<AdminHomeDeck[]>;
   graph: WorkspaceSection<WorkspaceGraphCard | null>;
 };
 
@@ -82,7 +80,6 @@ function sectionState<T>(source: Observable<T>, empty: T): Observable<WorkspaceS
 })
 export class AdminDashboardComponent {
   private readonly adminEntitiesApi = inject(AdminEntitiesApi);
-  private readonly homeDecksApi = inject(AdminHomeDecksApi);
   private readonly researchApi = inject(ResearchApi);
 
   readonly graphExpanded = signal(true);
@@ -101,7 +98,6 @@ export class AdminDashboardComponent {
     this.researchApi.list().pipe(map((projects) => projects.slice(0, 3))),
     [] as ResearchProjectSummary[],
   );
-  private readonly decks$ = sectionState(this.homeDecksApi.list(), [] as AdminHomeDeck[]);
   private readonly graph$ = sectionState(
     this.adminEntitiesApi.workspaceGraph().pipe(map((graph) => this.buildGraphCard(graph))),
     null,
@@ -110,25 +106,17 @@ export class AdminDashboardComponent {
   readonly vm$ = combineLatest({
     recent: this.recent$,
     research: this.research$,
-    decks: this.decks$,
     graph: this.graph$,
   }).pipe(
-    map(({ recent, research, decks, graph }) => {
+    map(({ recent, research, graph }) => {
       const recentEntities = recent.data.slice(0, 5);
-      const featuredDecks = this.featuredDecks(decks.data);
 
       return {
-        sidebarGroups: this.sidebarGroups(
-          graph.data?.graphData ?? null,
-          decks.state === 'ready'
-            ? decks.data.filter((deck) => deck.surface === 'RECOMMENDED').length
-            : null,
-        ),
+        sidebarGroups: this.sidebarGroups(graph.data?.graphData ?? null),
         recent: { ...recent, data: recentEntities },
         research,
         attention: this.buildAttention(recent.data),
         recentSignals: this.buildRecentSignals(recent.data),
-        decks: { ...decks, data: featuredDecks },
         graph,
       } satisfies WorkspaceVm;
     }),
@@ -220,12 +208,6 @@ export class AdminDashboardComponent {
     return `${counts.sources} fuentes · ${counts.evidence} evidencias · ${counts.claims} claims`;
   }
 
-  deckPreviewEntities(deck: AdminHomeDeck) {
-    return [...(deck.entities ?? [])]
-      .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
-      .slice(0, 1);
-  }
-
   async toggleGraphFocus(graphCard?: HTMLElement): Promise<void> {
     if (document.fullscreenElement) {
       await document.exitFullscreen();
@@ -271,10 +253,7 @@ export class AdminDashboardComponent {
     this.rightSidebarVisible.update((value) => !value);
   }
 
-  private sidebarGroups(
-    graph: GraphResponseDto | null,
-    curationCount: number | null,
-  ): SidebarGroup[] {
+  private sidebarGroups(graph: GraphResponseDto | null): SidebarGroup[] {
     const count = (types: string[]) => {
       if (!graph) return null;
       return graph.nodes.filter(
@@ -293,16 +272,6 @@ export class AdminDashboardComponent {
           this.sidebarItem('Periodos', 'PERIOD', count(['PERIOD'])),
           this.sidebarItem('Lugares', 'PLACE', count(['PLACE'])),
           this.sidebarItem('Artículos', 'ARTICLE', count(['ARTICLE', 'TEXT'])),
-        ],
-      },
-      {
-        label: 'Curated',
-        items: [
-          {
-            label: 'Curaciones',
-            route: '/admin/curations',
-            count: curationCount,
-          },
         ],
       },
     ];
@@ -368,13 +337,6 @@ export class AdminDashboardComponent {
     return signals;
   }
 
-  private featuredDecks(decks: AdminHomeDeck[]): AdminHomeDeck[] {
-    return decks
-      .filter((deck) => deck.surface === 'RECOMMENDED')
-      .sort((left, right) => this.sortByRecent(right.updatedAt, left.updatedAt))
-      .slice(0, 2);
-  }
-
   private buildGraphCard(graphData: GraphResponseDto): WorkspaceGraphCard | null {
     const entityCount = graphData.nodes.filter((node) => !node.id.startsWith('workspace-')).length;
     if (!entityCount) return null;
@@ -384,14 +346,5 @@ export class AdminDashboardComponent {
       subtitle: `${entityCount} entidades conectadas`,
       graphData,
     };
-  }
-
-  private sortByRecent(left: string | null | undefined, right: string | null | undefined): number {
-    return this.toTimestamp(left) - this.toTimestamp(right);
-  }
-
-  private toTimestamp(value: string | null | undefined): number {
-    const parsed = value ? Date.parse(value) : NaN;
-    return Number.isFinite(parsed) ? parsed : 0;
   }
 }

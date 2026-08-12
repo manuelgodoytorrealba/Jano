@@ -1,0 +1,45 @@
+[
+  {
+    "aiExecutionId": "cmsorskr0002zqcfphu5acu1b",
+    "batch": {
+      "current": 4,
+      "total": 6
+    },
+    "attempt": 1,
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "category": "PROVIDER_TRANSPORT_ERROR",
+    "rawLength": 0,
+    "approximateTokens": 0,
+    "rawSha256": null,
+    "sameAsPreviousAttempt": false,
+    "finishReason": null,
+    "emptyResponse": true,
+    "appearsTruncated": false,
+    "containsJsonObject": false,
+    "containsJsonArray": false,
+    "containsMarkdownFence": false,
+    "containsWrapperText": false,
+    "strictJsonValid": false,
+    "acceptedByCurrentParser": false,
+    "parserError": "The operation was aborted due to timeout",
+    "parserErrorPosition": null,
+    "unclosedObjectCount": 0,
+    "unclosedArrayCount": 0,
+    "validationErrors": [],
+    "responseMetadata": {
+      "done": null,
+      "doneReason": null,
+      "evalCount": null,
+      "promptEvalCount": null,
+      "totalDuration": null,
+      "loadDuration": null,
+      "evalDuration": null,
+      "promptEvalDuration": null
+    },
+    "rawStart": null,
+    "rawEnd": null,
+    "rawOutputLocation": null,
+    "executionError": "Ollama transport failed [category=PROVIDER_TRANSPORT_ERROR attempts=1 rawLength=0 finishReason=unknown]"
+  }
+]

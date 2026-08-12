@@ -1,0 +1,115 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Aina Soler y Ana Soler son dos personas distintas",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "Casa Faro es una organización que organiza eventos",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsovcky9001sqrfpitqggh10"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "El eco quieto es una obra de Ana Soler",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "La Cartografía del intervalo es un método de investigación visual",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "El eco quieto",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "EVENT",
+      "title": "Jornadas del Eco",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PLACE",
+      "title": "Faro Bajo",
+      "evidenceIds": [
+        "cmsovcky9001sqrfpitqggh10"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovcky8001qqrfp120io2yj"
+      ],
+      "relationTypeId": "relation-type-related-to"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovcky9001sqrfpitqggh10"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    }
+  ]
+}

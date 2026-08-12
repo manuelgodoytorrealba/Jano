@@ -36,6 +36,7 @@ export class ResearchEvidenceCaptureComponent {
     return this._sources;
   }
   @Input() evidence: ResearchEvidence[] = [];
+  @Input() allowSourceAssociation = true;
   @Input() set excerpt(value: ResearchLibraryExcerptReference | null) {
     this.preparedExcerpt = value;
     if (value) this.locator = value.locator;

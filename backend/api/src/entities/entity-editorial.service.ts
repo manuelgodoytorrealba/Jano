@@ -50,6 +50,32 @@ export class EntityEditorialService {
     });
   }
 
+  createDraftRecord(
+    tx: Prisma.TransactionClient,
+    dto: { type: EntityType; kind: KnowledgeEntityKind; title: string; summary?: string },
+  ) {
+    const title = dto.title.trim();
+    const summary = dto.summary?.trim() || null;
+    return tx.entity.create({
+      data: {
+        type: dto.type,
+        kind: dto.kind,
+        title,
+        slug: '_draft-' + randomUUID(),
+        summary,
+        status: 'DRAFT',
+        translations: {
+          create: {
+            locale: 'es',
+            title,
+            shortDescription: summary,
+          },
+        },
+      },
+      select: { id: true },
+    });
+  }
+
   async create(dto: CreateEntityDto) {
     const id = await this.prisma.$transaction(async (tx) => {
       const existing = await tx.entity.findUnique({

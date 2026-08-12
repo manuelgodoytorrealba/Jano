@@ -1,0 +1,426 @@
+[
+  {
+    "proposalId": "cmsorr2x50024qcfp5gw801ci",
+    "title": "Iria Sorel",
+    "documentIds": ["01-monograph"],
+    "goldId": "person-iria-sorel",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "trabaja con fotografía intervenida, escritura breve y objetos domésticos",
+        "desarrolló Casa de sal y Atlas del umbral",
+        "su práctica formula la memoria porosa"
+      ],
+      "missingFromFullIdentityContext": [
+        "trabaja con fotografía intervenida, escritura breve y objetos domésticos",
+        "desarrolló Casa de sal y Atlas del umbral",
+        "su práctica formula la memoria porosa"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorr2x60025qcfpccmlauwp",
+    "title": "Casa de sal",
+    "documentIds": ["01-monograph"],
+    "goldId": "work-casa-de-sal",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["es una instalación de fotografías, mesas y sonido"],
+      "missingFromFullIdentityContext": [
+        "es una instalación de fotografías, mesas y sonido",
+        "compara habitaciones antes y después de una rehabilitación",
+        "trabaja a escala doméstica"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_PARTIAL",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorr2x70026qcfp1o9d3022",
+    "title": "Atlas del umbral",
+    "documentIds": ["01-monograph"],
+    "goldId": "work-atlas-del-umbral",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [],
+      "missingFromFullIdentityContext": [
+        "es un libro desplegable",
+        "reúne dibujos de zonas de paso",
+        "se concentra en decisiones corporales ante el umbral"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_SEVERELY_FRAGMENTED",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorr2x90027qcfpihemof1f",
+    "title": "Memoria porosa",
+    "documentIds": ["01-monograph"],
+    "goldId": "concept-memoria-porosa",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ABSTRACTION",
+    "goldKind": "ABSTRACTION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "admite cambios de significado al reunir pruebas",
+        "surge del trabajo de Sorel en Puerto Niebla"
+      ],
+      "missingFromFullIdentityContext": [
+        "el recuerdo absorbe materiales nuevos sin borrar todas las capas",
+        "admite cambios de significado al reunir pruebas",
+        "surge del trabajo de Sorel en Puerto Niebla"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorrkk6002hqcfphvhjuvnz",
+    "title": "Materia de Casa",
+    "documentIds": ["03-exhibition"],
+    "goldId": "event-materia-casa",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "EVENT",
+    "kindCorrect": false,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "fue una exposición de seis semanas",
+        "reunió dos obras y una mesa documental",
+        "fue organizada por Instituto Lumen"
+      ],
+      "missingFromFullIdentityContext": [
+        "fue una exposición de seis semanas",
+        "reunió dos obras y una mesa documental",
+        "fue organizada por Instituto Lumen"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorrkk7002iqcfph434wttx",
+    "title": "Dalia Neri",
+    "documentIds": ["03-exhibition"],
+    "goldId": "person-dalia-neri",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["comisarió Materia de Casa", "articuló la intimidad logística"],
+      "missingFromFullIdentityContext": [
+        "comisarió Materia de Casa",
+        "articuló la intimidad logística"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorrkk8002jqcfpx64q4y3d",
+    "title": "Mara Téllez",
+    "documentIds": ["02-theory"],
+    "goldId": "person-mara-tellez",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["formuló escucha oblicua en un seminario interno"],
+      "missingFromFullIdentityContext": ["formuló escucha oblicua en un seminario interno"],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorrkk9002kqcfpnhlq1amm",
+    "title": "Instituto Lumen",
+    "documentIds": ["03-exhibition"],
+    "goldId": "organization-instituto-lumen",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ORGANIZATION",
+    "goldKind": "ORGANIZATION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "organizó Materia de Casa",
+        "asumió producción, seguros y mediación"
+      ],
+      "missingFromFullIdentityContext": [
+        "organizó Materia de Casa",
+        "asumió producción, seguros y mediación"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorrkka002lqcfpjztm8stv",
+    "title": "Mesa para una ausencia",
+    "documentIds": ["03-exhibition"],
+    "goldId": "work-mesa-ausencia",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "usa una mesa y seis cajones",
+        "requiere coordinación entre visitantes",
+        "contiene listas de objetos prestados"
+      ],
+      "missingFromFullIdentityContext": [
+        "usa una mesa y seis cajones",
+        "requiere coordinación entre visitantes",
+        "contiene listas de objetos prestados"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorrkkb002mqcfpeds1nb01",
+    "title": "Inventario del humo",
+    "documentIds": ["03-exhibition"],
+    "goldId": "work-inventario-humo",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "usa vidrio, telas y grabaciones de cocina",
+        "sus omisiones señalan saberes familiares no escritos"
+      ],
+      "missingFromFullIdentityContext": [
+        "usa vidrio, telas y grabaciones de cocina",
+        "sus omisiones señalan saberes familiares no escritos"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorskqr002tqcfp76jzh7rb",
+    "title": "El cuaderno de proceso",
+    "documentIds": ["03-exhibition", "04-education"],
+    "goldId": null,
+    "naming": "POOR_NAME",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": null,
+    "kindCorrect": null,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 0,
+      "coverage": 0,
+      "specificity": 0,
+      "editorialUsefulness": 0,
+      "overallDraftScore": 0,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [],
+      "missingFromFullIdentityContext": [],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": null,
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorskqs002uqcfplc0lc50j",
+    "title": "Noa Mir",
+    "documentIds": ["03-exhibition", "04-education"],
+    "goldId": "person-noa-mir",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "coordina un laboratorio de prácticas visuales",
+        "define lectura de huellas"
+      ],
+      "missingFromFullIdentityContext": [
+        "coordina un laboratorio de prácticas visuales",
+        "define lectura de huellas"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsorskqu002vqcfp6caww0rq",
+    "title": "Escuela Delta",
+    "documentIds": ["03-exhibition", "04-education"],
+    "goldId": "organization-escuela-delta",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ORGANIZATION",
+    "goldKind": "ORGANIZATION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["alberga el laboratorio coordinado por Noa Mir"],
+      "missingFromFullIdentityContext": ["alberga el laboratorio coordinado por Noa Mir"],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  }
+]

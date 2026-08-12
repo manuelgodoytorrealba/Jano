@@ -17,10 +17,22 @@ describe('ResearchService', () => {
     researchFinding: { create: jest.fn(), update: jest.fn() },
     researchFindingEvidence: { createMany: jest.fn() },
     researchFindingProposal: { update: jest.fn() },
+    researchEntity: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+    researchEntityEvidence: { createMany: jest.fn() },
+    researchRelation: { create: jest.fn() },
     researchDecision: { create: jest.fn() },
     researchProject: { findUnique: jest.fn(), update: jest.fn() },
-    libraryMaterial: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
+    libraryMaterial: {
+      findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
     researchLibraryMaterial: { upsert: jest.fn() },
+    researchProjectSource: { upsert: jest.fn() },
+    source: { create: jest.fn() },
+    libraryExcerpt: { findFirst: jest.fn() },
+    researchEvidence: { upsert: jest.fn() },
   };
   const prisma = {
     $transaction: jest.fn(async (callback: (client: typeof tx) => Promise<unknown>) =>
@@ -36,7 +48,8 @@ describe('ResearchService', () => {
       findUnique: jest.fn(),
       upsert: jest.fn(),
     },
-    researchLibraryMaterial: { deleteMany: jest.fn() },
+    researchLibraryMaterial: { deleteMany: jest.fn(), findMany: jest.fn() },
+    researchOutlineSection: { findMany: jest.fn() },
     researchEvidence: {
       count: jest.fn(),
       findMany: jest.fn(),
@@ -53,14 +66,17 @@ describe('ResearchService', () => {
     researchJob: {
       upsert: jest.fn(),
       updateMany: jest.fn(),
+      findFirst: jest.fn(),
     },
-    libraryMaterialVersion: { findFirst: jest.fn(), update: jest.fn() },
+    libraryMaterialVersion: { findFirst: jest.fn(), update: jest.fn(), count: jest.fn() },
     researchFinding: {
       findFirst: jest.fn(),
     },
     researchFindingProposal: {
       findFirst: jest.fn(),
       update: jest.fn(),
+      findMany: jest.fn(),
+      count: jest.fn(),
     },
     researchEntity: {
       count: jest.fn(),
@@ -69,6 +85,7 @@ describe('ResearchService', () => {
       update: jest.fn(),
     },
     researchRelation: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+    relation: { findMany: jest.fn() },
     relationType: { findUnique: jest.fn() },
     entity: { findUnique: jest.fn() },
     source: {
@@ -79,25 +96,86 @@ describe('ResearchService', () => {
   const sources = { search: jest.fn() };
   const library = { createInitialMaterial: jest.fn(), createInitialPdf: jest.fn() };
   const outline = { create: jest.fn(), update: jest.fn(), reorder: jest.fn() };
+  const entityEditorial = { createDraftRecord: jest.fn() };
   let service: ResearchService;
 
   beforeEach(() => {
     jest.resetAllMocks();
     prisma.$transaction.mockImplementation(async (callback) => callback(tx));
+    prisma.relation.findMany.mockResolvedValue([]);
     service = new ResearchService(
       prisma as unknown as PrismaService,
       sources as never,
       library as never,
       outline as never,
+      entityEditorial as never,
     );
   });
 
-  it('has no direct Knowledge Core promotion capability', () => {
+  it('has no automatic proposal or relation promotion capability', () => {
     expect(ResearchService.prototype).not.toHaveProperty('promoteFindingToEntity');
-    expect(ResearchService.prototype).not.toHaveProperty('promoteEntity');
     expect(ResearchService.prototype).not.toHaveProperty('promoteRelation');
     expect(ResearchService.prototype).not.toHaveProperty('createFinding');
     expect(ResearchService.prototype).not.toHaveProperty('decideFinding');
+  });
+
+  it('converts a selected LibraryExcerpt into Evidence with its material Source', async () => {
+    tx.libraryExcerpt.findFirst.mockResolvedValue({
+      id: 'excerpt-1',
+      locator: 'caracteres 4–12',
+      materialVersion: {
+        version: 2,
+        url: null,
+        material: {
+          id: 'material-1',
+          sourceId: 'source-1',
+          kind: LibraryMaterialKind.TEXT,
+          title: 'Cuaderno',
+        },
+      },
+    });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.createEvidenceFromExcerpt('project-1', 'excerpt-1');
+
+    expect(tx.researchProjectSource.upsert).toHaveBeenCalledWith({
+      where: { projectId_sourceId: { projectId: 'project-1', sourceId: 'source-1' } },
+      create: { projectId: 'project-1', sourceId: 'source-1' },
+      update: {},
+    });
+    expect(tx.researchEvidence.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          projectId: 'project-1',
+          sourceId: 'source-1',
+          libraryExcerptId: 'excerpt-1',
+          sourceVersion: 'material-v2',
+        }),
+      }),
+    );
+  });
+
+  it('merges an Entity proposal into private knowledge while preserving Evidence', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue({
+      id: 'proposal-1',
+      reviewState: 'PENDING',
+      convertedEntityId: null,
+      evidence: [{ evidenceId: 'evidence-1' }],
+    });
+    prisma.researchEntity.findFirst.mockResolvedValue({ id: 'entity-1' });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.mergeEntityProposal('project-1', 'proposal-1', 'entity-1');
+
+    expect(tx.researchEntityEvidence.createMany).toHaveBeenCalledWith({
+      data: [{ entityId: 'entity-1', evidenceId: 'evidence-1' }],
+      skipDuplicates: true,
+    });
+    expect(tx.researchFindingProposal.update).toHaveBeenCalledWith({
+      where: { id: 'proposal-1' },
+      data: { reviewState: 'REVIEWED', convertedEntityId: 'entity-1' },
+    });
+    expect(prisma.entity.findUnique).not.toHaveBeenCalled();
   });
 
   it('creates a project as private research state, not a canonical entity', async () => {
@@ -158,6 +236,53 @@ describe('ResearchService', () => {
     });
   });
 
+  it('lists typed research proposals without materializing canonical knowledge', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchFindingProposal.count.mockResolvedValue(1);
+    prisma.researchFindingProposal.findMany.mockResolvedValue([
+      {
+        id: 'proposal-1',
+        evidence: [{ evidenceId: 'evidence-1', evidence: { id: 'evidence-1' } }],
+      },
+    ]);
+
+    await expect(service.listProposals('project-1', { page: 1, limit: 24 })).resolves.toMatchObject(
+      {
+        total: 1,
+        items: [
+          {
+            id: 'proposal-1',
+            evidence: [{ evidenceId: 'evidence-1', evidence: { excerptStatus: 'UNAVAILABLE' } }],
+          },
+        ],
+      },
+    );
+    expect(prisma.entity.findUnique).not.toHaveBeenCalled();
+    expect(prisma.entity).not.toHaveProperty('create');
+  });
+
+  it('reports observable knowledge-map generation state and context freshness', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchLibraryMaterial.findMany.mockResolvedValue([]);
+    prisma.researchOutlineSection.findMany.mockResolvedValue([]);
+    prisma.libraryMaterialVersion.count.mockResolvedValue(1);
+    prisma.researchJob.findFirst.mockResolvedValue({
+      id: 'job-1',
+      inputFingerprint: 'previous-context',
+      status: ResearchJobStatus.FAILED,
+      progressCurrent: 2,
+      progressTotal: 4,
+      _count: { findingProposals: 3 },
+    });
+
+    await expect(service.getKnowledgeMapGeneration('project-1')).resolves.toMatchObject({
+      stale: true,
+      canGenerate: true,
+      preparedMaterials: 1,
+      job: { id: 'job-1', progressCurrent: 2, progressTotal: 4 },
+    });
+  });
+
   it('opens one project with its research context', async () => {
     prisma.researchProject.findUnique.mockResolvedValue({
       id: 'project-1',
@@ -172,6 +297,7 @@ describe('ResearchService', () => {
     await expect(service.getProject('project-1')).resolves.toEqual({
       id: 'project-1',
       materials: [],
+      outlineSections: [],
       knowledge: {
         projectId: 'project-1',
         scope: 'complete',
@@ -420,6 +546,50 @@ describe('ResearchService', () => {
     const read = prisma.researchProject.findUnique.mock.calls[0][0];
     expect(read.select).not.toHaveProperty('outlineSections');
     expect(read.select.entities).not.toHaveProperty('include');
+    expect(read.select.entities.select.canonicalEntityId).toBe(true);
+  });
+
+  it('projects Knowledge Core relations between canonical-linked Research nodes', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({
+      id: 'project-1',
+      entities: [
+        { id: 'research-a', canonicalEntityId: 'core-a', title: 'Goya', kind: 'PERSON' },
+        {
+          id: 'research-b',
+          canonicalEntityId: 'core-b',
+          title: 'Pinturas negras',
+          kind: 'WORK',
+        },
+      ],
+      relations: [],
+    });
+    prisma.relation.findMany.mockResolvedValue([
+      {
+        id: 'core-relation-1',
+        fromId: 'core-a',
+        toId: 'core-b',
+        relationTypeId: 'created-type',
+        relationType: { id: 'created-type', key: 'CREATED', label: 'Creó' },
+        justification: 'Relación editorial canónica.',
+        confidence: 0.9,
+        status: 'PUBLISHED',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+      },
+    ]);
+
+    const knowledge = await service.getKnowledge('project-1', { scope: 'topology' });
+
+    expect(knowledge.relations).toEqual([
+      expect.objectContaining({
+        id: 'core:core-relation-1',
+        canonicalRelationId: 'core-relation-1',
+        origin: 'KNOWLEDGE_CORE',
+        fromEntityId: 'research-a',
+        toEntityId: 'research-b',
+        explanation: 'Relación editorial canónica.',
+      }),
+    ]);
   });
   it('resolves Entity and Relation focus within the requested Research', async () => {
     const claim = { id: 'claim-1', kind: 'ASSERTION', status: 'SUPPORTED' };
@@ -882,6 +1052,30 @@ describe('ResearchService', () => {
     expect(tx.libraryMaterial.update).not.toHaveBeenCalled();
   });
 
+  it('turns a research material into one cited source', async () => {
+    tx.libraryMaterial.findFirst.mockResolvedValue({
+      id: 'material-1',
+      sourceId: null,
+      kind: 'PDF',
+      title: 'Catálogo de Goya',
+      versions: [],
+    });
+    tx.source.create.mockResolvedValue({ id: 'source-1' });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.citeLibraryMaterial('project-1', 'material-1');
+
+    expect(tx.libraryMaterial.update).toHaveBeenCalledWith({
+      where: { id: 'material-1' },
+      data: { sourceId: 'source-1' },
+    });
+    expect(tx.researchProjectSource.upsert).toHaveBeenCalledWith({
+      where: { projectId_sourceId: { projectId: 'project-1', sourceId: 'source-1' } },
+      create: { projectId: 'project-1', sourceId: 'source-1' },
+      update: {},
+    });
+  });
+
   it('rejects a Library association when either foreign key is missing', async () => {
     tx.researchProject.findUnique.mockResolvedValue(null);
     tx.libraryMaterial.findUnique.mockResolvedValue({ id: 'material-1' });
@@ -954,7 +1148,15 @@ describe('ResearchService', () => {
         type: ResearchJobType.EXTRACT_FINDINGS,
         inputFingerprint: expect.stringMatching(/^[a-f0-9]{64}$/),
       },
-      update: {},
+      update: {
+        status: ResearchJobStatus.QUEUED,
+        attempts: 0,
+        progressCurrent: 0,
+        progressTotal: 0,
+        startedAt: null,
+        finishedAt: null,
+        lastError: null,
+      },
     });
     expect(prisma.researchJob.upsert.mock.calls[1][0].where).toEqual(
       prisma.researchJob.upsert.mock.calls[0][0].where,
@@ -1046,12 +1248,12 @@ describe('ResearchService', () => {
     expect(prisma.researchFindingProposal.findFirst).not.toHaveBeenCalled();
   });
 
-  it('converts a reviewed proposal into a supported private Claim', async () => {
+  it('converts a reviewed proposal into a draft private Claim', async () => {
     prisma.researchFindingProposal.findFirst.mockResolvedValue({
       id: 'proposal-1',
       title: 'Hallazgo revisado',
       summary: 'Resumen',
-      kind: 'attribution',
+      claimKind: ResearchClaimKind.ASSERTION,
       reviewState: ResearchProposalReviewState.REVIEWED,
       convertedClaimId: null,
       evidence: [{ evidenceId: 'evidence-1' }, { evidenceId: 'evidence-2' }],
@@ -1068,7 +1270,7 @@ describe('ResearchService', () => {
         id: true,
         title: true,
         summary: true,
-        kind: true,
+        claimKind: true,
         reviewState: true,
         convertedClaimId: true,
         evidence: { select: { evidenceId: true } },
@@ -1080,7 +1282,7 @@ describe('ResearchService', () => {
         title: 'Hallazgo revisado',
         summary: 'Resumen',
         kind: ResearchClaimKind.ASSERTION,
-        status: ResearchClaimStatus.SUPPORTED,
+        status: ResearchClaimStatus.DRAFT,
         evidence: { create: [{ evidenceId: 'evidence-1' }, { evidenceId: 'evidence-2' }] },
       },
       select: { id: true },
@@ -1096,7 +1298,7 @@ describe('ResearchService', () => {
       id: 'proposal-1',
       title: 'Hallazgo revisado',
       summary: 'Resumen',
-      kind: 'attribution',
+      claimKind: ResearchClaimKind.ASSERTION,
       reviewState: ResearchProposalReviewState.REVIEWED,
       convertedClaimId: 'finding-existing',
       evidence: [{ evidenceId: 'evidence-1' }],
@@ -1109,6 +1311,68 @@ describe('ResearchService', () => {
     expect(tx.researchClaim.create).not.toHaveBeenCalled();
     expect(tx.researchClaim.create).not.toHaveBeenCalled();
     expect(tx.researchFindingProposal.update).not.toHaveBeenCalled();
+  });
+
+  it('accepts an entity proposal as private research knowledge with its evidence', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue({
+      id: 'proposal-entity',
+      type: 'ENTITY',
+      reviewState: ResearchProposalReviewState.PENDING,
+      convertedEntityId: null,
+      title: 'Rembrandt',
+      summary: 'Pintor neerlandés',
+      entityKind: 'PERSON',
+      evidence: [{ evidenceId: 'evidence-1' }],
+    });
+    tx.researchEntity.create.mockResolvedValue({ id: 'research-entity-1' });
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+
+    await service.acceptProposal('project-1', 'proposal-entity');
+
+    expect(tx.researchEntity.create).toHaveBeenCalledWith({
+      data: {
+        projectId: 'project-1',
+        kind: 'PERSON',
+        title: 'Rembrandt',
+        summary: 'Pintor neerlandés',
+        reviewState: ResearchProposalReviewState.REVIEWED,
+        evidence: { create: [{ evidenceId: 'evidence-1' }] },
+      },
+      select: { id: true },
+    });
+    expect(tx.researchFindingProposal.update).toHaveBeenCalledWith({
+      where: { id: 'proposal-entity' },
+      data: {
+        reviewState: ResearchProposalReviewState.REVIEWED,
+        convertedEntityId: 'research-entity-1',
+      },
+    });
+    expect(prisma.entity).not.toHaveProperty('create');
+  });
+
+  it('requires accepted private entity endpoints before accepting a relation proposal', async () => {
+    prisma.researchFindingProposal.findFirst.mockResolvedValue({
+      id: 'proposal-relation',
+      type: 'RELATION',
+      reviewState: ResearchProposalReviewState.PENDING,
+      convertedRelationId: null,
+      jobId: 'job-1',
+      relationFromKey: 'from',
+      relationToKey: 'to',
+      relationTypeId: null,
+      explanation: null,
+      title: 'relación propuesta',
+      evidence: [],
+    });
+    prisma.researchFindingProposal.findMany.mockResolvedValue([
+      { proposalKey: 'from', convertedEntityId: 'entity-1' },
+      { proposalKey: 'to', convertedEntityId: null },
+    ]);
+
+    await expect(service.acceptProposal('project-1', 'proposal-relation')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+    expect(tx.researchRelation.create).not.toHaveBeenCalled();
   });
 
   it('rejects conversion for pending or rejected automatic finding proposals', async () => {
@@ -1276,6 +1540,81 @@ describe('ResearchService', () => {
     expect(prisma.entity).not.toHaveProperty('update');
   });
 
+  it('creates and links a canonical draft atomically after an explicit manual decision', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchEvidence.count.mockResolvedValue(1);
+    entityEditorial.createDraftRecord.mockResolvedValue({ id: 'entity-core-1' });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.createEntity('project-1', {
+      canonicalType: 'ARTWORK',
+      title: 'Pinturas negras',
+      summary: 'Serie investigada.',
+      evidenceIds: ['evidence-1'],
+    });
+
+    expect(entityEditorial.createDraftRecord).toHaveBeenCalledWith(tx, {
+      type: 'ARTWORK',
+      kind: 'WORK',
+      title: 'Pinturas negras',
+      summary: 'Serie investigada.',
+    });
+    expect(tx.researchEntity.create).toHaveBeenCalledWith({
+      data: {
+        projectId: 'project-1',
+        kind: 'WORK',
+        title: 'Pinturas negras',
+        summary: 'Serie investigada.',
+        canonicalEntityId: 'entity-core-1',
+        evidence: { create: [{ evidenceId: 'evidence-1' }] },
+      },
+    });
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    expect(prisma.researchEntity.create).not.toHaveBeenCalled();
+  });
+
+  it('promotes an accepted private entity to a linked canonical draft', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    tx.researchEntity.findFirst.mockResolvedValue({
+      id: 'research-entity-1',
+      kind: 'WORK',
+      title: 'Pinturas negras',
+      summary: 'Serie investigada.',
+      canonicalEntityId: null,
+    });
+    entityEditorial.createDraftRecord.mockResolvedValue({ id: 'core-entity-1' });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.promoteEntity('project-1', 'research-entity-1', 'ARTWORK');
+
+    expect(entityEditorial.createDraftRecord).toHaveBeenCalledWith(tx, {
+      type: 'ARTWORK',
+      kind: 'WORK',
+      title: 'Pinturas negras',
+      summary: 'Serie investigada.',
+    });
+    expect(tx.researchEntity.update).toHaveBeenCalledWith({
+      where: { id: 'research-entity-1' },
+      data: { canonicalEntityId: 'core-entity-1' },
+    });
+  });
+
+  it('rejects promotion to a canonical type with a different knowledge kind', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    tx.researchEntity.findFirst.mockResolvedValue({
+      id: 'research-entity-1',
+      kind: 'PERSON',
+      title: 'Francisco de Goya',
+      summary: null,
+      canonicalEntityId: null,
+    });
+
+    await expect(
+      service.promoteEntity('project-1', 'research-entity-1', 'ARTWORK'),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(entityEditorial.createDraftRecord).not.toHaveBeenCalled();
+  });
+
   it('rejects Evidence outside the Research when creating a ResearchEntity', async () => {
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
     prisma.researchEvidence.count.mockResolvedValue(0);
@@ -1315,7 +1654,8 @@ describe('ResearchService', () => {
       },
     });
     expect(prisma).not.toHaveProperty('researchRelationEvidence');
-    expect(prisma).not.toHaveProperty('relation');
+    expect(prisma.relation).not.toHaveProperty('create');
+    expect(prisma.relation).not.toHaveProperty('update');
   });
 
   it('rejects external entities or Claims when creating a ResearchRelation', async () => {

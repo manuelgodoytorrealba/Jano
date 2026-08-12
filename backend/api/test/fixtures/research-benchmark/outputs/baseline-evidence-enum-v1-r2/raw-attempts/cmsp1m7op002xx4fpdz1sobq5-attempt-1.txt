@@ -1,0 +1,71 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones, dudas, pruebas descartadas y cambios de vocabulario en el laboratorio de prácticas visuales de la Escuela Delta.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1l9lp001ax4fp32h02dlz",
+        "cmsp1l9lr001cx4fpdx5fi13z"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "La lectura de huellas es un método de crítica situada que identifica marcas persistentes, pregunta sobre las condiciones que las modificaron y registra interpretaciones abiertas.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1l9lp001ax4fp32h02dlz",
+        "cmsp1l9lr001cx4fpdx5fi13z"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "ABSTRACTION",
+      "title": "Cuaderno de proceso",
+      "evidenceIds": [
+        "cmsp1l9lp001ax4fp32h02dlz",
+        "cmsp1l9lr001cx4fpdx5fi13z"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "ABSTRACTION",
+      "title": "Mapa de decisiones",
+      "evidenceIds": [
+        "cmsp1l9lr001cx4fpdx5fi13z"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Noa Mir",
+      "evidenceIds": [
+        "cmsp1l9lp001ax4fp32h02dlz",
+        "cmsp1l9lr001cx4fpdx5fi13z"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsp1l9lp001ax4fp32h02dlz",
+        "cmsp1l9lr001cx4fpdx5fi13z"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsp1l9lr001cx4fpdx5fi13z"
+      ],
+      "relationTypeId": "relation-type-part-of"
+    }
+  ]
+}

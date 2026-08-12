@@ -1,0 +1,180 @@
+{
+  "runId": "baseline-relation-enum-v1-r3",
+  "datasetVersion": "1.0.0",
+  "datasetHash": "ed87b7a72952b65cb28ca4af00da909606e31b05b86c328ca1bc1519437990fe",
+  "createdAt": "2026-08-11T16:27:17.260Z",
+  "commitSha": "7b2206e3fddfd6d15284964623998ef9a3302750",
+  "dirtyWorktree": true,
+  "worktreeDiffHash": "a2fc1c5ced4870035f950898b86c6f40fe4fe6c775efb2898eb69f28aac28ca7",
+  "provider": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b"
+  },
+  "pipeline": {
+    "task": "research.extract_findings",
+    "contractVersion": "3",
+    "maxCorpusSegments": 80,
+    "maxSegmentChars": 1400,
+    "evidenceBatchSize": 5,
+    "maxOutputTokens": 2400,
+    "entityOutputLimitPerBatch": 6,
+    "temperature": 0.2,
+    "promptAndContractHash": "b2c30166ba90f4bcacb82cbb97599168383234267e6c5fa24e58868196597f38",
+    "providerImplementationHash": "98af91c51414fd0aba56cb70b55545aa95ac6bb2af8bf53ab2807501e683aecc",
+    "providerMetadata": {
+      "provider": "ollama",
+      "model": "qwen2.5:7b"
+    }
+  },
+  "records": {
+    "ownerId": "cmsovijp50000esfplzuzuijl",
+    "projectId": "cmsovijpm0001esfpzmmtsen1",
+    "jobId": "cmsovijqo000kesfpwpofif3z",
+    "sourceIds": [
+      "cmsovijpo0002esfpg2ccoa5i",
+      "cmsovijq60005esfpp8xarqjj",
+      "cmsovijqa0008esfpgmt9wimx",
+      "cmsovijqd000besfpaokpnwyn",
+      "cmsovijqg000eesfpfo9k2bhg",
+      "cmsovijqk000hesfphx6qvf0k"
+    ],
+    "materialIds": [
+      "cmsovijpz0003esfplj5udysh",
+      "cmsovijq70006esfp9uchn7gt",
+      "cmsovijqb0009esfpdc749e3g",
+      "cmsovijqe000cesfpk65c457r",
+      "cmsovijqh000fesfpz0wcpd4y",
+      "cmsovijqk000iesfpbp339o0n"
+    ],
+    "materialVersionIds": [
+      "cmsovijq00004esfpbin6gkiu",
+      "cmsovijq70007esfpmd91narv",
+      "cmsovijqb000aesfpocwdx9pn",
+      "cmsovijqe000desfpd34iz71x",
+      "cmsovijqh000gesfpwce0fr3j",
+      "cmsovijqk000jesfpyoj7enog"
+    ]
+  },
+  "documents": [
+    {
+      "id": "01-monograph",
+      "contentHash": "ee97ea139f225e7fd2a533d3ac9f9eacc6fa03799358cf622be1211915d59c34",
+      "sourceId": "cmsovijpo0002esfpg2ccoa5i",
+      "materialId": "cmsovijpz0003esfplj5udysh",
+      "materialVersionId": "cmsovijq00004esfpbin6gkiu"
+    },
+    {
+      "id": "02-theory",
+      "contentHash": "d837381b45706406125ec9070f085992b61c44b67c7b48c9b2c2b1575881ce2b",
+      "sourceId": "cmsovijq60005esfpp8xarqjj",
+      "materialId": "cmsovijq70006esfp9uchn7gt",
+      "materialVersionId": "cmsovijq70007esfpmd91narv"
+    },
+    {
+      "id": "03-exhibition",
+      "contentHash": "6c5316d2813c3c3cacf2b551d8b339ac208e00798e1d8894adcca2ee1363c5e6",
+      "sourceId": "cmsovijqa0008esfpgmt9wimx",
+      "materialId": "cmsovijqb0009esfpdc749e3g",
+      "materialVersionId": "cmsovijqb000aesfpocwdx9pn"
+    },
+    {
+      "id": "04-education",
+      "contentHash": "75214957b801998671c96b38658b38a983ba20d8a4786f81bd1c81c915d453eb",
+      "sourceId": "cmsovijqd000besfpaokpnwyn",
+      "materialId": "cmsovijqe000cesfpk65c457r",
+      "materialVersionId": "cmsovijqe000desfpd34iz71x"
+    },
+    {
+      "id": "05-aliases",
+      "contentHash": "514c322bc222758f2ad13b4f5ef0bc95e4981916377211fae980e9c42738b71f",
+      "sourceId": "cmsovijqg000eesfpfo9k2bhg",
+      "materialId": "cmsovijqh000fesfpz0wcpd4y",
+      "materialVersionId": "cmsovijqh000gesfpwce0fr3j"
+    },
+    {
+      "id": "06-long-ambiguity",
+      "contentHash": "e819dbcfd244a47aa173b6390484914a0b8ec362f0ed1a5dd8fc902ea4fdb239",
+      "sourceId": "cmsovijqk000hesfphx6qvf0k",
+      "materialId": "cmsovijqk000iesfpbp339o0n",
+      "materialVersionId": "cmsovijqk000jesfpyoj7enog"
+    }
+  ],
+  "aiExecutionIds": [
+    "cmsovijtm0021esfp6tqjjlw3",
+    "cmsovj00f002fesfpa537ttjd",
+    "cmsovjdka002tesfpxnunw7xi",
+    "cmsovjtpm002wesfph7uk6riz",
+    "cmsovkcae003cesfpf0m54gi1",
+    "cmsovkxzf003pesfpyeglarqj"
+  ],
+  "proposalIds": [
+    "cmsovizzv0022esfp3iy0u7b9",
+    "cmsovizzy0023esfpazgmu14i",
+    "cmsovj0000024esfpjazv34tq",
+    "cmsovj0010025esfpa0kfafl5",
+    "cmsovj0030026esfpok13ghwm",
+    "cmsovj0040027esfphkbvup3m",
+    "cmsovj0050028esfp02u6uaa7",
+    "cmsovj0070029esfpyjp5oh5l",
+    "cmsovj008002aesfp7iwp0rb4",
+    "cmsovj00a002besfp6dqaxubc",
+    "cmsovj00b002cesfpqe925pll",
+    "cmsovj00c002desfp5jowm2e7",
+    "cmsovj00d002eesfpuirzhkac",
+    "cmsovjdju002gesfpe04zobd6",
+    "cmsovjdjw002hesfplmck0fhd",
+    "cmsovjdjx002iesfpypzepn7e",
+    "cmsovjdjy002jesfpkq384lve",
+    "cmsovjdjz002kesfpfzvzy0at",
+    "cmsovjdk1002lesfpnpak5xfk",
+    "cmsovjdk2002mesfpe3awr4an",
+    "cmsovjdk3002nesfpab70drz6",
+    "cmsovjdk4002oesfp6d3oq46d",
+    "cmsovjdk5002pesfpo0djo7x1",
+    "cmsovjdk6002qesfp7oerwd1h",
+    "cmsovjdk7002resfpilbdwlm6",
+    "cmsovjdk8002sesfptacr2ins",
+    "cmsovjtpi002uesfp5kja3ss5",
+    "cmsovjtpk002vesfpvi8mos7v",
+    "cmsovkc9w002xesfpbqxkjn1p",
+    "cmsovkc9y002yesfpvvimx53f",
+    "cmsovkc9z002zesfpai3whhy8",
+    "cmsovkca00030esfpco476uei",
+    "cmsovkca10031esfpt5l44c6l",
+    "cmsovkca20032esfpw259rnif",
+    "cmsovkca30033esfpb9d4hby4",
+    "cmsovkca40034esfperl1o59t",
+    "cmsovkca50035esfp4p3uy3ti",
+    "cmsovkca60036esfpwgh2y87n",
+    "cmsovkca70037esfpjjo30svq",
+    "cmsovkca90038esfp872mik47",
+    "cmsovkcaa0039esfpxkiabwhc",
+    "cmsovkcab003aesfpbzlnwx2b",
+    "cmsovkcac003besfpe2595pjl",
+    "cmsovkxyz003desfpsb6ccz84",
+    "cmsovkxz1003eesfphlv9vvvm",
+    "cmsovkxz2003fesfpbguycllc",
+    "cmsovkxz4003gesfp9wmzkf7l",
+    "cmsovkxz5003hesfpvcc49rf6",
+    "cmsovkxz6003iesfp0iz7jph7",
+    "cmsovkxz7003jesfpsv6vve59",
+    "cmsovkxz8003kesfpliaqfk2c",
+    "cmsovkxz9003lesfp2r490gbq",
+    "cmsovkxzb003mesfpzko1hai3",
+    "cmsovkxzc003nesfpm2x7r4v9",
+    "cmsovkxzd003oesfppko4qfvr",
+    "cmsovlc9l003qesfplt1sxuyz",
+    "cmsovlc9n003resfpyyeptof1",
+    "cmsovlc9p003sesfpjby1m42d",
+    "cmsovlc9q003tesfpp63bvkb6",
+    "cmsovlc9s003uesfpwutubj8v",
+    "cmsovlc9t003vesfpdvo9ncai",
+    "cmsovlc9u003wesfprzjxl5cc",
+    "cmsovlc9w003xesfphi6d40gf",
+    "cmsovlc9x003yesfpasz9nbzq",
+    "cmsovlc9y003zesfpkwma5lys",
+    "cmsovlc9z0040esfpcgb3vl23"
+  ],
+  "status": "SUCCEEDED",
+  "cleanedUpAt": "2026-08-11T16:29:27.574Z"
+}

@@ -1,0 +1,128 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Iria Sorel construye una práctica basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Iria Sorel",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs8000qesfpx85kgt9g"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "Casa de sal",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs6000oesfpzuyoxigo"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "Atlas del umbral",
+      "evidenceIds": [
+        "cmsovijs6000oesfpzuyoxigo"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Memoria porosa",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs8000qesfpx85kgt9g"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ORGANIZATION",
+      "title": "Taller Bruma",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs8000qesfpx85kgt9g"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PERSON",
+      "title": "Nuno Arce",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs8000qesfpx85kgt9g"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs8000qesfpx85kgt9g"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs6000oesfpzuyoxigo"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovijs6000oesfpzuyoxigo"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs8000qesfpx85kgt9g"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs8000qesfpx85kgt9g"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-6",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovijs4000mesfpnwzedgic",
+        "cmsovijs6000oesfpzuyoxigo"
+      ],
+      "relationTypeId": "relation-type-related-to"
+    }
+  ]
+}

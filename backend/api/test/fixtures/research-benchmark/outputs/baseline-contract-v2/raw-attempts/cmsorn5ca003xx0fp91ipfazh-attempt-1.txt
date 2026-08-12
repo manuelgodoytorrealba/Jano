@@ -1,0 +1,76 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Comparar estados separados requiere declarar qué se observa y qué se infiere.",
+      "kind": "CONCEPT"
+   ,
+      "evidenceIds": [
+        "cmsorknst0020x0fpx07fwlkq"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsorknst0020x0fpx07fwlkq"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsorknst0020x0fpx07fwlkq"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "EVENT",
+      "title": "Jornadas del Eco en Faro Bajo",
+      "evidenceIds": [
+        "cmsorknst0020x0fpx07fwlkq"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "WORK",
+      "title": "Intervalos útiles",
+      "evidenceIds": [
+        "cmsorknst0020x0fpx07fwlkq"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsorknst0020x0fpx07fwlkq"
+      ],
+      "relationTypeId": "LOCATED_IN"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsorknst0020x0fpx07fwlkq"
+      ],
+      "relationTypeId": "PART_OF"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsorknst0020x0fpx07fwlkq"
+      ],
+      "relationTypeId": "MENTIONS"
+    }
+  ]
+}

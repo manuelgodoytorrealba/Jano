@@ -1,0 +1,129 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "La escucha oblicua atiende a condiciones y silencios",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1l9ld000wx4fplqf8sv2d",
+        "cmsp1l9lh0010x4fpus7qr7c6"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "El archivo respirante reorganiza sin borrar versiones",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1l9ld000wx4fplqf8sv2d",
+        "cmsp1l9lh0010x4fpus7qr7c6"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "La opacidad productiva mantiene visibles los límites",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1l9ld000wx4fplqf8sv2d",
+        "cmsp1l9lh0010x4fpus7qr7c6"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "El ritmo de retorno registra nuevas lecturas de una misma evidencia",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1l9ld000wx4fplqf8sv2d",
+        "cmsp1l9lh0010x4fpus7qr7c6"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "Materia de Casa",
+      "evidenceIds": [
+        "cmsp1l9li0012x4fp89yeqavb",
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Mara Téllez",
+      "evidenceIds": [
+        "cmsp1l9lh0010x4fpus7qr7c6"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "ORGANIZATION",
+      "title": "Instituto Lumen",
+      "evidenceIds": [
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PLACE",
+      "title": "Nave del Este",
+      "evidenceIds": [
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "WORK",
+      "title": "Mesa para una ausencia",
+      "evidenceIds": [
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "WORK",
+      "title": "Inventario del humo",
+      "evidenceIds": [
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsp1l9lk0014x4fp9o56zeav"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    }
+  ]
+}

@@ -30,7 +30,7 @@ export function presentSectionDossiers<
   TRelation extends Relation,
   TSection extends Section<TExcerpt>,
 >(
-  sections: TSection[],
+  sections: TSection[] = [],
   evidence: TEvidence[],
   claims: TClaim[],
   entities: TEntity[],

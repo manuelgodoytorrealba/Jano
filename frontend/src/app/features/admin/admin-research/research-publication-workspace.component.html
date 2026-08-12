@@ -1,0 +1,274 @@
+<section class="publication" aria-label="Publicación de la investigación">
+  <header class="publication__hero jano-editorial-surface">
+    <div class="publication__hero-copy">
+      <nav class="publication__breadcrumb" aria-label="Miga de pan">
+        <a routerLink="/admin/research">Research Studio</a><span aria-hidden="true">/</span
+        ><span>Publicación</span>
+      </nav>
+      <p class="publication__eyebrow">Investigación privada</p>
+      <h1>{{ project.title }}</h1>
+      <p class="publication__objective">
+        {{ project.objective || 'Una investigación editorial en desarrollo.' }}
+      </p>
+      <div class="publication__meta" aria-label="Metadatos editoriales">
+        <span>{{ readingTime }} min de lectura</span>
+        <span>{{ entities.length }} {{ entities.length === 1 ? 'entidad' : 'entidades' }}</span>
+        <span
+          >{{ project.sources.length }}
+          {{ project.sources.length === 1 ? 'fuente' : 'fuentes' }}</span
+        >
+      </div>
+      <div class="publication__actions">
+        <a [routerLink]="['/admin/research', project.id]" [queryParams]="{ mode: 'index' }"
+          >Editar contenido</a
+        >
+        <button type="button" (click)="setTab('sources')">Ver fuentes</button>
+        @if (project.status !== 'PUBLISHED') {
+          <button type="button" (click)="publish()">Publicar investigación</button>
+        }
+      </div>
+    </div>
+    <div class="publication__cover" [class.has-image]="!!project.coverImageUrl">
+      @if (project.coverImageUrl) {
+        <img [src]="project.coverImageUrl" [alt]="'Portada de ' + project.title" />
+      } @else {
+        <div class="publication__cover-fallback" aria-hidden="true">
+          <span>J</span><i></i><i></i><i></i>
+        </div>
+      }
+      <span class="publication__cover-label">Research Studio</span>
+    </div>
+  </header>
+
+  <nav class="publication__tabs" role="tablist" aria-label="Capas de la publicación">
+    @for (tab of tabs; track tab.id) {
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeTab === tab.id"
+        [class.is-active]="activeTab === tab.id"
+        (click)="setTab(tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </nav>
+
+  @if (activeTab === 'content') {
+    <section
+      class="publication__reading publication__panel jano-editorial-surface"
+      role="tabpanel"
+      aria-label="Contenido"
+    >
+      @if (publicationSections.length) {
+        <div class="publication__introduction">
+          <p class="publication__eyebrow">Lectura</p>
+          <p>
+            {{
+              project.objective || 'Esta investigación todavía está encontrando su forma editorial.'
+            }}
+          </p>
+        </div>
+        @for (section of publicationSections; track section.id; let index = $index) {
+          <article class="publication__section" [class.is-subsection]="section.depth > 0">
+            <header>
+              <span>{{ index + 1 < 10 ? '0' + (index + 1) : index + 1 }}</span>
+              <h2>{{ section.title }}</h2>
+            </header>
+            @if (section.imageUrl) {
+              <img [src]="section.imageUrl" [alt]="section.title" />
+            }
+            @if (sectionContent(section); as content) {
+              <app-rich-text [text]="content" previewAccess="admin" />
+            } @else {
+              <p class="publication__section-empty">
+                Esta sección todavía no tiene texto editorial.
+              </p>
+            }
+          </article>
+        }
+      } @else {
+        <div class="publication__empty publication__empty--reading">
+          <p class="publication__eyebrow">Contenido en preparación</p>
+          <h2>La investigación aún no tiene un recorrido de lectura.</h2>
+          <p>
+            Organiza el índice y desarrolla las secciones para convertir el corpus en una pieza
+            editorial.
+          </p>
+          <a [routerLink]="['/admin/research', project.id]" [queryParams]="{ mode: 'index' }"
+            >Abrir el índice</a
+          >
+        </div>
+      }
+    </section>
+  } @else if (activeTab === 'knowledge-map') {
+    <section
+      class="publication__knowledge publication__panel jano-editorial-surface"
+      role="tabpanel"
+      aria-label="Mapa del conocimiento"
+    >
+      <header class="publication__tab-heading">
+        <p class="publication__eyebrow">Conocimiento conectado</p>
+        <h2>Mapa de conocimiento</h2>
+        <p>Explora las entidades y relaciones privadas que sostienen esta investigación.</p>
+      </header>
+      @if (entities.length) {
+        <app-research-graph [researchId]="project.id" [showCandidates]="false" />
+      } @else {
+        <div class="publication__empty">
+          <h3>El mapa todavía está vacío.</h3>
+          <p>Revisa las entidades del corpus para empezar a construir conocimiento conectado.</p>
+          <a [routerLink]="['/admin/research', project.id]" [queryParams]="{ mode: 'entities' }"
+            >Ir a Entidades</a
+          >
+        </div>
+      }
+    </section>
+  } @else if (activeTab === 'entities') {
+    <section
+      class="publication__collection publication__panel jano-editorial-surface"
+      role="tabpanel"
+      aria-label="Entidades"
+    >
+      <header class="publication__tab-heading">
+        <p class="publication__eyebrow">Conocimiento de la investigación</p>
+        <h2>Entidades</h2>
+        <p>Identidades revisadas que forman parte de esta investigación.</p>
+      </header>
+      @if (entities.length) {
+        <div class="publication__entities-grid">
+          @for (entity of entities; track entity.id) {
+            @if (entityHref(entity); as href) {
+              <a class="publication__entity jano-editorial-surface" [routerLink]="href">
+                <div class="publication__entity-media">
+                  @if (entityImage(entity); as imageUrl) {
+                    <img [src]="imageUrl" [alt]="entity.title" />
+                  } @else {
+                    <span aria-hidden="true">{{ entityInitial(entity) }}</span>
+                  }
+                </div>
+                <span>{{ entityType(entity) }}</span>
+                <h3>{{ entity.title }}</h3>
+                <p>
+                  {{
+                    entity.summary || 'Entidad incorporada al conocimiento de esta investigación.'
+                  }}
+                </p>
+                <small
+                  >{{ entity.evidence?.length ?? entity.mentionCount }} evidencias vinculadas
+                  ↗</small
+                >
+              </a>
+            } @else {
+              <article class="publication__entity jano-editorial-surface">
+                <div class="publication__entity-media">
+                  <span aria-hidden="true">{{ entityInitial(entity) }}</span>
+                </div>
+                <span>{{ entityType(entity) }} · Privada</span>
+                <h3>{{ entity.title }}</h3>
+                <p>
+                  {{
+                    entity.summary || 'Entidad incorporada al conocimiento de esta investigación.'
+                  }}
+                </p>
+                <small
+                  >{{ entity.evidence?.length ?? entity.mentionCount }} evidencias vinculadas</small
+                >
+              </article>
+            }
+          }
+        </div>
+      } @else {
+        <div class="publication__empty">
+          <h3>Aún no hay entidades revisadas.</h3>
+          <p>
+            Las entidades aceptadas aparecerán aquí como capa de exploración de la investigación.
+          </p>
+          <a [routerLink]="['/admin/research', project.id]" [queryParams]="{ mode: 'entities' }"
+            >Revisar entidades</a
+          >
+        </div>
+      }
+    </section>
+  } @else if (activeTab === 'sources') {
+    <section
+      class="publication__collection publication__panel jano-editorial-surface"
+      role="tabpanel"
+      aria-label="Fuentes"
+    >
+      <header class="publication__tab-heading">
+        <p class="publication__eyebrow">Procedencia</p>
+        <h2>Fuentes</h2>
+        <p>Materiales y referencias que sostienen el recorrido de investigación.</p>
+      </header>
+      @if (project.sources.length) {
+        <ol class="publication__sources">
+          @for (projectSource of project.sources; track projectSource.sourceId) {
+            <li>
+              <span>{{ projectSource.source?.type ?? 'Fuente' }}</span>
+              <div>
+                <h3>{{ sourceTitle(projectSource) }}</h3>
+                @if (sourceMeta(projectSource)) {
+                  <p>{{ sourceMeta(projectSource) }}</p>
+                }
+                @if (projectSource.note) {
+                  <small>{{ projectSource.note }}</small>
+                }
+                @if (citationsFor(projectSource.sourceId).length) {
+                  <div class="publication__source-citations">
+                    <small>Selecciones citadas</small>
+                    @for (citation of citationsFor(projectSource.sourceId); track citation.id) {
+                      <blockquote>
+                        @if (citation.libraryExcerpt; as excerpt) {
+                          <cite>{{ excerpt.text }}</cite
+                          ><span>{{ excerpt.locator }}</span>
+                        } @else if (citation.evidence; as evidence) {
+                          <cite>{{
+                            evidence.quote || evidence.context || 'Evidencia registrada'
+                          }}</cite
+                          ><span>{{ evidence.locator }}</span>
+                        } @else if (citation.material; as material) {
+                          <cite>{{ material.title }}</cite
+                          ><span>Material completo</span>
+                        }
+                      </blockquote>
+                    }
+                  </div>
+                }
+              </div>
+              @if (projectSource.source?.url) {
+                <a [href]="projectSource.source?.url" target="_blank" rel="noopener">Abrir ↗</a>
+              }
+            </li>
+          }
+        </ol>
+      } @else {
+        <div class="publication__empty">
+          <h3>La investigación aún no tiene fuentes asociadas.</h3>
+          <p>Incorpora materiales al corpus para que su procedencia acompañe a la lectura.</p>
+          <a [routerLink]="['/admin/research', project.id]" [queryParams]="{ mode: 'corpus' }"
+            >Abrir corpus</a
+          >
+        </div>
+      }
+    </section>
+  } @else {
+    <section
+      class="publication__collection publication__panel jano-editorial-surface"
+      role="tabpanel"
+      aria-label="Investigaciones relacionadas"
+    >
+      <header class="publication__tab-heading">
+        <p class="publication__eyebrow">Continuar explorando</p>
+        <h2>Investigaciones relacionadas</h2>
+        <p>
+          Una futura capa editorial podrá proponer conexiones entre investigaciones sin inventarlas.
+        </p>
+      </header>
+      <div class="publication__empty">
+        <h3>Todavía no hay investigaciones relacionadas.</h3>
+        <p>JANO mostrará conexiones sólo cuando exista una relación editorialmente fundamentada.</p>
+      </div>
+    </section>
+  }
+</section>

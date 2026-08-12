@@ -4,6 +4,37 @@ import { EntityReadService } from './entity-read.service';
 import { EntityEditorialService } from './entity-editorial.service';
 
 describe('EntityEditorialService', () => {
+  it('creates a canonical draft record with its initial Spanish translation', async () => {
+    const tx = { entity: { create: jest.fn().mockResolvedValue({ id: 'entity-1' }) } };
+    const service = new EntityEditorialService({} as PrismaService, {} as EntityReadService);
+
+    await service.createDraftRecord(tx as never, {
+      type: 'ARTWORK',
+      kind: 'WORK',
+      title: ' Pinturas negras ',
+      summary: ' Serie investigada. ',
+    });
+
+    expect(tx.entity.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        type: 'ARTWORK',
+        kind: 'WORK',
+        title: 'Pinturas negras',
+        slug: expect.stringMatching(/^_draft-/),
+        summary: 'Serie investigada.',
+        status: 'DRAFT',
+        translations: {
+          create: {
+            locale: 'es',
+            title: 'Pinturas negras',
+            shortDescription: 'Serie investigada.',
+          },
+        },
+      }),
+      select: { id: true },
+    });
+  });
+
   it('persists the Spanish translation, base entity and mentions in one transaction', async () => {
     const tx = {
       entity: {

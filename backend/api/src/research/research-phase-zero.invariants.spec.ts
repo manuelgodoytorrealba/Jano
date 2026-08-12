@@ -5,7 +5,13 @@ import { ResearchService } from './research.service';
 describe('Research phase-zero invariants', () => {
   it('archives without deleting private Research state', async () => {
     const prisma = { researchProject: { update: jest.fn() } };
-    const service = new ResearchService(prisma as never, {} as never, {} as never, {} as never);
+    const service = new ResearchService(
+      prisma as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+    );
     jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'research-1' } as never);
 
     await service.archiveProject('research-1', 'user-1');

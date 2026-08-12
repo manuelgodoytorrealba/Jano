@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { HomeDeckSurface, KnowledgeAssertionStatus } from '@prisma/client';
+import {
+  EntityStatus,
+  HomeDeckSurface,
+  KnowledgeAssertionStatus,
+  UserDiscoverySignalKind,
+} from '@prisma/client';
 import { attachResolvedMedia } from '../media/media.resolver';
 import { normalizeLocale, resolveEntityTranslation } from '../entities/entity-translation.resolver';
 import { PrismaService } from '../prisma/prisma.service';
@@ -10,6 +15,7 @@ import {
 import { SearchQuery } from './dto/search.query';
 import { SearchIntentService, type SearchQueryVariant } from './search-intent.service';
 import { SearchQueryRepository, type SearchRow } from './search-query.repository';
+import { ArchiveRecommendationsQuery } from './dto/archive-recommendations.query';
 
 type SearchItem = {
   id: string;
@@ -31,7 +37,7 @@ type SearchEntityRecord = Parameters<typeof resolveEntityTranslation>[0] & {
   contentLevel?: string | null;
   startYear?: number | null;
   endYear?: number | null;
-  tags?: Array<{ tag: Record<string, unknown> }> | null;
+  tags?: Array<{ tag: { id: string; [key: string]: unknown } }> | null;
   aliases?: Array<{
     id: string;
     locale: string | null;
@@ -134,13 +140,17 @@ export class SearchService {
     private searchQuery: SearchQueryRepository,
   ) {}
 
-  async search(query: SearchQuery, options: { includeDrafts: boolean }) {
+  async search(query: SearchQuery, options: { includeDrafts: boolean; userId?: string }) {
     const q = (query.q ?? '').trim();
     const tag = (query.tag ?? '').trim();
     const locale = normalizeLocale(query.locale);
     const limit = Math.min(60, Math.max(1, Number(query.limit ?? 20)));
     const types = Array.isArray(query.type) ? query.type.filter(Boolean) : [];
     const kinds = Array.isArray(query.kind) ? query.kind.filter(Boolean) : [];
+
+    if (options.userId && query.recordInterest && q.length >= 2) {
+      await this.recordSearch(options.userId, q);
+    }
 
     if (!q && !tag) {
       return {
@@ -246,6 +256,151 @@ export class SearchService {
           reason: variant.reason,
         })),
       },
+    };
+  }
+
+  async archiveRecommendations(userId: string, query: ArchiveRecommendationsQuery) {
+    const locale = normalizeLocale(query.locale);
+    const type = query.type;
+    const limit = Math.min(24, Math.max(1, Number(query.limit ?? 24)));
+    const since = new Date();
+    since.setDate(since.getDate() - 90);
+    const signals = await this.prisma.userDiscoverySignal.findMany({
+      where: {
+        userId,
+        kind: UserDiscoverySignalKind.SEARCH_SUBMITTED,
+        createdAt: { gte: since },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 6,
+    });
+
+    if (!signals.length) {
+      const items = await this.prisma.entity.findMany({
+        where: { status: EntityStatus.PUBLISHED, ...(type ? { type } : {}) },
+        orderBy: { updatedAt: 'desc' },
+        take: limit,
+        include: this.entityInclude(locale),
+      });
+      return this.archiveResponse(items, locale, limit, false, new Map(), new Set());
+    }
+
+    const seedScores = new Map<string, number>();
+    const seedQueries = new Map<string, string>();
+    for (const [index, signal] of signals.entries()) {
+      const intent = this.searchIntent.interpret(signal.query, locale);
+      const rows = await this.searchVariantRows(intent.variants.slice(0, 2), {
+        limit: 6,
+        types: [],
+        kinds: [],
+        locale,
+        includeDrafts: false,
+      });
+      const recency = Math.max(1, signals.length - index);
+      for (const row of rows) {
+        seedScores.set(row.id, Math.max(seedScores.get(row.id) ?? 0, Number(row.score) + recency));
+        seedQueries.set(row.id, signal.query);
+      }
+    }
+
+    const seedIds = Array.from(seedScores.keys());
+    if (!seedIds.length) {
+      return { items: [], page: 1, limit, total: 0, totalPages: 1, personalized: true };
+    }
+
+    const seeds = await this.prisma.entity.findMany({
+      where: { id: { in: seedIds }, status: EntityStatus.PUBLISHED },
+      select: { id: true, tags: { select: { tagId: true } } },
+    });
+    const tagIds = [...new Set(seeds.flatMap((seed) => seed.tags.map((item) => item.tagId)))];
+    const relations = await this.prisma.relation.findMany({
+      where: {
+        status: KnowledgeAssertionStatus.PUBLISHED,
+        OR: [{ fromId: { in: seedIds } }, { toId: { in: seedIds } }],
+      },
+      select: { fromId: true, toId: true, weight: true },
+      take: 240,
+    });
+    const connectedIds = new Set<string>();
+    for (const relation of relations) {
+      if (seedScores.has(relation.fromId)) connectedIds.add(relation.toId);
+      if (seedScores.has(relation.toId)) connectedIds.add(relation.fromId);
+    }
+
+    const candidates = await this.prisma.entity.findMany({
+      where: {
+        status: EntityStatus.PUBLISHED,
+        ...(type ? { type } : {}),
+        OR: [
+          { id: { in: [...seedIds, ...connectedIds] } },
+          ...(tagIds.length ? [{ tags: { some: { tagId: { in: tagIds } } } }] : []),
+        ],
+      },
+      include: this.entityInclude(locale),
+      take: 180,
+    });
+
+    return this.archiveResponse(
+      candidates,
+      locale,
+      limit,
+      true,
+      seedQueries,
+      connectedIds,
+      seedScores,
+      tagIds,
+    );
+  }
+
+  private async recordSearch(userId: string, query: string) {
+    await this.prisma.userDiscoverySignal.create({
+      data: {
+        userId,
+        kind: UserDiscoverySignalKind.SEARCH_SUBMITTED,
+        query: query.slice(0, 240),
+      },
+    });
+  }
+
+  private archiveResponse(
+    entities: SearchEntityRecord[],
+    locale: string,
+    limit: number,
+    personalized: boolean,
+    seedQueries: Map<string, string>,
+    connectedIds: Set<string>,
+    seedScores = new Map<string, number>(),
+    tagIds: string[] = [],
+  ) {
+    const tagSet = new Set(tagIds);
+    const items = entities
+      .map((entity) => {
+        const directScore = seedScores.get(entity.id) ?? 0;
+        const graphScore = connectedIds.has(entity.id) ? 4 : 0;
+        const tagScore = (entity.tags ?? []).filter((item) => tagSet.has(item.tag.id)).length * 2;
+        const query = seedQueries.get(entity.id);
+        return {
+          ...this.serializeSearchEntity(entity, locale, directScore + graphScore + tagScore),
+          recommendationReason: query
+            ? `Porque has buscado «${query}»`
+            : graphScore
+              ? 'Conectado con tus búsquedas recientes'
+              : personalized
+                ? 'Comparte temas con tus búsquedas recientes'
+                : 'Explora el archivo',
+          recommendationScore: directScore + graphScore + tagScore,
+        };
+      })
+      .sort((left, right) => right.recommendationScore - left.recommendationScore)
+      .slice(0, limit);
+
+    return {
+      items,
+      page: 1,
+      limit,
+      total: items.length,
+      totalPages: 1,
+      personalized,
     };
   }
 

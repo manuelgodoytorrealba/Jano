@@ -6,6 +6,7 @@ import { EntityRouteArtworkTransitionService } from '../../core/entity-route-art
 import { HomeDecksApi } from '../../core/api/home-decks.api';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
+import { SearchApi } from '../../core/api/search.api';
 import { TagsApi } from '../../core/api/tags.api';
 import { EntitiesListComponent } from './entities-list.component';
 import { EntitiesListPageVm } from './entities-list.facade';
@@ -100,6 +101,11 @@ describe('EntitiesListComponent filters', () => {
     listPublic: () => of([]),
   };
 
+  const searchApiStub = {
+    archiveRecommendations: () =>
+      of({ items: [], page: 1, limit: 24, total: 0, totalPages: 1, personalized: false }),
+  };
+
   const seoStub = {
     setPageMeta: () => undefined,
   };
@@ -169,6 +175,7 @@ describe('EntitiesListComponent filters', () => {
         { provide: Router, useValue: routerStub },
         { provide: TagsApi, useValue: tagsApiStub },
         { provide: HomeDecksApi, useValue: homeDecksApiStub },
+        { provide: SearchApi, useValue: searchApiStub },
         { provide: SeoService, useValue: seoStub },
         { provide: EntityRouteArtworkTransitionService, useValue: artworkTransitionStub },
         { provide: I18nService, useValue: i18nStub },

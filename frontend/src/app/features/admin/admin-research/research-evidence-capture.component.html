@@ -7,7 +7,7 @@
     >
   </header>
 
-  @if (!preparedSource) {
+  @if (!preparedSource && allowSourceAssociation) {
     <form class="research-evidence__source-search" (ngSubmit)="searchSources()">
       <label for="sourceSearch">Incorpora una Source existente</label>
       <div>

@@ -1,0 +1,130 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Aina Soler y Ana Soler son dos personas distintas",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz"
+      ],
+      "summary": "El texto establece que Aina Soler y Ana Soler son nombres similares pero designan personas distintas y no hay evidencia de parentesco o relación entre ellas."
+    },
+    {
+      "localId": "claim-2",
+      "title": "El eco quieto es una obra y no una entidad separada",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz",
+        "cmsovfnim001u5gfpzq68lbyk"
+      ],
+      "summary": "El texto indica que el eco quieto es una cualidad perceptiva y no una entidad separada, sino que se refiere a la obra titulada 'El eco quieto'."
+    },
+    {
+      "localId": "claim-3",
+      "title": "Casa Faro es una organización que gestiona encuentros y residencias",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz",
+        "cmsovfnik001s5gfpqpw50fkl",
+        "cmsovfnim001u5gfpzq68lbyk"
+      ],
+      "summary": "El texto menciona que Casa Faro es la organización anfitriona de las Jornadas del Eco y que gestiona residencias y encuentros, pero no es una vivienda ni un lugar geográfico."
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz",
+        "cmsovfnim001u5gfpzq68lbyk"
+      ],
+      "summary": "Aina Soler se ocupó del programa y de las sesiones de lectura en las Jornadas del Eco."
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz",
+        "cmsovfnim001u5gfpzq68lbyk"
+      ],
+      "summary": "Ana Soler presentó una instalación titulada 'El eco quieto' y moderó una conversación titulada 'Eco quieto, sin artículo'."
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "El eco quieto",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz",
+        "cmsovfnim001u5gfpzq68lbyk"
+      ],
+      "summary": "El eco quieto es una instalación formada por dos superficies metálicas y un sistema de vibración que se activa cuando la sala queda momentáneamente vacía."
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz",
+        "cmsovfnik001s5gfpqpw50fkl",
+        "cmsovfnim001u5gfpzq68lbyk"
+      ],
+      "summary": "Cartografía del intervalo es un método de investigación visual que registra cambios y decisiones entre una primera observación y una revisión posterior."
+    },
+    {
+      "localId": "entity-5",
+      "kind": "PLACE",
+      "title": "Faro Bajo",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz",
+        "cmsovfnim001u5gfpzq68lbyk"
+      ],
+      "summary": "Faro Bajo es la localidad donde se encuentra el edificio ocupado por Casa Faro."
+    },
+    {
+      "localId": "entity-6",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz",
+        "cmsovfnik001s5gfpqpw50fkl",
+        "cmsovfnim001u5gfpzq68lbyk"
+      ],
+      "summary": "Casa Faro es la organización anfitriona de las Jornadas del Eco y gestiona residencias y encuentros."
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz"
+      ],
+      "relationTypeId": "relation-type-created-by",
+      "explanation": "Aina Soler creó la instalación 'El eco quieto'."
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovfnii001q5gfpoyh3gnsz"
+      ],
+      "relationTypeId": "relation-type-created-by",
+      "explanation": "Ana Soler creó la instalación 'El eco quieto'."
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsovfnik001s5gfpqpw50fkl"
+      ],
+      "relationTypeId": "relation-type-located-in",
+      "explanation": "Cartografía del intervalo se llevó a cabo en el edificio ocupado por Casa Faro."
+    }
+  ]
+}

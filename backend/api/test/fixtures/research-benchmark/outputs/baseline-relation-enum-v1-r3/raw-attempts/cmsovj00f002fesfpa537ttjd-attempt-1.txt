@@ -1,0 +1,116 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "La escucha oblicua atiende a condiciones y silencios",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovijsd000wesfpkbrfcrgu"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "El archivo respirante reorganiza sin borrar versiones",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovijsd000wesfpkbrfcrgu"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "La opacidad productiva mantiene visibles los límites",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovijsd000wesfpkbrfcrgu"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "El ritmo de retorno registra nuevas lecturas de una misma evidencia",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovijsd000wesfpkbrfcrgu"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "Materia de Casa",
+      "evidenceIds": [
+        "cmsovijsi0012esfpaycy6bh7",
+        "cmsovijsk0014esfph6hpkrsw"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Mara Téllez",
+      "evidenceIds": [
+        "cmsovijsg0010esfpz774d6s9"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "ORGANIZATION",
+      "title": "Instituto Lumen",
+      "evidenceIds": [
+        "cmsovijsk0014esfph6hpkrsw"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PLACE",
+      "title": "Nave del Este",
+      "evidenceIds": [
+        "cmsovijsk0014esfph6hpkrsw"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "WORK",
+      "title": "Mesa para una ausencia",
+      "evidenceIds": [
+        "cmsovijsk0014esfph6hpkrsw"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "WORK",
+      "title": "Inventario del humo",
+      "evidenceIds": [
+        "cmsovijsk0014esfph6hpkrsw"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovijsk0014esfph6hpkrsw"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovijsk0014esfph6hpkrsw"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovijsk0014esfph6hpkrsw"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    }
+  ]
+}

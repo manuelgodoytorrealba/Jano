@@ -7,20 +7,32 @@ import {
   ResearchJobType,
   ResearchProjectStatus,
   ResearchProposalReviewState,
+  LibraryMaterialKind,
+  SourceType,
+  type KnowledgeEntityKind,
   type Prisma,
 } from '@prisma/client';
+import {
+  EntityEditorialService,
+  kindForLegacyEntityType,
+} from '../entities/entity-editorial.service';
 import { LibraryService } from '../library/library.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
 import { AssociateResearchLibraryMaterialDto } from './dto/associate-research-library-material.dto';
+import { CiteResearchItemDto } from './dto/cite-research-item.dto';
 import { CreateResearchClaimDto, SetResearchClaimStatusDto } from './dto/create-research-claim.dto';
 import { CreateResearchEvidenceDto } from './dto/create-research-evidence.dto';
 import { CreateResearchLibraryExcerptDto } from './dto/create-research-library-excerpt.dto';
+import { CreateResearchEvidenceFromExcerptDto } from './dto/create-research-evidence-from-excerpt.dto';
+import { UpdateResearchEvidenceDto } from './dto/update-research-evidence.dto';
+import { UpdateResearchLibraryExcerptDto } from './dto/update-research-library-excerpt.dto';
 import { CreateLibraryMaterialDto } from '../library/dto/create-library-material.dto';
 import { CreateResearchPdfMaterialDto } from './dto/create-research-pdf-material.dto';
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { UpdateResearchProjectStatusDto } from './dto/update-research-project-status.dto';
 import { ReviewResearchProposalDto } from './dto/review-research-proposal.dto';
+import { UpdateResearchProposalDto } from './dto/update-research-proposal.dto';
 import { CreateResearchEntityDto } from './dto/create-research-entity.dto';
 import { CreateResearchRelationDto } from './dto/create-research-relation.dto';
 import { SearchSourcesQuery } from '../sources/dto/search-sources.query';
@@ -30,6 +42,7 @@ import type {
   ResearchKnowledgeQuery,
   ResearchKnowledgeScope,
 } from './dto/research-knowledge.query';
+import type { ListResearchProposalsQuery } from './dto/list-research-proposals.query';
 import type { UploadedResearchPdf } from './research-pdf-upload.config';
 import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-section.dto';
 import { AddResearchOutlineSectionExcerptDto } from './dto/add-research-outline-section-excerpt.dto';
@@ -42,6 +55,7 @@ import { ResearchOutlineService } from './research-outline.service';
 import { AddResearchOutlineSectionMaterialDto } from './dto/add-research-outline-section-material.dto';
 import type { UploadedImageFile } from '../media/entity-media.service';
 import { buildPublicUploadUrl, resolveMediaPublicBaseUrl } from '../common/media-url.util';
+import { resolveEntityMedia, resolvedMediaUrl } from '../media/media.resolver';
 import { presentSectionDossiers } from './research-section-dossier';
 const researchSourceSelect = {
   id: true,
@@ -91,8 +105,10 @@ function presentKnowledgeEvidence<T extends object>(evidence: T, traceabilityLoa
 const researchKnowledgeEntitySelect = {
   id: true,
   projectId: true,
+  canonicalEntityId: true,
   kind: true,
   title: true,
+  aliases: true,
   summary: true,
   confidence: true,
   mentionCount: true,
@@ -144,12 +160,81 @@ export class ResearchService {
     private readonly sources: SourcesService,
     private readonly library: LibraryService,
     private readonly outline: ResearchOutlineService,
+    private readonly entityEditorial: EntityEditorialService,
   ) {}
 
   getStudioStatus() {
     return {
       status: 'ready',
       scope: 'editorial-research-studio',
+    };
+  }
+
+  async listProposals(projectId: string, query: ListResearchProposalsQuery) {
+    const where = {
+      projectId,
+      ...(query.reviewState ? { reviewState: query.reviewState } : {}),
+    };
+    const [project, total, items] = await Promise.all([
+      this.prisma.researchProject.findUnique({ where: { id: projectId }, select: { id: true } }),
+      this.prisma.researchFindingProposal.count({ where }),
+      this.prisma.researchFindingProposal.findMany({
+        where,
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
+        include: {
+          relationType: { select: { id: true, key: true, label: true } },
+          convertedEntity: { select: { id: true } },
+          convertedRelation: { select: { id: true } },
+          evidence: { include: { evidence: { include: researchEvidenceTraceInclude } } },
+        },
+      }),
+    ]);
+    if (!project) throw new NotFoundException('Research project not found');
+
+    return {
+      items: items.map((proposal) => ({
+        ...proposal,
+        evidence: proposal.evidence.map((item) => ({
+          ...item,
+          evidence: presentKnowledgeEvidence(item.evidence),
+        })),
+      })),
+      page: query.page,
+      limit: query.limit,
+      total,
+      totalPages: Math.ceil(total / query.limit),
+    };
+  }
+
+  async getKnowledgeMapGeneration(projectId: string) {
+    await this.requireProject(projectId);
+    const contextFingerprint = await this.analysisContextFingerprint(projectId);
+    const inputFingerprint = this.jobFingerprint({
+      projectId,
+      type: ResearchJobType.EXTRACT_FINDINGS,
+      contextFingerprint,
+    });
+    const [job, preparedMaterials] = await Promise.all([
+      this.prisma.researchJob.findFirst({
+        where: { projectId, type: ResearchJobType.EXTRACT_FINDINGS },
+        orderBy: { updatedAt: 'desc' },
+        include: { _count: { select: { findingProposals: true } } },
+      }),
+      this.prisma.libraryMaterialVersion.count({
+        where: {
+          status: 'READY',
+          content: { not: null },
+          material: { research: { some: { projectId } } },
+        },
+      }),
+    ]);
+    return {
+      job,
+      stale: Boolean(job && job.inputFingerprint !== inputFingerprint),
+      canGenerate: preparedMaterials > 0,
+      preparedMaterials,
     };
   }
 
@@ -304,6 +389,35 @@ export class ResearchService {
     }));
   }
 
+  async listPublishedProjects() {
+    return this.prisma.researchProject.findMany({
+      where: { status: ResearchProjectStatus.PUBLISHED },
+      orderBy: { publishedAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        objective: true,
+        scope: true,
+        coverImageUrl: true,
+        publishedAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  async publishProject(projectId: string) {
+    await this.prisma.researchProject.update({
+      where: { id: projectId },
+      data: {
+        status: ResearchProjectStatus.PUBLISHED,
+        publishedAt: new Date(),
+        archivedAt: null,
+        archivedById: null,
+      },
+    });
+    return this.getProject(projectId);
+  }
+
   searchSources(query: SearchSourcesQuery) {
     return this.sources.search(query);
   }
@@ -355,6 +469,7 @@ export class ResearchService {
     return {
       fromEntity: { select: researchKnowledgeEntitySelect },
       toEntity: { select: researchKnowledgeEntitySelect },
+      relationType: { select: { id: true, key: true, label: true } },
       claims: {
         where: { claim: { projectId } },
         include: { claim: { select: researchKnowledgeClaimSelect } },
@@ -384,10 +499,76 @@ export class ResearchService {
     });
     if (!project) throw new NotFoundException('Research project not found');
 
+    const researchEntityByCanonicalId = new Map(
+      project.entities
+        .filter((entity) => entity.canonicalEntityId)
+        .map((entity) => [entity.canonicalEntityId!, entity]),
+    );
+    const canonicalEntityIds = [...researchEntityByCanonicalId.keys()];
+    const canonicalRelations =
+      canonicalEntityIds.length > 1
+        ? await this.prisma.relation.findMany({
+            where: { fromId: { in: canonicalEntityIds }, toId: { in: canonicalEntityIds } },
+            select: {
+              id: true,
+              fromId: true,
+              toId: true,
+              relationTypeId: true,
+              relationType: { select: { id: true, key: true, label: true } },
+              justification: true,
+              confidence: true,
+              status: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+            orderBy: { id: 'asc' },
+          })
+        : [];
+    const researchRelationKeys = new Set(
+      project.relations.map(
+        (relation) =>
+          `${relation.fromEntityId}:${relation.toEntityId}:${relation.relationTypeId ?? ''}`,
+      ),
+    );
+    const projectedCanonicalRelations = canonicalRelations.flatMap((relation) => {
+      const fromEntity = researchEntityByCanonicalId.get(relation.fromId);
+      const toEntity = researchEntityByCanonicalId.get(relation.toId);
+      if (!fromEntity || !toEntity) return [];
+      const key = `${fromEntity.id}:${toEntity.id}:${relation.relationTypeId}`;
+      if (researchRelationKeys.has(key)) return [];
+      return [
+        {
+          id: `core:${relation.id}`,
+          canonicalRelationId: relation.id,
+          origin: 'KNOWLEDGE_CORE' as const,
+          canonicalStatus: relation.status,
+          projectId,
+          fromEntityId: fromEntity.id,
+          toEntityId: toEntity.id,
+          fromEntity,
+          toEntity,
+          relationTypeId: relation.relationTypeId,
+          relationType: relation.relationType,
+          explanation: relation.justification,
+          confidence: relation.confidence,
+          reviewState:
+            relation.status === 'PUBLISHED'
+              ? ResearchProposalReviewState.REVIEWED
+              : ResearchProposalReviewState.PENDING,
+          claims: [],
+          createdAt: relation.createdAt,
+          updatedAt: relation.updatedAt,
+        },
+      ];
+    });
+
     return this.knowledgeResponse(project.id, 'topology', {
       expansions: { claims: 'SUMMARY', evidence: 'NOT_LOADED', traceability: 'NOT_LOADED' },
       entities: sortById(project.entities),
-      relations: sortById(project.relations),
+      relations: sortById([
+        ...project.relations.map((relation) => ({ ...relation, origin: 'RESEARCH' as const })),
+        ...projectedCanonicalRelations,
+      ]),
       claims: [],
       contradictions: [],
       supportingEvidence: [],
@@ -685,14 +866,26 @@ export class ResearchService {
           include: { source: { include: { translations: { orderBy: { locale: 'asc' } } } } },
           orderBy: { createdAt: 'desc' },
         },
-        evidence: { orderBy: { createdAt: 'desc' } },
+        citations: {
+          orderBy: { createdAt: 'desc' },
+          include: {
+            material: { select: { title: true } },
+            libraryExcerpt: { select: { locator: true, text: true } },
+            evidence: { select: { locator: true, quote: true, context: true } },
+          },
+        },
+        evidence: { orderBy: { createdAt: 'desc' }, include: researchEvidenceTraceInclude },
         decisions: { orderBy: { createdAt: 'desc' } },
         jobs: { orderBy: { updatedAt: 'desc' } },
         libraryMaterials: {
           include: {
             material: {
               include: {
-                versions: { orderBy: { version: 'desc' }, take: 1 },
+                versions: {
+                  orderBy: { version: 'desc' },
+                  take: 1,
+                  include: { excerpts: { orderBy: { createdAt: 'asc' } } },
+                },
               },
             },
           },
@@ -701,7 +894,37 @@ export class ResearchService {
         entities: {
           include: {
             evidence: { include: { evidence: { include: researchEvidenceTraceInclude } } },
-            canonicalEntity: { select: { id: true, title: true, kind: true } },
+            canonicalEntity: {
+              select: {
+                id: true,
+                title: true,
+                type: true,
+                kind: true,
+                mediaLinks: {
+                  orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+                  select: {
+                    id: true,
+                    role: true,
+                    sortOrder: true,
+                    isPrimary: true,
+                    media: {
+                      select: {
+                        id: true,
+                        url: true,
+                        displayUrl: true,
+                        mimeType: true,
+                        isVector: true,
+                        alt: true,
+                        width: true,
+                        height: true,
+                        provider: true,
+                        qualityTier: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
           orderBy: { updatedAt: 'desc' },
         },
@@ -777,6 +1000,17 @@ export class ResearchService {
     const { libraryMaterials, ...research } = project;
     const entities = (research.entities ?? []).map((entity) => ({
       ...entity,
+      ...(entity.canonicalEntity
+        ? {
+            canonicalEntity: {
+              id: entity.canonicalEntity.id,
+              title: entity.canonicalEntity.title,
+              type: entity.canonicalEntity.type,
+              kind: entity.canonicalEntity.kind,
+              imageUrl: resolvedMediaUrl(resolveEntityMedia(entity.canonicalEntity, 'card')),
+            },
+          }
+        : {}),
       evidence: (entity.evidence ?? []).map((item) => ({
         ...item,
         evidence: presentKnowledgeEvidence(item.evidence),
@@ -838,6 +1072,7 @@ export class ResearchService {
             originalName: version.originalName,
             mimeType: version.mimeType,
             sizeBytes: version.sizeBytes,
+            excerpts: version.excerpts,
             createdAt: material.createdAt,
             updatedAt: material.updatedAt,
           };
@@ -865,6 +1100,147 @@ export class ResearchService {
       update: { note },
     });
 
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async removeProjectSource(projectId: string, sourceId: string) {
+    await this.requireProject(projectId);
+    const { count } = await this.prisma.researchProjectSource.deleteMany({
+      where: { projectId, sourceId },
+    });
+    if (!count) throw new NotFoundException('Research project source not found');
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async citeResearchItem(projectId: string, dto: CiteResearchItemDto) {
+    const item = await this.prisma.$transaction(async (tx) => {
+      const project = await tx.researchProject.findUnique({
+        where: { id: projectId },
+        select: { id: true },
+      });
+      if (!project) throw new NotFoundException('Research project not found');
+      let sourceId = dto.sourceId;
+      let data: { materialId?: string; libraryExcerptId?: string; evidenceId?: string } = {};
+      if (dto.kind === 'material') {
+        const material = await tx.libraryMaterial.findFirst({
+          where: { id: dto.itemId, research: { some: { projectId } } },
+          select: {
+            id: true,
+            sourceId: true,
+            kind: true,
+            title: true,
+            versions: { orderBy: { version: 'desc' }, take: 1, select: { url: true } },
+          },
+        });
+        if (!material) throw new NotFoundException('Research material not found');
+        sourceId = sourceId ?? material.sourceId ?? undefined;
+        if (!sourceId) {
+          sourceId = (
+            await tx.source.create({
+              data: {
+                type:
+                  material.kind === LibraryMaterialKind.URL ? SourceType.WEBSITE : SourceType.PAPER,
+                title: material.title,
+                url: material.versions[0]?.url ?? null,
+              },
+              select: { id: true },
+            })
+          ).id;
+          await tx.libraryMaterial.update({ where: { id: material.id }, data: { sourceId } });
+        }
+        data = { materialId: material.id };
+      } else if (dto.kind === 'excerpt') {
+        const excerpt = await tx.libraryExcerpt.findFirst({
+          where: {
+            id: dto.itemId,
+            materialVersion: { material: { research: { some: { projectId } } } },
+          },
+          select: {
+            id: true,
+            materialVersion: {
+              select: {
+                material: {
+                  select: {
+                    id: true,
+                    sourceId: true,
+                    kind: true,
+                    title: true,
+                    versions: { orderBy: { version: 'desc' }, take: 1, select: { url: true } },
+                  },
+                },
+              },
+            },
+          },
+        });
+        if (!excerpt) throw new NotFoundException('Research excerpt not found');
+        sourceId = sourceId ?? excerpt.materialVersion.material.sourceId ?? undefined;
+        if (!sourceId) {
+          const material = excerpt.materialVersion.material;
+          sourceId = (
+            await tx.source.create({
+              data: {
+                type:
+                  material.kind === LibraryMaterialKind.URL ? SourceType.WEBSITE : SourceType.PAPER,
+                title: material.title,
+                url: material.versions[0]?.url ?? null,
+              },
+              select: { id: true },
+            })
+          ).id;
+          await tx.libraryMaterial.update({ where: { id: material.id }, data: { sourceId } });
+        }
+        data = { libraryExcerptId: excerpt.id };
+      } else {
+        const evidence = await tx.researchEvidence.findFirst({
+          where: { id: dto.itemId, projectId },
+          select: { id: true, sourceId: true },
+        });
+        if (!evidence) throw new NotFoundException('Research evidence not found');
+        sourceId = sourceId ?? evidence.sourceId;
+        data = { evidenceId: evidence.id };
+      }
+      if (!sourceId) throw new BadRequestException('The cited item has no source');
+      await tx.researchProjectSource.upsert({
+        where: { projectId_sourceId: { projectId, sourceId } },
+        create: { projectId, sourceId },
+        update: {},
+      });
+      return tx.researchProjectCitation.create({ data: { projectId, sourceId, ...data } });
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async citeLibraryMaterial(projectId: string, materialId: string) {
+    await this.prisma.$transaction(async (tx) => {
+      const material = await tx.libraryMaterial.findFirst({
+        where: { id: materialId, research: { some: { projectId } } },
+        include: { versions: { orderBy: { version: 'desc' }, take: 1 } },
+      });
+      if (!material) throw new NotFoundException('Library material not found in this research');
+      const sourceId =
+        material.sourceId ??
+        (
+          await tx.source.create({
+            data: {
+              type:
+                material.kind === LibraryMaterialKind.URL ? SourceType.WEBSITE : SourceType.PAPER,
+              title: material.title,
+              url: material.versions[0]?.url ?? null,
+            },
+            select: { id: true },
+          })
+        ).id;
+      if (!material.sourceId)
+        await tx.libraryMaterial.update({ where: { id: material.id }, data: { sourceId } });
+      await tx.researchProjectSource.upsert({
+        where: { projectId_sourceId: { projectId, sourceId } },
+        create: { projectId, sourceId },
+        update: {},
+      });
+    });
     await this.touchProject(projectId);
     return this.getProject(projectId);
   }
@@ -939,12 +1315,25 @@ export class ResearchService {
     }
 
     const type = ResearchJobType.EXTRACT_FINDINGS;
-    const inputFingerprint = this.jobFingerprint({ projectId, sourceId: sourceKey ?? 'all', type });
+    const inputFingerprint = this.jobFingerprint({
+      projectId,
+      sourceId: sourceKey ?? undefined,
+      contextFingerprint: sourceKey ? undefined : await this.analysisContextFingerprint(projectId),
+      type,
+    });
 
     await this.prisma.researchJob.upsert({
       where: { projectId_type_inputFingerprint: { projectId, type, inputFingerprint } },
       create: { projectId, sourceId: sourceKey, type, inputFingerprint },
-      update: {},
+      update: {
+        status: ResearchJobStatus.QUEUED,
+        attempts: 0,
+        progressCurrent: 0,
+        progressTotal: 0,
+        startedAt: null,
+        finishedAt: null,
+        lastError: null,
+      },
     });
 
     await this.touchProject(projectId);
@@ -981,7 +1370,7 @@ export class ResearchService {
         id: true,
         title: true,
         summary: true,
-        kind: true,
+        claimKind: true,
         reviewState: true,
         convertedClaimId: true,
         evidence: { select: { evidenceId: true } },
@@ -999,8 +1388,8 @@ export class ResearchService {
           projectId,
           title: proposal.title,
           summary: proposal.summary,
-          kind: ResearchClaimKind.ASSERTION,
-          status: ResearchClaimStatus.SUPPORTED,
+          kind: proposal.claimKind ?? ResearchClaimKind.ASSERTION,
+          status: ResearchClaimStatus.DRAFT,
           evidence: { create: proposal.evidence.map((item) => ({ evidenceId: item.evidenceId })) },
         },
         select: { id: true },
@@ -1017,6 +1406,243 @@ export class ResearchService {
       });
     });
 
+    return this.getProject(projectId);
+  }
+
+  async updateProposal(projectId: string, proposalId: string, dto: UpdateResearchProposalDto) {
+    const proposal = await this.prisma.researchFindingProposal.findFirst({
+      where: { id: proposalId, projectId },
+      select: { id: true, type: true },
+    });
+    if (!proposal) throw new NotFoundException('Research proposal not found');
+    if (proposal.type !== 'ENTITY' && dto.entityKind !== undefined) {
+      throw new BadRequestException('Only entity proposals can change kind');
+    }
+    if (proposal.type !== 'RELATION' && dto.relationTypeId !== undefined) {
+      throw new BadRequestException('Only relation proposals can change relation type');
+    }
+    if (dto.relationTypeId) {
+      const relationType = await this.prisma.relationType.findUnique({
+        where: { id: dto.relationTypeId },
+        select: { id: true },
+      });
+      if (!relationType) throw new NotFoundException('Relation type not found');
+    }
+    await this.prisma.researchFindingProposal.update({
+      where: { id: proposal.id },
+      data: {
+        title: dto.title?.trim() || undefined,
+        summary: dto.summary?.trim() || undefined,
+        entityKind: dto.entityKind,
+        claimKind: dto.claimKind,
+        relationTypeId: dto.relationTypeId?.trim() || undefined,
+        explanation: dto.explanation?.trim() || undefined,
+      },
+    });
+    await this.touchProject(projectId);
+    return this.listProposals(projectId, { page: 1, limit: 100 });
+  }
+
+  async acceptProposal(projectId: string, proposalId: string) {
+    const proposal = await this.prisma.researchFindingProposal.findFirst({
+      where: { id: proposalId, projectId },
+      include: { evidence: { select: { evidenceId: true } } },
+    });
+    if (!proposal) throw new NotFoundException('Research proposal not found');
+    if (proposal.reviewState === ResearchProposalReviewState.REJECTED) {
+      throw new BadRequestException('Rejected proposals cannot be accepted');
+    }
+    if (proposal.type === 'CLAIM') return this.acceptClaimProposal(projectId, proposal);
+    if (proposal.type === 'ENTITY') return this.acceptEntityProposal(projectId, proposal);
+    if (proposal.type === 'RELATION') return this.acceptRelationProposal(projectId, proposal);
+    throw new BadRequestException('Unsupported research proposal type');
+  }
+
+  async mergeEntityProposal(projectId: string, proposalId: string, entityId: string) {
+    const [proposal, entity] = await Promise.all([
+      this.prisma.researchFindingProposal.findFirst({
+        where: { id: proposalId, projectId, type: 'ENTITY' },
+        select: {
+          id: true,
+          reviewState: true,
+          convertedEntityId: true,
+          evidence: { select: { evidenceId: true } },
+        },
+      }),
+      this.prisma.researchEntity.findFirst({
+        where: { id: entityId, projectId },
+        select: { id: true },
+      }),
+    ]);
+    if (!proposal) throw new NotFoundException('Research entity proposal not found');
+    if (!entity) throw new NotFoundException('Research entity not found');
+    if (proposal.reviewState === ResearchProposalReviewState.REJECTED) {
+      throw new BadRequestException('Rejected proposals cannot be merged');
+    }
+    if (proposal.convertedEntityId) return this.getProject(projectId);
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.researchEntityEvidence.createMany({
+        data: proposal.evidence.map((item) => ({ entityId, evidenceId: item.evidenceId })),
+        skipDuplicates: true,
+      });
+      await tx.researchFindingProposal.update({
+        where: { id: proposal.id },
+        data: {
+          reviewState: ResearchProposalReviewState.REVIEWED,
+          convertedEntityId: entityId,
+        },
+      });
+      await tx.researchProject.update({
+        where: { id: projectId },
+        data: { lastActiveAt: new Date() },
+      });
+    });
+    return this.getProject(projectId);
+  }
+
+  private async acceptClaimProposal(
+    projectId: string,
+    proposal: {
+      id: string;
+      convertedClaimId: string | null;
+      title: string;
+      summary: string | null;
+      claimKind: ResearchClaimKind | null;
+      evidence: Array<{ evidenceId: string }>;
+    },
+  ) {
+    if (proposal.convertedClaimId) return this.getProject(projectId);
+    await this.prisma.$transaction(async (tx) => {
+      const claim = await tx.researchClaim.create({
+        data: {
+          projectId,
+          title: proposal.title,
+          summary: proposal.summary,
+          kind: proposal.claimKind ?? ResearchClaimKind.ASSERTION,
+          status: ResearchClaimStatus.DRAFT,
+          evidence: { create: proposal.evidence.map((item) => ({ evidenceId: item.evidenceId })) },
+        },
+        select: { id: true },
+      });
+      await tx.researchFindingProposal.update({
+        where: { id: proposal.id },
+        data: { reviewState: ResearchProposalReviewState.REVIEWED, convertedClaimId: claim.id },
+      });
+      await tx.researchProject.update({
+        where: { id: projectId },
+        data: { lastActiveAt: new Date() },
+      });
+    });
+    return this.getProject(projectId);
+  }
+
+  private async acceptEntityProposal(
+    projectId: string,
+    proposal: {
+      id: string;
+      convertedEntityId: string | null;
+      title: string;
+      summary: string | null;
+      entityKind: import('@prisma/client').KnowledgeEntityKind | null;
+      evidence: Array<{ evidenceId: string }>;
+    },
+  ) {
+    const entityKind = proposal.entityKind;
+    if (!entityKind) throw new BadRequestException('Entity proposal kind is required');
+    if (proposal.convertedEntityId) return this.getProject(projectId);
+    await this.prisma.$transaction(async (tx) => {
+      const entity = await tx.researchEntity.create({
+        data: {
+          projectId,
+          kind: entityKind,
+          title: proposal.title,
+          summary: proposal.summary,
+          reviewState: ResearchProposalReviewState.REVIEWED,
+          evidence: { create: proposal.evidence.map((item) => ({ evidenceId: item.evidenceId })) },
+        },
+        select: { id: true },
+      });
+      await tx.researchFindingProposal.update({
+        where: { id: proposal.id },
+        data: { reviewState: ResearchProposalReviewState.REVIEWED, convertedEntityId: entity.id },
+      });
+      await tx.researchProject.update({
+        where: { id: projectId },
+        data: { lastActiveAt: new Date() },
+      });
+    });
+    return this.getProject(projectId);
+  }
+
+  private async acceptRelationProposal(
+    projectId: string,
+    proposal: {
+      id: string;
+      jobId: string | null;
+      convertedRelationId: string | null;
+      relationFromKey: string | null;
+      relationToKey: string | null;
+      relationTypeId: string | null;
+      explanation: string | null;
+      title: string;
+      evidence: Array<{ evidenceId: string }>;
+    },
+  ) {
+    if (proposal.convertedRelationId) return this.getProject(projectId);
+    if (!proposal.jobId || !proposal.relationFromKey || !proposal.relationToKey) {
+      throw new BadRequestException('Relation proposal endpoints are unavailable');
+    }
+    const endpoints = await this.prisma.researchFindingProposal.findMany({
+      where: {
+        jobId: proposal.jobId,
+        type: 'ENTITY',
+        proposalKey: { in: [proposal.relationFromKey, proposal.relationToKey] },
+      },
+      select: { proposalKey: true, convertedEntityId: true },
+    });
+    const ids = new Map(endpoints.map((item) => [item.proposalKey, item.convertedEntityId]));
+    const fromEntityId = ids.get(proposal.relationFromKey);
+    const toEntityId = ids.get(proposal.relationToKey);
+    if (!fromEntityId || !toEntityId) {
+      throw new BadRequestException('Accept both entity proposals before accepting this relation');
+    }
+    await this.prisma.$transaction(async (tx) => {
+      const claim = await tx.researchClaim.create({
+        data: {
+          projectId,
+          title: proposal.title,
+          summary: proposal.explanation,
+          kind: ResearchClaimKind.CONNECTION_HYPOTHESIS,
+          status: ResearchClaimStatus.DRAFT,
+          evidence: { create: proposal.evidence.map((item) => ({ evidenceId: item.evidenceId })) },
+        },
+        select: { id: true },
+      });
+      const relation = await tx.researchRelation.create({
+        data: {
+          projectId,
+          fromEntityId,
+          toEntityId,
+          relationTypeId: proposal.relationTypeId,
+          explanation: proposal.explanation,
+          reviewState: ResearchProposalReviewState.REVIEWED,
+          claims: { create: { claimId: claim.id } },
+        },
+        select: { id: true },
+      });
+      await tx.researchFindingProposal.update({
+        where: { id: proposal.id },
+        data: {
+          reviewState: ResearchProposalReviewState.REVIEWED,
+          convertedRelationId: relation.id,
+        },
+      });
+      await tx.researchProject.update({
+        where: { id: projectId },
+        data: { lastActiveAt: new Date() },
+      });
+    });
     return this.getProject(projectId);
   }
 
@@ -1094,6 +1720,12 @@ export class ResearchService {
 
   async createEntity(projectId: string, dto: CreateResearchEntityDto) {
     await this.requireProject(projectId);
+    if (!dto.kind && !dto.canonicalType) {
+      throw new BadRequestException('Research entity kind or canonical type is required');
+    }
+    if (dto.canonicalType && dto.canonicalEntityId) {
+      throw new BadRequestException('Choose a new canonical draft or an existing canonical entity');
+    }
     const evidenceIds = [...new Set(dto.evidenceIds.map((id) => id.trim()).filter(Boolean))];
     const evidence = await this.prisma.researchEvidence.count({
       where: { projectId, id: { in: evidenceIds } },
@@ -1106,10 +1738,35 @@ export class ResearchService {
       });
       if (!entity) throw new NotFoundException('Canonical entity not found');
     }
+    const kind: KnowledgeEntityKind = dto.canonicalType
+      ? kindForLegacyEntityType(dto.canonicalType)
+      : dto.kind!;
+    if (dto.canonicalType) {
+      await this.prisma.$transaction(async (tx) => {
+        const canonical = await this.entityEditorial.createDraftRecord(tx, {
+          type: dto.canonicalType!,
+          kind,
+          title: dto.title,
+          summary: dto.summary,
+        });
+        await tx.researchEntity.create({
+          data: {
+            projectId,
+            kind,
+            title: dto.title.trim(),
+            summary: dto.summary?.trim() || null,
+            canonicalEntityId: canonical.id,
+            evidence: { create: evidenceIds.map((evidenceId) => ({ evidenceId })) },
+          },
+        });
+      });
+      await this.touchProject(projectId);
+      return this.getProject(projectId);
+    }
     await this.prisma.researchEntity.create({
       data: {
         projectId,
-        kind: dto.kind,
+        kind,
         title: dto.title.trim(),
         summary: dto.summary?.trim() || null,
         canonicalEntityId: dto.canonicalEntityId?.trim() || null,
@@ -1117,6 +1774,47 @@ export class ResearchService {
       },
     });
     await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async promoteEntity(
+    projectId: string,
+    entityId: string,
+    canonicalType: import('@prisma/client').EntityType,
+  ) {
+    await this.requireProject(projectId);
+    const canonicalKind = kindForLegacyEntityType(canonicalType);
+    await this.prisma.$transaction(async (tx) => {
+      const entity = await tx.researchEntity.findFirst({
+        where: { id: entityId, projectId },
+        select: {
+          id: true,
+          kind: true,
+          title: true,
+          summary: true,
+          canonicalEntityId: true,
+        },
+      });
+      if (!entity) throw new NotFoundException('Research entity not found');
+      if (entity.canonicalEntityId) return;
+      if (entity.kind !== canonicalKind) {
+        throw new BadRequestException('Canonical type does not match the Research entity kind');
+      }
+      const canonical = await this.entityEditorial.createDraftRecord(tx, {
+        type: canonicalType,
+        kind: canonicalKind,
+        title: entity.title,
+        summary: entity.summary ?? undefined,
+      });
+      await tx.researchEntity.update({
+        where: { id: entity.id },
+        data: { canonicalEntityId: canonical.id },
+      });
+      await tx.researchProject.update({
+        where: { id: projectId },
+        data: { lastActiveAt: new Date() },
+      });
+    });
     return this.getProject(projectId);
   }
 
@@ -1330,6 +2028,132 @@ export class ResearchService {
     });
   }
 
+  async createEvidenceFromExcerpt(
+    projectId: string,
+    excerptId: string,
+    dto: CreateResearchEvidenceFromExcerptDto = {},
+  ) {
+    await this.prisma.$transaction(async (tx) => {
+      const excerpt = await tx.libraryExcerpt.findFirst({
+        where: {
+          id: excerptId,
+          materialVersion: { material: { research: { some: { projectId } } } },
+        },
+        include: { materialVersion: { include: { material: true } } },
+      });
+      if (!excerpt) throw new NotFoundException('Library excerpt not found');
+
+      const material = excerpt.materialVersion.material;
+      const sourceId =
+        material.sourceId ??
+        (
+          await tx.source.create({
+            data: {
+              type:
+                material.kind === LibraryMaterialKind.URL ? SourceType.WEBSITE : SourceType.PAPER,
+              title: material.title,
+              url: excerpt.materialVersion.url,
+            },
+            select: { id: true },
+          })
+        ).id;
+      if (!material.sourceId)
+        await tx.libraryMaterial.update({ where: { id: material.id }, data: { sourceId } });
+      await tx.researchProjectSource.upsert({
+        where: { projectId_sourceId: { projectId, sourceId } },
+        create: { projectId, sourceId },
+        update: {},
+      });
+
+      const sourceVersion = `material-v${excerpt.materialVersion.version}`;
+      const fingerprint = this.evidenceFingerprint({
+        sourceId,
+        sourceVersion,
+        locator: excerpt.locator,
+        quote: null,
+        context: null,
+        note: null,
+        libraryExcerptId: excerpt.id,
+      });
+      await tx.researchEvidence.upsert({
+        where: { projectId_sourceId_fingerprint: { projectId, sourceId, fingerprint } },
+        create: {
+          projectId,
+          sourceId,
+          libraryExcerptId: excerpt.id,
+          sourceVersion,
+          locator: excerpt.locator,
+          quote: null,
+          context: dto.context?.trim() || null,
+          note: dto.note?.trim() || null,
+          fingerprint,
+        },
+        update: {},
+      });
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async deleteEvidence(projectId: string, evidenceId: string) {
+    const { count } = await this.prisma.researchEvidence.deleteMany({
+      where: { id: evidenceId, projectId },
+    });
+    if (!count) throw new NotFoundException('Research evidence not found');
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async updateEvidence(projectId: string, evidenceId: string, dto: UpdateResearchEvidenceDto) {
+    const { count } = await this.prisma.researchEvidence.updateMany({
+      where: { id: evidenceId, projectId },
+      data: { context: dto.context?.trim() || null, note: dto.note?.trim() || null },
+    });
+    if (!count) throw new NotFoundException('Research evidence not found');
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async deleteLibraryExcerpt(projectId: string, excerptId: string) {
+    const excerpt = await this.prisma.libraryExcerpt.findFirst({
+      where: {
+        id: excerptId,
+        materialVersion: { material: { research: { some: { projectId } } } },
+      },
+      select: { id: true, _count: { select: { evidence: true, sectionReferences: true } } },
+    });
+    if (!excerpt) throw new NotFoundException('Library excerpt not found');
+    if (excerpt._count.evidence || excerpt._count.sectionReferences) {
+      throw new BadRequestException(
+        'Remove the Evidence and Section references before deleting this excerpt',
+      );
+    }
+    await this.prisma.libraryExcerpt.delete({ where: { id: excerpt.id } });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async updateLibraryExcerpt(
+    projectId: string,
+    excerptId: string,
+    dto: UpdateResearchLibraryExcerptDto,
+  ) {
+    const excerpt = await this.prisma.libraryExcerpt.findFirst({
+      where: {
+        id: excerptId,
+        materialVersion: { material: { research: { some: { projectId } } } },
+      },
+      select: { id: true },
+    });
+    if (!excerpt) throw new NotFoundException('Library excerpt not found');
+    await this.prisma.libraryExcerpt.update({
+      where: { id: excerpt.id },
+      data: { locator: dto.locator.trim(), text: dto.text.trim() },
+    });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
   private async requireProject(projectId: string) {
     const project = await this.prisma.researchProject.findUnique({
       where: { id: projectId },
@@ -1350,14 +2174,48 @@ export class ResearchService {
     type: ResearchJobType;
     sourceId?: string;
     materialVersionId?: string;
+    contextFingerprint?: string;
   }) {
     return createHash('sha256')
       .update(
-        [input.projectId, input.sourceId ?? input.materialVersionId ?? '', input.type].join(
-          '\u001f',
-        ),
+        [
+          input.projectId,
+          input.sourceId ?? input.materialVersionId ?? input.contextFingerprint ?? '',
+          input.type,
+        ].join('\u001f'),
       )
       .digest('hex');
+  }
+
+  private async analysisContextFingerprint(projectId: string) {
+    const [materials, sections] = await Promise.all([
+      this.prisma.researchLibraryMaterial.findMany({
+        where: { projectId },
+        select: {
+          material: {
+            select: {
+              versions: {
+                orderBy: { version: 'desc' },
+                take: 1,
+                select: { id: true, contentHash: true, status: true },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.researchOutlineSection.findMany({
+        where: { projectId },
+        select: {
+          id: true,
+          updatedAt: true,
+          drafts: {
+            where: { archivedAt: null },
+            select: { updatedAt: true, currentRevisionId: true },
+          },
+        },
+      }),
+    ]);
+    return createHash('sha256').update(JSON.stringify({ materials, sections })).digest('hex');
   }
 
   private evidenceFingerprint(input: {

@@ -1,0 +1,111 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Comparar estados separados requiere declarar qué se observa y qué se infiere.",
+      "kind": "CONCEPT"
+   ,
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "EVENT",
+      "title": "Jornadas del Eco en Faro Bajo",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ],
+      "relationTypeId": null
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ],
+      "relationTypeId": null
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ],
+      "relationTypeId": null
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ],
+      "relationTypeId": null
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ],
+      "relationTypeId": null
+    },
+    {
+      "localId": "relation-6",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovckyg0020qrfpwmgkb000"
+      ],
+      "relationTypeId": null
+    }
+  ]
+}

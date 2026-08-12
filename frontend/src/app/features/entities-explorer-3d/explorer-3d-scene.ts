@@ -61,11 +61,12 @@ export class Explorer3dScene {
       powerPreference: 'high-performance',
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.setClearColor(0x000000, 0);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(width, height);
     host.replaceChildren(this.renderer.domElement);
     this.buildCards();
-    this.updateTargets();
+    this.updateTargets(true);
     this.startLoop();
     this.observeResize(host);
   }
@@ -74,7 +75,7 @@ export class Explorer3dScene {
     this.items = items;
     if (!this.renderer) return;
     this.buildCards();
-    this.updateTargets();
+    this.updateTargets(true);
   }
 
   setActiveIndex(index: number): void {
@@ -178,7 +179,7 @@ export class Explorer3dScene {
         depthWrite: false,
       });
       const imageMaterial = new THREE.MeshBasicMaterial({
-        color: new THREE.Color('#f2f2ef'),
+        color: new THREE.Color('#1c1b1a'),
         transparent: true,
         opacity: 1,
       });
@@ -211,20 +212,30 @@ export class Explorer3dScene {
       if (media.src) {
         const source = new Image();
         source.crossOrigin = 'anonymous';
-        source.onload = () => {
+        source.onload = async () => {
+          try {
+            await source.decode?.();
+          } catch {
+            // `load` remains a safe readiness fallback when decode is unavailable or rejects.
+          }
+
           if (cardsVersion !== this.cardsVersion) return;
           imageMaterial.map?.dispose();
           imageMaterial.map = createRoundedImageTexture(source, 1100, 1200, 48, media);
+          imageMaterial.color.set('#ffffff');
+          imageMaterial.opacity = 0;
           imageMaterial.needsUpdate = true;
         };
         source.onerror = () => {
           if (cardsVersion !== this.cardsVersion) return;
           imageMaterial.map = createFallbackImageTexture(item, 1100, 1200, 48);
+          imageMaterial.color.set('#ffffff');
           imageMaterial.needsUpdate = true;
         };
         source.src = media.src;
       } else {
         imageMaterial.map = createFallbackImageTexture(item, 1100, 1200, 48);
+        imageMaterial.color.set('#ffffff');
         imageMaterial.needsUpdate = true;
       }
       group.userData = { index, slug: item.slug } satisfies CardUserData;
@@ -236,7 +247,7 @@ export class Explorer3dScene {
     });
   }
 
-  private updateTargets(): void {
+  private updateTargets(immediate = false): void {
     if (!this.items.length) return;
     const profile = this.viewportProfile();
     this.cards.forEach((card, index) => {
@@ -271,6 +282,17 @@ export class Explorer3dScene {
       );
       data.targetScale = hovered ? baseScale + 0.04 : baseScale;
       data.targetOpacity = hovered ? Math.min(1, baseOpacity + 0.1) : baseOpacity;
+
+      if (immediate) {
+        card.group.position.copy(data.targetPosition);
+        card.group.rotation.copy(data.targetRotation);
+        card.group.scale.setScalar(data.targetScale);
+        card.image.material.opacity = data.targetOpacity;
+        card.frame.material.opacity =
+          data.targetOpacity === 1 ? 0.5 : Math.max(0.12, data.targetOpacity * 0.2);
+        card.glass.material.opacity =
+          data.targetOpacity === 1 ? 0.16 : Math.max(0.05, data.targetOpacity * 0.08);
+      }
     });
   }
 
@@ -339,7 +361,7 @@ export class Explorer3dScene {
       this.renderer?.setSize(width, height);
       this.renderer?.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       this.buildCards();
-      this.updateTargets();
+      this.updateTargets(true);
     });
     this.resizeObserver.observe(host);
   }

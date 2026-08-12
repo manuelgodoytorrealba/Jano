@@ -270,52 +270,6 @@
             </section>
           }
 
-          @if (sectionDecks(vm, 'decks', 3).length) {
-            <section class="search-section">
-              <header class="search-section__head">
-                <div>
-                  <p class="search-eyebrow">{{ i18n.t('search.discovery') }}</p>
-                  <h2>{{ sectionTitle('decks') }}</h2>
-                </div>
-              </header>
-
-              <div class="search-deck-grid">
-                @for (deck of sectionDecks(vm, 'decks', 3); track deck.id) {
-                  <button
-                    type="button"
-                    class="search-card search-card--deck"
-                    (click)="goDeck(deck)"
-                  >
-                    <span class="search-card__body">
-                      <small>{{ deck.subtitle || i18n.t('search.editorialRoute') }}</small>
-                      <strong>{{ deck.title }}</strong>
-                      @if (deck.description) {
-                        <span>{{ deck.description }}</span>
-                      }
-                    </span>
-                    <span class="search-deck-thumbs">
-                      @for (entry of deck.entities; track entry.id) {
-                        @if (entry.entity) {
-                          <app-jano-media
-                            class="search-deck-thumbs__item"
-                            [media]="
-                              entry.entity.resolvedMedia?.thumbnail ??
-                              entry.entity.resolvedMedia?.card ??
-                              null
-                            "
-                            usage="thumbnail"
-                            [alt]="entry.entity.title"
-                            placeholderMode="auto"
-                          />
-                        }
-                      }
-                    </span>
-                  </button>
-                }
-              </div>
-            </section>
-          }
-
           @if (canOpenGraph(heroItem(vm))) {
             <section class="search-graph-cta ds-panel">
               <div>
@@ -425,39 +379,6 @@
                         </div>
                         <span class="route-card__relation">{{ route.relationType }}</span>
                       </div>
-                    }
-                  </div>
-                }
-
-                @if (section.decks?.length) {
-                  <div class="deck-list">
-                    @for (deck of section.decks; track deck.id) {
-                      <button type="button" class="deck-card" (click)="goDeck(deck)">
-                        <span class="deck-card__copy">
-                          <small>{{ deck.subtitle || i18n.t('search.editorialRoute') }}</small>
-                          <strong>{{ deck.title }}</strong>
-                          @if (deck.description) {
-                            <span>{{ deck.description }}</span>
-                          }
-                        </span>
-                        <span class="deck-card__thumbs">
-                          @for (entry of deck.entities; track entry.id) {
-                            @if (entry.entity) {
-                              <app-jano-media
-                                class="deck-card__thumb"
-                                [media]="
-                                  entry.entity.resolvedMedia?.thumbnail ??
-                                  entry.entity.resolvedMedia?.card ??
-                                  null
-                                "
-                                usage="thumbnail"
-                                [alt]="entry.entity.title"
-                                placeholderMode="auto"
-                              />
-                            }
-                          }
-                        </span>
-                      </button>
                     }
                   </div>
                 }

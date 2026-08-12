@@ -1,0 +1,112 @@
+{
+  "claims": [
+    {
+      "localId": "cmsor351t000mclfp5l4i2zwn",
+      "title": "Iria Sorel y la memoria porosa",
+      "kind": "CONCEPT",
+      "evidenceIds": ["cmsor351t000mclfp5l4i2zwn"],
+      "summary": "Iria Sorel utiliza la noción de 'memoria porosa' para explorar cómo las casas conservan rastros contradictorios de su pasado y presente."
+    },
+    {
+      "localId": "cmsor351v000oclfpo3jkg0ys",
+      "title": "Casa de sal",
+      "kind": "CONCEPT",
+      "evidenceIds": ["cmsor351v000oclfpo3jkg0ys"],
+      "summary": "Casa de sal es una instalación que examina la memoria doméstica y la percepción de espacios vacíos, utilizando la memoria porosa como concepto central."
+    },
+    {
+      "localId": "cmsor351x000qclfpn62hdhst",
+      "title": "Atlas del umbral",
+      "kind": "CONCEPT",
+      "evidenceIds": ["cmsor351x000qclfpn62hdhst"],
+      "summary": "Atlas del umbral es una obra que se centra en la transición y el umbral como lugar de decisiones corporales, relacionado con la memoria porosa."
+    },
+    {
+      "localId": "cmsor351z000sclfpauyrfrwe",
+      "title": "Memoria porosa",
+      "kind": "CONCEPT",
+      "evidenceIds": ["cmsor351z000sclfpauyrfrwe"],
+      "summary": "La memoria porosa es una práctica de lectura que admite que las pruebas cambian de significado al reunirse, y no equivale a guardar cada objeto."
+    }
+  ],
+  "entities": [
+    {
+      "localId": "cmsor351t000mclfp5l4i2zwn",
+      "kind": "PERSON",
+      "title": "Iria Sorel",
+      "evidenceIds": ["cmsor351t000mclfp5l4i2zwn"],
+      "summary": "Artista que ha construido una práctica basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos."
+    },
+    {
+      "localId": "cmsor351v000oclfpo3jkg0ys",
+      "kind": "WORK",
+      "title": "Casa de sal",
+      "evidenceIds": ["cmsor351v000oclfpo3jkg0ys"],
+      "summary": "Instalación compuesta por cuarenta fotografías, tres mesas y un registro sonoro de puertas, que examina la memoria doméstica y la percepción de espacios vacíos."
+    },
+    {
+      "localId": "cmsor351x000qclfpn62hdhst",
+      "kind": "WORK",
+      "title": "Atlas del umbral",
+      "evidenceIds": ["cmsor351x000qclfpn62hdhst"],
+      "summary": "Libro desplegable elaborado en el Taller Bruma con la colaboración técnica de Nuno Arce, que se centra en la transición y el umbral como lugar de decisiones corporales."
+    },
+    {
+      "localId": "cmsor351z000sclfpauyrfrwe",
+      "kind": "WORK",
+      "title": "Memoria porosa",
+      "evidenceIds": ["cmsor351z000sclfpauyrfrwe"],
+      "summary": "Práctica de lectura que admite que las pruebas cambian de significado al reunirse, y no equivale a guardar cada objeto."
+    }
+  ],
+  "relations": [
+    {
+      "localId": "cmsor351t000mclfp5l4i2zwn",
+      "fromLocalId": "cmsor351t000mclfp5l4i2zwn",
+      "toLocalId": "cmsor351v000oclfpo3jkg0ys",
+      "evidenceIds": ["cmsor351t000mclfp5l4i2zwn", "cmsor351v000oclfpo3jkg0ys"],
+      "relationTypeId": "CREATED_BY",
+      "explanation": "Iria Sorel ha construido Casa de sal durante quince años."
+    },
+    {
+      "localId": "cmsor351t000mclfp5l4i2zwn",
+      "fromLocalId": "cmsor351t000mclfp5l4i2zwn",
+      "toLocalId": "cmsor351x000qclfpn62hdhst",
+      "evidenceIds": ["cmsor351t000mclfp5l4i2zwn", "cmsor351x000qclfpn62hdhst"],
+      "relationTypeId": "CREATED_BY",
+      "explanation": "Iria Sorel ha iniciado Atlas del umbral dos años después de Casa de sal."
+    },
+    {
+      "localId": "cmsor351t000mclfp5l4i2zwn",
+      "fromLocalId": "cmsor351t000mclfp5l4i2zwn",
+      "toLocalId": "cmsor351z000sclfpauyrfrwe",
+      "evidenceIds": ["cmsor351t000mclfp5l4i2zwn", "cmsor351z000sclfpauyrfrwe"],
+      "relationTypeId": "CREATED_BY",
+      "explanation": "Iria Sorel ha explorado la memoria porosa en sus obras."
+    },
+    {
+      "localId": "cmsor351t000mclfp5l4i2zwn",
+      "fromLocalId": "cmsor351t000mclfp5l4i2zwn",
+      "toLocalId": "cmsor351v000oclfpo3jkg0ys",
+      "evidenceIds": ["cmsor351t000mclfp5l4i2zwn", "cmsor351v000oclfpo3jkg0ys"],
+      "relationTypeId": "RELATED_TO",
+      "explanation": "Casa de sal es una instalación que examina la memoria porosa."
+    },
+    {
+      "localId": "cmsor351t000mclfp5l4i2zwn",
+      "fromLocalId": "cmsor351t000mclfp5l4i2zwn",
+      "toLocalId": "cmsor351x000qclfpn62hdhst",
+      "evidenceIds": ["cmsor351t000mclfp5l4i2zwn", "cmsor351x000qclfpn62hdhst"],
+      "relationTypeId": "RELATED_TO",
+      "explanation": "Atlas del umbral es una obra que se centra en la transición y el umbral, conceptos relacionados con la memoria porosa."
+    },
+    {
+      "localId": "cmsor351t000mclfp5l4i2zwn",
+      "fromLocalId": "cmsor351t000mclfp5l4i2zwn",
+      "toLocalId": "cmsor351z000sclfpauyrfrwe",
+      "evidenceIds": ["cmsor351t000mclfp5l4i2zwn", "cmsor351z000sclfpauyrfrwe"],
+      "relationTypeId": "RELATED_TO",
+      "explanation": "Memoria porosa es un concepto que Iria Sorel ha explorado en sus obras."
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Comparación de estados separados",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "summary": "Comparar estados separados requiere declarar qué se observa y qué se infiere."
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "summary": "El método de comparación utilizado en el documento."
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "Intervalos útiles",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "summary": "Libro ficticio mencionado en el documento, pero no desarrollado."
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "summary": "Coordina el documento."
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "summary": "Crea 'El eco quieto'."
+    },
+    {
+      "localId": "entity-5",
+      "kind": "PLACE",
+      "title": "Faro Bajo",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "summary": "Lugar donde se organiza y aloja las Jornadas del Eco en Faro Bajo."
+    },
+    {
+      "localId": "entity-6",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "summary": "Organización que organiza y aloja las Jornadas del Eco en Faro Bajo."
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "relationTypeId": "relation-type-created-by",
+      "explanation": "Aina Soler coordina la Cartografía del intervalo."
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "relationTypeId": "relation-type-created-by",
+      "explanation": "Ana Soler crea 'El eco quieto', que es una cualidad perceptiva secundaria."
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "relationTypeId": "relation-type-located-in",
+      "explanation": "Las Jornadas del Eco en Faro Bajo se alojan en Faro Bajo."
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovijtb0020esfp5xvtk1n4"
+      ],
+      "relationTypeId": "relation-type-associated-with",
+      "explanation": "Casa Faro organiza y aloja la Cartografía del intervalo."
+    }
+  ]
+}

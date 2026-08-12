@@ -1,0 +1,128 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Iria Sorel construye una práctica basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Iria Sorel",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8",
+        "cmsp1iq6m000or2fpnmy38i3p",
+        "cmsp1iq6o000qr2fpfbq97fz8",
+        "cmsp1iq6q000sr2fpb9ed63d8"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "Casa de sal",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8",
+        "cmsp1iq6m000or2fpnmy38i3p"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "Atlas del umbral",
+      "evidenceIds": [
+        "cmsp1iq6m000or2fpnmy38i3p"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Memoria porosa",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8",
+        "cmsp1iq6o000qr2fpfbq97fz8"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ORGANIZATION",
+      "title": "Taller Bruma",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8",
+        "cmsp1iq6o000qr2fpfbq97fz8"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PERSON",
+      "title": "Nuno Arce",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8",
+        "cmsp1iq6o000qr2fpfbq97fz8"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsp1iq6o000qr2fpfbq97fz8"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8",
+        "cmsp1iq6m000or2fpnmy38i3p"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsp1iq6m000or2fpnmy38i3p"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8",
+        "cmsp1iq6o000qr2fpfbq97fz8"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsp1iq6k000mr2fpygrwero8",
+        "cmsp1iq6o000qr2fpfbq97fz8"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-6",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsp1iq6m000or2fpnmy38i3p"
+      ],
+      "relationTypeId": "relation-type-about-concept"
+    }
+  ]
+}

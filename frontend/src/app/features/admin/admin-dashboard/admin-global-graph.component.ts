@@ -116,17 +116,10 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     });
     this.entityTypeFilters.set(this.enabledMap(this.entityTypes()));
     this.relationTypeFilters.set(this.enabledMap(this.relationTypes()));
-    const centerIndex = this.pointNodes.findIndex((node) => node.id === this.graphData?.centerId);
-    const center = this.pointNodes[centerIndex] ?? null;
-    this.selectedNode.set(center);
+    this.selectedNode.set(null);
     this.selectionChange.emit(null);
-    if (center && this.selectionRing && this.points) {
-      const position = this.points.geometry.getAttribute('position');
-      this.selectionRing.position.set(position.getX(centerIndex), position.getY(centerIndex), 0.5);
-      this.selectionRing.visible = true;
-    }
-    this.updateFocus(center?.id ?? null);
-    this.applyFilters();
+    if (this.selectionRing) this.selectionRing.visible = false;
+    this.updateFocus(null);
     this.userAdjusted = false;
     this.applyFilters();
     this.fitGraph();
@@ -317,17 +310,10 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     this.graphGroup.add(this.selectionRing);
 
     this.graphGroup.userData['layout'] = layout;
-    const centerIndex = this.pointNodes.findIndex((node) => node.id === graph.centerId);
-    const center = this.pointNodes[centerIndex] ?? null;
-    this.selectedNode.set(center);
+    this.selectedNode.set(null);
+    this.selectionChange.emit(null);
     this.tooltip.set(null);
     this.userAdjusted = false;
-    if (center && this.selectionRing) {
-      const position = this.points.geometry.getAttribute('position');
-      this.selectionRing.position.set(position.getX(centerIndex), position.getY(centerIndex), 0.5);
-      this.selectionRing.visible = true;
-      this.updateFocus(center.id);
-    }
     this.fitGraph();
     this.animateEntrance();
   }

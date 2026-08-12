@@ -1,0 +1,101 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Comparar estados separados requiere declarar qué se observa y qué se infiere.",
+      "kind": "CONCEPT"
+   ,
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "Intervalos útiles",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "M. Ral",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "EVENT",
+      "title": "Jornadas del Eco en Faro Bajo",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ],
+      "relationTypeId": "relation-type-belongs-to-period"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsp1nvcw00202ufptqoqo9cj"
+      ],
+      "relationTypeId": "relation-type-belongs-to-movement"
+    }
+  ]
+}

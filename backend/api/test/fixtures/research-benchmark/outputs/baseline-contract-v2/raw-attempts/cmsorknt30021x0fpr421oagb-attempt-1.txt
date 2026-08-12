@@ -1,0 +1,151 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Iria Sorel construye una práctica artística basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "La memoria porosa es una práctica de lectura que admite que las pruebas cambian de significado al reunirse.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "El Taller Bruma es un lugar de producción compartido donde Iria Sorel y Nuno Arce trabajan juntos.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "Casa de sal es una instalación compuesta por cuarenta fotografías, tres mesas y un registro sonoro de puertas.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Iria Sorel",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p",
+        "cmsorknrp000qx0fpndfnnlj7"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "Casa de sal",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p",
+        "cmsorknrp000qx0fpndfnnlj7"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "Atlas del umbral",
+      "evidenceIds": [
+        "cmsorknrn000ox0fp5piazqw5",
+        "cmsorknrp000qx0fpndfnnlj7"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PLACE",
+      "title": "Puerto Niebla",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p",
+        "cmsorknrn000ox0fp5piazqw5",
+        "cmsorknrp000qx0fpndfnnlj7"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ORGANIZATION",
+      "title": "Taller Bruma",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p",
+        "cmsorknrn000ox0fp5piazqw5",
+        "cmsorknrp000qx0fpndfnnlj7"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PERSON",
+      "title": "Nuno Arce",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p",
+        "cmsorknrn000ox0fp5piazqw5",
+        "cmsorknrp000qx0fpndfnnlj7"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsorknrn000ox0fp5piazqw5"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-6",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsorknrl000mx0fph3opx14p"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones, dudas, pruebas descartadas y cambios de vocabulario en el laboratorio de prácticas visuales de la Escuela Delta.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1nvc800182ufppfbwrxxd",
+        "cmsp1nvcc001c2ufp6qcn42dw",
+        "cmsp1nvce001e2ufp76y4w6eq"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "El cuaderno de proceso",
+      "evidenceIds": [
+        "cmsp1nvca001a2ufpw15mzcky",
+        "cmsp1nvcc001c2ufp6qcn42dw",
+        "cmsp1nvce001e2ufp76y4w6eq"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "ORGANIZATION",
+      "title": "Escuela Delta",
+      "evidenceIds": [
+        "cmsp1nvca001a2ufpw15mzcky",
+        "cmsp1nvcc001c2ufp6qcn42dw",
+        "cmsp1nvce001e2ufp76y4w6eq"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Noa Mir",
+      "evidenceIds": [
+        "cmsp1nvca001a2ufpw15mzcky",
+        "cmsp1nvcc001c2ufp6qcn42dw",
+        "cmsp1nvce001e2ufp76y4w6eq"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1nvca001a2ufpw15mzcky",
+        "cmsp1nvcc001c2ufp6qcn42dw",
+        "cmsp1nvce001e2ufp76y4w6eq"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1nvca001a2ufpw15mzcky",
+        "cmsp1nvcc001c2ufp6qcn42dw",
+        "cmsp1nvce001e2ufp76y4w6eq"
+      ],
+      "relationTypeId": "relation-type-part-of"
+    }
+  ]
+}

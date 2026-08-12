@@ -1,0 +1,148 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Elena Varo desarrolló El jardín inverso",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "El jardín inverso y Jardín inverso son variantes textuales del mismo título",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "El jardín inverso explora cómo una escena familiar cambia cuando el fondo contradice la dirección de la luz",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "E. Varo es una abreviatura documental de Elena Varo",
+      "kind": "ASSERTION",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Elena Varo",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7",
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "El jardín inverso",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7",
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "Archivo de lluvia",
+      "evidenceIds": [
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Memoria doméstica",
+      "evidenceIds": [
+        "cmsp1iq7g001kr2fp7lggkfme"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "PLACE",
+      "title": "Valle del Río Arce",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7",
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "ORGANIZATION",
+      "title": "Galería Umbral",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7",
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsp1iq7g001kr2fp7lggkfme"
+      ],
+      "relationTypeId": "relation-type-about-concept"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7",
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-6",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1iq7e001ir2fpjx44frg7",
+        "cmsp1iq7k001or2fpqr1ckksq"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    }
+  ]
+}

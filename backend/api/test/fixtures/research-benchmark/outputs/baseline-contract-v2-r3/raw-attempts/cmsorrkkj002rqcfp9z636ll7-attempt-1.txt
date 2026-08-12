@@ -1,0 +1,88 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones, dudas, pruebas descartadas y cambios de vocabulario en el laboratorio de prácticas visuales de la Escuela Delta.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorqrjy0016qcfp6zpg5fb8",
+        "cmsorqrk1001aqcfprxbtlq3t",
+        "cmsorqrk3001cqcfp0lkmhhzd",
+        "cmsorqrk5001eqcfpx8j7qhtr"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "El cuaderno de proceso",
+      "evidenceIds": [
+        "cmsorqrjy0016qcfp6zpg5fb8",
+        "cmsorqrk1001aqcfprxbtlq3t",
+        "cmsorqrk3001cqcfp0lkmhhzd",
+        "cmsorqrk5001eqcfpx8j7qhtr"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Noa Mir",
+      "evidenceIds": [
+        "cmsorqrjy0016qcfp6zpg5fb8",
+        "cmsorqrk1001aqcfprxbtlq3t",
+        "cmsorqrk3001cqcfp0lkmhhzd",
+        "cmsorqrk5001eqcfpx8j7qhtr"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "ORGANIZATION",
+      "title": "Escuela Delta",
+      "evidenceIds": [
+        "cmsorqrjy0016qcfp6zpg5fb8",
+        "cmsorqrk1001aqcfprxbtlq3t",
+        "cmsorqrk3001cqcfp0lkmhhzd",
+        "cmsorqrk5001eqcfpx8j7qhtr"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsorqrjy0016qcfp6zpg5fb8",
+        "cmsorqrk1001aqcfprxbtlq3t",
+        "cmsorqrk3001cqcfp0lkmhhzd",
+        "cmsorqrk5001eqcfpx8j7qhtr"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsorqrjy0016qcfp6zpg5fb8",
+        "cmsorqrk1001aqcfprxbtlq3t",
+        "cmsorqrk3001cqcfp0lkmhhzd",
+        "cmsorqrk5001eqcfpx8j7qhtr"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsorqrjy0016qcfp6zpg5fb8",
+        "cmsorqrk1001aqcfprxbtlq3t",
+        "cmsorqrk3001cqcfp0lkmhhzd",
+        "cmsorqrk5001eqcfpx8j7qhtr"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    }
+  ]
+}

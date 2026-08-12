@@ -1,0 +1,113 @@
+{
+  "datasetVersion": "1.0.0",
+  "relations": [
+    {
+      "documentId": "01-monograph",
+      "from": "person-iria-sorel",
+      "predicate": "CREATED",
+      "to": "work-casa-de-sal"
+    },
+    {
+      "documentId": "01-monograph",
+      "from": "person-iria-sorel",
+      "predicate": "CREATED",
+      "to": "work-atlas-del-umbral"
+    },
+    {
+      "documentId": "01-monograph",
+      "from": "person-iria-sorel",
+      "predicate": "WORKS_AT",
+      "to": "organization-taller-bruma"
+    },
+    {
+      "documentId": "02-theory",
+      "from": "person-mara-tellez",
+      "predicate": "FORMULATED",
+      "to": "concept-escucha-oblicua"
+    },
+    {
+      "documentId": "02-theory",
+      "from": "concept-ritmo-retorno",
+      "predicate": "CONNECTS",
+      "to": "concept-archivo-respirante"
+    },
+    {
+      "documentId": "03-exhibition",
+      "from": "organization-instituto-lumen",
+      "predicate": "ORGANIZED",
+      "to": "event-materia-casa"
+    },
+    {
+      "documentId": "03-exhibition",
+      "from": "event-materia-casa",
+      "predicate": "HELD_AT",
+      "to": "place-nave-este"
+    },
+    {
+      "documentId": "03-exhibition",
+      "from": "person-dalia-neri",
+      "predicate": "CURATED",
+      "to": "event-materia-casa"
+    },
+    {
+      "documentId": "03-exhibition",
+      "from": "person-omar-cendro",
+      "predicate": "CREATED",
+      "to": "work-mesa-ausencia"
+    },
+    {
+      "documentId": "03-exhibition",
+      "from": "person-lia-corvan",
+      "predicate": "CREATED",
+      "to": "work-inventario-humo"
+    },
+    {
+      "documentId": "04-education",
+      "from": "person-noa-mir",
+      "predicate": "COORDINATES_AT",
+      "to": "organization-escuela-delta"
+    },
+    {
+      "documentId": "04-education",
+      "from": "concept-lectura-huellas",
+      "predicate": "READS",
+      "to": "concept-cuaderno-proceso"
+    },
+    {
+      "documentId": "05-aliases",
+      "from": "person-elena-varo",
+      "predicate": "CREATED",
+      "to": "work-jardin-inverso"
+    },
+    {
+      "documentId": "05-aliases",
+      "from": "person-elena-varo",
+      "predicate": "CREATED",
+      "to": "work-archivo-lluvia"
+    },
+    {
+      "documentId": "05-aliases",
+      "from": "organization-galeria-umbral",
+      "predicate": "PRESENTED",
+      "to": "work-jardin-inverso"
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "from": "organization-casa-faro",
+      "predicate": "HOSTED",
+      "to": "event-jornadas-eco"
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "from": "person-aina-soler",
+      "predicate": "COORDINATED",
+      "to": "event-jornadas-eco"
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "from": "person-ana-soler",
+      "predicate": "CREATED",
+      "to": "work-el-eco-quieto"
+    }
+  ]
+}

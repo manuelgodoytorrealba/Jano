@@ -1,0 +1,135 @@
+{
+  "runStatus": "FAILED",
+  "qualityMetricsValid": false,
+  "qualityMetrics": null,
+  "partialMetrics": {
+    "rawEntityProposals": 0,
+    "definitiveProposals": 0,
+    "ambiguousForManualReview": 0,
+    "matchedRawProposals": 0,
+    "detectedGoldIdentities": 0,
+    "expectedGoldIdentities": 43,
+    "falseEntities": 0,
+    "duplicateProposals": 0,
+    "duplicateRatio": 0,
+    "precision": null,
+    "recall": 0,
+    "f1": null,
+    "recallByRelevance": {
+      "CENTRAL": {
+        "detected": 0,
+        "expected": 27,
+        "recall": 0
+      },
+      "RELEVANT": {
+        "detected": 0,
+        "expected": 12,
+        "recall": 0
+      },
+      "SECONDARY": {
+        "detected": 0,
+        "expected": 4,
+        "recall": 0
+      }
+    },
+    "kindAccuracy": null,
+    "kindConfusion": {},
+    "naming": {},
+    "summary": {
+      "groundingAverage": null,
+      "coverageAverage": null,
+      "specificityAverage": null,
+      "editorialUsefulnessAverage": null,
+      "overallDraftAverage": null,
+      "draftAtLeastFour": 0,
+      "draftAtMostTwo": 0,
+      "forbiddenFactHits": 0
+    }
+  },
+  "coverage": [
+    {
+      "documentId": "01-monograph",
+      "characters": 5273,
+      "words": 837,
+      "normalizedCharacters": 5262,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 4,
+      "segmentsProcessed": 0,
+      "batchesAttempted": 1,
+      "batchesSucceeded": 0,
+      "coverage": 0,
+      "truncated": true
+    },
+    {
+      "documentId": "02-theory",
+      "characters": 5391,
+      "words": 803,
+      "normalizedCharacters": 5378,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 1,
+      "segmentsProcessed": 0,
+      "batchesAttempted": 1,
+      "batchesSucceeded": 0,
+      "coverage": 0,
+      "truncated": true
+    },
+    {
+      "documentId": "03-exhibition",
+      "characters": 4978,
+      "words": 749,
+      "normalizedCharacters": 4965,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 0,
+      "segmentsProcessed": 0,
+      "batchesAttempted": 0,
+      "batchesSucceeded": 0,
+      "coverage": 0,
+      "truncated": true
+    },
+    {
+      "documentId": "04-education",
+      "characters": 4619,
+      "words": 693,
+      "normalizedCharacters": 4606,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 0,
+      "segmentsProcessed": 0,
+      "batchesAttempted": 0,
+      "batchesSucceeded": 0,
+      "coverage": 0,
+      "truncated": true
+    },
+    {
+      "documentId": "05-aliases",
+      "characters": 4336,
+      "words": 680,
+      "normalizedCharacters": 4323,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 0,
+      "segmentsProcessed": 0,
+      "batchesAttempted": 0,
+      "batchesSucceeded": 0,
+      "coverage": 0,
+      "truncated": true
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "characters": 8120,
+      "words": 1263,
+      "normalizedCharacters": 8094,
+      "segmentsRequired": 6,
+      "segmentsPrepared": 6,
+      "segmentsAttempted": 0,
+      "segmentsProcessed": 0,
+      "batchesAttempted": 0,
+      "batchesSucceeded": 0,
+      "coverage": 0,
+      "truncated": true
+    }
+  ]
+}

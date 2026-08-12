@@ -1,0 +1,861 @@
+{
+  "datasetVersion": "1.0.0",
+  "entities": [
+    {
+      "documentId": "01-monograph",
+      "goldId": "person-iria-sorel",
+      "canonicalName": "Iria Sorel",
+      "kind": "PERSON",
+      "aliases": ["Sorel", "la artista"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "Iria Sorel ha construido durante quince años",
+        "Sorel trabaja en Puerto Niebla"
+      ],
+      "expectedFacts": [
+        "trabaja con fotografía intervenida, escritura breve y objetos domésticos",
+        "desarrolló Casa de sal y Atlas del umbral",
+        "su práctica formula la memoria porosa"
+      ],
+      "forbiddenFacts": ["nació en", "estudió en", "premio", "edad"],
+      "notes": "Autora principal; no completar biografía.",
+      "relatedGoldEntities": ["work-casa-de-sal", "work-atlas-del-umbral", "concept-memoria-porosa"]
+    },
+    {
+      "documentId": "01-monograph",
+      "goldId": "work-casa-de-sal",
+      "canonicalName": "Casa de sal",
+      "kind": "WORK",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "La obra más extensa de este periodo es Casa de sal",
+        "Casa de sal no es un documento sobre toda la ciudad"
+      ],
+      "expectedFacts": [
+        "es una instalación de fotografías, mesas y sonido",
+        "compara habitaciones antes y después de una rehabilitación",
+        "trabaja a escala doméstica"
+      ],
+      "forbiddenFacts": ["premiada", "museo", "colección permanente"],
+      "notes": "No fusionar con Atlas del umbral.",
+      "relatedGoldEntities": ["person-iria-sorel", "concept-memoria-porosa"]
+    },
+    {
+      "documentId": "01-monograph",
+      "goldId": "work-atlas-del-umbral",
+      "canonicalName": "Atlas del umbral",
+      "kind": "WORK",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["Sorel inició Atlas del umbral", "Atlas del umbral es una obra distinta"],
+      "expectedFacts": [
+        "es un libro desplegable",
+        "reúne dibujos de zonas de paso",
+        "se concentra en decisiones corporales ante el umbral"
+      ],
+      "forbiddenFacts": ["forma parte de Casa de sal", "premio", "publicado por"],
+      "notes": "Obra distinta de Casa de sal.",
+      "relatedGoldEntities": ["person-iria-sorel", "organization-taller-bruma"]
+    },
+    {
+      "documentId": "01-monograph",
+      "goldId": "concept-memoria-porosa",
+      "canonicalName": "memoria porosa",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": ["archivo doméstico"],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "Sorel llama memoria porosa",
+        "la memoria porosa no equivale a guardar cada objeto"
+      ],
+      "expectedFacts": [
+        "el recuerdo absorbe materiales nuevos sin borrar todas las capas",
+        "admite cambios de significado al reunir pruebas",
+        "surge del trabajo de Sorel en Puerto Niebla"
+      ],
+      "forbiddenFacts": ["teoría universal", "movimiento artístico", "fundada"],
+      "notes": "Archivo doméstico aparece como descripción discutida, no alias seguro.",
+      "relatedGoldEntities": ["person-iria-sorel", "work-casa-de-sal"]
+    },
+    {
+      "documentId": "01-monograph",
+      "goldId": "place-puerto-niebla",
+      "canonicalName": "Puerto Niebla",
+      "kind": "PLACE",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["En Puerto Niebla", "doce edificios de Puerto Niebla"],
+      "expectedFacts": ["es el contexto de trabajo de Sorel y Taller Bruma"],
+      "forbiddenFacts": ["lugar de nacimiento", "capital", "país"],
+      "notes": "Lugar ficticio; no inferir geografía externa.",
+      "relatedGoldEntities": ["person-iria-sorel", "organization-taller-bruma"]
+    },
+    {
+      "documentId": "01-monograph",
+      "goldId": "organization-taller-bruma",
+      "canonicalName": "Taller Bruma",
+      "kind": "ORGANIZATION",
+      "aliases": ["el taller"],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "El Taller Bruma ocupa desde hace ocho años",
+        "El Taller Bruma, por su parte, es la organización"
+      ],
+      "expectedFacts": [
+        "es un lugar de producción compartido",
+        "reúne el trabajo de Sorel y Nuno Arce"
+      ],
+      "forbiddenFacts": ["galería", "escuela", "movimiento"],
+      "notes": "Clasificación explícitamente organizacional.",
+      "relatedGoldEntities": ["person-iria-sorel", "person-nuno-arce"]
+    },
+    {
+      "documentId": "01-monograph",
+      "goldId": "person-nuno-arce",
+      "canonicalName": "Nuno Arce",
+      "kind": "PERSON",
+      "aliases": ["Arce", "el encuadernador"],
+      "possibleAliases": [],
+      "relevance": "SECONDARY",
+      "shouldExtract": true,
+      "sourceSpans": ["el encuadernador Nuno Arce", "Su colaboración se limita a los sobres"],
+      "expectedFacts": [
+        "colabora técnicamente en soportes de papel",
+        "no comparte la autoría fotográfica"
+      ],
+      "forbiddenFacts": ["coautor de Casa de sal", "nació", "premio"],
+      "notes": "Secundario pero editorialmente conectado.",
+      "relatedGoldEntities": ["organization-taller-bruma", "work-atlas-del-umbral"]
+    },
+
+    {
+      "documentId": "02-theory",
+      "goldId": "concept-escucha-oblicua",
+      "canonicalName": "escucha oblicua",
+      "kind": "ABSTRACTION",
+      "aliases": ["escuchar de lado"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["propone la escucha oblicua", "La entidad pertinente es escucha oblicua"],
+      "expectedFacts": [
+        "atiende silencios, repeticiones y condiciones de registro",
+        "se aplica a materiales incompletos",
+        "orienta una práctica de atención"
+      ],
+      "forbiddenFacts": ["técnica musical", "movimiento", "premio"],
+      "notes": "No confundir con claims oracionales.",
+      "relatedGoldEntities": ["concept-archivo-respirante", "person-mara-tellez"]
+    },
+    {
+      "documentId": "02-theory",
+      "goldId": "concept-archivo-respirante",
+      "canonicalName": "archivo respirante",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["El archivo respirante nombra", "el archivo respirante permite explorar"],
+      "expectedFacts": [
+        "puede reorganizarse sin borrar posiciones anteriores",
+        "al citar fija la versión utilizada",
+        "combina apertura con trazabilidad"
+      ],
+      "forbiddenFacts": ["software", "institución", "edificio"],
+      "notes": "Concepto distinto de escucha oblicua.",
+      "relatedGoldEntities": ["concept-escucha-oblicua", "concept-ritmo-retorno"]
+    },
+    {
+      "documentId": "02-theory",
+      "goldId": "concept-opacidad-productiva",
+      "canonicalName": "opacidad productiva",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "Un tercer concepto, opacidad productiva",
+        "La opacidad productiva no celebra"
+      ],
+      "expectedFacts": [
+        "mantiene visible la falta de información",
+        "impide completar huecos por intuición",
+        "registra decisiones dependientes de una ausencia"
+      ],
+      "forbiddenFacts": ["oculta deliberadamente", "estilo visual", "obra"],
+      "notes": "No es alias de escucha oblicua.",
+      "relatedGoldEntities": ["concept-escucha-oblicua"]
+    },
+    {
+      "documentId": "02-theory",
+      "goldId": "concept-ritmo-retorno",
+      "canonicalName": "ritmo de retorno",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["El ritmo de retorno es", "El ritmo de retorno conecta"],
+      "expectedFacts": [
+        "describe volver a Evidence con preguntas nuevas",
+        "exige registrar el motivo de la nueva lectura"
+      ],
+      "forbiddenFacts": ["ritmo musical", "coreografía"],
+      "notes": "Concepto metodológico.",
+      "relatedGoldEntities": ["concept-archivo-respirante"]
+    },
+    {
+      "documentId": "02-theory",
+      "goldId": "person-mara-tellez",
+      "canonicalName": "Mara Téllez",
+      "kind": "PERSON",
+      "aliases": ["Téllez", "la investigadora"],
+      "possibleAliases": [],
+      "relevance": "SECONDARY",
+      "shouldExtract": true,
+      "sourceSpans": ["La investigadora Mara Téllez", "Téllez formuló la expresión"],
+      "expectedFacts": ["formuló escucha oblicua en un seminario interno"],
+      "forbiddenFacts": ["nació", "universidad", "premio", "publicó"],
+      "notes": "No completar biografía.",
+      "relatedGoldEntities": ["concept-escucha-oblicua", "organization-circulo-orbe"]
+    },
+    {
+      "documentId": "02-theory",
+      "goldId": "organization-circulo-orbe",
+      "canonicalName": "Círculo Orbe",
+      "kind": "ORGANIZATION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "SECONDARY",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "seminario interno del Círculo Orbe",
+        "El Círculo Orbe es una pequeña organización"
+      ],
+      "expectedFacts": ["es una organización de lectura comparada", "dio contexto al seminario"],
+      "forbiddenFacts": ["sede", "financiación pública", "universidad"],
+      "notes": "Secundaria y localizadora.",
+      "relatedGoldEntities": ["person-mara-tellez"]
+    },
+
+    {
+      "documentId": "03-exhibition",
+      "goldId": "event-materia-casa",
+      "canonicalName": "Materia de Casa",
+      "kind": "EVENT",
+      "aliases": ["la muestra", "la exposición"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "Materia de Casa fue una exposición temporal",
+        "Como evento, Materia de Casa"
+      ],
+      "expectedFacts": [
+        "fue una exposición de seis semanas",
+        "reunió dos obras y una mesa documental",
+        "fue organizada por Instituto Lumen"
+      ],
+      "forbiddenFacts": ["obra de Dalia Neri", "evento anual", "museo"],
+      "notes": "Evento, no obra ni lugar.",
+      "relatedGoldEntities": ["organization-instituto-lumen", "place-nave-este"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "organization-instituto-lumen",
+      "canonicalName": "Instituto Lumen",
+      "kind": "ORGANIZATION",
+      "aliases": ["el Instituto"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["organizada por el Instituto Lumen", "El Instituto Lumen, en cambio, asumió"],
+      "expectedFacts": ["organizó Materia de Casa", "asumió producción, seguros y mediación"],
+      "forbiddenFacts": ["propietario de Nave del Este", "universidad", "museo"],
+      "notes": "No inferir propiedad del venue.",
+      "relatedGoldEntities": ["event-materia-casa"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "place-nave-este",
+      "canonicalName": "Nave del Este",
+      "kind": "PLACE",
+      "aliases": ["la nave"],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["en la Nave del Este", "La Nave del Este condicionó"],
+      "expectedFacts": [
+        "fue el lugar de la exposición",
+        "su acceso y techo condicionaron recorrido y sonido"
+      ],
+      "forbiddenFacts": ["organizó", "propiedad del Instituto", "organización"],
+      "notes": "Lugar, no organización.",
+      "relatedGoldEntities": ["event-materia-casa"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "person-dalia-neri",
+      "canonicalName": "Dalia Neri",
+      "kind": "PERSON",
+      "aliases": ["Neri", "la comisaria"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["fue comisariada por Dalia Neri", "La comisaria Dalia Neri articuló"],
+      "expectedFacts": ["comisarió Materia de Casa", "articuló la intimidad logística"],
+      "forbiddenFacts": ["autora de las obras", "nació", "premio"],
+      "notes": "Comisaria, no artista de las instalaciones.",
+      "relatedGoldEntities": ["event-materia-casa", "concept-intimidad-logistica"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "person-omar-cendro",
+      "canonicalName": "Omar Cendro",
+      "kind": "PERSON",
+      "aliases": ["Cendro"],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["Omar Cendro presentó", "Omar Cendro creó"],
+      "expectedFacts": ["creó Mesa para una ausencia"],
+      "forbiddenFacts": ["creó Inventario del humo", "nació", "premio"],
+      "notes": "Autoría explícita.",
+      "relatedGoldEntities": ["work-mesa-ausencia"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "work-mesa-ausencia",
+      "canonicalName": "Mesa para una ausencia",
+      "kind": "WORK",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["Mesa para una ausencia, una obra", "Mesa para una ausencia trabaja"],
+      "expectedFacts": [
+        "usa una mesa y seis cajones",
+        "requiere coordinación entre visitantes",
+        "contiene listas de objetos prestados"
+      ],
+      "forbiddenFacts": ["obra de Dalia Neri", "grabaciones de cocina"],
+      "notes": "Obra de Omar Cendro.",
+      "relatedGoldEntities": ["person-omar-cendro"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "person-lia-corvan",
+      "canonicalName": "Lía Corvan",
+      "kind": "PERSON",
+      "aliases": ["Corvan"],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["Lía Corvan presentó", "Lía Corvan creó"],
+      "expectedFacts": ["creó Inventario del humo"],
+      "forbiddenFacts": ["creó Mesa para una ausencia", "nació", "premio"],
+      "notes": "Autoría explícita.",
+      "relatedGoldEntities": ["work-inventario-humo"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "work-inventario-humo",
+      "canonicalName": "Inventario del humo",
+      "kind": "WORK",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["Inventario del humo, una instalación", "Inventario del humo trabaja"],
+      "expectedFacts": [
+        "usa vidrio, telas y grabaciones de cocina",
+        "sus omisiones señalan saberes familiares no escritos"
+      ],
+      "forbiddenFacts": ["obra de Omar Cendro", "seis cajones"],
+      "notes": "Obra de Lía Corvan.",
+      "relatedGoldEntities": ["person-lia-corvan"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "concept-intimidad-logistica",
+      "canonicalName": "intimidad logística",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "alrededor de la intimidad logística",
+        "La intimidad logística no era el título"
+      ],
+      "expectedFacts": [
+        "describe redes de traslado, cuidado y almacenamiento",
+        "funciona como hipótesis curatorial"
+      ],
+      "forbiddenFacts": ["título de una obra", "empresa logística"],
+      "notes": "No fusionar con hospitalidad inversa.",
+      "relatedGoldEntities": ["concept-hospitalidad-inversa"]
+    },
+    {
+      "documentId": "03-exhibition",
+      "goldId": "concept-hospitalidad-inversa",
+      "canonicalName": "hospitalidad inversa",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["Neri propuso la hospitalidad inversa", "la hospitalidad inversa explica"],
+      "expectedFacts": ["describe cómo un objeto recibido transforma reglas de la casa"],
+      "forbiddenFacts": ["sinónimo de intimidad logística", "obra"],
+      "notes": "Concepto específico distinto.",
+      "relatedGoldEntities": ["concept-intimidad-logistica"]
+    },
+
+    {
+      "documentId": "04-education",
+      "goldId": "organization-escuela-delta",
+      "canonicalName": "Escuela Delta",
+      "kind": "ORGANIZATION",
+      "aliases": ["la escuela"],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["En la Escuela Delta", "La Escuela Delta es la organización"],
+      "expectedFacts": ["alberga el laboratorio coordinado por Noa Mir"],
+      "forbiddenFacts": ["ciudad", "fundada", "universidad"],
+      "notes": "No inventar localización.",
+      "relatedGoldEntities": ["person-noa-mir"]
+    },
+    {
+      "documentId": "04-education",
+      "goldId": "person-noa-mir",
+      "canonicalName": "Noa Mir",
+      "kind": "PERSON",
+      "aliases": ["Mir", "la docente"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["la docente Noa Mir", "Noa Mir denomina"],
+      "expectedFacts": [
+        "coordina un laboratorio de prácticas visuales",
+        "define lectura de huellas"
+      ],
+      "forbiddenFacts": ["fundó la Escuela Delta", "universidad", "libro", "premio"],
+      "notes": "No completar biografía.",
+      "relatedGoldEntities": ["concept-lectura-huellas"]
+    },
+    {
+      "documentId": "04-education",
+      "goldId": "concept-cuaderno-proceso",
+      "canonicalName": "cuaderno de proceso",
+      "kind": "ABSTRACTION",
+      "aliases": ["el cuaderno"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["Utiliza el cuaderno de proceso", "La entidad es cuaderno de proceso"],
+      "expectedFacts": [
+        "registra decisiones, dudas y pruebas",
+        "puede contener varios medios",
+        "sirve de soporte para crítica situada"
+      ],
+      "forbiddenFacts": ["obra expuesta", "libro publicado"],
+      "notes": "Entidad frente a claim de observación continuada.",
+      "relatedGoldEntities": ["concept-lectura-huellas", "concept-critica-situada"]
+    },
+    {
+      "documentId": "04-education",
+      "goldId": "concept-lectura-huellas",
+      "canonicalName": "lectura de huellas",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["denomina lectura de huellas", "La lectura de huellas propone"],
+      "expectedFacts": [
+        "compara tres momentos del cuaderno",
+        "identifica marcas, condiciones e interpretaciones abiertas"
+      ],
+      "forbiddenFacts": ["método arqueológico", "obra"],
+      "notes": "Método representado como ABSTRACTION.",
+      "relatedGoldEntities": ["concept-cuaderno-proceso"]
+    },
+    {
+      "documentId": "04-education",
+      "goldId": "concept-critica-situada",
+      "canonicalName": "crítica situada",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["La crítica situada es", "cada comentario de crítica situada"],
+      "expectedFacts": [
+        "formula observaciones indicando material, momento y pregunta",
+        "debe referir a una entrada del cuaderno"
+      ],
+      "forbiddenFacts": ["crítica amable", "sin criterios"],
+      "notes": "Concepto pedagógico.",
+      "relatedGoldEntities": ["concept-cuaderno-proceso"]
+    },
+    {
+      "documentId": "04-education",
+      "goldId": "concept-mapa-decisiones",
+      "canonicalName": "mapa de decisiones",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["El mapa de decisiones es", "El mapa de decisiones explicita"],
+      "expectedFacts": [
+        "conecta pruebas, alternativas y preguntas",
+        "es herramienta metodológica, no lugar ni obra"
+      ],
+      "forbiddenFacts": ["lugar", "obra autónoma"],
+      "notes": "Trampa de kind por la palabra mapa.",
+      "relatedGoldEntities": ["concept-cuaderno-proceso"]
+    },
+
+    {
+      "documentId": "05-aliases",
+      "goldId": "person-elena-varo",
+      "canonicalName": "Elena Varo",
+      "kind": "PERSON",
+      "aliases": ["Varo", "E. Varo", "la artista Elena Varo"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "Elena Varo trabaja con fotografía",
+        "La artista Elena Varo desarrolló",
+        "la firma vuelve a escribirse completa: Elena Varo"
+      ],
+      "expectedFacts": [
+        "trabaja con fotografía intervenida y objetos encontrados",
+        "creó El jardín inverso y Archivo de lluvia",
+        "trabaja la memoria doméstica"
+      ],
+      "forbiddenFacts": ["nació en", "edad", "premio", "nacionalidad", "universidad"],
+      "notes": "Tres aliases seguros; no fusionar con Teo Varo.",
+      "relatedGoldEntities": ["work-jardin-inverso", "work-archivo-lluvia"]
+    },
+    {
+      "documentId": "05-aliases",
+      "goldId": "work-jardin-inverso",
+      "canonicalName": "El jardín inverso",
+      "kind": "WORK",
+      "aliases": ["Jardín inverso"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["desarrolló El jardín inverso", "El jardín inverso y Jardín inverso"],
+      "expectedFacts": [
+        "es una serie de veinticuatro fotografías",
+        "usa plantas domésticas y fondos dibujados"
+      ],
+      "forbiddenFacts": ["alias de Archivo de lluvia", "premiada"],
+      "notes": "Conservar artículo en canonical.",
+      "relatedGoldEntities": ["person-elena-varo"]
+    },
+    {
+      "documentId": "05-aliases",
+      "goldId": "work-archivo-lluvia",
+      "canonicalName": "Archivo de lluvia",
+      "kind": "WORK",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["comenzó Archivo de lluvia", "Archivo de lluvia no es alias"],
+      "expectedFacts": [
+        "usa sobres de papel sensible y registros de humedad",
+        "es una obra distinta de El jardín inverso"
+      ],
+      "forbiddenFacts": ["alias de El jardín inverso", "obra de Teo Varo"],
+      "notes": "Identidad de obra independiente.",
+      "relatedGoldEntities": ["person-elena-varo"]
+    },
+    {
+      "documentId": "05-aliases",
+      "goldId": "concept-memoria-domestica",
+      "canonicalName": "memoria doméstica",
+      "kind": "ABSTRACTION",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "La memoria doméstica es el concepto",
+        "las dos obras y la memoria doméstica"
+      ],
+      "expectedFacts": [
+        "conecta las dos obras",
+        "describe rastros de prácticas repetidas de cuidado"
+      ],
+      "forbiddenFacts": ["obra llamada Memoria doméstica", "organización"],
+      "notes": "Unidad conceptual específica.",
+      "relatedGoldEntities": ["person-elena-varo"]
+    },
+    {
+      "documentId": "05-aliases",
+      "goldId": "organization-galeria-umbral",
+      "canonicalName": "Galería Umbral",
+      "kind": "ORGANIZATION",
+      "aliases": ["la galería"],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["en la Galería Umbral", "La Galería Umbral vuelve"],
+      "expectedFacts": ["organizó el montaje de una selección de El jardín inverso"],
+      "forbiddenFacts": ["creó la obra", "situada en Río Arce", "fundada"],
+      "notes": "No inferir ubicación.",
+      "relatedGoldEntities": ["work-jardin-inverso"]
+    },
+    {
+      "documentId": "05-aliases",
+      "goldId": "place-rio-arce",
+      "canonicalName": "Río Arce",
+      "kind": "PLACE",
+      "aliases": ["el valle del Río Arce", "el valle"],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "valle ficticio del Río Arce",
+        "el valle del Río Arce, tratado aquí como PLACE"
+      ],
+      "expectedFacts": ["es el lugar donde se desarrolla el trabajo de Varo"],
+      "forbiddenFacts": ["lugar de nacimiento", "sede de Galería Umbral", "país"],
+      "notes": "Lugar de trabajo, no nacimiento.",
+      "relatedGoldEntities": ["person-elena-varo"]
+    },
+    {
+      "documentId": "05-aliases",
+      "goldId": "person-teo-varo",
+      "canonicalName": "Teo Varo",
+      "kind": "PERSON",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "SECONDARY",
+      "shouldExtract": false,
+      "sourceSpans": ["Teo Varo aparece", "Teo Varo entrega los marcos"],
+      "expectedFacts": ["transporta marcos y no participa en la autoría"],
+      "forbiddenFacts": ["pariente de Elena Varo", "autor de Archivo de lluvia"],
+      "notes": "Identidad real pero deliberadamente periférica; útil como prueba de relevancia.",
+      "relatedGoldEntities": ["person-elena-varo"]
+    },
+
+    {
+      "documentId": "06-long-ambiguity",
+      "goldId": "concept-cartografia-intervalo",
+      "canonicalName": "Cartografía del intervalo",
+      "kind": "ABSTRACTION",
+      "aliases": ["el método"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "La Cartografía del intervalo es un método",
+        "la Cartografía del intervalo incorporó",
+        "la Cartografía del intervalo se definió con mayor precisión"
+      ],
+      "expectedFacts": [
+        "compara estados documentales separados",
+        "registra cambios, pérdidas y preguntas",
+        "distingue observación, inferencia, memoria y registro"
+      ],
+      "forbiddenFacts": ["obra", "mapa geográfico", "publicación"],
+      "notes": "Identidad repetida al inicio, mitad y final para medir fragmentación.",
+      "relatedGoldEntities": ["event-jornadas-eco"]
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "goldId": "event-jornadas-eco",
+      "canonicalName": "Jornadas del Eco",
+      "kind": "EVENT",
+      "aliases": ["las jornadas", "el evento"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["para las Jornadas del Eco, un evento", "Al final de las Jornadas del Eco"],
+      "expectedFacts": ["fue un evento celebrado en Casa Faro", "fue coordinado por Aina Soler"],
+      "forbiddenFacts": ["obra", "publicación periódica"],
+      "notes": "Evento, no work.",
+      "relatedGoldEntities": ["organization-casa-faro", "person-aina-soler"]
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "goldId": "organization-casa-faro",
+      "canonicalName": "Casa Faro",
+      "kind": "ORGANIZATION",
+      "aliases": ["la organización"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["en Casa Faro", "Casa Faro es la organización anfitriona"],
+      "expectedFacts": [
+        "organizó y alojó las Jornadas del Eco",
+        "gestiona residencias y encuentros"
+      ],
+      "forbiddenFacts": ["vivienda", "lugar geográfico", "propietaria del edificio", "museo"],
+      "notes": "Nombre con trampa semántica; es organización.",
+      "relatedGoldEntities": ["event-jornadas-eco"]
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "goldId": "place-faro-bajo",
+      "canonicalName": "Faro Bajo",
+      "kind": "PLACE",
+      "aliases": [],
+      "possibleAliases": [],
+      "relevance": "RELEVANT",
+      "shouldExtract": true,
+      "sourceSpans": ["localidad ficticia de Faro Bajo", "Faro Bajo, que sí es PLACE"],
+      "expectedFacts": ["es la localidad donde se encuentra Casa Faro"],
+      "forbiddenFacts": ["organización", "persona", "país"],
+      "notes": "No fusionar con Casa Faro.",
+      "relatedGoldEntities": ["organization-casa-faro"]
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "goldId": "person-aina-soler",
+      "canonicalName": "Aina Soler",
+      "kind": "PERSON",
+      "aliases": ["Aina"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["Aina Soler coordinó", "Aina Soler escribió el informe"],
+      "expectedFacts": [
+        "coordinó las Jornadas del Eco",
+        "moderó una conversación y escribió el informe"
+      ],
+      "forbiddenFacts": ["creó El eco quieto", "pariente de Ana Soler", "nació", "premio"],
+      "notes": "No fusionar con Ana Soler ni Ania Solar.",
+      "relatedGoldEntities": ["person-ana-soler", "event-jornadas-eco"]
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "goldId": "person-ana-soler",
+      "canonicalName": "Ana Soler",
+      "kind": "PERSON",
+      "aliases": ["Ana", "la artista"],
+      "possibleAliases": [],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": ["Ana Soler participó como artista", "Ana Soler desmontó El eco quieto"],
+      "expectedFacts": ["creó y presentó El eco quieto", "revisó la descripción de su obra"],
+      "forbiddenFacts": ["coordinó las Jornadas", "pariente de Aina Soler", "nació", "premio"],
+      "notes": "No fusionar con Aina Soler.",
+      "relatedGoldEntities": ["work-el-eco-quieto"]
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "goldId": "work-el-eco-quieto",
+      "canonicalName": "El eco quieto",
+      "kind": "WORK",
+      "aliases": [],
+      "possibleAliases": ["Eco quieto"],
+      "relevance": "CENTRAL",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "La instalación de Ana Soler se titula El eco quieto",
+        "pruebas de El eco quieto"
+      ],
+      "expectedFacts": [
+        "es una instalación de superficies metálicas y vibración",
+        "se activa cuando la sala queda vacía",
+        "fue creada por Ana Soler"
+      ],
+      "forbiddenFacts": ["obra de Aina Soler", "conversación", "concepto idéntico"],
+      "notes": "Título próximo a actividad y abstracción.",
+      "relatedGoldEntities": ["person-ana-soler", "concept-eco-quieto"]
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "goldId": "concept-eco-quieto",
+      "canonicalName": "eco quieto",
+      "kind": "ABSTRACTION",
+      "aliases": ["la cualidad perceptiva"],
+      "possibleAliases": ["Eco quieto"],
+      "relevance": "SECONDARY",
+      "shouldExtract": true,
+      "sourceSpans": [
+        "eco quieto en minúsculas para describir una cualidad",
+        "Eco quieto, la cualidad perceptiva, reaparece"
+      ],
+      "expectedFacts": [
+        "describe una vibración que ya no se oye claramente",
+        "ayuda a interpretar la obra sin ser idéntico a ella"
+      ],
+      "forbiddenFacts": ["instalación de Ana Soler", "evento"],
+      "notes": "Misma cadena base, identidad y kind distintos.",
+      "relatedGoldEntities": ["work-el-eco-quieto"]
+    }
+  ],
+  "negativeEntityCandidates": [
+    {
+      "documentId": "01-monograph",
+      "text": "Toda imagen es una casa",
+      "category": "CLAIM_AS_ENTITY"
+    },
+    { "documentId": "01-monograph", "text": "Métodos de aproximación", "category": "HEADING" },
+    {
+      "documentId": "02-theory",
+      "text": "Mantener visible una ausencia mejora la honestidad",
+      "category": "CLAIM_AS_ENTITY"
+    },
+    { "documentId": "02-theory", "text": "L. Noren", "category": "BIBLIOGRAPHIC_NOISE" },
+    { "documentId": "02-theory", "text": "arte", "category": "GENERIC_TERM" },
+    {
+      "documentId": "03-exhibition",
+      "text": "Abrir un cajón requiere aceptar la dependencia",
+      "category": "CLAIM_AS_ENTITY"
+    },
+    { "documentId": "03-exhibition", "text": "Prensa y agradecimientos", "category": "HEADING" },
+    { "documentId": "03-exhibition", "text": "R. Bel", "category": "BIBLIOGRAPHIC_NOISE" },
+    {
+      "documentId": "04-education",
+      "text": "La observación continuada del cuaderno permite reconocer cambios",
+      "category": "CLAIM_AS_ENTITY"
+    },
+    { "documentId": "04-education", "text": "Indicadores finales", "category": "HEADING" },
+    { "documentId": "04-education", "text": "P. Daro", "category": "BIBLIOGRAPHIC_NOISE" },
+    {
+      "documentId": "05-aliases",
+      "text": "Cuidar una planta reorganiza la mirada",
+      "category": "CLAIM_AS_ENTITY"
+    },
+    { "documentId": "05-aliases", "text": "Jardín", "category": "GENERIC_TERM" },
+    { "documentId": "06-long-ambiguity", "text": "Ania Solar", "category": "PERIPHERAL_PERSON" },
+    {
+      "documentId": "06-long-ambiguity",
+      "text": "Resultados del segundo día",
+      "category": "HEADING"
+    },
+    { "documentId": "06-long-ambiguity", "text": "M. Ral", "category": "BIBLIOGRAPHIC_NOISE" },
+    {
+      "documentId": "06-long-ambiguity",
+      "text": "Comparar dos imágenes obliga a imaginar el tiempo",
+      "category": "CLAIM_AS_ENTITY"
+    }
+  ]
+}

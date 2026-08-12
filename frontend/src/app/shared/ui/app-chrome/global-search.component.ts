@@ -10,18 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  forkJoin,
-  map,
-  of,
-  Subject,
-  switchMap,
-} from 'rxjs';
-import { CuratedApi, CuratedDeck } from '../../../core/api/curated.api';
-import { HomeDeck, HomeDecksApi } from '../../../core/api/home-decks.api';
+import { catchError, debounceTime, distinctUntilChanged, map, of, Subject, switchMap } from 'rxjs';
 import { SearchApi, SearchResult } from '../../../core/api/search.api';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
@@ -59,8 +48,6 @@ const SEARCH_CATEGORIES: Array<{
 export class GlobalSearchComponent {
   private readonly router = inject(Router);
   private readonly searchApi = inject(SearchApi);
-  private readonly homeDecksApi = inject(HomeDecksApi);
-  private readonly curatedApi = inject(CuratedApi);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   readonly i18n = inject(I18nService);
@@ -69,13 +56,9 @@ export class GlobalSearchComponent {
   readonly searchSuggestions = signal<SearchResult[]>([]);
   readonly searchFocused = signal(false);
   readonly searchLoading = signal(false);
-  readonly preparationLoading = signal(false);
-  readonly preparationTopics = signal<HomeDeck[]>([]);
-  readonly preparationPicks = signal<CuratedDeck[]>([]);
   readonly categories = SEARCH_CATEGORIES;
   readonly activeSuggestionIndex = signal(-1);
 
-  private preparationLoaded = false;
   private readonly searchInput$ = new Subject<string>();
 
   @HostBinding('class.search-open')
@@ -125,7 +108,6 @@ export class GlobalSearchComponent {
 
   onSearchFocus(value: string): void {
     this.searchFocused.set(true);
-    this.ensurePreparationLoaded();
     if (value.trim() && !this.searchSuggestions().length) this.searchInput$.next(value);
   }
 
@@ -135,25 +117,6 @@ export class GlobalSearchComponent {
 
   showSearchSuggestions(): boolean {
     return this.searchFocused() && !!this.searchDraft().trim();
-  }
-
-  trendMeta(deck: HomeDeck): string {
-    return `${deck.entities.length} ${this.i18n.t('search.prep.contents')}`;
-  }
-
-  openPreparationCollection(deck: {
-    slug: string;
-    ctaRoute?: string | null;
-    ctaUrl?: string | null;
-  }): void {
-    this.closeSearchUi();
-    if (deck.ctaUrl) {
-      window.location.href = deck.ctaUrl;
-    } else if (deck.ctaRoute) {
-      void this.router.navigateByUrl(deck.ctaRoute);
-    } else {
-      void this.router.navigate(['/entities'], { queryParams: { deck: deck.slug } });
-    }
   }
 
   openPreparationCategory(type: SearchCategoryType): void {
@@ -216,22 +179,6 @@ export class GlobalSearchComponent {
     this.searchSuggestions.set([]);
     this.activeSuggestionIndex.set(-1);
     this.searchFocused.set(false);
-  }
-
-  private ensurePreparationLoaded(): void {
-    if (this.preparationLoaded || this.preparationLoading()) return;
-    this.preparationLoading.set(true);
-    forkJoin({
-      topics: this.homeDecksApi.listPublic('RECOMMENDED').pipe(catchError(() => of([]))),
-      curated: this.curatedApi.page().pipe(catchError(() => of(null))),
-    })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ topics, curated }) => {
-        this.preparationTopics.set(topics.slice(0, 6));
-        this.preparationPicks.set(curated?.staffPicks?.slice(0, 3) ?? []);
-        this.preparationLoading.set(false);
-        this.preparationLoaded = true;
-      });
   }
 }
 

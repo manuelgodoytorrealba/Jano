@@ -1,0 +1,480 @@
+<section class="entities-workspace" aria-labelledby="entities-title">
+  @if (vm$ | async; as vm) {
+    <header class="entities-workspace__header">
+      <div>
+        <p class="entities-workspace__eyebrow">Conocimiento privado</p>
+        <h2 id="entities-title">Entidades</h2>
+        <p>
+          Revisa y organiza las entidades y relaciones extraídas del corpus antes de incorporarlas
+          al conocimiento privado.
+        </p>
+        <nav class="entities-workspace__modes" aria-label="Vista de entidades">
+          <button type="button" [class.is-active]="mode === 'review'" (click)="setMode('review')">
+            Revisión
+          </button>
+          <button type="button" [class.is-active]="mode === 'map'" (click)="setMode('map')">
+            Mapa
+          </button>
+        </nav>
+      </div>
+      <div class="entities-workspace__summary" aria-label="Progreso de revisión">
+        <span
+          ><strong>{{ count(vm.proposals, 'PENDING') }}</strong
+          >Pendientes</span
+        >
+        <span
+          ><strong>{{ count(vm.proposals, 'REVIEWED') }}</strong
+          >Revisadas</span
+        >
+        <span
+          ><strong>{{ count(vm.proposals, 'REJECTED') }}</strong
+          >Descartadas</span
+        >
+        <span class="is-progress"
+          ><strong>{{ progress(vm.proposals) }}%</strong>Progreso<progress
+            [value]="progress(vm.proposals)"
+            max="100"
+          ></progress
+        ></span>
+      </div>
+    </header>
+
+    @if (vm.generation.job; as job) {
+      @if (job.status === 'QUEUED' || job.status === 'RUNNING' || job.status === 'FAILED') {
+        <div class="entities-workspace__processing" [class.is-error]="job.status === 'FAILED'">
+          <span>{{
+            job.status === 'FAILED' ? 'El análisis necesita atención' : 'Analizando el corpus'
+          }}</span>
+          @if (job.progressTotal > 0) {
+            <progress [value]="job.progressCurrent" [max]="job.progressTotal"></progress>
+          }
+          @if (job.lastError) {
+            <small>{{ job.lastError }}</small>
+          }
+        </div>
+      }
+    }
+    @if (actionError || vm.error) {
+      <p class="entities-workspace__notice is-error">{{ actionError || vm.error }}</p>
+    }
+    @if (actionMessage) {
+      <div class="entities-workspace__notice">
+        <span>{{ actionMessage }}</span>
+        @if (
+          actionMessage.includes('conocimiento privado') || actionMessage.startsWith('Añadido a')
+        ) {
+          <button type="button" (click)="openMap()">Ver en el mapa</button>
+          <button type="button" (click)="selectNextCandidate()">Siguiente candidata</button>
+        }
+      </div>
+    }
+
+    @if (mode === 'map') {
+      <div class="entities-map-editorial">
+        <div>
+          <strong>Mapa</strong>
+          <span>Explora y amplía el conocimiento privado de esta investigación.</span>
+        </div>
+        <button
+          type="button"
+          (click)="creatingEntity = !creatingEntity"
+          [attr.aria-expanded]="creatingEntity"
+        >
+          {{ creatingEntity ? 'Cerrar' : '+ Crear entidad' }}
+        </button>
+      </div>
+      @if (creatingEntity) {
+        <form class="map-create-panel" (ngSubmit)="createManualEntity(vm.entities)">
+          <header>
+            <div>
+              <strong>Nueva entidad</strong>
+              <span
+                >Se creará como borrador del Knowledge Core y quedará vinculada a Research.</span
+              >
+            </div>
+          </header>
+          <label>
+            Nombre
+            <input
+              name="manualTitle"
+              [(ngModel)]="manualTitle"
+              maxlength="180"
+              required
+              autocomplete="off"
+            />
+          </label>
+          <label>
+            Tipo
+            <select name="manualCanonicalType" [(ngModel)]="manualCanonicalType">
+              <option value="ARTWORK">Obra</option>
+              <option value="ARTIST">Artista</option>
+              <option value="CONCEPT">Concepto</option>
+              <option value="MOVEMENT">Movimiento</option>
+              <option value="PERIOD">Periodo</option>
+              <option value="ARTICLE">Artículo</option>
+              <option value="TEXT">Texto</option>
+              <option value="EVENT">Evento</option>
+              <option value="PLACE">Lugar</option>
+              <option value="ORGANIZATION">Organización</option>
+            </select>
+          </label>
+          <label class="map-create-panel__summary">
+            Resumen editorial
+            <textarea
+              name="manualSummary"
+              [(ngModel)]="manualSummary"
+              maxlength="1200"
+              rows="3"
+              placeholder="Texto breve que se mostrará en la ficha de la entidad."
+            ></textarea>
+          </label>
+          <fieldset>
+            <legend>Evidencia que la respalda</legend>
+            @for (item of evidence; track item.id) {
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="manualEvidenceIds.includes(item.id)"
+                  (change)="toggleManualEvidence(item.id, $any($event.target).checked)"
+                />
+                <span
+                  ><strong>{{ evidenceTitle(item) }}</strong
+                  ><small>{{ item.locator }}</small></span
+                >
+              </label>
+            } @empty {
+              <p>Esta investigación todavía no contiene evidencia vinculable.</p>
+            }
+          </fieldset>
+          <footer>
+            <button type="button" (click)="creatingEntity = false">Cancelar</button>
+            <button
+              type="submit"
+              class="is-primary"
+              [disabled]="busy || !manualTitle.trim() || !manualEvidenceIds.length"
+            >
+              {{ busy ? 'Creando…' : 'Crear borrador de entidad' }}
+            </button>
+          </footer>
+        </form>
+      }
+      <app-research-graph
+        [researchId]="researchId"
+        [proposals]="vm.proposals"
+        [showCandidates]="showCandidates"
+        [refreshToken]="vm.refreshToken"
+        [selectedEntityId]="selectedMapEntityId"
+        [promotionBusy]="busy"
+        (showCandidatesChange)="showCandidates = $event"
+        (entitySelected)="selectMapEntity($event)"
+        (entityOpen)="openEntity($event, vm.entities)"
+        (promotionRequested)="promoteEntity($event)"
+        (reviewRequested)="selectProposal($event)"
+      />
+    } @else {
+      <div class="entities-review">
+        <aside class="candidate-tray" aria-label="Bandeja de entidades candidatas">
+          <nav class="candidate-tray__tabs" aria-label="Estado de candidatas">
+            <button
+              type="button"
+              [class.is-active]="view === 'pending'"
+              (click)="setView('pending')"
+            >
+              Pendientes <span>{{ count(vm.proposals, 'PENDING') }}</span>
+            </button>
+            <button
+              type="button"
+              [class.is-active]="view === 'reviewed'"
+              (click)="setView('reviewed')"
+            >
+              Revisadas <span>{{ count(vm.proposals, 'REVIEWED') }}</span>
+            </button>
+            <button
+              type="button"
+              [class.is-active]="view === 'discarded'"
+              (click)="setView('discarded')"
+            >
+              Descartadas <span>{{ count(vm.proposals, 'REJECTED') }}</span>
+            </button>
+          </nav>
+          <div class="candidate-tray__tools">
+            <input
+              type="search"
+              [(ngModel)]="query"
+              placeholder="Buscar entidad…"
+              aria-label="Buscar entidad candidata"
+            />
+            <select [(ngModel)]="kindFilter" aria-label="Filtrar por tipo">
+              <option value="">Todos los tipos</option>
+              <option value="PERSON">Persona</option>
+              <option value="WORK">Obra</option>
+              <option value="ABSTRACTION">Concepto</option>
+              <option value="EVENT">Evento</option>
+              <option value="PLACE">Lugar</option>
+              <option value="ORGANIZATION">Organización</option>
+            </select>
+          </div>
+          <div class="candidate-tray__list">
+            @for (candidate of candidates(vm.proposals); track candidate.id) {
+              <button
+                type="button"
+                class="candidate-card"
+                [class.is-selected]="selectedProposal?.id === candidate.id"
+                (click)="selectProposal(candidate)"
+              >
+                <span class="candidate-card__icon">{{
+                  kindLabel(candidate.entityKind).slice(0, 1)
+                }}</span>
+                <span class="candidate-card__copy">
+                  <strong>{{ candidate.title }}</strong
+                  ><small>{{ kindLabel(candidate.entityKind) }}</small>
+                  <span class="candidate-card__metrics"
+                    >{{ candidate.evidence.length }} evidencias ·
+                    {{ sourceCount(candidate) }} fuentes ·
+                    {{ relationsFor(candidate, vm.proposals).length }} relaciones sugeridas</span
+                  >
+                  @if (candidate.summary) {
+                    <span class="candidate-card__summary">{{ candidate.summary }}</span>
+                  }
+                </span>
+              </button>
+            } @empty {
+              <div class="candidate-tray__empty">
+                @if (!vm.generation.canGenerate) {
+                  <h3>Aún no hay candidatas.</h3>
+                  <p>Prepara material del Corpus para que JANO pueda proponer conocimiento.</p>
+                } @else if (query || kindFilter) {
+                  <h3>Sin coincidencias.</h3>
+                  <p>Prueba otra búsqueda o elimina el filtro.</p>
+                } @else {
+                  <h3>No hay candidatas en este estado.</h3>
+                  @if (view === 'pending') {
+                    <button type="button" (click)="generateKnowledgeMap()" [disabled]="generating">
+                      {{ generating ? 'Analizando…' : 'Generar propuestas' }}
+                    </button>
+                  }
+                }
+              </div>
+            }
+          </div>
+        </aside>
+
+        <main class="candidate-dossier">
+          @if (selectedProposal; as candidate) {
+            <header class="candidate-dossier__header">
+              <span class="candidate-dossier__icon">{{
+                kindLabel(candidate.entityKind).slice(0, 1)
+              }}</span>
+              <div>
+                @if (editing) {
+                  <input
+                    class="candidate-dossier__title-input"
+                    [(ngModel)]="proposalTitle"
+                    aria-label="Nombre de la candidata"
+                  />
+                } @else {
+                  <h3>{{ candidate.title }}</h3>
+                }
+                <p>
+                  {{ kindLabel(candidate.entityKind) }} ·
+                  {{
+                    candidate.reviewState === 'PENDING'
+                      ? 'Candidata'
+                      : candidate.reviewState === 'REVIEWED'
+                        ? 'Consolidada'
+                        : 'Descartada'
+                  }}
+                </p>
+              </div>
+              @if (candidate.reviewState === 'PENDING') {
+                <button type="button" class="candidate-dossier__edit" (click)="editing = !editing">
+                  {{ editing ? 'Cerrar edición' : 'Editar' }}
+                </button>
+              }
+            </header>
+
+            <div class="candidate-dossier__grid">
+              <div class="candidate-dossier__main">
+                <section class="dossier-block">
+                  <h4>Propuesta de JANO</h4>
+                  @if (editing) {
+                    <select [(ngModel)]="selectedEntityKind" aria-label="Tipo de entidad">
+                      <option value="PERSON">Persona</option>
+                      <option value="WORK">Obra</option>
+                      <option value="ABSTRACTION">Concepto</option>
+                      <option value="EVENT">Evento</option>
+                      <option value="PLACE">Lugar</option>
+                      <option value="ORGANIZATION">Organización</option>
+                    </select>
+                    <textarea
+                      [(ngModel)]="proposalSummary"
+                      rows="4"
+                      aria-label="Resumen propuesto"
+                    ></textarea>
+                    <button
+                      type="button"
+                      (click)="saveProposal()"
+                      [disabled]="busy || !proposalTitle.trim()"
+                    >
+                      Guardar borrador
+                    </button>
+                  } @else {
+                    <p>
+                      {{
+                        candidate.summary || 'JANO no ha propuesto todavía un resumen editorial.'
+                      }}
+                    </p>
+                  }
+                </section>
+
+                <section class="dossier-block">
+                  <h4>Evidencia</h4>
+                  @for (item of candidate.evidence; track item.evidenceId) {
+                    <article class="evidence-row">
+                      <div>
+                        <strong>{{ evidenceTitle(item.evidence) }}</strong
+                        ><small
+                          >{{ item.evidence.source?.author || 'Autor no indicado' }} ·
+                          {{ item.evidence.locator }}</small
+                        >
+                      </div>
+                      <blockquote>
+                        {{
+                          item.evidence.quote ||
+                            'Fragmento no disponible; se conserva la referencia bibliográfica.'
+                        }}
+                      </blockquote>
+                      @if (item.evidence.context || item.evidence.note) {
+                        <p>{{ item.evidence.context || item.evidence.note }}</p>
+                      }
+                    </article>
+                  } @empty {
+                    <p class="dossier-block__empty">
+                      Esta candidata no conserva Evidence vinculada. No puede consolidarse de forma
+                      trazable.
+                    </p>
+                  }
+                </section>
+              </div>
+
+              <aside class="candidate-dossier__side">
+                <section class="dossier-block">
+                  <h4>Posibles coincidencias</h4>
+                  @if (vm.entities.length) {
+                    <p>
+                      El contrato actual no puntúa similitud. Revisa manualmente el conocimiento
+                      privado antes de crear un duplicado.
+                    </p>
+                    <select [(ngModel)]="mergeEntityId" aria-label="Entidad privada existente">
+                      <option value="">Selecciona una entidad existente…</option>
+                      @for (entity of vm.entities; track entity.id) {
+                        <option [value]="entity.id">
+                          {{ entity.title }} · {{ kindLabel(entity.kind) }}
+                        </option>
+                      }
+                    </select>
+                  } @else {
+                    <p>No hay entidades privadas con las que comparar todavía.</p>
+                  }
+                </section>
+
+                <section class="dossier-block">
+                  <h4>Relaciones sugeridas</h4>
+                  @for (relation of relationsFor(candidate, vm.proposals); track relation.id) {
+                    <article
+                      class="relation-card"
+                      [class.is-reviewed]="relation.reviewState !== 'PENDING'"
+                    >
+                      <div>
+                        <strong>{{ candidate.title }}</strong
+                        ><span>{{ relation.relationType?.label ?? relation.title }} →</span
+                        ><strong>{{
+                          otherEndpoint(relation, vm.proposals)?.title ?? 'Extremo no disponible'
+                        }}</strong>
+                      </div>
+                      @if (relation.explanation) {
+                        <p>{{ relation.explanation }}</p>
+                      }
+                      <small
+                        >{{ relation.evidence.length }} evidencias ·
+                        {{
+                          relation.reviewState === 'PENDING'
+                            ? 'Pendiente'
+                            : relation.reviewState === 'REVIEWED'
+                              ? 'Consolidada'
+                              : 'Descartada'
+                        }}</small
+                      >
+                      @if (relation.reviewState === 'PENDING') {
+                        <footer>
+                          <button
+                            type="button"
+                            (click)="reviewRelation(relation, true)"
+                            [disabled]="busy || !canConsolidateRelation(relation, vm.proposals)"
+                          >
+                            Consolidar</button
+                          ><button
+                            type="button"
+                            (click)="reviewRelation(relation, false)"
+                            [disabled]="busy"
+                          >
+                            Descartar
+                          </button>
+                        </footer>
+                        @if (!canConsolidateRelation(relation, vm.proposals)) {
+                          <em>Consolida primero ambas entidades.</em>
+                        }
+                      }
+                    </article>
+                  } @empty {
+                    <p>JANO no ha sugerido relaciones para esta candidata.</p>
+                  }
+                </section>
+              </aside>
+            </div>
+
+            @if (candidate.reviewState === 'PENDING') {
+              <footer class="candidate-dossier__actions">
+                <button
+                  type="button"
+                  class="is-primary"
+                  (click)="createPrivateEntity()"
+                  [disabled]="busy || !candidate.evidence.length"
+                >
+                  Crear entidad privada
+                </button>
+                <button
+                  type="button"
+                  (click)="mergeWithEntity(vm.entities)"
+                  [disabled]="busy || !mergeEntityId"
+                >
+                  Fusionar con existente
+                </button>
+                <button type="button" (click)="editing = true">Guardar borrador</button>
+                <button
+                  type="button"
+                  class="is-danger"
+                  (click)="discardSelectedProposal()"
+                  [disabled]="busy"
+                >
+                  Descartar
+                </button>
+              </footer>
+            }
+          } @else {
+            <div class="candidate-dossier__empty">
+              <p class="entities-workspace__eyebrow">Mesa editorial</p>
+              <h3>Selecciona una entidad candidata.</h3>
+              <p>
+                Revisa su propuesta, procedencia y relaciones antes de decidir si merece existir en
+                el conocimiento privado.
+              </p>
+            </div>
+          }
+        </main>
+      </div>
+    }
+  } @else {
+    <div class="candidate-dossier__empty"><p>Cargando candidatas…</p></div>
+  }
+</section>

@@ -8,6 +8,10 @@ export type ResearchKnowledgeFocusType = (typeof RESEARCH_KNOWLEDGE_FOCUS_TYPES)
 
 export class ResearchKnowledgeQuery {
   @IsOptional()
+  @IsString()
+  locale?: string;
+
+  @IsOptional()
   @IsIn(RESEARCH_KNOWLEDGE_SCOPES)
   scope?: ResearchKnowledgeScope;
 

@@ -1,0 +1,91 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Comparar estados separados requiere declarar qué se observa y qué se infiere",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "Intervalos útiles",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "WORK",
+      "title": "El eco quieto",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsornswv0020cffp856mj1o0"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    }
+  ]
+}

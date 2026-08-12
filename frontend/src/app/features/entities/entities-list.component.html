@@ -2,7 +2,6 @@
   class="entities-page page-shell"
   [class.entities-page--immersive]="viewMode === 'explore'"
   [class.entities-page--list-shell]="viewMode === 'list'"
-  [class.entities-page--curated-deck]="curatedDeckMode()"
 >
   <h1 class="sr-only">
     @if (pageVm$ | async; as pageVm) {
@@ -18,7 +17,6 @@
     class="entities-explorer-layout"
     [class.is-list]="viewMode === 'list'"
     [class.is-filters-collapsed]="!filtersPanelOpen()"
-    [class.is-curated-deck]="curatedDeckMode()"
     [class.is-info-collapsed]="!infoPanelOpen()"
     [class.is-mobile-portrait-totem]="isMobilePortraitTotemActive()"
   >
@@ -27,26 +25,16 @@
         <nav class="entities-breadcrumbs ds-panel" aria-label="Breadcrumb">
           <a class="entities-breadcrumbs__link" routerLink="/">{{ i18n.t('nav.discover') }}</a>
           <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
-          @if (curatedDeckMode()) {
-            <a class="entities-breadcrumbs__link" routerLink="/curated">{{
-              i18n.t('nav.curated')
-            }}</a>
-            @if (breadcrumbCurrentLabel(pageVm)) {
-              <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
-              <span class="entities-breadcrumbs__current">{{
-                breadcrumbCurrentLabel(pageVm)
-              }}</span>
-            }
-          } @else {
-            <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{
-              breadcrumbSectionLabel(pageVm)
-            }}</a>
-            @if (breadcrumbCurrentLabel(pageVm)) {
-              <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
-              <span class="entities-breadcrumbs__current">{{
-                breadcrumbCurrentLabel(pageVm)
-              }}</span>
-            }
+          <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{
+            breadcrumbSectionLabel(pageVm)
+          }}</a>
+          @if (pageVm.recommendationsActive) {
+            <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
+            <span class="entities-breadcrumbs__current">Para ti</span>
+          }
+          @if (breadcrumbCurrentLabel(pageVm)) {
+            <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
+            <span class="entities-breadcrumbs__current">{{ breadcrumbCurrentLabel(pageVm) }}</span>
           }
         </nav>
       }
@@ -260,66 +248,10 @@
 
       @if (viewMode === 'explore') {
         <div class="entities-explorer-stage">
-          @if (viewportWidth() > 640) {
-            <div
-              class="entities-explorer-loading entities-explorer-loading--desktop"
-              aria-hidden="true"
-            >
-              <div class="entities-explorer-loading__hud">
-                <div class="entities-explorer-loading__mode">
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-
-              <div class="entities-explorer-loading__hero">
-                <div class="entities-explorer-loading__card entities-explorer-loading__card--prev">
-                  <div class="entities-explorer-loading__art"></div>
-                  <div class="entities-explorer-loading__card-foot"></div>
-                </div>
-
-                <div
-                  class="entities-explorer-loading__card entities-explorer-loading__card--active"
-                >
-                  <div class="entities-explorer-loading__art"></div>
-                  <div class="entities-explorer-loading__card-meta">
-                    <div
-                      class="entities-explorer-loading__line entities-explorer-loading__line--eyebrow"
-                    ></div>
-                    <div
-                      class="entities-explorer-loading__line entities-explorer-loading__line--title"
-                    ></div>
-                    <div
-                      class="entities-explorer-loading__line entities-explorer-loading__line--summary"
-                    ></div>
-                  </div>
-                </div>
-
-                <div class="entities-explorer-loading__card entities-explorer-loading__card--next">
-                  <div class="entities-explorer-loading__art"></div>
-                  <div class="entities-explorer-loading__card-foot"></div>
-                </div>
-              </div>
-            </div>
-          } @else {
-            <div class="entities-explorer-loading" aria-hidden="true">
-              <div class="entities-explorer-loading__ribbon">
-                <div class="entities-explorer-loading__card entities-explorer-loading__card--prev">
-                  <div class="entities-explorer-loading__art"></div>
-                </div>
-
-                <div
-                  class="entities-explorer-loading__card entities-explorer-loading__card--active"
-                >
-                  <div class="entities-explorer-loading__art"></div>
-                </div>
-
-                <div class="entities-explorer-loading__card entities-explorer-loading__card--next">
-                  <div class="entities-explorer-loading__art"></div>
-                </div>
-              </div>
-            </div>
-          }
+          <div class="entities-explorer-loading" role="status" aria-label="Cargando Archivo">
+            <span class="entities-explorer-loading__pulse" aria-hidden="true"></span>
+            <span class="entities-explorer-loading__label">Preparando tu archivo</span>
+          </div>
         </div>
       } @else {
         <div class="entities-stage-shell entities-stage-shell--list">

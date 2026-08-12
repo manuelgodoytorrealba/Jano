@@ -74,6 +74,8 @@ La proyección representa conocimiento privado organizado, no una verdad canóni
 
 `ResearchClaim` es la única representación persistente activa de una afirmación privada. `ResearchFinding` queda exclusivamente como compatibilidad histórica: el Contract migra cada fila a un Claim con el mismo ID, Evidence, decisiones y timestamps; no tiene writer, endpoint, DTO público, lectura activa ni participación en la proyección.
 
+Una `ResearchFindingProposal` aceptada se materializa explícitamente como Claim, Entity o Relation privada y conserva sus Evidence y el vínculo con la propuesta. Una propuesta Entity también puede fusionarse explícitamente con una `ResearchEntity` del mismo Research: conserva sus Evidence en la entidad elegida y registra el vínculo sin resolver identidad automáticamente. Aceptar una Relation crea el Claim privado en `DRAFT` que explica la conexión. Ninguna de estas operaciones escribe en Knowledge Core.
+
 ## Relación con el Editorial Pipeline
 
 El [Editorial Pipeline](./16-editorial-pipeline.md) prepara documentos y propuestas para revisión. Research Knowledge sólo recibe Evidence revisadas, Claims en estado editorial explícito, Entities privadas identificadas y Relations explicadas por Claims. Un Editorial Job o una ejecución de IA nunca constituyen conocimiento revisado por sí mismos.
@@ -82,10 +84,14 @@ El [Editorial Pipeline](./16-editorial-pipeline.md) prepara documentos y propues
 
 El Research Graph es la experiencia visual de lectura de `Research Knowledge` en la Fase 3. No es un agregado, una fuente adicional de verdad ni un contrato de lectura paralelo: consume exclusivamente `GET /research/:id/knowledge` y sus futuras variaciones internas del mismo read model.
 
+En el workspace de Entities existe una única superficie de grafo. Durante la revisión puede superponer, con tratamiento visual inequívoco, `ResearchFindingProposal` de tipo Entity y Relation todavía pendientes. Esta superposición es estado de presentación derivado de `GET /knowledge` y de la cola de propuestas: no incorpora candidatos a Research Knowledge, no crea una segunda topología persistente y desaparece o se sustituye por el objeto privado cuando la decisión humana correspondiente se materializa.
+
 ### Representación y trazabilidad
 
 - Un nodo representa exclusivamente una `ResearchEntity` privada. Claim, Evidence, Source, LibraryExcerpt y Entity canónica no son nodos por defecto.
+- Un nodo candidato visible en el workspace representa exclusivamente una propuesta Entity pendiente y debe identificarse como tal; nunca se presenta como `ResearchEntity` revisada.
 - Una arista representa exclusivamente una `ResearchRelation` entre sus dos `ResearchEntity` privadas. No es una verdad autónoma, no se deriva directamente de Claims y no se inventa desde coincidencias visuales.
+- Una arista candidata sólo puede unir propuestas Entity resolubles del mismo resultado o sus Entities privadas ya materializadas. Una referencia irresoluble no se dibuja.
 - Una arista conduce a uno o más Claims asociados mediante `ResearchRelationClaim`. Los Claims aportan significado y procedencia a la relación; no son extremos de la arista.
 - Una `ResearchEntity` puede tener Evidence propia para justificar su identificación privada. Esa Evidence no crea por sí misma un Claim ni una Relation.
 - La navegación argumentativa es `ResearchEntity → ResearchRelation → ResearchClaim → ResearchEvidence`. Cuando la Evidence tiene `libraryExcerptId`, continúa hasta `LibraryExcerpt → LibraryMaterialVersion → Source`.
@@ -103,6 +109,7 @@ Las contradicciones emergen de Claims coexistentes con `kind=CONTRADICTION` o `s
 - La topología se construye sólo con `ResearchEntity` y `ResearchRelation` privadas del mismo Research. Claims y Evidence explican la navegación, pero no crean topología adicional.
 - El Graph no consulta Entity canónica para construir la topología, no usa slugs canónicos como identidad, no navega hacia rutas públicas o canónicas y no reutiliza `EntityGraphService` como backend. Un `canonicalEntityId` sólo puede informarse como reconocimiento, sin adquirir ownership ni controlar la navegación.
 - El Graph no escribe sobre Research, Library ni Knowledge Core y no participa en promoción alguna.
+- El workspace no ofrece un segundo "grafo de propuestas": Revisión y Mapa son vistas internas separadas de Entities, y sólo Mapa renderiza la topología mediante el renderer compartido.
 
 ```mermaid
 flowchart LR

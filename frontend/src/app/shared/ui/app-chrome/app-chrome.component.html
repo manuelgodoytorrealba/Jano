@@ -2,10 +2,11 @@
   class="app-chrome__header app-glass"
   [class.app-chrome__header--collapsed]="headerCollapsed()"
   [class.app-chrome__header--detail]="detailHeaderMode()"
+  [class.app-chrome__header--admin]="isAdminRoute()"
 >
   <a
     class="app-chrome__brand"
-    routerLink="/"
+    routerLink="/home"
     [attr.aria-label]="i18n.t('chrome.goHome')"
     [class.is-pressing]="brandPressing()"
     (pointerdown)="pressBrand()"
@@ -28,7 +29,9 @@
     </span>
   </a>
 
-  <app-global-search />
+  @if (!isAdminRoute()) {
+    <app-global-search />
+  }
 
   <nav
     class="app-chrome__nav"
@@ -38,7 +41,7 @@
   >
     <span class="app-chrome__nav-indicator" aria-hidden="true"></span>
     @for (item of navItems; track item.label) {
-      @if ($index === 4) {
+      @if ($index === 3) {
         <span class="app-chrome__nav-separator" aria-hidden="true"></span>
       }
       @if (item.kind === 'route') {

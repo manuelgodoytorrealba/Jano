@@ -1,0 +1,62 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones y cambios en el laboratorio de prácticas visuales de la Escuela Delta.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1iq77001ar2fp9tuohq2g",
+        "cmsp1iq79001cr2fp2tp5s7qj"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "El cuaderno de proceso",
+      "evidenceIds": [
+        "cmsp1iq77001ar2fp9tuohq2g",
+        "cmsp1iq79001cr2fp2tp5s7qj"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Noa Mir",
+      "evidenceIds": [
+        "cmsp1iq77001ar2fp9tuohq2g",
+        "cmsp1iq79001cr2fp2tp5s7qj"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "ORGANIZATION",
+      "title": "Escuela Delta",
+      "evidenceIds": [
+        "cmsp1iq79001cr2fp2tp5s7qj"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1iq77001ar2fp9tuohq2g",
+        "cmsp1iq79001cr2fp2tp5s7qj"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsp1iq79001cr2fp2tp5s7qj"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones y cambios de vocabulario en el laboratorio de prácticas visuales de la Escuela Delta.",
+      "kind": "CONCEPT"
+   ,
+      "evidenceIds": [
+        "cmsovijsm0016esfpt87m0saj",
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphwroufrr"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "El cuaderno de proceso",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphwroufrr"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Noa Mir",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphroufrr"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "ORGANIZATION",
+      "title": "Escuela Delta",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphroufrr"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Lectura de huellas",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphroufrr"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ABSTRACTION",
+      "title": "Mapa de decisiones",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphroufrr"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphroufrr"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphroufrr"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphroufrr"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovijsp001aesfperd7vsib",
+        "cmsovijsr001cesfpjzah395z",
+        "cmsovijss001eesfphroufrr"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    }
+  ]
+}

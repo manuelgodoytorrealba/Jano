@@ -1,0 +1,75 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones, dudas, pruebas descartadas y cambios de vocabulario en el laboratorio de prácticas visuales de la Escuela Delta.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornsw9001acffphrfplnaq"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "La crítica situada en la Escuela Delta utiliza el cuaderno de proceso como base para la observación y comparación de decisiones estudiantiles.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornsw9001acffphrfplnaq"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "El mapa de decisiones en la Escuela Delta es una herramienta metodológica que conecta pruebas realizadas, alternativas descartadas y preguntas futuras.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornswb001ccffpzx9sgow6"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "ABSTRACTION",
+      "title": "Cuaderno de proceso",
+      "evidenceIds": [
+        "cmsornsw9001acffphrfplnaq",
+        "cmsornswb001ccffpzx9sgow6"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "ABSTRACTION",
+      "title": "Crítica situada",
+      "evidenceIds": [
+        "cmsornsw9001acffphrfplnaq"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "ABSTRACTION",
+      "title": "Mapa de decisiones",
+      "evidenceIds": [
+        "cmsornswb001ccffpzx9sgow6"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsornsw9001acffphrfplnaq"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsornswb001ccffpzx9sgow6"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    }
+  ]
+}

@@ -239,6 +239,8 @@ export interface PublicEntity {
   mediaLinks?: Array<{ media?: PublicEntityMediaAsset | null; [key: string]: unknown }> | null;
   mediaLibrary?: PublicEntityMediaLibrary | null;
   resolvedMedia?: PublicEntityResolvedMedia | null;
+  recommendationReason?: string | null;
+  recommendationScore?: number | null;
 }
 
 export type PublicEntityListItem = PublicEntity;

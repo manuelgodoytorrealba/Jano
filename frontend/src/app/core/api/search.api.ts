@@ -2,6 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { apiUrl } from './api-base';
 import {
+  PublicEntity,
+  PublicEntityListResponse,
   PublicEntityResolvedMedia,
   PublicEntityTagItem,
   PublicEntityTagReference,
@@ -43,22 +45,12 @@ export type SearchRoute = {
   items: SearchResult[];
 };
 
-export type SearchDeck = {
-  id: string;
-  slug: string;
-  title: string;
-  subtitle: string | null;
-  description: string | null;
-  entities: Array<{ id: string; sortOrder: number; entity: SearchResult | null }>;
-};
-
 export type SearchSection = {
   key: string;
   title: string;
   total?: number;
   items?: SearchResult[];
   routes?: SearchRoute[];
-  decks?: SearchDeck[];
 };
 
 export type SearchResponse = {
@@ -75,6 +67,11 @@ export type SearchResponse = {
   };
 };
 
+export type ArchiveRecommendation = PublicEntity & {
+  recommendationReason: string;
+  recommendationScore: number;
+};
+
 @Injectable({ providedIn: 'root' })
 export class SearchApi {
   private http = inject(HttpClient);
@@ -86,6 +83,7 @@ export class SearchApi {
     tag?: string;
     limit?: number;
     includeDrafts?: boolean;
+    recordInterest?: boolean;
   }) {
     let httpParams = new HttpParams().set('q', params.q ?? '');
 
@@ -109,6 +107,16 @@ export class SearchApi {
       httpParams = httpParams.set('includeDrafts', true);
     }
 
+    if (params.recordInterest) {
+      httpParams = httpParams.set('recordInterest', true);
+    }
+
     return this.http.get<SearchResponse>(apiUrl('/search'), { params: httpParams });
+  }
+
+  archiveRecommendations(params: { type?: string; limit?: number } = {}) {
+    return this.http.get<
+      PublicEntityListResponse<ArchiveRecommendation> & { personalized: boolean }
+    >(apiUrl('/search/recommendations/archive'), { params });
   }
 }

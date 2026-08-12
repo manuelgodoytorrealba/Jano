@@ -1,0 +1,42 @@
+{
+  "datasetVersion": "1.0.0",
+  "language": "es",
+  "documents": [
+    {
+      "id": "01-monograph",
+      "file": "01-monograph.txt",
+      "genre": "monograph",
+      "title": "Iria Sorel y la memoria porosa"
+    },
+    {
+      "id": "02-theory",
+      "file": "02-theory.txt",
+      "genre": "theory",
+      "title": "Escuchar de lado: notas para un archivo respirante"
+    },
+    {
+      "id": "03-exhibition",
+      "file": "03-exhibition.txt",
+      "genre": "exhibition-review",
+      "title": "Materia de Casa: crítica de una exposición"
+    },
+    {
+      "id": "04-education",
+      "file": "04-education.txt",
+      "genre": "art-education",
+      "title": "El cuaderno no responde solo"
+    },
+    {
+      "id": "05-aliases",
+      "file": "05-aliases.txt",
+      "genre": "artist-profile",
+      "title": "Elena Varo: tres nombres para una continuidad de trabajo"
+    },
+    {
+      "id": "06-long-ambiguity",
+      "file": "06-long-ambiguity.txt",
+      "genre": "long-context",
+      "title": "Cartografía del intervalo: nombres cercanos, identidades distintas"
+    }
+  ]
+}

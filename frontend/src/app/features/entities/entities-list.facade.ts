@@ -17,6 +17,7 @@ import {
 } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
+import { SearchApi } from '../../core/api/search.api';
 import { Tag, TagsApi } from '../../core/api/tags.api';
 
 export type Sort = 'recent' | 'title' | 'relevance';
@@ -47,7 +48,6 @@ type EntitiesListQueryState = {
   type: string;
   kind: EntitiesListKind;
   q: string;
-  deck: string;
   page: number;
   status: Status;
   contentLevel: Level;
@@ -58,7 +58,6 @@ type EntitiesListQueryState = {
   tag: string;
   sort: Sort;
   filterSupport: FilterSupport;
-  curatedDeckMode: boolean;
 };
 
 export type EntitiesListActiveFilterChipVm = {
@@ -99,7 +98,7 @@ export type EntitiesListPageVm = {
   title: string;
   type: string;
   query: string;
-  curatedDeckMode: boolean;
+  recommendationsActive: boolean;
   results: EntityListVm;
   filterRail: EntitiesListFilterRailVm;
 };
@@ -158,6 +157,7 @@ const KIND_LABEL_KEYS: Record<Exclude<EntitiesListKind, ''>, string> = {
 @Injectable()
 export class EntitiesListFacade {
   private readonly api = inject(EntitiesApi);
+  private readonly searchApi = inject(SearchApi);
   private readonly tagsApi = inject(TagsApi);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -241,7 +241,6 @@ export class EntitiesListFacade {
         type,
         kind,
         q: (queryParamMap.get('q') ?? '').trim(),
-        deck: (queryParamMap.get('deck') ?? '').trim(),
         page: this.toPositiveInt(queryParamMap.get('page')),
         status: this.normalizeStatus(queryParamMap.get('status')),
         contentLevel: this.normalizeContentLevel(queryParamMap.get('contentLevel')),
@@ -252,7 +251,6 @@ export class EntitiesListFacade {
         tag: (queryParamMap.get('tag') ?? '').trim(),
         sort: this.normalizeSort(queryParamMap.get('sort'), queryParamMap.get('q')),
         filterSupport: this.filterSupportForType(type),
-        curatedDeckMode: !!(queryParamMap.get('deck') ?? '').trim(),
       } satisfies EntitiesListQueryState;
     }),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
@@ -267,22 +265,29 @@ export class EntitiesListFacade {
     this.queryState$,
   ]).pipe(
     switchMap(([debouncedQuery, state]) =>
-      this.api.list({
-        type: state.type || undefined,
-        kind: state.kind || undefined,
-        q: debouncedQuery || undefined,
-        deck: state.deck || undefined,
-        page: state.page,
-        limit: this.limit,
-        sort: state.sort === 'relevance' && !debouncedQuery ? 'recent' : state.sort,
-        status: state.status || undefined,
-        contentLevel: state.contentLevel || undefined,
-        movement: state.filterSupport.movement ? state.movement || undefined : undefined,
-        period: state.filterSupport.period ? state.period || undefined : undefined,
-        institution: state.filterSupport.institution ? state.institution || undefined : undefined,
-        nationality: state.filterSupport.nationality ? state.nationality || undefined : undefined,
-        tag: state.tag || undefined,
-      }),
+      this.shouldUseArchiveRecommendations(state)
+        ? this.searchApi.archiveRecommendations(
+            state.type ? { type: state.type, limit: this.limit } : { limit: this.limit },
+          )
+        : this.api.list({
+            type: state.type || undefined,
+            kind: state.kind || undefined,
+            q: debouncedQuery || undefined,
+            page: state.page,
+            limit: this.limit,
+            sort: state.sort === 'relevance' && !debouncedQuery ? 'recent' : state.sort,
+            status: state.status || undefined,
+            contentLevel: state.contentLevel || undefined,
+            movement: state.filterSupport.movement ? state.movement || undefined : undefined,
+            period: state.filterSupport.period ? state.period || undefined : undefined,
+            institution: state.filterSupport.institution
+              ? state.institution || undefined
+              : undefined,
+            nationality: state.filterSupport.nationality
+              ? state.nationality || undefined
+              : undefined,
+            tag: state.tag || undefined,
+          }),
     ),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
@@ -453,7 +458,6 @@ export class EntitiesListFacade {
           searchQuery: state.q,
           hasActiveFilters: !!(
             state.q ||
-            state.deck ||
             state.status ||
             state.contentLevel ||
             (state.filterSupport.movement && state.movement) ||
@@ -479,7 +483,7 @@ export class EntitiesListFacade {
           title: state.title,
           type: state.type,
           query: state.q,
-          curatedDeckMode: state.curatedDeckMode,
+          recommendationsActive: Boolean((results as { personalized?: boolean }).personalized),
           results,
           filterRail,
         } satisfies EntitiesListPageVm;
@@ -651,6 +655,22 @@ export class EntitiesListFacade {
     return sort === 'relevance' && !(query ?? '').trim() ? 'recent' : sort;
   }
 
+  private shouldUseArchiveRecommendations(state: EntitiesListQueryState): boolean {
+    return (
+      !state.type &&
+      state.page === 1 &&
+      !state.q &&
+      !state.tag &&
+      !state.status &&
+      !state.contentLevel &&
+      !state.movement &&
+      !state.period &&
+      !state.institution &&
+      !state.nationality &&
+      state.sort === 'recent'
+    );
+  }
+
   private normalizeStatus(value: string | null): Status {
     const normalized = (value ?? '').trim();
     return normalized === 'DRAFT' || normalized === 'IN_REVIEW' || normalized === 'PUBLISHED'
@@ -687,6 +707,10 @@ export class EntitiesListFacade {
   ) {
     const support = this.filterSupportForType(type);
     const obsolete: Record<string, null> = {};
+
+    if ((queryParamMap.get('deck') ?? '').trim()) {
+      obsolete['deck'] = null;
+    }
 
     for (const key of this.contextualFilterKeys) {
       const value = (queryParamMap.get(key) ?? '').trim();

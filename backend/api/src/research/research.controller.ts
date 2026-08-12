@@ -20,8 +20,12 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
 import { AssociateResearchLibraryMaterialDto } from './dto/associate-research-library-material.dto';
+import { CiteResearchItemDto } from './dto/cite-research-item.dto';
 import { CreateResearchClaimDto, SetResearchClaimStatusDto } from './dto/create-research-claim.dto';
 import { CreateResearchEvidenceDto } from './dto/create-research-evidence.dto';
+import { CreateResearchEvidenceFromExcerptDto } from './dto/create-research-evidence-from-excerpt.dto';
+import { UpdateResearchEvidenceDto } from './dto/update-research-evidence.dto';
+import { UpdateResearchLibraryExcerptDto } from './dto/update-research-library-excerpt.dto';
 import { CreateResearchLibraryExcerptDto } from './dto/create-research-library-excerpt.dto';
 import { CreateLibraryMaterialDto } from '../library/dto/create-library-material.dto';
 import { CreateResearchPdfMaterialDto } from './dto/create-research-pdf-material.dto';
@@ -31,6 +35,9 @@ import { CreateResearchOutlineSectionDto } from './dto/create-research-outline-s
 import { CreateResearchQuestionDto } from './dto/create-research-question.dto';
 import { AddResearchOutlineSectionMaterialDto } from './dto/add-research-outline-section-material.dto';
 import { ResearchKnowledgeQuery } from './dto/research-knowledge.query';
+import { ListResearchProposalsQuery } from './dto/list-research-proposals.query';
+import { UpdateResearchProposalDto } from './dto/update-research-proposal.dto';
+import { MergeResearchEntityProposalDto } from './dto/merge-research-entity-proposal.dto';
 import { UpdateResearchQuestionDto } from './dto/update-research-question.dto';
 import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outline-sections.dto';
 import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dto';
@@ -38,6 +45,7 @@ import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-s
 import { ReviewResearchProposalDto } from './dto/review-research-proposal.dto';
 import { CreateResearchEntityDto } from './dto/create-research-entity.dto';
 import { CreateResearchRelationDto } from './dto/create-research-relation.dto';
+import { PromoteResearchEntityDto } from './dto/promote-research-entity.dto';
 import { SearchSourcesQuery } from '../sources/dto/search-sources.query';
 import { ResearchJobRunnerService } from './research-job-runner.service';
 import { ResearchDraftService } from './research-draft.service';
@@ -117,6 +125,16 @@ export class ResearchController {
     return this.service.getKnowledge(id, query);
   }
 
+  @Get(':id/research-proposals')
+  proposals(@Param('id') id: string, @Query() query: ListResearchProposalsQuery) {
+    return this.service.listProposals(id, query);
+  }
+
+  @Get(':id/knowledge-map-generation')
+  knowledgeMapGeneration(@Param('id') id: string) {
+    return this.service.getKnowledgeMapGeneration(id);
+  }
+
   @Get(':id')
   get(@Param('id') id: string) {
     return this.service.getProject(id);
@@ -125,6 +143,11 @@ export class ResearchController {
   @Post(':id/archive')
   archive(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     return this.service.archiveProject(id, req.user.userId);
+  }
+
+  @Post(':id/publish')
+  publish(@Param('id') id: string) {
+    return this.service.publishProject(id);
   }
 
   @Patch(':id/status')
@@ -284,6 +307,21 @@ export class ResearchController {
     return this.service.addProjectSource(id, dto);
   }
 
+  @Delete(':id/sources/:sourceId')
+  removeSource(@Param('id') id: string, @Param('sourceId') sourceId: string) {
+    return this.service.removeProjectSource(id, sourceId);
+  }
+
+  @Post(':id/citations')
+  citeItem(@Param('id') id: string, @Body() dto: CiteResearchItemDto) {
+    return this.service.citeResearchItem(id, dto);
+  }
+
+  @Post(':id/cited-materials/:materialId')
+  citeMaterial(@Param('id') id: string, @Param('materialId') materialId: string) {
+    return this.service.citeLibraryMaterial(id, materialId);
+  }
+
   @Post(':id/library-materials')
   associateLibraryMaterial(
     @Param('id') id: string,
@@ -351,6 +389,29 @@ export class ResearchController {
     return this.service.convertProposalToClaim(id, proposalId);
   }
 
+  @Post(':id/research-proposals/:proposalId/accept')
+  acceptProposal(@Param('id') id: string, @Param('proposalId') proposalId: string) {
+    return this.service.acceptProposal(id, proposalId);
+  }
+
+  @Post(':id/research-proposals/:proposalId/merge')
+  mergeEntityProposal(
+    @Param('id') id: string,
+    @Param('proposalId') proposalId: string,
+    @Body() dto: MergeResearchEntityProposalDto,
+  ) {
+    return this.service.mergeEntityProposal(id, proposalId, dto.entityId);
+  }
+
+  @Patch(':id/research-proposals/:proposalId')
+  updateProposal(
+    @Param('id') id: string,
+    @Param('proposalId') proposalId: string,
+    @Body() dto: UpdateResearchProposalDto,
+  ) {
+    return this.service.updateProposal(id, proposalId, dto);
+  }
+
   @Post(':id/research-proposals/:proposalId/review')
   reviewProposal(
     @Param('id') id: string,
@@ -388,10 +449,57 @@ export class ResearchController {
     return this.service.createEntity(id, dto);
   }
 
+  @Post(':id/entities/:entityId/promote')
+  promoteEntity(
+    @Param('id') id: string,
+    @Param('entityId') entityId: string,
+    @Body() dto: PromoteResearchEntityDto,
+  ) {
+    return this.service.promoteEntity(id, entityId, dto.canonicalType);
+  }
+
   @Post(':id/evidence')
   createEvidence(@Param('id') id: string, @Body() dto: CreateResearchEvidenceDto) {
     return this.service.createEvidence(id, dto);
   }
+
+  @Post(':id/library-excerpts/:excerptId/evidence')
+  createEvidenceFromExcerpt(
+    @Param('id') id: string,
+    @Param('excerptId') excerptId: string,
+    @Body() dto: CreateResearchEvidenceFromExcerptDto,
+  ) {
+    return this.service.createEvidenceFromExcerpt(id, excerptId, dto);
+  }
+
+  @Delete(':id/evidence/:evidenceId')
+  deleteEvidence(@Param('id') id: string, @Param('evidenceId') evidenceId: string) {
+    return this.service.deleteEvidence(id, evidenceId);
+  }
+
+  @Patch(':id/evidence/:evidenceId')
+  updateEvidence(
+    @Param('id') id: string,
+    @Param('evidenceId') evidenceId: string,
+    @Body() dto: UpdateResearchEvidenceDto,
+  ) {
+    return this.service.updateEvidence(id, evidenceId, dto);
+  }
+
+  @Delete(':id/library-excerpts/:excerptId')
+  deleteLibraryExcerpt(@Param('id') id: string, @Param('excerptId') excerptId: string) {
+    return this.service.deleteLibraryExcerpt(id, excerptId);
+  }
+
+  @Patch(':id/library-excerpts/:excerptId')
+  updateLibraryExcerpt(
+    @Param('id') id: string,
+    @Param('excerptId') excerptId: string,
+    @Body() dto: UpdateResearchLibraryExcerptDto,
+  ) {
+    return this.service.updateLibraryExcerpt(id, excerptId, dto);
+  }
+
   @Post(':id/library-excerpts')
   createLibraryExcerpt(@Param('id') id: string, @Body() dto: CreateResearchLibraryExcerptDto) {
     return this.service.createLibraryExcerpt(id, dto);

@@ -20,10 +20,15 @@ describe('ResearchController', () => {
     removeLibraryMaterial: jest.fn(),
     prepareSourceJob: jest.fn(),
     getKnowledge: jest.fn(),
+    listProposals: jest.fn(),
+    getKnowledgeMapGeneration: jest.fn(),
     extractProposalsJob: jest.fn(),
     createEvidence: jest.fn(),
     createFinding: jest.fn(),
     convertProposalToClaim: jest.fn(),
+    acceptProposal: jest.fn(),
+    mergeEntityProposal: jest.fn(),
+    updateProposal: jest.fn(),
     reviewProposal: jest.fn(),
     decideFinding: jest.fn(),
   } as unknown as jest.Mocked<ResearchService>;
@@ -62,9 +67,8 @@ describe('ResearchController', () => {
     });
   });
 
-  it('does not expose direct promotion routes into the Knowledge Core', () => {
+  it('does not expose automatic finding or relation promotion routes', () => {
     expect(ResearchController.prototype).not.toHaveProperty('promoteFindingToEntity');
-    expect(ResearchController.prototype).not.toHaveProperty('promoteEntity');
     expect(ResearchController.prototype).not.toHaveProperty('promoteRelation');
     expect(ResearchController.prototype).not.toHaveProperty('createFinding');
     expect(ResearchController.prototype).not.toHaveProperty('decideFinding');
@@ -109,6 +113,36 @@ describe('ResearchController', () => {
       projectId: 'project-1',
     });
     expect(service.getKnowledge).toHaveBeenCalledWith('project-1', {});
+  });
+
+  it('delegates paginated proposal reads without exposing Knowledge Core writes', async () => {
+    service.listProposals.mockResolvedValue({ items: [], page: 1, limit: 24, total: 0 } as never);
+
+    await expect(controller.proposals('project-1', { page: 1, limit: 24 })).resolves.toMatchObject({
+      items: [],
+    });
+    expect(service.listProposals).toHaveBeenCalledWith('project-1', { page: 1, limit: 24 });
+  });
+
+  it('delegates knowledge-map generation status', async () => {
+    service.getKnowledgeMapGeneration.mockResolvedValue({
+      job: null,
+      stale: false,
+      canGenerate: true,
+      preparedMaterials: 1,
+    });
+    await expect(controller.knowledgeMapGeneration('project-1')).resolves.toMatchObject({
+      canGenerate: true,
+    });
+    expect(service.getKnowledgeMapGeneration).toHaveBeenCalledWith('project-1');
+  });
+
+  it('delegates an explicit private Entity merge', async () => {
+    service.mergeEntityProposal.mockResolvedValue({ id: 'project-1' } as never);
+    await expect(
+      controller.mergeEntityProposal('project-1', 'proposal-1', { entityId: 'entity-1' }),
+    ).resolves.toEqual({ id: 'project-1' });
+    expect(service.mergeEntityProposal).toHaveBeenCalledWith('project-1', 'proposal-1', 'entity-1');
   });
 
   it('delegates project source association to the research service', async () => {
@@ -179,6 +213,21 @@ describe('ResearchController', () => {
       id: 'project-1',
     });
     expect(service.convertProposalToClaim).toHaveBeenCalledWith('project-1', 'proposal-1');
+  });
+
+  it('delegates proposal acceptance and editing to the research service', async () => {
+    const dto = { title: 'Nombre revisado' };
+    service.acceptProposal.mockResolvedValue({ id: 'project-1' } as never);
+    service.updateProposal.mockResolvedValue({ items: [] } as never);
+
+    await expect(controller.acceptProposal('project-1', 'proposal-1')).resolves.toEqual({
+      id: 'project-1',
+    });
+    await expect(controller.updateProposal('project-1', 'proposal-1', dto)).resolves.toEqual({
+      items: [],
+    });
+    expect(service.acceptProposal).toHaveBeenCalledWith('project-1', 'proposal-1');
+    expect(service.updateProposal).toHaveBeenCalledWith('project-1', 'proposal-1', dto);
   });
 
   it('delegates automatic proposal review to the research service', async () => {

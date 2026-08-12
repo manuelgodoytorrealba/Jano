@@ -1,0 +1,145 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "La escucha oblicua atiende a condiciones y silencios",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornsvx000wcffpuuplhakg",
+        "cmsornsw00010cffpqhnzeqmm"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "El archivo respirante reorganiza sin borrar versiones",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornsvx000wcffpuuplhakg",
+        "cmsornsw00010cffpqhnzeqmm"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "La opacidad productiva mantiene visibles los límites",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornsvx000wcffpuuplhakg",
+        "cmsornsw00010cffpqhnzeqmm"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "El ritmo de retorno registra nuevas lecturas de una misma evidencia",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornsvx000wcffpuuplhakg",
+        "cmsornsw00010cffpqhnzeqmm"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "Materia de Casa",
+      "evidenceIds": [
+        "cmsornsw00010cffpqhnzeqmm",
+        "cmsornsw20012cffp1428rvyl",
+        "cmsornsw30014cffpet5mc1eh"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Dalia Neri",
+      "evidenceIds": [
+        "cmsornsw20012cffp1428rvyl",
+        "cmsornsw30014cffpet5mc1eh"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Omar Cendro",
+      "evidenceIds": [
+        "cmsornsw20012cffp1428rvyl"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PERSON",
+      "title": "Lía Corvan",
+      "evidenceIds": [
+        "cmsornsw30014cffpet5mc1eh"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ORGANIZATION",
+      "title": "Instituto Lumen",
+      "evidenceIds": [
+        "cmsornsw20012cffp1428rvyl",
+        "cmsornsw30014cffpet5mc1eh"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PLACE",
+      "title": "Nave del Este",
+      "evidenceIds": [
+        "cmsornsw20012cffp1428rvyl",
+        "cmsornsw30014cffpet5mc1eh"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsornsw20012cffp1428rvyl",
+        "cmsornsw30014cffpet5mc1eh"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsornsw20012cffp1428rvyl",
+        "cmsornsw30014cffpet5mc1eh"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsornsw20012cffp1428rvyl",
+        "cmsornsw30014cffpet5mc1eh"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsornsw20012cffp1428rvyl"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsornsw30014cffpet5mc1eh"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    }
+  ]
+}

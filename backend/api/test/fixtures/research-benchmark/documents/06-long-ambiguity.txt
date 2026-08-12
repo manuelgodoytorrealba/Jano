@@ -1,0 +1,51 @@
+Cartografía del intervalo: nombres cercanos, identidades distintas
+
+La Cartografía del intervalo es un método de investigación visual desarrollado para las Jornadas del Eco, un evento celebrado en Casa Faro, en la localidad ficticia de Faro Bajo. El método registra qué ocurre entre una primera observación y una revisión posterior: cambios de posición, nuevas preguntas, pérdidas de material y decisiones que ya no pueden reconstruirse. No es una obra ni el título del evento. Es una ABSTRACTION que reaparecerá a lo largo de este documento con información distribuida.
+
+Aina Soler coordinó las Jornadas del Eco. Ana Soler participó como artista invitada. Sus nombres son parecidos, pero designan personas distintas y el texto no establece parentesco. Aina se ocupó del programa y de las sesiones de lectura; Ana presentó una instalación. Fusionarlas sería un error de identidad.
+
+La instalación de Ana Soler se titula El eco quieto. Está formada por dos superficies metálicas y un sistema de vibración que se activa cuando la sala queda momentáneamente vacía. En el mismo evento, Aina Soler moderó una conversación titulada Eco quieto, sin artículo. Esa conversación es una actividad del evento y no se considera WORK GOLD independiente. El eco quieto, con artículo y cursiva en el catálogo original, es la obra.
+
+El ensayo utiliza además eco quieto en minúsculas para describir una cualidad perceptiva: la persistencia de una vibración que ya no puede oírse claramente. Como concepto, eco quieto es una ABSTRACTION secundaria y no un alias automático de la obra El eco quieto. El contexto y el kind separan las identidades.
+
+Casa Faro es la organización anfitriona de las Jornadas del Eco. A pesar de su nombre, no es una vivienda ni un lugar geográfico. Ocupa un edificio en Faro Bajo, que sí es PLACE. La organización gestiona residencias y encuentros; el documento no afirma que sea propietaria del edificio.
+
+Durante la primera sesión, la Cartografía del intervalo se aplicó a una secuencia de fotografías sin fecha. Cada participante anotó qué detalles parecían estables y qué cambios sólo podían inferirse. El método exigía marcar las inferencias con un signo distinto de las observaciones. Esta regla impide que una suposición plausible se convierta silenciosamente en hecho.
+
+La frase «comparar dos imágenes obliga a imaginar el tiempo entre ellas» es un claim surgido de la sesión. No es una entidad. También es claim la afirmación «una ausencia registrada puede orientar una búsqueda posterior». Los nombres reusables son Cartografía del intervalo y, en un plano secundario, eco quieto.
+
+SEGUNDA PARTE — Desplazamientos
+
+En la mitad del programa, Aina Soler trasladó el trabajo a un archivo temporal preparado por Casa Faro. Allí la Cartografía del intervalo incorporó una ficha de revisión con tres campos: observación inicial, cambio comprobado y pregunta abierta. Esta ficha no sustituyó el método; añadió un instrumento para conservar la diferencia entre dato e interpretación.
+
+Ana Soler mostró entonces pruebas de El eco quieto realizadas antes del montaje. Las pruebas revelaban que el sistema de vibración había cambiado de frecuencia, pero el texto no proporciona valores técnicos. La artista explicó que la pieza dependía de la alternancia entre presencia y vacío, no de producir un sonido reconocible. Este dato pertenece a la obra y no a la conversación moderada por Aina.
+
+Otra participante, Ania Solar, aparece una sola vez en la lista de asistencia. El parecido gráfico con Aina Soler y Ana Soler es deliberado, pero Ania Solar no interviene en el argumento y no debería extraerse como entidad editorial. La lista también contiene códigos F-01, F-02 y F-03, que son metadata.
+
+Las Jornadas del Eco constituyen un EVENT. Casa Faro es ORGANIZATION. Faro Bajo es PLACE. Aina Soler y Ana Soler son PERSON. El eco quieto es WORK. Cartografía del intervalo y eco quieto son ABSTRACTION. Estas categorías no aparecen como etiquetas pedagógicas en la fuente original del evento; aquí se explican mediante el papel que cada identidad desempeña.
+
+El método comenzó a mostrar una limitación: cuando la revisión ocurría demasiado tarde, algunas decisiones intermedias sólo podían reconstruirse mediante testimonios. La Cartografía del intervalo no resolvía esa pérdida; la hacía visible. El grupo añadió entonces una convención para distinguir memoria de registro contemporáneo. La convención es parte del método, no una entidad separada.
+
+Un apartado llamado Resultados del segundo día resume que las fichas redujeron confusiones entre observación e inferencia. Resultados del segundo día es un heading, no una entidad. La oración completa sobre la reducción de confusiones es un claim evaluativo.
+
+La organización Casa Faro preparó las salas y conservó las fichas hasta el cierre. Aina Soler coordinó la devolución de materiales. Ana Soler desmontó El eco quieto. Ninguna de estas acciones convierte a Casa Faro en autora de la obra ni a Aina en artista de la instalación.
+
+TERCERA PARTE — Retornos
+
+Al final de las Jornadas del Eco, la Cartografía del intervalo se definió con mayor precisión: es una práctica para comparar estados documentales separados sin rellenar automáticamente lo que falta entre ellos. Esta definición añade una dimensión epistémica que no estaba completa al inicio. El método combina observaciones, cambios comprobados, preguntas abiertas y memoria declarada.
+
+El recorrido largo permite medir fragmentación. Una proposal nacida en el primer segmento puede saber que la Cartografía del intervalo registra cambios y pérdidas. Otra nacida aquí puede saber que evita rellenar huecos y distingue memoria de registro. Ninguna Evidence aislada contiene necesariamente todos esos aspectos, aunque el documento completo sí los sostiene.
+
+Eco quieto, la cualidad perceptiva, reaparece en la evaluación final. Los participantes utilizaron el concepto para describir la espera entre el abandono de la sala y la activación de la instalación. La abstracción ayuda a interpretar El eco quieto, pero sigue sin ser idéntica a la obra. La diferencia entre mayúscula inicial, artículo y contexto no debe resolverse sólo por similitud de strings.
+
+Aina Soler escribió el informe de las jornadas. Ana Soler revisó únicamente la descripción de su obra. El texto no ofrece biografías, edades, lugares de nacimiento, premios ni afiliaciones externas de ninguna de las dos. Tampoco aporta esos datos sobre Ania Solar. Cualquier resumen que los añada estaría alucinando.
+
+Casa Faro no es un museo, una universidad ni una vivienda privada según esta fuente. Faro Bajo no es una organización. Las Jornadas del Eco no son una obra periódica ni una publicación. El documento proporciona roles suficientes para clasificarlos sin inventar categorías externas.
+
+La conversación Eco quieto aparece en el programa entre Pausa y Cierre. Pausa y Cierre son encabezados funcionales, no entidades. La conversación tampoco debe eclipsar la obra El eco quieto, que recibe desarrollo, autoría y descripción material. Si se extrae el título sin artículo, debe marcarse para revisión manual porque puede referirse a la actividad o al concepto.
+
+En una nota marginal se cita el libro ficticio Intervalos útiles, de M. Ral, 1971. La referencia no se desarrolla y M. Ral no es una entidad relevante. Su inclusión comprueba si el modelo transforma referencias periféricas en PERSON o WORK.
+
+La conclusión sostiene que comparar estados separados requiere declarar qué se observa y qué se infiere. Es un claim central sobre la Cartografía del intervalo, no una entidad con forma oracional. El método merece extracción porque posee nombre estable, definición, aplicación repetida y relaciones claras con el evento y la organización.
+
+En resumen documental, las identidades deben permanecer diferenciadas. Aina Soler coordina. Ana Soler crea El eco quieto. Casa Faro organiza y aloja las Jornadas del Eco en Faro Bajo. La Cartografía del intervalo estructura el método de comparación. Eco quieto designa además una cualidad perceptiva secundaria. El documento no autoriza a fusionar nombres cercanos ni a completar biografías.

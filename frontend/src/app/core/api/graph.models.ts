@@ -26,6 +26,7 @@ export interface GraphNodeDto {
   slug: string;
   image?: string | null;
   metadata?: GraphNodeMetadata | null;
+  state?: 'confirmed' | 'candidate';
 }
 
 export interface GraphEdgeDto {
@@ -37,6 +38,7 @@ export interface GraphEdgeDto {
   directed?: boolean;
   weight?: number;
   justification?: string | null;
+  state?: 'confirmed' | 'candidate';
 }
 
 export interface GraphResponseDto {

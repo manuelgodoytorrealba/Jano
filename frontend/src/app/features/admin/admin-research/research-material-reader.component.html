@@ -32,81 +32,277 @@
       }
 
       @if (selectedMaterial; as material) {
-        <article class="research-reader__document">
-          <header>
-            <div>
-              <p>
-                {{ material.kind }} ·
-                {{ material.status === 'READY' ? 'Texto preparado' : 'Actualizando contenido' }}
-              </p>
-              <h3>{{ material.title }}</h3>
-            </div>
-            <div class="research-reader__document-actions">
-              @if (material.kind !== 'TEXT') {
+        <div class="research-reader__workspace">
+          <article class="research-reader__document">
+            <header>
+              <div>
+                <p>
+                  {{ material.kind }} ·
+                  {{ material.status === 'READY' ? 'Texto preparado' : 'Actualizando contenido' }}
+                </p>
+                <h3>{{ material.title }}</h3>
+              </div>
+              <div class="research-reader__document-actions">
+                @if (material.kind !== 'TEXT') {
+                  <button
+                    type="button"
+                    class="research-reader__fullscreen"
+                    [disabled]="material.status !== 'READY'"
+                    (click)="retry(material.id)"
+                  >
+                    {{ material.status === 'READY' ? 'Actualizar contenido' : 'Actualizando…' }}
+                  </button>
+                }
                 <button
                   type="button"
                   class="research-reader__fullscreen"
-                  [disabled]="material.status !== 'READY'"
-                  (click)="retry(material.id)"
+                  (click)="toggleFullscreen()"
                 >
-                  {{ material.status === 'READY' ? 'Actualizar contenido' : 'Actualizando…' }}
+                  <span aria-hidden="true">{{ fullscreen ? '×' : '⛶' }}</span>
+                  {{ fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa' }}
                 </button>
+              </div>
+            </header>
+            <p class="research-reader__selection-hint">
+              Selecciona un pasaje para convertirlo en extracto documental.
+            </p>
+            @if (highlights(material).length) {
+              <p class="research-reader__highlights-summary">
+                {{ highlights(material).length }}
+                {{
+                  highlights(material).length === 1 ? 'highlight guardado' : 'highlights guardados'
+                }}
+              </p>
+            }
+            <div
+              class="research-reader__content"
+              #documentContent
+              (mouseup)="captureSelection(documentContent)"
+              [class.has-selection]="selectionDraft"
+            >
+              @for (segment of contentSegments(material); track $index) {
+                @if (segment.excerpt) {
+                  <mark
+                    class="research-reader__highlight"
+                    [title]="'Extracto documental · ' + segment.excerpt.locator"
+                    (contextmenu)="openExcerptMenu($event, segment.excerpt)"
+                    >{{ segment.text }}</mark
+                  >
+                } @else {
+                  <span>{{ segment.text }}</span>
+                }
               }
-              <button
-                type="button"
-                class="research-reader__fullscreen"
-                (click)="toggleFullscreen()"
-              >
-                <span aria-hidden="true">{{ fullscreen ? '×' : '⛶' }}</span>
-                {{ fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa' }}
-              </button>
             </div>
-          </header>
-          <p class="research-reader__selection-hint">
-            Selecciona un pasaje para convertirlo en extracto documental.
-          </p>
-          <div
-            class="research-reader__content"
-            #documentContent
-            [textContent]="material.content"
-            (mouseup)="captureSelection(documentContent)"
-          ></div>
-          @if (!excerptComposerOpen) {
-            @if (selectionDraft; as selection) {
+            @if (excerptMenu; as menu) {
               <aside
-                class="research-reader__selection-action"
-                [style.left.px]="selection.x"
-                [style.top.px]="selection.y"
-                aria-live="polite"
+                class="research-reader__excerpt-menu"
+                [style.left.px]="menu.x"
+                [style.top.px]="menu.y"
+                aria-label="Acciones del extracto"
               >
-                <span>{{ selection.locator }}</span>
-                <button type="button" (click)="openExcerptComposer()">Crear extracto</button>
-                <button
-                  type="button"
-                  class="research-reader__selection-dismiss"
-                  (click)="cancelExcerptComposer()"
-                  aria-label="Descartar selección"
-                >
-                  ×
-                </button>
+                @if (evidenceFor(menu.excerpt); as evidence) {
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); deleteExcerptEvidence(evidence)"
+                  >
+                    Eliminar evidencia
+                  </button>
+                  <button type="button" disabled>Eliminar extracto</button>
+                  <small>Elimina antes la evidencia para retirar el extracto.</small>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="$event.stopPropagation(); createEvidenceFromExcerpt(menu.excerpt)"
+                  >
+                    Convertir en evidencia
+                  </button>
+                  <button
+                    type="button"
+                    class="is-danger"
+                    (click)="$event.stopPropagation(); deleteExcerpt(menu.excerpt)"
+                  >
+                    Eliminar extracto
+                  </button>
+                }
+                @if (excerptActionError) {
+                  <small class="is-error">{{ excerptActionError }}</small>
+                }
               </aside>
             }
-          }
-          @if (excerptComposerOpen) {
-            <app-research-excerpt-capture
-              [researchId]="researchId"
-              [materialVersionId]="material.materialVersionId"
-              [sourceTitle]="material.title"
-              [selection]="selectionDraft"
-              (cancelled)="cancelExcerptComposer()"
-              (created)="onExcerptCreated($event, material)"
-            />
-          }
-        </article>
+            @if (evidenceComposer; as excerpt) {
+              <section class="research-reader__evidence-panel" aria-label="Explicar evidencia">
+                <header>
+                  <div>
+                    <p>Research Knowledge</p>
+                    <h4>Convertir en evidencia</h4>
+                  </div>
+                  <button
+                    type="button"
+                    class="research-reader__evidence-close"
+                    (click)="cancelEvidence()"
+                    aria-label="Cerrar panel"
+                  >
+                    ×
+                  </button>
+                </header>
+                <p class="research-reader__evidence-locator">{{ excerpt.locator }}</p>
+                <blockquote>{{ excerpt.text }}</blockquote>
+                <label>
+                  ¿Qué demuestra este pasaje?
+                  <textarea
+                    [(ngModel)]="evidenceExplanation"
+                    placeholder="Es evidencia de que…"
+                    rows="3"
+                  ></textarea>
+                </label>
+                <label>
+                  Nota de investigación (opcional)
+                  <input [(ngModel)]="evidenceNote" placeholder="Añade una observación…" />
+                </label>
+                @if (excerptActionError) {
+                  <p class="is-error">{{ excerptActionError }}</p>
+                }
+                <div class="research-reader__evidence-actions">
+                  <button type="button" class="is-secondary" (click)="cancelEvidence()">
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    [disabled]="evidenceBusy || !evidenceExplanation.trim()"
+                    (click)="saveEvidence()"
+                  >
+                    {{ evidenceBusy ? 'Guardando…' : 'Guardar evidencia' }}
+                  </button>
+                </div>
+              </section>
+            }
+            @if (!excerptComposerOpen) {
+              @if (selectionDraft; as selection) {
+                <aside
+                  class="research-reader__selection-action"
+                  [style.left.px]="selection.x"
+                  [style.top.px]="selection.y"
+                  aria-live="polite"
+                >
+                  <span>{{ selection.locator }}</span>
+                  <button type="button" (click)="openExcerptComposer()">Crear extracto</button>
+                  <button
+                    type="button"
+                    class="research-reader__selection-dismiss"
+                    (click)="cancelExcerptComposer()"
+                    aria-label="Descartar selección"
+                  >
+                    ×
+                  </button>
+                </aside>
+              }
+            }
+            @if (excerptComposerOpen) {
+              <app-research-excerpt-capture
+                [researchId]="researchId"
+                [materialVersionId]="material.materialVersionId"
+                [sourceTitle]="material.title"
+                [selection]="selectionDraft"
+                (cancelled)="cancelExcerptComposer()"
+                (created)="onExcerptCreated($event, material)"
+              />
+            }
+          </article>
+          <aside class="research-reader__summary" aria-label="Extractos y evidencias del material">
+            <header>
+              <p>Notas del lector</p>
+              <h3>Extractos y evidencias</h3>
+            </header>
+            <section>
+              <div class="research-reader__summary-heading">
+                <strong>Extractos</strong><span>{{ excerptsFor(material).length }}</span>
+              </div>
+              @for (excerpt of excerptsFor(material); track excerpt.id) {
+                <article>
+                  <blockquote>{{ excerpt.text }}</blockquote>
+                  <small>{{ excerpt.locator }}</small>
+                  <div>
+                    <button type="button" (click)="editExcerpt(excerpt)">Editar</button
+                    ><button type="button" class="is-danger" (click)="deleteExcerpt(excerpt)">
+                      Eliminar
+                    </button>
+                  </div>
+                </article>
+              } @empty {
+                <p class="research-reader__summary-empty">
+                  Todavía no hay extractos en este material.
+                </p>
+              }
+            </section>
+            <section>
+              <div class="research-reader__summary-heading">
+                <strong>Evidencias</strong><span>{{ evidenceForMaterial(material).length }}</span>
+              </div>
+              @for (item of evidenceForMaterial(material); track item.id) {
+                <article>
+                  <blockquote>
+                    {{
+                      item.context ||
+                        item.quote ||
+                        item.libraryExcerpt?.text ||
+                        'Evidencia registrada'
+                    }}
+                  </blockquote>
+                  <small>{{ item.locator }}</small>
+                  <div>
+                    <button type="button" (click)="editEvidence(item)">Editar</button
+                    ><button type="button" class="is-danger" (click)="deleteExcerptEvidence(item)">
+                      Eliminar
+                    </button>
+                  </div>
+                </article>
+              } @empty {
+                <p class="research-reader__summary-empty">
+                  Convierte un extracto en evidencia para explicarlo aquí.
+                </p>
+              }
+            </section>
+          </aside>
+        </div>
       }
     </div>
   } @else {
     <p class="research-reader__empty">No hay materiales de texto disponibles para lectura.</p>
+  }
+
+  @if (editingExcerpt) {
+    <section class="research-reader__editor-panel" aria-label="Editar extracto">
+      <header>
+        <div>
+          <p>Library</p>
+          <h4>Editar extracto</h4>
+        </div>
+        <button type="button" (click)="editingExcerpt = null">×</button>
+      </header>
+      <label>Localizador<input [(ngModel)]="editLocator" /></label
+      ><label>Cita<textarea [(ngModel)]="editText" rows="6"></textarea></label>
+      <div>
+        <button type="button" (click)="editingExcerpt = null">Cancelar</button
+        ><button type="button" (click)="saveExcerpt()">Guardar</button>
+      </div>
+    </section>
+  }
+  @if (editingEvidence) {
+    <section class="research-reader__editor-panel" aria-label="Editar evidencia">
+      <header>
+        <div>
+          <p>Research Knowledge</p>
+          <h4>Editar evidencia</h4>
+        </div>
+        <button type="button" (click)="editingEvidence = null">×</button>
+      </header>
+      <label>¿Qué demuestra?<textarea [(ngModel)]="editContext" rows="5"></textarea></label
+      ><label>Nota<input [(ngModel)]="editNote" /></label>
+      <div>
+        <button type="button" (click)="editingEvidence = null">Cancelar</button
+        ><button type="button" (click)="saveEditedEvidence()">Guardar</button>
+      </div>
+    </section>
   }
 
   @if (failedMaterials.length) {

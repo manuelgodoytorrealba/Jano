@@ -1,0 +1,3 @@
+ALTER TABLE "ResearchJob"
+  ADD COLUMN "progressCurrent" INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN "progressTotal" INTEGER NOT NULL DEFAULT 0;

@@ -1,0 +1,1012 @@
+[
+  {
+    "proposalId": "cmsovizzy0023esfpazgmu14i",
+    "title": "Iria Sorel",
+    "documentIds": ["01-monograph"],
+    "goldId": "person-iria-sorel",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "trabaja con fotografía intervenida, escritura breve y objetos domésticos",
+        "desarrolló Casa de sal y Atlas del umbral",
+        "su práctica formula la memoria porosa"
+      ],
+      "missingFromFullIdentityContext": [
+        "trabaja con fotografía intervenida, escritura breve y objetos domésticos",
+        "desarrolló Casa de sal y Atlas del umbral",
+        "su práctica formula la memoria porosa"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovj0000024esfpjazv34tq",
+    "title": "Casa de sal",
+    "documentIds": ["01-monograph"],
+    "goldId": "work-casa-de-sal",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "es una instalación de fotografías, mesas y sonido",
+        "compara habitaciones antes y después de una rehabilitación",
+        "trabaja a escala doméstica"
+      ],
+      "missingFromFullIdentityContext": [
+        "es una instalación de fotografías, mesas y sonido",
+        "compara habitaciones antes y después de una rehabilitación",
+        "trabaja a escala doméstica"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovj0010025esfpa0kfafl5",
+    "title": "Atlas del umbral",
+    "documentIds": ["01-monograph"],
+    "goldId": "work-atlas-del-umbral",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["es un libro desplegable", "reúne dibujos de zonas de paso"],
+      "missingFromFullIdentityContext": [
+        "es un libro desplegable",
+        "reúne dibujos de zonas de paso",
+        "se concentra en decisiones corporales ante el umbral"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovj0030026esfpok13ghwm",
+    "title": "Memoria porosa",
+    "documentIds": ["01-monograph"],
+    "goldId": "concept-memoria-porosa",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ABSTRACTION",
+    "goldKind": "ABSTRACTION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "el recuerdo absorbe materiales nuevos sin borrar todas las capas",
+        "admite cambios de significado al reunir pruebas",
+        "surge del trabajo de Sorel en Puerto Niebla"
+      ],
+      "missingFromFullIdentityContext": [
+        "el recuerdo absorbe materiales nuevos sin borrar todas las capas",
+        "admite cambios de significado al reunir pruebas",
+        "surge del trabajo de Sorel en Puerto Niebla"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovj0040027esfphkbvup3m",
+    "title": "Taller Bruma",
+    "documentIds": ["01-monograph"],
+    "goldId": "organization-taller-bruma",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ORGANIZATION",
+    "goldKind": "ORGANIZATION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "es un lugar de producción compartido",
+        "reúne el trabajo de Sorel y Nuno Arce"
+      ],
+      "missingFromFullIdentityContext": [
+        "es un lugar de producción compartido",
+        "reúne el trabajo de Sorel y Nuno Arce"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_PARTIAL",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovj0050028esfp02u6uaa7",
+    "title": "Nuno Arce",
+    "documentIds": ["01-monograph"],
+    "goldId": "person-nuno-arce",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["colabora técnicamente en soportes de papel"],
+      "missingFromFullIdentityContext": [
+        "colabora técnicamente en soportes de papel",
+        "no comparte la autoría fotográfica"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_PARTIAL",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovjdjz002kesfpfzvzy0at",
+    "title": "Materia de Casa",
+    "documentIds": ["03-exhibition"],
+    "goldId": "event-materia-casa",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "EVENT",
+    "kindCorrect": false,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "fue una exposición de seis semanas",
+        "reunió dos obras y una mesa documental",
+        "fue organizada por Instituto Lumen"
+      ],
+      "missingFromFullIdentityContext": [
+        "fue una exposición de seis semanas",
+        "reunió dos obras y una mesa documental",
+        "fue organizada por Instituto Lumen"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovjdk1002lesfpnpak5xfk",
+    "title": "Mara Téllez",
+    "documentIds": ["02-theory"],
+    "goldId": "person-mara-tellez",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["formuló escucha oblicua en un seminario interno"],
+      "missingFromFullIdentityContext": ["formuló escucha oblicua en un seminario interno"],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovjdk2002mesfpe3awr4an",
+    "title": "Instituto Lumen",
+    "documentIds": ["03-exhibition"],
+    "goldId": "organization-instituto-lumen",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ORGANIZATION",
+    "goldKind": "ORGANIZATION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "organizó Materia de Casa",
+        "asumió producción, seguros y mediación"
+      ],
+      "missingFromFullIdentityContext": [
+        "organizó Materia de Casa",
+        "asumió producción, seguros y mediación"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovjdk3002nesfpab70drz6",
+    "title": "Nave del Este",
+    "documentIds": ["03-exhibition"],
+    "goldId": "place-nave-este",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PLACE",
+    "goldKind": "PLACE",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "fue el lugar de la exposición",
+        "su acceso y techo condicionaron recorrido y sonido"
+      ],
+      "missingFromFullIdentityContext": [
+        "fue el lugar de la exposición",
+        "su acceso y techo condicionaron recorrido y sonido"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovjdk4002oesfp6d3oq46d",
+    "title": "Mesa para una ausencia",
+    "documentIds": ["03-exhibition"],
+    "goldId": "work-mesa-ausencia",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [],
+      "missingFromFullIdentityContext": [
+        "usa una mesa y seis cajones",
+        "requiere coordinación entre visitantes",
+        "contiene listas de objetos prestados"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovjdk5002pesfpo0djo7x1",
+    "title": "Inventario del humo",
+    "documentIds": ["03-exhibition"],
+    "goldId": "work-inventario-humo",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "usa vidrio, telas y grabaciones de cocina",
+        "sus omisiones señalan saberes familiares no escritos"
+      ],
+      "missingFromFullIdentityContext": [
+        "usa vidrio, telas y grabaciones de cocina",
+        "sus omisiones señalan saberes familiares no escritos"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovjtpk002vesfpvi8mos7v",
+    "title": "El cuaderno de proceso",
+    "documentIds": ["04-education"],
+    "goldId": null,
+    "naming": "POOR_NAME",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": null,
+    "kindCorrect": null,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 0,
+      "coverage": 0,
+      "specificity": 0,
+      "editorialUsefulness": 0,
+      "overallDraftScore": 0,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [],
+      "missingFromFullIdentityContext": [],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": null,
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkca10031esfpt5l44c6l",
+    "title": "Elena Varo",
+    "documentIds": ["05-aliases"],
+    "goldId": "person-elena-varo",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "trabaja con fotografía intervenida y objetos encontrados",
+        "creó El jardín inverso y Archivo de lluvia",
+        "trabaja la memoria doméstica"
+      ],
+      "missingFromFullIdentityContext": [
+        "trabaja con fotografía intervenida y objetos encontrados",
+        "creó El jardín inverso y Archivo de lluvia",
+        "trabaja la memoria doméstica"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkca20032esfpw259rnif",
+    "title": "El jardín inverso",
+    "documentIds": ["05-aliases"],
+    "goldId": "work-jardin-inverso",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "es una serie de veinticuatro fotografías",
+        "usa plantas domésticas y fondos dibujados"
+      ],
+      "missingFromFullIdentityContext": [
+        "es una serie de veinticuatro fotografías",
+        "usa plantas domésticas y fondos dibujados"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkca30033esfpb9d4hby4",
+    "title": "Archivo de lluvia",
+    "documentIds": ["05-aliases"],
+    "goldId": "work-archivo-lluvia",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["es una obra distinta de El jardín inverso"],
+      "missingFromFullIdentityContext": [
+        "usa sobres de papel sensible y registros de humedad",
+        "es una obra distinta de El jardín inverso"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkca40034esfperl1o59t",
+    "title": "Memoria doméstica",
+    "documentIds": ["05-aliases"],
+    "goldId": "concept-memoria-domestica",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ABSTRACTION",
+    "goldKind": "ABSTRACTION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "conecta las dos obras",
+        "describe rastros de prácticas repetidas de cuidado"
+      ],
+      "missingFromFullIdentityContext": [
+        "conecta las dos obras",
+        "describe rastros de prácticas repetidas de cuidado"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkca50035esfp4p3uy3ti",
+    "title": "Valle del Río Arce",
+    "documentIds": ["05-aliases"],
+    "goldId": null,
+    "naming": "POOR_NAME",
+    "negativeCategory": null,
+    "kind": "PLACE",
+    "goldKind": null,
+    "kindCorrect": null,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 0,
+      "coverage": 0,
+      "specificity": 0,
+      "editorialUsefulness": 0,
+      "overallDraftScore": 0,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [],
+      "missingFromFullIdentityContext": [],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": null,
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkca60036esfpwgh2y87n",
+    "title": "Galería Umbral",
+    "documentIds": ["05-aliases"],
+    "goldId": "organization-galeria-umbral",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ORGANIZATION",
+    "goldKind": "ORGANIZATION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["organizó el montaje de una selección de El jardín inverso"],
+      "missingFromFullIdentityContext": [
+        "organizó el montaje de una selección de El jardín inverso"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkxyz003desfpsb6ccz84",
+    "title": "Aina Soler",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "person-aina-soler",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "coordinó las Jornadas del Eco",
+        "moderó una conversación y escribió el informe"
+      ],
+      "missingFromFullIdentityContext": [
+        "coordinó las Jornadas del Eco",
+        "moderó una conversación y escribió el informe"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkxz1003eesfphlv9vvvm",
+    "title": "Ana Soler",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "person-ana-soler",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "creó y presentó El eco quieto",
+        "revisó la descripción de su obra"
+      ],
+      "missingFromFullIdentityContext": [
+        "creó y presentó El eco quieto",
+        "revisó la descripción de su obra"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkxz2003fesfpbguycllc",
+    "title": "El eco quieto",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "work-el-eco-quieto",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": "WORK",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "es una instalación de superficies metálicas y vibración",
+        "se activa cuando la sala queda vacía",
+        "fue creada por Ana Soler"
+      ],
+      "missingFromFullIdentityContext": [
+        "es una instalación de superficies metálicas y vibración",
+        "se activa cuando la sala queda vacía",
+        "fue creada por Ana Soler"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkxz4003gesfp9wmzkf7l",
+    "title": "Cartografía del intervalo",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "concept-cartografia-intervalo",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ABSTRACTION",
+    "goldKind": "ABSTRACTION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "compara estados documentales separados",
+        "registra cambios, pérdidas y preguntas",
+        "distingue observación, inferencia, memoria y registro"
+      ],
+      "missingFromFullIdentityContext": [
+        "compara estados documentales separados",
+        "registra cambios, pérdidas y preguntas",
+        "distingue observación, inferencia, memoria y registro"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkxz5003hesfpvcc49rf6",
+    "title": "Eco quieto",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "concept-eco-quieto",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ABSTRACTION",
+    "goldKind": "ABSTRACTION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "describe una vibración que ya no se oye claramente",
+        "ayuda a interpretar la obra sin ser idéntico a ella"
+      ],
+      "missingFromFullIdentityContext": [
+        "describe una vibración que ya no se oye claramente",
+        "ayuda a interpretar la obra sin ser idéntico a ella"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovkxz6003iesfp0iz7jph7",
+    "title": "Jornadas del Eco",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "event-jornadas-eco",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "EVENT",
+    "goldKind": "EVENT",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": null,
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 2,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 1,
+      "overallDraftScore": 1,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [
+        "fue un evento celebrado en Casa Faro",
+        "fue coordinado por Aina Soler"
+      ],
+      "missingFromFullIdentityContext": [
+        "fue un evento celebrado en Casa Faro",
+        "fue coordinado por Aina Soler"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovlc9n003resfpyyeptof1",
+    "title": "Cartografía del intervalo",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "concept-cartografia-intervalo",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ABSTRACTION",
+    "goldKind": "ABSTRACTION",
+    "kindCorrect": true,
+    "duplicate": true,
+    "summary": "El método de comparación utilizado en el documento.",
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 4,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 2,
+      "overallDraftScore": 2,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["compara estados documentales separados"],
+      "missingFromFullIdentityContext": [
+        "compara estados documentales separados",
+        "registra cambios, pérdidas y preguntas",
+        "distingue observación, inferencia, memoria y registro"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0.75,
+      "contextStatus": "CONTEXT_PARTIAL",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovlc9p003sesfpjby1m42d",
+    "title": "Intervalos útiles",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": null,
+    "naming": "POOR_NAME",
+    "negativeCategory": null,
+    "kind": "WORK",
+    "goldKind": null,
+    "kindCorrect": null,
+    "duplicate": false,
+    "summary": "Libro ficticio mencionado en el documento, pero no desarrollado.",
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 0,
+      "coverage": 0,
+      "specificity": 0,
+      "editorialUsefulness": 0,
+      "overallDraftScore": 0,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [],
+      "missingFromFullIdentityContext": [],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0.5,
+      "contextStatus": null,
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovlc9q003tesfpp63bvkb6",
+    "title": "Aina Soler",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "person-aina-soler",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": true,
+    "summary": "Coordina el documento.",
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 5,
+      "coverage": 0,
+      "specificity": 2,
+      "editorialUsefulness": 2,
+      "overallDraftScore": 2,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["coordinó las Jornadas del Eco"],
+      "missingFromFullIdentityContext": [
+        "coordinó las Jornadas del Eco",
+        "moderó una conversación y escribió el informe"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 1,
+      "contextStatus": "CONTEXT_PARTIAL",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovlc9s003uesfpwutubj8v",
+    "title": "Ana Soler",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "person-ana-soler",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PERSON",
+    "goldKind": "PERSON",
+    "kindCorrect": true,
+    "duplicate": true,
+    "summary": "Crea 'El eco quieto'.",
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 5,
+      "coverage": 0,
+      "specificity": 4,
+      "editorialUsefulness": 3,
+      "overallDraftScore": 3,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [],
+      "missingFromFullIdentityContext": [
+        "creó y presentó El eco quieto",
+        "revisó la descripción de su obra"
+      ],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 1,
+      "contextStatus": "CONTEXT_PARTIAL",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovlc9t003vesfpdvo9ncai",
+    "title": "Faro Bajo",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "place-faro-bajo",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "PLACE",
+    "goldKind": "PLACE",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": "Lugar donde se organiza y aloja las Jornadas del Eco en Faro Bajo.",
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 5,
+      "coverage": 0,
+      "specificity": 3,
+      "editorialUsefulness": 3,
+      "overallDraftScore": 3,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": ["es la localidad donde se encuentra Casa Faro"],
+      "missingFromFullIdentityContext": ["es la localidad donde se encuentra Casa Faro"],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 0.833,
+      "contextStatus": "CONTEXT_PARTIAL",
+      "manualReviewRequired": true
+    }
+  },
+  {
+    "proposalId": "cmsovlc9u003wesfprzjxl5cc",
+    "title": "Casa Faro",
+    "documentIds": ["06-long-ambiguity"],
+    "goldId": "organization-casa-faro",
+    "naming": "EXACT_CANONICAL",
+    "negativeCategory": null,
+    "kind": "ORGANIZATION",
+    "goldKind": "ORGANIZATION",
+    "kindCorrect": true,
+    "duplicate": false,
+    "summary": "Organización que organiza y aloja las Jornadas del Eco en Faro Bajo.",
+    "summaryEvaluation": {
+      "automatedHeuristic": true,
+      "grounding": 5,
+      "coverage": 0,
+      "specificity": 3,
+      "editorialUsefulness": 3,
+      "overallDraftScore": 3,
+      "reflectedFacts": [],
+      "missingFromLocalSummary": [],
+      "missingFromFullIdentityContext": ["gestiona residencias y encuentros"],
+      "forbiddenHits": [],
+      "evidenceLexicalSupport": 1,
+      "contextStatus": "CONTEXT_COMPLETE",
+      "manualReviewRequired": true
+    }
+  }
+]

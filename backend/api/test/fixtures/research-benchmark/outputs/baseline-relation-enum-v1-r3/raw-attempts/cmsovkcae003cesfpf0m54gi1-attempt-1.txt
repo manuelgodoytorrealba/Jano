@@ -1,0 +1,139 @@
+{
+  "claims": [],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt9001yesfpbb579595"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt9001yesfpbb579595"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "El eco quieto",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt9001yesfpbb579595"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt4001sesfpz5w94h9b",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt8001wesfp1k739g5e",
+        "cmsovijt9001yesfpbb579595"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ABSTRACTION",
+      "title": "Eco quieto",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt4001sesfpz5w94h9b",
+        "cmsovijt9001yesfpbb579595"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "EVENT",
+      "title": "Jornadas del Eco",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt9001yesfpbb579595"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt9001yesfpbb579595"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt9001yesfpbb579595"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt4001sesfpz5w94h9b",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt8001wesfp1k739g5e",
+        "cmsovijt9001yesfpbb579595"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt4001sesfpz5w94h9b",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt8001wesfp1k739g5e",
+        "cmsovijt9001yesfpbb579595"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt4001sesfpz5w94h9b",
+        "cmsovijt9001yesfpbb579595"
+      ],
+      "relationTypeId": "relation-type-about-concept"
+    },
+    {
+      "localId": "relation-6",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovijt3001qesfptdssi25w",
+        "cmsovijt6001uesfpkk4tr2zs",
+        "cmsovijt9001yesfpbb579595"
+      ],
+      "relationTypeId": "relation-type-part-of"
+    }
+  ]
+}

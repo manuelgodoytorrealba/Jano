@@ -1,0 +1,28 @@
+<main class="research-publications page-shell">
+  <header class="research-publications__hero">
+    <p>Investigaciones</p>
+    <h1>Publicaciones de Research</h1>
+    <span>Recorridos editoriales nacidos de investigación, fuentes y conocimiento conectado.</span>
+  </header>
+
+  @if (publications$ | async; as publications) {
+    @if (publications.length) {
+      <section class="research-publications__grid" aria-label="Investigaciones publicadas">
+        @for (publication of publications; track publication.id) {
+          <article class="research-publications__card">
+            @if (publication.coverImageUrl) {
+              <img [src]="publication.coverImageUrl" [alt]="publication.title" />
+            }
+            <div>
+              <small>{{ publication.publishedAt | date: 'longDate' }}</small>
+              <h2>{{ publication.title }}</h2>
+              <p>{{ publication.objective }}</p>
+            </div>
+          </article>
+        }
+      </section>
+    } @else {
+      <p class="research-publications__empty">Aún no hay investigaciones publicadas.</p>
+    }
+  }
+</main>

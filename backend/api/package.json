@@ -29,7 +29,9 @@
     "prisma:reset": "prisma migrate reset",
     "studio": "prisma studio --port 5555 --browser none",
     "db:empty:prod": "node scripts/empty-production-db.js",
-    "admin:info": "node scripts/admin-info.js"
+    "admin:info": "node scripts/admin-info.js",
+    "research:benchmark": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/research-benchmark.ts",
+    "research:publication-demo": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/research-publication-demo.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

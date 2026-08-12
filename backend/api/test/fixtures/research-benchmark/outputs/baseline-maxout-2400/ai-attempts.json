@@ -1,0 +1,45 @@
+[
+  {
+    "aiExecutionId": "cmsor353d0021clfpi9i75ihs",
+    "batch": {
+      "current": 1,
+      "total": 6
+    },
+    "attempt": 1,
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "category": null,
+    "rawLength": 4958,
+    "approximateTokens": 1964,
+    "rawSha256": "66cba126f7322112a484b12ff5dad12a06e06649b6910777cbd08d0de58e5e52",
+    "sameAsPreviousAttempt": false,
+    "finishReason": "stop",
+    "emptyResponse": false,
+    "appearsTruncated": false,
+    "containsJsonObject": true,
+    "containsJsonArray": true,
+    "containsMarkdownFence": false,
+    "containsWrapperText": false,
+    "strictJsonValid": true,
+    "acceptedByCurrentParser": true,
+    "parserError": null,
+    "parserErrorPosition": null,
+    "unclosedObjectCount": 0,
+    "unclosedArrayCount": 0,
+    "validationErrors": [],
+    "responseMetadata": {
+      "done": true,
+      "doneReason": "stop",
+      "evalCount": 1964,
+      "promptEvalCount": 2654,
+      "totalDuration": 38680149081,
+      "loadDuration": 71649372,
+      "evalDuration": 17265076578,
+      "promptEvalDuration": 517225579
+    },
+    "rawStart": "{   \"claims\": [     {       \"localId\": \"cmsor351t000mclfp5l4i2zwn\",       \"title\": \"Iria Sorel y la memoria porosa\",       \"kind\": \"CONCEPT\",       \"evidenceIds\": [\"cmsor351t000mcl",
+    "rawEnd": "zwn\", \"cmsor351z000sclfpauyrfrwe\"],       \"relationTypeId\": \"RELATED_TO\",       \"explanation\": \"Memoria porosa es un concepto que Iria Sorel ha explorado en sus obras.\"     }   ] }",
+    "rawOutputLocation": "raw-attempts/cmsor353d0021clfpi9i75ihs-attempt-1.txt",
+    "executionError": "AI proposal keys must be unique"
+  }
+]

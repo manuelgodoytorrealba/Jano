@@ -1,0 +1,25 @@
+Elena Varo: tres nombres para una continuidad de trabajo
+
+Elena Varo trabaja con fotografía intervenida y objetos encontrados en el valle ficticio del Río Arce. En sus fichas más antiguas firma Elena Varo; en notas de montaje aparece como E. Varo y, cuando el contexto no ofrece duda, el ensayo utiliza simplemente Varo. Las tres formas se refieren a la misma persona. No deben producir tres identidades editoriales independientes.
+
+La artista Elena Varo desarrolló El jardín inverso, una serie de veinticuatro fotografías de plantas domésticas colocadas frente a fondos dibujados. El jardín inverso y Jardín inverso son variantes textuales del mismo título dentro de este documento. La forma canónica conserva el artículo: El jardín inverso. La obra explora cómo una escena familiar cambia cuando el fondo contradice la dirección de la luz.
+
+Varo presentó una selección de la serie en la Galería Umbral. La galería organizó el montaje, pero no creó la obra. Galería Umbral es una organización ficticia. El texto no indica su ciudad, año de fundación ni programa comercial. La única localización explícita es que el trabajo de Varo se desarrolla en el valle del Río Arce, tratado aquí como PLACE.
+
+En una etapa posterior, E. Varo comenzó Archivo de lluvia, una obra distinta compuesta por sobres de papel sensible y registros diarios de humedad. Aunque ambos proyectos utilizan series y anotaciones, Archivo de lluvia no es alias de El jardín inverso. Sus títulos deben conservar identidades separadas.
+
+La memoria doméstica es el concepto que conecta las dos obras. En El jardín inverso aparece mediante plantas cuidadas dentro de casa; en Archivo de lluvia, mediante rutinas de observación y almacenamiento. La memoria doméstica no es una obra llamada Memoria doméstica ni una organización. Es una ABSTRACTION central definida por el texto como el modo en que prácticas repetidas de cuidado dejan rastros interpretables.
+
+Teo Varo aparece en dos párrafos como responsable de transportar los marcos de Archivo de lluvia. Comparte apellido con Elena Varo, pero es otra persona. El texto declara que no existe parentesco documentado entre ambos. Un sistema de resolución no debe fusionarlos por el apellido. Teo Varo es secundario y su papel logístico puede no justificar extracción editorial, aunque su existencia textual sea inequívoca.
+
+La frase «cuidar una planta reorganiza la mirada sobre una habitación» es un claim asociado a El jardín inverso y a la memoria doméstica. No debe convertirse en una entidad con ese título. Tampoco deben extraerse como entidades los encabezados Primera visita, Segundo registro y Notas de transporte.
+
+El ensayo incluye las expresiones jardín, archivo, lluvia y memoria en sentidos genéricos además de sus usos dentro de nombres propios. Una proposal llamada simplemente Jardín o Archivo sería demasiado amplia. El GOLD espera El jardín inverso, Archivo de lluvia y memoria doméstica porque son las unidades específicas y reusables.
+
+En las últimas fichas, la firma vuelve a escribirse completa: Elena Varo. Esta repetición no indica una segunda etapa biográfica ni otra artista. Permite comprobar si distintas Evidence y batches producen varias proposals correctas para la misma identidad. La duplicación raw sería comprensible; la evaluación collapsed debe reconocer una sola persona.
+
+La Galería Umbral vuelve a mencionarse al describir el desmontaje de El jardín inverso. El lugar de producción, sin embargo, sigue siendo el valle del Río Arce. El documento no afirma que la galería esté situada allí. Tampoco afirma que Elena Varo naciera en el valle. Confundir lugar de trabajo, lugar de exposición y lugar de nacimiento añadiría hechos no respaldados.
+
+Teo Varo entrega los marcos y firma un recibo. No participa en el diseño de Archivo de lluvia ni en la toma de fotografías. Elena Varo es la autora de ambas obras. Esta diferencia está repetida para que el benchmark pueda detectar una síntesis que mezcle identidades por proximidad textual.
+
+No se proporcionan edad, premios, formación, nacionalidad ni representación exclusiva de Elena Varo. Tampoco se afirma que E. Varo sea un seudónimo: es una abreviatura documental de su nombre. Un buen summary debería mencionar su trabajo con fotografía intervenida, las dos obras y la memoria doméstica, sin completar datos biográficos ausentes.

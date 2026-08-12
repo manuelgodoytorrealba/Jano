@@ -1,0 +1,146 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "La escucha oblicua atiende a condiciones y silencios",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfnhq000w5gfp8w4s89kq",
+        "cmsovfnhu00105gfp6kl8w4zy"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "El archivo respirante reorganiza sin borrar versiones",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfnhq000w5gfp8w4s89kq",
+        "cmsovfnhu00105gfp6kl8w4zy"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "La opacidad productiva mantiene visibles los límites",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfnhq000w5gfp8w4s89kq",
+        "cmsovfnhu00105gfp6kl8w4zy"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "El ritmo de retorno registra nuevas lecturas de una misma evidencia",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfnhq000w5gfp8w4s89kq",
+        "cmsovfnhu00105gfp6kl8w4zy"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "Materia de Casa",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Dalia Neri",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Mara Téllez",
+      "evidenceIds": [
+        "cmsovfnhu00105gfp6kl8w4zy"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ORGANIZATION",
+      "title": "Instituto Lumen",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "PLACE",
+      "title": "Nave del Este",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PLACE",
+      "title": "Miralba",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovfnhw00125gfpdfq1jy2a",
+        "cmsovfnhy00145gfp0vxjwygj"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovfnhu00105gfp6kl8w4zy"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    }
+  ]
+}

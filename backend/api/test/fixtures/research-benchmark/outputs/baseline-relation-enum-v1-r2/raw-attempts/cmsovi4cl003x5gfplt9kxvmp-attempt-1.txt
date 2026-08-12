@@ -1,0 +1,93 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Comparación de estados",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ],
+      "summary": "Comparar estados separados requiere declarar qué se observa y qué se infiere."
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "Intervalos útiles",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ],
+      "relationTypeId": null
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovfnir00205gfp9us8ft58"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    }
+  ]
+}

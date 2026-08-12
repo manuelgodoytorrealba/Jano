@@ -1,0 +1,73 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Comparación de estados separados",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1iq7v0020r2fpvq6vujz6"
+      ],
+      "summary": "La comparación de estados separados requiere declarar qué se observa y qué se infiere."
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsp1iq7v0020r2fpvq6vujz6"
+      ],
+      "summary": "El método de comparación utilizado en la investigación."
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsp1iq7v0020r2fpvq6vujz6"
+      ],
+      "summary": "Coordinadora del documento."
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsp1iq7v0020r2fpvq6vujz6"
+      ],
+      "summary": "Creadora de El eco quieto."
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsp1iq7v0020r2fpvq6vujz6"
+      ],
+      "summary": "Organización que organiza y aloja las Jornadas del Eco en Faro Bajo."
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsp1iq7v0020r2fpvq6vujz6"
+      ],
+      "relationTypeId": "relation-type-created-by",
+      "explanation": "Ana Soler crea El eco quieto."
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsp1iq7v0020r2fpvq6vujz6"
+      ],
+      "relationTypeId": "relation-type-associated-with",
+      "explanation": "Casa Faro organiza y aloja las Jornadas del Eco en Faro Bajo, que están relacionadas con la Cartografía del intervalo."
+    }
+  ]
+}

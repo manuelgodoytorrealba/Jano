@@ -39,25 +39,6 @@
   opacity: 0.4;
 }
 
-/* transición con el rail */
-.explorer3d::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 42px;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    rgba(10, 10, 14, 0.92) 0%,
-    rgba(10, 10, 14, 0.74) 22%,
-    rgba(10, 10, 14, 0.38) 58%,
-    rgba(10, 10, 14, 0) 100%
-  );
-  z-index: 1;
-}
-
 /* 🔥 CURSOR FIX DEFINITIVO (Linux safe) */
 .explorer3d__canvas {
   position: relative;

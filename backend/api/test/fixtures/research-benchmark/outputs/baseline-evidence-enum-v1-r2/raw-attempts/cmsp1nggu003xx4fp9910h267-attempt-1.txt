@@ -1,0 +1,93 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Comparar estados separados requiere declarar qué se observa y qué se infiere",
+      "kind": "CONCEPT"
+   ,
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "Intervalos útiles",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ORGANIZATION",
+      "title": "Casa Faro",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ],
+      "relationTypeId": null
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsp1l9mf0020x4fptvd92tzw"
+      ],
+      "relationTypeId": "relation-type-mentions"
+    }
+  ]
+}

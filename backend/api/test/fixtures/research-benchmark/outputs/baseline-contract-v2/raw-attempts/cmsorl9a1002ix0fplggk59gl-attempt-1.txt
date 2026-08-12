@@ -1,0 +1,106 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Mantener visible una ausencia mejora la honestidad de una interpretación",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorknry0010x0fpd85ovpra"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "Materia de Casa",
+      "evidenceIds": [
+        "cmsorkns00012x0fpi7nle396",
+        "cmsorkns20014x0fpewrvkokx"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Dalia Neri",
+      "evidenceIds": [
+        "cmsorkns00012x0fpi7nle396",
+        "cmsorkns20014x0fpewrvkokx"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "Mesa para una ausencia",
+      "evidenceIds": [
+        "cmsorkns00012x0fpi7nle396"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "WORK",
+      "title": "Inventario del humo",
+      "evidenceIds": [
+        "cmsorkns20014x0fpewrvkokx"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "ORGANIZATION",
+      "title": "Instituto Lumen",
+      "evidenceIds": [
+        "cmsorkns00012x0fpi7nle396",
+        "cmsorkns20014x0fpewrvkokx"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PLACE",
+      "title": "Nave del Este",
+      "evidenceIds": [
+        "cmsorkns00012x0fpi7nle396",
+        "cmsorkns20014x0fpewrvkokx"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsorkns00012x0fpi7nle396",
+        "cmsorkns20014x0fpewrvkokx"
+      ],
+      "relationTypeId": "PART_OF"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsorkns00012x0fpi7nle396"
+      ],
+      "relationTypeId": "CREATED_BY"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsorkns20014x0fpewrvkokx"
+      ],
+      "relationTypeId": "CREATED_BY"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsorkns00012x0fpi7nle396",
+        "cmsorkns20014x0fpewrvkokx"
+      ],
+      "relationTypeId": "LOCATED_IN"
+    }
+  ]
+}

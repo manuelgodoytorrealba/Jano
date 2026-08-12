@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs';
 import {
   SearchApi,
-  SearchDeck,
   SearchResponse,
   SearchResult,
   SearchRoute,
@@ -97,6 +96,7 @@ export class SearchComponent {
           type: type || undefined,
           tag: tag || undefined,
           limit: 40,
+          recordInterest: true,
         })
         .pipe(
           map((response) => ({
@@ -147,10 +147,6 @@ export class SearchComponent {
     void this.router.navigate(['/entity', result.slug]);
   }
 
-  goDeck(deck: SearchDeck): void {
-    void this.router.navigate(['/entities'], { queryParams: { deck: deck.slug } });
-  }
-
   openGraph(result: SearchResult | null | undefined): void {
     if (!result || !this.canOpenGraph(result)) {
       return;
@@ -168,7 +164,7 @@ export class SearchComponent {
   }
 
   hasSectionContent(section: SearchSection): boolean {
-    return !!section.items?.length || !!section.routes?.length || !!section.decks?.length;
+    return !!section.items?.length || !!section.routes?.length;
   }
 
   isDiscoveryLayout(vm: SearchViewModel): boolean {
@@ -194,19 +190,13 @@ export class SearchComponent {
     return (this.section(vm, key)?.routes ?? []).slice(0, limit);
   }
 
-  sectionDecks(vm: SearchViewModel, key: string, limit: number): SearchDeck[] {
-    return (this.section(vm, key)?.decks ?? []).slice(0, limit);
-  }
-
   sectionTotal(vm: SearchViewModel, key: string): number {
     const section = this.section(vm, key);
     if (!section) {
       return 0;
     }
 
-    return (
-      section.total ?? section.items?.length ?? section.routes?.length ?? section.decks?.length ?? 0
-    );
+    return section.total ?? section.items?.length ?? section.routes?.length ?? 0;
   }
 
   canOpenGraph(item: SearchResult | null | undefined): boolean {

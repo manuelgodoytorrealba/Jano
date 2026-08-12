@@ -25,6 +25,9 @@ import { ResearchGraphComponent } from './research-graph.component';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
 import { ResearchSectionAssistantComponent } from './research-section-assistant.component';
+import { ResearchEntitiesWorkspaceComponent } from './research-entities-workspace.component';
+import { ResearchPublicationWorkspaceComponent } from './research-publication-workspace.component';
+import { ResearchSourcesWorkspaceComponent } from './research-sources-workspace.component';
 
 const MAX_PDF_SIZE_BYTES = 300 * 1024 * 1024;
 const MATERIAL_POLL_INTERVAL_MS = 2000;
@@ -45,6 +48,9 @@ const MATERIAL_POLL_INTERVAL_MS = 2000;
     MaterialContextMenuComponent,
     RichTextComponent,
     ResearchSectionAssistantComponent,
+    ResearchEntitiesWorkspaceComponent,
+    ResearchPublicationWorkspaceComponent,
+    ResearchSourcesWorkspaceComponent,
   ],
   templateUrl: './research-project.component.html',
   styleUrl: './research-project.component.scss',
@@ -66,9 +72,10 @@ export class ResearchProjectComponent implements OnDestroy {
   readonly modes = [
     { id: 'corpus', label: 'Corpus', available: true },
     { id: 'index', label: 'Índice', available: true },
+    { id: 'sources', label: 'Fuentes', available: true },
     { id: 'argument', label: 'Argumento', available: false },
-    { id: 'entities', label: 'Entidades', available: false },
-    { id: 'publication', label: 'Publicación', available: false },
+    { id: 'entities', label: 'Entidades', available: true },
+    { id: 'publication', label: 'Publicación', available: true },
   ] as const;
 
   title = '';
@@ -131,7 +138,15 @@ export class ResearchProjectComponent implements OnDestroy {
             (mode === 'index' ? project.outlineSections[0] : null) ??
             null;
           this.syncWorkspace(activeSection);
-          return { project, projects, libraryMaterials, activeSection, mode, error: '' };
+          return {
+            project,
+            projects,
+            libraryMaterials,
+            activeSection,
+            mode,
+            publicationTab: this.publicationTab(query.get('publicationTab')),
+            error: '',
+          };
         }),
         catchError(() => {
           this.stopMaterialPolling();
@@ -141,6 +156,7 @@ export class ResearchProjectComponent implements OnDestroy {
             libraryMaterials: [],
             activeSection: null,
             mode: 'corpus',
+            publicationTab: 'content' as const,
             error: 'No se pudo abrir esta investigación.',
           });
         }),
@@ -675,6 +691,7 @@ export class ResearchProjectComponent implements OnDestroy {
 
   openMode(mode: (typeof this.modes)[number]): void {
     if (!mode.available) return;
+    if (mode.id === 'publication') this.exitFocus();
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { mode: mode.id, section: mode.id === 'index' ? undefined : null },
@@ -926,5 +943,16 @@ export class ResearchProjectComponent implements OnDestroy {
   private workspaceMode(mode: string | null, sectionId: string | null) {
     if (sectionId) return 'index';
     return this.modes.some((item) => item.id === mode) ? mode! : 'corpus';
+  }
+
+  private publicationTab(
+    value: string | null,
+  ): 'content' | 'knowledge-map' | 'entities' | 'sources' | 'related' {
+    return value === 'knowledge-map' ||
+      value === 'entities' ||
+      value === 'sources' ||
+      value === 'related'
+      ? value
+      : 'content';
   }
 }

@@ -1,0 +1,69 @@
+{
+  "claims": [
+    {
+      "localId": "cmsoqo75d000mjnfpw070u1at",
+      "title": "Iria Sorel y la memoria porosa",
+      "kind": "CONCEPT",
+      "evidenceIds": ["cmsoqo75d000mjnfpw070u1at"],
+      "summary": "La memoria porosa es un concepto que describe cómo los recuerdos pueden absorber nuevos materiales sin borrar completamente las capas anteriores. Este concepto se aplica a la práctica artística de Iria Sorel."
+    },
+    {
+      "localId": "cmsoqo75k000qjnfpd2lbulx4",
+      "title": "Atlas del umbral",
+      "kind": "CONCEPT",
+      "evidenceIds": ["cmsoqo75k000qjnfpd2lbulx4"],
+      "summary": "El umbral se presenta como un lugar donde una decisión corporal deja una huella espacial. Este concepto se desarrolla en la obra de Iria Sorel y Nuno Arce."
+    },
+    {
+      "localId": "cmsoqo75n000ujnfpnk1hn26o",
+      "title": "Escuchar de lado: notas para un archivo respirante",
+      "kind": "CONCEPT",
+      "evidenceIds": ["cmsoqo75n000ujnfpnk1hn26o"],
+      "summary": "La escucha oblicua es una metodología que implica observar silencios, repeticiones y cambios de ritmo antes de convertir un fragmento en explicación. Este concepto se desarrolla en el trabajo de Mara Téllez."
+    }
+  ],
+  "entities": [
+    {
+      "localId": "cmsoqo75d000mjnfpw070u1at",
+      "kind": "PERSON",
+      "title": "Iria Sorel",
+      "evidenceIds": ["cmsoqo75d000mjnfpw070u1at", "cmsoqo75k000qjnfpd2lbulx4"],
+      "summary": "Artista que ha construido una práctica basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos en Puerto Niebla."
+    },
+    {
+      "localId": "cmsoqo75k000qjnfpd2lbulx4",
+      "kind": "PERSON",
+      "title": "Nuno Arce",
+      "evidenceIds": ["cmsoqo75k000qjnfpd2lbulx4"],
+      "summary": "Encuadernador que colabora con Iria Sorel en el Taller Bruma, construyendo cajas, pliegos y soportes móviles."
+    },
+    {
+      "localId": "cmsoqo75n000ujnfpnk1hn26o",
+      "kind": "PERSON",
+      "title": "Mara Téllez",
+      "evidenceIds": ["cmsoqo75n000ujnfpnk1hn26o"],
+      "summary": "Investigadora que utilizó la expresión 'escuchar de lado' en el seminario interno del Círculo Orbe."
+    },
+    {
+      "localId": "cmsoqo7310002jnfpqh4ch9c0",
+      "kind": "WORK",
+      "title": "Casa de sal",
+      "evidenceIds": ["cmsoqo75d000mjnfpw070u1at"],
+      "summary": "Instalación compuesta por cuarenta fotografías, tres mesas y un registro sonoro de puertas, que documenta la transición en las viviendas de Puerto Niebla."
+    },
+    {
+      "localId": "cmsoqo75k000qjnfpd2lbulx4",
+      "kind": "WORK",
+      "title": "Atlas del umbral",
+      "evidenceIds": ["cmsoqo75k000qjnfpd2lbulx4"],
+      "summary": "Libro desplegable elaborado en el Taller Bruma con dibujos de marcos, bisagras y zonas de paso observadas en doce edificios de Puerto Niebla."
+    }
+  ],
+  "relations": [
+    {
+      "localId": "cmsoqo75d000mjnfpw070u1at",
+      "fromLocalId": "cmsoqo75d000mjnfpw070u1at",
+      "toLocalId": "cmsoqo75k000qjnfpd2lbulx4",
+      "evidenceIds": ["cmsoqo75d000mjnfpw070u1at", "cmsoqo75k000qjnfpd2lbulx4"],
+      "relationTypeId": "ASSOCIATED_WITH",
+      "explanation": "Iria Sorel

@@ -1,0 +1,144 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "La Cartografía del intervalo es un método de investigación visual.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "El eco quieto",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "EVENT",
+      "title": "Jornadas del Eco",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PLACE",
+      "title": "Faro Bajo",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ],
+      "relationTypeId": "relation-type-depicts"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-5",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsornswm001qcffpapeg7exk",
+        "cmsornswo001scffpk2xag23u",
+        "cmsornswq001ucffpp8maeeps",
+        "cmsornswr001wcffpjth5xi42",
+        "cmsornswt001ycffpvzaia446"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    }
+  ]
+}

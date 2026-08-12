@@ -36,6 +36,22 @@ describe('media.utils', () => {
     expect(resolveEntityMediaItem(entity, 'hero')).toBeNull();
   });
 
+  it('uses the resolved card when the list API has no explorer3d slot', () => {
+    const entity = {
+      type: 'ARTWORK',
+      resolvedMedia: {
+        card: { id: 'card-media', url: 'https://example.com/card.jpg', role: 'CARD' },
+        thumbnail: {
+          id: 'thumbnail-media',
+          url: 'https://example.com/thumb.jpg',
+          role: 'THUMBNAIL',
+        },
+      },
+    };
+
+    expect(resolveEntityMediaItem(entity, 'explorer3d')?.id).toBe('card-media');
+  });
+
   it('falls back to media.url when admin data carries an empty displayUrl string', () => {
     expect(
       mediaDisplayUrl({

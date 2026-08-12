@@ -66,10 +66,10 @@ export class AppChromeComponent {
   }
 
   readonly navItems: HeaderNavItem[] = [
-    { label: 'nav.discover', route: '/', kind: 'route', group: 'public', exact: true },
-    { label: 'nav.explore', route: '/entities/artwork', kind: 'route', group: 'public' },
+    { label: 'nav.discover', route: '/home', kind: 'route', group: 'public', exact: true },
+    { label: 'nav.explore', route: '/entities', kind: 'route', group: 'public', exact: true },
     { label: 'nav.articles', route: '/entities/article', kind: 'route', group: 'public' },
-    { label: 'nav.curatedShort', route: '/curated', kind: 'route', group: 'public' },
+    { label: 'nav.research', route: '/research', kind: 'route', group: 'public' },
     { label: 'nav.profile', route: '/profile', kind: 'route', group: 'personal' },
     { label: 'nav.spaceShort', route: '/my-space', kind: 'route', group: 'personal' },
   ];
@@ -78,6 +78,7 @@ export class AppChromeComponent {
     { label: 'nav.profile', route: '/profile', icon: 'profile', kind: 'route' },
     { label: 'nav.mySpace', route: '/my-space', icon: 'space', kind: 'route' },
     { label: 'nav.articles', route: '/entities/article', icon: 'articles', kind: 'route' },
+    { label: 'nav.research', route: '/research', icon: 'articles', kind: 'route' },
     { label: 'nav.admin', route: '/admin', icon: 'admin', kind: 'route', adminOnly: true },
     { label: 'nav.settings', route: '/settings', icon: 'settings', kind: 'route' },
   ];
@@ -174,6 +175,10 @@ export class AppChromeComponent {
 
   isDetailRoute(): boolean {
     return this.activeUrl().startsWith('/entity/');
+  }
+
+  isAdminRoute(): boolean {
+    return this.activeUrl().startsWith('/admin');
   }
 
   collapseHeader(): void {
@@ -365,7 +370,9 @@ export class AppChromeComponent {
     }
 
     if (item.icon === 'articles') {
-      return url.startsWith('/entities/article');
+      return item.route === '/research'
+        ? url.startsWith('/research')
+        : url.startsWith('/entities/article');
     }
 
     if (item.icon === 'settings') {

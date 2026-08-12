@@ -1,0 +1,138 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "La Cartografía del intervalo es un método de investigación visual.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvct001w2ufpdpfneo40",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Aina Soler",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Ana Soler",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "El eco quieto",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Cartografía del intervalo",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvct001w2ufpdpfneo40",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "EVENT",
+      "title": "Jornadas del Eco",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvct001w2ufpdpfneo40",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "PLACE",
+      "title": "Faro Bajo",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvct001w2ufpdpfneo40",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvct001w2ufpdpfneo40",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ],
+      "relationTypeId": "relation-type-part-of"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsp1nvco001q2ufpy8ax29gy",
+        "cmsp1nvcq001s2ufpvi5u4peg",
+        "cmsp1nvcr001u2ufpobxlc9rl",
+        "cmsp1nvct001w2ufpdpfneo40",
+        "cmsp1nvcu001y2ufpf9iyik1n"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    }
+  ]
+}

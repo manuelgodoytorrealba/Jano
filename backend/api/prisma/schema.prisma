@@ -16,6 +16,10 @@ enum UserPlan {
   PREMIUM
 }
 
+enum UserDiscoverySignalKind {
+  SEARCH_SUBMITTED
+}
+
 enum EntityType {
   ARTWORK
   ARTIST
@@ -141,6 +145,7 @@ enum ResearchProjectStatus {
   ACTIVE
   PAUSED
   READY_TO_DECIDE
+  PUBLISHED
   ARCHIVED
 }
 
@@ -698,6 +703,7 @@ model Source {
   citations    Citation[]
 
   researchProjects ResearchProjectSource[]
+  researchProjectCitations ResearchProjectCitation[]
   researchEvidence ResearchEvidence[]
   researchJobs     ResearchJob[]
   libraryMaterials LibraryMaterial[]
@@ -761,11 +767,13 @@ model ResearchProject {
   scope        String?
   coverImageUrl String?
   status       ResearchProjectStatus @default(ACTIVE)
+  publishedAt  DateTime?
   lastActiveAt DateTime              @default(now())
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
 
   sources          ResearchProjectSource[]
+  citations        ResearchProjectCitation[]
   evidence         ResearchEvidence[]
   legacyFindings   ResearchFinding[] // Legacy compatibility; never queried by active Research flows
   decisions        ResearchDecision[]
@@ -800,6 +808,7 @@ model LibraryMaterial {
   source   Source?                   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
   versions LibraryMaterialVersion[]
   research ResearchLibraryMaterial[]
+  projectCitations ResearchProjectCitation[]
 
   @@index([sourceId])
 }
@@ -833,11 +842,13 @@ model LibraryExcerpt {
   locator           String
   text              String
   fingerprint       String
+  isHighlight       Boolean  @default(false)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   materialVersion   LibraryMaterialVersion          @relation(fields: [materialVersionId], references: [id], onDelete: Cascade)
   evidence          ResearchEvidence[]
+  projectCitations ResearchProjectCitation[]
   sectionReferences ResearchOutlineSectionExcerpt[]
 
   @@unique([materialVersionId, fingerprint])
@@ -973,6 +984,27 @@ model ResearchProjectSource {
   @@index([sourceId])
 }
 
+model ResearchProjectCitation {
+  id               String   @id @default(cuid())
+  projectId        String
+  sourceId         String
+  materialId       String?
+  libraryExcerptId String?
+  evidenceId       String?
+  createdAt        DateTime @default(now())
+
+  project        ResearchProject  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  source         Source           @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  material       LibraryMaterial? @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  libraryExcerpt LibraryExcerpt?  @relation(fields: [libraryExcerptId], references: [id], onDelete: Cascade)
+  evidence       ResearchEvidence? @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, materialId])
+  @@unique([projectId, libraryExcerptId])
+  @@unique([projectId, evidenceId])
+  @@index([projectId, createdAt])
+}
+
 model ResearchEvidence {
   id               String   @id @default(cuid())
   projectId        String
@@ -994,6 +1026,7 @@ model ResearchEvidence {
   findingProposals ResearchFindingProposalEvidence[]
   claims           ResearchClaimEvidence[]
   citations        Citation[]
+  projectCitations ResearchProjectCitation[]
   entityEvidence   ResearchEntityEvidence[]
 
   @@unique([projectId, sourceId, fingerprint])
@@ -1021,6 +1054,7 @@ model ResearchEntity {
   evidence        ResearchEntityEvidence[]
   outgoing        ResearchRelation[]       @relation("ResearchRelationFrom")
   incoming        ResearchRelation[]       @relation("ResearchRelationTo")
+  acceptedProposals ResearchFindingProposal[] @relation("ConvertedEntityProposal")
 
   @@index([projectId, reviewState])
   @@index([canonicalEntityId])
@@ -1053,6 +1087,7 @@ model ResearchRelation {
   toEntity     ResearchEntity          @relation("ResearchRelationTo", fields: [toEntityId], references: [id], onDelete: Cascade)
   relationType RelationType?           @relation(fields: [relationTypeId], references: [id], onDelete: SetNull)
   claims       ResearchRelationClaim[]
+  acceptedProposals ResearchFindingProposal[] @relation("ConvertedRelationProposal")
 
   @@index([projectId, reviewState])
   @@index([fromEntityId])
@@ -1136,6 +1171,8 @@ model ResearchJob {
   inputFingerprint String
   attempts         Int               @default(0)
   maxAttempts      Int               @default(3)
+  progressCurrent  Int               @default(0)
+  progressTotal    Int               @default(0)
   lastError        String?
   startedAt        DateTime?
   finishedAt       DateTime?
@@ -1185,6 +1222,8 @@ model ResearchFindingProposal {
   aiExecutionId      String
   convertedFindingId String? // Legacy compatibility only
   convertedClaimId   String?
+  convertedEntityId  String?
+  convertedRelationId String?
   type               ResearchFindingProposalType @default(LEGACY)
   proposalKey        String?
   resultFingerprint  String?
@@ -1199,6 +1238,7 @@ model ResearchFindingProposal {
   explanation        String?
   reviewState        ResearchProposalReviewState @default(PENDING)
   createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
 
   project          ResearchProject                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   job              ResearchJob?                      @relation(fields: [jobId], references: [id], onDelete: SetNull)
@@ -1206,6 +1246,8 @@ model ResearchFindingProposal {
   relationType     RelationType?                     @relation(fields: [relationTypeId], references: [id], onDelete: SetNull)
   convertedFinding ResearchFinding?                  @relation("ConvertedFindingProposal", fields: [convertedFindingId], references: [id], onDelete: SetNull)
   convertedClaim   ResearchClaim?                    @relation("ConvertedClaimProposal", fields: [convertedClaimId], references: [id], onDelete: SetNull)
+  convertedEntity  ResearchEntity?                   @relation("ConvertedEntityProposal", fields: [convertedEntityId], references: [id], onDelete: SetNull)
+  convertedRelation ResearchRelation?                @relation("ConvertedRelationProposal", fields: [convertedRelationId], references: [id], onDelete: SetNull)
   evidence         ResearchFindingProposalEvidence[]
 
   @@index([projectId, reviewState])
@@ -1419,10 +1461,23 @@ model User {
 
   savedEntities     SavedEntity[]
   collections       Collection[]
+  discoverySignals  UserDiscoverySignal[]
   researchDecisions ResearchDecision[]
   ownedResearch     ResearchProject[]  @relation("ResearchProjectOwner")
   archivedResearch  ResearchProject[]  @relation("ResearchProjectArchivedBy")
   researchDraftRevisions ResearchDraftRevision[]
+}
+
+model UserDiscoverySignal {
+  id        String                  @id @default(cuid())
+  userId    String
+  kind      UserDiscoverySignalKind
+  query     String
+  createdAt DateTime                @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind, createdAt])
 }
 
 model AppSetting {

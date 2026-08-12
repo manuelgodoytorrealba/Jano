@@ -368,7 +368,6 @@
               >+ Nueva entidad</a
             >
             <a class="workspace-btn" routerLink="/admin/research/new">+ Nueva investigación</a>
-            <a class="workspace-btn" routerLink="/admin/curations/new">+ Nueva curación</a>
             <a class="workspace-btn" routerLink="/admin/entities">Explorar archivo</a>
             <a class="workspace-btn" routerLink="/admin/research">Research Studio</a>
           </div>
@@ -487,60 +486,6 @@
             } @else {
               <div class="workspace-state workspace-state--tight">
                 <span>La lectura reciente no está disponible.</span>
-              </div>
-            }
-          </section>
-
-          <section class="workspace-card workspace-card--panel">
-            <div class="workspace-card__head">
-              <div>
-                <p class="workspace-card__eyebrow">Curaciones editoriales</p>
-                <h2>Curaciones recientes</h2>
-              </div>
-              <a class="workspace-card__link" routerLink="/admin/curations">Ver todas</a>
-            </div>
-
-            @if (vm.decks.state === 'loading') {
-              <div class="workspace-state workspace-state--tight">
-                <span>Recuperando curaciones.</span>
-              </div>
-            } @else if (vm.decks.state === 'error') {
-              <div class="workspace-state workspace-state--tight workspace-state--error">
-                <span>Las curaciones no están disponibles.</span>
-              </div>
-            } @else if (vm.decks.data.length) {
-              <div class="panel-list">
-                @for (deck of vm.decks.data; track deck.id) {
-                  <a
-                    class="panel-entry"
-                    [routerLink]="['/admin/home-decks', deck.id, 'edit']"
-                    [queryParams]="{ returnTo: '/admin' }"
-                  >
-                    <span class="panel-entry__media">
-                      @if (deckPreviewEntities(deck).length) {
-                        <app-jano-media
-                          [entity]="deckPreviewEntities(deck)[0].entity"
-                          usage="thumbnail"
-                          [alt]="deck.title"
-                        ></app-jano-media>
-                      } @else {
-                        <span class="panel-entry__placeholder">JANO</span>
-                      }
-                    </span>
-                    <span class="panel-entry__body">
-                      <strong>{{ deck.title }}</strong>
-                      <span>{{ deck.entities.length }} entidades</span>
-                      <time [attr.datetime]="deck.updatedAt">
-                        Editada {{ deck.updatedAt | date: 'dd MMM' }}
-                      </time>
-                    </span>
-                    <span aria-hidden="true">›</span>
-                  </a>
-                }
-              </div>
-            } @else {
-              <div class="workspace-state workspace-state--tight">
-                <span>Las próximas curaciones aparecerán aquí.</span>
               </div>
             }
           </section>

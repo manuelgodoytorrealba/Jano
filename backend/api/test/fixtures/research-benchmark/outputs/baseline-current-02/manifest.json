@@ -1,0 +1,99 @@
+{
+  "runId": "baseline-current-02",
+  "datasetVersion": "1.0.0",
+  "createdAt": "2026-08-11T13:55:18.456Z",
+  "commitSha": "7b2206e3fddfd6d15284964623998ef9a3302750",
+  "dirtyWorktree": true,
+  "worktreeDiffHash": "be4ab180f4ef579037212df5071399ba2dc98648fad4ecf1db1b9c8b0f10bc74",
+  "provider": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b"
+  },
+  "pipeline": {
+    "task": "research.extract_findings",
+    "contractVersion": "3",
+    "maxCorpusSegments": 80,
+    "maxSegmentChars": 1400,
+    "evidenceBatchSize": 5,
+    "maxOutputTokens": 1200,
+    "entityOutputLimitPerBatch": 6,
+    "temperature": 0.2,
+    "promptAndContractHash": "0d40225b136338f4cc0ac577753838407d8f7b2f1f50544d1cd604cf7536905b",
+    "providerMetadata": {
+      "provider": "ollama",
+      "model": "qwen2.5:7b"
+    }
+  },
+  "records": {
+    "ownerId": "cmsoq33l20000x7fp5zjk9v0o",
+    "projectId": "cmsoq33lj0001x7fpptqs3cui",
+    "jobId": "cmsoq33ml000kx7fpgh9r6qxu",
+    "sourceIds": [
+      "cmsoq33lk0002x7fpfr433gf7",
+      "cmsoq33m30005x7fpnlw34j06",
+      "cmsoq33m70008x7fp8w5e55t3",
+      "cmsoq33ma000bx7fpcijdb8zi",
+      "cmsoq33md000ex7fppjg43hox",
+      "cmsoq33mh000hx7fp4qik5j4d"
+    ],
+    "materialIds": [
+      "cmsoq33lw0003x7fp9o04501x",
+      "cmsoq33m40006x7fpepm3ef6z",
+      "cmsoq33m80009x7fp2chwoydc",
+      "cmsoq33mb000cx7fp8f3u64k0",
+      "cmsoq33me000fx7fpciusq3nn",
+      "cmsoq33mi000ix7fpdaohj0ql"
+    ],
+    "materialVersionIds": [
+      "cmsoq33lw0004x7fpc7vkbw6n",
+      "cmsoq33m40007x7fponny308b",
+      "cmsoq33m8000ax7fpnmgdblim",
+      "cmsoq33mb000dx7fp63ukn9mu",
+      "cmsoq33me000gx7fpz50mu23d",
+      "cmsoq33mi000jx7fpfsf844wo"
+    ]
+  },
+  "documents": [
+    {
+      "id": "01-monograph",
+      "sourceId": "cmsoq33lk0002x7fpfr433gf7",
+      "materialId": "cmsoq33lw0003x7fp9o04501x",
+      "materialVersionId": "cmsoq33lw0004x7fpc7vkbw6n"
+    },
+    {
+      "id": "02-theory",
+      "sourceId": "cmsoq33m30005x7fpnlw34j06",
+      "materialId": "cmsoq33m40006x7fpepm3ef6z",
+      "materialVersionId": "cmsoq33m40007x7fponny308b"
+    },
+    {
+      "id": "03-exhibition",
+      "sourceId": "cmsoq33m70008x7fp8w5e55t3",
+      "materialId": "cmsoq33m80009x7fp2chwoydc",
+      "materialVersionId": "cmsoq33m8000ax7fpnmgdblim"
+    },
+    {
+      "id": "04-education",
+      "sourceId": "cmsoq33ma000bx7fpcijdb8zi",
+      "materialId": "cmsoq33mb000cx7fp8f3u64k0",
+      "materialVersionId": "cmsoq33mb000dx7fp63ukn9mu"
+    },
+    {
+      "id": "05-aliases",
+      "sourceId": "cmsoq33md000ex7fppjg43hox",
+      "materialId": "cmsoq33me000fx7fpciusq3nn",
+      "materialVersionId": "cmsoq33me000gx7fpz50mu23d"
+    },
+    {
+      "id": "06-long-ambiguity",
+      "sourceId": "cmsoq33mh000hx7fp4qik5j4d",
+      "materialId": "cmsoq33mi000ix7fpdaohj0ql",
+      "materialVersionId": "cmsoq33mi000jx7fpfsf844wo"
+    }
+  ],
+  "aiExecutionIds": ["cmsoq33pl0021x7fprzqw9bwh"],
+  "proposalIds": [],
+  "status": "FAILED",
+  "error": "Ollama no devolvió JSON válido",
+  "cleanedUpAt": "2026-08-11T13:56:08.956Z"
+}

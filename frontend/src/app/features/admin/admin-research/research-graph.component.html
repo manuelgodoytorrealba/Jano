@@ -1,218 +1,155 @@
-<section class="research-graph" aria-labelledby="research-graph-title">
+<section
+  class="research-map"
+  [class.is-focused]="focused"
+  aria-label="Mapa de conocimiento privado"
+>
   @if (vm$ | async; as vm) {
-    <header class="research-graph__header">
-      <div>
-        <p class="research-graph__eyebrow">Conocimiento privado</p>
-        <h2 id="research-graph-title">Mapa de relaciones</h2>
-        <p>
-          Explora entidades privadas y vuelve siempre a las evidencias que sostienen la lectura.
-        </p>
-      </div>
-      @if (vm.visual) {
-        <div class="research-graph__meta">
-          <span>{{ vm.visual.nodes.length }} entidades</span>
-          <span>{{ vm.visual.edges.length }} relaciones</span>
-          @if (vm.visual.indicators.hasContradictions) {
-            <span class="research-graph__tension">Tensiones documentadas</span>
-          }
-        </div>
+    <div class="research-map__bar">
+      <span>Vista: Relacional</span>
+      <label>
+        <input
+          type="checkbox"
+          [checked]="vm.showCandidates"
+          (change)="toggleCandidates($any($event.target).checked)"
+        />
+        Mostrar candidatas
+      </label>
+      @if (vm.graphData) {
+        <small
+          >{{ vm.graphData.nodes.length }} nodos · {{ vm.graphData.edges.length }} relaciones</small
+        >
       }
-    </header>
+      <button
+        type="button"
+        class="research-map__focus"
+        [attr.aria-pressed]="focused"
+        (click)="toggleFocus()"
+      >
+        {{ focused ? 'Salir del enfoque' : 'Modo enfoque' }}
+      </button>
+    </div>
 
     @if (vm.error) {
-      <p class="research-graph__state research-graph__state--error">{{ vm.error }}</p>
-    } @else if (vm.visual && vm.knowledge) {
-      <div class="research-graph__layout">
-        <div class="research-graph__canvas-wrap">
-          <div class="research-graph__canvas-toolbar">
-            <span>Vista {{ vm.visual.scope }}</span>
-            @if (vm.selection) {
-              <button type="button" (click)="showTopology()">Volver a la topología</button>
-            }
+      <div class="research-map__empty is-error">
+        <h3>No hemos podido abrir el mapa.</h3>
+        <p>{{ vm.error }}</p>
+      </div>
+    } @else if (vm.graphData; as graphData) {
+      @if (graphData.nodes.length) {
+        <div class="research-map__layout">
+          <div class="research-map__canvas">
+            <app-graph
+              slug="research-map"
+              workspaceMode="graph"
+              [graphData]="graphData"
+              [hideImagePane]="true"
+              [allowNodeOpen]="false"
+              [showInspector]="false"
+              [showControls]="true"
+              [overviewMode]="true"
+              [showAllOverviewRelations]="true"
+              [preserveRuntimeOnGraphChange]="true"
+              [workspaceFocused]="focused"
+              [requestedNodeId]="vm.selectedNodeId"
+              (nodeSelect)="selectNode($event)"
+              (nodeOpen)="openNode($event)"
+            />
           </div>
-          @if (vm.visual.nodes.length) {
-            <svg
-              class="research-graph__canvas"
-              viewBox="-260 -240 520 480"
-              role="img"
-              aria-label="Relaciones de investigación"
-            >
-              <g class="research-graph__edges">
-                @for (edge of vm.visual.edges; track edge.id) {
-                  <path
-                    class="research-graph__edge"
-                    [class.is-selected]="
-                      vm.selection?.kind === 'relation' && vm.selection?.id === edge.id
-                    "
-                    [class.has-tension]="edge.indicators.hasContradictions"
-                    [attr.d]="relationPath(edge, vm.positions)"
-                    (click)="selectRelation(edge.id)"
-                  />
-                }
-              </g>
-              <g class="research-graph__nodes">
-                @for (node of vm.visual.nodes; track node.id) {
-                  <g
-                    class="research-graph__node"
-                    [class.is-selected]="
-                      vm.selection?.kind === 'entity' && vm.selection?.id === node.id
-                    "
-                    [attr.transform]="
-                      'translate(' + vm.positions[node.id].x + ' ' + vm.positions[node.id].y + ')'
-                    "
-                    (click)="selectEntity(node.id)"
-                  >
-                    <circle r="24" />
-                    <text y="4" text-anchor="middle">{{ node.label.slice(0, 1) }}</text>
-                    <text class="research-graph__node-label" y="42" text-anchor="middle">
-                      {{ node.label }}
-                    </text>
-                  </g>
-                }
-              </g>
-            </svg>
-          } @else {
-            <p class="research-graph__state">Todavía no hay entidades privadas que explorar.</p>
-          }
-        </div>
 
-        <aside class="research-graph__inspector" aria-label="Inspector de investigación">
-          @if (vm.selectedEntity; as entity) {
-            <p class="research-graph__eyebrow">Entidad privada</p>
-            <h3>{{ entity.title }}</h3>
-            <dl>
-              <div>
-                <dt>Tipo</dt>
-                <dd>{{ entity.kind }}</dd>
-              </div>
-              <div>
-                <dt>Aliases</dt>
-                <dd>Sin aliases registrados.</dd>
-              </div>
-            </dl>
-            @if (entity.summary) {
-              <p>{{ entity.summary }}</p>
-            }
-            <h4>Relaciones visibles</h4>
-            @for (relation of vm.knowledge.relations; track relation.id) {
-              @if (relation.fromEntityId === entity.id || relation.toEntityId === entity.id) {
+          <aside class="research-map__context" aria-live="polite">
+            @if (vm.selectedProposal; as proposal) {
+              <p class="research-map__eyebrow">Entidad candidata</p>
+              <h3>{{ proposal.title }}</h3>
+              <span class="research-map__kind"
+                >{{ proposal.entityKind ?? 'Entidad' }} · Pendiente</span
+              >
+              @if (proposal.summary) {
+                <p>{{ proposal.summary }}</p>
+              }
+              <section>
+                <h4>Evidencia</h4>
+                <p>{{ proposal.evidence.length }} evidencias vinculadas</p>
+              </section>
+              <button type="button" class="research-map__primary" (click)="review(proposal)">
+                Revisar candidata
+              </button>
+            } @else if (vm.selectedEntity; as entity) {
+              <p class="research-map__eyebrow">Entidad seleccionada</p>
+              <h3>{{ entity.title }}</h3>
+              <span class="research-map__kind">{{ entity.kind }} · Privada</span>
+              @if (entity.canonicalEntityId) {
                 <button
                   type="button"
-                  class="research-graph__inspector-link"
-                  (click)="selectRelation(relation.id)"
+                  class="research-map__open"
+                  (click)="entityOpen.emit(entity.id)"
                 >
-                  {{ relation.fromEntity?.title ?? relation.fromEntityId }} →
-                  {{ relation.toEntity?.title ?? relation.toEntityId }}
+                  Abrir entidad ↗
                 </button>
-              }
-            } @empty {
-              <p class="research-graph__muted">Sin relaciones en este foco.</p>
-            }
-          } @else if (vm.selectedRelation; as relation) {
-            <p class="research-graph__eyebrow">Relación privada</p>
-            <h3>
-              {{ relation.fromEntity?.title ?? relation.fromEntityId }} →
-              {{ relation.toEntity?.title ?? relation.toEntityId }}
-            </h3>
-            <dl>
-              <div>
-                <dt>Predicado</dt>
-                <dd>{{ relation.relationTypeId ?? 'Relación privada' }}</dd>
-              </div>
-              <div>
-                <dt>Claims</dt>
-                <dd>{{ relation.claims?.length ?? 0 }}</dd>
-              </div>
-              @if (relationHasTension(relation.id, vm.visual)) {
-                <div>
-                  <dt>Tensión</dt>
-                  <dd>Claims coexistentes requieren lectura editorial.</dd>
+              } @else {
+                <div class="research-map__promotion">
+                  <small>Entidad privada sin vínculo al Knowledge Core.</small>
+                  <label>
+                    Tipo editorial
+                    <select #canonicalType>
+                      @for (type of canonicalTypesFor(entity.kind); track type.value) {
+                        <option [value]="type.value">{{ type.label }}</option>
+                      }
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    [disabled]="promotionBusy || !canonicalTypesFor(entity.kind).length"
+                    (click)="requestPromotion(entity.id, entity.kind, canonicalType.value)"
+                  >
+                    {{ promotionBusy ? 'Promoviendo…' : 'Promover al Knowledge Core' }}
+                  </button>
                 </div>
               }
-            </dl>
-            @if (relation.explanation) {
-              <p>{{ relation.explanation }}</p>
-            }
-            <h4>Claims asociados</h4>
-            @for (item of relation.claims ?? []; track item.claimId) {
-              <button
-                type="button"
-                class="research-graph__inspector-link"
-                (click)="selectClaim(item.claimId)"
-              >
-                {{ item.claim?.title ?? item.claimId }} · {{ item.claim?.status ?? 'Sin expandir' }}
-              </button>
-            } @empty {
-              <p class="research-graph__muted">Sin Claims asociados.</p>
-            }
-          } @else if (vm.selectedClaim; as claim) {
-            <p class="research-graph__eyebrow">Claim privado</p>
-            <h3>{{ claim.title }}</h3>
-            <dl>
-              <div>
-                <dt>Estado</dt>
-                <dd>{{ claim.status }}</dd>
+              @if (entity.summary) {
+                <p>{{ entity.summary }}</p>
+              }
+              <section>
+                <h4>Evidencia</h4>
+                <p>{{ entity.evidence?.length ?? 0 }} evidencias vinculadas</p>
+              </section>
+              <section>
+                <h4>Relaciones principales</h4>
+                @for (
+                  relation of relationsFor(entity.id, vm.knowledge, vm.selectedKnowledge);
+                  track relation.id
+                ) {
+                  <div class="research-map__relation">
+                    <span
+                      >{{ relation.relationType?.label ?? 'Relaciona' }}
+                      @if (relation.origin === 'KNOWLEDGE_CORE') {
+                        <small>Knowledge Core</small>
+                      }
+                    </span>
+                    <strong>→ {{ relationTarget(relation, entity.id) }}</strong>
+                  </div>
+                } @empty {
+                  <p>Esta entidad aún no tiene relaciones consolidadas.</p>
+                }
+              </section>
+            } @else {
+              <p class="research-map__eyebrow">Exploración</p>
+              <h3>Selecciona una entidad</h3>
+              <p>Lee su resumen, evidencia y relaciones sin abandonar el mapa.</p>
+              <div class="research-map__legend">
+                <span><i></i> Conocimiento privado</span>
+                <span><i class="is-candidate"></i> Propuesta pendiente</span>
               </div>
-              <div>
-                <dt>Tipo</dt>
-                <dd>{{ claim.kind }}</dd>
-              </div>
-            </dl>
-            @if (claim.summary) {
-              <p>{{ claim.summary }}</p>
             }
-            <h4>Evidencias</h4>
-            @for (item of claim.evidence ?? []; track item.evidenceId) {
-              <button
-                type="button"
-                class="research-graph__inspector-link"
-                (click)="selectEvidence(item.evidenceId)"
-              >
-                {{ item.evidence?.locator ?? item.evidenceId }} ·
-                {{ item.evidence?.quote ?? 'Abrir trazabilidad' }}
-              </button>
-            } @empty {
-              <p class="research-graph__muted">Sin Evidence expandida.</p>
-            }
-          } @else if (vm.selectedEvidence; as evidence) {
-            <p class="research-graph__eyebrow">Evidence</p>
-            <h3>{{ evidenceTitle(evidence) }}</h3>
-            <dl>
-              <div>
-                <dt>Locator</dt>
-                <dd>{{ evidence.locator }}</dd>
-              </div>
-              <div>
-                <dt>Versión</dt>
-                <dd>{{ evidence.sourceVersion }}</dd>
-              </div>
-            </dl>
-            @if (evidence.quote) {
-              <blockquote>{{ evidence.quote }}</blockquote>
-            }
-            @if (evidence.excerptStatus === 'UNAVAILABLE') {
-              <p class="research-graph__unavailable">
-                Fragmento no disponible. La referencia bibliográfica se conserva.
-              </p>
-            } @else if (evidence.libraryExcerpt; as excerpt) {
-              <h4>Library Excerpt</h4>
-              <p>{{ excerpt.text }}</p>
-              <small
-                >{{ excerpt.materialVersion.material.title }} · versión
-                {{ excerpt.materialVersion.version }}</small
-              >
-            }
-          } @else {
-            <p class="research-graph__eyebrow">Lectura progresiva</p>
-            <h3>Selecciona una entidad</h3>
-            <p>
-              El mapa abre sólo su topología. La evidencia se carga cuando la lectura la necesita.
-            </p>
-          }
-        </aside>
-      </div>
+          </aside>
+        </div>
+      } @else {
+        <div class="research-map__empty">
+          <h3>Tu mapa todavía está vacío.</h3>
+          <p>Revisa las primeras entidades del corpus para empezar a construirlo.</p>
+        </div>
+      }
     } @else {
-      <p class="research-graph__state">Cargando topología privada…</p>
+      <div class="research-map__empty"><p>Cargando mapa privado…</p></div>
     }
   }
 </section>

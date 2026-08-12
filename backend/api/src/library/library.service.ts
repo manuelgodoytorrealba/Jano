@@ -165,8 +165,14 @@ export class LibraryService {
 
     return tx.libraryExcerpt.upsert({
       where: { materialVersionId_fingerprint: { materialVersionId, fingerprint } },
-      create: { materialVersionId, locator: normalizedLocator, text: normalizedText, fingerprint },
-      update: {},
+      create: {
+        materialVersionId,
+        locator: normalizedLocator,
+        text: normalizedText,
+        fingerprint,
+        isHighlight: true,
+      },
+      update: { isHighlight: true },
     });
   }
 

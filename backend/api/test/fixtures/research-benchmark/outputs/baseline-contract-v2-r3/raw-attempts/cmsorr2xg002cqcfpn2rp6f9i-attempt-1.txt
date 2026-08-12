@@ -1,0 +1,135 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "La escucha oblicua atiende a condiciones y silencios",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorqrjo000wqcfpg6jf0sqp",
+        "cmsorqrjs0010qcfp3c3muot9"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "El archivo respirante reorganiza sin borrar versiones",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorqrjo000wqcfpg6jf0sqp",
+        "cmsorqrjs0010qcfp3c3muot9"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "La opacidad productiva mantiene visibles los límites",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorqrjo000wqcfpg6jf0sqp",
+        "cmsorqrjs0010qcfp3c3muot9"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "El ritmo de retorno registra nuevas lecturas de una misma evidencia",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorqrjo000wqcfpg6jf0sqp",
+        "cmsorqrjs0010qcfp3c3muot9"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "Materia de Casa",
+      "evidenceIds": [
+        "cmsorqrju0012qcfppsarbjsl",
+        "cmsorqrjw0014qcfpf0su4ucb"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Dalia Neri",
+      "evidenceIds": [
+        "cmsorqrju0012qcfppsarbjsl",
+        "cmsorqrjw0014qcfpf0su4ucb"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Mara Téllez",
+      "evidenceIds": [
+        "cmsorqrjs0010qcfp3c3muot9"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ORGANIZATION",
+      "title": "Instituto Lumen",
+      "evidenceIds": [
+        "cmsorqrju0012qcfppsarbjsl",
+        "cmsorqrjw0014qcfpf0su4ucb"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "WORK",
+      "title": "Mesa para una ausencia",
+      "evidenceIds": [
+        "cmsorqrju0012qcfppsarbjsl",
+        "cmsorqrjw0014qcfpf0su4ucb"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "WORK",
+      "title": "Inventario del humo",
+      "evidenceIds": [
+        "cmsorqrjw0014qcfpf0su4ucb"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsorqrju0012qcfppsarbjsl",
+        "cmsorqrjw0014qcfpf0su4ucb"
+      ],
+      "relationTypeId": "CURATED_WITH"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsorqrju0012qcfppsarbjsl",
+        "cmsorqrjw0014qcfpf0su4ucb"
+      ],
+      "relationTypeId": "CREATED_BY"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-3",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsorqrjs0010qcfp3c3muot9"
+      ],
+      "relationTypeId": "ABOUT_CONCEPT"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-4",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsorqrju0012qcfppsarbjsl",
+        "cmsorqrjw0014qcfpf0su4ucb"
+      ],
+      "relationTypeId": "HAS_SUBJECT"
+    }
+  ]
+}

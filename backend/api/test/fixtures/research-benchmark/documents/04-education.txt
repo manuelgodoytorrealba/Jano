@@ -1,0 +1,25 @@
+El cuaderno no responde solo: metodología para una crítica situada
+
+En la Escuela Delta, la docente Noa Mir coordina un laboratorio semestral de prácticas visuales. El laboratorio no evalúa obras terminadas de manera aislada. Utiliza el cuaderno de proceso como registro de decisiones, dudas, pruebas descartadas y cambios de vocabulario. El cuaderno puede contener dibujos, fotografías, listas o conversaciones transcritas; su valor no depende de una forma gráfica uniforme.
+
+La observación continuada del cuaderno permite reconocer cambios en la percepción del estudiante. Esta oración expresa un claim metodológico. No debe extraerse completa como nombre de entidad. La entidad es cuaderno de proceso. El claim explica qué permite hacer su observación dentro del laboratorio.
+
+Noa Mir denomina lectura de huellas a una revisión que compara tres momentos del cuaderno sin exigir que el estudiante justifique retrospectivamente cada decisión. Primero se identifica una marca persistente; después se pregunta qué condiciones la modificaron; finalmente se registra qué interpretaciones siguen abiertas. La lectura de huellas es un método y, dentro de los kinds disponibles, debe representarse como ABSTRACTION.
+
+La crítica situada es la conversación en la que una observación se formula indicando desde qué material, momento y pregunta se hace. No equivale a una opinión amable ni a una evaluación sin criterios. Su finalidad es evitar frases universales que ignoran el recorrido documentado. En la Escuela Delta, cada comentario de crítica situada debe señalar al menos una página o entrada del cuaderno de proceso.
+
+El mapa de decisiones es una hoja plegable donde el estudiante conecta pruebas realizadas, alternativas descartadas y preguntas futuras. Aunque se llama mapa, no es un lugar geográfico. Tampoco es una obra autónoma destinada a exposición. Es una herramienta metodológica y debe clasificarse como ABSTRACTION. Se actualiza dos veces durante el semestre y permanece vinculado al cuaderno de proceso.
+
+Una regla del laboratorio afirma que descartar una prueba no elimina su capacidad de explicar una decisión posterior. Esto es un claim sobre la documentación del proceso. Otra regla sostiene que una crítica útil distingue entre describir una forma y atribuirle una intención. También es un claim. Crear entidades con cualquiera de esas frases completas confundiría afirmaciones con unidades conceptuales reusables.
+
+La Escuela Delta es la organización que alberga el laboratorio. Noa Mir es la persona que lo coordina. El laboratorio semestral aparece como contexto pedagógico, pero el GOLD no lo considera una entidad independiente porque el texto no le asigna nombre propio ni continuidad institucional fuera del curso descrito. Palabras como estudiante, página, ejercicio y evaluación son términos genéricos.
+
+Durante una sesión, Mir muestra tres cuadernos sin nombres para evitar que la reputación del autor determine la primera lectura. Después devuelve la identidad y permite que cada estudiante corrija las inferencias formuladas. El ejercicio demuestra que una marca material puede sostener varias hipótesis, pero no autoriza a elegir una sin evidencia adicional.
+
+El apartado Indicadores finales contiene una tabla con los números 1, 2 y 3 y las expresiones Completo, En curso y Pendiente. Son metadata de seguimiento, no entidades. Una referencia ficticia —P. Daro, Aprender del margen, 2003— aparece al final como ejemplo de formato bibliográfico; el ensayo no desarrolla a esa persona ni su obra.
+
+La relación entre los conceptos es precisa. El cuaderno de proceso conserva materiales. La lectura de huellas propone cómo revisarlos. La crítica situada regula cómo formular comentarios sobre ellos. El mapa de decisiones explicita alternativas y preguntas. Ningún concepto es alias de otro, aunque todos formen parte de la misma metodología.
+
+El texto no afirma que Noa Mir fundara la Escuela Delta, que tenga un título universitario o que haya publicado libros. Tampoco localiza geográficamente la institución. Un resumen grounded puede decir que coordina el laboratorio y define la lectura de huellas; no puede completar su biografía ni atribuir a la escuela una ciudad, una fecha de fundación o un reconocimiento oficial.
+
+La metodología busca que la evaluación sea una lectura argumentada del proceso, no una puntuación añadida al final. Esta conclusión debe permanecer como claim. Las entidades editoriales centrales son cuaderno de proceso, lectura de huellas, crítica situada y mapa de decisiones; permiten conectar Evidence y relaciones sin convertir cada frase normativa en un nodo.

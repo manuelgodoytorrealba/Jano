@@ -63,6 +63,11 @@
   opacity: 0.15;
 }
 
+.graph-edge-group.is-candidate .graph-edge:not(.graph-edge--aura) {
+  stroke-dasharray: 7 7;
+  opacity: 0.72;
+}
+
 .graph-edge-hit {
   fill: none;
   stroke: transparent;
@@ -129,6 +134,15 @@
 
 .graph-node__shape {
   stroke-width: 2.2px;
+}
+
+.graph-node.is-candidate .graph-node__shape {
+  stroke-dasharray: 5 4;
+}
+
+.graph-node.is-candidate .graph-node__shape--inner,
+.graph-node.is-candidate .graph-node__halo {
+  opacity: 0.08;
 }
 
 .graph-node__shape--inner {

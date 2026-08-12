@@ -117,6 +117,7 @@ const reviewExcerpt: ResearchLibraryExcerpt = {
   id: 'excerpt-1',
   locator: 'p. 42',
   text: 'Pasaje para revisión.',
+  isHighlight: true,
   materialVersion: {
     id: 'version-1',
     version: 1,
@@ -206,7 +207,7 @@ describe('ResearchProjectComponent', () => {
     expect(backLink.nativeElement.textContent).toContain('Investigaciones');
   });
 
-  it('switches research and enters and exits focus mode', async () => {
+  it('switches research and exits focus mode when opening publication', async () => {
     const api = {
       getById: vi.fn().mockReturnValue(of(project)),
       list: vi
@@ -226,7 +227,9 @@ describe('ResearchProjectComponent', () => {
 
     fixture.nativeElement.querySelector('.research-project__focus-toggle').click();
     expect(document.body.classList.contains('app-stage-immersive')).toBe(true);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.componentInstance.openMode(
+      fixture.componentInstance.modes.find((mode) => mode.id === 'publication')!,
+    );
     expect(document.body.classList.contains('app-stage-immersive')).toBe(false);
   });
 
@@ -242,6 +245,36 @@ describe('ResearchProjectComponent', () => {
 
     fixture.componentInstance.selectMaterial(corpusMaterial);
     expect(fixture.componentInstance.corpusView).toBe('reader');
+  });
+
+  it('opens Entities in the existing Research workspace and reads private proposals', async () => {
+    const api = {
+      getById: vi.fn().mockReturnValue(of(project)),
+      list: vi.fn().mockReturnValue(of([project])),
+      listProposals: vi
+        .fn()
+        .mockReturnValue(of({ items: [], page: 1, limit: 100, total: 0, totalPages: 0 })),
+      getKnowledgeMapGeneration: vi
+        .fn()
+        .mockReturnValue(of({ job: null, stale: false, canGenerate: true, preparedMaterials: 1 })),
+    };
+    const fixture = await createFixture(api, false, 'entities');
+
+    expect(fixture.nativeElement.textContent).toContain('Entidades');
+    expect(api.listProposals).toHaveBeenCalledWith(project.id, { limit: 100 });
+  });
+
+  it('opens Publicación in its reading-first content tab without mounting graph or entities', async () => {
+    const fixture = await createFixture(
+      { getById: vi.fn().mockReturnValue(of(project)) },
+      false,
+      'publication',
+    );
+
+    expect(fixture.nativeElement.querySelector('app-research-publication-workspace')).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('Contenido en preparación');
+    expect(fixture.nativeElement.querySelector('app-research-graph')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.publication__entities-grid')).toBeNull();
   });
 
   it('orients an empty outline and creates its first section', async () => {

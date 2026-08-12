@@ -1,0 +1,107 @@
+{
+  "runId": "baseline-maxout-2400",
+  "datasetVersion": "1.0.0",
+  "datasetHash": "ed87b7a72952b65cb28ca4af00da909606e31b05b86c328ca1bc1519437990fe",
+  "createdAt": "2026-08-11T14:23:19.865Z",
+  "commitSha": "7b2206e3fddfd6d15284964623998ef9a3302750",
+  "dirtyWorktree": true,
+  "worktreeDiffHash": "6c71d98a401d5a43d74f6cb0ff5ca49382a07a042b737dfcda11eb43911a558a",
+  "provider": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b"
+  },
+  "pipeline": {
+    "task": "research.extract_findings",
+    "contractVersion": "3",
+    "maxCorpusSegments": 80,
+    "maxSegmentChars": 1400,
+    "evidenceBatchSize": 5,
+    "maxOutputTokens": 2400,
+    "entityOutputLimitPerBatch": 6,
+    "temperature": 0.2,
+    "promptAndContractHash": "4f020d891c8f50daf1a35078c6e3afaf20acf34cddbec9a529e87dad0455c5e4",
+    "providerImplementationHash": "98af91c51414fd0aba56cb70b55545aa95ac6bb2af8bf53ab2807501e683aecc",
+    "providerMetadata": {
+      "provider": "ollama",
+      "model": "qwen2.5:7b"
+    }
+  },
+  "records": {
+    "ownerId": "cmsor34yu0000clfp6eieig28",
+    "projectId": "cmsor34zb0001clfpy5dj2uwn",
+    "jobId": "cmsor350e000kclfppewyozyh",
+    "sourceIds": [
+      "cmsor34zd0002clfpbs09tga3",
+      "cmsor34zv0005clfp1a78gs0l",
+      "cmsor34zz0008clfpw30flun7",
+      "cmsor3502000bclfpu4xyygcb",
+      "cmsor3506000eclfp131o61jg",
+      "cmsor350a000hclfpjef4nv1s"
+    ],
+    "materialIds": [
+      "cmsor34zo0003clfpgbc2giig",
+      "cmsor34zw0006clfp9ea8s5j2",
+      "cmsor35000009clfpthoc0p68",
+      "cmsor3503000cclfpxhnudg7w",
+      "cmsor3507000fclfpk7uhj20m",
+      "cmsor350b000iclfp76n7j46r"
+    ],
+    "materialVersionIds": [
+      "cmsor34zp0004clfp823vpfm3",
+      "cmsor34zw0007clfptnbmve3s",
+      "cmsor3500000aclfpcdgsjnr5",
+      "cmsor3503000dclfpx8dlduwq",
+      "cmsor3507000gclfpfzr8mhh0",
+      "cmsor350b000jclfpsl6wbu1m"
+    ]
+  },
+  "documents": [
+    {
+      "id": "01-monograph",
+      "contentHash": "ee97ea139f225e7fd2a533d3ac9f9eacc6fa03799358cf622be1211915d59c34",
+      "sourceId": "cmsor34zd0002clfpbs09tga3",
+      "materialId": "cmsor34zo0003clfpgbc2giig",
+      "materialVersionId": "cmsor34zp0004clfp823vpfm3"
+    },
+    {
+      "id": "02-theory",
+      "contentHash": "d837381b45706406125ec9070f085992b61c44b67c7b48c9b2c2b1575881ce2b",
+      "sourceId": "cmsor34zv0005clfp1a78gs0l",
+      "materialId": "cmsor34zw0006clfp9ea8s5j2",
+      "materialVersionId": "cmsor34zw0007clfptnbmve3s"
+    },
+    {
+      "id": "03-exhibition",
+      "contentHash": "6c5316d2813c3c3cacf2b551d8b339ac208e00798e1d8894adcca2ee1363c5e6",
+      "sourceId": "cmsor34zz0008clfpw30flun7",
+      "materialId": "cmsor35000009clfpthoc0p68",
+      "materialVersionId": "cmsor3500000aclfpcdgsjnr5"
+    },
+    {
+      "id": "04-education",
+      "contentHash": "75214957b801998671c96b38658b38a983ba20d8a4786f81bd1c81c915d453eb",
+      "sourceId": "cmsor3502000bclfpu4xyygcb",
+      "materialId": "cmsor3503000cclfpxhnudg7w",
+      "materialVersionId": "cmsor3503000dclfpx8dlduwq"
+    },
+    {
+      "id": "05-aliases",
+      "contentHash": "514c322bc222758f2ad13b4f5ef0bc95e4981916377211fae980e9c42738b71f",
+      "sourceId": "cmsor3506000eclfp131o61jg",
+      "materialId": "cmsor3507000fclfpk7uhj20m",
+      "materialVersionId": "cmsor3507000gclfpfzr8mhh0"
+    },
+    {
+      "id": "06-long-ambiguity",
+      "contentHash": "e819dbcfd244a47aa173b6390484914a0b8ec362f0ed1a5dd8fc902ea4fdb239",
+      "sourceId": "cmsor350a000hclfpjef4nv1s",
+      "materialId": "cmsor350b000iclfp76n7j46r",
+      "materialVersionId": "cmsor350b000jclfpsl6wbu1m"
+    }
+  ],
+  "aiExecutionIds": ["cmsor353d0021clfpi9i75ihs"],
+  "proposalIds": [],
+  "status": "FAILED",
+  "error": "AI proposal keys must be unique",
+  "cleanedUpAt": "2026-08-11T14:23:58.679Z"
+}

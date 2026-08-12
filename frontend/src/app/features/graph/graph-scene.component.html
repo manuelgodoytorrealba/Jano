@@ -63,6 +63,7 @@
     @for (renderedEdge of renderedEdges; track renderedEdge.edge.id) {
       <g
         class="graph-edge-group"
+        [class.is-candidate]="renderedEdge.edge.state === 'candidate'"
         [class.graph-edge-group--focus]="renderedEdge.depthTier === 'focus'"
         [class.graph-edge-group--mid]="renderedEdge.depthTier === 'mid'"
         [class.graph-edge-group--far]="renderedEdge.depthTier === 'far'"
@@ -113,6 +114,7 @@
     @for (renderedNode of renderedNodes; track renderedNode.node.id) {
       <g
         class="graph-node"
+        [class.is-candidate]="renderedNode.node.state === 'candidate'"
         [attr.transform]="renderedNode.transform"
         [class.is-selected]="renderedNode.selected"
         [class.is-muted]="renderedNode.muted"

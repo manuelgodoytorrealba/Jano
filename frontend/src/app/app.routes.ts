@@ -5,19 +5,13 @@ import { adminGuard } from './core/auth/admin.guard';
 export const routes: Routes = [
   {
     path: '',
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
+  {
+    path: 'home',
     canActivate: [authGuard],
     loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
-  },
-  {
-    path: 'curated',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/recommended/recommended.component').then((m) => m.RecommendedComponent),
-  },
-  {
-    path: 'recommended',
-    redirectTo: 'curated',
-    pathMatch: 'full',
   },
   {
     path: 'search',
@@ -36,6 +30,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
+  },
+  {
+    path: 'research',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/research-publications/research-publications.component').then(
+        (m) => m.ResearchPublicationsComponent,
+      ),
   },
   {
     path: 'entity/:slug',
@@ -94,29 +96,10 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'visual-selector',
-        loadComponent: () =>
-          import('./features/admin/admin-entities-deck/admin-entities-deck.component').then(
-            (m) => m.AdminEntitiesDeckComponent,
-          ),
-      },
-      {
         path: 'entities',
         loadComponent: () =>
           import('./features/admin/admin-entities/admin-entities.component').then(
             (m) => m.AdminEntitiesComponent,
-          ),
-      },
-      {
-        path: 'home-decks',
-        redirectTo: 'curations',
-        pathMatch: 'full',
-      },
-      {
-        path: 'curations',
-        loadComponent: () =>
-          import('./features/admin/admin-curations/admin-curations.component').then(
-            (m) => m.AdminCurationsComponent,
           ),
       },
       {
@@ -153,20 +136,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'curations/new',
-        loadComponent: () =>
-          import('./features/admin/admin-curations/admin-curations.component').then(
-            (m) => m.AdminCurationsComponent,
-          ),
-      },
-      {
-        path: 'home-decks/:id/edit',
-        loadComponent: () =>
-          import('./features/admin/admin-home-deck-editor/admin-home-deck-editor.component').then(
-            (m) => m.AdminHomeDeckEditorComponent,
-          ),
-      },
-      {
         path: 'entities/new',
         loadComponent: () =>
           import('./features/admin/admin-entity-form/admin-entity-form.component').then(
@@ -175,6 +144,13 @@ export const routes: Routes = [
       },
       {
         path: 'entities/:id/edit',
+        loadComponent: () =>
+          import('./features/admin/admin-entity-form/admin-entity-form.component').then(
+            (m) => m.AdminEntityFormComponent,
+          ),
+      },
+      {
+        path: 'entities/:id',
         loadComponent: () =>
           import('./features/admin/admin-entity-form/admin-entity-form.component').then(
             (m) => m.AdminEntityFormComponent,

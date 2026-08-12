@@ -1,0 +1,141 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Iria Sorel construye una práctica basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "La memoria porosa es una condición en la que el recuerdo absorbe materiales nuevos sin borrar del todo sus capas anteriores.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "El Taller Bruma es un lugar de producción compartido donde Iria Sorel y Nuno Arce trabajan.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "Casa de sal es una instalación compuesta por cuarenta fotografías, tres mesas y un registro sonoro de puertas.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Iria Sorel",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf",
+        "cmsovckxe000qqrfp7kzk12rp"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "PERSON",
+      "title": "Nuno Arce",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf",
+        "cmsovckxe000qqrfp7kzk12rp"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "Casa de sal",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf",
+        "cmsovckxe000qqrfp7kzk12rp"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "WORK",
+      "title": "Atlas del umbral",
+      "evidenceIds": [
+        "cmsovckxe000qqrfp7kzk12rp"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "PLACE",
+      "title": "Puerto Niebla",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf",
+        "cmsovckxe000qqrfp7kzk12rp"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "ORGANIZATION",
+      "title": "Taller Bruma",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf",
+        "cmsovckxe000qqrfp7kzk12rp"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovckxe000qqrfp7kzk12rp"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf",
+        "cmsovckxe000qqrfp7kzk12rp"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf",
+        "cmsovckxe000qqrfp7kzk12rp"
+      ],
+      "relationTypeId": "relation-type-associated-with"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-6",
+      "toLocalId": "entity-1",
+      "evidenceIds": [
+        "cmsovckxa000mqrfplfie4lrf",
+        "cmsovckxe000qqrfp7kzk12rp"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    }
+  ]
+}

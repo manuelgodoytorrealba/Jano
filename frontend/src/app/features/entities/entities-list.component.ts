@@ -1,10 +1,9 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
+import { distinctUntilChanged, map, tap } from 'rxjs';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
-import { HomeDecksApi } from '../../core/api/home-decks.api';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { PublicEntityListItem } from '../../core/api/entities.models';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
@@ -72,8 +71,6 @@ const CONTENT_LEVEL_KEYS: Record<Exclude<Level, ''>, string> = {
 })
 export class EntitiesListComponent {
   private readonly facade = inject(EntitiesListFacade);
-  private readonly route = inject(ActivatedRoute);
-  private readonly homeDecksApi = inject(HomeDecksApi);
   readonly i18n = inject(I18nService);
 
   readonly pageVm$ = this.facade.pageVm$;
@@ -90,42 +87,10 @@ export class EntitiesListComponent {
       : true,
   );
   readonly openFilterMenu = signal<FilterMenuKey | null>(null);
-  readonly curatedDeckMode = signal(!!(this.route.snapshot.queryParamMap.get('deck') ?? '').trim());
-  readonly curatedDeckTitle = signal('');
 
   viewMode: ViewMode = 'explore';
 
   constructor() {
-    this.pageVm$
-      .pipe(
-        map((pageVm) => pageVm.curatedDeckMode),
-        distinctUntilChanged(),
-        tap((isCuratedDeck) => {
-          this.curatedDeckMode.set(isCuratedDeck);
-        }),
-        takeUntilDestroyed(),
-      )
-      .subscribe();
-    this.route.queryParamMap
-      .pipe(
-        map((queryParamMap) => (queryParamMap.get('deck') ?? '').trim()),
-        distinctUntilChanged(),
-        switchMap((deckSlug) => {
-          if (!deckSlug) {
-            return of('');
-          }
-
-          return this.homeDecksApi
-            .listPublic('RECOMMENDED')
-            .pipe(
-              map((decks) => decks.find((deck) => deck.slug === deckSlug)?.title?.trim() || ''),
-            );
-        }),
-        tap((title) => this.curatedDeckTitle.set(title)),
-        takeUntilDestroyed(),
-      )
-      .subscribe();
-
     this.pageVm$
       .pipe(
         map((pageVm) => pageVm.results.items.length),
@@ -213,15 +178,7 @@ export class EntitiesListComponent {
     this.infoPanelOpen.set(false);
   }
 
-  breadcrumbSectionLabel(pageVm: {
-    title: string;
-    type: string;
-    curatedDeckMode: boolean;
-  }): string {
-    if (this.curatedDeckMode()) {
-      return this.i18n.t('nav.curated');
-    }
-
+  breadcrumbSectionLabel(pageVm: { title: string; type: string }): string {
     if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
       return this.i18n.t('nav.articles');
     }
@@ -229,15 +186,7 @@ export class EntitiesListComponent {
     return this.i18n.t('nav.explore');
   }
 
-  breadcrumbSectionRoute(pageVm: {
-    title: string;
-    type: string;
-    curatedDeckMode: boolean;
-  }): string {
-    if (this.curatedDeckMode()) {
-      return '/curated';
-    }
-
+  breadcrumbSectionRoute(pageVm: { title: string; type: string }): string {
     if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
       return '/entities/article';
     }
@@ -245,15 +194,7 @@ export class EntitiesListComponent {
     return '/entities/artwork';
   }
 
-  breadcrumbCurrentLabel(pageVm: {
-    title: string;
-    type: string;
-    curatedDeckMode: boolean;
-  }): string {
-    if (this.curatedDeckMode()) {
-      return this.curatedDeckTitle() || this.i18n.t('nav.curated');
-    }
-
+  breadcrumbCurrentLabel(pageVm: { title: string; type: string }): string {
     if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
       return '';
     }

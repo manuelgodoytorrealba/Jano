@@ -1,0 +1,145 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "Elena Varo desarrolló El jardín inverso",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfni9001g5gfp0x9v8apb",
+        "cmsovfnib001i5gfpjrkqeulr"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "El jardín inverso y Jardín inverso son variantes textuales del mismo título",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "El jardín inverso explora cómo una escena familiar cambia cuando el fondo contradice la dirección de la luz",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr"
+      ]
+    },
+    {
+      "localId": "claim-4",
+      "title": "Elena Varo presentó El jardín inverso en la Galería Umbral",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "PERSON",
+      "title": "Elena Varo",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr",
+        "cmsovfnid001k5gfpha32upqp",
+        "cmsovfnif001m5gfpn9optenu",
+        "cmsovfnig001o5gfp1bcvucju"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "El jardín inverso",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr",
+        "cmsovfnid001k5gfpha32upqp",
+        "cmsovfnif001m5gfpn9optenu"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "Archivo de lluvia",
+      "evidenceIds": [
+        "cmsovfnid001k5gfpha32upqp",
+        "cmsovfnif001m5gfpn9optenu"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ABSTRACTION",
+      "title": "Memoria doméstica",
+      "evidenceIds": [
+        "cmsovfnid001k5gfpha32upqp",
+        "cmsovfnif001m5gfpn9optenu"
+      ]
+    },
+    {
+      "localId": "entity-5",
+      "kind": "PLACE",
+      "title": "Valle del Río Arce",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr",
+        "cmsovfnif001m5gfpn9optenu"
+      ]
+    },
+    {
+      "localId": "entity-6",
+      "kind": "ORGANIZATION",
+      "title": "Galería Umbral",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr",
+        "cmsovfnif001m5gfpn9optenu"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr",
+        "cmsovfnid001k5gfpha32upqp"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovfnid001k5gfpha32upqp"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-3",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-4",
+      "evidenceIds": [
+        "cmsovfnid001k5gfpha32upqp",
+        "cmsovfnif001m5gfpn9optenu"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-4",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-5",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr"
+      ],
+      "relationTypeId": "relation-type-located-in"
+    },
+    {
+      "localId": "relation-5",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-6",
+      "evidenceIds": [
+        "cmsovfnib001i5gfpjrkqeulr"
+      ],
+      "relationTypeId": "relation-type-curated-with"
+    }
+  ]
+}

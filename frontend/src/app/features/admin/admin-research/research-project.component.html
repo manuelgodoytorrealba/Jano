@@ -1,12 +1,19 @@
-<main class="research-project">
-  @if (vm$ | async; as vm) {
+@if (vm$ | async; as vm) {
+  <main
+    class="research-project jano-research-studio"
+    [class.is-publication]="vm.mode === 'publication'"
+  >
     @if (vm.project; as project) {
       <header class="research-project__header">
         <a class="research-project__back" routerLink="/admin/research">
           <span aria-hidden="true">←</span>
           Investigaciones
         </a>
-        <nav class="research-project__breadcrumb" aria-label="Miga de pan">
+        <nav
+          class="research-project__breadcrumb"
+          [class.is-publication]="vm.mode === 'publication'"
+          aria-label="Miga de pan"
+        >
           <a routerLink="/admin/research">Research Studio</a><span>/</span
           ><span>{{ project.title }}</span>
           <ng-template #materialIntake let-project let-libraryMaterials="libraryMaterials">
@@ -109,9 +116,11 @@
             <span>/</span><strong>{{ section.title }}</strong>
           }
         </nav>
-        <p class="research-project__eyebrow">Índice de investigación</p>
-        <h1>{{ project.title }}</h1>
-        <p>{{ project.objective }}</p>
+        @if (vm.mode !== 'publication') {
+          <p class="research-project__eyebrow">Índice de investigación</p>
+          <h1>{{ project.title }}</h1>
+          <p>{{ project.objective }}</p>
+        }
         <nav class="research-project__modes" aria-label="Modo de trabajo">
           @for (mode of modes; track mode.id) {
             <button
@@ -136,298 +145,314 @@
         </button>
       </header>
 
-      <section class="research-project__layout">
-        <aside class="research-project__outline" aria-label="Índice de la investigación">
-          <div class="research-project__studio-brand">
-            @if (project.coverImageUrl) {
-              <img class="research-project__studio-mark" [src]="project.coverImageUrl" alt="" />
-            } @else {
-              <span class="research-project__studio-mark">J</span>
-            }
-            <div><strong>JANO</strong><small>Research Studio</small></div>
-          </div>
-          <div class="research-project__active-research">
-            <small>Investigación activa</small>
-            <select
-              [ngModel]="project.id"
-              [ngModelOptions]="{ standalone: true }"
-              (ngModelChange)="switchResearch($event)"
-              aria-label="Cambiar investigación activa"
-            >
-              @if (!vm.projects.length) {
-                <option [value]="project.id">{{ project.title }}</option>
-              }
-              @for (research of vm.projects; track research.id) {
-                <option [value]="research.id">{{ research.title }}</option>
-              }
-            </select>
-            <details class="research-project__cover-control">
-              <summary>{{ project.coverImageUrl ? 'Cambiar portada' : 'Añadir portada' }}</summary>
-              <label
-                class="research-project__cover-dropzone"
-                (dragover)="dragProjectCoverOver($event)"
-                (drop)="dropProjectCover($event, project)"
-              >
-                <span>{{
-                  projectCoverUploading ? 'Subiendo portada…' : 'Arrastra una imagen o selecciónala'
-                }}</span>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-                  [disabled]="projectCoverUploading"
-                  (change)="selectProjectCover($event, project)"
-                />
-              </label>
+      <section
+        class="research-project__layout"
+        [class.research-project__layout--publication]="vm.mode === 'publication'"
+      >
+        @if (vm.mode !== 'publication') {
+          <aside class="research-project__outline" aria-label="Índice de la investigación">
+            <div class="research-project__studio-brand">
               @if (project.coverImageUrl) {
-                <button type="button" (click)="clearProjectCover(project)">Retirar portada</button>
+                <img class="research-project__studio-mark" [src]="project.coverImageUrl" alt="" />
+              } @else {
+                <span class="research-project__studio-mark">J</span>
               }
-            </details>
-          </div>
-          @if (vm.mode === 'index') {
-            <div class="research-project__section-head">
-              <div>
-                <p class="research-project__eyebrow">Estructura</p>
-                <h2>Índice</h2>
-              </div>
-              <span>{{ project.outlineSections.length }} secciones</span>
+              <div><strong>JANO</strong><small>Research Studio</small></div>
             </div>
-            @if (!subsectionParentId) {
-              <form class="research-project__create" (ngSubmit)="createSection(project)">
-                <input name="sectionTitle" [(ngModel)]="title" placeholder="Nueva sección" />
-                <button type="submit" [disabled]="!title.trim()">Añadir</button>
-              </form>
-            }
-            @if (error) {
-              <p class="research-project__error">{{ error }}</p>
-            }
-            @if (project.outlineSections.length) {
-              <ol class="research-project__tree">
-                @for (section of roots(project); track section.id) {
-                  <li>
-                    <div
-                      class="research-project__tree-row"
-                      draggable="true"
-                      [class.is-dragging]="draggedSection?.id === section.id"
-                      [class.is-drop-before]="
-                        dropTargetSectionId === section.id && !dropAfterTarget
-                      "
-                      [class.is-drop-after]="dropTargetSectionId === section.id && dropAfterTarget"
-                      (dragstart)="startSectionDrag($event, section)"
-                      (dragover)="dragSectionOver($event, section)"
-                      (drop)="dropSection($event, project, section)"
-                      (dragend)="finishSectionDrag()"
-                    >
-                      @if (
-                        children(project, section.id).length || subsectionParentId === section.id
-                      ) {
-                        <button
-                          type="button"
-                          class="research-project__tree-toggle"
-                          [attr.aria-label]="
-                            (isSectionCollapsed(section.id) ? 'Expandir ' : 'Contraer ') +
-                            section.title
-                          "
-                          [attr.aria-expanded]="!isSectionCollapsed(section.id)"
-                          (click)="toggleSection(section.id)"
-                        >
-                          <span aria-hidden="true">›</span>
-                        </button>
-                      } @else {
-                        <span class="research-project__tree-toggle-spacer"></span>
-                      }
-                      <button
-                        type="button"
-                        class="research-project__tree-entry"
-                        [class.is-active]="section.id === vm.activeSection?.id"
-                        (click)="openSection(project, section)"
+            <div class="research-project__active-research">
+              <small>Investigación activa</small>
+              <select
+                [ngModel]="project.id"
+                [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="switchResearch($event)"
+                aria-label="Cambiar investigación activa"
+              >
+                @if (!vm.projects.length) {
+                  <option [value]="project.id">{{ project.title }}</option>
+                }
+                @for (research of vm.projects; track research.id) {
+                  <option [value]="research.id">{{ research.title }}</option>
+                }
+              </select>
+              <details class="research-project__cover-control">
+                <summary>
+                  {{ project.coverImageUrl ? 'Cambiar portada' : 'Añadir portada' }}
+                </summary>
+                <label
+                  class="research-project__cover-dropzone"
+                  (dragover)="dragProjectCoverOver($event)"
+                  (drop)="dropProjectCover($event, project)"
+                >
+                  <span>{{
+                    projectCoverUploading
+                      ? 'Subiendo portada…'
+                      : 'Arrastra una imagen o selecciónala'
+                  }}</span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                    [disabled]="projectCoverUploading"
+                    (change)="selectProjectCover($event, project)"
+                  />
+                </label>
+                @if (project.coverImageUrl) {
+                  <button type="button" (click)="clearProjectCover(project)">
+                    Retirar portada
+                  </button>
+                }
+              </details>
+            </div>
+            @if (vm.mode === 'index') {
+              <div class="research-project__section-head">
+                <div>
+                  <p class="research-project__eyebrow">Estructura</p>
+                  <h2>Índice</h2>
+                </div>
+                <span>{{ project.outlineSections.length }} secciones</span>
+              </div>
+              @if (!subsectionParentId) {
+                <form class="research-project__create" (ngSubmit)="createSection(project)">
+                  <input name="sectionTitle" [(ngModel)]="title" placeholder="Nueva sección" />
+                  <button type="submit" [disabled]="!title.trim()">Añadir</button>
+                </form>
+              }
+              @if (error) {
+                <p class="research-project__error">{{ error }}</p>
+              }
+              @if (project.outlineSections.length) {
+                <ol class="research-project__tree">
+                  @for (section of roots(project); track section.id) {
+                    <li>
+                      <div
+                        class="research-project__tree-row"
+                        draggable="true"
+                        [class.is-dragging]="draggedSection?.id === section.id"
+                        [class.is-drop-before]="
+                          dropTargetSectionId === section.id && !dropAfterTarget
+                        "
+                        [class.is-drop-after]="
+                          dropTargetSectionId === section.id && dropAfterTarget
+                        "
+                        (dragstart)="startSectionDrag($event, section)"
+                        (dragover)="dragSectionOver($event, section)"
+                        (drop)="dropSection($event, project, section)"
+                        (dragend)="finishSectionDrag()"
                       >
-                        <span class="research-project__tree-label">
-                          <span>{{ section.title }}</span>
+                        @if (
+                          children(project, section.id).length || subsectionParentId === section.id
+                        ) {
+                          <button
+                            type="button"
+                            class="research-project__tree-toggle"
+                            [attr.aria-label]="
+                              (isSectionCollapsed(section.id) ? 'Expandir ' : 'Contraer ') +
+                              section.title
+                            "
+                            [attr.aria-expanded]="!isSectionCollapsed(section.id)"
+                            (click)="toggleSection(section.id)"
+                          >
+                            <span aria-hidden="true">›</span>
+                          </button>
+                        } @else {
+                          <span class="research-project__tree-toggle-spacer"></span>
+                        }
+                        <button
+                          type="button"
+                          class="research-project__tree-entry"
+                          [class.is-active]="section.id === vm.activeSection?.id"
+                          (click)="openSection(project, section)"
+                        >
+                          <span class="research-project__tree-label">
+                            <span>{{ section.title }}</span>
+                          </span>
+                          <span
+                            class="research-project__tree-status"
+                            [class.is-completed]="section.status === 'COMPLETED'"
+                            [class.is-in-progress]="section.status === 'IN_PROGRESS'"
+                            [attr.aria-label]="statusLabel(section.status)"
+                            [title]="statusLabel(section.status)"
+                            >{{ section.status === 'COMPLETED' ? '✓' : '•' }}</span
+                          >
+                        </button>
+                        <span class="research-project__tree-actions">
+                          <button
+                            type="button"
+                            [attr.aria-label]="'Subir ' + section.title"
+                            [disabled]="!canMoveSection(project, section, -1)"
+                            (click)="moveSection(project, section, -1)"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            [attr.aria-label]="'Bajar ' + section.title"
+                            [disabled]="!canMoveSection(project, section, 1)"
+                            (click)="moveSection(project, section, 1)"
+                          >
+                            ↓
+                          </button>
+                          <button
+                            type="button"
+                            [attr.aria-label]="'Añadir subsección a ' + section.title"
+                            (click)="startSubsection(section.id)"
+                          >
+                            +
+                          </button>
+                          <button
+                            type="button"
+                            class="research-project__tree-delete"
+                            [attr.aria-label]="'Eliminar ' + section.title"
+                            (click)="deleteSection(project, section)"
+                          >
+                            ×
+                          </button>
                         </span>
-                        <span
-                          class="research-project__tree-status"
-                          [class.is-completed]="section.status === 'COMPLETED'"
-                          [class.is-in-progress]="section.status === 'IN_PROGRESS'"
-                          [attr.aria-label]="statusLabel(section.status)"
-                          [title]="statusLabel(section.status)"
-                          >{{ section.status === 'COMPLETED' ? '✓' : '•' }}</span
-                        >
-                      </button>
-                      <span class="research-project__tree-actions">
-                        <button
-                          type="button"
-                          [attr.aria-label]="'Subir ' + section.title"
-                          [disabled]="!canMoveSection(project, section, -1)"
-                          (click)="moveSection(project, section, -1)"
-                        >
-                          ↑
-                        </button>
-                        <button
-                          type="button"
-                          [attr.aria-label]="'Bajar ' + section.title"
-                          [disabled]="!canMoveSection(project, section, 1)"
-                          (click)="moveSection(project, section, 1)"
-                        >
-                          ↓
-                        </button>
-                        <button
-                          type="button"
-                          [attr.aria-label]="'Añadir subsección a ' + section.title"
-                          (click)="startSubsection(section.id)"
-                        >
-                          +
-                        </button>
-                        <button
-                          type="button"
-                          class="research-project__tree-delete"
-                          [attr.aria-label]="'Eliminar ' + section.title"
-                          (click)="deleteSection(project, section)"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    </div>
-                    @if (
-                      !isSectionCollapsed(section.id) &&
-                      (children(project, section.id).length || subsectionParentId === section.id)
-                    ) {
-                      <ol>
-                        @for (child of children(project, section.id); track child.id) {
-                          <li>
-                            <div
-                              class="research-project__tree-row"
-                              draggable="true"
-                              [class.is-dragging]="draggedSection?.id === child.id"
-                              [class.is-drop-before]="
-                                dropTargetSectionId === child.id && !dropAfterTarget
-                              "
-                              [class.is-drop-after]="
-                                dropTargetSectionId === child.id && dropAfterTarget
-                              "
-                              (dragstart)="startSectionDrag($event, child)"
-                              (dragover)="dragSectionOver($event, child)"
-                              (drop)="dropSection($event, project, child)"
-                              (dragend)="finishSectionDrag()"
-                            >
-                              <span class="research-project__tree-toggle-spacer"></span>
-                              <button
-                                type="button"
-                                class="research-project__tree-entry"
-                                [class.is-active]="child.id === vm.activeSection?.id"
-                                (click)="openSection(project, child)"
+                      </div>
+                      @if (
+                        !isSectionCollapsed(section.id) &&
+                        (children(project, section.id).length || subsectionParentId === section.id)
+                      ) {
+                        <ol>
+                          @for (child of children(project, section.id); track child.id) {
+                            <li>
+                              <div
+                                class="research-project__tree-row"
+                                draggable="true"
+                                [class.is-dragging]="draggedSection?.id === child.id"
+                                [class.is-drop-before]="
+                                  dropTargetSectionId === child.id && !dropAfterTarget
+                                "
+                                [class.is-drop-after]="
+                                  dropTargetSectionId === child.id && dropAfterTarget
+                                "
+                                (dragstart)="startSectionDrag($event, child)"
+                                (dragover)="dragSectionOver($event, child)"
+                                (drop)="dropSection($event, project, child)"
+                                (dragend)="finishSectionDrag()"
                               >
-                                <span class="research-project__tree-label">
-                                  <span>{{ child.title }}</span>
+                                <span class="research-project__tree-toggle-spacer"></span>
+                                <button
+                                  type="button"
+                                  class="research-project__tree-entry"
+                                  [class.is-active]="child.id === vm.activeSection?.id"
+                                  (click)="openSection(project, child)"
+                                >
+                                  <span class="research-project__tree-label">
+                                    <span>{{ child.title }}</span>
+                                  </span>
+                                  <span
+                                    class="research-project__tree-status"
+                                    [class.is-completed]="child.status === 'COMPLETED'"
+                                    [class.is-in-progress]="child.status === 'IN_PROGRESS'"
+                                    [attr.aria-label]="statusLabel(child.status)"
+                                    [title]="statusLabel(child.status)"
+                                    >{{ child.status === 'COMPLETED' ? '✓' : '•' }}</span
+                                  >
+                                </button>
+                                <span class="research-project__tree-actions">
+                                  <button
+                                    type="button"
+                                    [attr.aria-label]="'Subir ' + child.title"
+                                    [disabled]="!canMoveSection(project, child, -1)"
+                                    (click)="moveSection(project, child, -1)"
+                                  >
+                                    ↑
+                                  </button>
+                                  <button
+                                    type="button"
+                                    [attr.aria-label]="'Bajar ' + child.title"
+                                    [disabled]="!canMoveSection(project, child, 1)"
+                                    (click)="moveSection(project, child, 1)"
+                                  >
+                                    ↓
+                                  </button>
+                                  <button
+                                    type="button"
+                                    class="research-project__tree-delete"
+                                    [attr.aria-label]="'Eliminar ' + child.title"
+                                    (click)="deleteSection(project, child)"
+                                  >
+                                    ×
+                                  </button>
                                 </span>
-                                <span
-                                  class="research-project__tree-status"
-                                  [class.is-completed]="child.status === 'COMPLETED'"
-                                  [class.is-in-progress]="child.status === 'IN_PROGRESS'"
-                                  [attr.aria-label]="statusLabel(child.status)"
-                                  [title]="statusLabel(child.status)"
-                                  >{{ child.status === 'COMPLETED' ? '✓' : '•' }}</span
-                                >
-                              </button>
-                              <span class="research-project__tree-actions">
+                              </div>
+                            </li>
+                          }
+                          @if (subsectionParentId === section.id) {
+                            <li>
+                              <form
+                                class="research-project__create research-project__create--nested"
+                                (ngSubmit)="createSection(project, section.id)"
+                              >
+                                <input
+                                  name="subsectionTitle"
+                                  [(ngModel)]="title"
+                                  placeholder="Nueva subsección"
+                                />
+                                <button type="submit" [disabled]="!title.trim()">Añadir</button>
                                 <button
                                   type="button"
-                                  [attr.aria-label]="'Subir ' + child.title"
-                                  [disabled]="!canMoveSection(project, child, -1)"
-                                  (click)="moveSection(project, child, -1)"
-                                >
-                                  ↑
-                                </button>
-                                <button
-                                  type="button"
-                                  [attr.aria-label]="'Bajar ' + child.title"
-                                  [disabled]="!canMoveSection(project, child, 1)"
-                                  (click)="moveSection(project, child, 1)"
-                                >
-                                  ↓
-                                </button>
-                                <button
-                                  type="button"
-                                  class="research-project__tree-delete"
-                                  [attr.aria-label]="'Eliminar ' + child.title"
-                                  (click)="deleteSection(project, child)"
+                                  class="research-project__create-cancel"
+                                  aria-label="Cancelar subsección"
+                                  (click)="cancelSubsection()"
                                 >
                                   ×
                                 </button>
-                              </span>
-                            </div>
-                          </li>
-                        }
-                        @if (subsectionParentId === section.id) {
-                          <li>
-                            <form
-                              class="research-project__create research-project__create--nested"
-                              (ngSubmit)="createSection(project, section.id)"
-                            >
-                              <input
-                                name="subsectionTitle"
-                                [(ngModel)]="title"
-                                placeholder="Nueva subsección"
-                                autofocus
-                              />
-                              <button type="submit" [disabled]="!title.trim()">Añadir</button>
-                              <button
-                                type="button"
-                                class="research-project__create-cancel"
-                                aria-label="Cancelar subsección"
-                                (click)="cancelSubsection()"
-                              >
-                                ×
-                              </button>
-                            </form>
-                          </li>
-                        }
-                      </ol>
-                    }
-                  </li>
-                }
-              </ol>
-            } @else {
-              <div class="research-project__empty-outline">
-                <h3>El argumento empieza aquí.</h3>
-                <p>Crea la primera sección para delimitar una cuestión editorial.</p>
-              </div>
-            }
-          } @else if (vm.mode === 'corpus') {
-            <section class="research-project__corpus-context">
-              <small>Corpus asociado</small>
-              <strong>{{ project.materials.length }} materiales</strong>
-              <p>
-                Esta selección pertenece a la investigación. Los materiales viven en Biblioteca y
-                pueden reutilizarse en otros Research sin duplicarlos.
-              </p>
-              @if (project.materials.length) {
-                <nav class="research-project__corpus-materials" aria-label="Materiales del corpus">
-                  @for (material of project.materials; track material.id) {
-                    <button
-                      type="button"
-                      [class.is-selected]="readerMaterialId(project) === material.id"
-                      [class.is-unavailable]="!isReadableMaterial(material)"
-                      [attr.aria-disabled]="!isReadableMaterial(material)"
-                      aria-haspopup="menu"
-                      (click)="selectMaterial(material)"
-                      (contextmenu)="openMaterialMenu($event, material)"
-                    >
-                      <span aria-hidden="true">{{ material.kind }}</span>
-                      <span>
-                        <strong>{{ material.title }}</strong>
-                        <small>{{ materialStatusLabel(material) }}</small>
-                      </span>
-                    </button>
+                              </form>
+                            </li>
+                          }
+                        </ol>
+                      }
+                    </li>
                   }
-                </nav>
+                </ol>
+              } @else {
+                <div class="research-project__empty-outline">
+                  <h3>El argumento empieza aquí.</h3>
+                  <p>Crea la primera sección para delimitar una cuestión editorial.</p>
+                </div>
               }
-            </section>
-          }
-        </aside>
+            } @else if (vm.mode === 'corpus') {
+              <section class="research-project__corpus-context">
+                <small>Corpus asociado</small>
+                <strong>{{ project.materials.length }} materiales</strong>
+                <p>
+                  Esta selección pertenece a la investigación. Los materiales viven en Biblioteca y
+                  pueden reutilizarse en otros Research sin duplicarlos.
+                </p>
+                @if (project.materials.length) {
+                  <nav
+                    class="research-project__corpus-materials"
+                    aria-label="Materiales del corpus"
+                  >
+                    @for (material of project.materials; track material.id) {
+                      <button
+                        type="button"
+                        [class.is-selected]="readerMaterialId(project) === material.id"
+                        [class.is-unavailable]="!isReadableMaterial(material)"
+                        [attr.aria-disabled]="!isReadableMaterial(material)"
+                        aria-haspopup="menu"
+                        (click)="selectMaterial(material)"
+                        (contextmenu)="openMaterialMenu($event, material)"
+                      >
+                        <span aria-hidden="true">{{ material.kind }}</span>
+                        <span>
+                          <strong>{{ material.title }}</strong>
+                          <small>{{ materialStatusLabel(material) }}</small>
+                        </span>
+                      </button>
+                    }
+                  </nav>
+                }
+              </section>
+            }
+          </aside>
+        }
 
         <section
           class="research-project__workspace"
           [class.research-project__workspace--corpus]="vm.mode === 'corpus'"
+          [class.research-project__workspace--sources]="vm.mode === 'sources'"
           aria-live="polite"
         >
           @if (vm.mode === 'corpus') {
@@ -466,13 +491,26 @@
                 <app-research-material-reader
                   [researchId]="project.id"
                   [materials]="project.materials"
+                  [evidence]="project.evidence"
                   [selectedMaterialId]="readerMaterialId(project)"
                   [showMaterialList]="false"
                   (excerptCreated)="refreshResearch()"
+                  (dataChanged)="refreshResearch()"
                   (retryRequested)="retryMaterial(project, $event)"
                 />
               }
             </div>
+          } @else if (vm.mode === 'sources') {
+            <app-research-sources-workspace
+              [researchId]="project.id"
+              [sources]="project.sources"
+              [materials]="project.materials"
+              [libraryMaterials]="vm.libraryMaterials"
+              [evidence]="project.evidence"
+              [citations]="project.citations"
+              [materialCount]="project.materials.length"
+              (saved)="refreshResearch()"
+            />
           } @else if (vm.mode === 'index' && vm.activeSection; as section) {
             <div class="research-project__section-workspace">
               <section class="research-project__draft" aria-labelledby="section-draft-title">
@@ -1307,8 +1345,10 @@
                   <app-research-material-reader
                     [researchId]="project.id"
                     [materials]="project.materials"
+                    [evidence]="project.evidence"
                     [focusExcerpt]="reviewExcerpt"
                     (excerptCreated)="prepareEvidenceFromExcerpt($event)"
+                    (dataChanged)="refreshResearch()"
                     (retryRequested)="retryMaterial(project, $event)"
                   />
 
@@ -1327,6 +1367,7 @@
                     [sources]="project.sources"
                     [evidence]="project.evidence"
                     [excerpt]="preparedExcerpt"
+                    [allowSourceAssociation]="false"
                     (saved)="refreshResearch()"
                     (excerptUsed)="clearPreparedExcerpt()"
                   />
@@ -1364,6 +1405,16 @@
               >
               <span>Actualizada {{ section.updatedAt | date: 'd MMM y, HH:mm' }}</span>
             </footer>
+          } @else if (vm.mode === 'entities') {
+            <app-research-entities-workspace
+              [researchId]="project.id"
+              [evidence]="project.evidence"
+            />
+          } @else if (vm.mode === 'publication') {
+            <app-research-publication-workspace
+              [project]="project"
+              [activeTab]="vm.publicationTab"
+            />
           } @else {
             <div class="research-project__workspace-empty">
               <p class="research-project__eyebrow">
@@ -1404,5 +1455,5 @@
     } @else {
       <div class="research-project__error">{{ vm.error }}</div>
     }
-  }
-</main>
+  </main>
+}

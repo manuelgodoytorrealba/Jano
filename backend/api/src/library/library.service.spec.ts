@@ -135,8 +135,9 @@ describe('LibraryService', () => {
         materialVersionId: 'version-1',
         locator: 'page=4',
         text: 'Pasaje verificable',
+        isHighlight: true,
       }),
-      update: {},
+      update: { isHighlight: true },
     });
   });
 

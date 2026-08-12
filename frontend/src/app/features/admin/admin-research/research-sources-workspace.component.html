@@ -1,0 +1,365 @@
+<section class="research-sources" aria-label="Fuentes de la investigación">
+  <header class="research-sources__hero">
+    <div>
+      <p>Procedencia</p>
+      <h2>Fuentes citadas</h2>
+      <span>Decide qué materiales de trabajo acompañarán a la investigación publicada.</span>
+    </div>
+    <aside class="research-sources__help">
+      <strong>◉ Cómo funciona Fuentes</strong
+      ><span>Entiende la diferencia entre Fuente, Material, Extracto y Evidencia.</span
+      ><button type="button" (click)="guideOpen = !guideOpen">Ver guía →</button>
+    </aside>
+  </header>
+
+  @if (guideOpen) {
+    <aside class="research-sources__guide" aria-live="polite">
+      <strong>Fuente</strong><span>Referencia bibliográfica o editorial.</span
+      ><strong>Material</strong><span>El PDF, URL o texto que lees.</span><strong>Extracto</strong
+      ><span>Un fragmento guardado del material.</span><strong>Evidencia</strong
+      ><span>La interpretación de qué demuestra ese fragmento.</span>
+    </aside>
+  }
+
+  <form class="research-sources__search" (ngSubmit)="searchSources()">
+    <label for="research-source-search">Buscar en Biblioteca y fuentes</label>
+    <div>
+      <input
+        id="research-source-search"
+        name="sourceSearch"
+        [(ngModel)]="search"
+        placeholder="Título, autor, editorial o URL"
+      /><select name="searchType" [(ngModel)]="searchType" aria-label="Tipo de búsqueda">
+        <option value="all">Todos</option>
+        <option value="sources">Fuentes</option>
+        <option value="materials">Materiales</option></select
+      ><button type="submit" [disabled]="searching || !search.trim()">
+        {{ searching ? 'Buscando…' : 'Buscar' }}
+      </button>
+    </div>
+  </form>
+
+  <div class="research-sources__workspace">
+    <section
+      class="research-sources__column research-sources__discover"
+      aria-label="Buscar en Biblioteca y fuentes"
+    >
+      <header>
+        <span class="research-sources__step">1</span>
+        <h3>Buscar en Biblioteca y fuentes</h3>
+      </header>
+      <nav class="research-sources__tabs" aria-label="Resultados de búsqueda">
+        <button
+          type="button"
+          [class.is-active]="searchTab === 'sources'"
+          (click)="searchTab = 'sources'"
+        >
+          Fuentes</button
+        ><button
+          type="button"
+          [class.is-active]="searchTab === 'materials'"
+          (click)="searchTab = 'materials'"
+        >
+          Materiales
+        </button>
+      </nav>
+      <div class="research-sources__column-content">
+        @if (searchTab === 'sources') {
+          @for (source of visibleSourceResults(); track source.id) {
+            <article class="research-sources__result">
+              <span class="research-sources__type research-sources__type--source">▣</span>
+              <div>
+                <strong>{{ source.title }}</strong
+                ><small>{{ sourceMeta(source) || sourceTypeLabel(source.type) }}</small
+                ><em>{{ sourceTypeLabel(source.type) }}</em>
+              </div>
+              <div class="research-sources__result-actions">
+                @if (source.url) {
+                  <a [href]="source.url" target="_blank" rel="noopener">Ver</a>
+                }
+                <button
+                  type="button"
+                  [disabled]="isAssociated(source.id) || associating"
+                  (click)="associateSource(source)"
+                >
+                  {{ isAssociated(source.id) ? 'Añadida' : '+ Añadir' }}
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <p class="research-sources__empty">
+              {{
+                hasSearched
+                  ? 'No hay fuentes que coincidan.'
+                  : 'Busca una fuente canónica para añadirla a esta investigación.'
+              }}
+            </p>
+          }
+        } @else {
+          @for (material of visibleMaterialResults(); track material.id) {
+            <article class="research-sources__result">
+              <span class="research-sources__type research-sources__type--material">▤</span>
+              <div>
+                <strong>{{ material.title }}</strong
+                ><small>{{ materialMeta(material) }}</small
+                ><em>{{ material.kind }}</em>
+              </div>
+              <div class="research-sources__result-actions">
+                @if (material.version?.url) {
+                  <a [href]="material.version?.url" target="_blank" rel="noopener">Ver</a>
+                }
+                <button
+                  type="button"
+                  [disabled]="isInCorpus(material.id) || associating"
+                  (click)="addMaterial(material.id)"
+                >
+                  {{ isInCorpus(material.id) ? 'En Corpus' : '+ Añadir' }}
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <p class="research-sources__empty">
+              {{
+                hasSearched
+                  ? 'No hay materiales que coincidan.'
+                  : 'Busca materiales existentes en Biblioteca.'
+              }}
+            </p>
+          }
+        }
+      </div>
+    </section>
+
+    <section
+      class="research-sources__column research-sources__worked"
+      aria-label="Trabajo realizado en esta investigación"
+    >
+      <header>
+        <span class="research-sources__step">2</span>
+        <h3>Ya trabajaste en esta investigación</h3>
+      </header>
+      <nav class="research-sources__tabs" aria-label="Trabajo realizado">
+        <button
+          type="button"
+          [class.is-active]="workedTab === 'materials'"
+          (click)="workedTab = 'materials'"
+        >
+          Materiales <span>{{ materials.length }}</span></button
+        ><button
+          type="button"
+          [class.is-active]="workedTab === 'excerpts'"
+          (click)="workedTab = 'excerpts'"
+        >
+          Extractos <span>{{ excerptCount() }}</span></button
+        ><button
+          type="button"
+          [class.is-active]="workedTab === 'evidence'"
+          (click)="workedTab = 'evidence'"
+        >
+          Evidencias <span>{{ evidence.length }}</span>
+        </button>
+      </nav>
+      <p class="research-sources__recent">Recientes <span>↕ Más recientes</span></p>
+      <div class="research-sources__column-content">
+        @if (workedTab === 'materials') {
+          @for (material of visibleMaterials(); track material.id) {
+            <article class="research-sources__work-card research-sources__work-card--material">
+              <strong>{{ material.title }}</strong
+              ><small
+                >{{ material.kind }} ·
+                {{ material.sourceId ? 'Fuente asociada' : 'Sin fuente asociada' }}</small
+              ><button
+                type="button"
+                [disabled]="isCited('material', material.id) || citingMaterialId === material.id"
+                (click)="citeItem('material', material.id, material.sourceId ?? undefined)"
+              >
+                {{ citeLabel('material', material.id) }}
+              </button>
+            </article>
+          } @empty {
+            <p class="research-sources__empty">Aún no hay materiales en el Corpus.</p>
+          }
+          @if (materials.length > 3) {
+            <button
+              class="research-sources__show-all"
+              type="button"
+              (click)="showAllMaterials = !showAllMaterials"
+            >
+              {{
+                showAllMaterials
+                  ? 'Mostrar menos'
+                  : 'Ver todos los materiales (' + materials.length + ')'
+              }}
+              →
+            </button>
+          }
+        } @else if (workedTab === 'excerpts') {
+          @for (excerpt of visibleExcerpts(); track excerpt.id) {
+            <article class="research-sources__work-card research-sources__work-card--excerpt">
+              <strong>{{ excerptTitle(excerpt.text) }}</strong
+              ><small>Material: {{ excerpt.material.title }}</small>
+              <blockquote>“{{ preview(excerpt.text, 150) }}”</blockquote>
+              <span>Caracteres {{ excerpt.locator.replace('caracteres ', '') }}</span>
+              <div>
+                <button
+                  type="button"
+                  [disabled]="isCited('excerpt', excerpt.id) || citingMaterialId === excerpt.id"
+                  (click)="citeItem('excerpt', excerpt.id, excerpt.material.sourceId ?? undefined)"
+                >
+                  {{ citeLabel('excerpt', excerpt.id) }}
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <p class="research-sources__empty">Aún no hay extractos guardados.</p>
+          }
+          @if (excerptCount() > 3) {
+            <button
+              class="research-sources__show-all"
+              type="button"
+              (click)="showAllExcerpts = !showAllExcerpts"
+            >
+              {{
+                showAllExcerpts
+                  ? 'Mostrar menos'
+                  : 'Ver todos los extractos (' + excerptCount() + ')'
+              }}
+              →
+            </button>
+          }
+        } @else {
+          @for (item of visibleEvidence(); track item.id) {
+            <article class="research-sources__work-card research-sources__work-card--evidence">
+              <small>Sostiene</small><strong>{{ evidenceStatement(item) }}</strong
+              ><small>Pasaje · {{ item.locator }}</small>
+              <blockquote>“{{ evidencePassage(item) }}”</blockquote>
+              <button
+                type="button"
+                [disabled]="isCited('evidence', item.id) || citingMaterialId === item.id"
+                (click)="citeItem('evidence', item.id, item.sourceId)"
+              >
+                {{ citeLabel('evidence', item.id) }}
+              </button>
+            </article>
+          } @empty {
+            <p class="research-sources__empty">
+              Convierte un extracto en evidencia para explicarlo aquí.
+            </p>
+          }
+          @if (evidence.length > 3) {
+            <button
+              class="research-sources__show-all"
+              type="button"
+              (click)="showAllEvidence = !showAllEvidence"
+            >
+              {{
+                showAllEvidence
+                  ? 'Mostrar menos'
+                  : 'Ver todas las evidencias (' + evidence.length + ')'
+              }}
+              →
+            </button>
+          }
+        }
+      </div>
+    </section>
+
+    <section
+      class="research-sources__column research-sources__publication"
+      aria-label="Fuentes que aparecerán en Publicación"
+    >
+      <header>
+        <span class="research-sources__step">3</span>
+        <h3>Fuentes que aparecerán en Publicación</h3>
+        <span class="research-sources__count">{{ sources.length }}</span>
+      </header>
+      <div class="research-sources__column-content">
+        @for (item of sources; track item.sourceId) {
+          <article class="research-sources__publication-card">
+            <div class="research-sources__publication-head">
+              <span class="research-sources__type research-sources__type--source">▣</span>
+              <div>
+                <strong>{{ item.source?.title ?? 'Fuente sin título' }}</strong
+                ><small>{{
+                  sourceMeta($any(item.source)) || sourceTypeLabel(item.source?.type)
+                }}</small>
+              </div>
+              <button type="button" class="is-danger" (click)="removeSource(item.sourceId)">
+                Quitar
+              </button>
+            </div>
+            @if (publicationSelections(item.sourceId).length) {
+              <p>
+                Incluye:
+                <mark
+                  >{{ publicationExcerptCount(item.sourceId) }}
+                  {{
+                    publicationExcerptCount(item.sourceId) === 1 ? 'extracto' : 'extractos'
+                  }}</mark
+                >
+                <mark class="is-evidence"
+                  >{{ publicationEvidenceCount(item.sourceId) }}
+                  {{
+                    publicationEvidenceCount(item.sourceId) === 1 ? 'evidencia' : 'evidencias'
+                  }}</mark
+                >
+              </p>
+              <ol>
+                @for (citation of visiblePublicationSelections(item.sourceId); track citation.id) {
+                  <li>
+                    <span [class.is-evidence]="citation.evidenceId">{{
+                      citation.evidenceId
+                        ? '● Evidencia'
+                        : citation.libraryExcerptId
+                          ? '● Extracto'
+                          : '● Material'
+                    }}</span
+                    ><strong>{{ citationLabel(citation) }}</strong
+                    ><small>{{ citationLocator(citation) }}</small
+                    ><b>›</b>
+                  </li>
+                }
+              </ol>
+              @if (hiddenPublicationSelectionCount(item.sourceId)) {
+                <small class="research-sources__more-selections"
+                  >+ {{ hiddenPublicationSelectionCount(item.sourceId) }} selecciones más</small
+                >
+              }
+            } @else {
+              <p class="research-sources__publication-empty">
+                Fuente asociada sin una selección concreta.
+              </p>
+            }
+          </article>
+        } @empty {
+          <p class="research-sources__empty">
+            Aún no has decidido qué fuentes acompañarán la publicación.
+          </p>
+        }
+      </div>
+    </section>
+  </div>
+
+  @if (error) {
+    <p class="research-sources__error" role="alert">{{ error }}</p>
+  }
+
+  <footer class="research-sources__legend">
+    <div>
+      <b class="is-source">▣</b><strong>Fuente</strong
+      ><span>Referencia bibliográfica o editorial. No es el archivo.</span>
+    </div>
+    <div>
+      <b class="is-material">▤</b><strong>Material</strong
+      ><span>El PDF, URL o texto que lees.</span>
+    </div>
+    <div>
+      <b class="is-excerpt">◆</b><strong>Extracto</strong
+      ><span>Un fragmento guardado del Material.</span>
+    </div>
+    <div>
+      <b class="is-evidence">✦</b><strong>Evidencia</strong
+      ><span>La interpretación de qué demuestra ese fragmento.</span>
+    </div>
+  </footer>
+</section>

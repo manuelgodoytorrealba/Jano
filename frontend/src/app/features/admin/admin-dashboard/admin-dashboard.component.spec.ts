@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { filter, firstValueFrom, of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
-import { AdminHomeDecksApi } from '../../../core/api/admin-home-decks.api';
 import { ResearchApi } from '../../../core/api/research.api';
 import { AdminDashboardComponent } from './admin-dashboard.component';
 
@@ -80,28 +79,10 @@ describe('AdminDashboardComponent', () => {
         ]),
       ),
     };
-    const decksApi = {
-      list: vi.fn().mockReturnValue(
-        of([
-          {
-            id: 'deck-1',
-            surface: 'RECOMMENDED',
-            slug: 'goya',
-            title: 'Goya y la crisis moderna',
-            entities: [],
-            translations: [],
-            isActive: true,
-            updatedAt: '2026-06-30T12:00:00.000Z',
-          },
-        ]),
-      ),
-    };
-
     TestBed.configureTestingModule({
       imports: [AdminDashboardComponent],
       providers: [
         { provide: AdminEntitiesApi, useValue: api },
-        { provide: AdminHomeDecksApi, useValue: decksApi },
         { provide: ResearchApi, useValue: researchApi },
       ],
     });
@@ -112,7 +93,6 @@ describe('AdminDashboardComponent', () => {
           (value) =>
             value.recent.state === 'ready' &&
             value.research.state === 'ready' &&
-            value.decks.state === 'ready' &&
             value.graph.state === 'ready',
         ),
       ),
@@ -141,7 +121,6 @@ describe('AdminDashboardComponent', () => {
     expect(researchApi.list).toHaveBeenCalledOnce();
     expect(vm.research.data[0].title).toBe('Goya y guerra');
     expect(component.researchMeta(vm.research.data[0])).toBe('2 fuentes · 3 evidencias · 1 claims');
-    expect(decksApi.list).toHaveBeenCalledOnce();
     expect(vm.sidebarGroups[0].items[0].count).toBe(1);
     expect(vm.attention).toEqual([
       expect.objectContaining({

@@ -1,0 +1,81 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones, dudas, pruebas descartadas y cambios de vocabulario en el laboratorio de prácticas visuales de la Escuela Delta.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfni4001a5gfp4xl4gj4y",
+        "cmsovfni5001c5gfp3tmiyfml"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "La lectura de huellas es un método de crítica situada que identifica marcas persistentes, pregunta por las condiciones que las modifican y registra interpretaciones abiertas.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsovfni4001a5gfp4xl4gj4y",
+        "cmsovfni5001c5gfp3tmiyfml"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "El cuaderno de proceso",
+      "evidenceIds": [
+        "cmsovfni4001a5gfp4xl4gj4y",
+        "cmsovfni5001c5gfp3tmiyfml"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "La lectura de huellas",
+      "evidenceIds": [
+        "cmsovfni4001a5gfp4xl4gj4y",
+        "cmsovfni5001c5gfp3tmiyfml"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "PERSON",
+      "title": "Noa Mir",
+      "evidenceIds": [
+        "cmsovfni4001a5gfp4xl4gj4y",
+        "cmsovfni5001c5gfp3tmiyfml"
+      ]
+    },
+    {
+      "localId": "entity-4",
+      "kind": "ORGANIZATION",
+      "title": "Escuela Delta",
+      "evidenceIds": [
+        "cmsovfni5001c5gfp3tmiyfml"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovfni4001a5gfp4xl4gj4y",
+        "cmsovfni5001c5gfp3tmiyfml"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-2",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsovfni4001a5gfp4xl4gj4y",
+        "cmsovfni5001c5gfp3tmiyfml"
+      ],
+      "relationTypeId": "relation-type-created-by"
+    }
+  ]
+}

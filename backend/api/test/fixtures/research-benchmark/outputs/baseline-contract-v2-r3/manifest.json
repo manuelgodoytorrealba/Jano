@@ -1,0 +1,144 @@
+{
+  "runId": "baseline-contract-v2-r3",
+  "datasetVersion": "1.0.0",
+  "datasetHash": "ed87b7a72952b65cb28ca4af00da909606e31b05b86c328ca1bc1519437990fe",
+  "createdAt": "2026-08-11T14:41:42.101Z",
+  "commitSha": "7b2206e3fddfd6d15284964623998ef9a3302750",
+  "dirtyWorktree": true,
+  "worktreeDiffHash": "9bcca5ce30af4824e50f1296780bf221748de8f41b0272f60aee509d58ceda31",
+  "provider": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b"
+  },
+  "pipeline": {
+    "task": "research.extract_findings",
+    "contractVersion": "3",
+    "maxCorpusSegments": 80,
+    "maxSegmentChars": 1400,
+    "evidenceBatchSize": 5,
+    "maxOutputTokens": 2400,
+    "entityOutputLimitPerBatch": 6,
+    "temperature": 0.2,
+    "promptAndContractHash": "eb4f34c993c9d318745696709d8a1a1676c05b6ed9a75dacf787d8e11e14b8ad",
+    "providerImplementationHash": "98af91c51414fd0aba56cb70b55545aa95ac6bb2af8bf53ab2807501e683aecc",
+    "providerMetadata": {
+      "provider": "ollama",
+      "model": "qwen2.5:7b"
+    }
+  },
+  "records": {
+    "ownerId": "cmsorqrgh0000qcfp69m6f2mc",
+    "projectId": "cmsorqrgv0001qcfpya2ger66",
+    "jobId": "cmsorqri1000kqcfpt936ykba",
+    "sourceIds": [
+      "cmsorqrgw0002qcfppx3ri48u",
+      "cmsorqrhg0005qcfpyato3bgm",
+      "cmsorqrhk0008qcfpivswv4mu",
+      "cmsorqrhn000bqcfp6vlf73cu",
+      "cmsorqrhq000eqcfpc422xqmb",
+      "cmsorqrhx000hqcfp0c1qk9wi"
+    ],
+    "materialIds": [
+      "cmsorqrh90003qcfp6u59nwo3",
+      "cmsorqrhh0006qcfpbfq8m7sp",
+      "cmsorqrhl0009qcfpd6fblh6j",
+      "cmsorqrho000cqcfpknyvv6ub",
+      "cmsorqrhr000fqcfp7m1y9310",
+      "cmsorqrhx000iqcfpb00oifcg"
+    ],
+    "materialVersionIds": [
+      "cmsorqrha0004qcfpyrwkxl3m",
+      "cmsorqrhh0007qcfp4b7drqsn",
+      "cmsorqrhl000aqcfpgdvyhozq",
+      "cmsorqrho000dqcfplnl2a57c",
+      "cmsorqrhr000gqcfp8uzg7m5v",
+      "cmsorqrhy000jqcfp834x1apo"
+    ]
+  },
+  "documents": [
+    {
+      "id": "01-monograph",
+      "contentHash": "ee97ea139f225e7fd2a533d3ac9f9eacc6fa03799358cf622be1211915d59c34",
+      "sourceId": "cmsorqrgw0002qcfppx3ri48u",
+      "materialId": "cmsorqrh90003qcfp6u59nwo3",
+      "materialVersionId": "cmsorqrha0004qcfpyrwkxl3m"
+    },
+    {
+      "id": "02-theory",
+      "contentHash": "d837381b45706406125ec9070f085992b61c44b67c7b48c9b2c2b1575881ce2b",
+      "sourceId": "cmsorqrhg0005qcfpyato3bgm",
+      "materialId": "cmsorqrhh0006qcfpbfq8m7sp",
+      "materialVersionId": "cmsorqrhh0007qcfp4b7drqsn"
+    },
+    {
+      "id": "03-exhibition",
+      "contentHash": "6c5316d2813c3c3cacf2b551d8b339ac208e00798e1d8894adcca2ee1363c5e6",
+      "sourceId": "cmsorqrhk0008qcfpivswv4mu",
+      "materialId": "cmsorqrhl0009qcfpd6fblh6j",
+      "materialVersionId": "cmsorqrhl000aqcfpgdvyhozq"
+    },
+    {
+      "id": "04-education",
+      "contentHash": "75214957b801998671c96b38658b38a983ba20d8a4786f81bd1c81c915d453eb",
+      "sourceId": "cmsorqrhn000bqcfp6vlf73cu",
+      "materialId": "cmsorqrho000cqcfpknyvv6ub",
+      "materialVersionId": "cmsorqrho000dqcfplnl2a57c"
+    },
+    {
+      "id": "05-aliases",
+      "contentHash": "514c322bc222758f2ad13b4f5ef0bc95e4981916377211fae980e9c42738b71f",
+      "sourceId": "cmsorqrhq000eqcfpc422xqmb",
+      "materialId": "cmsorqrhr000fqcfp7m1y9310",
+      "materialVersionId": "cmsorqrhr000gqcfp8uzg7m5v"
+    },
+    {
+      "id": "06-long-ambiguity",
+      "contentHash": "e819dbcfd244a47aa173b6390484914a0b8ec362f0ed1a5dd8fc902ea4fdb239",
+      "sourceId": "cmsorqrhx000hqcfp0c1qk9wi",
+      "materialId": "cmsorqrhx000iqcfpb00oifcg",
+      "materialVersionId": "cmsorqrhy000jqcfp834x1apo"
+    }
+  ],
+  "aiExecutionIds": [
+    "cmsorqrl10021qcfpkqos89h8",
+    "cmsorr2xg002cqcfpn2rp6f9i",
+    "cmsorrkkj002rqcfp9z636ll7",
+    "cmsorskr0002zqcfphu5acu1b"
+  ],
+  "proposalIds": [
+    "cmsorr2x00022qcfpe6q1ak7p",
+    "cmsorr2x30023qcfplaup2ait",
+    "cmsorr2x50024qcfp5gw801ci",
+    "cmsorr2x60025qcfpccmlauwp",
+    "cmsorr2x70026qcfp1o9d3022",
+    "cmsorr2x90027qcfpihemof1f",
+    "cmsorr2xa0028qcfp8bibmb0i",
+    "cmsorr2xc0029qcfpkj3vjmn5",
+    "cmsorr2xd002aqcfpe61i6gif",
+    "cmsorr2xe002bqcfpb50j0iu4",
+    "cmsorrkjz002dqcfp9ggquzgb",
+    "cmsorrkk2002eqcfpy7hipmv4",
+    "cmsorrkk3002fqcfpm7jv99sk",
+    "cmsorrkk4002gqcfpb8gebedw",
+    "cmsorrkk6002hqcfphvhjuvnz",
+    "cmsorrkk7002iqcfph434wttx",
+    "cmsorrkk8002jqcfpx64q4y3d",
+    "cmsorrkk9002kqcfpnhlq1amm",
+    "cmsorrkka002lqcfpjztm8stv",
+    "cmsorrkkb002mqcfpeds1nb01",
+    "cmsorrkkd002nqcfpljye8k68",
+    "cmsorrkke002oqcfpc4zk5c0q",
+    "cmsorrkkf002pqcfp288sni8h",
+    "cmsorrkkg002qqcfpvuemwfok",
+    "cmsorskqo002sqcfp3bkx0hgk",
+    "cmsorskqr002tqcfp76jzh7rb",
+    "cmsorskqs002uqcfplc0lc50j",
+    "cmsorskqu002vqcfp6caww0rq",
+    "cmsorskqv002wqcfp3hqqrdgq",
+    "cmsorskqw002xqcfp7jovhwrj",
+    "cmsorskqy002yqcfpdlzmy1u5"
+  ],
+  "status": "FAILED",
+  "error": "Ollama transport failed [category=PROVIDER_TRANSPORT_ERROR attempts=1 rawLength=0 finishReason=unknown]",
+  "cleanedUpAt": "2026-08-11T14:44:06.682Z"
+}

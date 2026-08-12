@@ -1,0 +1,166 @@
+[
+  {
+    "id": "cmsoqo76x0021jnfptsqfcadf",
+    "jobId": "cmsoqo741000kjnfpml4kp47i",
+    "projectId": "cmsoqo72z0001jnfponjfh86i",
+    "task": "research.extract_findings",
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "providerVersion": null,
+    "input": {
+      "batch": {
+        "total": 6,
+        "current": 1
+      },
+      "project": {
+        "id": "cmsoqo72z0001jnfponjfh86i",
+        "scope": "Dataset controlado 1.0.0; no es una investigación editorial real.",
+        "title": "[BENCHMARK] baseline-observable",
+        "objective": "Medir detección, clasificación y síntesis de entidades sin conocimiento externo."
+      },
+      "evidence": [
+        {
+          "id": "cmsoqo75d000mjnfpw070u1at",
+          "note": null,
+          "quote": "Iria Sorel y la memoria porosa En Puerto Niebla, una ciudad portuaria imaginada alrededor de almacenes bajos y patios donde la sal se acumula sobre la madera, Iria Sorel ha construido durante quince años una práctica basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos. La artista no presenta esos medios como disciplinas separadas. Los utiliza para observar cómo una casa conserva rastros contradictorios: una marca puede ser testimonio de uso, pero también resultado de una restauración posterior. Sorel llama memoria porosa a esa condición en la que el recuerdo absorbe materiales nuevos sin borrar del todo sus capas anteriores. El Taller Bruma ocupa desde hace ocho años una antigua nave de reparación de redes en el extremo oriental de Puerto Niebla. Allí trabajan Sorel y el encuadernador Nuno Arce. El taller no funciona como escuela ni como galería; es un lugar de producción compartido. Arce construye cajas, pliegos y soportes móviles, mientras Sorel fotografía habitaciones prestadas por familias del barrio. Los créditos de las obras distinguen con claridad ambas tareas: Sorel firma las piezas y Arce aparece como colaborador técnico en los dispositivos de papel. La obra más extensa de este periodo es Casa de sal, una instalación compuesta por cuarenta fotografías, tres mesas y un registro sonoro de puertas. La serie comenzó cuando una viviend",
+          "context": null,
+          "locator": "Segmento 1",
+          "sourceId": "cmsoqo7310002jnfpqh4ch9c0",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsoqo75i000ojnfpcxhzmo44",
+          "note": null,
+          "quote": "a de la calle Marea fue vaciada antes de su rehabilitación. Sorel fotografió las habitaciones después de retirar los muebles y volvió seis meses más tarde, cuando las paredes habían sido pintadas. Las imágenes se muestran por parejas, pero no intentan restaurar un antes y un después estable. Cada pareja deja visible una diferencia que no puede atribuirse con seguridad al tiempo, al encuadre o a la intervención de los nuevos habitantes. Casa de sal no es un documento sobre toda la ciudad. Su escala es deliberadamente doméstica. La instalación pregunta quién puede reconocer una habitación cuando los objetos han desaparecido y qué parte de ese reconocimiento depende de relatos ajenos. En una mesa, sobres translúcidos contienen copias de pequeñas fotografías encontradas; en otra, el público puede leer descripciones de espacios que nunca aparecen en imagen. La tercera permanece vacía y funciona como pausa material. Esta distribución sostiene la idea de memoria porosa sin convertirla en una definición ilustrada. Dos años después, Sorel inició Atlas del umbral, un libro desplegable elaborado en el Taller Bruma con la colaboración técnica de Nuno Arce. El libro reúne dibujos de marcos, bisagras y zonas de paso observadas en doce edificios de Puerto Niebla. Aunque comparte materiales con Casa de sal, Atlas del umbral es una obra distinta. No documenta las mismas viviendas ni pertenece a",
+          "context": null,
+          "locator": "Segmento 2",
+          "sourceId": "cmsoqo7310002jnfpqh4ch9c0",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsoqo75k000qjnfpd2lbulx4",
+          "note": null,
+          "quote": " la instalación. Su argumento se concentra en la transición: el umbral aparece como lugar donde una decisión corporal —entrar, esperar, retroceder— deja una huella espacial. La crítica ha utilizado a veces la expresión archivo doméstico para describir el conjunto de Sorel. Ella prefiere evitarla cuando sugiere una colección estable. En sus notas de trabajo, un archivo sólo resulta útil si muestra también sus pérdidas y sustituciones. Por eso la memoria porosa no equivale a guardar cada objeto. Designa una práctica de lectura que admite que las pruebas cambian de significado al reunirse. La artista insiste en que esa noción nació de su trabajo en Puerto Niebla y no de una teoría cerrada anterior. El texto de sala de una presentación reciente formulaba una conclusión demasiado amplia: «Toda imagen es una casa». Sorel pidió retirarla porque convertía una observación localizada en un lema universal. La frase se conserva aquí como ejemplo de lo que su trabajo discute, no como nombre de una entidad o de una obra. También deben leerse con cautela encabezados internos como Métodos de aproximación y Resultados provisionales, que organizan sus cuadernos pero no nombran proyectos independientes. En las conversaciones del Taller Bruma aparece con frecuencia la observación de que repetir un encuadre no produce una imagen idéntica. Esa afirmación es un claim sobre el método de Sorel. No debe",
+          "context": null,
+          "locator": "Segmento 3",
+          "sourceId": "cmsoqo7310002jnfpqh4ch9c0",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsoqo75l000sjnfpcl50iam1",
+          "note": null,
+          "quote": " confundirse con una entidad llamada Repetir un encuadre no produce una imagen idéntica. La entidad editorial reusable es la memoria porosa, porque el ensayo la define, la relaciona con varias obras y explica por qué importa dentro de esta investigación. Nuno Arce no participa en las decisiones fotográficas de Casa de sal. Su colaboración se limita a los sobres, cajas y mecanismos de Atlas del umbral. Esta precisión evita atribuirle la autoría compartida de toda la producción. El Taller Bruma, por su parte, es la organización de trabajo que hace posibles esas colaboraciones; no es un movimiento artístico ni una exposición. Al final del recorrido, Puerto Niebla funciona como contexto y no como biografía. El texto no indica dónde nació Iria Sorel, dónde estudió, qué premios recibió ni su edad. Tampoco ofrece esos datos sobre Nuno Arce. Lo que sí sostiene es que Sorel trabaja en Puerto Niebla, desarrolla allí Casa de sal y Atlas del umbral, utiliza fotografía intervenida y explora la memoria doméstica mediante la noción específica de memoria porosa.",
+          "context": null,
+          "locator": "Segmento 4",
+          "sourceId": "cmsoqo7310002jnfpqh4ch9c0",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsoqo75n000ujnfpnk1hn26o",
+          "note": null,
+          "quote": "Escuchar de lado: notas para un archivo respirante Este ensayo propone la escucha oblicua como una forma de atender a materiales culturales que no se presentan como testimonios completos. Escuchar de lado no significa oír peor ni sospechar de toda voz. Significa observar silencios, repeticiones, cambios de ritmo y condiciones de registro antes de convertir un fragmento en explicación. La escucha oblicua es una abstracción metodológica: puede aplicarse a una entrevista, a una grabación ambiental o a la lectura en voz alta de una carta. La investigadora Mara Téllez utilizó por primera vez esta expresión en el seminario interno del Círculo Orbe. El ensayo cita su cuaderno de trabajo, pero no ofrece una biografía de Téllez ni convierte el seminario en su objeto principal. El Círculo Orbe es una pequeña organización de lectura comparada. Su presencia ayuda a localizar el origen de la discusión, aunque tanto Téllez como la organización ocupan un lugar secundario frente a los conceptos desarrollados. El archivo respirante nombra un conjunto documental cuya organización puede cambiar cuando aparece una nueva relación entre sus piezas. No es una base de datos que se reescribe sin memoria. Cada reorganización conserva constancia de la posición anterior. El adjetivo respirante señala alternancia entre apertura y cierre: durante una lectura se admite una combinación provisional; al citar, ",
+          "context": null,
+          "locator": "Segmento 1",
+          "sourceId": "cmsoqo73j0005jnfp54rwu2qq",
+          "sourceVersion": "material-v1"
+        }
+      ],
+      "sourceId": null,
+      "relationTypes": [
+        {
+          "id": "relation-type-created-by",
+          "key": "CREATED_BY",
+          "label": "Creado por"
+        },
+        {
+          "id": "relation-type-belongs-to-movement",
+          "key": "BELONGS_TO_MOVEMENT",
+          "label": "Pertenece al movimiento"
+        },
+        {
+          "id": "relation-type-belongs-to-period",
+          "key": "BELONGS_TO_PERIOD",
+          "label": "Pertenece al periodo"
+        },
+        {
+          "id": "relation-type-about-concept",
+          "key": "ABOUT_CONCEPT",
+          "label": "Explora el concepto"
+        },
+        {
+          "id": "relation-type-located-in",
+          "key": "LOCATED_IN",
+          "label": "Ubicado en"
+        },
+        {
+          "id": "relation-type-related-to",
+          "key": "RELATED_TO",
+          "label": "Relacionado con"
+        },
+        {
+          "id": "relation-type-associated-with",
+          "key": "ASSOCIATED_WITH",
+          "label": "Asociado con"
+        },
+        {
+          "id": "relation-type-mentions",
+          "key": "MENTIONS",
+          "label": "Menciona"
+        },
+        {
+          "id": "relation-type-inspired-by",
+          "key": "INSPIRED_BY",
+          "label": "Inspirado por"
+        },
+        {
+          "id": "relation-type-influenced-by",
+          "key": "INFLUENCED_BY",
+          "label": "Influenciado por"
+        },
+        {
+          "id": "relation-type-part-of",
+          "key": "PART_OF",
+          "label": "Forma parte de"
+        },
+        {
+          "id": "relation-type-depicts",
+          "key": "DEPICTS",
+          "label": "Representa"
+        },
+        {
+          "id": "relation-type-similar-to",
+          "key": "SIMILAR_TO",
+          "label": "Similar a"
+        },
+        {
+          "id": "relation-type-uses-technique",
+          "key": "USES_TECHNIQUE",
+          "label": "Usa técnica"
+        },
+        {
+          "id": "relation-type-uses-material",
+          "key": "USES_MATERIAL",
+          "label": "Usa material"
+        },
+        {
+          "id": "relation-type-has-subject",
+          "key": "HAS_SUBJECT",
+          "label": "Tiene tema"
+        },
+        {
+          "id": "relation-type-curated-with",
+          "key": "CURATED_WITH",
+          "label": "Curado junto a"
+        }
+      ],
+      "outputContract": "Devuelve sólo propuestas relevantes para el objetivo y el Índice. Usa exactamente los evidenceIds del lote y sólo relationTypeId incluidos en relationTypes; usa null si ninguno encaja. Omite menciones administrativas o periféricas sin valor editorial. Usa [] cuando no haya propuestas.",
+      "editorialContext": [],
+      "canonicalEntityKinds": ["PERSON", "WORK", "ABSTRACTION", "EVENT", "PLACE", "ORGANIZATION"]
+    },
+    "output": null,
+    "durationMs": 84022,
+    "costCents": null,
+    "error": "Ollama transport failed [category=PROVIDER_TRANSPORT_ERROR attempts=1 rawLength=0 finishReason=unknown]",
+    "createdAt": "2026-08-11T14:11:42.825Z"
+  }
+]

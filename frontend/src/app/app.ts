@@ -78,7 +78,7 @@ export class App {
 
   isImmersiveRoute(): boolean {
     const url = this.router.url.split('?')[0];
-    return url === '/';
+    return url === '/' || url === '/home';
   }
 
   isEntitiesRoute(): boolean {

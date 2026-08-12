@@ -1,0 +1,1519 @@
+[
+  {
+    "id": "cmsp1iq880021r2fpnpyeje7u",
+    "jobId": "cmsp1iq53000kr2fpg9i22y8f",
+    "projectId": "cmsp1iq400001r2fpdozop0f9",
+    "task": "research.extract_findings",
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "providerVersion": null,
+    "input": {
+      "batch": {
+        "total": 6,
+        "current": 1
+      },
+      "project": {
+        "id": "cmsp1iq400001r2fpdozop0f9",
+        "scope": "Dataset controlado 1.0.0; no es una investigación editorial real.",
+        "title": "[BENCHMARK] baseline-evidence-enum-v1",
+        "objective": "Medir detección, clasificación y síntesis de entidades sin conocimiento externo."
+      },
+      "evidence": [
+        {
+          "id": "cmsp1iq6k000mr2fpygrwero8",
+          "note": null,
+          "quote": "Iria Sorel y la memoria porosa En Puerto Niebla, una ciudad portuaria imaginada alrededor de almacenes bajos y patios donde la sal se acumula sobre la madera, Iria Sorel ha construido durante quince años una práctica basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos. La artista no presenta esos medios como disciplinas separadas. Los utiliza para observar cómo una casa conserva rastros contradictorios: una marca puede ser testimonio de uso, pero también resultado de una restauración posterior. Sorel llama memoria porosa a esa condición en la que el recuerdo absorbe materiales nuevos sin borrar del todo sus capas anteriores. El Taller Bruma ocupa desde hace ocho años una antigua nave de reparación de redes en el extremo oriental de Puerto Niebla. Allí trabajan Sorel y el encuadernador Nuno Arce. El taller no funciona como escuela ni como galería; es un lugar de producción compartido. Arce construye cajas, pliegos y soportes móviles, mientras Sorel fotografía habitaciones prestadas por familias del barrio. Los créditos de las obras distinguen con claridad ambas tareas: Sorel firma las piezas y Arce aparece como colaborador técnico en los dispositivos de papel. La obra más extensa de este periodo es Casa de sal, una instalación compuesta por cuarenta fotografías, tres mesas y un registro sonoro de puertas. La serie comenzó cuando una viviend",
+          "context": null,
+          "locator": "Segmento 1",
+          "sourceId": "cmsp1iq420002r2fpn8ff947y",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq6m000or2fpnmy38i3p",
+          "note": null,
+          "quote": "a de la calle Marea fue vaciada antes de su rehabilitación. Sorel fotografió las habitaciones después de retirar los muebles y volvió seis meses más tarde, cuando las paredes habían sido pintadas. Las imágenes se muestran por parejas, pero no intentan restaurar un antes y un después estable. Cada pareja deja visible una diferencia que no puede atribuirse con seguridad al tiempo, al encuadre o a la intervención de los nuevos habitantes. Casa de sal no es un documento sobre toda la ciudad. Su escala es deliberadamente doméstica. La instalación pregunta quién puede reconocer una habitación cuando los objetos han desaparecido y qué parte de ese reconocimiento depende de relatos ajenos. En una mesa, sobres translúcidos contienen copias de pequeñas fotografías encontradas; en otra, el público puede leer descripciones de espacios que nunca aparecen en imagen. La tercera permanece vacía y funciona como pausa material. Esta distribución sostiene la idea de memoria porosa sin convertirla en una definición ilustrada. Dos años después, Sorel inició Atlas del umbral, un libro desplegable elaborado en el Taller Bruma con la colaboración técnica de Nuno Arce. El libro reúne dibujos de marcos, bisagras y zonas de paso observadas en doce edificios de Puerto Niebla. Aunque comparte materiales con Casa de sal, Atlas del umbral es una obra distinta. No documenta las mismas viviendas ni pertenece a",
+          "context": null,
+          "locator": "Segmento 2",
+          "sourceId": "cmsp1iq420002r2fpn8ff947y",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq6o000qr2fpfbq97fz8",
+          "note": null,
+          "quote": " la instalación. Su argumento se concentra en la transición: el umbral aparece como lugar donde una decisión corporal —entrar, esperar, retroceder— deja una huella espacial. La crítica ha utilizado a veces la expresión archivo doméstico para describir el conjunto de Sorel. Ella prefiere evitarla cuando sugiere una colección estable. En sus notas de trabajo, un archivo sólo resulta útil si muestra también sus pérdidas y sustituciones. Por eso la memoria porosa no equivale a guardar cada objeto. Designa una práctica de lectura que admite que las pruebas cambian de significado al reunirse. La artista insiste en que esa noción nació de su trabajo en Puerto Niebla y no de una teoría cerrada anterior. El texto de sala de una presentación reciente formulaba una conclusión demasiado amplia: «Toda imagen es una casa». Sorel pidió retirarla porque convertía una observación localizada en un lema universal. La frase se conserva aquí como ejemplo de lo que su trabajo discute, no como nombre de una entidad o de una obra. También deben leerse con cautela encabezados internos como Métodos de aproximación y Resultados provisionales, que organizan sus cuadernos pero no nombran proyectos independientes. En las conversaciones del Taller Bruma aparece con frecuencia la observación de que repetir un encuadre no produce una imagen idéntica. Esa afirmación es un claim sobre el método de Sorel. No debe",
+          "context": null,
+          "locator": "Segmento 3",
+          "sourceId": "cmsp1iq420002r2fpn8ff947y",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq6q000sr2fpb9ed63d8",
+          "note": null,
+          "quote": " confundirse con una entidad llamada Repetir un encuadre no produce una imagen idéntica. La entidad editorial reusable es la memoria porosa, porque el ensayo la define, la relaciona con varias obras y explica por qué importa dentro de esta investigación. Nuno Arce no participa en las decisiones fotográficas de Casa de sal. Su colaboración se limita a los sobres, cajas y mecanismos de Atlas del umbral. Esta precisión evita atribuirle la autoría compartida de toda la producción. El Taller Bruma, por su parte, es la organización de trabajo que hace posibles esas colaboraciones; no es un movimiento artístico ni una exposición. Al final del recorrido, Puerto Niebla funciona como contexto y no como biografía. El texto no indica dónde nació Iria Sorel, dónde estudió, qué premios recibió ni su edad. Tampoco ofrece esos datos sobre Nuno Arce. Lo que sí sostiene es que Sorel trabaja en Puerto Niebla, desarrolla allí Casa de sal y Atlas del umbral, utiliza fotografía intervenida y explora la memoria doméstica mediante la noción específica de memoria porosa.",
+          "context": null,
+          "locator": "Segmento 4",
+          "sourceId": "cmsp1iq420002r2fpn8ff947y",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq6s000ur2fpkgafyd8o",
+          "note": null,
+          "quote": "Escuchar de lado: notas para un archivo respirante Este ensayo propone la escucha oblicua como una forma de atender a materiales culturales que no se presentan como testimonios completos. Escuchar de lado no significa oír peor ni sospechar de toda voz. Significa observar silencios, repeticiones, cambios de ritmo y condiciones de registro antes de convertir un fragmento en explicación. La escucha oblicua es una abstracción metodológica: puede aplicarse a una entrevista, a una grabación ambiental o a la lectura en voz alta de una carta. La investigadora Mara Téllez utilizó por primera vez esta expresión en el seminario interno del Círculo Orbe. El ensayo cita su cuaderno de trabajo, pero no ofrece una biografía de Téllez ni convierte el seminario en su objeto principal. El Círculo Orbe es una pequeña organización de lectura comparada. Su presencia ayuda a localizar el origen de la discusión, aunque tanto Téllez como la organización ocupan un lugar secundario frente a los conceptos desarrollados. El archivo respirante nombra un conjunto documental cuya organización puede cambiar cuando aparece una nueva relación entre sus piezas. No es una base de datos que se reescribe sin memoria. Cada reorganización conserva constancia de la posición anterior. El adjetivo respirante señala alternancia entre apertura y cierre: durante una lectura se admite una combinación provisional; al citar, ",
+          "context": null,
+          "locator": "Segmento 1",
+          "sourceId": "cmsp1iq4m0005r2fpkkjuilb4",
+          "sourceVersion": "material-v1"
+        }
+      ],
+      "sourceId": null,
+      "relationTypes": [
+        {
+          "id": "relation-type-created-by",
+          "key": "CREATED_BY",
+          "label": "Creado por"
+        },
+        {
+          "id": "relation-type-belongs-to-movement",
+          "key": "BELONGS_TO_MOVEMENT",
+          "label": "Pertenece al movimiento"
+        },
+        {
+          "id": "relation-type-belongs-to-period",
+          "key": "BELONGS_TO_PERIOD",
+          "label": "Pertenece al periodo"
+        },
+        {
+          "id": "relation-type-about-concept",
+          "key": "ABOUT_CONCEPT",
+          "label": "Explora el concepto"
+        },
+        {
+          "id": "relation-type-located-in",
+          "key": "LOCATED_IN",
+          "label": "Ubicado en"
+        },
+        {
+          "id": "relation-type-related-to",
+          "key": "RELATED_TO",
+          "label": "Relacionado con"
+        },
+        {
+          "id": "relation-type-associated-with",
+          "key": "ASSOCIATED_WITH",
+          "label": "Asociado con"
+        },
+        {
+          "id": "relation-type-mentions",
+          "key": "MENTIONS",
+          "label": "Menciona"
+        },
+        {
+          "id": "relation-type-inspired-by",
+          "key": "INSPIRED_BY",
+          "label": "Inspirado por"
+        },
+        {
+          "id": "relation-type-influenced-by",
+          "key": "INFLUENCED_BY",
+          "label": "Influenciado por"
+        },
+        {
+          "id": "relation-type-part-of",
+          "key": "PART_OF",
+          "label": "Forma parte de"
+        },
+        {
+          "id": "relation-type-depicts",
+          "key": "DEPICTS",
+          "label": "Representa"
+        },
+        {
+          "id": "relation-type-similar-to",
+          "key": "SIMILAR_TO",
+          "label": "Similar a"
+        },
+        {
+          "id": "relation-type-uses-technique",
+          "key": "USES_TECHNIQUE",
+          "label": "Usa técnica"
+        },
+        {
+          "id": "relation-type-uses-material",
+          "key": "USES_MATERIAL",
+          "label": "Usa material"
+        },
+        {
+          "id": "relation-type-has-subject",
+          "key": "HAS_SUBJECT",
+          "label": "Tiene tema"
+        },
+        {
+          "id": "relation-type-curated-with",
+          "key": "CURATED_WITH",
+          "label": "Curado junto a"
+        }
+      ],
+      "outputContract": "Devuelve sólo propuestas relevantes para el objetivo y el Índice. Contrato mecánico: localId es un identificador local y temporal sin significado semántico. Cada Claim, Entity y Relation debe tener localId, y cada localId debe ser único dentro de su propio array; no reutilices evidenceIds, sourceIds, relationTypeIds ni IDs de entidades existentes como localId. Ejemplos válidos: claim-1, claim-2; entity-1, entity-2; relation-1, relation-2. En cada Relation, fromLocalId y toLocalId deben copiar exactamente los localId de dos Entities distintas incluidas en entities de esta misma respuesta; no uses evidenceIds, títulos ni IDs externos como endpoints. relationTypeId debe ser exactamente el campo id de uno de los objetos entregados en relationTypes, nunca su key ni su label; por ejemplo, para { id: \"rt_123\", key: \"CREATED_BY\", label: \"Creada por\" }, devuelve \"relationTypeId\": \"rt_123\", no \"CREATED_BY\" ni \"Creada por\". Usa null si ningún RelationType encaja. Usa exactamente los evidenceIds del lote. Omite menciones administrativas o periféricas sin valor editorial. Usa [] cuando no haya propuestas.",
+      "editorialContext": [],
+      "canonicalEntityKinds": ["PERSON", "WORK", "ABSTRACTION", "EVENT", "PLACE", "ORGANIZATION"]
+    },
+    "output": {
+      "claims": [
+        {
+          "kind": "CONCEPT",
+          "title": "Iria Sorel construye una práctica basada en la fotografía intervenida, la escritura breve y el montaje de objetos domésticos.",
+          "localId": "b1:claim:claim-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6k000mr2fpygrwero8"]
+        }
+      ],
+      "entities": [
+        {
+          "kind": "PERSON",
+          "title": "Iria Sorel",
+          "localId": "b1:entity:entity-1",
+          "summary": null,
+          "evidenceIds": [
+            "cmsp1iq6k000mr2fpygrwero8",
+            "cmsp1iq6m000or2fpnmy38i3p",
+            "cmsp1iq6o000qr2fpfbq97fz8",
+            "cmsp1iq6q000sr2fpb9ed63d8"
+          ]
+        },
+        {
+          "kind": "WORK",
+          "title": "Casa de sal",
+          "localId": "b1:entity:entity-2",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6k000mr2fpygrwero8", "cmsp1iq6m000or2fpnmy38i3p"]
+        },
+        {
+          "kind": "WORK",
+          "title": "Atlas del umbral",
+          "localId": "b1:entity:entity-3",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6m000or2fpnmy38i3p"]
+        },
+        {
+          "kind": "ABSTRACTION",
+          "title": "Memoria porosa",
+          "localId": "b1:entity:entity-4",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6k000mr2fpygrwero8", "cmsp1iq6o000qr2fpfbq97fz8"]
+        },
+        {
+          "kind": "ORGANIZATION",
+          "title": "Taller Bruma",
+          "localId": "b1:entity:entity-5",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6k000mr2fpygrwero8", "cmsp1iq6o000qr2fpfbq97fz8"]
+        },
+        {
+          "kind": "PERSON",
+          "title": "Nuno Arce",
+          "localId": "b1:entity:entity-6",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6k000mr2fpygrwero8", "cmsp1iq6o000qr2fpfbq97fz8"]
+        }
+      ],
+      "relations": [
+        {
+          "localId": "b1:relation:relation-1",
+          "toLocalId": "b1:entity:entity-4",
+          "evidenceIds": ["cmsp1iq6o000qr2fpfbq97fz8"],
+          "explanation": null,
+          "fromLocalId": "b1:entity:entity-1",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b1:relation:relation-2",
+          "toLocalId": "b1:entity:entity-2",
+          "evidenceIds": ["cmsp1iq6k000mr2fpygrwero8", "cmsp1iq6m000or2fpnmy38i3p"],
+          "explanation": null,
+          "fromLocalId": "b1:entity:entity-1",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b1:relation:relation-3",
+          "toLocalId": "b1:entity:entity-3",
+          "evidenceIds": ["cmsp1iq6m000or2fpnmy38i3p"],
+          "explanation": null,
+          "fromLocalId": "b1:entity:entity-1",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b1:relation:relation-4",
+          "toLocalId": "b1:entity:entity-5",
+          "evidenceIds": ["cmsp1iq6k000mr2fpygrwero8", "cmsp1iq6o000qr2fpfbq97fz8"],
+          "explanation": null,
+          "fromLocalId": "b1:entity:entity-1",
+          "relationTypeId": "relation-type-associated-with"
+        },
+        {
+          "localId": "b1:relation:relation-5",
+          "toLocalId": "b1:entity:entity-6",
+          "evidenceIds": ["cmsp1iq6k000mr2fpygrwero8", "cmsp1iq6o000qr2fpfbq97fz8"],
+          "explanation": null,
+          "fromLocalId": "b1:entity:entity-1",
+          "relationTypeId": "relation-type-associated-with"
+        },
+        {
+          "localId": "b1:relation:relation-6",
+          "toLocalId": "b1:entity:entity-4",
+          "evidenceIds": ["cmsp1iq6m000or2fpnmy38i3p"],
+          "explanation": null,
+          "fromLocalId": "b1:entity:entity-2",
+          "relationTypeId": "relation-type-about-concept"
+        }
+      ]
+    },
+    "durationMs": 22958,
+    "costCents": 0,
+    "error": null,
+    "createdAt": "2026-08-11T19:15:23.336Z"
+  },
+  {
+    "id": "cmsp1j7yr002fr2fp2bkw88tj",
+    "jobId": "cmsp1iq53000kr2fpg9i22y8f",
+    "projectId": "cmsp1iq400001r2fpdozop0f9",
+    "task": "research.extract_findings",
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "providerVersion": null,
+    "input": {
+      "batch": {
+        "total": 6,
+        "current": 2
+      },
+      "project": {
+        "id": "cmsp1iq400001r2fpdozop0f9",
+        "scope": "Dataset controlado 1.0.0; no es una investigación editorial real.",
+        "title": "[BENCHMARK] baseline-evidence-enum-v1",
+        "objective": "Medir detección, clasificación y síntesis de entidades sin conocimiento externo."
+      },
+      "evidence": [
+        {
+          "id": "cmsp1iq6u000wr2fp5ra7fq69",
+          "note": null,
+          "quote": "se fija la versión utilizada. De este modo, el archivo respirante permite explorar sin perder trazabilidad. La observación continuada de una pausa permite reconocer cambios en la posición del hablante. Esta frase es una afirmación del ensayo, no el nombre de una entidad. La entidad pertinente es escucha oblicua. Del mismo modo, «cuando una ficha cambia de carpeta también cambia su vecindad interpretativa» es un claim sobre el archivo respirante. Convertir la oración completa en una ABSTRACTION produciría una unidad demasiado específica y poco reusable. Un tercer concepto, opacidad productiva, describe los casos en que la falta de información debe mantenerse visible porque condiciona la interpretación. La opacidad productiva no celebra la ignorancia ni autoriza a completar huecos. Al contrario: obliga a registrar qué no puede saberse y qué decisiones dependen de esa ausencia. Cuando dos voces comparten una grabación sin identificación fiable, la opacidad productiva impide asignar cada frase por intuición. El ritmo de retorno es la pauta con la que una investigación vuelve a una misma evidencia después de formular preguntas nuevas. No equivale a repetición mecánica. Un retorno resulta editorialmente útil cuando deja constancia de la pregunta que motivó la nueva lectura. El ritmo de retorno conecta la escucha oblicua con el archivo respirante: una orienta la atención y el otro con",
+          "context": null,
+          "locator": "Segmento 2",
+          "sourceId": "cmsp1iq4m0005r2fpkkjuilb4",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq6w000yr2fp13tdpqia",
+          "note": null,
+          "quote": "serva las reorganizaciones derivadas de ella. Arte, cultura, información y método aparecen muchas veces en estas páginas. Son términos amplios y necesarios para la prosa, pero no constituyen por sí solos entidades editoriales relevantes para este documento. «Una ventana abierta», «la mesa siguiente» y «el segundo momento» son expresiones transitorias. Tampoco deben extraerse los encabezados Hipótesis, Desarrollo y Cierre como entidades. El ensayo incluye una referencia bibliográfica ficticia: L. Noren, Manual de márgenes, edición del norte, 1998. La referencia muestra el formato de una nota incompleta y no implica que L. Noren sea una figura relevante del argumento. Si el extractor propone a esa firma como PERSON central, estará confundiendo presencia textual con relevancia editorial. La escucha oblicua y la opacidad productiva se parecen porque ambas evitan completar demasiado pronto una explicación, pero no son aliases. La primera organiza una práctica de atención; la segunda nombra una condición epistémica que debe conservarse. El archivo respirante tampoco es otro nombre para ninguna de ellas. Es la estructura documental mutable y trazable donde esas prácticas pueden operar. Puede afirmarse que mantener visible una ausencia mejora la honestidad de una interpretación. Esa afirmación está apoyada por el desarrollo sobre opacidad productiva. No debe transformarse en una entida",
+          "context": null,
+          "locator": "Segmento 3",
+          "sourceId": "cmsp1iq4m0005r2fpkkjuilb4",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq6y0010r2fpiyp29jzb",
+          "note": null,
+          "quote": "d titulada Mantener visible una ausencia mejora la honestidad. La diferencia entre entidad y claim es aquí decisiva: una entidad puede reaparecer en relaciones posteriores, mientras el claim expresa qué sostiene este ensayo acerca de ella. El texto no atribuye premios, fechas de nacimiento, afiliaciones universitarias ni publicaciones previas a Mara Téllez. Tampoco afirma que el Círculo Orbe tenga sede permanente o financiación pública. Cualquier resumen que añada esos detalles utilizaría información externa o inventada. Sí puede decir que Téllez formuló la expresión escucha oblicua en un seminario interno y que el Círculo Orbe proporcionó el contexto de aquella discusión. En conjunto, el argumento defiende cuatro entidades conceptuales distintas: escucha oblicua, archivo respirante, opacidad productiva y ritmo de retorno. Su utilidad editorial depende de conservar sus diferencias. La síntesis adecuada debe explicar que la escucha oblicua atiende a condiciones y silencios, que el archivo respirante reorganiza sin borrar versiones, que la opacidad productiva mantiene visibles los límites y que el ritmo de retorno registra nuevas lecturas de una misma evidencia.",
+          "context": null,
+          "locator": "Segmento 4",
+          "sourceId": "cmsp1iq4m0005r2fpkkjuilb4",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq700012r2fp67rpne42",
+          "note": null,
+          "quote": "Materia de Casa: crítica de una exposición Materia de Casa fue una exposición temporal organizada por el Instituto Lumen en la Nave del Este, un antiguo depósito situado en el distrito ficticio de Miralba. La muestra permaneció abierta durante seis semanas y fue comisariada por Dalia Neri. Su recorrido reunió dos obras principales y una mesa documental. El evento no debe confundirse con el edificio que lo acogió ni con el programa anual del Instituto Lumen. La comisaria Dalia Neri articuló la exposición alrededor de la intimidad logística, concepto con el que describió las redes de traslado, cuidado y almacenamiento que sostienen objetos aparentemente privados. La intimidad logística no era el título de una obra. Funcionaba como hipótesis curatorial para leer cómo una mesa, una caja o una prenda pasan de una casa a otra y adquieren obligaciones nuevas. Omar Cendro presentó Mesa para una ausencia, una obra formada por una superficie de madera marcada con fechas y seis cajones que sólo podían abrirse desde el lado opuesto. Cada cajón contenía una lista de objetos prestados, no los objetos mismos. La disposición obligaba a dos visitantes a coordinarse. Según el texto de sala, Cendro buscaba mostrar que recordar una pertenencia también implica recordar quién la trasladó y quién respondió por ella. Lía Corvan presentó Inventario del humo, una instalación de vidrio opaco, telas y gra",
+          "context": null,
+          "locator": "Segmento 1",
+          "sourceId": "cmsp1iq4q0008r2fpa35iswg8",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq710014r2fplk8xgioi",
+          "note": null,
+          "quote": "baciones de cocina. A diferencia de Mesa para una ausencia, la pieza no exigía cooperación física. Las voces describían recetas incompletas mientras pequeñas etiquetas registraban lugares de almacenamiento. Corvan explicó que las omisiones no eran errores de transcripción: señalaban conocimientos familiares que nunca habían sido escritos. Entre ambas obras, Neri propuso la hospitalidad inversa. El concepto describe situaciones en las que el objeto recibido transforma las reglas de la casa anfitriona. No es sinónimo de intimidad logística. La primera noción se ocupa de cómo recibir altera un espacio; la segunda observa la infraestructura que permite el traslado y el cuidado. La exposición las relacionó, pero mantuvo su diferencia. La Nave del Este condicionó de manera importante el recorrido. Su acceso estrecho obligaba a entrar en grupos pequeños y su techo alto dispersaba las grabaciones de Inventario del humo. Sin embargo, la nave no organizó la exposición y no es una organización. Es un lugar. El Instituto Lumen, en cambio, asumió producción, seguros y mediación; es la organización responsable del evento. Una cartela afirmaba: «Abrir un cajón requiere aceptar la dependencia de otra persona». Es un claim interpretativo sobre Mesa para una ausencia, no una entidad titulada Abrir un cajón requiere aceptar la dependencia. Otra frase, «las recetas incompletas conservan la forma d",
+          "context": null,
+          "locator": "Segmento 2",
+          "sourceId": "cmsp1iq4q0008r2fpa35iswg8",
+          "sourceVersion": "material-v1"
+        }
+      ],
+      "sourceId": null,
+      "relationTypes": [
+        {
+          "id": "relation-type-created-by",
+          "key": "CREATED_BY",
+          "label": "Creado por"
+        },
+        {
+          "id": "relation-type-belongs-to-movement",
+          "key": "BELONGS_TO_MOVEMENT",
+          "label": "Pertenece al movimiento"
+        },
+        {
+          "id": "relation-type-belongs-to-period",
+          "key": "BELONGS_TO_PERIOD",
+          "label": "Pertenece al periodo"
+        },
+        {
+          "id": "relation-type-about-concept",
+          "key": "ABOUT_CONCEPT",
+          "label": "Explora el concepto"
+        },
+        {
+          "id": "relation-type-located-in",
+          "key": "LOCATED_IN",
+          "label": "Ubicado en"
+        },
+        {
+          "id": "relation-type-related-to",
+          "key": "RELATED_TO",
+          "label": "Relacionado con"
+        },
+        {
+          "id": "relation-type-associated-with",
+          "key": "ASSOCIATED_WITH",
+          "label": "Asociado con"
+        },
+        {
+          "id": "relation-type-mentions",
+          "key": "MENTIONS",
+          "label": "Menciona"
+        },
+        {
+          "id": "relation-type-inspired-by",
+          "key": "INSPIRED_BY",
+          "label": "Inspirado por"
+        },
+        {
+          "id": "relation-type-influenced-by",
+          "key": "INFLUENCED_BY",
+          "label": "Influenciado por"
+        },
+        {
+          "id": "relation-type-part-of",
+          "key": "PART_OF",
+          "label": "Forma parte de"
+        },
+        {
+          "id": "relation-type-depicts",
+          "key": "DEPICTS",
+          "label": "Representa"
+        },
+        {
+          "id": "relation-type-similar-to",
+          "key": "SIMILAR_TO",
+          "label": "Similar a"
+        },
+        {
+          "id": "relation-type-uses-technique",
+          "key": "USES_TECHNIQUE",
+          "label": "Usa técnica"
+        },
+        {
+          "id": "relation-type-uses-material",
+          "key": "USES_MATERIAL",
+          "label": "Usa material"
+        },
+        {
+          "id": "relation-type-has-subject",
+          "key": "HAS_SUBJECT",
+          "label": "Tiene tema"
+        },
+        {
+          "id": "relation-type-curated-with",
+          "key": "CURATED_WITH",
+          "label": "Curado junto a"
+        }
+      ],
+      "outputContract": "Devuelve sólo propuestas relevantes para el objetivo y el Índice. Contrato mecánico: localId es un identificador local y temporal sin significado semántico. Cada Claim, Entity y Relation debe tener localId, y cada localId debe ser único dentro de su propio array; no reutilices evidenceIds, sourceIds, relationTypeIds ni IDs de entidades existentes como localId. Ejemplos válidos: claim-1, claim-2; entity-1, entity-2; relation-1, relation-2. En cada Relation, fromLocalId y toLocalId deben copiar exactamente los localId de dos Entities distintas incluidas en entities de esta misma respuesta; no uses evidenceIds, títulos ni IDs externos como endpoints. relationTypeId debe ser exactamente el campo id de uno de los objetos entregados en relationTypes, nunca su key ni su label; por ejemplo, para { id: \"rt_123\", key: \"CREATED_BY\", label: \"Creada por\" }, devuelve \"relationTypeId\": \"rt_123\", no \"CREATED_BY\" ni \"Creada por\". Usa null si ningún RelationType encaja. Usa exactamente los evidenceIds del lote. Omite menciones administrativas o periféricas sin valor editorial. Usa [] cuando no haya propuestas.",
+      "editorialContext": [],
+      "canonicalEntityKinds": ["PERSON", "WORK", "ABSTRACTION", "EVENT", "PLACE", "ORGANIZATION"]
+    },
+    "output": {
+      "claims": [
+        {
+          "kind": "CONCEPT",
+          "title": "La escucha oblicua atiende a condiciones y silencios",
+          "localId": "b2:claim:claim-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6u000wr2fp5ra7fq69", "cmsp1iq6y0010r2fpiyp29jzb"]
+        },
+        {
+          "kind": "CONCEPT",
+          "title": "El archivo respirante reorganiza sin borrar versiones",
+          "localId": "b2:claim:claim-2",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6u000wr2fp5ra7fq69", "cmsp1iq6y0010r2fpiyp29jzb"]
+        },
+        {
+          "kind": "CONCEPT",
+          "title": "La opacidad productiva mantiene visibles los límites",
+          "localId": "b2:claim:claim-3",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6u000wr2fp5ra7fq69", "cmsp1iq6y0010r2fpiyp29jzb"]
+        },
+        {
+          "kind": "CONCEPT",
+          "title": "El ritmo de retorno registra nuevas lecturas de una misma evidencia",
+          "localId": "b2:claim:claim-4",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq6u000wr2fp5ra7fq69", "cmsp1iq6y0010r2fpiyp29jzb"]
+        }
+      ],
+      "entities": [
+        {
+          "kind": "WORK",
+          "title": "Materia de Casa",
+          "localId": "b2:entity:entity-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"]
+        },
+        {
+          "kind": "PERSON",
+          "title": "Dalia Neri",
+          "localId": "b2:entity:entity-2",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"]
+        },
+        {
+          "kind": "PERSON",
+          "title": "Omar Cendro",
+          "localId": "b2:entity:entity-3",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"]
+        },
+        {
+          "kind": "PERSON",
+          "title": "Lía Corvan",
+          "localId": "b2:entity:entity-4",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq710014r2fplk8xgioi"]
+        },
+        {
+          "kind": "ORGANIZATION",
+          "title": "Instituto Lumen",
+          "localId": "b2:entity:entity-5",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"]
+        },
+        {
+          "kind": "PLACE",
+          "title": "Nave del Este",
+          "localId": "b2:entity:entity-6",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"]
+        }
+      ],
+      "relations": [
+        {
+          "localId": "b2:relation:relation-1",
+          "toLocalId": "b2:entity:entity-5",
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"],
+          "explanation": null,
+          "fromLocalId": "b2:entity:entity-1",
+          "relationTypeId": "relation-type-curated-with"
+        },
+        {
+          "localId": "b2:relation:relation-2",
+          "toLocalId": "b2:entity:entity-5",
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"],
+          "explanation": null,
+          "fromLocalId": "b2:entity:entity-2",
+          "relationTypeId": "relation-type-curated-with"
+        },
+        {
+          "localId": "b2:relation:relation-3",
+          "toLocalId": "b2:entity:entity-5",
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"],
+          "explanation": null,
+          "fromLocalId": "b2:entity:entity-3",
+          "relationTypeId": "relation-type-curated-with"
+        },
+        {
+          "localId": "b2:relation:relation-4",
+          "toLocalId": "b2:entity:entity-5",
+          "evidenceIds": ["cmsp1iq710014r2fplk8xgioi"],
+          "explanation": null,
+          "fromLocalId": "b2:entity:entity-4",
+          "relationTypeId": "relation-type-curated-with"
+        },
+        {
+          "localId": "b2:relation:relation-5",
+          "toLocalId": "b2:entity:entity-5",
+          "evidenceIds": ["cmsp1iq700012r2fp67rpne42", "cmsp1iq710014r2fplk8xgioi"],
+          "explanation": null,
+          "fromLocalId": "b2:entity:entity-6",
+          "relationTypeId": "relation-type-curated-with"
+        }
+      ]
+    },
+    "durationMs": 24831,
+    "costCents": 0,
+    "error": null,
+    "createdAt": "2026-08-11T19:15:46.323Z"
+  },
+  {
+    "id": "cmsp1jr58002vr2fp9sguzkj8",
+    "jobId": "cmsp1iq53000kr2fpg9i22y8f",
+    "projectId": "cmsp1iq400001r2fpdozop0f9",
+    "task": "research.extract_findings",
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "providerVersion": null,
+    "input": {
+      "batch": {
+        "total": 6,
+        "current": 3
+      },
+      "project": {
+        "id": "cmsp1iq400001r2fpdozop0f9",
+        "scope": "Dataset controlado 1.0.0; no es una investigación editorial real.",
+        "title": "[BENCHMARK] baseline-evidence-enum-v1",
+        "objective": "Medir detección, clasificación y síntesis de entidades sin conocimiento externo."
+      },
+      "evidence": [
+        {
+          "id": "cmsp1iq730016r2fp58ekr14e",
+          "note": null,
+          "quote": "e una transmisión», formula una lectura de Inventario del humo. Ninguna debería competir con los nombres de las obras o con los conceptos curatoriales. La sección Prensa y agradecimientos enumeraba a varias personas encargadas del transporte. Esas menciones administrativas son reales, pero periféricas. El nombre ficticio R. Bel aparece sólo en una referencia a un boletín interno y no merece una propuesta editorial. También aparecen los términos arte contemporáneo, público y exposición como vocabulario general; su frecuencia no basta para convertirlos en entidades útiles. La crítica considera que Materia de Casa logró conectar las dos instalaciones sin hacerlas equivalentes. Mesa para una ausencia trabaja mediante coordinación corporal y listas de préstamos. Inventario del humo trabaja mediante voces, omisiones y registros de almacenamiento. La intimidad logística permite observar el soporte común; la hospitalidad inversa explica una consecuencia espacial más específica. Dalia Neri figura como comisaria, no como autora de las obras. Omar Cendro creó Mesa para una ausencia y Lía Corvan creó Inventario del humo. El Instituto Lumen organizó Materia de Casa en la Nave del Este. Estas relaciones están formuladas expresamente para que una evaluación posterior pueda comprobar dirección y tipo sin recurrir a conocimiento externo. El texto no indica dónde nacieron Neri, Cendro o Corvan; ",
+          "context": null,
+          "locator": "Segmento 3",
+          "sourceId": "cmsp1iq4q0008r2fpa35iswg8",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq750018r2fpq8famc4j",
+          "note": null,
+          "quote": "tampoco menciona estudios, premios o representación comercial. No afirma que la Nave del Este pertenezca al Instituto Lumen. Sí afirma que el Instituto utilizó ese lugar para la exposición y asumió su organización. Añadir propiedad, biografías o fechas distintas de la duración de seis semanas constituiría información no respaldada. Como evento, Materia de Casa importa porque convirtió operaciones normalmente invisibles —guardar, prestar, trasladar y responder por un objeto— en decisiones espaciales observables. Como organización, el Instituto Lumen importa por su responsabilidad productiva. Como lugar, la Nave del Este importa por las restricciones físicas que modificaron la escucha y el acceso. La síntesis editorial debe conservar esos papeles distintos.",
+          "context": null,
+          "locator": "Segmento 4",
+          "sourceId": "cmsp1iq4q0008r2fpa35iswg8",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq77001ar2fp9tuohq2g",
+          "note": null,
+          "quote": "El cuaderno no responde solo: metodología para una crítica situada En la Escuela Delta, la docente Noa Mir coordina un laboratorio semestral de prácticas visuales. El laboratorio no evalúa obras terminadas de manera aislada. Utiliza el cuaderno de proceso como registro de decisiones, dudas, pruebas descartadas y cambios de vocabulario. El cuaderno puede contener dibujos, fotografías, listas o conversaciones transcritas; su valor no depende de una forma gráfica uniforme. La observación continuada del cuaderno permite reconocer cambios en la percepción del estudiante. Esta oración expresa un claim metodológico. No debe extraerse completa como nombre de entidad. La entidad es cuaderno de proceso. El claim explica qué permite hacer su observación dentro del laboratorio. Noa Mir denomina lectura de huellas a una revisión que compara tres momentos del cuaderno sin exigir que el estudiante justifique retrospectivamente cada decisión. Primero se identifica una marca persistente; después se pregunta qué condiciones la modificaron; finalmente se registra qué interpretaciones siguen abiertas. La lectura de huellas es un método y, dentro de los kinds disponibles, debe representarse como ABSTRACTION. La crítica situada es la conversación en la que una observación se formula indicando desde qué material, momento y pregunta se hace. No equivale a una opinión amable ni a una evaluación sin cri",
+          "context": null,
+          "locator": "Segmento 1",
+          "sourceId": "cmsp1iq4t000br2fpz7k93dkk",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq79001cr2fp2tp5s7qj",
+          "note": null,
+          "quote": "terios. Su finalidad es evitar frases universales que ignoran el recorrido documentado. En la Escuela Delta, cada comentario de crítica situada debe señalar al menos una página o entrada del cuaderno de proceso. El mapa de decisiones es una hoja plegable donde el estudiante conecta pruebas realizadas, alternativas descartadas y preguntas futuras. Aunque se llama mapa, no es un lugar geográfico. Tampoco es una obra autónoma destinada a exposición. Es una herramienta metodológica y debe clasificarse como ABSTRACTION. Se actualiza dos veces durante el semestre y permanece vinculado al cuaderno de proceso. Una regla del laboratorio afirma que descartar una prueba no elimina su capacidad de explicar una decisión posterior. Esto es un claim sobre la documentación del proceso. Otra regla sostiene que una crítica útil distingue entre describir una forma y atribuirle una intención. También es un claim. Crear entidades con cualquiera de esas frases completas confundiría afirmaciones con unidades conceptuales reusables. La Escuela Delta es la organización que alberga el laboratorio. Noa Mir es la persona que lo coordina. El laboratorio semestral aparece como contexto pedagógico, pero el GOLD no lo considera una entidad independiente porque el texto no le asigna nombre propio ni continuidad institucional fuera del curso descrito. Palabras como estudiante, página, ejercicio y evaluación son",
+          "context": null,
+          "locator": "Segmento 2",
+          "sourceId": "cmsp1iq4t000br2fpz7k93dkk",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7b001er2fp3ehjccf8",
+          "note": null,
+          "quote": " términos genéricos. Durante una sesión, Mir muestra tres cuadernos sin nombres para evitar que la reputación del autor determine la primera lectura. Después devuelve la identidad y permite que cada estudiante corrija las inferencias formuladas. El ejercicio demuestra que una marca material puede sostener varias hipótesis, pero no autoriza a elegir una sin evidencia adicional. El apartado Indicadores finales contiene una tabla con los números 1, 2 y 3 y las expresiones Completo, En curso y Pendiente. Son metadata de seguimiento, no entidades. Una referencia ficticia —P. Daro, Aprender del margen, 2003— aparece al final como ejemplo de formato bibliográfico; el ensayo no desarrolla a esa persona ni su obra. La relación entre los conceptos es precisa. El cuaderno de proceso conserva materiales. La lectura de huellas propone cómo revisarlos. La crítica situada regula cómo formular comentarios sobre ellos. El mapa de decisiones explicita alternativas y preguntas. Ningún concepto es alias de otro, aunque todos formen parte de la misma metodología. El texto no afirma que Noa Mir fundara la Escuela Delta, que tenga un título universitario o que haya publicado libros. Tampoco localiza geográficamente la institución. Un resumen grounded puede decir que coordina el laboratorio y define la lectura de huellas; no puede completar su biografía ni atribuir a la escuela una ciudad, una fecha d",
+          "context": null,
+          "locator": "Segmento 3",
+          "sourceId": "cmsp1iq4t000br2fpz7k93dkk",
+          "sourceVersion": "material-v1"
+        }
+      ],
+      "sourceId": null,
+      "relationTypes": [
+        {
+          "id": "relation-type-created-by",
+          "key": "CREATED_BY",
+          "label": "Creado por"
+        },
+        {
+          "id": "relation-type-belongs-to-movement",
+          "key": "BELONGS_TO_MOVEMENT",
+          "label": "Pertenece al movimiento"
+        },
+        {
+          "id": "relation-type-belongs-to-period",
+          "key": "BELONGS_TO_PERIOD",
+          "label": "Pertenece al periodo"
+        },
+        {
+          "id": "relation-type-about-concept",
+          "key": "ABOUT_CONCEPT",
+          "label": "Explora el concepto"
+        },
+        {
+          "id": "relation-type-located-in",
+          "key": "LOCATED_IN",
+          "label": "Ubicado en"
+        },
+        {
+          "id": "relation-type-related-to",
+          "key": "RELATED_TO",
+          "label": "Relacionado con"
+        },
+        {
+          "id": "relation-type-associated-with",
+          "key": "ASSOCIATED_WITH",
+          "label": "Asociado con"
+        },
+        {
+          "id": "relation-type-mentions",
+          "key": "MENTIONS",
+          "label": "Menciona"
+        },
+        {
+          "id": "relation-type-inspired-by",
+          "key": "INSPIRED_BY",
+          "label": "Inspirado por"
+        },
+        {
+          "id": "relation-type-influenced-by",
+          "key": "INFLUENCED_BY",
+          "label": "Influenciado por"
+        },
+        {
+          "id": "relation-type-part-of",
+          "key": "PART_OF",
+          "label": "Forma parte de"
+        },
+        {
+          "id": "relation-type-depicts",
+          "key": "DEPICTS",
+          "label": "Representa"
+        },
+        {
+          "id": "relation-type-similar-to",
+          "key": "SIMILAR_TO",
+          "label": "Similar a"
+        },
+        {
+          "id": "relation-type-uses-technique",
+          "key": "USES_TECHNIQUE",
+          "label": "Usa técnica"
+        },
+        {
+          "id": "relation-type-uses-material",
+          "key": "USES_MATERIAL",
+          "label": "Usa material"
+        },
+        {
+          "id": "relation-type-has-subject",
+          "key": "HAS_SUBJECT",
+          "label": "Tiene tema"
+        },
+        {
+          "id": "relation-type-curated-with",
+          "key": "CURATED_WITH",
+          "label": "Curado junto a"
+        }
+      ],
+      "outputContract": "Devuelve sólo propuestas relevantes para el objetivo y el Índice. Contrato mecánico: localId es un identificador local y temporal sin significado semántico. Cada Claim, Entity y Relation debe tener localId, y cada localId debe ser único dentro de su propio array; no reutilices evidenceIds, sourceIds, relationTypeIds ni IDs de entidades existentes como localId. Ejemplos válidos: claim-1, claim-2; entity-1, entity-2; relation-1, relation-2. En cada Relation, fromLocalId y toLocalId deben copiar exactamente los localId de dos Entities distintas incluidas en entities de esta misma respuesta; no uses evidenceIds, títulos ni IDs externos como endpoints. relationTypeId debe ser exactamente el campo id de uno de los objetos entregados en relationTypes, nunca su key ni su label; por ejemplo, para { id: \"rt_123\", key: \"CREATED_BY\", label: \"Creada por\" }, devuelve \"relationTypeId\": \"rt_123\", no \"CREATED_BY\" ni \"Creada por\". Usa null si ningún RelationType encaja. Usa exactamente los evidenceIds del lote. Omite menciones administrativas o periféricas sin valor editorial. Usa [] cuando no haya propuestas.",
+      "editorialContext": [],
+      "canonicalEntityKinds": ["PERSON", "WORK", "ABSTRACTION", "EVENT", "PLACE", "ORGANIZATION"]
+    },
+    "output": {
+      "claims": [
+        {
+          "kind": "CONCEPT",
+          "title": "El cuaderno de proceso es un registro de decisiones y cambios en el laboratorio de prácticas visuales de la Escuela Delta.",
+          "localId": "b3:claim:claim-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq77001ar2fp9tuohq2g", "cmsp1iq79001cr2fp2tp5s7qj"]
+        }
+      ],
+      "entities": [
+        {
+          "kind": "WORK",
+          "title": "El cuaderno de proceso",
+          "localId": "b3:entity:entity-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq77001ar2fp9tuohq2g", "cmsp1iq79001cr2fp2tp5s7qj"]
+        },
+        {
+          "kind": "PERSON",
+          "title": "Noa Mir",
+          "localId": "b3:entity:entity-2",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq77001ar2fp9tuohq2g", "cmsp1iq79001cr2fp2tp5s7qj"]
+        },
+        {
+          "kind": "ORGANIZATION",
+          "title": "Escuela Delta",
+          "localId": "b3:entity:entity-3",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq79001cr2fp2tp5s7qj"]
+        }
+      ],
+      "relations": [
+        {
+          "localId": "b3:relation:relation-1",
+          "toLocalId": "b3:entity:entity-2",
+          "evidenceIds": ["cmsp1iq77001ar2fp9tuohq2g", "cmsp1iq79001cr2fp2tp5s7qj"],
+          "explanation": null,
+          "fromLocalId": "b3:entity:entity-1",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b3:relation:relation-2",
+          "toLocalId": "b3:entity:entity-1",
+          "evidenceIds": ["cmsp1iq79001cr2fp2tp5s7qj"],
+          "explanation": null,
+          "fromLocalId": "b3:entity:entity-3",
+          "relationTypeId": "relation-type-curated-with"
+        }
+      ]
+    },
+    "durationMs": 10195,
+    "costCents": 0,
+    "error": null,
+    "createdAt": "2026-08-11T19:16:11.180Z"
+  },
+  {
+    "id": "cmsp1jz0v0032r2fpffr1kzqh",
+    "jobId": "cmsp1iq53000kr2fpg9i22y8f",
+    "projectId": "cmsp1iq400001r2fpdozop0f9",
+    "task": "research.extract_findings",
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "providerVersion": null,
+    "input": {
+      "batch": {
+        "total": 6,
+        "current": 4
+      },
+      "project": {
+        "id": "cmsp1iq400001r2fpdozop0f9",
+        "scope": "Dataset controlado 1.0.0; no es una investigación editorial real.",
+        "title": "[BENCHMARK] baseline-evidence-enum-v1",
+        "objective": "Medir detección, clasificación y síntesis de entidades sin conocimiento externo."
+      },
+      "evidence": [
+        {
+          "id": "cmsp1iq7c001gr2fpcpuuzzwv",
+          "note": null,
+          "quote": "e fundación o un reconocimiento oficial. La metodología busca que la evaluación sea una lectura argumentada del proceso, no una puntuación añadida al final. Esta conclusión debe permanecer como claim. Las entidades editoriales centrales son cuaderno de proceso, lectura de huellas, crítica situada y mapa de decisiones; permiten conectar Evidence y relaciones sin convertir cada frase normativa en un nodo.",
+          "context": null,
+          "locator": "Segmento 4",
+          "sourceId": "cmsp1iq4t000br2fpz7k93dkk",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7e001ir2fpjx44frg7",
+          "note": null,
+          "quote": "Elena Varo: tres nombres para una continuidad de trabajo Elena Varo trabaja con fotografía intervenida y objetos encontrados en el valle ficticio del Río Arce. En sus fichas más antiguas firma Elena Varo; en notas de montaje aparece como E. Varo y, cuando el contexto no ofrece duda, el ensayo utiliza simplemente Varo. Las tres formas se refieren a la misma persona. No deben producir tres identidades editoriales independientes. La artista Elena Varo desarrolló El jardín inverso, una serie de veinticuatro fotografías de plantas domésticas colocadas frente a fondos dibujados. El jardín inverso y Jardín inverso son variantes textuales del mismo título dentro de este documento. La forma canónica conserva el artículo: El jardín inverso. La obra explora cómo una escena familiar cambia cuando el fondo contradice la dirección de la luz. Varo presentó una selección de la serie en la Galería Umbral. La galería organizó el montaje, pero no creó la obra. Galería Umbral es una organización ficticia. El texto no indica su ciudad, año de fundación ni programa comercial. La única localización explícita es que el trabajo de Varo se desarrolla en el valle del Río Arce, tratado aquí como PLACE. En una etapa posterior, E. Varo comenzó Archivo de lluvia, una obra distinta compuesta por sobres de papel sensible y registros diarios de humedad. Aunque ambos proyectos utilizan series y anotaciones, Arch",
+          "context": null,
+          "locator": "Segmento 1",
+          "sourceId": "cmsp1iq4w000er2fp7c3040ma",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7g001kr2fp7lggkfme",
+          "note": null,
+          "quote": "ivo de lluvia no es alias de El jardín inverso. Sus títulos deben conservar identidades separadas. La memoria doméstica es el concepto que conecta las dos obras. En El jardín inverso aparece mediante plantas cuidadas dentro de casa; en Archivo de lluvia, mediante rutinas de observación y almacenamiento. La memoria doméstica no es una obra llamada Memoria doméstica ni una organización. Es una ABSTRACTION central definida por el texto como el modo en que prácticas repetidas de cuidado dejan rastros interpretables. Teo Varo aparece en dos párrafos como responsable de transportar los marcos de Archivo de lluvia. Comparte apellido con Elena Varo, pero es otra persona. El texto declara que no existe parentesco documentado entre ambos. Un sistema de resolución no debe fusionarlos por el apellido. Teo Varo es secundario y su papel logístico puede no justificar extracción editorial, aunque su existencia textual sea inequívoca. La frase «cuidar una planta reorganiza la mirada sobre una habitación» es un claim asociado a El jardín inverso y a la memoria doméstica. No debe convertirse en una entidad con ese título. Tampoco deben extraerse como entidades los encabezados Primera visita, Segundo registro y Notas de transporte. El ensayo incluye las expresiones jardín, archivo, lluvia y memoria en sentidos genéricos además de sus usos dentro de nombres propios. Una proposal llamada simplemente",
+          "context": null,
+          "locator": "Segmento 2",
+          "sourceId": "cmsp1iq4w000er2fp7c3040ma",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7i001mr2fpq9p9coge",
+          "note": null,
+          "quote": " Jardín o Archivo sería demasiado amplia. El GOLD espera El jardín inverso, Archivo de lluvia y memoria doméstica porque son las unidades específicas y reusables. En las últimas fichas, la firma vuelve a escribirse completa: Elena Varo. Esta repetición no indica una segunda etapa biográfica ni otra artista. Permite comprobar si distintas Evidence y batches producen varias proposals correctas para la misma identidad. La duplicación raw sería comprensible; la evaluación collapsed debe reconocer una sola persona. La Galería Umbral vuelve a mencionarse al describir el desmontaje de El jardín inverso. El lugar de producción, sin embargo, sigue siendo el valle del Río Arce. El documento no afirma que la galería esté situada allí. Tampoco afirma que Elena Varo naciera en el valle. Confundir lugar de trabajo, lugar de exposición y lugar de nacimiento añadiría hechos no respaldados. Teo Varo entrega los marcos y firma un recibo. No participa en el diseño de Archivo de lluvia ni en la toma de fotografías. Elena Varo es la autora de ambas obras. Esta diferencia está repetida para que el benchmark pueda detectar una síntesis que mezcle identidades por proximidad textual. No se proporcionan edad, premios, formación, nacionalidad ni representación exclusiva de Elena Varo. Tampoco se afirma que E. Varo sea un seudónimo: es una abreviatura documental de su nombre. Un buen summary debería menci",
+          "context": null,
+          "locator": "Segmento 3",
+          "sourceId": "cmsp1iq4w000er2fp7c3040ma",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7k001or2fpqr1ckksq",
+          "note": null,
+          "quote": "onar su trabajo con fotografía intervenida, las dos obras y la memoria doméstica, sin completar datos biográficos ausentes.",
+          "context": null,
+          "locator": "Segmento 4",
+          "sourceId": "cmsp1iq4w000er2fp7c3040ma",
+          "sourceVersion": "material-v1"
+        }
+      ],
+      "sourceId": null,
+      "relationTypes": [
+        {
+          "id": "relation-type-created-by",
+          "key": "CREATED_BY",
+          "label": "Creado por"
+        },
+        {
+          "id": "relation-type-belongs-to-movement",
+          "key": "BELONGS_TO_MOVEMENT",
+          "label": "Pertenece al movimiento"
+        },
+        {
+          "id": "relation-type-belongs-to-period",
+          "key": "BELONGS_TO_PERIOD",
+          "label": "Pertenece al periodo"
+        },
+        {
+          "id": "relation-type-about-concept",
+          "key": "ABOUT_CONCEPT",
+          "label": "Explora el concepto"
+        },
+        {
+          "id": "relation-type-located-in",
+          "key": "LOCATED_IN",
+          "label": "Ubicado en"
+        },
+        {
+          "id": "relation-type-related-to",
+          "key": "RELATED_TO",
+          "label": "Relacionado con"
+        },
+        {
+          "id": "relation-type-associated-with",
+          "key": "ASSOCIATED_WITH",
+          "label": "Asociado con"
+        },
+        {
+          "id": "relation-type-mentions",
+          "key": "MENTIONS",
+          "label": "Menciona"
+        },
+        {
+          "id": "relation-type-inspired-by",
+          "key": "INSPIRED_BY",
+          "label": "Inspirado por"
+        },
+        {
+          "id": "relation-type-influenced-by",
+          "key": "INFLUENCED_BY",
+          "label": "Influenciado por"
+        },
+        {
+          "id": "relation-type-part-of",
+          "key": "PART_OF",
+          "label": "Forma parte de"
+        },
+        {
+          "id": "relation-type-depicts",
+          "key": "DEPICTS",
+          "label": "Representa"
+        },
+        {
+          "id": "relation-type-similar-to",
+          "key": "SIMILAR_TO",
+          "label": "Similar a"
+        },
+        {
+          "id": "relation-type-uses-technique",
+          "key": "USES_TECHNIQUE",
+          "label": "Usa técnica"
+        },
+        {
+          "id": "relation-type-uses-material",
+          "key": "USES_MATERIAL",
+          "label": "Usa material"
+        },
+        {
+          "id": "relation-type-has-subject",
+          "key": "HAS_SUBJECT",
+          "label": "Tiene tema"
+        },
+        {
+          "id": "relation-type-curated-with",
+          "key": "CURATED_WITH",
+          "label": "Curado junto a"
+        }
+      ],
+      "outputContract": "Devuelve sólo propuestas relevantes para el objetivo y el Índice. Contrato mecánico: localId es un identificador local y temporal sin significado semántico. Cada Claim, Entity y Relation debe tener localId, y cada localId debe ser único dentro de su propio array; no reutilices evidenceIds, sourceIds, relationTypeIds ni IDs de entidades existentes como localId. Ejemplos válidos: claim-1, claim-2; entity-1, entity-2; relation-1, relation-2. En cada Relation, fromLocalId y toLocalId deben copiar exactamente los localId de dos Entities distintas incluidas en entities de esta misma respuesta; no uses evidenceIds, títulos ni IDs externos como endpoints. relationTypeId debe ser exactamente el campo id de uno de los objetos entregados en relationTypes, nunca su key ni su label; por ejemplo, para { id: \"rt_123\", key: \"CREATED_BY\", label: \"Creada por\" }, devuelve \"relationTypeId\": \"rt_123\", no \"CREATED_BY\" ni \"Creada por\". Usa null si ningún RelationType encaja. Usa exactamente los evidenceIds del lote. Omite menciones administrativas o periféricas sin valor editorial. Usa [] cuando no haya propuestas.",
+      "editorialContext": [],
+      "canonicalEntityKinds": ["PERSON", "WORK", "ABSTRACTION", "EVENT", "PLACE", "ORGANIZATION"]
+    },
+    "output": {
+      "claims": [
+        {
+          "kind": "ASSERTION",
+          "title": "Elena Varo desarrolló El jardín inverso",
+          "localId": "b4:claim:claim-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7"]
+        },
+        {
+          "kind": "ASSERTION",
+          "title": "El jardín inverso y Jardín inverso son variantes textuales del mismo título",
+          "localId": "b4:claim:claim-2",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7"]
+        },
+        {
+          "kind": "ASSERTION",
+          "title": "El jardín inverso explora cómo una escena familiar cambia cuando el fondo contradice la dirección de la luz",
+          "localId": "b4:claim:claim-3",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7"]
+        },
+        {
+          "kind": "ASSERTION",
+          "title": "E. Varo es una abreviatura documental de Elena Varo",
+          "localId": "b4:claim:claim-4",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7"]
+        }
+      ],
+      "entities": [
+        {
+          "kind": "PERSON",
+          "title": "Elena Varo",
+          "localId": "b4:entity:entity-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7", "cmsp1iq7k001or2fpqr1ckksq"]
+        },
+        {
+          "kind": "WORK",
+          "title": "El jardín inverso",
+          "localId": "b4:entity:entity-2",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7", "cmsp1iq7k001or2fpqr1ckksq"]
+        },
+        {
+          "kind": "WORK",
+          "title": "Archivo de lluvia",
+          "localId": "b4:entity:entity-3",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7k001or2fpqr1ckksq"]
+        },
+        {
+          "kind": "ABSTRACTION",
+          "title": "Memoria doméstica",
+          "localId": "b4:entity:entity-4",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7g001kr2fp7lggkfme"]
+        },
+        {
+          "kind": "PLACE",
+          "title": "Valle del Río Arce",
+          "localId": "b4:entity:entity-5",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7", "cmsp1iq7k001or2fpqr1ckksq"]
+        },
+        {
+          "kind": "ORGANIZATION",
+          "title": "Galería Umbral",
+          "localId": "b4:entity:entity-6",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7", "cmsp1iq7k001or2fpqr1ckksq"]
+        }
+      ],
+      "relations": [
+        {
+          "localId": "b4:relation:relation-1",
+          "toLocalId": "b4:entity:entity-2",
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7"],
+          "explanation": null,
+          "fromLocalId": "b4:entity:entity-1",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b4:relation:relation-2",
+          "toLocalId": "b4:entity:entity-3",
+          "evidenceIds": ["cmsp1iq7k001or2fpqr1ckksq"],
+          "explanation": null,
+          "fromLocalId": "b4:entity:entity-1",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b4:relation:relation-3",
+          "toLocalId": "b4:entity:entity-4",
+          "evidenceIds": ["cmsp1iq7g001kr2fp7lggkfme"],
+          "explanation": null,
+          "fromLocalId": "b4:entity:entity-2",
+          "relationTypeId": "relation-type-about-concept"
+        },
+        {
+          "localId": "b4:relation:relation-4",
+          "toLocalId": "b4:entity:entity-2",
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7", "cmsp1iq7k001or2fpqr1ckksq"],
+          "explanation": null,
+          "fromLocalId": "b4:entity:entity-6",
+          "relationTypeId": "relation-type-curated-with"
+        },
+        {
+          "localId": "b4:relation:relation-5",
+          "toLocalId": "b4:entity:entity-3",
+          "evidenceIds": ["cmsp1iq7k001or2fpqr1ckksq"],
+          "explanation": null,
+          "fromLocalId": "b4:entity:entity-6",
+          "relationTypeId": "relation-type-curated-with"
+        },
+        {
+          "localId": "b4:relation:relation-6",
+          "toLocalId": "b4:entity:entity-2",
+          "evidenceIds": ["cmsp1iq7e001ir2fpjx44frg7", "cmsp1iq7k001or2fpqr1ckksq"],
+          "explanation": null,
+          "fromLocalId": "b4:entity:entity-5",
+          "relationTypeId": "relation-type-located-in"
+        }
+      ]
+    },
+    "durationMs": 23790,
+    "costCents": 0,
+    "error": null,
+    "createdAt": "2026-08-11T19:16:21.391Z"
+  },
+  {
+    "id": "cmsp1khei003jr2fpinir7o1s",
+    "jobId": "cmsp1iq53000kr2fpg9i22y8f",
+    "projectId": "cmsp1iq400001r2fpdozop0f9",
+    "task": "research.extract_findings",
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "providerVersion": null,
+    "input": {
+      "batch": {
+        "total": 6,
+        "current": 5
+      },
+      "project": {
+        "id": "cmsp1iq400001r2fpdozop0f9",
+        "scope": "Dataset controlado 1.0.0; no es una investigación editorial real.",
+        "title": "[BENCHMARK] baseline-evidence-enum-v1",
+        "objective": "Medir detección, clasificación y síntesis de entidades sin conocimiento externo."
+      },
+      "evidence": [
+        {
+          "id": "cmsp1iq7m001qr2fpr3lf4js6",
+          "note": null,
+          "quote": "Cartografía del intervalo: nombres cercanos, identidades distintas La Cartografía del intervalo es un método de investigación visual desarrollado para las Jornadas del Eco, un evento celebrado en Casa Faro, en la localidad ficticia de Faro Bajo. El método registra qué ocurre entre una primera observación y una revisión posterior: cambios de posición, nuevas preguntas, pérdidas de material y decisiones que ya no pueden reconstruirse. No es una obra ni el título del evento. Es una ABSTRACTION que reaparecerá a lo largo de este documento con información distribuida. Aina Soler coordinó las Jornadas del Eco. Ana Soler participó como artista invitada. Sus nombres son parecidos, pero designan personas distintas y el texto no establece parentesco. Aina se ocupó del programa y de las sesiones de lectura; Ana presentó una instalación. Fusionarlas sería un error de identidad. La instalación de Ana Soler se titula El eco quieto. Está formada por dos superficies metálicas y un sistema de vibración que se activa cuando la sala queda momentáneamente vacía. En el mismo evento, Aina Soler moderó una conversación titulada Eco quieto, sin artículo. Esa conversación es una actividad del evento y no se considera WORK GOLD independiente. El eco quieto, con artículo y cursiva en el catálogo original, es la obra. El ensayo utiliza además eco quieto en minúsculas para describir una cualidad perceptiva",
+          "context": null,
+          "locator": "Segmento 1",
+          "sourceId": "cmsp1iq50000hr2fp7wpnj3fo",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7n001sr2fpp7hxkxlu",
+          "note": null,
+          "quote": ": la persistencia de una vibración que ya no puede oírse claramente. Como concepto, eco quieto es una ABSTRACTION secundaria y no un alias automático de la obra El eco quieto. El contexto y el kind separan las identidades. Casa Faro es la organización anfitriona de las Jornadas del Eco. A pesar de su nombre, no es una vivienda ni un lugar geográfico. Ocupa un edificio en Faro Bajo, que sí es PLACE. La organización gestiona residencias y encuentros; el documento no afirma que sea propietaria del edificio. Durante la primera sesión, la Cartografía del intervalo se aplicó a una secuencia de fotografías sin fecha. Cada participante anotó qué detalles parecían estables y qué cambios sólo podían inferirse. El método exigía marcar las inferencias con un signo distinto de las observaciones. Esta regla impide que una suposición plausible se convierta silenciosamente en hecho. La frase «comparar dos imágenes obliga a imaginar el tiempo entre ellas» es un claim surgido de la sesión. No es una entidad. También es claim la afirmación «una ausencia registrada puede orientar una búsqueda posterior». Los nombres reusables son Cartografía del intervalo y, en un plano secundario, eco quieto. SEGUNDA PARTE — Desplazamientos En la mitad del programa, Aina Soler trasladó el trabajo a un archivo temporal preparado por Casa Faro. Allí la Cartografía del intervalo incorporó una ficha de revisión con t",
+          "context": null,
+          "locator": "Segmento 2",
+          "sourceId": "cmsp1iq50000hr2fp7wpnj3fo",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7p001ur2fpubkho9we",
+          "note": null,
+          "quote": "res campos: observación inicial, cambio comprobado y pregunta abierta. Esta ficha no sustituyó el método; añadió un instrumento para conservar la diferencia entre dato e interpretación. Ana Soler mostró entonces pruebas de El eco quieto realizadas antes del montaje. Las pruebas revelaban que el sistema de vibración había cambiado de frecuencia, pero el texto no proporciona valores técnicos. La artista explicó que la pieza dependía de la alternancia entre presencia y vacío, no de producir un sonido reconocible. Este dato pertenece a la obra y no a la conversación moderada por Aina. Otra participante, Ania Solar, aparece una sola vez en la lista de asistencia. El parecido gráfico con Aina Soler y Ana Soler es deliberado, pero Ania Solar no interviene en el argumento y no debería extraerse como entidad editorial. La lista también contiene códigos F-01, F-02 y F-03, que son metadata. Las Jornadas del Eco constituyen un EVENT. Casa Faro es ORGANIZATION. Faro Bajo es PLACE. Aina Soler y Ana Soler son PERSON. El eco quieto es WORK. Cartografía del intervalo y eco quieto son ABSTRACTION. Estas categorías no aparecen como etiquetas pedagógicas en la fuente original del evento; aquí se explican mediante el papel que cada identidad desempeña. El método comenzó a mostrar una limitación: cuando la revisión ocurría demasiado tarde, algunas decisiones intermedias sólo podían reconstruirse med",
+          "context": null,
+          "locator": "Segmento 3",
+          "sourceId": "cmsp1iq50000hr2fp7wpnj3fo",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7r001wr2fp1x4019cz",
+          "note": null,
+          "quote": "iante testimonios. La Cartografía del intervalo no resolvía esa pérdida; la hacía visible. El grupo añadió entonces una convención para distinguir memoria de registro contemporáneo. La convención es parte del método, no una entidad separada. Un apartado llamado Resultados del segundo día resume que las fichas redujeron confusiones entre observación e inferencia. Resultados del segundo día es un heading, no una entidad. La oración completa sobre la reducción de confusiones es un claim evaluativo. La organización Casa Faro preparó las salas y conservó las fichas hasta el cierre. Aina Soler coordinó la devolución de materiales. Ana Soler desmontó El eco quieto. Ninguna de estas acciones convierte a Casa Faro en autora de la obra ni a Aina en artista de la instalación. TERCERA PARTE — Retornos Al final de las Jornadas del Eco, la Cartografía del intervalo se definió con mayor precisión: es una práctica para comparar estados documentales separados sin rellenar automáticamente lo que falta entre ellos. Esta definición añade una dimensión epistémica que no estaba completa al inicio. El método combina observaciones, cambios comprobados, preguntas abiertas y memoria declarada. El recorrido largo permite medir fragmentación. Una proposal nacida en el primer segmento puede saber que la Cartografía del intervalo registra cambios y pérdidas. Otra nacida aquí puede saber que evita rellenar h",
+          "context": null,
+          "locator": "Segmento 4",
+          "sourceId": "cmsp1iq50000hr2fp7wpnj3fo",
+          "sourceVersion": "material-v1"
+        },
+        {
+          "id": "cmsp1iq7t001yr2fp9qtqkwsx",
+          "note": null,
+          "quote": "uecos y distingue memoria de registro. Ninguna Evidence aislada contiene necesariamente todos esos aspectos, aunque el documento completo sí los sostiene. Eco quieto, la cualidad perceptiva, reaparece en la evaluación final. Los participantes utilizaron el concepto para describir la espera entre el abandono de la sala y la activación de la instalación. La abstracción ayuda a interpretar El eco quieto, pero sigue sin ser idéntica a la obra. La diferencia entre mayúscula inicial, artículo y contexto no debe resolverse sólo por similitud de strings. Aina Soler escribió el informe de las jornadas. Ana Soler revisó únicamente la descripción de su obra. El texto no ofrece biografías, edades, lugares de nacimiento, premios ni afiliaciones externas de ninguna de las dos. Tampoco aporta esos datos sobre Ania Solar. Cualquier resumen que los añada estaría alucinando. Casa Faro no es un museo, una universidad ni una vivienda privada según esta fuente. Faro Bajo no es una organización. Las Jornadas del Eco no son una obra periódica ni una publicación. El documento proporciona roles suficientes para clasificarlos sin inventar categorías externas. La conversación Eco quieto aparece en el programa entre Pausa y Cierre. Pausa y Cierre son encabezados funcionales, no entidades. La conversación tampoco debe eclipsar la obra El eco quieto, que recibe desarrollo, autoría y descripción material. Si",
+          "context": null,
+          "locator": "Segmento 5",
+          "sourceId": "cmsp1iq50000hr2fp7wpnj3fo",
+          "sourceVersion": "material-v1"
+        }
+      ],
+      "sourceId": null,
+      "relationTypes": [
+        {
+          "id": "relation-type-created-by",
+          "key": "CREATED_BY",
+          "label": "Creado por"
+        },
+        {
+          "id": "relation-type-belongs-to-movement",
+          "key": "BELONGS_TO_MOVEMENT",
+          "label": "Pertenece al movimiento"
+        },
+        {
+          "id": "relation-type-belongs-to-period",
+          "key": "BELONGS_TO_PERIOD",
+          "label": "Pertenece al periodo"
+        },
+        {
+          "id": "relation-type-about-concept",
+          "key": "ABOUT_CONCEPT",
+          "label": "Explora el concepto"
+        },
+        {
+          "id": "relation-type-located-in",
+          "key": "LOCATED_IN",
+          "label": "Ubicado en"
+        },
+        {
+          "id": "relation-type-related-to",
+          "key": "RELATED_TO",
+          "label": "Relacionado con"
+        },
+        {
+          "id": "relation-type-associated-with",
+          "key": "ASSOCIATED_WITH",
+          "label": "Asociado con"
+        },
+        {
+          "id": "relation-type-mentions",
+          "key": "MENTIONS",
+          "label": "Menciona"
+        },
+        {
+          "id": "relation-type-inspired-by",
+          "key": "INSPIRED_BY",
+          "label": "Inspirado por"
+        },
+        {
+          "id": "relation-type-influenced-by",
+          "key": "INFLUENCED_BY",
+          "label": "Influenciado por"
+        },
+        {
+          "id": "relation-type-part-of",
+          "key": "PART_OF",
+          "label": "Forma parte de"
+        },
+        {
+          "id": "relation-type-depicts",
+          "key": "DEPICTS",
+          "label": "Representa"
+        },
+        {
+          "id": "relation-type-similar-to",
+          "key": "SIMILAR_TO",
+          "label": "Similar a"
+        },
+        {
+          "id": "relation-type-uses-technique",
+          "key": "USES_TECHNIQUE",
+          "label": "Usa técnica"
+        },
+        {
+          "id": "relation-type-uses-material",
+          "key": "USES_MATERIAL",
+          "label": "Usa material"
+        },
+        {
+          "id": "relation-type-has-subject",
+          "key": "HAS_SUBJECT",
+          "label": "Tiene tema"
+        },
+        {
+          "id": "relation-type-curated-with",
+          "key": "CURATED_WITH",
+          "label": "Curado junto a"
+        }
+      ],
+      "outputContract": "Devuelve sólo propuestas relevantes para el objetivo y el Índice. Contrato mecánico: localId es un identificador local y temporal sin significado semántico. Cada Claim, Entity y Relation debe tener localId, y cada localId debe ser único dentro de su propio array; no reutilices evidenceIds, sourceIds, relationTypeIds ni IDs de entidades existentes como localId. Ejemplos válidos: claim-1, claim-2; entity-1, entity-2; relation-1, relation-2. En cada Relation, fromLocalId y toLocalId deben copiar exactamente los localId de dos Entities distintas incluidas en entities de esta misma respuesta; no uses evidenceIds, títulos ni IDs externos como endpoints. relationTypeId debe ser exactamente el campo id de uno de los objetos entregados en relationTypes, nunca su key ni su label; por ejemplo, para { id: \"rt_123\", key: \"CREATED_BY\", label: \"Creada por\" }, devuelve \"relationTypeId\": \"rt_123\", no \"CREATED_BY\" ni \"Creada por\". Usa null si ningún RelationType encaja. Usa exactamente los evidenceIds del lote. Omite menciones administrativas o periféricas sin valor editorial. Usa [] cuando no haya propuestas.",
+      "editorialContext": [],
+      "canonicalEntityKinds": ["PERSON", "WORK", "ABSTRACTION", "EVENT", "PLACE", "ORGANIZATION"]
+    },
+    "output": {
+      "claims": [
+        {
+          "kind": "ASSERTION",
+          "title": "Aina Soler y Ana Soler son dos personas distintas",
+          "localId": "b5:claim:claim-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"]
+        },
+        {
+          "kind": "ASSERTION",
+          "title": "El eco quieto es una obra y no una entidad separada",
+          "localId": "b5:claim:claim-2",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"]
+        },
+        {
+          "kind": "ASSERTION",
+          "title": "La Cartografía del intervalo es un método de investigación visual",
+          "localId": "b5:claim:claim-3",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"]
+        },
+        {
+          "kind": "ASSERTION",
+          "title": "Casa Faro es una organización que gestiona residencias y encuentros",
+          "localId": "b5:claim:claim-4",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7n001sr2fpp7hxkxlu"]
+        }
+      ],
+      "entities": [
+        {
+          "kind": "PERSON",
+          "title": "Aina Soler",
+          "localId": "b5:entity:entity-1",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"]
+        },
+        {
+          "kind": "PERSON",
+          "title": "Ana Soler",
+          "localId": "b5:entity:entity-2",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"]
+        },
+        {
+          "kind": "WORK",
+          "title": "El eco quieto",
+          "localId": "b5:entity:entity-3",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"]
+        },
+        {
+          "kind": "ABSTRACTION",
+          "title": "Cartografía del intervalo",
+          "localId": "b5:entity:entity-4",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"]
+        },
+        {
+          "kind": "ORGANIZATION",
+          "title": "Casa Faro",
+          "localId": "b5:entity:entity-5",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7n001sr2fpp7hxkxlu"]
+        },
+        {
+          "kind": "PLACE",
+          "title": "Faro Bajo",
+          "localId": "b5:entity:entity-6",
+          "summary": null,
+          "evidenceIds": ["cmsp1iq7p001ur2fpubkho9we"]
+        }
+      ],
+      "relations": [
+        {
+          "localId": "b5:relation:relation-1",
+          "toLocalId": "b5:entity:entity-4",
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"],
+          "explanation": null,
+          "fromLocalId": "b5:entity:entity-1",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b5:relation:relation-2",
+          "toLocalId": "b5:entity:entity-3",
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"],
+          "explanation": null,
+          "fromLocalId": "b5:entity:entity-2",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b5:relation:relation-3",
+          "toLocalId": "b5:entity:entity-5",
+          "evidenceIds": ["cmsp1iq7m001qr2fpr3lf4js6"],
+          "explanation": null,
+          "fromLocalId": "b5:entity:entity-4",
+          "relationTypeId": "relation-type-curated-with"
+        },
+        {
+          "localId": "b5:relation:relation-4",
+          "toLocalId": "b5:entity:entity-6",
+          "evidenceIds": ["cmsp1iq7n001sr2fpp7hxkxlu"],
+          "explanation": null,
+          "fromLocalId": "b5:entity:entity-5",
+          "relationTypeId": "relation-type-located-in"
+        }
+      ]
+    },
+    "durationMs": 18410,
+    "costCents": 0,
+    "error": null,
+    "createdAt": "2026-08-11T19:16:45.210Z"
+  },
+  {
+    "id": "cmsp1kvmj003yr2fp6u6wp69w",
+    "jobId": "cmsp1iq53000kr2fpg9i22y8f",
+    "projectId": "cmsp1iq400001r2fpdozop0f9",
+    "task": "research.extract_findings",
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "providerVersion": null,
+    "input": {
+      "batch": {
+        "total": 6,
+        "current": 6
+      },
+      "project": {
+        "id": "cmsp1iq400001r2fpdozop0f9",
+        "scope": "Dataset controlado 1.0.0; no es una investigación editorial real.",
+        "title": "[BENCHMARK] baseline-evidence-enum-v1",
+        "objective": "Medir detección, clasificación y síntesis de entidades sin conocimiento externo."
+      },
+      "evidence": [
+        {
+          "id": "cmsp1iq7v0020r2fpvq6vujz6",
+          "note": null,
+          "quote": " se extrae el título sin artículo, debe marcarse para revisión manual porque puede referirse a la actividad o al concepto. En una nota marginal se cita el libro ficticio Intervalos útiles, de M. Ral, 1971. La referencia no se desarrolla y M. Ral no es una entidad relevante. Su inclusión comprueba si el modelo transforma referencias periféricas en PERSON o WORK. La conclusión sostiene que comparar estados separados requiere declarar qué se observa y qué se infiere. Es un claim central sobre la Cartografía del intervalo, no una entidad con forma oracional. El método merece extracción porque posee nombre estable, definición, aplicación repetida y relaciones claras con el evento y la organización. En resumen documental, las identidades deben permanecer diferenciadas. Aina Soler coordina. Ana Soler crea El eco quieto. Casa Faro organiza y aloja las Jornadas del Eco en Faro Bajo. La Cartografía del intervalo estructura el método de comparación. Eco quieto designa además una cualidad perceptiva secundaria. El documento no autoriza a fusionar nombres cercanos ni a completar biografías.",
+          "context": null,
+          "locator": "Segmento 6",
+          "sourceId": "cmsp1iq50000hr2fp7wpnj3fo",
+          "sourceVersion": "material-v1"
+        }
+      ],
+      "sourceId": null,
+      "relationTypes": [
+        {
+          "id": "relation-type-created-by",
+          "key": "CREATED_BY",
+          "label": "Creado por"
+        },
+        {
+          "id": "relation-type-belongs-to-movement",
+          "key": "BELONGS_TO_MOVEMENT",
+          "label": "Pertenece al movimiento"
+        },
+        {
+          "id": "relation-type-belongs-to-period",
+          "key": "BELONGS_TO_PERIOD",
+          "label": "Pertenece al periodo"
+        },
+        {
+          "id": "relation-type-about-concept",
+          "key": "ABOUT_CONCEPT",
+          "label": "Explora el concepto"
+        },
+        {
+          "id": "relation-type-located-in",
+          "key": "LOCATED_IN",
+          "label": "Ubicado en"
+        },
+        {
+          "id": "relation-type-related-to",
+          "key": "RELATED_TO",
+          "label": "Relacionado con"
+        },
+        {
+          "id": "relation-type-associated-with",
+          "key": "ASSOCIATED_WITH",
+          "label": "Asociado con"
+        },
+        {
+          "id": "relation-type-mentions",
+          "key": "MENTIONS",
+          "label": "Menciona"
+        },
+        {
+          "id": "relation-type-inspired-by",
+          "key": "INSPIRED_BY",
+          "label": "Inspirado por"
+        },
+        {
+          "id": "relation-type-influenced-by",
+          "key": "INFLUENCED_BY",
+          "label": "Influenciado por"
+        },
+        {
+          "id": "relation-type-part-of",
+          "key": "PART_OF",
+          "label": "Forma parte de"
+        },
+        {
+          "id": "relation-type-depicts",
+          "key": "DEPICTS",
+          "label": "Representa"
+        },
+        {
+          "id": "relation-type-similar-to",
+          "key": "SIMILAR_TO",
+          "label": "Similar a"
+        },
+        {
+          "id": "relation-type-uses-technique",
+          "key": "USES_TECHNIQUE",
+          "label": "Usa técnica"
+        },
+        {
+          "id": "relation-type-uses-material",
+          "key": "USES_MATERIAL",
+          "label": "Usa material"
+        },
+        {
+          "id": "relation-type-has-subject",
+          "key": "HAS_SUBJECT",
+          "label": "Tiene tema"
+        },
+        {
+          "id": "relation-type-curated-with",
+          "key": "CURATED_WITH",
+          "label": "Curado junto a"
+        }
+      ],
+      "outputContract": "Devuelve sólo propuestas relevantes para el objetivo y el Índice. Contrato mecánico: localId es un identificador local y temporal sin significado semántico. Cada Claim, Entity y Relation debe tener localId, y cada localId debe ser único dentro de su propio array; no reutilices evidenceIds, sourceIds, relationTypeIds ni IDs de entidades existentes como localId. Ejemplos válidos: claim-1, claim-2; entity-1, entity-2; relation-1, relation-2. En cada Relation, fromLocalId y toLocalId deben copiar exactamente los localId de dos Entities distintas incluidas en entities de esta misma respuesta; no uses evidenceIds, títulos ni IDs externos como endpoints. relationTypeId debe ser exactamente el campo id de uno de los objetos entregados en relationTypes, nunca su key ni su label; por ejemplo, para { id: \"rt_123\", key: \"CREATED_BY\", label: \"Creada por\" }, devuelve \"relationTypeId\": \"rt_123\", no \"CREATED_BY\" ni \"Creada por\". Usa null si ningún RelationType encaja. Usa exactamente los evidenceIds del lote. Omite menciones administrativas o periféricas sin valor editorial. Usa [] cuando no haya propuestas.",
+      "editorialContext": [],
+      "canonicalEntityKinds": ["PERSON", "WORK", "ABSTRACTION", "EVENT", "PLACE", "ORGANIZATION"]
+    },
+    "output": {
+      "claims": [
+        {
+          "kind": "CONCEPT",
+          "title": "Comparación de estados separados",
+          "localId": "b6:claim:claim-1",
+          "summary": "La comparación de estados separados requiere declarar qué se observa y qué se infiere.",
+          "evidenceIds": ["cmsp1iq7v0020r2fpvq6vujz6"]
+        }
+      ],
+      "entities": [
+        {
+          "kind": "WORK",
+          "title": "Cartografía del intervalo",
+          "localId": "b6:entity:entity-1",
+          "summary": "El método de comparación utilizado en la investigación.",
+          "evidenceIds": ["cmsp1iq7v0020r2fpvq6vujz6"]
+        },
+        {
+          "kind": "PERSON",
+          "title": "Aina Soler",
+          "localId": "b6:entity:entity-2",
+          "summary": "Coordinadora del documento.",
+          "evidenceIds": ["cmsp1iq7v0020r2fpvq6vujz6"]
+        },
+        {
+          "kind": "PERSON",
+          "title": "Ana Soler",
+          "localId": "b6:entity:entity-3",
+          "summary": "Creadora de El eco quieto.",
+          "evidenceIds": ["cmsp1iq7v0020r2fpvq6vujz6"]
+        },
+        {
+          "kind": "ORGANIZATION",
+          "title": "Casa Faro",
+          "localId": "b6:entity:entity-4",
+          "summary": "Organización que organiza y aloja las Jornadas del Eco en Faro Bajo.",
+          "evidenceIds": ["cmsp1iq7v0020r2fpvq6vujz6"]
+        }
+      ],
+      "relations": [
+        {
+          "localId": "b6:relation:relation-1",
+          "toLocalId": "b6:entity:entity-3",
+          "evidenceIds": ["cmsp1iq7v0020r2fpvq6vujz6"],
+          "explanation": "Ana Soler crea El eco quieto.",
+          "fromLocalId": "b6:entity:entity-2",
+          "relationTypeId": "relation-type-created-by"
+        },
+        {
+          "localId": "b6:relation:relation-2",
+          "toLocalId": "b6:entity:entity-1",
+          "evidenceIds": ["cmsp1iq7v0020r2fpvq6vujz6"],
+          "explanation": "Casa Faro organiza y aloja las Jornadas del Eco en Faro Bajo, que están relacionadas con la Cartografía del intervalo.",
+          "fromLocalId": "b6:entity:entity-4",
+          "relationTypeId": "relation-type-associated-with"
+        }
+      ]
+    },
+    "durationMs": 11987,
+    "costCents": 0,
+    "error": null,
+    "createdAt": "2026-08-11T19:17:03.643Z"
+  }
+]

@@ -124,6 +124,8 @@ Es una cola de decisiones pendientes sobre documentos, Evidence, Claims, Entitie
 
 Es la lectura estructurada del conocimiento privado actual: Entities, Relations, Claims, Evidence y contradicciones. No es una fuente de verdad adicional; sus invariantes viven en [Research Knowledge](./04-research-knowledge.md).
 
+El modo Entities contiene dos vistas internas con propósitos distintos: **Revisión** decide qué propuestas de Entity y Relation deben materializarse como conocimiento privado; **Mapa** explora la topología privada actual y puede superponer propuestas pendientes con estados inequívocos. Ambas pertenecen a la misma fase del Studio y el Mapa conserva un único renderer y una única topología derivada.
+
 ### Research Graph
 
 Es una vista de exploración de Research Knowledge. Permite enfocar Entities y Relations y recorrer Claims, Evidence y trazabilidad documental. Nunca representa Claims, Evidence, Sources o extractos como nodos por defecto.

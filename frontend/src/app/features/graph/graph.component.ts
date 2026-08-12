@@ -167,8 +167,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() disableSelectionZoom = true;
   @Input() preserveRuntimeOnGraphChange = false;
   @Input() showAllOverviewRelations = false;
+  @Input() requestedNodeId: string | null = null;
   @Output() workspaceFocusToggle = new EventEmitter<void>();
   @Output() nodeSelect = new EventEmitter<string>();
+  @Output() nodeOpen = new EventEmitter<string>();
 
   private graphStage?: ElementRef<HTMLDivElement>;
   private imageStage?: ElementRef<HTMLDivElement>;
@@ -409,6 +411,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    if (changes['requestedNodeId'] && this.requestedNodeId) {
+      this.selectNodeWithoutViewportChange(this.requestedNodeId);
+    }
+
     if (next.shouldLoadGraph && !this.graphData) {
       this.loadGraph();
     }
@@ -494,10 +500,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     );
     this.labelsMode.set(loadedState.labelsMode);
 
-    const nextSelectedNodeId =
-      shouldPreserveRuntime &&
-      previousSelectedNodeId &&
-      loadedState.graph.nodes.some((node) => node.id === previousSelectedNodeId)
+    const requestedNodeId = loadedState.graph.nodes.some((node) => node.id === this.requestedNodeId)
+      ? this.requestedNodeId
+      : null;
+    const nextSelectedNodeId = requestedNodeId
+      ? requestedNodeId
+      : shouldPreserveRuntime &&
+          previousSelectedNodeId &&
+          loadedState.graph.nodes.some((node) => node.id === previousSelectedNodeId)
         ? previousSelectedNodeId
         : loadedState.selectedNodeId;
 
@@ -1261,6 +1271,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     if (isDoubleActivation) {
       this.lastNodeActivation = null;
+      this.nodeOpen.emit(nodeId);
       if (this.allowNodeOpen) {
         this.openNodeEntity(nodeId);
       }

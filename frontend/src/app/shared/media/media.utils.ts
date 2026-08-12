@@ -271,9 +271,15 @@ function selectResolvedMediaItem(
     return null;
   }
 
-  const direct = resolved[usage];
-  if (direct && isRenderableRasterMedia(direct)) {
-    return direct;
+  const candidates =
+    usage === 'explorer3d'
+      ? [resolved.explorer3d, resolved.card, resolved.primary, resolved.thumbnail]
+      : [resolved[usage]];
+
+  for (const candidate of candidates) {
+    if (candidate && !Array.isArray(candidate) && isRenderableRasterMedia(candidate)) {
+      return candidate;
+    }
   }
 
   return null;

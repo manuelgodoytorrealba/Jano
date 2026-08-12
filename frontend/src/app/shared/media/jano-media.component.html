@@ -1,21 +1,28 @@
 @if (src) {
   <div class="jano-media__viewport">
-    <img
-      class="jano-media__img"
-      [src]="src"
-      [alt]="altText"
-      [attr.loading]="loadingAttr"
-      [attr.fetchpriority]="fetchPriorityAttr"
-      [attr.width]="widthAttr"
-      [attr.height]="heightAttr"
-      decoding="async"
-      [style.object-fit]="objectFit"
-      [style.object-position]="objectPosition"
-      [style.transform-origin]="imageTransformOrigin"
-      [style.transform]="imageTransform"
-      [style.filter]="imageFilter"
-      (error)="onImageError()"
-    />
+    @for (requestId of [imageRequestId]; track requestId) {
+      <div class="jano-media__reveal" [class.is-ready]="state() === 'ready'">
+        <img
+          #image
+          class="jano-media__img"
+          [attr.data-media-request]="requestId"
+          [src]="src"
+          [alt]="altText"
+          [attr.loading]="loadingAttr"
+          [attr.fetchpriority]="fetchPriorityAttr"
+          [attr.width]="widthAttr"
+          [attr.height]="heightAttr"
+          decoding="async"
+          [style.object-fit]="objectFit"
+          [style.object-position]="objectPosition"
+          [style.transform-origin]="imageTransformOrigin"
+          [style.transform]="imageTransform"
+          [style.filter]="imageFilter"
+          (load)="onImageLoad($event)"
+          (error)="onImageError($event)"
+        />
+      </div>
+    }
   </div>
 } @else {
   <div class="jano-media__placeholder" aria-hidden="true"></div>

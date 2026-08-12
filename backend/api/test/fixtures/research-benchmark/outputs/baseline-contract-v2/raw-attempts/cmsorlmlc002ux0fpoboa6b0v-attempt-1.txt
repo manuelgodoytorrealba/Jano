@@ -1,0 +1,75 @@
+{
+  "claims": [
+    {
+      "localId": "claim-1",
+      "title": "El cuaderno de proceso es un registro de decisiones, dudas, pruebas descartadas y cambios de vocabulario.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorkns7001ax0fpeu3n4vbw"
+      ]
+    },
+    {
+      "localId": "claim-2",
+      "title": "La crítica situada es un método que compara tres momentos del cuaderno de proceso sin exigir justificación retrospectiva de cada decisión.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorkns7001ax0fpeu3n4vbw"
+      ]
+    },
+    {
+      "localId": "claim-3",
+      "title": "El mapa de decisiones es una herramienta metodológica que conecta pruebas realizadas, alternativas descartadas y preguntas futuras.",
+      "kind": "CONCEPT",
+      "evidenceIds": [
+        "cmsorkns9001cx0fpoy5i5na3"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "localId": "entity-1",
+      "kind": "WORK",
+      "title": "El cuaderno de proceso",
+      "evidenceIds": [
+        "cmsorkns7001ax0fpeu3n4vbw",
+        "cmsorkns9001cx0fpoy5i5na3"
+      ]
+    },
+    {
+      "localId": "entity-2",
+      "kind": "WORK",
+      "title": "La crítica situada",
+      "evidenceIds": [
+        "cmsorkns7001ax0fpeu3n4vbw"
+      ]
+    },
+    {
+      "localId": "entity-3",
+      "kind": "WORK",
+      "title": "El mapa de decisiones",
+      "evidenceIds": [
+        "cmsorkns9001cx0fpoy5i5na3"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "localId": "relation-1",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-2",
+      "evidenceIds": [
+        "cmsorkns7001ax0fpeu3n4vbw"
+      ],
+      "relationTypeId": "relation-type-about-concept"
+    },
+    {
+      "localId": "relation-2",
+      "fromLocalId": "entity-1",
+      "toLocalId": "entity-3",
+      "evidenceIds": [
+        "cmsorkns9001cx0fpoy5i5na3"
+      ],
+      "relationTypeId": "relation-type-part-of"
+    }
+  ]
+}

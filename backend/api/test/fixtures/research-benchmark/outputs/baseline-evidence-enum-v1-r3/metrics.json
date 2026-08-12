@@ -1,0 +1,202 @@
+{
+  "runStatus": "SUCCEEDED",
+  "qualityMetricsValid": true,
+  "qualityMetrics": {
+    "rawEntityProposals": 33,
+    "definitiveProposals": 33,
+    "ambiguousForManualReview": 0,
+    "matchedRawProposals": 28,
+    "detectedGoldIdentities": 26,
+    "expectedGoldIdentities": 43,
+    "falseEntities": 5,
+    "duplicateProposals": 2,
+    "duplicateRatio": 0.06060606060606061,
+    "precision": 0.8484848484848485,
+    "recall": 0.6046511627906976,
+    "f1": 0.7061105722599418,
+    "recallByRelevance": {
+      "CENTRAL": {
+        "detected": 18,
+        "expected": 27,
+        "recall": 0.6666666666666666
+      },
+      "RELEVANT": {
+        "detected": 6,
+        "expected": 12,
+        "recall": 0.5
+      },
+      "SECONDARY": {
+        "detected": 2,
+        "expected": 4,
+        "recall": 0.5
+      }
+    },
+    "kindAccuracy": 0.9642857142857143,
+    "kindConfusion": {
+      "PERSON->PERSON": 9,
+      "WORK->WORK": 6,
+      "PLACE->PLACE": 3,
+      "ORGANIZATION->ORGANIZATION": 5,
+      "EVENT->WORK": 1,
+      "ABSTRACTION->ABSTRACTION": 3,
+      "EVENT->EVENT": 1
+    },
+    "naming": {
+      "EXACT_CANONICAL": 28,
+      "POOR_NAME": 4,
+      "FALSE_ENTITY": 1
+    },
+    "summary": {
+      "groundingAverage": 2,
+      "coverageAverage": 0,
+      "specificityAverage": 2,
+      "editorialUsefulnessAverage": 1,
+      "overallDraftAverage": 1,
+      "draftAtLeastFour": 0,
+      "draftAtMostTwo": 28,
+      "forbiddenFactHits": 0
+    }
+  },
+  "partialMetrics": {
+    "rawEntityProposals": 33,
+    "definitiveProposals": 33,
+    "ambiguousForManualReview": 0,
+    "matchedRawProposals": 28,
+    "detectedGoldIdentities": 26,
+    "expectedGoldIdentities": 43,
+    "falseEntities": 5,
+    "duplicateProposals": 2,
+    "duplicateRatio": 0.06060606060606061,
+    "precision": 0.8484848484848485,
+    "recall": 0.6046511627906976,
+    "f1": 0.7061105722599418,
+    "recallByRelevance": {
+      "CENTRAL": {
+        "detected": 18,
+        "expected": 27,
+        "recall": 0.6666666666666666
+      },
+      "RELEVANT": {
+        "detected": 6,
+        "expected": 12,
+        "recall": 0.5
+      },
+      "SECONDARY": {
+        "detected": 2,
+        "expected": 4,
+        "recall": 0.5
+      }
+    },
+    "kindAccuracy": 0.9642857142857143,
+    "kindConfusion": {
+      "PERSON->PERSON": 9,
+      "WORK->WORK": 6,
+      "PLACE->PLACE": 3,
+      "ORGANIZATION->ORGANIZATION": 5,
+      "EVENT->WORK": 1,
+      "ABSTRACTION->ABSTRACTION": 3,
+      "EVENT->EVENT": 1
+    },
+    "naming": {
+      "EXACT_CANONICAL": 28,
+      "POOR_NAME": 4,
+      "FALSE_ENTITY": 1
+    },
+    "summary": {
+      "groundingAverage": 2,
+      "coverageAverage": 0,
+      "specificityAverage": 2,
+      "editorialUsefulnessAverage": 1,
+      "overallDraftAverage": 1,
+      "draftAtLeastFour": 0,
+      "draftAtMostTwo": 28,
+      "forbiddenFactHits": 0
+    }
+  },
+  "coverage": [
+    {
+      "documentId": "01-monograph",
+      "characters": 5273,
+      "words": 837,
+      "normalizedCharacters": 5262,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 4,
+      "segmentsProcessed": 4,
+      "batchesAttempted": 1,
+      "batchesSucceeded": 1,
+      "coverage": 1,
+      "truncated": false
+    },
+    {
+      "documentId": "02-theory",
+      "characters": 5391,
+      "words": 803,
+      "normalizedCharacters": 5378,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 4,
+      "segmentsProcessed": 4,
+      "batchesAttempted": 2,
+      "batchesSucceeded": 2,
+      "coverage": 1,
+      "truncated": false
+    },
+    {
+      "documentId": "03-exhibition",
+      "characters": 4978,
+      "words": 749,
+      "normalizedCharacters": 4965,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 4,
+      "segmentsProcessed": 4,
+      "batchesAttempted": 2,
+      "batchesSucceeded": 2,
+      "coverage": 1,
+      "truncated": false
+    },
+    {
+      "documentId": "04-education",
+      "characters": 4619,
+      "words": 693,
+      "normalizedCharacters": 4606,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 4,
+      "segmentsProcessed": 4,
+      "batchesAttempted": 2,
+      "batchesSucceeded": 2,
+      "coverage": 1,
+      "truncated": false
+    },
+    {
+      "documentId": "05-aliases",
+      "characters": 4336,
+      "words": 680,
+      "normalizedCharacters": 4323,
+      "segmentsRequired": 4,
+      "segmentsPrepared": 4,
+      "segmentsAttempted": 4,
+      "segmentsProcessed": 4,
+      "batchesAttempted": 1,
+      "batchesSucceeded": 1,
+      "coverage": 1,
+      "truncated": false
+    },
+    {
+      "documentId": "06-long-ambiguity",
+      "characters": 8120,
+      "words": 1263,
+      "normalizedCharacters": 8094,
+      "segmentsRequired": 6,
+      "segmentsPrepared": 6,
+      "segmentsAttempted": 6,
+      "segmentsProcessed": 6,
+      "batchesAttempted": 2,
+      "batchesSucceeded": 2,
+      "coverage": 1,
+      "truncated": false
+    }
+  ]
+}

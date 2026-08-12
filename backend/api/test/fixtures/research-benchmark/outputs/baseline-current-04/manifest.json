@@ -1,0 +1,107 @@
+{
+  "runId": "baseline-current-04",
+  "datasetVersion": "1.0.0",
+  "datasetHash": "ed87b7a72952b65cb28ca4af00da909606e31b05b86c328ca1bc1519437990fe",
+  "createdAt": "2026-08-11T14:00:02.072Z",
+  "commitSha": "7b2206e3fddfd6d15284964623998ef9a3302750",
+  "dirtyWorktree": true,
+  "worktreeDiffHash": "be4ab180f4ef579037212df5071399ba2dc98648fad4ecf1db1b9c8b0f10bc74",
+  "provider": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b"
+  },
+  "pipeline": {
+    "task": "research.extract_findings",
+    "contractVersion": "3",
+    "maxCorpusSegments": 80,
+    "maxSegmentChars": 1400,
+    "evidenceBatchSize": 5,
+    "maxOutputTokens": 1200,
+    "entityOutputLimitPerBatch": 6,
+    "temperature": 0.2,
+    "promptAndContractHash": "4f020d891c8f50daf1a35078c6e3afaf20acf34cddbec9a529e87dad0455c5e4",
+    "providerImplementationHash": "0d40225b136338f4cc0ac577753838407d8f7b2f1f50544d1cd604cf7536905b",
+    "providerMetadata": {
+      "provider": "ollama",
+      "model": "qwen2.5:7b"
+    }
+  },
+  "records": {
+    "ownerId": "cmsoq96f80000d0fpqbsbd088",
+    "projectId": "cmsoq96fo0001d0fp5x6pcg5z",
+    "jobId": "cmsoq96gs000kd0fpnrnthap8",
+    "sourceIds": [
+      "cmsoq96fq0002d0fp2j2d8m5o",
+      "cmsoq96g90005d0fpw0jmm9ve",
+      "cmsoq96gd0008d0fpykz8isxy",
+      "cmsoq96gh000bd0fpciisbe7f",
+      "cmsoq96gk000ed0fp7r5xxd5f",
+      "cmsoq96gn000hd0fpjizh236c"
+    ],
+    "materialIds": [
+      "cmsoq96g20003d0fpumk33b8i",
+      "cmsoq96ga0006d0fpjn78kjzg",
+      "cmsoq96ge0009d0fpfn2tq3tg",
+      "cmsoq96gh000cd0fpk9xr0mse",
+      "cmsoq96gl000fd0fpye4kubmr",
+      "cmsoq96go000id0fpq07f5xt2"
+    ],
+    "materialVersionIds": [
+      "cmsoq96g30004d0fp87xes27l",
+      "cmsoq96ga0007d0fp6c3duvlu",
+      "cmsoq96ge000ad0fpt9aj2xdi",
+      "cmsoq96gi000dd0fpmvfxgr4l",
+      "cmsoq96gl000gd0fpwz6jqdyd",
+      "cmsoq96go000jd0fpvzvnsuvu"
+    ]
+  },
+  "documents": [
+    {
+      "id": "01-monograph",
+      "contentHash": "ee97ea139f225e7fd2a533d3ac9f9eacc6fa03799358cf622be1211915d59c34",
+      "sourceId": "cmsoq96fq0002d0fp2j2d8m5o",
+      "materialId": "cmsoq96g20003d0fpumk33b8i",
+      "materialVersionId": "cmsoq96g30004d0fp87xes27l"
+    },
+    {
+      "id": "02-theory",
+      "contentHash": "d837381b45706406125ec9070f085992b61c44b67c7b48c9b2c2b1575881ce2b",
+      "sourceId": "cmsoq96g90005d0fpw0jmm9ve",
+      "materialId": "cmsoq96ga0006d0fpjn78kjzg",
+      "materialVersionId": "cmsoq96ga0007d0fp6c3duvlu"
+    },
+    {
+      "id": "03-exhibition",
+      "contentHash": "6c5316d2813c3c3cacf2b551d8b339ac208e00798e1d8894adcca2ee1363c5e6",
+      "sourceId": "cmsoq96gd0008d0fpykz8isxy",
+      "materialId": "cmsoq96ge0009d0fpfn2tq3tg",
+      "materialVersionId": "cmsoq96ge000ad0fpt9aj2xdi"
+    },
+    {
+      "id": "04-education",
+      "contentHash": "75214957b801998671c96b38658b38a983ba20d8a4786f81bd1c81c915d453eb",
+      "sourceId": "cmsoq96gh000bd0fpciisbe7f",
+      "materialId": "cmsoq96gh000cd0fpk9xr0mse",
+      "materialVersionId": "cmsoq96gi000dd0fpmvfxgr4l"
+    },
+    {
+      "id": "05-aliases",
+      "contentHash": "514c322bc222758f2ad13b4f5ef0bc95e4981916377211fae980e9c42738b71f",
+      "sourceId": "cmsoq96gk000ed0fp7r5xxd5f",
+      "materialId": "cmsoq96gl000fd0fpye4kubmr",
+      "materialVersionId": "cmsoq96gl000gd0fpwz6jqdyd"
+    },
+    {
+      "id": "06-long-ambiguity",
+      "contentHash": "e819dbcfd244a47aa173b6390484914a0b8ec362f0ed1a5dd8fc902ea4fdb239",
+      "sourceId": "cmsoq96gn000hd0fpjizh236c",
+      "materialId": "cmsoq96go000id0fpq07f5xt2",
+      "materialVersionId": "cmsoq96go000jd0fpvzvnsuvu"
+    }
+  ],
+  "aiExecutionIds": ["cmsoq96jt0021d0fplnknwco3"],
+  "proposalIds": [],
+  "status": "FAILED",
+  "error": "Ollama no devolvió JSON válido",
+  "cleanedUpAt": "2026-08-11T14:00:52.659Z"
+}

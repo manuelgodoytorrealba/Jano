@@ -15,6 +15,10 @@ describe('SearchService', () => {
     relation: {
       findMany: jest.fn(),
     },
+    userDiscoverySignal: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+    },
     homeDeck: {
       findMany: jest.fn(),
     },
@@ -27,9 +31,12 @@ describe('SearchService', () => {
     prisma.$queryRaw.mockReset();
     prisma.entity.findMany.mockReset();
     prisma.relation.findMany.mockReset();
+    prisma.userDiscoverySignal.create.mockReset();
+    prisma.userDiscoverySignal.findMany.mockReset();
     prisma.homeDeck.findMany.mockReset();
     searchIntent.interpret.mockReset();
     prisma.relation.findMany.mockResolvedValue([]);
+    prisma.userDiscoverySignal.findMany.mockResolvedValue([]);
     prisma.homeDeck.findMany.mockResolvedValue([]);
     searchIntent.interpret.mockImplementation((q: string, locale: string) => ({
       rawQuery: q,
@@ -134,6 +141,74 @@ describe('SearchService', () => {
         variantsTried: [{ query: 'english', reason: 'raw query' }],
       }),
     );
+  });
+
+  it('uses every entity type for the archive fallback when no type is requested', async () => {
+    prisma.entity.findMany.mockResolvedValue([]);
+
+    await service.archiveRecommendations('user-1', {});
+
+    expect(prisma.entity.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { status: 'PUBLISHED' } }),
+    );
+  });
+
+  it('recommends artworks connected to entities found by a submitted search', async () => {
+    prisma.userDiscoverySignal.findMany.mockResolvedValue([
+      { query: 'Goya', createdAt: new Date('2026-08-10T12:00:00.000Z') },
+    ]);
+    prisma.$queryRaw.mockResolvedValue([
+      {
+        id: 'artist-1',
+        score: 42,
+        matched_title: true,
+        matched_summary: false,
+        matched_content: false,
+        matched_slug: false,
+        matched_alias: false,
+        matched_tag: false,
+        matched_detail: false,
+        matched_relation: false,
+        trigram_score: 0,
+      },
+    ]);
+    prisma.entity.findMany
+      .mockResolvedValueOnce([{ id: 'artist-1', tags: [{ tagId: 'tag-war' }] }])
+      .mockResolvedValueOnce([
+        {
+          id: 'artwork-1',
+          slug: 'third-of-may',
+          title: 'El tres de mayo de 1808',
+          type: 'ARTWORK',
+          kind: 'WORK',
+          summary: 'Una obra de Goya.',
+          content: null,
+          status: 'PUBLISHED',
+          contentLevel: 'INTERMEDIATE',
+          startYear: 1814,
+          endYear: null,
+          tags: [{ tag: { id: 'tag-war', slug: 'war', label: 'Guerra' } }],
+          aliases: [],
+          mediaLinks: [],
+          translations: [],
+        },
+      ]);
+    prisma.relation.findMany.mockResolvedValue([
+      { fromId: 'artwork-1', toId: 'artist-1', weight: 1 },
+    ]);
+
+    const result = await service.archiveRecommendations('user-1', {
+      type: 'ARTWORK',
+      locale: 'es',
+    });
+
+    expect(result.personalized).toBe(true);
+    expect(result.items).toEqual([
+      expect.objectContaining({
+        id: 'artwork-1',
+        recommendationReason: 'Conectado con tus búsquedas recientes',
+      }),
+    ]);
   });
 
   it('keeps artist key works to authored artworks and moves related artworks to related section', async () => {

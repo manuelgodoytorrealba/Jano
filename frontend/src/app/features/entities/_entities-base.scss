@@ -366,3 +366,43 @@ mark {
 .skeleton-box--w3 {
   width: 55%;
 }
+
+.entities-explorer-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  gap: 12px;
+  place-items: center;
+  align-content: center;
+  pointer-events: none;
+}
+
+.entities-explorer-loading__pulse {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  box-shadow: 0 0 0 12px rgba(255, 255, 255, 0.025);
+  animation: entities-explorer-loading-pulse 1.2s ease-in-out infinite;
+}
+
+.entities-explorer-loading__label {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@keyframes entities-explorer-loading-pulse {
+  50% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entities-explorer-loading__pulse {
+    animation: none;
+  }
+}

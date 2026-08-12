@@ -150,9 +150,14 @@ La lista de Jobs informa progreso, límites y recuperación del procesamiento. L
 
 La IA trabaja sólo sobre contenido disponible y contextualizado. Puede proponer segmentos relevantes, Evidence candidatas, Entities, aliases, Claims, Relations, contradicciones posibles, resúmenes documentales y cobertura insuficiente.
 
+En Research Studio, `Generar mapa de conocimiento` es una acción explícita. Analiza el Corpus preparado completo dentro de límites segmentados, junto con el contexto de Índice, preguntas y Drafts disponibles. Antes de la ejecución, el sistema puede crear anclas documentales reproducibles (LibraryExcerpt y ResearchEvidence con texto, versión y locator exactos) para el material preparado que aún no las tenga; no son afirmaciones ni decisiones editoriales. La ejecución nunca sobrescribe una propuesta revisada ni conocimiento privado aceptado: un cambio de contexto produce un Job y propuestas nuevos para revisión.
+
+El análisis completo se ejecuta por lotes documentales localizables. Cada lote recibe sólo sus Evidence, el contexto editorial acotado y un contrato JSON Schema; conserva una `AIExecution` propia y puede producir propuestas parciales sin convertirlas en conocimiento. El `ResearchJob` publica progreso agregado y cualquier fallo real. La interfaz consulta ese estado: nunca sustituye el estado del Job por un temporizador local ni presenta un fallo como una generación vacía.
+
 No puede aceptar Claims, consolidar Relations, decidir identidad definitiva, resolver contradicciones, inventar quotes o locators, publicar ni promover al Knowledge Core.
 
 Toda propuesta debe conservar documento, versión, segmento o Evidence de origen, pregunta relacionada, Job de procedencia y ejecución de IA cuando exista.
+Una propuesta individual que cite Evidence ajena a su lote o no resoluble se descarta antes de persistir; no invalida las demás propuestas fundamentadas del mismo lote.
 
 ## Política de Ollama y neutralidad de proveedor
 

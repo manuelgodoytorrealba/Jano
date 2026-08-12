@@ -1,6 +1,11 @@
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
-import { ResearchDocument, ResearchLibraryExcerpt } from '../../../core/api/research.api';
+import {
+  ResearchApi,
+  ResearchDocument,
+  ResearchLibraryExcerpt,
+} from '../../../core/api/research.api';
 import { ResearchMaterialReaderComponent } from './research-material-reader.component';
 
 const textMaterial: ResearchDocument = {
@@ -21,28 +26,65 @@ const textMaterial: ResearchDocument = {
 };
 
 async function createFixture(materials: ResearchDocument[] = [textMaterial]) {
+  const api = {
+    createEvidenceFromExcerpt: vi.fn().mockReturnValue(of({})),
+    deleteEvidence: vi.fn().mockReturnValue(of({})),
+    deleteLibraryExcerpt: vi.fn().mockReturnValue(of({})),
+  };
   await TestBed.configureTestingModule({
     imports: [ResearchMaterialReaderComponent],
+    providers: [{ provide: ResearchApi, useValue: api }],
   }).compileComponents();
   const fixture = TestBed.createComponent(ResearchMaterialReaderComponent);
   fixture.componentRef.setInput('researchId', 'research-1');
   fixture.componentRef.setInput('materials', materials);
   fixture.detectChanges();
   await fixture.whenStable();
-  return fixture;
+  return { fixture, api };
 }
 
 describe('ResearchMaterialReaderComponent', () => {
   it('opens a TEXT material and shows its complete content', async () => {
-    const fixture = await createFixture();
+    const { fixture } = await createFixture();
     expect(fixture.nativeElement.textContent).toContain('Cuaderno de lectura');
     expect(fixture.nativeElement.textContent).toContain(
       'Un pasaje disponible para lectura completa.',
     );
   });
 
+  it('renders existing Library Excerpts as persistent highlights', async () => {
+    const { fixture } = await createFixture([
+      {
+        ...textMaterial,
+        content: 'Antes. Un pasaje disponible. Después.',
+        excerpts: [
+          {
+            id: 'excerpt-automatico',
+            locator: 'caracteres 1–6',
+            text: 'Antes.',
+            isHighlight: false,
+          },
+          {
+            id: 'excerpt-1',
+            locator: 'caracteres 8–28',
+            text: 'Un pasaje disponible.',
+            isHighlight: true,
+          },
+        ],
+      },
+    ]);
+
+    const highlight = fixture.nativeElement.querySelector('mark.research-reader__highlight');
+
+    expect(highlight.textContent).toBe('Un pasaje disponible.');
+    expect(fixture.nativeElement.querySelectorAll('mark.research-reader__highlight')).toHaveLength(
+      1,
+    );
+    expect(fixture.nativeElement.textContent).toContain('1 highlight guardado');
+  });
+
   it('opens the Reader with the native fullscreen API', async () => {
-    const fixture = await createFixture();
+    const { fixture } = await createFixture();
     const requestFullscreen = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(fixture.nativeElement, 'requestFullscreen', {
       value: requestFullscreen,
@@ -54,7 +96,7 @@ describe('ResearchMaterialReaderComponent', () => {
   });
 
   it('switches between available TEXT materials without writing', async () => {
-    const fixture = await createFixture([
+    const { fixture } = await createFixture([
       textMaterial,
       { ...textMaterial, id: 'material-text-2', title: 'Segunda lectura', content: 'Otro pasaje.' },
     ]);
@@ -67,7 +109,7 @@ describe('ResearchMaterialReaderComponent', () => {
   });
 
   it('allows a prepared URL to be refreshed from the Reader', async () => {
-    const fixture = await createFixture([
+    const { fixture } = await createFixture([
       { ...textMaterial, kind: 'URL', url: 'https://example.com' },
     ]);
     const retry = vi.fn();
@@ -79,7 +121,7 @@ describe('ResearchMaterialReaderComponent', () => {
   });
 
   it('keeps the selected material visible while it updates', async () => {
-    const fixture = await createFixture([
+    const { fixture } = await createFixture([
       { ...textMaterial, kind: 'URL', status: 'PENDING_PREPARATION' },
       { ...textMaterial, id: 'material-pdf', kind: 'PDF', title: 'Otro material' },
     ]);
@@ -94,12 +136,12 @@ describe('ResearchMaterialReaderComponent', () => {
   });
 
   it('preserves the material Source when an excerpt leaves the Reader', async () => {
-    const fixture = await createFixture();
+    const { fixture } = await createFixture();
     const created = vi.fn();
     fixture.componentInstance.excerptCreated.subscribe(created);
 
     fixture.componentInstance.onExcerptCreated(
-      { id: 'excerpt-1', locator: 'p. 3', text: 'Pasaje' },
+      { id: 'excerpt-1', locator: 'p. 3', text: 'Pasaje', isHighlight: true },
       textMaterial,
     );
 
@@ -107,14 +149,67 @@ describe('ResearchMaterialReaderComponent', () => {
       id: 'excerpt-1',
       locator: 'p. 3',
       text: 'Pasaje',
+      isHighlight: true,
       sourceId: 'source-1',
     });
   });
 
+  it('converts a selected highlight into evidence', async () => {
+    const { fixture, api } = await createFixture([
+      {
+        ...textMaterial,
+        excerpts: [
+          {
+            id: 'excerpt-1',
+            locator: 'caracteres 1–9',
+            text: 'Un pasaje',
+            isHighlight: true,
+          },
+        ],
+      },
+    ]);
+    const changed = vi.fn();
+    fixture.componentInstance.dataChanged.subscribe(changed);
+
+    fixture.nativeElement
+      .querySelector('mark.research-reader__highlight')
+      .dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, clientX: 40, clientY: 50 }));
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('.research-reader__excerpt-menu button').click();
+    fixture.detectChanges();
+    fixture.componentInstance.evidenceExplanation = 'Demuestra el argumento editorial.';
+    fixture.componentInstance.saveEvidence();
+
+    expect(api.createEvidenceFromExcerpt).toHaveBeenCalledWith('research-1', 'excerpt-1', {
+      context: expect.any(String),
+      note: undefined,
+    });
+    expect(changed).toHaveBeenCalledWith(undefined);
+  });
+
+  it('closes excerpt actions when clicking outside them', async () => {
+    const { fixture } = await createFixture([
+      {
+        ...textMaterial,
+        excerpts: [
+          { id: 'excerpt-1', locator: 'caracteres 1–9', text: 'Un pasaje', isHighlight: true },
+        ],
+      },
+    ]);
+    fixture.componentInstance.openExcerptMenu(
+      new MouseEvent('contextmenu', { clientX: 40, clientY: 50 }),
+      fixture.componentInstance.selectedMaterial!.excerpts![0],
+    );
+    fixture.detectChanges();
+    expect(fixture.componentInstance.excerptMenu).toMatchObject({ x: 40, y: 50 });
+    fixture.componentInstance.closeTransientPanels(new MouseEvent('click'));
+    expect(fixture.componentInstance.excerptMenu).toBeNull();
+  });
+
   it('prepares a LibraryExcerpt from text selected inside the Reader', async () => {
-    const fixture = await createFixture();
+    const { fixture } = await createFixture();
     const content = fixture.nativeElement.querySelector('.research-reader__content') as HTMLElement;
-    const text = content.firstChild as Text;
+    const text = content.querySelector('span')?.firstChild as Text;
     const range = document.createRange();
     range.setStart(text, 0);
     range.setEnd(text, 10);
@@ -150,11 +245,12 @@ describe('ResearchMaterialReaderComponent', () => {
   });
 
   it('focuses a reviewed excerpt in its source material', async () => {
-    const fixture = await createFixture();
+    const { fixture } = await createFixture();
     const excerpt: ResearchLibraryExcerpt = {
       id: 'excerpt-1',
       locator: 'p. 3',
       text: 'Pasaje revisado.',
+      isHighlight: true,
       materialVersion: {
         id: 'version-1',
         version: 1,
@@ -170,7 +266,7 @@ describe('ResearchMaterialReaderComponent', () => {
   });
 
   it('explains when no TEXT material is available and does not expose URL or PDF content', async () => {
-    const fixture = await createFixture([
+    const { fixture } = await createFixture([
       {
         ...textMaterial,
         id: 'material-url',

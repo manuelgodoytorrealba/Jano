@@ -52,4 +52,9 @@ export class SearchQuery {
   @IsOptional()
   @IsString()
   tag?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  recordInterest?: boolean;
 }
