@@ -80,9 +80,15 @@ export class ResearchPublicationWorkspaceComponent {
 
   publish(): void {
     if (!window.confirm('¿Publicar esta investigación? Será visible en Investigaciones.')) return;
+    this.researchApi.publish(this.project.id).subscribe((project) => (this.project = project));
+  }
+
+  unpublish(): void {
+    if (!window.confirm('¿Retirar esta investigación de la publicación? Dejará de ser visible.'))
+      return;
     this.researchApi
-      .publish(this.project.id)
-      .subscribe(() => void this.router.navigate(['/research']));
+      .updateProjectStatus(this.project.id, 'ACTIVE')
+      .subscribe((project) => (this.project = project));
   }
 
   sectionContent(section: ResearchOutlineSection): string {

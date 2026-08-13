@@ -39,16 +39,11 @@
     [attr.aria-label]="i18n.t('chrome.primaryNav')"
     [style.--active-index]="activeNavIndex()"
   >
-    <span class="app-chrome__nav-indicator" aria-hidden="true"></span>
     @for (item of navItems; track item.label) {
-      @if ($index === 3) {
-        <span class="app-chrome__nav-separator" aria-hidden="true"></span>
-      }
       @if (item.kind === 'route') {
         <a
           class="app-chrome__nav-link"
           [class.is-active]="isRouteActive(item)"
-          [class.app-chrome__nav-link--personal]="item.group === 'personal'"
           [routerLink]="targetRoute(item)"
           (click)="primeRoute(item)"
         >
@@ -65,6 +60,37 @@
       }
     }
   </nav>
+
+  <div class="app-chrome__account">
+    <button
+      type="button"
+      class="app-chrome__account-trigger"
+      [class.is-open]="accountMenuOpen()"
+      [attr.aria-expanded]="accountMenuOpen()"
+      aria-haspopup="menu"
+      (click)="toggleAccountMenu()"
+    >
+      <img class="app-chrome__account-avatar" src="/app-brand-mark.png" alt="" />
+      <span>{{ accountName() }}</span>
+      <span class="app-chrome__account-chevron" aria-hidden="true">⌄</span>
+    </button>
+
+    @if (accountMenuOpen()) {
+      <div class="app-chrome__account-menu app-glass" role="menu" aria-label="Cuenta">
+        <a routerLink="/profile" role="menuitem" (click)="closeAccountMenu()">Mi perfil</a>
+        <a routerLink="/my-space" role="menuitem" (click)="closeAccountMenu()">Espacio</a>
+        <a
+          routerLink="/my-space"
+          fragment="collections"
+          role="menuitem"
+          (click)="closeAccountMenu()"
+          >Colecciones</a
+        >
+        <a routerLink="/settings" role="menuitem" (click)="closeAccountMenu()">Ajustes</a>
+        <button type="button" role="menuitem" (click)="logout()">Cerrar sesión</button>
+      </div>
+    }
+  </div>
 
   @if (showHeaderCloseButton()) {
     <button
@@ -100,6 +126,7 @@
 
 <aside
   class="app-chrome__utility app-glass"
+  [class.app-chrome__utility--hidden]="!isDetailRoute()"
   [class.app-chrome__utility--contextual]="isDetailRoute()"
   [class.has-active]="activeUtilityIndex() >= 0"
   [attr.aria-label]="i18n.t('chrome.utilities')"

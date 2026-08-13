@@ -211,7 +211,7 @@ export class ResearchGraphComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.renderer.removeClass(this.document.body, 'app-stage-immersive');
+    if (this.focused) this.renderer.removeClass(this.document.body, 'app-stage-immersive');
   }
 
   toggleCandidates(checked: boolean): void {

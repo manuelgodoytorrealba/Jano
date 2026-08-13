@@ -691,7 +691,6 @@ export class ResearchProjectComponent implements OnDestroy {
 
   openMode(mode: (typeof this.modes)[number]): void {
     if (!mode.available) return;
-    if (mode.id === 'publication') this.exitFocus();
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { mode: mode.id, section: mode.id === 'index' ? undefined : null },

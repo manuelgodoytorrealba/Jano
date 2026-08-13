@@ -21,6 +21,7 @@ import { EntitiesListActiveFiltersComponent } from './entities-list-active-filte
 export class EntitiesListFilterRailComponent {
   @Input({ required: true }) vm!: EntitiesListFilterRailVm;
   @Input() collapsed = false;
+  @Input() simple = false;
   @Input() openFilterMenu: FilterMenuKey | null = null;
   @Input() advancedFiltersOpen = false;
 

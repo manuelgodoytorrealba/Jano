@@ -83,7 +83,7 @@ export class App {
 
   isEntitiesRoute(): boolean {
     const url = this.router.url.split('?')[0];
-    return url === '/entities' || url.startsWith('/entities/');
+    return url === '/research' || url === '/entities' || url.startsWith('/entities/');
   }
 
   isEntityDetailRoute(): boolean {

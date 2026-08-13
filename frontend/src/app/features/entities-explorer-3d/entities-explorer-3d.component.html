@@ -81,9 +81,11 @@
         <p class="explorer3d__summary">{{ cleanWiki(active.summary) }}</p>
       }
 
-      <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
-        {{ i18n.t('entity.open') }}
-      </button>
+      @if (showOpenAction) {
+        <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
+          {{ i18n.t('entity.open') }}
+        </button>
+      }
     </aside>
   }
 </div>

@@ -207,7 +207,7 @@ describe('ResearchProjectComponent', () => {
     expect(backLink.nativeElement.textContent).toContain('Investigaciones');
   });
 
-  it('switches research and exits focus mode when opening publication', async () => {
+  it('switches research and preserves focus mode when opening publication', async () => {
     const api = {
       getById: vi.fn().mockReturnValue(of(project)),
       list: vi
@@ -230,7 +230,7 @@ describe('ResearchProjectComponent', () => {
     fixture.componentInstance.openMode(
       fixture.componentInstance.modes.find((mode) => mode.id === 'publication')!,
     );
-    expect(document.body.classList.contains('app-stage-immersive')).toBe(false);
+    expect(document.body.classList.contains('app-stage-immersive')).toBe(true);
   });
 
   it('keeps intake and reading as separate corpus views', async () => {

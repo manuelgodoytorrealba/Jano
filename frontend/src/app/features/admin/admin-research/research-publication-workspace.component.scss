@@ -116,6 +116,20 @@
   text-decoration: none;
   cursor: pointer;
 }
+.publication__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--research-accent) 48%, transparent);
+  border-radius: 999px;
+  background: var(--research-accent-soft);
+  color: var(--research-accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+.publication__actions .publication__unpublish {
+  color: var(--research-text-soft);
+}
 .publication__actions a,
 .publication__empty a {
   background: var(--research-primary);

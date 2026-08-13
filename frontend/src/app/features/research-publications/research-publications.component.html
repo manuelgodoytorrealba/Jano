@@ -1,28 +1,127 @@
-<main class="research-publications page-shell">
-  <header class="research-publications__hero">
-    <p>Investigaciones</p>
-    <h1>Publicaciones de Research</h1>
-    <span>Recorridos editoriales nacidos de investigación, fuentes y conocimiento conectado.</span>
-  </header>
+<div
+  class="entities-page page-shell"
+  [class.entities-page--immersive]="viewMode === 'explore'"
+  [class.entities-page--list-shell]="viewMode === 'list'"
+>
+  <h1 class="sr-only">Publicaciones de Research</h1>
+  <section
+    class="entities-explorer-layout"
+    [class.is-list]="viewMode === 'list'"
+    [class.is-filters-collapsed]="!filtersOpen()"
+    [class.is-info-collapsed]="!infoOpen()"
+  >
+    <header class="entities-hud" aria-label="Explorador de publicaciones">
+      <nav class="entities-breadcrumbs ds-panel" aria-label="Miga de pan">
+        <span class="entities-breadcrumbs__link">Inicio</span>
+        <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
+        <span class="entities-breadcrumbs__current">Investigaciones</span>
+      </nav>
+      <div class="entities-hud__controls">
+        <button
+          type="button"
+          class="entities-hud__filters ds-panel"
+          [class.is-collapsed]="!filtersOpen()"
+          [attr.aria-expanded]="filtersOpen()"
+          (click)="filtersOpen.set(!filtersOpen())"
+          aria-label="Mostrar filtros"
+        >
+          <svg
+            class="entities-hud__filters-icon"
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            focusable="false"
+          >
+            <path d="M4 6h16" />
+            <circle cx="9" cy="6" r="1.9" />
+            <path d="M4 12h16" />
+            <circle cx="15" cy="12" r="1.9" />
+            <path d="M4 18h16" />
+            <circle cx="11" cy="18" r="1.9" />
+          </svg>
+        </button>
+        <div class="entities-mode-pill ds-panel">
+          <div class="view-toggle" role="tablist" aria-label="Vista">
+            <button
+              type="button"
+              class="view-toggle__button"
+              role="tab"
+              [attr.aria-selected]="viewMode === 'explore'"
+              [class.is-active]="viewMode === 'explore'"
+              (click)="setView('explore')"
+            >
+              Explorar
+            </button>
+            <button
+              type="button"
+              class="view-toggle__button"
+              role="tab"
+              [attr.aria-selected]="viewMode === 'list'"
+              [class.is-active]="viewMode === 'list'"
+              (click)="setView('list')"
+            >
+              Lista
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
 
-  @if (publications$ | async; as publications) {
-    @if (publications.length) {
-      <section class="research-publications__grid" aria-label="Investigaciones publicadas">
-        @for (publication of publications; track publication.id) {
-          <article class="research-publications__card">
-            @if (publication.coverImageUrl) {
-              <img [src]="publication.coverImageUrl" [alt]="publication.title" />
-            }
-            <div>
-              <small>{{ publication.publishedAt | date: 'longDate' }}</small>
-              <h2>{{ publication.title }}</h2>
-              <p>{{ publication.objective }}</p>
-            </div>
-          </article>
+    @if (publications$ | async; as publications) {
+      @if (filtered(publications); as items) {
+        @if (filtersOpen()) {
+          <app-entities-list-filter-rail
+            [vm]="filterRailVm(items.length)"
+            [simple]="true"
+            [collapsed]="false"
+            (searchChange)="filter($event)"
+            (clearSearch)="filter('')"
+            (sortChange)="setSort($event)"
+            (resetFilters)="filter('')"
+          />
         }
-      </section>
-    } @else {
-      <p class="research-publications__empty">Aún no hay investigaciones publicadas.</p>
+
+        @if (items.length) {
+          @if (viewMode === 'explore') {
+            <div class="entities-explorer-stage">
+              <app-entities-explorer-3d
+                [items]="items"
+                [activeIndex]="activeIndex()"
+                [infoOpen]="infoOpen()"
+                [infoClosable]="true"
+                [showOpenAction]="false"
+                (activeIndexChange)="activeIndex.set($event)"
+                (requestInfoOpen)="infoOpen.set(true)"
+                (requestInfoClose)="infoOpen.set(false)"
+              />
+            </div>
+          } @else {
+            <div class="entities-stage-shell entities-stage-shell--list">
+              <section class="entities-grid" aria-label="Lista de publicaciones">
+                @for (publication of items; track publication.id; let index = $index) {
+                  <article class="entity-card ds-card" tabindex="0" (click)="select(index)">
+                    <div class="entity-card__thumb">
+                      <app-jano-media
+                        [entity]="publication"
+                        usage="card"
+                        [alt]="publication.title"
+                      />
+                    </div>
+                    <div class="entity-card__body">
+                      <div class="entity-card__badges"><span class="ds-badge">Research</span></div>
+                      <div class="entity-card__title">{{ publication.title }}</div>
+                      <div class="entity-card__summary">{{ publication.summary }}</div>
+                    </div>
+                  </article>
+                }
+              </section>
+            </div>
+          }
+        } @else {
+          <div class="entities-stage-shell entities-stage-shell--empty">
+            <p>No hay publicaciones que coincidan.</p>
+          </div>
+        }
+      }
     }
-  }
-</main>
+  </section>
+</div>

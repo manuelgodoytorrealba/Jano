@@ -5,7 +5,9 @@
         <a routerLink="/admin/research">Research Studio</a><span aria-hidden="true">/</span
         ><span>Publicación</span>
       </nav>
-      <p class="publication__eyebrow">Investigación privada</p>
+      <p class="publication__eyebrow">
+        {{ project.status === 'PUBLISHED' ? 'Investigación publicada' : 'Investigación privada' }}
+      </p>
       <h1>{{ project.title }}</h1>
       <p class="publication__objective">
         {{ project.objective || 'Una investigación editorial en desarrollo.' }}
@@ -23,7 +25,12 @@
           >Editar contenido</a
         >
         <button type="button" (click)="setTab('sources')">Ver fuentes</button>
-        @if (project.status !== 'PUBLISHED') {
+        @if (project.status === 'PUBLISHED') {
+          <span class="publication__status" role="status">Publicada</span>
+          <button type="button" class="publication__unpublish" (click)="unpublish()">
+            Retirar de publicación
+          </button>
+        } @else {
           <button type="button" (click)="publish()">Publicar investigación</button>
         }
       </div>

@@ -25,7 +25,6 @@ type HeaderNavItem = {
   label: string;
   route?: string;
   kind: 'route' | 'placeholder';
-  group: 'public' | 'personal';
   exact?: boolean;
 };
 
@@ -56,6 +55,7 @@ export class AppChromeComponent {
   private readonly pendingUrl = signal<string | null>(null);
   readonly compactHeaderEnabled = signal(this.readCompactHeaderEnabled());
   readonly headerCollapsed = signal(this.shouldStartHeaderCollapsed());
+  readonly accountMenuOpen = signal(false);
   readonly detailHeaderRevealed = signal(false);
   readonly brandPressing = signal(false);
   readonly orientationLockVisible = signal(this.readOrientationLockVisible());
@@ -66,12 +66,10 @@ export class AppChromeComponent {
   }
 
   readonly navItems: HeaderNavItem[] = [
-    { label: 'nav.discover', route: '/home', kind: 'route', group: 'public', exact: true },
-    { label: 'nav.explore', route: '/entities', kind: 'route', group: 'public', exact: true },
-    { label: 'nav.articles', route: '/entities/article', kind: 'route', group: 'public' },
-    { label: 'nav.research', route: '/research', kind: 'route', group: 'public' },
-    { label: 'nav.profile', route: '/profile', kind: 'route', group: 'personal' },
-    { label: 'nav.spaceShort', route: '/my-space', kind: 'route', group: 'personal' },
+    { label: 'nav.discover', route: '/home', kind: 'route', exact: true },
+    { label: 'nav.explore', route: '/entities', kind: 'route', exact: true },
+    { label: 'nav.articles', route: '/entities/article', kind: 'route' },
+    { label: 'nav.research', route: '/research', kind: 'route' },
   ];
 
   readonly utilityItems: UtilityItem[] = [
@@ -128,8 +126,12 @@ export class AppChromeComponent {
       fromEvent<KeyboardEvent>(window, 'keydown')
         .pipe(takeUntilDestroyed())
         .subscribe((event) => {
-          if (event.key === 'Escape' && this.isDetailRoute()) {
-            this.revealDetailHeader();
+          if (event.key === 'Escape') {
+            if (this.accountMenuOpen()) {
+              this.accountMenuOpen.set(false);
+            } else if (this.isDetailRoute()) {
+              this.revealDetailHeader();
+            }
           }
         });
     }
@@ -218,15 +220,12 @@ export class AppChromeComponent {
       return;
     }
 
-    if (!this.isDetailRoute() || this.headerCollapsed()) {
-      return;
-    }
-
     if (target.closest('.app-chrome__header, .app-chrome__header-toggle')) {
       return;
     }
 
-    this.collapseHeader();
+    this.accountMenuOpen.set(false);
+    if (this.isDetailRoute() && !this.headerCollapsed()) this.collapseHeader();
   }
 
   detailHeaderMode(): boolean {
@@ -239,6 +238,25 @@ export class AppChromeComponent {
 
   showHeaderCloseButton(): boolean {
     return this.compactHeaderEnabled();
+  }
+
+  accountName(): string {
+    return (
+      this.auth.currentUser?.name?.trim() || this.auth.currentUser?.email?.split('@')[0] || 'JANO'
+    );
+  }
+
+  toggleAccountMenu(): void {
+    this.accountMenuOpen.set(!this.accountMenuOpen());
+  }
+
+  closeAccountMenu(): void {
+    this.accountMenuOpen.set(false);
+  }
+
+  logout(): void {
+    this.closeAccountMenu();
+    this.auth.logout();
   }
 
   private syncHeaderState(): void {

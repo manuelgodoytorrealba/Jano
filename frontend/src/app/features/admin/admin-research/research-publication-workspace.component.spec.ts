@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { describe, expect, it, vi } from 'vitest';
-import { ResearchEntity, ResearchProject } from '../../../core/api/research.api';
+import { of } from 'rxjs';
+import { ResearchApi, ResearchEntity, ResearchProject } from '../../../core/api/research.api';
 import { ResearchPublicationWorkspaceComponent } from './research-publication-workspace.component';
 
 const project = {
@@ -150,5 +151,29 @@ describe('ResearchPublicationWorkspaceComponent', () => {
 
     expect(component.entityType(entity)).toBe('ARTWORK');
     expect(component.entityImage(entity)).toBe('/artwork.jpg');
+  });
+
+  it('returns a published Research to its active private state', () => {
+    const router = { navigate: vi.fn() };
+    const researchApi = {
+      updateProjectStatus: vi.fn().mockReturnValue(of({ ...project, status: 'ACTIVE' })),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: Router, useValue: router },
+        { provide: ResearchApi, useValue: researchApi },
+      ],
+    });
+    const component = TestBed.runInInjectionContext(
+      () => new ResearchPublicationWorkspaceComponent(),
+    );
+    component.project = { ...project, status: 'PUBLISHED' };
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    component.unpublish();
+
+    expect(researchApi.updateProjectStatus).toHaveBeenCalledWith('research-1', 'ACTIVE');
+    expect(component.project.status).toBe('ACTIVE');
+    confirm.mockRestore();
   });
 });

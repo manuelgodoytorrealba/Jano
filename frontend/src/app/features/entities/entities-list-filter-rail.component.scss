@@ -53,6 +53,10 @@
   visibility: hidden;
 }
 
+.entities-filter-rail.is-simple .entities-filter-rail__section--advanced {
+  display: none;
+}
+
 .entities-filter-rail__section {
   display: grid;
   gap: 7px;

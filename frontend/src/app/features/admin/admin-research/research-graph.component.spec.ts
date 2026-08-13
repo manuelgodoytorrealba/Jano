@@ -190,6 +190,16 @@ describe('ResearchGraphComponent', () => {
     expect(result.componentInstance.focused).toBe(false);
   });
 
+  it('does not clear the Studio focus when an unfocused graph is destroyed', async () => {
+    const { result } = await fixture();
+    document.body.classList.add('app-stage-immersive');
+
+    result.destroy();
+
+    expect(document.body.classList.contains('app-stage-immersive')).toBe(true);
+    document.body.classList.remove('app-stage-immersive');
+  });
+
   it('emits candidate selection for editorial review', async () => {
     const { result } = await fixture();
     const selected = vi.fn();

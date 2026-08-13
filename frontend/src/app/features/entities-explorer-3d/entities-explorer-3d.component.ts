@@ -38,6 +38,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   @Input() infoOpen = true;
   @Input() infoClosable = false;
   @Input() infoModal = false;
+  @Input() showOpenAction = true;
 
   @Output() activeIndexChange = new EventEmitter<number>();
   @Output() openEntity = new EventEmitter<string | EntityArtworkTransitionPayload>();
