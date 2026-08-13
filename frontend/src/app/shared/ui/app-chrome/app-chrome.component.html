@@ -82,14 +82,7 @@
     @if (accountMenuOpen()) {
       <div class="app-chrome__account-menu app-glass" role="menu" aria-label="Cuenta">
         <a routerLink="/profile" role="menuitem" (click)="closeAccountMenu()">Mi perfil</a>
-        <a routerLink="/my-space" role="menuitem" (click)="closeAccountMenu()">Espacio</a>
-        <a
-          routerLink="/my-space"
-          fragment="collections"
-          role="menuitem"
-          (click)="closeAccountMenu()"
-          >Colecciones</a
-        >
+        <a routerLink="/my-space" role="menuitem" (click)="closeAccountMenu()">Mi espacio</a>
         <a routerLink="/settings" role="menuitem" (click)="closeAccountMenu()">Ajustes</a>
         <button type="button" role="menuitem" (click)="logout()">Cerrar sesión</button>
       </div>
