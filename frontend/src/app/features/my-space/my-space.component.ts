@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { CollectionsApi } from '../../core/api/collections.api';
@@ -13,7 +13,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
   standalone: true,
   selector: 'app-my-space',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, RouterLink, JanoMediaComponent],
+  imports: [AsyncPipe, JanoMediaComponent],
   templateUrl: './my-space.component.html',
   styleUrls: ['./my-space.component.scss'],
 })
@@ -32,6 +32,8 @@ export class MySpaceComponent {
   newCollectionDescription = '';
   creating = false;
   createError = '';
+  readonly activeTab = signal<'saved' | 'collections'>('saved');
+  readonly createPanelOpen = signal(false);
 
   saved$ = combineLatest([this.auth.user$, this.refresh$, this.removedSavedIds$]).pipe(
     switchMap(([user, _, removedSavedIds]) => {
@@ -117,12 +119,18 @@ export class MySpaceComponent {
           this.newCollectionDescription = '';
           this.creating = false;
           this.refresh$.next();
+          this.activeTab.set('collections');
+          this.createPanelOpen.set(false);
         },
         error: (err) => {
           this.creating = false;
           this.createError = err?.error?.message ?? this.i18n.t('mySpace.createError');
         },
       });
+  }
+
+  setTab(tab: 'saved' | 'collections'): void {
+    this.activeTab.set(tab);
   }
 
   removeSaved(entityId: string) {

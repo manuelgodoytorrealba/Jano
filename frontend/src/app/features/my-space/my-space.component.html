@@ -1,238 +1,197 @@
-<div class="space-page">
-  @if (auth.user$ | async; as user) {
-    <section class="space-hero">
-      <div class="space-hero__copy">
-        <span class="space-eyebrow">{{ i18n.t('mySpace.eyebrow') }}</span>
-        <h1>{{ i18n.t('mySpace.title') }}</h1>
-        <p class="space-muted">
-          {{ i18n.t('mySpace.intro') }}
-        </p>
-      </div>
+<main class="space-page">
+  <header class="space-hero">
+    <div class="space-hero__copy">
+      <span class="space-eyebrow">{{ i18n.t('mySpace.eyebrow') }}</span>
+      <h1>{{ i18n.t('mySpace.title') }}</h1>
+      <p class="space-muted">{{ i18n.t('mySpace.intro') }}</p>
+    </div>
 
-      <div class="space-hero__actions">
-        <nav class="space-shortcuts" aria-label="{{ i18n.t('mySpace.shortcuts') }}">
-          <a class="space-shortcut" routerLink="/profile">{{ i18n.t('nav.profile') }}</a>
-          <a class="space-shortcut" routerLink="/settings">{{ i18n.t('nav.settings') }}</a>
-          @if (isAdmin(user)) {
-            <a class="space-shortcut" routerLink="/admin">Admin</a>
-          }
-        </nav>
+    <button
+      type="button"
+      class="space-shortcut space-shortcut--primary"
+      (click)="createPanelOpen.set(!createPanelOpen())"
+    >
+      + {{ i18n.t('mySpace.createBoard') }}
+    </button>
+  </header>
 
-        <button class="space-shortcut space-shortcut--quiet" type="button" (click)="logout()">
-          {{ i18n.t('auth.logout') }}
-        </button>
-      </div>
-    </section>
-
-    <section class="space-surface space-surface--identity">
-      <div class="space-section-head space-section-head--identity">
-        <div>
-          <span class="space-label">{{ i18n.t('common.account') }}</span>
-          <h2>{{ user.name || user.email }}</h2>
-          <p class="space-muted">
-            {{ i18n.t('mySpace.accountIntro') }}
-          </p>
-        </div>
-
-        <div class="space-note">
-          <span class="space-note__label">{{ i18n.t('common.role') }}</span>
-          <strong>{{ roleLabel(user) }}</strong>
-        </div>
-      </div>
-    </section>
-  }
-
-  <section class="space-workbench">
-    <article class="space-surface space-surface--compose">
+  @if (createPanelOpen()) {
+    <section class="space-surface space-surface--compose">
       <div class="space-section-head">
         <div>
           <span class="space-label">{{ i18n.t('mySpace.collections') }}</span>
           <h2>{{ i18n.t('mySpace.createBoard') }}</h2>
-          <p class="space-muted">{{ i18n.t('mySpace.createIntro') }}</p>
         </div>
+        <button
+          type="button"
+          class="space-shortcut space-shortcut--quiet"
+          (click)="createPanelOpen.set(false)"
+        >
+          ×
+        </button>
       </div>
-
       <div class="space-create-form">
         <input
           class="space-input"
           type="text"
-          placeholder="{{ i18n.t('collection.namePlaceholder') }}"
+          [placeholder]="i18n.t('collection.namePlaceholder')"
           [value]="newCollectionName"
           (input)="newCollectionName = $any($event.target).value"
         />
-
         <input
           class="space-input"
           type="text"
-          placeholder="{{ i18n.t('collection.descriptionPlaceholder') }}"
+          [placeholder]="i18n.t('collection.descriptionPlaceholder')"
           [value]="newCollectionDescription"
           (input)="newCollectionDescription = $any($event.target).value"
         />
-
         <button
           class="space-shortcut space-shortcut--primary"
           type="button"
           [disabled]="creating || !newCollectionName.trim()"
           (click)="createCollection()"
         >
-          @if (creating) {
-            {{ i18n.t('common.creating') }}
-          } @else {
-            {{ i18n.t('collection.create') }}
-          }
+          {{ creating ? i18n.t('common.creating') : i18n.t('collection.create') }}
         </button>
       </div>
-
       @if (createError) {
         <div class="space-feedback space-feedback--error">{{ createError }}</div>
       }
-    </article>
-
-    <article class="space-surface space-surface--saved">
-      <div class="space-section-head">
-        <div>
-          <span class="space-label">{{ i18n.t('mySpace.saved') }}</span>
-          <h2>{{ i18n.t('mySpace.quickSelection') }}</h2>
-          <p class="space-muted">{{ i18n.t('mySpace.savedIntro') }}</p>
-        </div>
-      </div>
-
-      @if (saved$ | async; as savedItems) {
-        @if (savedItems.length) {
-          <div class="saved-shelf">
-            @for (row of previewItems(savedItems, 6); track row.id) {
-              <article class="saved-tile">
-                <div
-                  class="saved-tile__thumb"
-                  role="link"
-                  tabindex="0"
-                  (click)="go(row.entity.slug)"
-                  (keydown.enter)="go(row.entity.slug)"
-                >
-                  <app-jano-media
-                    [entity]="row.entity"
-                    usage="card"
-                    [alt]="row.entity.title"
-                  ></app-jano-media>
-                </div>
-
-                <div class="saved-tile__body">
-                  <button type="button" class="saved-tile__title" (click)="go(row.entity.slug)">
-                    {{ row.entity.title }}
-                  </button>
-                  <button
-                    type="button"
-                    class="saved-tile__remove"
-                    (click)="removeSaved(row.entity.id)"
-                  >
-                    {{ i18n.t('button.remove') }}
-                  </button>
-                </div>
-              </article>
-            }
-          </div>
-        } @else {
-          <div class="space-empty">
-            <div class="space-empty__title">{{ i18n.t('mySpace.noSaved') }}</div>
-            <div class="space-empty__sub">{{ i18n.t('mySpace.noSavedSub') }}</div>
-          </div>
-        }
-      }
-    </article>
-  </section>
-
-  @if (collections$ | async; as collections) {
-    <section class="space-surface space-surface--boards">
-      <div class="space-section-head">
-        <div>
-          <span class="space-label">{{ i18n.t('mySpace.boards') }}</span>
-          <h2>{{ i18n.t('mySpace.collections') }} personales</h2>
-          <p class="space-muted">{{ i18n.t('mySpace.boardsIntro') }}</p>
-        </div>
-
-        <div class="collection-count collection-count--section">
-          {{ collections.length }} {{ collections.length === 1 ? 'board' : 'boards' }}
-        </div>
-      </div>
-
-      @if (collections.length) {
-        <div class="boards-grid">
-          @for (collection of collections; track collection.id) {
-            <article
-              class="board-card"
-              [class.board-card--empty]="!collection.items.length"
-              role="link"
-              tabindex="0"
-              [attr.aria-label]="i18n.t('collection.openAria') + ' ' + collection.name"
-              (click)="goToCollection(collection.id)"
-              (keydown.enter)="goToCollection(collection.id)"
-              (keydown.space)="$event.preventDefault(); goToCollection(collection.id)"
-            >
-              <div
-                class="board-card__mosaic"
-                [class.board-card__mosaic--empty]="!collection.items.length"
-              >
-                @if (collection.items.length) {
-                  @for (
-                    item of previewItems(collection.items, 4);
-                    track item.id;
-                    let index = $index
-                  ) {
-                    <div class="board-card__tile" [class.board-card__tile--accent]="index === 0">
-                      <app-jano-media
-                        [entity]="item.entity"
-                        usage="card"
-                        [alt]="item.entity.title"
-                      ></app-jano-media>
-
-                      @if (index === 3 && remainingItems(collection.itemCount, 4) > 0) {
-                        <div class="board-card__overflow">
-                          +{{ remainingItems(collection.itemCount, 4) }}
-                        </div>
-                      }
-                    </div>
-                  }
-                } @else {
-                  <div class="board-card__empty-state">
-                    <span class="board-card__empty-label">{{ i18n.t('collection.empty') }}</span>
-                    <p>{{ i18n.t('collection.emptyHelp') }}</p>
-                  </div>
-                }
-              </div>
-
-              <div class="board-card__body">
-                <div class="board-card__meta">
-                  <div class="board-card__title-row">
-                    <h3 class="board-card__title">{{ collection.name }}</h3>
-                    @if (collection.isDefault) {
-                      <span class="collection-pill">{{ i18n.t('common.default') }}</span>
-                    }
-                  </div>
-
-                  <div class="collection-count">{{ collection.itemCount }} items</div>
-                </div>
-
-                @if (collection.description) {
-                  <p class="board-card__description">{{ collection.description }}</p>
-                } @else {
-                  <p class="board-card__description board-card__description--muted">
-                    {{ i18n.t('collection.defaultDescription') }}
-                  </p>
-                }
-
-                <div class="board-card__footer">
-                  <span class="board-card__hint">{{ i18n.t('collection.openBoard') }}</span>
-                </div>
-              </div>
-            </article>
-          }
-        </div>
-      } @else {
-        <div class="space-empty space-empty--main">
-          <div class="space-empty__title">{{ i18n.t('mySpace.noBoards') }}</div>
-          <div class="space-empty__sub">{{ i18n.t('mySpace.noBoardsSub') }}</div>
-        </div>
-      }
     </section>
   }
-</div>
+
+  @if (saved$ | async; as savedItems) {
+    @if (collections$ | async; as collections) {
+      <section class="space-workspace">
+        <div class="space-tabs" role="tablist" aria-label="Archivo personal">
+          <button
+            type="button"
+            role="tab"
+            [class.is-active]="activeTab() === 'saved'"
+            [attr.aria-selected]="activeTab() === 'saved'"
+            (click)="setTab('saved')"
+          >
+            {{ i18n.t('mySpace.saved') }} <span>{{ savedItems.length }}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            [class.is-active]="activeTab() === 'collections'"
+            [attr.aria-selected]="activeTab() === 'collections'"
+            (click)="setTab('collections')"
+          >
+            {{ i18n.t('mySpace.collections') }} <span>{{ collections.length }}</span>
+          </button>
+        </div>
+
+        @if (activeTab() === 'saved') {
+          <section class="space-surface space-surface--saved">
+            <div class="space-section-head">
+              <div>
+                <span class="space-label">{{ i18n.t('mySpace.saved') }}</span>
+                <h2>{{ i18n.t('mySpace.quickSelection') }}</h2>
+                <p class="space-muted">{{ i18n.t('mySpace.savedIntro') }}</p>
+              </div>
+            </div>
+            @if (savedItems.length) {
+              <div class="saved-shelf">
+                @for (row of savedItems; track row.id) {
+                  <article class="saved-tile">
+                    <button type="button" class="saved-tile__thumb" (click)="go(row.entity.slug)">
+                      <app-jano-media [entity]="row.entity" usage="card" [alt]="row.entity.title" />
+                    </button>
+                    <div class="saved-tile__body">
+                      <button type="button" class="saved-tile__title" (click)="go(row.entity.slug)">
+                        {{ row.entity.title }}
+                      </button>
+                      <button
+                        type="button"
+                        class="saved-tile__remove"
+                        (click)="removeSaved(row.entity.id)"
+                      >
+                        {{ i18n.t('button.remove') }}
+                      </button>
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="space-empty">
+                <div class="space-empty__title">{{ i18n.t('mySpace.noSaved') }}</div>
+                <div class="space-empty__sub">{{ i18n.t('mySpace.noSavedSub') }}</div>
+              </div>
+            }
+          </section>
+        } @else {
+          <section class="space-surface space-surface--boards" id="collections">
+            <div class="space-section-head">
+              <div>
+                <span class="space-label">{{ i18n.t('mySpace.boards') }}</span>
+                <h2>{{ i18n.t('mySpace.collections') }} personales</h2>
+                <p class="space-muted">{{ i18n.t('mySpace.boardsIntro') }}</p>
+              </div>
+            </div>
+            @if (collections.length) {
+              <div class="boards-grid">
+                @for (collection of collections; track collection.id) {
+                  <article
+                    class="board-card"
+                    role="link"
+                    tabindex="0"
+                    (click)="goToCollection(collection.id)"
+                    (keydown.enter)="goToCollection(collection.id)"
+                  >
+                    <div
+                      class="board-card__mosaic"
+                      [class.board-card__mosaic--empty]="!collection.items.length"
+                    >
+                      @if (collection.items.length) {
+                        @for (
+                          item of previewItems(collection.items, 4);
+                          track item.id;
+                          let index = $index
+                        ) {
+                          <div
+                            class="board-card__tile"
+                            [class.board-card__tile--accent]="index === 0"
+                          >
+                            <app-jano-media
+                              [entity]="item.entity"
+                              usage="card"
+                              [alt]="item.entity.title"
+                            />
+                            @if (index === 3 && remainingItems(collection.itemCount, 4) > 0) {
+                              <div class="board-card__overflow">
+                                +{{ remainingItems(collection.itemCount, 4) }}
+                              </div>
+                            }
+                          </div>
+                        }
+                      } @else {
+                        <div class="board-card__empty-state">{{ i18n.t('collection.empty') }}</div>
+                      }
+                    </div>
+                    <div class="board-card__body">
+                      <div class="board-card__meta">
+                        <h3 class="board-card__title">{{ collection.name }}</h3>
+                        <span class="collection-count">{{ collection.itemCount }} items</span>
+                      </div>
+                      <p class="board-card__description">
+                        {{ collection.description || i18n.t('collection.defaultDescription') }}
+                      </p>
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="space-empty">
+                <div class="space-empty__title">{{ i18n.t('mySpace.noBoards') }}</div>
+                <div class="space-empty__sub">{{ i18n.t('mySpace.noBoardsSub') }}</div>
+              </div>
+            }
+          </section>
+        }
+      </section>
+    }
+  }
+</main>

@@ -174,6 +174,43 @@
   gap: 16px;
 }
 
+.space-workspace {
+  display: grid;
+  gap: 16px;
+}
+
+.space-tabs {
+  display: inline-flex;
+  width: fit-content;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(12, 13, 18, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.space-tabs button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(242, 241, 238, 0.68);
+  font: inherit;
+  cursor: pointer;
+}
+
+.space-tabs button.is-active {
+  color: rgba(247, 244, 240, 0.96);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.space-tabs span {
+  margin-left: 5px;
+  opacity: 0.66;
+}
+
 .space-surface--compose,
 .space-surface--saved {
   align-content: start;
@@ -221,6 +258,9 @@
 
 .saved-tile__thumb {
   height: 158px;
+  width: 100%;
+  padding: 0;
+  border: 0;
   background: rgba(11, 12, 18, 0.5);
   cursor: pointer;
 }
