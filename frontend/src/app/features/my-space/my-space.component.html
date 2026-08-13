@@ -91,14 +91,17 @@
         @if (activeTab() === 'saved') {
           <section class="space-surface space-surface--saved">
             <div class="saved-controls">
-              <label class="saved-search"
-                ><span class="visually-hidden">Buscar en tus guardados</span
-                ><input
+              <label class="saved-search">
+                <span class="saved-search__icon" aria-hidden="true">⌕</span>
+                <span class="saved-search__label">Buscar en tus guardados</span>
+                <input
                   type="search"
                   placeholder="Buscar en tus guardados…"
+                  aria-label="Buscar en tus guardados"
                   [value]="savedQuery()"
                   (input)="setSavedQuery($any($event.target).value)"
-              /></label>
+                />
+              </label>
               <label class="saved-select"
                 ><span>Ordenar por</span
                 ><select [value]="savedSort()" (change)="setSavedSort($any($event.target).value)">
