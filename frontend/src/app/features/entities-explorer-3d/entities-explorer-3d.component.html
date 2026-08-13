@@ -16,6 +16,8 @@
       <button
         class="explorer3d__info-toggle"
         [class.is-visible]="!infoOpen"
+        [style.left.px]="infoTogglePosition?.left"
+        [style.top.px]="infoTogglePosition?.top"
         type="button"
         (click)="openInfoPanel()"
         [attr.aria-label]="i18n.t('explorer3d.showInfo') + ' ' + active.title"
@@ -46,23 +48,17 @@
       (wheel)="$event.preventDefault(); $event.stopPropagation()"
     >
       <div class="explorer3d__info-head">
+        <div class="explorer3d__eyebrow">JANO Explorer</div>
         @if (infoClosable) {
-          <button
-            class="explorer3d__info-close-hit"
-            type="button"
-            (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
-            [attr.aria-label]="i18n.t('button.close')"
-          ></button>
           <button
             class="explorer3d__info-close"
             type="button"
             (pointerdown)="closeInfoPanel(); $event.preventDefault(); $event.stopPropagation()"
             [attr.aria-label]="i18n.t('button.close')"
           >
-            <span aria-hidden="true">×</span>
+            {{ i18n.t('button.close') }} <span aria-hidden="true">×</span>
           </button>
         }
-        <div class="explorer3d__eyebrow">JANO Explorer</div>
       </div>
 
       <h2 class="explorer3d__title">{{ active.title }}</h2>
@@ -85,6 +81,29 @@
         <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
           {{ i18n.t('entity.open') }}
         </button>
+      }
+
+      @if (formatDate(active.createdAt) || tags(active).length || collection(active)) {
+        <dl class="explorer3d__details">
+          @if (formatDate(active.createdAt); as createdAt) {
+            <div class="explorer3d__detail">
+              <dt>{{ i18n.t('explorer3d.created') }}</dt>
+              <dd>{{ createdAt }}</dd>
+            </div>
+          }
+          @if (tags(active).length) {
+            <div class="explorer3d__detail">
+              <dt>{{ i18n.t('explorer3d.tags') }}</dt>
+              <dd>{{ tags(active).join(', ') }}</dd>
+            </div>
+          }
+          @if (collection(active); as collection) {
+            <div class="explorer3d__detail">
+              <dt>{{ i18n.t('explorer3d.collection') }}</dt>
+              <dd>{{ collection }}</dd>
+            </div>
+          }
+        </dl>
       }
     </aside>
   }

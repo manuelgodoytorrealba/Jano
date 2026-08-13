@@ -80,8 +80,6 @@
 
 .explorer3d__info-toggle {
   position: absolute;
-  top: var(--entities-explorer-info-toggle-top, clamp(134px, 16svh, 168px));
-  right: var(--entities-explorer-info-toggle-right, clamp(72px, 11vw, 132px));
   z-index: 4;
   width: 32px;
   height: 32px;
@@ -152,9 +150,9 @@
   top: var(--entities-explorer-info-top, clamp(74px, 11svh, 104px));
   right: var(--entities-explorer-info-right, clamp(24px, 2.8vw, 38px));
   bottom: auto;
-  width: var(--entities-explorer-info-width, min(286px, calc(100% - 56px)));
-  padding: 14px 14px 16px;
-  border-radius: 18px;
+  width: var(--entities-explorer-info-width, min(344px, calc(100% - 56px)));
+  padding: 28px 28px 0;
+  border-radius: 22px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
     rgba(21, 21, 28, 0.28);
@@ -167,7 +165,7 @@
   z-index: 4;
   isolation: isolate;
   display: grid;
-  gap: 9px;
+  gap: 14px;
   opacity: 1;
   visibility: visible;
   transform: translate3d(0, 0, 0);
@@ -179,24 +177,9 @@
 
 .explorer3d__info-head {
   position: relative;
-  padding: 2px 96px 10px 0;
-  min-height: 68px;
+  padding: 2px 112px 0 0;
+  min-height: 28px;
   z-index: 2;
-}
-
-.explorer3d__info-close-hit {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 104px;
-  height: 76px;
-  z-index: 4;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  background: transparent;
-  cursor: pointer;
-  touch-action: manipulation;
 }
 
 .explorer3d__info.is-hidden {
@@ -208,49 +191,38 @@
 
 .explorer3d__info-close {
   position: absolute;
-  top: -2px;
-  right: -2px;
+  top: -6px;
+  right: 0;
   z-index: 5;
-  width: 60px;
-  height: 60px;
+  min-height: 32px;
   display: inline-flex;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07)),
-    rgba(22, 22, 30, 0.42);
+  border: 0;
+  padding: 0;
+  background: transparent;
   color: rgba(255, 248, 241, 0.88);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
   touch-action: manipulation;
   pointer-events: auto;
   cursor: pointer;
-  box-shadow:
-    0 12px 26px rgba(0, 0, 0, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
   transition:
     transform var(--transition-fast),
-    background var(--transition-fast),
-    color var(--transition-fast),
-    box-shadow var(--transition-fast);
+    color var(--transition-fast);
 }
 
 .explorer3d__info-close span {
   display: block;
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1;
-  transform: translateY(-1px);
 }
 
 .explorer3d__info-close:hover {
   transform: translateY(-1px);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
-    rgba(22, 22, 30, 0.48);
   color: rgba(255, 252, 246, 0.96);
-  box-shadow:
-    0 16px 30px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .explorer3d__info-close:focus-visible {
@@ -270,8 +242,8 @@
 
 .explorer3d__title {
   margin: 0;
-  font-size: clamp(1.36rem, 1.55vw, 1.86rem);
-  line-height: 1;
+  font-size: clamp(1.62rem, 2.05vw, 2.3rem);
+  line-height: 1.02;
   letter-spacing: -0.035em;
   font-weight: 600;
   color: rgba(255, 248, 241, 0.96);
@@ -281,7 +253,7 @@
 .explorer3d__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 14px;
 }
 
 .explorer3d__meta span {
@@ -294,17 +266,62 @@
 
 .explorer3d__summary {
   margin: 0;
-  font-size: 12px;
-  line-height: 1.56;
-  color: rgba(255, 244, 235, 0.66);
-  max-width: 26ch;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 244, 235, 0.74);
+  max-width: 28ch;
 }
 
 .explorer3d__cta {
   width: 100%;
+  min-height: 50px;
+  margin-top: 8px;
+  border-radius: 16px;
+}
+
+.explorer3d__details {
+  display: grid;
+  gap: 0;
+  margin: 10px -28px 0;
+  padding: 0 28px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.explorer3d__detail {
+  display: grid;
+  gap: 5px;
+  padding: 18px 0 0 48px;
   min-height: 42px;
-  margin-top: 2px;
-  border-radius: 14px;
+  background-repeat: no-repeat;
+  background-position: 2px 20px;
+  background-size: 26px 26px;
+}
+
+.explorer3d__detail:nth-child(1) {
+  background-image:
+    radial-gradient(circle, rgba(255, 244, 235, 0.68) 0 2px, transparent 2.5px),
+    linear-gradient(rgba(255, 244, 235, 0.68), rgba(255, 244, 235, 0.68));
+  background-size:
+    26px 26px,
+    16px 1px;
+  background-position:
+    2px 20px,
+    7px 32px;
+}
+
+.explorer3d__detail dt {
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 240, 228, 0.45);
+}
+
+.explorer3d__detail dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.42;
+  color: rgba(255, 244, 235, 0.78);
 }
 
 @media (min-width: 1101px) and (max-width: 1500px) {
@@ -316,9 +333,9 @@
   }
 
   .explorer3d__info {
-    padding: 12px 12px 14px;
+    padding: 20px 20px 0;
     border-radius: 16px;
-    gap: 8px;
+    gap: 10px;
   }
 
   .explorer3d__title {
@@ -327,9 +344,15 @@
   }
 
   .explorer3d__summary {
-    font-size: 11px;
-    line-height: 1.48;
+    font-size: 13px;
+    line-height: 1.5;
     max-width: 24ch;
+  }
+
+  .explorer3d__details {
+    margin-right: -20px;
+    margin-left: -20px;
+    padding: 0 20px 16px;
   }
 }
 
@@ -391,7 +414,7 @@
     top: clamp(56px, 9svh, 84px);
     right: 18px;
     width: min(286px, calc(100% - 36px));
-    padding: 16px;
+    padding: 20px 20px 0;
   }
 
   .explorer3d__info-toggle {
@@ -405,6 +428,12 @@
 
   .explorer3d__summary {
     max-width: none;
+  }
+
+  .explorer3d__details {
+    margin-right: -20px;
+    margin-left: -20px;
+    padding: 0 20px 16px;
   }
 }
 
@@ -428,7 +457,7 @@
     bottom: 14px;
     top: auto;
     width: auto;
-    padding: 16px;
+    padding: 18px 18px 0;
     border-radius: 16px;
   }
 
@@ -444,6 +473,12 @@
   .explorer3d__summary {
     font-size: 13px;
     line-height: 1.5;
+  }
+
+  .explorer3d__details {
+    margin-right: -18px;
+    margin-left: -18px;
+    padding: 0 18px 16px;
   }
 
   .explorer3d__cta {

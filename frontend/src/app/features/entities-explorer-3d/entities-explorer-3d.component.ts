@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -65,8 +66,13 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   private lastWheelEventAt = 0;
   private lastWheelNavigationAt = 0;
   private keyboardNavigationActive = false;
+  private infoToggleFrame = 0;
+  infoTogglePosition: { left: number; top: number } | null = null;
 
-  constructor(@Inject(PLATFORM_ID) platformId: object) {
+  constructor(
+    @Inject(PLATFORM_ID) platformId: object,
+    private readonly changeDetectorRef: ChangeDetectorRef,
+  ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
@@ -79,6 +85,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
 
     this.scene.initialize(this.canvasHostRef.nativeElement, this.items, this.activeIndex);
     this.syncCanvasInteractionState();
+    this.queueInfoTogglePosition();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -90,6 +97,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
 
     if (changes['activeIndex']) {
       this.scene.setActiveIndex(this.activeIndex);
+      this.queueInfoTogglePosition();
     }
 
     if (changes['infoOpen'] && this.scene.domElement) {
@@ -105,6 +113,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     if (!this.isBrowser) return;
 
     this.detachCanvasInteractions();
+    cancelAnimationFrame(this.infoToggleFrame);
     this.scene.destroy();
   }
 
@@ -129,6 +138,11 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     event.stopPropagation();
   }
 
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.queueInfoTogglePosition();
+  }
+
   private cancelCanvasInteraction(): void {
     this.isDragging = false;
     this.dragMoved = false;
@@ -141,6 +155,31 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   cleanWiki(text: string): string {
     if (!text) return '';
     return text.replace(/\[\[(.*?)\|(.*?)\]\]/g, '$2');
+  }
+
+  tags(item: Entity): string[] {
+    return (item.tags ?? [])
+      .map((entry) => ('tag' in entry && entry.tag ? entry.tag : entry))
+      .map((entry) => entry.label?.trim())
+      .filter((label): label is string => !!label)
+      .slice(0, 3);
+  }
+
+  collection(item: Entity): string | null {
+    return item.artwork?.collection?.trim() || null;
+  }
+
+  formatDate(value: string | null | undefined): string {
+    if (!value) return '';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+
+    return new Intl.DateTimeFormat(this.i18n.locale() === 'es' ? 'es-ES' : 'en-US', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -203,6 +242,29 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     }
 
     this.attachCanvasInteractions();
+  }
+
+  private queueInfoTogglePosition(): void {
+    if (!this.isBrowser) return;
+
+    cancelAnimationFrame(this.infoToggleFrame);
+    let remainingFrames = 24;
+    const syncPosition = () => {
+      const bounds = this.scene.activeCardBounds(this.activeIndex);
+      const rootBounds = this.rootRef.nativeElement.getBoundingClientRect();
+      if (bounds && rootBounds.width && rootBounds.height) {
+        this.infoTogglePosition = {
+          left: bounds.left - rootBounds.left + bounds.width - 48,
+          top: bounds.top - rootBounds.top + 48,
+        };
+        this.changeDetectorRef.markForCheck();
+      }
+
+      remainingFrames -= 1;
+      if (remainingFrames > 0) this.infoToggleFrame = requestAnimationFrame(syncPosition);
+    };
+
+    this.infoToggleFrame = requestAnimationFrame(syncPosition);
   }
 
   private attachCanvasInteractions(): void {
