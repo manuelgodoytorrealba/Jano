@@ -336,10 +336,25 @@
   color: rgba(242, 241, 238, 0.6);
   font-size: 0.84rem;
 }
-.saved-section__head > span {
+.saved-section__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.saved-section__actions span {
   color: rgba(242, 241, 238, 0.54);
   font-size: 0.8rem;
   font-weight: 650;
+}
+.saved-section__actions button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: rgba(214, 194, 255, 0.94);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 .saved-gallery {
   display: grid;

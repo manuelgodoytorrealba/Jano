@@ -97,7 +97,14 @@
                       <h2>Recientes</h2>
                       <p>Los últimos elementos que guardaste.</p>
                     </div>
-                    <span>{{ visibleSaved(savedItems).length }} elementos</span>
+                    <div class="saved-section__actions">
+                      <span>{{ visibleSaved(savedItems).length }} elementos</span>
+                      @if (visibleSaved(savedItems).length > 6) {
+                        <button type="button" (click)="toggleSavedExpanded()">
+                          {{ savedExpanded() ? 'Ver menos' : 'Ver todos' }}
+                        </button>
+                      }
+                    </div>
                   </div>
                   <div class="saved-gallery" [class.saved-gallery--list]="savedView() === 'list'">
                     @for (row of recentSaved(savedItems); track row.id) {

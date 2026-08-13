@@ -42,6 +42,7 @@ export class MySpaceComponent {
   readonly savedSort = signal<SavedSort>('recent');
   readonly savedType = signal('all');
   readonly savedView = signal<SavedView>('grid');
+  readonly savedExpanded = signal(false);
   readonly collectionQuery = signal('');
   readonly collectionSort = signal<CollectionSort>('recent');
   readonly collectionView = signal<CollectionView>('grid');
@@ -153,14 +154,17 @@ export class MySpaceComponent {
 
   setSavedQuery(value: string): void {
     this.savedQuery.set(value);
+    this.savedExpanded.set(false);
   }
 
   setSavedSort(value: string): void {
     this.savedSort.set(value === 'title' ? 'title' : 'recent');
+    this.savedExpanded.set(false);
   }
 
   setSavedType(value: string): void {
     this.savedType.set(value);
+    this.savedExpanded.set(false);
   }
 
   setSavedView(view: SavedView): void {
@@ -217,7 +221,12 @@ export class MySpaceComponent {
   }
 
   recentSaved(items: SavedItem[]): SavedItem[] {
-    return this.visibleSaved(items).slice(0, 6);
+    const visible = this.visibleSaved(items);
+    return this.savedExpanded() ? visible : visible.slice(0, 6);
+  }
+
+  toggleSavedExpanded(): void {
+    this.savedExpanded.set(!this.savedExpanded());
   }
 
   savedGroups(items: SavedItem[]): Array<{ type: string; items: SavedItem[] }> {
