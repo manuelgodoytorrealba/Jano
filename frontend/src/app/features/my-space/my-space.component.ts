@@ -34,7 +34,6 @@ export class MySpaceComponent {
   private removedCollectionItemKeys$ = new BehaviorSubject<Set<string>>(new Set());
 
   newCollectionName = '';
-  newCollectionDescription = '';
   creating = false;
   createError = '';
   readonly activeTab = signal<'saved' | 'collections'>('saved');
@@ -113,7 +112,6 @@ export class MySpaceComponent {
 
   createCollection() {
     const name = this.newCollectionName.trim();
-    const description = this.newCollectionDescription.trim();
 
     if (!name || this.creating) return;
 
@@ -123,12 +121,10 @@ export class MySpaceComponent {
     this.collectionsApi
       .create({
         name,
-        description: description || undefined,
       })
       .subscribe({
         next: () => {
           this.newCollectionName = '';
-          this.newCollectionDescription = '';
           this.creating = false;
           this.refresh$.next();
           this.activeTab.set('collections');
@@ -143,6 +139,16 @@ export class MySpaceComponent {
 
   setTab(tab: 'saved' | 'collections'): void {
     this.activeTab.set(tab);
+  }
+
+  openCollectionCreator(): void {
+    this.createError = '';
+    this.createPanelOpen.set(true);
+  }
+
+  closeCollectionCreator(): void {
+    this.createError = '';
+    this.createPanelOpen.set(false);
   }
 
   setSavedQuery(value: string): void {

@@ -12,57 +12,12 @@
       <button
         type="button"
         class="space-shortcut space-shortcut--primary"
-        (click)="createPanelOpen.set(!createPanelOpen())"
+        (click)="openCollectionCreator()"
       >
         + {{ i18n.t('mySpace.createBoard') }}
       </button>
     }
   </header>
-
-  @if (createPanelOpen()) {
-    <section class="space-surface space-surface--compose">
-      <div class="space-section-head">
-        <div>
-          <span class="space-label">{{ i18n.t('mySpace.collections') }}</span>
-          <h2>{{ i18n.t('mySpace.createBoard') }}</h2>
-        </div>
-        <button
-          type="button"
-          class="space-shortcut space-shortcut--quiet"
-          (click)="createPanelOpen.set(false)"
-        >
-          ×
-        </button>
-      </div>
-      <div class="space-create-form">
-        <input
-          class="space-input"
-          type="text"
-          [placeholder]="i18n.t('collection.namePlaceholder')"
-          [value]="newCollectionName"
-          (input)="newCollectionName = $any($event.target).value"
-        />
-        <input
-          class="space-input"
-          type="text"
-          [placeholder]="i18n.t('collection.descriptionPlaceholder')"
-          [value]="newCollectionDescription"
-          (input)="newCollectionDescription = $any($event.target).value"
-        />
-        <button
-          class="space-shortcut space-shortcut--primary"
-          type="button"
-          [disabled]="creating || !newCollectionName.trim()"
-          (click)="createCollection()"
-        >
-          {{ creating ? i18n.t('common.creating') : i18n.t('collection.create') }}
-        </button>
-      </div>
-      @if (createError) {
-        <div class="space-feedback space-feedback--error">{{ createError }}</div>
-      }
-    </section>
-  }
 
   @if (saved$ | async; as savedItems) {
     @if (collections$ | async; as collections) {
@@ -260,6 +215,43 @@
                 </button>
               </div>
             </div>
+            @if (createPanelOpen()) {
+              <form
+                class="collection-create-inline"
+                (submit)="$event.preventDefault(); createCollection()"
+              >
+                <div>
+                  <strong>Nueva colección</strong
+                  ><span>Podrás añadir piezas desde cualquier entidad guardada.</span>
+                </div>
+                <label
+                  ><span class="saved-search__label">Nombre de la colección</span
+                  ><input
+                    type="text"
+                    autocomplete="off"
+                    [placeholder]="i18n.t('collection.namePlaceholder')"
+                    [value]="newCollectionName"
+                    (input)="newCollectionName = $any($event.target).value"
+                /></label>
+                <button
+                  class="space-shortcut space-shortcut--primary"
+                  type="submit"
+                  [disabled]="creating || !newCollectionName.trim()"
+                >
+                  {{ creating ? i18n.t('common.creating') : i18n.t('collection.create') }}
+                </button>
+                <button
+                  class="space-shortcut space-shortcut--quiet"
+                  type="button"
+                  (click)="closeCollectionCreator()"
+                >
+                  Cancelar
+                </button>
+                @if (createError) {
+                  <p class="collection-create-inline__error">{{ createError }}</p>
+                }
+              </form>
+            }
             @if (visibleCollections(collections).length) {
               <div
                 class="collection-library"
@@ -318,7 +310,7 @@
                 <button
                   type="button"
                   class="collection-create-card"
-                  (click)="createPanelOpen.set(true)"
+                  (click)="openCollectionCreator()"
                 >
                   <span>+</span><strong>Nueva colección</strong
                   ><small>Crea un tablero para organizar tus ideas y referencias.</small>
