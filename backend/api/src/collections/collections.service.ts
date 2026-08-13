@@ -1,11 +1,5 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserPlan } from '@prisma/client';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { attachResolvedMedia } from '../media/media.resolver';
@@ -117,7 +111,7 @@ export class CollectionsService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, plan: true },
+      select: { id: true },
     });
 
     if (!user) {
@@ -127,10 +121,6 @@ export class CollectionsService {
     const count = await this.prisma.collection.count({
       where: { userId },
     });
-
-    if (user.plan === UserPlan.FREE && count >= 1) {
-      throw new ForbiddenException('Free plan allows only 1 collection');
-    }
 
     const existing = await this.prisma.collection.findFirst({
       where: {
