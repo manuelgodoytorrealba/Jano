@@ -1,23 +1,24 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
-import { CollectionsApi } from '../../core/api/collections.api';
-import { SavedApi } from '../../core/api/saved.api';
+import { Collection, CollectionsApi } from '../../core/api/collections.api';
+import { SavedApi, SavedItem } from '../../core/api/saved.api';
 import { AuthUser } from '../../core/auth/auth.types';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { I18nService } from '../../core/i18n/i18n.service';
-import { SavedItem } from '../../core/api/saved.api';
 
 type SavedSort = 'recent' | 'title';
 type SavedView = 'grid' | 'list';
+type CollectionSort = 'recent' | 'title';
+type CollectionView = 'grid' | 'list';
 
 @Component({
   standalone: true,
   selector: 'app-my-space',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, JanoMediaComponent],
+  imports: [AsyncPipe, DatePipe, JanoMediaComponent],
   templateUrl: './my-space.component.html',
   styleUrls: ['./my-space.component.scss'],
 })
@@ -42,6 +43,9 @@ export class MySpaceComponent {
   readonly savedSort = signal<SavedSort>('recent');
   readonly savedType = signal('all');
   readonly savedView = signal<SavedView>('grid');
+  readonly collectionQuery = signal('');
+  readonly collectionSort = signal<CollectionSort>('recent');
+  readonly collectionView = signal<CollectionView>('grid');
 
   saved$ = combineLatest([this.auth.user$, this.refresh$, this.removedSavedIds$]).pipe(
     switchMap(([user, _, removedSavedIds]) => {
@@ -155,6 +159,33 @@ export class MySpaceComponent {
 
   setSavedView(view: SavedView): void {
     this.savedView.set(view);
+  }
+
+  setCollectionQuery(value: string): void {
+    this.collectionQuery.set(value);
+  }
+
+  setCollectionSort(value: string): void {
+    this.collectionSort.set(value === 'title' ? 'title' : 'recent');
+  }
+
+  setCollectionView(view: CollectionView): void {
+    this.collectionView.set(view);
+  }
+
+  visibleCollections(collections: Collection[]): Collection[] {
+    const query = this.collectionQuery().trim().toLocaleLowerCase();
+    const filtered = collections.filter(
+      (collection) =>
+        !query ||
+        collection.name.toLocaleLowerCase().includes(query) ||
+        collection.description?.toLocaleLowerCase().includes(query),
+    );
+    return [...filtered].sort((a, b) =>
+      this.collectionSort() === 'title'
+        ? a.name.localeCompare(b.name)
+        : new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
   }
 
   savedTypes(items: SavedItem[]): string[] {

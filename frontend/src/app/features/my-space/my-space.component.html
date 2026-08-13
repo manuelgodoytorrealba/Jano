@@ -224,69 +224,112 @@
           </section>
         } @else {
           <section class="space-surface space-surface--boards" id="collections">
-            <div class="space-section-head">
-              <div>
-                <span class="space-label">{{ i18n.t('mySpace.boards') }}</span>
-                <h2>{{ i18n.t('mySpace.collections') }} personales</h2>
-                <p class="space-muted">{{ i18n.t('mySpace.boardsIntro') }}</p>
+            <div class="collection-controls">
+              <label class="collection-search"
+                ><span aria-hidden="true">⌕</span
+                ><input
+                  type="search"
+                  placeholder="Buscar colecciones…"
+                  aria-label="Buscar colecciones"
+                  [value]="collectionQuery()"
+                  (input)="setCollectionQuery($any($event.target).value)"
+              /></label>
+              <label class="collection-select"
+                ><span>Ordenar por</span
+                ><select
+                  [value]="collectionSort()"
+                  (change)="setCollectionSort($any($event.target).value)"
+                >
+                  <option value="recent">Recientes</option>
+                  <option value="title">Título</option>
+                </select></label
+              >
+              <div class="collection-view-switch" aria-label="Vista" role="group">
+                <button
+                  type="button"
+                  [class.is-active]="collectionView() === 'grid'"
+                  (click)="setCollectionView('grid')"
+                >
+                  Cuadrícula</button
+                ><button
+                  type="button"
+                  [class.is-active]="collectionView() === 'list'"
+                  (click)="setCollectionView('list')"
+                >
+                  Lista
+                </button>
               </div>
             </div>
-            @if (collections.length) {
-              <div class="boards-grid">
-                @for (collection of collections; track collection.id) {
+            @if (visibleCollections(collections).length) {
+              <div
+                class="collection-library"
+                [class.collection-library--list]="collectionView() === 'list'"
+              >
+                @for (collection of visibleCollections(collections); track collection.id) {
                   <article
-                    class="board-card"
+                    class="collection-library-card"
                     role="link"
                     tabindex="0"
                     (click)="goToCollection(collection.id)"
                     (keydown.enter)="goToCollection(collection.id)"
                   >
                     <div
-                      class="board-card__mosaic"
-                      [class.board-card__mosaic--empty]="!collection.items.length"
+                      class="collection-library-card__cover"
+                      [class.collection-library-card__cover--empty]="
+                        !collection.items.length && !collection.coverMedia
+                      "
                     >
-                      @if (collection.items.length) {
+                      @if (collection.coverMedia) {
+                        <app-jano-media
+                          [media]="collection.coverMedia"
+                          usage="card"
+                          [alt]="collection.name"
+                        />
+                      } @else if (collection.items.length) {
                         @for (
                           item of previewItems(collection.items, 4);
                           track item.id;
                           let index = $index
                         ) {
-                          <div
-                            class="board-card__tile"
-                            [class.board-card__tile--accent]="index === 0"
-                          >
-                            <app-jano-media
-                              [entity]="item.entity"
-                              usage="card"
-                              [alt]="item.entity.title"
-                            />
-                            @if (index === 3 && remainingItems(collection.itemCount, 4) > 0) {
-                              <div class="board-card__overflow">
-                                +{{ remainingItems(collection.itemCount, 4) }}
-                              </div>
-                            }
-                          </div>
+                          <app-jano-media
+                            [entity]="item.entity"
+                            usage="card"
+                            [alt]="item.entity.title"
+                          />
                         }
                       } @else {
-                        <div class="board-card__empty-state">{{ i18n.t('collection.empty') }}</div>
+                        <span>{{ i18n.t('collection.empty') }}</span>
                       }
                     </div>
-                    <div class="board-card__body">
-                      <div class="board-card__meta">
-                        <h3 class="board-card__title">{{ collection.name }}</h3>
-                        <span class="collection-count">{{ collection.itemCount }} items</span>
+                    <div class="collection-library-card__body">
+                      <div>
+                        <h2>{{ collection.name }}</h2>
+                        <p>
+                          {{ collection.description || i18n.t('collection.defaultDescription') }}
+                        </p>
                       </div>
-                      <p class="board-card__description">
-                        {{ collection.description || i18n.t('collection.defaultDescription') }}
-                      </p>
+                      <div class="collection-library-card__meta">
+                        <span>{{ collection.itemCount }} elementos</span
+                        ><span>Actualizada {{ collection.updatedAt | date: 'mediumDate' }}</span>
+                      </div>
                     </div>
                   </article>
                 }
+                <button
+                  type="button"
+                  class="collection-create-card"
+                  (click)="createPanelOpen.set(true)"
+                >
+                  <span>+</span><strong>Nueva colección</strong
+                  ><small>Crea un tablero para organizar tus ideas y referencias.</small>
+                </button>
               </div>
             } @else {
               <div class="space-empty">
-                <div class="space-empty__title">{{ i18n.t('mySpace.noBoards') }}</div>
-                <div class="space-empty__sub">{{ i18n.t('mySpace.noBoardsSub') }}</div>
+                <div class="space-empty__title">No encontramos colecciones</div>
+                <div class="space-empty__sub">
+                  Prueba a cambiar la búsqueda o crea una colección nueva.
+                </div>
               </div>
             }
           </section>
