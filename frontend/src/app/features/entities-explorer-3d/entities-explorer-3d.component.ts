@@ -124,6 +124,14 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     this.requestInfoOpen.emit();
   }
 
+  onInfoToggleEnter(): void {
+    this.scene.setHoveredIndex(this.activeIndex);
+  }
+
+  onInfoToggleLeave(): void {
+    if (!this.isDragging) this.scene.setHoveredIndex(null);
+  }
+
   closeInfoPanel(): void {
     this.requestInfoClose.emit();
   }
@@ -254,8 +262,8 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
       const rootBounds = this.rootRef.nativeElement.getBoundingClientRect();
       const button = this.infoToggleRef?.nativeElement;
       if (bounds && rootBounds.width && rootBounds.height && button) {
-        button.style.left = `${bounds.left - rootBounds.left + bounds.width - 44}px`;
-        button.style.top = `${bounds.top - rootBounds.top + 14}px`;
+        button.style.left = `${bounds.left - rootBounds.left + bounds.width - 52}px`;
+        button.style.top = `${bounds.top - rootBounds.top + 22}px`;
       }
 
       this.infoToggleFrame = requestAnimationFrame(syncPosition);
@@ -534,11 +542,13 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     this.goToIndex(index);
   };
 
-  private onPointerLeave = () => {
+  private onPointerLeave = (event: PointerEvent) => {
     if (this.infoOpen) {
       this.cancelCanvasInteraction();
       return;
     }
+
+    if (event.relatedTarget === this.infoToggleRef?.nativeElement) return;
 
     this.isDragging = false;
     this.dragMoved = false;

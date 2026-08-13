@@ -18,6 +18,8 @@
         class="explorer3d__info-toggle"
         [class.is-visible]="!infoOpen"
         type="button"
+        (pointerenter)="onInfoToggleEnter()"
+        (pointerleave)="onInfoToggleLeave()"
         (click)="openInfoPanel()"
         [attr.aria-label]="i18n.t('explorer3d.showInfo') + ' ' + active.title"
       >
