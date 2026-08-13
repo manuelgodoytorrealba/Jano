@@ -608,7 +608,7 @@
 .collection-library-card,
 .collection-create-card {
   display: grid;
-  min-height: 350px;
+  min-height: 292px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 20px;
@@ -630,7 +630,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  min-height: 204px;
+  min-height: 168px;
   overflow: hidden;
   background: rgba(8, 9, 14, 0.42);
 }
@@ -647,9 +647,9 @@
 }
 .collection-library-card__body {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   align-content: space-between;
-  padding: 14px;
+  padding: 11px 12px;
 }
 .collection-library-card h2 {
   margin: 0;
@@ -658,7 +658,7 @@
   letter-spacing: -0.025em;
 }
 .collection-library-card p {
-  margin: 7px 0 0;
+  margin: 5px 0 0;
   color: rgba(242, 241, 238, 0.62);
   font-size: 0.84rem;
   line-height: 1.42;
@@ -707,13 +707,13 @@
 }
 .collection-library--list .collection-library-card {
   grid-template-columns: 160px minmax(0, 1fr);
-  min-height: 132px;
+  min-height: 112px;
 }
 .collection-library--list .collection-library-card__cover {
-  min-height: 132px;
+  min-height: 112px;
 }
 .collection-library--list .collection-create-card {
-  min-height: 120px;
+  min-height: 112px;
 }
 
 .space-create-form {

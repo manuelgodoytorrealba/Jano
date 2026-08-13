@@ -7,16 +7,6 @@
       </h1>
       <p class="space-muted">{{ i18n.t('mySpace.intro') }}</p>
     </div>
-
-    @if (activeTab() === 'collections') {
-      <button
-        type="button"
-        class="space-shortcut space-shortcut--primary"
-        (click)="openCollectionCreator()"
-      >
-        + {{ i18n.t('mySpace.createBoard') }}
-      </button>
-    }
   </header>
 
   @if (saved$ | async; as savedItems) {
