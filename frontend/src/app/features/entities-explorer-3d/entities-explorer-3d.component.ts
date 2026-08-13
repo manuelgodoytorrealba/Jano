@@ -254,8 +254,8 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
       const rootBounds = this.rootRef.nativeElement.getBoundingClientRect();
       if (bounds && rootBounds.width && rootBounds.height) {
         this.infoTogglePosition = {
-          left: bounds.left - rootBounds.left + bounds.width - 48,
-          top: bounds.top - rootBounds.top + 48,
+          left: bounds.left - rootBounds.left + bounds.width - 58,
+          top: bounds.top - rootBounds.top + 22,
         };
         this.changeDetectorRef.markForCheck();
       }

@@ -81,22 +81,24 @@
 .explorer3d__info-toggle {
   position: absolute;
   z-index: 4;
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 252, 246, 0.38);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
-    rgba(21, 21, 28, 0.24);
-  color: rgba(255, 248, 241, 0.92);
+    radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.34), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06)),
+    rgba(20, 20, 26, 0.54);
+  color: rgba(255, 252, 246, 0.98);
   backdrop-filter: blur(14px) saturate(1.04);
   -webkit-backdrop-filter: blur(14px) saturate(1.04);
   box-shadow:
-    0 16px 30px rgba(0, 0, 0, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 12px 28px rgba(0, 0, 0, 0.32),
+    0 0 0 1px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
@@ -115,6 +117,7 @@
   visibility: visible;
   pointer-events: auto;
   transform: translateY(0) scale(1);
+  animation: explorer3d-info-hint 2.8s ease-in-out 700ms 2;
 }
 
 .explorer3d__info-toggle:hover {
@@ -122,6 +125,38 @@
   box-shadow:
     0 18px 34px rgba(0, 0, 0, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  animation: none;
+}
+
+.explorer3d__info-toggle span {
+  font-family: Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+@keyframes explorer3d-info-hint {
+  0%,
+  100% {
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.32),
+      0 0 0 1px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
+
+  50% {
+    box-shadow:
+      0 14px 32px rgba(0, 0, 0, 0.32),
+      0 0 0 5px rgba(255, 247, 239, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.34);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explorer3d__info-toggle.is-visible {
+    animation: none;
+  }
 }
 
 .explorer3d__info-backdrop {
