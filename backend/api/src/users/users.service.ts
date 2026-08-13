@@ -27,6 +27,10 @@ export class UsersService {
     });
   }
 
+  updateProfile(id: string, data: { name?: string | null; avatarUrl?: string | null }) {
+    return this.prisma.user.update({ where: { id }, data });
+  }
+
   create(data: {
     email: string;
     passwordHash: string;

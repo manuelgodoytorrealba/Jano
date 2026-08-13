@@ -61,6 +61,20 @@ export class AuthService {
     );
   }
 
+  updateProfile(data: { name: string }): Observable<AuthUser> {
+    return this.http
+      .patch<AuthUser>(`${this.baseUrl}/me`, data)
+      .pipe(tap((user) => this.persistUser(user)));
+  }
+
+  uploadAvatar(file: File): Observable<AuthUser> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http
+      .post<AuthUser>(`${this.baseUrl}/me/avatar`, body)
+      .pipe(tap((user) => this.persistUser(user)));
+  }
+
   logout() {
     this.http.post<void>(`${this.baseUrl}/logout`, {}).subscribe({ error: () => undefined });
 
@@ -90,8 +104,10 @@ export class AuthService {
       id: user.id ?? user.userId ?? '',
       email: user.email,
       name: user.name ?? null,
+      avatarUrl: user.avatarUrl ?? null,
       role: user.role,
       isBeta: user.isBeta === true,
+      createdAt: user.createdAt,
     };
   }
 

@@ -46,12 +46,26 @@ export class AuthService {
     return this.usersService.findById(userId);
   }
 
+  async updateProfile(userId: string, name: string | undefined) {
+    const user = await this.usersService.updateProfile(userId, {
+      ...(name !== undefined ? { name: name.trim() || null } : {}),
+    });
+    return this.profile(user);
+  }
+
+  async updateAvatar(userId: string, avatarUrl: string) {
+    const user = await this.usersService.updateProfile(userId, { avatarUrl });
+    return this.profile(user);
+  }
+
   private async buildAuthResponse(user: {
     id: string;
     email: string;
     name: string | null;
+    avatarUrl: string | null;
     role: string;
     isBeta: boolean;
+    createdAt: Date;
   }) {
     const payload = {
       sub: user.id,
@@ -64,13 +78,27 @@ export class AuthService {
 
     return {
       accessToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        isBeta: user.isBeta,
-      },
+      user: this.profile(user),
+    };
+  }
+
+  private profile(user: {
+    id: string;
+    email: string;
+    name: string | null;
+    avatarUrl: string | null;
+    role: string;
+    isBeta: boolean;
+    createdAt: Date;
+  }) {
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatarUrl: user.avatarUrl,
+      role: user.role,
+      isBeta: user.isBeta,
+      createdAt: user.createdAt,
     };
   }
 }

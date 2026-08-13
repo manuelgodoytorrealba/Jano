@@ -1,45 +1,87 @@
-<div class="profile-page">
-  @if (auth.user$ | async; as user) {
-    <section class="profile-hero">
-      <div class="profile-hero__copy">
-        <span class="profile-eyebrow">{{ i18n.t('profile.eyebrow') }}</span>
-        <h1>{{ i18n.t('profile.title') }}</h1>
-        <p class="profile-muted">
-          {{ i18n.t('profile.intro') }}
-        </p>
+@if (auth.user$ | async; as user) {
+  <main class="profile-page">
+    <section class="profile-identity profile-surface">
+      <div class="profile-avatar">
+        <img
+          [src]="user.avatarUrl || '/app-brand-mark.png'"
+          [alt]="'Avatar de ' + (user.name || user.email)"
+        />
+        <label class="profile-avatar__change">
+          <span>Cambiar foto</span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+            (change)="uploadAvatar($event)"
+          />
+        </label>
       </div>
-    </section>
 
-    <section class="profile-surface">
-      <div class="profile-overview">
-        <article class="profile-card profile-card--identity">
-          <span class="profile-label">{{ i18n.t('profile.identity') }}</span>
-          <h2>{{ user.name || i18n.t('profile.noName') }}</h2>
-          <p class="profile-identity__mail">{{ user.email }}</p>
-
-          <div class="profile-role-pill">
-            <span class="profile-role-pill__label">{{ i18n.t('common.role') }}</span>
-            <strong>{{ roleLabel(user) }}</strong>
+      <div class="profile-identity__copy">
+        <p class="profile-label">Mi perfil</p>
+        @if (editing()) {
+          <label class="profile-name-field">
+            <span>Nombre visible</span>
+            <input [(ngModel)]="nameDraft" maxlength="80" autocomplete="name" />
+          </label>
+          <div class="profile-actions">
+            <button
+              type="button"
+              class="profile-button profile-button--primary"
+              [disabled]="saving()"
+              (click)="saveName()"
+            >
+              {{ saving() ? 'Guardando…' : 'Guardar' }}
+            </button>
+            <button
+              type="button"
+              class="profile-button"
+              [disabled]="saving()"
+              (click)="cancelEditing()"
+            >
+              Cancelar
+            </button>
           </div>
-        </article>
-
-        <div class="profile-rail">
-          <article class="profile-card profile-card--note">
-            <span class="profile-note__label">{{ i18n.t('common.status') }}</span>
-            <strong>{{ i18n.t('profile.statusReady') }}</strong>
-          </article>
-
-          <nav class="profile-shortcuts" aria-label="{{ i18n.t('profile.shortcuts') }}">
-            <a class="profile-shortcut" routerLink="/settings">{{ i18n.t('nav.settings') }}</a>
-            <a class="profile-shortcut" routerLink="/my-space">{{ i18n.t('nav.mySpace') }}</a>
-            @if (isAdmin(user)) {
-              <a class="profile-shortcut profile-shortcut--primary" routerLink="/admin">{{
-                i18n.t('profile.openAdmin')
-              }}</a>
-            }
-          </nav>
+        } @else {
+          <div class="profile-name-row">
+            <h1>{{ user.name || i18n.t('profile.noName') }}</h1>
+            <button type="button" class="profile-button" (click)="beginEditing(user)">
+              Editar perfil
+            </button>
+          </div>
+        }
+        <div class="profile-identity__meta">
+          <span class="profile-role-pill">{{ roleLabel(user) }}</span>
+          <span>{{ user.email }}</span>
         </div>
+        @if (error()) {
+          <p class="profile-error" role="alert">{{ error() }}</p>
+        }
       </div>
     </section>
-  }
-</div>
+
+    <section class="profile-account profile-surface" aria-labelledby="profile-account-title">
+      <div class="profile-account__head">
+        <p class="profile-label">Cuenta</p>
+        <h2 id="profile-account-title">Información de la cuenta</h2>
+      </div>
+      <dl class="profile-account__facts">
+        <div>
+          <dt>Miembro desde</dt>
+          <dd>{{ user.createdAt | date: 'longDate' }}</dd>
+        </div>
+        <div>
+          <dt>Correo electrónico</dt>
+          <dd>{{ user.email }}</dd>
+        </div>
+        <div>
+          <dt>ID de cuenta</dt>
+          <dd>{{ user.id }}</dd>
+        </div>
+        <div>
+          <dt>Rol</dt>
+          <dd>{{ roleLabel(user) }}</dd>
+        </div>
+      </dl>
+    </section>
+  </main>
+}

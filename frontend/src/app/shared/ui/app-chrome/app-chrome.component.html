@@ -70,7 +70,11 @@
       aria-haspopup="menu"
       (click)="toggleAccountMenu()"
     >
-      <img class="app-chrome__account-avatar" src="/app-brand-mark.png" alt="" />
+      <img
+        class="app-chrome__account-avatar"
+        [src]="auth.currentUser?.avatarUrl || '/app-brand-mark.png'"
+        alt=""
+      />
       <span>{{ accountName() }}</span>
       <span class="app-chrome__account-chevron" aria-hidden="true">⌄</span>
     </button>

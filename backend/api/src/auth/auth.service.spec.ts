@@ -11,6 +11,7 @@ describe('AuthService', () => {
     findByEmail: jest.fn(),
     create: jest.fn(),
     findById: jest.fn(),
+    updateProfile: jest.fn(),
   };
 
   const jwtService = {
@@ -21,6 +22,7 @@ describe('AuthService', () => {
     usersService.findByEmail.mockReset();
     usersService.create.mockReset();
     usersService.findById.mockReset();
+    usersService.updateProfile.mockReset();
     jwtService.signAsync.mockReset();
     jwtService.signAsync.mockResolvedValue('jwt-token');
 
@@ -41,8 +43,10 @@ describe('AuthService', () => {
       id: 'user-1',
       email: 'manuel@test3.com',
       name: 'Manuel',
+      avatarUrl: null,
       role: 'ADMIN',
       isBeta: true,
+      createdAt: new Date('2026-01-01'),
       passwordHash,
     });
 
@@ -57,8 +61,10 @@ describe('AuthService', () => {
         id: 'user-1',
         email: 'manuel@test3.com',
         name: 'Manuel',
+        avatarUrl: null,
         role: 'ADMIN',
         isBeta: true,
+        createdAt: new Date('2026-01-01'),
       },
     });
 
@@ -76,8 +82,10 @@ describe('AuthService', () => {
       id: 'user-1',
       email: 'manuel@test3.com',
       name: 'Manuel',
+      avatarUrl: null,
       role: 'ADMIN',
       isBeta: true,
+      createdAt: new Date('2026-01-01'),
       passwordHash,
     });
 
@@ -95,8 +103,10 @@ describe('AuthService', () => {
       id: 'user-1',
       email: 'manuel@test3.com',
       name: 'Manuel',
+      avatarUrl: null,
       role: 'USER',
       isBeta: false,
+      createdAt: new Date('2026-01-01'),
       passwordHash,
     });
 
@@ -113,5 +123,23 @@ describe('AuthService', () => {
         isBeta: false,
       },
     });
+  });
+
+  it('trims the visible profile name before persisting it', async () => {
+    usersService.updateProfile.mockResolvedValue({
+      id: 'user-1',
+      email: 'manuel@test3.com',
+      name: 'Manuel',
+      avatarUrl: null,
+      role: 'USER',
+      isBeta: false,
+      createdAt: new Date('2026-01-01'),
+    });
+
+    await expect(service.updateProfile('user-1', '  Manuel  ')).resolves.toMatchObject({
+      id: 'user-1',
+      name: 'Manuel',
+    });
+    expect(usersService.updateProfile).toHaveBeenCalledWith('user-1', { name: 'Manuel' });
   });
 });
