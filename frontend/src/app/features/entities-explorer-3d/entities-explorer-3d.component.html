@@ -14,10 +14,9 @@
   @if (activeItem; as active) {
     @if (infoClosable) {
       <button
+        #infoToggle
         class="explorer3d__info-toggle"
         [class.is-visible]="!infoOpen"
-        [style.left.px]="infoTogglePosition?.left"
-        [style.top.px]="infoTogglePosition?.top"
         type="button"
         (click)="openInfoPanel()"
         [attr.aria-label]="i18n.t('explorer3d.showInfo') + ' ' + active.title"

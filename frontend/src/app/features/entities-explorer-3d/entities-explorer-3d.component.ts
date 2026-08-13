@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -52,6 +51,9 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   @ViewChild('root', { static: true })
   rootRef!: ElementRef<HTMLDivElement>;
 
+  @ViewChild('infoToggle')
+  infoToggleRef?: ElementRef<HTMLButtonElement>;
+
   private readonly isBrowser: boolean;
   readonly i18n = inject(I18nService);
 
@@ -67,12 +69,8 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   private lastWheelNavigationAt = 0;
   private keyboardNavigationActive = false;
   private infoToggleFrame = 0;
-  infoTogglePosition: { left: number; top: number } | null = null;
 
-  constructor(
-    @Inject(PLATFORM_ID) platformId: object,
-    private readonly changeDetectorRef: ChangeDetectorRef,
-  ) {
+  constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
@@ -106,6 +104,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
       }
 
       this.syncCanvasInteractionState();
+      this.queueInfoTogglePosition();
     }
   }
 
@@ -248,20 +247,18 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     if (!this.isBrowser) return;
 
     cancelAnimationFrame(this.infoToggleFrame);
-    let remainingFrames = 24;
     const syncPosition = () => {
+      if (this.infoOpen) return;
+
       const bounds = this.scene.activeCardBounds(this.activeIndex);
       const rootBounds = this.rootRef.nativeElement.getBoundingClientRect();
-      if (bounds && rootBounds.width && rootBounds.height) {
-        this.infoTogglePosition = {
-          left: bounds.left - rootBounds.left + bounds.width - 58,
-          top: bounds.top - rootBounds.top + 22,
-        };
-        this.changeDetectorRef.markForCheck();
+      const button = this.infoToggleRef?.nativeElement;
+      if (bounds && rootBounds.width && rootBounds.height && button) {
+        button.style.left = `${bounds.left - rootBounds.left + bounds.width - 44}px`;
+        button.style.top = `${bounds.top - rootBounds.top + 14}px`;
       }
 
-      remainingFrames -= 1;
-      if (remainingFrames > 0) this.infoToggleFrame = requestAnimationFrame(syncPosition);
+      this.infoToggleFrame = requestAnimationFrame(syncPosition);
     };
 
     this.infoToggleFrame = requestAnimationFrame(syncPosition);
