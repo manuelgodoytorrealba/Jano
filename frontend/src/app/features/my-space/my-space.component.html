@@ -2,17 +2,21 @@
   <header class="space-hero">
     <div class="space-hero__copy">
       <span class="space-eyebrow">{{ i18n.t('mySpace.eyebrow') }}</span>
-      <h1>{{ i18n.t('mySpace.title') }}</h1>
+      <h1>
+        {{ activeTab() === 'saved' ? i18n.t('mySpace.saved') : i18n.t('mySpace.collections') }}
+      </h1>
       <p class="space-muted">{{ i18n.t('mySpace.intro') }}</p>
     </div>
 
-    <button
-      type="button"
-      class="space-shortcut space-shortcut--primary"
-      (click)="createPanelOpen.set(!createPanelOpen())"
-    >
-      + {{ i18n.t('mySpace.createBoard') }}
-    </button>
+    @if (activeTab() === 'collections') {
+      <button
+        type="button"
+        class="space-shortcut space-shortcut--primary"
+        (click)="createPanelOpen.set(!createPanelOpen())"
+      >
+        + {{ i18n.t('mySpace.createBoard') }}
+      </button>
+    }
   </header>
 
   @if (createPanelOpen()) {
@@ -86,35 +90,128 @@
 
         @if (activeTab() === 'saved') {
           <section class="space-surface space-surface--saved">
-            <div class="space-section-head">
-              <div>
-                <span class="space-label">{{ i18n.t('mySpace.saved') }}</span>
-                <h2>{{ i18n.t('mySpace.quickSelection') }}</h2>
-                <p class="space-muted">{{ i18n.t('mySpace.savedIntro') }}</p>
+            <div class="saved-controls">
+              <label class="saved-search"
+                ><span class="visually-hidden">Buscar en tus guardados</span
+                ><input
+                  type="search"
+                  placeholder="Buscar en tus guardados…"
+                  [value]="savedQuery()"
+                  (input)="setSavedQuery($any($event.target).value)"
+              /></label>
+              <label class="saved-select"
+                ><span>Ordenar por</span
+                ><select [value]="savedSort()" (change)="setSavedSort($any($event.target).value)">
+                  <option value="recent">Recientes</option>
+                  <option value="title">Título</option>
+                </select></label
+              >
+              <label class="saved-select"
+                ><span>Tipo</span
+                ><select [value]="savedType()" (change)="setSavedType($any($event.target).value)">
+                  <option value="all">Todos</option>
+                  @for (type of savedTypes(savedItems); track type) {
+                    <option [value]="type">{{ entityTypeLabel(type) }}</option>
+                  }
+                </select></label
+              >
+              <div class="saved-view-switch" aria-label="Vista" role="group">
+                <button
+                  type="button"
+                  [class.is-active]="savedView() === 'grid'"
+                  (click)="setSavedView('grid')"
+                >
+                  Cuadrícula</button
+                ><button
+                  type="button"
+                  [class.is-active]="savedView() === 'list'"
+                  (click)="setSavedView('list')"
+                >
+                  Lista
+                </button>
               </div>
             </div>
             @if (savedItems.length) {
-              <div class="saved-shelf">
-                @for (row of savedItems; track row.id) {
-                  <article class="saved-tile">
-                    <button type="button" class="saved-tile__thumb" (click)="go(row.entity.slug)">
-                      <app-jano-media [entity]="row.entity" usage="card" [alt]="row.entity.title" />
-                    </button>
-                    <div class="saved-tile__body">
-                      <button type="button" class="saved-tile__title" (click)="go(row.entity.slug)">
-                        {{ row.entity.title }}
-                      </button>
+              @if (visibleSaved(savedItems).length) {
+                <section class="saved-section">
+                  <div class="saved-section__head">
+                    <div>
+                      <h2>Recientes</h2>
+                      <p>Los últimos elementos que guardaste.</p>
+                    </div>
+                    <span>{{ visibleSaved(savedItems).length }} elementos</span>
+                  </div>
+                  <div class="saved-gallery" [class.saved-gallery--list]="savedView() === 'list'">
+                    @for (row of recentSaved(savedItems); track row.id) {
+                      <article class="saved-card">
+                        <button
+                          type="button"
+                          class="saved-card__thumb"
+                          (click)="go(row.entity.slug)"
+                        >
+                          <app-jano-media
+                            [entity]="row.entity"
+                            usage="card"
+                            [alt]="row.entity.title"
+                          />
+                        </button>
+                        <div class="saved-card__body">
+                          <button
+                            type="button"
+                            class="saved-card__title"
+                            (click)="go(row.entity.slug)"
+                          >
+                            {{ row.entity.title }}</button
+                          ><span>{{ entityTypeLabel(row.entity.type) }}</span
+                          ><button
+                            type="button"
+                            class="saved-card__remove"
+                            (click)="removeSaved(row.entity.id)"
+                          >
+                            {{ i18n.t('button.remove') }}
+                          </button>
+                        </div>
+                      </article>
+                    }
+                  </div>
+                </section>
+                <section class="saved-section saved-section--types">
+                  <div class="saved-section__head">
+                    <div>
+                      <h2>Por tipo</h2>
+                      <p>Explora tu archivo organizado por categoría.</p>
+                    </div>
+                  </div>
+                  <div class="saved-type-grid">
+                    @for (group of savedGroups(savedItems); track group.type) {
                       <button
                         type="button"
-                        class="saved-tile__remove"
-                        (click)="removeSaved(row.entity.id)"
+                        class="saved-type-card"
+                        (click)="setSavedType(group.type)"
                       >
-                        {{ i18n.t('button.remove') }}
+                        <div>
+                          <strong>{{ entityTypeLabel(group.type) }}</strong
+                          ><span>{{ group.items.length }}</span>
+                        </div>
+                        <div class="saved-type-card__media">
+                          @for (row of previewItems(group.items, 3); track row.id) {
+                            <app-jano-media
+                              [entity]="row.entity"
+                              usage="thumbnail"
+                              [alt]="row.entity.title"
+                            />
+                          }
+                        </div>
                       </button>
-                    </div>
-                  </article>
-                }
-              </div>
+                    }
+                  </div>
+                </section>
+              } @else {
+                <div class="space-empty">
+                  <div class="space-empty__title">No encontramos guardados</div>
+                  <div class="space-empty__sub">Prueba a cambiar la búsqueda o los filtros.</div>
+                </div>
+              }
             } @else {
               <div class="space-empty">
                 <div class="space-empty__title">{{ i18n.t('mySpace.noSaved') }}</div>

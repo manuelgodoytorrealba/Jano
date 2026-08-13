@@ -8,6 +8,10 @@ import { SavedApi } from '../../core/api/saved.api';
 import { AuthUser } from '../../core/auth/auth.types';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { SavedItem } from '../../core/api/saved.api';
+
+type SavedSort = 'recent' | 'title';
+type SavedView = 'grid' | 'list';
 
 @Component({
   standalone: true,
@@ -34,6 +38,10 @@ export class MySpaceComponent {
   createError = '';
   readonly activeTab = signal<'saved' | 'collections'>('saved');
   readonly createPanelOpen = signal(false);
+  readonly savedQuery = signal('');
+  readonly savedSort = signal<SavedSort>('recent');
+  readonly savedType = signal('all');
+  readonly savedView = signal<SavedView>('grid');
 
   saved$ = combineLatest([this.auth.user$, this.refresh$, this.removedSavedIds$]).pipe(
     switchMap(([user, _, removedSavedIds]) => {
@@ -131,6 +139,71 @@ export class MySpaceComponent {
 
   setTab(tab: 'saved' | 'collections'): void {
     this.activeTab.set(tab);
+  }
+
+  setSavedQuery(value: string): void {
+    this.savedQuery.set(value);
+  }
+
+  setSavedSort(value: string): void {
+    this.savedSort.set(value === 'title' ? 'title' : 'recent');
+  }
+
+  setSavedType(value: string): void {
+    this.savedType.set(value);
+  }
+
+  setSavedView(view: SavedView): void {
+    this.savedView.set(view);
+  }
+
+  savedTypes(items: SavedItem[]): string[] {
+    return [...new Set(items.map((item) => item.entity.type))].sort((a, b) =>
+      this.entityTypeLabel(a).localeCompare(this.entityTypeLabel(b)),
+    );
+  }
+
+  visibleSaved(items: SavedItem[]): SavedItem[] {
+    const query = this.savedQuery().trim().toLocaleLowerCase();
+    const type = this.savedType();
+    const filtered = items.filter(
+      (item) =>
+        (type === 'all' || item.entity.type === type) &&
+        (!query || item.entity.title.toLocaleLowerCase().includes(query)),
+    );
+
+    return [...filtered].sort((a, b) =>
+      this.savedSort() === 'title'
+        ? a.entity.title.localeCompare(b.entity.title)
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }
+
+  recentSaved(items: SavedItem[]): SavedItem[] {
+    return this.visibleSaved(items).slice(0, 6);
+  }
+
+  savedGroups(items: SavedItem[]): Array<{ type: string; items: SavedItem[] }> {
+    return this.savedTypes(this.visibleSaved(items)).map((type) => ({
+      type,
+      items: this.visibleSaved(items).filter((item) => item.entity.type === type),
+    }));
+  }
+
+  entityTypeLabel(type: string): string {
+    const labels: Record<string, string> = {
+      ARTWORK: 'Obras de arte',
+      ARTIST: 'Artistas',
+      ARTICLE: 'Artículos',
+      CONCEPT: 'Conceptos',
+      MOVEMENT: 'Movimientos',
+      PERIOD: 'Periodos',
+      PLACE: 'Lugares',
+      TEXT: 'Lecturas',
+      EVENT: 'Eventos',
+      ORGANIZATION: 'Organizaciones',
+    };
+    return labels[type] ?? type;
   }
 
   removeSaved(entityId: string) {
