@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from '../../users/users.service';
+import { AccountStatus } from '@prisma/client';
 
 function tokenFromCookie(request: { headers?: { cookie?: string } } | undefined): string | null {
   const cookieHeader = request?.headers?.cookie;
@@ -34,11 +35,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: string; email: string; role: string }) {
+  async validate(payload: { sub: string; email: string; role: string; authVersion?: number }) {
     const user = await this.usersService.findById(payload.sub);
 
     if (!user) {
       throw new UnauthorizedException('User not found');
+    }
+    if (user.accountStatus !== AccountStatus.ACTIVE)
+      throw new UnauthorizedException('Account unavailable');
+    if ((payload.authVersion ?? 0) !== user.authVersion) {
+      throw new UnauthorizedException('Session invalidated');
     }
 
     return {
@@ -47,6 +53,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       name: user.name ?? null,
       avatarUrl: user.avatarUrl ?? null,
+      emailVerifiedAt: user.emailVerifiedAt,
       createdAt: user.createdAt,
       role: user.role,
       isBeta: user.isBeta,

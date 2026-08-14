@@ -4,11 +4,13 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { TagsService } from './tags.service';
+import { Public } from '../auth/public.decorator';
 
 @Controller('tags')
 export class TagsController {
   constructor(private service: TagsService) {}
 
+  @Public()
   @Get()
   list(@Query('locale') locale?: string) {
     return this.service.list(locale);

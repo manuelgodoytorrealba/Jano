@@ -3,12 +3,12 @@
     <div class="beta-auth-card__brand">JANO</div>
 
     <header class="beta-auth-card__header">
-      <h1 id="blocked-title">Acceso restringido</h1>
-      <p>Tu cuenta no tiene permisos para acceder a esta sección.</p>
+      <h1 id="blocked-title">{{ i18n.t('auth.blockedTitle') }}</h1>
+      <p>{{ i18n.t('auth.blockedCopy') }}</p>
     </header>
 
     <button class="beta-auth-submit" type="button" (click)="logout()">
-      Volver al inicio de sesión
+      {{ i18n.t('auth.backToLogin') }}
     </button>
   </section>
 </main>

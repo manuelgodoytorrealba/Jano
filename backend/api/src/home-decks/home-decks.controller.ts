@@ -24,6 +24,7 @@ import { UploadHomeDeckImageDto } from './dto/upload-home-deck-image.dto';
 import { HomeDecksService } from './home-decks.service';
 import { HomeDeckSurface } from '@prisma/client';
 import { MEDIA_IMAGE_UPLOAD_OPTIONS } from '../media/image-upload.config';
+import { Public } from '../auth/public.decorator';
 
 type UploadedImageFile = {
   filename: string;
@@ -37,6 +38,7 @@ type UploadedImageFile = {
 export class HomeDecksController {
   constructor(private service: HomeDecksService) {}
 
+  @Public()
   @Get()
   listPublic(@Query('surface') surface?: HomeDeckSurface, @Query('locale') locale?: string) {
     return this.service.listPublic(surface, locale);

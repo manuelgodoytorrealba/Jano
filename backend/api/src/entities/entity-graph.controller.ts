@@ -2,6 +2,7 @@ import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { Public } from '../auth/public.decorator';
 import { EntityGraphService } from './entity-graph.service';
 
 @Controller('entities')
@@ -15,6 +16,7 @@ export class EntityGraphController {
     return this.service.adminWorkspaceGraph(locale);
   }
 
+  @Public()
   @Get(':slug/graph')
   graph(@Param('slug') slug: string, @Query('locale') locale?: string) {
     return this.service.graphBySlug(slug, locale);

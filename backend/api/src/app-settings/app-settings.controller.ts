@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { AppSettingsService } from './app-settings.service';
+import { Public } from '../auth/public.decorator';
 
 type UploadedBackgroundFile = {
   filename: string;
@@ -37,6 +38,7 @@ const ALLOWED_BACKGROUND_MIME_TYPES = new Set([
 export class AppSettingsController {
   constructor(private readonly service: AppSettingsService) {}
 
+  @Public()
   @Get()
   getPublicSettings() {
     return this.service.getPublicSettings();

@@ -16,6 +16,12 @@ enum UserPlan {
   PREMIUM
 }
 
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  DISABLED
+}
+
 enum UserDiscoverySignalKind {
   SEARCH_SUBMITTED
 }
@@ -1456,6 +1462,9 @@ model User {
   role         UserRole @default(USER)
   plan         UserPlan @default(FREE)
   isBeta       Boolean  @default(false)
+  authVersion  Int      @default(0)
+  emailVerifiedAt DateTime?
+  accountStatus AccountStatus @default(ACTIVE)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1467,6 +1476,34 @@ model User {
   ownedResearch     ResearchProject[]  @relation("ResearchProjectOwner")
   archivedResearch  ResearchProject[]  @relation("ResearchProjectArchivedBy")
   researchDraftRevisions ResearchDraftRevision[]
+  passwordResetTokens PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+}
+
+model EmailVerificationToken {
+  id String @id @default(cuid())
+  userId String
+  tokenHash String @unique
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
 }
 
 model UserDiscoverySignal {

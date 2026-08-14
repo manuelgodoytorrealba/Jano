@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { PUBLIC_ROUTE_KEY } from '../public.decorator';
 
 @Injectable()
-export class BetaAuthGuard extends AuthGuard('jwt') implements CanActivate {
+export class GlobalAuthGuard extends AuthGuard('jwt') implements CanActivate {
   constructor(private reflector: Reflector) {
     super();
   }
@@ -16,10 +16,6 @@ export class BetaAuthGuard extends AuthGuard('jwt') implements CanActivate {
       context.getClass(),
     ]);
 
-    if (isPublic) {
-      return true;
-    }
-
-    return super.canActivate(context);
+    return isPublic ? true : super.canActivate(context);
   }
 }

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { I18nService } from '../../../core/i18n/i18n.service';
 
 @Component({
   standalone: true,
@@ -12,6 +13,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 export class BlockedComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  readonly i18n = inject(I18nService);
 
   logout() {
     this.auth.logout();

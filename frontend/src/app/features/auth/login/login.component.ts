@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { I18nService } from '../../../core/i18n/i18n.service';
 
@@ -29,7 +29,7 @@ type Particle = {
   standalone: true,
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -52,7 +52,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
 
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
   });
 
   ngAfterViewInit() {
@@ -202,8 +202,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
 
     this.auth.login(this.form.getRawValue()).subscribe({
       next: () => {
-        const redirectTo = (this.route.snapshot.queryParamMap.get('redirectTo') ?? '').trim();
-        void this.router.navigateByUrl(redirectTo || '/my-space');
+        void this.router.navigateByUrl(this.redirectTarget());
       },
       error: (err) => {
         this.loading = false;
@@ -214,5 +213,10 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
             : this.i18n.t('auth.loginError');
       },
     });
+  }
+
+  private redirectTarget() {
+    const redirectTo = (this.route.snapshot.queryParamMap.get('redirectTo') ?? '').trim();
+    return redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/my-space';
   }
 }

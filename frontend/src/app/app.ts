@@ -95,7 +95,7 @@ export class App {
     return url ? `url("${url.replace(/"/g, '%22')}")` : null;
   }
   isAuthRoute(): boolean {
-    return this.router.url.startsWith('/login');
+    return this.router.url.startsWith('/login') || this.router.url.startsWith('/register');
   }
 
   private setThemeColor(color: string): void {

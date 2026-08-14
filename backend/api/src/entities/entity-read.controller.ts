@@ -2,6 +2,7 @@ import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { Public } from '../auth/public.decorator';
 import { ListEntitiesQuery } from './dto/list-entities.query';
 import { EntityReadService } from './entity-read.service';
 import { EntityCatalogService } from './entity-catalog.service';
@@ -13,6 +14,7 @@ export class EntityReadController {
     private readonly service: EntityReadService,
   ) {}
 
+  @Public()
   @Get()
   list(@Query() query: ListEntitiesQuery) {
     return this.catalog.list(query);
@@ -25,16 +27,19 @@ export class EntityReadController {
     return this.catalog.adminList(query);
   }
 
+  @Public()
   @Get('institutions')
   institutions() {
     return this.catalog.listInstitutions();
   }
 
+  @Public()
   @Get('nationalities')
   nationalities() {
     return this.catalog.listNationalities();
   }
 
+  @Public()
   @Get('home')
   home(@Query('locale') locale?: string) {
     return this.catalog.home(locale);
@@ -68,11 +73,13 @@ export class EntityReadController {
     return this.service.adminListIncomingRelations(id);
   }
 
+  @Public()
   @Get(':slug')
   get(@Param('slug') slug: string, @Query('locale') locale?: string) {
     return this.service.getBySlug(slug, locale);
   }
 
+  @Public()
   @Get(':slug/preview')
   preview(@Param('slug') slug: string, @Query('locale') locale?: string) {
     return this.service.previewBySlug(slug, locale);

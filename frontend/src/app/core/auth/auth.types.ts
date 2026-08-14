@@ -8,6 +8,7 @@ export interface AuthUser {
   role: UserRole;
   isBeta: boolean;
   createdAt: string;
+  emailVerifiedAt: string | null;
 }
 
 export interface SessionUser extends AuthUser {
@@ -25,6 +26,5 @@ export interface RegisterDto {
   name?: string;
 }
 export interface AuthResponse {
-  accessToken: string;
   user: AuthUser;
 }

@@ -82,6 +82,16 @@ canvas {
   gap: 16px;
 }
 
+.beta-auth-forgot {
+  justify-self: start;
+  color: var(--auth-muted);
+  font-size: 0.84rem;
+}
+
+.beta-auth-forgot:hover {
+  color: var(--auth-text);
+}
+
 .beta-auth-field {
   display: grid;
   gap: 8px;

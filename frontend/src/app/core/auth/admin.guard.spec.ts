@@ -1,15 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
-import { firstValueFrom, of, throwError } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { adminGuard } from './admin.guard';
 import { AuthService } from './auth.service';
 
 describe('adminGuard', () => {
-  it('refreshes the session and allows access when the backend confirms ADMIN', async () => {
+  it('allows access when the verified session confirms ADMIN', async () => {
     const auth = {
-      isAuthenticated: vi.fn(() => true),
-      currentUser: null,
-      refreshSession: vi.fn(() =>
+      restoreSession: vi.fn(() =>
         of({
           id: '1',
           email: 'admin@test.com',
@@ -33,7 +31,6 @@ describe('adminGuard', () => {
       providers: [
         { provide: AuthService, useValue: auth },
         { provide: Router, useValue: router },
-        { provide: 'PLATFORM_ID', useValue: 'browser' },
       ],
     });
 
@@ -42,14 +39,12 @@ describe('adminGuard', () => {
     ) as ReturnType<typeof of>;
 
     await expect(firstValueFrom(result$)).resolves.toBe(true);
-    expect(auth.refreshSession).toHaveBeenCalledTimes(1);
+    expect(auth.restoreSession).toHaveBeenCalledTimes(1);
   });
 
-  it('redirects to login when refresh fails', async () => {
+  it('redirects anonymous users to login', async () => {
     const auth = {
-      isAuthenticated: vi.fn(() => true),
-      currentUser: null,
-      refreshSession: vi.fn(() => throwError(() => new Error('401'))),
+      restoreSession: vi.fn(() => of(null)),
     };
     const router = {
       createUrlTree: vi.fn(
@@ -65,7 +60,6 @@ describe('adminGuard', () => {
       providers: [
         { provide: AuthService, useValue: auth },
         { provide: Router, useValue: router },
-        { provide: 'PLATFORM_ID', useValue: 'browser' },
       ],
     });
 
@@ -81,5 +75,24 @@ describe('adminGuard', () => {
       commands: ['/login'],
       extras: { queryParams: { redirectTo: '/admin/entities' } },
     });
+  });
+
+  it('denies a verified USER from admin routes', async () => {
+    const auth = { restoreSession: vi.fn(() => of({ id: '1', role: 'USER' })) };
+    const router = {
+      createUrlTree: vi.fn((commands: unknown[]) => ({ commands }) as unknown as UrlTree),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: AuthService, useValue: auth },
+        { provide: Router, useValue: router },
+      ],
+    });
+
+    const result = TestBed.runInInjectionContext(() =>
+      adminGuard({} as never, { url: '/admin' } as never),
+    ) as ReturnType<typeof of>;
+    await firstValueFrom(result);
+    expect(router.createUrlTree).toHaveBeenCalledWith(['/']);
   });
 });

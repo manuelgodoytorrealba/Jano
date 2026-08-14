@@ -9,8 +9,12 @@ describe('JwtStrategy', () => {
         id: 'user-1',
         email: 'manuel@test3.com',
         name: 'Manuel',
+        avatarUrl: null,
+        createdAt: undefined,
         role: 'ADMIN',
         isBeta: true,
+        accountStatus: 'ACTIVE',
+        authVersion: 0,
       }),
     };
     const configService = {
@@ -27,12 +31,15 @@ describe('JwtStrategy', () => {
         sub: 'user-1',
         email: 'manuel@test3.com',
         role: 'USER',
+        authVersion: 0,
       }),
     ).resolves.toEqual({
       userId: 'user-1',
       id: 'user-1',
       email: 'manuel@test3.com',
       name: 'Manuel',
+      avatarUrl: null,
+      createdAt: undefined,
       role: 'ADMIN',
       isBeta: true,
     });

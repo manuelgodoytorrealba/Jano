@@ -8,6 +8,7 @@ import { ArchiveRecommendationsQuery } from './dto/archive-recommendations.query
 import { SearchQuery } from './dto/search.query';
 import { OptionalJwtAuthGuard } from './optional-jwt-auth.guard';
 import { SearchService } from './search.service';
+import { Public } from '../auth/public.decorator';
 
 @Controller('search')
 export class SearchController {
@@ -23,6 +24,7 @@ export class SearchController {
   }
 
   @UseGuards(OptionalJwtAuthGuard)
+  @Public()
   @Get()
   search(@Query() query: SearchQuery, @Req() req: OptionalAuthenticatedRequest) {
     const includeDrafts = query.includeDrafts === true && req.user?.role === 'ADMIN';

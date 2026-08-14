@@ -10,6 +10,14 @@ type AppEnv = {
   DATABASE_URL: string;
   MEDIA_PUBLIC_BASE_URL: string;
   JWT_SECRET: string;
+  AUTH_RATE_LIMIT: number;
+  AUTH_RATE_LIMIT_TTL_SECONDS: number;
+  PASSWORD_RESET_TOKEN_TTL_MINUTES: number;
+  EMAIL_VERIFICATION_TOKEN_TTL_HOURS: number;
+  APP_PUBLIC_URL: string;
+  MAIL_PROVIDER: 'console' | 'resend';
+  MAIL_FROM?: string;
+  RESEND_API_KEY?: string;
   AI_PROVIDER: 'noop' | 'ollama';
   OLLAMA_BASE_URL: string;
   OLLAMA_MODEL: string;
@@ -51,6 +59,18 @@ function readPort(env: RawEnv, key: string, fallback: number): number {
   }
 
   return port;
+}
+
+function readPositiveInteger(env: RawEnv, key: string, fallback: number): number {
+  const rawValue = readString(env, key);
+  if (!rawValue) return fallback;
+
+  const value = Number(rawValue);
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new Error(error(`Invalid env var: ${key} must be a positive integer`));
+  }
+
+  return value;
 }
 
 function readNodeEnv(env: RawEnv): AppEnv['NODE_ENV'] {
@@ -100,6 +120,33 @@ export function validateEnv(env: RawEnv): AppEnv {
   const AI_PROVIDER = readAIProvider(env);
   const OLLAMA_BASE_URL = readString(env, 'OLLAMA_BASE_URL') ?? 'http://127.0.0.1:11434';
   const OLLAMA_MODEL = readString(env, 'OLLAMA_MODEL') ?? 'qwen2.5:7b';
+  const AUTH_RATE_LIMIT = readPositiveInteger(env, 'AUTH_RATE_LIMIT', 10);
+  const AUTH_RATE_LIMIT_TTL_SECONDS = readPositiveInteger(env, 'AUTH_RATE_LIMIT_TTL_SECONDS', 60);
+  const PASSWORD_RESET_TOKEN_TTL_MINUTES = readPositiveInteger(
+    env,
+    'PASSWORD_RESET_TOKEN_TTL_MINUTES',
+    45,
+  );
+  const EMAIL_VERIFICATION_TOKEN_TTL_HOURS = readPositiveInteger(
+    env,
+    'EMAIL_VERIFICATION_TOKEN_TTL_HOURS',
+    24,
+  );
+  const APP_PUBLIC_URL = readString(env, 'APP_PUBLIC_URL') ?? 'http://localhost:4200';
+  const MAIL_PROVIDER =
+    readString(env, 'MAIL_PROVIDER') ?? (NODE_ENV === 'production' ? 'resend' : 'console');
+  if (MAIL_PROVIDER !== 'console' && MAIL_PROVIDER !== 'resend') {
+    throw new Error(error('Invalid env var: MAIL_PROVIDER must be console or resend'));
+  }
+  const MAIL_FROM = readString(env, 'MAIL_FROM');
+  const RESEND_API_KEY = readString(env, 'RESEND_API_KEY');
+  if (NODE_ENV === 'production' && (!MAIL_FROM || !RESEND_API_KEY || MAIL_PROVIDER !== 'resend')) {
+    throw new Error(
+      error(
+        'Production password recovery requires MAIL_PROVIDER=resend, MAIL_FROM and RESEND_API_KEY',
+      ),
+    );
+  }
 
   let JWT_SECRET = readString(env, 'JWT_SECRET');
   let usingFallbackJwtSecret = false;
@@ -121,6 +168,14 @@ export function validateEnv(env: RawEnv): AppEnv {
     DATABASE_URL,
     MEDIA_PUBLIC_BASE_URL,
     JWT_SECRET,
+    AUTH_RATE_LIMIT,
+    AUTH_RATE_LIMIT_TTL_SECONDS,
+    PASSWORD_RESET_TOKEN_TTL_MINUTES,
+    EMAIL_VERIFICATION_TOKEN_TTL_HOURS,
+    APP_PUBLIC_URL: APP_PUBLIC_URL.replace(/\/+$/, ''),
+    MAIL_PROVIDER,
+    MAIL_FROM,
+    RESEND_API_KEY,
     AI_PROVIDER,
     OLLAMA_BASE_URL,
     OLLAMA_MODEL,
