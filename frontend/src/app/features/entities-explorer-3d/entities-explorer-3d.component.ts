@@ -17,6 +17,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { inject } from '@angular/core';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { contentLevelLabel, entityTypeLabel, statusLabel } from '../../core/i18n/domain-labels';
 import { PublicEntityListItem } from '../../core/api/entities.models';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { resolveEntityMediaItem, resolveMediaPresentation } from '../../shared/media/media.utils';
@@ -35,7 +36,7 @@ type NavDirection = -1 | 1;
 export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() items: Entity[] = [];
   @Input() activeIndex = 0;
-  @Input() infoOpen = true;
+  @Input() infoOpen = false;
   @Input() infoClosable = false;
   @Input() infoModal = false;
   @Input() showOpenAction = true;
@@ -57,7 +58,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   private readonly isBrowser: boolean;
   readonly i18n = inject(I18nService);
 
-  private readonly scene = new Explorer3dScene();
+  private readonly scene = new Explorer3dScene(() => this.syncCanvasInteractionState());
   private canvasInteractionsAttached = false;
 
   private isDragging = false;
@@ -117,6 +118,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   }
 
   openActive(): void {
+    if (this.isEntryInteractionLocked()) return;
     this.openIndex(this.activeIndex);
   }
 
@@ -125,10 +127,12 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   }
 
   onInfoToggleEnter(): void {
+    if (this.isEntryInteractionLocked()) return;
     this.scene.setHoveredIndex(this.activeIndex);
   }
 
   onInfoToggleLeave(): void {
+    if (this.isEntryInteractionLocked()) return;
     if (!this.isDragging) this.scene.setHoveredIndex(null);
   }
 
@@ -189,6 +193,18 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     }).format(date);
   }
 
+  typeLabel(type: string | null | undefined): string {
+    return entityTypeLabel(type, this.i18n);
+  }
+
+  statusLabel(status: string | null | undefined): string {
+    return statusLabel(status, this.i18n);
+  }
+
+  contentLevelLabel(level: string | null | undefined): string {
+    return contentLevelLabel(level, this.i18n);
+  }
+
   @HostListener('window:keydown', ['$event'])
   onWindowKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Escape' && this.infoOpen) {
@@ -198,6 +214,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     }
 
     if (!this.keyboardNavigationActive) return;
+    if (this.isEntryInteractionLocked()) return;
     if (this.shouldIgnoreKeyboardEvent(event)) return;
 
     if (event.key === 'ArrowLeft') {
@@ -231,6 +248,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   }
 
   onMouseEnter(): void {
+    if (this.isEntryInteractionLocked()) return;
     this.activateExplorerFocus('hover');
   }
 
@@ -241,9 +259,11 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   private syncCanvasInteractionState(): void {
     if (!this.scene.domElement) return;
 
-    this.scene.setInteractive(!this.infoOpen);
+    const interactive = !this.infoOpen && !this.isEntryInteractionLocked();
+    this.scene.setInteractive(interactive);
 
-    if (this.infoOpen) {
+    if (!interactive) {
+      this.cancelCanvasInteraction();
       this.detachCanvasInteractions();
       return;
     }
@@ -262,8 +282,8 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
       const rootBounds = this.rootRef.nativeElement.getBoundingClientRect();
       const button = this.infoToggleRef?.nativeElement;
       if (bounds && rootBounds.width && rootBounds.height && button) {
-        button.style.left = `${bounds.left - rootBounds.left + bounds.width - 52}px`;
-        button.style.top = `${bounds.top - rootBounds.top + 22}px`;
+        button.style.left = `${bounds.left - rootBounds.left + bounds.width - 70}px`;
+        button.style.top = `${bounds.top - rootBounds.top + 28}px`;
       }
 
       this.infoToggleFrame = requestAnimationFrame(syncPosition);
@@ -468,6 +488,8 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   private onWheel = (event: WheelEvent) => {
     event.preventDefault();
 
+    if (this.isEntryInteractionLocked()) return;
+
     if (!this.items.length) return;
     this.activateExplorerFocus('wheel');
 
@@ -478,7 +500,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   };
 
   private onPointerDown = (event: PointerEvent) => {
-    if (this.infoOpen) {
+    if (this.infoOpen || this.isEntryInteractionLocked()) {
       event.preventDefault();
       this.cancelCanvasInteraction();
       return;
@@ -493,7 +515,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   };
 
   private onPointerMove = (event: PointerEvent) => {
-    if (this.infoOpen) {
+    if (this.infoOpen || this.isEntryInteractionLocked()) {
       this.cancelCanvasInteraction();
       return;
     }
@@ -517,7 +539,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   };
 
   private onPointerUp = (event: PointerEvent) => {
-    if (this.infoOpen) {
+    if (this.infoOpen || this.isEntryInteractionLocked()) {
       this.cancelCanvasInteraction();
       return;
     }
@@ -543,7 +565,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   };
 
   private onPointerLeave = (event: PointerEvent) => {
-    if (this.infoOpen) {
+    if (this.infoOpen || this.isEntryInteractionLocked()) {
       this.cancelCanvasInteraction();
       return;
     }
@@ -555,4 +577,8 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     this.scene.setDragging(false);
     this.scene.setHoveredIndex(null);
   };
+
+  private isEntryInteractionLocked(): boolean {
+    return this.scene.isEntryAnimationRunning;
+  }
 }

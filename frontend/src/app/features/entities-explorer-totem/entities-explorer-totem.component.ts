@@ -18,6 +18,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { entityTypeLabel } from '../../core/i18n/domain-labels';
 import { PublicEntityListItem } from '../../core/api/entities.models';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { mediaDisplayUrl, resolveEntityMediaItem } from '../../shared/media/media.utils';
@@ -88,6 +89,10 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
   get activeItem(): Entity | null {
     return this.items[this.activeIndex] ?? null;
+  }
+
+  typeLabel(type: string | null | undefined): string {
+    return entityTypeLabel(type, this.i18n);
   }
 
   get panelItem(): Entity | null {

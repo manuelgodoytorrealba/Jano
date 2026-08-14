@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { adminGuard } from './core/auth/admin.guard';
+import { guestGuard } from './core/auth/guest.guard';
 
 export const routes: Routes = [
   {
@@ -10,46 +11,81 @@ export const routes: Routes = [
   },
   {
     path: 'home',
-    canActivate: [authGuard],
     loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'search',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/search/search.component').then((m) => m.SearchComponent),
   },
   {
     path: 'entities',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },
   {
     path: 'entities/:type',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },
   {
     path: 'research',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/research-publications/research-publications.component').then(
         (m) => m.ResearchPublicationsComponent,
       ),
   },
   {
+    path: 'research/:id',
+    loadComponent: () =>
+      import('./features/research-publication/research-publication.component').then(
+        (m) => m.ResearchPublicationComponent,
+      ),
+  },
+  {
     path: 'entity/:slug',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/entity/entity.component').then((m) => m.EntityComponent),
   },
 
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+    data: { layout: 'auth' },
+  },
+  {
+    path: 'register',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+    data: { layout: 'auth' },
+  },
+  {
+    path: 'forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.component').then(
+        (m) => m.ForgotPasswordComponent,
+      ),
+    data: { layout: 'auth' },
+  },
+  {
+    path: 'reset-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent,
+      ),
+    data: { layout: 'auth' },
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./features/auth/verify-email/verify-email.component').then(
+        (m) => m.VerifyEmailComponent,
+      ),
     data: { layout: 'auth' },
   },
   {

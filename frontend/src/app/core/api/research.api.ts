@@ -556,6 +556,45 @@ export type ResearchProject = ResearchProjectSummary & {
   outlineSections: ResearchOutlineSection[];
 };
 
+export type ResearchPublicPublication = {
+  id: string;
+  title: string;
+  objective: string | null;
+  scope: string | null;
+  coverImageUrl: string | null;
+  publishedAt: string | null;
+  outlineSections: Array<{
+    id: string;
+    title: string;
+    objective: string | null;
+    notes: string | null;
+    imageUrl: string | null;
+    sortOrder: number;
+    drafts: Array<{ title: string | null; currentRevision: { content: string } | null }>;
+  }>;
+  sources: Array<{ source: ResearchSourceReference }>;
+  entities: Array<{
+    id: string;
+    title: string;
+    kind: string;
+    summary: string | null;
+    canonicalEntity: {
+      id: string;
+      slug: string;
+      title: string;
+      type: string;
+      imageUrl: string | null;
+    } | null;
+  }>;
+  relations: Array<{
+    id: string;
+    relationType: { label: string } | null;
+    fromEntity: { id: string; title: string; kind: string };
+    toEntity: { id: string; title: string; kind: string };
+  }>;
+  related: Array<{ id: string; title: string; objective: string; coverImageUrl: string | null }>;
+};
+
 export type ResearchProjectCitation = {
   id: string;
   projectId: string;
@@ -661,6 +700,10 @@ export class ResearchApi {
 
   listPublished() {
     return this.http.get<ResearchProjectSummary[]>(apiUrl('/public/research'));
+  }
+
+  getPublished(id: string) {
+    return this.http.get<ResearchPublicPublication>(apiUrl(`/public/research/${id}`));
   }
 
   createOutlineSection(projectId: string, data: CreateResearchOutlineSectionPayload) {

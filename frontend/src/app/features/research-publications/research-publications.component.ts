@@ -1,10 +1,12 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { map } from 'rxjs';
 import { PublicEntityListItem } from '../../core/api/entities.models';
 import { ResearchApi, ResearchProjectSummary } from '../../core/api/research.api';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
+import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { EntitiesListFilterRailVm, Sort } from '../entities/entities-list.facade';
 import { EntitiesListFilterRailComponent } from '../entities/entities-list-filter-rail.component';
 
@@ -23,6 +25,7 @@ type ViewMode = 'explore' | 'list';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchPublicationsComponent {
+  private readonly router = inject(Router);
   readonly publications$ = inject(ResearchApi)
     .listPublished()
     .pipe(
@@ -30,7 +33,7 @@ export class ResearchPublicationsComponent {
     );
   readonly activeIndex = signal(0);
   readonly filtersOpen = signal(false);
-  readonly infoOpen = signal(true);
+  readonly infoOpen = signal(false);
   readonly query = signal('');
   readonly sort = signal<Sort>('recent');
   viewMode: ViewMode = 'explore';
@@ -69,6 +72,16 @@ export class ResearchPublicationsComponent {
     this.activeIndex.set(index);
     this.infoOpen.set(true);
     this.viewMode = 'explore';
+  }
+
+  open(publication: PublicEntityListItem | string | EntityArtworkTransitionPayload): void {
+    const id =
+      typeof publication === 'string'
+        ? publication
+        : 'id' in publication
+          ? publication.id
+          : publication.slug;
+    void this.router.navigate(['/research', id]);
   }
 
   filterRailVm(resultsTotal: number): EntitiesListFilterRailVm {

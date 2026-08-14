@@ -12,6 +12,7 @@ import {
 
 export type SearchResult = {
   id: string;
+  resultType: 'ENTITY' | 'RESEARCH' | 'RELATION';
   slug: string;
   type: string;
   kind?: PublicKnowledgeEntityKind | null;
@@ -36,6 +37,9 @@ export type SearchResult = {
   relationType?: string | null;
   relationReason?: string | null;
   relationWithTitle?: string | null;
+  fromSlug?: string;
+  toSlug?: string;
+  publishedAt?: string | null;
 };
 
 export type SearchRoute = {
@@ -84,6 +88,7 @@ export class SearchApi {
     limit?: number;
     includeDrafts?: boolean;
     recordInterest?: boolean;
+    locale?: string;
   }) {
     let httpParams = new HttpParams().set('q', params.q ?? '');
 
@@ -109,6 +114,10 @@ export class SearchApi {
 
     if (params.recordInterest) {
       httpParams = httpParams.set('recordInterest', true);
+    }
+
+    if (params.locale) {
+      httpParams = httpParams.set('locale', params.locale);
     }
 
     return this.http.get<SearchResponse>(apiUrl('/search'), { params: httpParams });

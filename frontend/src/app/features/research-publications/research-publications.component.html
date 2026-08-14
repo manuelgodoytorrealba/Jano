@@ -88,17 +88,18 @@
                 [activeIndex]="activeIndex()"
                 [infoOpen]="infoOpen()"
                 [infoClosable]="true"
-                [showOpenAction]="false"
+                [showOpenAction]="true"
                 (activeIndexChange)="activeIndex.set($event)"
                 (requestInfoOpen)="infoOpen.set(true)"
                 (requestInfoClose)="infoOpen.set(false)"
+                (openEntity)="open($event)"
               />
             </div>
           } @else {
             <div class="entities-stage-shell entities-stage-shell--list">
               <section class="entities-grid" aria-label="Lista de publicaciones">
                 @for (publication of items; track publication.id; let index = $index) {
-                  <article class="entity-card ds-card" tabindex="0" (click)="select(index)">
+                  <article class="entity-card ds-card" tabindex="0" (click)="open(publication)">
                     <div class="entity-card__thumb">
                       <app-jano-media
                         [entity]="publication"

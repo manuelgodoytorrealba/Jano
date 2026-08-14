@@ -405,6 +405,122 @@ export class ResearchService {
     });
   }
 
+  async getPublishedProject(id: string) {
+    const project = await this.prisma.researchProject.findFirst({
+      where: { id, status: ResearchProjectStatus.PUBLISHED },
+      select: {
+        id: true,
+        title: true,
+        objective: true,
+        scope: true,
+        coverImageUrl: true,
+        publishedAt: true,
+        outlineSections: {
+          orderBy: [{ parentSectionId: 'asc' }, { sortOrder: 'asc' }],
+          select: {
+            id: true,
+            title: true,
+            objective: true,
+            notes: true,
+            imageUrl: true,
+            sortOrder: true,
+            drafts: {
+              where: { archivedAt: null },
+              orderBy: { updatedAt: 'desc' },
+              take: 1,
+              select: { title: true, currentRevision: { select: { content: true } } },
+            },
+          },
+        },
+        // A public publication can reference public entities and bibliography,
+        // but never the private Research Knowledge evidence or editorial notes.
+        sources: {
+          select: {
+            source: { select: researchSourceSelect },
+          },
+        },
+        entities: {
+          where: { reviewState: ResearchProposalReviewState.REVIEWED },
+          select: {
+            id: true,
+            title: true,
+            kind: true,
+            summary: true,
+            canonicalEntity: {
+              select: {
+                id: true,
+                slug: true,
+                title: true,
+                type: true,
+                mediaLinks: {
+                  orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
+                  select: {
+                    id: true,
+                    role: true,
+                    sortOrder: true,
+                    isPrimary: true,
+                    media: {
+                      select: {
+                        id: true,
+                        url: true,
+                        displayUrl: true,
+                        mimeType: true,
+                        isVector: true,
+                        alt: true,
+                        width: true,
+                        height: true,
+                        provider: true,
+                        qualityTier: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        relations: {
+          where: { reviewState: ResearchProposalReviewState.REVIEWED },
+          select: {
+            id: true,
+            relationType: { select: { label: true } },
+            fromEntity: { select: { id: true, title: true, kind: true } },
+            toEntity: { select: { id: true, title: true, kind: true } },
+          },
+        },
+      },
+    });
+    if (!project) throw new NotFoundException('Published research not found');
+    const entities = project.entities.map((entity) => ({
+      ...entity,
+      canonicalEntity: entity.canonicalEntity
+        ? {
+            id: entity.canonicalEntity.id,
+            slug: entity.canonicalEntity.slug,
+            title: entity.canonicalEntity.title,
+            type: entity.canonicalEntity.type,
+            imageUrl: resolvedMediaUrl(resolveEntityMedia(entity.canonicalEntity, 'card')),
+          }
+        : null,
+    }));
+    const publicEntityIds = entities.flatMap((item) =>
+      item.canonicalEntity ? [item.canonicalEntity.id] : [],
+    );
+    const related = publicEntityIds.length
+      ? await this.prisma.researchProject.findMany({
+          where: {
+            status: ResearchProjectStatus.PUBLISHED,
+            id: { not: project.id },
+            entities: { some: { canonicalEntityId: { in: publicEntityIds } } },
+          },
+          orderBy: { publishedAt: 'desc' },
+          take: 3,
+          select: { id: true, title: true, objective: true, coverImageUrl: true },
+        })
+      : [];
+    return { ...project, entities, related };
+  }
+
   async publishProject(projectId: string) {
     await this.prisma.researchProject.update({
       where: { id: projectId },

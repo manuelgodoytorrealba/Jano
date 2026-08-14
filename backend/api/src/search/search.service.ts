@@ -19,6 +19,7 @@ import { ArchiveRecommendationsQuery } from './dto/archive-recommendations.query
 
 type SearchItem = {
   id: string;
+  resultType: 'ENTITY' | 'RESEARCH' | 'RELATION';
   slug: string;
   type: string;
   kind: string | null;
@@ -175,25 +176,6 @@ export class SearchService {
       includeDrafts: options.includeDrafts,
     });
 
-    if (!rows.length) {
-      return {
-        query: q,
-        total: 0,
-        items: [],
-        groups: {},
-        sections: [],
-        interpretation: {
-          normalizedQuery: intent.normalizedQuery,
-          significantTerms: intent.significantTerms,
-          signals: intent.signals,
-          variantsTried: variants.map((variant) => ({
-            query: variant.query,
-            reason: variant.reason,
-          })),
-        },
-      };
-    }
-
     const scoreById = new Map(rows.map((row) => [row.id, Number(row.score ?? 0)]));
     const matchedFieldsById = new Map(
       rows.map((row) => [
@@ -238,12 +220,24 @@ export class SearchService {
       acc[item.type].push(item);
       return acc;
     }, {});
-
-    const sections = await this.buildSections(q, items, locale, options.includeDrafts);
+    const [research, relations] = await Promise.all([
+      this.searchPublishedResearch(variants, limit),
+      this.searchPublishedRelations(
+        variants,
+        rows.map((row) => row.id),
+        locale,
+        limit,
+      ),
+    ]);
+    const sections = [
+      this.itemSection('entities', 'Entidades', items),
+      this.itemSection('research', 'Investigaciones', research),
+      this.itemSection('relations', 'Relaciones', relations),
+    ].filter((section) => section.items?.length);
 
     return {
       query: q,
-      total: items.length,
+      total: items.length + research.length + relations.length,
       items,
       groups,
       sections,
@@ -459,6 +453,7 @@ export class SearchService {
 
     return {
       id: entity.id,
+      resultType: 'ENTITY' as const,
       slug: entity.slug,
       type: resolvedEntity.type,
       kind: resolvedEntity.kind ?? null,
@@ -484,6 +479,99 @@ export class SearchService {
       matchedFields,
       matchReasons,
     };
+  }
+
+  private async searchPublishedResearch(
+    variants: SearchQueryVariant[],
+    limit: number,
+  ): Promise<SearchItem[]> {
+    const queries = [...new Set(variants.map((variant) => variant.query).filter(Boolean))];
+    if (!queries.length) return [];
+
+    const projects = await this.prisma.researchProject.findMany({
+      where: {
+        status: 'PUBLISHED',
+        OR: queries.flatMap((value) => [
+          { title: { contains: value, mode: 'insensitive' } },
+          { objective: { contains: value, mode: 'insensitive' } },
+          { scope: { contains: value, mode: 'insensitive' } },
+        ]),
+      },
+      select: { id: true, title: true, objective: true, scope: true, publishedAt: true },
+      orderBy: { publishedAt: 'desc' },
+      take: limit,
+    });
+
+    const normalized = queries[0].toLocaleLowerCase();
+    return projects
+      .map((project) => ({
+        id: project.id,
+        resultType: 'RESEARCH' as const,
+        slug: project.id,
+        type: 'RESEARCH',
+        kind: null,
+        title: project.title,
+        summary: project.objective || project.scope || null,
+        publishedAt: project.publishedAt,
+        score: project.title.toLocaleLowerCase() === normalized ? 100 : 20,
+      }))
+      .sort((left, right) => Number(right.score) - Number(left.score));
+  }
+
+  private async searchPublishedRelations(
+    variants: SearchQueryVariant[],
+    entityIds: string[],
+    locale: string,
+    limit: number,
+  ): Promise<SearchItem[]> {
+    const queries = [...new Set(variants.map((variant) => variant.query).filter(Boolean))];
+    const relationMatches = queries.flatMap((value) => [
+      { justification: { contains: value, mode: 'insensitive' as const } },
+      {
+        translations: {
+          some: { justification: { contains: value, mode: 'insensitive' as const } },
+        },
+      },
+    ]);
+    if (!relationMatches.length && !entityIds.length) return [];
+
+    const relations = await this.prisma.relation.findMany({
+      where: {
+        status: KnowledgeAssertionStatus.PUBLISHED,
+        from: { status: EntityStatus.PUBLISHED },
+        to: { status: EntityStatus.PUBLISHED },
+        OR: [
+          ...relationMatches,
+          ...(entityIds.length ? [{ fromId: { in: entityIds } }, { toId: { in: entityIds } }] : []),
+        ],
+      },
+      include: {
+        from: { include: this.entityInclude(locale) },
+        to: { select: { slug: true, title: true } },
+        relationType: {
+          include: { translations: { where: { locale: { in: [locale, 'es', 'en'] } } } },
+        },
+        translations: { where: { locale: { in: [locale, 'es', 'en'] } } },
+      },
+      orderBy: [{ weight: 'desc' }, { updatedAt: 'desc' }],
+      take: limit,
+    });
+
+    return relations.map((relation) => ({
+      id: relation.id,
+      resultType: 'RELATION' as const,
+      slug: relation.id,
+      type: 'RELATION',
+      kind: null,
+      title: `${relation.from.title} → ${relation.to.title}`,
+      summary:
+        this.relationJustification(relation, locale) || this.relationDisplayLabel(relation, locale),
+      resolvedMedia: this.serializeSearchEntity(relation.from, locale).resolvedMedia,
+      fromSlug: relation.from.slug,
+      toSlug: relation.to.slug,
+      relationType: this.relationDisplayLabel(relation, locale),
+      score: entityIds.includes(relation.fromId) || entityIds.includes(relation.toId) ? 10 : 5,
+    }));
   }
 
   private async buildSections(

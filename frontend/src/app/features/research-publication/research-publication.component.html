@@ -1,0 +1,162 @@
+@if (publication$ | async; as publication) {
+  <main class="publication jano-research-studio">
+    <a routerLink="/research" class="publication__back">← {{ 'research.publication.back' | t }}</a>
+    <header class="publication__hero jano-editorial-surface">
+      <div class="publication__hero-copy">
+        <p class="publication__eyebrow">{{ 'research.publication.published' | t }}</p>
+        <h1>{{ publication.title }}</h1>
+        @if (publication.objective) {
+          <p class="publication__objective">{{ publication.objective }}</p>
+        }
+        @if (publication.publishedAt) {
+          <small>{{ publishedDate(publication.publishedAt) }}</small>
+        }
+      </div>
+      <div class="publication__cover">
+        @if (publication.coverImageUrl) {
+          <img [src]="publication.coverImageUrl" [alt]="publication.title" />
+        }
+      </div>
+    </header>
+    <nav
+      class="publication__tabs"
+      role="tablist"
+      [attr.aria-label]="'research.publication.tabs' | t"
+    >
+      @for (tab of tabs; track tab.id) {
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activeTab() === tab.id"
+          [class.is-active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+        >
+          {{ tab.label | t }}
+        </button>
+      }
+    </nav>
+    @if (activeTab() === 'content') {
+      <article class="publication__reading jano-editorial-surface" role="tabpanel">
+        <div class="publication__introduction">
+          <p class="publication__eyebrow">{{ 'research.publication.reading' | t }}</p>
+          <p>{{ publication.objective || ('research.publication.noIntroduction' | t) }}</p>
+        </div>
+        @for (section of publication.outlineSections; track section.id; let index = $index) {
+          <section class="publication__section">
+            <header>
+              <span>{{ (index + 1).toString().padStart(2, '0') }}</span>
+              <h2>{{ section.title }}</h2>
+            </header>
+            @if (section.imageUrl) {
+              <img [src]="section.imageUrl" [alt]="section.title" />
+            }
+            @if (section.drafts[0]?.currentRevision?.content) {
+              <app-rich-text [text]="section.drafts[0].currentRevision!.content" />
+            } @else if (section.objective || section.notes) {
+              <p class="publication__section-summary">{{ section.objective || section.notes }}</p>
+            }
+          </section>
+        } @empty {
+          <p class="publication__empty">{{ 'research.publication.noContent' | t }}</p>
+        }
+      </article>
+    } @else if (activeTab() === 'knowledge-map') {
+      <section class="publication__panel jano-editorial-surface" role="tabpanel">
+        <p class="publication__eyebrow">{{ 'research.publication.connectedKnowledge' | t }}</p>
+        <h2>{{ 'research.publication.knowledgeMap' | t }}</h2>
+        @if (publication.entities.length) {
+          <div class="publication__graph">
+            <app-graph
+              slug="research-publication"
+              workspaceMode="graph"
+              [graphData]="graphData(publication)"
+              [hideImagePane]="true"
+              [allowNodeOpen]="false"
+              [showInspector]="false"
+              [showControls]="true"
+              [overviewMode]="true"
+              [showAllOverviewRelations]="true"
+              [preserveRuntimeOnGraphChange]="true"
+            />
+          </div>
+        } @else {
+          <p class="publication__empty">{{ 'research.publication.noMap' | t }}</p>
+        }
+      </section>
+    } @else if (activeTab() === 'entities') {
+      <section class="publication__panel jano-editorial-surface" role="tabpanel">
+        <p class="publication__eyebrow">{{ 'research.publication.connectedKnowledge' | t }}</p>
+        <h2>{{ 'research.publication.entities' | t }}</h2>
+        @if (publication.entities.length) {
+          <div class="publication__entities">
+            @for (item of publication.entities; track item.id) {
+              @if (item.canonicalEntity) {
+                <a [routerLink]="['/entity', item.canonicalEntity.slug]">
+                  @if (item.canonicalEntity.imageUrl) {
+                    <img [src]="item.canonicalEntity.imageUrl" [alt]="item.canonicalEntity.title" />
+                  }
+                  <span>{{ item.canonicalEntity.type }}</span>
+                  <h3>{{ item.canonicalEntity.title }}</h3>
+                  <p>{{ item.summary }}</p></a
+                >
+              } @else {
+                <article>
+                  <span>{{ item.kind }}</span>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.summary }}</p>
+                </article>
+              }
+            }
+          </div>
+        } @else {
+          <p class="publication__empty">{{ 'research.publication.noEntities' | t }}</p>
+        }
+      </section>
+    } @else if (activeTab() === 'sources') {
+      <section class="publication__panel jano-editorial-surface" role="tabpanel">
+        <p class="publication__eyebrow">{{ 'research.publication.provenance' | t }}</p>
+        <h2>{{ 'research.publication.sources' | t }}</h2>
+        @if (publication.sources.length) {
+          <ol class="publication__sources">
+            @for (item of publication.sources; track item.source.id) {
+              <li>
+                <span>{{ item.source.type }}</span>
+                <div>
+                  <h3>{{ item.source.title }}</h3>
+                  <p>{{ sourceMeta(item.source) }}</p>
+                </div>
+                @if (item.source.url) {
+                  <a [href]="item.source.url" target="_blank" rel="noopener"
+                    >{{ 'research.publication.openSource' | t }} ↗</a
+                  >
+                }
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="publication__empty">{{ 'research.publication.noSources' | t }}</p>
+        }
+      </section>
+    } @else {
+      <section class="publication__panel jano-editorial-surface" role="tabpanel">
+        <p class="publication__eyebrow">{{ 'research.publication.continueExploring' | t }}</p>
+        <h2>{{ 'research.publication.related' | t }}</h2>
+        @if (publication.related.length) {
+          <div class="publication__related">
+            @for (item of publication.related; track item.id) {
+              <a [routerLink]="['/research', item.id]">
+                @if (item.coverImageUrl) {
+                  <img [src]="item.coverImageUrl" [alt]="item.title" />
+                }
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.objective }}</p></a
+              >
+            }
+          </div>
+        } @else {
+          <p class="publication__empty">{{ 'research.publication.noRelated' | t }}</p>
+        }
+      </section>
+    }
+  </main>
+}

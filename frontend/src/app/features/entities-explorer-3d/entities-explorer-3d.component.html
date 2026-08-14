@@ -65,12 +65,12 @@
       <h2 class="explorer3d__title">{{ active.title }}</h2>
 
       <div class="explorer3d__meta">
-        <span>{{ active.type }}</span>
+        <span>{{ typeLabel(active.type) }}</span>
         @if (active.status) {
-          <span>{{ active.status }}</span>
+          <span>{{ statusLabel(active.status) }}</span>
         }
         @if (active.contentLevel) {
-          <span>{{ active.contentLevel }}</span>
+          <span>{{ contentLevelLabel(active.contentLevel) }}</span>
         }
       </div>
 

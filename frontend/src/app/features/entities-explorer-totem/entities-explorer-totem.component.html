@@ -82,7 +82,7 @@
           @if (formatPeriod(active)) {
             <span>{{ formatPeriod(active) }}</span>
           }
-          <span>{{ active.type }}</span>
+          <span>{{ typeLabel(active.type) }}</span>
         </div>
 
         @if (active.summary) {

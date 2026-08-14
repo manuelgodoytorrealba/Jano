@@ -16,6 +16,12 @@ type CardUserData = {
   targetRotation?: THREE.Euler;
   targetScale?: number;
   targetOpacity?: number;
+  layoutOpacity?: number;
+  imageRevealOpacity?: number;
+  entryPosition?: THREE.Vector3;
+  entryRotation?: THREE.Euler;
+  entryScale?: number;
+  entryDistance?: number;
 };
 
 type Card3D = {
@@ -24,6 +30,19 @@ type Card3D = {
   image: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   glass: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
 };
+
+export type EntryAnimationState = 'idle' | 'running' | 'complete';
+
+const ENTRY_DURATION_MS = 560;
+const ENTRY_STAGGER_MS = 22;
+
+export function entryAnimationProgress(elapsedMs: number, distance: number): number {
+  return THREE.MathUtils.clamp((elapsedMs - distance * ENTRY_STAGGER_MS) / ENTRY_DURATION_MS, 0, 1);
+}
+
+function easeOutQuart(progress: number): number {
+  return 1 - Math.pow(1 - progress, 4);
+}
 
 export class Explorer3dScene {
   private readonly scene = new THREE.Scene();
@@ -41,9 +60,25 @@ export class Explorer3dScene {
   private hoveredIndex: number | null = null;
   private viewportWidth = 1200;
   private viewportHeight = 700;
+  private cardProfileKey = '';
+  private lastWidth = 0;
+  private lastHeight = 0;
+  private entryStartedAt: number | null = null;
+  private resizePending = false;
+  private _entryAnimationState: EntryAnimationState = 'idle';
+
+  constructor(private readonly onEntryAnimationComplete?: () => void) {}
 
   get domElement(): HTMLCanvasElement | undefined {
     return this.renderer?.domElement;
+  }
+
+  get entryAnimationState(): EntryAnimationState {
+    return this._entryAnimationState;
+  }
+
+  get isEntryAnimationRunning(): boolean {
+    return this._entryAnimationState === 'running';
   }
 
   initialize(host: HTMLElement, items: PublicEntityListItem[], activeIndex: number): void {
@@ -51,6 +86,8 @@ export class Explorer3dScene {
     const height = host.clientHeight || 700;
     this.viewportWidth = width;
     this.viewportHeight = height;
+    this.lastWidth = width;
+    this.lastHeight = height;
     this.items = items;
     this.activeIndex = activeIndex;
     this.scene.background = null;
@@ -66,7 +103,9 @@ export class Explorer3dScene {
     this.renderer.setSize(width, height);
     host.replaceChildren(this.renderer.domElement);
     this.buildCards();
-    this.updateTargets(true);
+    this.updateTargets();
+    this.prepareInitialDeckState();
+    this.startEntryAnimation();
     this.startLoop();
     this.observeResize(host);
   }
@@ -76,6 +115,7 @@ export class Explorer3dScene {
     if (!this.renderer) return;
     this.buildCards();
     this.updateTargets(true);
+    if (this.isEntryAnimationRunning) this.completeEntryAnimation();
   }
 
   setActiveIndex(index: number): void {
@@ -158,6 +198,7 @@ export class Explorer3dScene {
     this.disposeCards();
     const cardsVersion = this.cardsVersion;
     const profile = this.viewportProfile();
+    this.cardProfileKey = profile.key;
     const imageWidth = profile.cardWidth - profile.imageInset * 2;
     const imageHeight = profile.cardHeight - profile.imageInset * 2.35;
     const glassWidth = profile.cardWidth - profile.imageInset;
@@ -205,6 +246,9 @@ export class Explorer3dScene {
       frame.position.z = -0.022;
       image.position.z = 0.02;
       glass.position.z = 0.036;
+      const data: CardUserData = { index, slug: item.slug, imageRevealOpacity: 1 };
+      group.userData = data;
+      image.userData = data;
       const media = resolveMediaPresentation(
         resolveEntityMediaItem(item, 'explorer3d'),
         'explorer3d',
@@ -223,6 +267,7 @@ export class Explorer3dScene {
           imageMaterial.map?.dispose();
           imageMaterial.map = createRoundedImageTexture(source, 1100, 1200, 48, media);
           imageMaterial.color.set('#ffffff');
+          data.imageRevealOpacity = 0;
           imageMaterial.opacity = 0;
           imageMaterial.needsUpdate = true;
         };
@@ -238,8 +283,6 @@ export class Explorer3dScene {
         imageMaterial.color.set('#ffffff');
         imageMaterial.needsUpdate = true;
       }
-      group.userData = { index, slug: item.slug } satisfies CardUserData;
-      image.userData = { index, slug: item.slug } satisfies CardUserData;
       group.add(frame, image, glass);
       this.scene.add(group);
       this.cards.push({ group, frame, image, glass });
@@ -287,21 +330,68 @@ export class Explorer3dScene {
         card.group.position.copy(data.targetPosition);
         card.group.rotation.copy(data.targetRotation);
         card.group.scale.setScalar(data.targetScale);
-        card.image.material.opacity = data.targetOpacity;
-        card.frame.material.opacity =
-          data.targetOpacity === 1 ? 0.5 : Math.max(0.12, data.targetOpacity * 0.2);
-        card.glass.material.opacity =
-          data.targetOpacity === 1 ? 0.16 : Math.max(0.05, data.targetOpacity * 0.08);
+        data.layoutOpacity = data.targetOpacity;
+        this.applyCardOpacity(card, data.layoutOpacity);
       }
     });
   }
 
+  private prepareInitialDeckState(): void {
+    const activeTarget = (this.cards[this.activeIndex]?.group.userData as CardUserData | undefined)
+      ?.targetPosition;
+    if (!activeTarget) return;
+
+    const profile = this.viewportProfile();
+    for (const [index, card] of this.cards.entries()) {
+      if (!card.group.visible) continue;
+      const data = card.group.userData as CardUserData;
+      if (
+        !data.targetPosition ||
+        !data.targetRotation ||
+        data.targetScale === undefined ||
+        data.targetOpacity === undefined
+      ) {
+        continue;
+      }
+
+      const offset = circularOffset(index, this.activeIndex, this.items.length);
+      const distance = Math.abs(offset);
+      data.entryPosition = new THREE.Vector3(
+        activeTarget.x + offset * profile.cardWidth * 0.035,
+        activeTarget.y - distance * profile.cardHeight * 0.012,
+        activeTarget.z - distance * profile.depthSpacing * 0.11,
+      );
+      data.entryRotation = new THREE.Euler(0, offset * -0.006, offset * -0.004);
+      data.entryScale = data.targetScale * 0.94;
+      data.entryDistance = distance;
+      data.layoutOpacity = data.targetOpacity;
+
+      card.group.position.copy(data.entryPosition);
+      card.group.rotation.copy(data.entryRotation);
+      card.group.scale.setScalar(data.entryScale);
+      this.applyCardOpacity(card, data.layoutOpacity);
+    }
+  }
+
+  private startEntryAnimation(): void {
+    this.entryStartedAt = null;
+    this._entryAnimationState = 'running';
+  }
+
   private startLoop(): void {
-    const tick = () => {
+    const tick = (now: number) => {
       this.animationFrameId = requestAnimationFrame(tick);
+      if (this.isEntryAnimationRunning) {
+        this.advanceEntryAnimation(now);
+      }
       for (const card of this.cards) {
         if (!card.group.visible) continue;
         const data = card.group.userData as CardUserData;
+        if (this.isEntryAnimationRunning) {
+          this.advanceImageReveal(card);
+          this.applyCardOpacity(card, data.layoutOpacity ?? data.targetOpacity ?? 1);
+          continue;
+        }
         if (data.targetPosition) card.group.position.lerp(data.targetPosition, 0.082);
         if (data.targetRotation) {
           card.group.rotation.x = THREE.MathUtils.lerp(
@@ -326,26 +416,91 @@ export class Explorer3dScene {
           );
         }
         if (typeof data.targetOpacity === 'number') {
-          card.image.material.opacity = THREE.MathUtils.lerp(
-            card.image.material.opacity,
+          data.layoutOpacity = THREE.MathUtils.lerp(
+            data.layoutOpacity ?? data.targetOpacity,
             data.targetOpacity,
             0.082,
           );
-          card.frame.material.opacity = THREE.MathUtils.lerp(
-            card.frame.material.opacity,
-            data.targetOpacity === 1 ? 0.5 : Math.max(0.12, data.targetOpacity * 0.2),
-            0.082,
-          );
-          card.glass.material.opacity = THREE.MathUtils.lerp(
-            card.glass.material.opacity,
-            data.targetOpacity === 1 ? 0.16 : Math.max(0.05, data.targetOpacity * 0.08),
-            0.082,
-          );
+          this.advanceImageReveal(card);
+          this.applyCardOpacity(card, data.layoutOpacity);
         }
       }
       if (this.renderer) this.renderer.render(this.scene, this.camera);
     };
-    tick();
+    tick(performance.now());
+  }
+
+  private advanceEntryAnimation(now: number): void {
+    this.entryStartedAt ??= now;
+    const elapsed = now - this.entryStartedAt;
+    let complete = true;
+
+    for (const card of this.cards) {
+      if (!card.group.visible) continue;
+      const data = card.group.userData as CardUserData;
+      if (
+        !data.entryPosition ||
+        !data.entryRotation ||
+        data.entryScale === undefined ||
+        !data.targetPosition ||
+        !data.targetRotation ||
+        data.targetScale === undefined
+      ) {
+        continue;
+      }
+
+      const progress = entryAnimationProgress(elapsed, data.entryDistance ?? 0);
+      const eased = easeOutQuart(progress);
+      card.group.position.lerpVectors(data.entryPosition, data.targetPosition, eased);
+      card.group.rotation.set(
+        THREE.MathUtils.lerp(data.entryRotation.x, data.targetRotation.x, eased),
+        THREE.MathUtils.lerp(data.entryRotation.y, data.targetRotation.y, eased),
+        THREE.MathUtils.lerp(data.entryRotation.z, data.targetRotation.z, eased),
+      );
+      card.group.scale.setScalar(THREE.MathUtils.lerp(data.entryScale, data.targetScale, eased));
+      data.layoutOpacity = data.targetOpacity;
+      if (progress < 1) complete = false;
+    }
+
+    if (complete) this.completeEntryAnimation();
+  }
+
+  private completeEntryAnimation(): void {
+    if (!this.isEntryAnimationRunning) return;
+
+    for (const card of this.cards) {
+      if (!card.group.visible) continue;
+      const data = card.group.userData as CardUserData;
+      if (data.targetPosition) card.group.position.copy(data.targetPosition);
+      if (data.targetRotation) card.group.rotation.copy(data.targetRotation);
+      if (data.targetScale !== undefined) card.group.scale.setScalar(data.targetScale);
+      data.layoutOpacity = data.targetOpacity;
+      data.entryPosition = undefined;
+      data.entryRotation = undefined;
+      data.entryScale = undefined;
+      data.entryDistance = undefined;
+    }
+
+    this.entryStartedAt = null;
+    this._entryAnimationState = 'complete';
+    if (this.resizePending) {
+      this.resizePending = false;
+      this.buildCards();
+      this.updateTargets(true);
+    }
+    this.onEntryAnimationComplete?.();
+  }
+
+  private advanceImageReveal(card: Card3D): void {
+    const data = card.group.userData as CardUserData;
+    data.imageRevealOpacity = THREE.MathUtils.lerp(data.imageRevealOpacity ?? 1, 1, 0.082);
+  }
+
+  private applyCardOpacity(card: Card3D, layoutOpacity: number): void {
+    const data = card.group.userData as CardUserData;
+    card.image.material.opacity = layoutOpacity * (data.imageRevealOpacity ?? 1);
+    card.frame.material.opacity = layoutOpacity === 1 ? 0.5 : Math.max(0.12, layoutOpacity * 0.2);
+    card.glass.material.opacity = layoutOpacity === 1 ? 0.16 : Math.max(0.05, layoutOpacity * 0.08);
   }
 
   private observeResize(host: HTMLElement): void {
@@ -353,13 +508,21 @@ export class Explorer3dScene {
       if (!this.renderer) return;
       const width = host.clientWidth || 1200;
       const height = host.clientHeight || 700;
+      if (width === this.lastWidth && height === this.lastHeight) return;
+
+      this.lastWidth = width;
+      this.lastHeight = height;
       this.viewportWidth = width;
       this.viewportHeight = height;
+      const profileChanged = this.cardProfileKey !== this.viewportProfile().key;
       this.applyCamera(width, height);
-      this.camera.aspect = width / height;
-      this.camera.updateProjectionMatrix();
       this.renderer?.setSize(width, height);
       this.renderer?.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      if (!profileChanged) return;
+      if (this.isEntryAnimationRunning) {
+        this.resizePending = true;
+        return;
+      }
       this.buildCards();
       this.updateTargets(true);
     });
@@ -380,6 +543,7 @@ export class Explorer3dScene {
     const short = compact && this.viewportHeight <= 940;
     return compact
       ? {
+          key: short ? 'compact-short' : 'compact',
           cardWidth: short ? 2.68 : 2.82,
           cardHeight: short ? 3.04 : 3.18,
           imageInset: short ? 0.12 : 0.13,
@@ -396,6 +560,7 @@ export class Explorer3dScene {
           sideOpacityDecay: 0.108,
         }
       : {
+          key: 'standard',
           cardWidth: 2.84,
           cardHeight: 3.08,
           imageInset: 0.1,

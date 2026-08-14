@@ -12,6 +12,9 @@ describe('SearchService', () => {
     entity: {
       findMany: jest.fn(),
     },
+    researchProject: {
+      findMany: jest.fn(),
+    },
     relation: {
       findMany: jest.fn(),
     },
@@ -30,6 +33,7 @@ describe('SearchService', () => {
   beforeEach(async () => {
     prisma.$queryRaw.mockReset();
     prisma.entity.findMany.mockReset();
+    prisma.researchProject.findMany.mockReset();
     prisma.relation.findMany.mockReset();
     prisma.userDiscoverySignal.create.mockReset();
     prisma.userDiscoverySignal.findMany.mockReset();
@@ -38,6 +42,8 @@ describe('SearchService', () => {
     prisma.relation.findMany.mockResolvedValue([]);
     prisma.userDiscoverySignal.findMany.mockResolvedValue([]);
     prisma.homeDeck.findMany.mockResolvedValue([]);
+    prisma.researchProject.findMany.mockResolvedValue([]);
+    prisma.entity.findMany.mockResolvedValue([]);
     searchIntent.interpret.mockImplementation((q: string, locale: string) => ({
       rawQuery: q,
       locale,
@@ -130,8 +136,8 @@ describe('SearchService', () => {
     expect(result.sections).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          key: 'main',
-          title: 'Resultados principales',
+          key: 'entities',
+          title: 'Entidades',
         }),
       ]),
     );
@@ -150,6 +156,31 @@ describe('SearchService', () => {
 
     expect(prisma.entity.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: { status: 'PUBLISHED' } }),
+    );
+  });
+
+  it('returns published research separately and never queries private projects', async () => {
+    prisma.$queryRaw.mockResolvedValue([]);
+    prisma.researchProject.findMany.mockResolvedValue([
+      {
+        id: 'research-1',
+        title: 'Goya y las Pinturas negras',
+        objective: 'Una investigación publicada.',
+        scope: null,
+        publishedAt: new Date('2026-08-13T10:00:00.000Z'),
+      },
+    ]);
+
+    const result = await service.search({ q: 'Goya', locale: 'es' }, { includeDrafts: false });
+
+    expect(prisma.researchProject.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ status: 'PUBLISHED' }) }),
+    );
+    expect(result.sections).toContainEqual(
+      expect.objectContaining({
+        key: 'research',
+        items: [expect.objectContaining({ resultType: 'RESEARCH', id: 'research-1' })],
+      }),
     );
   });
 
@@ -211,7 +242,7 @@ describe('SearchService', () => {
     ]);
   });
 
-  it('keeps artist key works to authored artworks and moves related artworks to related section', async () => {
+  it('returns only direct entity results instead of derived discovery sections', async () => {
     const picasso = {
       id: 'artist-1',
       slug: 'pablo-picasso',
@@ -309,16 +340,13 @@ describe('SearchService', () => {
 
     const result = await service.search({ q: 'picasso', locale: 'es' }, { includeDrafts: false });
 
-    const keyWorks = result.sections.find((section) => section.key === 'keyWorks');
-    const relatedWorks = result.sections.find((section) => section.key === 'relatedWorks');
-
-    expect(keyWorks?.total).toBe(1);
-    expect(keyWorks?.items?.map((item) => item.id)).toEqual(['artwork-1']);
-    expect(relatedWorks?.title).toBe('Obras relacionadas');
-    expect(relatedWorks?.total).toBe(1);
-    expect(relatedWorks?.items?.map((item) => item.id)).toEqual(['artwork-2']);
-    expect(relatedWorks?.items?.[0].relationReason).toBe('Both works address war violence.');
-    expect(relatedWorks?.items?.[0].relationWithTitle).toBe('Guernica');
+    expect(result.sections).toEqual([
+      expect.objectContaining({
+        key: 'entities',
+        items: expect.arrayContaining([expect.objectContaining({ id: 'artist-1' })]),
+      }),
+      expect.objectContaining({ key: 'relations' }),
+    ]);
   });
 
   it('searches translation fields in the raw query pipeline', async () => {
