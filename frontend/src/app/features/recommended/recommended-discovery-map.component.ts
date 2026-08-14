@@ -15,6 +15,7 @@ import { PublicEntity } from '../../core/api/entities.models';
 import { CuratedMapEntity } from '../../core/api/curated.api';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import { GraphComponent } from '../graph/graph.component';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { recommendedTypeLabel } from './recommended-presenter';
 
 @Component({
@@ -28,6 +29,7 @@ import { recommendedTypeLabel } from './recommended-presenter';
 export class RecommendedDiscoveryMapComponent {
   private readonly api = inject(EntitiesApi);
   private readonly destroyRef = inject(DestroyRef);
+  readonly i18n = inject(I18nService);
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private requestId = 0;
 
@@ -116,7 +118,7 @@ export class RecommendedDiscoveryMapComponent {
   }
 
   typeLabel(type: string): string {
-    return recommendedTypeLabel(type);
+    return recommendedTypeLabel(type, this.i18n);
   }
 
   toggleSearch(): void {

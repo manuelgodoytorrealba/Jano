@@ -4,7 +4,7 @@
       <button
         type="button"
         class="recommended-shelf__arrow recommended-shelf__arrow--prev"
-        aria-label="Previous items"
+        [attr.aria-label]="i18n.t('curated.shelf.previous')"
         (click)="scrollShelf('prev')"
       >
         ←
@@ -33,16 +33,18 @@
               }
               <div class="recommended-card__body">
                 @if (showNewBadge()) {
-                  <span class="recommended-pill">NEW</span>
+                  <span class="recommended-pill">{{ i18n.t('curated.shelf.new') }}</span>
                 }
                 <h3>{{ item.title }}</h3>
                 @if (item.description) {
                   <p>{{ item.description }}</p>
                 }
                 <div class="recommended-card__meta-row">
-                  <span>{{ item.entityCount }} works</span>
+                  <span>{{ item.entityCount }} {{ i18n.t('curated.shelf.works') }}</span>
                   <span>•</span>
-                  <span>{{ item.entityCount > 2 ? 5 : 4 }} articles</span>
+                  <span
+                    >{{ item.entityCount > 2 ? 5 : 4 }} {{ i18n.t('curated.shelf.articles') }}</span
+                  >
                 </div>
               </div>
             </a>
@@ -71,7 +73,7 @@
       <button
         type="button"
         class="recommended-shelf__arrow recommended-shelf__arrow--next"
-        aria-label="Next items"
+        [attr.aria-label]="i18n.t('curated.shelf.next')"
         (click)="scrollShelf('next')"
       >
         →
@@ -79,5 +81,5 @@
     }
   </div>
 } @else {
-  <p class="recommended-empty">No editorial entries yet for this tab.</p>
+  <p class="recommended-empty">{{ i18n.t('curated.shelf.empty') }}</p>
 }

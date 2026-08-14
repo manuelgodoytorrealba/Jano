@@ -1,5 +1,5 @@
 <section class="home-page">
-  <h1 class="sr-only">JANO home: immersive art discovery</h1>
+  <h1 class="sr-only">{{ i18n.t('home.srTitle') }}</h1>
 
   @if (loadState() === 'ready' || loadState() === 'loading') {
     <app-entity-deck

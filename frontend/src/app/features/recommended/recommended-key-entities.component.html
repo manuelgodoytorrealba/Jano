@@ -3,11 +3,11 @@
     <div>
       <div class="recommended-section__titleline">
         <span class="recommended-section__number">5</span>
-        <p class="recommended-section__eyebrow">Key Entities</p>
+        <p class="recommended-section__eyebrow">{{ i18n.t('curated.key.eyebrow') }}</p>
       </div>
-      <h2>Essential entities</h2>
+      <h2>{{ i18n.t('curated.key.title') }}</h2>
     </div>
-    <span class="recommended-card__meta">View all →</span>
+    <span class="recommended-card__meta">{{ i18n.t('search.viewAll') }} →</span>
   </div>
 
   <div class="recommended-key-shelf" [class.is-carousel]="showControls()">
@@ -15,7 +15,7 @@
       <button
         type="button"
         class="recommended-key-shelf__arrow recommended-key-shelf__arrow--prev"
-        aria-label="Previous entities"
+        [attr.aria-label]="i18n.t('curated.key.previous')"
         (click)="scroll('prev')"
       >
         ←
@@ -58,7 +58,7 @@
       <button
         type="button"
         class="recommended-key-shelf__arrow recommended-key-shelf__arrow--next"
-        aria-label="Next entities"
+        [attr.aria-label]="i18n.t('curated.key.next')"
         (click)="scroll('next')"
       >
         →

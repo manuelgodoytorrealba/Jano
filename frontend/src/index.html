@@ -22,6 +22,22 @@
     <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    /></noscript>
     <style>
       .jano-boot {
         position: fixed;
@@ -35,8 +51,7 @@
 
       .jano-boot__mark {
         font:
-          700 clamp(2rem, 5vw, 3.4rem) / 1 Helvetica,
-          Arial,
+          700 clamp(2rem, 5vw, 3.4rem) / 1 'Inter',
           sans-serif;
         letter-spacing: 0.32em;
         opacity: 0.82;

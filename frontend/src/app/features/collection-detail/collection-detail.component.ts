@@ -24,6 +24,7 @@ import {
 } from 'rxjs';
 import { CollectionsApi, Collection } from '../../core/api/collections.api';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { entityTypeLabel } from '../../core/i18n/domain-labels';
 import { SeoService } from '../../core/seo/seo.service';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import { GraphComponent } from '../graph/graph.component';
@@ -98,7 +99,7 @@ export class CollectionDetailComponent implements OnDestroy {
           }),
           catchError(() => {
             this.notesStatus = 'error';
-            this.notesError = 'No se pudieron guardar las notas.';
+            this.notesError = this.i18n.t('collection.notesSaveError');
             this.cdr.markForCheck();
             return EMPTY;
           }),
@@ -235,7 +236,10 @@ export class CollectionDetailComponent implements OnDestroy {
   }
 
   nodeLabel(collection: Collection, nodeId: string): string {
-    return collection.graph?.nodes.find((node) => node.id === nodeId)?.label ?? 'Entidad';
+    return (
+      collection.graph?.nodes.find((node) => node.id === nodeId)?.label ??
+      this.i18n.t('entity.generic')
+    );
   }
 
   relationLabel(type: string): string {
@@ -245,6 +249,10 @@ export class CollectionDetailComponent implements OnDestroy {
       .filter(Boolean)
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(' ');
+  }
+
+  entityTypeLabel(type: string): string {
+    return entityTypeLabel(type, this.i18n);
   }
 
   private summaryEntries(source: Record<string, number>): Array<{ type: string; count: number }> {

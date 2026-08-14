@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { BehaviorSubject, map, of } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, map, of } from 'rxjs';
 import { EntitiesApi, EntitiesListParams } from '../../core/api/entities.api';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { HomeDecksApi } from '../../core/api/home-decks.api';
@@ -8,6 +8,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { SearchApi } from '../../core/api/search.api';
 import { TagsApi } from '../../core/api/tags.api';
+import { AuthService } from '../../core/auth/auth.service';
 import { EntitiesListComponent } from './entities-list.component';
 import { EntitiesListPageVm } from './entities-list.facade';
 
@@ -25,6 +26,7 @@ describe('EntitiesListComponent filters', () => {
 
   let navigateCalls: Parameters<Router['navigate']>[] = [];
   let listCalls: EntitiesListParams[] = [];
+  let archiveRecommendationCalls = 0;
 
   const routeStub = {
     paramMap: paramMap$.asObservable(),
@@ -102,8 +104,14 @@ describe('EntitiesListComponent filters', () => {
   };
 
   const searchApiStub = {
-    archiveRecommendations: () =>
-      of({ items: [], page: 1, limit: 24, total: 0, totalPages: 1, personalized: false }),
+    archiveRecommendations: () => {
+      archiveRecommendationCalls += 1;
+      return of({ items: [], page: 1, limit: 24, total: 0, totalPages: 1, personalized: false });
+    },
+  };
+
+  const authStub = {
+    user$: new BehaviorSubject(null),
   };
 
   const seoStub = {
@@ -166,6 +174,7 @@ describe('EntitiesListComponent filters', () => {
 
     navigateCalls = [];
     listCalls = [];
+    archiveRecommendationCalls = 0;
 
     await TestBed.configureTestingModule({
       imports: [EntitiesListComponent],
@@ -176,6 +185,7 @@ describe('EntitiesListComponent filters', () => {
         { provide: TagsApi, useValue: tagsApiStub },
         { provide: HomeDecksApi, useValue: homeDecksApiStub },
         { provide: SearchApi, useValue: searchApiStub },
+        { provide: AuthService, useValue: authStub },
         { provide: SeoService, useValue: seoStub },
         { provide: EntityRouteArtworkTransitionService, useValue: artworkTransitionStub },
         { provide: I18nService, useValue: i18nStub },
@@ -200,6 +210,18 @@ describe('EntitiesListComponent filters', () => {
 
     expect(latest).toBeTruthy();
     expect(listCalls.some((params) => params?.kind === 'WORK' && !params?.type)).toBe(true);
+    fixture.destroy();
+  });
+
+  it('uses the public catalog instead of personalized archive recommendations anonymously', async () => {
+    paramMap$.next(convertToParamMap({}));
+    queryParamMap$.next(convertToParamMap({}));
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const component = fixture.componentInstance;
+    await firstValueFrom(component.pageVm$);
+
+    expect(archiveRecommendationCalls).toBe(0);
+    expect(listCalls.some((params) => !params.type && !params.q)).toBe(true);
     fixture.destroy();
   });
 

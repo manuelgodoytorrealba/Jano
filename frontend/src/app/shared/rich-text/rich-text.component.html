@@ -6,7 +6,7 @@
   [attr.data-placeholder]="placeholder"
   [attr.role]="editable ? 'textbox' : null"
   [attr.aria-multiline]="editable ? 'true' : null"
-  [attr.aria-label]="editable ? 'Borrador de la sección' : null"
+  [attr.aria-label]="editable ? i18n.t('richText.editorAria') : null"
   (input)="onInput($event)"
   (click)="onEditorClick($event)"
   (keydown)="onEditorKeydown($event)"
@@ -103,18 +103,24 @@
     class="entity-picker"
     [style.top.px]="entityPickerTop()"
     [style.left.px]="entityPickerLeft()"
-    aria-label="Enlazar una entidad"
+    [attr.aria-label]="i18n.t('richText.linkEntity')"
   >
     <header>
-      <strong>Enlazar entidad</strong>
-      <button type="button" aria-label="Cerrar" (click)="closeEntityPicker()">×</button>
+      <strong>{{ i18n.t('richText.linkEntity') }}</strong>
+      <button
+        type="button"
+        [attr.aria-label]="i18n.t('button.close')"
+        (click)="closeEntityPicker()"
+      >
+        ×
+      </button>
     </header>
     <input
       #entitySearch
       type="search"
       autocomplete="off"
       role="combobox"
-      placeholder="Busca artistas, obras, conceptos…"
+      [placeholder]="i18n.t('richText.searchPlaceholder')"
       [value]="entityQuery()"
       [attr.aria-expanded]="true"
       [attr.aria-controls]="'entity-link-results'"
@@ -123,7 +129,7 @@
     />
     <div id="entity-link-results" class="entity-picker__results" role="listbox">
       @if (entityLoading()) {
-        <p>Buscando…</p>
+        <p>{{ i18n.t('richText.searching') }}</p>
       } @else if (entityResults().length) {
         @for (entity of entityResults(); track entity.id; let index = $index) {
           <button
@@ -135,13 +141,13 @@
             (mousedown)="$event.preventDefault(); chooseEntity(entity)"
           >
             <span>{{ entity.title }}</span>
-            <small>{{ entity.type }}</small>
+            <small>{{ entityLabel(entity.type) }}</small>
           </button>
         }
       } @else if (entityQuery().trim()) {
-        <p>No hay entidades que coincidan.</p>
+        <p>{{ i18n.t('richText.noResults') }}</p>
       } @else {
-        <p>Escribe para buscar en la base de conocimiento.</p>
+        <p>{{ i18n.t('richText.searchHint') }}</p>
       }
     </div>
   </section>
@@ -179,12 +185,12 @@
             (mouseleave)="onTooltipLeave()"
           >
             @if (previewLoading()) {
-              <div class="tt-loading">Cargando preview…</div>
+              <div class="tt-loading">{{ i18n.t('richText.previewLoading') }}</div>
             } @else if (preview()) {
               <div class="tt-title">{{ preview()!.title }}</div>
 
               <div class="tt-meta">
-                <span>{{ preview()!.type }}</span>
+                <span>{{ entityLabel(preview()!.type) }}</span>
 
                 @if (preview()!.startYear || preview()!.endYear) {
                   <span>
@@ -196,11 +202,11 @@
                 }
 
                 @if (preview()!.status) {
-                  <span>• {{ preview()!.status }}</span>
+                  <span>• {{ statusLabel(preview()!.status) }}</span>
                 }
 
                 @if (preview()!.contentLevel) {
-                  <span>• {{ preview()!.contentLevel }}</span>
+                  <span>• {{ contentLevelLabel(preview()!.contentLevel) }}</span>
                 }
               </div>
 

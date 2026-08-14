@@ -25,7 +25,7 @@
 .recommended-panel__summary h2 {
   margin: 0;
   color: var(--curated-text);
-  font-family: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+  font-family: var(--font-sans);
   font-size: clamp(2.4rem, 2.4vw + 1rem, 4rem);
   line-height: 0.9;
   letter-spacing: -0.03em;

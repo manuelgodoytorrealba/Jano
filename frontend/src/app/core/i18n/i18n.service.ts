@@ -7,7 +7,6 @@ export type AppLocale = 'es' | 'en';
 
 const SUPPORTED_LOCALES: AppLocale[] = ['es', 'en'];
 const DEFAULT_LOCALE: AppLocale = 'es';
-const FALLBACK_LOCALE: AppLocale = 'en';
 const STORAGE_KEY = 'jano.locale';
 
 type TranslationMap = Record<string, string>;
@@ -51,7 +50,7 @@ export class I18nService {
   t(key: string): string {
     const dictionaries = this.dictionaries();
     const locale = this.locale();
-    const translated = dictionaries[locale]?.[key] ?? dictionaries[FALLBACK_LOCALE]?.[key];
+    const translated = dictionaries[locale]?.[key];
     const shouldWarnForMissingTranslation = isPlatformBrowser(this.platformId) && this.ready();
 
     if (
@@ -63,7 +62,9 @@ export class I18nService {
       console.warn(`[i18n] Missing translation for ${locale}:${key}`);
     }
 
-    return translated ?? '';
+    // Keep missing UI visible in every environment. Falling back to the other
+    // language silently mixes locales and makes incomplete dictionaries harder to find.
+    return translated ?? `[${key}]`;
   }
 
   normalizeLocale(locale: string | null | undefined): AppLocale {

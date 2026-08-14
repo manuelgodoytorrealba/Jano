@@ -263,9 +263,6 @@
                   <app-graph
                     [slug]="entity.slug"
                     [workspaceMode]="graphWorkspaceMode"
-                    [imageMedia]="detailMedia(entity)"
-                    [imageUrl]="visualUrl(entity)"
-                    [imageAlt]="visualAlt(entity)"
                     [entityTitle]="entity.title"
                     [entityType]="entity.type"
                     [hideImagePane]="true"
@@ -313,16 +310,8 @@
                   </div>
                 }
               } @else {
-                <div class="entity-explorer__fallback entity-explorer__fallback--compact">
-                  <div class="entity-explorer__fallback-media">
-                    <app-jano-media
-                      [entity]="entity"
-                      usage="detail"
-                      [alt]="visualAlt(entity)"
-                      [lazy]="false"
-                      priority="high"
-                    />
-                  </div>
+                <div class="entity-article-graph__empty" role="status">
+                  {{ i18n.t('entity.noGraph') }}
                 </div>
               }
             </section>

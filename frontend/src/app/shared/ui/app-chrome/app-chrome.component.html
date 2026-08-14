@@ -62,29 +62,57 @@
   </nav>
 
   <div class="app-chrome__account">
-    <button
-      type="button"
-      class="app-chrome__account-trigger"
-      [class.is-open]="accountMenuOpen()"
-      [attr.aria-expanded]="accountMenuOpen()"
-      aria-haspopup="menu"
-      (click)="toggleAccountMenu()"
-    >
-      <img
-        class="app-chrome__account-avatar"
-        [src]="auth.currentUser?.avatarUrl || '/app-brand-mark.png'"
-        alt=""
-      />
-      <span>{{ accountName() }}</span>
-      <span class="app-chrome__account-chevron" aria-hidden="true">⌄</span>
-    </button>
+    @if (auth.currentUser) {
+      <button
+        type="button"
+        class="app-chrome__account-trigger"
+        [class.is-open]="accountMenuOpen()"
+        [attr.aria-expanded]="accountMenuOpen()"
+        aria-haspopup="menu"
+        (click)="toggleAccountMenu()"
+      >
+        <img
+          class="app-chrome__account-avatar"
+          [src]="auth.currentUser.avatarUrl || '/app-brand-mark.png'"
+          alt=""
+        />
+        <span>{{ accountName() }}</span>
+        <span class="app-chrome__account-chevron" aria-hidden="true">⌄</span>
+      </button>
 
-    @if (accountMenuOpen()) {
-      <div class="app-chrome__account-menu app-glass" role="menu" aria-label="Cuenta">
-        <a routerLink="/profile" role="menuitem" (click)="closeAccountMenu()">Mi perfil</a>
-        <a routerLink="/my-space" role="menuitem" (click)="closeAccountMenu()">Mi espacio</a>
-        <a routerLink="/settings" role="menuitem" (click)="closeAccountMenu()">Ajustes</a>
-        <button type="button" role="menuitem" (click)="logout()">Cerrar sesión</button>
+      @if (accountMenuOpen()) {
+        <div
+          class="app-chrome__account-menu app-glass"
+          role="menu"
+          [attr.aria-label]="i18n.t('common.account')"
+        >
+          @if (isAdmin()) {
+            <a routerLink="/admin" role="menuitem" (click)="closeAccountMenu()">{{
+              i18n.t('chrome.editorialDesk')
+            }}</a>
+          }
+          <a routerLink="/profile" role="menuitem" (click)="closeAccountMenu()">{{
+            i18n.t('nav.profile')
+          }}</a>
+          <a routerLink="/my-space" role="menuitem" (click)="closeAccountMenu()">{{
+            i18n.t('nav.mySpace')
+          }}</a>
+          <a routerLink="/settings" role="menuitem" (click)="closeAccountMenu()">{{
+            i18n.t('nav.settings')
+          }}</a>
+          <button type="button" role="menuitem" (click)="logout()">
+            {{ i18n.t('auth.logout') }}
+          </button>
+        </div>
+      }
+    } @else {
+      <div class="app-chrome__account-actions">
+        <a class="app-chrome__auth-link app-chrome__auth-link--login" routerLink="/login">{{
+          i18n.t('auth.login')
+        }}</a>
+        <a class="app-chrome__auth-link app-chrome__auth-link--register" routerLink="/register">{{
+          i18n.t('auth.registerTitle')
+        }}</a>
       </div>
     }
   </div>

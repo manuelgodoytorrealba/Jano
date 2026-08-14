@@ -32,10 +32,8 @@
   --color-danger-soft: rgba(196, 123, 112, 0.12);
 
   /* Typography */
-  --font-sans:
-    'Helvetica Now Display', 'Neue Haas Grotesk', 'Helvetica Neue', Helvetica, Arial, ui-sans-serif,
-    system-ui, sans-serif;
-  --font-serif: 'Times New Roman', Times, serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: var(--font-sans);
   --font-mono: 'SFMono-Regular', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --text-xs: 12px;

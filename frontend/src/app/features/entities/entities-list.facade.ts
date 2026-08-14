@@ -19,6 +19,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { SearchApi } from '../../core/api/search.api';
 import { Tag, TagsApi } from '../../core/api/tags.api';
+import { AuthService } from '../../core/auth/auth.service';
 
 export type Sort = 'recent' | 'title' | 'relevance';
 export type Status = 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | '';
@@ -159,6 +160,7 @@ export class EntitiesListFacade {
   private readonly api = inject(EntitiesApi);
   private readonly searchApi = inject(SearchApi);
   private readonly tagsApi = inject(TagsApi);
+  private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly artworkTransition = inject(EntityRouteArtworkTransitionService);
@@ -263,9 +265,10 @@ export class EntitiesListFacade {
       debounceTime(300),
     ),
     this.queryState$,
+    this.auth.user$,
   ]).pipe(
-    switchMap(([debouncedQuery, state]) =>
-      this.shouldUseArchiveRecommendations(state)
+    switchMap(([debouncedQuery, state, user]) =>
+      user && this.shouldUseArchiveRecommendations(state)
         ? this.searchApi.archiveRecommendations(
             state.type ? { type: state.type, limit: this.limit } : { limit: this.limit },
           )

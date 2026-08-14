@@ -1,4 +1,4 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
@@ -8,6 +8,7 @@ import { SavedApi, SavedItem } from '../../core/api/saved.api';
 import { AuthUser } from '../../core/auth/auth.types';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { entityTypeLabel } from '../../core/i18n/domain-labels';
 
 type SavedSort = 'recent' | 'title';
 type SavedView = 'grid' | 'list';
@@ -18,7 +19,7 @@ type CollectionView = 'grid' | 'list';
   standalone: true,
   selector: 'app-my-space',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, DatePipe, JanoMediaComponent],
+  imports: [AsyncPipe, JanoMediaComponent],
   templateUrl: './my-space.component.html',
   styleUrls: ['./my-space.component.scss'],
 })
@@ -237,19 +238,15 @@ export class MySpaceComponent {
   }
 
   entityTypeLabel(type: string): string {
-    const labels: Record<string, string> = {
-      ARTWORK: 'Obras de arte',
-      ARTIST: 'Artistas',
-      ARTICLE: 'Artículos',
-      CONCEPT: 'Conceptos',
-      MOVEMENT: 'Movimientos',
-      PERIOD: 'Periodos',
-      PLACE: 'Lugares',
-      TEXT: 'Lecturas',
-      EVENT: 'Eventos',
-      ORGANIZATION: 'Organizaciones',
-    };
-    return labels[type] ?? type;
+    return entityTypeLabel(type, this.i18n);
+  }
+
+  formatDate(value: string): string {
+    return new Intl.DateTimeFormat(this.i18n.locale() === 'en' ? 'en-US' : 'es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date(value));
   }
 
   removeSaved(entityId: string) {

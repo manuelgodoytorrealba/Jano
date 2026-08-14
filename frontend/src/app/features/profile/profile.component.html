@@ -4,10 +4,10 @@
       <div class="profile-avatar">
         <img
           [src]="user.avatarUrl || '/app-brand-mark.png'"
-          [alt]="'Avatar de ' + (user.name || user.email)"
+          [alt]="i18n.t('profile.avatarOf') + ' ' + (user.name || user.email)"
         />
         <label class="profile-avatar__change">
-          <span>Cambiar foto</span>
+          <span>{{ i18n.t('profile.changePhoto') }}</span>
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
@@ -17,10 +17,10 @@
       </div>
 
       <div class="profile-identity__copy">
-        <p class="profile-label">Mi perfil</p>
+        <p class="profile-label">{{ i18n.t('profile.myProfile') }}</p>
         @if (editing()) {
           <label class="profile-name-field">
-            <span>Nombre visible</span>
+            <span>{{ i18n.t('profile.visibleName') }}</span>
             <input [(ngModel)]="nameDraft" maxlength="80" autocomplete="name" />
           </label>
           <div class="profile-actions">
@@ -30,7 +30,7 @@
               [disabled]="saving()"
               (click)="saveName()"
             >
-              {{ saving() ? 'Guardando…' : 'Guardar' }}
+              {{ saving() ? i18n.t('common.saving') : i18n.t('button.save') }}
             </button>
             <button
               type="button"
@@ -38,14 +38,14 @@
               [disabled]="saving()"
               (click)="cancelEditing()"
             >
-              Cancelar
+              {{ i18n.t('common.cancel') }}
             </button>
           </div>
         } @else {
           <div class="profile-name-row">
             <h1>{{ user.name || i18n.t('profile.noName') }}</h1>
             <button type="button" class="profile-button" (click)="beginEditing(user)">
-              Editar perfil
+              {{ i18n.t('profile.edit') }}
             </button>
           </div>
         }
@@ -61,27 +61,93 @@
 
     <section class="profile-account profile-surface" aria-labelledby="profile-account-title">
       <div class="profile-account__head">
-        <p class="profile-label">Cuenta</p>
-        <h2 id="profile-account-title">Información de la cuenta</h2>
+        <p class="profile-label">{{ i18n.t('common.account') }}</p>
+        <h2 id="profile-account-title">{{ i18n.t('profile.accountInfo') }}</h2>
       </div>
       <dl class="profile-account__facts">
         <div>
-          <dt>Miembro desde</dt>
+          <dt>{{ i18n.t('profile.memberSince') }}</dt>
           <dd>{{ user.createdAt | date: 'longDate' }}</dd>
         </div>
         <div>
-          <dt>Correo electrónico</dt>
-          <dd>{{ user.email }}</dd>
+          <dt>{{ i18n.t('profile.email') }}</dt>
+          <dd>
+            {{ user.email }} ·
+            @if (user.emailVerifiedAt) {
+              {{ i18n.t('auth.emailVerified') }}
+            } @else {
+              {{ i18n.t('auth.verificationPending') }}
+              <button type="button" class="profile-button" (click)="resendVerification()">
+                {{ i18n.t('auth.resendVerification') }}
+              </button>
+            }
+          </dd>
         </div>
         <div>
-          <dt>ID de cuenta</dt>
+          <dt>{{ i18n.t('profile.accountId') }}</dt>
           <dd>{{ user.id }}</dd>
         </div>
         <div>
-          <dt>Rol</dt>
+          <dt>{{ i18n.t('common.role') }}</dt>
           <dd>{{ roleLabel(user) }}</dd>
         </div>
       </dl>
+      @if (verificationMessage()) {
+        <p class="profile-success" role="status">{{ verificationMessage() }}</p>
+      }
+    </section>
+
+    <section class="profile-account profile-surface" aria-labelledby="profile-security-title">
+      <div class="profile-account__head">
+        <p class="profile-label">{{ i18n.t('profile.security') }}</p>
+        <h2 id="profile-security-title">{{ i18n.t('auth.changePassword') }}</h2>
+      </div>
+      @if (passwordSuccess()) {
+        <p class="profile-success" role="status">{{ i18n.t('auth.changePasswordSuccess') }}</p>
+      } @else {
+        <form class="profile-password-form" (ngSubmit)="changePassword()">
+          <label
+            ><span>{{ i18n.t('auth.currentPassword') }}</span
+            ><input
+              type="password"
+              name="currentPassword"
+              [(ngModel)]="currentPassword"
+              autocomplete="current-password"
+              maxlength="72"
+              required
+          /></label>
+          <label
+            ><span>{{ i18n.t('auth.newPassword') }}</span
+            ><input
+              type="password"
+              name="newPassword"
+              [(ngModel)]="newPassword"
+              autocomplete="new-password"
+              maxlength="72"
+              required
+          /></label>
+          <label
+            ><span>{{ i18n.t('auth.confirmPassword') }}</span
+            ><input
+              type="password"
+              name="confirmPassword"
+              [(ngModel)]="confirmPassword"
+              autocomplete="new-password"
+              maxlength="72"
+              required
+          /></label>
+          @if (passwordError()) {
+            <p class="profile-error" role="alert">{{ passwordError() }}</p>
+          }
+          <button
+            class="profile-button profile-button--primary"
+            type="submit"
+            [disabled]="passwordSaving()"
+          >
+            {{ passwordSaving() ? i18n.t('common.saving') : i18n.t('auth.changePassword') }}
+          </button>
+        </form>
+      }
     </section>
   </main>
 }

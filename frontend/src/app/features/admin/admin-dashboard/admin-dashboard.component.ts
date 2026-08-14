@@ -1,10 +1,12 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Observable, catchError, combineLatest, map, of, startWith } from 'rxjs';
 import { AdminEntitiesApi, AdminEntitySearchListItem } from '../../../core/api/admin-entities.api';
 import { GraphNodeDto, GraphResponseDto } from '../../../core/api/graph.models';
 import { ResearchApi, ResearchProjectSummary } from '../../../core/api/research.api';
+import { entityTypeLabel, statusLabel } from '../../../core/i18n/domain-labels';
+import { I18nService } from '../../../core/i18n/i18n.service';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import { getEntityTypeConfig, getRelationTypeConfig } from '../../graph/graph.config';
 import { AdminGlobalGraphComponent } from './admin-global-graph.component';
@@ -73,7 +75,7 @@ function sectionState<T>(source: Observable<T>, empty: T): Observable<WorkspaceS
 @Component({
   standalone: true,
   selector: 'app-admin-dashboard',
-  imports: [AsyncPipe, DatePipe, RouterLink, JanoMediaComponent, AdminGlobalGraphComponent],
+  imports: [AsyncPipe, RouterLink, JanoMediaComponent, AdminGlobalGraphComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -81,6 +83,7 @@ function sectionState<T>(source: Observable<T>, empty: T): Observable<WorkspaceS
 export class AdminDashboardComponent {
   private readonly adminEntitiesApi = inject(AdminEntitiesApi);
   private readonly researchApi = inject(ResearchApi);
+  readonly i18n = inject(I18nService);
 
   readonly graphExpanded = signal(true);
   readonly graphFocusMode = signal(false);
@@ -161,36 +164,20 @@ export class AdminDashboardComponent {
   }
 
   typeLabel(type: string | null | undefined): string {
-    const labels: Record<string, string> = {
-      ARTIST: 'Artista',
-      ARTWORK: 'Obra',
-      ARTICLE: 'Artículo',
-      CONCEPT: 'Concepto',
-      MOVEMENT: 'Movimiento',
-      PERIOD: 'Periodo',
-      PLACE: 'Lugar',
-      TEXT: 'Texto',
-    };
-    return labels[(type ?? '').toUpperCase()] ?? type?.trim() ?? 'Entidad';
+    return entityTypeLabel(type, this.i18n);
   }
 
   statusLabel(status: string | null | undefined): string {
-    const labels: Record<string, string> = {
-      PUBLISHED: 'Publicada',
-      IN_REVIEW: 'En revisión',
-      DRAFT: 'Borrador',
-    };
-    return labels[(status ?? '').toUpperCase()] ?? 'Actualizada';
+    return statusLabel(status, this.i18n);
   }
 
   researchStatusLabel(status: string | null | undefined): string {
-    const labels: Record<string, string> = {
-      ACTIVE: 'Activa',
-      PAUSED: 'Pausada',
-      READY_TO_DECIDE: 'Lista para decidir',
-      ARCHIVED: 'Archivada',
-    };
-    return labels[(status ?? '').toUpperCase()] ?? 'Investigación';
+    const key = (status ?? '').toLowerCase();
+    return this.i18n.t(
+      ['active', 'paused', 'ready_to_decide', 'archived'].includes(key)
+        ? `admin.dashboard.researchStatus.${key}`
+        : 'admin.dashboard.research',
+    );
   }
 
   statusClass(status: string | null | undefined): string {
@@ -198,7 +185,19 @@ export class AdminDashboardComponent {
   }
 
   relationLabel(count: number): string {
-    return count === 1 ? '1 relación' : `${count} relaciones`;
+    return `${count} ${this.i18n.t(count === 1 ? 'admin.dashboard.relation' : 'admin.dashboard.relations')}`;
+  }
+
+  formatDate(value: string | null | undefined): string {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat(this.i18n.locale() === 'es' ? 'es-ES' : 'en-US', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
   }
 
   researchMeta(project: ResearchProjectSummary): string {

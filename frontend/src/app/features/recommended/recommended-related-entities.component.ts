@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PublicEntity } from '../../core/api/entities.models';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { recommendedTypeLabel } from './recommended-presenter';
 
 @Component({
@@ -12,9 +13,10 @@ import { recommendedTypeLabel } from './recommended-presenter';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecommendedRelatedEntitiesComponent {
+  readonly i18n = inject(I18nService);
   items = input<PublicEntity[]>([]);
 
   typeLabel(type: string): string {
-    return recommendedTypeLabel(type);
+    return recommendedTypeLabel(type, this.i18n);
   }
 }

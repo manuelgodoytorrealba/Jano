@@ -23,8 +23,13 @@ function diffKeys(base, target) {
 
 const [es, en] = await Promise.all([readLocale('es'), readLocale('en')]);
 const { missingInTarget, missingInBase } = diffKeys(es, en);
+const emptyValues = Object.entries({ es, en }).flatMap(([locale, dictionary]) =>
+  Object.entries(dictionary)
+    .filter(([, value]) => typeof value !== 'string' || !value.trim())
+    .map(([key]) => `${locale}:${key}`),
+);
 
-if (missingInTarget.length || missingInBase.length) {
+if (missingInTarget.length || missingInBase.length || emptyValues.length) {
   console.error('i18n validation failed.');
 
   if (missingInTarget.length) {
@@ -39,6 +44,11 @@ if (missingInTarget.length || missingInBase.length) {
     for (const key of missingInBase) {
       console.error(`- ${key}`);
     }
+  }
+
+  if (emptyValues.length) {
+    console.error('\nEmpty translation values:');
+    for (const entry of emptyValues) console.error(`- ${entry}`);
   }
 
   process.exit(1);

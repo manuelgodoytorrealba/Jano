@@ -3,13 +3,13 @@
     <div>
       <div class="recommended-section__titleline">
         <span class="recommended-section__number">2</span>
-        <p class="recommended-section__eyebrow">Explore Entities</p>
+        <p class="recommended-section__eyebrow">{{ i18n.t('curated.map.eyebrow') }}</p>
       </div>
-      <h2>Discovery map</h2>
+      <h2>{{ i18n.t('curated.map.title') }}</h2>
     </div>
     <div class="recommended-map__actions">
       <button type="button" class="recommended-button" (click)="toggleSearch()">
-        {{ searchOpen() ? 'Close' : '+ Add Entity' }}
+        {{ searchOpen() ? i18n.t('button.close') : i18n.t('curated.map.addEntity') }}
       </button>
     </div>
   </div>
@@ -21,11 +21,11 @@
         class="ds-input"
         [ngModel]="query()"
         (ngModelChange)="query.set($event)"
-        placeholder="Search an entity to add"
+        [placeholder]="i18n.t('curated.map.searchPlaceholder')"
       />
 
       @if (loading()) {
-        <p class="recommended-map__search-note">Searching…</p>
+        <p class="recommended-map__search-note">{{ i18n.t('search.searching') }}</p>
       } @else if (searchResults().length) {
         <div class="recommended-map__search-results">
           @for (entity of searchResults(); track entity.id) {
@@ -36,7 +36,7 @@
           }
         </div>
       } @else if (query().trim().length >= 2) {
-        <p class="recommended-map__search-note">No matching discovery entities yet.</p>
+        <p class="recommended-map__search-note">{{ i18n.t('curated.map.noMatches') }}</p>
       }
     </div>
   }
@@ -58,6 +58,7 @@
             class="recommended-map__chip-remove"
             [disabled]="!canRemove(entity.id)"
             (click)="removeEntity.emit(entity.id)"
+            [attr.aria-label]="i18n.t('button.remove') + ' ' + entity.title"
           >
             ×
           </button>
@@ -84,12 +85,11 @@
       >
       </app-graph>
     } @else {
-      <p class="recommended-map__empty">No discovery map available yet.</p>
+      <p class="recommended-map__empty">{{ i18n.t('curated.map.noGraph') }}</p>
     }
   </div>
 
   <p class="recommended-map__legend">
-    Click a node to update the curated context. Add Entity only expands the current curated pool in
-    this first iteration.
+    {{ i18n.t('curated.map.legend') }}
   </p>
 </section>

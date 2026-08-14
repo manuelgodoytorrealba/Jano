@@ -40,7 +40,7 @@ export class RecommendedComponent {
   private readonly api = inject(CuratedApi);
   private readonly route = inject(ActivatedRoute);
   private readonly seo = inject(SeoService);
-  private readonly i18n = inject(I18nService);
+  readonly i18n = inject(I18nService);
   private readonly destroyRef = inject(DestroyRef);
   private requestId = 0;
 

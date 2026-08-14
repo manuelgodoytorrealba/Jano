@@ -12,7 +12,7 @@
   @if (saved$ | async; as savedItems) {
     @if (collections$ | async; as collections) {
       <section class="space-workspace">
-        <div class="space-tabs" role="tablist" aria-label="Archivo personal">
+        <div class="space-tabs" role="tablist" [attr.aria-label]="i18n.t('mySpace.title')">
           <button
             type="button"
             role="tab"
@@ -38,44 +38,48 @@
             <div class="saved-controls">
               <label class="saved-search">
                 <span class="saved-search__icon" aria-hidden="true">⌕</span>
-                <span class="saved-search__label">Buscar en tus guardados</span>
+                <span class="saved-search__label">{{ i18n.t('mySpace.searchSaved') }}</span>
                 <input
                   type="search"
-                  placeholder="Buscar en tus guardados…"
-                  aria-label="Buscar en tus guardados"
+                  [placeholder]="i18n.t('mySpace.searchSaved')"
+                  [attr.aria-label]="i18n.t('mySpace.searchSaved')"
                   [value]="savedQuery()"
                   (input)="setSavedQuery($any($event.target).value)"
                 />
               </label>
               <label class="saved-select"
-                ><span>Ordenar por</span
+                ><span>{{ i18n.t('mySpace.sortBy') }}</span
                 ><select [value]="savedSort()" (change)="setSavedSort($any($event.target).value)">
-                  <option value="recent">Recientes</option>
-                  <option value="title">Título</option>
+                  <option value="recent">{{ i18n.t('mySpace.recent') }}</option>
+                  <option value="title">{{ i18n.t('mySpace.titleSort') }}</option>
                 </select></label
               >
               <label class="saved-select"
-                ><span>Tipo</span
+                ><span>{{ i18n.t('mySpace.type') }}</span
                 ><select [value]="savedType()" (change)="setSavedType($any($event.target).value)">
-                  <option value="all">Todos</option>
+                  <option value="all">{{ i18n.t('common.all') }}</option>
                   @for (type of savedTypes(savedItems); track type) {
                     <option [value]="type">{{ entityTypeLabel(type) }}</option>
                   }
                 </select></label
               >
-              <div class="saved-view-switch" aria-label="Vista" role="group">
+              <div
+                class="saved-view-switch"
+                [attr.aria-label]="i18n.t('mySpace.view')"
+                role="group"
+              >
                 <button
                   type="button"
                   [class.is-active]="savedView() === 'grid'"
                   (click)="setSavedView('grid')"
                 >
-                  Cuadrícula</button
+                  {{ i18n.t('mySpace.grid') }}</button
                 ><button
                   type="button"
                   [class.is-active]="savedView() === 'list'"
                   (click)="setSavedView('list')"
                 >
-                  Lista
+                  {{ i18n.t('explorer.view.list') }}
                 </button>
               </div>
             </div>
@@ -84,14 +88,19 @@
                 <section class="saved-section">
                   <div class="saved-section__head">
                     <div>
-                      <h2>Recientes</h2>
-                      <p>Los últimos elementos que guardaste.</p>
+                      <h2>{{ i18n.t('mySpace.recent') }}</h2>
+                      <p>{{ i18n.t('mySpace.recentIntro') }}</p>
                     </div>
                     <div class="saved-section__actions">
-                      <span>{{ visibleSaved(savedItems).length }} elementos</span>
+                      <span
+                        >{{ visibleSaved(savedItems).length }}
+                        {{ i18n.t('collection.items') }}</span
+                      >
                       @if (visibleSaved(savedItems).length > 6) {
                         <button type="button" (click)="toggleSavedExpanded()">
-                          {{ savedExpanded() ? 'Ver menos' : 'Ver todos' }}
+                          {{
+                            savedExpanded() ? i18n.t('mySpace.showLess') : i18n.t('search.viewAll')
+                          }}
                         </button>
                       }
                     </div>
@@ -133,8 +142,8 @@
                 <section class="saved-section saved-section--types">
                   <div class="saved-section__head">
                     <div>
-                      <h2>Por tipo</h2>
-                      <p>Explora tu archivo organizado por categoría.</p>
+                      <h2>{{ i18n.t('mySpace.byType') }}</h2>
+                      <p>{{ i18n.t('mySpace.byTypeIntro') }}</p>
                     </div>
                   </div>
                   <div class="saved-type-grid">
@@ -163,8 +172,8 @@
                 </section>
               } @else {
                 <div class="space-empty">
-                  <div class="space-empty__title">No encontramos guardados</div>
-                  <div class="space-empty__sub">Prueba a cambiar la búsqueda o los filtros.</div>
+                  <div class="space-empty__title">{{ i18n.t('mySpace.noSavedResults') }}</div>
+                  <div class="space-empty__sub">{{ i18n.t('mySpace.changeFilters') }}</div>
                 </div>
               }
             } @else {
@@ -181,34 +190,38 @@
                 ><span aria-hidden="true">⌕</span
                 ><input
                   type="search"
-                  placeholder="Buscar colecciones…"
-                  aria-label="Buscar colecciones"
+                  [placeholder]="i18n.t('mySpace.searchCollections')"
+                  [attr.aria-label]="i18n.t('mySpace.searchCollections')"
                   [value]="collectionQuery()"
                   (input)="setCollectionQuery($any($event.target).value)"
               /></label>
               <label class="collection-select"
-                ><span>Ordenar por</span
+                ><span>{{ i18n.t('mySpace.sortBy') }}</span
                 ><select
                   [value]="collectionSort()"
                   (change)="setCollectionSort($any($event.target).value)"
                 >
-                  <option value="recent">Recientes</option>
-                  <option value="title">Título</option>
+                  <option value="recent">{{ i18n.t('mySpace.recent') }}</option>
+                  <option value="title">{{ i18n.t('mySpace.titleSort') }}</option>
                 </select></label
               >
-              <div class="collection-view-switch" aria-label="Vista" role="group">
+              <div
+                class="collection-view-switch"
+                [attr.aria-label]="i18n.t('mySpace.view')"
+                role="group"
+              >
                 <button
                   type="button"
                   [class.is-active]="collectionView() === 'grid'"
                   (click)="setCollectionView('grid')"
                 >
-                  Cuadrícula</button
+                  {{ i18n.t('mySpace.grid') }}</button
                 ><button
                   type="button"
                   [class.is-active]="collectionView() === 'list'"
                   (click)="setCollectionView('list')"
                 >
-                  Lista
+                  {{ i18n.t('explorer.view.list') }}
                 </button>
               </div>
             </div>
@@ -218,11 +231,13 @@
                 (submit)="$event.preventDefault(); createCollection()"
               >
                 <div>
-                  <strong>Nueva colección</strong
-                  ><span>Podrás añadir piezas desde cualquier entidad guardada.</span>
+                  <strong>{{ i18n.t('collection.new') }}</strong
+                  ><span>{{ i18n.t('mySpace.createCollectionIntro') }}</span>
                 </div>
                 <label
-                  ><span class="saved-search__label">Nombre de la colección</span
+                  ><span class="saved-search__label">{{
+                    i18n.t('collection.namePlaceholder')
+                  }}</span
                   ><input
                     type="text"
                     autocomplete="off"
@@ -242,7 +257,7 @@
                   type="button"
                   (click)="closeCollectionCreator()"
                 >
-                  Cancelar
+                  {{ i18n.t('common.cancel') }}
                 </button>
                 @if (createError) {
                   <p class="collection-create-inline__error">{{ createError }}</p>
@@ -298,8 +313,11 @@
                         </p>
                       </div>
                       <div class="collection-library-card__meta">
-                        <span>{{ collection.itemCount }} elementos</span
-                        ><span>Actualizada {{ collection.updatedAt | date: 'mediumDate' }}</span>
+                        <span>{{ collection.itemCount }} {{ i18n.t('collection.items') }}</span
+                        ><span
+                          >{{ i18n.t('mySpace.updated') }}
+                          {{ formatDate(collection.updatedAt) }}</span
+                        >
                       </div>
                     </div>
                   </article>
@@ -309,15 +327,15 @@
                   class="collection-create-card"
                   (click)="openCollectionCreator()"
                 >
-                  <span>+</span><strong>Nueva colección</strong
-                  ><small>Crea un tablero para organizar tus ideas y referencias.</small>
+                  <span>+</span><strong>{{ i18n.t('collection.new') }}</strong
+                  ><small>{{ i18n.t('mySpace.createCollectionCard') }}</small>
                 </button>
               </div>
             } @else {
               <div class="space-empty">
-                <div class="space-empty__title">No encontramos colecciones</div>
+                <div class="space-empty__title">{{ i18n.t('mySpace.noCollectionsResults') }}</div>
                 <div class="space-empty__sub">
-                  Prueba a cambiar la búsqueda o crea una colección nueva.
+                  {{ i18n.t('mySpace.changeCollectionsFilters') }}
                 </div>
               </div>
             }

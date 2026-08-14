@@ -19,7 +19,14 @@ export class ProfileComponent {
   readonly editing = signal(false);
   readonly saving = signal(false);
   readonly error = signal('');
+  readonly passwordSaving = signal(false);
+  readonly passwordError = signal('');
+  readonly passwordSuccess = signal(false);
+  readonly verificationMessage = signal('');
   nameDraft = '';
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
 
   isAdmin(user: AuthUser | null | undefined): boolean {
     return String(user?.role ?? '').toUpperCase() === 'ADMIN';
@@ -52,7 +59,7 @@ export class ProfileComponent {
       },
       error: () => {
         this.saving.set(false);
-        this.error.set('No se pudo actualizar el nombre. Inténtalo de nuevo.');
+        this.error.set(this.i18n.t('profile.updateNameError'));
       },
     });
   }
@@ -71,8 +78,45 @@ export class ProfileComponent {
       },
       error: () => {
         this.saving.set(false);
-        this.error.set('No se pudo actualizar la imagen. Usa una imagen de hasta 15 MB.');
+        this.error.set(this.i18n.t('profile.updateAvatarError'));
       },
     });
+  }
+
+  changePassword(): void {
+    if (this.passwordSaving()) return;
+    this.passwordError.set('');
+    this.passwordSuccess.set(false);
+    if (this.newPassword.length < 8 || this.newPassword !== this.confirmPassword) {
+      this.passwordError.set(this.i18n.t('auth.passwordMismatch'));
+      return;
+    }
+    this.passwordSaving.set(true);
+    this.auth.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        this.passwordSaving.set(false);
+        this.passwordSuccess.set(true);
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
+      },
+      error: (error) => {
+        this.passwordSaving.set(false);
+        this.passwordError.set(
+          error?.status === 401
+            ? this.i18n.t('auth.currentPasswordInvalid')
+            : this.i18n.t('auth.changePasswordError'),
+        );
+      },
+    });
+  }
+
+  resendVerification(): void {
+    this.verificationMessage.set('');
+    this.auth
+      .resendVerification()
+      .subscribe({
+        next: () => this.verificationMessage.set(this.i18n.t('auth.verificationSent')),
+      });
   }
 }

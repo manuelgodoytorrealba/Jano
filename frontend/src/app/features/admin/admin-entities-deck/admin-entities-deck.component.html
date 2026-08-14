@@ -1,7 +1,7 @@
 <section class="admin-deck-page">
-  <div class="admin-deck-page__identity" aria-label="Selector visual admin">
-    <span>Admin</span>
-    <strong>Selector visual</strong>
+  <div class="admin-deck-page__identity" [attr.aria-label]="i18n.t('admin.entitiesDeck.aria')">
+    <span>{{ i18n.t('common.admin') }}</span>
+    <strong>{{ i18n.t('admin.entitiesDeck.title') }}</strong>
   </div>
 
   <app-entity-deck

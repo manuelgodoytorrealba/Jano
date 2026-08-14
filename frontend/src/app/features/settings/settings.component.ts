@@ -37,12 +37,18 @@ export class SettingsComponent implements OnDestroy {
     }
 
     const sizeInMb = this.selectedBackgroundFile.size / (1024 * 1024);
-    return `${this.selectedBackgroundFile.name} · ${sizeInMb.toFixed(sizeInMb >= 10 ? 0 : 1)} MB`;
+    const locale = this.i18n.locale() === 'es' ? 'es-ES' : 'en-US';
+    const size = new Intl.NumberFormat(locale, {
+      maximumFractionDigits: sizeInMb >= 10 ? 0 : 1,
+    }).format(sizeInMb);
+    return `${this.selectedBackgroundFile.name} · ${size} MB`;
   }
 
   get roleLabel(): string {
     const role = this.auth.currentUser?.role ?? '';
-    return role === 'ADMIN' ? this.i18n.t('role.admin') : role || this.i18n.t('role.none');
+    if (role === 'ADMIN') return this.i18n.t('role.admin');
+    if (role === 'USER') return this.i18n.t('role.member');
+    return this.i18n.t('role.none');
   }
 
   setThemePreference(preference: AppThemePreference): void {

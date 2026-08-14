@@ -139,6 +139,36 @@
   cursor: wait;
   opacity: 0.62;
 }
+.profile-password-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.profile-password-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+.profile-password-form input {
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.16);
+  color: var(--color-text);
+}
+.profile-success {
+  margin: 0;
+  color: #d8e9ca;
+}
+@media (max-width: 760px) {
+  .profile-password-form {
+    grid-template-columns: 1fr;
+  }
+}
 .profile-name-field {
   display: grid;
   max-width: 520px;

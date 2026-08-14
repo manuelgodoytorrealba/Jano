@@ -56,15 +56,18 @@
   right: 0;
   z-index: 12;
   display: grid;
-  grid-template-rows: auto auto auto;
-  gap: 12px;
+  gap: 20px;
   height: auto;
   max-height: min(700px, calc(100dvh - 164px));
-  padding: 14px 14px 16px;
+  width: min(920px, calc(100vw - 32px));
+  padding: 28px;
   align-content: start;
-  border-radius: 18px;
-  border: 1px solid var(--color-border);
-  background: linear-gradient(180deg, rgba(32, 32, 34, 0.98), rgba(22, 22, 24, 0.98));
+  border-radius: 26px;
+  border: 1px solid rgba(255, 235, 219, 0.38);
+  background: linear-gradient(135deg, rgba(29, 30, 36, 0.985), rgba(25, 22, 29, 0.98));
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
   overflow: hidden;
 }
 
@@ -75,13 +78,13 @@
 
 .app-chrome__search-prelude-section {
   display: grid;
-  gap: 8px;
+  gap: 14px;
   min-height: 0;
 }
 
 .app-chrome__search-prelude-head h2 {
   margin: 0;
-  font-size: 0.62rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -167,27 +170,40 @@
 
 .app-chrome__search-categories {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .app-chrome__search-category {
-  min-height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
+  min-height: 138px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
   display: grid;
   justify-items: center;
   align-content: center;
-  gap: 3px;
-  padding: 5px 3px;
+  gap: 14px;
+  padding: 18px 10px;
   text-align: center;
   cursor: pointer;
-  font-size: 0.64rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025));
+  color: rgba(255, 250, 244, 0.92);
+  font-size: 0.98rem;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+.app-chrome__search-category:hover,
+.app-chrome__search-category:focus-visible {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 235, 219, 0.4);
+  outline: none;
+  transform: translateY(-1px);
 }
 
 .app-chrome__search-category-icon {
-  width: 14px;
-  height: 14px;
+  width: 30px;
+  height: 30px;
   place-items: center;
 }
 
@@ -196,9 +212,62 @@
   height: 100%;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.6;
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.app-chrome__search-recent-section {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.app-chrome__search-recents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.app-chrome__search-recent {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 250, 244, 0.86);
+  font: inherit;
+  cursor: pointer;
+}
+.app-chrome__search-recent:hover,
+.app-chrome__search-recent:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+.app-chrome__search-prompt {
+  margin: 0 -28px -28px;
+  min-height: 76px;
+  padding: 18px 28px;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0 0 26px 26px;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0.07), rgba(198, 131, 100, 0.14));
+  color: rgba(255, 250, 244, 0.78);
+  text-align: left;
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.app-chrome__search-prompt span,
+.app-chrome__search-prompt strong {
+  color: rgba(250, 203, 159, 0.95);
+}
+.app-chrome__search-prompt span {
+  margin-right: 12px;
+  font-size: 1.4rem;
+}
+.app-chrome__search-prompt strong {
+  margin-right: 7px;
 }
 
 .app-chrome__search-clear {
@@ -228,8 +297,15 @@
   gap: 0.28rem;
   padding: 0.45rem;
   border-radius: 14px;
-  z-index: 20;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.28);
+  z-index: 90;
+  isolation: isolate;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #1c1c1f;
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 .app-chrome__search-state,
 .app-chrome__suggestion {
@@ -245,7 +321,7 @@
   gap: 0.12rem;
   width: 100%;
   border: 0;
-  background: transparent;
+  background: #1c1c1f;
   color: inherit;
   text-align: left;
   cursor: pointer;
@@ -291,6 +367,10 @@
     background: linear-gradient(180deg, rgba(244, 244, 241, 0.98), rgba(230, 230, 226, 0.98));
     color: rgba(28, 27, 24, 0.96);
   }
+  .app-chrome__search-suggestions,
+  .app-chrome__suggestion {
+    background: #f3f2ef;
+  }
   .app-chrome__trend-card,
   .app-chrome__pick-card,
   .app-chrome__search-category {
@@ -305,16 +385,13 @@
   }
 
   .app-chrome__search-prelude {
-    width: min(100%, 620px);
-    max-width: 620px;
+    width: min(760px, calc(100vw - 32px));
+    max-width: none;
     left: 0;
     right: auto;
-    gap: 12px;
-    padding: 14px 14px 15px;
-    border-radius: 18px;
-    box-shadow:
-      0 20px 54px rgba(0, 0, 0, 0.28),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    gap: 16px;
+    padding: 22px;
+    border-radius: 22px;
   }
 
   .app-chrome__search-prelude-section {
@@ -360,20 +437,20 @@
   }
 
   .app-chrome__search-categories {
-    gap: 6px;
+    gap: 10px;
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .app-chrome__search-category {
-    min-height: 52px;
-    border-radius: 14px;
-    font-size: 0.68rem;
-    padding: 7px 6px;
+    min-height: 112px;
+    border-radius: 18px;
+    font-size: 0.82rem;
+    padding: 12px 6px;
   }
 
   .app-chrome__search-category-icon {
-    width: 14px;
-    height: 14px;
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -389,13 +466,13 @@
     height: auto;
     max-height: none;
     grid-template-rows: none;
-    padding: 8px;
+    padding: 16px;
     overflow: visible;
   }
   .app-chrome__search-trends,
   .app-chrome__search-picks,
   .app-chrome__search-categories {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .app-chrome__trend-card,
   .app-chrome__pick-card {
@@ -404,8 +481,14 @@
     border-radius: 14px;
   }
   .app-chrome__search-category {
-    min-height: 40px;
+    min-height: 94px;
     border-radius: 14px;
+  }
+  .app-chrome__search-prompt {
+    margin: 0 -16px -16px;
+    min-height: 64px;
+    padding: 14px 16px;
+    border-radius: 0 0 18px 18px;
   }
   .app-chrome__search-prelude-head {
     align-items: flex-start;

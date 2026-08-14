@@ -33,8 +33,8 @@
     <button
       type="button"
       class="app-chrome__search-clear"
-      aria-label="Limpiar búsqueda"
-      title="Limpiar búsqueda"
+      [attr.aria-label]="i18n.t('search.clear')"
+      [title]="i18n.t('search.clear')"
       (click)="clearSearchInput(searchInput)"
     >
       ×
@@ -47,7 +47,7 @@
       (wheel)="onSearchSuggestionsWheel($event)"
     >
       @if (searchLoading()) {
-        <div class="app-chrome__search-state">Buscando…</div>
+        <div class="app-chrome__search-state">{{ i18n.t('search.searching') }}</div>
       } @else if (searchSuggestions().length) {
         @for (item of searchSuggestions(); track item.id; let i = $index) {
           <button
@@ -57,16 +57,16 @@
             (mouseenter)="setActiveSearchSuggestion(i)"
             (mousedown)="chooseSearchSuggestion(searchInput, item)"
           >
-            <span class="app-chrome__suggestion-type">{{ item.type }}</span>
+            <span class="app-chrome__suggestion-type">{{ entityLabel(item.type) }}</span>
             <span class="app-chrome__suggestion-title">{{ item.title }}</span>
           </button>
         }
         <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
-          Ver todos los resultados para “{{ searchDraft() }}”
+          {{ i18n.t('search.viewAllFor') }} “{{ searchDraft() }}”
         </button>
       } @else {
         <button type="submit" class="app-chrome__suggestion app-chrome__suggestion--search">
-          Buscar “{{ searchDraft() }}”
+          {{ i18n.t('search.searchFor') }} “{{ searchDraft() }}”
         </button>
       }
     </div>
@@ -148,6 +148,32 @@
           }
         </div>
       </section>
+      @if (recentSearches().length) {
+        <section class="app-chrome__search-prelude-section app-chrome__search-recent-section">
+          <div class="app-chrome__search-prelude-head">
+            <h2>{{ i18n.t('search.recent') }}</h2>
+          </div>
+          <div class="app-chrome__search-recents">
+            @for (query of recentSearches(); track query) {
+              <button
+                type="button"
+                class="app-chrome__search-recent"
+                (mousedown)="chooseRecentSearch(searchInput, query)"
+              >
+                <span aria-hidden="true">◷</span>{{ query }}
+              </button>
+            }
+          </div>
+        </section>
+      }
+      <button
+        type="button"
+        class="app-chrome__search-prompt"
+        (mousedown)="chooseSearchPrompt(searchInput)"
+      >
+        <span aria-hidden="true">✦</span><strong>{{ i18n.t('search.suggestion') }}</strong>
+        {{ i18n.t('search.try') }} “{{ i18n.t('search.promptQuery') }}”
+      </button>
     </section>
   }
 </form>

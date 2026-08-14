@@ -1,5 +1,5 @@
 @if (error()) {
-  <div class="explorer-state explorer-state--error">{{ error() }}</div>
+  <div class="explorer-state explorer-state--error">{{ i18n.t(error()!) }}</div>
 } @else if (graph(); as graphData) {
   <section
     class="explorer-shell"
@@ -65,7 +65,7 @@
               </div>
             } @else {
               <div class="image-stage__empty">
-                <span>Sin imagen disponible</span>
+                <span>{{ i18n.t('graph.noImage') }}</span>
               </div>
             }
 
@@ -156,7 +156,7 @@
 
             <div class="image-overlay-bar">
               @if (!isMobileViewport) {
-                <div class="explorer-surface-label">Imagen</div>
+                <div class="explorer-surface-label">{{ i18n.t('graph.image') }}</div>
               }
 
               @if (!isMobileViewport) {
@@ -206,13 +206,19 @@
 
                 <div class="image-meta-card">
                   @if (imageMeta?.source) {
-                    <div><strong>Fuente</strong> {{ imageMeta?.source }}</div>
+                    <div>
+                      <strong>{{ i18n.t('graph.source') }}</strong> {{ imageMeta?.source }}
+                    </div>
                   }
                   @if (imageMeta?.photoBy) {
-                    <div><strong>Foto</strong> {{ imageMeta?.photoBy }}</div>
+                    <div>
+                      <strong>{{ i18n.t('graph.photo') }}</strong> {{ imageMeta?.photoBy }}
+                    </div>
                   }
                   @if (imageMeta?.license) {
-                    <div><strong>Licencia</strong> {{ imageMeta?.license }}</div>
+                    <div>
+                      <strong>{{ i18n.t('graph.license') }}</strong> {{ imageMeta?.license }}
+                    </div>
                   }
                 </div>
               </div>

@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PublicEntity } from '../../core/api/entities.models';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { CuratedPageTabs } from './recommended-presenter';
 import { RecommendedEntityShelfComponent } from './recommended-entity-shelf.component';
 import {
@@ -21,6 +22,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecommendedEntityPanelComponent {
+  readonly i18n = inject(I18nService);
   entity = input<PublicEntity | null>(null);
   selectedTab = input<RecommendedTab>('curations');
   tabGroups = input<CuratedPageTabs | null>(null);
@@ -38,19 +40,11 @@ export class RecommendedEntityPanelComponent {
   }
 
   typeLabel(type?: string | null): string {
-    return recommendedTypeLabel(type ?? 'ENTITY');
+    return recommendedTypeLabel(type ?? 'ENTITY', this.i18n);
   }
 
   tabLabel(tab: RecommendedTab): string {
-    const labels: Record<RecommendedTab, string> = {
-      curations: 'Curations',
-      articles: 'Articles',
-      artists: 'Artists',
-      artworks: 'Artworks',
-      concepts: 'Concepts',
-    };
-
-    return labels[tab];
+    return this.i18n.t(`curated.tab.${tab}`);
   }
 
   itemsForTab(tab: RecommendedTab) {

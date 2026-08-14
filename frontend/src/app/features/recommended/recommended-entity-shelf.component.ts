@@ -1,8 +1,16 @@
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+  inject,
+  input,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CuratedDeck } from '../../core/api/curated.api';
 import { PublicEntity } from '../../core/api/entities.models';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { recommendedEntityMeta, recommendedTypeLabel } from './recommended-presenter';
 
 @Component({
@@ -14,6 +22,7 @@ import { recommendedEntityMeta, recommendedTypeLabel } from './recommended-prese
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecommendedEntityShelfComponent {
+  readonly i18n = inject(I18nService);
   items = input<Array<CuratedDeck | PublicEntity>>([]);
   kind = input<'curations' | 'entities'>('entities');
   showNewBadge = input(false);
@@ -26,7 +35,7 @@ export class RecommendedEntityShelfComponent {
   }
 
   typeLabel(type: string): string {
-    return recommendedTypeLabel(type);
+    return recommendedTypeLabel(type, this.i18n);
   }
 
   meta(item: PublicEntity): string | null {

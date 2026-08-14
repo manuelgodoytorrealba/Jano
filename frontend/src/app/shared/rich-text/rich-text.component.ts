@@ -14,6 +14,8 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
+import { I18nService } from '../../core/i18n/i18n.service';
+import { contentLevelLabel, entityTypeLabel, statusLabel } from '../../core/i18n/domain-labels';
 import {
   PublicEntity,
   PublicEntityMediaAsset,
@@ -57,6 +59,7 @@ export class RichTextComponent {
   private document = inject(DOCUMENT);
   private changeDetector = inject(ChangeDetectorRef);
   private host = inject(ElementRef<HTMLElement>);
+  readonly i18n = inject(I18nService);
   @ViewChild('editor') private editor?: ElementRef<HTMLElement>;
   @ViewChild('entitySearch') private entitySearch?: ElementRef<HTMLInputElement>;
 
@@ -95,6 +98,18 @@ export class RichTextComponent {
 
   get previewImageMedia(): PublicEntityMediaAsset | null {
     return this.selectPreviewImage(this.preview());
+  }
+
+  entityLabel(type: string | null | undefined): string {
+    return entityTypeLabel(type, this.i18n);
+  }
+
+  statusLabel(status: string | null | undefined): string {
+    return statusLabel(status, this.i18n);
+  }
+
+  contentLevelLabel(level: string | null | undefined): string {
+    return contentLevelLabel(level, this.i18n);
   }
 
   format(command: RichTextFormat): void {

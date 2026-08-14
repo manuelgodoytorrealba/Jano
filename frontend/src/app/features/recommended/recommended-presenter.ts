@@ -1,21 +1,12 @@
 import { CuratedDeck } from '../../core/api/curated.api';
 import { PublicEntity } from '../../core/api/entities.models';
+import { entityTypeLabel } from '../../core/i18n/domain-labels';
+import { I18nService } from '../../core/i18n/i18n.service';
 
 export type RecommendedTab = 'curations' | 'articles' | 'artists' | 'artworks' | 'concepts';
 
-export function recommendedTypeLabel(type: string): string {
-  const labels: Record<string, string> = {
-    ARTWORK: 'Artwork',
-    ARTICLE: 'Article',
-    ARTIST: 'Artist',
-    MOVEMENT: 'Movement',
-    PERIOD: 'Period',
-    CONCEPT: 'Concept',
-    PLACE: 'Place',
-    TEXT: 'Text',
-  };
-
-  return labels[type] ?? type.replaceAll('_', ' ').toLowerCase();
+export function recommendedTypeLabel(type: string, i18n: Pick<I18nService, 't'>): string {
+  return entityTypeLabel(type, i18n);
 }
 
 export function recommendedEntityDescription(entity: PublicEntity | null): string | null {

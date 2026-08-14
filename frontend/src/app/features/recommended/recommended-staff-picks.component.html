@@ -2,9 +2,9 @@
   <div class="recommended-section__head">
     <div class="recommended-section__titleline">
       <span class="recommended-section__number">1</span>
-      <p class="recommended-section__eyebrow">Staff Picks</p>
+      <p class="recommended-section__eyebrow">{{ i18n.t('curated.staff.eyebrow') }}</p>
     </div>
-    <h2>Staff picks for the selected entity</h2>
+    <h2>{{ i18n.t('curated.staff.title') }}</h2>
   </div>
 
   @if (featuredPick(); as pick) {
@@ -23,12 +23,12 @@
       <div class="recommended-staff__overlay"></div>
 
       <div class="recommended-card__body recommended-staff__body">
-        <span class="recommended-staff__kicker">Featured curation</span>
+        <span class="recommended-staff__kicker">{{ i18n.t('curated.staff.featured') }}</span>
         <h3>{{ pick.title }}</h3>
         @if (pick.description) {
           <p>{{ pick.description }}</p>
         }
-        <span class="recommended-staff__cta">Enter curation →</span>
+        <span class="recommended-staff__cta">{{ i18n.t('curated.staff.enter') }} →</span>
       </div>
 
       @if (picks().length > 1) {
@@ -38,7 +38,7 @@
               type="button"
               class="recommended-staff__dot"
               [class.is-active]="index === selectedIndex()"
-              [attr.aria-label]="'Show curation ' + staffPick.title"
+              [attr.aria-label]="i18n.t('curated.staff.show') + ' ' + staffPick.title"
               (click)="selectPick(index); $event.preventDefault(); $event.stopPropagation()"
             ></button>
           }

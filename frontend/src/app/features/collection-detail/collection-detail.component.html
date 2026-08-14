@@ -47,11 +47,9 @@
               />
             }
             <div class="collection-hero-empty__copy">
-              <span class="section-label">Colección</span>
-              <h2>Sin grafo interno todavía</h2>
-              <p>
-                Añade entidades relacionadas para activar el mapa de conexiones de esta colección.
-              </p>
+              <span class="section-label">{{ i18n.t('collection.label') }}</span>
+              <h2>{{ i18n.t('collection.noGraphTitle') }}</h2>
+              <p>{{ i18n.t('collection.noGraphCopy') }}</p>
             </div>
           </div>
         }
@@ -70,12 +68,14 @@
                 }
                 <div class="entity-topbar__meta">
                   <div class="entity-header__badges">
-                    <span class="ds-badge entity-badge">COLLECTION</span>
+                    <span class="ds-badge entity-badge">{{ i18n.t('collection.label') }}</span>
                     @if (collection.isDefault) {
-                      <span class="ds-badge entity-badge">DEFAULT</span>
+                      <span class="ds-badge entity-badge">{{ i18n.t('collection.default') }}</span>
                     }
                   </div>
-                  <span class="ds-pill entity-pill">{{ collection.itemCount }} items</span>
+                  <span class="ds-pill entity-pill"
+                    >{{ collection.itemCount }} {{ i18n.t('collection.items') }}</span
+                  >
                   <span class="ds-pill entity-pill"
                     >Actualizada {{ collection.updatedAt | date: 'mediumDate' }}</span
                   >
@@ -89,16 +89,16 @@
       <div class="entity-detail__sections">
         <section class="entity-section entity-glass">
           <div class="entity-section__head">
-            <p class="section-label">Notas curatoriales</p>
+            <p class="section-label">{{ i18n.t('collection.notes') }}</p>
             <span class="collection-notes-status" [attr.data-status]="notesStatus">
               @if (notesStatus === 'dirty') {
-                Escribiendo
+                {{ i18n.t('collection.notesWriting') }}
               } @else if (notesStatus === 'saving') {
-                Guardando
+                {{ i18n.t('common.saving') }}
               } @else if (notesStatus === 'saved') {
-                Guardado
+                {{ i18n.t('collection.notesSaved') }}
               } @else if (notesStatus === 'error') {
-                Error
+                {{ i18n.t('common.error') }}
               }
             </span>
           </div>
@@ -108,7 +108,7 @@
             name="collectionNotes"
             [ngModel]="notesDraft"
             (ngModelChange)="onNotesChanged($event, notesEditor)"
-            placeholder="Escribe una idea curatorial, una interpretación personal o el contexto de estudio de esta colección."
+            [placeholder]="i18n.t('collection.notesPlaceholder')"
           ></textarea>
           @if (notesError) {
             <p class="collection-notes-feedback collection-notes-feedback--error">
@@ -119,30 +119,30 @@
 
         <section class="entity-section entity-glass">
           <div class="entity-section__head">
-            <p class="section-label">Relaciones internas</p>
+            <p class="section-label">{{ i18n.t('collection.internalRelations') }}</p>
           </div>
           <div class="collection-relations-grid">
             <article class="fact-card entity-glass-card">
-              <span class="fact-card__label">Entidades</span>
+              <span class="fact-card__label">{{ i18n.t('collection.entities') }}</span>
               <p class="fact-card__value">{{ collection.itemCount }}</p>
             </article>
             <article class="fact-card entity-glass-card">
-              <span class="fact-card__label">Conexiones directas</span>
+              <span class="fact-card__label">{{ i18n.t('collection.directConnections') }}</span>
               <p class="fact-card__value">{{ graphEdgeCount(collection) }}</p>
             </article>
             <article class="fact-card entity-glass-card">
-              <span class="fact-card__label">Nodos sin conexión</span>
+              <span class="fact-card__label">{{ i18n.t('collection.isolatedNodes') }}</span>
               <p class="fact-card__value">{{ isolatedCount(collection) }}</p>
             </article>
           </div>
 
           @if (entityTypeSummary(collection).length) {
             <div class="relations-group">
-              <h3 class="title-section entity-subtitle">Tipos presentes</h3>
+              <h3 class="title-section entity-subtitle">{{ i18n.t('collection.presentTypes') }}</h3>
               <div class="collection-chip-list">
                 @for (entry of entityTypeSummary(collection); track entry.type) {
                   <span class="collection-chip"
-                    >{{ relationLabel(entry.type) }} · {{ entry.count }}</span
+                    >{{ entityTypeLabel(entry.type) }} · {{ entry.count }}</span
                   >
                 }
               </div>
@@ -151,7 +151,9 @@
 
           @if (connectedEdges(collection).length) {
             <div class="relations-group">
-              <h3 class="title-section entity-subtitle">Conexiones entre piezas guardadas</h3>
+              <h3 class="title-section entity-subtitle">
+                {{ i18n.t('collection.connectionsBetween') }}
+              </h3>
               <ul class="relations-list">
                 @for (edge of connectedEdges(collection); track edge.id) {
                   <li class="relation-card entity-glass-card relation-card--friendly">
@@ -173,7 +175,7 @@
             </div>
           } @else {
             <p class="text-muted">
-              Las entidades de esta colección todavía no tienen relaciones directas entre sí.
+              {{ i18n.t('collection.noDirectConnections') }}
             </p>
           }
         </section>
@@ -183,9 +185,9 @@
 } @else {
   <div class="entity-detail page-shell">
     <section class="entity-section entity-glass collection-missing">
-      <p class="section-label">Colección</p>
-      <h1>No se pudo cargar la colección</h1>
-      <a class="ds-btn" routerLink="/my-space">Volver a My Space</a>
+      <p class="section-label">{{ i18n.t('collection.label') }}</p>
+      <h1>{{ i18n.t('collection.loadError') }}</h1>
+      <a class="ds-btn" routerLink="/my-space">{{ i18n.t('collection.backToMySpace') }}</a>
     </section>
   </div>
 }

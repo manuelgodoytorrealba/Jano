@@ -107,7 +107,8 @@
 }
 
 .entity-story--article .entity-prose {
-  max-width: 70ch;
+  width: min(100%, 108ch);
+  max-width: none;
   padding: clamp(1.25rem, 2.4vw, 2rem);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;

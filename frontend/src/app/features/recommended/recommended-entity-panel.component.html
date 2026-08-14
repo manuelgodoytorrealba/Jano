@@ -5,7 +5,7 @@
         <div class="recommended-panel__summary-copy">
           <div class="recommended-section__titleline">
             <span class="recommended-section__number">3</span>
-            <p class="recommended-section__eyebrow">Selected Entity</p>
+            <p class="recommended-section__eyebrow">{{ i18n.t('curated.panel.selectedEntity') }}</p>
           </div>
           <h2>{{ entity.title }}</h2>
           <div class="recommended-panel__meta">
@@ -23,13 +23,17 @@
 
         <div class="recommended-panel__summary-actions">
           <a class="recommended-panel__cta" [routerLink]="['/entity', entity.slug]"
-            >View entity page →</a
+            >{{ i18n.t('curated.panel.viewEntity') }} →</a
           >
         </div>
       </div>
 
       <div class="recommended-panel__content">
-        <div class="recommended-panel__tabs" role="tablist" aria-label="Selected entity shelves">
+        <div
+          class="recommended-panel__tabs"
+          role="tablist"
+          [attr.aria-label]="i18n.t('curated.panel.tabsAria')"
+        >
           @for (tab of tabs; track tab) {
             <button
               type="button"
@@ -45,7 +49,7 @@
         <div class="recommended-panel__shelf">
           <div class="recommended-section__titleline recommended-panel__shelf-title">
             <span class="recommended-section__number">4</span>
-            <p class="recommended-section__eyebrow">Entity Shelf</p>
+            <p class="recommended-section__eyebrow">{{ i18n.t('curated.panel.entityShelf') }}</p>
           </div>
           <app-recommended-entity-shelf
             layout="shelf"

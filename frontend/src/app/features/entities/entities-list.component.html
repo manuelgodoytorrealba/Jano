@@ -22,7 +22,7 @@
   >
     <header class="entities-hud" [attr.aria-label]="i18n.t('explorer.view.explorer')">
       @if (pageVm$ | async; as pageVm) {
-        <nav class="entities-breadcrumbs ds-panel" aria-label="Breadcrumb">
+        <nav class="entities-breadcrumbs ds-panel" [attr.aria-label]="i18n.t('common.breadcrumb')">
           <a class="entities-breadcrumbs__link" routerLink="/">{{ i18n.t('nav.discover') }}</a>
           <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
           <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{
@@ -30,7 +30,7 @@
           }}</a>
           @if (pageVm.recommendationsActive) {
             <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
-            <span class="entities-breadcrumbs__current">Para ti</span>
+            <span class="entities-breadcrumbs__current">{{ i18n.t('explorer.forYou') }}</span>
           }
           @if (breadcrumbCurrentLabel(pageVm)) {
             <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
@@ -248,9 +248,13 @@
 
       @if (viewMode === 'explore') {
         <div class="entities-explorer-stage">
-          <div class="entities-explorer-loading" role="status" aria-label="Cargando Archivo">
+          <div
+            class="entities-explorer-loading"
+            role="status"
+            [attr.aria-label]="i18n.t('explorer.loadingAria')"
+          >
             <span class="entities-explorer-loading__pulse" aria-hidden="true"></span>
-            <span class="entities-explorer-loading__label">Preparando tu archivo</span>
+            <span class="entities-explorer-loading__label">{{ i18n.t('explorer.loading') }}</span>
           </div>
         </div>
       } @else {

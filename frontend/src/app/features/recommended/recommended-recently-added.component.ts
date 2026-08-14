@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { CuratedDeck } from '../../core/api/curated.api';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { RecommendedEntityShelfComponent } from './recommended-entity-shelf.component';
 
 @Component({
@@ -11,5 +12,6 @@ import { RecommendedEntityShelfComponent } from './recommended-entity-shelf.comp
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecommendedRecentlyAddedComponent {
+  readonly i18n = inject(I18nService);
   items = input<CuratedDeck[]>([]);
 }

@@ -81,11 +81,7 @@ export class EntitiesListComponent {
   readonly activeIndex = signal(0);
   readonly advancedFiltersOpen = signal(false);
   readonly filtersPanelOpen = signal(false);
-  readonly infoPanelOpen = signal(
-    typeof window !== 'undefined'
-      ? !(window.innerWidth <= 720 && window.innerHeight > window.innerWidth)
-      : true,
-  );
+  readonly infoPanelOpen = signal(false);
   readonly openFilterMenu = signal<FilterMenuKey | null>(null);
 
   viewMode: ViewMode = 'explore';
@@ -152,10 +148,6 @@ export class EntitiesListComponent {
   setView(mode: ViewMode) {
     this.closeFilterMenu();
     this.viewMode = mode;
-
-    if (mode === 'explore' && !this.isMobilePortraitTotem()) {
-      this.infoPanelOpen.set(true);
-    }
   }
 
   toggleFiltersPanel() {
@@ -194,9 +186,17 @@ export class EntitiesListComponent {
     return '/entities/artwork';
   }
 
-  breadcrumbCurrentLabel(pageVm: { title: string; type: string }): string {
+  breadcrumbCurrentLabel(pageVm: {
+    title: string;
+    type: string;
+    recommendationsActive?: boolean;
+  }): string {
     if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
       return '';
+    }
+
+    if (pageVm.recommendationsActive) {
+      return this.i18n.t('explorer.view.explorer');
     }
 
     return pageVm.title;

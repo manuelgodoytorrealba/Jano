@@ -67,8 +67,8 @@ export class EntityComponent implements OnDestroy {
       kind: 'detail',
       isSaved: this.saved.isSaved(),
       saveLoading: this.saved.saveLoading() || !this.saved.saveStatusResolved(),
-      canSave: this.auth.isLoggedIn && this.saved.saveStatusResolved(),
-      onSave: () => this.saved.toggleSave(entity.id),
+      canSave: this.saved.saveStatusResolved(),
+      onSave: () => this.saveOrAuthenticate(entity),
       onShare: () => this.shareEntity(entity),
       onFocus: () => this.focusTop(),
     });
@@ -171,6 +171,17 @@ export class EntityComponent implements OnDestroy {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  private saveOrAuthenticate(entity: PublicEntity): void {
+    if (!this.auth.isLoggedIn) {
+      void this.router.navigate(['/login'], {
+        queryParams: { redirectTo: `/entity/${entity.slug}` },
+      });
+      return;
+    }
+
+    this.saved.toggleSave(entity.id);
+  }
+
   private slug$ = this.route.paramMap.pipe(
     map((p) => p.get('slug') ?? ''),
     distinctUntilChanged(),
@@ -200,6 +211,10 @@ export class EntityComponent implements OnDestroy {
     tap((entity) => {
       if (!entity) {
         return;
+      }
+
+      if (entity.type !== 'ARTWORK') {
+        this.artworkTransition.cancel();
       }
 
       this.currentEntity.set(entity);

@@ -9,12 +9,12 @@
     <div class="entity-deck__overlay"></div>
 
     @if (showRail()) {
-      <aside class="entity-deck__rail" aria-label="Navegación principal">
+      <aside class="entity-deck__rail" [attr.aria-label]="i18n.t('chrome.primaryNav')">
         <button
           class="entity-deck__rail-btn"
           [class.is-active]="isRailActive('home')"
           type="button"
-          aria-label="Home"
+          [attr.aria-label]="i18n.t('nav.discover')"
           (click)="onRailClick('home')"
         >
           <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -29,7 +29,7 @@
           class="entity-deck__rail-btn"
           [class.is-active]="isRailActive('picks')"
           type="button"
-          aria-label="Curated"
+          [attr.aria-label]="i18n.t('nav.curated')"
           (click)="onRailClick('picks')"
         >
           <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -49,7 +49,7 @@
           class="entity-deck__rail-btn"
           [class.is-active]="isRailActive('profile')"
           type="button"
-          aria-label="Profile"
+          [attr.aria-label]="i18n.t('nav.profile')"
           (click)="onRailClick('profile')"
         >
           <svg class="entity-deck__rail-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -79,7 +79,7 @@
         class="entity-deck__nav entity-deck__nav--left"
         type="button"
         (click)="prev()"
-        aria-label="Anterior"
+        [attr.aria-label]="i18n.t('deck.previous')"
       >
         <svg class="entity-deck__nav-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path
@@ -198,7 +198,7 @@
         class="entity-deck__nav entity-deck__nav--right"
         type="button"
         (click)="next()"
-        aria-label="Siguiente"
+        [attr.aria-label]="i18n.t('deck.next')"
       >
         <svg class="entity-deck__nav-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path
@@ -225,7 +225,8 @@
               #searchInput
               type="text"
               name="search"
-              placeholder="Buscar en JANO..."
+              [placeholder]="i18n.t('search.headerPlaceholder')"
+              [attr.aria-label]="i18n.t('search.headerPlaceholder')"
               autocomplete="off"
             />
           </form>
@@ -234,14 +235,14 @@
     }
 
     @if (showDots()) {
-      <div class="entity-deck__dots" aria-label="Paginación">
+      <div class="entity-deck__dots" [attr.aria-label]="i18n.t('pager.pagination')">
         @for (item of items(); track item.id) {
           <button
             type="button"
             class="entity-deck__dot"
             [class.is-active]="$index === activeIndex()"
             (click)="setActive($index)"
-            [attr.aria-label]="'Ir a ' + item.title"
+            [attr.aria-label]="i18n.t('pager.goTo') + ' ' + item.title"
           ></button>
         }
       </div>

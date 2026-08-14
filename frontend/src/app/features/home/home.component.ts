@@ -140,7 +140,7 @@ export class HomeComponent {
   private deckToItem(deck: HomeDeck): DeckItem {
     return {
       id: deck.id,
-      eyebrow: deck.subtitle ?? 'Discover',
+      eyebrow: deck.subtitle ?? this.i18n.t('home.defaultEyebrow'),
       title: deck.title,
       description: deck.description ?? undefined,
       meta: deck.entities.length

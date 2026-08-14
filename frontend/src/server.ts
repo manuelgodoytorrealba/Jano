@@ -40,15 +40,14 @@ function cookieValue(cookieHeader: string | undefined, name: string): string | n
   return match ? decodeURIComponent(match.slice(name.length + 1)) : null;
 }
 
-function isPublicSsrPath(pathname: string): boolean {
+function requiresSsrAuth(pathname: string): boolean {
   return (
-    pathname === '/login' ||
-    pathname === '/blocked' ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/uploads') ||
-    pathname.startsWith('/assets') ||
-    pathname === '/favicon.ico' ||
-    /\.[a-z0-9]{2,8}$/i.test(pathname)
+    pathname === '/my-space' ||
+    pathname.startsWith('/collections/') ||
+    pathname === '/profile' ||
+    pathname === '/settings' ||
+    pathname === '/admin' ||
+    pathname.startsWith('/admin/')
   );
 }
 
@@ -57,7 +56,7 @@ function loginRedirectFor(req: express.Request): string {
   return `/login?redirectTo=${redirectTo}`;
 }
 
-async function validateBetaSession(req: express.Request): Promise<'ok' | 'unauthorized'> {
+async function validateAuthSession(req: express.Request): Promise<'ok' | 'unauthorized'> {
   const authorization = firstHeaderValue(req.headers.authorization);
   const cookieToken = cookieValue(req.headers.cookie, 'jano_access_token');
   const headers = new Headers();
@@ -157,12 +156,12 @@ app.use(['/api', '/uploads'], (req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (isPublicSsrPath(req.path)) {
+  if (!requiresSsrAuth(req.path)) {
     next();
     return;
   }
 
-  void validateBetaSession(req)
+  void validateAuthSession(req)
     .then((session) => {
       if (session === 'ok') {
         next();

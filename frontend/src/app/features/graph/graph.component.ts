@@ -466,7 +466,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       next: (response) => this.applyGraphResponse(response),
       error: () => {
         this.loading.set(false);
-        this.error.set('No se pudo cargar el grafo.');
+        this.error.set('graph.loadError');
       },
     });
   }

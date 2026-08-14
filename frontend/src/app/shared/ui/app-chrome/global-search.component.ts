@@ -5,14 +5,17 @@ import {
   ElementRef,
   HostBinding,
   HostListener,
+  PLATFORM_ID,
   inject,
   signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { catchError, debounceTime, distinctUntilChanged, map, of, Subject, switchMap } from 'rxjs';
 import { SearchApi, SearchResult } from '../../../core/api/search.api';
 import { I18nService } from '../../../core/i18n/i18n.service';
+import { entityTypeLabel } from '../../../core/i18n/domain-labels';
 import { navigateToAppSearch } from '../../../core/search/search-navigation';
 
 type SearchCategoryType =
@@ -50,6 +53,7 @@ export class GlobalSearchComponent {
   private readonly searchApi = inject(SearchApi);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly i18n = inject(I18nService);
 
   readonly searchDraft = signal('');
@@ -58,6 +62,7 @@ export class GlobalSearchComponent {
   readonly searchLoading = signal(false);
   readonly categories = SEARCH_CATEGORIES;
   readonly activeSuggestionIndex = signal(-1);
+  readonly recentSearches = signal<string[]>(this.readRecentSearches());
 
   private readonly searchInput$ = new Subject<string>();
 
@@ -164,8 +169,24 @@ export class GlobalSearchComponent {
   onSearchSubmit(event: Event, input: HTMLInputElement): void {
     event.preventDefault();
     const query = input.value;
+    this.recordRecentSearch(query);
     this.reset(input);
     void navigateToAppSearch(this.router, query);
+  }
+
+  chooseRecentSearch(input: HTMLInputElement, query: string): void {
+    input.value = query;
+    this.recordRecentSearch(query);
+    this.reset(input);
+    void navigateToAppSearch(this.router, query);
+  }
+
+  chooseSearchPrompt(input: HTMLInputElement): void {
+    this.chooseRecentSearch(input, this.i18n.t('search.promptQuery'));
+  }
+
+  entityLabel(type: string | null | undefined): string {
+    return entityTypeLabel(type, this.i18n);
   }
 
   closeSearchUi(): void {
@@ -179,6 +200,35 @@ export class GlobalSearchComponent {
     this.searchSuggestions.set([]);
     this.activeSuggestionIndex.set(-1);
     this.searchFocused.set(false);
+  }
+
+  private readRecentSearches(): string[] {
+    if (!isPlatformBrowser(this.platformId)) return [];
+
+    try {
+      const searches = JSON.parse(window.localStorage.getItem('jano.search.recents') ?? '[]');
+      return Array.isArray(searches)
+        ? searches.filter((query): query is string => typeof query === 'string').slice(0, 4)
+        : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private recordRecentSearch(rawQuery: string): void {
+    const query = rawQuery.trim();
+    if (!query) return;
+
+    this.recentSearches.update((searches) => {
+      const next = [
+        query,
+        ...searches.filter((item) => item.toLocaleLowerCase() !== query.toLocaleLowerCase()),
+      ].slice(0, 4);
+      if (isPlatformBrowser(this.platformId)) {
+        window.localStorage.setItem('jano.search.recents', JSON.stringify(next));
+      }
+      return next;
+    });
   }
 }
 
