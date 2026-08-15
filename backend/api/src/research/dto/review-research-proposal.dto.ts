@@ -3,5 +3,5 @@ import { IsEnum } from 'class-validator';
 
 export class ReviewResearchProposalDto {
   @IsEnum(ResearchProposalReviewState)
-  reviewState!: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>;
+  reviewState!: ResearchProposalReviewState;
 }

@@ -71,8 +71,7 @@ type GraphEntityInfo = {
 })
 export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   private static readonly MOBILE_BREAKPOINT = 760;
-  private static readonly INITIAL_RELATION_LIMIT = 48;
-  private static readonly RELATION_LIMIT_STEP = 48;
+  private static readonly INITIAL_RELATION_LIMIT = 6;
   private static readonly WORKSPACE_TRANSITION_MS = 320;
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly platformId = inject(PLATFORM_ID);
@@ -380,12 +379,12 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
     return Math.max(0, (entity?.incoming?.length ?? 0) - this.incomingRelationLimit);
   }
 
-  showMoreOutgoingRelations(): void {
-    this.outgoingRelationLimit += EntityDetailViewComponent.RELATION_LIMIT_STEP;
+  showAllOutgoingRelations(entity: PublicEntity | null): void {
+    this.outgoingRelationLimit = entity?.outgoing?.length ?? 0;
   }
 
-  showMoreIncomingRelations(): void {
-    this.incomingRelationLimit += EntityDetailViewComponent.RELATION_LIMIT_STEP;
+  showAllIncomingRelations(entity: PublicEntity | null): void {
+    this.incomingRelationLimit = entity?.incoming?.length ?? 0;
   }
 
   private resetRelationLimits(): void {

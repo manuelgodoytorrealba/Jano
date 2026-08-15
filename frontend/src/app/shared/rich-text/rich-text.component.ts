@@ -7,6 +7,7 @@ import {
   EventEmitter,
   HostListener,
   Input,
+  OnDestroy,
   Output,
   ViewChild,
   inject,
@@ -15,7 +16,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { I18nService } from '../../core/i18n/i18n.service';
-import { contentLevelLabel, entityTypeLabel, statusLabel } from '../../core/i18n/domain-labels';
+import { entityTypeLabel } from '../../core/i18n/domain-labels';
 import {
   PublicEntity,
   PublicEntityMediaAsset,
@@ -54,7 +55,8 @@ type Block =
   templateUrl: './rich-text.component.html',
   styleUrls: ['./rich-text.component.scss'],
 })
-export class RichTextComponent {
+export class RichTextComponent implements OnDestroy {
+  private static readonly PREVIEW_DELAY_MS = 320;
   private api = inject(EntitiesApi);
   private document = inject(DOCUMENT);
   private changeDetector = inject(ChangeDetectorRef);
@@ -82,7 +84,9 @@ export class RichTextComponent {
   entityPickerLeft = signal(0);
 
   private closeTimer: ReturnType<typeof setTimeout> | null = null;
+  private previewTimer: ReturnType<typeof setTimeout> | null = null;
   private requestId = 0;
+  private readonly previewCache = new Map<string, PublicEntityPreview>();
   private quoteExitArmed = false;
   private activeFormats = new Set<RichTextFormat>();
   private linkRange: Range | null = null;
@@ -100,16 +104,13 @@ export class RichTextComponent {
     return this.selectPreviewImage(this.preview());
   }
 
+  ngOnDestroy(): void {
+    this.cancelClose();
+    this.cancelPreviewOpen();
+  }
+
   entityLabel(type: string | null | undefined): string {
     return entityTypeLabel(type, this.i18n);
-  }
-
-  statusLabel(status: string | null | undefined): string {
-    return statusLabel(status, this.i18n);
-  }
-
-  contentLevelLabel(level: string | null | undefined): string {
-    return contentLevelLabel(level, this.i18n);
   }
 
   format(command: RichTextFormat): void {
@@ -407,11 +408,33 @@ export class RichTextComponent {
       return;
     }
 
+    this.cancelPreviewOpen();
+    this.openSlug.set(null);
+    this.openPreviewKey.set(null);
+    this.preview.set(null);
+    this.previewLoading.set(false);
+    this.previewTimer = setTimeout(
+      () => this.openPreview(slug, previewKey),
+      RichTextComponent.PREVIEW_DELAY_MS,
+    );
+  }
+
+  private openPreview(slug: string, previewKey: string): void {
+    this.previewTimer = null;
+    if (!this.isHoveringLink) return;
+
     this.openSlug.set(slug);
     this.openPreviewKey.set(previewKey);
-    this.preview.set(null);
-    this.previewLoading.set(true);
 
+    const cacheKey = `${this.i18n.locale()}:${this.previewAccess}:${slug}`;
+    const cached = this.previewCache.get(cacheKey);
+    if (cached) {
+      this.preview.set(cached);
+      this.previewLoading.set(false);
+      return;
+    }
+
+    this.previewLoading.set(true);
     const currentRequest = ++this.requestId;
 
     this.api.preview(slug, { includeDrafts: this.previewAccess === 'admin' }).subscribe({
@@ -419,6 +442,7 @@ export class RichTextComponent {
         if (currentRequest !== this.requestId) return;
         if (this.openSlug() !== slug) return;
 
+        this.previewCache.set(cacheKey, p);
         this.preview.set(p);
         this.previewLoading.set(false);
       },
@@ -434,6 +458,7 @@ export class RichTextComponent {
 
   onLinkLeave() {
     this.isHoveringLink = false;
+    this.cancelPreviewOpen();
     this.scheduleClose();
   }
 
@@ -475,6 +500,13 @@ export class RichTextComponent {
       clearTimeout(this.closeTimer);
       this.closeTimer = null;
     }
+  }
+
+  private cancelPreviewOpen() {
+    if (!this.previewTimer) return;
+
+    clearTimeout(this.previewTimer);
+    this.previewTimer = null;
   }
 
   private selectPreviewImage(entity: PublicEntityPreview | null): PublicEntityMediaAsset | null {

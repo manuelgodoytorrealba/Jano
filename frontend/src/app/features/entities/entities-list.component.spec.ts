@@ -353,6 +353,7 @@ describe('EntitiesListComponent filters', () => {
     expect(navigateCalls).toHaveLength(1);
     expect(navigateCalls[0][1]?.queryParams).toEqual({
       q: null,
+      type: null,
       status: null,
       contentLevel: null,
       movement: null,
@@ -409,7 +410,7 @@ describe('EntitiesListComponent filters', () => {
     paramMap$.next(convertToParamMap({ type: 'movement' }));
 
     await new Promise((resolve) => setTimeout(resolve, 350));
-    expect(visibleStates.at(-1)).toBe(false);
+    expect(visibleStates.at(-1)).toBe(true);
   });
 
   it('keeps nationality combined with q, sort, movement and period for artist catalogs', async () => {
@@ -486,7 +487,7 @@ describe('EntitiesListComponent filters', () => {
     paramMap$.next(convertToParamMap({ type: 'artwork' }));
 
     await new Promise((resolve) => setTimeout(resolve, 350));
-    expect(visibleStates.at(-1)).toBe(false);
+    expect(visibleStates.at(-1)).toBe(true);
   });
 
   it('ignores institution when the catalog type is not artwork', async () => {

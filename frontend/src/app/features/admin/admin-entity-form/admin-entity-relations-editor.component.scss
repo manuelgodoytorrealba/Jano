@@ -29,6 +29,22 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
+
+.relation-advanced {
+  border-top: 1px solid var(--color-border);
+  padding-top: 10px;
+}
+
+.relation-advanced summary {
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.relation-advanced__body {
+  margin-top: 12px;
+}
 .current-relations h4 {
   margin: 0;
   color: var(--color-text);
@@ -43,6 +59,11 @@
   border: 1px solid var(--entity-editor-control-border);
   border-radius: 12px;
   background: var(--entity-editor-control-bg);
+}
+
+.search-empty {
+  color: var(--color-text-muted);
+  font-size: 12px;
 }
 
 .search-item {
@@ -67,6 +88,29 @@
   font-size: 12px;
 }
 
+.search-item small {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.search-item:hover,
+.search-item:focus-visible {
+  border-color: var(--entity-editor-accent, #8ca6ff);
+  background: color-mix(in srgb, var(--entity-editor-control-bg) 76%, #8ca6ff 24%);
+}
+
+.relation-form select,
+.relation-card select {
+  color-scheme: dark;
+}
+
+.relation-form select option,
+.relation-card select option {
+  background: #202326;
+  color: #f5f3ef;
+}
+
 .relation-card {
   display: flex;
   align-items: start;
@@ -76,6 +120,13 @@
   border: 1px solid var(--entity-editor-control-border);
   border-radius: 14px;
   background: var(--entity-editor-control-bg);
+}
+
+.relations-list {
+  max-height: 720px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-gutter: stable;
 }
 
 .relation-card.incoming {
@@ -95,6 +146,16 @@
   color: var(--color-text);
   font-weight: 700;
 }
+
+.relation-status {
+  color: var(--text-muted, #a6a6ad);
+  font-size: 0.78rem;
+  margin-top: 0.5rem;
+}
+
+.relation-status.is-published {
+  color: #8fd3a1;
+}
 .relation-arrow,
 .relation-meta {
   color: var(--color-text-muted);
@@ -111,6 +172,11 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.source-card__actions .btn:disabled {
+  cursor: default;
+  opacity: 0.55;
 }
 
 .preview-empty {

@@ -17,6 +17,18 @@
         <a class="draft-launcher__back" [attr.href]="shell.returnTo">Volver</a>
       </header>
 
+      <label class="draft-launcher__identity">
+        <span>Nombre provisional</span>
+        <input
+          type="text"
+          [(ngModel)]="newEntityTitle"
+          (ngModelChange)="newEntitySlug = slugify($event)"
+          placeholder="Ej. Retrato de una época"
+          autocomplete="off"
+        />
+        <small>Podrás completar el resto de la ficha después, sin crear una entidad anónima.</small>
+      </label>
+
       <div class="draft-types" role="list" aria-label="Tipos de entidad">
         @for (option of draftTypes; track option.type) {
           <button
@@ -73,6 +85,19 @@
       ></app-admin-entity-sidebar>
 
       <section class="form-wrap">
+        <header class="entity-workspace-head">
+          <div class="entity-workspace-head__identity">
+            <p>{{ entityTypeLabel }} · {{ form.kind || 'Pieza editorial' }}</p>
+            <h1>{{ form.title || 'Nueva pieza' }}</h1>
+            <span [class]="entitySaveStatus.className">{{ entitySaveStatus.label }}</span>
+          </div>
+          <div class="entity-workspace-head__meta">
+            <span>{{ form.status === 'PUBLISHED' ? 'Publicada' : 'Borrador de trabajo' }}</span>
+            @if (form.startYear || form.endYear) {
+              <span>{{ form.startYear || '…' }}–{{ form.endYear || '…' }}</span>
+            }
+          </div>
+        </header>
         @if (facade.errorMessage()) {
           <div class="error-box">{{ facade.errorMessage() }}</div>
         }
@@ -80,82 +105,113 @@
           <div class="success-box">{{ facade.successMessage() }}</div>
         }
 
-        <app-admin-entity-global-data
-          [isEdit]="shell.isEdit"
-          [entityId]="shell.entityId"
-          [form]="form"
-          [translations]="translationForms"
-          [localizedDetails]="localizedDetailForms"
-          [details]="detailsForm"
-          [tags]="entityTags"
-          [classifications]="entityClassifications"
-          [aliases]="entityAliases"
-          (draftChange)="onGlobalDataDraftChange($event)"
-          (translationSaved)="onTranslationSaved($event)"
-          (detailsSaved)="onDetailsSaved($event)"
-          (detailsStatusChange)="onDetailsStatusChange($event)"
-        ></app-admin-entity-global-data>
+        <div
+          class="editor-workspace-section"
+          [class.is-active]="shell.activeSection === 'section-content'"
+        >
+          <app-admin-entity-global-data
+            [isEdit]="shell.isEdit"
+            [entityId]="shell.entityId"
+            [form]="form"
+            [translations]="translationForms"
+            [localizedDetails]="localizedDetailForms"
+            [details]="detailsForm"
+            [tags]="entityTags"
+            [classifications]="entityClassifications"
+            [aliases]="entityAliases"
+            (draftChange)="onGlobalDataDraftChange($event)"
+            (translationSaved)="onTranslationSaved($event)"
+            (detailsSaved)="onDetailsSaved($event)"
+            (detailsStatusChange)="onDetailsStatusChange($event)"
+            (publishRequested)="publishEntity()"
+          ></app-admin-entity-global-data>
+        </div>
 
-        <app-admin-entity-relations-editor
-          [entityId]="shell.entityId"
-          (stateChange)="onRelationsStateChange($event)"
-        ></app-admin-entity-relations-editor>
+        <div
+          class="editor-workspace-section"
+          [class.is-active]="shell.activeSection === 'section-relations'"
+        >
+          <app-admin-entity-relations-editor
+            [entityId]="shell.entityId"
+            (stateChange)="onRelationsStateChange($event)"
+          ></app-admin-entity-relations-editor>
+        </div>
 
-        <app-admin-entity-media-library
-          [isEdit]="shell.isEdit"
-          [entityTitle]="form.title"
-          [mediaEditors]="mediaEditors"
-          [persistedMediaLinks]="persistedMediaLinks"
-          [resolvedVisualSlots]="resolvedVisualSlots"
-          [additionalMediaItems]="additionalMediaItems"
-          [mediaWarningsDetailed]="mediaWarningsDetailed"
-          [mediaWarningMessages]="mediaWarningMessages"
-          [mediaCoverageSummary]="mediaCoverageSummary"
-          [persistedResolvedMedia]="persistedResolvedMedia"
-          [entityId]="shell.entityId"
-          [initialActiveEditorId]="activeMediaEditorId"
-          [adding]="addingMedia"
-          [uploading]="uploadingMedia"
-          [addResetVersion]="mediaAddResetVersion"
-          [message]="mediaMessage"
-          [error]="mediaError"
-          (stateChange)="onMediaLibraryStateChange($event)"
-        ></app-admin-entity-media-library>
+        <div
+          class="editor-workspace-section"
+          [class.is-active]="shell.activeSection === 'section-media'"
+        >
+          <app-admin-entity-media-library
+            [isEdit]="shell.isEdit"
+            [entityTitle]="form.title"
+            [mediaEditors]="mediaEditors"
+            [persistedMediaLinks]="persistedMediaLinks"
+            [resolvedVisualSlots]="resolvedVisualSlots"
+            [additionalMediaItems]="additionalMediaItems"
+            [mediaWarningsDetailed]="mediaWarningsDetailed"
+            [mediaWarningMessages]="mediaWarningMessages"
+            [mediaCoverageSummary]="mediaCoverageSummary"
+            [persistedResolvedMedia]="persistedResolvedMedia"
+            [entityId]="shell.entityId"
+            [initialActiveEditorId]="activeMediaEditorId"
+            [adding]="addingMedia"
+            [uploading]="uploadingMedia"
+            [addResetVersion]="mediaAddResetVersion"
+            [message]="mediaMessage"
+            [error]="mediaError"
+            (stateChange)="onMediaLibraryStateChange($event)"
+          ></app-admin-entity-media-library>
+        </div>
 
         @if (shell.isEdit) {
-          <app-admin-entity-sources-editor
-            [entityId]="shell.entityId"
-            [sourceRefs]="sourceRefs"
-            (stateChange)="onSourcesStateChange($event)"
-          ></app-admin-entity-sources-editor>
+          <div
+            class="editor-workspace-section"
+            [class.is-active]="shell.activeSection === 'section-sources'"
+          >
+            <app-admin-entity-sources-editor
+              [entityId]="shell.entityId"
+              [sourceRefs]="sourceRefs"
+              (stateChange)="onSourcesStateChange($event)"
+            ></app-admin-entity-sources-editor>
+          </div>
 
-          <app-admin-entity-contributors-editor
-            [entityId]="shell.entityId"
-            [contributors]="contributors"
-            (stateChange)="onContributorsStateChange($event)"
-          ></app-admin-entity-contributors-editor>
+          <div
+            class="editor-workspace-section"
+            [class.is-active]="shell.activeSection === 'section-contributors'"
+          >
+            <app-admin-entity-contributors-editor
+              [entityId]="shell.entityId"
+              [contributors]="contributors"
+              (stateChange)="onContributorsStateChange($event)"
+            ></app-admin-entity-contributors-editor>
+          </div>
         }
 
-        <app-admin-entity-preview
-          [ready]="initialEntityHydrated"
-          [stateKey]="previewStateKey()"
-          [entityId]="shell.entityId"
-          [locale]="i18n.locale()"
-          [form]="form"
-          [translations]="translationForms"
-          [details]="detailsForm"
-          [localizedDetails]="localizedDetailForms"
-          [entityTags]="entityTags"
-          [relations]="relations"
-          [incomingRelations]="incomingRelations"
-          [sourceRefs]="sourceRefs"
-          [contributors]="contributors"
-          [mediaEditors]="mediaEditors"
-          [persistedResolvedMedia]="persistedResolvedMedia"
-          [resolvedVisualSlots]="resolvedVisualSlots"
-          [publishing]="facade.saving()"
-          (publish)="publishEntity()"
-        ></app-admin-entity-preview>
+        <div
+          class="editor-workspace-section"
+          [class.is-active]="shell.activeSection === 'section-preview'"
+        >
+          <app-admin-entity-preview
+            [ready]="initialEntityHydrated"
+            [stateKey]="previewStateKey()"
+            [entityId]="shell.entityId"
+            [locale]="i18n.locale()"
+            [form]="form"
+            [translations]="translationForms"
+            [details]="detailsForm"
+            [localizedDetails]="localizedDetailForms"
+            [entityTags]="entityTags"
+            [relations]="relations"
+            [incomingRelations]="incomingRelations"
+            [sourceRefs]="sourceRefs"
+            [contributors]="contributors"
+            [mediaEditors]="mediaEditors"
+            [persistedResolvedMedia]="persistedResolvedMedia"
+            [resolvedVisualSlots]="resolvedVisualSlots"
+            [publishing]="facade.saving()"
+            (publish)="publishEntity()"
+          ></app-admin-entity-preview>
+        </div>
       </section>
     </section>
   }

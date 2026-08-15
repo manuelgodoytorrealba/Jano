@@ -64,6 +64,12 @@
     "prisma:migrate": "npm --prefix backend/api run prisma:migrate",
     "prisma:deploy": "npm --prefix backend/api run prisma:deploy",
     "prisma:seed": "npm --prefix backend/api run prisma:seed",
+    "seed:system": "npm --prefix backend/api run seed:system",
+    "seed:foundational": "npm --prefix backend/api run seed:foundational",
+    "foundational:validate": "npm --prefix backend/api run foundational:validate",
+    "foundational:report": "npm --prefix backend/api run foundational:report",
+    "foundational:idempotency": "npm --prefix backend/api run foundational:idempotency",
+    "db:reset:development": "npm --prefix backend/api run db:reset:development",
     "prisma:reset": "npm --prefix backend/api run prisma:reset",
     "admin:info": "npm --prefix backend/api run admin:info",
     "mobile": "node scripts/mobile-dev.mjs"

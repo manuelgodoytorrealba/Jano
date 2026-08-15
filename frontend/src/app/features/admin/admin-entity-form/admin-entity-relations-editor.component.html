@@ -12,6 +12,9 @@
   @if (errorMessage) {
     <small class="error-text">{{ errorMessage }}</small>
   }
+  @if (successMessage) {
+    <small class="success-text">{{ successMessage }}</small>
+  }
 
   <details class="resource-composer">
     <summary>
@@ -23,13 +26,15 @@
     <div class="resource-composer__body">
       <div class="relation-form">
         <label class="field full">
-          <span>Buscar entity</span>
+          <span>Buscar entidad de destino</span>
           <input
             type="text"
             [(ngModel)]="relationSearch"
             (input)="searchRelationTargets()"
-            placeholder="Busca por título, slug o resumen..."
+            placeholder="Escribe al menos 2 letras: nombre, slug o tema..."
+            autocomplete="off"
           />
+          <small class="hint">Elige una entidad existente; no necesitas conocer su ID.</small>
         </label>
         @if (relationLoading) {
           <div class="muted">Buscando…</div>
@@ -39,10 +44,16 @@
             @for (item of relationResults; track item.id) {
               <button type="button" class="search-item" (click)="selectRelationTarget(item)">
                 <strong>{{ item.title }}</strong
-                ><span>{{ item.type }}</span>
+                ><span>{{ item.type }} · {{ item.slug }}</span>
+                @if (item.summary) {
+                  <small>{{ item.summary }}</small>
+                }
               </button>
             }
           </div>
+        }
+        @if (!relationLoading && relationSearch.trim().length >= 2 && !relationResults.length) {
+          <small class="search-empty">No encontramos entidades con ese texto.</small>
         }
         <label class="field">
           <span>Tipo de relación</span>
@@ -56,44 +67,47 @@
             }
           </select>
         </label>
-        <div class="relation-assertion-grid">
-          <label class="field"
-            ><span>Estado</span
-            ><select [(ngModel)]="newRelation.status" name="newRelationStatus">
-              <option value="PUBLISHED">Publicado</option>
-              <option value="DRAFT">Borrador</option>
-              <option value="IN_REVIEW">En revisión</option>
-              <option value="REJECTED">Rechazado</option>
-            </select></label
-          >
-          <label class="field"
-            ><span>Confianza</span
-            ><input
-              type="number"
-              min="0"
-              max="1"
-              step="0.01"
-              [(ngModel)]="newRelation.confidence"
-              name="newRelationConfidence"
-              placeholder="0–1"
-          /></label>
-          <label class="field"
-            ><span>Desde</span
-            ><input
-              type="number"
-              [(ngModel)]="newRelation.validFromYear"
-              name="newRelationValidFromYear"
-              placeholder="Año"
-          /></label>
-          <label class="field"
-            ><span>Hasta</span
-            ><input
-              type="number"
-              [(ngModel)]="newRelation.validToYear"
-              name="newRelationValidToYear"
-              placeholder="Año"
-          /></label>
-        </div>
+        <details class="relation-advanced">
+          <summary>Contexto y datos avanzados</summary>
+          <div class="relation-advanced__body relation-assertion-grid">
+            <label class="field"
+              ><span>Estado</span
+              ><select [(ngModel)]="newRelation.status" name="newRelationStatus">
+                <option value="PUBLISHED">Publicado</option>
+                <option value="DRAFT">Borrador</option>
+                <option value="IN_REVIEW">En revisión</option>
+                <option value="REJECTED">Rechazado</option>
+              </select></label
+            >
+            <label class="field"
+              ><span>Confianza</span
+              ><input
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                [(ngModel)]="newRelation.confidence"
+                name="newRelationConfidence"
+                placeholder="0–1"
+            /></label>
+            <label class="field"
+              ><span>Desde</span
+              ><input
+                type="number"
+                [(ngModel)]="newRelation.validFromYear"
+                name="newRelationValidFromYear"
+                placeholder="Año"
+            /></label>
+            <label class="field"
+              ><span>Hasta</span
+              ><input
+                type="number"
+                [(ngModel)]="newRelation.validToYear"
+                name="newRelationValidToYear"
+                placeholder="Año"
+            /></label>
+          </div>
+        </details>
         <label class="field full"
           ><span>Justificación ES</span
           ><textarea
@@ -102,16 +116,26 @@
             name="newRelationJustificationEs"
           ></textarea>
         </label>
-        <label class="field full"
-          ><span>Justification EN</span
-          ><textarea
-            rows="3"
-            [(ngModel)]="newRelation.justificationEn"
-            name="newRelationJustificationEn"
-          ></textarea>
-        </label>
+        <details class="relation-advanced">
+          <summary>Justificación en inglés</summary>
+          <label class="field full relation-advanced__body"
+            ><span>Justification EN</span
+            ><textarea
+              rows="3"
+              [(ngModel)]="newRelation.justificationEn"
+              name="newRelationJustificationEn"
+            ></textarea>
+          </label>
+        </details>
         <div class="relations-actions">
-          <button class="btn primary" type="button" (click)="addRelation()">Añadir relación</button>
+          <button
+            class="btn primary"
+            type="button"
+            (click)="addRelation()"
+            [disabled]="relationSaving"
+          >
+            {{ relationSaving ? 'Creando relación…' : 'Añadir relación publicada' }}
+          </button>
         </div>
       </div>
     </div>
@@ -138,44 +162,50 @@
                   <span class="relation-meta">· {{ rel.to?.type }}</span>
                 }
               </div>
-              <div class="relation-assertion-grid">
-                <label class="field"
-                  ><span>Estado</span
-                  ><select [(ngModel)]="rel.status" [name]="'relationStatus-' + rel.id">
-                    <option value="PUBLISHED">Publicado</option>
-                    <option value="DRAFT">Borrador</option>
-                    <option value="IN_REVIEW">En revisión</option>
-                    <option value="REJECTED">Rechazado</option>
-                  </select></label
-                >
-                <label class="field"
-                  ><span>Confianza</span
-                  ><input
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    [(ngModel)]="rel.confidence"
-                    [name]="'relationConfidence-' + rel.id"
-                    placeholder="0–1"
-                /></label>
-                <label class="field"
-                  ><span>Desde</span
-                  ><input
-                    type="number"
-                    [(ngModel)]="rel.validFromYear"
-                    [name]="'relationValidFromYear-' + rel.id"
-                    placeholder="Año"
-                /></label>
-                <label class="field"
-                  ><span>Hasta</span
-                  ><input
-                    type="number"
-                    [(ngModel)]="rel.validToYear"
-                    [name]="'relationValidToYear-' + rel.id"
-                    placeholder="Año"
-                /></label>
+              <div class="relation-status" [class.is-published]="rel.status === 'PUBLISHED'">
+                {{ rel.status === 'PUBLISHED' ? 'Publicada' : 'Pendiente de publicar' }}
               </div>
+              <details class="relation-advanced">
+                <summary>Contexto y datos avanzados</summary>
+                <div class="relation-advanced__body relation-assertion-grid">
+                  <label class="field"
+                    ><span>Estado</span
+                    ><select [(ngModel)]="rel.status" [name]="'relationStatus-' + rel.id">
+                      <option value="PUBLISHED">Publicado</option>
+                      <option value="DRAFT">Borrador</option>
+                      <option value="IN_REVIEW">En revisión</option>
+                      <option value="REJECTED">Rechazado</option>
+                    </select></label
+                  >
+                  <label class="field"
+                    ><span>Confianza</span
+                    ><input
+                      type="number"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      [(ngModel)]="rel.confidence"
+                      [name]="'relationConfidence-' + rel.id"
+                      placeholder="0–1"
+                  /></label>
+                  <label class="field"
+                    ><span>Desde</span
+                    ><input
+                      type="number"
+                      [(ngModel)]="rel.validFromYear"
+                      [name]="'relationValidFromYear-' + rel.id"
+                      placeholder="Año"
+                  /></label>
+                  <label class="field"
+                    ><span>Hasta</span
+                    ><input
+                      type="number"
+                      [(ngModel)]="rel.validToYear"
+                      [name]="'relationValidToYear-' + rel.id"
+                      placeholder="Año"
+                  /></label>
+                </div>
+              </details>
               <label class="field full"
                 ><span>Justificación ES</span
                 ><textarea
@@ -184,18 +214,33 @@
                   [name]="'relationJustificationEs-' + rel.id"
                 ></textarea>
               </label>
-              <label class="field full"
-                ><span>Justification EN</span
-                ><textarea
-                  rows="2"
-                  [(ngModel)]="rel.justificationEn"
-                  [name]="'relationJustificationEn-' + rel.id"
-                ></textarea>
-              </label>
+              <details class="relation-advanced">
+                <summary>Justificación en inglés</summary>
+                <label class="field full relation-advanced__body"
+                  ><span>Justification EN</span
+                  ><textarea
+                    rows="2"
+                    [(ngModel)]="rel.justificationEn"
+                    [name]="'relationJustificationEn-' + rel.id"
+                  ></textarea>
+                </label>
+              </details>
             </div>
             <div class="source-card__actions">
-              <button type="button" class="btn" (click)="saveRelation(rel)">Guardar</button
-              ><button type="button" class="btn danger" (click)="removeRelation(rel.id)">
+              <button
+                type="button"
+                class="btn"
+                [disabled]="!isRelationDirty(rel)"
+                (click)="saveRelation(rel)"
+              >
+                {{ isRelationDirty(rel) ? 'Guardar relación' : 'Sin cambios' }}
+              </button>
+              @if (rel.status !== 'PUBLISHED') {
+                <button type="button" class="btn primary" (click)="publishRelation(rel)">
+                  Publicar relación
+                </button>
+              }
+              <button type="button" class="btn danger" (click)="removeRelation(rel.id)">
                 Quitar
               </button>
             </div>

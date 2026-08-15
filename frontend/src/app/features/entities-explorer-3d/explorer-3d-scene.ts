@@ -67,7 +67,11 @@ export class Explorer3dScene {
   private resizePending = false;
   private _entryAnimationState: EntryAnimationState = 'idle';
 
-  constructor(private readonly onEntryAnimationComplete?: () => void) {}
+  constructor(
+    private readonly onEntryAnimationComplete?: () => void,
+    private readonly typeLabel: (type: string | null | undefined) => string = (type) =>
+      type ?? 'Entity',
+  ) {}
 
   get domElement(): HTMLCanvasElement | undefined {
     return this.renderer?.domElement;
@@ -249,6 +253,14 @@ export class Explorer3dScene {
       const data: CardUserData = { index, slug: item.slug, imageRevealOpacity: 1 };
       group.userData = data;
       image.userData = data;
+      imageMaterial.map = createFallbackImageTexture(
+        { ...item, type: this.typeLabel(item.type) },
+        1100,
+        1200,
+        48,
+      );
+      imageMaterial.color.set('#ffffff');
+      imageMaterial.needsUpdate = true;
       const media = resolveMediaPresentation(
         resolveEntityMediaItem(item, 'explorer3d'),
         'explorer3d',
@@ -267,21 +279,9 @@ export class Explorer3dScene {
           imageMaterial.map?.dispose();
           imageMaterial.map = createRoundedImageTexture(source, 1100, 1200, 48, media);
           imageMaterial.color.set('#ffffff');
-          data.imageRevealOpacity = 0;
-          imageMaterial.opacity = 0;
-          imageMaterial.needsUpdate = true;
-        };
-        source.onerror = () => {
-          if (cardsVersion !== this.cardsVersion) return;
-          imageMaterial.map = createFallbackImageTexture(item, 1100, 1200, 48);
-          imageMaterial.color.set('#ffffff');
           imageMaterial.needsUpdate = true;
         };
         source.src = media.src;
-      } else {
-        imageMaterial.map = createFallbackImageTexture(item, 1100, 1200, 48);
-        imageMaterial.color.set('#ffffff');
-        imageMaterial.needsUpdate = true;
       }
       group.add(frame, image, glass);
       this.scene.add(group);

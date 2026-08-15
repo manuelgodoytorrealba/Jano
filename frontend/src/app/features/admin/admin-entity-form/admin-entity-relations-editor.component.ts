@@ -57,10 +57,14 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
   relationSearch = '';
   relationResults: AdminEntitySearchListItem[] = [];
   relationLoading = false;
+  relationSearchRequest = 0;
+  relationSaving = false;
   relationsLoading = false;
   incomingRelationsLoading = false;
   errorMessage = '';
+  successMessage = '';
   citationRelationId = '';
+  private readonly relationSnapshots = new Map<string, string>();
   newRelation: AdminEntityRelationDraft = createEmptyRelationDraft([]);
 
   ngOnInit(): void {
@@ -71,13 +75,16 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
 
   searchRelationTargets(): void {
     const query = this.relationSearch.trim();
+    const request = ++this.relationSearchRequest;
     if (!shouldSearchRelationTargets(query)) {
       this.relationResults = [];
+      this.relationLoading = false;
       return;
     }
     this.relationLoading = true;
     this.adminApi.list({ q: query, limit: 12, page: 1, sort: 'title' }).subscribe({
       next: (response) => {
+        if (request !== this.relationSearchRequest) return;
         this.relationResults = filterRelationSearchResults(
           Array.isArray(response?.items) ? response.items : [],
           this.entityId,
@@ -86,6 +93,7 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: () => {
+        if (request !== this.relationSearchRequest) return;
         this.relationResults = [];
         this.relationLoading = false;
         this.cdr.markForCheck();
@@ -97,6 +105,7 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
     this.newRelation = { ...this.newRelation, toId: entity.id };
     this.relationSearch = buildSelectedRelationSearchLabel(entity);
     this.relationResults = [];
+    this.successMessage = '';
   }
 
   onRelationTypeChange(relationTypeId: string): void {
@@ -110,10 +119,14 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
   addRelation(): void {
     if (!canSubmitRelationDraft(this.entityId, this.newRelation)) return;
     this.errorMessage = '';
+    this.successMessage = '';
+    this.relationSaving = true;
     this.adminApi
       .createRelation(this.entityId, buildCreateRelationPayload(this.newRelation))
       .subscribe({
         next: () => {
+          this.relationSaving = false;
+          this.successMessage = 'Relación creada y publicada.';
           this.newRelation = createEmptyRelationDraft(this.relationTypes);
           this.relationSearch = '';
           this.relationResults = [];
@@ -121,6 +134,7 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
           this.loadIncomingRelations();
         },
         error: () => {
+          this.relationSaving = false;
           this.errorMessage = 'No se pudo crear la relación.';
           this.emitState();
         },
@@ -128,22 +142,36 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
   }
 
   saveRelation(relation: AdminEntityRelationRecord): void {
+    if (!this.isRelationDirty(relation)) return;
     this.errorMessage = '';
+    this.successMessage = '';
     this.adminApi
       .updateRelation(this.entityId, relation.id, buildUpdateRelationPayload(relation))
       .subscribe({
         next: (updated) => {
           this.relations = this.relations.map((item) => (item.id === updated.id ? updated : item));
+          this.relationSnapshots.set(updated.id, this.relationFingerprint(updated));
           this.incomingRelations = this.incomingRelations.map((item) =>
             item.id === updated.id ? updated : item,
           );
           this.emitState();
+          this.successMessage = 'Relación guardada.';
+          this.cdr.markForCheck();
         },
         error: () => {
           this.errorMessage = 'No se pudo actualizar la relación.';
           this.emitState();
         },
       });
+  }
+
+  publishRelation(relation: AdminEntityRelationRecord): void {
+    relation.status = 'PUBLISHED';
+    this.saveRelation(relation);
+  }
+
+  isRelationDirty(relation: AdminEntityRelationRecord): boolean {
+    return this.relationSnapshots.get(relation.id) !== this.relationFingerprint(relation);
   }
 
   toggleCitations(relationId: string): void {
@@ -189,6 +217,9 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
     this.adminApi.listRelations(this.entityId).subscribe({
       next: (relations) => {
         this.relations = relations;
+        relations.forEach((relation) =>
+          this.relationSnapshots.set(relation.id, this.relationFingerprint(relation)),
+        );
         this.relationsLoading = false;
         this.emitState();
       },
@@ -227,5 +258,19 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
       hasError: !!this.errorMessage,
     });
     this.cdr.markForCheck();
+  }
+
+  private relationFingerprint(relation: AdminEntityRelationRecord): string {
+    return JSON.stringify({
+      relationTypeId: relation.relationTypeId ?? relation.relationType?.id ?? null,
+      type: relation.type ?? relation.relationTypeKey ?? null,
+      justificationEs: relation.justificationEs ?? relation.justification ?? null,
+      justificationEn: relation.justificationEn ?? null,
+      status: relation.status ?? null,
+      weight: relation.weight ?? null,
+      confidence: relation.confidence ?? null,
+      validFromYear: relation.validFromYear ?? null,
+      validToYear: relation.validToYear ?? null,
+    });
   }
 }

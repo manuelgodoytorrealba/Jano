@@ -383,9 +383,12 @@
                           r.relationTypeLabel ??
                             relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing')
                         }}</span>
-                        <a class="relation-card__link" [routerLink]="['/entity', r.to.slug]">{{
-                          r.to.title
-                        }}</a>
+                        <a
+                          class="relation-card__link"
+                          [routerLink]="['/entity', r.to.slug]"
+                          [attr.aria-label]="i18n.t('entity.open') + ': ' + r.to.title"
+                          >{{ r.to.title }}</a
+                        >
                       </div>
                       @if (r.justification) {
                         <div class="relation-card__text">
@@ -402,13 +405,9 @@
                   <button
                     type="button"
                     class="relations-reveal"
-                    (click)="showMoreOutgoingRelations()"
+                    (click)="showAllOutgoingRelations(entity)"
                   >
-                    {{ i18n.t('common.show') }}
-                    {{
-                      hiddenOutgoingRelations(entity) > 48 ? 48 : hiddenOutgoingRelations(entity)
-                    }}
-                    {{ i18n.t('common.more') }}
+                    {{ i18n.t('common.show') }} {{ i18n.t('common.all') }}
                   </button>
                 }
               }
@@ -428,9 +427,12 @@
                             r.relationTypeLabel ??
                             relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming')
                         }}</span>
-                        <a class="relation-card__link" [routerLink]="['/entity', r.from.slug]">{{
-                          r.from.title
-                        }}</a>
+                        <a
+                          class="relation-card__link"
+                          [routerLink]="['/entity', r.from.slug]"
+                          [attr.aria-label]="i18n.t('entity.open') + ': ' + r.from.title"
+                          >{{ r.from.title }}</a
+                        >
                       </div>
                       @if (r.justification) {
                         <div class="relation-card__text">
@@ -447,13 +449,9 @@
                   <button
                     type="button"
                     class="relations-reveal"
-                    (click)="showMoreIncomingRelations()"
+                    (click)="showAllIncomingRelations(entity)"
                   >
-                    {{ i18n.t('common.show') }}
-                    {{
-                      hiddenIncomingRelations(entity) > 48 ? 48 : hiddenIncomingRelations(entity)
-                    }}
-                    {{ i18n.t('common.more') }}
+                    {{ i18n.t('common.show') }} {{ i18n.t('common.all') }}
                   </button>
                 }
               }

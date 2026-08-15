@@ -222,14 +222,17 @@ export function graphTooltipStyle(
   tooltip: GraphTooltip | null,
   host: HTMLElement | null | undefined,
 ): Record<string, string> {
-  if (!tooltip || !host) {
+  if (!tooltip) {
     return {};
   }
 
-  const rect = host.getBoundingClientRect();
+  const hostRect = host?.getBoundingClientRect();
+  const left = hostRect ? tooltip.x - hostRect.left : tooltip.x;
+  const top = hostRect ? tooltip.y - hostRect.top : tooltip.y;
+
   return {
-    left: `${tooltip.x - rect.left + 18}px`,
-    top: `${tooltip.y - rect.top + 18}px`,
+    left: `${left + 18}px`,
+    top: `${top + 18}px`,
   };
 }
 

@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, map, tap } from 'rxjs';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { PublicEntityListItem } from '../../core/api/entities.models';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
@@ -72,6 +73,8 @@ const CONTENT_LEVEL_KEYS: Record<Exclude<Level, ''>, string> = {
 export class EntitiesListComponent {
   private readonly facade = inject(EntitiesListFacade);
   readonly i18n = inject(I18nService);
+  readonly auth = inject(AuthService);
+  readonly isAdmin = signal(this.auth.currentUser?.role === 'ADMIN');
 
   readonly pageVm$ = this.facade.pageVm$;
   readonly skeleton = Array.from({ length: 8 });
@@ -87,6 +90,9 @@ export class EntitiesListComponent {
   viewMode: ViewMode = 'explore';
 
   constructor() {
+    this.auth.user$.pipe(takeUntilDestroyed()).subscribe((user) => {
+      this.isAdmin.set(user?.role === 'ADMIN');
+    });
     this.pageVm$
       .pipe(
         map((pageVm) => pageVm.results.items.length),
@@ -179,11 +185,8 @@ export class EntitiesListComponent {
   }
 
   breadcrumbSectionRoute(pageVm: { title: string; type: string }): string {
-    if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
-      return '/entities/article';
-    }
-
-    return '/entities/artwork';
+    const type = (pageVm.type ?? '').trim().toLowerCase();
+    return type ? `/entities/${type}` : '/entities';
   }
 
   breadcrumbCurrentLabel(pageVm: {
@@ -221,6 +224,9 @@ export class EntitiesListComponent {
 
   selectFilterOption(key: FilterMenuKey, value: string) {
     switch (key) {
+      case 'type':
+        this.setType(value);
+        break;
       case 'movement':
         this.setMovement(value);
         break;
@@ -243,6 +249,9 @@ export class EntitiesListComponent {
 
   clearActiveFilter(key: EntitiesListActiveFilterKey) {
     switch (key) {
+      case 'type':
+        this.setType('');
+        break;
       case 'status':
         this.toggleStatus('');
         break;
@@ -341,6 +350,10 @@ export class EntitiesListComponent {
 
   setQ(value: string) {
     void this.facade.setQuery(value);
+  }
+
+  setType(value: string) {
+    void this.facade.setType(value);
   }
 
   toggleSort(next: Sort) {

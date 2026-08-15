@@ -444,6 +444,11 @@ export class ResearchController {
     return this.service.reviewEntity(id, entityId, dto);
   }
 
+  @Delete(':id/entities/:entityId')
+  deleteEntity(@Param('id') id: string, @Param('entityId') entityId: string) {
+    return this.service.deleteEntity(id, entityId);
+  }
+
   @Post(':id/entities')
   createEntity(@Param('id') id: string, @Body() dto: CreateResearchEntityDto) {
     return this.service.createEntity(id, dto);

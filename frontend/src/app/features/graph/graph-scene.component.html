@@ -91,9 +91,15 @@
 
         <path
           class="graph-edge-hit"
+          [attr.data-edge-id]="renderedEdge.edge.id"
           [attr.d]="renderedEdge.path"
+          vector-effect="non-scaling-stroke"
           (pointerenter)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
-          (pointermove)="tooltipMove.emit($event)"
+          (mouseenter)="edgeHover.emit({ event: $any($event), edge: renderedEdge.edge })"
+          (pointermove)="
+            edgeHover.emit({ event: $event, edge: renderedEdge.edge }); tooltipMove.emit($event)
+          "
+          (mousemove)="tooltipMove.emit($any($event))"
           (pointerup)="edgeActivate.emit({ event: $event, edge: renderedEdge.edge })"
           (pointerleave)="clearHover.emit()"
         ></path>
@@ -101,9 +107,16 @@
         @if (edgeLabelVisibility[renderedEdge.edge.id]) {
           <text
             class="graph-edge-label"
+            [attr.data-edge-id]="renderedEdge.edge.id"
             [class.is-muted]="renderedEdge.muted"
             [attr.x]="renderedEdge.labelPoint.x"
             [attr.y]="renderedEdge.labelPoint.y"
+            (pointerenter)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
+            (mouseenter)="edgeHover.emit({ event: $any($event), edge: renderedEdge.edge })"
+            (pointermove)="
+              edgeHover.emit({ event: $event, edge: renderedEdge.edge }); tooltipMove.emit($event)
+            "
+            (mousemove)="tooltipMove.emit($any($event))"
           >
             {{ renderedEdge.displayLabel }}
           </text>
@@ -114,6 +127,7 @@
     @for (renderedNode of renderedNodes; track renderedNode.node.id) {
       <g
         class="graph-node"
+        [attr.data-node-id]="renderedNode.node.id"
         [class.is-candidate]="renderedNode.node.state === 'candidate'"
         [attr.transform]="renderedNode.transform"
         [class.is-selected]="renderedNode.selected"
@@ -122,10 +136,15 @@
         [class.graph-node--mid]="renderedNode.depthTier === 'mid'"
         [class.graph-node--far]="renderedNode.depthTier === 'far'"
         (pointerdown)="nodePointerDown.emit({ event: $event, nodeId: renderedNode.node.id })"
-        (pointermove)="nodePointerMove.emit($event)"
+        (pointermove)="
+          nodePointerMove.emit($event);
+          nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })
+        "
         (pointerup)="nodePointerUp.emit({ event: $event, nodeId: renderedNode.node.id })"
         (pointercancel)="nodePointerCancel.emit($event)"
         (pointerenter)="nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })"
+        (mouseenter)="nodeHover.emit({ event: $any($event), nodeId: renderedNode.node.id })"
+        (mousemove)="nodeHover.emit({ event: $any($event), nodeId: renderedNode.node.id })"
         (pointerleave)="clearHover.emit()"
       >
         <circle
@@ -149,12 +168,14 @@
           [attr.d]="renderedNode.shapePath"
           [attr.fill]="renderedNode.nodeVisual.color"
           [attr.stroke]="renderedNode.nodeVisual.accent"
+          (mousemove)="nodeHover.emit({ event: $any($event), nodeId: renderedNode.node.id })"
         ></path>
 
         <path
           class="graph-node__shape graph-node__shape--inner"
           [attr.d]="renderedNode.shapePath"
           [attr.fill]="renderedNode.nodeVisual.color"
+          (mousemove)="nodeHover.emit({ event: $any($event), nodeId: renderedNode.node.id })"
         ></path>
 
         <text

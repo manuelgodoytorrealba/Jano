@@ -13,6 +13,8 @@
   );
   max-height: calc(var(--app-viewport-block) - var(--entities-rail-top) - 24px);
   display: grid;
+  align-content: start;
+  box-sizing: border-box;
   gap: 10px;
   padding: 13px 13px 15px;
   border-radius: 24px;
@@ -64,6 +66,7 @@
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.024);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 0;
 }
 
 .entities-filter-rail__section--actions {

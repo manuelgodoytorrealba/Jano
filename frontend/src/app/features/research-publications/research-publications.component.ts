@@ -65,7 +65,6 @@ export class ResearchPublicationsComponent {
 
   setView(viewMode: ViewMode): void {
     this.viewMode = viewMode;
-    if (viewMode === 'explore') this.infoOpen.set(true);
   }
 
   select(index: number): void {
@@ -114,7 +113,6 @@ export class ResearchPublicationsComponent {
       kind: 'WORK',
       summary: publication.objective,
       status: 'PUBLISHED',
-      contentLevel: 'PUBLICATION',
       createdAt: publication.publishedAt ?? publication.updatedAt,
       resolvedMedia: media
         ? { explorer3d: media, card: media, primary: media, thumbnail: media }

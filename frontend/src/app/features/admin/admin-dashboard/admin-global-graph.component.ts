@@ -428,15 +428,11 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     edges.forEach((edge, index) => {
       const source = positions[edge.source] ?? { x: 0, y: 0 };
       const target = positions[edge.target] ?? { x: 0, y: 0 };
-      const sourceColor = new THREE.Color(
-        getEntityTypeConfig(nodeMap.get(edge.source)?.type ?? '').color,
-      );
-      const targetColor = new THREE.Color(
-        getEntityTypeConfig(nodeMap.get(edge.target)?.type ?? '').color,
-      );
+      // Edges are connective tissue, not a second categorical legend.
+      const edgeColor = new THREE.Color('#7d8da3');
       vertices.set([source.x, source.y, -0.2, target.x, target.y, -0.2], index * 6);
       colors.set(
-        [sourceColor.r, sourceColor.g, sourceColor.b, targetColor.r, targetColor.g, targetColor.b],
+        [edgeColor.r, edgeColor.g, edgeColor.b, edgeColor.r, edgeColor.g, edgeColor.b],
         index * 6,
       );
     });
@@ -451,13 +447,13 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
       this.trackEdgeVertex(edge.source, positionAttribute, index * 2);
       this.trackEdgeVertex(edge.target, positionAttribute, index * 2 + 1);
     });
-    const baseOpacity = structural ? 0.1 : 0.28;
+    const baseOpacity = structural ? 0.24 : 0.3;
     const material = new THREE.LineBasicMaterial({
       vertexColors: true,
       transparent: true,
       opacity: baseOpacity,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
     });
     material.userData['baseOpacity'] = baseOpacity;
     return new THREE.LineSegments(geometry, material);
@@ -593,8 +589,20 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
   }
 
   private updateEdgeLod(): void {
-    if (this.structuralEdges) this.structuralEdges.visible = this.zoom >= 0.28;
-    if (this.semanticEdges) this.semanticEdges.visible = this.zoom >= 0.12;
+    // Keep the initial graph useful as a map; filters, not zoom, control density.
+    if (this.structuralEdges) this.structuralEdges.visible = true;
+    if (this.semanticEdges) this.semanticEdges.visible = true;
+    // Lines are pixel-based in WebGL. Increase contrast at the fit-to-screen
+    // scale, where a large graph would otherwise make them appear hair-thin.
+    for (const [line, overviewOpacity] of [
+      [this.structuralEdges, 0.38],
+      [this.semanticEdges, 0.44],
+    ] as const) {
+      if (!line) continue;
+      const material = line.material as THREE.LineBasicMaterial;
+      const baseOpacity = material.userData['baseOpacity'] as number;
+      material.opacity = this.zoom < 0.42 ? overviewOpacity : baseOpacity;
+    }
   }
 
   private readonly onWheel = (event: WheelEvent): void => {
@@ -823,7 +831,12 @@ export class AdminGlobalGraphComponent implements AfterViewInit, OnChanges, OnDe
     });
     colors.needsUpdate = true;
     const material = line.material as THREE.LineBasicMaterial;
-    material.opacity = selectedId ? 0.82 : (material.userData['baseOpacity'] as number);
+    const baseOpacity = material.userData['baseOpacity'] as number;
+    material.opacity = selectedId
+      ? 0.82
+      : this.zoom < 0.42
+        ? Math.min(0.5, baseOpacity + 0.14)
+        : baseOpacity;
   }
 
   private attachEvents(): void {

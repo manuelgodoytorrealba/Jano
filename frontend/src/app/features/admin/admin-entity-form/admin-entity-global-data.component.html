@@ -44,35 +44,27 @@
 
     <details class="editorial-inspector">
       <summary>
-        <span>Inspector</span>
-        <strong>{{ form.status }}</strong>
+        <span>Ficha y estado</span>
+        <strong>{{ statusLabel(form.status) }}</strong>
       </summary>
 
       <div class="editorial-inspector__body">
         <header class="editorial-inspector__head">
-          <p class="editorial-eyebrow">Configuración</p>
-          <h3>Metadatos de la pieza</h3>
-          <p>Datos operativos que no deben interrumpir la escritura.</p>
+          <p class="editorial-eyebrow">Ficha editorial</p>
+          <h3>Estado y contexto</h3>
+          <p>Solo lo necesario para situar y publicar la pieza.</p>
         </header>
 
         <div class="editorial-inspector__fields">
           <label class="field">
             <span>Estado</span>
-            <select
-              [(ngModel)]="form.status"
-              (ngModelChange)="onFormChange()"
-              name="status"
-              [disabled]="form.status === 'PUBLISHED'"
-            >
-              @if (form.status === 'PUBLISHED') {
-                <option value="PUBLISHED">PUBLISHED</option>
-              }
+            <select [ngModel]="form.status" (ngModelChange)="onStatusChange($event)" name="status">
               @for (status of statuses; track status) {
-                <option [value]="status">{{ status }}</option>
+                <option [value]="status">{{ statusLabel(status) }}</option>
               }
             </select>
             @if (form.status === 'PUBLISHED') {
-              <small class="hint">El contenido publicado permanece en guardado manual.</small>
+              <small class="hint">Los cambios posteriores se guardan manualmente.</small>
             }
           </label>
 
@@ -142,28 +134,37 @@
         </div>
 
         @if (isEdit) {
-          <section class="editorial-inspector__taxonomy" aria-label="Taxonomía editorial">
-            <app-admin-entity-taxonomy-editor
-              [entityId]="entityId"
-              [tags]="tags"
-              [classifications]="classifications"
-              [aliases]="aliases"
-              (stateChange)="onTaxonomyStateChange($event)"
-            ></app-admin-entity-taxonomy-editor>
-          </section>
+          <details class="editorial-inspector__advanced">
+            <summary>Clasificación y búsqueda</summary>
+            <section class="editorial-inspector__taxonomy" aria-label="Taxonomía editorial">
+              <app-admin-entity-taxonomy-editor
+                [entityId]="entityId"
+                [tags]="tags"
+                [classifications]="classifications"
+                [aliases]="aliases"
+                (stateChange)="onTaxonomyStateChange($event)"
+              ></app-admin-entity-taxonomy-editor>
+            </section>
+          </details>
 
-          <section class="editorial-inspector__taxonomy" aria-label="Atributos editoriales">
-            <app-admin-entity-attributes-editor
-              [entityId]="entityId"
-            ></app-admin-entity-attributes-editor>
-          </section>
+          <details class="editorial-inspector__advanced">
+            <summary>Atributos editoriales</summary>
+            <section class="editorial-inspector__taxonomy" aria-label="Atributos editoriales">
+              <app-admin-entity-attributes-editor
+                [entityId]="entityId"
+              ></app-admin-entity-attributes-editor>
+            </section>
+          </details>
 
-          <section class="editorial-inspector__taxonomy" aria-label="Evidencias de entidad">
-            <app-admin-citations-editor
-              target="entity"
-              [targetId]="entityId"
-            ></app-admin-citations-editor>
-          </section>
+          <details class="editorial-inspector__advanced">
+            <summary>Evidencias y procedencia</summary>
+            <section class="editorial-inspector__taxonomy" aria-label="Evidencias de entidad">
+              <app-admin-citations-editor
+                target="entity"
+                [targetId]="entityId"
+              ></app-admin-citations-editor>
+            </section>
+          </details>
         }
       </div>
     </details>

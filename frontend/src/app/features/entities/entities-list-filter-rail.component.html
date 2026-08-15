@@ -130,106 +130,110 @@
     </div>
   </div>
 
-  <div
-    class="entities-filter-rail__section entities-filter-rail__section--advanced"
-    [class.is-open]="advancedFiltersOpen || vm.hasAdvancedFilters"
-  >
-    <button
-      type="button"
-      class="entities-advanced-toggle"
-      (click)="toggleAdvancedFilters.emit()"
-      [attr.aria-expanded]="advancedFiltersOpen || vm.hasAdvancedFilters"
+  @if (showAdvancedFilters) {
+    <div
+      class="entities-filter-rail__section entities-filter-rail__section--advanced"
+      [class.is-open]="advancedFiltersOpen || vm.hasAdvancedFilters"
     >
-      <span class="entities-filter-rail__label">{{ i18n.t('explorer.advancedFilters') }}</span>
-      <span class="entities-advanced-toggle__meta">
-        @if (vm.hasAdvancedFilters) {
-          {{ i18n.t('explorer.active') }}
-        } @else {
-          {{ i18n.t('explorer.optional') }}
-        }
-      </span>
-    </button>
+      <button
+        type="button"
+        class="entities-advanced-toggle"
+        (click)="toggleAdvancedFilters.emit()"
+        [attr.aria-expanded]="advancedFiltersOpen || vm.hasAdvancedFilters"
+      >
+        <span class="entities-filter-rail__label">{{ i18n.t('explorer.advancedFilters') }}</span>
+        <span class="entities-advanced-toggle__meta">
+          @if (vm.hasAdvancedFilters) {
+            {{ i18n.t('explorer.active') }}
+          } @else {
+            {{ i18n.t('explorer.optional') }}
+          }
+        </span>
+      </button>
 
-    @if (advancedFiltersOpen || vm.hasAdvancedFilters) {
-      <div class="entities-advanced-panel">
-        <div class="entities-filter-rail__group">
-          <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.editorialStatus') }}</div>
-          <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
-            <button
-              type="button"
-              class="filter-chip filter-chip--secondary"
-              [class.is-active]="vm.status === 'DRAFT'"
-              (click)="statusChange.emit('DRAFT')"
-            >
-              {{ i18n.t('status.draft') }}
-            </button>
-            <button
-              type="button"
-              class="filter-chip filter-chip--secondary"
-              [class.is-active]="vm.status === 'IN_REVIEW'"
-              (click)="statusChange.emit('IN_REVIEW')"
-            >
-              {{ i18n.t('status.inReview') }}
-            </button>
-            <button
-              type="button"
-              class="filter-chip filter-chip--secondary"
-              [class.is-active]="vm.status === 'PUBLISHED'"
-              (click)="statusChange.emit('PUBLISHED')"
-            >
-              {{ i18n.t('status.published') }}
-            </button>
-            <button
-              type="button"
-              class="filter-chip filter-chip--ghost filter-chip--secondary"
-              [class.is-active]="!vm.status"
-              (click)="statusChange.emit('')"
-            >
-              {{ i18n.t('common.all') }}
-            </button>
+      @if (advancedFiltersOpen || vm.hasAdvancedFilters) {
+        <div class="entities-advanced-panel">
+          <div class="entities-filter-rail__group">
+            <div class="entities-filter-rail__sublabel">
+              {{ i18n.t('explorer.editorialStatus') }}
+            </div>
+            <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
+              <button
+                type="button"
+                class="filter-chip filter-chip--secondary"
+                [class.is-active]="vm.status === 'DRAFT'"
+                (click)="statusChange.emit('DRAFT')"
+              >
+                {{ i18n.t('status.draft') }}
+              </button>
+              <button
+                type="button"
+                class="filter-chip filter-chip--secondary"
+                [class.is-active]="vm.status === 'IN_REVIEW'"
+                (click)="statusChange.emit('IN_REVIEW')"
+              >
+                {{ i18n.t('status.inReview') }}
+              </button>
+              <button
+                type="button"
+                class="filter-chip filter-chip--secondary"
+                [class.is-active]="vm.status === 'PUBLISHED'"
+                (click)="statusChange.emit('PUBLISHED')"
+              >
+                {{ i18n.t('status.published') }}
+              </button>
+              <button
+                type="button"
+                class="filter-chip filter-chip--ghost filter-chip--secondary"
+                [class.is-active]="!vm.status"
+                (click)="statusChange.emit('')"
+              >
+                {{ i18n.t('common.all') }}
+              </button>
+            </div>
+          </div>
+
+          <div class="entities-filter-rail__group">
+            <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.readingLevel') }}</div>
+            <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
+              <button
+                type="button"
+                class="filter-chip filter-chip--secondary"
+                [class.is-active]="vm.contentLevel === 'BASIC'"
+                (click)="contentLevelChange.emit('BASIC')"
+              >
+                {{ i18n.t('level.basic') }}
+              </button>
+              <button
+                type="button"
+                class="filter-chip filter-chip--secondary"
+                [class.is-active]="vm.contentLevel === 'INTERMEDIATE'"
+                (click)="contentLevelChange.emit('INTERMEDIATE')"
+              >
+                {{ i18n.t('level.intermediate') }}
+              </button>
+              <button
+                type="button"
+                class="filter-chip filter-chip--secondary"
+                [class.is-active]="vm.contentLevel === 'ADVANCED'"
+                (click)="contentLevelChange.emit('ADVANCED')"
+              >
+                {{ i18n.t('level.advanced') }}
+              </button>
+              <button
+                type="button"
+                class="filter-chip filter-chip--ghost filter-chip--secondary"
+                [class.is-active]="!vm.contentLevel"
+                (click)="contentLevelChange.emit('')"
+              >
+                {{ i18n.t('common.all') }}
+              </button>
+            </div>
           </div>
         </div>
-
-        <div class="entities-filter-rail__group">
-          <div class="entities-filter-rail__sublabel">{{ i18n.t('explorer.readingLevel') }}</div>
-          <div class="entities-filter-rail__chips entities-filter-rail__chips--advanced">
-            <button
-              type="button"
-              class="filter-chip filter-chip--secondary"
-              [class.is-active]="vm.contentLevel === 'BASIC'"
-              (click)="contentLevelChange.emit('BASIC')"
-            >
-              {{ i18n.t('level.basic') }}
-            </button>
-            <button
-              type="button"
-              class="filter-chip filter-chip--secondary"
-              [class.is-active]="vm.contentLevel === 'INTERMEDIATE'"
-              (click)="contentLevelChange.emit('INTERMEDIATE')"
-            >
-              {{ i18n.t('level.intermediate') }}
-            </button>
-            <button
-              type="button"
-              class="filter-chip filter-chip--secondary"
-              [class.is-active]="vm.contentLevel === 'ADVANCED'"
-              (click)="contentLevelChange.emit('ADVANCED')"
-            >
-              {{ i18n.t('level.advanced') }}
-            </button>
-            <button
-              type="button"
-              class="filter-chip filter-chip--ghost filter-chip--secondary"
-              [class.is-active]="!vm.contentLevel"
-              (click)="contentLevelChange.emit('')"
-            >
-              {{ i18n.t('common.all') }}
-            </button>
-          </div>
-        </div>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
 
   @if (vm.hasActiveFilters) {
     <div class="entities-filter-rail__section entities-filter-rail__section--actions">

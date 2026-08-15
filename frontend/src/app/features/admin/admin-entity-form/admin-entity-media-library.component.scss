@@ -5,9 +5,9 @@
   text-align: left;
   padding: 11px 13px;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.72);
-  color: #2a2a2a;
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-control-bg);
+  color: var(--color-text);
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
@@ -20,7 +20,7 @@
     box-shadow 0.14s ease;
   display: grid;
   gap: 7px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: none;
 }
 
 .admin-dashboard-nav__item-main,
@@ -38,7 +38,7 @@
 
 .admin-dashboard-nav__item-meta {
   font-size: 12px;
-  color: #6f6a65;
+  color: var(--color-text-muted);
   align-items: start;
   line-height: 1.34;
 }
@@ -53,14 +53,14 @@
   text-align: center;
   padding: 5px 9px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--entity-editor-control-border);
+  background: var(--entity-editor-panel-bg);
   white-space: nowrap;
 }
 
 .admin-dashboard-nav__item:hover {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(0, 0, 0, 0.14);
+  background: var(--entity-editor-panel-bg);
+  border-color: var(--entity-editor-control-border);
   transform: translateX(2px);
   box-shadow: 0 8px 18px rgba(20, 18, 16, 0.08);
 }
@@ -177,7 +177,8 @@
 .media-overview,
 .media-intake,
 .media-warning-stack,
-.media-library-group {
+.media-library-group,
+.media-presentation-empty {
   display: grid;
   gap: 12px;
 }
@@ -230,6 +231,33 @@
   grid-template-columns: minmax(220px, 0.56fr) minmax(0, 1.44fr);
   gap: 14px;
   align-items: start;
+}
+
+.media-presentation-empty {
+  min-height: 260px;
+  align-content: center;
+  justify-items: start;
+  padding: 32px;
+  border: 1px dashed var(--entity-editor-control-border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--entity-editor-control-bg) 64%, transparent);
+}
+
+.media-presentation-empty h3 {
+  margin: 4px 0 8px;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.media-presentation-empty__drop-hint {
+  margin: 12px 0 0;
+  color: var(--color-text-muted);
+}
+
+.media-presentation-empty--dragging {
+  border-color: var(--color-accent, #8aa68e);
+  background: color-mix(in srgb, var(--color-accent, #8aa68e) 10%, var(--entity-editor-control-bg));
+  box-shadow: inset 0 0 0 1px var(--color-accent, #8aa68e);
 }
 
 .media-library-stack {

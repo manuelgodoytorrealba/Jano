@@ -9,6 +9,11 @@ describe('domain labels', () => {
     expect(entityTypeLabel('ARTWORK', es)).toBe('Obra');
     expect(entityTypeLabel('ARTWORK', en)).toBe('Artwork');
     expect(
+      entityTypeLabel('RESEARCH', {
+        t: (key: string) => (key === 'entity.research' ? 'Research' : key),
+      }),
+    ).toBe('Research');
+    expect(
       statusLabel('PUBLISHED', {
         t: (key: string) => (key === 'status.published' ? 'Published' : key),
       }),

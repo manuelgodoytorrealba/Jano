@@ -1,9 +1,9 @@
 <section id="section-media" class="admin-dashboard-panel resource-block media-box">
   <header class="resource-block__head">
     <div>
-      <p class="resource-block__eyebrow">Archivo visual</p>
-      <h2>Media</h2>
-      <p class="muted">Construye la identidad visual y revisa su cobertura editorial.</p>
+      <p class="resource-block__eyebrow">Imagen y presentación</p>
+      <h2>Imágenes</h2>
+      <p class="muted">Da a la pieza una presencia visual antes de completar sus formatos.</p>
     </div>
     <span class="resource-block__count">{{ persistedMediaLinks.length }}</span>
   </header>
@@ -43,10 +43,9 @@
       <section class="media-overview">
         <div class="media-coverage__head">
           <div>
-            <h3>Cobertura</h3>
+            <h3>Comprobación de presentación</h3>
             <p class="muted">
-              Lectura editorial de lo que realmente se publica en Explorer 3D, List, Detail y
-              Preview.
+              Revisa cómo se resuelve cada formato una vez que la imagen editorial ya está lista.
             </p>
           </div>
           <span class="admin-dashboard-panel__pill">Publicado</span>
@@ -65,8 +64,8 @@
 
         <div class="media-slots__head">
           <div>
-            <h3>Slots principales</h3>
-            <p class="muted">Qué asset ocupa cada slot y desde qué lógica se resuelve.</p>
+            <h3>Formatos de salida</h3>
+            <p class="muted">Detalle técnico de la resolución de cada formato.</p>
           </div>
           <div class="media-slots__legend">
             <span class="media-pill media-pill--slot-explicit">Explícito</span>
@@ -141,158 +140,195 @@
       [class.media-library-view--hidden]="activeView !== 'library'"
       [attr.aria-hidden]="activeView !== 'library'"
     >
-      <div class="media-library-workspace">
-        <div class="media-library-stack">
-          <section class="current-relations">
-            <div class="relations-head">
-              <h4>Assets Library</h4>
-              <p class="muted">Selector de assets para cargar una imagen en el editor visual.</p>
-            </div>
+      @if (!persistedMediaLinks.length) {
+        <section
+          class="media-presentation-empty"
+          [class.media-presentation-empty--dragging]="emptyDropActive"
+          (dragover)="onEmptyMediaDragOver($event)"
+          (dragleave)="onEmptyMediaDragLeave($event)"
+          (drop)="onEmptyMediaDrop($event)"
+        >
+          <div>
+            <p class="resource-block__eyebrow">Imagen principal</p>
+            <h3>Esta pieza todavía no tiene imagen.</h3>
+            <p class="muted">
+              Añade una imagen para empezar a construir su presencia en JANO. Podrás ajustar el
+              encuadre y los formatos después.
+            </p>
+            <p class="media-presentation-empty__drop-hint">
+              Arrastra una imagen aquí o selecciónala desde tu equipo.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="entity-editor-button entity-editor-button--primary"
+            (click)="setView('add')"
+          >
+            Añadir imagen
+          </button>
+        </section>
+      } @else {
+        <div class="media-library-workspace">
+          <div class="media-library-stack">
+            <section class="current-relations">
+              <div class="relations-head">
+                <h4>Imagen principal y biblioteca</h4>
+                <p class="muted">Selecciona una imagen para ajustar su encuadre, crédito y uso.</p>
+              </div>
 
-            <div class="media-library-sections">
-              <app-admin-entity-media-group
-                title="En uso"
-                emptyMessage="Todavía no hay assets cubriendo los slots principales."
-                [editors]="model.mainUsedEditors"
-                [activeEditorId]="activeEditorId"
-                [entityTitle]="entityTitle"
-                [editorPresentationFor]="presentationFor"
-                [hasAnyPersistedLegacyForEditor]="hasPersistedLegacyFor"
-                (editRequested)="selectEditor($event)"
-                (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
-                (assignRole)="
-                  dispatch({ type: 'assignRole', link: $event.link, role: $event.role })
-                "
-                (toggleLegacy)="emitLinkIntent('toggleLegacy', $event)"
-                (save)="emitLinkIntent('save', $event)"
-                (discard)="emitLinkIntent('discard', $event)"
-                (remove)="emitLinkIntent('remove', $event)"
-                (ingest)="emitLinkIntent('ingest', $event)"
-                (promote)="emitLinkIntent('promote', $event)"
-                (restore)="emitLinkIntent('restore', $event)"
-              ></app-admin-entity-media-group>
+              <div class="media-library-sections">
+                <app-admin-entity-media-group
+                  title="En presentación"
+                  emptyMessage="Todavía no hay una imagen cubriendo los formatos principales."
+                  [editors]="model.mainUsedEditors"
+                  [activeEditorId]="activeEditorId"
+                  [entityTitle]="entityTitle"
+                  [editorPresentationFor]="presentationFor"
+                  [hasAnyPersistedLegacyForEditor]="hasPersistedLegacyFor"
+                  (editRequested)="selectEditor($event)"
+                  (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
+                  (assignRole)="
+                    dispatch({ type: 'assignRole', link: $event.link, role: $event.role })
+                  "
+                  (toggleLegacy)="emitLinkIntent('toggleLegacy', $event)"
+                  (save)="emitLinkIntent('save', $event)"
+                  (discard)="emitLinkIntent('discard', $event)"
+                  (remove)="emitLinkIntent('remove', $event)"
+                  (ingest)="emitLinkIntent('ingest', $event)"
+                  (promote)="emitLinkIntent('promote', $event)"
+                  (restore)="emitLinkIntent('restore', $event)"
+                ></app-admin-entity-media-group>
 
-              <app-admin-entity-media-group
-                title="Derivados / reemplazos"
-                emptyMessage="No hay derivados o reemplazos fuera del uso principal."
-                [editors]="model.derivedEditors"
-                [activeEditorId]="activeEditorId"
-                [entityTitle]="entityTitle"
-                [editorPresentationFor]="presentationFor"
-                [hasAnyPersistedLegacyForEditor]="hasPersistedLegacyFor"
-                (editRequested)="selectEditor($event)"
-                (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
-                (assignRole)="
-                  dispatch({ type: 'assignRole', link: $event.link, role: $event.role })
-                "
-                (toggleLegacy)="emitLinkIntent('toggleLegacy', $event)"
-                (save)="emitLinkIntent('save', $event)"
-                (discard)="emitLinkIntent('discard', $event)"
-                (remove)="emitLinkIntent('remove', $event)"
-                (ingest)="emitLinkIntent('ingest', $event)"
-                (promote)="emitLinkIntent('promote', $event)"
-                (restore)="emitLinkIntent('restore', $event)"
-              ></app-admin-entity-media-group>
+                <app-admin-entity-media-group
+                  title="Versiones y reemplazos"
+                  emptyMessage="No hay versiones o reemplazos adicionales."
+                  [editors]="model.derivedEditors"
+                  [activeEditorId]="activeEditorId"
+                  [entityTitle]="entityTitle"
+                  [editorPresentationFor]="presentationFor"
+                  [hasAnyPersistedLegacyForEditor]="hasPersistedLegacyFor"
+                  (editRequested)="selectEditor($event)"
+                  (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
+                  (assignRole)="
+                    dispatch({ type: 'assignRole', link: $event.link, role: $event.role })
+                  "
+                  (toggleLegacy)="emitLinkIntent('toggleLegacy', $event)"
+                  (save)="emitLinkIntent('save', $event)"
+                  (discard)="emitLinkIntent('discard', $event)"
+                  (remove)="emitLinkIntent('remove', $event)"
+                  (ingest)="emitLinkIntent('ingest', $event)"
+                  (promote)="emitLinkIntent('promote', $event)"
+                  (restore)="emitLinkIntent('restore', $event)"
+                ></app-admin-entity-media-group>
 
-              <app-admin-entity-media-group
-                title="Sin uso"
-                emptyMessage="No hay assets huérfanos fuera de uso principal."
-                [editors]="model.unusedEditors"
-                [activeEditorId]="activeEditorId"
-                [entityTitle]="entityTitle"
-                [editorPresentationFor]="presentationFor"
-                [hasAnyPersistedLegacyForEditor]="hasPersistedLegacyFor"
-                (editRequested)="selectEditor($event)"
-                (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
-                (assignRole)="
-                  dispatch({ type: 'assignRole', link: $event.link, role: $event.role })
-                "
-                (toggleLegacy)="emitLinkIntent('toggleLegacy', $event)"
-                (save)="emitLinkIntent('save', $event)"
-                (discard)="emitLinkIntent('discard', $event)"
-                (remove)="emitLinkIntent('remove', $event)"
-                (ingest)="emitLinkIntent('ingest', $event)"
-                (promote)="emitLinkIntent('promote', $event)"
-                (restore)="emitLinkIntent('restore', $event)"
-              ></app-admin-entity-media-group>
-            </div>
-          </section>
+                <app-admin-entity-media-group
+                  title="Biblioteca sin asignar"
+                  emptyMessage="No hay imágenes pendientes de asignar."
+                  [editors]="model.unusedEditors"
+                  [activeEditorId]="activeEditorId"
+                  [entityTitle]="entityTitle"
+                  [editorPresentationFor]="presentationFor"
+                  [hasAnyPersistedLegacyForEditor]="hasPersistedLegacyFor"
+                  (editRequested)="selectEditor($event)"
+                  (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
+                  (assignRole)="
+                    dispatch({ type: 'assignRole', link: $event.link, role: $event.role })
+                  "
+                  (toggleLegacy)="emitLinkIntent('toggleLegacy', $event)"
+                  (save)="emitLinkIntent('save', $event)"
+                  (discard)="emitLinkIntent('discard', $event)"
+                  (remove)="emitLinkIntent('remove', $event)"
+                  (ingest)="emitLinkIntent('ingest', $event)"
+                  (promote)="emitLinkIntent('promote', $event)"
+                  (restore)="emitLinkIntent('restore', $event)"
+                ></app-admin-entity-media-group>
+              </div>
+            </section>
 
-          <section class="current-relations current-relations--secondary">
-            <div class="relations-head">
-              <h4>Additional Media</h4>
-              <p class="muted">
-                Material documental, extra o de apoyo. No compite con los slots principales.
-              </p>
-            </div>
-
-            <app-admin-entity-media-group
-              title="Additional Media"
-              emptyMessage="No hay material adicional definido todavía."
-              [editors]="model.additionalMediaEditors"
-              [activeEditorId]="activeEditorId"
-              [entityTitle]="entityTitle"
-              [editorPresentationFor]="presentationFor"
-              (editRequested)="selectEditor($event)"
-              (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
-              (assignRole)="dispatch({ type: 'assignRole', link: $event.link, role: $event.role })"
-              (save)="emitLinkIntent('save', $event)"
-              (discard)="emitLinkIntent('discard', $event)"
-              (remove)="emitLinkIntent('remove', $event)"
-              (ingest)="emitLinkIntent('ingest', $event)"
-              (promote)="emitLinkIntent('promote', $event)"
-              (restore)="emitLinkIntent('restore', $event)"
-            ></app-admin-entity-media-group>
-          </section>
-        </div>
-
-        <aside class="media-editor-panel">
-          @if (model.activeMediaEditor; as activeEditor) {
-            <div class="media-editor-panel__head">
-              <div>
-                <h4>Editor visual</h4>
+            <section class="current-relations current-relations--secondary">
+              <div class="relations-head">
+                <h4>Material adicional</h4>
                 <p class="muted">
-                  {{ entityTitle || 'Entity sin título' }} · trabaja una sola imagen cada vez con
-                  crop, foco, metadata y guardado local.
+                  Material documental, extra o de apoyo. No compite con los slots principales.
                 </p>
               </div>
-              <span class="admin-dashboard-panel__pill">Media tool</span>
-            </div>
 
-            <app-media-card-editor
-              [editor]="activeEditor"
-              [forceAdvanced]="true"
-              [panel]="true"
-              [entityTitle]="entityTitle"
-              [activeSlotLabels]="presentation(activeEditor.persisted).activeSlotLabels"
-              [canIngest]="presentation(activeEditor.persisted).canIngest"
-              [canPromote]="presentation(activeEditor.persisted).canPromote"
-              [canRestore]="presentation(activeEditor.persisted).canRestore"
-              [hasAnyPersistedLegacy]="hasPersistedLegacyFor(activeEditor.id)"
-              [hasPromotedReplacement]="presentation(activeEditor.persisted).hasPromotedReplacement"
-              [replacementTargetLabel]="presentation(activeEditor.persisted).replacementTargetLabel"
-              [replacementIngestedLabel]="
-                presentation(activeEditor.persisted).replacementIngestedLabel
-              "
-              [ingestedSourceLabel]="presentation(activeEditor.persisted).ingestedSourceLabel"
-              [slotWarnings]="presentation(activeEditor.persisted).slotWarnings"
-              (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
-              (assignRole)="dispatch({ type: 'assignRole', link: $event.link, role: $event.role })"
-              (toggleLegacy)="emitLinkIntent('toggleLegacy', $event)"
-              (save)="emitLinkIntent('save', $event)"
-              (discard)="emitLinkIntent('discard', $event)"
-              (remove)="emitLinkIntent('remove', $event)"
-              (ingest)="emitLinkIntent('ingest', $event)"
-              (promote)="emitLinkIntent('promote', $event)"
-              (restore)="emitLinkIntent('restore', $event)"
-            ></app-media-card-editor>
-          } @else {
-            <div class="preview-empty">
-              Selecciona un asset de la biblioteca para editarlo aquí.
-            </div>
-          }
-        </aside>
-      </div>
+              <app-admin-entity-media-group
+                title="Material adicional"
+                emptyMessage="No hay material documental o de apoyo todavía."
+                [editors]="model.additionalMediaEditors"
+                [activeEditorId]="activeEditorId"
+                [entityTitle]="entityTitle"
+                [editorPresentationFor]="presentationFor"
+                (editRequested)="selectEditor($event)"
+                (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
+                (assignRole)="
+                  dispatch({ type: 'assignRole', link: $event.link, role: $event.role })
+                "
+                (save)="emitLinkIntent('save', $event)"
+                (discard)="emitLinkIntent('discard', $event)"
+                (remove)="emitLinkIntent('remove', $event)"
+                (ingest)="emitLinkIntent('ingest', $event)"
+                (promote)="emitLinkIntent('promote', $event)"
+                (restore)="emitLinkIntent('restore', $event)"
+              ></app-admin-entity-media-group>
+            </section>
+          </div>
+
+          <aside class="media-editor-panel">
+            @if (model.activeMediaEditor; as activeEditor) {
+              <div class="media-editor-panel__head">
+                <div>
+                  <h4>Editar imagen</h4>
+                  <p class="muted">
+                    {{ entityTitle || 'Pieza sin título' }} · ajusta una imagen cada vez: encuadre,
+                    foco, crédito y guardado.
+                  </p>
+                </div>
+                <span class="admin-dashboard-panel__pill">Imagen</span>
+              </div>
+
+              <app-media-card-editor
+                [editor]="activeEditor"
+                [forceAdvanced]="true"
+                [panel]="true"
+                [entityTitle]="entityTitle"
+                [activeSlotLabels]="presentation(activeEditor.persisted).activeSlotLabels"
+                [canIngest]="presentation(activeEditor.persisted).canIngest"
+                [canPromote]="presentation(activeEditor.persisted).canPromote"
+                [canRestore]="presentation(activeEditor.persisted).canRestore"
+                [hasAnyPersistedLegacy]="hasPersistedLegacyFor(activeEditor.id)"
+                [hasPromotedReplacement]="
+                  presentation(activeEditor.persisted).hasPromotedReplacement
+                "
+                [replacementTargetLabel]="
+                  presentation(activeEditor.persisted).replacementTargetLabel
+                "
+                [replacementIngestedLabel]="
+                  presentation(activeEditor.persisted).replacementIngestedLabel
+                "
+                [ingestedSourceLabel]="presentation(activeEditor.persisted).ingestedSourceLabel"
+                [slotWarnings]="presentation(activeEditor.persisted).slotWarnings"
+                (draftChange)="dispatch({ type: 'draftChange', draft: $event })"
+                (assignRole)="
+                  dispatch({ type: 'assignRole', link: $event.link, role: $event.role })
+                "
+                (toggleLegacy)="emitLinkIntent('toggleLegacy', $event)"
+                (save)="emitLinkIntent('save', $event)"
+                (discard)="emitLinkIntent('discard', $event)"
+                (remove)="emitLinkIntent('remove', $event)"
+                (ingest)="emitLinkIntent('ingest', $event)"
+                (promote)="emitLinkIntent('promote', $event)"
+                (restore)="emitLinkIntent('restore', $event)"
+              ></app-media-card-editor>
+            } @else {
+              <div class="preview-empty">
+                Selecciona una imagen de la biblioteca para editarla aquí.
+              </div>
+            }
+          </aside>
+        </div>
+      }
     </div>
 
     <div
@@ -302,16 +338,17 @@
     >
       <section class="media-intake">
         <div class="relations-head">
-          <h4>Añadir media</h4>
+          <h4>Añadir imagen</h4>
           <p class="muted">
-            Alta rápida de URL externa, subida de archivo y opciones avanzadas en un bloque separado
-            del trabajo editorial.
+            Sube un archivo o incorpora una URL. Las opciones avanzadas quedan disponibles sin
+            interrumpir el trabajo editorial.
           </p>
         </div>
         <app-media-add-panel
           [adding]="adding"
           [uploading]="uploading"
           [resetVersion]="addResetVersion"
+          [droppedUploadFile]="droppedUploadFile"
           (addExternal)="dispatch({ type: 'addExternal', event: $event })"
           (addUpload)="dispatch({ type: 'upload', event: $event })"
         ></app-media-add-panel>

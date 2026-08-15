@@ -1,10 +1,10 @@
 <section class="media-add-panel">
   <div class="media-add-panel__head">
     <div>
-      <h4>Add Media</h4>
+      <p class="media-add-panel__eyebrow">Archivo visual</p>
+      <h4>Añadir una imagen</h4>
       <p class="muted">
-        Elige entre referencia externa y asset propio antes de decidir dónde se usará dentro del
-        producto.
+        Sube un archivo para empezar. La URL externa queda disponible cuando la necesites.
       </p>
     </div>
 
@@ -31,7 +31,7 @@
   @if (mode === 'url') {
     <div class="media-create">
       <div class="media-create__eyebrow">
-        <span class="media-pill media-pill--external">External</span>
+        <span class="media-pill media-pill--external">URL externa</span>
         <span class="media-create__caption"
           >Referencia remota para documentar o probar una imagen sin copiarla todavía a JANO.</span
         >
@@ -73,20 +73,33 @@
           />
         </label>
 
-        <label class="field">
-          <span>Uso editorial inicial</span>
-          <select [(ngModel)]="externalDraft.role" name="externalRole">
-            @for (role of roleOptions; track role) {
-              <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+        <div class="media-placement" role="radiogroup" aria-label="Uso editorial inicial">
+          <div class="media-placement__head">
+            <strong>¿Dónde se verá?</strong>
+            <span>Podrás cambiarlo después.</span>
+          </div>
+          <div class="media-placement__options">
+            @for (placement of placementOptions; track placement.role) {
+              <button
+                type="button"
+                class="media-placement__option"
+                [class.is-active]="initialRoleIsSelected(placement.role)"
+                [attr.aria-checked]="initialRoleIsSelected(placement.role)"
+                role="radio"
+                (click)="setInitialRole(placement.role)"
+              >
+                <strong>{{ placement.label }}</strong>
+                <span>{{ placement.description }}</span>
+              </button>
             }
-          </select>
-        </label>
+          </div>
+        </div>
       </div>
     </div>
   } @else {
     <div class="media-create">
       <div class="media-create__eyebrow">
-        <span class="media-pill media-pill--upload">Upload</span>
+        <span class="media-pill media-pill--upload">Archivo propio</span>
         <span class="media-create__caption"
           >Asset propio estable para cobertura principal, reemplazos y trabajo editorial
           duradero.</span
@@ -162,14 +175,27 @@
           />
         </label>
 
-        <label class="field">
-          <span>Uso editorial inicial</span>
-          <select [(ngModel)]="uploadDraft.role" name="uploadRole">
-            @for (role of roleOptions; track role) {
-              <option [value]="role">{{ mediaRoleLabel(role) }}</option>
+        <div class="media-placement" role="radiogroup" aria-label="Uso editorial inicial">
+          <div class="media-placement__head">
+            <strong>¿Dónde se verá?</strong>
+            <span>Podrás cambiarlo después.</span>
+          </div>
+          <div class="media-placement__options">
+            @for (placement of placementOptions; track placement.role) {
+              <button
+                type="button"
+                class="media-placement__option"
+                [class.is-active]="initialRoleIsSelected(placement.role)"
+                [attr.aria-checked]="initialRoleIsSelected(placement.role)"
+                role="radio"
+                (click)="setInitialRole(placement.role)"
+              >
+                <strong>{{ placement.label }}</strong>
+                <span>{{ placement.description }}</span>
+              </button>
             }
-          </select>
-        </label>
+          </div>
+        </div>
       </div>
     </div>
   }

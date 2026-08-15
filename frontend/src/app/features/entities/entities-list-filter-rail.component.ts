@@ -24,6 +24,7 @@ export class EntitiesListFilterRailComponent {
   @Input() simple = false;
   @Input() openFilterMenu: FilterMenuKey | null = null;
   @Input() advancedFiltersOpen = false;
+  @Input() showAdvancedFilters = false;
 
   @Output() searchChange = new EventEmitter<string>();
   @Output() clearSearch = new EventEmitter<void>();

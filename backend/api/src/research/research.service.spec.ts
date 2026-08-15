@@ -1242,7 +1242,7 @@ describe('ResearchService', () => {
   it('rejects unsupported automatic proposal review states', async () => {
     await expect(
       service.reviewProposal('project-1', 'proposal-1', {
-        reviewState: ResearchProposalReviewState.PENDING as never,
+        reviewState: ResearchProposalReviewState.PENDING,
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(prisma.researchFindingProposal.findFirst).not.toHaveBeenCalled();

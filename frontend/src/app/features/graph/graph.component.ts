@@ -161,6 +161,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() overviewMode = false;
   @Input() ambientMotion = false;
   @Input() allowNodeOpen = true;
+  @Input() openNodeOnSelect = false;
   @Input() showControls = true;
   @Input() showInspector = true;
   @Input() hideImagePane = false;
@@ -1114,7 +1115,15 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   onNodeHover(event: PointerEvent, nodeId: string): void {
     this.clearHoverClearTimer();
     const node = this.graphDerived().nodeMap.get(nodeId);
-    if (!node || !canHandleHover(this.interactions.pointerSession)) return;
+    if (
+      !node ||
+      (!canHandleHover(this.interactions.pointerSession) && event.pointerType !== 'mouse')
+    )
+      return;
+    if (this.hoveredNodeId() === node.id && this.tooltip()) {
+      this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
+      return;
+    }
     this.interruptGraphViewportAutomation();
     this.hoveredNodeId.set(node.id);
     this.hoveredEdgeId.set(null);
@@ -1155,7 +1164,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   onTooltipMove(event: PointerEvent): void {
     this.clearHoverClearTimer();
-    if (!canHandleHover(this.interactions.pointerSession) || !this.tooltip()) return;
+    if (
+      (!canHandleHover(this.interactions.pointerSession) && event.pointerType !== 'mouse') ||
+      !this.tooltip()
+    )
+      return;
     this.interruptGraphViewportAutomation();
     this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
   }
@@ -1269,6 +1282,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
     this.emitNodeSelection(nodeId);
 
+    if (this.openNodeOnSelect) {
+      this.openNodeEntity(nodeId);
+      return;
+    }
+
     if (isDoubleActivation) {
       this.lastNodeActivation = null;
       this.nodeOpen.emit(nodeId);
@@ -1303,7 +1321,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   private openNodeEntity(nodeId: string): void {
     const node = this.graphDerived().nodeMap.get(nodeId) ?? null;
-    if (!node) {
+    if (!node?.slug) {
       return;
     }
 
@@ -1507,7 +1525,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private applyEdgeHover(event: PointerEvent, edge: GraphEdge): void {
-    if (!canHandleHover(this.interactions.pointerSession)) return;
+    if (!canHandleHover(this.interactions.pointerSession) && event.pointerType !== 'mouse') return;
+    if (this.hoveredEdgeId() === edge.id && this.tooltip()) {
+      this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
+      return;
+    }
     this.interruptGraphViewportAutomation();
     this.hoveredNodeId.set(null);
     this.hoveredEdgeId.set(edge.id);

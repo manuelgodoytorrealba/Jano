@@ -17,6 +17,7 @@ import {
   ResearchEvidence,
   ResearchKnowledge,
   ResearchProposal,
+  ResearchProposalReviewState,
   ResearchRelation,
 } from '../../../core/api/research.api';
 import { GraphComponent } from '../../graph/graph.component';
@@ -47,6 +48,10 @@ export class ResearchGraphComponent implements OnDestroy {
 
   @Output() readonly proposalSelected = new EventEmitter<ResearchProposal>();
   @Output() readonly reviewRequested = new EventEmitter<ResearchProposal>();
+  @Output() readonly entityReviewRequested = new EventEmitter<{
+    entityId: string;
+    reviewState: ResearchProposalReviewState;
+  }>();
   @Output() readonly showCandidatesChange = new EventEmitter<boolean>();
   @Output() readonly entitySelected = new EventEmitter<string>();
   @Output() readonly entityOpen = new EventEmitter<string>();
@@ -54,6 +59,7 @@ export class ResearchGraphComponent implements OnDestroy {
     entityId: string;
     canonicalType: ResearchCanonicalEntityType;
   }>();
+  @Output() readonly deleteRequested = new EventEmitter<{ entityId: string; title: string }>();
 
   @Input() promotionBusy = false;
   focused = false;
@@ -98,7 +104,11 @@ export class ResearchGraphComponent implements OnDestroy {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  private readonly selectedKnowledge$ = combineLatest([this.researchId$, this.selection$]).pipe(
+  private readonly selectedKnowledge$ = combineLatest([
+    this.researchId$,
+    this.selection$,
+    this.refresh$,
+  ]).pipe(
     switchMap(([researchId, selection]) => {
       if (!researchId || selection?.kind !== 'entity') return of(null);
       return this.api

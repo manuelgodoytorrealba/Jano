@@ -57,7 +57,7 @@ export class ResearchPublicationComponent {
       centerId: publication.entities[0]?.id ?? '',
       nodes: publication.entities.map((entity) => ({
         id: entity.id,
-        slug: entity.canonicalEntity?.slug ?? entity.id,
+        slug: entity.canonicalEntity?.slug ?? '',
         label: entity.canonicalEntity?.title ?? entity.title,
         type: entity.canonicalEntity?.type ?? entity.kind,
         image: entity.canonicalEntity?.imageUrl,
@@ -71,6 +71,7 @@ export class ResearchPublicationComponent {
         relationType: relation.relationType?.label ?? 'RELATED_TO',
         label: relation.relationType?.label ?? this.i18n.t('research.publication.relatedTo'),
         directed: true,
+        justification: relation.explanation ?? undefined,
         state: 'confirmed',
       })),
       filters: {

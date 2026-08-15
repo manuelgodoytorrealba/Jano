@@ -33,7 +33,17 @@ describe('ResearchPublicationsComponent', () => {
     const [publication] = await firstValueFrom(component.publications$);
 
     expect(publication.resolvedMedia?.card?.url).toBe('/cover.jpg');
+    expect(publication.contentLevel).toBeUndefined();
     component.filter('memoria');
     expect(component.filtered([publication])).toEqual([publication]);
+  });
+
+  it('keeps the information panel closed when returning to Explorer', () => {
+    const component = TestBed.runInInjectionContext(() => new ResearchPublicationsComponent());
+    component.infoOpen.set(false);
+
+    component.setView('explore');
+
+    expect(component.infoOpen()).toBe(false);
   });
 });

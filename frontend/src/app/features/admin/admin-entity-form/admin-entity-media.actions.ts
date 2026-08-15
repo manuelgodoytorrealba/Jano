@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Subject } from 'rxjs';
-import { AdminEntitiesApi } from '../../../core/api/admin-entities.api';
+import { AdminEntitiesApi, AdminEntityResponse } from '../../../core/api/admin-entities.api';
 import {
   AdminEntityMediaLibraryState,
   buildAdminEntityMediaLibraryState,
@@ -101,11 +101,11 @@ export class AdminEntityMediaActions {
     this.adding = true;
     this.emit();
     this.api.createMedia(this.entityId, result.payload).subscribe({
-      next: () => {
+      next: (entity) => {
         this.adding = false;
         this.resetVersion++;
         this.message = 'Media añadida correctamente.';
-        this.refresh(true);
+        this.applyEntity(entity, true);
       },
       error: (error) => {
         this.adding = false;
@@ -123,11 +123,11 @@ export class AdminEntityMediaActions {
     this.uploading = true;
     this.emit();
     this.api.uploadMedia(this.entityId, event.file, payload).subscribe({
-      next: () => {
+      next: (entity) => {
         this.uploading = false;
         this.resetVersion++;
         this.message = 'Archivo subido y asociado correctamente.';
-        this.refresh(true);
+        this.applyEntity(entity, true);
       },
       error: (error) => {
         this.uploading = false;
@@ -337,21 +337,27 @@ export class AdminEntityMediaActions {
 
   private refresh(preserveDirtyEditors = true, clearedEditorId?: string): void {
     this.formFacade.refreshEntity(this.entityId).subscribe({
-      next: (entity) => {
-        this.state = buildAdminEntityMediaLibraryState({
-          entity,
-          mediaEditors: this.state.mediaEditors,
-          activeMediaEditorId: this.state.activeMediaEditorId,
-          activeMediaLibraryView: this.state.activeMediaLibraryView,
-          preserveDirtyEditors,
-          clearedEditorId,
-          toNullableNumber: (value) => this.toNumber(value),
-        });
-        this.persistedResolvedMedia = entity.resolvedMedia ?? null;
-        this.emit();
-      },
+      next: (entity) => this.applyEntity(entity, preserveDirtyEditors, clearedEditorId),
       error: (error) => this.fail(error?.error?.message ?? 'No se pudo refrescar la media.'),
     });
+  }
+
+  private applyEntity(
+    entity: AdminEntityResponse,
+    preserveDirtyEditors: boolean,
+    clearedEditorId?: string,
+  ): void {
+    this.state = buildAdminEntityMediaLibraryState({
+      entity,
+      mediaEditors: this.state.mediaEditors,
+      activeMediaEditorId: this.state.activeMediaEditorId,
+      activeMediaLibraryView: this.state.activeMediaLibraryView,
+      preserveDirtyEditors,
+      clearedEditorId,
+      toNullableNumber: (value) => this.toNumber(value),
+    });
+    this.persistedResolvedMedia = entity.resolvedMedia ?? null;
+    this.emit();
   }
 
   private emit(): void {

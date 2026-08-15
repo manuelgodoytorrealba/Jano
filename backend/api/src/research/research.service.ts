@@ -483,7 +483,8 @@ export class ResearchService {
           where: { reviewState: ResearchProposalReviewState.REVIEWED },
           select: {
             id: true,
-            relationType: { select: { label: true } },
+            relationType: { select: { id: true, label: true } },
+            explanation: true,
             fromEntity: { select: { id: true, title: true, kind: true } },
             toEntity: { select: { id: true, title: true, kind: true } },
           },
@@ -506,6 +507,49 @@ export class ResearchService {
     const publicEntityIds = entities.flatMap((item) =>
       item.canonicalEntity ? [item.canonicalEntity.id] : [],
     );
+    const researchEntityByCanonicalId = new Map(
+      entities
+        .filter((entity) => entity.canonicalEntity)
+        .map((entity) => [entity.canonicalEntity!.id, entity]),
+    );
+    const canonicalRelations = publicEntityIds.length
+      ? await this.prisma.relation.findMany({
+          where: {
+            status: 'PUBLISHED',
+            fromId: { in: publicEntityIds },
+            toId: { in: publicEntityIds },
+          },
+          select: {
+            id: true,
+            relationType: { select: { id: true, label: true } },
+            justification: true,
+            fromId: true,
+            toId: true,
+          },
+        })
+      : [];
+    const publishedRelations = [...project.relations];
+    const relationKeys = new Set(
+      project.relations.map(
+        (relation) =>
+          `${relation.fromEntity.id}:${relation.toEntity.id}:${relation.relationType?.label ?? ''}`,
+      ),
+    );
+    for (const relation of canonicalRelations) {
+      const fromEntity = researchEntityByCanonicalId.get(relation.fromId);
+      const toEntity = researchEntityByCanonicalId.get(relation.toId);
+      if (!fromEntity || !toEntity) continue;
+      const key = `${fromEntity.id}:${toEntity.id}:${relation.relationType.label}`;
+      if (relationKeys.has(key)) continue;
+      relationKeys.add(key);
+      publishedRelations.push({
+        id: `core:${relation.id}`,
+        relationType: { id: relation.relationType.id, label: relation.relationType.label },
+        explanation: relation.justification,
+        fromEntity: { id: fromEntity.id, title: fromEntity.title, kind: fromEntity.kind },
+        toEntity: { id: toEntity.id, title: toEntity.title, kind: toEntity.kind },
+      });
+    }
     const related = publicEntityIds.length
       ? await this.prisma.researchProject.findMany({
           where: {
@@ -518,7 +562,7 @@ export class ResearchService {
           select: { id: true, title: true, objective: true, coverImageUrl: true },
         })
       : [];
-    return { ...project, entities, related };
+    return { ...project, entities, relations: publishedRelations, related };
   }
 
   async publishProject(projectId: string) {
@@ -1763,10 +1807,7 @@ export class ResearchService {
   }
 
   async reviewRelation(projectId: string, relationId: string, dto: ReviewResearchProposalDto) {
-    if (
-      dto.reviewState !== ResearchProposalReviewState.REVIEWED &&
-      dto.reviewState !== ResearchProposalReviewState.REJECTED
-    )
+    if (!Object.values(ResearchProposalReviewState).includes(dto.reviewState))
       throw new BadRequestException('Unsupported research review state');
     const relation = await this.prisma.researchRelation.findFirst({
       where: { id: relationId, projectId },
@@ -1816,10 +1857,7 @@ export class ResearchService {
   }
 
   async reviewEntity(projectId: string, entityId: string, dto: ReviewResearchProposalDto) {
-    if (
-      dto.reviewState !== ResearchProposalReviewState.REVIEWED &&
-      dto.reviewState !== ResearchProposalReviewState.REJECTED
-    )
+    if (!Object.values(ResearchProposalReviewState).includes(dto.reviewState))
       throw new BadRequestException('Unsupported research review state');
     const entity = await this.prisma.researchEntity.findFirst({
       where: { id: entityId, projectId },
@@ -1830,6 +1868,17 @@ export class ResearchService {
       where: { id: entityId },
       data: { reviewState: dto.reviewState },
     });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async deleteEntity(projectId: string, entityId: string) {
+    const entity = await this.prisma.researchEntity.findFirst({
+      where: { id: entityId, projectId },
+      select: { id: true },
+    });
+    if (!entity) throw new NotFoundException('Research entity not found');
+    await this.prisma.researchEntity.delete({ where: { id: entity.id } });
     await this.touchProject(projectId);
     return this.getProject(projectId);
   }

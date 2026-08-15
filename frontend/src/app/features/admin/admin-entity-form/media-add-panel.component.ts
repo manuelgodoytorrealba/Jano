@@ -11,9 +11,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { JanoMediaComponent } from '../../../shared/media/jano-media.component';
 import {
-  MEDIA_ADD_ROLE_OPTIONS,
   MEDIA_DISPLAY_MODES,
-  MEDIA_ROLE_LABELS,
   MediaAddExternalSubmit,
   MediaAddUploadSubmit,
   MediaDraft,
@@ -41,11 +39,12 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
   @Input() adding = false;
   @Input() uploading = false;
   @Input() resetVersion = 0;
+  @Input() droppedUploadFile: File | null = null;
 
   @Output() addExternal = new EventEmitter<MediaAddExternalSubmit>();
   @Output() addUpload = new EventEmitter<MediaAddUploadSubmit>();
 
-  mode: 'url' | 'upload' = 'url';
+  mode: 'url' | 'upload' = 'upload';
   showAdvanced = false;
 
   externalDraft = this.createEmptyDraft();
@@ -59,8 +58,13 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
 
   private initialized = false;
 
-  readonly roleOptions = MEDIA_ADD_ROLE_OPTIONS;
-  readonly roleLabels = MEDIA_ROLE_LABELS;
+  readonly placementOptions = [
+    { role: 'DETAIL', label: 'Ficha', description: 'Imagen principal de la entidad' },
+    { role: 'CARD', label: 'Lista', description: 'Tarjetas y resultados' },
+    { role: 'EXPLORER_3D', label: 'Explorer 3D', description: 'Vista espacial' },
+    { role: 'THUMBNAIL', label: 'Vista previa', description: 'Miniaturas y enlaces' },
+    { role: 'GALLERY', label: 'Material adicional', description: 'Apoyo editorial' },
+  ] as const;
   readonly displayModes = MEDIA_DISPLAY_MODES;
 
   ngOnChanges(changes: SimpleChanges) {
@@ -71,6 +75,10 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
 
     if (changes['resetVersion']) {
       this.reset();
+    }
+
+    if (changes['droppedUploadFile'] && this.droppedUploadFile) {
+      this.acceptUploadFile(this.droppedUploadFile);
     }
   }
 
@@ -120,6 +128,19 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
     this.mode = mode;
   }
 
+  setInitialRole(role: string) {
+    if (this.mode === 'url') {
+      this.externalDraft = { ...this.externalDraft, role };
+      return;
+    }
+
+    this.uploadDraft = { ...this.uploadDraft, role };
+  }
+
+  initialRoleIsSelected(role: string): boolean {
+    return (this.mode === 'url' ? this.externalDraft : this.uploadDraft).role === role;
+  }
+
   toggleAdvanced() {
     this.showAdvanced = !this.showAdvanced;
   }
@@ -150,7 +171,7 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement | null;
     const file = input?.files?.[0] ?? null;
-    this.setUploadFile(file);
+    this.acceptUploadFile(file);
   }
 
   onDragOver(event: DragEvent) {
@@ -167,15 +188,16 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
     event.preventDefault();
     this.uploadDragActive = false;
     const file = event.dataTransfer?.files?.[0] ?? null;
+    this.acceptUploadFile(file);
+  }
+
+  acceptUploadFile(file: File | null) {
+    this.mode = 'upload';
     this.setUploadFile(file);
   }
 
   clearSelectedUpload() {
     this.setUploadFile(null);
-  }
-
-  mediaRoleLabel(role: string | null | undefined): string {
-    return this.roleLabels[role ?? ''] ?? role ?? '—';
   }
 
   formatFileSize(value: number | null | undefined): string {
@@ -199,7 +221,7 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
       source: '',
       photoBy: '',
       license: '',
-      role: 'CARD',
+      role: 'DETAIL',
       sortOrder: 0,
       isPrimary: false,
       displayMode: '',
@@ -217,7 +239,7 @@ export class MediaAddPanelComponent implements OnChanges, OnDestroy {
   }
 
   private reset() {
-    this.mode = 'url';
+    this.mode = 'upload';
     this.showAdvanced = false;
     this.externalDraft = this.createEmptyDraft();
     this.uploadDraft = this.createEmptyDraft();

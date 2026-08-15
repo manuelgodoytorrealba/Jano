@@ -70,12 +70,14 @@
 
 .graph-edge-hit {
   fill: none;
+  pointer-events: stroke;
   stroke: transparent;
   stroke-width: 18;
   cursor: pointer;
 }
 
 .graph-edge-label {
+  pointer-events: auto;
   fill: rgba(238, 246, 255, 0.9);
   font-size: 10.5px;
   font-weight: 700;

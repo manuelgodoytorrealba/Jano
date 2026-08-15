@@ -589,6 +589,7 @@ export type ResearchPublicPublication = {
   relations: Array<{
     id: string;
     relationType: { label: string } | null;
+    explanation?: string | null;
     fromEntity: { id: string; title: string; kind: string };
     toEntity: { id: string; title: string; kind: string };
   }>;
@@ -1062,25 +1063,21 @@ export class ResearchApi {
     );
   }
 
-  reviewRelation(
-    projectId: string,
-    relationId: string,
-    reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
-  ) {
+  reviewRelation(projectId: string, relationId: string, reviewState: ResearchProposalReviewState) {
     return this.http.post<ResearchProject>(
       this.baseUrl + '/' + projectId + '/relations/' + relationId + '/review',
       { reviewState },
     );
   }
 
-  reviewEntity(
-    projectId: string,
-    entityId: string,
-    reviewState: Extract<ResearchProposalReviewState, 'REVIEWED' | 'REJECTED'>,
-  ) {
+  reviewEntity(projectId: string, entityId: string, reviewState: ResearchProposalReviewState) {
     return this.http.post<ResearchProject>(
       this.baseUrl + '/' + projectId + '/entities/' + entityId + '/review',
       { reviewState },
     );
+  }
+
+  deleteEntity(projectId: string, entityId: string) {
+    return this.http.delete<ResearchProject>(`${this.baseUrl}/${projectId}/entities/${entityId}`);
   }
 }

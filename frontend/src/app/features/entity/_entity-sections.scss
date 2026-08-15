@@ -157,15 +157,33 @@
 }
 
 .relation-card__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.28rem 0.56rem;
+  border: 1px solid rgba(94, 101, 117, 0.42);
+  border-radius: 0.55rem;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
   color: rgba(18, 24, 38, 0.94);
   text-decoration: none;
   font-weight: 700;
   font-size: 1rem;
-  transition: opacity 160ms ease;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
-.relation-card__link:hover {
-  opacity: 0.72;
+.relation-card__link:hover,
+.relation-card__link:focus-visible {
+  border-color: rgba(94, 101, 117, 0.72);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 4px 12px rgba(17, 24, 39, 0.1);
+  transform: translateY(-1px);
 }
 
 .relation-card__text {

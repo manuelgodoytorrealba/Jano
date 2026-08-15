@@ -76,14 +76,21 @@
             } @else if (vm.selectedEntity; as entity) {
               <p class="research-map__eyebrow">Entidad seleccionada</p>
               <h3>{{ entity.title }}</h3>
-              <span class="research-map__kind">{{ entity.kind }} · Privada</span>
+              <span class="research-map__kind"
+                >{{ entity.kind }} · Privada ·
+                {{
+                  entity.reviewState === 'REVIEWED'
+                    ? 'Incluida en publicación'
+                    : 'Pendiente de publicación'
+                }}</span
+              >
               @if (entity.canonicalEntityId) {
                 <button
                   type="button"
                   class="research-map__open"
                   (click)="entityOpen.emit(entity.id)"
                 >
-                  Abrir entidad ↗
+                  Editar entidad y relaciones ↗
                 </button>
               } @else {
                 <div class="research-map__promotion">
@@ -105,6 +112,35 @@
                   </button>
                 </div>
               }
+              <div class="research-map__entity-actions">
+                @if (entity.reviewState === 'REVIEWED') {
+                  <button
+                    type="button"
+                    (click)="
+                      entityReviewRequested.emit({ entityId: entity.id, reviewState: 'PENDING' })
+                    "
+                  >
+                    Volver a pendiente
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="is-primary"
+                    (click)="
+                      entityReviewRequested.emit({ entityId: entity.id, reviewState: 'REVIEWED' })
+                    "
+                  >
+                    Revisar entidad
+                  </button>
+                }
+                <button
+                  type="button"
+                  class="is-danger"
+                  (click)="deleteRequested.emit({ entityId: entity.id, title: entity.title })"
+                >
+                  Eliminar entidad
+                </button>
+              </div>
               @if (entity.summary) {
                 <p>{{ entity.summary }}</p>
               }
@@ -122,7 +158,14 @@
                     <span
                       >{{ relation.relationType?.label ?? 'Relaciona' }}
                       @if (relation.origin === 'KNOWLEDGE_CORE') {
-                        <small>Knowledge Core</small>
+                        <small
+                          >Knowledge Core ·
+                          {{
+                            relation.canonicalStatus === 'PUBLISHED'
+                              ? 'Publicada'
+                              : 'Pendiente de publicar'
+                          }}</small
+                        >
                       }
                     </span>
                     <strong>→ {{ relationTarget(relation, entity.id) }}</strong>

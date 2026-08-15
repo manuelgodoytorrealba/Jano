@@ -103,6 +103,7 @@
           [collapsed]="!filtersPanelOpen()"
           [openFilterMenu]="openFilterMenu()"
           [advancedFiltersOpen]="advancedFiltersOpen()"
+          [showAdvancedFilters]="isAdmin()"
           (searchChange)="setQ($event)"
           (clearSearch)="clearSearch()"
           (clearChip)="clearActiveFilter($event)"
@@ -176,12 +177,6 @@
                   <div class="entity-card__body">
                     <div class="entity-card__badges">
                       <span class="ds-badge">{{ typeLabel(entity.kind ?? entity.type) }}</span>
-                      @if (entity.status) {
-                        <span class="ds-badge">{{ statusLabel(entity.status) }}</span>
-                      }
-                      @if (entity.contentLevel) {
-                        <span class="ds-badge">{{ contentLevelLabel(entity.contentLevel) }}</span>
-                      }
                     </div>
 
                     <div

@@ -91,6 +91,7 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
   @Output() translationSaved = new EventEmitter<AdminEntityResponse>();
   @Output() detailsSaved = new EventEmitter<AdminEntityResponse>();
   @Output() detailsStatusChange = new EventEmitter<{ saving: boolean; error: string }>();
+  @Output() publishRequested = new EventEmitter<void>();
 
   readonly kinds: NonNullable<AdminEntityPayload['kind']>[] = [
     'PERSON',
@@ -113,7 +114,11 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
     'EVENT',
     'ORGANIZATION',
   ];
-  readonly statuses: NonNullable<AdminEntityPayload['status']>[] = ['DRAFT', 'IN_REVIEW'];
+  readonly statuses: NonNullable<AdminEntityPayload['status']>[] = [
+    'DRAFT',
+    'IN_REVIEW',
+    'PUBLISHED',
+  ];
   readonly levels: NonNullable<AdminEntityPayload['contentLevel']>[] = [
     'BASIC',
     'INTERMEDIATE',
@@ -147,6 +152,20 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
 
   onFormChange(): void {
     this.emitDraft();
+  }
+
+  onStatusChange(status: NonNullable<AdminEntityPayload['status']>): void {
+    if (status === 'PUBLISHED') {
+      this.publishRequested.emit();
+      return;
+    }
+
+    this.form.status = status;
+    this.emitDraft();
+  }
+
+  statusLabel(status: NonNullable<AdminEntityPayload['status']>): string {
+    return { DRAFT: 'Borrador', IN_REVIEW: 'En revisión', PUBLISHED: 'Publicada' }[status];
   }
 
   onSlugChange(value: string): void {

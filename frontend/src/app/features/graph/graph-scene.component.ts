@@ -3,7 +3,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  HostListener,
   HostBinding,
+  ElementRef,
+  inject,
   Input,
   Output,
 } from '@angular/core';
@@ -24,6 +27,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GraphSceneComponent {
+  private readonly host = inject(ElementRef<HTMLElement>);
   @Input() ambientFields: GraphAmbientField[] = [];
   @Input({ required: true }) markerDefs: Array<{ id: string; color: string }> = [];
   @Input({ required: true }) viewportTransform = '';
@@ -49,4 +53,27 @@ export class GraphSceneComponent {
   @Output() edgeActivate = new EventEmitter<{ event: PointerEvent; edge: GraphEdge }>();
   @Output() tooltipMove = new EventEmitter<PointerEvent>();
   @Output() clearHover = new EventEmitter<void>();
+
+  @HostListener('document:mousemove', ['$event'])
+  onDocumentMouseMove(event: MouseEvent): void {
+    const target = event.target as Element | null;
+    if (!target || !this.host.nativeElement.contains(target)) return;
+
+    const edgeElement = target.closest<SVGElement>('.graph-edge-hit, .graph-edge-label');
+    if (edgeElement) {
+      const edgeId = edgeElement.getAttribute('data-edge-id');
+      const renderedEdge = this.renderedEdges.find((item) => item.edge.id === edgeId);
+      if (renderedEdge) {
+        this.edgeHover.emit({ event: event as PointerEvent, edge: renderedEdge.edge });
+        this.tooltipMove.emit(event as PointerEvent);
+        return;
+      }
+    }
+
+    const nodeElement = target.closest<SVGGElement>('.graph-node');
+    const nodeId = nodeElement?.getAttribute('data-node-id');
+    if (nodeId) {
+      this.nodeHover.emit({ event: event as PointerEvent, nodeId });
+    }
+  }
 }

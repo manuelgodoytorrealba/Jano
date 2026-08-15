@@ -84,12 +84,14 @@ export class AdminEntityMediaLibraryComponent implements OnChanges {
   @Output() stateChange = new EventEmitter<AdminEntityMediaActionsSnapshot>();
 
   readonly views = [
-    { id: 'coverage' as const, label: 'Cobertura' },
-    { id: 'library' as const, label: 'Biblioteca' },
-    { id: 'add' as const, label: 'Añadir media' },
+    { id: 'library' as const, label: 'Imágenes' },
+    { id: 'add' as const, label: 'Añadir imagen' },
+    { id: 'coverage' as const, label: 'Comprobación' },
   ];
-  activeView: MediaLibraryViewId = 'coverage';
+  activeView: MediaLibraryViewId = 'library';
   activeEditorId: string | null = null;
+  emptyDropActive = false;
+  droppedUploadFile: File | null = null;
   model: AdminEntityMediaLibraryViewModel = this.buildModel();
 
   constructor() {
@@ -124,6 +126,29 @@ export class AdminEntityMediaLibraryComponent implements OnChanges {
   setView(view: MediaLibraryViewId): void {
     this.activeView = view;
     this.actions.setVisualState(this.activeEditorId, view);
+  }
+
+  onEmptyMediaDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.emptyDropActive = true;
+  }
+
+  onEmptyMediaDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.emptyDropActive = false;
+  }
+
+  onEmptyMediaDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.emptyDropActive = false;
+    const file = event.dataTransfer?.files?.[0] ?? null;
+    if (!file) {
+      return;
+    }
+
+    this.setView('add');
+    this.droppedUploadFile = file;
+    setTimeout(() => (this.droppedUploadFile = null));
   }
 
   selectEditor(linkOrId: EditableAdminMediaLink | string): void {

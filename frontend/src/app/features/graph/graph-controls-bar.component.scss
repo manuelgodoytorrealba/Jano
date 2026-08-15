@@ -69,6 +69,12 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
+:host-context(.explorer-shell--graph-only) .graph-panel-bar {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 :host-context(.explorer-shell--focused) .graph-panel-bar__group--actions {
   gap: 0.12rem;
   flex-wrap: wrap;

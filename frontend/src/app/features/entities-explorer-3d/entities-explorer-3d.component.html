@@ -66,12 +66,6 @@
 
       <div class="explorer3d__meta">
         <span>{{ typeLabel(active.type) }}</span>
-        @if (active.status) {
-          <span>{{ statusLabel(active.status) }}</span>
-        }
-        @if (active.contentLevel) {
-          <span>{{ contentLevelLabel(active.contentLevel) }}</span>
-        }
       </div>
 
       @if (active.summary) {
@@ -80,7 +74,7 @@
 
       @if (showOpenAction) {
         <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
-          {{ i18n.t('entity.open') }}
+          {{ i18n.t(openActionKey) }}
         </button>
       }
 

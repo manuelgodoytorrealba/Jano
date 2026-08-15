@@ -40,6 +40,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   @Input() infoClosable = false;
   @Input() infoModal = false;
   @Input() showOpenAction = true;
+  @Input() openActionKey = 'entity.open';
 
   @Output() activeIndexChange = new EventEmitter<number>();
   @Output() openEntity = new EventEmitter<string | EntityArtworkTransitionPayload>();
@@ -58,7 +59,10 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   private readonly isBrowser: boolean;
   readonly i18n = inject(I18nService);
 
-  private readonly scene = new Explorer3dScene(() => this.syncCanvasInteractionState());
+  private readonly scene = new Explorer3dScene(
+    () => this.syncCanvasInteractionState(),
+    (type) => this.typeLabel(type),
+  );
   private canvasInteractionsAttached = false;
 
   private isDragging = false;

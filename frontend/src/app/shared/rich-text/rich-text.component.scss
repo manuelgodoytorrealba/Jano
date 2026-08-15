@@ -294,15 +294,15 @@
   left: 50%;
   transform: translateX(-28%);
   z-index: 240;
-  width: 320px;
-  max-width: min(320px, 88vw);
+  width: 252px;
+  max-width: min(252px, 84vw);
   border: 1px solid var(--rt-tooltip-border);
-  border-radius: 16px;
+  border-radius: 12px;
   background: var(--rt-tooltip-bg);
   box-shadow: var(--rt-tooltip-shadow);
-  padding: 14px;
+  padding: 10px;
   display: grid;
-  gap: 10px;
+  gap: 7px;
   overflow: visible;
   backdrop-filter: blur(16px);
 }
@@ -314,36 +314,13 @@
   transform: none;
 }
 
-.rt-editable .tooltip::after {
-  top: auto;
-  bottom: 100%;
-  left: 20px;
-  border: 0;
-  border-top: 1px solid var(--rt-tooltip-border);
-  border-left: 1px solid var(--rt-tooltip-border);
-  transform: translateY(50%) rotate(45deg);
-}
-
-.tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 28%;
-  width: 16px;
-  height: 16px;
-  background: var(--rt-tooltip-bg);
-  border-right: 1px solid var(--rt-tooltip-border);
-  border-bottom: 1px solid var(--rt-tooltip-border);
-  transform: translateX(-50%) rotate(45deg);
-}
-
 .tt-loading {
   font-size: 13px;
   color: var(--rt-tooltip-loading);
 }
 
 .tt-title {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.2;
   font-weight: 600;
   color: var(--rt-tooltip-title);
@@ -360,16 +337,21 @@
 }
 
 .tt-summary {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.4;
   color: var(--rt-tooltip-summary);
 }
 
 .tt-img {
   width: 100%;
-  min-height: 180px;
-  aspect-ratio: 4 / 3;
-  border-radius: 12px;
+  height: 88px;
+  min-height: 0;
+  aspect-ratio: auto;
+  border-radius: 8px;
   display: block;
   overflow: hidden;
   position: relative;

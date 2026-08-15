@@ -18,6 +18,10 @@ export class EntityCatalogService {
     'MOVEMENT',
     'CONCEPT',
     'ARTIST',
+    'PLACE',
+    'TEXT',
+    'EVENT',
+    'ORGANIZATION',
   ];
 
   async list(query: ListEntitiesQuery) {

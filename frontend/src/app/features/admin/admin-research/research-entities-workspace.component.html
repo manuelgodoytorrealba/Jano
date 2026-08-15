@@ -74,14 +74,35 @@
         <div>
           <strong>Mapa</strong>
           <span>Explora y amplía el conocimiento privado de esta investigación.</span>
+          <small class="entities-map-editorial__hint"
+            >Estas acciones afectan al conocimiento ya incorporado. Las candidatas del corpus siguen
+            requiriendo revisión editorial.</small
+          >
         </div>
-        <button
-          type="button"
-          (click)="creatingEntity = !creatingEntity"
-          [attr.aria-expanded]="creatingEntity"
-        >
-          {{ creatingEntity ? 'Cerrar' : '+ Crear entidad' }}
-        </button>
+        <div class="entities-map-editorial__actions">
+          <button
+            type="button"
+            class="is-primary"
+            [disabled]="busy || !vm.entities.length"
+            (click)="setGraphReviewState(vm.entities, vm.relations, 'REVIEWED')"
+          >
+            Revisar todo el grafo
+          </button>
+          <button
+            type="button"
+            [disabled]="busy || (!vm.entities.length && !vm.relations.length)"
+            (click)="setGraphReviewState(vm.entities, vm.relations, 'PENDING')"
+          >
+            Volver a pendiente
+          </button>
+          <button
+            type="button"
+            (click)="creatingEntity = !creatingEntity"
+            [attr.aria-expanded]="creatingEntity"
+          >
+            {{ creatingEntity ? 'Cerrar' : '+ Crear entidad' }}
+          </button>
+        </div>
       </div>
       @if (creatingEntity) {
         <form class="map-create-panel" (ngSubmit)="createManualEntity(vm.entities)">
@@ -169,6 +190,8 @@
         (entitySelected)="selectMapEntity($event)"
         (entityOpen)="openEntity($event, vm.entities)"
         (promotionRequested)="promoteEntity($event)"
+        (entityReviewRequested)="reviewMapEntity($event)"
+        (deleteRequested)="deleteMapEntity($event.entityId, $event.title)"
         (reviewRequested)="selectProposal($event)"
       />
     } @else {

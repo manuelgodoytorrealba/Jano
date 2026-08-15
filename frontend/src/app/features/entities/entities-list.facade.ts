@@ -24,12 +24,13 @@ import { AuthService } from '../../core/auth/auth.service';
 export type Sort = 'recent' | 'title' | 'relevance';
 export type Status = 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | '';
 export type Level = 'BASIC' | 'INTERMEDIATE' | 'ADVANCED' | '';
-export type FilterMenuKey = 'movement' | 'period' | 'institution' | 'nationality' | 'tag';
+export type FilterMenuKey = 'type' | 'movement' | 'period' | 'institution' | 'nationality' | 'tag';
 export type EntityListVm = PublicEntityListResponse<PublicEntityListItem>;
 export type TagFilterOption = Pick<Tag, 'slug' | 'label' | 'category'>;
 export type EntitiesListActiveFilterKey =
   | 'status'
   | 'contentLevel'
+  | 'type'
   | 'movement'
   | 'period'
   | 'institution'
@@ -60,6 +61,19 @@ type EntitiesListQueryState = {
   sort: Sort;
   filterSupport: FilterSupport;
 };
+
+const TYPE_FILTER_OPTIONS: FilterOption[] = [
+  { slug: 'artwork', title: 'Obra' },
+  { slug: 'artist', title: 'Artista' },
+  { slug: 'concept', title: 'Concepto' },
+  { slug: 'movement', title: 'Movimiento' },
+  { slug: 'period', title: 'Periodo' },
+  { slug: 'place', title: 'Lugar' },
+  { slug: 'event', title: 'Evento' },
+  { slug: 'organization', title: 'Organización' },
+  { slug: 'article', title: 'Artículo' },
+  { slug: 'text', title: 'Texto' },
+];
 
 export type EntitiesListActiveFilterChipVm = {
   key: EntitiesListActiveFilterKey;
@@ -134,6 +148,8 @@ const TYPE_ROUTE_LABELS: Record<string, string> = {
   concept: 'entities.type.concept',
   place: 'entities.type.place',
   text: 'entities.type.text',
+  event: 'search.kind.events',
+  organization: 'search.kind.organizations',
 };
 const VALID_TYPE_ROUTE_SLUGS = new Set(Object.keys(TYPE_ROUTE_LABELS));
 
@@ -226,7 +242,9 @@ export class EntitiesListFacade {
 
   readonly queryState$ = combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(
     map(([paramMap, queryParamMap]) => {
-      const typeSlug = (paramMap.get('type') ?? 'entities').toLowerCase();
+      const routeTypeSlug = (paramMap.get('type') ?? '').toLowerCase();
+      const queryTypeSlug = (queryParamMap.get('type') ?? '').toLowerCase();
+      const typeSlug = VALID_TYPE_ROUTE_SLUGS.has(routeTypeSlug) ? routeTypeSlug : queryTypeSlug;
       const type = VALID_TYPE_ROUTE_SLUGS.has(typeSlug) ? typeSlug.toUpperCase() : '';
       const requestedKind = (queryParamMap.get('kind') ?? '').trim().toUpperCase();
       const kind =
@@ -298,6 +316,7 @@ export class EntitiesListFacade {
   readonly pageVm$ = combineLatest([
     this.queryState$,
     this.results$,
+    this.auth.user$,
     this.movementOptions$,
     this.periodOptions$,
     this.institutionOptions$,
@@ -308,6 +327,7 @@ export class EntitiesListFacade {
       ([
         state,
         results,
+        user,
         movementOptions,
         periodOptions,
         institutionOptions,
@@ -322,7 +342,15 @@ export class EntitiesListFacade {
 
         const activeFilterChips: EntitiesListActiveFilterChipVm[] = [];
 
-        if (state.status) {
+        if (state.type) {
+          activeFilterChips.push({
+            key: 'type',
+            label: this.i18n.t('explorer.type'),
+            value: this.i18n.t(TYPE_ROUTE_LABELS[state.type.toLowerCase()] ?? 'entity.generic'),
+          });
+        }
+
+        if (user?.role === 'ADMIN' && state.status) {
           activeFilterChips.push({
             key: 'status',
             label: this.i18n.t('explorer.status'),
@@ -331,7 +359,7 @@ export class EntitiesListFacade {
           });
         }
 
-        if (state.contentLevel) {
+        if (user?.role === 'ADMIN' && state.contentLevel) {
           activeFilterChips.push({
             key: 'contentLevel',
             label: this.i18n.t('explorer.level'),
@@ -381,6 +409,21 @@ export class EntitiesListFacade {
         }
 
         const selects: EntitiesListSelectFilterVm[] = [
+          this.createSelectVm({
+            key: 'type',
+            label: this.i18n.t('explorer.type'),
+            ariaLabel: this.i18n.t('explorer.filterByType'),
+            optionsLabel: this.i18n.t('explorer.typeOptions'),
+            allLabel: this.i18n.t('explorer.allTypes'),
+            selectedValue: state.type.toLowerCase(),
+            selectedLabel: state.type
+              ? this.i18n.t(TYPE_ROUTE_LABELS[state.type.toLowerCase()] ?? 'entity.generic')
+              : this.i18n.t('explorer.allTypes'),
+            options: TYPE_FILTER_OPTIONS.map((item) => ({
+              slug: item.slug,
+              title: this.i18n.t(TYPE_ROUTE_LABELS[item.slug] ?? 'entity.generic'),
+            })),
+          }),
           {
             key: 'tag',
             label: this.i18n.t('explorer.tag'),
@@ -461,6 +504,7 @@ export class EntitiesListFacade {
           searchQuery: state.q,
           hasActiveFilters: !!(
             state.q ||
+            state.type ||
             state.status ||
             state.contentLevel ||
             (state.filterSupport.movement && state.movement) ||
@@ -470,7 +514,7 @@ export class EntitiesListFacade {
             state.tag
           ),
           hasVisibleFilterChips: activeFilterChips.length > 0,
-          hasAdvancedFilters: !!(state.status || state.contentLevel),
+          hasAdvancedFilters: user?.role === 'ADMIN' && !!(state.status || state.contentLevel),
           activeFilterChips,
           selects,
           sort: state.sort,
@@ -598,6 +642,13 @@ export class EntitiesListFacade {
     return this.navigateQuery({ movement: (next ?? '').trim() || null, page: 1 });
   }
 
+  setType(next: string): Promise<boolean> {
+    return this.router.navigate(['/entities'], {
+      queryParams: { type: (next ?? '').trim().toLowerCase() || null, page: 1 },
+      queryParamsHandling: 'merge',
+    });
+  }
+
   setPeriod(next: string): Promise<boolean> {
     return this.navigateQuery({ period: (next ?? '').trim() || null, page: 1 });
   }
@@ -617,6 +668,7 @@ export class EntitiesListFacade {
   resetFilters(): Promise<boolean> {
     return this.navigateQuery({
       q: null,
+      type: null,
       status: null,
       contentLevel: null,
       movement: null,

@@ -211,6 +211,12 @@ function resolveOverviewVisibleNodeIds(options: {
       (left, right) => right.degree - left.degree || left.label.localeCompare(right.label, 'es'),
     );
 
+  // Research graphs are entity-native and do not include workspace-type hubs.
+  // Keeping only the center in that case makes the map look empty until zoomed in.
+  if (!hubNodes.length) {
+    return allNodeIds;
+  }
+
   for (const hub of hubNodes) {
     visible.add(hub.id);
   }

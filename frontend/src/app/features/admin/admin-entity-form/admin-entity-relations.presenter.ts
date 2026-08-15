@@ -28,6 +28,9 @@ export function createEmptyRelationDraft(relationTypes: RelationType[]): AdminEn
     relationTypeId: preferred?.id ?? '',
     justificationEs: '',
     justificationEn: '',
+    // Canonical relations created from the entity editor are immediately
+    // available to the public graph. The advanced editor still allows an
+    // editor to explicitly move one back to draft/review.
     status: 'PUBLISHED',
     confidence: null,
     validFromYear: null,

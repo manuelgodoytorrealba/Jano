@@ -7,6 +7,7 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
   AdminAdditionalMediaItem,
   AdminEntityAliasRecord,
@@ -145,6 +146,7 @@ const DRAFT_TYPES: Array<{
     AdminEntityContributorsEditorComponent,
     AdminEntityPreviewComponent,
     AdminEntityMediaLibraryComponent,
+    FormsModule,
   ],
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
@@ -162,7 +164,10 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
     ...option,
   }));
 
-  activeMediaLibraryView: MediaLibraryViewId = 'coverage';
+  newEntityTitle = '';
+  newEntitySlug = '';
+
+  activeMediaLibraryView: MediaLibraryViewId = 'library';
 
   readonly translationLocales: Array<{ locale: AdminLocale; label: string }> = [
     { locale: 'es', label: 'Español' },
@@ -275,23 +280,39 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
   createDraft(type: AdminEntityPayload['type']): void {
     if (this.facade.creatingDraft()) return;
 
-    this.facade.createDraft(type).subscribe({
-      next: (entity) => this.shell.navigateToDraft(entity),
-      error: () => this.cdr.markForCheck(),
-    });
+    const title = this.newEntityTitle.trim();
+    if (!title || !this.newEntitySlug) {
+      this.facade.createDraftError.set('Escribe un nombre provisional para abrir el borrador.');
+      return;
+    }
+
+    this.facade
+      .saveEntity(null, { type, title, slug: this.newEntitySlug, status: 'DRAFT' })
+      .subscribe({
+        next: (entity) => this.shell.navigateToDraft(entity),
+        error: () => this.cdr.markForCheck(),
+      });
   }
 
   scrollToSection(sectionId: DashboardSectionId) {
     this.shell.selectSection(sectionId);
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.style.scrollMarginTop = '96px';
-      section.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start',
-      });
-    }
+    window.scrollTo({ top: 0, behavior: 'auto' });
     this.cdr.markForCheck();
+  }
+
+  get entityTypeLabel(): string {
+    return this.draftTypes.find((item) => item.type === this.form.type)?.label ?? this.form.type;
+  }
+
+  slugify(value: string): string {
+    return value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
   }
 
   private buildPayload(): AdminEntityPayload {

@@ -13,6 +13,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { ssrApiOriginInterceptor } from './core/api/ssr-api-origin.interceptor';
 import { I18nService } from './core/i18n/i18n.service';
+import { AuthService } from './core/auth/auth.service';
 import { localeInterceptor } from './core/i18n/locale.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -30,6 +31,12 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [I18nService],
       useFactory: (i18n: I18nService) => () => firstValueFrom(i18n.load()),
+    },
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [AuthService],
+      useFactory: (auth: AuthService) => () => firstValueFrom(auth.restoreSession()),
     },
   ],
 };

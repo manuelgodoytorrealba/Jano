@@ -191,23 +191,6 @@
 
               <div class="tt-meta">
                 <span>{{ entityLabel(preview()!.type) }}</span>
-
-                @if (preview()!.startYear || preview()!.endYear) {
-                  <span>
-                    • {{ preview()!.startYear ?? '' }}
-                    @if (preview()!.endYear) {
-                      –{{ preview()!.endYear }}
-                    }
-                  </span>
-                }
-
-                @if (preview()!.status) {
-                  <span>• {{ statusLabel(preview()!.status) }}</span>
-                }
-
-                @if (preview()!.contentLevel) {
-                  <span>• {{ contentLevelLabel(preview()!.contentLevel) }}</span>
-                }
               </div>
 
               @if (preview()!.summary) {

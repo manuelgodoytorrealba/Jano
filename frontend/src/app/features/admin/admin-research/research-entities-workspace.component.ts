@@ -14,6 +14,7 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  forkJoin,
   map,
   Observable,
   of,
@@ -26,6 +27,7 @@ import {
   CreateResearchEntityPayload,
   ResearchEvidence,
   ResearchEntity,
+  ResearchRelation,
   ResearchKnowledgeMapGeneration,
   ResearchProposal,
   ResearchProposalReviewState,
@@ -124,6 +126,7 @@ export class ResearchEntitiesWorkspaceComponent {
             map(([proposals, knowledge, generation]) => ({
               proposals: proposals.items,
               entities: knowledge.knowledge?.entities ?? [],
+              relations: knowledge.knowledge?.relations ?? [],
               entityCount: knowledge.knowledge?.entities.length ?? 0,
               relationCount: knowledge.knowledge?.relations.length ?? 0,
               error: proposals.error || knowledge.error,
@@ -347,6 +350,57 @@ export class ResearchEntitiesWorkspaceComponent {
     );
   }
 
+  setGraphReviewState(
+    entities: ResearchEntity[],
+    relations: ResearchRelation[],
+    reviewState: ResearchProposalReviewState,
+  ): void {
+    const entityActions = entities
+      .filter((entity) => entity.reviewState !== reviewState)
+      .map((entity) => this.api.reviewEntity(this.researchId, entity.id, reviewState));
+    const relationActions = relations
+      .filter((relation) => relation.reviewState !== reviewState)
+      .map((relation) => this.api.reviewRelation(this.researchId, relation.id, reviewState));
+    if (!entityActions.length && !relationActions.length) return;
+    this.busy = true;
+    this.actionError = '';
+    forkJoin([...entityActions, ...relationActions]).subscribe({
+      next: () => {
+        this.busy = false;
+        this.actionMessage =
+          reviewState === 'REVIEWED'
+            ? 'Todo el grafo está revisado y listo para la publicación.'
+            : reviewState === 'PENDING'
+              ? 'Todo el grafo ha vuelto a quedar pendiente.'
+              : 'Todo el grafo se ha descartado.';
+        this.refresh$.next(this.refresh$.value + 1);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.busy = false;
+        this.actionError = 'No se pudo actualizar todo el grafo.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  deleteMapEntity(entityId: string, title: string): void {
+    if (!window.confirm(`¿Eliminar “${title}” del conocimiento de esta investigación?`)) return;
+    this.runAction(
+      this.api.deleteEntity(this.researchId, entityId),
+      'Entidad eliminada del conocimiento privado.',
+    );
+    this.selectedMapEntityId = null;
+    this.syncMapContext(null);
+  }
+
+  reviewMapEntity(request: { entityId: string; reviewState: ResearchProposalReviewState }): void {
+    this.runAction(
+      this.api.reviewEntity(this.researchId, request.entityId, request.reviewState),
+      request.reviewState === 'REVIEWED' ? 'Entidad revisada.' : 'Entidad pendiente.',
+    );
+  }
+
   selectNextCandidate(): void {
     const next = this.latestProposals.find(
       (proposal) => proposal.type === 'ENTITY' && proposal.reviewState === 'PENDING',
@@ -436,6 +490,7 @@ export class ResearchEntitiesWorkspaceComponent {
     return {
       proposals: [],
       entities: [],
+      relations: [],
       entityCount: 0,
       relationCount: 0,
       error: '',

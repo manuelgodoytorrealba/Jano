@@ -2,14 +2,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  effect,
+  PLATFORM_ID,
   inject,
   signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { AppAppearanceService } from '../../core/app-appearance.service';
-import { HomeDeck, HomeDecksApi } from '../../core/api/home-decks.api';
+import { EntitiesApi } from '../../core/api/entities.api';
+import { PublicEntity } from '../../core/api/entities.models';
+import { entityTypeLabel } from '../../core/i18n/domain-labels';
 import { AuthService } from '../../core/auth/auth.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { I18nService } from '../../core/i18n/i18n.service';
@@ -30,11 +33,12 @@ type HomeLoadState = 'loading' | 'ready' | 'empty' | 'error';
 export class HomeComponent {
   private router = inject(Router);
   private readonly appearance = inject(AppAppearanceService);
-  private readonly homeDecksApi = inject(HomeDecksApi);
+  private readonly entitiesApi = inject(EntitiesApi);
   private readonly auth = inject(AuthService);
   private readonly seo = inject(SeoService);
   readonly i18n = inject(I18nService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly deckItems = signal<DeckItem[]>([]);
   readonly loadState = signal<HomeLoadState>('loading');
@@ -48,13 +52,9 @@ export class HomeComponent {
       image: '/assets/home/artwork.jpg',
     });
 
-    effect(() => {
-      const locale = this.i18n.locale();
-      const cachedDecks = this.homeDecksApi.readCachedPublic('HOME', locale);
-
-      if (cachedDecks) this.setDecks(cachedDecks);
-      this.loadHomeDecks(locale);
-    });
+    // Home data is interactive and must not block Angular SSR on an API hop.
+    // Hydration runs this branch in the browser and fills the deck immediately.
+    if (isPlatformBrowser(this.platformId)) this.loadHomeDecks();
   }
 
   onCardClick(item: DeckItem): void {
@@ -114,53 +114,86 @@ export class HomeComponent {
   }
 
   retryLoad(): void {
-    this.loadHomeDecks(this.i18n.locale());
+    this.loadHomeDecks();
   }
 
-  private loadHomeDecks(locale: string): void {
+  private loadHomeDecks(): void {
     if (!this.deckItems().length) this.loadState.set('loading');
 
-    this.homeDecksApi
-      .listPublic('HOME', locale)
+    this.entitiesApi
+      .home()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (decks) => this.setDecks(decks),
+        next: (entities) => this.setCoreDecks(entities),
         error: () => {
           if (!this.deckItems().length) this.loadState.set('error');
         },
       });
   }
 
-  private setDecks(decks: HomeDeck[]): void {
-    const items = decks.map((deck) => this.deckToItem(deck));
+  private setCoreDecks(entities: PublicEntity[]): void {
+    const items = entities.map((entity) => ({
+      id: `core-${entity.type}`,
+      eyebrow: this.i18n.t('home.defaultEyebrow'),
+      title: entityTypeLabel(entity.type, this.i18n),
+      description: this.coreTypeDescription(entity.type),
+      meta: entity.title,
+      cta: `${this.i18n.t('home.viewSelection')} →`,
+      image:
+        entity.resolvedMedia?.card?.url ?? entity.resolvedMedia?.hero?.url ?? entity.image ?? '',
+      routeType: entity.type.toLowerCase(),
+      ctaRoute: `/entities/${entity.type.toLowerCase()}`,
+      adminEditRoute: '/admin/home-decks',
+    }));
     this.deckItems.set(items);
     this.loadState.set(items.length ? 'ready' : 'empty');
   }
 
-  private deckToItem(deck: HomeDeck): DeckItem {
-    return {
-      id: deck.id,
-      eyebrow: deck.subtitle ?? this.i18n.t('home.defaultEyebrow'),
-      title: deck.title,
-      description: deck.description ?? undefined,
-      meta: deck.entities.length
-        ? `${deck.entities.length} ${this.i18n.t('home.entities')}`
-        : this.i18n.t('home.editorialDeck'),
-      cta: `${deck.ctaLabel || this.i18n.t('home.viewSelection')} →`,
-      image: deck.image?.url ?? '',
-      imageWidth: deck.image?.width ?? undefined,
-      imageHeight: deck.image?.height ?? undefined,
-      routeType: this.routeTypeFromDeck(deck),
-      ctaRoute: deck.ctaRoute ?? `/entities?deck=${encodeURIComponent(deck.slug)}`,
-      ctaUrl: deck.ctaUrl ?? undefined,
-      adminEditRoute: '/admin/home-decks/' + deck.id + '/edit?returnTo=/',
+  private coreTypeDescription(type: string): string {
+    const descriptions: Record<string, { es: string; en: string }> = {
+      ARTWORK: {
+        es: 'Obras y piezas que abren recorridos por forma, materia y contexto.',
+        en: 'Works that open paths through form, material and context.',
+      },
+      ARTIST: {
+        es: 'Personas, prácticas e influencias que articulan la historia cultural.',
+        en: 'People, practices and influences that shape cultural history.',
+      },
+      CONCEPT: {
+        es: 'Ideas transversales para cruzar obras, épocas y conversaciones.',
+        en: 'Cross-cutting ideas connecting works, periods and conversations.',
+      },
+      MOVEMENT: {
+        es: 'Corrientes y escuelas que dan forma a nuevas maneras de mirar.',
+        en: 'Movements and schools that shape new ways of seeing.',
+      },
+      PERIOD: {
+        es: 'Marcos temporales para situar cambios, continuidades y rupturas.',
+        en: 'Timeframes for locating change, continuity and rupture.',
+      },
+      PLACE: {
+        es: 'Lugares donde se encuentran prácticas, obras e instituciones.',
+        en: 'Places where practices, works and institutions meet.',
+      },
+      EVENT: {
+        es: 'Acontecimientos que desplazan la cultura y sus imaginarios.',
+        en: 'Events that shift culture and its imaginaries.',
+      },
+      ORGANIZATION: {
+        es: 'Museos, escuelas y agentes que sostienen la vida cultural.',
+        en: 'Museums, schools and organisations that sustain cultural life.',
+      },
+      ARTICLE: {
+        es: 'Textos editoriales para leer, interpretar y conectar conocimiento.',
+        en: 'Editorial texts for reading, interpreting and connecting knowledge.',
+      },
+      TEXT: {
+        es: 'Fuentes escritas que amplían el contexto de la biblioteca.',
+        en: 'Written sources that extend the library context.',
+      },
     };
-  }
-
-  private routeTypeFromDeck(deck: HomeDeck): string | undefined {
-    const route = deck.ctaRoute ?? '';
-    const match = route.match(/^\/entities\/([^/?#]+)/);
-    return match?.[1] ?? undefined;
+    const value = descriptions[type] ?? descriptions['ARTWORK'];
+    return this.i18n.locale().startsWith('en') ? value.en : value.es;
   }
 
   private navigateDeckItem(item: DeckItem): void {

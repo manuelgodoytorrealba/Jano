@@ -16,6 +16,7 @@ const ENTITY_TYPE_LABEL_KEYS: Record<string, string> = {
   ABSTRACTION: 'search.kind.abstractions',
   EVENT: 'search.kind.events',
   ORGANIZATION: 'search.kind.organizations',
+  RESEARCH: 'entity.research',
   ENTITY: 'entity.generic',
 };
 

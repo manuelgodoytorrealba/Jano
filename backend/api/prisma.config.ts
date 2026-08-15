@@ -9,6 +9,6 @@ export default defineConfig({
   },
 
   migrations: {
-    seed: 'ts-node prisma/seed.ts',
+    seed: 'ts-node prisma/seed-bootstrap.ts',
   },
 });
