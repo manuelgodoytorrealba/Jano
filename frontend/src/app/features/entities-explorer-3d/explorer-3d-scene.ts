@@ -35,6 +35,7 @@ export type EntryAnimationState = 'idle' | 'running' | 'complete';
 
 const ENTRY_DURATION_MS = 560;
 const ENTRY_STAGGER_MS = 22;
+const MAX_RENDER_PIXEL_RATIO = 1.5;
 
 export function entryAnimationProgress(elapsedMs: number, distance: number): number {
   return THREE.MathUtils.clamp((elapsedMs - distance * ENTRY_STAGGER_MS) / ENTRY_DURATION_MS, 0, 1);
@@ -103,7 +104,7 @@ export class Explorer3dScene {
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.setClearColor(0x000000, 0);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_RENDER_PIXEL_RATIO));
     this.renderer.setSize(width, height);
     host.replaceChildren(this.renderer.domElement);
     this.buildCards();
@@ -517,7 +518,7 @@ export class Explorer3dScene {
       const profileChanged = this.cardProfileKey !== this.viewportProfile().key;
       this.applyCamera(width, height);
       this.renderer?.setSize(width, height);
-      this.renderer?.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.renderer?.setPixelRatio(Math.min(window.devicePixelRatio, MAX_RENDER_PIXEL_RATIO));
       if (!profileChanged) return;
       if (this.isEntryAnimationRunning) {
         this.resizePending = true;
