@@ -102,6 +102,13 @@ type EntityRecord = LocalizedEntityRecord & {
   slug: string;
   startYear?: number | null;
   endYear?: number | null;
+  typeDefinition?: {
+    key: string;
+    singularName: string;
+    icon: string;
+    colorToken: string;
+    baseKind: string;
+  } | null;
 };
 
 type AdminEntityDetailRecord = EntityRecord &
@@ -131,6 +138,9 @@ export class EntityReadService {
         status: EntityStatus.PUBLISHED,
       },
       include: {
+        typeDefinition: {
+          select: { key: true, singularName: true, icon: true, colorToken: true, baseKind: true },
+        },
         translations: localizedInclude(locale),
         artwork: { include: { translations: localizedInclude(locale) } },
         artist: { include: { translations: localizedInclude(locale) } },
@@ -287,6 +297,9 @@ export class EntityReadService {
         contentLevel: true,
         startYear: true,
         endYear: true,
+        typeDefinition: {
+          select: { key: true, singularName: true, icon: true, colorToken: true, baseKind: true },
+        },
         translations: localizedInclude(locale),
         tags: {
           select: {
@@ -352,6 +365,9 @@ export class EntityReadService {
     const entity = await this.prisma.entity.findUnique({
       where: { id },
       include: {
+        typeDefinition: {
+          select: { key: true, singularName: true, icon: true, colorToken: true, baseKind: true },
+        },
         translations: { orderBy: { locale: 'asc' } },
         aliases: {
           orderBy: [{ locale: 'asc' }, { kind: 'asc' }, { value: 'asc' }],

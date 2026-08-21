@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { EntityType, KnowledgeEntityKind, Prisma } from '@prisma/client';
+import { EntityType, EntityTypeStatus, KnowledgeEntityKind, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { canonicalRelationTypeFilter } from '../relation-types/relation-type.utils';
 import { CreateEntityDraftDto } from './dto/create-entity-draft.dto';
@@ -52,7 +52,7 @@ export class EntityEditorialService {
 
   createDraftRecord(
     tx: Prisma.TransactionClient,
-    dto: { type: EntityType; kind: KnowledgeEntityKind; title: string; summary?: string },
+    dto: { type: string; kind: KnowledgeEntityKind; title: string; summary?: string },
   ) {
     const title = dto.title.trim();
     const summary = dto.summary?.trim() || null;
@@ -78,6 +78,10 @@ export class EntityEditorialService {
 
   async create(dto: CreateEntityDto) {
     const id = await this.prisma.$transaction(async (tx) => {
+      const typeDefinition = await tx.entityTypeDefinition.findUnique({ where: { key: dto.type } });
+      if (!typeDefinition || typeDefinition.status !== EntityTypeStatus.ACTIVE) {
+        throw new BadRequestException('Entity type is unavailable');
+      }
       const existing = await tx.entity.findUnique({
         where: { slug: dto.slug },
         select: { id: true },
@@ -87,7 +91,7 @@ export class EntityEditorialService {
       const entity = await tx.entity.create({
         data: {
           type: dto.type,
-          kind: dto.kind ?? kindForLegacyEntityType(dto.type),
+          kind: typeDefinition.baseKind,
           title: dto.title.trim(),
           slug: dto.slug.trim(),
           summary: dto.summary?.trim(),
@@ -119,9 +123,20 @@ export class EntityEditorialService {
     await this.prisma.$transaction(async (tx) => {
       const existing = await tx.entity.findUnique({
         where: { id },
-        select: { id: true, type: true, kind: true },
+        select: { id: true, type: true, kind: true, status: true },
       });
       if (!existing) throw new NotFoundException('Entity not found');
+
+      const typeDefinition = dto.type
+        ? await tx.entityTypeDefinition.findUnique({ where: { key: dto.type } })
+        : null;
+      if (
+        dto.type &&
+        (!typeDefinition ||
+          (typeDefinition.status === EntityTypeStatus.INACTIVE && dto.type !== existing.type))
+      ) {
+        throw new BadRequestException('Entity type is unavailable');
+      }
 
       if (dto.slug) {
         const slugOwner = await tx.entity.findUnique({
@@ -133,11 +148,18 @@ export class EntityEditorialService {
         }
       }
 
+      await this.assertRequiredTypeFields(
+        tx,
+        id,
+        dto.type ?? existing.type,
+        dto.status ?? existing.status,
+      );
+
       const entity = await tx.entity.update({
         where: { id },
         data: {
           type: dto.type,
-          kind: dto.kind ?? (dto.type ? kindForLegacyEntityType(dto.type) : existing.kind),
+          kind: typeDefinition?.baseKind ?? dto.kind ?? existing.kind,
           title: dto.title?.trim(),
           slug: dto.slug?.trim(),
           summary: dto.summary?.trim(),
@@ -201,6 +223,31 @@ export class EntityEditorialService {
     });
 
     return { ok: true };
+  }
+
+  private async assertRequiredTypeFields(
+    tx: Prisma.TransactionClient,
+    entityId: string,
+    type: string,
+    status: string,
+  ) {
+    if (status !== 'PUBLISHED') return;
+    const required = await tx.entityTypeFieldDefinition.findMany({
+      where: { entityTypeKey: type, isRequired: true },
+      select: { attributeDefinitionId: true },
+    });
+    if (!required.length) return;
+    const present = await tx.entityAttribute.findMany({
+      where: {
+        entityId,
+        definitionId: { in: required.map((field) => field.attributeDefinitionId) },
+        status: { not: 'REJECTED' },
+      },
+      select: { definitionId: true },
+    });
+    if (new Set(present.map((attribute) => attribute.definitionId)).size !== required.length) {
+      throw new BadRequestException('Required contextual fields are incomplete');
+    }
   }
 
   async upsertTranslation(id: string, rawLocale: string, dto: UpsertEntityTranslationDto) {
@@ -275,6 +322,7 @@ export class EntityEditorialService {
     type: string,
     dto: UpdateEntityDetailsDto,
   ) {
+    // ponytail: legacy API bridge; remove after external detail clients have moved to EntityAttribute.
     if (type === 'ARTWORK') {
       const data = {
         authorNation: dto.authorNation?.trim() || null,
@@ -329,6 +377,7 @@ export class EntityEditorialService {
     locale: string,
     dto: UpdateEntityDetailsDto,
   ) {
+    // ponytail: legacy API bridge; localized attributes are the next i18n migration.
     if (type === 'ARTWORK') {
       const data = {
         authorNation: dto.authorNation?.trim() || null,

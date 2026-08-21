@@ -42,12 +42,16 @@ describe('ResearchService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       update: jest.fn(),
     },
     researchProjectSource: {
       findUnique: jest.fn(),
       upsert: jest.fn(),
+      deleteMany: jest.fn(),
     },
+    researchProjectCitation: { deleteMany: jest.fn() },
+    researchProjectRelation: { upsert: jest.fn(), deleteMany: jest.fn() },
     researchLibraryMaterial: { deleteMany: jest.fn(), findMany: jest.fn() },
     researchOutlineSection: { findMany: jest.fn() },
     researchEvidence: {
@@ -817,6 +821,37 @@ describe('ResearchService', () => {
     );
   });
 
+  it('removes one citation without removing its source or material', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
+    prisma.researchProjectCitation.deleteMany.mockResolvedValue({ count: 1 });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.removeProjectCitation('project-1', 'citation-1');
+
+    expect(prisma.researchProjectCitation.deleteMany).toHaveBeenCalledWith({
+      where: { id: 'citation-1', projectId: 'project-1' },
+    });
+    expect(prisma.researchProjectSource.deleteMany).not.toHaveBeenCalled();
+    expect(prisma.researchLibraryMaterial.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('relates an owned research project without inventing a reverse relation', async () => {
+    prisma.researchProject.findUnique.mockResolvedValue({ ownerId: 'owner-1' });
+    prisma.researchProject.findFirst.mockResolvedValue({ id: 'project-2' });
+    jest.spyOn(service, 'getProject').mockResolvedValue({ id: 'project-1' } as never);
+
+    await service.addRelatedProject('project-1', 'project-2');
+
+    expect(prisma.researchProjectRelation.upsert).toHaveBeenCalledWith({
+      where: {
+        projectId_relatedProjectId: { projectId: 'project-1', relatedProjectId: 'project-2' },
+      },
+      create: { projectId: 'project-1', relatedProjectId: 'project-2' },
+      update: {},
+    });
+    expect(prisma.researchProjectRelation.deleteMany).not.toHaveBeenCalled();
+  });
+
   it('delegates PDF creation to Library and preserves the legacy writer untouched', async () => {
     tx.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
     prisma.researchProject.findUnique.mockResolvedValue({ id: 'project-1' });
@@ -841,6 +876,7 @@ describe('ResearchService', () => {
         size: 2048,
       },
       undefined,
+      {},
     );
     expect(tx.researchLibraryMaterial.upsert).toHaveBeenCalledWith(
       expect.objectContaining({

@@ -14,7 +14,10 @@
             inmediatamente.
           </p>
         </div>
-        <a class="draft-launcher__back" [attr.href]="shell.returnTo">Volver</a>
+        <div class="draft-launcher__head-actions">
+          <a routerLink="/admin/entity-types" class="draft-launcher__back">Gestionar tipos</a
+          ><a class="draft-launcher__back" [attr.href]="shell.returnTo">Volver</a>
+        </div>
       </header>
 
       <label class="draft-launcher__identity">
@@ -31,23 +34,116 @@
 
       <div class="draft-types" role="list" aria-label="Tipos de entidad">
         @for (option of draftTypes; track option.type) {
-          <button
-            type="button"
-            class="draft-type"
-            role="listitem"
-            [style.--entity-color]="option.color"
-            [disabled]="facade.creatingDraft()"
-            (click)="createDraft(option.type)"
-          >
-            <span class="draft-type__mark" aria-hidden="true">{{ option.icon }}</span>
-            <span class="draft-type__copy">
-              <strong>{{ option.label }}</strong>
-              <span>{{ option.description }}</span>
-            </span>
-            <span class="draft-type__action" aria-hidden="true">Crear borrador&nbsp;›</span>
-          </button>
+          <div class="draft-type-wrap" role="listitem" [style.--entity-color]="option.color">
+            <button
+              type="button"
+              class="draft-type"
+              [disabled]="facade.creatingDraft()"
+              (click)="createDraft(option.type)"
+            >
+              <span class="draft-type__mark" aria-hidden="true">{{ option.icon }}</span>
+              <span class="draft-type__copy"
+                ><strong>{{ option.label }}</strong
+                ><span>{{ option.description }}</span></span
+              >
+              <span class="draft-type__action" aria-hidden="true">Crear borrador&nbsp;›</span>
+            </button>
+            <a
+              routerLink="/admin/entity-types"
+              class="draft-type__manage"
+              [attr.aria-label]="'Gestionar tipo ' + option.label"
+              title="Gestionar tipo"
+              >×</a
+            >
+          </div>
         }
+        <button
+          type="button"
+          class="draft-type draft-type--new"
+          role="listitem"
+          (click)="creatingType = true"
+        >
+          <span class="draft-type__mark" aria-hidden="true">+</span>
+          <span class="draft-type__copy"
+            ><strong>Nuevo tipo</strong><span>Crear un tipo de entidad personalizado.</span></span
+          >
+          <span class="draft-type__action" aria-hidden="true">Crear tipo&nbsp;›</span>
+        </button>
       </div>
+      @if (typeError && !creatingType) {
+        <p class="draft-launcher__error" role="alert">{{ typeError }}</p>
+      }
+
+      @if (creatingType) {
+        <section class="draft-type-dialog" aria-label="Crear tipo de entidad">
+          <header>
+            <div>
+              <p class="draft-launcher__eyebrow">Tipo editorial</p>
+              <h2>Nuevo tipo</h2>
+            </div>
+            <button
+              class="draft-launcher__back"
+              type="button"
+              [disabled]="savingType"
+              (click)="creatingType = false"
+            >
+              Cerrar
+            </button>
+          </header>
+          <div class="draft-type-dialog__fields">
+            <label
+              ><span>Nombre</span
+              ><input
+                [(ngModel)]="newType.singularName"
+                (ngModelChange)="newType.key = slugify($event)"
+                placeholder="Meme"
+            /></label>
+            <label
+              ><span>Nombre plural</span
+              ><input [(ngModel)]="newType.pluralName" placeholder="Memes"
+            /></label>
+            <label
+              ><span>Identificador</span><input [(ngModel)]="newType.key" placeholder="meme"
+            /></label>
+            <label
+              ><span>Inicial</span><input [(ngModel)]="newType.icon" maxlength="4" placeholder="M"
+            /></label>
+            <label
+              ><span>Color</span
+              ><select [(ngModel)]="newType.colorToken">
+                @for (color of typeColors; track color[0]) {
+                  <option [value]="color[0]">{{ color[1] }}</option>
+                }
+              </select></label
+            >
+            <label class="full"
+              ><span>Descripción</span
+              ><textarea [(ngModel)]="newType.description" rows="3"></textarea>
+            </label>
+            <label
+              ><span>Naturaleza estructural</span
+              ><select [(ngModel)]="newType.baseKind">
+                @for (kind of typeKinds; track kind[0]) {
+                  <option [value]="kind[0]">{{ kind[1] }}</option>
+                }
+              </select></label
+            >
+            <label
+              ><span>Estado</span
+              ><select [(ngModel)]="newType.status">
+                <option value="DRAFT">Borrador</option>
+                <option value="ACTIVE">Activo</option>
+              </select></label
+            >
+          </div>
+          @if (typeError) {
+            <p class="draft-launcher__error">{{ typeError }}</p>
+          }
+          <button class="btn primary" type="button" [disabled]="savingType" (click)="createType()">
+            {{ savingType ? 'Guardando…' : 'Crear tipo' }}
+          </button>
+        </section>
+      }
 
       @if (facade.createDraftError()) {
         <p class="draft-launcher__error" role="alert">{{ facade.createDraftError() }}</p>
@@ -119,6 +215,7 @@
             [tags]="entityTags"
             [classifications]="entityClassifications"
             [aliases]="entityAliases"
+            [entityTypes]="entityTypeDefinitions"
             (draftChange)="onGlobalDataDraftChange($event)"
             (translationSaved)="onTranslationSaved($event)"
             (detailsSaved)="onDetailsSaved($event)"

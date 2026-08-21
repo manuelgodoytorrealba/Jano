@@ -10,6 +10,7 @@ import {
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
 import {
   AdminEntityDetailsPayload,
   AdminEntityPayload,
@@ -39,7 +40,7 @@ export type AdminEntityTranslationDraftState = {
 @Component({
   standalone: true,
   selector: 'app-admin-entity-translation-editor',
-  imports: [FormsModule],
+  imports: [FormsModule, RichTextComponent],
   templateUrl: './admin-entity-translation-editor.component.html',
   styleUrls: ['./admin-entity-translation-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,6 +73,9 @@ export class AdminEntityTranslationEditorComponent implements OnChanges {
     { locale: 'en', label: 'English' },
   ];
   activeLocale: AdminLocale = 'es';
+  essayEditorContent = '';
+  essayEditorVersion = 0;
+  private editingEssay = false;
 
   get saving(): boolean {
     return this.facade.translationSaving();
@@ -91,6 +95,7 @@ export class AdminEntityTranslationEditorComponent implements OnChanges {
         es: { ...this.translations.es },
         en: { ...this.translations.en },
       };
+      if (!this.editingEssay) this.essayEditorContent = this.activeTranslation().essay;
     }
     if (changes['localizedDetails']) {
       this.localizedDetails = {
@@ -105,6 +110,8 @@ export class AdminEntityTranslationEditorComponent implements OnChanges {
 
   setActiveLocale(locale: AdminLocale): void {
     this.activeLocale = locale;
+    this.editingEssay = false;
+    this.essayEditorContent = this.activeTranslation().essay;
     this.facade.translationMessage.set('');
     this.facade.translationError.set('');
   }
@@ -125,6 +132,25 @@ export class AdminEntityTranslationEditorComponent implements OnChanges {
       [this.activeLocale]: { ...this.activeTranslation(), [field]: value },
     };
     this.emitDraft();
+  }
+
+  updateEssay(value: string): void {
+    this.editingEssay = true;
+    this.updateTranslation('essay', value);
+  }
+
+  refreshEssayEditor(content: string): void {
+    this.essayEditorContent = content;
+    this.essayEditorVersion += 1;
+  }
+
+  handleEssayShortcut(event: KeyboardEvent, editor: RichTextComponent): void {
+    if (!(event.ctrlKey || event.metaKey)) return;
+    const format =
+      event.key.toLowerCase() === 'b' ? 'bold' : event.key.toLowerCase() === 'i' ? 'italic' : null;
+    if (!format) return;
+    event.preventDefault();
+    editor.format(format);
   }
 
   updateDetails(field: keyof AdminEntityPreviewLocalizedDetailsForm, value: string): void {
@@ -152,7 +178,7 @@ export class AdminEntityTranslationEditorComponent implements OnChanges {
   }
 
   supportsTypedDetails(): boolean {
-    return ['ARTWORK', 'ARTIST', 'CONCEPT', 'PERIOD'].includes(this.entityType);
+    return false;
   }
 
   save(): void {

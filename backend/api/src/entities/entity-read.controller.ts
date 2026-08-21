@@ -45,6 +45,12 @@ export class EntityReadController {
     return this.catalog.home(locale);
   }
 
+  @Public()
+  @Get('types')
+  types() {
+    return this.catalog.activeTypes();
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Get('admin/:id')

@@ -176,4 +176,36 @@ describe('ResearchPublicationWorkspaceComponent', () => {
     expect(component.project.status).toBe('ACTIVE');
     confirm.mockRestore();
   });
+
+  it('adds an editorially selected related research project', () => {
+    const router = { navigate: vi.fn() };
+    const researchApi = { addRelatedProject: vi.fn().mockReturnValue(of({})) };
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: Router, useValue: router },
+        { provide: ResearchApi, useValue: researchApi },
+      ],
+    });
+    const component = TestBed.runInInjectionContext(
+      () => new ResearchPublicationWorkspaceComponent(),
+    );
+    component.project = project;
+    component.candidates = [
+      project,
+      {
+        id: 'research-2',
+        title: 'Otra investigación',
+        objective: 'Continúa la lectura',
+        scope: null,
+        coverImageUrl: null,
+        status: 'PUBLISHED',
+        lastActiveAt: '',
+      },
+    ] as ResearchProject[];
+    component.relatedProjectId = 'research-2';
+
+    component.addRelatedProject();
+
+    expect(researchApi.addRelatedProject).toHaveBeenCalledWith('research-1', 'research-2');
+  });
 });

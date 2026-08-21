@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException } from '@nestjs/common';
-import { LibraryMaterialKind, LibraryMaterialVersionStatus } from '@prisma/client';
+import { LibraryMaterialKind, LibraryMaterialVersionStatus, SourceType } from '@prisma/client';
 import { LibraryService } from './library.service';
 
 describe('LibraryService', () => {
@@ -41,6 +41,15 @@ describe('LibraryService', () => {
       data: {
         kind: LibraryMaterialKind.TEXT,
         title: 'Notas',
+        source: {
+          create: {
+            type: SourceType.PAPER,
+            title: 'Notas',
+            author: null,
+            year: null,
+            url: null,
+          },
+        },
         versions: {
           create: {
             version: 1,
@@ -56,6 +65,15 @@ describe('LibraryService', () => {
       data: {
         kind: LibraryMaterialKind.URL,
         title: 'Prado',
+        source: {
+          create: {
+            type: SourceType.WEBSITE,
+            title: 'Prado',
+            author: null,
+            year: null,
+            url: 'https://www.museodelprado.es/',
+          },
+        },
         versions: {
           create: {
             version: 1,
@@ -104,6 +122,15 @@ describe('LibraryService', () => {
       data: {
         kind: LibraryMaterialKind.PDF,
         title: 'Catálogo',
+        source: {
+          create: {
+            type: SourceType.PAPER,
+            title: 'Catálogo',
+            author: null,
+            year: null,
+            url: null,
+          },
+        },
         versions: {
           create: {
             version: 1,

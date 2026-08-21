@@ -12,6 +12,8 @@ import { EntityTaxonomyService } from './entity-taxonomy.service';
 import { EntityCreditsService } from './entity-credits.service';
 import { EntityCatalogService } from './entity-catalog.service';
 import { EntityMediaLifecycleService } from '../media/entity-media-lifecycle.service';
+import { EntityTypeDefinitionController } from './entity-type-definition.controller';
+import { EntityTypeDefinitionService } from './entity-type-definition.service';
 
 @Module({
   imports: [PrismaModule],
@@ -20,6 +22,7 @@ import { EntityMediaLifecycleService } from '../media/entity-media-lifecycle.ser
     EntityMediaController,
     EntityEditorialController,
     EntityReadController,
+    EntityTypeDefinitionController,
   ],
   providers: [
     EntityReadService,
@@ -30,6 +33,7 @@ import { EntityMediaLifecycleService } from '../media/entity-media-lifecycle.ser
     EntityEditorialService,
     EntityTaxonomyService,
     EntityCreditsService,
+    EntityTypeDefinitionService,
   ],
   exports: [EntityEditorialService, EntityTaxonomyService],
 })

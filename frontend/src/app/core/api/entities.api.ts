@@ -4,6 +4,8 @@ import { GraphResponseDto } from './graph.models';
 import { apiUrl } from './api-base';
 import {
   PublicEntity,
+  PublicEntityTypeDefinition,
+  PublicHomeEntityTypeCard,
   PublicEntityListResponse,
   PublicEntityPreview,
   type PublicKnowledgeEntityKind,
@@ -33,7 +35,11 @@ export class EntitiesApi {
   private http = inject(HttpClient);
 
   home() {
-    return this.http.get<PublicEntity[]>(apiUrl('/entities/home'));
+    return this.http.get<PublicHomeEntityTypeCard[]>(apiUrl('/entities/home'));
+  }
+
+  types() {
+    return this.http.get<PublicEntityTypeDefinition[]>(apiUrl('/entities/types'));
   }
 
   list(params: EntitiesListParams) {

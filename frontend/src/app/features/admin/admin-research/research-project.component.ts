@@ -1,5 +1,12 @@
 import { AsyncPipe, DatePipe, DOCUMENT, NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, HostListener, inject, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  inject,
+  OnDestroy,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap } from 'rxjs';
@@ -58,6 +65,7 @@ const MATERIAL_POLL_INTERVAL_MS = 2000;
 })
 export class ResearchProjectComponent implements OnDestroy {
   private readonly api = inject(ResearchApi);
+  private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly libraryApi = inject(LibraryApi);
   private readonly document = inject(DOCUMENT);
   private readonly route = inject(ActivatedRoute);
@@ -65,9 +73,18 @@ export class ResearchProjectComponent implements OnDestroy {
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
   private materialPollTimer: ReturnType<typeof setTimeout> | null = null;
   private workspaceSectionId: string | null = null;
-  private savedObjective = '';
-  private savedNotes = '';
-  savedDraftContent = '';
+  private readonly draftStates = new Map<
+    string,
+    {
+      content: string;
+      draftId: string | null;
+      editorContent: string;
+      revisionContent: string;
+      revisionNumber: number | null;
+      renderVersion: number;
+    }
+  >();
+  private readonly draftSaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
   readonly modes = [
     { id: 'corpus', label: 'Corpus', available: true },
@@ -85,13 +102,9 @@ export class ResearchProjectComponent implements OnDestroy {
   dropTargetSectionId: string | null = null;
   dropAfterTarget = false;
   questionText = '';
-  workspaceObjective = '';
-  workspaceNotes = '';
   sectionImageUploading = false;
   projectCoverUploading = false;
   sectionSidePanel: 'context' | 'assistant' = 'context';
-  draftContent = '';
-  draftEditorContent = '';
   savingDraft = false;
   draftMessage = '';
   error = '';
@@ -99,6 +112,9 @@ export class ResearchProjectComponent implements OnDestroy {
   reviewExcerpt: ResearchLibraryExcerpt | null = null;
   materialKind: ResearchDocumentKind = 'TEXT';
   materialTitle = '';
+  materialAuthor = '';
+  materialYear: number | null = null;
+  materialSourceUrl = '';
   materialContent = '';
   materialUrl = '';
   materialPdf: File | null = null;
@@ -110,6 +126,7 @@ export class ResearchProjectComponent implements OnDestroy {
   selectedSectionMaterialVersionId = '';
   materialMenu: MaterialMenuState | null = null;
   focusMode = false;
+  draftFocused = false;
   corpusView: 'intake' | 'reader' = 'intake';
   readonly statuses: ResearchOutlineSectionStatus[] = [
     'NOT_STARTED',
@@ -177,13 +194,14 @@ export class ResearchProjectComponent implements OnDestroy {
     const request =
       this.materialKind === 'PDF'
         ? this.materialPdf
-          ? this.api.createPdfMaterial(project.id, this.materialPdf, title)
+          ? this.api.createPdfMaterial(project.id, this.materialPdf, this.materialProvenance(title))
           : null
         : this.api.createMaterial(project.id, {
             kind: this.materialKind,
-            title,
+            ...this.materialProvenance(title),
             content: this.materialKind === 'TEXT' ? this.materialContent.trim() : undefined,
             url: this.materialKind === 'URL' ? this.materialUrl.trim() : undefined,
+            sourceUrl: this.materialSourceUrl.trim() || this.materialUrl.trim() || undefined,
           });
     if (!request) return;
 
@@ -193,6 +211,9 @@ export class ResearchProjectComponent implements OnDestroy {
       next: () => {
         this.addingMaterial = false;
         this.materialTitle = '';
+        this.materialAuthor = '';
+        this.materialYear = null;
+        this.materialSourceUrl = '';
         this.materialContent = '';
         this.materialUrl = '';
         this.materialPdf = null;
@@ -259,6 +280,15 @@ export class ResearchProjectComponent implements OnDestroy {
     if (this.materialKind === 'TEXT') return Boolean(this.materialContent.trim());
     if (this.materialKind === 'URL') return Boolean(this.materialUrl.trim());
     return Boolean(this.materialPdf);
+  }
+
+  private materialProvenance(title: string) {
+    return {
+      title,
+      author: this.materialAuthor.trim() || undefined,
+      year: this.materialYear ?? undefined,
+      sourceUrl: this.materialSourceUrl.trim() || undefined,
+    };
   }
 
   private setPdf(file: File | null): void {
@@ -464,24 +494,104 @@ export class ResearchProjectComponent implements OnDestroy {
     this.formatDraft(editor, format);
   }
 
+  async toggleDraftFocus(draft: HTMLElement): Promise<void> {
+    if (this.document.fullscreenElement === draft) {
+      await this.document.exitFullscreen();
+      return;
+    }
+    await draft.requestFullscreen();
+  }
+
+  @HostListener('document:fullscreenchange')
+  syncDraftFocus(): void {
+    this.draftFocused =
+      this.document.fullscreenElement?.classList.contains('research-project__draft') ?? false;
+  }
+
   activeDraft(section: ResearchOutlineSection): ResearchDraft | null {
     return section.drafts[0] ?? null;
   }
 
-  saveDraft(project: ResearchProject, section: ResearchOutlineSection): void {
-    if (this.savingDraft || this.draftContent === this.savedDraftContent) return;
+  draftContent(section: ResearchOutlineSection): string {
+    return (
+      this.draftStates.get(section.id)?.content ?? section.drafts[0]?.currentRevision?.content ?? ''
+    );
+  }
+
+  draftEditorContent(section: ResearchOutlineSection): string {
+    return this.draftStates.get(section.id)?.editorContent ?? '';
+  }
+
+  editorKey(section: ResearchOutlineSection): string {
+    return `${section.id}:${this.draftStates.get(section.id)?.renderVersion ?? 0}`;
+  }
+
+  draftRevisionNumber(section: ResearchOutlineSection): number | null {
+    return this.draftStates.get(section.id)?.revisionNumber ?? null;
+  }
+
+  hasUncommittedDraft(section: ResearchOutlineSection): boolean {
+    const state = this.draftStates.get(section.id);
+    return Boolean(state && state.content !== state.revisionContent);
+  }
+
+  updateDraftContent(
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+    content: string,
+  ): void {
     const draft = this.activeDraft(section);
+    const savedContent = draft?.workingContent ?? draft?.currentRevision?.content ?? '';
+    const state = this.draftStates.get(section.id) ?? {
+      content: savedContent,
+      draftId: draft?.id ?? null,
+      editorContent: savedContent,
+      revisionContent: draft?.currentRevision?.content ?? '',
+      revisionNumber: draft?.currentRevision?.number ?? null,
+      renderVersion: 0,
+    };
+    state.content = content;
+    this.draftStates.set(section.id, state);
+    this.changeDetector.markForCheck();
+    const timer = this.draftSaveTimers.get(section.id);
+    if (timer) clearTimeout(timer);
+    this.draftSaveTimers.set(
+      section.id,
+      setTimeout(() => this.saveWorkingCopy(project, section), 700),
+    );
+  }
+
+  refreshDraftEditor(section: ResearchOutlineSection, content: string): void {
+    const state = this.draftStates.get(section.id);
+    if (!state) return;
+    state.editorContent = content;
+    this.changeDetector.markForCheck();
+  }
+
+  saveDraft(project: ResearchProject, section: ResearchOutlineSection): void {
+    const content = this.draftContent(section);
+    if (this.savingDraft || !this.hasUncommittedDraft(section)) return;
+    const state = this.draftStates.get(section.id);
+    if (!state?.draftId) {
+      this.saveWorkingCopy(project, section, () => this.saveDraft(project, section));
+      return;
+    }
     this.savingDraft = true;
     this.draftMessage = '';
-    const request = draft
-      ? this.api.reviseDraft(project.id, draft.id, this.draftContent)
-      : this.api.createDraft(project.id, section.id, this.draftContent);
-    request.subscribe({
+    this.api.reviseDraft(project.id, state.draftId, content).subscribe({
       next: (saved) => {
         this.savingDraft = false;
-        this.savedDraftContent = saved.currentRevision?.content ?? '';
-        this.draftMessage = draft ? 'Revisión guardada.' : 'Borrador creado.';
-        this.refresh$.next();
+        const savedContent = saved.currentRevision?.content ?? '';
+        this.draftStates.set(section.id, {
+          content: savedContent,
+          draftId: saved.id,
+          editorContent: savedContent,
+          revisionContent: savedContent,
+          revisionNumber: saved.currentRevision?.number ?? null,
+          renderVersion: state.renderVersion + 1,
+        });
+        this.draftMessage = 'Revisión guardada.';
+        this.changeDetector.markForCheck();
       },
       error: () => {
         this.savingDraft = false;
@@ -490,21 +600,45 @@ export class ResearchProjectComponent implements OnDestroy {
     });
   }
 
-  saveWorkspace(project: ResearchProject, section: ResearchOutlineSection | null): void {
-    if (
-      !section ||
-      (this.workspaceObjective === this.savedObjective && this.workspaceNotes === this.savedNotes)
-    )
+  private saveWorkingCopy(
+    project: ResearchProject,
+    section: ResearchOutlineSection,
+    afterSave?: () => void,
+  ): void {
+    const state = this.draftStates.get(section.id);
+    if (!state) return;
+    const request = state.draftId
+      ? this.api.saveDraftWorkingCopy(project.id, state.draftId, state.content)
+      : this.api.createDraft(project.id, section.id, state.content);
+    request.subscribe({
+      next: (draft) => {
+        const current = this.draftStates.get(section.id);
+        if (!current) return;
+        current.draftId = draft.id;
+        this.draftStates.set(section.id, current);
+        this.draftMessage = 'Borrador guardado.';
+        this.changeDetector.markForCheck();
+        afterSave?.();
+      },
+      error: () => (this.draftMessage = 'No se pudo guardar el borrador.'),
+    });
+  }
+
+  saveWorkspace(
+    project: ResearchProject,
+    section: ResearchOutlineSection | null,
+    objective: string,
+    notes: string,
+  ): void {
+    if (!section || (objective === (section.objective ?? '') && notes === (section.notes ?? '')))
       return;
     this.api
       .updateOutlineSection(project.id, section.id, {
-        objective: this.workspaceObjective,
-        notes: this.workspaceNotes,
+        objective,
+        notes,
       })
       .subscribe({
         next: () => {
-          this.savedObjective = this.workspaceObjective;
-          this.savedNotes = this.workspaceNotes;
           this.refresh$.next();
         },
         error: () => (this.error = 'No se pudo guardar el contexto de la sección.'),
@@ -794,6 +928,7 @@ export class ResearchProjectComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopMaterialPolling();
+    this.draftSaveTimers.forEach((timer) => clearTimeout(timer));
     this.document.body.classList.remove('app-stage-immersive');
   }
 
@@ -893,13 +1028,19 @@ export class ResearchProjectComponent implements OnDestroy {
   private syncWorkspace(section: ResearchOutlineSection | null): void {
     if (!section || section.id === this.workspaceSectionId) return;
     this.workspaceSectionId = section.id;
-    this.workspaceObjective = section.objective ?? '';
-    this.workspaceNotes = section.notes ?? '';
-    this.savedObjective = this.workspaceObjective;
-    this.savedNotes = this.workspaceNotes;
-    this.draftContent = section.drafts[0]?.currentRevision?.content ?? '';
-    this.draftEditorContent = this.draftContent;
-    this.savedDraftContent = this.draftContent;
+    const draft = this.activeDraft(section);
+    const savedContent = draft?.workingContent ?? draft?.currentRevision?.content ?? '';
+    const draftState = this.draftStates.get(section.id);
+    if (!draftState || draftState.content === draftState.revisionContent)
+      this.draftStates.set(section.id, {
+        content: savedContent,
+        draftId: draft?.id ?? null,
+        editorContent: savedContent,
+        revisionContent: draft?.currentRevision?.content ?? '',
+        revisionNumber: draft?.currentRevision?.number ?? null,
+        renderVersion: (draftState?.renderVersion ?? -1) + 1,
+      });
+    else draftState.editorContent = draftState.content;
     this.draftMessage = '';
     this.selectedSectionMaterialVersionId = '';
     this.questionText = '';

@@ -139,6 +139,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'entity-types',
+        loadComponent: () =>
+          import('./features/admin/admin-entity-types/admin-entity-types.component').then(
+            (m) => m.AdminEntityTypesComponent,
+          ),
+      },
+      {
         path: 'research/prototype/:screen',
         redirectTo: 'research',
         pathMatch: 'full',

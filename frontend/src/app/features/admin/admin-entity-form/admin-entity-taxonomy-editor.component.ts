@@ -52,9 +52,7 @@ export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
   taxonomies: Taxonomy[] = [];
   selectedTaxonomyKey = '';
   selectedTermId = '';
-  newTaxonomyKey = '';
   newTaxonomyLabel = '';
-  newTermKey = '';
   newTermLabel = '';
   taxonomySaving = false;
   taxonomyMessage = '';
@@ -65,6 +63,8 @@ export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
   selectedTagId = '';
   newTagLabel = '';
   newTagCategory = '';
+  newTagCategoryLabel = '';
+  readonly newTagCategoryOption = '__new_category__';
   tagsSaving = false;
   tagsMessage = '';
   tagsError = '';
@@ -113,20 +113,18 @@ export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
   }
 
   createTaxonomy(): void {
-    const key = this.newTaxonomyKey.trim();
     const label = this.newTaxonomyLabel.trim();
-    if (!key || !label || this.taxonomySaving) return;
+    if (!label || this.taxonomySaving) return;
 
     this.taxonomySaving = true;
     this.taxonomyMessage = '';
     this.taxonomyError = '';
-    this.taxonomiesApi.create({ key, label }).subscribe({
+    this.taxonomiesApi.create({ key: this.vocabularyKey(label), label }).subscribe({
       next: (taxonomy) => {
         this.taxonomies = [...this.taxonomies, { ...taxonomy, terms: [] }].sort((a, b) =>
           a.label.localeCompare(b.label),
         );
         this.selectedTaxonomyKey = taxonomy.key;
-        this.newTaxonomyKey = '';
         this.newTaxonomyLabel = '';
         this.taxonomySaving = false;
         this.taxonomyMessage = 'Taxonomía creada.';
@@ -141,36 +139,36 @@ export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
   }
 
   createTerm(): void {
-    const key = this.newTermKey.trim();
     const label = this.newTermLabel.trim();
-    if (!this.selectedTaxonomyKey || !key || !label || this.taxonomySaving) return;
+    if (!this.selectedTaxonomyKey || !label || this.taxonomySaving) return;
 
     this.taxonomySaving = true;
     this.taxonomyMessage = '';
     this.taxonomyError = '';
-    this.taxonomiesApi.createTerm(this.selectedTaxonomyKey, { key, label }).subscribe({
-      next: (term) => {
-        this.taxonomies = this.taxonomies.map((taxonomy) =>
-          taxonomy.key !== this.selectedTaxonomyKey
-            ? taxonomy
-            : {
-                ...taxonomy,
-                terms: [...taxonomy.terms, term].sort((a, b) => a.label.localeCompare(b.label)),
-              },
-        );
-        this.selectedTermId = term.id;
-        this.newTermKey = '';
-        this.newTermLabel = '';
-        this.taxonomySaving = false;
-        this.taxonomyMessage = 'Término creado.';
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        this.taxonomySaving = false;
-        this.taxonomyError = error?.error?.message ?? 'No se pudo crear el término.';
-        this.cdr.markForCheck();
-      },
-    });
+    this.taxonomiesApi
+      .createTerm(this.selectedTaxonomyKey, { key: this.vocabularyKey(label), label })
+      .subscribe({
+        next: (term) => {
+          this.taxonomies = this.taxonomies.map((taxonomy) =>
+            taxonomy.key !== this.selectedTaxonomyKey
+              ? taxonomy
+              : {
+                  ...taxonomy,
+                  terms: [...taxonomy.terms, term].sort((a, b) => a.label.localeCompare(b.label)),
+                },
+          );
+          this.selectedTermId = term.id;
+          this.newTermLabel = '';
+          this.taxonomySaving = false;
+          this.taxonomyMessage = 'Término creado y listo para añadir.';
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          this.taxonomySaving = false;
+          this.taxonomyError = error?.error?.message ?? 'No se pudo crear el término.';
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   addClassification(): void {
@@ -257,15 +255,23 @@ export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
 
   createTagAndAttach(): void {
     const label = this.newTagLabel.trim();
-    if (!this.entityId || !label || this.tagsSaving) return;
+    const category = this.tagCategory();
+    if (
+      !this.entityId ||
+      !label ||
+      (this.newTagCategory === this.newTagCategoryOption && !category) ||
+      this.tagsSaving
+    )
+      return;
     this.startTagAction();
-    this.tagsApi.create({ label, category: this.newTagCategory.trim() || undefined }).subscribe({
+    this.tagsApi.create({ label, category: category || undefined }).subscribe({
       next: (tag) => {
         this.availableTags = [...this.availableTags, tag].sort((a, b) =>
           a.label.localeCompare(b.label),
         );
         this.newTagLabel = '';
         this.newTagCategory = '';
+        this.newTagCategoryLabel = '';
         this.tagsApi.addToEntity(this.entityId, tag.id).subscribe({
           next: (entityTag) => {
             this.tagsSaving = false;
@@ -355,6 +361,43 @@ export class AdminEntityTaxonomyEditorComponent implements OnInit, OnChanges {
     return this.availableTags.filter(
       (tag) => tag.isActive && !this.tags.some((item) => this.entityTagId(item) === tag.id),
     );
+  }
+
+  tagCategories(): string[] {
+    // ponytail: categories derive from existing tags; add a category owner only if they need governance beyond reuse.
+    return Array.from(
+      new Set(
+        this.availableTags
+          .map((tag) => tag.category?.trim())
+          .filter((category): category is string => Boolean(category)),
+      ),
+    ).sort((left, right) => left.localeCompare(right));
+  }
+
+  selectedTaxonomyLabel(): string {
+    return (
+      this.taxonomies.find((taxonomy) => taxonomy.key === this.selectedTaxonomyKey)?.label ??
+      'esta taxonomía'
+    );
+  }
+
+  private tagCategory(): string {
+    return (
+      this.newTagCategory === this.newTagCategoryOption
+        ? this.newTagCategoryLabel
+        : this.newTagCategory
+    ).trim();
+  }
+
+  private vocabularyKey(value: string): string {
+    return value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
   }
 
   aliasLocaleLabel(locale?: string | null): string {

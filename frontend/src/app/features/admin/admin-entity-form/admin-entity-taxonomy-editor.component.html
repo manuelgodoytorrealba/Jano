@@ -45,40 +45,47 @@
         Añadir clasificación
       </button>
     </div>
-    <div class="tag-admin__create">
-      <input [(ngModel)]="newTaxonomyKey" name="newTaxonomyKey" placeholder="Clave de taxonomía" />
-      <input [(ngModel)]="newTaxonomyLabel" name="newTaxonomyLabel" placeholder="Nueva taxonomía" />
-      <button
-        class="btn"
-        type="button"
-        [disabled]="!newTaxonomyKey.trim() || !newTaxonomyLabel.trim() || taxonomySaving"
-        (click)="createTaxonomy()"
-      >
-        Crear taxonomía
-      </button>
-    </div>
-
-    @if (selectedTaxonomyKey) {
+    <details class="tag-admin__vocabulary">
+      <summary>Ampliar vocabulario</summary>
       <div class="tag-admin__create">
-        <input [(ngModel)]="newTermKey" name="newTermKey" placeholder="Clave de término" />
-        <input [(ngModel)]="newTermLabel" name="newTermLabel" placeholder="Nuevo término" />
+        <input
+          [(ngModel)]="newTaxonomyLabel"
+          name="newTaxonomyLabel"
+          placeholder="Nombre de la taxonomía"
+        />
         <button
           class="btn"
           type="button"
-          [disabled]="!newTermKey.trim() || !newTermLabel.trim() || taxonomySaving"
-          (click)="createTerm()"
+          [disabled]="!newTaxonomyLabel.trim() || taxonomySaving"
+          (click)="createTaxonomy()"
         >
-          Crear término
+          Crear taxonomía
         </button>
       </div>
-    }
-
-    @if (taxonomyMessage) {
-      <small class="success-text">{{ taxonomyMessage }}</small>
-    }
-    @if (taxonomyError) {
-      <small class="error-text">{{ taxonomyError }}</small>
-    }
+      @if (selectedTaxonomyKey) {
+        <div class="tag-admin__create">
+          <input
+            [(ngModel)]="newTermLabel"
+            name="newTermLabel"
+            [placeholder]="'Nuevo término en ' + selectedTaxonomyLabel()"
+          />
+          <button
+            class="btn"
+            type="button"
+            [disabled]="!newTermLabel.trim() || taxonomySaving"
+            (click)="createTerm()"
+          >
+            Crear término
+          </button>
+        </div>
+      }
+      @if (taxonomyMessage) {
+        <small class="success-text">{{ taxonomyMessage }}</small>
+      }
+      @if (taxonomyError) {
+        <small class="error-text">{{ taxonomyError }}</small>
+      }
+    </details>
 
     @if (classificationsMessage) {
       <small class="success-text">{{ classificationsMessage }}</small>
@@ -128,23 +135,44 @@
       </button>
     </div>
 
-    <div class="tag-admin__create">
-      <input type="text" [(ngModel)]="newTagLabel" name="newTagLabel" placeholder="Nuevo tag" />
-      <input
-        type="text"
-        [(ngModel)]="newTagCategory"
-        name="newTagCategory"
-        placeholder="Categoría"
-      />
-      <button
-        class="btn"
-        type="button"
-        [disabled]="!newTagLabel.trim() || tagsSaving"
-        (click)="createTagAndAttach()"
-      >
-        Crear y añadir
-      </button>
-    </div>
+    <details class="tag-admin__quick-create">
+      <summary>Crear un tag nuevo</summary>
+      <div class="tag-admin__create">
+        <input
+          type="text"
+          [(ngModel)]="newTagLabel"
+          name="newTagLabel"
+          placeholder="Nombre del tag"
+        />
+        <select [(ngModel)]="newTagCategory" name="newTagCategory">
+          <option value="">Sin categoría</option>
+          @for (category of tagCategories(); track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+          <option [value]="newTagCategoryOption">Crear nueva categoría…</option>
+        </select>
+        @if (newTagCategory === newTagCategoryOption) {
+          <input
+            type="text"
+            [(ngModel)]="newTagCategoryLabel"
+            name="newTagCategoryLabel"
+            placeholder="Nombre de la categoría"
+          />
+        }
+        <button
+          class="btn"
+          type="button"
+          [disabled]="
+            !newTagLabel.trim() ||
+            (newTagCategory === newTagCategoryOption && !newTagCategoryLabel.trim()) ||
+            tagsSaving
+          "
+          (click)="createTagAndAttach()"
+        >
+          Crear y añadir
+        </button>
+      </div>
+    </details>
     @if (tagsMessage) {
       <small class="success-text">{{ tagsMessage }}</small>
     }

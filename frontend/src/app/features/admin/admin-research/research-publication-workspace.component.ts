@@ -1,10 +1,19 @@
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  inject,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
   ResearchApi,
   ResearchEntity,
   ResearchOutlineSection,
   ResearchProject,
+  ResearchProjectSummary,
 } from '../../../core/api/research.api';
 import { RichTextComponent } from '../../../shared/rich-text/rich-text.component';
 import { ResearchGraphComponent } from './research-graph.component';
@@ -15,7 +24,7 @@ type PublicationSection = ResearchOutlineSection & { depth: number };
 @Component({
   standalone: true,
   selector: 'app-research-publication-workspace',
-  imports: [RouterLink, RichTextComponent, ResearchGraphComponent],
+  imports: [RouterLink, FormsModule, RichTextComponent, ResearchGraphComponent],
   templateUrl: './research-publication-workspace.component.html',
   styleUrl: './research-publication-workspace.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +34,11 @@ export class ResearchPublicationWorkspaceComponent {
   private readonly researchApi = inject(ResearchApi);
 
   @Input({ required: true }) project!: ResearchProject;
+  @Input() candidates: ResearchProjectSummary[] = [];
   @Input() activeTab: PublicationTab = 'content';
+  @Output() saved = new EventEmitter<void>();
+  relatedProjectId = '';
+  updatingRelatedProjectId = '';
 
   readonly tabs: Array<{ id: PublicationTab; label: string }> = [
     { id: 'content', label: 'Contenido' },
@@ -60,6 +73,44 @@ export class ResearchPublicationWorkspaceComponent {
     };
     append(null, 0);
     return ordered;
+  }
+
+  get availableRelatedProjects(): ResearchProjectSummary[] {
+    const linked = new Set(
+      (this.project.relatedProjects ?? []).map((item) => item.relatedProjectId),
+    );
+    return this.candidates.filter(
+      (candidate) =>
+        candidate.id !== this.project.id &&
+        candidate.status === 'PUBLISHED' &&
+        !linked.has(candidate.id),
+    );
+  }
+
+  addRelatedProject(): void {
+    const relatedProjectId = this.relatedProjectId;
+    if (!relatedProjectId || this.updatingRelatedProjectId) return;
+    this.updatingRelatedProjectId = relatedProjectId;
+    this.researchApi.addRelatedProject(this.project.id, relatedProjectId).subscribe({
+      next: () => {
+        this.relatedProjectId = '';
+        this.updatingRelatedProjectId = '';
+        this.saved.emit();
+      },
+      error: () => (this.updatingRelatedProjectId = ''),
+    });
+  }
+
+  removeRelatedProject(relatedProjectId: string): void {
+    if (this.updatingRelatedProjectId) return;
+    this.updatingRelatedProjectId = relatedProjectId;
+    this.researchApi.removeRelatedProject(this.project.id, relatedProjectId).subscribe({
+      next: () => {
+        this.updatingRelatedProjectId = '';
+        this.saved.emit();
+      },
+      error: () => (this.updatingRelatedProjectId = ''),
+    });
   }
 
   get readingTime(): number {

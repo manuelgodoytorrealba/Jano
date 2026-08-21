@@ -214,7 +214,15 @@
             <li>
               <span>{{ projectSource.source?.type ?? 'Fuente' }}</span>
               <div>
-                <h3>{{ sourceTitle(projectSource) }}</h3>
+                <h3>
+                  @if (projectSource.source?.url) {
+                    <a [href]="projectSource.source?.url" target="_blank" rel="noopener noreferrer">
+                      {{ sourceTitle(projectSource) }}
+                    </a>
+                  } @else {
+                    {{ sourceTitle(projectSource) }}
+                  }
+                </h3>
                 @if (sourceMeta(projectSource)) {
                   <p>{{ sourceMeta(projectSource) }}</p>
                 }
@@ -269,13 +277,58 @@
         <p class="publication__eyebrow">Continuar explorando</p>
         <h2>Investigaciones relacionadas</h2>
         <p>
-          Una futura capa editorial podrá proponer conexiones entre investigaciones sin inventarlas.
+          Elige conexiones editoriales reales para que la lectura pueda continuar en otra
+          investigación.
         </p>
       </header>
-      <div class="publication__empty">
-        <h3>Todavía no hay investigaciones relacionadas.</h3>
-        <p>JANO mostrará conexiones sólo cuando exista una relación editorialmente fundamentada.</p>
-      </div>
+      <form class="publication__related-picker" (ngSubmit)="addRelatedProject()">
+        <select
+          name="relatedProject"
+          [(ngModel)]="relatedProjectId"
+          aria-label="Investigación relacionada"
+        >
+          <option value="">Añadir investigación relacionada…</option>
+          @for (candidate of availableRelatedProjects; track candidate.id) {
+            <option [value]="candidate.id">{{ candidate.title }}</option>
+          }
+        </select>
+        <button type="submit" [disabled]="!relatedProjectId || !!updatingRelatedProjectId">
+          Añadir
+        </button>
+      </form>
+      <p class="publication__related-note">Solo puedes enlazar investigaciones ya publicadas.</p>
+      @if (project.relatedProjects?.length) {
+        <ol class="publication__related-list">
+          @for (relation of project.relatedProjects; track relation.relatedProjectId) {
+            <li>
+              <div>
+                <strong>{{ relation.relatedProject.title }}</strong>
+                <p>
+                  {{ relation.relatedProject.objective || 'Investigación editorial relacionada.' }}
+                </p>
+                @if (relation.relatedProject.status !== 'PUBLISHED') {
+                  <small>Se mostrará cuando publiques “{{ relation.relatedProject.title }}”.</small>
+                }
+              </div>
+              <button
+                type="button"
+                class="publication__related-remove"
+                [disabled]="updatingRelatedProjectId === relation.relatedProjectId"
+                (click)="removeRelatedProject(relation.relatedProjectId)"
+              >
+                {{
+                  updatingRelatedProjectId === relation.relatedProjectId ? 'Quitando…' : 'Quitar'
+                }}
+              </button>
+            </li>
+          }
+        </ol>
+      } @else {
+        <div class="publication__empty">
+          <h3>Todavía no hay investigaciones relacionadas.</h3>
+          <p>Solo aparecerán en la publicación las conexiones que hayas elegido aquí.</p>
+        </div>
+      }
     </section>
   }
 </section>

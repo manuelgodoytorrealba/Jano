@@ -8,7 +8,135 @@ import { RELATION_TYPES, RELATION_TYPE_EN } from './foundational/relation-types'
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
+const SYSTEM_ENTITY_TYPES = [
+  [
+    'ARTWORK',
+    'Obra',
+    'Obras',
+    'Una obra y su contexto material, histórico y visual.',
+    'O',
+    'blue',
+    'WORK',
+  ],
+  [
+    'ARTIST',
+    'Artista',
+    'Artistas',
+    'Una trayectoria, práctica y red de influencias.',
+    'A',
+    'coral',
+    'PERSON',
+  ],
+  [
+    'ARTICLE',
+    'Artículo',
+    'Artículos',
+    'Una pieza editorial que interpreta y conecta conocimiento.',
+    'R',
+    'orange',
+    'WORK',
+  ],
+  [
+    'CONCEPT',
+    'Concepto',
+    'Conceptos',
+    'Una idea crítica presente en obras, épocas y discursos.',
+    'C',
+    'green',
+    'ABSTRACTION',
+  ],
+  [
+    'MOVEMENT',
+    'Movimiento',
+    'Movimientos',
+    'Una corriente artística y las conexiones que la definen.',
+    'M',
+    'violet',
+    'ABSTRACTION',
+  ],
+  [
+    'PERIOD',
+    'Periodo',
+    'Periodos',
+    'Un marco temporal para organizar la biblioteca.',
+    'P',
+    'gold',
+    'ABSTRACTION',
+  ],
+  [
+    'PLACE',
+    'Lugar',
+    'Lugares',
+    'Un lugar cultural, geográfico o institucional.',
+    'L',
+    'teal',
+    'PLACE',
+  ],
+  [
+    'TEXT',
+    'Texto',
+    'Textos',
+    'Un documento, manifiesto o referencia escrita.',
+    'T',
+    'rose',
+    'WORK',
+  ],
+  [
+    'EVENT',
+    'Evento',
+    'Eventos',
+    'Un acontecimiento que sitúa y conecta la cultura.',
+    'E',
+    'gold',
+    'EVENT',
+  ],
+  [
+    'ORGANIZATION',
+    'Organización',
+    'Organizaciones',
+    'Una institución, colectivo o agente cultural.',
+    'O',
+    'violet',
+    'ORGANIZATION',
+  ],
+] as const;
+
 async function main() {
+  for (const [
+    key,
+    singularName,
+    pluralName,
+    description,
+    icon,
+    colorToken,
+    baseKind,
+  ] of SYSTEM_ENTITY_TYPES) {
+    await prisma.entityTypeDefinition.upsert({
+      where: { key },
+      update: {
+        singularName,
+        pluralName,
+        description,
+        icon,
+        colorToken,
+        baseKind,
+        status: 'ACTIVE',
+        systemType: true,
+      },
+      create: {
+        id: `system-${key.toLowerCase()}`,
+        key,
+        singularName,
+        pluralName,
+        description,
+        icon,
+        colorToken,
+        baseKind,
+        status: 'ACTIVE',
+        systemType: true,
+      },
+    });
+  }
   for (const [key, label, inverseLabel, directed, category, sortOrder] of RELATION_TYPES) {
     const relationType = await prisma.relationType.upsert({
       where: { key },

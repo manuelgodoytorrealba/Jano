@@ -12,7 +12,32 @@
   </header>
 
   <div class="editorial-stage">
-    <article class="editorial-document" aria-label="Contenido editorial de la entidad">
+    <div class="editorial-stage__tabs" role="tablist" aria-label="Áreas de edición">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeWorkspace === 'document'"
+        [class.is-active]="activeWorkspace === 'document'"
+        (click)="selectWorkspace('document')"
+      >
+        Contenido
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeWorkspace === 'piece'"
+        [class.is-active]="activeWorkspace === 'piece'"
+        (click)="selectWorkspace('piece')"
+      >
+        Pieza
+      </button>
+    </div>
+
+    <article
+      class="editorial-document"
+      [class.is-mobile-hidden]="activeWorkspace !== 'document'"
+      aria-label="Contenido editorial de la entidad"
+    >
       <app-admin-entity-translation-editor
         [entityId]="entityId"
         [entityType]="form.type"
@@ -23,39 +48,40 @@
         (saved)="translationSaved.emit($event)"
       ></app-admin-entity-translation-editor>
 
-      @if (supportsTypedDetails()) {
+      @if (isEdit) {
         <section class="editorial-context" aria-labelledby="editorial-context-title">
           <header class="editorial-context__head">
             <p class="editorial-eyebrow">Ficha contextual</p>
             <h3 id="editorial-context-title">Datos que sostienen la lectura</h3>
-            <p class="muted">Información específica que acompaña la narrativa pública.</p>
+            <p class="muted">Campos configurados para este tipo editorial.</p>
           </header>
-          <app-admin-entity-details-editor
+          <app-admin-entity-attributes-editor
             [entityId]="entityId"
-            [entityType]="form.type"
-            [details]="details"
-            (detailsChange)="onDetailsChange($event)"
-            (statusChange)="detailsStatusChange.emit($event)"
-            (saved)="detailsSaved.emit($event)"
-          ></app-admin-entity-details-editor>
+            [entityTypeKey]="form.type"
+          ></app-admin-entity-attributes-editor>
         </section>
       }
     </article>
 
-    <details class="editorial-inspector">
-      <summary>
-        <span>Ficha y estado</span>
+    <aside
+      class="editorial-inspector"
+      [class.is-mobile-hidden]="activeWorkspace !== 'piece'"
+      aria-label="Inspector editorial de la pieza"
+    >
+      <header class="editorial-inspector__title">
+        <h3>Pieza</h3>
         <strong>{{ statusLabel(form.status) }}</strong>
-      </summary>
+      </header>
 
-      <div class="editorial-inspector__body">
-        <header class="editorial-inspector__head">
-          <p class="editorial-eyebrow">Ficha editorial</p>
-          <h3>Estado y contexto</h3>
-          <p>Solo lo necesario para situar y publicar la pieza.</p>
-        </header>
-
-        <div class="editorial-inspector__fields">
+      <details class="editorial-inspector__card" open>
+        <summary>
+          <span class="editorial-inspector__card-copy">
+            <strong>Publicación</strong>
+            <small>Estado y nivel editorial</small>
+          </span>
+          <span class="editorial-inspector__card-value">{{ statusLabel(form.status) }}</span>
+        </summary>
+        <div class="editorial-inspector__card-body">
           <label class="field">
             <span>Estado</span>
             <select [ngModel]="form.status" (ngModelChange)="onStatusChange($event)" name="status">
@@ -67,36 +93,6 @@
               <small class="hint">Los cambios posteriores se guardan manualmente.</small>
             }
           </label>
-
-          <label class="field">
-            <span>Clase estructural</span>
-            <select [(ngModel)]="form.kind" (ngModelChange)="onFormChange()" name="kind">
-              @for (kind of kinds; track kind) {
-                <option [value]="kind">{{ kind }}</option>
-              }
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Tipo</span>
-            <select [(ngModel)]="form.type" (ngModelChange)="onFormChange()" name="type">
-              @for (type of types; track type) {
-                <option [value]="type">{{ type }}</option>
-              }
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Slug</span>
-            <input
-              type="text"
-              [(ngModel)]="form.slug"
-              (ngModelChange)="onSlugChange($event)"
-              name="slug"
-            />
-            <small class="hint">URL única y neutral para todos los idiomas.</small>
-          </label>
-
           <label class="field">
             <span>Nivel</span>
             <select
@@ -110,32 +106,89 @@
               }
             </select>
           </label>
-
-          <div class="editorial-inspector__years">
-            <label class="field">
-              <span>Año inicio</span>
-              <input
-                type="number"
-                [(ngModel)]="form.startYear"
-                (ngModelChange)="onFormChange()"
-                name="startYear"
-              />
-            </label>
-            <label class="field">
-              <span>Año fin</span>
-              <input
-                type="number"
-                [(ngModel)]="form.endYear"
-                (ngModelChange)="onFormChange()"
-                name="endYear"
-              />
-            </label>
-          </div>
         </div>
+      </details>
 
-        @if (isEdit) {
-          <details class="editorial-inspector__advanced">
-            <summary>Clasificación y búsqueda</summary>
+      <details class="editorial-inspector__card" open>
+        <summary>
+          <span class="editorial-inspector__card-copy">
+            <strong>Identidad</strong>
+            <small>Tipo, slug y fechas</small>
+          </span>
+          <span class="editorial-inspector__card-value">{{ form.type }}</span>
+        </summary>
+        <div class="editorial-inspector__card-body">
+          <div class="editorial-inspector__identity-meta">
+            <span>Tipo</span>
+            <strong>{{ form.type }}</strong>
+          </div>
+          <section class="editorial-inspector__taxonomy">
+            <label class="field">
+              <span>Slug</span>
+              <input
+                type="text"
+                [(ngModel)]="form.slug"
+                (ngModelChange)="onSlugChange($event)"
+                name="slug"
+              />
+              <small class="hint">URL única y neutral para todos los idiomas.</small>
+            </label>
+            <div class="editorial-inspector__years">
+              <label class="field">
+                <span>Año inicio</span>
+                <input
+                  type="number"
+                  [(ngModel)]="form.startYear"
+                  (ngModelChange)="onFormChange()"
+                  name="startYear"
+                />
+              </label>
+              <label class="field">
+                <span>Año fin</span>
+                <input
+                  type="number"
+                  [(ngModel)]="form.endYear"
+                  (ngModelChange)="onFormChange()"
+                  name="endYear"
+                />
+              </label>
+            </div>
+            <details class="editorial-inspector__structure">
+              <summary>Cambiar estructura</summary>
+              <p>Modificar el tipo puede cambiar los campos contextuales de esta pieza.</p>
+              <label class="field">
+                <span>Clase estructural</span>
+                <select [(ngModel)]="form.kind" (ngModelChange)="onFormChange()" name="kind">
+                  @for (kind of kinds; track kind) {
+                    <option [value]="kind">{{ kind }}</option>
+                  }
+                </select>
+              </label>
+              <label class="field">
+                <span>Tipo</span>
+                <select [(ngModel)]="form.type" (ngModelChange)="onFormChange()" name="type">
+                  @for (type of entityTypes; track type.key) {
+                    @if (type.status === 'ACTIVE' || type.key === form.type) {
+                      <option [value]="type.key">{{ type.singularName }}</option>
+                    }
+                  }
+                </select>
+              </label>
+            </details>
+          </section>
+        </div>
+      </details>
+
+      @if (isEdit) {
+        <details class="editorial-inspector__card">
+          <summary>
+            <span class="editorial-inspector__card-copy">
+              <strong>Descubrimiento</strong>
+              <small>Clasificaciones, tags y aliases</small>
+            </span>
+            <span class="editorial-inspector__card-value">{{ discoverabilitySummary() }}</span>
+          </summary>
+          <div class="editorial-inspector__card-body">
             <section class="editorial-inspector__taxonomy" aria-label="Taxonomía editorial">
               <app-admin-entity-taxonomy-editor
                 [entityId]="entityId"
@@ -145,28 +198,30 @@
                 (stateChange)="onTaxonomyStateChange($event)"
               ></app-admin-entity-taxonomy-editor>
             </section>
-          </details>
+          </div>
+        </details>
 
-          <details class="editorial-inspector__advanced">
-            <summary>Atributos editoriales</summary>
-            <section class="editorial-inspector__taxonomy" aria-label="Atributos editoriales">
+        <details class="editorial-inspector__card">
+          <summary>
+            <span class="editorial-inspector__card-copy">
+              <strong>Rigor</strong>
+              <small>Atributos, evidencias y procedencia</small>
+            </span>
+          </summary>
+          <div class="editorial-inspector__card-body">
+            <section class="editorial-inspector__taxonomy" aria-label="Rigor y procedencia">
               <app-admin-entity-attributes-editor
                 [entityId]="entityId"
+                [entityTypeKey]="form.type"
               ></app-admin-entity-attributes-editor>
-            </section>
-          </details>
-
-          <details class="editorial-inspector__advanced">
-            <summary>Evidencias y procedencia</summary>
-            <section class="editorial-inspector__taxonomy" aria-label="Evidencias de entidad">
               <app-admin-citations-editor
                 target="entity"
                 [targetId]="entityId"
               ></app-admin-citations-editor>
             </section>
-          </details>
-        }
-      </div>
-    </details>
+          </div>
+        </details>
+      }
+    </aside>
   </div>
 </section>

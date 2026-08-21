@@ -9,12 +9,7 @@ import {
 export class ResearchDraftService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(
-    projectId: string,
-    sectionId: string,
-    authorId: string,
-    dto: CreateResearchDraftDto,
-  ) {
+  async create(projectId: string, sectionId: string, dto: CreateResearchDraftDto) {
     const section = await this.prisma.researchOutlineSection.findFirst({
       where: { id: sectionId, projectId },
       select: { id: true, title: true },
@@ -27,16 +22,26 @@ export class ResearchDraftService {
           projectId,
           sectionId,
           title: dto.title?.trim() || section.title,
+          workingContent: dto.content ?? '',
         },
       });
-      const revision = await tx.researchDraftRevision.create({
-        data: { draftId: draft.id, authorId, number: 1, content: dto.content ?? '' },
-      });
-      return tx.researchDraft.update({
+      return tx.researchDraft.findUniqueOrThrow({
         where: { id: draft.id },
-        data: { currentRevisionId: revision.id },
         include: { currentRevision: true },
       });
+    });
+  }
+
+  async saveWorkingCopy(projectId: string, draftId: string, content: string) {
+    const draft = await this.prisma.researchDraft.findFirst({
+      where: { id: draftId, projectId, archivedAt: null },
+      select: { id: true },
+    });
+    if (!draft) throw new NotFoundException('Research draft not found');
+    return this.prisma.researchDraft.update({
+      where: { id: draftId },
+      data: { workingContent: content },
+      include: { currentRevision: true },
     });
   }
 
@@ -51,7 +56,13 @@ export class ResearchDraftService {
       include: { currentRevision: true },
     });
     if (!draft) throw new NotFoundException('Research draft not found');
-    if (draft.currentRevision?.content === dto.content) return draft;
+    if (draft.currentRevision?.content === dto.content) {
+      return this.prisma.researchDraft.update({
+        where: { id: draftId },
+        data: { workingContent: dto.content },
+        include: { currentRevision: true },
+      });
+    }
 
     return this.prisma.$transaction(async (tx) => {
       const revision = await tx.researchDraftRevision.create({
@@ -64,7 +75,7 @@ export class ResearchDraftService {
       });
       return tx.researchDraft.update({
         where: { id: draftId },
-        data: { currentRevisionId: revision.id },
+        data: { currentRevisionId: revision.id, workingContent: dto.content },
         include: { currentRevision: true },
       });
     });

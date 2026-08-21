@@ -78,6 +78,12 @@ enum EntityStatus {
   PUBLISHED
 }
 
+enum EntityTypeStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
 enum ContentLevel {
   BASIC
   INTERMEDIATE
@@ -240,7 +246,8 @@ enum LibraryMaterialVersionStatus {
 
 model Entity {
   id           String               @id @default(cuid())
-  type         EntityType
+  // Transitional enum remains declared for legacy detail compatibility only. The FK below is canonical.
+  type         String
   kind         KnowledgeEntityKind?
   title        String
   slug         String               @unique
@@ -299,6 +306,28 @@ model Entity {
   concept          ConceptDetails?
   period           PeriodDetails?
   researchEntities ResearchEntity[]
+  typeDefinition   EntityTypeDefinition @relation(fields: [type], references: [key], onDelete: Restrict)
+}
+
+model EntityTypeDefinition {
+  id           String              @id @default(cuid())
+  key          String              @unique
+  singularName String
+  pluralName   String
+  description  String?
+  icon         String              @default("•")
+  colorToken   String              @default("slate")
+  baseKind     KnowledgeEntityKind
+  status       EntityTypeStatus    @default(DRAFT)
+  systemType   Boolean             @default(false)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  entities Entity[]
+  fields   EntityTypeFieldDefinition[]
+
+  @@index([status, systemType])
+  @@index([baseKind])
 }
 
 model EntityTranslation {
@@ -542,8 +571,25 @@ model AttributeDefinition {
 
   attributes   EntityAttribute[]
   translations AttributeDefinitionTranslation[]
+  typeFields   EntityTypeFieldDefinition[]
 
   @@index([isActive])
+}
+
+model EntityTypeFieldDefinition {
+  id                    String   @id @default(cuid())
+  entityTypeKey         String
+  attributeDefinitionId String
+  sortOrder             Int      @default(0)
+  isRequired            Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  entityType          EntityTypeDefinition @relation(fields: [entityTypeKey], references: [key], onDelete: Cascade)
+  attributeDefinition AttributeDefinition  @relation(fields: [attributeDefinitionId], references: [id], onDelete: Restrict)
+
+  @@unique([entityTypeKey, attributeDefinitionId])
+  @@index([entityTypeKey, sortOrder])
 }
 
 model AttributeDefinitionTranslation {
@@ -708,11 +754,11 @@ model Source {
   translations SourceTranslation[]
   citations    Citation[]
 
-  researchProjects ResearchProjectSource[]
+  researchProjects         ResearchProjectSource[]
   researchProjectCitations ResearchProjectCitation[]
-  researchEvidence ResearchEvidence[]
-  researchJobs     ResearchJob[]
-  libraryMaterials LibraryMaterial[]
+  researchEvidence         ResearchEvidence[]
+  researchJobs             ResearchJob[]
+  libraryMaterials         LibraryMaterial[]
 }
 
 model SourceTranslation {
@@ -764,19 +810,19 @@ model SourceRefTranslation {
 }
 
 model ResearchProject {
-  id           String                @id @default(cuid())
-  title        String
-  ownerId      String
-  archivedAt   DateTime?
-  archivedById String?
-  objective    String
-  scope        String?
+  id            String                @id @default(cuid())
+  title         String
+  ownerId       String
+  archivedAt    DateTime?
+  archivedById  String?
+  objective     String
+  scope         String?
   coverImageUrl String?
-  status       ResearchProjectStatus @default(ACTIVE)
-  publishedAt  DateTime?
-  lastActiveAt DateTime              @default(now())
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
+  status        ResearchProjectStatus @default(ACTIVE)
+  publishedAt   DateTime?
+  lastActiveAt  DateTime              @default(now())
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
 
   sources          ResearchProjectSource[]
   citations        ResearchProjectCitation[]
@@ -792,6 +838,8 @@ model ResearchProject {
   entities         ResearchEntity[]
   libraryMaterials ResearchLibraryMaterial[]
   relations        ResearchRelation[]
+  relatedProjects  ResearchProjectRelation[] @relation("ResearchProjectRelationSource")
+  relatedFrom      ResearchProjectRelation[] @relation("ResearchProjectRelationTarget")
   assistantThreads ResearchAssistantThread[]
 
   owner      User  @relation("ResearchProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
@@ -803,6 +851,18 @@ model ResearchProject {
   @@index([updatedAt])
 }
 
+model ResearchProjectRelation {
+  projectId        String
+  relatedProjectId String
+  createdAt        DateTime @default(now())
+
+  project        ResearchProject @relation("ResearchProjectRelationSource", fields: [projectId], references: [id], onDelete: Cascade)
+  relatedProject ResearchProject @relation("ResearchProjectRelationTarget", fields: [relatedProjectId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, relatedProjectId])
+  @@index([relatedProjectId])
+}
+
 model LibraryMaterial {
   id        String              @id @default(cuid())
   sourceId  String?
@@ -811,9 +871,9 @@ model LibraryMaterial {
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt
 
-  source   Source?                   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
-  versions LibraryMaterialVersion[]
-  research ResearchLibraryMaterial[]
+  source           Source?                   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  versions         LibraryMaterialVersion[]
+  research         ResearchLibraryMaterial[]
   projectCitations ResearchProjectCitation[]
 
   @@index([sourceId])
@@ -833,9 +893,9 @@ model LibraryMaterialVersion {
   contentHash  String?
   createdAt    DateTime                     @default(now())
 
-  material LibraryMaterial  @relation(fields: [materialId], references: [id], onDelete: Cascade)
-  excerpts LibraryExcerpt[]
-  researchJobs ResearchJob[]
+  material          LibraryMaterial                  @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  excerpts          LibraryExcerpt[]
+  researchJobs      ResearchJob[]
   sectionReferences ResearchOutlineSectionMaterial[]
 
   @@unique([materialId, version])
@@ -854,7 +914,7 @@ model LibraryExcerpt {
 
   materialVersion   LibraryMaterialVersion          @relation(fields: [materialVersionId], references: [id], onDelete: Cascade)
   evidence          ResearchEvidence[]
-  projectCitations ResearchProjectCitation[]
+  projectCitations  ResearchProjectCitation[]
   sectionReferences ResearchOutlineSectionExcerpt[]
 
   @@unique([materialVersionId, fingerprint])
@@ -890,8 +950,8 @@ model ResearchOutlineSection {
   parent   ResearchOutlineSection?  @relation("ResearchOutlineSectionHierarchy", fields: [parentSectionId], references: [id], onDelete: Cascade)
   children ResearchOutlineSection[] @relation("ResearchOutlineSectionHierarchy")
 
-  questions         ResearchQuestion[]
-  excerptReferences ResearchOutlineSectionExcerpt[]
+  questions          ResearchQuestion[]
+  excerptReferences  ResearchOutlineSectionExcerpt[]
   materialReferences ResearchOutlineSectionMaterial[]
   drafts             ResearchDraft[]
   assistantThreads   ResearchAssistantThread[]
@@ -907,8 +967,8 @@ model ResearchAssistantThread {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  project  ResearchProject        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  section  ResearchOutlineSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  project  ResearchProject            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  section  ResearchOutlineSection     @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   messages ResearchAssistantMessage[]
 
   @@unique([projectId, sectionId])
@@ -916,12 +976,12 @@ model ResearchAssistantThread {
 }
 
 model ResearchAssistantMessage {
-  id        String                      @id @default(cuid())
+  id        String                       @id @default(cuid())
   threadId  String
   role      ResearchAssistantMessageRole
   content   String
   snapshot  Json
-  createdAt DateTime                    @default(now())
+  createdAt DateTime                     @default(now())
 
   thread ResearchAssistantThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
 
@@ -933,6 +993,7 @@ model ResearchDraft {
   projectId         String
   sectionId         String
   title             String?
+  workingContent    String    @default("")
   currentRevisionId String?   @unique
   archivedAt        DateTime?
   createdAt         DateTime  @default(now())
@@ -999,10 +1060,10 @@ model ResearchProjectCitation {
   evidenceId       String?
   createdAt        DateTime @default(now())
 
-  project        ResearchProject  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  source         Source           @relation(fields: [sourceId], references: [id], onDelete: Restrict)
-  material       LibraryMaterial? @relation(fields: [materialId], references: [id], onDelete: Cascade)
-  libraryExcerpt LibraryExcerpt?  @relation(fields: [libraryExcerptId], references: [id], onDelete: Cascade)
+  project        ResearchProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  source         Source            @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  material       LibraryMaterial?  @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  libraryExcerpt LibraryExcerpt?   @relation(fields: [libraryExcerptId], references: [id], onDelete: Cascade)
   evidence       ResearchEvidence? @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, materialId])
@@ -1055,11 +1116,11 @@ model ResearchEntity {
   createdAt         DateTime                    @default(now())
   updatedAt         DateTime                    @updatedAt
 
-  project         ResearchProject          @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  canonicalEntity Entity?                  @relation(fields: [canonicalEntityId], references: [id], onDelete: SetNull)
-  evidence        ResearchEntityEvidence[]
-  outgoing        ResearchRelation[]       @relation("ResearchRelationFrom")
-  incoming        ResearchRelation[]       @relation("ResearchRelationTo")
+  project           ResearchProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  canonicalEntity   Entity?                   @relation(fields: [canonicalEntityId], references: [id], onDelete: SetNull)
+  evidence          ResearchEntityEvidence[]
+  outgoing          ResearchRelation[]        @relation("ResearchRelationFrom")
+  incoming          ResearchRelation[]        @relation("ResearchRelationTo")
   acceptedProposals ResearchFindingProposal[] @relation("ConvertedEntityProposal")
 
   @@index([projectId, reviewState])
@@ -1088,11 +1149,11 @@ model ResearchRelation {
   createdAt      DateTime                    @default(now())
   updatedAt      DateTime                    @updatedAt
 
-  project      ResearchProject         @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  fromEntity   ResearchEntity          @relation("ResearchRelationFrom", fields: [fromEntityId], references: [id], onDelete: Cascade)
-  toEntity     ResearchEntity          @relation("ResearchRelationTo", fields: [toEntityId], references: [id], onDelete: Cascade)
-  relationType RelationType?           @relation(fields: [relationTypeId], references: [id], onDelete: SetNull)
-  claims       ResearchRelationClaim[]
+  project           ResearchProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fromEntity        ResearchEntity            @relation("ResearchRelationFrom", fields: [fromEntityId], references: [id], onDelete: Cascade)
+  toEntity          ResearchEntity            @relation("ResearchRelationTo", fields: [toEntityId], references: [id], onDelete: Cascade)
+  relationType      RelationType?             @relation(fields: [relationTypeId], references: [id], onDelete: SetNull)
+  claims            ResearchRelationClaim[]
   acceptedProposals ResearchFindingProposal[] @relation("ConvertedRelationProposal")
 
   @@index([projectId, reviewState])
@@ -1168,26 +1229,26 @@ model ResearchDecision {
 }
 
 model ResearchJob {
-  id               String            @id @default(cuid())
-  projectId        String
-  sourceId         String?
+  id                String            @id @default(cuid())
+  projectId         String
+  sourceId          String?
   materialVersionId String?
-  type             ResearchJobType
-  status           ResearchJobStatus @default(QUEUED)
-  inputFingerprint String
-  attempts         Int               @default(0)
-  maxAttempts      Int               @default(3)
-  progressCurrent  Int               @default(0)
-  progressTotal    Int               @default(0)
-  lastError        String?
-  startedAt        DateTime?
-  finishedAt       DateTime?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  type              ResearchJobType
+  status            ResearchJobStatus @default(QUEUED)
+  inputFingerprint  String
+  attempts          Int               @default(0)
+  maxAttempts       Int               @default(3)
+  progressCurrent   Int               @default(0)
+  progressTotal     Int               @default(0)
+  lastError         String?
+  startedAt         DateTime?
+  finishedAt        DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
   project          ResearchProject           @relation(fields: [projectId], references: [id], onDelete: Cascade)
   source           Source?                   @relation(fields: [sourceId], references: [id], onDelete: SetNull)
-  materialVersion  LibraryMaterialVersion?    @relation(fields: [materialVersionId], references: [id], onDelete: SetNull)
+  materialVersion  LibraryMaterialVersion?   @relation(fields: [materialVersionId], references: [id], onDelete: SetNull)
   aiExecutions     AIExecution[]
   findingProposals ResearchFindingProposal[]
 
@@ -1222,39 +1283,39 @@ model AIExecution {
 }
 
 model ResearchFindingProposal {
-  id                 String                      @id @default(cuid())
-  projectId          String
-  jobId              String?
-  aiExecutionId      String
-  convertedFindingId String? // Legacy compatibility only
-  convertedClaimId   String?
-  convertedEntityId  String?
+  id                  String                      @id @default(cuid())
+  projectId           String
+  jobId               String?
+  aiExecutionId       String
+  convertedFindingId  String? // Legacy compatibility only
+  convertedClaimId    String?
+  convertedEntityId   String?
   convertedRelationId String?
-  type               ResearchFindingProposalType @default(LEGACY)
-  proposalKey        String?
-  resultFingerprint  String?
-  title              String
-  summary            String?
-  kind               String?
-  claimKind          ResearchClaimKind?
-  entityKind         KnowledgeEntityKind?
-  relationFromKey    String?
-  relationToKey      String?
-  relationTypeId     String?
-  explanation        String?
-  reviewState        ResearchProposalReviewState @default(PENDING)
-  createdAt          DateTime                    @default(now())
-  updatedAt          DateTime                    @updatedAt
+  type                ResearchFindingProposalType @default(LEGACY)
+  proposalKey         String?
+  resultFingerprint   String?
+  title               String
+  summary             String?
+  kind                String?
+  claimKind           ResearchClaimKind?
+  entityKind          KnowledgeEntityKind?
+  relationFromKey     String?
+  relationToKey       String?
+  relationTypeId      String?
+  explanation         String?
+  reviewState         ResearchProposalReviewState @default(PENDING)
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
 
-  project          ResearchProject                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  job              ResearchJob?                      @relation(fields: [jobId], references: [id], onDelete: SetNull)
-  aiExecution      AIExecution                       @relation(fields: [aiExecutionId], references: [id], onDelete: Cascade)
-  relationType     RelationType?                     @relation(fields: [relationTypeId], references: [id], onDelete: SetNull)
-  convertedFinding ResearchFinding?                  @relation("ConvertedFindingProposal", fields: [convertedFindingId], references: [id], onDelete: SetNull)
-  convertedClaim   ResearchClaim?                    @relation("ConvertedClaimProposal", fields: [convertedClaimId], references: [id], onDelete: SetNull)
-  convertedEntity  ResearchEntity?                   @relation("ConvertedEntityProposal", fields: [convertedEntityId], references: [id], onDelete: SetNull)
-  convertedRelation ResearchRelation?                @relation("ConvertedRelationProposal", fields: [convertedRelationId], references: [id], onDelete: SetNull)
-  evidence         ResearchFindingProposalEvidence[]
+  project           ResearchProject                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  job               ResearchJob?                      @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  aiExecution       AIExecution                       @relation(fields: [aiExecutionId], references: [id], onDelete: Cascade)
+  relationType      RelationType?                     @relation(fields: [relationTypeId], references: [id], onDelete: SetNull)
+  convertedFinding  ResearchFinding?                  @relation("ConvertedFindingProposal", fields: [convertedFindingId], references: [id], onDelete: SetNull)
+  convertedClaim    ResearchClaim?                    @relation("ConvertedClaimProposal", fields: [convertedClaimId], references: [id], onDelete: SetNull)
+  convertedEntity   ResearchEntity?                   @relation("ConvertedEntityProposal", fields: [convertedEntityId], references: [id], onDelete: SetNull)
+  convertedRelation ResearchRelation?                 @relation("ConvertedRelationProposal", fields: [convertedRelationId], references: [id], onDelete: SetNull)
+  evidence          ResearchFindingProposalEvidence[]
 
   @@index([projectId, reviewState])
   @@index([jobId])
@@ -1454,51 +1515,52 @@ model PeriodDetailsTranslation {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  avatarUrl    String?
-  role         UserRole @default(USER)
-  plan         UserPlan @default(FREE)
-  isBeta       Boolean  @default(false)
-  authVersion  Int      @default(0)
+  id              String        @id @default(cuid())
+  email           String        @unique
+  passwordHash    String
+  name            String?
+  avatarUrl       String?
+  role            UserRole      @default(USER)
+  plan            UserPlan      @default(FREE)
+  isBeta          Boolean       @default(false)
+  authVersion     Int           @default(0)
   emailVerifiedAt DateTime?
-  accountStatus AccountStatus @default(ACTIVE)
+  accountStatus   AccountStatus @default(ACTIVE)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  savedEntities     SavedEntity[]
-  collections       Collection[]
-  discoverySignals  UserDiscoverySignal[]
-  researchDecisions ResearchDecision[]
-  ownedResearch     ResearchProject[]  @relation("ResearchProjectOwner")
-  archivedResearch  ResearchProject[]  @relation("ResearchProjectArchivedBy")
-  researchDraftRevisions ResearchDraftRevision[]
-  passwordResetTokens PasswordResetToken[]
+  savedEntities           SavedEntity[]
+  collections             Collection[]
+  discoverySignals        UserDiscoverySignal[]
+  researchDecisions       ResearchDecision[]
+  ownedResearch           ResearchProject[]        @relation("ResearchProjectOwner")
+  archivedResearch        ResearchProject[]        @relation("ResearchProjectArchivedBy")
+  researchDraftRevisions  ResearchDraftRevision[]
+  passwordResetTokens     PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
 }
 
 model EmailVerificationToken {
-  id String @id @default(cuid())
-  userId String
-  tokenHash String @unique
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
   expiresAt DateTime
-  usedAt DateTime?
-  createdAt DateTime @default(now())
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, createdAt])
   @@index([expiresAt])
 }
 
 model PasswordResetToken {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  tokenHash String   @unique
+  tokenHash String    @unique
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -33,7 +33,7 @@ flowchart LR
   V -->|importación explícita| PV[Publication Version]
 ```
 
-`Draft` conserva identidad, contexto y ciclo de vida. `DraftRevision` conserva una representación inmutable del contenido autoral y de sus referencias editoriales. La revisión actual es una decisión de Research; no es un objeto de Knowledge ni una versión de Publication.
+`Draft` conserva identidad, contexto, ciclo de vida y una copia de trabajo mutable autoguardada. `DraftRevision` conserva una representación inmutable del contenido autoral y de sus referencias editoriales. La revisión actual es una decisión explícita de Research; no es un objeto de Knowledge ni una versión de Publication.
 
 El contenido inicial es una narrativa continua con estructura editorial mínima. Un modelo de bloques sólo será pertinente cuando una necesidad medida de comentarios granulares, colaboración o composición lo requiera; no debe anticiparse mediante un sistema genérico.
 
@@ -78,7 +78,7 @@ creación intencional
 ```
 
 - **Creación:** aparece cuando la investigadora necesita articular narrativa; no exige que todos los Claims estén respaldados.
-- **Escritura y revisiones:** la investigadora formula prosa y selecciona el soporte que considera relevante.
+- **Escritura y revisiones:** la copia de trabajo se autoguarda; la investigadora crea una revisión cuando decide fijar un hito editorial.
 - **Contraste:** puede volver a Evidence, Extractos, preguntas y contradicciones sin abandonar el contexto de la Section.
 - **Archivo o sustitución:** conserva historia privada y no borra procedencia.
 - **Derivación:** una DraftRevision o un fragmento identificable puede importarse explícitamente a una PublicationVersion no publicada.

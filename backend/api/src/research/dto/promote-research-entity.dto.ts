@@ -1,6 +1,5 @@
-import { EntityType } from '@prisma/client';
-import { IsEnum } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class PromoteResearchEntityDto {
-  @IsEnum(EntityType) canonicalType!: EntityType;
+  @IsString() canonicalType!: string;
 }

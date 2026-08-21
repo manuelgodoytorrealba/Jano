@@ -26,17 +26,7 @@ export type AdminEntityTranslation = AdminEntityTranslationPayload & {
 export type AdminTranslationStatus = Record<string, 'complete' | 'partial' | 'missing'>;
 
 export type AdminEntityPayload = {
-  type:
-    | 'ARTWORK'
-    | 'ARTIST'
-    | 'ARTICLE'
-    | 'CONCEPT'
-    | 'MOVEMENT'
-    | 'PERIOD'
-    | 'TEXT'
-    | 'PLACE'
-    | 'EVENT'
-    | 'ORGANIZATION';
+  type: string;
   kind?: PublicKnowledgeEntityKind;
   title: string;
   slug: string;

@@ -11,11 +11,24 @@
 }
 
 .publication__back {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   margin: 0 0 12px;
-  color: var(--research-text-muted);
+  color: var(--research-text-soft);
   font-size: 12px;
+  font-weight: 600;
   text-decoration: none;
+}
+
+.publication__back-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.65;
 }
 
 .publication__hero {

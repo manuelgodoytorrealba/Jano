@@ -13,9 +13,12 @@ import { UpdateEntityAttributeDto } from './dto/update-entity-attribute.dto';
 export class AttributesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  listDefinitions() {
+  listDefinitions(entityTypeKey?: string) {
     return this.prisma.attributeDefinition.findMany({
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        ...(entityTypeKey ? { typeFields: { some: { entityTypeKey } } } : {}),
+      },
       orderBy: { label: 'asc' },
     });
   }

@@ -10,7 +10,11 @@ import {
   tap,
 } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
-import { PublicEntityListItem, PublicEntityListResponse } from '../../core/api/entities.models';
+import {
+  PublicEntityListItem,
+  PublicEntityListResponse,
+  PublicEntityTypeDefinition,
+} from '../../core/api/entities.models';
 import {
   EntityArtworkTransitionPayload,
   EntityRouteArtworkTransitionService,
@@ -48,6 +52,8 @@ type EntitiesListFilterOptionVm = { slug: string; label: string };
 type EntitiesListQueryState = {
   title: string;
   type: string;
+  typeLabel: string;
+  typeOptions: FilterOption[];
   kind: EntitiesListKind;
   q: string;
   page: number;
@@ -61,19 +67,6 @@ type EntitiesListQueryState = {
   sort: Sort;
   filterSupport: FilterSupport;
 };
-
-const TYPE_FILTER_OPTIONS: FilterOption[] = [
-  { slug: 'artwork', title: 'Obra' },
-  { slug: 'artist', title: 'Artista' },
-  { slug: 'concept', title: 'Concepto' },
-  { slug: 'movement', title: 'Movimiento' },
-  { slug: 'period', title: 'Periodo' },
-  { slug: 'place', title: 'Lugar' },
-  { slug: 'event', title: 'Evento' },
-  { slug: 'organization', title: 'Organización' },
-  { slug: 'article', title: 'Artículo' },
-  { slug: 'text', title: 'Texto' },
-];
 
 export type EntitiesListActiveFilterChipVm = {
   key: EntitiesListActiveFilterKey;
@@ -151,8 +144,6 @@ const TYPE_ROUTE_LABELS: Record<string, string> = {
   event: 'search.kind.events',
   organization: 'search.kind.organizations',
 };
-const VALID_TYPE_ROUTE_SLUGS = new Set(Object.keys(TYPE_ROUTE_LABELS));
-
 const KNOWLEDGE_KINDS = [
   'PERSON',
   'WORK',
@@ -240,12 +231,22 @@ export class EntitiesListFacade {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  readonly queryState$ = combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(
-    map(([paramMap, queryParamMap]) => {
+  readonly typeDefinitions$ = this.api.types().pipe(shareReplay({ bufferSize: 1, refCount: true }));
+
+  readonly queryState$ = combineLatest([
+    this.route.paramMap,
+    this.route.queryParamMap,
+    this.typeDefinitions$,
+  ]).pipe(
+    map(([paramMap, queryParamMap, typeDefinitions]) => {
       const routeTypeSlug = (paramMap.get('type') ?? '').toLowerCase();
       const queryTypeSlug = (queryParamMap.get('type') ?? '').toLowerCase();
-      const typeSlug = VALID_TYPE_ROUTE_SLUGS.has(routeTypeSlug) ? routeTypeSlug : queryTypeSlug;
-      const type = VALID_TYPE_ROUTE_SLUGS.has(typeSlug) ? typeSlug.toUpperCase() : '';
+      const typesBySlug = new Map(
+        typeDefinitions.map((definition) => [definition.key.toLowerCase(), definition]),
+      );
+      const typeDefinition = typesBySlug.get(routeTypeSlug) ?? typesBySlug.get(queryTypeSlug);
+      const type = typeDefinition?.key ?? '';
+      const typeLabel = this.typeLabel(typeDefinition);
       const requestedKind = (queryParamMap.get('kind') ?? '').trim().toUpperCase();
       const kind =
         !type && KNOWLEDGE_KINDS.includes(requestedKind as (typeof KNOWLEDGE_KINDS)[number])
@@ -253,12 +254,13 @@ export class EntitiesListFacade {
           : '';
 
       return {
-        title: type
-          ? this.i18n.t(TYPE_ROUTE_LABELS[typeSlug])
-          : kind
-            ? this.i18n.t(KIND_LABEL_KEYS[kind])
-            : 'Explorar',
+        title: type ? typeLabel : kind ? this.i18n.t(KIND_LABEL_KEYS[kind]) : 'Explorar',
         type,
+        typeLabel,
+        typeOptions: typeDefinitions.map((definition) => ({
+          slug: definition.key.toLowerCase(),
+          title: this.typeLabel(definition),
+        })),
         kind,
         q: (queryParamMap.get('q') ?? '').trim(),
         page: this.toPositiveInt(queryParamMap.get('page')),
@@ -346,7 +348,7 @@ export class EntitiesListFacade {
           activeFilterChips.push({
             key: 'type',
             label: this.i18n.t('explorer.type'),
-            value: this.i18n.t(TYPE_ROUTE_LABELS[state.type.toLowerCase()] ?? 'entity.generic'),
+            value: state.typeLabel,
           });
         }
 
@@ -416,13 +418,8 @@ export class EntitiesListFacade {
             optionsLabel: this.i18n.t('explorer.typeOptions'),
             allLabel: this.i18n.t('explorer.allTypes'),
             selectedValue: state.type.toLowerCase(),
-            selectedLabel: state.type
-              ? this.i18n.t(TYPE_ROUTE_LABELS[state.type.toLowerCase()] ?? 'entity.generic')
-              : this.i18n.t('explorer.allTypes'),
-            options: TYPE_FILTER_OPTIONS.map((item) => ({
-              slug: item.slug,
-              title: this.i18n.t(TYPE_ROUTE_LABELS[item.slug] ?? 'entity.generic'),
-            })),
+            selectedLabel: state.type ? state.typeLabel : this.i18n.t('explorer.allTypes'),
+            options: state.typeOptions,
           }),
           {
             key: 'tag',
@@ -708,6 +705,12 @@ export class EntitiesListFacade {
     const normalized = (value ?? 'recent').trim();
     const sort = normalized === 'title' || normalized === 'relevance' ? normalized : 'recent';
     return sort === 'relevance' && !(query ?? '').trim() ? 'recent' : sort;
+  }
+
+  private typeLabel(type: PublicEntityTypeDefinition | undefined): string {
+    if (!type) return '';
+    const translationKey = TYPE_ROUTE_LABELS[type.key.toLowerCase()];
+    return type.systemType && translationKey ? this.i18n.t(translationKey) : type.singularName;
   }
 
   private shouldUseArchiveRecommendations(state: EntitiesListQueryState): boolean {

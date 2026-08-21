@@ -227,6 +227,12 @@
   gap: 24px;
   margin-bottom: 26px;
 }
+.draft-launcher__head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
 
 .draft-launcher__eyebrow {
   margin: 0 0 8px;
@@ -271,6 +277,39 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
+.draft-type-wrap {
+  position: relative;
+  min-width: 0;
+}
+.draft-type-wrap .draft-type {
+  width: 100%;
+}
+.draft-type__manage {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  line-height: 1;
+  text-decoration: none;
+  opacity: 0.66;
+  transition:
+    opacity 160ms ease,
+    border-color 160ms ease;
+}
+.draft-type__manage:hover,
+.draft-type__manage:focus-visible {
+  opacity: 1;
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
 
 .draft-type {
   min-width: 0;
@@ -304,6 +343,50 @@
 .draft-type:hover:not(:disabled) {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--entity-color) 52%, transparent);
+}
+
+.draft-type--new {
+  border-style: dashed;
+  --entity-color: #94a3b8;
+}
+.draft-type-dialog {
+  display: grid;
+  gap: 18px;
+  margin-top: 22px;
+  padding: 22px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 18px;
+  background: var(--entity-editor-panel-bg);
+}
+.draft-type-dialog > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.draft-type-dialog h2 {
+  margin: 0;
+  font-size: 24px;
+}
+.draft-type-dialog__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.draft-type-dialog label {
+  display: grid;
+  gap: 6px;
+  color: var(--color-text-soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+.draft-type-dialog input,
+.draft-type-dialog textarea,
+.draft-type-dialog select {
+  width: 100%;
+  box-sizing: border-box;
+}
+.draft-type-dialog .full {
+  grid-column: 1 / -1;
 }
 
 .draft-type:disabled {
@@ -362,7 +445,7 @@
   color: #d97757;
 }
 
-:where(.draft-type, .draft-launcher__back):focus-visible {
+:where(.draft-type, .draft-type__manage, .draft-launcher__back):focus-visible {
   outline: 2px solid var(--entity-editor-accent);
   outline-offset: 3px;
 }

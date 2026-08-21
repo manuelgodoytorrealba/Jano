@@ -505,4 +505,13 @@
 :host:fullscreen .research-reader__content {
   max-height: none;
   min-height: calc(100dvh - 300px);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+:host:fullscreen .research-reader__evidence-panel,
+:host:fullscreen .research-reader__editor-panel {
+  top: 0;
+  right: 0;
+  bottom: 0;
 }

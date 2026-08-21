@@ -53,8 +53,10 @@ export type EntityAttributeMutationPayload = {
 export class AttributesApi {
   private http = inject(HttpClient);
 
-  definitions() {
-    return this.http.get<AttributeDefinition[]>(apiUrl('/attribute-definitions'));
+  definitions(entityType?: string) {
+    return this.http.get<AttributeDefinition[]>(apiUrl('/attribute-definitions'), {
+      params: entityType ? { entityType } : undefined,
+    });
   }
 
   createDefinition(payload: CreateAttributeDefinitionPayload) {

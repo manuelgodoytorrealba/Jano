@@ -70,6 +70,7 @@ export class RichTextComponent implements OnDestroy {
   @Input() editable = false;
   @Input() placeholder = '';
   @Output() textChange = new EventEmitter<string>();
+  @Output() textRender = new EventEmitter<string>();
 
   openSlug = signal<string | null>(null);
   openPreviewKey = signal<string | null>(null);
@@ -92,6 +93,7 @@ export class RichTextComponent implements OnDestroy {
   private linkRange: Range | null = null;
   private entitySearchTimer: ReturnType<typeof setTimeout> | null = null;
   private entitySearchRequest = 0;
+  private savedSelection: Range | null = null;
 
   isHoveringLink = false;
   isHoveringTooltip = false;
@@ -116,6 +118,7 @@ export class RichTextComponent implements OnDestroy {
   format(command: RichTextFormat): void {
     const editor = this.editor?.nativeElement;
     if (!editor) return;
+    this.restoreSelection(editor);
     this.updateFormatState();
     const wasActive = this.isFormatActive(command);
     editor.focus();
@@ -143,19 +146,25 @@ export class RichTextComponent implements OnDestroy {
 
   openEntityPicker(anchor?: HTMLElement): void {
     this.updateFormatState();
-    if (this.isFormatActive('link')) {
-      this.format('link');
-      return;
-    }
-
     const editor = this.editor?.nativeElement;
     const selection = this.document.getSelection();
     if (!editor) return;
     const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
     let query = '';
     if (range && editor.contains(range.commonAncestorContainer)) {
-      this.linkRange = range.cloneRange();
-      query = range.toString().trim();
+      const selectedElement =
+        range.commonAncestorContainer instanceof Element
+          ? range.commonAncestorContainer
+          : range.commonAncestorContainer.parentElement;
+      const selectedLink = selectedElement?.closest<HTMLAnchorElement>('a.link');
+      if (selectedLink) {
+        this.linkRange = this.document.createRange();
+        this.linkRange.setStartAfter(selectedLink.closest('.link-wrap') ?? selectedLink);
+        this.linkRange.collapse(true);
+      } else {
+        this.linkRange = range.cloneRange();
+        query = range.toString().trim();
+      }
     } else {
       this.linkRange = this.document.createRange();
       this.linkRange.selectNodeContents(editor);
@@ -240,33 +249,18 @@ export class RichTextComponent implements OnDestroy {
     const editor = this.editor?.nativeElement;
     const range = this.linkRange;
     if (!editor || !range) return;
-    const label = range.toString().trim() || entity.title;
     const link = this.document.createElement('a');
     link.href = `/entity/${entity.slug}`;
-    link.textContent = label;
+    link.textContent = entity.title;
     range.deleteContents();
     range.insertNode(link);
     const markdown = serializeMarkdown(editor);
     link.remove();
     this.text = markdown;
     this.textChange.emit(markdown);
+    this.textRender.emit(markdown);
     this.closeEntityPicker();
-    this.changeDetector.detectChanges();
-    setTimeout(() => {
-      const links = Array.from(editor.querySelectorAll<HTMLAnchorElement>('.link'));
-      const inserted = links
-        .reverse()
-        .find((candidate) => candidate.getAttribute('href')?.endsWith(`/entity/${entity.slug}`));
-      if (!inserted) return;
-      const caret = this.document.createRange();
-      caret.setStartAfter(inserted.closest('.link-wrap') ?? inserted);
-      caret.collapse(true);
-      const selection = this.document.getSelection();
-      selection?.removeAllRanges();
-      selection?.addRange(caret);
-      editor.focus();
-      this.updateFormatState();
-    });
+    setTimeout(() => this.moveCaretAfterEntityLink(editor, entity.slug));
   }
 
   closeEntityPicker(): void {
@@ -315,6 +309,22 @@ export class RichTextComponent implements OnDestroy {
 
   onInput(event: Event): void {
     this.emitText(event.currentTarget as HTMLElement);
+    this.captureSelection();
+    this.updateFormatState();
+  }
+
+  onPaste(event: ClipboardEvent): void {
+    if (!this.editable) return;
+    const editor = event.currentTarget as HTMLElement;
+    const clipboard = event.clipboardData;
+    if (!clipboard) return;
+    event.preventDefault();
+    this.restoreSelection(editor);
+    const html = clipboard.getData('text/html');
+    const text = clipboard.getData('text/plain');
+    this.insertPastedContent(editor, html ? sanitizePastedHtml(html) : plainTextToHtml(text));
+    this.emitText(editor);
+    this.captureSelection();
     this.updateFormatState();
   }
 
@@ -342,6 +352,21 @@ export class RichTextComponent implements OnDestroy {
     if (!this.editable) return;
     const selection = this.document.getSelection();
     const anchor = selection?.anchorNode;
+    const selectionRange = selection?.rangeCount ? selection.getRangeAt(0) : null;
+    const linkedText = this.linkAtSelection(anchor, selectionRange);
+    if (event.key === ' ' && linkedText && selectionRange) {
+      event.preventDefault();
+      const space = this.document.createTextNode(' ');
+      (linkedText.closest('.link-wrap') ?? linkedText).after(space);
+      selectionRange.setStart(space, 1);
+      selectionRange.collapse(true);
+      selection?.removeAllRanges();
+      selection?.addRange(selectionRange);
+      this.emitText(event.currentTarget as HTMLElement);
+      this.captureSelection();
+      this.updateFormatState();
+      return;
+    }
     const quote = (anchor instanceof Element ? anchor : anchor?.parentElement)?.closest(
       'blockquote',
     );
@@ -394,6 +419,75 @@ export class RichTextComponent implements OnDestroy {
 
   private emitText(editor: HTMLElement): void {
     this.textChange.emit(serializeMarkdown(editor));
+  }
+
+  captureSelection(): void {
+    const editor = this.editor?.nativeElement;
+    const selection = this.document.getSelection();
+    const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+    if (!editor || !range || !editor.contains(range.commonAncestorContainer)) return;
+    this.savedSelection = range.cloneRange();
+  }
+
+  private restoreSelection(editor: HTMLElement): void {
+    const range = this.savedSelection;
+    if (!range || !editor.contains(range.commonAncestorContainer)) return;
+    const selection = this.document.getSelection();
+    editor.focus();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  }
+
+  private moveCaretAfterEntityLink(editor: HTMLElement, slug: string): void {
+    const inserted = Array.from(editor.querySelectorAll<HTMLAnchorElement>('.link'))
+      .reverse()
+      .find(
+        (candidate) =>
+          candidate.dataset['entitySlug'] === slug ||
+          candidate.getAttribute('href')?.endsWith(`/entity/${slug}`),
+      );
+    if (!inserted) return;
+    const caret = this.document.createRange();
+    const marker = this.document.createTextNode('\u200B');
+    (inserted.closest('.link-wrap') ?? inserted).after(marker);
+    editor.focus();
+    caret.setStart(marker, 1);
+    caret.collapse(true);
+    const selection = this.document.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(caret);
+    this.updateFormatState();
+  }
+
+  private linkAtSelection(
+    anchor: Node | null | undefined,
+    range: Range | null,
+  ): HTMLAnchorElement | null {
+    const element = anchor instanceof Element ? anchor : anchor?.parentElement;
+    const nestedLink = element?.closest<HTMLAnchorElement>('a.link');
+    if (nestedLink) return nestedLink;
+    if (!(range?.startContainer instanceof HTMLElement) || !range.startOffset) return null;
+    const previous = range.startContainer.childNodes[range.startOffset - 1];
+    return previous instanceof HTMLElement
+      ? previous instanceof HTMLAnchorElement && previous.matches('a.link')
+        ? previous
+        : previous.querySelector<HTMLAnchorElement>('a.link')
+      : null;
+  }
+
+  private insertPastedContent(editor: HTMLElement, html: string): void {
+    const selection = this.document.getSelection();
+    const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+    if (!range || !editor.contains(range.commonAncestorContainer)) return;
+    range.deleteContents();
+    const fragment = range.createContextualFragment(html);
+    const lastNode = fragment.lastChild;
+    range.insertNode(fragment);
+    if (!lastNode) return;
+    range.setStartAfter(lastNode);
+    range.collapse(true);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
   }
 
   onLinkEnter(slug: string, previewKey = slug) {
@@ -534,15 +628,17 @@ export class RichTextComponent implements OnDestroy {
 
 function serializeMarkdown(root: HTMLElement): string {
   const inline = (node: Node): string => {
-    if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? '';
+    if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').replace(/\u200B/g, '');
     if (!(node instanceof HTMLElement)) return '';
     const content = Array.from(node.childNodes).map(inline).join('');
     if (node.matches('strong, b')) return `**${content}**`;
     if (node.matches('em, i')) return `_${content}_`;
     if (node.matches('a')) {
       const path = node.getAttribute('href') ?? '';
-      const slug = decodeURIComponent(path.split('/entity/')[1]?.split(/[?#]/)[0] ?? '');
-      return slug ? `[[${slug}|${content}]]` : content;
+      const slug =
+        node.dataset['entitySlug'] ??
+        decodeURIComponent(path.split('/entity/')[1]?.split(/[?#]/)[0] ?? '');
+      return slug ? `[[${slug}|${content.trim()}]]` : content;
     }
     if (node.matches('br')) return '\n';
     return content;
@@ -571,6 +667,54 @@ function serializeMarkdown(root: HTMLElement): string {
     })
     .filter(Boolean)
     .join('\n\n');
+}
+
+function sanitizePastedHtml(html: string): string {
+  const source = new DOMParser().parseFromString(html, 'text/html').body;
+  const inline = (node: Node): string => {
+    if (node.nodeType === Node.TEXT_NODE) return escapeHtml(node.textContent ?? '');
+    if (!(node instanceof HTMLElement)) return '';
+    if (node.matches('script, style, iframe, object, embed, svg, math')) return '';
+    const content = Array.from(node.childNodes).map(inline).join('');
+    if (node.matches('strong, b')) return `<strong>${content}</strong>`;
+    if (node.matches('em, i')) return `<em>${content}</em>`;
+    if (node.matches('br')) return '<br>';
+    return content;
+  };
+  const block = (node: Node): string => {
+    if (node.nodeType === Node.TEXT_NODE) return escapeHtml(node.textContent ?? '');
+    if (!(node instanceof HTMLElement)) return '';
+    if (node.matches('script, style, iframe, object, embed, svg, math')) return '';
+    const content = Array.from(node.childNodes).map(inline).join('');
+    if (node.matches('h1, h2, h3'))
+      return `<${node.tagName.toLowerCase()}>${content}</${node.tagName.toLowerCase()}>`;
+    if (node.matches('blockquote')) return `<blockquote>${content}</blockquote>`;
+    if (node.matches('ul, ol')) {
+      const items = Array.from(node.children)
+        .filter((child) => child.matches('li'))
+        .map((item) => `<li>${Array.from(item.childNodes).map(inline).join('')}</li>`)
+        .join('');
+      return items ? `<${node.tagName.toLowerCase()}>${items}</${node.tagName.toLowerCase()}>` : '';
+    }
+    if (node.matches('p, div')) return content ? `<p>${content}</p>` : '';
+    return content;
+  };
+  return Array.from(source.childNodes).map(block).join('');
+}
+
+function plainTextToHtml(text: string): string {
+  return text
+    .split(/\n{2,}/)
+    .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, '<br>')}</p>`)
+    .join('');
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]!,
+  );
 }
 
 function parseBlocks(input: string): Block[] {

@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
+import { AddResearchProjectRelationDto } from './dto/add-research-project-relation.dto';
 import { AssociateResearchLibraryMaterialDto } from './dto/associate-research-library-material.dto';
 import { CiteResearchItemDto } from './dto/cite-research-item.dto';
 import { CreateResearchClaimDto, SetResearchClaimStatusDto } from './dto/create-research-claim.dto';
@@ -284,12 +285,11 @@ export class ResearchController {
 
   @Post(':id/outline/sections/:sectionId/drafts')
   createDraft(
-    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Param('sectionId') sectionId: string,
     @Body() dto: CreateResearchDraftDto,
   ) {
-    return this.drafts.create(id, sectionId, req.user.userId, dto);
+    return this.drafts.create(id, sectionId, dto);
   }
 
   @Post(':id/drafts/:draftId/revisions')
@@ -302,6 +302,15 @@ export class ResearchController {
     return this.drafts.revise(id, draftId, req.user.userId, dto);
   }
 
+  @Patch(':id/drafts/:draftId/working-copy')
+  saveDraftWorkingCopy(
+    @Param('id') id: string,
+    @Param('draftId') draftId: string,
+    @Body() dto: CreateResearchDraftRevisionDto,
+  ) {
+    return this.drafts.saveWorkingCopy(id, draftId, dto.content);
+  }
+
   @Post(':id/sources')
   addSource(@Param('id') id: string, @Body() dto: AddResearchProjectSourceDto) {
     return this.service.addProjectSource(id, dto);
@@ -312,9 +321,27 @@ export class ResearchController {
     return this.service.removeProjectSource(id, sourceId);
   }
 
+  @Post(':id/related-projects')
+  addRelatedProject(@Param('id') id: string, @Body() dto: AddResearchProjectRelationDto) {
+    return this.service.addRelatedProject(id, dto.relatedProjectId);
+  }
+
+  @Delete(':id/related-projects/:relatedProjectId')
+  removeRelatedProject(
+    @Param('id') id: string,
+    @Param('relatedProjectId') relatedProjectId: string,
+  ) {
+    return this.service.removeRelatedProject(id, relatedProjectId);
+  }
+
   @Post(':id/citations')
   citeItem(@Param('id') id: string, @Body() dto: CiteResearchItemDto) {
     return this.service.citeResearchItem(id, dto);
+  }
+
+  @Delete(':id/citations/:citationId')
+  removeCitation(@Param('id') id: string, @Param('citationId') citationId: string) {
+    return this.service.removeProjectCitation(id, citationId);
   }
 
   @Post(':id/cited-materials/:materialId')

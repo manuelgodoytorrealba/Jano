@@ -47,6 +47,7 @@ export class ResearchSourcesWorkspaceComponent {
   searching = false;
   associating = false;
   citingMaterialId = '';
+  removingCitationId = '';
   error = '';
   guideOpen = false;
   searchType: 'all' | 'sources' | 'materials' = 'all';
@@ -338,6 +339,22 @@ export class ResearchSourcesWorkspaceComponent {
       next: () => this.saved.emit(),
       error: () => {
         this.error = 'No se pudo quitar la fuente.';
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  removeCitation(citationId: string): void {
+    if (this.removingCitationId) return;
+    this.removingCitationId = citationId;
+    this.api.removeCitation(this.researchId, citationId).subscribe({
+      next: () => {
+        this.removingCitationId = '';
+        this.saved.emit();
+      },
+      error: () => {
+        this.removingCitationId = '';
+        this.error = 'No se pudo quitar la cita.';
         this.cdr.markForCheck();
       },
     });

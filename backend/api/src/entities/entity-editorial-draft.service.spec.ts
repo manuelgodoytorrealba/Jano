@@ -12,6 +12,11 @@ describe('kindForLegacyEntityType', () => {
 describe('EntityEditorialService draft creation', () => {
   it('creates a Draft with server-owned provisional identity', async () => {
     const tx = {
+      entityTypeDefinition: {
+        findUnique: jest
+          .fn()
+          .mockResolvedValue({ key: 'ARTIST', baseKind: 'PERSON', status: 'ACTIVE' }),
+      },
       entity: {
         findUnique: jest.fn().mockResolvedValue(null),
         create: jest.fn().mockResolvedValue({ id: 'draft-1', content: null }),
@@ -39,7 +44,7 @@ describe('EntityEditorialService draft creation', () => {
     expect(tx.entity.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         type: 'ARTIST',
-        kind: 'ORGANIZATION',
+        kind: 'PERSON',
         title: 'Sin título',
         slug: expect.stringMatching(/^_draft-/),
         status: 'DRAFT',

@@ -148,6 +148,13 @@ async function createFixture(
 ) {
   api['getKnowledge'] ??= vi.fn().mockReturnValue(of(topology));
   api['list'] ??= vi.fn().mockReturnValue(of([project]));
+  api['createDraft'] ??= vi.fn().mockReturnValue(of({ id: 'draft-auto', currentRevision: null }));
+  api['saveDraftWorkingCopy'] ??= vi
+    .fn()
+    .mockReturnValue(of({ id: 'draft-auto', currentRevision: null }));
+  api['reviseDraft'] ??= vi
+    .fn()
+    .mockReturnValue(of({ id: 'draft-auto', currentRevision: { content: '' } }));
   await TestBed.configureTestingModule({
     imports: [ResearchProjectComponent],
     providers: [
@@ -621,6 +628,30 @@ describe('ResearchProjectComponent', () => {
     });
   });
 
+  it('keeps unsaved Draft text isolated by Section', async () => {
+    const fixture = await createFixture({ getById: vi.fn().mockReturnValue(of(project)) });
+    const component = fixture.componentInstance;
+    const first = section();
+    const second = { ...section(), id: 'section-2', title: 'Cubismo sintético' };
+
+    component.updateDraftContent(
+      project as unknown as ResearchProject,
+      first,
+      'Texto de la primera sección.',
+    );
+    component.updateDraftContent(
+      project as unknown as ResearchProject,
+      second,
+      'Texto de la segunda sección.',
+    );
+
+    expect(component.draftContent(first)).toBe('Texto de la primera sección.');
+    expect(component.draftContent(second)).toBe('Texto de la segunda sección.');
+    expect(component.hasUncommittedDraft(first)).toBe(true);
+    expect(component.hasUncommittedDraft(second)).toBe(true);
+    component.ngOnDestroy();
+  });
+
   it('uploads an optional editorial image for the active section', async () => {
     const active = section();
     const api = {
@@ -795,6 +826,45 @@ describe('ResearchProjectComponent', () => {
     document.execCommand = originalExecCommand;
   });
 
+  it('keeps the selected text when formatting and pastes only supported editorial markup', async () => {
+    const active = section();
+    const fixture = await createFixture(
+      { getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })) },
+      true,
+    );
+    const editor = fixture.debugElement.query(By.directive(RichTextComponent)).componentInstance;
+    const editable = fixture.nativeElement.querySelector('.rt-editable') as HTMLElement;
+    editable.innerHTML = '<p>Antes selección después</p>';
+    const text = editable.querySelector('p')!.firstChild!;
+    const range = document.createRange();
+    range.setStart(text, 6);
+    range.setEnd(text, 15);
+    document.getSelection()?.removeAllRanges();
+    document.getSelection()?.addRange(range);
+    editor.captureSelection();
+
+    const originalExecCommand = document.execCommand;
+    document.execCommand = vi.fn();
+    document.getSelection()?.removeAllRanges();
+    editor.format('bold');
+    expect(document.getSelection()?.toString()).toBe('selección');
+    document.execCommand = originalExecCommand;
+
+    editor.onPaste({
+      currentTarget: editable,
+      clipboardData: {
+        getData: (type: string) =>
+          type === 'text/html'
+            ? '<p><strong>Fragmento</strong> <em>editorial</em><script>ignorar</script></p>'
+            : 'Fragmento editorial',
+      },
+      preventDefault: vi.fn(),
+    });
+
+    expect(fixture.componentInstance.draftContent(active)).toContain('**Fragmento** _editorial_');
+    expect(fixture.componentInstance.draftContent(active)).not.toContain('ignorar');
+  });
+
   it('renders headings, citations and lists with the shared editorial renderer', async () => {
     const content =
       '## Una nueva mirada\n\n> El arte es una armonía paralela.\n> — Paul Cézanne\n\n- Cézanne\n- Braque';
@@ -852,7 +922,7 @@ describe('ResearchProjectComponent', () => {
     expect(document.getSelection()?.anchorNode?.parentElement?.closest('blockquote')).toBeNull();
   });
 
-  it('links an existing entity from the visual picker and keeps the shared preview', async () => {
+  it('inserts an entity link and returns the cursor to normal text', async () => {
     const active = section();
     const fixture = await createFixture(
       { getById: vi.fn().mockReturnValue(of({ ...project, outlineSections: [active] })) },
@@ -869,21 +939,60 @@ describe('ResearchProjectComponent', () => {
       title: 'Pablo Picasso',
       type: 'ARTIST',
     });
+    await Promise.resolve();
     fixture.detectChanges();
-    expect(fixture.componentInstance.draftContent).toContain('[[pablo-picasso|Pablo Picasso]]');
+    expect(fixture.componentInstance.draftContent(active)).toContain(
+      '[[pablo-picasso|Pablo Picasso]]',
+    );
 
     expect(fixture.nativeElement.querySelectorAll('.rt-editable .link')).toHaveLength(1);
-    const link = fixture.nativeElement.querySelector('.rt-editable .link');
-    link.dispatchEvent(new MouseEvent('mouseenter'));
-    fixture.detectChanges();
-    expect(TestBed.inject(EntitiesApi).preview).toHaveBeenCalledWith('pablo-picasso', {
-      includeDrafts: true,
+    expect(document.getSelection()?.anchorNode?.parentElement?.closest('.link')).toBeNull();
+
+    const firstLink = fixture.nativeElement.querySelector(
+      '.rt-editable .link',
+    ) as HTMLAnchorElement;
+    expect(firstLink.getAttribute('contenteditable')).toBe('false');
+    const linkRange = document.createRange();
+    linkRange.selectNodeContents(firstLink);
+    linkRange.collapse(false);
+    document.getSelection()?.removeAllRanges();
+    document.getSelection()?.addRange(linkRange);
+    editor.openEntityPicker();
+    editor.chooseEntity({
+      id: 'entity-2',
+      slug: 'georges-braque',
+      title: 'Georges Braque',
+      type: 'ARTIST',
     });
-    expect(fixture.nativeElement.querySelector('.tooltip .tt-title').textContent).toContain(
-      'Pablo Picasso',
+    await Promise.resolve();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.draftContent(active)).toContain(
+      '[[pablo-picasso|Pablo Picasso]]',
     );
-    expect(fixture.nativeElement.querySelector('.tooltip .tt-summary').textContent).toContain(
-      'figura central del cubismo',
+    expect(fixture.componentInstance.draftContent(active)).toContain(
+      '[[georges-braque|Georges Braque]]',
+    );
+    expect(fixture.nativeElement.querySelectorAll('.rt-editable .link')).toHaveLength(2);
+
+    const refreshedFirstLink = fixture.nativeElement.querySelector(
+      '.rt-editable .link',
+    ) as HTMLAnchorElement;
+    linkRange.selectNodeContents(refreshedFirstLink);
+    linkRange.collapse(false);
+    document.getSelection()?.removeAllRanges();
+    document.getSelection()?.addRange(linkRange);
+    const preventDefault = vi.fn();
+    editor.onEditorKeydown({
+      key: ' ',
+      currentTarget: refreshedFirstLink.closest('.rt-editable'),
+      preventDefault,
+    });
+    expect(preventDefault).toHaveBeenCalled();
+    const normalText = document.createTextNode('normal');
+    refreshedFirstLink.closest('.link-wrap')?.nextSibling?.after(normalText);
+    editor.onInput({ currentTarget: refreshedFirstLink.closest('.rt-editable') });
+    expect(fixture.componentInstance.draftContent(active)).toContain(
+      '[[pablo-picasso|Pablo Picasso]] normal',
     );
   });
   it('creates, edits, deletes and reorders research questions in the active section', async () => {

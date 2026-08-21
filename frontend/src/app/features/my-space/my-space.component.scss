@@ -180,6 +180,8 @@
 }
 
 .space-tabs {
+  align-self: start;
+  justify-self: start;
   display: inline-flex;
   width: fit-content;
   gap: 4px;

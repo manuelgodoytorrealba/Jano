@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -11,8 +21,8 @@ import { AttributesService } from './attributes.service';
 @Controller()
 export class AttributesController {
   constructor(private readonly service: AttributesService) {}
-  @Get('attribute-definitions') listDefinitions() {
-    return this.service.listDefinitions();
+  @Get('attribute-definitions') listDefinitions(@Query('entityType') entityType?: string) {
+    return this.service.listDefinitions(entityType);
   }
   @Post('attribute-definitions') createDefinition(@Body() dto: CreateAttributeDefinitionDto) {
     return this.service.createDefinition(dto);

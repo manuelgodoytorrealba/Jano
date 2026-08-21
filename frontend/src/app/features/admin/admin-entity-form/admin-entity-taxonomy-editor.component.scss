@@ -14,6 +14,23 @@
   align-items: center;
 }
 
+.tag-admin__quick-create,
+.tag-admin__vocabulary {
+  color: var(--color-text-muted);
+}
+
+.tag-admin__quick-create > summary,
+.tag-admin__vocabulary > summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tag-admin__quick-create > .tag-admin__create,
+.tag-admin__vocabulary > .tag-admin__create {
+  margin-top: 0.7rem;
+}
+
 .tag-admin__attach select,
 .tag-admin__create input,
 .tag-admin__create select {

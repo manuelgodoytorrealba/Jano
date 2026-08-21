@@ -220,7 +220,8 @@ h1 {
 .research-project__tree-label > span:last-child {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .research-project__tree-status {
   flex: 0 0 auto;
@@ -236,8 +237,10 @@ h1 {
   font-size: 12px;
 }
 .research-project__tree-actions {
-  display: flex;
-  flex: 0 0 auto;
+  position: absolute;
+  z-index: 2;
+  right: 4px;
+  display: none;
   opacity: 0;
 }
 .research-project__tree-actions button {
@@ -250,6 +253,7 @@ h1 {
 }
 .research-project__tree-row:hover .research-project__tree-actions,
 .research-project__tree-row:focus-within .research-project__tree-actions {
+  display: flex;
   opacity: 1;
 }
 .research-project__tree-actions button:hover:not(:disabled) {
@@ -334,8 +338,8 @@ h1 {
 }
 
 .research-project__section-image {
-  height: 180px;
-  margin: 18px 0 0;
+  height: 96px;
+  margin: 12px 0 0;
   overflow: hidden;
   border-radius: 12px;
   background: var(--research-control);
@@ -406,7 +410,9 @@ h1 {
 }
 
 .research-project__cover-dropzone {
+  box-sizing: border-box;
   display: grid;
+  min-width: 0;
   gap: 8px;
   margin-top: 8px;
   border: 1px dashed var(--research-border-soft);
@@ -414,9 +420,16 @@ h1 {
   background: var(--research-control);
   padding: 8px 10px;
   cursor: pointer;
+  overflow: hidden;
+}
+
+.research-project__cover-dropzone span {
+  overflow-wrap: anywhere;
 }
 
 .research-project__cover-dropzone input {
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
   color: var(--research-text-muted);
 }
@@ -453,6 +466,28 @@ h1 {
   font: inherit;
 }
 
+.research-project__draft-focus {
+  border: 1px solid var(--research-border-soft) !important;
+  background: transparent !important;
+  color: var(--research-text-soft) !important;
+  font-size: 11px !important;
+}
+
+.research-project__draft:fullscreen {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--research-shell);
+  box-shadow: none;
+}
+
+.research-project__draft:fullscreen::backdrop {
+  background: rgba(8, 8, 10, 0.94);
+}
+
 .research-project__draft-editor {
   display: block;
   flex: 1;
@@ -466,7 +501,7 @@ h1 {
 .research-project__draft-toolbar {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   margin-top: 18px;
   border: 1px solid var(--research-border-soft);
   border-radius: 9px;
@@ -475,8 +510,10 @@ h1 {
 
 .research-project__draft-toolbar > button,
 .research-project__toolbar-help > summary {
-  min-width: 34px;
-  padding: 7px;
+  min-width: 36px;
+  min-height: 34px;
+  border-radius: 7px;
+  padding: 7px 8px;
   background: transparent;
   color: var(--research-text-soft);
   font-size: 12px;
@@ -486,6 +523,13 @@ h1 {
 .research-project__draft-toolbar > button:hover,
 .research-project__toolbar-help > summary:hover {
   background: var(--research-control-hover);
+  color: var(--research-text);
+}
+
+.research-project__draft-toolbar > button:focus-visible,
+.research-project__toolbar-help > summary:focus-visible {
+  outline: 2px solid var(--research-accent);
+  outline-offset: 2px;
 }
 
 .research-project__draft-toolbar > button.is-active {
@@ -960,6 +1004,24 @@ h1 {
 .research-project__material-intake > textarea {
   min-height: 150px;
 }
+.research-project__material-provenance {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.45fr);
+  gap: 8px;
+}
+.research-project__material-provenance input {
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--research-border);
+  border-radius: 10px;
+  background: var(--research-control);
+  color: inherit;
+  font: inherit;
+  padding: 11px;
+}
+.research-project__material-provenance input:last-child {
+  grid-column: 1 / -1;
+}
 .research-project__pdf-input {
   cursor: pointer;
   display: grid;
@@ -1039,11 +1101,22 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: var(--research-text-soft);
+  color: var(--research-text);
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
   transition: color 160ms ease;
+}
+
+.research-project__back-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.65;
 }
 
 .research-project__back:hover {
@@ -1328,6 +1401,17 @@ h1 {
 
 .research-project__workspace--corpus {
   padding-top: 18px;
+}
+
+.research-project__workspace--empty-index {
+  display: grid;
+  place-items: center;
+}
+
+.research-project__workspace--empty-index .research-project__workspace-empty {
+  min-height: 0;
+  text-align: center;
+  align-items: center;
 }
 
 .research-project__workspace--sources {

@@ -243,6 +243,23 @@ export interface PublicEntity {
   recommendationScore?: number | null;
 }
 
+export interface PublicHomeEntityTypeCard {
+  type: PublicEntityTypeDefinition;
+  entity: PublicEntity | null;
+}
+
+export interface PublicEntityTypeDefinition {
+  id: string;
+  key: string;
+  singularName: string;
+  pluralName: string;
+  description?: string | null;
+  icon: string;
+  colorToken: string;
+  baseKind: PublicKnowledgeEntityKind;
+  systemType: boolean;
+}
+
 export type PublicEntityListItem = PublicEntity;
 export type PublicEntityPreview = PublicEntity;
 export type PublicEntityDetail = PublicEntity;

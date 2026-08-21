@@ -38,6 +38,29 @@ describe('EntitiesListComponent filters', () => {
     },
   };
 
+  const typeDefinitions = [
+    ['ARTWORK', 'Obra', 'WORK'],
+    ['ARTIST', 'Artista', 'PERSON'],
+    ['ARTICLE', 'Artículo', 'WORK'],
+    ['CONCEPT', 'Concepto', 'ABSTRACTION'],
+    ['MOVEMENT', 'Movimiento', 'ABSTRACTION'],
+    ['PERIOD', 'Periodo', 'ABSTRACTION'],
+    ['PLACE', 'Lugar', 'PLACE'],
+    ['TEXT', 'Texto', 'WORK'],
+    ['EVENT', 'Evento', 'EVENT'],
+    ['ORGANIZATION', 'Organización', 'ORGANIZATION'],
+    ['MEME', 'Meme', 'ABSTRACTION'],
+  ].map(([key, singularName, baseKind]) => ({
+    id: `type-${key.toLowerCase()}`,
+    key,
+    singularName,
+    pluralName: `${singularName}s`,
+    icon: singularName.charAt(0),
+    colorToken: 'blue',
+    baseKind,
+    systemType: key !== 'MEME',
+  }));
+
   const apiStub = {
     list: (params: EntitiesListParams) => {
       listCalls.push(params);
@@ -77,6 +100,7 @@ describe('EntitiesListComponent filters', () => {
     },
     institutions: () => of(['Museo del Prado, Madrid', 'MoMA, New York']),
     nationalities: () => of(['España', 'México', 'Francia / Estados Unidos']),
+    types: () => of(typeDefinitions),
   };
 
   const routerStub = {
@@ -210,6 +234,19 @@ describe('EntitiesListComponent filters', () => {
 
     expect(latest).toBeTruthy();
     expect(listCalls.some((params) => params?.kind === 'WORK' && !params?.type)).toBe(true);
+    fixture.destroy();
+  });
+
+  it('applies an active custom type from the route', async () => {
+    paramMap$.next(convertToParamMap({ type: 'meme' }));
+    queryParamMap$.next(convertToParamMap({}));
+
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const component = fixture.componentInstance;
+    const pageVm = await firstValueFrom(component.pageVm$);
+
+    expect(pageVm.title).toBe('Meme');
+    expect(listCalls.some((params) => params?.type === 'MEME')).toBe(true);
     fixture.destroy();
   });
 

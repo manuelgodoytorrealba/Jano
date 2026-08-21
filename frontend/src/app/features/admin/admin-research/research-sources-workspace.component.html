@@ -315,8 +315,15 @@
                           : '● Material'
                     }}</span
                     ><strong>{{ citationLabel(citation) }}</strong
-                    ><small>{{ citationLocator(citation) }}</small
-                    ><b>›</b>
+                    ><small>{{ citationLocator(citation) }}</small>
+                    <button
+                      type="button"
+                      class="research-sources__citation-remove"
+                      [disabled]="removingCitationId === citation.id"
+                      (click)="removeCitation(citation.id)"
+                    >
+                      {{ removingCitationId === citation.id ? 'Quitando…' : 'Quitar' }}
+                    </button>
                   </li>
                 }
               </ol>

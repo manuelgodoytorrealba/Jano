@@ -7,7 +7,12 @@ import {
 import { createHash } from 'node:crypto';
 import { unlink } from 'node:fs/promises';
 import { join, normalize, relative } from 'node:path';
-import { LibraryMaterialKind, LibraryMaterialVersionStatus, type Prisma } from '@prisma/client';
+import {
+  LibraryMaterialKind,
+  LibraryMaterialVersionStatus,
+  SourceType,
+  type Prisma,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateLibraryMaterialDto } from './dto/create-library-material.dto';
 
@@ -17,6 +22,8 @@ type LibraryPdfFile = {
   mimetype: string;
   size: number;
 };
+
+type SourceMetadata = { author?: string; year?: number; sourceUrl?: string };
 
 @Injectable()
 export class LibraryService {
@@ -101,6 +108,7 @@ export class LibraryService {
   async createInitialMaterial(tx: Prisma.TransactionClient, dto: CreateLibraryMaterialDto) {
     const content = dto.kind === LibraryMaterialKind.TEXT ? dto.content?.trim() : null;
     const url = dto.kind === LibraryMaterialKind.URL ? dto.url?.trim() : null;
+    const title = dto.title.trim();
     if (dto.kind === LibraryMaterialKind.TEXT && !content) {
       throw new BadRequestException('Library text content is required');
     }
@@ -111,7 +119,10 @@ export class LibraryService {
     return tx.libraryMaterial.create({
       data: {
         kind: dto.kind,
-        title: dto.title.trim(),
+        title,
+        source: {
+          create: this.sourceData(dto.kind, title, dto, url),
+        },
         versions: {
           create: {
             version: 1,
@@ -128,11 +139,20 @@ export class LibraryService {
     });
   }
 
-  async createInitialPdf(tx: Prisma.TransactionClient, file: LibraryPdfFile, title?: string) {
+  async createInitialPdf(
+    tx: Prisma.TransactionClient,
+    file: LibraryPdfFile,
+    title?: string,
+    metadata: SourceMetadata = {},
+  ) {
+    const materialTitle = title?.trim() || file.originalname.replace(/\.pdf$/i, '');
     return tx.libraryMaterial.create({
       data: {
         kind: LibraryMaterialKind.PDF,
-        title: title?.trim() || file.originalname.replace(/\.pdf$/i, ''),
+        title: materialTitle,
+        source: {
+          create: this.sourceData(LibraryMaterialKind.PDF, materialTitle, metadata),
+        },
         versions: {
           create: {
             version: 1,
@@ -146,6 +166,21 @@ export class LibraryService {
       },
       select: { id: true },
     });
+  }
+
+  private sourceData(
+    kind: LibraryMaterialKind,
+    title: string,
+    metadata: SourceMetadata,
+    url?: string | null,
+  ) {
+    return {
+      type: kind === LibraryMaterialKind.URL ? SourceType.WEBSITE : SourceType.PAPER,
+      title,
+      author: metadata.author?.trim() || null,
+      year: metadata.year ?? null,
+      url: metadata.sourceUrl?.trim() || url || null,
+    };
   }
 
   createExcerpt(

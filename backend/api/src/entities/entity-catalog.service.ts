@@ -3,7 +3,7 @@ import { ContentLevel, EntityStatus, Prisma } from '@prisma/client';
 import { resolveEntityMediaSlot } from '../media/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import { canonicalRelationTypeFilter } from '../relation-types/relation-type.utils';
-import { ListEntitiesQuery, EntityType } from './dto/list-entities.query';
+import { ListEntitiesQuery } from './dto/list-entities.query';
 import { localizedInclude, resolveLocalizedEntity } from './entity.presenter';
 import { normalizeLocale, translationStatusSummary } from './entity-translation.resolver';
 
@@ -11,7 +11,8 @@ import { normalizeLocale, translationStatusSummary } from './entity-translation.
 export class EntityCatalogService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private readonly HOME_TYPES: EntityType[] = [
+  // System types retain the established editorial order; custom active types follow them.
+  private readonly HOME_TYPE_ORDER: string[] = [
     'ARTWORK',
     'ARTICLE',
     'PERIOD',
@@ -465,11 +466,20 @@ export class EntityCatalogService {
   }
 
   async home(locale?: string) {
+    const typeDefinitions = await this.activeTypes();
+    const types = typeDefinitions.sort((a, b) => {
+      const aIndex = this.HOME_TYPE_ORDER.indexOf(a.key);
+      const bIndex = this.HOME_TYPE_ORDER.indexOf(b.key);
+      const aOrder = aIndex < 0 ? Number.MAX_SAFE_INTEGER : aIndex;
+      const bOrder = bIndex < 0 ? Number.MAX_SAFE_INTEGER : bIndex;
+      return aOrder - bOrder || a.singularName.localeCompare(b.singularName, 'es');
+    });
+
     const results = await Promise.all(
-      this.HOME_TYPES.map((type) =>
+      types.map((type) =>
         this.prisma.entity.findFirst({
           where: {
-            type,
+            type: type.key,
             status: EntityStatus.PUBLISHED,
           },
           orderBy: { createdAt: 'desc' },
@@ -488,6 +498,27 @@ export class EntityCatalogService {
       ),
     );
 
-    return results.flatMap((entity) => (entity ? [resolveLocalizedEntity(entity, locale)] : []));
+    return types.map((type, index) => ({
+      type,
+      entity: results[index] ? resolveLocalizedEntity(results[index], locale) : null,
+    }));
+  }
+
+  activeTypes() {
+    return this.prisma.entityTypeDefinition.findMany({
+      where: { status: 'ACTIVE' },
+      select: {
+        id: true,
+        key: true,
+        singularName: true,
+        pluralName: true,
+        description: true,
+        icon: true,
+        colorToken: true,
+        baseKind: true,
+        systemType: true,
+      },
+      orderBy: [{ systemType: 'desc' }, { singularName: 'asc' }],
+    });
   }
 }

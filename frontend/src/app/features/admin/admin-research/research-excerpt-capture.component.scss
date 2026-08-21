@@ -18,6 +18,16 @@
   padding: 26px;
   scrollbar-width: none;
 }
+:host(.is-fullscreen) {
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+:host(.is-fullscreen) .research-excerpt {
+  border-block: 0;
+  border-right: 0;
+  border-radius: 0;
+}
 :host-context(.app-stage-immersive) {
   top: 0;
   right: 0;

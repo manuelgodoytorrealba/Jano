@@ -1,27 +1,13 @@
 import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-const TYPES = [
-  'ARTWORK',
-  'ARTIST',
-  'ARTICLE',
-  'PERIOD',
-  'MOVEMENT',
-  'CONCEPT',
-  'PLACE',
-  'TEXT',
-  'EVENT',
-  'ORGANIZATION',
-] as const;
-export type EntityType = (typeof TYPES)[number];
-
 const KINDS = ['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'] as const;
 export type KnowledgeEntityKind = (typeof KINDS)[number];
 
 export class ListEntitiesQuery {
   @IsOptional()
-  @IsIn(TYPES)
-  type?: EntityType;
+  @IsString()
+  type?: string;
 
   @IsOptional()
   @IsIn(KINDS)

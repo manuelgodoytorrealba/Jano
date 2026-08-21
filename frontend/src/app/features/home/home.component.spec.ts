@@ -5,25 +5,23 @@ import { Subject } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AppAppearanceService } from '../../core/app-appearance.service';
-import { AdminHomeDecksApi } from '../../core/api/admin-home-decks.api';
-import { HomeDeck, HomeDecksApi } from '../../core/api/home-decks.api';
+import { EntitiesApi } from '../../core/api/entities.api';
+import { PublicHomeEntityTypeCard } from '../../core/api/entities.models';
 import { AuthService } from '../../core/auth/auth.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
-  it('keeps valid decks during refreshes and shows errors only without content', async () => {
-    let response = new Subject<HomeDeck[]>();
-    const listPublic = vi.fn(() => response);
-    const readCachedPublic = vi.fn(() => undefined as HomeDeck[] | undefined);
+  it('renders active type cards even when the type has no published entity yet', async () => {
+    const response = new Subject<PublicHomeEntityTypeCard[]>();
+    const home = vi.fn(() => response);
 
     await TestBed.configureTestingModule({
       imports: [HomeComponent],
       providers: [
         provideRouter([]),
-        { provide: HomeDecksApi, useValue: { listPublic, readCachedPublic } },
-        { provide: AdminHomeDecksApi, useValue: {} },
+        { provide: EntitiesApi, useValue: { home } },
         { provide: AuthService, useValue: { currentUser: null } },
         { provide: SeoService, useValue: { setPageMeta: vi.fn() } },
         {
@@ -43,52 +41,29 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
     const component = fixture.componentInstance;
 
-    response.next([]);
-    expect(component.loadState()).toBe('empty');
-    expect(component.deckItems()).toEqual([]);
-
-    response.next([deckWithoutImage]);
+    response.next([memeCard]);
     expect(component.loadState()).toBe('ready');
-    expect(component.deckItems()[0]?.image).toBe('');
+    expect(component.deckItems()[0]).toMatchObject({
+      title: 'Meme',
+      image: '',
+      ctaRoute: '/entities/meme',
+    });
 
     fixture.destroy();
-    readCachedPublic.mockReturnValue([deckWithoutImage]);
-    response = new Subject<HomeDeck[]>();
-
-    const cachedFixture = TestBed.createComponent(HomeComponent);
-    cachedFixture.detectChanges();
-
-    expect(cachedFixture.componentInstance.loadState()).toBe('ready');
-    expect(cachedFixture.componentInstance.deckItems()).toHaveLength(1);
-
-    response.error(new Error('offline'));
-    expect(cachedFixture.componentInstance.loadState()).toBe('ready');
-    expect(cachedFixture.componentInstance.deckItems()).toHaveLength(1);
-
-    cachedFixture.destroy();
-    readCachedPublic.mockReturnValue(undefined);
-    response = new Subject<HomeDeck[]>();
-
-    const emptyFixture = TestBed.createComponent(HomeComponent);
-    emptyFixture.detectChanges();
-    response.error(new Error('offline'));
-
-    expect(emptyFixture.componentInstance.loadState()).toBe('error');
-    expect(emptyFixture.componentInstance.deckItems()).toEqual([]);
   });
 });
 
-const deckWithoutImage: HomeDeck = {
-  id: 'deck-1',
-  surface: 'HOME',
-  slug: 'artwork',
-  title: 'Artworks',
-  subtitle: null,
-  description: null,
-  ctaLabel: null,
-  ctaUrl: null,
-  ctaRoute: '/entities/artwork',
-  image: null,
-  sortOrder: 0,
-  entities: [],
+const memeCard: PublicHomeEntityTypeCard = {
+  type: {
+    id: 'type-meme',
+    key: 'MEME',
+    singularName: 'Meme',
+    pluralName: 'Memes',
+    description: 'Formato cultural reproducible.',
+    icon: 'M',
+    colorToken: 'violet',
+    baseKind: 'ABSTRACTION',
+    systemType: false,
+  },
+  entity: null,
 };

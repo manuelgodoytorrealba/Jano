@@ -6,7 +6,9 @@
     @if (vm.project; as project) {
       <header class="research-project__header">
         <a class="research-project__back" routerLink="/admin/research">
-          <span aria-hidden="true">←</span>
+          <svg class="research-project__back-icon" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M16 10H4m5-5-5 5 5 5" />
+          </svg>
           Investigaciones
         </a>
         <nav
@@ -63,6 +65,28 @@
                   [(ngModel)]="materialTitle"
                   placeholder="Título del material"
                 />
+                <div class="research-project__material-provenance">
+                  <input
+                    type="text"
+                    name="materialAuthor"
+                    [(ngModel)]="materialAuthor"
+                    placeholder="Autor/a (opcional)"
+                  />
+                  <input
+                    type="number"
+                    name="materialYear"
+                    [(ngModel)]="materialYear"
+                    min="0"
+                    max="9999"
+                    placeholder="Año de publicación"
+                  />
+                  <input
+                    type="url"
+                    name="materialSourceUrl"
+                    [(ngModel)]="materialSourceUrl"
+                    placeholder="URL de referencia (opcional)"
+                  />
+                </div>
                 @if (materialKind === 'TEXT') {
                   <textarea
                     name="materialContent"
@@ -262,7 +286,7 @@
                           [class.is-active]="section.id === vm.activeSection?.id"
                           (click)="openSection(project, section)"
                         >
-                          <span class="research-project__tree-label">
+                          <span class="research-project__tree-label" [title]="section.title">
                             <span>{{ section.title }}</span>
                           </span>
                           <span
@@ -337,7 +361,7 @@
                                   [class.is-active]="child.id === vm.activeSection?.id"
                                   (click)="openSection(project, child)"
                                 >
-                                  <span class="research-project__tree-label">
+                                  <span class="research-project__tree-label" [title]="child.title">
                                     <span>{{ child.title }}</span>
                                   </span>
                                   <span
@@ -453,6 +477,9 @@
           class="research-project__workspace"
           [class.research-project__workspace--corpus]="vm.mode === 'corpus'"
           [class.research-project__workspace--sources]="vm.mode === 'sources'"
+          [class.research-project__workspace--empty-index]="
+            vm.mode === 'index' && !project.outlineSections.length
+          "
           aria-live="polite"
         >
           @if (vm.mode === 'corpus') {
@@ -513,207 +540,224 @@
             />
           } @else if (vm.mode === 'index' && vm.activeSection; as section) {
             <div class="research-project__section-workspace">
-              <section class="research-project__draft" aria-labelledby="section-draft-title">
-                <div class="research-project__draft-heading">
-                  <div>
-                    <p class="research-project__eyebrow">Draft activo</p>
-                    <textarea
-                      id="section-draft-title"
-                      class="research-project__draft-title"
-                      [ngModel]="section.title"
-                      [ngModelOptions]="{ standalone: true }"
-                      (blur)="saveSectionTitle(project, section, $any($event.target))"
-                      (keydown.enter)="$event.preventDefault()"
-                      aria-label="Título de la Section"
-                      rows="2"
-                    ></textarea>
-                  </div>
-                  <div class="research-project__draft-meta">
-                    @if (activeDraft(section)?.currentRevision; as revision) {
-                      <span>Revisión {{ revision.number }}</span>
-                    }
-                    <select
-                      name="sectionStatus"
-                      [ngModel]="section.status"
-                      [ngModelOptions]="{ standalone: true }"
-                      (ngModelChange)="updateStatus(project, section, $any($event))"
-                      aria-label="Estado editorial"
-                    >
-                      @for (status of statuses; track status) {
-                        <option [value]="status">{{ statusLabel(status) }}</option>
+              @for (key of [editorKey(section)]; track key) {
+                <section
+                  #sectionDraft
+                  class="research-project__draft"
+                  aria-labelledby="section-draft-title"
+                >
+                  <div class="research-project__draft-heading">
+                    <div>
+                      <p class="research-project__eyebrow">Draft activo</p>
+                      <textarea
+                        id="section-draft-title"
+                        class="research-project__draft-title"
+                        [ngModel]="section.title"
+                        [ngModelOptions]="{ standalone: true }"
+                        (blur)="saveSectionTitle(project, section, $any($event.target))"
+                        (keydown.enter)="$event.preventDefault()"
+                        aria-label="Título de la Section"
+                        rows="2"
+                      ></textarea>
+                    </div>
+                    <div class="research-project__draft-meta">
+                      @if (draftRevisionNumber(section); as revisionNumber) {
+                        <span>Revisión {{ revisionNumber }}</span>
                       }
-                    </select>
+                      <select
+                        name="sectionStatus"
+                        [ngModel]="section.status"
+                        [ngModelOptions]="{ standalone: true }"
+                        (ngModelChange)="updateStatus(project, section, $any($event))"
+                        aria-label="Estado editorial"
+                      >
+                        @for (status of statuses; track status) {
+                          <option [value]="status">{{ statusLabel(status) }}</option>
+                        }
+                      </select>
+                      <button
+                        type="button"
+                        class="research-project__draft-focus"
+                        (click)="toggleDraftFocus(sectionDraft)"
+                      >
+                        {{ draftFocused ? 'Salir del enfoque' : 'Enfoque de escritura' }}
+                      </button>
+                    </div>
                   </div>
-                </div>
-                @if (section.imageUrl) {
-                  <figure class="research-project__section-image">
-                    <img [src]="section.imageUrl" alt="" />
-                  </figure>
-                }
-                <details class="research-project__section-image-control">
-                  <summary>
-                    {{ section.imageUrl ? 'Cambiar imagen editorial' : 'Añadir imagen editorial' }}
-                  </summary>
-                  <label
-                    class="research-project__section-image-dropzone"
-                    (dragover)="dragSectionImageOver($event)"
-                    (drop)="dropSectionImage($event, project, section)"
+                  <details class="research-project__section-image-control">
+                    <summary>
+                      {{
+                        section.imageUrl ? 'Cambiar imagen editorial' : 'Añadir imagen editorial'
+                      }}
+                    </summary>
+                    @if (section.imageUrl) {
+                      <figure class="research-project__section-image">
+                        <img [src]="section.imageUrl" alt="" />
+                      </figure>
+                    }
+                    <label
+                      class="research-project__section-image-dropzone"
+                      (dragover)="dragSectionImageOver($event)"
+                      (drop)="dropSectionImage($event, project, section)"
+                    >
+                      <span>{{
+                        sectionImageUploading
+                          ? 'Subiendo imagen…'
+                          : 'Arrastra una imagen o selecciónala'
+                      }}</span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                        [disabled]="sectionImageUploading"
+                        (change)="selectSectionImage($event, project, section)"
+                      />
+                    </label>
+                    <small>Opcional · JPEG, PNG, WEBP, GIF o AVIF · máx. 15 MB.</small>
+                    @if (section.imageUrl) {
+                      <button
+                        type="button"
+                        class="research-project__section-image-remove"
+                        (click)="clearSectionImage(project, section)"
+                      >
+                        Retirar imagen
+                      </button>
+                    }
+                  </details>
+                  <div
+                    class="research-project__draft-toolbar"
+                    role="toolbar"
+                    aria-label="Formato del Draft"
                   >
-                    <span>{{
-                      sectionImageUploading
-                        ? 'Subiendo imagen…'
-                        : 'Arrastra una imagen o selecciónala'
-                    }}</span>
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-                      [disabled]="sectionImageUploading"
-                      (change)="selectSectionImage($event, project, section)"
-                    />
-                  </label>
-                  <small>Opcional · JPEG, PNG, WEBP, GIF o AVIF · máx. 15 MB.</small>
-                  @if (section.imageUrl) {
                     <button
                       type="button"
-                      class="research-project__section-image-remove"
-                      (click)="clearSectionImage(project, section)"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="formatDraft(draftEditor, 'heading')"
+                      [class.is-active]="draftEditor.isFormatActive('heading')"
+                      [attr.aria-pressed]="draftEditor.isFormatActive('heading')"
+                      aria-label="Encabezado nivel 2"
+                      title="Encabezado nivel 2"
                     >
-                      Retirar imagen
+                      H2
                     </button>
-                  }
-                </details>
-                <div
-                  class="research-project__draft-toolbar"
-                  role="toolbar"
-                  aria-label="Formato del Draft"
-                >
-                  <button
-                    type="button"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="formatDraft(draftEditor, 'heading')"
-                    [class.is-active]="draftEditor.isFormatActive('heading')"
-                    [attr.aria-pressed]="draftEditor.isFormatActive('heading')"
-                    aria-label="Encabezado nivel 2"
-                  >
-                    H2
-                  </button>
-                  <button
-                    type="button"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="formatDraft(draftEditor, 'bold')"
-                    [class.is-active]="draftEditor.isFormatActive('bold')"
-                    [attr.aria-pressed]="draftEditor.isFormatActive('bold')"
-                    aria-label="Negrita"
-                  >
-                    <strong>B</strong>
-                  </button>
-                  <button
-                    type="button"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="formatDraft(draftEditor, 'italic')"
-                    [class.is-active]="draftEditor.isFormatActive('italic')"
-                    [attr.aria-pressed]="draftEditor.isFormatActive('italic')"
-                    aria-label="Cursiva"
-                  >
-                    <em>I</em>
-                  </button>
-                  <button
-                    type="button"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="formatDraft(draftEditor, 'bullet-list')"
-                    [class.is-active]="draftEditor.isFormatActive('bullet-list')"
-                    [attr.aria-pressed]="draftEditor.isFormatActive('bullet-list')"
-                    aria-label="Lista con viñetas"
-                  >
-                    • Lista
-                  </button>
-                  <button
-                    type="button"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="formatDraft(draftEditor, 'number-list')"
-                    [class.is-active]="draftEditor.isFormatActive('number-list')"
-                    [attr.aria-pressed]="draftEditor.isFormatActive('number-list')"
-                    aria-label="Lista numerada"
-                  >
-                    1. Lista
-                  </button>
-                  <button
-                    type="button"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="formatDraft(draftEditor, 'quote')"
-                    [class.is-active]="draftEditor.isFormatActive('quote')"
-                    [attr.aria-pressed]="draftEditor.isFormatActive('quote')"
-                    aria-label="Cita"
-                  >
-                    “ ”
-                  </button>
-                  <button
-                    type="button"
-                    (mousedown)="$event.preventDefault()"
-                    (click)="draftEditor.openEntityPicker($any($event.currentTarget))"
-                    [class.is-active]="draftEditor.isFormatActive('link')"
-                    [attr.aria-pressed]="draftEditor.isFormatActive('link')"
-                    aria-label="Enlace a Entidad"
-                  >
-                    ↗
-                  </button>
-                  <details class="research-project__toolbar-help">
-                    <summary aria-label="Abrir ayuda de formato">?</summary>
-                    <div>
-                      <strong>Ayudas de escritura</strong>
-                      <p>Selecciona texto y pulsa una acción. El formato se guarda con el Draft.</p>
-                      <dl>
-                        <div>
-                          <dt>H2</dt>
-                          <dd>Encabezado de sección</dd>
-                        </div>
-                        <div>
-                          <dt>B / I</dt>
-                          <dd>Negrita y cursiva</dd>
-                        </div>
-                        <div>
-                          <dt>Listas</dt>
-                          <dd>Viñetas o pasos numerados</dd>
-                        </div>
-                        <div>
-                          <dt>“ ”</dt>
-                          <dd>Cita o pasaje destacado</dd>
-                        </div>
-                        <div>
-                          <dt>↗</dt>
-                          <dd>Enlace interno a una Entidad</dd>
-                        </div>
-                      </dl>
-                    </div>
-                  </details>
-                </div>
-                <app-rich-text
-                  #draftEditor
-                  class="research-project__draft-editor"
-                  [text]="draftEditorContent"
-                  [editable]="true"
-                  placeholder="Empieza a articular aquí la narrativa de esta sección…"
-                  previewAccess="admin"
-                  (textChange)="draftContent = $event"
-                  (keydown)="handleDraftShortcut($event, draftEditor)"
-                />
-                <footer>
-                  <p aria-live="polite">{{ draftMessage }}</p>
-                  <button
-                    type="button"
-                    (click)="saveDraft(project, section)"
-                    [disabled]="savingDraft || draftContent === savedDraftContent"
-                  >
-                    {{
-                      savingDraft
-                        ? 'Guardando…'
-                        : activeDraft(section)
-                          ? 'Guardar revisión'
-                          : 'Crear borrador'
-                    }}
-                  </button>
-                </footer>
-              </section>
+                    <button
+                      type="button"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="formatDraft(draftEditor, 'bold')"
+                      [class.is-active]="draftEditor.isFormatActive('bold')"
+                      [attr.aria-pressed]="draftEditor.isFormatActive('bold')"
+                      aria-label="Negrita"
+                      title="Negrita (⌘/Ctrl+B)"
+                    >
+                      <strong>B</strong>
+                    </button>
+                    <button
+                      type="button"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="formatDraft(draftEditor, 'italic')"
+                      [class.is-active]="draftEditor.isFormatActive('italic')"
+                      [attr.aria-pressed]="draftEditor.isFormatActive('italic')"
+                      aria-label="Cursiva"
+                      title="Cursiva (⌘/Ctrl+I)"
+                    >
+                      <em>I</em>
+                    </button>
+                    <button
+                      type="button"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="formatDraft(draftEditor, 'bullet-list')"
+                      [class.is-active]="draftEditor.isFormatActive('bullet-list')"
+                      [attr.aria-pressed]="draftEditor.isFormatActive('bullet-list')"
+                      aria-label="Lista con viñetas"
+                      title="Lista con viñetas"
+                    >
+                      • Lista
+                    </button>
+                    <button
+                      type="button"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="formatDraft(draftEditor, 'number-list')"
+                      [class.is-active]="draftEditor.isFormatActive('number-list')"
+                      [attr.aria-pressed]="draftEditor.isFormatActive('number-list')"
+                      aria-label="Lista numerada"
+                      title="Lista numerada"
+                    >
+                      1. Lista
+                    </button>
+                    <button
+                      type="button"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="formatDraft(draftEditor, 'quote')"
+                      [class.is-active]="draftEditor.isFormatActive('quote')"
+                      [attr.aria-pressed]="draftEditor.isFormatActive('quote')"
+                      aria-label="Cita"
+                      title="Cita"
+                    >
+                      “ ”
+                    </button>
+                    <button
+                      type="button"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="draftEditor.openEntityPicker($any($event.currentTarget))"
+                      aria-label="Enlace a Entidad"
+                      title="Enlace a una Entidad"
+                    >
+                      ↗
+                    </button>
+                    <details class="research-project__toolbar-help">
+                      <summary aria-label="Abrir ayuda de formato">?</summary>
+                      <div>
+                        <strong>Ayudas de escritura</strong>
+                        <p>
+                          Selecciona texto y pulsa una acción. El formato se guarda con el Draft.
+                        </p>
+                        <dl>
+                          <div>
+                            <dt>H2</dt>
+                            <dd>Encabezado de sección</dd>
+                          </div>
+                          <div>
+                            <dt>B / I</dt>
+                            <dd>Negrita y cursiva</dd>
+                          </div>
+                          <div>
+                            <dt>Listas</dt>
+                            <dd>Viñetas o pasos numerados</dd>
+                          </div>
+                          <div>
+                            <dt>“ ”</dt>
+                            <dd>Cita o pasaje destacado</dd>
+                          </div>
+                          <div>
+                            <dt>↗</dt>
+                            <dd>Enlace interno a una Entidad</dd>
+                          </div>
+                        </dl>
+                      </div>
+                    </details>
+                  </div>
+                  <app-rich-text
+                    #draftEditor
+                    class="research-project__draft-editor"
+                    [text]="draftEditorContent(section)"
+                    [editable]="true"
+                    placeholder="Empieza a articular aquí la narrativa de esta sección…"
+                    previewAccess="admin"
+                    (textChange)="updateDraftContent(project, section, $event)"
+                    (textRender)="refreshDraftEditor(section, $event)"
+                    (keydown)="handleDraftShortcut($event, draftEditor)"
+                  />
+                  <footer>
+                    <p aria-live="polite">{{ draftMessage }}</p>
+                    <button
+                      type="button"
+                      (click)="saveDraft(project, section)"
+                      [disabled]="savingDraft || !hasUncommittedDraft(section)"
+                    >
+                      {{ savingDraft ? 'Guardando…' : 'Guardar revisión' }}
+                    </button>
+                  </footer>
+                </section>
+              }
 
               <aside class="research-project__section-dossier" aria-label="Contexto de la Section">
                 <nav class="research-project__section-side-tabs" aria-label="Panel de sección">
@@ -748,9 +792,16 @@
                       <p class="research-project__eyebrow">Objetivo</p>
                       <textarea
                         name="sectionObjective"
-                        [(ngModel)]="workspaceObjective"
                         [ngModelOptions]="{ standalone: true }"
-                        (blur)="saveWorkspace(project, section)"
+                        [ngModel]="section.objective ?? ''"
+                        (blur)="
+                          saveWorkspace(
+                            project,
+                            section,
+                            $any($event.target).value,
+                            section.notes ?? ''
+                          )
+                        "
                         placeholder="¿Qué intenta resolver esta sección?"
                       ></textarea>
                     </section>
@@ -932,9 +983,16 @@
                   <p>¿Qué intenta resolver esta sección?</p>
                   <textarea
                     name="sectionObjective"
-                    [(ngModel)]="workspaceObjective"
                     [ngModelOptions]="{ standalone: true }"
-                    (blur)="saveWorkspace(project, section)"
+                    [ngModel]="section.objective ?? ''"
+                    (blur)="
+                      saveWorkspace(
+                        project,
+                        section,
+                        $any($event.target).value,
+                        section.notes ?? ''
+                      )
+                    "
                     placeholder="Formula la intención editorial de esta sección"
                   ></textarea>
                 </section>
@@ -1134,9 +1192,16 @@
                   <textarea
                     class="research-project__notes"
                     name="sectionNotes"
-                    [(ngModel)]="workspaceNotes"
                     [ngModelOptions]="{ standalone: true }"
-                    (blur)="saveWorkspace(project, section)"
+                    [ngModel]="section.notes ?? ''"
+                    (blur)="
+                      saveWorkspace(
+                        project,
+                        section,
+                        section.objective ?? '',
+                        $any($event.target).value
+                      )
+                    "
                     placeholder="Escribe aquí sin estructurar todavía"
                   ></textarea>
                 </section>
@@ -1413,7 +1478,9 @@
           } @else if (vm.mode === 'publication') {
             <app-research-publication-workspace
               [project]="project"
+              [candidates]="vm.projects"
               [activeTab]="vm.publicationTab"
+              (saved)="refreshResearch()"
             />
           } @else {
             <div class="research-project__workspace-empty">

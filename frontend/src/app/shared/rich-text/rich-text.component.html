@@ -8,10 +8,11 @@
   [attr.aria-multiline]="editable ? 'true' : null"
   [attr.aria-label]="editable ? i18n.t('richText.editorAria') : null"
   (input)="onInput($event)"
+  (paste)="onPaste($event)"
   (click)="onEditorClick($event)"
   (keydown)="onEditorKeydown($event)"
-  (keyup)="updateFormatState()"
-  (mouseup)="updateFormatState()"
+  (keyup)="captureSelection(); updateFormatState()"
+  (mouseup)="captureSelection(); updateFormatState()"
 >
   @for (block of blocks; track $index; let blockIndex = $index) {
     @if (block.kind === 'heading' && block.level === 1) {
@@ -167,6 +168,8 @@
       <span class="link-wrap">
         <a
           class="link"
+          [attr.data-entity-slug]="t.slug"
+          [attr.contenteditable]="editable ? 'false' : null"
           [routerLink]="editable ? null : ['/entity', t.slug]"
           (click)="onEditableLinkClick($event)"
           (mouseenter)="onLinkEnter(t.slug, keyPrefix + ':' + tokenIndex)"

@@ -40,6 +40,16 @@ export type CreateResearchDocumentPayload = {
   title: string;
   content?: string;
   url?: string;
+  author?: string;
+  year?: number;
+  sourceUrl?: string;
+};
+
+export type CreateResearchPdfMaterialPayload = {
+  title?: string;
+  author?: string;
+  year?: number;
+  sourceUrl?: string;
 };
 
 export type CreateResearchLibraryExcerptPayload = {
@@ -82,17 +92,7 @@ export type CreateResearchRelationPayload = {
 
 export type CreateResearchEntityPayload = {
   kind?: 'PERSON' | 'WORK' | 'ABSTRACTION' | 'EVENT' | 'PLACE' | 'ORGANIZATION';
-  canonicalType?:
-    | 'ARTWORK'
-    | 'ARTIST'
-    | 'ARTICLE'
-    | 'CONCEPT'
-    | 'MOVEMENT'
-    | 'PERIOD'
-    | 'TEXT'
-    | 'PLACE'
-    | 'EVENT'
-    | 'ORGANIZATION';
+  canonicalType?: string;
   title: string;
   evidenceIds: string[];
   summary?: string;
@@ -409,6 +409,7 @@ export type ResearchDraft = {
   projectId: string;
   sectionId: string;
   title: string | null;
+  workingContent?: string;
   currentRevisionId: string | null;
   archivedAt: string | null;
   createdAt: string;
@@ -554,6 +555,15 @@ export type ResearchProject = ResearchProjectSummary & {
   materials: ResearchDocument[];
   claims: ResearchClaim[];
   outlineSections: ResearchOutlineSection[];
+  relatedProjects?: Array<{
+    projectId: string;
+    relatedProjectId: string;
+    createdAt: string;
+    relatedProject: Pick<
+      ResearchProjectSummary,
+      'id' | 'title' | 'objective' | 'coverImageUrl' | 'status'
+    >;
+  }>;
 };
 
 export type ResearchPublicPublication = {
@@ -843,6 +853,15 @@ export class ResearchApi {
     );
   }
 
+  saveDraftWorkingCopy(projectId: string, draftId: string, content: string) {
+    return this.http.patch<ResearchDraft>(
+      `${this.baseUrl}/${projectId}/drafts/${draftId}/working-copy`,
+      {
+        content,
+      },
+    );
+  }
+
   reviseDraft(projectId: string, draftId: string, content: string) {
     return this.http.post<ResearchDraft>(
       `${this.baseUrl}/${projectId}/drafts/${draftId}/revisions`,
@@ -898,6 +917,24 @@ export class ResearchApi {
     });
   }
 
+  removeCitation(projectId: string, citationId: string) {
+    return this.http.delete<ResearchProject>(
+      `${this.baseUrl}/${projectId}/citations/${citationId}`,
+    );
+  }
+
+  addRelatedProject(projectId: string, relatedProjectId: string) {
+    return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/related-projects`, {
+      relatedProjectId,
+    });
+  }
+
+  removeRelatedProject(projectId: string, relatedProjectId: string) {
+    return this.http.delete<ResearchProject>(
+      `${this.baseUrl}/${projectId}/related-projects/${relatedProjectId}`,
+    );
+  }
+
   associateLibraryMaterial(projectId: string, materialId: string) {
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/library-materials`, {
       materialId,
@@ -914,10 +951,18 @@ export class ResearchApi {
     );
   }
 
-  createPdfMaterial(projectId: string, file: File, title?: string) {
+  createPdfMaterial(
+    projectId: string,
+    file: File,
+    data: CreateResearchPdfMaterialPayload | string = {},
+  ) {
+    const metadata = typeof data === 'string' ? { title: data } : data;
     const formData = new FormData();
     formData.append('file', file);
-    if (title?.trim()) formData.append('title', title.trim());
+    if (metadata.title?.trim()) formData.append('title', metadata.title.trim());
+    if (metadata.author?.trim()) formData.append('author', metadata.author.trim());
+    if (metadata.year !== undefined) formData.append('year', String(metadata.year));
+    if (metadata.sourceUrl?.trim()) formData.append('sourceUrl', metadata.sourceUrl.trim());
     return this.http.post<ResearchProject>(`${this.baseUrl}/${projectId}/materials/pdf`, formData);
   }
 

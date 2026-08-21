@@ -31,6 +31,7 @@ export class AdminEntityAttributesEditorComponent implements OnChanges {
   private readonly cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true }) entityId = '';
+  @Input() entityTypeKey = '';
 
   definitions: AttributeDefinition[] = [];
   attributes: EntityAttribute[] = [];
@@ -186,7 +187,7 @@ export class AdminEntityAttributesEditorComponent implements OnChanges {
   }
 
   private load(): void {
-    this.api.definitions().subscribe({
+    this.api.definitions(this.entityTypeKey || undefined).subscribe({
       next: (definitions) => {
         this.definitions = definitions;
         this.cdr.markForCheck();

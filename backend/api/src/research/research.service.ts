@@ -12,10 +12,7 @@ import {
   type KnowledgeEntityKind,
   type Prisma,
 } from '@prisma/client';
-import {
-  EntityEditorialService,
-  kindForLegacyEntityType,
-} from '../entities/entity-editorial.service';
+import { EntityEditorialService } from '../entities/entity-editorial.service';
 import { LibraryService } from '../library/library.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
@@ -489,6 +486,15 @@ export class ResearchService {
             toEntity: { select: { id: true, title: true, kind: true } },
           },
         },
+        relatedProjects: {
+          where: { relatedProject: { status: ResearchProjectStatus.PUBLISHED } },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            relatedProject: {
+              select: { id: true, title: true, objective: true, coverImageUrl: true },
+            },
+          },
+        },
       },
     });
     if (!project) throw new NotFoundException('Published research not found');
@@ -550,19 +556,12 @@ export class ResearchService {
         toEntity: { id: toEntity.id, title: toEntity.title, kind: toEntity.kind },
       });
     }
-    const related = publicEntityIds.length
-      ? await this.prisma.researchProject.findMany({
-          where: {
-            status: ResearchProjectStatus.PUBLISHED,
-            id: { not: project.id },
-            entities: { some: { canonicalEntityId: { in: publicEntityIds } } },
-          },
-          orderBy: { publishedAt: 'desc' },
-          take: 3,
-          select: { id: true, title: true, objective: true, coverImageUrl: true },
-        })
-      : [];
-    return { ...project, entities, relations: publishedRelations, related };
+    return {
+      ...project,
+      entities,
+      relations: publishedRelations,
+      related: project.relatedProjects.map(({ relatedProject }) => relatedProject),
+    };
   }
 
   async publishProject(projectId: string) {
@@ -1037,6 +1036,14 @@ export class ResearchService {
         evidence: { orderBy: { createdAt: 'desc' }, include: researchEvidenceTraceInclude },
         decisions: { orderBy: { createdAt: 'desc' } },
         jobs: { orderBy: { updatedAt: 'desc' } },
+        relatedProjects: {
+          orderBy: { createdAt: 'desc' },
+          include: {
+            relatedProject: {
+              select: { id: true, title: true, objective: true, coverImageUrl: true, status: true },
+            },
+          },
+        },
         libraryMaterials: {
           include: {
             material: {
@@ -1274,6 +1281,40 @@ export class ResearchService {
     return this.getProject(projectId);
   }
 
+  async addRelatedProject(projectId: string, relatedProjectId: string) {
+    if (projectId === relatedProjectId)
+      throw new BadRequestException('A research project cannot relate to itself');
+    const project = await this.prisma.researchProject.findUnique({
+      where: { id: projectId },
+      select: { ownerId: true },
+    });
+    if (!project) throw new NotFoundException('Research project not found');
+    const relatedProject = await this.prisma.researchProject.findFirst({
+      where: {
+        id: relatedProjectId,
+        ownerId: project.ownerId,
+        status: ResearchProjectStatus.PUBLISHED,
+      },
+      select: { id: true },
+    });
+    if (!relatedProject) throw new NotFoundException('Related research project not found');
+    await this.prisma.researchProjectRelation.upsert({
+      where: { projectId_relatedProjectId: { projectId, relatedProjectId } },
+      create: { projectId, relatedProjectId },
+      update: {},
+    });
+    return this.getProject(projectId);
+  }
+
+  async removeRelatedProject(projectId: string, relatedProjectId: string) {
+    await this.requireProject(projectId);
+    const { count } = await this.prisma.researchProjectRelation.deleteMany({
+      where: { projectId, relatedProjectId },
+    });
+    if (!count) throw new NotFoundException('Related research project not found');
+    return this.getProject(projectId);
+  }
+
   async citeResearchItem(projectId: string, dto: CiteResearchItemDto) {
     const item = await this.prisma.$transaction(async (tx) => {
       const project = await tx.researchProject.findUnique({
@@ -1369,6 +1410,16 @@ export class ResearchService {
       });
       return tx.researchProjectCitation.create({ data: { projectId, sourceId, ...data } });
     });
+    await this.touchProject(projectId);
+    return this.getProject(projectId);
+  }
+
+  async removeProjectCitation(projectId: string, citationId: string) {
+    await this.requireProject(projectId);
+    const { count } = await this.prisma.researchProjectCitation.deleteMany({
+      where: { id: citationId, projectId },
+    });
+    if (!count) throw new NotFoundException('Research project citation not found');
     await this.touchProject(projectId);
     return this.getProject(projectId);
   }
@@ -1903,9 +1954,13 @@ export class ResearchService {
       });
       if (!entity) throw new NotFoundException('Canonical entity not found');
     }
-    const kind: KnowledgeEntityKind = dto.canonicalType
-      ? kindForLegacyEntityType(dto.canonicalType)
-      : dto.kind!;
+    const typeDefinition = dto.canonicalType
+      ? await this.prisma.entityTypeDefinition.findUnique({ where: { key: dto.canonicalType } })
+      : null;
+    if (dto.canonicalType && (!typeDefinition || typeDefinition.status !== 'ACTIVE')) {
+      throw new BadRequestException('Canonical entity type is unavailable');
+    }
+    const kind: KnowledgeEntityKind = typeDefinition?.baseKind ?? dto.kind!;
     if (dto.canonicalType) {
       await this.prisma.$transaction(async (tx) => {
         const canonical = await this.entityEditorial.createDraftRecord(tx, {
@@ -1942,13 +1997,15 @@ export class ResearchService {
     return this.getProject(projectId);
   }
 
-  async promoteEntity(
-    projectId: string,
-    entityId: string,
-    canonicalType: import('@prisma/client').EntityType,
-  ) {
+  async promoteEntity(projectId: string, entityId: string, canonicalType: string) {
     await this.requireProject(projectId);
-    const canonicalKind = kindForLegacyEntityType(canonicalType);
+    const typeDefinition = await this.prisma.entityTypeDefinition.findUnique({
+      where: { key: canonicalType },
+    });
+    if (!typeDefinition || typeDefinition.status !== 'ACTIVE') {
+      throw new BadRequestException('Canonical entity type is unavailable');
+    }
+    const canonicalKind = typeDefinition.baseKind;
     await this.prisma.$transaction(async (tx) => {
       const entity = await tx.researchEntity.findFirst({
         where: { id: entityId, projectId },
@@ -2068,7 +2125,7 @@ export class ResearchService {
       });
       if (!project) throw new NotFoundException('Research project not found');
 
-      const material = await this.library.createInitialPdf(tx, file, dto.title);
+      const material = await this.library.createInitialPdf(tx, file, dto.title, dto);
       materialId = material.id;
       await tx.researchLibraryMaterial.upsert({
         where: { projectId_materialId: { projectId, materialId: material.id } },

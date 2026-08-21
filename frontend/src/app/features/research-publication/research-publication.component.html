@@ -1,6 +1,11 @@
 @if (publication$ | async; as publication) {
   <main class="publication jano-research-studio">
-    <a routerLink="/research" class="publication__back">← {{ 'research.publication.back' | t }}</a>
+    <a routerLink="/research" class="publication__back">
+      <svg class="publication__back-icon" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M16 10H4m5-5-5 5 5 5" />
+      </svg>
+      {{ 'research.publication.back' | t }}
+    </a>
     <header class="publication__hero jano-editorial-surface">
       <div class="publication__hero-copy">
         <p class="publication__eyebrow">{{ 'research.publication.published' | t }}</p>
@@ -24,15 +29,17 @@
       [attr.aria-label]="'research.publication.tabs' | t"
     >
       @for (tab of tabs; track tab.id) {
-        <button
-          type="button"
-          role="tab"
-          [attr.aria-selected]="activeTab() === tab.id"
-          [class.is-active]="activeTab() === tab.id"
-          (click)="setTab(tab.id)"
-        >
-          {{ tab.label | t }}
-        </button>
+        @if (tab.id !== 'related' || publication.related.length) {
+          <button
+            type="button"
+            role="tab"
+            [attr.aria-selected]="activeTab() === tab.id"
+            [class.is-active]="activeTab() === tab.id"
+            (click)="setTab(tab.id)"
+          >
+            {{ tab.label | t }}
+          </button>
+        }
       }
     </nav>
     @if (activeTab() === 'content') {
@@ -137,25 +144,21 @@
           <p class="publication__empty">{{ 'research.publication.noSources' | t }}</p>
         }
       </section>
-    } @else {
+    } @else if (publication.related.length) {
       <section class="publication__panel jano-editorial-surface" role="tabpanel">
         <p class="publication__eyebrow">{{ 'research.publication.continueExploring' | t }}</p>
         <h2>{{ 'research.publication.related' | t }}</h2>
-        @if (publication.related.length) {
-          <div class="publication__related">
-            @for (item of publication.related; track item.id) {
-              <a [routerLink]="['/research', item.id]">
-                @if (item.coverImageUrl) {
-                  <img [src]="item.coverImageUrl" [alt]="item.title" />
-                }
-                <h3>{{ item.title }}</h3>
-                <p>{{ item.objective }}</p></a
-              >
-            }
-          </div>
-        } @else {
-          <p class="publication__empty">{{ 'research.publication.noRelated' | t }}</p>
-        }
+        <div class="publication__related">
+          @for (item of publication.related; track item.id) {
+            <a [routerLink]="['/research', item.id]">
+              @if (item.coverImageUrl) {
+                <img [src]="item.coverImageUrl" [alt]="item.title" />
+              }
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.objective }}</p></a
+            >
+          }
+        </div>
       </section>
     }
   </main>

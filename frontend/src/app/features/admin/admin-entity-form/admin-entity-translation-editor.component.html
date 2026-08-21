@@ -48,23 +48,99 @@
         [name]="'translationShort_' + activeLocale"
       ></textarea>
     </label>
-    <label class="field editorial-field editorial-field--essay">
+    <section class="field editorial-field editorial-field--essay" aria-label="Ensayo">
       <span>Ensayo</span>
-      <textarea
-        rows="10"
-        [ngModel]="activeTranslation().essay"
-        (ngModelChange)="updateTranslation('essay', $event)"
-        [name]="'translationEssay_' + activeLocale"
-      ></textarea>
-      <aside class="essay-guide" aria-label="Guía de escritura del ensayo">
-        <strong>Guía de escritura</strong>
-        <span><code># ## ###</code> Títulos</span>
-        <span><code>&gt;</code> Cita</span>
-        <span><code>:::lead ... :::</code> Texto destacado</span>
-        <span><code>[[slug]]</code> Entidad</span>
-        <span><code>[[slug|texto]]</code> Entidad con texto propio</span>
-      </aside>
-    </label>
+      @for (editorVersion of [essayEditorVersion]; track editorVersion) {
+        <div class="essay-toolbar" role="toolbar" aria-label="Formato del ensayo">
+          <button
+            type="button"
+            (mousedown)="$event.preventDefault()"
+            (click)="essayEditor.format('heading')"
+            [class.is-active]="essayEditor.isFormatActive('heading')"
+            [attr.aria-pressed]="essayEditor.isFormatActive('heading')"
+            aria-label="Encabezado nivel 2"
+            title="Encabezado nivel 2"
+          >
+            H2
+          </button>
+          <button
+            type="button"
+            (mousedown)="$event.preventDefault()"
+            (click)="essayEditor.format('bold')"
+            [class.is-active]="essayEditor.isFormatActive('bold')"
+            [attr.aria-pressed]="essayEditor.isFormatActive('bold')"
+            aria-label="Negrita"
+            title="Negrita (⌘/Ctrl+B)"
+          >
+            <strong>B</strong>
+          </button>
+          <button
+            type="button"
+            (mousedown)="$event.preventDefault()"
+            (click)="essayEditor.format('italic')"
+            [class.is-active]="essayEditor.isFormatActive('italic')"
+            [attr.aria-pressed]="essayEditor.isFormatActive('italic')"
+            aria-label="Cursiva"
+            title="Cursiva (⌘/Ctrl+I)"
+          >
+            <em>I</em>
+          </button>
+          <button
+            type="button"
+            (mousedown)="$event.preventDefault()"
+            (click)="essayEditor.format('bullet-list')"
+            [class.is-active]="essayEditor.isFormatActive('bullet-list')"
+            [attr.aria-pressed]="essayEditor.isFormatActive('bullet-list')"
+            aria-label="Lista con viñetas"
+            title="Lista con viñetas"
+          >
+            • Lista
+          </button>
+          <button
+            type="button"
+            (mousedown)="$event.preventDefault()"
+            (click)="essayEditor.format('number-list')"
+            [class.is-active]="essayEditor.isFormatActive('number-list')"
+            [attr.aria-pressed]="essayEditor.isFormatActive('number-list')"
+            aria-label="Lista numerada"
+            title="Lista numerada"
+          >
+            1. Lista
+          </button>
+          <button
+            type="button"
+            (mousedown)="$event.preventDefault()"
+            (click)="essayEditor.format('quote')"
+            [class.is-active]="essayEditor.isFormatActive('quote')"
+            [attr.aria-pressed]="essayEditor.isFormatActive('quote')"
+            aria-label="Cita"
+            title="Cita"
+          >
+            “ ”
+          </button>
+          <button
+            type="button"
+            (mousedown)="$event.preventDefault()"
+            (click)="essayEditor.openEntityPicker($any($event.currentTarget))"
+            aria-label="Enlace a entidad"
+            title="Enlace a una entidad"
+          >
+            ↗
+          </button>
+        </div>
+        <app-rich-text
+          #essayEditor
+          class="essay-editor"
+          [text]="essayEditorContent"
+          [editable]="true"
+          placeholder="Escribe el ensayo editorial…"
+          previewAccess="admin"
+          (textChange)="updateEssay($event)"
+          (textRender)="refreshEssayEditor($event)"
+          (keydown)="handleEssayShortcut($event, essayEditor)"
+        />
+      }
+    </section>
     <details class="editorial-support">
       <summary>Notas y apoyo editorial</summary>
       <label class="field full">

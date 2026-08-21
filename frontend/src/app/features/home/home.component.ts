@@ -11,7 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { AppAppearanceService } from '../../core/app-appearance.service';
 import { EntitiesApi } from '../../core/api/entities.api';
-import { PublicEntity } from '../../core/api/entities.models';
+import { PublicHomeEntityTypeCard } from '../../core/api/entities.models';
 import { entityTypeLabel } from '../../core/i18n/domain-labels';
 import { AuthService } from '../../core/auth/auth.service';
 import { SeoService } from '../../core/seo/seo.service';
@@ -131,19 +131,19 @@ export class HomeComponent {
       });
   }
 
-  private setCoreDecks(entities: PublicEntity[]): void {
-    const items = entities.map((entity) => ({
-      id: `core-${entity.type}`,
+  private setCoreDecks(cards: PublicHomeEntityTypeCard[]): void {
+    const items = cards.map(({ type, entity }) => ({
+      id: `core-${type.key}`,
       eyebrow: this.i18n.t('home.defaultEyebrow'),
-      title: entityTypeLabel(entity.type, this.i18n),
-      description: this.coreTypeDescription(entity.type),
-      meta: entity.title,
+      title: type.systemType ? entityTypeLabel(type.key, this.i18n) : type.singularName,
+      description: type.systemType ? this.coreTypeDescription(type.key) : (type.description ?? ''),
+      meta: entity?.title ?? type.pluralName,
       cta: `${this.i18n.t('home.viewSelection')} →`,
       image:
-        entity.resolvedMedia?.card?.url ?? entity.resolvedMedia?.hero?.url ?? entity.image ?? '',
-      routeType: entity.type.toLowerCase(),
-      ctaRoute: `/entities/${entity.type.toLowerCase()}`,
-      adminEditRoute: '/admin/home-decks',
+        entity?.resolvedMedia?.card?.url ?? entity?.resolvedMedia?.hero?.url ?? entity?.image ?? '',
+      routeType: type.key.toLowerCase(),
+      ctaRoute: `/entities/${type.key.toLowerCase()}`,
+      adminEditRoute: '/admin/entity-types',
     }));
     this.deckItems.set(items);
     this.loadState.set(items.length ? 'ready' : 'empty');

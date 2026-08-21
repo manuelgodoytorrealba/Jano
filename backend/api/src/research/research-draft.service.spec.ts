@@ -4,7 +4,7 @@ import { ResearchDraftService } from './research-draft.service';
 
 describe('ResearchDraftService', () => {
   const tx = {
-    researchDraft: { create: jest.fn(), update: jest.fn() },
+    researchDraft: { create: jest.fn(), findUniqueOrThrow: jest.fn(), update: jest.fn() },
     researchDraftRevision: { create: jest.fn() },
   };
   const prisma = {
@@ -19,33 +19,27 @@ describe('ResearchDraftService', () => {
     prisma.$transaction.mockImplementation(async (work) => work(tx));
   });
 
-  it('creates an attributed first revision only inside the requested Section', async () => {
+  it('creates a working copy only inside the requested Section', async () => {
     prisma.researchOutlineSection.findFirst.mockResolvedValue({
       id: 'section-1',
       title: 'Hacia una nueva representación',
     });
     tx.researchDraft.create.mockResolvedValue({ id: 'draft-1' });
-    tx.researchDraftRevision.create.mockResolvedValue({ id: 'revision-1' });
-    tx.researchDraft.update.mockResolvedValue({ id: 'draft-1' });
+    tx.researchDraft.findUniqueOrThrow.mockResolvedValue({ id: 'draft-1' });
 
-    await service.create('research-1', 'section-1', 'user-1', { content: 'Primer texto.' });
+    await service.create('research-1', 'section-1', { content: 'Primer texto.' });
 
     expect(prisma.researchOutlineSection.findFirst).toHaveBeenCalledWith({
       where: { id: 'section-1', projectId: 'research-1' },
       select: { id: true, title: true },
     });
-    expect(tx.researchDraftRevision.create).toHaveBeenCalledWith({
+    expect(tx.researchDraft.create).toHaveBeenCalledWith({
       data: {
-        draftId: 'draft-1',
-        authorId: 'user-1',
-        number: 1,
-        content: 'Primer texto.',
+        projectId: 'research-1',
+        sectionId: 'section-1',
+        title: 'Hacia una nueva representación',
+        workingContent: 'Primer texto.',
       },
-    });
-    expect(tx.researchDraft.update).toHaveBeenCalledWith({
-      where: { id: 'draft-1' },
-      data: { currentRevisionId: 'revision-1' },
-      include: { currentRevision: true },
     });
   });
 
@@ -69,7 +63,7 @@ describe('ResearchDraftService', () => {
     });
     expect(tx.researchDraft.update).toHaveBeenCalledWith({
       where: { id: 'draft-1' },
-      data: { currentRevisionId: 'revision-2' },
+      data: { currentRevisionId: 'revision-2', workingContent: 'Nueva revisión.' },
       include: { currentRevision: true },
     });
   });
@@ -77,8 +71,8 @@ describe('ResearchDraftService', () => {
   it('rejects a Section from another Research', async () => {
     prisma.researchOutlineSection.findFirst.mockResolvedValue(null);
 
-    await expect(
-      service.create('research-1', 'section-2', 'user-1', { content: '' }),
-    ).rejects.toBeInstanceOf(NotFoundException);
+    await expect(service.create('research-1', 'section-2', { content: '' })).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 });

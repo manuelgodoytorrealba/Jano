@@ -14,6 +14,9 @@ describe('EntityReadService.list filters', () => {
 
   const prisma = {
     $transaction: jest.fn(),
+    entityTypeDefinition: {
+      findMany: jest.fn(),
+    },
     entity: {
       count: jest.fn(),
       findFirst: jest.fn(),
@@ -80,6 +83,7 @@ describe('EntityReadService.list filters', () => {
     prisma.entity.findUnique.mockReset();
     prisma.entity.delete.mockReset();
     prisma.$transaction.mockReset();
+    prisma.entityTypeDefinition.findMany.mockReset();
     prisma.source.deleteMany.mockReset();
     prisma.sourceRef.findMany.mockReset();
     prisma.sourceRef.count.mockReset();
@@ -104,6 +108,20 @@ describe('EntityReadService.list filters', () => {
     prisma.entity.findFirst.mockResolvedValue(null);
     prisma.entity.findMany.mockResolvedValue([]);
     prisma.entity.findUnique.mockResolvedValue(null);
+    prisma.entityTypeDefinition.findMany.mockResolvedValue(
+      [
+        'ARTWORK',
+        'ARTIST',
+        'ARTICLE',
+        'CONCEPT',
+        'MOVEMENT',
+        'PERIOD',
+        'TEXT',
+        'PLACE',
+        'EVENT',
+        'ORGANIZATION',
+      ].map((key) => ({ key, singularName: key })),
+    );
     prisma.entity.delete.mockResolvedValue({ id: 'entity-id' });
     prisma.$transaction.mockImplementation(
       async (callback: (tx: typeof prisma) => Promise<unknown> | unknown) => callback(prisma),
@@ -822,17 +840,37 @@ describe('EntityReadService.list filters', () => {
     ]);
   });
 
-  it('loads home sections from published entities only', async () => {
+  it('loads one Home card for every active type, even without a published entity', async () => {
+    prisma.entityTypeDefinition.findMany.mockResolvedValue([
+      {
+        id: 'type-meme',
+        key: 'MEME',
+        singularName: 'Meme',
+        pluralName: 'Memes',
+        description: 'Formato cultural reproducible.',
+        icon: 'M',
+        colorToken: 'violet',
+        baseKind: 'ABSTRACTION',
+        systemType: false,
+      },
+    ]);
+
     await catalogService.home();
 
+    expect(prisma.entityTypeDefinition.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { status: 'ACTIVE' } }),
+    );
     expect(prisma.entity.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          type: 'ARTWORK',
+          type: 'MEME',
           status: 'PUBLISHED',
         },
       }),
     );
+    await expect(catalogService.home()).resolves.toEqual([
+      expect.objectContaining({ type: expect.objectContaining({ key: 'MEME' }), entity: null }),
+    ]);
   });
 
   it('loads public entity detail by slug from published entities only', async () => {

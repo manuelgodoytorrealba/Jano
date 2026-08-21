@@ -18,7 +18,7 @@ import {
   AdminLocale,
 } from '../../../core/api/admin-entities.api';
 import { AdminEntityFormDraft } from './admin-entity-content.presenter';
-import { AdminEntityDetailsEditorComponent } from './admin-entity-details-editor.component';
+import { EntityTypeDefinition } from '../../../core/api/entity-types.api';
 import { AdminCitationsEditorComponent } from './admin-citations-editor.component';
 import { AdminEntityAttributesEditorComponent } from './admin-entity-attributes-editor.component';
 import {
@@ -51,7 +51,6 @@ export type AdminEntityGlobalDataDraft = {
     FormsModule,
     AdminEntityTranslationEditorComponent,
     AdminEntityTaxonomyEditorComponent,
-    AdminEntityDetailsEditorComponent,
     AdminCitationsEditorComponent,
     AdminEntityAttributesEditorComponent,
   ],
@@ -86,6 +85,7 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
   @Input() tags: AdminEntityTagRecord[] = [];
   @Input() classifications: AdminEntityClassificationRecord[] = [];
   @Input() aliases: AdminEntityAliasRecord[] = [];
+  @Input() entityTypes: EntityTypeDefinition[] = [];
 
   @Output() draftChange = new EventEmitter<AdminEntityGlobalDataDraft>();
   @Output() translationSaved = new EventEmitter<AdminEntityResponse>();
@@ -102,18 +102,6 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
     'ORGANIZATION',
   ];
 
-  readonly types: AdminEntityPayload['type'][] = [
-    'ARTWORK',
-    'ARTIST',
-    'ARTICLE',
-    'CONCEPT',
-    'MOVEMENT',
-    'PERIOD',
-    'TEXT',
-    'PLACE',
-    'EVENT',
-    'ORGANIZATION',
-  ];
   readonly statuses: NonNullable<AdminEntityPayload['status']>[] = [
     'DRAFT',
     'IN_REVIEW',
@@ -124,6 +112,8 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
     'INTERMEDIATE',
     'ADVANCED',
   ];
+
+  activeWorkspace: 'document' | 'piece' = 'document';
 
   private slugTouched = false;
 
@@ -152,6 +142,24 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
 
   onFormChange(): void {
     this.emitDraft();
+  }
+
+  selectWorkspace(workspace: 'document' | 'piece'): void {
+    this.activeWorkspace = workspace;
+  }
+
+  discoverabilitySummary(): string {
+    const parts = [
+      this.classifications.length
+        ? `${this.classifications.length} ${this.classifications.length === 1 ? 'clasificación' : 'clasificaciones'}`
+        : '',
+      this.tags.length ? `${this.tags.length} tag${this.tags.length === 1 ? '' : 's'}` : '',
+      this.aliases.length
+        ? `${this.aliases.length} ${this.aliases.length === 1 ? 'alias' : 'aliases'}`
+        : '',
+    ].filter(Boolean);
+
+    return parts.join(' · ') || 'Sin clasificaciones ni tags';
   }
 
   onStatusChange(status: NonNullable<AdminEntityPayload['status']>): void {
@@ -199,10 +207,6 @@ export class AdminEntityGlobalDataComponent implements OnChanges {
   onDetailsChange(details: AdminEntityDetailsPayload): void {
     this.details = details;
     this.emitDraft();
-  }
-
-  supportsTypedDetails(): boolean {
-    return ['ARTWORK', 'ARTIST', 'CONCEPT', 'PERIOD'].includes(this.form.type);
   }
 
   private emitDraft(): void {

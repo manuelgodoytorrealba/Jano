@@ -1,19 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-const TYPES = [
-  'ARTWORK',
-  'ARTIST',
-  'ARTICLE',
-  'PERIOD',
-  'MOVEMENT',
-  'CONCEPT',
-  'PLACE',
-  'TEXT',
-  'EVENT',
-  'ORGANIZATION',
-] as const;
-export type SearchEntityType = (typeof TYPES)[number];
+export type SearchEntityType = string;
 
 const KINDS = ['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'] as const;
 export type SearchKnowledgeEntityKind = (typeof KINDS)[number];
@@ -34,7 +22,7 @@ export class SearchQuery {
 
   @IsOptional()
   @Transform(({ value }) => (Array.isArray(value) ? value : value ? [value] : undefined))
-  @IsIn(TYPES, { each: true })
+  @IsString({ each: true })
   type?: SearchEntityType[];
 
   @IsOptional()

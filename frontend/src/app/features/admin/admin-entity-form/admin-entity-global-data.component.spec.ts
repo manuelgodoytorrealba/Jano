@@ -10,6 +10,15 @@ import { AdminEntityFormFacade } from './admin-entity-form.facade';
 import { AdminEntityGlobalDataComponent } from './admin-entity-global-data.component';
 
 describe('AdminEntityGlobalDataComponent', () => {
+  it('summarizes discovery metadata without exposing its editor', () => {
+    const component = new AdminEntityGlobalDataComponent();
+    component.classifications = [{}, {}];
+    component.tags = [{}, {}, {}];
+    component.aliases = [{} as never];
+
+    expect(component.discoverabilitySummary()).toBe('2 clasificaciones · 3 tags · 1 alias');
+  });
+
   it('replaces a provisional slug while preserving immutable draft inputs', () => {
     TestBed.configureTestingModule({
       imports: [AdminEntityGlobalDataComponent],

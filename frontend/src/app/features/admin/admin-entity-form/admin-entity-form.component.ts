@@ -8,6 +8,7 @@ import {
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
   AdminAdditionalMediaItem,
   AdminEntityAliasRecord,
@@ -84,55 +85,7 @@ import {
   AdminEntityGlobalDataDraft,
 } from './admin-entity-global-data.component';
 import { AdminEntityRouteShell } from './admin-entity-route-shell';
-
-const DRAFT_TYPES: Array<{
-  type: AdminEntityPayload['type'];
-  label: string;
-  description: string;
-}> = [
-  {
-    type: 'ARTWORK',
-    label: 'Obra',
-    description: 'Una obra y su contexto material, histórico y visual.',
-  },
-  {
-    type: 'ARTIST',
-    label: 'Artista',
-    description: 'Una trayectoria, práctica y red de influencias.',
-  },
-  {
-    type: 'ARTICLE',
-    label: 'Artículo',
-    description: 'Una pieza editorial que interpreta y conecta conocimiento.',
-  },
-  {
-    type: 'CONCEPT',
-    label: 'Concepto',
-    description: 'Una idea crítica presente en obras, épocas y discursos.',
-  },
-  {
-    type: 'MOVEMENT',
-    label: 'Movimiento',
-    description: 'Una corriente artística y las conexiones que la definen.',
-  },
-  {
-    type: 'PERIOD',
-    label: 'Periodo',
-    description: 'Un marco temporal para organizar la biblioteca.',
-  },
-  { type: 'PLACE', label: 'Lugar', description: 'Un lugar cultural, geográfico o institucional.' },
-  { type: 'TEXT', label: 'Texto', description: 'Un documento, manifiesto o referencia escrita.' },
-  {
-    type: 'EVENT',
-    label: 'Evento',
-    description: 'Un acontecimiento que sitúa y conecta la cultura.',
-  },
-  {
-    type: 'ORGANIZATION',
-    label: 'Organización',
-    description: 'Una institución, colectivo o agente cultural.',
-  },
-];
+import { EntityTypeDefinition, EntityTypesApi } from '../../../core/api/entity-types.api';
 
 @Component({
   standalone: true,
@@ -147,6 +100,7 @@ const DRAFT_TYPES: Array<{
     AdminEntityPreviewComponent,
     AdminEntityMediaLibraryComponent,
     FormsModule,
+    RouterLink,
   ],
   templateUrl: './admin-entity-form.component.html',
   styleUrls: ['./admin-entity-form.component.scss'],
@@ -159,13 +113,50 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
   readonly facade = inject(AdminEntityFormFacade);
   readonly shell = inject(AdminEntityRouteShell);
 
-  readonly draftTypes = DRAFT_TYPES.map((option) => ({
-    ...getEntityTypeConfig(option.type),
-    ...option,
-  }));
+  private readonly entityTypesApi = inject(EntityTypesApi);
+  draftTypes: Array<{
+    type: string;
+    label: string;
+    description: string;
+    icon: string;
+    color: string;
+  }> = [];
+  entityTypeDefinitions: EntityTypeDefinition[] = [];
 
   newEntityTitle = '';
   newEntitySlug = '';
+  creatingType = false;
+  savingType = false;
+  typeError = '';
+  newType = {
+    singularName: '',
+    pluralName: '',
+    description: '',
+    key: '',
+    icon: '',
+    colorToken: 'slate',
+    baseKind: 'WORK',
+    status: 'ACTIVE' as const,
+  };
+  readonly typeKinds = [
+    ['PERSON', 'Persona o agente'],
+    ['WORK', 'Obra u objeto cultural'],
+    ['ABSTRACTION', 'Concepto, técnica o idea'],
+    ['PLACE', 'Lugar'],
+    ['EVENT', 'Evento'],
+    ['ORGANIZATION', 'Organización'],
+  ] as const;
+  readonly typeColors = [
+    ['slate', 'Neutro'],
+    ['blue', 'Azul'],
+    ['coral', 'Coral'],
+    ['orange', 'Naranja'],
+    ['green', 'Verde'],
+    ['violet', 'Violeta'],
+    ['gold', 'Oro'],
+    ['teal', 'Turquesa'],
+    ['rose', 'Rosa'],
+  ] as const;
 
   activeMediaLibraryView: MediaLibraryViewId = 'library';
 
@@ -241,6 +232,20 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
   ngOnInit() {
     this.shell.initialize();
 
+    this.entityTypesApi.list().subscribe({
+      next: (types) => {
+        this.entityTypeDefinitions = types;
+        this.draftTypes = this.sortTypes(types.filter((type) => type.status === 'ACTIVE')).map(
+          (type) => this.draftType(type),
+        );
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.typeError = 'No se pudieron cargar los tipos de entidad.';
+        this.cdr.markForCheck();
+      },
+    });
+
     if (!this.shell.isEdit || !this.shell.entityId) {
       this.initialEntityHydrated = true;
       return;
@@ -294,6 +299,48 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
       });
   }
 
+  createType(): void {
+    const singularName = this.newType.singularName.trim();
+    const key = (this.newType.key || this.slugify(singularName)).replace(/-/g, '_').toUpperCase();
+    if (!singularName || !this.newType.pluralName.trim() || !key || this.savingType) return;
+    this.savingType = true;
+    this.typeError = '';
+    this.entityTypesApi
+      .create({
+        ...this.newType,
+        singularName,
+        pluralName: this.newType.pluralName.trim(),
+        key,
+        icon: this.newType.icon.trim() || singularName[0].toUpperCase(),
+      })
+      .subscribe({
+        next: (type) => {
+          this.entityTypeDefinitions = [...this.entityTypeDefinitions, type];
+          this.draftTypes = this.sortTypes(this.entityTypeDefinitions).map((item) =>
+            this.draftType(item),
+          );
+          this.newType = {
+            singularName: '',
+            pluralName: '',
+            description: '',
+            key: '',
+            icon: '',
+            colorToken: 'slate',
+            baseKind: 'WORK',
+            status: 'ACTIVE',
+          };
+          this.savingType = false;
+          this.creatingType = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          this.savingType = false;
+          this.typeError = error?.error?.message ?? 'No se pudo crear el tipo.';
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
   scrollToSection(sectionId: DashboardSectionId) {
     this.shell.selectSection(sectionId);
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -302,6 +349,55 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
 
   get entityTypeLabel(): string {
     return this.draftTypes.find((item) => item.type === this.form.type)?.label ?? this.form.type;
+  }
+
+  private draftType(type: EntityTypeDefinition) {
+    const visual = getEntityTypeConfig(type.key);
+    return {
+      type: type.key,
+      label: type.singularName,
+      description: type.description || '',
+      icon: type.icon || visual.icon,
+      color: this.colorValue(type.colorToken, visual.color),
+    };
+  }
+
+  private sortTypes(types: EntityTypeDefinition[]) {
+    const systemOrder = [
+      'ARTWORK',
+      'ARTIST',
+      'ARTICLE',
+      'CONCEPT',
+      'MOVEMENT',
+      'PERIOD',
+      'PLACE',
+      'TEXT',
+      'EVENT',
+      'ORGANIZATION',
+    ];
+    return [...types].sort((left, right) => {
+      const leftRank = left.systemType ? systemOrder.indexOf(left.key) : systemOrder.length;
+      const rightRank = right.systemType ? systemOrder.indexOf(right.key) : systemOrder.length;
+      return leftRank - rightRank || left.singularName.localeCompare(right.singularName, 'es');
+    });
+  }
+
+  private colorValue(token: string, fallback: string) {
+    return (
+      (
+        {
+          slate: '#8d939f',
+          blue: '#62b5ef',
+          coral: '#ec8e77',
+          orange: '#d98449',
+          green: '#58c78d',
+          violet: '#a57be4',
+          gold: '#d8ab43',
+          teal: '#54c2ce',
+          rose: '#d585b8',
+        } as Record<string, string>
+      )[token] ?? fallback
+    );
   }
 
   slugify(value: string): string {
@@ -484,7 +580,7 @@ export class AdminEntityFormComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   supportsTypedDetails(): boolean {
-    return ['ARTWORK', 'ARTIST', 'CONCEPT', 'PERIOD'].includes(this.form.type);
+    return false;
   }
 
   typedDetailsSummary(): string {

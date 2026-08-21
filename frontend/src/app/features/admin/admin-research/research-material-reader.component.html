@@ -199,6 +199,7 @@
             }
             @if (excerptComposerOpen) {
               <app-research-excerpt-capture
+                [class.is-fullscreen]="fullscreen"
                 [researchId]="researchId"
                 [materialVersionId]="material.materialVersionId"
                 [sourceTitle]="material.title"

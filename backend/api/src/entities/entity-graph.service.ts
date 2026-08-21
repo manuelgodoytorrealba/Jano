@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EntityStatus, EntityType } from '@prisma/client';
+import { EntityStatus } from '@prisma/client';
 import { resolvedMediaUrl, type ResolvedMediaPayload } from '../media/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -55,23 +55,6 @@ type GraphEdgePayload = {
 @Injectable()
 export class EntityGraphService {
   constructor(private readonly prisma: PrismaService) {}
-
-  private workspaceEntityTypeLabel(type: EntityType, locale?: string): string {
-    const labels: Record<EntityType, [string, string]> = {
-      ARTWORK: ['Obra', 'Artwork'],
-      ARTIST: ['Artista', 'Artist'],
-      ARTICLE: ['Artículo', 'Article'],
-      CONCEPT: ['Concepto', 'Concept'],
-      MOVEMENT: ['Movimiento', 'Movement'],
-      PERIOD: ['Periodo', 'Period'],
-      TEXT: ['Texto', 'Text'],
-      PLACE: ['Lugar', 'Place'],
-      EVENT: ['Evento', 'Event'],
-      ORGANIZATION: ['Organización', 'Organization'],
-    };
-
-    return labels[type][locale?.toLowerCase().startsWith('en') ? 1 : 0];
-  }
 
   private graphMediaInclude(locale?: string) {
     return {
@@ -260,7 +243,12 @@ export class EntityGraphService {
           },
         })
       : [];
-    const entityTypes = Object.values(EntityType);
+    const typeDefinitions = await this.prisma.entityTypeDefinition.findMany({
+      select: { key: true, singularName: true },
+      orderBy: [{ systemType: 'desc' }, { singularName: 'asc' }],
+    });
+    const typeLabels = new Map(typeDefinitions.map((type) => [type.key, type.singularName]));
+    const entityTypes = typeDefinitions.map((type) => type.key);
     const nodes: GraphNodePayload[] = [
       {
         id: 'workspace-center-jano',
@@ -277,13 +265,13 @@ export class EntityGraphService {
       },
       ...entityTypes.map((type) => ({
         id: `workspace-type-${type}`,
-        label: this.workspaceEntityTypeLabel(type, locale),
+        label: typeLabels.get(type) ?? type,
         type,
         kind: null,
         slug: `workspace-type-${type.toLowerCase()}`,
         image: null,
         metadata: {
-          summary: `Tipo editorial ${this.workspaceEntityTypeLabel(type, locale)} en JANO.`,
+          summary: `Tipo editorial ${typeLabels.get(type) ?? type} en JANO.`,
           startYear: null,
           endYear: null,
         },
@@ -314,7 +302,7 @@ export class EntityGraphService {
         label: relationLabel('PART_OF'),
         directed: true,
         weight: 0.7,
-        justification: `${entity.title} pertenece al tipo editorial ${this.workspaceEntityTypeLabel(entity.type, locale)}.`,
+        justification: `${entity.title} pertenece al tipo editorial ${typeLabels.get(entity.type) ?? entity.type}.`,
       });
     }
 

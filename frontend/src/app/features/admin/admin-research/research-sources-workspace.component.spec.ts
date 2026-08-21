@@ -104,4 +104,18 @@ describe('ResearchSourcesWorkspaceComponent', () => {
     expect(component.isCited('excerpt', 'excerpt-2')).toBe(true);
     expect(component.isCited('evidence', 'evidence-2')).toBe(false);
   });
+
+  it('removes one citation without touching its source', () => {
+    const api = { removeCitation: vi.fn().mockReturnValue(of({})) };
+    TestBed.configureTestingModule({
+      imports: [ResearchSourcesWorkspaceComponent],
+      providers: [{ provide: ResearchApi, useValue: api }],
+    });
+    const component = TestBed.createComponent(ResearchSourcesWorkspaceComponent).componentInstance;
+    component.researchId = 'research-1';
+
+    component.removeCitation('citation-1');
+
+    expect(api.removeCitation).toHaveBeenCalledWith('research-1', 'citation-1');
+  });
 });
