@@ -8,6 +8,7 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
 async function main() {
+  const dryRun = process.argv.includes('--dry-run');
   let created = 0;
   let skipped = 0;
   let linkedExisting = 0;
@@ -23,27 +24,16 @@ async function main() {
         (link) =>
           link.media.canonicalUrl === item.canonicalUrl && link.media.provider === item.provider,
       );
-      if (
-        pilotLink &&
-        (pilotLink.media.displayUrl !== item.displayUrl ||
-          pilotLink.media.width !== item.width ||
-          pilotLink.media.height !== item.height)
-      ) {
-        await prisma.media.update({
-          where: { id: pilotLink.media.id },
-          data: {
-            displayUrl: item.displayUrl,
-            sourcePageUrl: item.sourcePageUrl,
-            width: item.width,
-            height: item.height,
-          },
-        });
-      }
       skipped += 1;
       continue;
     }
 
     const existing = await prisma.media.findFirst({ where: { canonicalUrl: item.canonicalUrl } });
+    if (dryRun) {
+      if (existing) linkedExisting += 1;
+      else created += 1;
+      continue;
+    }
     const media =
       existing ??
       (await prisma.media.create({
@@ -79,7 +69,7 @@ async function main() {
 
   console.log(
     JSON.stringify(
-      { entries: foundationalV1VisualPilot.length, created, linkedExisting, skipped },
+      { dryRun, entries: foundationalV1VisualPilot.length, created, linkedExisting, skipped },
       null,
       2,
     ),

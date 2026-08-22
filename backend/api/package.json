@@ -37,6 +37,7 @@
     "foundational:editorial-pilot": "node -r ts-node/register scripts/import-foundational-editorial-pilot.ts",
     "foundational:visual-validate": "node -r ts-node/register scripts/foundational-visual-validate.ts",
     "foundational:visual-pilot": "node -r ts-node/register scripts/import-foundational-visual-pilot.ts",
+    "foundational:visual-pilot:dry-run": "node -r ts-node/register scripts/import-foundational-visual-pilot.ts --dry-run",
     "knowledge:graph-health": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/knowledge-graph-health.ts",
     "foundational:idempotency": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/foundational-idempotency.ts",
     "db:reset:development": "node -r ts-node/register scripts/reset-development.ts",
