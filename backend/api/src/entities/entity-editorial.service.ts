@@ -297,6 +297,8 @@ export class EntityEditorialService {
         });
         if (dto.details) await this.upsertBaseDetails(tx, id, entity.type, dto.details);
         await this.syncContentRelations(tx, id, updated.content);
+      } else {
+        await this.syncContentRelations(tx, id, null);
       }
     });
 
@@ -439,7 +441,13 @@ export class EntityEditorialService {
     entityId: string,
     content: string | null,
   ) {
-    const slugs = this.extractEntityLinks(content);
+    const translations = await tx.entityTranslation.findMany({
+      where: { entityId },
+      select: { essay: true },
+    });
+    const slugs = [content, ...translations.map((translation) => translation.essay)].flatMap(
+      (value) => this.extractEntityLinks(value),
+    );
     const targets = slugs.length
       ? await tx.entity.findMany({
           where: { slug: { in: slugs }, id: { not: entityId } },

@@ -1073,6 +1073,77 @@ describe('EntityReadService.list filters', () => {
     });
   });
 
+  it('keeps published manual relations in the graph for Spanish and English', async () => {
+    prisma.entity.findFirst.mockResolvedValue({
+      id: 'entity-1',
+      slug: 'juventud',
+      title: 'Juventud',
+      type: 'CONCEPT',
+      kind: 'ABSTRACTION',
+      summary: null,
+      startYear: null,
+      endYear: null,
+      mediaLinks: [],
+      translations: [{ locale: 'en', title: 'Youth', summary: null }],
+    });
+    prisma.relation.findMany.mockResolvedValue([
+      {
+        id: 'relation-1',
+        fromId: 'entity-1',
+        toId: 'entity-2',
+        weight: 1,
+        justification: 'Relación editorial',
+        translations: [{ locale: 'en', justification: 'Editorial relation' }],
+        relationType: {
+          key: 'RELATED_TO',
+          label: 'Relacionado con',
+          inverseLabel: 'Relacionado con',
+          directed: false,
+          translations: [{ locale: 'en', label: 'Related to', inverseLabel: 'Related to' }],
+        },
+      },
+    ]);
+    prisma.entity.findMany.mockResolvedValue([
+      {
+        id: 'entity-2',
+        slug: 'graffiti',
+        title: 'Graffiti',
+        type: 'ARTICLE',
+        kind: 'EDITORIAL',
+        summary: null,
+        startYear: null,
+        endYear: null,
+        mediaLinks: [],
+        translations: [{ locale: 'en', title: 'Graffiti', summary: null }],
+      },
+    ]);
+
+    const [spanish, english] = await Promise.all([
+      graphService.graphBySlug('juventud', 'es'),
+      graphService.graphBySlug('juventud', 'en'),
+    ]);
+
+    expect(spanish.edges).toHaveLength(1);
+    expect(english.edges).toHaveLength(1);
+    expect(prisma.relation.findMany).toHaveBeenCalledTimes(2);
+    expect(prisma.relation.findMany.mock.calls.map(([query]) => query.where)).toEqual([
+      {
+        status: 'PUBLISHED',
+        OR: [
+          { fromId: 'entity-1', to: { status: 'PUBLISHED' } },
+          { toId: 'entity-1', from: { status: 'PUBLISHED' } },
+        ],
+      },
+      {
+        status: 'PUBLISHED',
+        OR: [
+          { fromId: 'entity-1', to: { status: 'PUBLISHED' } },
+          { toId: 'entity-1', from: { status: 'PUBLISHED' } },
+        ],
+      },
+    ]);
+  });
+
   it('loads admin preview by slug without forcing published status', async () => {
     prisma.entity.findFirst.mockResolvedValue({
       id: 'entity-1',

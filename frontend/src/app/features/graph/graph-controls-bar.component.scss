@@ -2,7 +2,6 @@
   /* QUICK MAP
    * Toolbar overall size: tweak --graph-bar-padding-* / --graph-bar-radius
    * Meta chips: tweak --graph-bar-chip-*
-   * Section pill ("RELACIONES"): tweak --graph-bar-label-*
    * Action buttons: tweak --graph-bar-button-*
    * Zoom/reset controls: tweak --graph-bar-control-*
    */
@@ -16,10 +15,6 @@
   --graph-bar-chip-padding-x: 0.3rem;
   --graph-bar-chip-font-size: 0.75rem;
 
-  --graph-bar-label-padding-y: 0.22rem;
-  --graph-bar-label-padding-x: 0.42rem;
-  --graph-bar-label-font-size: 0.75rem;
-
   --graph-bar-button-min-height: 24px;
   --graph-bar-button-padding-y: 0.2rem;
   --graph-bar-button-padding-x: 0.46rem;
@@ -31,6 +26,9 @@
   --graph-bar-control-font-size: 0.75rem;
   --graph-bar-control-text-padding-x: 0.56rem;
   --graph-bar-control-wide-min-width: 70px;
+
+  display: block;
+  container-type: inline-size;
 }
 
 .graph-panel-bar {
@@ -102,10 +100,6 @@
   min-width: 0;
 }
 
-.graph-panel-bar__group--primary {
-  justify-self: start;
-}
-
 .graph-panel-bar__group--meta {
   justify-self: center;
   min-width: 0;
@@ -118,19 +112,6 @@
   min-width: 0;
 }
 
-.explorer-surface-label {
-  padding: var(--graph-bar-label-padding-y) var(--graph-bar-label-padding-x);
-  border-radius: 999px;
-  background: rgba(6, 10, 15, 0.56);
-  color: var(--color-text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: var(--graph-bar-label-font-size);
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .graph-panel-caption {
   color: var(--color-text-muted);
   font-size: 0.75rem;
@@ -139,6 +120,7 @@
   text-transform: uppercase;
   white-space: nowrap;
 }
+
 .graph-utility-btn,
 .surface-control {
   border: 0;
@@ -231,6 +213,30 @@
   min-width: var(--graph-bar-control-wide-min-width);
 }
 
+@container (max-width: 1180px) {
+  .graph-panel-bar {
+    grid-template-columns: auto minmax(0, 1fr) !important;
+  }
+
+  .graph-panel-bar__group--meta {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start !important;
+  }
+
+  .graph-panel-bar__group--actions {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end !important;
+    justify-content: flex-end !important;
+  }
+
+  .graph-panel-bar__toggles,
+  .surface-controls {
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 1480px) {
   :host {
     --graph-bar-gap-x: 0.24rem;
@@ -238,8 +244,6 @@
     --graph-bar-padding-x: 0.2rem;
     --graph-bar-chip-padding-x: 0.26rem;
     --graph-bar-chip-font-size: 0.75rem;
-    --graph-bar-label-padding-x: 0.38rem;
-    --graph-bar-label-font-size: 0.75rem;
     --graph-bar-button-padding-x: 0.4rem;
     --graph-bar-button-font-size: 0.75rem;
     --graph-bar-button-min-width: 72px;
@@ -274,8 +278,6 @@
     --graph-bar-gap-x: 0.18rem;
     --graph-bar-chip-padding-x: 0.22rem;
     --graph-bar-chip-font-size: 0.75rem;
-    --graph-bar-label-padding-x: 0.34rem;
-    --graph-bar-label-font-size: 0.75rem;
     --graph-bar-button-padding-x: 0.34rem;
     --graph-bar-button-font-size: 0.75rem;
     --graph-bar-button-min-width: 66px;
@@ -311,7 +313,6 @@
     flex-wrap: wrap;
   }
 
-  .graph-panel-bar__group--primary,
   .graph-panel-bar__group--meta,
   .graph-panel-bar__group--actions {
     justify-content: flex-start;
@@ -334,9 +335,6 @@
     --graph-bar-chip-padding-y: 0.1rem;
     --graph-bar-chip-padding-x: 0.28rem;
     --graph-bar-chip-font-size: 0.7rem;
-    --graph-bar-label-padding-y: 0.18rem;
-    --graph-bar-label-padding-x: 0.38rem;
-    --graph-bar-label-font-size: 0.72rem;
     --graph-bar-button-min-height: 28px;
     --graph-bar-button-padding-y: 0.16rem;
     --graph-bar-button-padding-x: 0.5rem;
@@ -358,10 +356,6 @@
     align-items: center;
     gap: 0.22rem 0.34rem;
     padding: var(--graph-bar-padding-y) var(--graph-bar-padding-x);
-  }
-
-  .graph-panel-bar__group--primary {
-    display: none;
   }
 
   .graph-panel-bar__group--actions {
@@ -410,10 +404,6 @@
 
   .graph-utility-btn--mode {
     max-width: 8.4rem;
-  }
-
-  .explorer-surface-label {
-    letter-spacing: 0.1em;
   }
 }
 

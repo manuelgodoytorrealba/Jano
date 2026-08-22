@@ -133,15 +133,18 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
           this.loadRelations();
           this.loadIncomingRelations();
         },
-        error: () => {
+        error: (error) => {
           this.relationSaving = false;
-          this.errorMessage = 'No se pudo crear la relación.';
+          this.errorMessage = error?.error?.message ?? 'No se pudo crear la relación.';
           this.emitState();
         },
       });
   }
 
-  saveRelation(relation: AdminEntityRelationRecord): void {
+  saveRelation(
+    relation: AdminEntityRelationRecord,
+    rollbackStatus?: AdminEntityRelationRecord['status'],
+  ): void {
     if (!this.isRelationDirty(relation)) return;
     this.errorMessage = '';
     this.successMessage = '';
@@ -158,16 +161,18 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
           this.successMessage = 'Relación guardada.';
           this.cdr.markForCheck();
         },
-        error: () => {
-          this.errorMessage = 'No se pudo actualizar la relación.';
+        error: (error) => {
+          if (rollbackStatus !== undefined) relation.status = rollbackStatus;
+          this.errorMessage = error?.error?.message ?? 'No se pudo actualizar la relación.';
           this.emitState();
         },
       });
   }
 
   publishRelation(relation: AdminEntityRelationRecord): void {
+    const previousStatus = relation.status;
     relation.status = 'PUBLISHED';
-    this.saveRelation(relation);
+    this.saveRelation(relation, previousStatus);
   }
 
   isRelationDirty(relation: AdminEntityRelationRecord): boolean {

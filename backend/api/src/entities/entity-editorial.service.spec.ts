@@ -45,7 +45,10 @@ describe('EntityEditorialService', () => {
         }),
         findMany: jest.fn().mockResolvedValue([{ id: 'entity-2' }]),
       },
-      entityTranslation: { upsert: jest.fn().mockResolvedValue({}) },
+      entityTranslation: {
+        upsert: jest.fn().mockResolvedValue({}),
+        findMany: jest.fn().mockResolvedValue([{ essay: 'Relacionada con [[moma]].' }]),
+      },
       relation: {
         findMany: jest.fn().mockResolvedValue([]),
         create: jest.fn().mockResolvedValue({}),
@@ -84,5 +87,47 @@ describe('EntityEditorialService', () => {
       },
     });
     expect(readService.adminGetById).toHaveBeenCalledWith('entity-1');
+  });
+
+  it('creates mentions from an English translation without changing the Spanish base entity', async () => {
+    const tx = {
+      entity: {
+        findUnique: jest.fn().mockResolvedValue({ id: 'entity-1', type: 'ARTICLE' }),
+        findMany: jest.fn().mockResolvedValue([{ id: 'entity-2' }]),
+        update: jest.fn(),
+      },
+      entityTranslation: {
+        upsert: jest.fn().mockResolvedValue({}),
+        findMany: jest.fn().mockResolvedValue([{ essay: 'Related to [[moma]].' }]),
+      },
+      relation: {
+        findMany: jest.fn().mockResolvedValue([]),
+        create: jest.fn().mockResolvedValue({}),
+        delete: jest.fn(),
+      },
+      relationType: { findUniqueOrThrow: jest.fn().mockResolvedValue({ id: 'mentions-type' }) },
+    };
+    const prisma = {
+      $transaction: jest.fn(async (callback: (client: typeof tx) => Promise<unknown>) =>
+        callback(tx),
+      ),
+    };
+    const readService = { adminGetById: jest.fn().mockResolvedValue({ id: 'entity-1' }) };
+    const service = new EntityEditorialService(prisma as never, readService as never);
+
+    await service.upsertTranslation('entity-1', 'en', {
+      title: 'Article',
+      essay: 'Related to [[moma]].',
+    });
+
+    expect(tx.entity.update).not.toHaveBeenCalled();
+    expect(tx.relation.create).toHaveBeenCalledWith({
+      data: {
+        fromId: 'entity-1',
+        toId: 'entity-2',
+        relationTypeId: 'mentions-type',
+        status: 'PUBLISHED',
+      },
+    });
   });
 });

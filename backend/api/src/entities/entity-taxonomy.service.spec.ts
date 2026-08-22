@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { EntityStatus } from '@prisma/client';
 import { EntityTaxonomyService } from './entity-taxonomy.service';
 
 describe('EntityTaxonomyService relations', () => {
@@ -12,14 +13,13 @@ describe('EntityTaxonomyService relations', () => {
   function createService() {
     const prisma = {
       entity: {
-        findUnique: jest
-          .fn()
-          .mockResolvedValueOnce({ id: 'entity-1' })
-          .mockResolvedValueOnce({ id: 'entity-2' }),
+        findUnique: jest.fn().mockResolvedValue({ id: 'entity-1', status: EntityStatus.PUBLISHED }),
       },
       relationType: { findUnique: jest.fn().mockResolvedValue({ id: 'related-type' }) },
       relation: {
         create: jest.fn().mockResolvedValue({ id: relation.id }),
+        findFirst: jest.fn(),
+        update: jest.fn(),
         findUniqueOrThrow: jest.fn().mockResolvedValue(relation),
       },
       relationTranslation: { upsert: jest.fn().mockResolvedValue({}) },
@@ -64,5 +64,43 @@ describe('EntityTaxonomyService relations', () => {
     ).rejects.toBeInstanceOf(BadRequestException);
 
     expect(prisma.relation.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects publishing a relation when its target is not public', async () => {
+    const { prisma, service } = createService();
+    prisma.entity.findUnique
+      .mockResolvedValueOnce({ id: 'entity-1', status: EntityStatus.PUBLISHED })
+      .mockResolvedValueOnce({ id: 'entity-2', status: EntityStatus.DRAFT });
+
+    await expect(
+      service.createRelation('entity-1', {
+        toId: 'entity-2',
+        relationTypeId: 'related-type',
+        status: 'PUBLISHED',
+      }),
+    ).rejects.toThrow(
+      'Solo se puede publicar una relación cuando ambas entidades están publicadas.',
+    );
+
+    expect(prisma.relation.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects publishing an existing relation when either endpoint is not public', async () => {
+    const { prisma, service } = createService();
+    prisma.relation.findFirst.mockResolvedValue({
+      id: relation.id,
+      status: 'DRAFT',
+      relationType: { id: 'related-type' },
+      from: { status: EntityStatus.PUBLISHED },
+      to: { status: EntityStatus.IN_REVIEW },
+    });
+
+    await expect(
+      service.updateRelation('entity-1', relation.id, { status: 'PUBLISHED' }),
+    ).rejects.toThrow(
+      'Solo se puede publicar una relación cuando ambas entidades están publicadas.',
+    );
+
+    expect(prisma.relation.update).not.toHaveBeenCalled();
   });
 });

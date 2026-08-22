@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { EntityStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateEntityAliasDto, type EntityAliasKindValue } from './dto/create-entity-alias.dto';
 import { CreateEntityClassificationDto } from './dto/create-entity-classification.dto';
@@ -95,20 +96,21 @@ export class EntityTaxonomyService {
   async createRelation(entityId: string, dto: RelationMutationDto) {
     const from = await this.prisma.entity.findUnique({
       where: { id: entityId },
-      select: { id: true },
+      select: { id: true, status: true },
     });
     if (!from) throw new NotFoundException('Origin entity not found');
     if (!dto.toId) throw new BadRequestException('Target entity is required');
 
     const to = await this.prisma.entity.findUnique({
       where: { id: dto.toId },
-      select: { id: true },
+      select: { id: true, status: true },
     });
     if (!to) throw new NotFoundException('Target entity not found');
 
     const relationType = await this.findRelationType(dto);
     if (!relationType) throw new BadRequestException('Valid relation type is required');
     this.assertValidYears(dto.validFromYear, dto.validToYear);
+    this.assertPublishableRelation(dto.status ?? 'PUBLISHED', from.status, to.status);
 
     const relation = await this.prisma.relation.create({
       data: {
@@ -130,7 +132,11 @@ export class EntityTaxonomyService {
   async updateRelation(entityId: string, relationId: string, dto: RelationMutationDto) {
     const existing = await this.prisma.relation.findFirst({
       where: { id: relationId, fromId: entityId },
-      include: { relationType: true },
+      include: {
+        relationType: true,
+        from: { select: { status: true } },
+        to: { select: { status: true } },
+      },
     });
     if (!existing) throw new NotFoundException('Relation not found');
 
@@ -140,6 +146,11 @@ export class EntityTaxonomyService {
     this.assertValidYears(
       dto.validFromYear !== undefined ? dto.validFromYear : existing.validFromYear,
       dto.validToYear !== undefined ? dto.validToYear : existing.validToYear,
+    );
+    this.assertPublishableRelation(
+      dto.status ?? existing.status,
+      existing.from.status,
+      existing.to.status,
     );
     await this.prisma.relation.update({
       where: { id: relationId },
@@ -248,6 +259,21 @@ export class EntityTaxonomyService {
       validFromYear > validToYear
     ) {
       throw new BadRequestException('validFromYear must not be after validToYear');
+    }
+  }
+
+  private assertPublishableRelation(
+    status: string,
+    fromStatus: EntityStatus,
+    toStatus: EntityStatus,
+  ) {
+    if (
+      status === 'PUBLISHED' &&
+      (fromStatus !== EntityStatus.PUBLISHED || toStatus !== EntityStatus.PUBLISHED)
+    ) {
+      throw new BadRequestException(
+        'Solo se puede publicar una relación cuando ambas entidades están publicadas.',
+      );
     }
   }
 
