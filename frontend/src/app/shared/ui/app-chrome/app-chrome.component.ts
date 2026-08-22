@@ -16,6 +16,7 @@ import {
   RouterLink,
 } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { AppAppearanceService } from '../../../core/app-appearance.service';
 import { AppChromeRailService, ContextualRailAction } from './app-chrome-rail.service';
 import { I18nService } from '../../../core/i18n/i18n.service';
 import { filter, fromEvent } from 'rxjs';
@@ -51,6 +52,7 @@ export class AppChromeComponent {
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);
   readonly i18n = inject(I18nService);
+  readonly appearance = inject(AppAppearanceService);
   private readonly currentUrl = signal(this.normalizeUrl(this.router.url));
   private readonly pendingUrl = signal<string | null>(null);
   readonly compactHeaderEnabled = signal(this.readCompactHeaderEnabled());
@@ -176,7 +178,8 @@ export class AppChromeComponent {
   }
 
   isDetailRoute(): boolean {
-    return this.activeUrl().startsWith('/entity/');
+    const url = this.activeUrl();
+    return url.startsWith('/entity/') || /^\/research\/[^/]+$/.test(url);
   }
 
   isAdminRoute(): boolean {
@@ -259,6 +262,28 @@ export class AppChromeComponent {
     this.auth.logout();
   }
 
+  toggleTheme(): void {
+    this.appearance.setThemePreference(
+      this.appearance.resolvedTheme() === 'dark' ? 'light' : 'dark',
+    );
+  }
+
+  toggleLocale(): void {
+    this.i18n.setLocale(this.i18n.locale() === 'es' ? 'en' : 'es');
+  }
+
+  themeToggleLabel(): string {
+    return this.i18n.t(
+      this.appearance.resolvedTheme() === 'dark' ? 'button.switchToLight' : 'button.switchToDark',
+    );
+  }
+
+  localeToggleLabel(): string {
+    return this.i18n.t(
+      this.i18n.locale() === 'es' ? 'button.switchToEnglish' : 'button.switchToSpanish',
+    );
+  }
+
   private syncHeaderState(): void {
     if (this.isDetailRoute()) {
       this.minimizeDetailHeader();
@@ -299,7 +324,7 @@ export class AppChromeComponent {
 
     const items: UtilityItem[] = [];
 
-    if (!state || state.kind !== 'detail') {
+    if (!state) {
       return [];
     }
 
@@ -370,7 +395,7 @@ export class AppChromeComponent {
   isUtilityActive(item: UtilityItem): boolean {
     const contextual = this.rail.contextualRail();
     if (item.kind === 'action' && contextual?.kind === 'detail') {
-      return item.action === 'save' ? contextual.isSaved : false;
+      return item.action === 'save' ? (contextual.isSaved ?? false) : false;
     }
 
     const url = this.activeUrl();

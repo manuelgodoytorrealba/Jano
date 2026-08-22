@@ -3,13 +3,13 @@ import { Injectable, signal } from '@angular/core';
 export type ContextualRailAction = 'save' | 'share' | 'focus';
 
 export type ContextualRailState = {
-  kind: 'detail';
-  isSaved: boolean;
-  saveLoading: boolean;
-  canSave: boolean;
-  onSave: () => void;
+  kind: 'detail' | 'publication';
   onShare: () => void;
   onFocus: () => void;
+  isSaved?: boolean;
+  saveLoading?: boolean;
+  canSave?: boolean;
+  onSave?: () => void;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -31,7 +31,7 @@ export class AppChromeRailService {
     }
 
     if (action === 'save') {
-      state.onSave();
+      state.onSave?.();
       return;
     }
 

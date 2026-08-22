@@ -1,6 +1,7 @@
 export type SeedEntityType =
   | 'ARTWORK'
   | 'ARTIST'
+  | 'PERSON'
   | 'CONCEPT'
   | 'MOVEMENT'
   | 'PERIOD'

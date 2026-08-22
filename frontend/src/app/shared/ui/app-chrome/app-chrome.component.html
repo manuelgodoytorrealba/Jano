@@ -158,7 +158,7 @@
   [style.--active-index]="activeUtilityIndex()"
 >
   <span class="app-chrome__utility-indicator" aria-hidden="true"></span>
-  @if (isDetailRoute() && rail.contextualRail()?.kind === 'detail') {
+  @if (isDetailRoute() && rail.contextualRail()) {
     <button
       type="button"
       class="app-chrome__utility-btn"
@@ -326,6 +326,43 @@
         <circle cx="12" cy="12" r="2.05" fill="url(#detailFocusGlass)" />
         <circle cx="12" cy="12" r="2.05" fill="url(#detailFocusGlow)" />
       </svg>
+    </button>
+
+    <button
+      type="button"
+      class="app-chrome__utility-btn"
+      data-action="appearance"
+      [attr.aria-label]="themeToggleLabel()"
+      [title]="themeToggleLabel()"
+      (click)="toggleTheme()"
+    >
+      <svg
+        class="app-chrome__utility-icon app-chrome__detail-icon"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="4" fill="currentColor" />
+        <path
+          d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-width="1.6"
+        />
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      class="app-chrome__utility-btn"
+      data-action="locale"
+      [attr.aria-label]="localeToggleLabel()"
+      [title]="localeToggleLabel()"
+      (click)="toggleLocale()"
+    >
+      <span class="app-chrome__detail-locale" aria-hidden="true">{{
+        i18n.locale().toUpperCase()
+      }}</span>
     </button>
   } @else {
     @for (item of currentUtilityItems(); track item.label) {

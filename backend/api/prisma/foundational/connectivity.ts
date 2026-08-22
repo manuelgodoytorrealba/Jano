@@ -32,7 +32,7 @@ const conceptWorks: Record<string, string[]> = {
   fundicion: ['david-de-miguel-angel', 'maman'],
   genero: ['las-dos-fridas', 'olympia'],
   grabado: ['tres-de-mayo-1808', 'gran-ola-de-kanagawa'],
-  hormigon: ['casa-sobre-la-cascada', 'gran-mezquita-de-djenne'],
+  hormigon: ['casa-sobre-la-cascada'],
   iconografia: ['el-nacimiento-de-venus', 'busto-de-nefertiti'],
   identidad: ['las-dos-fridas', 'autorretrato-con-collar-de-espinas'],
   instalacion: ['maman', 'infinity-mirrored-room'],
@@ -76,7 +76,7 @@ const conceptWorks: Record<string, string[]> = {
   'trabajo-industrial': ['vapor-y-nubes-de-steam-boat', 'edificio-bauhaus-dessau'],
   tradicion: ['gran-ola-de-kanagawa', 'busto-de-nefertiti'],
   vida: ['el-nacimiento-de-venus', 'las-dos-fridas'],
-  vidrio: ['catedral-de-chartres', 'gran-mezquita-de-djenne'],
+  vidrio: ['catedral-de-chartres'],
   xilografia: ['gran-ola-de-kanagawa', 'lluvia-repentina-sobre-el-puente-ohashi'],
 };
 
@@ -94,7 +94,6 @@ const placeLinks: Array<[string, string]> = [
   ['praga', 'art-nouveau'],
   ['tenochtitlan', 'arte-mexica'],
   ['teotihuacan', 'arte-mexica'],
-  ['toledo-espanol', 'el-greco'],
   ['zurich', 'dadaismo'],
   ['antwerp', 'peter-paul-rubens'],
   ['barcelona', 'joan-miro'],

@@ -18,6 +18,11 @@ export function validateCatalog() {
     const key = `${relation.from}:${relation.type}:${relation.to}`;
     if (seen.has(key)) errors.push(`Duplicate relation: ${key}`);
     seen.add(key);
+    if (
+      relation.type === 'CREATED_BY' &&
+      (bySlug.get(relation.from)?.type !== 'ARTWORK' || bySlug.get(relation.to)?.type !== 'ARTIST')
+    )
+      errors.push(`Invalid authorship: ${relation.from} → ${relation.to}`);
   }
   for (const slug of foundationalExpectations)
     if (!bySlug.has(slug)) errors.push(`Missing foundational node: ${slug}`);

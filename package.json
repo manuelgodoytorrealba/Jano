@@ -68,6 +68,7 @@
     "seed:foundational": "npm --prefix backend/api run seed:foundational",
     "foundational:validate": "npm --prefix backend/api run foundational:validate",
     "foundational:report": "npm --prefix backend/api run foundational:report",
+    "knowledge:graph-health": "npm --prefix backend/api run knowledge:graph-health",
     "foundational:idempotency": "npm --prefix backend/api run foundational:idempotency",
     "db:reset:development": "npm --prefix backend/api run db:reset:development",
     "prisma:reset": "npm --prefix backend/api run prisma:reset",

@@ -23,7 +23,6 @@ import { EntityRouteArtworkTransitionService } from '../../core/entity-route-art
 import { I18nService } from '../../core/i18n/i18n.service';
 import { MediaLike, resolveMediaPresentation } from '../../shared/media/media.utils';
 import { GraphStageRect } from './graph-interaction';
-import { ForceLayoutScratch } from './graph-layout';
 import { graphViewportTransform } from './graph-viewport';
 import { imageViewportTransform, ImageAssetSize, ImageViewport } from './image-viewport';
 import {
@@ -106,6 +105,11 @@ import {
   createNodeHoverTooltip,
 } from './graph-stage-interactions';
 import { GraphInteractionRuntime } from './graph-interaction-runtime';
+import {
+  initialRelationshipLimit,
+  nextRelationshipLimit,
+  previousRelationshipLimit,
+} from './graph-progressive-disclosure';
 
 type ImageMeta = {
   source?: string | null;
@@ -204,6 +208,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly imageLoading = signal(false);
   readonly entityTypeFilters = signal<Record<string, boolean>>({});
   readonly relationTypeFilters = signal<Record<string, boolean>>({});
+  readonly relationshipLimit = signal(0);
   readonly renderTick = signal(0);
   readonly initialGraphViewportReady = signal(true);
   readonly graphViewportAnimating = signal(false);
@@ -230,7 +235,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private imageViewportReady = false;
   private graphViewportReady = false;
   private persistedState: ExplorerPersistedState | null = null;
-  private layoutScratch: ForceLayoutScratch | null = null;
   private pendingInitialEntityFocus = false;
   private appliedGraphData: GraphResponseDto | null = null;
   private selectedNodeSource: GraphSelectionSource = 'center';
@@ -253,8 +257,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       viewportScale: this.graphViewport().scale,
       overviewMode: this.overviewMode,
       showAllOverviewRelations: this.showAllOverviewRelations,
+      relationshipLimit: this.relationshipLimit(),
     }),
   );
+  readonly layoutGraph = computed<GraphData | null>(() => {
+    const graph = this.graph();
+    const derived = this.graphDerived();
+    return graph ? { ...graph, nodes: derived.filteredNodes, edges: derived.filteredEdges } : null;
+  });
 
   readonly renderedEdges = computed<GraphRenderedEdge[]>(() => {
     this.renderTick();
@@ -386,7 +396,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.imageAsset.set(null);
       this.imageLoading.set(this.hasImageSource());
       this.imageViewport.set(nextState.imageViewport);
-      this.layoutScratch = nextState.layoutScratch;
       this.selectedNodeSource = nextState.selectedNodeSource;
       this.hasUserAdjustedGraphView = nextState.hasUserAdjustedGraphView;
       this.pendingInitialEntityFocus = nextState.pendingInitialEntityFocus;
@@ -481,7 +490,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     });
 
     this.graph.set(loadedState.graph);
-    this.layoutScratch = loadedState.layoutScratch;
+    this.relationshipLimit.set(
+      initialRelationshipLimit(loadedState.graph.edges.length, this.isMobileViewport),
+    );
     this.positions = shouldPreserveRuntime
       ? reuseGraphPositions(loadedState.graph, this.positions, loadedState.positions)
       : loadedState.positions;
@@ -566,7 +577,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private warmupGraphLayout(passes?: number): void {
-    const graph = this.graph();
+    const graph = this.layoutGraph();
     if (!graph) {
       return;
     }
@@ -576,7 +587,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.positions,
       this.velocities,
       (currentGraph) => this.pinGraphCenterNode(currentGraph),
-      this.layoutScratch ?? undefined,
+      undefined,
       passes,
     );
   }
@@ -587,10 +598,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   private advanceAnimationFrame(): boolean {
     const loop = advanceExplorerLoop({
-      graph: this.graph(),
+      graph: this.layoutGraph(),
       positions: this.positions,
       velocities: this.velocities,
-      layoutScratch: this.layoutScratch,
+      layoutScratch: undefined,
       pointerSession: this.interactions.pointerSession,
       ambientMotion: this.ambientMotion,
       selectedNodeId: this.selectedNodeId(),
@@ -876,7 +887,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   centerSelection(): void {
-    const graph = this.graph();
+    const graph = this.layoutGraph();
     if (!graph) return;
     const plan = createCenterSelectionPlan({
       graph,
@@ -1219,6 +1230,63 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     this.relationTypeFilters.set(nextFilters);
     this.persistExplorerState();
+  }
+
+  showMoreRelationships(): void {
+    const total = this.graphDerived().totalRelationshipCount;
+    this.relationshipLimit.update((current) =>
+      nextRelationshipLimit(current, total, this.isMobileViewport),
+    );
+    this.warmupGraphLayout(10);
+    this.graphLayoutActive = true;
+    this.graphLayoutFrames = 0;
+    this.graphSettledFrames = 0;
+    this.startAnimationLoop();
+    this.renderTick.update((value) => value + 1);
+  }
+
+  showFewerRelationships(): void {
+    const total = this.graph()?.edges.length ?? 0;
+    this.relationshipLimit.update((current) =>
+      previousRelationshipLimit(current, total, this.isMobileViewport),
+    );
+    this.warmupGraphLayout(10);
+    this.graphLayoutActive = true;
+    this.graphLayoutFrames = 0;
+    this.graphSettledFrames = 0;
+    this.startAnimationLoop();
+    this.renderTick.update((value) => value + 1);
+  }
+
+  canShowFewerRelationships(): boolean {
+    const total = this.graph()?.edges.length ?? 0;
+    return this.relationshipLimit() > initialRelationshipLimit(total, this.isMobileViewport);
+  }
+
+  relationshipBatchSize(): number {
+    return this.isMobileViewport ? 8 : 12;
+  }
+
+  relationshipProgressLabel(): string {
+    const derived = this.graphDerived();
+    return `${derived.filteredEdges.length} ${this.i18n.t('graph.of')} ${derived.totalRelationshipCount} ${this.i18n.t('graph.relations')}`;
+  }
+
+  relationshipExpansionLabel(): string {
+    return `${this.i18n.t('graph.explore')} ${Math.min(this.graphDerived().hiddenRelationshipCount, this.relationshipBatchSize())} ${this.i18n.t('graph.more')}`;
+  }
+
+  relationshipExpansionLayersLabel(): string {
+    const graph = this.graph();
+    if (!graph) {
+      return '';
+    }
+
+    const layers = graph.entityTypes
+      .filter((type) => this.entityTypeFilters()[type] !== false)
+      .map((type) => this.graphDerived().entityTypeMeta[type]?.label ?? type);
+
+    return `${this.i18n.t(layers.length === 1 ? 'graph.activeLayer' : 'graph.activeLayers')}: ${layers.join(' · ')}`;
   }
 
   setLabelsMode(mode: 'auto' | 'always' | 'hidden'): void {

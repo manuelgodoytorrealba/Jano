@@ -231,6 +231,10 @@
             ></ng-container>
           </header>
 
+          @if (entity.summary) {
+            <div class="entity-prose">{{ entity.summary }}</div>
+          }
+
           @if (entity.content) {
             <div class="entity-section__head">
               <p class="section-label">{{ storySectionLabel(entity) }}</p>
@@ -241,8 +245,6 @@
                 [previewAccess]="richTextPreviewAccess"
               ></app-rich-text>
             </div>
-          } @else if (entity.summary) {
-            <div class="entity-prose">{{ entity.summary }}</div>
           }
         </section>
 

@@ -8,6 +8,18 @@ import {
   expansion3PeopleRelations,
   expansion3Relations,
 } from './expansion3';
+import { closureEntities, closureRelations } from './closure';
+
+const nonArtistPeople = new Set([
+  'aristoteles',
+  'agustin-de-hipona',
+  'homer',
+  'sophocles',
+  'plinio-el-viejo',
+  'vitruvio',
+]);
+const correctPersonType = (entity: FoundationalEntity): FoundationalEntity =>
+  nonArtistPeople.has(entity.slug) ? { ...entity, type: 'PERSON' } : entity;
 
 const e = (
   slug: string,
@@ -37,9 +49,9 @@ const named = (
  */
 export const entities: FoundationalEntity[] = [
   ...named('PERIOD', 'chronology', 'A', [
-    ['paleolitico', 'Paleolítico', 'Palaeolithic', -3000000, -10000],
+    ['paleolitico', 'Paleolítico', 'Palaeolithic', -3000000, -10000, ['Paleolithic', 'Prehistory']],
     ['neolitico', 'Neolítico', 'Neolithic', -10000, -3000],
-    ['antiguedad', 'Antigüedad', 'Antiquity', -3500, 500],
+    ['antiguedad', 'Antigüedad', 'Antiquity', -3500, 500, ['Ancient art', 'Arte antiguo']],
     ['edad-media', 'Edad Media', 'Middle Ages', 500, 1400],
     ['renacimiento', 'Renacimiento', 'Renaissance', 1400, 1600],
     ['edad-moderna', 'Edad Moderna', 'Early Modern period', 1500, 1800],
@@ -236,7 +248,7 @@ export const entities: FoundationalEntity[] = [
     ['exposicion-armory-show', 'Armory Show', 'Armory Show', 1913],
   ]),
   ...named('ARTIST', 'people', 'A', [
-    ['leonardo-da-vinci', 'Leonardo da Vinci', 'Leonardo da Vinci', 1452, 1519],
+    ['leonardo-da-vinci', 'Leonardo da Vinci', 'Leonardo da Vinci', 1452, 1519, ['Leonardo']],
     ['miguel-angel', 'Miguel Ángel', 'Michelangelo', 1475, 1564, ['Michelangelo Buonarroti']],
     ['rafael', 'Rafael', 'Raphael', 1483, 1520, ['Raffaello Sanzio']],
     ['sandro-botticelli', 'Sandro Botticelli', 'Sandro Botticelli', 1445, 1510],
@@ -246,7 +258,7 @@ export const entities: FoundationalEntity[] = [
     ['diego-velazquez', 'Diego Velázquez', 'Diego Velázquez', 1599, 1660],
     ['rembrandt', 'Rembrandt van Rijn', 'Rembrandt', 1606, 1669],
     ['johannes-vermeer', 'Johannes Vermeer', 'Johannes Vermeer', 1632, 1675],
-    ['francisco-de-goya', 'Francisco de Goya', 'Francisco de Goya', 1746, 1828],
+    ['francisco-de-goya', 'Francisco de Goya', 'Francisco de Goya', 1746, 1828, ['Goya']],
     ['jacques-louis-david', 'Jacques-Louis David', 'Jacques-Louis David', 1748, 1825],
     ['eugene-delacroix', 'Eugène Delacroix', 'Eugène Delacroix', 1798, 1863],
     ['gustave-courbet', 'Gustave Courbet', 'Gustave Courbet', 1819, 1877],
@@ -303,7 +315,14 @@ export const entities: FoundationalEntity[] = [
     ['gran-mezquita-de-cordoba', 'Mezquita de Córdoba', 'Great Mosque of Córdoba', 785],
     ['tapiz-de-bayeux', 'Tapiz de Bayeux', 'Bayeux Tapestry', 1066, 1077],
     ['catedral-de-chartres', 'Catedral de Chartres', 'Chartres Cathedral', 1194, 1220],
-    ['el-nacimiento-de-venus', 'El nacimiento de Venus', 'The Birth of Venus', 1484, 1486],
+    [
+      'el-nacimiento-de-venus',
+      'El nacimiento de Venus',
+      'The Birth of Venus',
+      1484,
+      1486,
+      ['Birth of Venus'],
+    ],
     ['ultima-cena', 'La última cena', 'The Last Supper', 1495, 1498],
     ['mona-lisa', 'La Gioconda', 'Mona Lisa', 1503, 1519, ['Mona Lisa']],
     ['david-de-miguel-angel', 'David', 'David', 1501, 1504],
@@ -413,10 +432,11 @@ export const entities: FoundationalEntity[] = [
     ['antemio-de-tralles', 'Antemio de Tralles', 'Anthemius of Tralles', 474, 558],
     ['isidoro-de-mileto', 'Isidoro de Mileto', 'Isidore of Miletus', 442, 537],
   ]),
-  ...extraEntities,
-  ...expansion2Entities,
-  ...expansion3Entities,
-  ...expansion3People,
+  ...extraEntities.map(correctPersonType),
+  ...expansion2Entities.map(correctPersonType),
+  ...expansion3Entities.map(correctPersonType),
+  ...expansion3People.map(correctPersonType),
+  ...closureEntities,
 ];
 
 const r = (from: string, to: string, type: string): FoundationalRelation => ({ from, to, type });
@@ -436,6 +456,7 @@ const declaredRelations: FoundationalRelation[] = uniqueRelations([
   ...expansion2Relations,
   ...expansion3Relations,
   ...expansion3PeopleRelations,
+  ...closureRelations,
   ...connectivityRelations,
   ...Object.entries({
     'arte-rupestre': 'paleolitico',
@@ -730,16 +751,10 @@ const semanticTaxonomyRelations = entities
   .filter(
     (entity) =>
       entity.type === 'CONCEPT' &&
-      entity.slug !== 'representacion' &&
+      techniqueConcepts.has(entity.slug) &&
       (degree.get(entity.slug) ?? 0) < 3,
   )
-  .map((entity) =>
-    r(
-      entity.slug,
-      techniqueConcepts.has(entity.slug) ? 'materialidad' : 'representacion',
-      'PART_OF',
-    ),
-  );
+  .map((entity) => r(entity.slug, 'materialidad', 'PART_OF'));
 const placeRelations = entities
   .filter((entity) => entity.type === 'PLACE' && (degree.get(entity.slug) ?? 0) < 3)
   .map((entity) => r(entity.slug, 'ciudad', 'ASSOCIATED_WITH'));
@@ -759,7 +774,6 @@ const organizationPlaceRelations: FoundationalRelation[] = [
   r('instituto-warburg', 'londres', 'LOCATED_IN'),
   r('escuela-de-atenas-institucion', 'atenas', 'LOCATED_IN'),
   r('black-mountain-college', 'nueva-york', 'LOCATED_IN'),
-  r('instituto-de-arte-chicago', 'nueva-york', 'LOCATED_IN'),
   r('museo-nacional-de-arte-mexico', 'ciudad-de-mexico', 'LOCATED_IN'),
 ];
 
@@ -936,10 +950,7 @@ const workMaterialTechniqueRelations: FoundationalRelation[] = [
     'gran-mezquita-de-cordoba',
     'catedral-de-chartres',
     'gran-mezquita-de-djenne',
-  ].flatMap((work) => [
-    r(work, 'arquitectura', 'ABOUT_CONCEPT'),
-    r(work, 'marmol', 'USES_MATERIAL'),
-  ]),
+  ].map((work) => r(work, 'arquitectura', 'ABOUT_CONCEPT')),
   ...['casa-sobre-la-cascada', 'edificio-bauhaus-dessau'].flatMap((work) => [
     r(work, 'arquitectura', 'ABOUT_CONCEPT'),
     r(work, 'hormigon', 'USES_MATERIAL'),

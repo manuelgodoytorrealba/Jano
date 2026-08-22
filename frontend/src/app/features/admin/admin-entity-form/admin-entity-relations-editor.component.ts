@@ -155,7 +155,7 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
           this.relations = this.relations.map((item) => (item.id === updated.id ? updated : item));
           this.relationSnapshots.set(updated.id, this.relationFingerprint(updated));
           this.incomingRelations = this.incomingRelations.map((item) =>
-            item.id === updated.id ? updated : item,
+            item.id === updated.id ? { ...item, ...updated, from: item.from } : item,
           );
           this.emitState();
           this.successMessage = 'Relación guardada.';
@@ -243,6 +243,9 @@ export class AdminEntityRelationsEditorComponent implements OnInit {
     this.adminApi.listIncomingRelations(this.entityId).subscribe({
       next: (relations) => {
         this.incomingRelations = relations;
+        relations.forEach((relation) =>
+          this.relationSnapshots.set(relation.id, this.relationFingerprint(relation)),
+        );
         this.incomingRelationsLoading = false;
         this.emitState();
       },

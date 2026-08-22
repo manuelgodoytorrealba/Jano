@@ -254,7 +254,7 @@ const rows: Array<[string, string, string, string, string, number]> = [
     'la corriente del golfo',
     'La corriente del Golfo',
     'The Gulf Stream',
-    'homer',
+    'winslow-homer',
     'realismo',
     1899,
   ],
@@ -303,6 +303,35 @@ const rows: Array<[string, string, string, string, string, number]> = [
 
 export const expansion3People: FoundationalEntity[] = [
   {
+    slug: 'otobong-nkanga',
+    type: 'ARTIST',
+    title: 'Otobong Nkanga',
+    en: 'Otobong Nkanga',
+    block: 'people',
+    tier: 'B',
+    startYear: 1974,
+  },
+  {
+    slug: 'winslow-homer',
+    type: 'ARTIST',
+    title: 'Winslow Homer',
+    en: 'Winslow Homer',
+    block: 'people',
+    tier: 'B',
+    startYear: 1836,
+    endYear: 1910,
+    aliases: ['Winslow Homer'],
+  },
+  {
+    slug: 'doris-salcedo',
+    type: 'ARTIST',
+    title: 'Doris Salcedo',
+    en: 'Doris Salcedo',
+    block: 'people',
+    tier: 'B',
+    startYear: 1958,
+  },
+  {
     slug: 'william-morris',
     type: 'ARTIST',
     title: 'William Morris',
@@ -344,6 +373,12 @@ export const expansion3People: FoundationalEntity[] = [
   },
 ];
 export const expansion3PeopleRelations: FoundationalRelation[] = [
+  { from: 'otobong-nkanga', to: 'arte-africano', type: 'BELONGS_TO_MOVEMENT' },
+  { from: 'otobong-nkanga', to: 'lagos', type: 'LOCATED_IN' },
+  { from: 'winslow-homer', to: 'realismo', type: 'BELONGS_TO_MOVEMENT' },
+  { from: 'winslow-homer', to: 'nueva-york', type: 'LOCATED_IN' },
+  { from: 'doris-salcedo', to: 'arte-conceptual', type: 'BELONGS_TO_MOVEMENT' },
+  { from: 'doris-salcedo', to: 'bogota', type: 'LOCATED_IN' },
   { from: 'william-morris', to: 'arts-and-crafts', type: 'BELONGS_TO_MOVEMENT' },
   { from: 'william-morris', to: 'londres', type: 'LOCATED_IN' },
   { from: 'piet-mondrian', to: 'de-stijl', type: 'BELONGS_TO_MOVEMENT' },

@@ -7,6 +7,10 @@ import {
 } from './graph-labels';
 import { graphNodeTypeKey, GraphData, GraphEdge, GraphNode, GraphTypeMeta } from './graph.models';
 import { buildGraphTypeMeta, contextualGraphTypeMeta, graphEdgeMarkerId } from './graph-render';
+import {
+  isFocalRelationshipGraph,
+  selectProgressiveRelationships,
+} from './graph-progressive-disclosure';
 
 export interface GraphDerivedState {
   filteredNodes: GraphNode[];
@@ -26,6 +30,8 @@ export interface GraphDerivedState {
   relationMarkerDefs: Array<{ id: string; color: string }>;
   isDenseGraph: boolean;
   hasVisibleSelection: boolean;
+  totalRelationshipCount: number;
+  hiddenRelationshipCount: number;
 }
 
 export function buildGraphDerivedState(options: {
@@ -40,6 +46,7 @@ export function buildGraphDerivedState(options: {
   viewportScale: number;
   overviewMode: boolean;
   showAllOverviewRelations: boolean;
+  relationshipLimit: number;
 }): GraphDerivedState {
   const graph = options.graph;
   const nodeMap = new Map(graph?.nodes.map((node) => [node.id, node]) ?? []);
@@ -63,6 +70,8 @@ export function buildGraphDerivedState(options: {
       relationMarkerDefs: [],
       isDenseGraph: false,
       hasVisibleSelection: false,
+      totalRelationshipCount: 0,
+      hiddenRelationshipCount: 0,
     };
   }
 
@@ -77,10 +86,22 @@ export function buildGraphDerivedState(options: {
       baseVisibleNodeIds.has(edge.source) &&
       baseVisibleNodeIds.has(edge.target),
   );
+  const relationshipEdges = isFocalRelationshipGraph(graph, baseFilteredEdges)
+    ? selectProgressiveRelationships({
+        graph,
+        edges: baseFilteredEdges,
+        limit: options.relationshipLimit,
+      })
+    : baseFilteredEdges;
+  const relationshipNodeIds = new Set(
+    relationshipEdges.flatMap((edge) => [edge.source, edge.target]),
+  );
+  relationshipNodeIds.add(graph.centerId);
+  const progressiveNodes = baseFilteredNodes.filter((node) => relationshipNodeIds.has(node.id));
   const overviewVisibleNodeIds = resolveOverviewVisibleNodeIds({
     graph,
-    nodes: baseFilteredNodes,
-    edges: baseFilteredEdges,
+    nodes: progressiveNodes,
+    edges: relationshipEdges,
     selectedNodeId: options.selectedNodeId,
     hoveredNodeId: options.hoveredNodeId,
     viewportScale: options.viewportScale,
@@ -90,7 +111,7 @@ export function buildGraphDerivedState(options: {
   const visibleNodeIds = new Set(filteredNodes.map((node) => node.id));
   const filteredEdges = resolveOverviewVisibleEdges({
     graph,
-    edges: baseFilteredEdges,
+    edges: relationshipEdges,
     visibleNodeIds,
     selectedNodeId: options.selectedNodeId,
     hoveredEdgeId: options.hoveredEdgeId,
@@ -173,6 +194,8 @@ export function buildGraphDerivedState(options: {
     hasVisibleSelection: options.selectedNodeId
       ? visibleNodeIds.has(options.selectedNodeId)
       : false,
+    totalRelationshipCount: baseFilteredEdges.length,
+    hiddenRelationshipCount: Math.max(0, baseFilteredEdges.length - relationshipEdges.length),
   };
 }
 

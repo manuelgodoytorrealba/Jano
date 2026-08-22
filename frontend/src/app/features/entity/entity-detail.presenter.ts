@@ -147,6 +147,18 @@ export function detailFacts(
     ]);
   }
 
+  if (entity?.type === 'CONCEPT' && entity.concept) {
+    return compactFacts([
+      { label: context.t('entity.fact.definition'), value: entity.concept.definition },
+    ]);
+  }
+
+  if (entity?.type === 'PERIOD' && entity.period) {
+    return compactFacts([
+      { label: context.t('entity.fact.definition'), value: entity.period.definition },
+    ]);
+  }
+
   return [];
 }
 
@@ -156,6 +168,8 @@ export function detailFactKicker(entity: PublicEntity | null | undefined, t: Tra
       return t('entities.type.artworkSingular');
     case 'ARTIST':
       return t('entities.type.artistSingular');
+    case 'PERSON':
+      return t('search.kind.people');
     case 'ARTICLE':
       return t('entity.article');
     case 'CONCEPT':

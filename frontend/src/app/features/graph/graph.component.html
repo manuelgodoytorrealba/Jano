@@ -305,6 +305,37 @@
           />
         </div>
 
+        @if (graphDerived().hiddenRelationshipCount > 0 || canShowFewerRelationships()) {
+          <div class="graph-progressive-disclosure">
+            <span>
+              {{ relationshipProgressLabel() }}
+            </span>
+            <div class="graph-progressive-disclosure__actions">
+              @if (graphDerived().hiddenRelationshipCount > 0) {
+                <span class="graph-progressive-disclosure__layer">
+                  {{ relationshipExpansionLayersLabel() }}
+                </span>
+                <button
+                  type="button"
+                  class="graph-progressive-disclosure__button graph-progressive-disclosure__button--primary"
+                  (click)="showMoreRelationships()"
+                >
+                  {{ relationshipExpansionLabel() }}
+                </button>
+              }
+              @if (canShowFewerRelationships()) {
+                <button
+                  type="button"
+                  class="graph-progressive-disclosure__button"
+                  (click)="showFewerRelationships()"
+                >
+                  {{ i18n.t('graph.showLess') }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
         @if (showInspector && inspectorVisible() && !isMobileViewport) {
           <app-graph-inspector-panel
             [isMobileViewport]="false"
@@ -315,6 +346,7 @@
             [centerNode]="graphDerived().centerNode"
             [focusedNodeIsCenter]="inspectorFocusedNodeIsCenter()"
             [contextualEdges]="graphDerived().contextualEdges"
+            [allEdges]="graph()?.edges ?? []"
             [nodeMap]="graphDerived().nodeMap"
             [entityTypes]="graphData.entityTypes"
             [relationTypes]="graphData.relationTypes"
@@ -348,6 +380,7 @@
               [centerNode]="graphDerived().centerNode"
               [focusedNodeIsCenter]="inspectorFocusedNodeIsCenter()"
               [contextualEdges]="graphDerived().contextualEdges"
+              [allEdges]="graph()?.edges ?? []"
               [nodeMap]="graphDerived().nodeMap"
               [entityTypes]="graphData.entityTypes"
               [relationTypes]="graphData.relationTypes"

@@ -28,6 +28,15 @@ const SYSTEM_ENTITY_TYPES = [
     'PERSON',
   ],
   [
+    'PERSON',
+    'Persona',
+    'Personas',
+    'Una figura cultural cuya práctica no se clasifica como artística.',
+    'P',
+    'slate',
+    'PERSON',
+  ],
+  [
     'ARTICLE',
     'Artículo',
     'Artículos',

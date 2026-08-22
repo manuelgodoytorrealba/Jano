@@ -155,7 +155,6 @@ export const extraEntities: FoundationalEntity[] = [
   ...[
     ['alejandria', 'Alejandría', 'Alexandria'],
     ['cordoba', 'Córdoba', 'Córdoba'],
-    ['toledo-espanol', 'Toledo', 'Toledo'],
     ['praga', 'Praga', 'Prague'],
     ['zurich', 'Zúrich', 'Zurich'],
     ['weimar', 'Weimar', 'Weimar'],
@@ -252,8 +251,6 @@ export const artistRelations: FoundationalRelation[] = artistContext.flatMap(
 );
 
 const workContext: Array<[string, string, string]> = [
-  ['mezquita-azul', 'arte-islamico', 'religion'],
-  ['palacio-de-versailles', 'rococo', 'poder'],
   ['canaletto-gran-canal', 'canaletto', 'rococo'],
   ['vapor-y-nubes-de-steam-boat', 'jmw-turner', 'romanticismo'],
   ['la-clase-de-danza', 'edgar-degas', 'impresionismo'],
@@ -263,11 +260,10 @@ const workContext: Array<[string, string, string]> = [
   ['autorretrato-con-collar-de-espinas', 'frida-kahlo', 'muralismo-mexicano'],
   ['el-hijo-del-hombre', 'rene-magritte', 'surrealismo'],
   ['lobster-telephone', 'salvador-dali', 'surrealismo'],
-  ['objeto-para-ser-destruido', 'meret-oppenheim', 'surrealismo'],
+  ['objeto-para-ser-destruido', 'man-ray', 'surrealismo'],
   ['mobile-calder-rojo', 'alexander-calder', 'surrealismo'],
   ['obra-de-arte-en-el-tiempo', 'joseph-kosuth', 'arte-conceptual'],
-  ['cuerpo-como-archivo', 'cindy-sherman', 'fotografia'],
-  ['shibboleth', 'shirin-neshat', 'arte-conceptual'],
+  ['shibboleth', 'doris-salcedo', 'arte-conceptual'],
   ['tropicalia-obra', 'heli-oiticica', 'arte-conceptual'],
   ['abaporu', 'tarsila-do-amaral', 'muralismo-mexicano'],
   ['la-jungla-lam', 'wifredo-lam', 'surrealismo'],
@@ -279,4 +275,11 @@ export const extraRelations: FoundationalRelation[] = artistRelations.concat(
     relation(work, creator, 'CREATED_BY'),
     relation(work, movement, 'BELONGS_TO_MOVEMENT'),
   ]),
+  // These monuments have no reliable individual creator in this seed. Their
+  // historical/cultural context must not be misrepresented as authorship.
+  relation('mezquita-azul', 'arte-islamico', 'BELONGS_TO_MOVEMENT'),
+  relation('mezquita-azul', 'religion', 'ABOUT_CONCEPT'),
+  relation('palacio-de-versailles', 'barroco', 'BELONGS_TO_MOVEMENT'),
+  relation('palacio-de-versailles', 'poder', 'ABOUT_CONCEPT'),
+  relation('cuerpo-como-archivo', 'archivo', 'ABOUT_CONCEPT'),
 );

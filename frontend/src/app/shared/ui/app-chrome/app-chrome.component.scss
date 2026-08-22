@@ -761,6 +761,13 @@
   opacity: 0.9;
 }
 
+.app-chrome__detail-locale {
+  color: rgba(255, 247, 239, 0.92);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+
 :is(
   .app-chrome__utility-icon--profile-glass,
   .app-chrome__utility-icon--space-glass,
@@ -906,11 +913,27 @@
     color: rgba(24, 22, 19, 0.78);
   }
 
-  .app-chrome__nav,
   .app-chrome__utility-btn {
     border-color: rgba(24, 22, 19, 0.12);
     background: rgba(255, 255, 255, 0.4);
     color: var(--color-text);
+  }
+
+  .app-chrome__nav {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .app-chrome__nav-link {
+    color: rgba(28, 27, 24, 0.74);
+  }
+
+  .app-chrome__nav-link:hover,
+  .app-chrome__nav-link.is-active {
+    color: rgba(20, 19, 17, 0.96);
+    border-color: rgba(36, 34, 30, 0.16);
+    background: rgba(48, 45, 39, 0.1);
   }
 
   .app-chrome__nav-indicator,
@@ -1000,6 +1023,16 @@
 
   .app-chrome__utility-btn[data-action='save'] {
     color: rgba(28, 27, 24, 0.92);
+  }
+
+  .app-chrome__utility-btn[data-action='appearance'] .app-chrome__detail-icon,
+  .app-chrome__detail-locale {
+    color: rgba(20, 21, 20, 0.92);
+    filter: none;
+  }
+
+  .app-chrome__detail-locale {
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.58);
   }
 
   .app-chrome__utility--contextual {

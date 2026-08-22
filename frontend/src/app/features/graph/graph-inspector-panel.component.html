@@ -193,7 +193,7 @@
   <div class="graph-filter-tray">
     <div class="graph-filter-group">
       <div class="filter-group__head">
-        <span class="filter-group__label">{{ i18n.t('graph.types') }}</span>
+        <span class="filter-group__label">{{ i18n.t('graph.layers') }}</span>
         <button type="button" class="filter-action" (click)="setAllEntityTypes.emit(true)">
           {{ i18n.t('graph.allPlural') }}
         </button>
@@ -207,10 +207,11 @@
           class="filter-chip"
           [class.is-active]="entityTypeFilters[type] !== false"
           [style.--chip-color]="entityTypeMeta[type]?.color"
+          [attr.aria-pressed]="entityTypeFilters[type] !== false"
           (click)="toggleEntityType.emit(type)"
         >
           <span class="filter-chip__dot"></span>
-          {{ entityTypeMeta[type]?.label ?? type }}
+          {{ entityTypeMeta[type]?.label ?? type }} · {{ layerCount(type) }}
         </button>
       }
     </div>
@@ -231,6 +232,7 @@
           class="filter-chip filter-chip--relation"
           [class.is-active]="relationTypeFilters[type] !== false"
           [style.--chip-color]="relationTypeMeta[type]?.color"
+          [attr.aria-pressed]="relationTypeFilters[type] !== false"
           (click)="toggleRelationType.emit(type)"
         >
           <span class="filter-chip__line"></span>

@@ -46,6 +46,7 @@ export class GraphInspectorPanelComponent {
   @Input() centerNode: GraphNode | null = null;
   @Input() focusedNodeIsCenter = true;
   @Input() contextualEdges: GraphEdge[] = [];
+  @Input() allEdges: GraphEdge[] = [];
   @Input() nodeMap: Map<string, GraphNode> = new Map();
   @Input() entityTypes: string[] = [];
   @Input() relationTypes: string[] = [];
@@ -67,6 +68,17 @@ export class GraphInspectorPanelComponent {
 
   activeRelationTypesCount(): number {
     return this.relationTypes.filter((type) => this.relationTypeFilters[type] !== false).length;
+  }
+
+  layerCount(type: string): number {
+    if (!this.centerNode) {
+      return 0;
+    }
+
+    return this.allEdges.filter((edge) => {
+      const other = this.resolveOtherNode(edge, this.centerNode!.id);
+      return other ? graphNodeTypeKey(other) === type : false;
+    }).length;
   }
 
   mobileTitle(): string {

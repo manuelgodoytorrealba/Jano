@@ -288,6 +288,37 @@
                 </div>
                 <div class="relation-note">EN: {{ rel.justificationEn || '—' }}</div>
               }
+              <details class="relation-advanced">
+                <summary>Editar justificaciones</summary>
+                <div class="relation-advanced__body relation-main">
+                  <label class="field full"
+                    ><span>Justificación ES</span
+                    ><textarea
+                      rows="2"
+                      [(ngModel)]="rel.justificationEs"
+                      [name]="'incomingRelationJustificationEs-' + rel.id"
+                    ></textarea>
+                  </label>
+                  <label class="field full"
+                    ><span>Justification EN</span
+                    ><textarea
+                      rows="2"
+                      [(ngModel)]="rel.justificationEn"
+                      [name]="'incomingRelationJustificationEn-' + rel.id"
+                    ></textarea>
+                  </label>
+                  <div class="source-card__actions">
+                    <button
+                      type="button"
+                      class="btn"
+                      [disabled]="!isRelationDirty(rel)"
+                      (click)="saveRelation(rel)"
+                    >
+                      {{ isRelationDirty(rel) ? 'Guardar justificaciones' : 'Sin cambios' }}
+                    </button>
+                  </div>
+                </div>
+              </details>
             </div>
           </article>
         }

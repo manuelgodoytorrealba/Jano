@@ -325,40 +325,33 @@ const people: Array<[string, string, string, string, string, number?, number?]> 
   ['shigeru-ban', 'Shigeru Ban', 'Shigeru Ban', 'arquitectura-moderna', 'tokio', 1957],
 ];
 
-const works: Array<[string, string, string, string, string, number]> = [
-  ['puerta-de-ishtar', 'Puerta de Ishtar', 'Ishtar Gate', 'arte-mesopotamico', 'aristoteles', -575],
+const works: Array<[string, string, string, string, string | null, number]> = [
+  ['puerta-de-ishtar', 'Puerta de Ishtar', 'Ishtar Gate', 'arte-mesopotamico', null, -575],
   [
     'codigo-de-hammurabi',
     'Código de Hammurabi',
     'Code of Hammurabi',
     'arte-mesopotamico',
-    'aristoteles',
+    null,
     -1750,
   ],
-  ['discobolo', 'Discóbolo', 'Discobolus', 'arte-griego', 'aristoteles', -450],
-  [
-    'teatro-de-epidauro',
-    'Teatro de Epidauro',
-    'Theatre of Epidaurus',
-    'arte-griego',
-    'sophocles',
-    -340,
-  ],
+  ['discobolo', 'Discóbolo', 'Discobolus', 'arte-griego', null, -450],
+  ['teatro-de-epidauro', 'Teatro de Epidauro', 'Theatre of Epidaurus', 'arte-griego', null, -340],
   [
     'augusto-de-prima-porta',
     'Augusto de Prima Porta',
     'Augustus of Prima Porta',
     'arte-romano',
-    'vitruvio',
+    null,
     20,
   ],
-  ['columna-de-trajano', 'Columna de Trajano', 'Trajan’s Column', 'arte-romano', 'vitruvio', 113],
+  ['columna-de-trajano', 'Columna de Trajano', 'Trajan’s Column', 'arte-romano', null, 113],
   [
     'icono-de-cristo-pantocrator',
     'Cristo Pantocrátor',
     'Christ Pantocrator',
     'arte-bizantino',
-    'dionisio',
+    null,
     1100,
   ],
   [
@@ -366,7 +359,7 @@ const works: Array<[string, string, string, string, string, number]> = [
     'Gran Mezquita de Samarra',
     'Great Mosque of Samarra',
     'arte-islamico',
-    'aristoteles',
+    null,
     851,
   ],
   ['campanile-de-giotto', 'Campanile de Giotto', 'Giotto’s Campanile', 'gotico', 'giotto', 1334],
@@ -711,7 +704,7 @@ const works: Array<[string, string, string, string, string, number]> = [
     'monir-shahroudy-farmanfarmaian',
     1970,
   ],
-  ['otobong-nkanga', 'Double Plot', 'Double Plot', 'arte-conceptual', 'geta-bratescu', 1978],
+  ['double-plot', 'Double Plot', 'Double Plot', 'arte-conceptual', 'otobong-nkanga', 2018],
   [
     'faces-and-phases',
     'Faces and Phases',
@@ -895,11 +888,11 @@ const rawExpansion2Relations: FoundationalRelation[] = [
     rel(person, place, 'LOCATED_IN'),
   ]),
   ...works.flatMap(([work, , , movement, creator]) => [
-    rel(work, creator === 'walid-beshtي' ? 'walid-beshty' : creator, 'CREATED_BY'),
+    ...(creator
+      ? [rel(work, creator === 'walid-beshtي' ? 'walid-beshty' : creator, 'CREATED_BY')]
+      : []),
     rel(work, movement, 'BELONGS_TO_MOVEMENT'),
   ]),
-  ...concepts.map(([slug]) => rel(slug, 'representacion', 'PART_OF')),
-  ...concepts2.map(([slug]) => rel(slug, 'representacion', 'PART_OF')),
 ];
 
 export const expansion2Entities = rawExpansion2Entities.map((entity) => ({

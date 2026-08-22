@@ -103,4 +103,32 @@ describe('EntityTaxonomyService relations', () => {
 
     expect(prisma.relation.update).not.toHaveBeenCalled();
   });
+
+  it('allows either endpoint to add a justification to an existing relation', async () => {
+    const { prisma, service } = createService();
+    prisma.relation.findFirst.mockResolvedValue({
+      id: relation.id,
+      status: 'PUBLISHED',
+      relationType: { id: 'related-type' },
+      from: { status: EntityStatus.PUBLISHED },
+      to: { status: EntityStatus.PUBLISHED },
+    });
+
+    await service.updateRelation('entity-2', relation.id, {
+      justificationEs: 'Conexión editorial añadida después de publicar.',
+    });
+
+    expect(prisma.relation.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: relation.id, OR: [{ fromId: 'entity-2' }, { toId: 'entity-2' }] },
+      }),
+    );
+    expect(prisma.relation.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          justification: 'Conexión editorial añadida después de publicar.',
+        }),
+      }),
+    );
+  });
 });

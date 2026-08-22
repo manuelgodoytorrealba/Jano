@@ -131,7 +131,7 @@ export class EntityTaxonomyService {
 
   async updateRelation(entityId: string, relationId: string, dto: RelationMutationDto) {
     const existing = await this.prisma.relation.findFirst({
-      where: { id: relationId, fromId: entityId },
+      where: { id: relationId, OR: [{ fromId: entityId }, { toId: entityId }] },
       include: {
         relationType: true,
         from: { select: { status: true } },

@@ -115,6 +115,68 @@
   contain: layout paint style;
 }
 
+.graph-progressive-disclosure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: rgba(231, 237, 245, 0.68);
+  font-size: 0.72rem;
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.7rem;
+  }
+
+  &__layer {
+    color: rgba(231, 237, 245, 0.88);
+  }
+
+  button {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    padding: 0.34rem 0.66rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(241, 246, 255, 0.9);
+    font: inherit;
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease,
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  button:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  button:focus-visible {
+    outline: 2px solid #c9dcff;
+    outline-offset: 2px;
+  }
+
+  &__button--primary {
+    border-color: rgba(201, 220, 255, 0.42);
+    background: rgba(125, 163, 224, 0.14);
+    color: #d9e7ff;
+
+    &:hover {
+      border-color: rgba(201, 220, 255, 0.72);
+      background: rgba(125, 163, 224, 0.24);
+    }
+  }
+}
+
 .explorer-image-pane {
   display: flex;
   padding: 8px;

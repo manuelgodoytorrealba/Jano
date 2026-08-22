@@ -38,11 +38,42 @@ const SOURCES = [
   },
 ] as const;
 
+const RETIRED_AUTHORSHIPS: ReadonlyArray<readonly [string, string]> = [
+  ['mezquita-azul', 'arte-islamico'],
+  ['palacio-de-versailles', 'rococo'],
+  ['puerta-de-ishtar', 'aristoteles'],
+  ['codigo-de-hammurabi', 'aristoteles'],
+  ['discobolo', 'aristoteles'],
+  ['teatro-de-epidauro', 'sophocles'],
+  ['augusto-de-prima-porta', 'vitruvio'],
+  ['columna-de-trajano', 'vitruvio'],
+  ['icono-de-cristo-pantocrator', 'dionisio'],
+  ['mezquita-de-samarra', 'aristoteles'],
+  ['objeto-para-ser-destruido', 'meret-oppenheim'],
+  ['cuerpo-como-archivo', 'cindy-sherman'],
+  ['shibboleth', 'shirin-neshat'],
+  ['la-corriente-del-golfo', 'homer'],
+  ['otobong-nkanga', 'geta-bratescu'],
+];
+const RETIRED_RELATIONS: ReadonlyArray<readonly [string, string, string]> = [
+  ['instituto-de-arte-chicago', 'nueva-york', 'LOCATED_IN'],
+  ['partenon', 'marmol', 'USES_MATERIAL'],
+  ['panteon-de-roma', 'marmol', 'USES_MATERIAL'],
+  ['hagia-sophia', 'marmol', 'USES_MATERIAL'],
+  ['gran-mezquita-de-cordoba', 'marmol', 'USES_MATERIAL'],
+  ['catedral-de-chartres', 'marmol', 'USES_MATERIAL'],
+  ['gran-mezquita-de-djenne', 'marmol', 'USES_MATERIAL'],
+  ['gran-mezquita-de-djenne', 'hormigon', 'ABOUT_CONCEPT'],
+  ['gran-mezquita-de-djenne', 'vidrio', 'ABOUT_CONCEPT'],
+];
+const RETIRED_ENTITY_SLUGS = ['toledo-espanol'] as const;
+
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
 const kindByType: Record<(typeof entities)[number]['type'], KnowledgeEntityKind> = {
   ARTIST: 'PERSON',
+  PERSON: 'PERSON',
   ARTWORK: 'WORK',
   CONCEPT: 'ABSTRACTION',
   MOVEMENT: 'ABSTRACTION',
@@ -55,6 +86,15 @@ const kindByType: Record<(typeof entities)[number]['type'], KnowledgeEntityKind>
 async function main() {
   validateCatalog();
   const ids = new Map<string, string>();
+  for (const slug of RETIRED_ENTITY_SLUGS) {
+    const retired = await prisma.entity.findUnique({ where: { slug }, select: { id: true } });
+    if (retired) {
+      await prisma.relation.deleteMany({
+        where: { OR: [{ fromId: retired.id }, { toId: retired.id }] },
+      });
+      await prisma.entity.delete({ where: { id: retired.id } });
+    }
+  }
   for (const item of entities) {
     const entity = await prisma.entity.upsert({
       where: { slug: item.slug },
@@ -81,7 +121,8 @@ async function main() {
     ids.set(item.slug, entity.id);
     await prisma.entityTranslation.upsert({
       where: { entityId_locale: { entityId: entity.id, locale: 'es' } },
-      update: { title: item.title, shortDescription: item.summary ?? null, essay: null },
+      // Foundational reseeds own identity, never human editorial work.
+      update: { title: item.title },
       create: {
         entityId: entity.id,
         locale: 'es',
@@ -91,7 +132,7 @@ async function main() {
     });
     await prisma.entityTranslation.upsert({
       where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
-      update: { title: item.en, shortDescription: null, essay: null },
+      update: { title: item.en },
       create: { entityId: entity.id, locale: 'en', title: item.en },
     });
     for (const value of item.aliases ?? []) {
@@ -121,6 +162,29 @@ async function main() {
       type.id,
     ]),
   );
+  const createdByTypeId = types.get('CREATED_BY');
+  const partOfTypeId = types.get('PART_OF');
+  const representationId = ids.get('representacion');
+  if (partOfTypeId && representationId)
+    await prisma.relation.deleteMany({
+      where: { toId: representationId, relationTypeId: partOfTypeId },
+    });
+  if (createdByTypeId)
+    for (const [from, to] of RETIRED_AUTHORSHIPS) {
+      const fromId = ids.get(from);
+      const toId = ids.get(to);
+      if (fromId && toId)
+        await prisma.relation.deleteMany({
+          where: { fromId, toId, relationTypeId: createdByTypeId },
+        });
+    }
+  for (const [from, to, type] of RETIRED_RELATIONS) {
+    const fromId = ids.get(from);
+    const toId = ids.get(to);
+    const relationTypeId = types.get(type);
+    if (fromId && toId && relationTypeId)
+      await prisma.relation.deleteMany({ where: { fromId, toId, relationTypeId } });
+  }
   const sourceIds = new Map<string, string>();
   for (const source of SOURCES) {
     const existing = await prisma.source.findFirst({
