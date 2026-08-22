@@ -12,13 +12,17 @@ async function main() {
   let created = 0;
   let skipped = 0;
   let linkedExisting = 0;
+  const missing: string[] = [];
 
   for (const item of foundationalV1VisualPilot) {
     const entity = await prisma.entity.findUnique({
       where: { slug: item.slug },
       include: { mediaLinks: { include: { media: true } } },
     });
-    if (!entity) throw new Error(`Visual pilot entity not found: ${item.slug}`);
+    if (!entity) {
+      missing.push(item.slug);
+      continue;
+    }
     if (entity.mediaLinks.length > 0) {
       const pilotLink = entity.mediaLinks.find(
         (link) =>
@@ -69,7 +73,14 @@ async function main() {
 
   console.log(
     JSON.stringify(
-      { dryRun, entries: foundationalV1VisualPilot.length, created, linkedExisting, skipped },
+      {
+        dryRun,
+        entries: foundationalV1VisualPilot.length,
+        created,
+        linkedExisting,
+        skipped,
+        missing,
+      },
       null,
       2,
     ),
