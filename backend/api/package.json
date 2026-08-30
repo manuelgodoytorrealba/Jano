@@ -37,6 +37,8 @@
     "foundational:editorial-inventory": "node -r ts-node/register scripts/foundational-editorial-inventory.ts",
     "foundational:editorial-essay-plan": "node -r ts-node/register scripts/foundational-editorial-essay-plan.ts",
     "foundational:editorial-pilot": "node -r ts-node/register scripts/import-foundational-editorial-pilot.ts",
+    "foundational:editorial-complete": "node -r ts-node/register scripts/complete-foundational-editorial.ts",
+    "foundational:editorial-complete:apply": "node -r ts-node/register scripts/complete-foundational-editorial.ts --apply",
     "foundational:visual-validate": "node dist/scripts/foundational-visual-validate.js",
     "foundational:visual-pilot": "node dist/scripts/import-foundational-visual-pilot.js",
     "foundational:visual-pilot:dry-run": "node dist/scripts/import-foundational-visual-pilot.js --dry-run",

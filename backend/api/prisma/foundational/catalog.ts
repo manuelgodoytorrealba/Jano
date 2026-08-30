@@ -1062,6 +1062,33 @@ const normalizeRelation = (edge: FoundationalRelation): FoundationalRelation | n
   return edge;
 };
 
+const relationJustification = (edge: FoundationalRelation): string => {
+  const from = entityBySlug.get(edge.from);
+  const to = entityBySlug.get(edge.to);
+  const fromTitle = from?.title ?? edge.from;
+  const toTitle = to?.title ?? edge.to;
+  const templates: Record<string, string> = {
+    CREATED_BY: `${fromTitle} se atribuye a ${toTitle} como responsable de su creación.`,
+    BELONGS_TO_MOVEMENT: `${fromTitle} se sitúa historiográficamente en relación con ${toTitle}.`,
+    BELONGS_TO_PERIOD: `${fromTitle} se encuadra cronológicamente en ${toTitle}.`,
+    ABOUT_CONCEPT: `${fromTitle} permite una lectura editorial relevante a través de ${toTitle}.`,
+    LOCATED_IN: `${fromTitle} mantiene una vinculación geográfica o institucional con ${toTitle}.`,
+    RELATED_TO: `${fromTitle} y ${toTitle} comparten un contexto cultural significativo.`,
+    ASSOCIATED_WITH: `${fromTitle} mantiene una asociación histórica o profesional con ${toTitle}.`,
+    MENTIONS: `${fromTitle} menciona de forma explícita a ${toTitle}.`,
+    INSPIRED_BY: `${fromTitle} retoma un precedente identificable en ${toTitle}.`,
+    INFLUENCED_BY: `${fromTitle} se comprende en diálogo con la influencia de ${toTitle}.`,
+    PART_OF: `${fromTitle} forma parte de la estructura histórica o institucional de ${toTitle}.`,
+    DEPICTS: `${fromTitle} representa de forma reconocible a ${toTitle}.`,
+    SIMILAR_TO: `${fromTitle} y ${toTitle} permiten una comparación formal o temática concreta.`,
+    USES_TECHNIQUE: `${fromTitle} emplea ${toTitle} como técnica o procedimiento.`,
+    USES_MATERIAL: `${fromTitle} incorpora ${toTitle} entre sus materiales.`,
+    HAS_SUBJECT: `${fromTitle} trata ${toTitle} como asunto representado.`,
+    CURATED_WITH: `${fromTitle} y ${toTitle} se presentan juntos por una decisión editorial explícita.`,
+  };
+  return templates[edge.type] ?? `${fromTitle} mantiene una relación documentada con ${toTitle}.`;
+};
+
 export const relations: FoundationalRelation[] = uniqueRelations(
   [
     ...declaredRelations,
@@ -1074,7 +1101,11 @@ export const relations: FoundationalRelation[] = uniqueRelations(
     ...movementConceptRelations,
   ]
     .map(normalizeRelation)
-    .filter((edge): edge is FoundationalRelation => Boolean(edge)),
+    .filter((edge): edge is FoundationalRelation => Boolean(edge))
+    .map((edge) => ({
+      ...edge,
+      justification: edge.justification?.trim() || relationJustification(edge),
+    })),
 );
 
 export const foundationalExpectations = [
