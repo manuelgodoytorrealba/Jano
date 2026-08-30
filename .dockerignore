@@ -10,6 +10,7 @@
 **/.angular
 **/coverage
 **/dist
+backend/api/dist.root-owned-*
 **/node_modules
 **/out-tsc
 **/uploads

@@ -25,9 +25,9 @@ describe('I18nService', () => {
 
   function load() {
     service.load().subscribe();
-    http.expectOne('/assets/i18n/es.json').flush({ greeting: 'Hola' });
+    http.expectOne('/assets/i18n/es.json?v=development').flush({ greeting: 'Hola' });
     http
-      .expectOne('/assets/i18n/en.json')
+      .expectOne('/assets/i18n/en.json?v=development')
       .flush({ greeting: 'Hello', englishOnly: 'English only' });
   }
 

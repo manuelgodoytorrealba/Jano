@@ -112,7 +112,7 @@ export function isRenderableRasterMedia(media: MediaLike | null | undefined): bo
     return false;
   }
 
-  if (alt.includes('logo') || alt.includes('identidad visual')) {
+  if (/(^|[^\p{L}\p{N}])logo([^\p{L}\p{N}]|$)/iu.test(alt) || alt.includes('identidad visual')) {
     return false;
   }
 

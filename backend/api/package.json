@@ -11,7 +11,7 @@
     "npm": ">=10.9.4 <11"
   },
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && tsc -p tsconfig.seeds.json",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -26,8 +26,10 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "prisma db seed",
-    "seed:system": "node -r ts-node/register prisma/seed-system.ts",
-    "seed:foundational": "node -r ts-node/register prisma/seed-foundational.ts",
+    "seed:system": "node dist/prisma/seed-system.js",
+    "seed:foundational": "node dist/prisma/seed-foundational.js",
+    "seed:system:ts": "node -r ts-node/register prisma/seed-system.ts",
+    "seed:foundational:ts": "node -r ts-node/register prisma/seed-foundational.ts",
     "foundational:validate": "node -r ts-node/register prisma/foundational/validate-catalog.ts",
     "foundational:report": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/foundational-report.ts",
     "foundational:search-benchmark": "node -r ts-node/register scripts/foundational-search-benchmark.ts",
@@ -35,9 +37,11 @@
     "foundational:editorial-inventory": "node -r ts-node/register scripts/foundational-editorial-inventory.ts",
     "foundational:editorial-essay-plan": "node -r ts-node/register scripts/foundational-editorial-essay-plan.ts",
     "foundational:editorial-pilot": "node -r ts-node/register scripts/import-foundational-editorial-pilot.ts",
-    "foundational:visual-validate": "node -r ts-node/register scripts/foundational-visual-validate.ts",
-    "foundational:visual-pilot": "node -r ts-node/register scripts/import-foundational-visual-pilot.ts",
-    "foundational:visual-pilot:dry-run": "node -r ts-node/register scripts/import-foundational-visual-pilot.ts --dry-run",
+    "foundational:visual-validate": "node dist/scripts/foundational-visual-validate.js",
+    "foundational:visual-pilot": "node dist/scripts/import-foundational-visual-pilot.js",
+    "foundational:visual-pilot:dry-run": "node dist/scripts/import-foundational-visual-pilot.js --dry-run",
+    "foundational:local-visual-pilot": "node dist/scripts/import-foundational-local-visual-pilot.js",
+    "foundational:local-visual-pilot:apply": "node dist/scripts/import-foundational-local-visual-pilot.js --apply",
     "knowledge:graph-health": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/knowledge-graph-health.ts",
     "foundational:idempotency": "node --env-file=.env -r ts-node/register -r tsconfig-paths/register scripts/foundational-idempotency.ts",
     "db:reset:development": "node -r ts-node/register scripts/reset-development.ts",
@@ -67,7 +71,8 @@
     "pg": "^8.19.0",
     "prisma": "^7.4.2",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",

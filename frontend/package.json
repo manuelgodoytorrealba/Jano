@@ -9,7 +9,7 @@
     "ng": "ng",
     "start": "node scripts/dev-server.mjs",
     "start:host": "node scripts/dev-server.mjs host",
-    "build": "npm run validate:i18n && ng build",
+    "build": "node scripts/generate-i18n-release.mjs && npm run validate:i18n && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "typecheck": "ngc -p tsconfig.app.json --noEmit && ngc -p tsconfig.spec.json --noEmit",

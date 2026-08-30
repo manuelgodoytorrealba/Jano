@@ -20,6 +20,8 @@ COPY frontend ./
 CMD ["npm", "run", "start:host"]
 
 FROM dev AS build
+ARG JANO_RELEASE
+ENV JANO_RELEASE=$JANO_RELEASE
 RUN npm run build \
   && test -f dist/jano-web-app/server/server.mjs
 

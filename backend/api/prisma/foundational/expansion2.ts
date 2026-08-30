@@ -325,7 +325,7 @@ const people: Array<[string, string, string, string, string, number?, number?]> 
   ['shigeru-ban', 'Shigeru Ban', 'Shigeru Ban', 'arquitectura-moderna', 'tokio', 1957],
 ];
 
-const works: Array<[string, string, string, string, string | null, number]> = [
+const works: Array<[string, string, string, string | null, string | null, number]> = [
   ['puerta-de-ishtar', 'Puerta de Ishtar', 'Ishtar Gate', 'arte-mesopotamico', null, -575],
   [
     'codigo-de-hammurabi',
@@ -607,7 +607,14 @@ const works: Array<[string, string, string, string, string | null, number]> = [
     1965,
   ],
   ['cartel-de-la-guerra', 'Cartel de la guerra', 'War Poster', 'realismo', 'ben-shahn', 1943],
-  ['fumarolas', 'Fumarolas', 'Fumaroles', 'expresionismo-abstracto', 'philip-guston', 1964],
+  [
+    'early-mail-service-and-construction-of-railroads-mural-study',
+    'Early Mail Service and Construction of Railroads (mural study, Commerce, Georgia Post Office)',
+    'Early Mail Service and Construction of Railroads (mural study, Commerce, Georgia Post Office)',
+    null,
+    'philip-guston',
+    1938,
+  ],
   ['composicion', 'Composición', 'Composition', 'expresionismo-abstracto', 'lee-krasner', 1955],
   [
     'montanas-y-mar',
@@ -656,7 +663,7 @@ const works: Array<[string, string, string, string, string | null, number]> = [
     'martha-rosler',
     1975,
   ],
-  ['el-mar', 'El mar', 'El Mar', 'arte-conceptual', 'guillermo-kuitca', 1990],
+  ['nadie-olvida-nada-1', 'Nadie olvida nada', 'Nadie olvida nada', null, 'guillermo-kuitca', 1982],
   ['fisicromia', 'Fisicromía', 'Physichromie', 'arte-conceptual', 'carlos-cruz-diez', 1965],
   ['los-guerreros', 'Los guerreros', 'The Warriors', 'arte-conceptual', 'lygia-clark', 1960],
   ['divisor', 'Divisor', 'Divisor', 'arte-conceptual', 'lygia-pape', 1968],
@@ -729,7 +736,14 @@ const works: Array<[string, string, string, string, string | null, number]> = [
     'romuald-hazoume',
     2004,
   ],
-  ['cage', 'Cage', 'Cage', 'arte-africano', 'sokari-douglas-camp', 1990],
+  [
+    'otobo-hippo-masquerade',
+    'Otobo (Hippo) masquerade',
+    'Otobo (Hippo) masquerade',
+    null,
+    'sokari-douglas-camp',
+    1995,
+  ],
   ['modern-magic', 'Modern Magic', 'Modern Magic', 'arte-conceptual', 'henrike-naumann', 2017],
   ['hot-spot', 'Hot Spot', 'Hot Spot', 'arte-conceptual', 'mona-hatoum', 2006],
   ['fleshly-sight', 'Fleshly Sight', 'Fleshly Sight', 'arte-indio', 'shahzia-sikander', 2004],
@@ -891,7 +905,7 @@ const rawExpansion2Relations: FoundationalRelation[] = [
     ...(creator
       ? [rel(work, creator === 'walid-beshtي' ? 'walid-beshty' : creator, 'CREATED_BY')]
       : []),
-    rel(work, movement, 'BELONGS_TO_MOVEMENT'),
+    ...(movement ? [rel(work, movement, 'BELONGS_TO_MOVEMENT')] : []),
   ]),
 ];
 

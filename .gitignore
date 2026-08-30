@@ -2,12 +2,15 @@
 .env
 infra/.env.production
 .deploy/
+.worktrees/
+artifacts/
 
 node_modules
 .playwright-cli/
 
 backend/api/.env
 backend/api/dist
+backend/api/dist.root-owned-*
 backend/api/node_modules
 backend/api/uploads
 

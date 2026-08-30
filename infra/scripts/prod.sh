@@ -77,9 +77,14 @@ load_environment() {
   : "${DATABASE_URL:?DATABASE_URL is required}"
   : "${JWT_SECRET:?JWT_SECRET is required}"
   : "${FRONTEND_ORIGIN:?FRONTEND_ORIGIN is required}"
+  APP_PUBLIC_URL="${APP_PUBLIC_URL:-$JANO_PUBLIC_URL}"
+  export APP_PUBLIC_URL
   : "${MEDIA_PUBLIC_BASE_URL:?MEDIA_PUBLIC_BASE_URL is required}"
   : "${NG_ALLOWED_HOSTS:?NG_ALLOWED_HOSTS is required}"
   : "${JANO_PUBLIC_URL:?JANO_PUBLIC_URL is required}"
+  : "${MAIL_PROVIDER:?MAIL_PROVIDER is required}"
+  : "${MAIL_FROM:?MAIL_FROM is required}"
+  : "${RESEND_API_KEY:?RESEND_API_KEY is required}"
 
   JANO_BACKUP_DIR="${JANO_BACKUP_DIR:-/srv/backups/jano}"
   JANO_STATE_DIR="${JANO_STATE_DIR:-/srv/apps/jano/.deploy}"

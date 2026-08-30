@@ -452,6 +452,13 @@ const declaredRelations: FoundationalRelation[] = uniqueRelations([
   r('panteon-de-roma', 'apolodoro-de-damasco', 'CREATED_BY'),
   r('hagia-sophia', 'antemio-de-tralles', 'CREATED_BY'),
   r('hagia-sophia', 'isidoro-de-mileto', 'CREATED_BY'),
+  r(
+    'early-mail-service-and-construction-of-railroads-mural-study',
+    'siglo-xx',
+    'BELONGS_TO_PERIOD',
+  ),
+  r('nadie-olvida-nada-1', 'siglo-xx', 'BELONGS_TO_PERIOD'),
+  r('otobo-hippo-masquerade', 'siglo-xx', 'BELONGS_TO_PERIOD'),
   ...extraRelations,
   ...expansion2Relations,
   ...expansion3Relations,

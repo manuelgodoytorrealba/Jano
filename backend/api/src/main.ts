@@ -8,6 +8,7 @@ import { info, muted, success } from './config/terminal';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const expressInstance = app.getHttpAdapter().getInstance() as express.Express;
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT', 3000);
   const host = configService.get<string>('HOST', '0.0.0.0');
@@ -16,6 +17,15 @@ async function bootstrap() {
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
+
+  expressInstance.disable('x-powered-by');
+  app.use((_req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    next();
+  });
 
   app.enableCors({
     origin: corsOrigins,

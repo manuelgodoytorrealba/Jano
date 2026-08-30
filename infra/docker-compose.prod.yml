@@ -42,9 +42,15 @@ services:
       HOST: 0.0.0.0
       PORT: 3000
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:?FRONTEND_ORIGIN is required}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:?APP_PUBLIC_URL is required}
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
       MEDIA_PUBLIC_BASE_URL: ${MEDIA_PUBLIC_BASE_URL:?MEDIA_PUBLIC_BASE_URL is required}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+
+      MAIL_PROVIDER: ${MAIL_PROVIDER:?MAIL_PROVIDER is required}
+      MAIL_FROM: ${MAIL_FROM:?MAIL_FROM is required}
+      RESEND_API_KEY: ${RESEND_API_KEY:?RESEND_API_KEY is required}
+
     ports:
       - '${BACKEND_BIND:-127.0.0.1}:${BACKEND_PORT:-3000}:3000'
     volumes:
@@ -72,7 +78,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment: *backend-environment
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
     command: ['npm', 'exec', '--', 'prisma', 'migrate', 'deploy']
     restart: 'no'
     logging: *default-logging
@@ -129,6 +137,7 @@ volumes:
   jano_pgdata:
     external: true
     name: ${POSTGRES_VOLUME:?POSTGRES_VOLUME is required}
+
   backend_uploads:
     external: true
     name: ${UPLOADS_VOLUME:?UPLOADS_VOLUME is required}

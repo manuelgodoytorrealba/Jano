@@ -164,6 +164,25 @@ describe('media.resolver', () => {
     expect(resolveEntityMedia(entity, 'detail')?.id).toBe('raster-media');
   });
 
+  it('does not mistake catálogo provenance text for a logo', () => {
+    const catalogImage = createLink({
+      role: 'HERO',
+      isPrimary: true,
+      alt: 'Mirror Ball, catálogo Art Basel',
+    });
+    const logo = createLink({
+      id: 'logo',
+      mediaId: 'logo-media',
+      role: 'CARD',
+      alt: 'Logo del museo',
+    });
+
+    expect(resolveEntityMedia({ type: 'ARTWORK', mediaLinks: [catalogImage] }, 'hero')?.id).toBe(
+      'media-1',
+    );
+    expect(resolveEntityMedia({ type: 'PLACE', mediaLinks: [logo] }, 'card')).toBeNull();
+  });
+
   it('builds canonical admin slot states and warnings from the backend resolver', () => {
     const entity = {
       type: 'ARTWORK',

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, REQUEST, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { catchError, forkJoin, map, of, tap } from 'rxjs';
+import { I18N_RELEASE } from './i18n-release';
 
 export type AppLocale = 'es' | 'en';
 
@@ -76,13 +77,16 @@ export class I18nService {
   }
 
   private loadDictionary(locale: AppLocale) {
-    return this.http
-      .get<TranslationMap>(this.dictionaryUrl(locale))
-      .pipe(catchError(() => of({} as TranslationMap)));
+    return this.http.get<TranslationMap>(this.dictionaryUrl(locale)).pipe(
+      catchError((error: unknown) => {
+        console.error(`[i18n] Failed to load dictionary for ${locale}`, error);
+        return of({} as TranslationMap);
+      }),
+    );
   }
 
   private dictionaryUrl(locale: AppLocale): string {
-    const assetPath = `/assets/i18n/${locale}.json`;
+    const assetPath = `/assets/i18n/${locale}.json?v=${encodeURIComponent(I18N_RELEASE)}`;
     if (!isPlatformServer(this.platformId) || !this.request?.url) return assetPath;
     return new URL(assetPath, this.request.url).toString();
   }

@@ -90,6 +90,15 @@ const allowedHostSet = new Set(allowedHosts);
 
 const app = express();
 app.set('trust proxy', true);
+app.disable('x-powered-by');
+
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  next();
+});
 
 app.get('/healthz', (_req, res) => {
   res.status(200).json({ status: 'ok' });

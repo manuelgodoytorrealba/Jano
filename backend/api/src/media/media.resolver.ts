@@ -567,6 +567,10 @@ function mediaDisplayUrl(media: MediaLike | null | undefined): string | null {
   return displayUrl ?? url ?? null;
 }
 
+function containsStandaloneLogo(value: string): boolean {
+  return /(^|[^\p{L}\p{N}])logo([^\p{L}\p{N}]|$)/iu.test(value);
+}
+
 function isRenderableRasterMedia(media: MediaLike | null | undefined): boolean {
   if (!media) {
     return false;
@@ -580,7 +584,7 @@ function isRenderableRasterMedia(media: MediaLike | null | undefined): boolean {
     return false;
   }
 
-  if (alt.includes('logo') || alt.includes('identidad visual')) {
+  if (containsStandaloneLogo(alt) || alt.includes('identidad visual')) {
     return false;
   }
 
@@ -623,7 +627,9 @@ function compareMediaQuality(a: MediaLike, b: MediaLike, entityType: string | nu
 
     if (
       entityType === 'PLACE' &&
-      (alt.includes('logo') || alt.includes('identidad visual') || url.includes('logo'))
+      (containsStandaloneLogo(alt) ||
+        alt.includes('identidad visual') ||
+        containsStandaloneLogo(url))
     ) {
       score -= 20;
     }

@@ -1,4 +1,9 @@
-import { mediaDisplayUrl, resolveEntityMediaItem, resolveMediaPresentation } from './media.utils';
+import {
+  isRenderableRasterMedia,
+  mediaDisplayUrl,
+  resolveEntityMediaItem,
+  resolveMediaPresentation,
+} from './media.utils';
 import { describe, expect, it } from 'vitest';
 
 describe('media.utils', () => {
@@ -59,6 +64,23 @@ describe('media.utils', () => {
         url: 'https://images.unsplash.com/photo-1554188248-986adbb73be4',
       }),
     ).toBe('https://images.unsplash.com/photo-1554188248-986adbb73be4');
+  });
+
+  it('keeps catálogo-sourced artwork images while rejecting actual logos', () => {
+    expect(
+      isRenderableRasterMedia({
+        url: 'https://example.com/mirror-ball.jpg',
+        mimeType: 'image/jpeg',
+        alt: 'Mirror Ball, catálogo Art Basel',
+      }),
+    ).toBe(true);
+    expect(
+      isRenderableRasterMedia({
+        url: 'https://example.com/logo.jpg',
+        mimeType: 'image/jpeg',
+        alt: 'Logo del museo',
+      }),
+    ).toBe(false);
   });
 
   it('rewrites local upload media to same-origin paths so SSR and browser reuse the frontend origin', () => {
