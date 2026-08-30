@@ -29,7 +29,7 @@ const fallbackByType: Record<string, string> = {
 
 async function main() {
   const entities = await prisma.entity.findMany({
-    where: { status: 'PUBLISHED', mediaLinks: { none: {} } },
+    where: { mediaLinks: { none: {} } },
     select: { id: true, slug: true, title: true, type: true },
     orderBy: { slug: 'asc' },
   });
