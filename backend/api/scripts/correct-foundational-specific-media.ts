@@ -276,6 +276,21 @@ function buildEssay(item: Correction, locale: 'es' | 'en') {
   return `${item.summaryEn}\n\n${technical}\n\nThe identification, chronology, and specific image were checked against ${item.sourceTitle}.`;
 }
 
+function relationJustification(from: string, type: string, to: string) {
+  switch (type) {
+    case 'CREATED_BY':
+      return `${from} se atribuye a ${to} como responsable de su creación.`;
+    case 'BELONGS_TO_MOVEMENT':
+      return `${from} se sitúa historiográficamente en relación con ${to}.`;
+    case 'ABOUT_CONCEPT':
+      return `${from} aborda de forma directa el concepto de ${to}.`;
+    case 'HAS_SUBJECT':
+      return `${from} representa o desarrolla el tema de ${to}.`;
+    default:
+      return `${from} mantiene una relación editorial documentada con ${to}.`;
+  }
+}
+
 async function main() {
   console.log(
     JSON.stringify(
@@ -418,6 +433,21 @@ async function main() {
             },
           });
       }
+      const outgoing = await tx.relation.findMany({
+        where: { fromId: entity.id },
+        include: { to: true, relationType: true },
+      });
+      for (const relation of outgoing)
+        await tx.relation.update({
+          where: { id: relation.id },
+          data: {
+            justification: relationJustification(
+              item.title,
+              relation.relationType.key,
+              relation.to.title,
+            ),
+          },
+        });
     });
   }
   console.log(`Applied ${corrections.length} verified entity and media corrections.`);
