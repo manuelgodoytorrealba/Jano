@@ -13,6 +13,9 @@ import { PrismaService } from '../prisma/prisma.service';
 const execFileAsync = promisify(execFile);
 const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 15_000;
+const MAX_FETCH_RETRIES = 3;
+const HOST_LAST_REQUEST = new Map<string, number>();
+const URL_TEXT_CACHE = new Map<string, string>();
 
 function isPrivateAddress(address: string) {
   if (address === '::1' || address.startsWith('fc') || address.startsWith('fd')) return true;
@@ -89,7 +92,14 @@ export function textFromHtml(value: string) {
   return decodeHtmlEntities(main)
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<(?:header|nav|footer|aside)\b[^>]*>[\s\S]*?<\/(?:header|nav|footer|aside)>/gi, ' ')
+    .replace(
+      /<(?:header|nav|footer|aside|form|dialog)\b[^>]*>[\s\S]*?<\/(?:header|nav|footer|aside|form|dialog)>/gi,
+      ' ',
+    )
+    .replace(
+      /<([a-z0-9]+)\b[^>]*(?:cookie|breadcrumb|related|share|social|subscribe|newsletter|advert|banner)[^>]*>[\s\S]*?<\/\1>/gi,
+      ' ',
+    )
     .replace(/<\/?(?:p|h[1-6]|li|blockquote|figcaption|br)\b[^>]*>/gi, '\n')
     .replace(/<[^>]+>/g, ' ')
     .replace(/[ \t]+/g, ' ')
@@ -185,19 +195,46 @@ export class LibraryMaterialPreparationService {
     const address = await lookup(url.hostname);
     if (isPrivateAddress(address.address)) throw new Error('Private URL is blocked');
 
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      redirect: 'error',
-      headers: { Accept: 'text/html,text/plain;q=0.9' },
-    });
-    if (!response.ok) throw new Error(`URL returned HTTP ${response.status}`);
-    const type = response.headers.get('content-type') ?? '';
-    if (!/^(text\/html|text\/plain)/i.test(type))
-      throw new Error('URL did not return HTML or text');
-    const length = Number(response.headers.get('content-length') ?? 0);
-    if (length > MAX_DOCUMENT_BYTES) throw new Error('URL content exceeds 5 MB');
-    const text = await response.text();
-    if (Buffer.byteLength(text) > MAX_DOCUMENT_BYTES) throw new Error('URL content exceeds 5 MB');
-    return type.toLowerCase().startsWith('text/html') ? textFromHtml(text) : text.trim();
+    const cached = URL_TEXT_CACHE.get(url.toString());
+    if (cached) return cached;
+    for (let attempt = 0; attempt <= MAX_FETCH_RETRIES; attempt += 1) {
+      const waitMs = Math.max(0, 750 - (Date.now() - (HOST_LAST_REQUEST.get(url.hostname) ?? 0)));
+      if (waitMs) await new Promise((resolve) => setTimeout(resolve, waitMs));
+      HOST_LAST_REQUEST.set(url.hostname, Date.now());
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        redirect: 'error',
+        headers: { Accept: 'text/html,text/plain;q=0.9' },
+      });
+      if (response.status === 429 && attempt < MAX_FETCH_RETRIES) {
+        const retryAfter = Number(response.headers.get('retry-after') ?? 0);
+        await new Promise((resolve) =>
+          setTimeout(
+            resolve,
+            Math.min(30_000, retryAfter > 0 ? retryAfter * 1000 : 500 * 2 ** attempt),
+          ),
+        );
+        continue;
+      }
+      if (!response.ok)
+        throw new Error(
+          `URL returned HTTP ${response.status}${response.status === 403 ? ' (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)' : ''}`,
+        );
+      const type = response.headers.get('content-type') ?? '';
+      if (!/^(text\/html|text\/plain)/i.test(type))
+        throw new Error(
+          'URL did not return HTML or text; PUBLIC_DOCUMENT requires Library material acquisition',
+        );
+      const length = Number(response.headers.get('content-length') ?? 0);
+      if (length > MAX_DOCUMENT_BYTES) throw new Error('URL content exceeds 5 MB');
+      const text = await response.text();
+      if (Buffer.byteLength(text) > MAX_DOCUMENT_BYTES) throw new Error('URL content exceeds 5 MB');
+      const prepared = type.toLowerCase().startsWith('text/html')
+        ? textFromHtml(text)
+        : text.trim();
+      URL_TEXT_CACHE.set(url.toString(), prepared);
+      return prepared;
+    }
+    throw new Error('URL returned HTTP 429 (RETRYABLE; retry limit reached)');
   }
 }

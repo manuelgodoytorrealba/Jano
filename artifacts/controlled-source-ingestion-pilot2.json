@@ -1,0 +1,1120 @@
+{
+  "mode": "DEVELOPMENT_APPLY",
+  "pilot": "PILOT_2_VALIDATION",
+  "pilot1Review": [
+    {
+      "source": "Marcel Duchamp: Fountain",
+      "entity": "Fuente",
+      "role": "PRIMARY_SUBJECT",
+      "rootCause": "AMBIGUOUS_RELEVANCE"
+    },
+    {
+      "source": "Cubism",
+      "entity": "Cubismo",
+      "role": "PRIMARY_SUBJECT",
+      "rootCause": "OVERLY_GENERAL_EXCERPT"
+    },
+    {
+      "source": "Art & Architecture Thesaurus",
+      "entity": "Muerte",
+      "role": "PRIMARY_SUBJECT",
+      "rootCause": "WEAK_SOURCE"
+    },
+    {
+      "source": "Madrid Destino",
+      "entity": "Madrid",
+      "role": "PRIMARY_SUBJECT",
+      "rootCause": "WEAK_SOURCE"
+    },
+    {
+      "source": "Madrid Destino",
+      "entity": "Madrid",
+      "role": "PRIMARY_SUBJECT",
+      "rootCause": "OVERLY_GENERAL_EXCERPT"
+    },
+    {
+      "source": "Madrid Destino",
+      "entity": "Madrid",
+      "role": "PRIMARY_SUBJECT",
+      "rootCause": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "source": "Madrid Destino",
+      "entity": "Madrid",
+      "role": "PRIMARY_SUBJECT",
+      "rootCause": "BAD_FRAGMENT_BOUNDARY"
+    }
+  ],
+  "selectedSourceIds": [
+    "cmqmnymll001j4vsjilaway65",
+    "cmsyor4nn000n07p5cl8x2lqg",
+    "cmtage9cl001vs0kp10jrl6sx",
+    "cmt2y1v9k004207p5plwmgfbd",
+    "cmtage91x0002s0kpo5sjxgck",
+    "cmtage9260004s0kpze27l6gc",
+    "cmtage92g0006s0kpqgkh78cu",
+    "cmtage92p0008s0kpef0kp3x6",
+    "cmtage93k000cs0kpps2qn6zs",
+    "cmtage946000fs0kpgeshwm5r",
+    "cmtage951000ks0kp54rnd7rq",
+    "cmtage95y000qs0kp8dvpd2mq",
+    "cmtage96b000ss0kpl7b7atwh",
+    "cmtage96u000vs0kptpf0w7wy",
+    "cmtage9a6001ds0kpmdf3isui",
+    "cmtage9ah001fs0kpumkfqhma",
+    "cmtage9aq001hs0kp9mytzmy4",
+    "cmtage9az001js0kp7z2nh7ld",
+    "cmtage9ba001ls0kpadu20fom",
+    "cmtage9bk001ns0kpchflxd03"
+  ],
+  "sourcePurposeModel": [
+    "VISUAL_PROVENANCE",
+    "CANONICAL_METADATA",
+    "EDITORIAL_REFERENCE",
+    "DOCUMENTARY_TEXT",
+    "INTERPRETIVE_SOURCE",
+    "GENERAL_REFERENCE",
+    "OTHER_UNKNOWN"
+  ],
+  "sourceCountRequested": 20,
+  "sourceCountFound": 20,
+  "projectId": "cmtg3bkv60000s2sj3rt2m8rf",
+  "results": [
+    {
+      "source": {
+        "id": "cmqmnymll001j4vsjilaway65",
+        "title": "Louise Bourgeois overview",
+        "url": "https://www.tate.org.uk",
+        "linkedEntities": [
+          "Maman"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": true,
+      "preparedTextChars": 1713,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "Our galleries See great art in London, Liverpool and Cornwall Tate Britain Free admission Millbank, London SW1P 4RG Tate Modern Free admission Bankside, London SE1 9TG Tate Liverpool + RIBA North Free admission Mann Island, Liverpool L3 1BP Tate St Ives Ticket or Membership required Porthmeor Beach, St Ives, Cornwall TR26 1TG What's on across Tate Plan your visit to our latest exhibitions and displays Left Right Exhibition Julio Le Parc: Light.",
+          "primaryEntity": "Maman",
+          "entityAssociations": [
+            {
+              "entity": "Maman",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmqmnymll001j4vsjilaway65",
+            "materialId": "cmtg3bkvf0001s2sj5g993cws",
+            "versionId": "cmtg3bkvj0002s2sjvjee3j3h"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "Discover seven decades of joyful works by Argentinian artist Julio Le Parc, which turns visitors into active participants Tate Modern Until 3 May 2027 FREE FOR MEMBERS Exhibition Frida: The Making of an Icon Step into the life and legacy of Frida Kahlo: revolutionary artist and global icon Tate Modern Until 3 Jan 2027 FREE FOR MEMBERS Exhibition James McNeill Whistler Experience the captivating world of rule-breaking American artist James McNeill Whistler Tate Britain Until 27 Sep 2026 FREE FOR MEMBERS Exhibition Ana Mendieta Experience the powerful work of Ana Mendieta, whose legacy changed the course of contemporary art Tate Modern Until 17 Jan 2027 FREE FOR MEMBERS Shop Left Right Books Treat your bookshelf to titles on art, artists, cultural movements, craft and history Prints Choose your perfect print from over a thousand posters and artworks Gifts From puzzles and games to art supplies, shop our collection of creative gifts Explore online Left Right Discover Art Explore highlights from our collection Search the collection Browse over 70,000 artworks Stories Watch videos, listen to audio and read articles about art and artists Tate Kids The best art website for kids: play, draw and learn",
+          "primaryEntity": "Maman",
+          "entityAssociations": [
+            {
+              "entity": "Maman",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmqmnymll001j4vsjilaway65",
+            "materialId": "cmtg3bkvf0001s2sj5g993cws",
+            "versionId": "cmtg3bkvj0002s2sjvjee3j3h"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "Our galleries See great art in London, Liverpool and Cornwall Tate Britain Free admission Millbank, London SW1P 4RG Tate Modern Free admission Bankside, London SE1 9TG Tate Liverpool + RIBA North Free admission Mann Island, Liverpool L3 1BP Tate St Ives Ticket or Membership required Porthmeor Beach, St Ives, Cornwall TR26 1TG What's on across Tate Plan your visit to our latest exhibitions and displays Left Right Exhibition Julio Le Parc: Light.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Discover seven decades of joyful works by Argentinian artist Julio Le Parc, which turns visitors into active participants Tate Modern Until 3 May 2027 FREE FOR MEMBERS Exhibition Frida: The Making of an Icon Step into the life and legacy of Frida Kahlo: revolutionary artist and global icon Tate Modern Until 3 Jan 2027 FREE FOR MEMBERS Exhibition James McNeill Whistler Experience the captivating world of rule-breaking American artist James McNeill Whistler Tate Britain Until 27 Sep 2026 FREE FOR MEMBERS Exhibition Ana Mendieta Experience the powerful work of Ana Mendieta, whose legacy changed the course of contemporary art Tate Modern Until 17 Jan 2027 FREE FOR MEMBERS Shop Left Right Books Treat your bookshelf to titles on art, artists, cultural movements, craft and history Prints Choose your perfect print from over a thousand posters and artworks Gifts From puzzles and games to art supplies, shop our collection of creative gifts Explore online Left Right Discover Art Explore highlights from our collection Search the collection Browse over 70,000 artworks Stories Watch videos, listen to audio and read articles about art and artists Tate Kids The best art website for kids: play, draw and learn",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "2/2 evidence candidates from 1713 prepared chars",
+      "created": {
+        "materialId": "cmtg3bkvf0001s2sj5g993cws",
+        "versionId": "cmtg3bkvj0002s2sjvjee3j3h",
+        "excerptIds": [
+          "cmtg3bl330004s2sjhbq92amo",
+          "cmtg3bl3g0006s2sjoxwnv9fe"
+        ],
+        "evidenceIds": [
+          "cmtg3bl3a0005s2sjkroh4ccx",
+          "cmtg3bl3j0007s2sj0uec7zkj"
+        ],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmsyor4nn000n07p5cl8x2lqg",
+        "title": "The Art of Birth",
+        "url": null,
+        "linkedEntities": []
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL is unavailable",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bl3o0008s2sj51m2u0rd",
+        "versionId": "cmtg3bl3s0009s2sjsz1xs9yq",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9cl001vs0kp10jrl6sx",
+        "title": "Raphael Rooms",
+        "url": "https://www.museivaticani.va/content/museivaticani/en/collezioni/musei/stanze-di-raffaello.html",
+        "linkedEntities": [
+          "La escuela de Atenas",
+          "Rafael"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 197,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "UNUSABLE",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0/0 evidence candidates from 197 prepared chars",
+      "created": {
+        "materialId": "cmtg3bl3z000as2sjhwcrwzi1",
+        "versionId": "cmtg3bl41000bs2sj1bt1i2xt",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmt2y1v9k004207p5plwmgfbd",
+        "title": "El descubrimiento a través del Gyotaku",
+        "url": "https://docta.ucm.es/rest/api/core/bitstreams/a472b7b1-11df-4ae3-811c-27627793f92d/content",
+        "linkedEntities": []
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL did not return HTML or text; PUBLIC_DOCUMENT requires Library material acquisition",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bld8000cs2sj6sv8iq1h",
+        "versionId": "cmtg3bldd000ds2sjpnkh7kq0",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage91x0002s0kpo5sjxgck",
+        "title": "Leonardo da Vinci",
+        "url": "https://www.louvre.fr/en/explore/the-palace/leonardo-da-vinci",
+        "linkedEntities": [
+          "Leonardo da Vinci",
+          "La Gioconda"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 404",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3blju000es2sjxas3wkue",
+        "versionId": "cmtg3bljy000fs2sjiityhzfc",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9260004s0kpze27l6gc",
+        "title": "Velázquez",
+        "url": "https://www.museodelprado.es/coleccion/artista/velazquez-diego-rodriguez-de-silva-y/20f7b0e0-84a0-45c0-87a0-0a6ca1761f16",
+        "linkedEntities": [
+          "Diego Velázquez"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bm7q000gs2sjyh84hb9q",
+        "versionId": "cmtg3bm7u000hs2sjq84t82qp",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage92g0006s0kpqgkh78cu",
+        "title": "Frida Kahlo",
+        "url": "https://www.museofridakahlo.org.mx/en/the-blue-house/frida-kahlo/",
+        "linkedEntities": [
+          "Frida Kahlo"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "fetch failed",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bmaj000is2sjut96zltl",
+        "versionId": "cmtg3bman000js2sjh0q8cfnc",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage92p0008s0kpef0kp3x6",
+        "title": "Katsushika Hokusai: Under the Wave off Kanagawa",
+        "url": "https://www.metmuseum.org/art/collection/search/39799",
+        "linkedEntities": [
+          "Katsushika Hokusai",
+          "La gran ola de Kanagawa"
+        ]
+      },
+      "purpose": "CANONICAL_METADATA",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 429",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bmqx000ks2sjs4wezrol",
+        "versionId": "cmtg3bmqz000ls2sjizixmkba",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage93k000cs0kpps2qn6zs",
+        "title": "Las Meninas",
+        "url": "https://www.museodelprado.es/coleccion/obra-de-arte/las-meninas/9fdc7800-9ade-48b0-ab8b-edee94ea877f",
+        "linkedEntities": [
+          "Las Meninas"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bq1h000ms2sju2o7j07b",
+        "versionId": "cmtg3bq1l000ns2sj9uu30fv6",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage946000fs0kpgeshwm5r",
+        "title": "Olympia",
+        "url": "https://www.musee-orsay.fr/en/artworks/olympia-712",
+        "linkedEntities": [
+          "Olympia"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bq3b000os2sj5ocsvr01",
+        "versionId": "cmtg3bq3g000ps2sjgrsc3790",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage951000ks0kp54rnd7rq",
+        "title": "The Scream",
+        "url": "https://www.munchmuseet.no/en/collection/the-scream/",
+        "linkedEntities": [
+          "El grito"
+        ]
+      },
+      "purpose": "CANONICAL_METADATA",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "fetch failed",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bq5n000qs2sj8hu6inud",
+        "versionId": "cmtg3bq5r000rs2sjuk2vsnfe",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage95y000qs0kp8dvpd2mq",
+        "title": "Impressionism",
+        "url": "https://www.musee-orsay.fr/en/collections/works-in-focus/painting/commentaire_id/impression-sunrise-312.html",
+        "linkedEntities": [
+          "Impresionismo"
+        ]
+      },
+      "purpose": "CANONICAL_METADATA",
+      "quality": "SCHOLARLY_STRONG_SECONDARY",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bqbq000ss2sj1gt1qefe",
+        "versionId": "cmtg3bqbu000ts2sj5k165tin",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage96b000ss0kpl7b7atwh",
+        "title": "The body in art",
+        "url": "https://www.tate.org.uk/art/art-terms/b/body-art",
+        "linkedEntities": [
+          "Cuerpo"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": true,
+      "preparedTextChars": 3177,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus Arnulf Rainer Untitled (Body Language) (c.1973) Tate © Arnulf Rainer Body art covers a wide range of art from about 1960 on, encompassing a variety of different approaches.",
+          "primaryEntity": "Cuerpo",
+          "entityAssociations": [
+            {
+              "entity": "Cuerpo",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage96b000ss0kpl7b7atwh",
+            "materialId": "cmtg3bqpa000us2sjl64kv68g",
+            "versionId": "cmtg3bqpc000vs2sjjegv8u2d"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "We would like to hear from you. read Performance art Artworks that are created through actions performed by the artist or other participants, which may be live or recorded, spontaneous … read Actionism Actionism is the English version of the general German term for performance art, specifically used for Vienna-based group Wiener Aktionismus … read Conceptual art Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art … read Feminist art Feminist art is art by artists made consciously in the light of developments in feminist art theory in the early … read Video Art that involves the use of video and /or audio data and relies on moving pictures Explore this term read The Body is Present Even if in Disguise: Tracing the Trace in the Artwork of Nancy Spero and Ana Mendieta Joanna S.",
+          "primaryEntity": "Cuerpo",
+          "entityAssociations": [
+            {
+              "entity": "Cuerpo",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage96b000ss0kpl7b7atwh",
+            "materialId": "cmtg3bqpa000us2sjl64kv68g",
+            "versionId": "cmtg3bqpc000vs2sjjegv8u2d"
+          }
+        },
+        {
+          "locator": "paragraph-3",
+          "text": "Walker In the early 1990s Nancy Spero (born 1926) composed a series of homages to the Cuban artist, Ana Mendieta (1948–1985). … read Extending bodies Lisa Le Feuvre How artists have explored and utilised prosthetic technologies both to satirise humanity and help in the quest to expand the … read Abject Modernism: The Male Body in the Work of Tatsumi Hijikata, Günter Brus and Rudolf Schwarzkogler Lucy Weir Focusing on the works of Tatsumi Hijikata, Günter Brus and Rudolf Schwarzkogler, this paper examines the representation of the male … SELECTED ARTWORKS IN THE COLLECTION Left Right Arm Extensions Rebecca Horn 1968 Artist’s Breath Piero Manzoni 1960 Sensitive content Untitled (Rape Scene) Ana Mendieta 1973 Body Techniques (after Parallel Stress, Dennis Oppenheim,1970) Carey Young 2007 Mechanical Body Fan Rebecca Horn 1973–4 Space², Providence, Rhode Island Francesca Woodman 1976 Performance Still Mona Hatoum 1985–95",
+          "primaryEntity": "Cuerpo",
+          "entityAssociations": [
+            {
+              "entity": "Cuerpo",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage96b000ss0kpl7b7atwh",
+            "materialId": "cmtg3bqpa000us2sjl64kv68g",
+            "versionId": "cmtg3bqpc000vs2sjjegv8u2d"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus Arnulf Rainer Untitled (Body Language) (c.1973) Tate © Arnulf Rainer Body art covers a wide range of art from about 1960 on, encompassing a variety of different approaches.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "We would like to hear from you. read Performance art Artworks that are created through actions performed by the artist or other participants, which may be live or recorded, spontaneous … read Actionism Actionism is the English version of the general German term for performance art, specifically used for Vienna-based group Wiener Aktionismus … read Conceptual art Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art … read Feminist art Feminist art is art by artists made consciously in the light of developments in feminist art theory in the early … read Video Art that involves the use of video and /or audio data and relies on moving pictures Explore this term read The Body is Present Even if in Disguise: Tracing the Trace in the Artwork of Nancy Spero and Ana Mendieta Joanna S.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Walker In the early 1990s Nancy Spero (born 1926) composed a series of homages to the Cuban artist, Ana Mendieta (1948–1985). … read Extending bodies Lisa Le Feuvre How artists have explored and utilised prosthetic technologies both to satirise humanity and help in the quest to expand the … read Abject Modernism: The Male Body in the Work of Tatsumi Hijikata, Günter Brus and Rudolf Schwarzkogler Lucy Weir Focusing on the works of Tatsumi Hijikata, Günter Brus and Rudolf Schwarzkogler, this paper examines the representation of the male … SELECTED ARTWORKS IN THE COLLECTION Left Right Arm Extensions Rebecca Horn 1968 Artist’s Breath Piero Manzoni 1960 Sensitive content Untitled (Rape Scene) Ana Mendieta 1973 Body Techniques (after Parallel Stress, Dennis Oppenheim,1970) Carey Young 2007 Mechanical Body Fan Rebecca Horn 1973–4 Space², Providence, Rhode Island Francesca Woodman 1976 Performance Still Mona Hatoum 1985–95",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "3/3 evidence candidates from 3177 prepared chars",
+      "created": {
+        "materialId": "cmtg3bqpa000us2sjl64kv68g",
+        "versionId": "cmtg3bqpc000vs2sjjegv8u2d",
+        "excerptIds": [
+          "cmtg3brvs000xs2sj211puwt2",
+          "cmtg3brvx000zs2sjbxxar1hy",
+          "cmtg3brw40011s2sj36isvbya"
+        ],
+        "evidenceIds": [
+          "cmtg3brvu000ys2sjo5w8fodl",
+          "cmtg3brw00010s2sjnf4anawe",
+          "cmtg3brw70012s2sjt6cvvm92"
+        ],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage96u000vs0kptpf0w7wy",
+        "title": "Representation",
+        "url": "https://www.tate.org.uk/art/art-terms/r/representation",
+        "linkedEntities": [
+          "Representación"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 404",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3brwa0013s2sj77vdk1v0",
+        "versionId": "cmtg3brwc0014s2sjl049uhmv",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9a6001ds0kpmdf3isui",
+        "title": "Bust of Nefertiti",
+        "url": "https://www.smb.museum/en/museums-institutions/neues-museum/collection-research/collection/egyptian-museum-and-papyrus-collection/",
+        "linkedEntities": [
+          "Busto de Nefertiti"
+        ]
+      },
+      "purpose": "CANONICAL_METADATA",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "fetch failed",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bsfv0015s2sj3o3pzamr",
+        "versionId": "cmtg3bsfz0016s2sjqrif2a0k",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9ah001fs0kpumkfqhma",
+        "title": "The Parthenon",
+        "url": "https://www.theacropolismuseum.gr/en/parthenon",
+        "linkedEntities": [
+          "Partenón"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 404",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bt3a0017s2sjz9wztjth",
+        "versionId": "cmtg3bt3f0018s2sjbs0uukr4",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9aq001hs0kp9mytzmy4",
+        "title": "Hagia Sophia",
+        "url": "https://whc.unesco.org/en/list/356/",
+        "linkedEntities": [
+          "Santa Sofía"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3btcw0019s2sjh2yktieb",
+        "versionId": "cmtg3btcy001as2sj1ojcjgch",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9az001js0kp7z2nh7ld",
+        "title": "Mezquita-Catedral de Córdoba",
+        "url": "https://mezquita-catedraldecordoba.es/en/",
+        "linkedEntities": [
+          "Mezquita de Córdoba"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "fetch failed",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3btf3001bs2sjw7u6ex1x",
+        "versionId": "cmtg3btf7001cs2sjdbrnsmc3",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9ba001ls0kpadu20fom",
+        "title": "The Bayeux Tapestry",
+        "url": "https://www.bayeuxmuseum.com/en/the-bayeux-tapestry/",
+        "linkedEntities": [
+          "Tapiz de Bayeux"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": true,
+      "preparedTextChars": 2910,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "Bayeux Tapestry museum - Closing for renovation work until 2027 The 3 museums The Bayeux Tapestry Memorial Museum of the Battle of Normandy MAHB Museum of Art and History Baron Gérard Practical information Disabled visitor You are a group You are… ?",
+          "primaryEntity": "Tapiz de Bayeux",
+          "entityAssociations": [
+            {
+              "entity": "Tapiz de Bayeux",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9ba001ls0kpadu20fom",
+            "materialId": "cmtg3btkj001ds2sj7552ag56",
+            "versionId": "cmtg3btkn001es2sjdcq3xx23"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "The Bayeux Tapestry The epic adventure of William the Conqueror in 1066 Discover the museum 01 02 03 Discover the Bayeux Tapestry The museum in pictures The Bayeux Tapestry, a UNESCO's \"Memory of the World\" Discover Bayeux Museum What's on?",
+          "primaryEntity": "Tapiz de Bayeux",
+          "entityAssociations": [
+            {
+              "entity": "Tapiz de Bayeux",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9ba001ls0kpadu20fom",
+            "materialId": "cmtg3btkj001ds2sj7552ag56",
+            "versionId": "cmtg3btkn001es2sjdcq3xx23"
+          }
+        },
+        {
+          "locator": "paragraph-3",
+          "text": "Find out more PRACTICAL INFORMATION By car From Caen : N13 exit 36 to Bayeux From Rennes : A84 or E03 towards Caen exit 43, then D6 By plane Paris airport, then by train from Gare Saint-Lazare station, Paris, to Bayeux station By train Leave the train at Bayeux station About 10-15 minutes walk from the station to the museums Getting here Opening times Prices Waiting time BAYEUX MUSEUM Contact us Visiting Bayeux What's on Practical information Press corner Visit with a group Accessibility Sitemap Legal information We are the official website for the 3 museums managed by the City of Bayeux © 2026 Bayeux Museum - All rights reserved..",
+          "primaryEntity": "Tapiz de Bayeux",
+          "entityAssociations": [
+            {
+              "entity": "Tapiz de Bayeux",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9ba001ls0kpadu20fom",
+            "materialId": "cmtg3btkj001ds2sj7552ag56",
+            "versionId": "cmtg3btkn001es2sjdcq3xx23"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "Bayeux Tapestry museum - Closing for renovation work until 2027 The 3 museums The Bayeux Tapestry Memorial Museum of the Battle of Normandy MAHB Museum of Art and History Baron Gérard Practical information Disabled visitor You are a group You are… ?",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "The Bayeux Tapestry The epic adventure of William the Conqueror in 1066 Discover the museum 01 02 03 Discover the Bayeux Tapestry The museum in pictures The Bayeux Tapestry, a UNESCO's \"Memory of the World\" Discover Bayeux Museum What's on?",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Find out more PRACTICAL INFORMATION By car From Caen : N13 exit 36 to Bayeux From Rennes : A84 or E03 towards Caen exit 43, then D6 By plane Paris airport, then by train from Gare Saint-Lazare station, Paris, to Bayeux station By train Leave the train at Bayeux station About 10-15 minutes walk from the station to the museums Getting here Opening times Prices Waiting time BAYEUX MUSEUM Contact us Visiting Bayeux What's on Practical information Press corner Visit with a group Accessibility Sitemap Legal information We are the official website for the 3 museums managed by the City of Bayeux © 2026 Bayeux Museum - All rights reserved..",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "3/3 evidence candidates from 2910 prepared chars",
+      "created": {
+        "materialId": "cmtg3btkj001ds2sj7552ag56",
+        "versionId": "cmtg3btkn001es2sjdcq3xx23",
+        "excerptIds": [
+          "cmtg3bukw001gs2sjjgis4ibo",
+          "cmtg3bul3001is2sjs4aoht0w",
+          "cmtg3bul9001ks2sjobmdeamg"
+        ],
+        "evidenceIds": [
+          "cmtg3bukz001hs2sjkaq3fc63",
+          "cmtg3bul5001js2sja4co2ls1",
+          "cmtg3bulb001ls2sjysglt5sx"
+        ],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9bk001ns0kpchflxd03",
+        "title": "Chartres Cathedral",
+        "url": "https://whc.unesco.org/en/list/81/",
+        "linkedEntities": [
+          "Catedral de Chartres"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg3bule001ms2sjilg3igic",
+        "versionId": "cmtg3bulg001ns2sjqaaz47ln",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg3bkv60000s2sj3rt2m8rf"
+      }
+    }
+  ],
+  "associationAudit": {
+    "total": 8,
+    "valid": 0,
+    "weak": 8,
+    "incorrect": 0,
+    "mentionOnly": 0,
+    "items": [
+      {
+        "source": "Louise Bourgeois overview",
+        "excerptSummary": "Our galleries See great art in London, Liverpool and Cornwall Tate Britain Free admission Millbank, London SW1P 4RG Tate Modern Free admission Bankside, London SE1 9TG Tate Liverpool + RIBA North Free admission Mann Isla",
+        "primarySubject": "Maman",
+        "entityAssociations": [
+          {
+            "entity": "Maman",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "Louise Bourgeois overview",
+        "excerptSummary": "Discover seven decades of joyful works by Argentinian artist Julio Le Parc, which turns visitors into active participants Tate Modern Until 3 May 2027 FREE FOR MEMBERS Exhibition Frida: The Making of an Icon Step into th",
+        "primarySubject": "Maman",
+        "entityAssociations": [
+          {
+            "entity": "Maman",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The body in art",
+        "excerptSummary": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus Arnulf Rainer Untitled (Body Language) (c.1973) Tate © Arnulf Rainer Body art covers a wide range of art from about ",
+        "primarySubject": "Cuerpo",
+        "entityAssociations": [
+          {
+            "entity": "Cuerpo",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The body in art",
+        "excerptSummary": "We would like to hear from you. read Performance art Artworks that are created through actions performed by the artist or other participants, which may be live or recorded, spontaneous … read Actionism Actionism is the E",
+        "primarySubject": "Cuerpo",
+        "entityAssociations": [
+          {
+            "entity": "Cuerpo",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The body in art",
+        "excerptSummary": "Walker In the early 1990s Nancy Spero (born 1926) composed a series of homages to the Cuban artist, Ana Mendieta (1948–1985). … read Extending bodies Lisa Le Feuvre How artists have explored and utilised prosthetic techn",
+        "primarySubject": "Cuerpo",
+        "entityAssociations": [
+          {
+            "entity": "Cuerpo",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The Bayeux Tapestry",
+        "excerptSummary": "Bayeux Tapestry museum - Closing for renovation work until 2027 The 3 museums The Bayeux Tapestry Memorial Museum of the Battle of Normandy MAHB Museum of Art and History Baron Gérard Practical information Disabled visit",
+        "primarySubject": "Tapiz de Bayeux",
+        "entityAssociations": [
+          {
+            "entity": "Tapiz de Bayeux",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The Bayeux Tapestry",
+        "excerptSummary": "The Bayeux Tapestry The epic adventure of William the Conqueror in 1066 Discover the museum 01 02 03 Discover the Bayeux Tapestry The museum in pictures The Bayeux Tapestry, a UNESCO's \"Memory of the World\" Discover Baye",
+        "primarySubject": "Tapiz de Bayeux",
+        "entityAssociations": [
+          {
+            "entity": "Tapiz de Bayeux",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The Bayeux Tapestry",
+        "excerptSummary": "Find out more PRACTICAL INFORMATION By car From Caen : N13 exit 36 to Bayeux From Rennes : A84 or E03 towards Caen exit 43, then D6 By plane Paris airport, then by train from Gare Saint-Lazare station, Paris, to Bayeux s",
+        "primarySubject": "Tapiz de Bayeux",
+        "entityAssociations": [
+          {
+            "entity": "Tapiz de Bayeux",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      }
+    ]
+  },
+  "entityImpact": [
+    {
+      "entity": "maman",
+      "title": "Maman",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 2,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "escuela-de-atenas",
+      "title": "La escuela de Atenas",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "leonardo-da-vinci",
+      "title": "Leonardo da Vinci",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "diego-velazquez",
+      "title": "Diego Velázquez",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "frida-kahlo",
+      "title": "Frida Kahlo",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "katsushika-hokusai",
+      "title": "Katsushika Hokusai",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "las-meninas",
+      "title": "Las Meninas",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "olympia",
+      "title": "Olympia",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "el-grito",
+      "title": "El grito",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "impresionismo",
+      "title": "Impresionismo",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "cuerpo",
+      "title": "Cuerpo",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 3,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "representacion",
+      "title": "Representación",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "busto-de-nefertiti",
+      "title": "Busto de Nefertiti",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "partenon",
+      "title": "Partenón",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "hagia-sophia",
+      "title": "Santa Sofía",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "gran-mezquita-de-cordoba",
+      "title": "Mezquita de Córdoba",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "tapiz-de-bayeux",
+      "title": "Tapiz de Bayeux",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 3,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "catedral-de-chartres",
+      "title": "Catedral de Chartres",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    }
+  ],
+  "rollback": "Delete ResearchProject cmtg3bkv60000s2sj3rt2m8rf; cascades pilot Evidence, Excerpts and ResearchLibraryMaterial. Delete pilot LibraryMaterials separately by title prefix [PILOT].",
+  "note": "No LLM, no external bulk downloads, development only."
+}

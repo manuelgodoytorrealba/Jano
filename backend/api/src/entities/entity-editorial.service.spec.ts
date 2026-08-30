@@ -35,7 +35,7 @@ describe('EntityEditorialService', () => {
     });
   });
 
-  it('persists the Spanish translation, base entity and mentions in one transaction', async () => {
+  it('persists Spanish editorial text without mutating canonical relations', async () => {
     const tx = {
       entity: {
         findUnique: jest.fn().mockResolvedValue({ id: 'entity-1', type: 'ARTICLE' }),
@@ -78,18 +78,12 @@ describe('EntityEditorialService', () => {
     expect(prisma.$transaction).toHaveBeenCalledTimes(1);
     expect(tx.entityTranslation.upsert).toHaveBeenCalled();
     expect(tx.entity.update).toHaveBeenCalled();
-    expect(tx.relation.create).toHaveBeenCalledWith({
-      data: {
-        fromId: 'entity-1',
-        toId: 'entity-2',
-        relationTypeId: 'mentions-type',
-        status: 'PUBLISHED',
-      },
-    });
+    expect(tx.relation.create).not.toHaveBeenCalled();
+    expect(tx.relation.delete).not.toHaveBeenCalled();
     expect(readService.adminGetById).toHaveBeenCalledWith('entity-1');
   });
 
-  it('creates mentions from an English translation without changing the Spanish base entity', async () => {
+  it('persists English editorial text without changing the base entity or canonical relations', async () => {
     const tx = {
       entity: {
         findUnique: jest.fn().mockResolvedValue({ id: 'entity-1', type: 'ARTICLE' }),
@@ -121,13 +115,7 @@ describe('EntityEditorialService', () => {
     });
 
     expect(tx.entity.update).not.toHaveBeenCalled();
-    expect(tx.relation.create).toHaveBeenCalledWith({
-      data: {
-        fromId: 'entity-1',
-        toId: 'entity-2',
-        relationTypeId: 'mentions-type',
-        status: 'PUBLISHED',
-      },
-    });
+    expect(tx.relation.create).not.toHaveBeenCalled();
+    expect(tx.relation.delete).not.toHaveBeenCalled();
   });
 });

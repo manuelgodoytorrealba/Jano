@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { EntityType, EntityTypeStatus, KnowledgeEntityKind, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { canonicalRelationTypeFilter } from '../relation-types/relation-type.utils';
 import { CreateEntityDraftDto } from './dto/create-entity-draft.dto';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDetailsDto } from './dto/update-entity-details.dto';
@@ -112,7 +111,6 @@ export class EntityEditorialService {
         },
       });
 
-      await this.syncContentRelations(tx, entity.id, entity.content);
       return entity.id;
     });
 
@@ -190,8 +188,6 @@ export class EntityEditorialService {
           },
         });
       }
-
-      await this.syncContentRelations(tx, id, entity.content);
     });
 
     return this.entities.adminGetById(id);
@@ -287,7 +283,7 @@ export class EntityEditorialService {
       }
 
       if (locale === 'es') {
-        const updated = await tx.entity.update({
+        await tx.entity.update({
           where: { id },
           data: {
             title,
@@ -296,9 +292,6 @@ export class EntityEditorialService {
           },
         });
         if (dto.details) await this.upsertBaseDetails(tx, id, entity.type, dto.details);
-        await this.syncContentRelations(tx, id, updated.content);
-      } else {
-        await this.syncContentRelations(tx, id, null);
       }
     });
 
@@ -422,65 +415,6 @@ export class EntityEditorialService {
         update: data,
         create: { entityId: id, locale, ...data },
       });
-    }
-  }
-
-  private extractEntityLinks(content: string | null | undefined): string[] {
-    if (!content) return [];
-    return [
-      ...new Set(
-        Array.from(content.matchAll(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g))
-          .map((match) => (match[1] ?? '').trim())
-          .filter(Boolean),
-      ),
-    ];
-  }
-
-  private async syncContentRelations(
-    tx: Prisma.TransactionClient,
-    entityId: string,
-    content: string | null,
-  ) {
-    const translations = await tx.entityTranslation.findMany({
-      where: { entityId },
-      select: { essay: true },
-    });
-    const slugs = [content, ...translations.map((translation) => translation.essay)].flatMap(
-      (value) => this.extractEntityLinks(value),
-    );
-    const targets = slugs.length
-      ? await tx.entity.findMany({
-          where: { slug: { in: slugs }, id: { not: entityId } },
-          select: { id: true },
-        })
-      : [];
-    const targetIds = new Set(targets.map((target) => target.id));
-    const existing = await tx.relation.findMany({
-      where: { fromId: entityId, ...canonicalRelationTypeFilter(['MENTIONS']) },
-      select: { id: true, toId: true },
-    });
-    const existingTargetIds = new Set(existing.map((relation) => relation.toId));
-    const relationType = await tx.relationType.findUniqueOrThrow({
-      where: { key: 'MENTIONS' },
-      select: { id: true },
-    });
-
-    for (const target of targets) {
-      if (!existingTargetIds.has(target.id)) {
-        await tx.relation.create({
-          data: {
-            fromId: entityId,
-            toId: target.id,
-            relationTypeId: relationType.id,
-            status: 'PUBLISHED',
-          },
-        });
-      }
-    }
-    for (const relation of existing) {
-      if (!targetIds.has(relation.toId)) {
-        await tx.relation.delete({ where: { id: relation.id } });
-      }
     }
   }
 }

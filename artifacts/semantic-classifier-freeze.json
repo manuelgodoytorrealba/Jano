@@ -1,0 +1,27 @@
+{
+  "hash": "5b3ff0f17820823fbea4a60a2df2492e46951cbe0e8ed1fd089b3cb1ec32fa88",
+  "file": "backend/api/src/research/semantic-evidence-classifier.ts",
+  "config": {
+    "version": "semantic-evidence-classifier-v2.1-frozen-micropilot",
+    "deterministicFilters": [
+      "visual/canonical purpose",
+      "chrome/navigation",
+      "promotional density",
+      "institutional logistics",
+      "missing provenance",
+      "caption trimming"
+    ],
+    "confidence": {
+      "high": "clear subject + extractable proposition + compatible purpose",
+      "medium": "factual span with unresolved sufficiency",
+      "low": "no proposition/incompatible/noise"
+    },
+    "decisions": {
+      "keep": "high + valid proposition + provenance",
+      "review": "medium/ambiguity",
+      "reject": "low/incompatible/noise"
+    },
+    "candidateStrategy": "primary SourceRef + explicit canonical mentions + direct relations"
+  },
+  "frozenAt": "2026-08-30T18:44:35.958Z"
+}

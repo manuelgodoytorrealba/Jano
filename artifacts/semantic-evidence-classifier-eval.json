@@ -1,0 +1,1195 @@
+{
+  "pilot1": {
+    "pilot": "PILOT_1",
+    "total": 19,
+    "predictions": {
+      "KEEP": 8,
+      "REVIEW": 0,
+      "REJECT": 11
+    },
+    "gold": {
+      "KEEP": 11,
+      "REVIEW": 5,
+      "REJECT": 3
+    },
+    "metrics": {
+      "acceptanceRate": 0.42105263157894735,
+      "classifierPrecision": 1,
+      "classifierRecall": 0.7272727272727273,
+      "reviewRate": 0,
+      "rejectRate": 0.5789473684210527,
+      "overallAgreement": 0.5789473684210527
+    },
+    "confusionMatrix": {
+      "KEEP": {
+        "KEEP": 8,
+        "REVIEW": 0,
+        "REJECT": 0
+      },
+      "REVIEW": {
+        "KEEP": 0,
+        "REVIEW": 0,
+        "REJECT": 0
+      },
+      "REJECT": {
+        "KEEP": 3,
+        "REVIEW": 5,
+        "REJECT": 3
+      }
+    },
+    "errors": [
+      {
+        "pilot": "PILOT_1",
+        "source": "Repensar Guernica",
+        "excerpt": "Construcción del Pabellón de España en la Exposición Internacional, París 1937 Carta de José Gaos a Pablo Picasso, 1937 En abril, a escasos dos meses de la exposición, inmerso en una crisis personal y creativa, Picasso no había conseguido resolver el encargo.",
+        "entity": "Guernica",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "LOW",
+          "decision": "REJECT",
+          "reason": "No puede formularse una proposition concreta.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Construcción del Pabellón de España en la Exposición Internacional, París 1937 Carta de José Gaos a Pablo Picasso, 1937 En abril, a escasos dos meses de la exposición, inmerso en una crisis personal y creativa, Picasso no había conseguido resolver el encargo.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Repensar Guernica",
+        "excerpt": "Desde su primera presentación al público en el Pabellón de España en París de 1937, Guernica realizó numerosos viajes por Europa y América antes de llegar a España en 1981, primero al Casón del Buen Retiro y, a partir de 1992, al Museo Reina Sofía.",
+        "entity": "Guernica",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "LOW",
+          "decision": "REJECT",
+          "reason": "No puede formularse una proposition concreta.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Desde su primera presentación al público en el Pabellón de España en París de 1937, Guernica realizó numerosos viajes por Europa y América antes de llegar a España en 1981, primero al Casón del Buen Retiro y, a partir de 1992, al Museo Reina Sofía.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Cubism",
+        "excerpt": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Paris and DACS, London 2026 Cubism was one of the most influential styles of the twentieth century.",
+        "entity": "Cubismo",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Paris and DACS, London 2026 Cubism was one of the most influential styles of the twentieth century.",
+          "dimension": "characteristics / origin",
+          "rationale": "Describe rasgos u origen del movimiento."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Cubism",
+        "excerpt": "Georges Braque Mandora (1909–10) Tate © ADAGP, Paris and DACS, London 2026 Pablo Picasso Bottle of Vieux Marc, Glass, Guitar and Newspaper (1913) Tate © Succession Picasso/DACS 2026 Types of cubism: Analytical vs. synthetic Cubism can be seen to have developed in two distinct phases: the initial and more austere analytical cubism , and a later phase of cubism known as synthetic cubism .",
+        "entity": "Cubismo",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "ABOUT",
+          "proposition": null,
+          "dimension": "characteristics",
+          "rationale": "Fragmento truncado y con metadata de obras mezclada."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "excerpt": "Explore the places and characters that raised the city to the top of the art and culture scene. --> Food and Drink Delve into Madrid’s exciting food scene with dinner at a Michelin-star restaurant, some tapas in a century-old taberna or a cocktail at a rooftop bar. --> Flamenco Discover the best spots in the city to enjoy Spain’s artistic expression par excellence . --> Shopping Art, fashion, luxury goods, antiques, music, technology gadgets… There’s nothing you can’t buy in Madrid. --> Parks and Gardens Madrid boasts an array of public parks and gardens from Casa de Campo, Spain's largest green space, to El Retiro Park, a UNESCO World Heritage Site. --> What’s On in Madrid The city is one of the busiest European capitals in terms of shows and cultural activities.",
+        "entity": "Madrid",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "cultural context",
+          "rationale": "Contenido turístico/promocional, no evidencia suficiente para una explicación cultural."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "excerpt": "Check out our calendar of events. live like a madrileño --> Keep cool with these fans Whether you prefer lace, plain or hand-painted fans, you're bound to find the perfect summer accessory at these shops. --> Artisan ice cream parlours Beat the heat at any of these artisan ice cream shops where you'll discover plenty of flavours to choose from. --> Shops for children Explore these spaces where children can feel at home with products designed especially for them.",
+        "entity": "Madrid",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "cultural context",
+          "rationale": "Contenido turístico/promocional, no evidencia suficiente para una explicación cultural."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "excerpt": "OFFICIAL PRODUCTS --> Madrid City Card The city&rsquo;s new official sightseeing and tourist travel pass. --> Panoramic views at 92 metres An observation deck offering wonderful vistas of the city. --> Official Madrid Shop Visit our store of souvenirs made by local artisans! --> Madrid Top 10 Discover the city's most popular sights and attractions, from one of Europe's largest royal palaces to the magnificent Prado Museum and the Real Madrid football stadium.",
+        "entity": "Madrid",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "cultural context",
+          "rationale": "Contenido turístico/promocional, no evidencia suficiente para una explicación cultural."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "excerpt": "Madrid Top 10 --> Advertisement PLAN YOUR TRIP Travelling to Madrid Getting around Madrid Essential Information Accessible Madrid Learning Spanish Tourist Information Centres Maps and Guides Other Cultures --> Madrid through the seasons No matter what time of year you visit, in Madrid you will enjoy our light and an inexhaustible array of culture, food and entertainment.",
+        "entity": "Madrid",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "cultural context",
+          "rationale": "Contenido turístico/promocional, no evidencia suficiente para una explicación cultural."
+        },
+        "error": "FALSE_REJECT"
+      }
+    ],
+    "rows": [
+      {
+        "pilot": "PILOT_1",
+        "source": "Pablo Picasso",
+        "excerpt": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés.",
+        "entity": "Pablo Picasso",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés.",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Pablo Picasso",
+        "excerpt": "Instalado en París en 1904, enseguida se convirtió en una figura de referencia que ocupó a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas, quienes reconocieron en su trabajo la expresión de un lenguaje nuevo por romper con los sistemas de representación tradicionales.",
+        "entity": "Pablo Picasso",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "Instalado en París en 1904, enseguida se convirtió en una figura de referencia que ocupó a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas, quienes reconocieron en su trabajo la expresión de un lenguaje nuevo por romper con los sistemas de representación tradicionales.",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Instalado en París en 1904, enseguida se convirtió en una figura de referencia que ocupó a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas, quienes reconocieron en su trabajo la expresión de un lenguaje nuevo por romper con los sistemas de representación tradicionales.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Pablo Picasso",
+        "excerpt": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages.",
+        "entity": "Pablo Picasso",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages.",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Pablo Picasso",
+        "excerpt": "Dentro de los parámetros de la figuración en los que trabajó en el conjunto de su obra predominan tres líneas temáticas: el retrato, las naturalezas muertas y los interiores con personas, en los que el tema del pintor y la modelo y sus variantes ocupan un lugar destacado.",
+        "entity": "Pablo Picasso",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "Dentro de los parámetros de la figuración en los que trabajó en el conjunto de su obra predominan tres líneas temáticas: el retrato, las naturalezas muertas y los interiores con personas, en los que el tema del pintor y la modelo y sus variantes ocupan un lugar destacado.",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Dentro de los parámetros de la figuración en los que trabajó en el conjunto de su obra predominan tres líneas temáticas: el retrato, las naturalezas muertas y los interiores con personas, en los que el tema del pintor y la modelo y sus variantes ocupan un lugar destacado.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Repensar Guernica",
+        "excerpt": "El Guernica expuesto en el Museo Reina Sofía Gernika tras el bombardeo, 1937 A comienzos de este mismo año, Picasso recibió un encargo del gobierno legítimo de la República: realizar un gran lienzo para el pabellón español de la Exposición Internacional de París prevista para el verano.",
+        "entity": "Guernica",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "El Guernica expuesto en el Museo Reina Sofía Gernika tras el bombardeo, 1937 A comienzos de este mismo año, Picasso recibió un encargo del gobierno legítimo de la República: realizar un gran lienzo para el pabellón español de la Exposición Internacional de París prevista para el verano.",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "El Guernica expuesto en el Museo Reina Sofía Gernika tras el bombardeo, 1937 A comienzos de este mismo año, Picasso recibió un encargo del gobierno legítimo de la República: realizar un gran lienzo para el pabellón español de la Exposición Internacional de París prevista para el verano.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Repensar Guernica",
+        "excerpt": "Construcción del Pabellón de España en la Exposición Internacional, París 1937 Carta de José Gaos a Pablo Picasso, 1937 En abril, a escasos dos meses de la exposición, inmerso en una crisis personal y creativa, Picasso no había conseguido resolver el encargo.",
+        "entity": "Guernica",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "LOW",
+          "decision": "REJECT",
+          "reason": "No puede formularse una proposition concreta.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Construcción del Pabellón de España en la Exposición Internacional, París 1937 Carta de José Gaos a Pablo Picasso, 1937 En abril, a escasos dos meses de la exposición, inmerso en una crisis personal y creativa, Picasso no había conseguido resolver el encargo.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Repensar Guernica",
+        "excerpt": "Desde su primera presentación al público en el Pabellón de España en París de 1937, Guernica realizó numerosos viajes por Europa y América antes de llegar a España en 1981, primero al Casón del Buen Retiro y, a partir de 1992, al Museo Reina Sofía.",
+        "entity": "Guernica",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "LOW",
+          "decision": "REJECT",
+          "reason": "No puede formularse una proposition concreta.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Desde su primera presentación al público en el Pabellón de España en París de 1937, Guernica realizó numerosos viajes por Europa y América antes de llegar a España en 1981, primero al Casón del Buen Retiro y, a partir de 1992, al Museo Reina Sofía.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Repensar Guernica",
+        "excerpt": "Trascendiendo el hecho concreto en el que se basaba, Guernica es un símbolo atemporal y universal, el de la denuncia de la destrucción implacable y criminal de la guerra, abriendo un debate artístico sobre la representación de conflictos bélicos.",
+        "entity": "Guernica",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "Trascendiendo el hecho concreto en el que se basaba, Guernica es un símbolo atemporal y universal, el de la denuncia de la destrucción implacable y criminal de la guerra, abriendo un debate artístico sobre la representación de conflictos bélicos.",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Trascendiendo el hecho concreto en el que se basaba, Guernica es un símbolo atemporal y universal, el de la denuncia de la destrucción implacable y criminal de la guerra, abriendo un debate artístico sobre la representación de conflictos bélicos.",
+          "dimension": "development / context",
+          "rationale": "La fuente está dedicada a la entidad y el fragmento contiene información sustantiva."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Marcel Duchamp: Fountain",
+        "excerpt": "You might like Left Right Woman at a Window Othon Friesz 1919 The Bride Stripped Bare by her Bachelors, Even (The Large Glass) Marcel Duchamp 1915–23, reconstruction by Richard Hamilton 1965–6, lower panel remade 1985 Coffee Mill Marcel Duchamp 1911 Female Fig Leaf Marcel Duchamp 1950, cast 1961 Dart Object Marcel Duchamp 1951, cast 1962 Wedge of Chastity Marcel Duchamp 1954, cast 1963 Fresh Widow Marcel Duchamp 1920, replica 1964 3 stoppages étalon (3 Standard Stoppages) Marcel Duchamp 1913–14, replica 1964 Why Not Sneeze Rose Sélavy?",
+        "entity": "Fuente",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 0,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REJECT",
+          "role": "UNRELATED",
+          "proposition": null,
+          "dimension": null,
+          "rationale": "Navegación o listado relacionado."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Marcel Duchamp: Fountain",
+        "excerpt": "Marcel Duchamp 1921, replica 1964 The Bride Stripped Bare by her Bachelors Even (The Green Box) Marcel Duchamp 1934 View by appointment Cadeau Man Ray 1921, editioned replica 1972 On display at Tate Modern part of In the Studio Nine malic moulds Marcel Duchamp, Richard Hamilton 1914–5, reconstruction by Richard Hamilton 1965",
+        "entity": "Fuente",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "LOW",
+          "decision": "REJECT",
+          "reason": "No puede formularse una proposition concreta.",
+          "signals": {
+            "subjectClarity": 0,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "REJECT",
+          "role": "UNRELATED",
+          "proposition": null,
+          "dimension": null,
+          "rationale": "Navegación o listado relacionado."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Cubism",
+        "excerpt": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Paris and DACS, London 2026 Cubism was one of the most influential styles of the twentieth century.",
+        "entity": "Cubismo",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Paris and DACS, London 2026 Cubism was one of the most influential styles of the twentieth century.",
+          "dimension": "characteristics / origin",
+          "rationale": "Describe rasgos u origen del movimiento."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Cubism",
+        "excerpt": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometric outlines, to cubes’.",
+        "entity": "Cubismo",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometric outlines, to cubes’.",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometric outlines, to cubes’.",
+          "dimension": "characteristics / origin",
+          "rationale": "Describe rasgos u origen del movimiento."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Cubism",
+        "excerpt": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image. ‘A head’, said Picasso, ‘is a matter of eyes, nose, mouth, which can be distributed in any way you like’.",
+        "entity": "Cubismo",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image.",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image.",
+          "dimension": "characteristics / origin",
+          "rationale": "Describe rasgos u origen del movimiento."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Cubism",
+        "excerpt": "Georges Braque Mandora (1909–10) Tate © ADAGP, Paris and DACS, London 2026 Pablo Picasso Bottle of Vieux Marc, Glass, Guitar and Newspaper (1913) Tate © Succession Picasso/DACS 2026 Types of cubism: Analytical vs. synthetic Cubism can be seen to have developed in two distinct phases: the initial and more austere analytical cubism , and a later phase of cubism known as synthetic cubism .",
+        "entity": "Cubismo",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "ABOUT",
+          "proposition": null,
+          "dimension": "characteristics",
+          "rationale": "Fragmento truncado y con metadata de obras mezclada."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Art & Architecture Thesaurus",
+        "excerpt": "Art & Architecture Thesaurus (Getty Research Institute) Search Tools & Databases Library Catalog Getty Research Portal Become a Contributing Institution Finding Aids for Research Collections Photo Archive Guide to the Photo Archive Search the Photo Archive The Index of Christian Art Research Guides & Bibliographies Digital Collections Article & Research Databases A-Z List Ancient Arts & Cultures Art & Architecture Art Sales & Collecting Biographical Information Conservation, Science, & Technology Dictionaries General Resources History, Archaeology, & Cultural Studies Image Resources & Museum Collections Language & Literature Libraries Performing Arts Philosophy & Religion Ready Reference Getty Provenance Index BHA & RILA Getty Vocabularies Art & Architecture Thesaurus (AAT) ® About AAT AAT: Frequently Asked Questions How to use AAT Cultural Objects Name Authority (CONA) ® About CONA CONA: Frequently Asked Questions Getty Thesaurus of Geographic Names (TGN) ® About TGN TGN: Frequently Asked Questions How to use TGN Union List of Artist Names (ULAN) ® About ULAN ULAN: Frequently Asked Questions How to use ULAN Contribute Contributors Editorial Guidelines Getty Vocabularies as Linked Open Data Frequently Asked Questions Obtain the Getty Vocabularies Download Center OpenRefine Reconciliation Training Materials Art & Architecture Thesaurus® Online Note: Pop-up Search Browse the AAT hierarchies Copyright information REPLACE THIS TEXT WITH YOUR SPECIAL ANNOUNCEMENT. --> Search Tips For the Find Term or Note field, you may use AND and OR (all in upper case) [e.g., 1) windsor chairs, 2) chairs OR rockers, 3) chairs OR rockers OR armchairs, 4) bow-back AND windsor, 5) windsor AND (rockers OR chairs), 6) (windsor OR boston) AND (rockers OR chairs)].",
+        "entity": "Muerte",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "LOW",
+          "decision": "REJECT",
+          "reason": "No puede formularse una proposition concreta.",
+          "signals": {
+            "subjectClarity": 0,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "REJECT",
+          "role": "UNRELATED",
+          "proposition": null,
+          "dimension": null,
+          "rationale": "Navegación o listado relacionado."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "excerpt": "Explore the places and characters that raised the city to the top of the art and culture scene. --> Food and Drink Delve into Madrid’s exciting food scene with dinner at a Michelin-star restaurant, some tapas in a century-old taberna or a cocktail at a rooftop bar. --> Flamenco Discover the best spots in the city to enjoy Spain’s artistic expression par excellence . --> Shopping Art, fashion, luxury goods, antiques, music, technology gadgets… There’s nothing you can’t buy in Madrid. --> Parks and Gardens Madrid boasts an array of public parks and gardens from Casa de Campo, Spain's largest green space, to El Retiro Park, a UNESCO World Heritage Site. --> What’s On in Madrid The city is one of the busiest European capitals in terms of shows and cultural activities.",
+        "entity": "Madrid",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "cultural context",
+          "rationale": "Contenido turístico/promocional, no evidencia suficiente para una explicación cultural."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "excerpt": "Check out our calendar of events. live like a madrileño --> Keep cool with these fans Whether you prefer lace, plain or hand-painted fans, you're bound to find the perfect summer accessory at these shops. --> Artisan ice cream parlours Beat the heat at any of these artisan ice cream shops where you'll discover plenty of flavours to choose from. --> Shops for children Explore these spaces where children can feel at home with products designed especially for them.",
+        "entity": "Madrid",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "cultural context",
+          "rationale": "Contenido turístico/promocional, no evidencia suficiente para una explicación cultural."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "excerpt": "OFFICIAL PRODUCTS --> Madrid City Card The city&rsquo;s new official sightseeing and tourist travel pass. --> Panoramic views at 92 metres An observation deck offering wonderful vistas of the city. --> Official Madrid Shop Visit our store of souvenirs made by local artisans! --> Madrid Top 10 Discover the city's most popular sights and attractions, from one of Europe's largest royal palaces to the magnificent Prado Museum and the Real Madrid football stadium.",
+        "entity": "Madrid",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "cultural context",
+          "rationale": "Contenido turístico/promocional, no evidencia suficiente para una explicación cultural."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "excerpt": "Madrid Top 10 --> Advertisement PLAN YOUR TRIP Travelling to Madrid Getting around Madrid Essential Information Accessible Madrid Learning Spanish Tourist Information Centres Maps and Guides Other Cultures --> Madrid through the seasons No matter what time of year you visit, in Madrid you will enjoy our light and an inexhaustible array of culture, food and entertainment.",
+        "entity": "Madrid",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "cultural context",
+          "rationale": "Contenido turístico/promocional, no evidencia suficiente para una explicación cultural."
+        },
+        "error": "FALSE_REJECT"
+      }
+    ]
+  },
+  "pilot2": {
+    "pilot": "PILOT_2",
+    "total": 8,
+    "predictions": {
+      "KEEP": 1,
+      "REVIEW": 1,
+      "REJECT": 6
+    },
+    "gold": {
+      "KEEP": 1,
+      "REVIEW": 4,
+      "REJECT": 3
+    },
+    "metrics": {
+      "acceptanceRate": 0.125,
+      "classifierPrecision": 1,
+      "classifierRecall": 1,
+      "reviewRate": 0.125,
+      "rejectRate": 0.75,
+      "overallAgreement": 0.625
+    },
+    "confusionMatrix": {
+      "KEEP": {
+        "KEEP": 1,
+        "REVIEW": 0,
+        "REJECT": 0
+      },
+      "REVIEW": {
+        "KEEP": 0,
+        "REVIEW": 1,
+        "REJECT": 0
+      },
+      "REJECT": {
+        "KEEP": 0,
+        "REVIEW": 3,
+        "REJECT": 3
+      }
+    },
+    "errors": [
+      {
+        "pilot": "PILOT_2",
+        "source": "Louise Bourgeois overview",
+        "excerpt": "Discover seven decades of joyful works by Argentinian artist Julio Le Parc, which turns visitors into active participants Tate Modern Until 3 May 2027 FREE FOR MEMBERS Exhibition Frida: The Making of an Icon Step into the life and legacy of Frida Kahlo: revolutionary artist and global icon Tate Modern Until 3 Jan 2027 FREE FOR MEMBERS Exhibition James McNeill Whistler Experience the captivating world of rule-breaking American artist James McNeill Whistler Tate Britain Until 27 Sep 2026 FREE FOR MEMBERS Exhibition Ana Mendieta Experience the powerful work of Ana Mendieta, whose legacy changed the course of contemporary art Tate Modern Until 17 Jan 2027 FREE FOR MEMBERS Shop Left Right Books Treat your bookshelf to titles on art, artists, cultural movements, craft and history Prints Choose your perfect print from over a thousand posters and artworks Gifts From puzzles and games to art supplies, shop our collection of creative gifts Explore online Left Right Discover Art Explore highlights from our collection Search the collection Browse over 70,000 artworks Stories Watch videos, listen to audio and read articles about art and artists Tate Kids The best art website for kids: play, draw and learn",
+        "entity": "Maman",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 0,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "context",
+          "rationale": "Listado de exposiciones y artistas, sin explicar Maman."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "The body in art",
+        "excerpt": "Walker In the early 1990s Nancy Spero (born 1926) composed a series of homages to the Cuban artist, Ana Mendieta (1948–1985). … read Extending bodies Lisa Le Feuvre How artists have explored and utilised prosthetic technologies both to satirise humanity and help in the quest to expand the … read Abject Modernism: The Male Body in the Work of Tatsumi Hijikata, Günter Brus and Rudolf Schwarzkogler Lucy Weir Focusing on the works of Tatsumi Hijikata, Günter Brus and Rudolf Schwarzkogler, this paper examines the representation of the male … SELECTED ARTWORKS IN THE COLLECTION Left Right Arm Extensions Rebecca Horn 1968 Artist’s Breath Piero Manzoni 1960 Sensitive content Untitled (Rape Scene) Ana Mendieta 1973 Body Techniques (after Parallel Stress, Dennis Oppenheim,1970) Carey Young 2007 Mechanical Body Fan Rebecca Horn 1973–4 Space², Providence, Rhode Island Francesca Woodman 1976 Performance Still Mona Hatoum 1985–95",
+        "entity": "Cuerpo",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "ABOUT",
+          "proposition": null,
+          "dimension": "examples / context",
+          "rationale": "El fragmento aporta contexto sobre prácticas corporales, pero mezcla listado o información insuficiente para un claim autónomo."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "The Bayeux Tapestry",
+        "excerpt": "The Bayeux Tapestry The epic adventure of William the Conqueror in 1066 Discover the museum 01 02 03 Discover the Bayeux Tapestry The museum in pictures The Bayeux Tapestry, a UNESCO's \"Memory of the World\" Discover Bayeux Museum What's on?",
+        "entity": "Tapiz de Bayeux",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "ABOUT",
+          "proposition": null,
+          "dimension": "identity / chronology",
+          "rationale": "Identifica la obra y 1066, pero con formulación promocional insuficiente."
+        },
+        "error": "FALSE_REJECT"
+      }
+    ],
+    "rows": [
+      {
+        "pilot": "PILOT_2",
+        "source": "Louise Bourgeois overview",
+        "excerpt": "Our galleries See great art in London, Liverpool and Cornwall Tate Britain Free admission Millbank, London SW1P 4RG Tate Modern Free admission Bankside, London SE1 9TG Tate Liverpool + RIBA North Free admission Mann Island, Liverpool L3 1BP Tate St Ives Ticket or Membership required Porthmeor Beach, St Ives, Cornwall TR26 1TG What's on across Tate Plan your visit to our latest exhibitions and displays Left Right Exhibition Julio Le Parc: Light.",
+        "entity": "Maman",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 0,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REJECT",
+          "role": "UNRELATED",
+          "proposition": null,
+          "dimension": null,
+          "rationale": "Navegación/promoción o selección de obras sin claim sobre la entidad."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "Louise Bourgeois overview",
+        "excerpt": "Discover seven decades of joyful works by Argentinian artist Julio Le Parc, which turns visitors into active participants Tate Modern Until 3 May 2027 FREE FOR MEMBERS Exhibition Frida: The Making of an Icon Step into the life and legacy of Frida Kahlo: revolutionary artist and global icon Tate Modern Until 3 Jan 2027 FREE FOR MEMBERS Exhibition James McNeill Whistler Experience the captivating world of rule-breaking American artist James McNeill Whistler Tate Britain Until 27 Sep 2026 FREE FOR MEMBERS Exhibition Ana Mendieta Experience the powerful work of Ana Mendieta, whose legacy changed the course of contemporary art Tate Modern Until 17 Jan 2027 FREE FOR MEMBERS Shop Left Right Books Treat your bookshelf to titles on art, artists, cultural movements, craft and history Prints Choose your perfect print from over a thousand posters and artworks Gifts From puzzles and games to art supplies, shop our collection of creative gifts Explore online Left Right Discover Art Explore highlights from our collection Search the collection Browse over 70,000 artworks Stories Watch videos, listen to audio and read articles about art and artists Tate Kids The best art website for kids: play, draw and learn",
+        "entity": "Maman",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 0,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "CONTEXT_FOR",
+          "proposition": null,
+          "dimension": "context",
+          "rationale": "Listado de exposiciones y artistas, sin explicar Maman."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "The body in art",
+        "excerpt": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus Arnulf Rainer Untitled (Body Language) (c.1973) Tate © Arnulf Rainer Body art covers a wide range of art from about 1960 on, encompassing a variety of different approaches.",
+        "entity": "Cuerpo",
+        "prediction": {
+          "relevanceRole": "PRIMARY_SUBJECT",
+          "evidenceProposition": {
+            "statement": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus",
+            "supportedDimension": "context / characteristics",
+            "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+          },
+          "confidence": "HIGH",
+          "decision": "KEEP",
+          "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "KEEP",
+          "role": "PRIMARY_SUBJECT",
+          "proposition": "Body art es una práctica artística en la que el cuerpo es el medio y foco principal.",
+          "dimension": "definition",
+          "rationale": "Definición explícita del concepto."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "The body in art",
+        "excerpt": "We would like to hear from you. read Performance art Artworks that are created through actions performed by the artist or other participants, which may be live or recorded, spontaneous … read Actionism Actionism is the English version of the general German term for performance art, specifically used for Vienna-based group Wiener Aktionismus … read Conceptual art Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art … read Feminist art Feminist art is art by artists made consciously in the light of developments in feminist art theory in the early … read Video Art that involves the use of video and /or audio data and relies on moving pictures Explore this term read The Body is Present Even if in Disguise: Tracing the Trace in the Artwork of Nancy Spero and Ana Mendieta Joanna S.",
+        "entity": "Cuerpo",
+        "prediction": {
+          "relevanceRole": "ABOUT",
+          "evidenceProposition": {
+            "statement": "read Performance art Artworks that are created through actions performed by the artist or other participants, which may be live or recorded, spontaneous …",
+            "supportedDimension": "context",
+            "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+          },
+          "confidence": "MEDIUM",
+          "decision": "REVIEW",
+          "reason": "Existe contenido factual, pero falta desambiguar subject o suficiencia.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 0
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "ABOUT",
+          "proposition": null,
+          "dimension": "examples / context",
+          "rationale": "El fragmento aporta contexto sobre prácticas corporales, pero mezcla listado o información insuficiente para un claim autónomo."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "The body in art",
+        "excerpt": "Walker In the early 1990s Nancy Spero (born 1926) composed a series of homages to the Cuban artist, Ana Mendieta (1948–1985). … read Extending bodies Lisa Le Feuvre How artists have explored and utilised prosthetic technologies both to satirise humanity and help in the quest to expand the … read Abject Modernism: The Male Body in the Work of Tatsumi Hijikata, Günter Brus and Rudolf Schwarzkogler Lucy Weir Focusing on the works of Tatsumi Hijikata, Günter Brus and Rudolf Schwarzkogler, this paper examines the representation of the male … SELECTED ARTWORKS IN THE COLLECTION Left Right Arm Extensions Rebecca Horn 1968 Artist’s Breath Piero Manzoni 1960 Sensitive content Untitled (Rape Scene) Ana Mendieta 1973 Body Techniques (after Parallel Stress, Dennis Oppenheim,1970) Carey Young 2007 Mechanical Body Fan Rebecca Horn 1973–4 Space², Providence, Rhode Island Francesca Woodman 1976 Performance Still Mona Hatoum 1985–95",
+        "entity": "Cuerpo",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "ABOUT",
+          "proposition": null,
+          "dimension": "examples / context",
+          "rationale": "El fragmento aporta contexto sobre prácticas corporales, pero mezcla listado o información insuficiente para un claim autónomo."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "The Bayeux Tapestry",
+        "excerpt": "Bayeux Tapestry museum - Closing for renovation work until 2027 The 3 museums The Bayeux Tapestry Memorial Museum of the Battle of Normandy MAHB Museum of Art and History Baron Gérard Practical information Disabled visitor You are a group You are… ?",
+        "entity": "Tapiz de Bayeux",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REJECT",
+          "role": "UNRELATED",
+          "proposition": null,
+          "dimension": null,
+          "rationale": "Navegación/promoción o selección de obras sin claim sobre la entidad."
+        },
+        "error": null
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "The Bayeux Tapestry",
+        "excerpt": "The Bayeux Tapestry The epic adventure of William the Conqueror in 1066 Discover the museum 01 02 03 Discover the Bayeux Tapestry The museum in pictures The Bayeux Tapestry, a UNESCO's \"Memory of the World\" Discover Bayeux Museum What's on?",
+        "entity": "Tapiz de Bayeux",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 0,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REVIEW",
+          "role": "ABOUT",
+          "proposition": null,
+          "dimension": "identity / chronology",
+          "rationale": "Identifica la obra y 1066, pero con formulación promocional insuficiente."
+        },
+        "error": "FALSE_REJECT"
+      },
+      {
+        "pilot": "PILOT_2",
+        "source": "The Bayeux Tapestry",
+        "excerpt": "Find out more PRACTICAL INFORMATION By car From Caen : N13 exit 36 to Bayeux From Rennes : A84 or E03 towards Caen exit 43, then D6 By plane Paris airport, then by train from Gare Saint-Lazare station, Paris, to Bayeux station By train Leave the train at Bayeux station About 10-15 minutes walk from the station to the museums Getting here Opening times Prices Waiting time BAYEUX MUSEUM Contact us Visiting Bayeux What's on Practical information Press corner Visit with a group Accessibility Sitemap Legal information We are the official website for the 3 museums managed by the City of Bayeux © 2026 Bayeux Museum - All rights reserved..",
+        "entity": "Tapiz de Bayeux",
+        "prediction": {
+          "relevanceRole": "UNRELATED",
+          "evidenceProposition": null,
+          "confidence": "HIGH",
+          "decision": "REJECT",
+          "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+          "signals": {
+            "subjectClarity": 1,
+            "extractability": 1,
+            "purposeFit": 1,
+            "noise": 1
+          }
+        },
+        "gold": {
+          "decision": "REJECT",
+          "role": "UNRELATED",
+          "proposition": null,
+          "dimension": null,
+          "rationale": "Navegación/promoción o selección de obras sin claim sobre la entidad."
+        },
+        "error": null
+      }
+    ]
+  },
+  "combined": {
+    "total": 27,
+    "classifierPrecision": 1,
+    "classifierRecall": 0.75,
+    "reviewRate": 0.037037037037037035,
+    "confusionMatrix": {
+      "KEEP": {
+        "KEEP": 9,
+        "REVIEW": 0,
+        "REJECT": 0
+      },
+      "REVIEW": {
+        "KEEP": 0,
+        "REVIEW": 1,
+        "REJECT": 0
+      },
+      "REJECT": {
+        "KEEP": 3,
+        "REVIEW": 8,
+        "REJECT": 6
+      }
+    }
+  },
+  "rolloutReadiness": {
+    "previous": 63,
+    "current": 63,
+    "reason": "Implementation exists, but Pilot 1/Pilot 2 gold evaluation does not yet meet Stage 1 confidence; no automatic score increase.",
+    "currentStage": "STAGE_0_EXPERIMENTAL",
+    "nextStage": "STAGE_1_SMALL_BATCH_READY",
+    "distanceToStage1": "KEEP precision and review workflow remain below exit criteria",
+    "majorStepsRemaining": 3,
+    "validationBatchesRemaining": 1,
+    "criticalBlockersOpen": [
+      "B-01 semantic evidence precision",
+      "B-02 operational human review"
+    ],
+    "newBlockers": [],
+    "closedBlockers": [],
+    "knowledgeCoverage": "Unchanged; pipeline readiness is separate from entity depth."
+  },
+  "note": "Deterministic evaluation over frozen Pilot 1/Pilot 2 artifacts. No LLM, no new Sources, no writes."
+}

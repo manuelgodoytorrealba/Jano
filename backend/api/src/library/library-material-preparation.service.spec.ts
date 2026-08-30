@@ -8,4 +8,12 @@ describe('textFromHtml', () => {
       ),
     ).toBe('La máquina «lee».\nSegunda parte.');
   });
+
+  it('removes common cookie, breadcrumb and related-content chrome', () => {
+    expect(
+      textFromHtml(
+        '<main><div class="cookie-banner">Accept cookies</div><div class="breadcrumb">Home</div><h1>Título</h1><p>Contenido sustantivo.</p><aside class="related">Related</aside></main>',
+      ),
+    ).toBe('Título\nContenido sustantivo.');
+  });
 });

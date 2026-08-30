@@ -32,6 +32,62 @@ Este documento define el comportamiento editorial del pipeline. Los owners de co
 - Reintentar o reanudar no debe duplicar documentos, propuestas, Evidence ni decisiones.
 - La ausencia o sustitución de un proveedor de IA no bloquea el trabajo manual ni altera conocimiento ya revisado.
 
+### Generación editorial de entidades públicas
+
+Los resúmenes y ensayos generados explican la entidad como conocimiento autónomo. Reciben datos de la
+entidad, relaciones existentes con su justificación y evidencia, fuentes, contexto documental explícito y
+un catálogo de nombres canónicos. No describen la función de una entidad dentro de JANO ni convierten
+metadata o relaciones en una enumeración narrativa.
+
+Los enlaces editoriales se producen mediante nombres presentes en el catálogo disponible y se normalizan
+al slug interno sólo después de validar la salida. Guardar esos enlaces nunca crea, publica, modifica o
+elimina Relations canónicas. Una Relation puede orientar el texto únicamente cuando su metadata permite
+explicar la conexión y conservar su grado de certeza; la generación no completa justificaciones ausentes.
+
+La selección del proveedor es independiente del contrato editorial: `AI_PROVIDER` selecciona el adaptador
+y `AI_MODEL` selecciona el modelo. Ollama es el adaptador local disponible actualmente; `OLLAMA_MODEL` se
+mantiene sólo como fallback de compatibilidad. El Editorial Quality Benchmark puede ejecutarse con el
+proveedor deshabilitado para auditar selección de dataset y disponibilidad sin producir texto ficticio.
+
+### Readiness, grounding y trazabilidad de claims
+
+Antes de generar una ficha, el benchmark calcula una preparación documental por dimensiones adaptadas al
+tipo de entidad. Las relaciones cuentan como candidatas de contexto, nunca como evidencia por sí mismas.
+Una relación sólo puede sostener una afirmación cuando su justificación o una cita asociada contiene la
+premisa relevante.
+
+El auditor clasifica cada afirmación como `STRUCTURED_FACT`, `DIRECT_SOURCE`, `RELATION_EVIDENCE`,
+`ATTRIBUTED_INTERPRETATION`, `SUPPORTED_SYNTHESIS`, `SUPPORTED_INFERENCE` o `UNSUPPORTED`; los encabezados
+se marcan `NOT_APPLICABLE`. Cada clasificación conserva las premisas, origen y confianza. La puntuación de
+readiness pondera cobertura y calidad de fuentes, no el número bruto de relaciones, y muestra advertencias
+por debajo de 75, por falta de citas o por relaciones sin justificación. El gate no bloquea el dry-run de
+weak-corpus, pero impide confundir una prueba técnica con una autorización editorial.
+
+La solución mínima de trazabilidad es un informe QA transitorio: `claim → premises → origin → locator`.
+No se crea todavía una tabla por frase. Al persistir una generación sólo deben conservarse versión del
+prompt, proveedor/modelo, huella del contexto y resultado revisable; la evidencia canónica continúa en
+Sources/Evidence/Relations. El retrieval selecciona primero fragmentos documentales citables, limita el
+presupuesto de contexto y conserva su procedencia; el catálogo de entidades sirve únicamente para resolver
+`[[Nombre canónico]]`.
+
+La preparación no es un gate binario. El benchmark calcula `editorialDepth`: `IDENTITY_ONLY`,
+`BASIC_EXPLANATION`, `EDITORIAL_ENTRY`, `CONTEXTUAL_ESSAY` o `DOCUMENTARY_ESSAY`. El nivel limita de forma
+adaptativa longitud, número de secciones, relaciones e interpretaciones permitidas. Una entidad con poco
+contexto conserva una entrada breve y factual; sólo un corpus documental con citas permite un ensayo de
+profundidad máxima. El retrieval compartido puede elevar el nivel únicamente cuando recupera fragments
+relevantes y trazables desde entidades relacionadas.
+
+Las `ResearchEvidence` y `ResearchEntity` del Studio permanecen privadas y en revisión (`PENDING`) hasta
+una decisión explícita. El generador de entidades canónicas no las lee directamente: sólo podrá usar una
+Evidence cuando haya pasado el flujo de Knowledge Review/Promotion y su procedencia se haya materializado
+en `SourceRef`, `Citation` o el vínculo canónico equivalente. Archivar un ResearchProject no puede romper
+ese conocimiento promocionado porque el Core debe conservar Source, locator y provenance independientes.
+
+La preparación de documentos remotos mantiene responsabilidades separadas: una URL PDF debe adquirirse y
+almacenarse como `LibraryMaterialVersion` antes de llamar al preparador PDF; `LibraryMaterialPreparationService`
+no descarga PDFs arbitrariamente. Las respuestas HTTP 403 se registran como acceso denegado/manual y las
+429 se reintentan con backoff, `Retry-After`, cache por URL y un límite finito.
+
 ## Tipos de entrada y disponibilidad actual
 
 | Entrada                     | Tratamiento editorial                                                   | Disponibilidad actual                                                                |

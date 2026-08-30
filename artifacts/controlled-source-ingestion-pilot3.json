@@ -1,0 +1,982 @@
+{
+  "mode": "DEVELOPMENT_APPLY",
+  "pilot": "PILOT_3_MICRO_VALIDATION",
+  "selectedSourceIds": [
+    "mannerism-met-source",
+    "mannerism-smarthistory-source",
+    "entierro-orgaz-prado-source",
+    "entierro-orgaz-santo-tome-source",
+    "semillas-girasol-tate-source",
+    "semillas-girasol-aiweiwei-source",
+    "cmtfxymg000f842keretvyms6",
+    "cmtfxymrc00fl42ket93zpnwa",
+    "cmtfzfo1m000i1kphutylnlfr",
+    "cmtfzfo21000m1kph5hgydr1j"
+  ],
+  "sourcePurposeModel": [
+    "VISUAL_PROVENANCE",
+    "CANONICAL_METADATA",
+    "EDITORIAL_REFERENCE",
+    "DOCUMENTARY_TEXT",
+    "INTERPRETIVE_SOURCE",
+    "GENERAL_REFERENCE",
+    "OTHER_UNKNOWN"
+  ],
+  "sourceCountRequested": 10,
+  "sourceCountFound": 10,
+  "projectId": "cmtg5shkf0000absjdacomore",
+  "results": [
+    {
+      "source": {
+        "id": "mannerism-met-source",
+        "title": "Mannerism: Bronzino (1503–1572) and His Contemporaries",
+        "url": "https://www.metmuseum.org/toah/hd/zino/hd_zino.htm",
+        "linkedEntities": [
+          "Manierismo"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "fetch failed",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg5shkp0001absj0cymz6uf",
+        "versionId": "cmtg5shku0002absjxygrbuk6",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "mannerism-smarthistory-source",
+        "title": "Mannerism, an introduction",
+        "url": "https://smarthistory.org/mannerism-introduction/",
+        "linkedEntities": [
+          "Manierismo"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg5sq4v0003absjsgwr2suf",
+        "versionId": "cmtg5sq4x0004absj0z22w6n1",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "entierro-orgaz-santo-tome-source",
+        "title": "El entierro del señor de Orgaz",
+        "url": "https://santotome.org/la-iglesia/",
+        "linkedEntities": [
+          "El entierro del conde de Orgaz"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 9122,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "La Iglesia | Santo Tomé Ir al contenido Tarifas y horarios El Greco La Iglesia Parroquia Noticias X Editar el contenido Contacto Plaza del Conde 4 45002 Toledo (+34) 925 256 098 info@santotome.org Horario 01 MAR - 15 OCT: 10:00 AM - 18:45 PM 16 OCT - 28 FEB: 10:00 AM - 17:45 PM Cómo llegar Tarifas y horarios El Greco La Iglesia Parroquia Noticias X Editar el contenido Contacto Plaza del Conde 4 45002 Toledo (+34) 925 256 098 info@santotome.org Horario 01 MAR - 15 OCT: 10:00 AM - 18:45 PM 16 OCT - 28 FEB: 10:00 AM - 17:45 PM Cómo llegar La Iglesia IGLESIA DE SANTO TOMÉ Desde 1085 Fundación de la iglesia La parroquia debió ser fundada tras la reconquista cristiana de la ciudad por Alfonso VI en el 1085, puesto que la primera noticia que tenemos de su existencia es de 1142.",
+          "primaryEntity": "El entierro del conde de Orgaz",
+          "entityAssociations": [
+            {
+              "entity": "El entierro del conde de Orgaz",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "entierro-orgaz-santo-tome-source",
+            "materialId": "cmtg5sq6q0005absjr0tpv28u",
+            "versionId": "cmtg5sq6s0006absjwqby2pjl"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "Del primer edificio mudéjar conserva el gran arco polilobulado superpuesto al actual arco toral, que separa la nave principal del presbiterio, junto con los recios machones de esta parte de la nave y un pequeño arquillo lobulado sobre un friso de ladrillos en esquinilla que sobrevive en la parte alta, en lo que fue la cabecera semicircular de la primitiva iglesia de una sola nave.",
+          "primaryEntity": "El entierro del conde de Orgaz",
+          "entityAssociations": [
+            {
+              "entity": "El entierro del conde de Orgaz",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "entierro-orgaz-santo-tome-source",
+            "materialId": "cmtg5sq6q0005absjr0tpv28u",
+            "versionId": "cmtg5sq6s0006absjwqby2pjl"
+          }
+        },
+        {
+          "locator": "paragraph-3",
+          "text": "Don Gonzalo Ruiz de Toledo Un generoso caballero Don Gonzalo Ruiz de Toledo, notario mayor de Castilla y señor de la villa de Orgaz, destacó por sus generosas obras de caridad, contribuyendo a la reconstrucción de iglesias parroquiales como ésta, San Justo y San Bartolomé y construyendo a sus expensas la iglesia de San Esteban del convento de los agustinos.",
+          "primaryEntity": "El entierro del conde de Orgaz",
+          "entityAssociations": [
+            {
+              "entity": "El entierro del conde de Orgaz",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "entierro-orgaz-santo-tome-source",
+            "materialId": "cmtg5sq6q0005absjr0tpv28u",
+            "versionId": "cmtg5sq6s0006absjwqby2pjl"
+          }
+        },
+        {
+          "locator": "paragraph-4",
+          "text": "En su testamento había dejado ordenada la donación anual a esta iglesia de unas mandas consistentes en 2 carneros, 2 pellejos de vino, 2 cargas de leña, 16 gallinas y 800 maravedíes para sostenimiento de los sacerdotes y los pobres de la parroquia, que debían recaudarse entre los habitantes de su señorío de Orgaz.",
+          "primaryEntity": "El entierro del conde de Orgaz",
+          "entityAssociations": [
+            {
+              "entity": "El entierro del conde de Orgaz",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "entierro-orgaz-santo-tome-source",
+            "materialId": "cmtg5sq6q0005absjr0tpv28u",
+            "versionId": "cmtg5sq6s0006absjwqby2pjl"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "La Iglesia | Santo Tomé Ir al contenido Tarifas y horarios El Greco La Iglesia Parroquia Noticias X Editar el contenido Contacto Plaza del Conde 4 45002 Toledo (+34) 925 256 098 info@santotome.org Horario 01 MAR - 15 OCT: 10:00 AM - 18:45 PM 16 OCT - 28 FEB: 10:00 AM - 17:45 PM Cómo llegar Tarifas y horarios El Greco La Iglesia Parroquia Noticias X Editar el contenido Contacto Plaza del Conde 4 45002 Toledo (+34) 925 256 098 info@santotome.org Horario 01 MAR - 15 OCT: 10:00 AM - 18:45 PM 16 OCT - 28 FEB: 10:00 AM - 17:45 PM Cómo llegar La Iglesia IGLESIA DE SANTO TOMÉ Desde 1085 Fundación de la iglesia La parroquia debió ser fundada tras la reconquista cristiana de la ciudad por Alfonso VI en el 1085, puesto que la primera noticia que tenemos de su existencia es de 1142.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Del primer edificio mudéjar conserva el gran arco polilobulado superpuesto al actual arco toral, que separa la nave principal del presbiterio, junto con los recios machones de esta parte de la nave y un pequeño arquillo lobulado sobre un friso de ladrillos en esquinilla que sobrevive en la parte alta, en lo que fue la cabecera semicircular de la primitiva iglesia de una sola nave.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Don Gonzalo Ruiz de Toledo Un generoso caballero Don Gonzalo Ruiz de Toledo, notario mayor de Castilla y señor de la villa de Orgaz, destacó por sus generosas obras de caridad, contribuyendo a la reconstrucción de iglesias parroquiales como ésta, San Justo y San Bartolomé y construyendo a sus expensas la iglesia de San Esteban del convento de los agustinos.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "3/4 evidence candidates from 9122 prepared chars",
+      "created": {
+        "materialId": "cmtg5sq6q0005absjr0tpv28u",
+        "versionId": "cmtg5sq6s0006absjwqby2pjl",
+        "excerptIds": [
+          "cmtg5srve0008absj8nisl4b6",
+          "cmtg5srvq000aabsjxuy92ezn",
+          "cmtg5srw6000cabsju6ljm8ro",
+          "cmtg5srwe000eabsjavkyscdr"
+        ],
+        "evidenceIds": [
+          "cmtg5srvk0009absj12ov179i",
+          "cmtg5srvz000babsj6qhh07co",
+          "cmtg5srwa000dabsj6lfyc93y"
+        ],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "entierro-orgaz-prado-source",
+        "title": "El entierro del señor de Orgaz — ficha de colección",
+        "url": "https://www.museodelprado.es/coleccion/obra-de-arte/el-entierro-del-seor-de-orgaz/46a8d08b-00ec-48c9-930c-92d517269fb8",
+        "linkedEntities": [
+          "El entierro del conde de Orgaz"
+        ]
+      },
+      "purpose": "CANONICAL_METADATA",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg5srwg000fabsjml5p5lc3",
+        "versionId": "cmtg5srwi000gabsjdyw01kux",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "semillas-girasol-tate-source",
+        "title": "The Unilever Series: Ai Weiwei: Sunflower Seeds",
+        "url": "https://www.tate.org.uk/whats-on/tate-modern/exhibition/unilever-series-ai-weiwei-sunflower-seeds",
+        "linkedEntities": [
+          "Semillas de girasol"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 404",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg5sry0000habsj8td1i0s7",
+        "versionId": "cmtg5sry2000iabsjh0h0xerm",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "semillas-girasol-aiweiwei-source",
+        "title": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+        "url": "https://www.aiweiwei.com/1000years-2",
+        "linkedEntities": [
+          "Semillas de girasol"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 4047,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "\" data-localized=\"{\"invalidVideo\":\"Invalid video embed.\",\"playButton\":\"Play\"}\" > 1000 YEARS OF JOYS AND SORROWS In his widely anticipated memoir, “one of the most important artists working in the world today” (Financial Times) tells a century-long epic tale of China through the story of his own extraordinary life and the legacy of his father, the nation’s most celebrated poet. “An impassioned testament to the enduring powers of art—to challenge the state and the status quo, to affirm essential and inconvenient truths, and to assert the indispensable agency of imagination and will in the face of political repression.”—Michiko Kakutani Hailed as “an eloquent and seemingly unsilenceable voice of freedom” by The New York Times, Ai Weiwei has written a sweeping memoir that presents a remarkable history of China over the last hundred years while also illuminating his artistic process.",
+          "primaryEntity": "Semillas de girasol",
+          "entityAssociations": [
+            {
+              "entity": "Semillas de girasol",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "semillas-girasol-aiweiwei-source",
+            "materialId": "cmtg5ssxg000jabsj6erag8zy",
+            "versionId": "cmtg5ssxl000kabsjtrh6llcn"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "Once an intimate of Mao Zedong and the nation’s most celebrated poet, Ai Weiwei’s father, Ai Qing, was branded a rightist during the Cultural Revolution, and he and his family were banished to a desolate place known as “Little Siberia,” where Ai Qing was sentenced to hard labor cleaning public toilets.",
+          "primaryEntity": "Semillas de girasol",
+          "entityAssociations": [
+            {
+              "entity": "Semillas de girasol",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "semillas-girasol-aiweiwei-source",
+            "materialId": "cmtg5ssxg000jabsj6erag8zy",
+            "versionId": "cmtg5ssxl000kabsjtrh6llcn"
+          }
+        },
+        {
+          "locator": "paragraph-3",
+          "text": "At once ambitious and intimate, 1000 Years of Joys and Sorrows offers a deep understanding of the myriad forces that have shaped modern China, and serves as a timely reminder of the urgent need to protect freedom of expression. “1000 Years of Joys and Sorrows” is out now.",
+          "primaryEntity": "Semillas de girasol",
+          "entityAssociations": [
+            {
+              "entity": "Semillas de girasol",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "semillas-girasol-aiweiwei-source",
+            "materialId": "cmtg5ssxg000jabsj6erag8zy",
+            "versionId": "cmtg5ssxl000kabsjtrh6llcn"
+          }
+        },
+        {
+          "locator": "paragraph-4",
+          "text": "I wanted to try something involving a material object that had close associations with culture and history, memory and identity, a subject that would be instantly recognizable but at the same time open to a variety of interpretations… In Mao’s China, sunflowers also had a special, symbolic status.",
+          "primaryEntity": "Semillas de girasol",
+          "entityAssociations": [
+            {
+              "entity": "Semillas de girasol",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "semillas-girasol-aiweiwei-source",
+            "materialId": "cmtg5ssxg000jabsj6erag8zy",
+            "versionId": "cmtg5ssxl000kabsjtrh6llcn"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "\" data-localized=\"{\"invalidVideo\":\"Invalid video embed.\",\"playButton\":\"Play\"}\" > 1000 YEARS OF JOYS AND SORROWS In his widely anticipated memoir, “one of the most important artists working in the world today” (Financial Times) tells a century-long epic tale of China through the story of his own extraordinary life and the legacy of his father, the nation’s most celebrated poet. “An impassioned testament to the enduring powers of art—to challenge the state and the status quo, to affirm essential and inconvenient truths, and to assert the indispensable agency of imagination and will in the face of political repression.”—Michiko Kakutani Hailed as “an eloquent and seemingly unsilenceable voice of freedom” by The New York Times, Ai Weiwei has written a sweeping memoir that presents a remarkable history of China over the last hundred years while also illuminating his artistic process.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Once an intimate of Mao Zedong and the nation’s most celebrated poet, Ai Weiwei’s father, Ai Qing, was branded a rightist during the Cultural Revolution, and he and his family were banished to a desolate place known as “Little Siberia,” where Ai Qing was sentenced to hard labor cleaning public toilets.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "At once ambitious and intimate, 1000 Years of Joys and Sorrows offers a deep understanding of the myriad forces that have shaped modern China, and serves as a timely reminder of the urgent need to protect freedom of expression. “1000 Years of Joys and Sorrows” is out now.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "3/4 evidence candidates from 4047 prepared chars",
+      "created": {
+        "materialId": "cmtg5ssxg000jabsj6erag8zy",
+        "versionId": "cmtg5ssxl000kabsjtrh6llcn",
+        "excerptIds": [
+          "cmtg5stvw000mabsj195gvgym",
+          "cmtg5stw2000oabsjw6zvw5ug",
+          "cmtg5stw8000qabsj3hn66na0",
+          "cmtg5stwe000sabsjblgt7lwz"
+        ],
+        "evidenceIds": [
+          "cmtg5stvy000nabsjpedng5k2",
+          "cmtg5stw5000pabsjcjitxmuj",
+          "cmtg5stwb000rabsjdficz2yx"
+        ],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtfxymg000f842keretvyms6",
+        "title": "Cy Twombly — registro de autoridad",
+        "url": "https://www.wikidata.org/wiki/Q159566",
+        "linkedEntities": [
+          "Cy Twombly"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 27131,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "Twombly Edwin Parker Twobly Edwin Parker Twombly Jnr edit Language Label Description Also known as default for all languages Cy Twombly – English Cy Twombly American painter, sculptor and photographer (1928–2011) Edwin Parker Twombly Edwin Parker \"Cy\" Twombly, Jr.",
+          "primaryEntity": "Cy Twombly",
+          "entityAssociations": [
+            {
+              "entity": "Cy Twombly",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtfxymg000f842keretvyms6",
+            "materialId": "cmtg5stwg000tabsjlw1f6naa",
+            "versionId": "cmtg5stwi000uabsjqalcs93q"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "Twombly Edwin Parker Twobly Edwin Parker Twombly Jnr Statements instance of human 3 references stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in datos.bne.es retrieved 25 February 2024 National Library of Spain SpMaBN ID (BNE v1.0) XX1142502 retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 sex or gender male 4 references stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in Museum of Modern Art online collection Museum of Modern Art artist ID 5988 retrieved 4 December 2019 stated in RKDartists RKDartists ID 78599 stated in Integrated Authority File GND ID 118624865 retrieved 14 June 2024 country of citizenship United States 3 references imported from Wikimedia project French Wikipedia stated in Museum of Modern Art online collection Museum of Modern Art artist ID 5988 retrieved 4 December 2019 reference URL https://www.workwithdata.com/person/cy-twombly-1928 retrieved 2 December 2024 name in native language Cy Twombly (English) 0 references birth name Edwin Parker (English) 0 references given name Cy object of statement has role nickname 1 reference reference URL http://www.cytwombly.org/biography Edwin 0 references family name Twombly 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500032301 pseudonym Twombly, Edwin Parker 0 references date of birth 25 April 1928 Gregorian 18 references stated in Integrated Authority File retrieved 26 April 2014 stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in RKDartists RKDartists ID 78599 title Cy Twombly (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Cy-Twombly subject named as Cy Twombly retrieved 9 October 2017 stated in SNAC SNAC ARK ID w60587rb subject named as Cy Twombly retrieved 9 October 2017 stated in Find a Grave Find a Grave memorial ID 72960593 subject named as Cy Twombly retrieved 9 October 2017 stated in Discogs Discogs artist ID 3071799 subject named as Cy Twombly retrieved 9 October 2017 stated in Encyclopaedia Metallum Encyclopaedia Metallum artist ID 287499 subject named as Cy Twombly retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID twombly-cy subject named as Cy Twombly stated in Luminous-Lint Luminous-Lint ID Cy__Twombly subject named as Cy Twombly stated in Twombly, Cy subject named as Cy Twombly stated in Le Delarge Le Delarge artist ID 10575_artiste_TWOMBLY_Cy subject named as Cy ( Edwin Parker Twombly, jr, dit ) TWOMBLY stated in Roglo Roglo person ID p=edwin+parker;n=twombly subject named as Edwin Parker Twombly stated in Croatian Encyclopedia Hrvatska enciklopedija ID 62886 subject named as Cy Twombly stated in The Fine Art Archive abART person ID 43841 retrieved 1 April 2021 reference URL http://www.cytwombly.org/biography stated in Munzinger Personen Munzinger person ID 00000017484 retrieved 9 October 2017 subject named as Cy Twombly retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 quotation 1928-04-25 (Dutch) place of birth Lexington located in the administrative territorial entity Virginia 2 references stated in RKDartists RKDartists ID 78599 stated in The Fine Art Archive Db abART person ID 43841 date of death 5 July 2011 16 references reference URL http://www.google.com/hostednews/afp/article/ALeqM5iPveHcv9hN9zFBBZP9yZJai_0_Qw?docId=CNG.eca0b99829d410a9a9b56c3e05884cf1.451 stated in Integrated Authority File retrieved 26 April 2014 stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in RKDartists RKDartists ID 78599 title Cy Twombly (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Cy-Twombly subject named as Cy Twombly retrieved 9 October 2017 stated in SNAC SNAC ARK ID w60587rb subject named as Cy Twombly retrieved 9 October 2017 stated in Find a Grave Find a Grave memorial ID 72960593 subject named as Cy Twombly retrieved 9 October 2017 stated in Discogs Discogs artist ID 3071799 subject named as Cy Twombly retrieved 9 October 2017 stated in Encyclopaedia Metallum Encyclopaedia Metallum artist ID 287499 subject named as Cy Twombly retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID twombly-cy subject named as Cy Twombly stated in Twombly, Cy subject named as Cy Twombly stated in Roglo Roglo person ID p=edwin+parker;n=twombly subject named as Edwin Parker Twombly stated in Croatian Encyclopedia Hrvatska enciklopedija ID 62886 subject named as Cy Twombly stated in The Fine Art Archive abART person ID 43841 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000017484 retrieved 9 October 2017 subject named as Cy Twombly retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 quotation 2011-07-05 (Dutch) place of death Rome country Italy 3 references stated in Integrated Authority File retrieved 31 December 2014 stated in RKDartists RKDartists ID 78599 stated in The Fine Art Archive Db abART person ID 43841 manner of death natural causes 1 reference based on heuristic inferred from cause of death cause of death cancer 1 reference imported from Wikimedia project Arabic Wikipedia father Cy Twombly 0 references child Alessandro Cyrus Twombly 0 references languages spoken, written or signed English 2 references stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 CONOR.SI ID 42687843 stated in CONOR.SI occupation painter 2 references stated in The Fine Art Archive abART person ID 43841 retrieved 1 April 2021 stated in Union List of Artist Names Union List of Artist Names ID 500032301 sculptor 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500032301 photographer 3 references stated in The Fine Art Archive abART person ID 43841 retrieved 1 April 2021 stated in Union List of Artist Names Union List of Artist Names ID 500032301 stated in RKDartists RKDartists ID 78599 retrieved 12 December 2025 draftsperson 1 reference inferred from Museum of Modern Art online collection Museum of Modern Art work ID 37220 retrieved 4 December 2019 printmaker 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500032301 architectural drafter 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500032301 visual artist 1 reference retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 artist 1 reference reference URL https://www.workwithdata.com/person/cy-twombly-1928 retrieved 2 December 2024 field of work painting 0 references art of sculpture 0 references educated at Black Mountain College start time 1951 end time 1952 1 reference reference URL http://www.gagosian.com/artists/cy-twombly title Cy Twombly (English) publisher Gagosian Gallery Art Students League of New York start time 1950 end time 1951 0 references Washington and Lee University 0 references School of the Museum of Fine Arts start time 1947 end time 1949 0 references Darlington School 1 reference imported from Wikimedia project English Wikipedia Wikimedia import URL https://en.wikipedia.org/w/index.php?title=Darlington_School&oldid=999713064 retrieved 4 March 2021 Aiglon College 1 reference imported from Wikimedia project English Wikipedia student of Pierre Daura 0 references Franz Kline 0 references Robert Motherwell 0 references Ben Shahn 0 references work location Munich 1 reference stated in RKDartists RKDartists ID 78599 Formia 1 reference stated in RKDartists RKDartists ID 78599 Gaeta 1 reference stated in RKDartists RKDartists ID 78599 Ischia 1 reference stated in RKDartists RKDartists ID 78599 Rome 1 reference stated in RKDartists RKDartists ID 78599 Tangier 1 reference stated in RKDartists RKDartists ID 78599 Florida 1 reference stated in RKDartists RKDartists ID 78599 Buena Vista 1 reference stated in RKDartists RKDartists ID 78599 Boston 1 reference stated in RKDartists RKDartists ID 78599 Lexington 1 reference stated in RKDartists RKDartists ID 78599 New York City 1 reference stated in RKDartists RKDartists ID 78599 Asheville 1 reference stated in RKDartists RKDartists ID 78599 participant in documenta 7 1 reference reference URL https://www.documenta.de/en/retrospective/documenta_7 retrieved 5 September 2018 archive URL https://web.archive.org/web/20190518200050/https://www.documenta.de/en/retrospective/documenta_7 archive date 18 May 2019 notable work The Ceiling 0 references archives at Cy Twombly Foundation 0 references artist files at Philadelphia Museum of Art Library and Archives 1 reference reference URL https://pacscl.exlibrisgroup.com:48994/F/?func=find-b&request=000195841&find_code=SYS Smithsonian American Art and Portrait Gallery Library 1 reference reference URL https://library.si.edu/art-and-artist-files Frick Art Research Library 1 reference Frick Art Research Library Artist File ID 991005651029707141 National Gallery of Art Library 1 reference reference URL https://library.nga.gov/permalink/01NGA_INST/1cl1g8d/alma99822453504896 has works in the collection Städel Museum 1 reference inferred from Städel Museum Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P4581 https://www.wikidata.org/wiki/Property:P4581#P2302 Museo Nacional Centro de Arte Reina Sofía 1 reference inferred from Museo Nacional Centro de Arte Reina Sofía Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P4439 https://www.wikidata.org/wiki/Property:P4439#P2302 San Francisco Museum of Modern Art 1 reference inferred from San Francisco Museum of Modern Art Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P4936 https://www.wikidata.org/wiki/Property:P4936#P2302 Art Institute of Chicago 1 reference inferred from Art Institute of Chicago Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P6295 https://www.wikidata.org/wiki/Property:P6295#P2302 Museum of Modern Art 2 references inferred from Museum of Modern Art Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P2174 https://www.wikidata.org/wiki/Property:P2174#P2302 inferred from Museum of Modern Art online collection Museum of Modern Art work ID 37220 retrieved 4 December 2019 Tate 0 references National Gallery of Art 0 references National Gallery of Canada 0 references Philadelphia Museum of Art 1 reference inferred from Philadelphia Museum of Art Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P8317 https://www.wikidata.org/wiki/Property:P8317#P2302 Metropolitan Museum of Art 1 reference The Met object ID 482639 Stedelijk Museum Amsterdam 2 references inferred from Q24062439 retrieved 15 February 2021 title Untitled (English) reference URL https://www.stedelijk.nl/nl/collectie/6088-cy-twombly-untitled retrieved 7 September 2021 Solomon R.",
+          "primaryEntity": "Cy Twombly",
+          "entityAssociations": [
+            {
+              "entity": "Cy Twombly",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtfxymg000f842keretvyms6",
+            "materialId": "cmtg5stwg000tabsjlw1f6naa",
+            "versionId": "cmtg5stwi000uabsjqalcs93q"
+          }
+        },
+        {
+          "locator": "paragraph-3",
+          "text": "Guggenheim Museum 1 reference retrieved 20 February 2021 inferred from Untitled Art Gallery of New South Wales 1 reference retrieved 20 February 2021 inferred from Three studies from the Temeraire Bavarian State Painting Collections 1 reference inferred from Q29899177 retrieved 23 February 2021 Corcoran Gallery of Art 1 reference retrieved 27 February 2021 inferred from Synopsis of a Battle Yale University Art Gallery 1 reference retrieved 27 February 2021 inferred from Untitled Musée National d'Art Moderne 1 reference retrieved 1 March 2021 inferred from Q60189221 Whitney Museum of American Art 1 reference inferred from Untitled retrieved 3 March 2021 Rhode Island School of Design Museum 1 reference inferred from Untitled retrieved 3 March 2021 Buffalo AKG Art Museum 1 reference inferred from Untitled retrieved 5 March 2021 Royal Museums of Fine Arts of Belgium 1 reference retrieved 4 May 2021 reference URL https://www.fine-arts-museum.be/nl/de-collectie/artist/twombly-cy-1 Smithsonian American Art Museum 1 reference stated in Smithsonian American Art Museum person/institution ID Smithsonian American Art Museum person/institution ID 4903 retrieved 15 October 2021 National Gallery of Kosovo 1 reference inferred from Graffiti retrieved 8 May 2022 Minneapolis Institute of Art 1 reference inferred from Untitled retrieved 2 June 2022 Stedelijk Museum voor Actuele Kunst 1 reference retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 J.",
+          "primaryEntity": "Cy Twombly",
+          "entityAssociations": [
+            {
+              "entity": "Cy Twombly",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtfxymg000f842keretvyms6",
+            "materialId": "cmtg5stwg000tabsjlw1f6naa",
+            "versionId": "cmtg5stwi000uabsjqalcs93q"
+          }
+        },
+        {
+          "locator": "paragraph-4",
+          "text": "Paul Getty Museum 0 references Kunsthaus Zürich 1 reference inferred from Q131585483 retrieved 5 February 2025 Museum Ludwig 1 reference inferred from Crimes of Passion II retrieved 30 November 2025 Guggenheim Museum Bilbao 1 reference inferred from Nine Discourses on Commodus retrieved 16 February 2026 movement abstract expressionism 0 references Postmodernism 1 reference reference URL https://www.studiointernational.com/index.php/cy-twombly-philosophy-in-paint member of American Academy of Arts and Letters 0 references Royal Academy of Arts subject has role honorary member 0 references American Academy of Arts and Sciences 0 references Accademia di San Luca 1 reference reference URL http://www.accademiasanluca.eu/it/accademici/id/1032/ genre abstract art 1 reference stated in RKDartists RKDartists ID 78599 award received Knight of the Legion of Honour 1 reference imported from Wikimedia project French Wikipedia Goslarer Kaiserring 0 references Praemium Imperiale point in time 1996 1 reference reference URL https://www.praemiumimperiale.org/en/laureate-en/laureates-en retrieved 19 March 2022 Rubenspreis point in time 1987 0 references Q110813485 point in time 3 June 1993 1 reference archive URL https://web.archive.org/web/20140519183811/http://www2.wlu.edu/documents/registrar/honors/hondegs.pdf described at URL https://www.solisprints.co.uk/pages/artist-cy-twombly language of work or name English 0 references plaque image Cy Twombly commemorative plaque.jpg 857 × 1,437; 561 KB 0 references on focus list of Wikimedia project Wiki Loves Pride Art & Artists 0 references WikiProject PCC Wikidata Pilot/Frick Art Reference Library 0 references WikiProject PCC Wikidata Pilot — Smithsonian Libraries — Artists Files 0 references copyright representative Cy Twombly Foundation 1 reference inferred from Italians stated in Museum of Modern Art online collection Museum of Modern Art work ID 79852 retrieved 2 November 2019 subject named as © 2019 Cy Twombly Foundation reproduction right not represented by CISAC member 2 references inferred from Italians stated in Museum of Modern Art online collection Museum of Modern Art work ID 79852 retrieved 2 November 2019 subject named as © 2019 Cy Twombly Foundation DACS ID (former) 3d86c467-bbe0-4240-8b82-37053c2cfb3b retrieved 15 December 2019 stated in DACS register copyright status as a creator works protected by copyrights applies to jurisdiction countries with longer than 50 years pma 1 reference retrieved 18 March 2020 based on heuristic 50 years or more after author(s) death Commons category Cy Twombly 0 references Identifiers VIAF cluster ID 49234268 4 references imported from Wikimedia project English Wikipedia imported from Wikimedia project German Wikipedia imported from Wikimedia project French Wikipedia stated in Japan Search Japan Search name ID サイ・トゥオンブリー retrieved 21 March 2020 ISNI 0000000368586856 1 reference stated in International Standard Name Identifier 0000000114435185 1 reference stated in International Standard Name Identifier Vatican Library VcBA ID 495/264190 subject named as Twombly, Cy, 1928- 2 references VIAF cluster ID 49234268 stated in Virtual International Authority File retrieved 16 July 2020 retrieved 31 May 2026 BIBSYS ID 14050565 1 reference stated in Norwegian Authority File: Persons and Corporate Bodies retrieved 10 March 2015 CANTIC ID 981058529875106706 0 references National Library of Spain SpMaBN ID (BNE v1.0) XX1142502 0 references Bibliothèque nationale de France ID 11991693f 1 reference imported from Wikimedia project French Wikipedia Canadiana Authorities ID (former scheme) 0017F5506 0 references GND ID 118624865 1 reference imported from Wikimedia project German Wikipedia Deutsche Biographie (GND) ID 118624865 0 references DDB person (GND) ID 118624865 0 references JudaicaLink person (GND) ID 118624865 0 references Kalliope-Verbund (GND) ID 118624865 0 references FAST ID 1773174 0 references SBN author ID CFIV115372 subject named as Twombly, Cy 0 references J9U entity ID 987007507969705171 0 references Union List of Artist Names ID 500032301 1 reference stated in Virtual International Authority File VIAF cluster ID 49234268 retrieved 16 December 2014 Library of Congress Authorities ID n79043986 1 reference imported from Wikimedia project German Wikipedia National Library of Latvia ID 000201482 0 references NDL Authority ID 00948318 0 references NACSIS-CAT author ID DA02496177 1 reference stated in CiNii Research CiNii Research ID 1140282266595738368 retrieved 22 March 2023 NL CR AUT ID ola2003192354 1 reference VIAF cluster ID 49234268 stated in Virtual International Authority File retrieved 21 December 2018 Libraries Australia ID 35559529 0 references Nationale Thesaurus voor Auteursnamen ID 070945071 1 reference stated in Virtual International Authority File VIAF cluster ID 49234268 retrieved 16 December 2014 NUKAT ID n01050759 0 references National Library of Poland MMS ID 9810550251705606 0 references RERO ID (legacy) A003916339 0 references Libris-URI vs6893dd3tq2nb9 1 reference stated in LIBRIS publication date 26 March 2018 retrieved 24 August 2018 SELIBR ID 207912 0 references CONOR.SI ID 42687843 subject named as Twombly, Cy, 1928-2011 0 references IdRef ID 027991474 1 reference imported from Wikimedia project French Wikipedia WorldCat Entities ID E39PBJtMqVbVTYJ4HHKQ4Fx7HC 1 reference matched by identifier from Library of Congress Authorities Library of Congress Authorities ID n79043986 retrieved 16 April 2024 abART person ID 43841 0 references American National Biography ID 1701987 0 references archINFORM person/group ID 40775 1 reference reference URL https://www.archinform.net/service/wd_aiarch.php retrieved 25 July 2018 Archives at Yale agent ID people/78435 0 references Art UK artist ID twombly-cy-19282011 subject named as Cy Twombly number of works 4 1 reference title Cy Twombly, 1928–2011 (English) retrieved 30 January 2017 ArtBrokerage artist ID Cy-Twombly 0 references Artcyclopedia artist ID twombly_cy 0 references ARTIC artist ID 37052 0 references artist-info artist ID 35349 0 references Artists of the World ID 00108872 1 reference archINFORM person/group ID 40775 stated in archINFORM retrieved 23 January 2024 Artnet artist ID cy-twombly 0 references Artsy artist ID cy-twombly 0 references askArt person ID 30112 0 references Athenaeum person ID 10173 0 references BBC Things ID a290fe22-a09a-482b-b838-47e1d1782d97 1 reference stated in BBC Things Benezit ID B00186508 0 references Brockhaus Enzyklopädie online ID twombly-cy 0 references BVPH authority ID 1016507 0 references Christie's creator ID 47952 0 references CiNii Research ID 1140282266595738368 0 references Cooper Hewitt person ID 18051565 0 references Cyprus University of Technology ID 113881 0 references DACS ID (2022) 002277 subject named as Twombly, Cy 0 references DACS ID (former) 3d86c467-bbe0-4240-8b82-37053c2cfb3b 0 references De Agostini ID Twombly,+Cy subject named as Twombly, Cy 0 references DFK Paris person ID 0000749697 0 references Discogs artist ID 3071799 0 references Encyclopædia Britannica Online ID biography/Cy-Twombly subject named as Cy Twombly author name string Lisa S.",
+          "primaryEntity": "Cy Twombly",
+          "entityAssociations": [
+            {
+              "entity": "Cy Twombly",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtfxymg000f842keretvyms6",
+            "materialId": "cmtg5stwg000tabsjlw1f6naa",
+            "versionId": "cmtg5stwi000uabsjqalcs93q"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "Twombly Edwin Parker Twobly Edwin Parker Twombly Jnr edit Language Label Description Also known as default for all languages Cy Twombly – English Cy Twombly American painter, sculptor and photographer (1928–2011) Edwin Parker Twombly Edwin Parker \"Cy\" Twombly, Jr.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Twombly Edwin Parker Twobly Edwin Parker Twombly Jnr Statements instance of human 3 references stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in datos.bne.es retrieved 25 February 2024 National Library of Spain SpMaBN ID (BNE v1.0) XX1142502 retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 sex or gender male 4 references stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in Museum of Modern Art online collection Museum of Modern Art artist ID 5988 retrieved 4 December 2019 stated in RKDartists RKDartists ID 78599 stated in Integrated Authority File GND ID 118624865 retrieved 14 June 2024 country of citizenship United States 3 references imported from Wikimedia project French Wikipedia stated in Museum of Modern Art online collection Museum of Modern Art artist ID 5988 retrieved 4 December 2019 reference URL https://www.workwithdata.com/person/cy-twombly-1928 retrieved 2 December 2024 name in native language Cy Twombly (English) 0 references birth name Edwin Parker (English) 0 references given name Cy object of statement has role nickname 1 reference reference URL http://www.cytwombly.org/biography Edwin 0 references family name Twombly 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500032301 pseudonym Twombly, Edwin Parker 0 references date of birth 25 April 1928 Gregorian 18 references stated in Integrated Authority File retrieved 26 April 2014 stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in RKDartists RKDartists ID 78599 title Cy Twombly (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Cy-Twombly subject named as Cy Twombly retrieved 9 October 2017 stated in SNAC SNAC ARK ID w60587rb subject named as Cy Twombly retrieved 9 October 2017 stated in Find a Grave Find a Grave memorial ID 72960593 subject named as Cy Twombly retrieved 9 October 2017 stated in Discogs Discogs artist ID 3071799 subject named as Cy Twombly retrieved 9 October 2017 stated in Encyclopaedia Metallum Encyclopaedia Metallum artist ID 287499 subject named as Cy Twombly retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID twombly-cy subject named as Cy Twombly stated in Luminous-Lint Luminous-Lint ID Cy__Twombly subject named as Cy Twombly stated in Twombly, Cy subject named as Cy Twombly stated in Le Delarge Le Delarge artist ID 10575_artiste_TWOMBLY_Cy subject named as Cy ( Edwin Parker Twombly, jr, dit ) TWOMBLY stated in Roglo Roglo person ID p=edwin+parker;n=twombly subject named as Edwin Parker Twombly stated in Croatian Encyclopedia Hrvatska enciklopedija ID 62886 subject named as Cy Twombly stated in The Fine Art Archive abART person ID 43841 retrieved 1 April 2021 reference URL http://www.cytwombly.org/biography stated in Munzinger Personen Munzinger person ID 00000017484 retrieved 9 October 2017 subject named as Cy Twombly retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 quotation 1928-04-25 (Dutch) place of birth Lexington located in the administrative territorial entity Virginia 2 references stated in RKDartists RKDartists ID 78599 stated in The Fine Art Archive Db abART person ID 43841 date of death 5 July 2011 16 references reference URL http://www.google.com/hostednews/afp/article/ALeqM5iPveHcv9hN9zFBBZP9yZJai_0_Qw?docId=CNG.eca0b99829d410a9a9b56c3e05884cf1.451 stated in Integrated Authority File retrieved 26 April 2014 stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in RKDartists RKDartists ID 78599 title Cy Twombly (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Cy-Twombly subject named as Cy Twombly retrieved 9 October 2017 stated in SNAC SNAC ARK ID w60587rb subject named as Cy Twombly retrieved 9 October 2017 stated in Find a Grave Find a Grave memorial ID 72960593 subject named as Cy Twombly retrieved 9 October 2017 stated in Discogs Discogs artist ID 3071799 subject named as Cy Twombly retrieved 9 October 2017 stated in Encyclopaedia Metallum Encyclopaedia Metallum artist ID 287499 subject named as Cy Twombly retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID twombly-cy subject named as Cy Twombly stated in Twombly, Cy subject named as Cy Twombly stated in Roglo Roglo person ID p=edwin+parker;n=twombly subject named as Edwin Parker Twombly stated in Croatian Encyclopedia Hrvatska enciklopedija ID 62886 subject named as Cy Twombly stated in The Fine Art Archive abART person ID 43841 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000017484 retrieved 9 October 2017 subject named as Cy Twombly retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 quotation 2011-07-05 (Dutch) place of death Rome country Italy 3 references stated in Integrated Authority File retrieved 31 December 2014 stated in RKDartists RKDartists ID 78599 stated in The Fine Art Archive Db abART person ID 43841 manner of death natural causes 1 reference based on heuristic inferred from cause of death cause of death cancer 1 reference imported from Wikimedia project Arabic Wikipedia father Cy Twombly 0 references child Alessandro Cyrus Twombly 0 references languages spoken, written or signed English 2 references stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 CONOR.SI ID 42687843 stated in CONOR.SI occupation painter 2 references stated in The Fine Art Archive abART person ID 43841 retrieved 1 April 2021 stated in Union List of Artist Names Union List of Artist Names ID 500032301 sculptor 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500032301 photographer 3 references stated in The Fine Art Archive abART person ID 43841 retrieved 1 April 2021 stated in Union List of Artist Names Union List of Artist Names ID 500032301 stated in RKDartists RKDartists ID 78599 retrieved 12 December 2025 draftsperson 1 reference inferred from Museum of Modern Art online collection Museum of Modern Art work ID 37220 retrieved 4 December 2019 printmaker 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500032301 architectural drafter 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500032301 visual artist 1 reference retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 artist 1 reference reference URL https://www.workwithdata.com/person/cy-twombly-1928 retrieved 2 December 2024 field of work painting 0 references art of sculpture 0 references educated at Black Mountain College start time 1951 end time 1952 1 reference reference URL http://www.gagosian.com/artists/cy-twombly title Cy Twombly (English) publisher Gagosian Gallery Art Students League of New York start time 1950 end time 1951 0 references Washington and Lee University 0 references School of the Museum of Fine Arts start time 1947 end time 1949 0 references Darlington School 1 reference imported from Wikimedia project English Wikipedia Wikimedia import URL https://en.wikipedia.org/w/index.php?title=Darlington_School&oldid=999713064 retrieved 4 March 2021 Aiglon College 1 reference imported from Wikimedia project English Wikipedia student of Pierre Daura 0 references Franz Kline 0 references Robert Motherwell 0 references Ben Shahn 0 references work location Munich 1 reference stated in RKDartists RKDartists ID 78599 Formia 1 reference stated in RKDartists RKDartists ID 78599 Gaeta 1 reference stated in RKDartists RKDartists ID 78599 Ischia 1 reference stated in RKDartists RKDartists ID 78599 Rome 1 reference stated in RKDartists RKDartists ID 78599 Tangier 1 reference stated in RKDartists RKDartists ID 78599 Florida 1 reference stated in RKDartists RKDartists ID 78599 Buena Vista 1 reference stated in RKDartists RKDartists ID 78599 Boston 1 reference stated in RKDartists RKDartists ID 78599 Lexington 1 reference stated in RKDartists RKDartists ID 78599 New York City 1 reference stated in RKDartists RKDartists ID 78599 Asheville 1 reference stated in RKDartists RKDartists ID 78599 participant in documenta 7 1 reference reference URL https://www.documenta.de/en/retrospective/documenta_7 retrieved 5 September 2018 archive URL https://web.archive.org/web/20190518200050/https://www.documenta.de/en/retrospective/documenta_7 archive date 18 May 2019 notable work The Ceiling 0 references archives at Cy Twombly Foundation 0 references artist files at Philadelphia Museum of Art Library and Archives 1 reference reference URL https://pacscl.exlibrisgroup.com:48994/F/?func=find-b&request=000195841&find_code=SYS Smithsonian American Art and Portrait Gallery Library 1 reference reference URL https://library.si.edu/art-and-artist-files Frick Art Research Library 1 reference Frick Art Research Library Artist File ID 991005651029707141 National Gallery of Art Library 1 reference reference URL https://library.nga.gov/permalink/01NGA_INST/1cl1g8d/alma99822453504896 has works in the collection Städel Museum 1 reference inferred from Städel Museum Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P4581 https://www.wikidata.org/wiki/Property:P4581#P2302 Museo Nacional Centro de Arte Reina Sofía 1 reference inferred from Museo Nacional Centro de Arte Reina Sofía Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P4439 https://www.wikidata.org/wiki/Property:P4439#P2302 San Francisco Museum of Modern Art 1 reference inferred from San Francisco Museum of Modern Art Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P4936 https://www.wikidata.org/wiki/Property:P4936#P2302 Art Institute of Chicago 1 reference inferred from Art Institute of Chicago Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P6295 https://www.wikidata.org/wiki/Property:P6295#P2302 Museum of Modern Art 2 references inferred from Museum of Modern Art Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P2174 https://www.wikidata.org/wiki/Property:P2174#P2302 inferred from Museum of Modern Art online collection Museum of Modern Art work ID 37220 retrieved 4 December 2019 Tate 0 references National Gallery of Art 0 references National Gallery of Canada 0 references Philadelphia Museum of Art 1 reference inferred from Philadelphia Museum of Art Wikimedia import URL https://www.wikidata.org/wiki/Q159566#P8317 https://www.wikidata.org/wiki/Property:P8317#P2302 Metropolitan Museum of Art 1 reference The Met object ID 482639 Stedelijk Museum Amsterdam 2 references inferred from Q24062439 retrieved 15 February 2021 title Untitled (English) reference URL https://www.stedelijk.nl/nl/collectie/6088-cy-twombly-untitled retrieved 7 September 2021 Solomon R.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Guggenheim Museum 1 reference retrieved 20 February 2021 inferred from Untitled Art Gallery of New South Wales 1 reference retrieved 20 February 2021 inferred from Three studies from the Temeraire Bavarian State Painting Collections 1 reference inferred from Q29899177 retrieved 23 February 2021 Corcoran Gallery of Art 1 reference retrieved 27 February 2021 inferred from Synopsis of a Battle Yale University Art Gallery 1 reference retrieved 27 February 2021 inferred from Untitled Musée National d'Art Moderne 1 reference retrieved 1 March 2021 inferred from Q60189221 Whitney Museum of American Art 1 reference inferred from Untitled retrieved 3 March 2021 Rhode Island School of Design Museum 1 reference inferred from Untitled retrieved 3 March 2021 Buffalo AKG Art Museum 1 reference inferred from Untitled retrieved 5 March 2021 Royal Museums of Fine Arts of Belgium 1 reference retrieved 4 May 2021 reference URL https://www.fine-arts-museum.be/nl/de-collectie/artist/twombly-cy-1 Smithsonian American Art Museum 1 reference stated in Smithsonian American Art Museum person/institution ID Smithsonian American Art Museum person/institution ID 4903 retrieved 15 October 2021 National Gallery of Kosovo 1 reference inferred from Graffiti retrieved 8 May 2022 Minneapolis Institute of Art 1 reference inferred from Untitled retrieved 2 June 2022 Stedelijk Museum voor Actuele Kunst 1 reference retrieved 14 May 2024 catalog Axiell Collections collection Stedelijk Museum voor Actuele Kunst inventory number 7551 J.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "3/4 evidence candidates from 27131 prepared chars",
+      "created": {
+        "materialId": "cmtg5stwg000tabsjlw1f6naa",
+        "versionId": "cmtg5stwi000uabsjqalcs93q",
+        "excerptIds": [
+          "cmtg5suih000wabsjcbv1enyo",
+          "cmtg5suim000yabsj3tynyzsu",
+          "cmtg5suiv0010absjeptmcykc",
+          "cmtg5suj20012absjhdxlt170"
+        ],
+        "evidenceIds": [
+          "cmtg5suij000xabsjcd7cr3tx",
+          "cmtg5suiq000zabsjplehi6d1",
+          "cmtg5suiy0011absj1v7i84qg"
+        ],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtfxymrc00fl42ket93zpnwa",
+        "title": "Dan Flavin — registro de autoridad",
+        "url": "https://www.wikidata.org/wiki/Q504395",
+        "linkedEntities": [
+          "Dan Flavin"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 23939,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "From Wikidata American installation artist and painter 1933–1996) (1933–1996) edit Language Label Description Also known as default for all languages Dan Flavin – English Dan Flavin American installation artist and painter 1933–1996) (1933–1996) Statements instance of human 2 references stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002553 sex or gender male 3 references stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 stated in Museum of Modern Art online collection Museum of Modern Art artist ID 1911 retrieved 4 December 2019 stated in RKDartists RKDartists ID 28247 retrieved 28 January 2025 country of citizenship United States 1 reference stated in Museum of Modern Art online collection Museum of Modern Art artist ID 1911 retrieved 4 December 2019 name in native language Dan Flavin (English) 0 references given name Dan series ordinal 1 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin family name Flavin 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin date of birth 1 April 1933 13 references stated in Integrated Authority File GND ID 118875736 retrieved 15 October 2015 stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 stated in RKDartists RKDartists ID 28247 title Dan Flavin (English) stated in Benezit Dictionary of Artists Benezit ID B00065060 title Dan Flavin (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin subject named as Dan Flavin retrieved 9 October 2017 stated in SNAC SNAC ARK ID w60009rd subject named as Dan Flavin retrieved 9 October 2017 stated in Kunstindeks Danmark Kunstindeks Danmark Artist ID 2175 subject named as Dan Flavin retrieved 9 October 2017 stated in Discogs Discogs artist ID 2385876 subject named as Dan Flavin retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID flavin-dan subject named as Dan Flavin retrieved 9 October 2017 stated in Flavin, Dan subject named as Dan Flavin stated in Proleksis Encyclopedia Proleksis enciklopedija ID 21561 subject named as Dan Flavin stated in The Fine Art Archive abART person ID 30798 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000019952 retrieved 9 October 2017 subject named as Dan Flavin place of birth Queens 2 references stated in RKDartists RKDartists ID 28247 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin date of death 29 November 1996 12 references stated in Integrated Authority File GND ID 118875736 retrieved 15 October 2015 stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 stated in RKDartists RKDartists ID 28247 title Dan Flavin (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin subject named as Dan Flavin retrieved 9 October 2017 stated in SNAC SNAC ARK ID w60009rd subject named as Dan Flavin retrieved 9 October 2017 stated in Kunstindeks Danmark Kunstindeks Danmark Artist ID 2175 subject named as Dan Flavin retrieved 9 October 2017 stated in Discogs Discogs artist ID 2385876 subject named as Dan Flavin retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID flavin-dan subject named as Dan Flavin retrieved 9 October 2017 stated in Flavin, Dan subject named as Dan Flavin stated in Le Delarge Le Delarge artist ID 23562_artiste_FLAVIN_Dan subject named as Dan FLAVIN stated in The Fine Art Archive abART person ID 30798 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000019952 retrieved 9 October 2017 subject named as Dan Flavin place of death Riverhead 1 reference stated in RKDartists RKDartists ID 28247 retrieved 26 November 2025 manner of death natural causes 1 reference based on heuristic inferred from cause of death cause of death diabetes 1 reference imported from Wikimedia project Thai Wikipedia languages spoken, written or signed English 1 reference stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 occupation sculptor 3 references stated in The Fine Art Archive abART person ID 30798 retrieved 1 April 2021 stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 architect 0 references draftsperson 2 references inferred from Museum of Modern Art online collection Museum of Modern Art work ID 36609 retrieved 4 December 2019 title Zonder titel (English) reference URL https://www.stedelijk.nl/nl/collectie/26754-dan-flavin-zonder-titel retrieved 7 September 2021 installation artist 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 painter 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 architectural drafter 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500021736 visual artist 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002553 light artist 1 reference stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 art critic 1 reference stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 graphic artist 1 reference stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 artist 1 reference stated in Integrated Authority File GND ID 118875736 retrieved 20 April 2026 field of work art of sculpture 0 references installation artwork 0 references educated at Columbia University 0 references work location Kingdom of the Netherlands 1 reference stated in RKDartists RKDartists ID 28247 New York City 1 reference stated in RKDartists RKDartists ID 28247 floruit 1987 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002553 quotation 1987 (Dutch) start of work period 1959 1 reference stated in RKDartists RKDartists ID 28247 retrieved 23 November 2022 end of work period 1996 1 reference stated in RKDartists RKDartists ID 28247 retrieved 23 November 2022 participant in 4. documenta 1 reference reference URL https://www.documenta.de/en/retrospective/4_documenta retrieved 3 September 2018 Documenta 6 1 reference reference URL https://www.documenta.de/en/retrospective/documenta_6 retrieved 5 September 2018 artist files at Philadelphia Museum of Art Library and Archives 1 reference reference URL https://pacscl.exlibrisgroup.com:48994/F/?func=find-b&request=000135133&find_code=SYS Smithsonian American Art and Portrait Gallery Library 1 reference reference URL https://library.si.edu/art-and-artist-files Frick Art Research Library 1 reference Frick Art Research Library Artist File ID 991005691389707141 College for Creative Studies Library 1 reference reference URL https://lib.collegeforcreativestudies.edu/cgi-bin/koha/opac-detail.pl?biblionumber=86529&query_desc=kw%2Cwrdl%3A%20Dan%20Flavin National Gallery of Art Library 1 reference reference URL https://library.nga.gov/permalink/01NGA_INST/1cl1g8d/alma99752923504896 has works in the collection Museum Boijmans Van Beuningen 1 reference inferred from Collectie Boijmans Online Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P3888 https://www.wikidata.org/wiki/Property:P3888#P2302 Städel Museum 1 reference inferred from Städel Museum Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P4581 https://www.wikidata.org/wiki/Property:P4581#P2302 Museo Nacional Centro de Arte Reina Sofía 1 reference inferred from Museo Nacional Centro de Arte Reina Sofía Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P4439 https://www.wikidata.org/wiki/Property:P4439#P2302 The Nelson-Atkins Museum of Art 1 reference inferred from The Nelson-Atkins Museum of Art Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P5273 https://www.wikidata.org/wiki/Property:P5273#P2302 Auckland Art Gallery 1 reference inferred from Auckland Art Gallery Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P3372 https://www.wikidata.org/wiki/Property:P3372#P2302 Finnish National Gallery 0 references Tate 0 references National Gallery of Art 0 references National Gallery of Canada 0 references Museum of Modern Art 1 reference inferred from Museum of Modern Art online collection Museum of Modern Art work ID 36609 retrieved 4 December 2019 Art Institute of Chicago 1 reference inferred from ARTIC Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P6295 https://www.wikidata.org/wiki/Property:P6295#P2302 Stedelijk Museum voor Actuele Kunst 0 references Kröller-Müller Museum 1 reference inferred from (quietly, to the memory of Mia Visser) retrieved 15 February 2021 Musée National d'Art Moderne 1 reference inferred from Q60191880 retrieved 4 March 2021 Royal Museums of Fine Arts of Belgium 1 reference retrieved 4 May 2021 reference URL https://www.fine-arts-museum.be/nl/de-collectie/artist/flavin-dan-1 San Francisco Museum of Modern Art 1 reference stated in San Francisco Museum of Modern Art online collection SFMOMA artist ID Dan_Flavin retrieved 10 May 2021 Van Abbemuseum 1 reference title Monument on Mrs.",
+          "primaryEntity": "Dan Flavin",
+          "entityAssociations": [
+            {
+              "entity": "Dan Flavin",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtfxymrc00fl42ket93zpnwa",
+            "materialId": "cmtg5suj50013absjdibaefch",
+            "versionId": "cmtg5suj70014absjfx2m6p0c"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "Reppin's survival (Dutch) reference URL https://vanabbemuseum.nl/en/collection/details/collection/?lookup%5B1673%5D%5Bfilter%5D%5B0%5D=id%3AC466 retrieved 5 July 2021 Stedelijk Museum Amsterdam 4 references title untitled (to Piet Mondrian through his preferred colors, red, yellow and blue) (English) reference URL https://www.stedelijk.nl/nl/collectie/94204-dan-flavin-untitled-%28to-piet-mondrian-through-his-preferred-colors-red-yellow-and-blue%29 retrieved 7 September 2021 title ''monument'' for V.",
+          "primaryEntity": "Dan Flavin",
+          "entityAssociations": [
+            {
+              "entity": "Dan Flavin",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtfxymrc00fl42ket93zpnwa",
+            "materialId": "cmtg5suj50013absjdibaefch",
+            "versionId": "cmtg5suj70014absjfx2m6p0c"
+          }
+        },
+        {
+          "locator": "paragraph-3",
+          "text": "Tatlin (English) reference URL https://www.stedelijk.nl/nl/collectie/1543-dan-flavin-%27%27monument%27%27-for-v.-tatlin retrieved 7 September 2021 title Zonder titel (English) reference URL https://www.stedelijk.nl/nl/collectie/26754-dan-flavin-zonder-titel retrieved 7 September 2021 title Minimal art (English) reference URL https://www.stedelijk.nl/nl/collectie/68277-carl-andre-minimal-art retrieved 7 September 2021 Smithsonian American Art Museum 1 reference stated in Smithsonian American Art Museum person/institution ID Smithsonian American Art Museum person/institution ID 1580 retrieved 15 October 2021 Bavarian State Painting Collections 1 reference inferred from Untitled (To Bob and Pat Rohm) retrieved 31 January 2023 Hessel Museum of Art 1 reference reference URL https://bard.emuseum.com/people/838/dan-flavin Design Museum Den Bosch 1 reference reference URL https://hdl.handle.net/21.12135/obj3200 title For Andre Raynaud (Dutch) publication date 1990 retrieved 22 January 2024 type of reference tableware subject named as Dan Flavin Mu.ZEE - Kunstmuseum aan Zee 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002553 Whitney Museum of American Art 1 reference Whitney Museum of American Art artist ID 438 movement Minimalism 2 references imported from Wikimedia project French Wikipedia stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin genre light art 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin installation art 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin described at URL https://www.solisprints.co.uk/pages/artist-dan-flavin language of work or name English 0 references represented by David Zwirner Gallery 1 reference reference URL https://www.davidzwirner.com/artists retrieved 7 April 2018 Artists Rights Society object of statement has role copyright collective 1 reference reference URL https://www.arsny.com/mostwanted/ retrieved 19 August 2018 on focus list of Wikimedia project WikiProject PCC Wikidata Pilot/Frick Art Reference Library 0 references WikiProject PCC Wikidata Pilot — Smithsonian Libraries — Artists Files 0 references NADD Wikidata project 1 reference reference URL https://hdl.handle.net/21.12135/obj3200 title For Andre Raynaud (Dutch) publication date 1990 retrieved 22 January 2024 type of reference tableware subject named as Dan Flavin copyright representative reproduction right represented by CISAC-member 2 references stated in DACS register DACS ID (former) c8d4720e-9ad3-4209-bfeb-0f0637e025b1 retrieved 19 October 2019 stated in ADAGP directory ADAGP artist ID dan-flavin-16033 retrieved 15 December 2019 copyright status as a creator works protected by copyrights applies to jurisdiction countries with longer than 50 years pma 1 reference retrieved 7 March 2020 based on heuristic 50 years or more after author(s) death date of death 29 November 1996 Commons Creator page Dan Flavin 0 references Commons category Dan Flavin 0 references Identifiers VIAF cluster ID 117220346 3 references imported from Wikimedia project German Wikipedia imported from Wikimedia project French Wikipedia stated in Japan Search Japan Search name ID ダン・フレイヴィン retrieved 21 March 2020 ISNI 000000008186322X 1 reference stated in BnF authorities retrieved 13 July 2015 Vatican Library VcBA ID 495/101541 subject named as Flavin, Dan, 1933-1996 2 references VIAF cluster ID 117220346 stated in Virtual International Authority File retrieved 16 July 2020 retrieved 6 June 2026 BIBSYS ID 90371241 1 reference VIAF cluster ID 117220346 retrieved 22 January 2018 stated in Virtual International Authority File National Library of Spain SpMaBN ID (BNE v1.0) XX1236171 0 references Bibliothèque nationale de France ID 12195727n 1 reference imported from Wikimedia project French Wikipedia Canadiana Name Authority ID ncf11946887 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 DBC author ID 87097919148963 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 GND ID 118875736 1 reference imported from Wikimedia project German Wikipedia Deutsche Biographie (GND) ID 118875736 0 references DDB person (GND) ID 118875736 0 references Kalliope-Verbund (GND) ID 118875736 0 references FAST ID 843 0 references SBN author ID SBLV284229 subject named as Flavin, Dan 0 references J9U entity ID 987007298773805171 0 references Union List of Artist Names ID 500021736 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 16 December 2014 Library of Congress Authorities ID n50003508 1 reference imported from Wikimedia project German Wikipedia National Library of Lithuania ID LNB:V*163849;=BR 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 National Library of Latvia ID 000164176 1 reference VIAF cluster ID 117220346 retrieved 22 January 2018 stated in Virtual International Authority File National Library of Ireland ID vtls002478158 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 NACSIS-CAT author ID DA12946258 2 references stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 stated in CiNii Research CiNii Research ID 1140845216531813760 retrieved 13 March 2023 NL CR AUT ID mzk2005295028 1 reference imported from Wikimedia project Czech Wikipedia Libraries Australia ID 35088345 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 Nationale Thesaurus voor Auteursnamen ID 070479011 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 16 December 2014 NUKAT ID n2007148835 0 references National Library of Poland MMS ID 9812463977105606 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 RERO ID (legacy) A003247337 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 Libris-URI hftx5qn13svkc6q 1 reference stated in LIBRIS publication date 21 September 2016 retrieved 24 August 2018 SELIBR ID 397471 0 references IdRef ID 034711104 1 reference imported from Wikimedia project French Wikipedia WorldCat Entities ID E39PBJvXm9RTqBWPYb9bkRgkDq 1 reference matched by identifier from Library of Congress Authorities Library of Congress Authorities ID n50003508 retrieved 21 April 2024 abART person ID 30798 0 references ADAGP artist ID dan-flavin-16033 0 references Art UK artist ID flavin-dan-19331996 0 references Artcyclopedia artist ID flavin_dan 0 references ARTIC artist ID 34492 0 references artist-info artist ID 10294 0 references artist-info curator ID 294672 0 references Artists of the World ID zz012756 0 references Artnet artist ID dan-flavin 0 references Artsy artist ID dan-flavin 0 references askArt person ID 27473 0 references Athenaeum person ID 11681 0 references Auckland Art Gallery artist ID 8382 0 references Beaux-Arts ID dan-flavin 0 references Benezit ID B00065060 0 references Boijmans artist ID 6252 0 references Bridgeman artist ID 3950 0 references Brockhaus Enzyklopädie online ID flavin-dan 0 references Christie's creator ID 22147 0 references CiNii Research ID 1140845216531813760 0 references DACS ID (2022) 000355 subject named as Flavin, Dan 0 references DACS ID (former) c8d4720e-9ad3-4209-bfeb-0f0637e025b1 1 reference retrieved 10 February 2018 De Agostini ID Flavin,+Dan subject named as Flavin, Dan 0 references DFK Paris person ID 0003680649 0 references DigitaltMuseum ID 0210311629200 0 references Discogs artist ID 2385876 0 references Enciclopedia Galega Universal ID 201789 0 references Encyclopædia Britannica Online ID biography/Dan-Flavin subject named as Dan Flavin author name string Lisa S.",
+          "primaryEntity": "Dan Flavin",
+          "entityAssociations": [
+            {
+              "entity": "Dan Flavin",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtfxymrc00fl42ket93zpnwa",
+            "materialId": "cmtg5suj50013absjdibaefch",
+            "versionId": "cmtg5suj70014absjfx2m6p0c"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "From Wikidata American installation artist and painter 1933–1996) (1933–1996) edit Language Label Description Also known as default for all languages Dan Flavin – English Dan Flavin American installation artist and painter 1933–1996) (1933–1996) Statements instance of human 2 references stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002553 sex or gender male 3 references stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 stated in Museum of Modern Art online collection Museum of Modern Art artist ID 1911 retrieved 4 December 2019 stated in RKDartists RKDartists ID 28247 retrieved 28 January 2025 country of citizenship United States 1 reference stated in Museum of Modern Art online collection Museum of Modern Art artist ID 1911 retrieved 4 December 2019 name in native language Dan Flavin (English) 0 references given name Dan series ordinal 1 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin family name Flavin 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin date of birth 1 April 1933 13 references stated in Integrated Authority File GND ID 118875736 retrieved 15 October 2015 stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 stated in RKDartists RKDartists ID 28247 title Dan Flavin (English) stated in Benezit Dictionary of Artists Benezit ID B00065060 title Dan Flavin (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin subject named as Dan Flavin retrieved 9 October 2017 stated in SNAC SNAC ARK ID w60009rd subject named as Dan Flavin retrieved 9 October 2017 stated in Kunstindeks Danmark Kunstindeks Danmark Artist ID 2175 subject named as Dan Flavin retrieved 9 October 2017 stated in Discogs Discogs artist ID 2385876 subject named as Dan Flavin retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID flavin-dan subject named as Dan Flavin retrieved 9 October 2017 stated in Flavin, Dan subject named as Dan Flavin stated in Proleksis Encyclopedia Proleksis enciklopedija ID 21561 subject named as Dan Flavin stated in The Fine Art Archive abART person ID 30798 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000019952 retrieved 9 October 2017 subject named as Dan Flavin place of birth Queens 2 references stated in RKDartists RKDartists ID 28247 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin date of death 29 November 1996 12 references stated in Integrated Authority File GND ID 118875736 retrieved 15 October 2015 stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 stated in RKDartists RKDartists ID 28247 title Dan Flavin (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin subject named as Dan Flavin retrieved 9 October 2017 stated in SNAC SNAC ARK ID w60009rd subject named as Dan Flavin retrieved 9 October 2017 stated in Kunstindeks Danmark Kunstindeks Danmark Artist ID 2175 subject named as Dan Flavin retrieved 9 October 2017 stated in Discogs Discogs artist ID 2385876 subject named as Dan Flavin retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID flavin-dan subject named as Dan Flavin retrieved 9 October 2017 stated in Flavin, Dan subject named as Dan Flavin stated in Le Delarge Le Delarge artist ID 23562_artiste_FLAVIN_Dan subject named as Dan FLAVIN stated in The Fine Art Archive abART person ID 30798 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000019952 retrieved 9 October 2017 subject named as Dan Flavin place of death Riverhead 1 reference stated in RKDartists RKDartists ID 28247 retrieved 26 November 2025 manner of death natural causes 1 reference based on heuristic inferred from cause of death cause of death diabetes 1 reference imported from Wikimedia project Thai Wikipedia languages spoken, written or signed English 1 reference stated in BnF authorities Bibliothèque nationale de France ID 12195727n retrieved 10 October 2015 occupation sculptor 3 references stated in The Fine Art Archive abART person ID 30798 retrieved 1 April 2021 stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 architect 0 references draftsperson 2 references inferred from Museum of Modern Art online collection Museum of Modern Art work ID 36609 retrieved 4 December 2019 title Zonder titel (English) reference URL https://www.stedelijk.nl/nl/collectie/26754-dan-flavin-zonder-titel retrieved 7 September 2021 installation artist 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 painter 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 architectural drafter 1 reference stated in Union List of Artist Names Union List of Artist Names ID 500021736 visual artist 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002553 light artist 1 reference stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 art critic 1 reference stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 graphic artist 1 reference stated in RKDartists RKDartists ID 28247 retrieved 10 December 2025 artist 1 reference stated in Integrated Authority File GND ID 118875736 retrieved 20 April 2026 field of work art of sculpture 0 references installation artwork 0 references educated at Columbia University 0 references work location Kingdom of the Netherlands 1 reference stated in RKDartists RKDartists ID 28247 New York City 1 reference stated in RKDartists RKDartists ID 28247 floruit 1987 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002553 quotation 1987 (Dutch) start of work period 1959 1 reference stated in RKDartists RKDartists ID 28247 retrieved 23 November 2022 end of work period 1996 1 reference stated in RKDartists RKDartists ID 28247 retrieved 23 November 2022 participant in 4. documenta 1 reference reference URL https://www.documenta.de/en/retrospective/4_documenta retrieved 3 September 2018 Documenta 6 1 reference reference URL https://www.documenta.de/en/retrospective/documenta_6 retrieved 5 September 2018 artist files at Philadelphia Museum of Art Library and Archives 1 reference reference URL https://pacscl.exlibrisgroup.com:48994/F/?func=find-b&request=000135133&find_code=SYS Smithsonian American Art and Portrait Gallery Library 1 reference reference URL https://library.si.edu/art-and-artist-files Frick Art Research Library 1 reference Frick Art Research Library Artist File ID 991005691389707141 College for Creative Studies Library 1 reference reference URL https://lib.collegeforcreativestudies.edu/cgi-bin/koha/opac-detail.pl?biblionumber=86529&query_desc=kw%2Cwrdl%3A%20Dan%20Flavin National Gallery of Art Library 1 reference reference URL https://library.nga.gov/permalink/01NGA_INST/1cl1g8d/alma99752923504896 has works in the collection Museum Boijmans Van Beuningen 1 reference inferred from Collectie Boijmans Online Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P3888 https://www.wikidata.org/wiki/Property:P3888#P2302 Städel Museum 1 reference inferred from Städel Museum Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P4581 https://www.wikidata.org/wiki/Property:P4581#P2302 Museo Nacional Centro de Arte Reina Sofía 1 reference inferred from Museo Nacional Centro de Arte Reina Sofía Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P4439 https://www.wikidata.org/wiki/Property:P4439#P2302 The Nelson-Atkins Museum of Art 1 reference inferred from The Nelson-Atkins Museum of Art Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P5273 https://www.wikidata.org/wiki/Property:P5273#P2302 Auckland Art Gallery 1 reference inferred from Auckland Art Gallery Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P3372 https://www.wikidata.org/wiki/Property:P3372#P2302 Finnish National Gallery 0 references Tate 0 references National Gallery of Art 0 references National Gallery of Canada 0 references Museum of Modern Art 1 reference inferred from Museum of Modern Art online collection Museum of Modern Art work ID 36609 retrieved 4 December 2019 Art Institute of Chicago 1 reference inferred from ARTIC Wikimedia import URL https://www.wikidata.org/wiki/Q504395#P6295 https://www.wikidata.org/wiki/Property:P6295#P2302 Stedelijk Museum voor Actuele Kunst 0 references Kröller-Müller Museum 1 reference inferred from (quietly, to the memory of Mia Visser) retrieved 15 February 2021 Musée National d'Art Moderne 1 reference inferred from Q60191880 retrieved 4 March 2021 Royal Museums of Fine Arts of Belgium 1 reference retrieved 4 May 2021 reference URL https://www.fine-arts-museum.be/nl/de-collectie/artist/flavin-dan-1 San Francisco Museum of Modern Art 1 reference stated in San Francisco Museum of Modern Art online collection SFMOMA artist ID Dan_Flavin retrieved 10 May 2021 Van Abbemuseum 1 reference title Monument on Mrs.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Reppin's survival (Dutch) reference URL https://vanabbemuseum.nl/en/collection/details/collection/?lookup%5B1673%5D%5Bfilter%5D%5B0%5D=id%3AC466 retrieved 5 July 2021 Stedelijk Museum Amsterdam 4 references title untitled (to Piet Mondrian through his preferred colors, red, yellow and blue) (English) reference URL https://www.stedelijk.nl/nl/collectie/94204-dan-flavin-untitled-%28to-piet-mondrian-through-his-preferred-colors-red-yellow-and-blue%29 retrieved 7 September 2021 title ''monument'' for V.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "Tatlin (English) reference URL https://www.stedelijk.nl/nl/collectie/1543-dan-flavin-%27%27monument%27%27-for-v.-tatlin retrieved 7 September 2021 title Zonder titel (English) reference URL https://www.stedelijk.nl/nl/collectie/26754-dan-flavin-zonder-titel retrieved 7 September 2021 title Minimal art (English) reference URL https://www.stedelijk.nl/nl/collectie/68277-carl-andre-minimal-art retrieved 7 September 2021 Smithsonian American Art Museum 1 reference stated in Smithsonian American Art Museum person/institution ID Smithsonian American Art Museum person/institution ID 1580 retrieved 15 October 2021 Bavarian State Painting Collections 1 reference inferred from Untitled (To Bob and Pat Rohm) retrieved 31 January 2023 Hessel Museum of Art 1 reference reference URL https://bard.emuseum.com/people/838/dan-flavin Design Museum Den Bosch 1 reference reference URL https://hdl.handle.net/21.12135/obj3200 title For Andre Raynaud (Dutch) publication date 1990 retrieved 22 January 2024 type of reference tableware subject named as Dan Flavin Mu.ZEE - Kunstmuseum aan Zee 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002553 Whitney Museum of American Art 1 reference Whitney Museum of American Art artist ID 438 movement Minimalism 2 references imported from Wikimedia project French Wikipedia stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin genre light art 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin installation art 2 references stated in Union List of Artist Names Union List of Artist Names ID 500021736 stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Dan-Flavin described at URL https://www.solisprints.co.uk/pages/artist-dan-flavin language of work or name English 0 references represented by David Zwirner Gallery 1 reference reference URL https://www.davidzwirner.com/artists retrieved 7 April 2018 Artists Rights Society object of statement has role copyright collective 1 reference reference URL https://www.arsny.com/mostwanted/ retrieved 19 August 2018 on focus list of Wikimedia project WikiProject PCC Wikidata Pilot/Frick Art Reference Library 0 references WikiProject PCC Wikidata Pilot — Smithsonian Libraries — Artists Files 0 references NADD Wikidata project 1 reference reference URL https://hdl.handle.net/21.12135/obj3200 title For Andre Raynaud (Dutch) publication date 1990 retrieved 22 January 2024 type of reference tableware subject named as Dan Flavin copyright representative reproduction right represented by CISAC-member 2 references stated in DACS register DACS ID (former) c8d4720e-9ad3-4209-bfeb-0f0637e025b1 retrieved 19 October 2019 stated in ADAGP directory ADAGP artist ID dan-flavin-16033 retrieved 15 December 2019 copyright status as a creator works protected by copyrights applies to jurisdiction countries with longer than 50 years pma 1 reference retrieved 7 March 2020 based on heuristic 50 years or more after author(s) death date of death 29 November 1996 Commons Creator page Dan Flavin 0 references Commons category Dan Flavin 0 references Identifiers VIAF cluster ID 117220346 3 references imported from Wikimedia project German Wikipedia imported from Wikimedia project French Wikipedia stated in Japan Search Japan Search name ID ダン・フレイヴィン retrieved 21 March 2020 ISNI 000000008186322X 1 reference stated in BnF authorities retrieved 13 July 2015 Vatican Library VcBA ID 495/101541 subject named as Flavin, Dan, 1933-1996 2 references VIAF cluster ID 117220346 stated in Virtual International Authority File retrieved 16 July 2020 retrieved 6 June 2026 BIBSYS ID 90371241 1 reference VIAF cluster ID 117220346 retrieved 22 January 2018 stated in Virtual International Authority File National Library of Spain SpMaBN ID (BNE v1.0) XX1236171 0 references Bibliothèque nationale de France ID 12195727n 1 reference imported from Wikimedia project French Wikipedia Canadiana Name Authority ID ncf11946887 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 DBC author ID 87097919148963 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 GND ID 118875736 1 reference imported from Wikimedia project German Wikipedia Deutsche Biographie (GND) ID 118875736 0 references DDB person (GND) ID 118875736 0 references Kalliope-Verbund (GND) ID 118875736 0 references FAST ID 843 0 references SBN author ID SBLV284229 subject named as Flavin, Dan 0 references J9U entity ID 987007298773805171 0 references Union List of Artist Names ID 500021736 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 16 December 2014 Library of Congress Authorities ID n50003508 1 reference imported from Wikimedia project German Wikipedia National Library of Lithuania ID LNB:V*163849;=BR 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 National Library of Latvia ID 000164176 1 reference VIAF cluster ID 117220346 retrieved 22 January 2018 stated in Virtual International Authority File National Library of Ireland ID vtls002478158 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 NACSIS-CAT author ID DA12946258 2 references stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 stated in CiNii Research CiNii Research ID 1140845216531813760 retrieved 13 March 2023 NL CR AUT ID mzk2005295028 1 reference imported from Wikimedia project Czech Wikipedia Libraries Australia ID 35088345 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 Nationale Thesaurus voor Auteursnamen ID 070479011 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 16 December 2014 NUKAT ID n2007148835 0 references National Library of Poland MMS ID 9812463977105606 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 RERO ID (legacy) A003247337 1 reference stated in Virtual International Authority File VIAF cluster ID 117220346 retrieved 25 June 2022 Libris-URI hftx5qn13svkc6q 1 reference stated in LIBRIS publication date 21 September 2016 retrieved 24 August 2018 SELIBR ID 397471 0 references IdRef ID 034711104 1 reference imported from Wikimedia project French Wikipedia WorldCat Entities ID E39PBJvXm9RTqBWPYb9bkRgkDq 1 reference matched by identifier from Library of Congress Authorities Library of Congress Authorities ID n50003508 retrieved 21 April 2024 abART person ID 30798 0 references ADAGP artist ID dan-flavin-16033 0 references Art UK artist ID flavin-dan-19331996 0 references Artcyclopedia artist ID flavin_dan 0 references ARTIC artist ID 34492 0 references artist-info artist ID 10294 0 references artist-info curator ID 294672 0 references Artists of the World ID zz012756 0 references Artnet artist ID dan-flavin 0 references Artsy artist ID dan-flavin 0 references askArt person ID 27473 0 references Athenaeum person ID 11681 0 references Auckland Art Gallery artist ID 8382 0 references Beaux-Arts ID dan-flavin 0 references Benezit ID B00065060 0 references Boijmans artist ID 6252 0 references Bridgeman artist ID 3950 0 references Brockhaus Enzyklopädie online ID flavin-dan 0 references Christie's creator ID 22147 0 references CiNii Research ID 1140845216531813760 0 references DACS ID (2022) 000355 subject named as Flavin, Dan 0 references DACS ID (former) c8d4720e-9ad3-4209-bfeb-0f0637e025b1 1 reference retrieved 10 February 2018 De Agostini ID Flavin,+Dan subject named as Flavin, Dan 0 references DFK Paris person ID 0003680649 0 references DigitaltMuseum ID 0210311629200 0 references Discogs artist ID 2385876 0 references Enciclopedia Galega Universal ID 201789 0 references Encyclopædia Britannica Online ID biography/Dan-Flavin subject named as Dan Flavin author name string Lisa S.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "3/3 evidence candidates from 23939 prepared chars",
+      "created": {
+        "materialId": "cmtg5suj50013absjdibaefch",
+        "versionId": "cmtg5suj70014absjfx2m6p0c",
+        "excerptIds": [
+          "cmtg5svba0016absjtrw1x0m7",
+          "cmtg5svbr0018absjzjvvb7yt",
+          "cmtg5svbx001aabsj6yjz58nv"
+        ],
+        "evidenceIds": [
+          "cmtg5svbk0017absjdrg0l252",
+          "cmtg5svbu0019absj2ztzcx4a",
+          "cmtg5svc1001babsjif1yp7yj"
+        ],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtfzfo1m000i1kphutylnlfr",
+        "title": "Shahzia Sikander, Flesh Flush, 2004 — artist website",
+        "url": "https://www.shahziasikander.com/artworks/flesh-flush",
+        "linkedEntities": [
+          "Flesh Flush"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 54,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "UNUSABLE",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0/0 evidence candidates from 54 prepared chars",
+      "created": {
+        "materialId": "cmtg5svc8001cabsj2g5xjkmk",
+        "versionId": "cmtg5svcc001dabsji97y1my0",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtfzfo21000m1kph5hgydr1j",
+        "title": "Dana Schutz, How We Would Give Birth, 2007 — David Zwirner",
+        "url": "https://www.davidzwirner.com/artworks/dana-schutz-how-we-would-give-birth-ac493",
+        "linkedEntities": [
+          "How We Would Give Birth"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 213,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "UNUSABLE",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0/0 evidence candidates from 213 prepared chars",
+      "created": {
+        "materialId": "cmtg5svsc001eabsjz3wn60hz",
+        "versionId": "cmtg5svse001fabsjw6v8tb1m",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg5shkf0000absjdacomore"
+      }
+    }
+  ],
+  "associationAudit": {
+    "total": 15,
+    "valid": 7,
+    "weak": 8,
+    "incorrect": 0,
+    "mentionOnly": 0,
+    "items": [
+      {
+        "source": "El entierro del señor de Orgaz",
+        "excerptSummary": "La Iglesia | Santo Tomé Ir al contenido Tarifas y horarios El Greco La Iglesia Parroquia Noticias X Editar el contenido Contacto Plaza del Conde 4 45002 Toledo (+34) 925 256 098 info@santotome.org Horario 01 MAR - 15 OCT",
+        "primarySubject": "El entierro del conde de Orgaz",
+        "entityAssociations": [
+          {
+            "entity": "El entierro del conde de Orgaz",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "El entierro del señor de Orgaz",
+        "excerptSummary": "Del primer edificio mudéjar conserva el gran arco polilobulado superpuesto al actual arco toral, que separa la nave principal del presbiterio, junto con los recios machones de esta parte de la nave y un pequeño arquillo ",
+        "primarySubject": "El entierro del conde de Orgaz",
+        "entityAssociations": [
+          {
+            "entity": "El entierro del conde de Orgaz",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "El entierro del señor de Orgaz",
+        "excerptSummary": "Don Gonzalo Ruiz de Toledo Un generoso caballero Don Gonzalo Ruiz de Toledo, notario mayor de Castilla y señor de la villa de Orgaz, destacó por sus generosas obras de caridad, contribuyendo a la reconstrucción de iglesi",
+        "primarySubject": "El entierro del conde de Orgaz",
+        "entityAssociations": [
+          {
+            "entity": "El entierro del conde de Orgaz",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "El entierro del señor de Orgaz",
+        "excerptSummary": "En su testamento había dejado ordenada la donación anual a esta iglesia de unas mandas consistentes en 2 carneros, 2 pellejos de vino, 2 cargas de leña, 16 gallinas y 800 maravedíes para sostenimiento de los sacerdotes y",
+        "primarySubject": "El entierro del conde de Orgaz",
+        "entityAssociations": [
+          {
+            "entity": "El entierro del conde de Orgaz",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+        "excerptSummary": "\" data-localized=\"{\"invalidVideo\":\"Invalid video embed.\",\"playButton\":\"Play\"}\" > 1000 YEARS OF JOYS AND SORROWS In his widely anticipated memoir, “one of the most important artists working in the world today” (Financial ",
+        "primarySubject": "Semillas de girasol",
+        "entityAssociations": [
+          {
+            "entity": "Semillas de girasol",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+        "excerptSummary": "Once an intimate of Mao Zedong and the nation’s most celebrated poet, Ai Weiwei’s father, Ai Qing, was branded a rightist during the Cultural Revolution, and he and his family were banished to a desolate place known as “",
+        "primarySubject": "Semillas de girasol",
+        "entityAssociations": [
+          {
+            "entity": "Semillas de girasol",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+        "excerptSummary": "At once ambitious and intimate, 1000 Years of Joys and Sorrows offers a deep understanding of the myriad forces that have shaped modern China, and serves as a timely reminder of the urgent need to protect freedom of expr",
+        "primarySubject": "Semillas de girasol",
+        "entityAssociations": [
+          {
+            "entity": "Semillas de girasol",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+        "excerptSummary": "I wanted to try something involving a material object that had close associations with culture and history, memory and identity, a subject that would be instantly recognizable but at the same time open to a variety of in",
+        "primarySubject": "Semillas de girasol",
+        "entityAssociations": [
+          {
+            "entity": "Semillas de girasol",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "Cy Twombly — registro de autoridad",
+        "excerptSummary": "Twombly Edwin Parker Twobly Edwin Parker Twombly Jnr edit Language Label Description Also known as default for all languages Cy Twombly – English Cy Twombly American painter, sculptor and photographer (1928–2011) Edwin P",
+        "primarySubject": "Cy Twombly",
+        "entityAssociations": [
+          {
+            "entity": "Cy Twombly",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "PRIMARY_SUBJECT",
+        "why": "independent title/text relevance check",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Cy Twombly — registro de autoridad",
+        "excerptSummary": "Twombly Edwin Parker Twobly Edwin Parker Twombly Jnr Statements instance of human 3 references stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in datos.bne.es retr",
+        "primarySubject": "Cy Twombly",
+        "entityAssociations": [
+          {
+            "entity": "Cy Twombly",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "PRIMARY_SUBJECT",
+        "why": "independent title/text relevance check",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Cy Twombly — registro de autoridad",
+        "excerptSummary": "Guggenheim Museum 1 reference retrieved 20 February 2021 inferred from Untitled Art Gallery of New South Wales 1 reference retrieved 20 February 2021 inferred from Three studies from the Temeraire Bavarian State Painting",
+        "primarySubject": "Cy Twombly",
+        "entityAssociations": [
+          {
+            "entity": "Cy Twombly",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "PRIMARY_SUBJECT",
+        "why": "independent title/text relevance check",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Cy Twombly — registro de autoridad",
+        "excerptSummary": "Paul Getty Museum 0 references Kunsthaus Zürich 1 reference inferred from Q131585483 retrieved 5 February 2025 Museum Ludwig 1 reference inferred from Crimes of Passion II retrieved 30 November 2025 Guggenheim Museum Bil",
+        "primarySubject": "Cy Twombly",
+        "entityAssociations": [
+          {
+            "entity": "Cy Twombly",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "PRIMARY_SUBJECT",
+        "why": "independent title/text relevance check",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Dan Flavin — registro de autoridad",
+        "excerptSummary": "From Wikidata American installation artist and painter 1933–1996) (1933–1996) edit Language Label Description Also known as default for all languages Dan Flavin – English Dan Flavin American installation artist and paint",
+        "primarySubject": "Dan Flavin",
+        "entityAssociations": [
+          {
+            "entity": "Dan Flavin",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "PRIMARY_SUBJECT",
+        "why": "independent title/text relevance check",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Dan Flavin — registro de autoridad",
+        "excerptSummary": "Reppin's survival (Dutch) reference URL https://vanabbemuseum.nl/en/collection/details/collection/?lookup%5B1673%5D%5Bfilter%5D%5B0%5D=id%3AC466 retrieved 5 July 2021 Stedelijk Museum Amsterdam 4 references title untitle",
+        "primarySubject": "Dan Flavin",
+        "entityAssociations": [
+          {
+            "entity": "Dan Flavin",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "PRIMARY_SUBJECT",
+        "why": "independent title/text relevance check",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Dan Flavin — registro de autoridad",
+        "excerptSummary": "Tatlin (English) reference URL https://www.stedelijk.nl/nl/collectie/1543-dan-flavin-%27%27monument%27%27-for-v.-tatlin retrieved 7 September 2021 title Zonder titel (English) reference URL https://www.stedelijk.nl/nl/co",
+        "primarySubject": "Dan Flavin",
+        "entityAssociations": [
+          {
+            "entity": "Dan Flavin",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "PRIMARY_SUBJECT",
+        "why": "independent title/text relevance check",
+        "decision": "KEEP"
+      }
+    ]
+  },
+  "entityImpact": [
+    {
+      "entity": "manierismo",
+      "title": "Manierismo",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "entierro-del-conde-de-orgaz",
+      "title": "El entierro del conde de Orgaz",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 3,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "semillas-de-girasol",
+      "title": "Semillas de girasol",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 3,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "cy-twombly",
+      "title": "Cy Twombly",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 3,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "dan-flavin",
+      "title": "Dan Flavin",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 3,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "fleshly-sight",
+      "title": "Flesh Flush",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "_draft-6ee6b32e-f41d-4664-bd31-f66f2bcd99fa",
+      "title": "How We Would Give Birth",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    }
+  ],
+  "rollback": "Delete ResearchProject cmtg5shkf0000absjdacomore; cascades pilot Evidence, Excerpts and ResearchLibraryMaterial. Delete pilot LibraryMaterials separately by title prefix [PILOT].",
+  "note": "No LLM, no external bulk downloads, development only."
+}

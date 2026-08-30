@@ -44,7 +44,8 @@ export class AIProvider {
 
   constructor(config: ConfigService) {
     this.provider = config.get<string>('AI_PROVIDER') ?? 'noop';
-    this.model = config.get<string>('OLLAMA_MODEL') ?? 'qwen2.5:7b';
+    this.model =
+      config.get<string>('AI_MODEL') ?? config.get<string>('OLLAMA_MODEL') ?? 'qwen2.5:7b';
     this.ollamaBaseUrl = (
       config.get<string>('OLLAMA_BASE_URL') ?? 'http://127.0.0.1:11434'
     ).replace(/\/$/, '');
