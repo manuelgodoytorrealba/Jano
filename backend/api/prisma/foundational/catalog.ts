@@ -706,62 +706,11 @@ const declaredRelations: FoundationalRelation[] = uniqueRelations([
   r('fotografia', 'tecnologia', 'ABOUT_CONCEPT'),
 ]);
 
-// A work/person inherits the period of its explicitly declared movement.
-// This is a deterministic taxonomy projection, not an additional editorial claim.
-const movementPeriods = new Map(
-  declaredRelations
-    .filter((edge) => edge.type === 'BELONGS_TO_PERIOD')
-    .map((edge) => [edge.from, edge.to]),
-);
-const contextualPeriodRelations = declaredRelations
-  .filter((edge) => edge.type === 'BELONGS_TO_MOVEMENT')
-  .map((edge) =>
-    movementPeriods.get(edge.to)
-      ? r(edge.from, movementPeriods.get(edge.to)!, 'BELONGS_TO_PERIOD')
-      : null,
-  )
-  .filter((edge): edge is FoundationalRelation => Boolean(edge));
-
-const techniqueConcepts = new Set([
-  'acero',
-  'acuarela',
-  'aguafuerte',
-  'bronce',
-  'collage',
-  'dibujo',
-  'ensamblaje',
-  'fresco',
-  'fundicion',
-  'grabado',
-  'hormigon',
-  'litografia',
-  'madera',
-  'marmol',
-  'papel',
-  'pelicula-fotografica',
-  'pigmento',
-  'serigrafia',
-  'talla',
-  'temple',
-  'vidrio',
-  'xilografia',
-  'pintura-al-oleo',
-  'pintura-de-historia',
-  'pintura-religiosa',
-]);
 const degree = new Map<string, number>();
-for (const edge of [...declaredRelations, ...contextualPeriodRelations]) {
+for (const edge of declaredRelations) {
   degree.set(edge.from, (degree.get(edge.from) ?? 0) + 1);
   degree.set(edge.to, (degree.get(edge.to) ?? 0) + 1);
 }
-const semanticTaxonomyRelations = entities
-  .filter(
-    (entity) =>
-      entity.type === 'CONCEPT' &&
-      techniqueConcepts.has(entity.slug) &&
-      (degree.get(entity.slug) ?? 0) < 3,
-  )
-  .map((entity) => r(entity.slug, 'materialidad', 'PART_OF'));
 const placeRelations = entities
   .filter((entity) => entity.type === 'PLACE' && (degree.get(entity.slug) ?? 0) < 3)
   .map((entity) => r(entity.slug, 'ciudad', 'ASSOCIATED_WITH'));
@@ -1069,36 +1018,64 @@ const movementConceptRelations: FoundationalRelation[] = [
   ].map(([movement, concept]) => r(movement, concept, 'ABOUT_CONCEPT')),
 ];
 
-// A creator's documented working city is useful context for the work, but is
-// intentionally ASSOCIATED_WITH rather than an unsupported exact creation
-// place assertion.
-const creatorPlaces = new Map(
-  declaredRelations
-    .filter((edge) => edge.type === 'LOCATED_IN')
-    .map((edge) => [edge.from, edge.to]),
-);
-const workPlaceRelations = declaredRelations
-  .filter((edge) => edge.type === 'CREATED_BY')
-  .map((edge) =>
-    creatorPlaces.get(edge.to)
-      ? r(edge.from, creatorPlaces.get(edge.to)!, 'ASSOCIATED_WITH')
-      : null,
-  )
-  .filter((edge): edge is FoundationalRelation => Boolean(edge));
+const entityBySlug = new Map(entities.map((entity) => [entity.slug, entity]));
+const periodForYear = (year: number) => {
+  if (year < -10000) return 'paleolitico';
+  if (year < -3000) return 'neolitico';
+  if (year < 500) return 'antiguedad';
+  if (year < 1400) return 'edad-media';
+  if (year < 1500) return 'renacimiento';
+  if (year <= 1800) return 'edad-moderna';
+  if (year <= 1900) return 'siglo-xix';
+  if (year <= 2000) return 'siglo-xx';
+  return 'siglo-xxi';
+};
 
-export const relations: FoundationalRelation[] = uniqueRelations([
-  ...declaredRelations,
-  ...contextualPeriodRelations,
-  ...semanticTaxonomyRelations,
-  ...placeRelations,
-  ...eventRelations,
-  ...organizationPlaceRelations,
-  ...workSubjects,
-  ...workMaterialTechniqueRelations,
-  ...movementInfluences,
-  ...movementConceptRelations,
-  ...workPlaceRelations,
-]);
+const normalizeRelation = (edge: FoundationalRelation): FoundationalRelation | null => {
+  const from = entityBySlug.get(edge.from);
+  const to = entityBySlug.get(edge.to);
+  if (!from || !to) return edge;
+
+  // A generic location cannot honestly encode birthplace, residence, working
+  // city, cultural centre and institutional association at the same time.
+  if (edge.type === 'LOCATED_IN' && ['ARTIST', 'PERSON', 'MOVEMENT', 'CONCEPT'].includes(from.type))
+    return null;
+
+  // PART_OF is structural, not a generic taxonomy bucket for techniques,
+  // materials, genres and themes.
+  if (edge.type === 'PART_OF' && from.type === 'CONCEPT') return null;
+
+  if (edge.type === 'ABOUT_CONCEPT' && from.type === 'CONCEPT' && to.type === 'ARTWORK')
+    return { ...edge, from: edge.to, to: edge.from };
+
+  if (edge.type === 'BELONGS_TO_MOVEMENT' && to.type === 'CONCEPT') {
+    if (from.type === 'ARTWORK' && ['fotografia', 'performance'].includes(to.slug))
+      return { ...edge, type: 'USES_TECHNIQUE' };
+    if (from.type === 'ARTIST') return { ...edge, type: 'ASSOCIATED_WITH' };
+    return { ...edge, type: 'ABOUT_CONCEPT' };
+  }
+
+  if (edge.type === 'BELONGS_TO_PERIOD' && from.startYear != null) {
+    const expectedPeriod = periodForYear(from.startYear);
+    if (edge.to !== expectedPeriod) return { ...edge, to: expectedPeriod };
+  }
+  return edge;
+};
+
+export const relations: FoundationalRelation[] = uniqueRelations(
+  [
+    ...declaredRelations,
+    ...placeRelations,
+    ...eventRelations,
+    ...organizationPlaceRelations,
+    ...workSubjects,
+    ...workMaterialTechniqueRelations,
+    ...movementInfluences,
+    ...movementConceptRelations,
+  ]
+    .map(normalizeRelation)
+    .filter((edge): edge is FoundationalRelation => Boolean(edge)),
+);
 
 export const foundationalExpectations = [
   'renacimiento',

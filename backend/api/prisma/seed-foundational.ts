@@ -92,6 +92,7 @@ async function main() {
       await prisma.relation.deleteMany({
         where: { OR: [{ fromId: retired.id }, { toId: retired.id }] },
       });
+      await prisma.entityMedia.deleteMany({ where: { entityId: retired.id } });
       await prisma.entity.delete({ where: { id: retired.id } });
     }
   }
@@ -164,6 +165,7 @@ async function main() {
   );
   const createdByTypeId = types.get('CREATED_BY');
   const partOfTypeId = types.get('PART_OF');
+  const belongsToPeriodTypeId = types.get('BELONGS_TO_PERIOD');
   const representationId = ids.get('representacion');
   if (partOfTypeId && representationId)
     await prisma.relation.deleteMany({
@@ -178,6 +180,61 @@ async function main() {
           where: { fromId, toId, relationTypeId: createdByTypeId },
         });
     }
+  const contemporaryPeriod = await prisma.entity.findUnique({
+    where: { slug: 'edad-contemporanea' },
+    select: { id: true },
+  });
+  const legacyTwentiethCentury = await prisma.entity.findUnique({
+    where: { slug: 'sigloxx' },
+    select: { id: true },
+  });
+  if (contemporaryPeriod && partOfTypeId && belongsToPeriodTypeId) {
+    for (const centurySlug of ['siglo-xix', 'siglo-xxi'] as const) {
+      const centuryId = ids.get(centurySlug);
+      if (!centuryId) continue;
+      const legacyRelation = await prisma.relation.findFirst({
+        where: {
+          fromId: contemporaryPeriod.id,
+          toId: centuryId,
+          relationTypeId: belongsToPeriodTypeId,
+        },
+        select: { id: true },
+      });
+      if (legacyRelation)
+        await prisma.relation.update({
+          where: { id: legacyRelation.id },
+          data: { fromId: centuryId, toId: contemporaryPeriod.id, relationTypeId: partOfTypeId },
+        });
+    }
+    const canonicalTwentiethCenturyId = ids.get('siglo-xx');
+    if (legacyTwentiethCentury && canonicalTwentiethCenturyId) {
+      const legacyRelation = await prisma.relation.findFirst({
+        where: {
+          fromId: contemporaryPeriod.id,
+          toId: legacyTwentiethCentury.id,
+          relationTypeId: belongsToPeriodTypeId,
+        },
+        select: { id: true },
+      });
+      if (legacyRelation)
+        await prisma.relation.update({
+          where: { id: legacyRelation.id },
+          data: {
+            fromId: canonicalTwentiethCenturyId,
+            toId: contemporaryPeriod.id,
+            relationTypeId: partOfTypeId,
+          },
+        });
+      await prisma.relation.deleteMany({
+        where: {
+          OR: [{ fromId: legacyTwentiethCentury.id }, { toId: legacyTwentiethCentury.id }],
+        },
+      });
+      await prisma.entityMedia.deleteMany({ where: { entityId: legacyTwentiethCentury.id } });
+      await prisma.periodDetails.deleteMany({ where: { entityId: legacyTwentiethCentury.id } });
+      await prisma.entity.delete({ where: { id: legacyTwentiethCentury.id } });
+    }
+  }
   for (const [from, to, type] of RETIRED_RELATIONS) {
     const fromId = ids.get(from);
     const toId = ids.get(to);
@@ -185,6 +242,32 @@ async function main() {
     if (fromId && toId && relationTypeId)
       await prisma.relation.deleteMany({ where: { fromId, toId, relationTypeId } });
   }
+  const foundationalIds = [...ids.values()];
+  const desiredRelationKeys = new Set(
+    relations.map((edge) => {
+      const relationTypeId = types.get(edge.type);
+      if (!relationTypeId) throw new Error(`Unknown relation type ${edge.type}`);
+      return `${ids.get(edge.from)}:${relationTypeId}:${ids.get(edge.to)}`;
+    }),
+  );
+  const unreviewedFoundationalRelations = await prisma.relation.findMany({
+    where: {
+      fromId: { in: foundationalIds },
+      toId: { in: foundationalIds },
+      justification: null,
+      citations: { none: {} },
+      translations: { none: {} },
+    },
+    select: { id: true, fromId: true, toId: true, relationTypeId: true },
+  });
+  const obsoleteRelationIds = unreviewedFoundationalRelations
+    .filter(
+      (relation) =>
+        !desiredRelationKeys.has(`${relation.fromId}:${relation.relationTypeId}:${relation.toId}`),
+    )
+    .map((relation) => relation.id);
+  if (obsoleteRelationIds.length)
+    await prisma.relation.deleteMany({ where: { id: { in: obsoleteRelationIds } } });
   const sourceIds = new Map<string, string>();
   for (const source of SOURCES) {
     const existing = await prisma.source.findFirst({
@@ -321,7 +404,7 @@ async function main() {
       });
   }
   console.log(
-    `Foundational Knowledge Core seeded: ${entities.length} entities, ${relations.length} relations.`,
+    `Foundational Knowledge Core seeded: ${entities.length} entities, ${relations.length} relations; ${obsoleteRelationIds.length} obsolete unreviewed relations removed.`,
   );
 }
 

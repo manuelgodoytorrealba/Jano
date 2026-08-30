@@ -730,7 +730,7 @@ model EntityMedia {
   cropDetail     Json?
   cropPreview    Json?
 
-  entity Entity @relation(fields: [entityId], references: [id])
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
   media  Media  @relation(fields: [mediaId], references: [id])
 
   @@index([entityId])
