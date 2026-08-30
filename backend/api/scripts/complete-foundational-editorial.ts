@@ -441,19 +441,20 @@ async function main() {
     include: { from: true, to: true, relationType: true, citations: true },
   });
   for (const relation of relations) {
-    if (clean(relation.justification)) continue;
-    changes.relationJustifications += 1;
-    if (apply)
-      await prisma.relation.update({
-        where: { id: relation.id },
-        data: {
-          justification: relationJustification(
-            relation.from.title,
-            relation.to.title,
-            relation.relationType.key,
-          ),
-        },
-      });
+    if (!clean(relation.justification)) {
+      changes.relationJustifications += 1;
+      if (apply)
+        await prisma.relation.update({
+          where: { id: relation.id },
+          data: {
+            justification: relationJustification(
+              relation.from.title,
+              relation.to.title,
+              relation.relationType.key,
+            ),
+          },
+        });
+    }
 
     if (!relation.citations.length) {
       const endpointSource = await prisma.sourceRef.findFirst({
