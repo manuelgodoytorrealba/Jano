@@ -1,4 +1,5 @@
 import {
+  entityVisualUrl,
   mediaDisplayUrl,
   resolveEntityMediaItem,
   selectPrimaryVisualMedia,
@@ -46,7 +47,7 @@ export function detailMedia(
 }
 
 export function visualUrl(entity: PublicEntity | null | undefined): string | null {
-  return mediaDisplayUrl(detailMedia(entity));
+  return mediaDisplayUrl(detailMedia(entity)) ?? entityVisualUrl(entity, 'detail');
 }
 
 export function visualAlt(entity: PublicEntity | null | undefined, t: Translate): string {
