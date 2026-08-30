@@ -175,6 +175,8 @@ export function validateEvidenceProposition(
   const statement = proposition.statement.trim();
   if (statement.length < 20 || statement.length > input.excerpt.length)
     return { valid: false, reason: 'Proposition length is not reconstructible from excerpt.' };
+  if (!input.excerpt.includes(statement))
+    return { valid: false, reason: 'Proposition is not a literal statement from the excerpt.' };
   const tokenCount = (statement.match(/[\p{L}\p{N}]{2,}/gu) ?? []).length;
   const delimiterCount = (
     statement.match(

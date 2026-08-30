@@ -1,4 +1,5 @@
 import {
+  AIProviderSemanticEvidenceModel,
   HybridSemanticEvidenceClassifier,
   type SemanticModelOutput,
 } from './hybrid-semantic-evidence-classifier';
@@ -52,5 +53,38 @@ describe('HybridSemanticEvidenceClassifier', () => {
       classify: async () => semanticKeep,
     }).classify({ ...input, sourcePurpose: STRUCTURED_REFERENCE_PURPOSE }, 'HYBRID');
     expect(result.decision).toBe('REJECT');
+  });
+
+  it('fails safe when the provider returns an open or incomplete contract', async () => {
+    const result = await new HybridSemanticEvidenceClassifier({
+      classify: async () => ({
+        ...semanticKeep,
+        supportSpan: null,
+      }),
+    }).classify(input, 'SEMANTIC_ONLY');
+    expect(result.decision).toBe('REVIEW');
+    expect(result.supportSpan).toBeNull();
+  });
+
+  it('never keeps a span that is not a literal excerpt substring', async () => {
+    const result = await new HybridSemanticEvidenceClassifier({
+      classify: async () => ({
+        ...semanticKeep,
+        supportSpan: { start: 0, end: 4, text: 'fake' },
+      }),
+    }).classify(input, 'SEMANTIC_ONLY');
+    expect(result.decision).toBe('REVIEW');
+    expect(result.supportSpan).toBeNull();
+  });
+
+  it('rejects unknown properties before semantic classification', async () => {
+    const model = new AIProviderSemanticEvidenceModel({
+      metadata: () => ({ provider: 'fixture', model: 'fixture' }),
+      isAvailable: () => true,
+      runStructured: async () => ({
+        output: { ...semanticKeep, unexpected: true },
+      }),
+    });
+    await expect(model.classify(input)).rejects.toThrow('MODEL_OUTPUT_INVALID');
   });
 });
