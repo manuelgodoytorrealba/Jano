@@ -292,10 +292,11 @@ async function main() {
   for (const entity of entities) {
     const es = entity.translations.find((item) => item.locale === 'es');
     const en = entity.translations.find((item) => item.locale === 'en');
-    const summaryEs =
-      clean(es?.shortDescription) || clean(entity.summary) ? null : summary(entity, 'es');
+    const summaryEs = clean(es?.shortDescription)
+      ? null
+      : clean(entity.summary) || summary(entity, 'es');
     const summaryEn = clean(en?.shortDescription) ? null : summary(entity, 'en');
-    const essayEs = clean(es?.essay) || clean(entity.content) ? null : essay(entity);
+    const essayEs = clean(es?.essay) ? null : clean(entity.content) || essay(entity);
     if (summaryEs) changes.summariesEs += 1;
     if (summaryEn) changes.summariesEn += 1;
     if (essayEs) changes.essaysEs += 1;
@@ -459,12 +460,7 @@ async function main() {
         where: { entityId: relation.fromId },
         orderBy: { id: 'asc' },
       });
-      if (
-        endpointSource &&
-        ['CREATED_BY', 'LOCATED_IN', 'USES_TECHNIQUE', 'USES_MATERIAL'].includes(
-          relation.relationType.key,
-        )
-      ) {
+      if (endpointSource) {
         changes.relationCitations += 1;
         if (apply)
           await prisma.citation.create({
