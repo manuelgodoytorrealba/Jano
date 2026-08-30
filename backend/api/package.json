@@ -40,6 +40,8 @@
     "foundational:editorial-complete": "node -r ts-node/register scripts/complete-foundational-editorial.ts",
     "foundational:editorial-complete:apply": "node -r ts-node/register scripts/complete-foundational-editorial.ts --apply",
     "foundational:visual-validate": "node dist/scripts/foundational-visual-validate.js",
+    "foundational:media-fallbacks": "node -r ts-node/register scripts/complete-foundational-media-fallbacks.ts",
+    "foundational:media-fallbacks:apply": "node -r ts-node/register scripts/complete-foundational-media-fallbacks.ts --apply",
     "foundational:visual-pilot": "node dist/scripts/import-foundational-visual-pilot.js",
     "foundational:visual-pilot:dry-run": "node dist/scripts/import-foundational-visual-pilot.js --dry-run",
     "foundational:local-visual-pilot": "node dist/scripts/import-foundational-local-visual-pilot.js",
