@@ -23,6 +23,8 @@ type Correction = {
   materials?: string;
   dimensions?: string;
   location?: string;
+  creatorSlug?: string;
+  creatorTitle?: string;
 };
 
 const corrections: Correction[] = [
@@ -175,6 +177,8 @@ const corrections: Correction[] = [
     technique: 'Collage',
     materials: 'Periódico, cinta y pan de oro de 22 quilates',
     dimensions: '81 × 54,5 cm',
+    creatorSlug: 'walid-beshty',
+    creatorTitle: 'Walead Beshty',
   },
   {
     slug: 'modern-magic',
@@ -234,6 +238,7 @@ const corrections: Correction[] = [
     materials: 'Acrílico y tinta serigráfica sobre lienzo',
     dimensions: '205,4 × 289,6 cm',
     location: 'Tate Modern, Londres',
+    creatorSlug: 'andy-warhol',
   },
   {
     slug: 'no-linear-narrative',
@@ -257,6 +262,20 @@ const corrections: Correction[] = [
   },
 ];
 
+function buildEssay(item: Correction, locale: 'es' | 'en') {
+  const facts = [item.technique, item.materials, item.dimensions, item.location].filter(Boolean);
+  if (locale === 'es') {
+    const technical = facts.length
+      ? `La ficha técnica documentada reúne estos datos: ${facts.join('; ')}.`
+      : `La cronología documentada sitúa esta entidad entre ${item.startYear} y ${item.endYear}.`;
+    return `${item.summaryEs}\n\n${technical}\n\nLa identificación, cronología e imagen específica se han contrastado con ${item.sourceTitle}.`;
+  }
+  const technical = facts.length
+    ? `The documented object record includes: ${facts.join('; ')}.`
+    : `The documented chronology places this entity between ${item.startYear} and ${item.endYear}.`;
+  return `${item.summaryEn}\n\n${technical}\n\nThe identification, chronology, and specific image were checked against ${item.sourceTitle}.`;
+}
+
 async function main() {
   console.log(
     JSON.stringify(
@@ -267,6 +286,8 @@ async function main() {
   );
   if (!apply) return;
   for (const item of corrections) {
+    const essayEs = buildEssay(item, 'es');
+    const essayEn = buildEssay(item, 'en');
     const entity = await prisma.entity.findUniqueOrThrow({
       where: { slug: item.slug },
       include: { mediaLinks: { include: { media: true } } },
@@ -279,6 +300,8 @@ async function main() {
           startYear: item.startYear,
           endYear: item.endYear,
           summary: item.summaryEs,
+          content: essayEs,
+          contentLevel: 'ADVANCED',
         },
       });
       await tx.entityTranslation.upsert({
@@ -288,9 +311,9 @@ async function main() {
           locale: 'es',
           title: item.title,
           shortDescription: item.summaryEs,
-          essay: item.summaryEs,
+          essay: essayEs,
         },
-        update: { title: item.title, shortDescription: item.summaryEs, essay: item.summaryEs },
+        update: { title: item.title, shortDescription: item.summaryEs, essay: essayEs },
       });
       await tx.entityTranslation.upsert({
         where: { entityId_locale: { entityId: entity.id, locale: 'en' } },
@@ -299,9 +322,9 @@ async function main() {
           locale: 'en',
           title: item.title,
           shortDescription: item.summaryEn,
-          essay: item.summaryEn,
+          essay: essayEn,
         },
-        update: { title: item.title, shortDescription: item.summaryEn, essay: item.summaryEn },
+        update: { title: item.title, shortDescription: item.summaryEn, essay: essayEn },
       });
       if (entity.type === 'ARTWORK')
         await tx.artworkDetails.upsert({
@@ -339,14 +362,16 @@ async function main() {
         },
       });
       await tx.sourceRef.deleteMany({ where: { entityId: entity.id } });
-      const source = await tx.source.create({
-        data: {
-          type: SourceType.WEBSITE,
-          title: item.sourceTitle,
-          publisher: new URL(item.sourceUrl).hostname,
-          url: item.sourceUrl,
-        },
-      });
+      const source =
+        (await tx.source.findFirst({ where: { url: item.sourceUrl } })) ??
+        (await tx.source.create({
+          data: {
+            type: SourceType.WEBSITE,
+            title: item.sourceTitle,
+            publisher: new URL(item.sourceUrl).hostname,
+            url: item.sourceUrl,
+          },
+        }));
       await tx.sourceRef.create({
         data: {
           entityId: entity.id,
@@ -354,6 +379,45 @@ async function main() {
           note: 'Fuente de autoridad utilizada para identidad, ficha e imagen específica.',
         },
       });
+      if (item.creatorSlug) {
+        const creator = await tx.entity.findUnique({ where: { slug: item.creatorSlug } });
+        const createdBy = await tx.relationType.findUnique({ where: { key: 'CREATED_BY' } });
+        if (!creator || !createdBy)
+          throw new Error(`Missing creator or CREATED_BY type for ${item.slug}`);
+        if (item.creatorTitle && creator.title !== item.creatorTitle) {
+          await tx.entity.update({ where: { id: creator.id }, data: { title: item.creatorTitle } });
+          await tx.entityTranslation.updateMany({
+            where: { entityId: creator.id },
+            data: { title: item.creatorTitle },
+          });
+        }
+        const relation =
+          (await tx.relation.findFirst({
+            where: { fromId: entity.id, toId: creator.id, relationTypeId: createdBy.id },
+          })) ??
+          (await tx.relation.create({
+            data: {
+              fromId: entity.id,
+              toId: creator.id,
+              relationTypeId: createdBy.id,
+              status: 'PUBLISHED',
+              confidence: 1,
+              justification: `${item.title} se atribuye a ${item.creatorTitle ?? creator.title} como responsable de su creación.`,
+            },
+          }));
+        const citation = await tx.citation.findFirst({
+          where: { relationId: relation.id, sourceId: source.id },
+        });
+        if (!citation)
+          await tx.citation.create({
+            data: {
+              relationId: relation.id,
+              sourceId: source.id,
+              stance: 'SUPPORTS',
+              note: 'La fuente institucional identifica directamente la autoría de la obra.',
+            },
+          });
+      }
     });
   }
   console.log(`Applied ${corrections.length} verified entity and media corrections.`);

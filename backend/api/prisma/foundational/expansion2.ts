@@ -300,7 +300,7 @@ const people: Array<[string, string, string, string, string, number?, number?]> 
     1968,
   ],
   ['sophie-calle', 'Sophie Calle', 'Sophie Calle', 'arte-conceptual', 'paris', 1953],
-  ['walid-beshty', 'Walid Beshty', 'Walid Beshty', 'arte-conceptual', 'nueva-york', 1976],
+  ['walid-beshty', 'Walead Beshty', 'Walead Beshty', 'arte-conceptual', 'nueva-york', 1976],
   ['do-ho-suh', 'Do Ho Suh', 'Do Ho Suh', 'arte-conceptual', 'tokio', 1962],
   [
     'monir-shahroudy-farmanfarmaian',
