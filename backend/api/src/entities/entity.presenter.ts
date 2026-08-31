@@ -178,7 +178,9 @@ export function relationDisplayLabel(
 export function publicRelationJustification(value: string | null | undefined): string | null {
   const justification = value?.trim() || null;
   if (!justification) return null;
-  return /(?:\bJANO\b|lectura editorial relevante|editorial reading)/i.test(justification)
+  return /(?:\bJANO\b|lectura editorial relevante|editorial reading|asociación histórica o profesional)/i.test(
+    justification,
+  )
     ? null
     : justification;
 }
