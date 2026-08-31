@@ -1,6 +1,9 @@
 import {
   editorialContextFingerprint,
   normalizeMappedSentenceIds,
+  normalizeRichLinks,
+  buildUncertainSentenceRepairRequest,
+  validateSingleMappedSentence,
   validateSentenceEntailment,
   publicOutputFromMapped,
   validateClaimPlan,
@@ -116,7 +119,10 @@ describe('claim-level editorial provenance', () => {
     ).toThrow('requires at least one section');
     expect(() =>
       validateMappedEditorialOutput(
-        { ...output, definition: { ...output.definition, text: '[[Pablo Picasso]] fue artista.' } },
+        {
+          ...output,
+          definition: { ...output.definition, text: '[[Entidad inventada]] fue artista.' },
+        },
         [claim],
         entity,
         [],
@@ -134,6 +140,53 @@ describe('claim-level editorial provenance', () => {
     const normalized = normalizeMappedSentenceIds(output);
     expect(normalized.definition.id).not.toBe(normalized.summary[0].id);
     expect(normalized.summary[0].claimIds).toEqual(['c1']);
+  });
+
+  it('removes self-links, resolves related links and rejects unknown links', () => {
+    const related = {
+      id: 'cubismo',
+      slug: 'cubismo',
+      canonicalName: 'Cubismo',
+      type: 'MOVEMENT',
+      reasonAllowed: 'RELATION:r1',
+    };
+    const output = {
+      definition: { id: 'd', text: 'Pablo Picasso [[Picasso]]', claimIds: ['c1'] },
+      summary: [{ id: 's', text: 'Relacionado con [[Cubismo]]', claimIds: ['c1'] }],
+      sections: [],
+    };
+    const normalized = normalizeRichLinks(output, entity, [related], ['Picasso']);
+    expect(normalized.definition.text).toBe('Pablo Picasso Picasso');
+    expect(normalized.summary[0].text).toBe('Relacionado con [[cubismo|Cubismo]]');
+    expect(() =>
+      normalizeRichLinks(
+        { ...output, definition: { ...output.definition, text: '[[Unknown]]' } },
+        entity,
+        [related],
+      ),
+    ).toThrow('unavailable entity');
+  });
+
+  it('blocks strong connective composition without a supporting connective claim', () => {
+    const second = { ...claim, id: 'c2', statement: 'Pablo Picasso murió en 1973.' };
+    expect(() =>
+      validateSingleMappedSentence(
+        { id: 's', text: 'Nació en 1881 porque murió en 1973.', claimIds: ['c1', 'c2'] },
+        [claim, second],
+        entity,
+        [],
+      ),
+    ).toThrow('unsupported connective');
+  });
+
+  it('builds a single constrained repair request', () => {
+    const request = buildUncertainSentenceRepairRequest(
+      { id: 's', text: 'La obra fue fundamental.', claimIds: ['c1'] },
+      [claim],
+      'La importancia no está documentada.',
+    );
+    expect(request.input).toEqual(expect.objectContaining({ AUDITOR_REASON: expect.any(String) }));
+    expect(request.input).not.toHaveProperty('externalKnowledge');
   });
 
   it('fails safe when the independent entailment audit is incomplete or uncertain', () => {

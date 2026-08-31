@@ -11,16 +11,20 @@ import {
   buildClaimPlannerRequest,
   buildEditorialRealizerRequest,
   buildSentenceEntailmentRequest,
+  buildUncertainSentenceRepairRequest,
   editorialContextFingerprint,
   publicOutputFromMapped,
   validateClaimPlan,
   validateMappedEditorialOutput,
+  validateSingleMappedSentence,
   normalizeMappedSentenceIds,
   validateSentenceEntailment,
   type ClaimPlan,
   type EditorialClaim,
+  type EditorialLinkableEntity,
   type EditorialKnowledgeUnit,
   type MappedEditorialOutput,
+  type MappedSentence,
   type SentenceEntailmentAudit,
 } from '../src/foundational/entity-editorial-claim-provenance';
 
@@ -206,6 +210,39 @@ function knowledgeUnits(entity: EntityRecord): EditorialKnowledgeUnit[] {
   return units;
 }
 
+function classifyRelations(entity: EntityRecord) {
+  const relations = [
+    ...entity.outgoing.map((relation) => ({
+      ...relation,
+      direction: 'outgoing',
+      other: relation.to,
+    })),
+    ...entity.incoming.map((relation) => ({
+      ...relation,
+      direction: 'incoming',
+      other: relation.from,
+    })),
+  ];
+  return relations.map((relation) => {
+    const supported =
+      relation.status === 'PUBLISHED' &&
+      relation.citations.length > 0 &&
+      Boolean(publicRelationJustification(relation.justification));
+    return {
+      id: relation.id,
+      type: relation.relationType.key,
+      direction: relation.direction,
+      target: relation.other.title,
+      targetId: relation.other.id,
+      classification: supported
+        ? 'SUPPORTED_RELATION'
+        : relation.status === 'PUBLISHED'
+          ? 'NAVIGATIONAL_RELATION'
+          : 'INSUFFICIENT_FOR_PROSE',
+    };
+  });
+}
+
 function articleFor(noun: string) {
   return /^(obra|entidad|organización)\b/i.test(noun) ? 'una' : 'un';
 }
@@ -229,6 +266,30 @@ function maxDepth(units: EditorialKnowledgeUnit[]) {
   return 'CONTEXTUAL_ESSAY';
 }
 
+function sentenceById(output: MappedEditorialOutput, id: string) {
+  return [
+    output.definition,
+    ...output.summary,
+    ...output.sections.flatMap((section) => section.sentences),
+  ].find((sentence) => sentence.id === id);
+}
+
+function replaceSentence(
+  output: MappedEditorialOutput,
+  replacement: MappedEditorialOutput['definition'],
+) {
+  if (output.definition.id === replacement.id) output.definition = replacement;
+  output.summary = output.summary.map((sentence) =>
+    sentence.id === replacement.id ? replacement : sentence,
+  );
+  output.sections = output.sections.map((section) => ({
+    ...section,
+    sentences: section.sentences.map((sentence) =>
+      sentence.id === replacement.id ? replacement : sentence,
+    ),
+  }));
+}
+
 async function main() {
   const writer = new AIProvider(new ConfigService());
   const validator = new AIProvider(
@@ -243,104 +304,247 @@ async function main() {
   mkdirSync(outputDir, { recursive: true });
 
   for (const slug of slugs) {
-    const entity = await prisma.entity.findUnique({
-      where: { slug },
-      include: {
-        translations: true,
-        sourceRefs: { include: { source: true } },
-        attributes: { include: { definition: true, citations: { include: { source: true } } } },
-        outgoing: {
-          include: { relationType: true, to: true, citations: { include: { source: true } } },
-        },
-        incoming: {
-          include: { relationType: true, from: true, citations: { include: { source: true } } },
-        },
-        artwork: true,
-        artist: true,
-        concept: true,
-        period: true,
-      },
-    });
-    if (!entity) throw new Error(`Entity not found: ${slug}`);
-    const units = knowledgeUnits(entity);
-    const depth = maxDepth(units);
-    const canonicalEntity = {
-      id: entity.id,
-      slug: entity.slug,
-      canonicalName: entity.title,
-      type: entity.type,
-    };
-    const relatedById = new Map(
-      [
-        ...entity.outgoing.map((relation) => relation.to),
-        ...entity.incoming.map((relation) => relation.from),
-      ].map((related) => [related.id, related]),
-    );
-    const linkableEntities = units
-      .filter((unit) => unit.kind === 'SUPPORTED_RELATION')
-      .flatMap((unit) => unit.entityIds)
-      .filter((id) => id !== entity.id)
-      .map((id) => relatedById.get(id))
-      .filter((item): item is NonNullable<typeof item> => Boolean(item))
-      .map((item) => ({
-        id: item.id,
-        slug: item.slug,
-        canonicalName: item.title,
-        type: item.type,
-      }));
-
-    let proposedPlan!: ClaimPlan;
-    let accepted: EditorialClaim[] = [];
-    let rejected: Array<{ claim: EditorialClaim; reason: string }> = [];
-    let invalidReferences: string[] = [];
-    for (let attempt = 0; attempt < 2 && !accepted.length; attempt += 1) {
-      const request = buildClaimPlannerRequest({ entity: canonicalEntity, units, depth });
-      if (attempt)
-        request.task += `\n\nREINTENTO OBLIGATORIO: los provenanceRefs anteriores eran inválidos. Copia literalmente un id de AVAILABLE_KNOWLEDGE_UNITS, incluyendo su prefijo FACT:, EVIDENCE: o RELATION:. Nunca uses nombres de tablas ni inventes ids.`;
-      const plannerResult = await writer.runStructured(request);
-      proposedPlan = plannerResult.output as ClaimPlan;
-      const result = validateClaimPlan(proposedPlan, units);
-      accepted = result.accepted;
-      rejected = result.rejected;
-      invalidReferences = result.invalidReferences;
-    }
-    if (!accepted.length)
-      throw new Error(
-        `Planner accepted no claims for ${slug}: ${JSON.stringify({ proposed: proposedPlan.claims, rejected })}`,
-      );
-
-    const realizerResult = await writer.runStructured(
-      buildEditorialRealizerRequest({
-        entity: canonicalEntity,
-        claims: accepted,
-        linkableEntities,
-        depth,
-        locale: 'es',
-      }),
-    );
-    const mappedOutput = normalizeMappedSentenceIds(realizerResult.output as MappedEditorialOutput);
-    let sentences;
     try {
-      sentences = validateMappedEditorialOutput(
-        mappedOutput,
-        accepted,
-        canonicalEntity,
-        linkableEntities,
-        depth,
+      const entity = await prisma.entity.findUnique({
+        where: { slug },
+        include: {
+          translations: true,
+          sourceRefs: { include: { source: true } },
+          attributes: { include: { definition: true, citations: { include: { source: true } } } },
+          outgoing: {
+            include: {
+              relationType: true,
+              to: { include: { aliases: true } },
+              citations: { include: { source: true } },
+            },
+          },
+          incoming: {
+            include: {
+              relationType: true,
+              from: { include: { aliases: true } },
+              citations: { include: { source: true } },
+            },
+          },
+          aliases: true,
+          artwork: true,
+          artist: true,
+          concept: true,
+          period: true,
+        },
+      });
+      if (!entity) throw new Error(`Entity not found: ${slug}`);
+      const units = knowledgeUnits(entity);
+      const depth = maxDepth(units);
+      const canonicalEntity = {
+        id: entity.id,
+        slug: entity.slug,
+        canonicalName: entity.title,
+        type: entity.type,
+      };
+      const relatedById = new Map(
+        [
+          ...entity.outgoing.map((relation) => relation.to),
+          ...entity.incoming.map((relation) => relation.from),
+        ].map((related) => [related.id, related]),
       );
-    } catch (error) {
-      const failedArtifact = {
+      let proposedPlan!: ClaimPlan;
+      let accepted: EditorialClaim[] = [];
+      let rejected: Array<{ claim: EditorialClaim; reason: string }> = [];
+      let invalidReferences: string[] = [];
+      for (let attempt = 0; attempt < 2 && !accepted.length; attempt += 1) {
+        const request = buildClaimPlannerRequest({ entity: canonicalEntity, units, depth });
+        if (attempt)
+          request.task += `\n\nREINTENTO OBLIGATORIO: los provenanceRefs anteriores eran inválidos. Copia literalmente un id de AVAILABLE_KNOWLEDGE_UNITS, incluyendo su prefijo FACT:, EVIDENCE: o RELATION:. Nunca uses nombres de tablas ni inventes ids.`;
+        const plannerResult = await writer.runStructured(request);
+        proposedPlan = plannerResult.output as ClaimPlan;
+        const result = validateClaimPlan(proposedPlan, units);
+        accepted = result.accepted;
+        rejected = result.rejected;
+        invalidReferences = result.invalidReferences;
+      }
+      if (!accepted.length)
+        throw new Error(
+          `Planner accepted no claims for ${slug}: ${JSON.stringify({ proposed: proposedPlan.claims, rejected })}`,
+        );
+
+      const unitById = new Map<string, EditorialKnowledgeUnit>(
+        units.map((unit) => [unit.id, unit]),
+      );
+      const linkableEntities = accepted
+        .flatMap((claim) => claim.provenanceRefs)
+        .map((ref) => unitById.get(ref))
+        .filter((unit): unit is EditorialKnowledgeUnit => unit?.kind === 'SUPPORTED_RELATION')
+        .flatMap((unit) => unit.entityIds)
+        .filter((id) => id !== entity.id)
+        .map((id) => relatedById.get(id))
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
+        .filter(
+          (item, index, all) => all.findIndex((candidate) => candidate.id === item.id) === index,
+        )
+        .map(
+          (item): EditorialLinkableEntity => ({
+            id: item.id,
+            slug: item.slug,
+            canonicalName: item.title,
+            type: item.type,
+            aliases: item.aliases?.map((alias) => alias.value),
+            reasonAllowed: [
+              ...new Set(
+                accepted
+                  .filter((claim) =>
+                    claim.provenanceRefs.some((ref) =>
+                      unitById.get(ref)?.entityIds.includes(item.id),
+                    ),
+                  )
+                  .flatMap((claim) => claim.provenanceRefs),
+              ),
+            ].join(','),
+          }),
+        );
+
+      const realizerResult = await writer.runStructured(
+        buildEditorialRealizerRequest({
+          entity: canonicalEntity,
+          claims: accepted,
+          linkableEntities,
+          depth,
+          locale: 'es',
+        }),
+      );
+      const mappedOutput = normalizeMappedSentenceIds(
+        realizerResult.output as MappedEditorialOutput,
+      );
+      let sentences;
+      try {
+        sentences = validateMappedEditorialOutput(
+          mappedOutput,
+          accepted,
+          canonicalEntity,
+          linkableEntities,
+          depth,
+          entity.aliases?.map((alias) => alias.value),
+        );
+      } catch (error) {
+        const failedArtifact = {
+          entity: canonicalEntity,
+          contextFingerprint: editorialContextFingerprint(entity.id, 'es', depth, units),
+          availableKnowledgeUnits: units,
+          proposedClaims: proposedPlan.claims,
+          acceptedClaims: accepted,
+          rejectedClaims: rejected,
+          invalidPlanReferences: invalidReferences,
+          mappedOutput,
+          publicOutput: null,
+          validationFailure: error instanceof Error ? error.message : String(error),
+          model: writer.metadata(),
+          promptVersion: {
+            planner: 'claim-level-editorial-v1-planner',
+            realizer: 'claim-level-editorial-v1-realizer',
+            entailment: 'claim-level-editorial-v1-entailment',
+          },
+          depth,
+          generatedAt: new Date().toISOString(),
+        };
+        writeFileSync(
+          resolve(outputDir, `claim-level-editorial-v1-${slug}-rejected.json`),
+          `${JSON.stringify(failedArtifact, null, 2)}\n`,
+          { mode: 0o600 },
+        );
+        throw error;
+      }
+      let entailmentResult = await validator.runStructured(
+        buildSentenceEntailmentRequest(sentences, accepted),
+      );
+      let entailment = validateSentenceEntailment(
+        sentences,
+        entailmentResult.output as SentenceEntailmentAudit,
+      );
+      const repairs: Array<{ sentenceId: string; status: string; reason?: string }> = [];
+      for (const rejectedSentence of entailment.rejected.filter(
+        ({ result }) => result.verdict === 'UNCERTAIN',
+      )) {
+        const original = sentenceById(mappedOutput, rejectedSentence.sentence.id);
+        if (!original) continue;
+        try {
+          const repairResult = await writer.runStructured(
+            buildUncertainSentenceRepairRequest(
+              original,
+              original.claimIds
+                .map((id) => accepted.find((claim) => claim.id === id)!)
+                .filter(Boolean),
+              rejectedSentence.result.reason,
+            ),
+          );
+          const candidate = repairResult.output as MappedSentence;
+          if (
+            candidate.id !== original.id ||
+            JSON.stringify([...candidate.claimIds].sort()) !==
+              JSON.stringify([...original.claimIds].sort())
+          )
+            throw new Error('Repair changed sentence id or claim references');
+          const repaired = validateSingleMappedSentence(
+            candidate,
+            accepted,
+            canonicalEntity,
+            linkableEntities,
+            entity.aliases?.map((alias) => alias.value),
+          );
+          replaceSentence(mappedOutput, repaired);
+          repairs.push({ sentenceId: original.id, status: 'REPAIRED' });
+        } catch (error) {
+          repairs.push({
+            sentenceId: original.id,
+            status: 'REPAIR_FAILED',
+            reason: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
+      if (repairs.some((repair) => repair.status === 'REPAIRED')) {
+        sentences = validateMappedEditorialOutput(
+          mappedOutput,
+          accepted,
+          canonicalEntity,
+          linkableEntities,
+          depth,
+          entity.aliases?.map((alias) => alias.value),
+        );
+        entailmentResult = await validator.runStructured(
+          buildSentenceEntailmentRequest(sentences, accepted),
+        );
+        entailment = validateSentenceEntailment(
+          sentences,
+          entailmentResult.output as SentenceEntailmentAudit,
+        );
+      }
+      const publicOutput = entailment.rejected.length
+        ? null
+        : publicOutputFromMapped(mappedOutput, linkableEntities);
+      const artifact = {
         entity: canonicalEntity,
         contextFingerprint: editorialContextFingerprint(entity.id, 'es', depth, units),
         availableKnowledgeUnits: units,
+        relationClassification: classifyRelations(entity),
         proposedClaims: proposedPlan.claims,
         acceptedClaims: accepted,
         rejectedClaims: rejected,
         invalidPlanReferences: invalidReferences,
         mappedOutput,
-        publicOutput: null,
-        validationFailure: error instanceof Error ? error.message : String(error),
+        publicOutput,
+        sentenceToClaimMapping: sentences,
+        entailment,
+        repairs,
+        parametricKnowledgeTest: {
+          omittedFact:
+            slug === 'guernica' ? 'bombing circumstances and location' : 'specific ritual examples',
+          leaked:
+            slug === 'guernica'
+              ? /bombarde|guerra civil|pabell[oó]n|pa[ií]s vasco/i.test(
+                  JSON.stringify(publicOutput),
+                )
+              : /religios|ceremon|liturg|bodas?|funeral/i.test(JSON.stringify(publicOutput)),
+        },
         model: writer.metadata(),
+        entailmentModel: validator.metadata(),
         promptVersion: {
           planner: 'claim-level-editorial-v1-planner',
           realizer: 'claim-level-editorial-v1-realizer',
@@ -349,67 +553,29 @@ async function main() {
         depth,
         generatedAt: new Date().toISOString(),
       };
-      writeFileSync(
-        resolve(outputDir, `claim-level-editorial-v1-${slug}-rejected.json`),
-        `${JSON.stringify(failedArtifact, null, 2)}\n`,
-        { mode: 0o600 },
+      const path = resolve(outputDir, `claim-level-editorial-v1-${slug}.json`);
+      writeFileSync(path, `${JSON.stringify(artifact, null, 2)}\n`, { mode: 0o600 });
+      console.log(
+        JSON.stringify({
+          slug,
+          depth,
+          units: units.length,
+          accepted: accepted.length,
+          rejected: rejected.length,
+          sentenceFailures: entailment.rejected.length,
+          parametricLeak: artifact.parametricKnowledgeTest.leaked,
+          artifact: path,
+        }),
       );
-      throw error;
+    } catch (error) {
+      console.error(
+        JSON.stringify({
+          slug,
+          status: 'FAIL',
+          error: error instanceof Error ? error.message : String(error),
+        }),
+      );
     }
-    const entailmentResult = await validator.runStructured(
-      buildSentenceEntailmentRequest(sentences, accepted),
-    );
-    const entailment = validateSentenceEntailment(
-      sentences,
-      entailmentResult.output as SentenceEntailmentAudit,
-    );
-    const publicOutput = entailment.rejected.length
-      ? null
-      : publicOutputFromMapped(mappedOutput, linkableEntities);
-    const artifact = {
-      entity: canonicalEntity,
-      contextFingerprint: editorialContextFingerprint(entity.id, 'es', depth, units),
-      availableKnowledgeUnits: units,
-      proposedClaims: proposedPlan.claims,
-      acceptedClaims: accepted,
-      rejectedClaims: rejected,
-      invalidPlanReferences: invalidReferences,
-      mappedOutput,
-      publicOutput,
-      sentenceToClaimMapping: sentences,
-      entailment,
-      parametricKnowledgeTest: {
-        omittedFact:
-          slug === 'guernica' ? 'bombing circumstances and location' : 'specific ritual examples',
-        leaked:
-          slug === 'guernica'
-            ? /bombarde|guerra civil|pabell[oó]n|pa[ií]s vasco/i.test(JSON.stringify(publicOutput))
-            : /religios|ceremon|liturg|bodas?|funeral/i.test(JSON.stringify(publicOutput)),
-      },
-      model: writer.metadata(),
-      entailmentModel: validator.metadata(),
-      promptVersion: {
-        planner: 'claim-level-editorial-v1-planner',
-        realizer: 'claim-level-editorial-v1-realizer',
-        entailment: 'claim-level-editorial-v1-entailment',
-      },
-      depth,
-      generatedAt: new Date().toISOString(),
-    };
-    const path = resolve(outputDir, `claim-level-editorial-v1-${slug}.json`);
-    writeFileSync(path, `${JSON.stringify(artifact, null, 2)}\n`, { mode: 0o600 });
-    console.log(
-      JSON.stringify({
-        slug,
-        depth,
-        units: units.length,
-        accepted: accepted.length,
-        rejected: rejected.length,
-        sentenceFailures: entailment.rejected.length,
-        parametricLeak: artifact.parametricKnowledgeTest.leaked,
-        artifact: path,
-      }),
-    );
   }
 }
 

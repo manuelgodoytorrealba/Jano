@@ -31,10 +31,14 @@ export type MappedEditorialOutput = {
   summary: MappedSentence[];
   sections: Array<{ heading: string; sentences: MappedSentence[] }>;
 };
+export type EditorialLinkableEntity = EditorialEntity & {
+  reasonAllowed: string;
+  aliases?: string[];
+};
 export type SentenceEntailmentAudit = {
   results: Array<{
     sentenceId: string;
-    verdict: 'ENTAILED' | 'UNSUPPORTED' | 'UNCERTAIN';
+    verdict: 'SUPPORTED' | 'UNSUPPORTED' | 'UNCERTAIN';
     reason: string;
   }>;
 };
@@ -182,7 +186,7 @@ export function validateClaimPlan(plan: ClaimPlan, units: EditorialKnowledgeUnit
 export function buildEditorialRealizerRequest(args: {
   entity: EditorialEntity;
   claims: EditorialClaim[];
-  linkableEntities: EditorialEntity[];
+  linkableEntities: EditorialLinkableEntity[];
   depth: string;
   locale: string;
 }) {
@@ -191,8 +195,11 @@ export function buildEditorialRealizerRequest(args: {
     task: `Escribe prosa natural que explique TARGET_ENTITY usando EXCLUSIVAMENTE ACCEPTED_CLAIMS.
 Cada frase debe devolver los claimIds que la sostienen. No añadas fechas, lugares, nombres, causalidad,
 interpretaciones ni relaciones ausentes. Puedes sintetizar claims, pero no ampliar su significado.
+Usa ÚNICAMENTE los IDs exactos de ACCEPTED_CLAIMS; copia cada claimIds literalmente y no inventes IDs.
 La definición debe nombrar TARGET_ENTITY. Definition y summary pueden usar [[Nombre canónico]] sólo para
-LINKABLE_ENTITIES. IDENTITY_ONLY debe ser breve y puede devolver sections vacío;
+LINKABLE_ENTITIES. TARGET_ENTITY nunca se enlaza consigo misma: elimina el marcado y conserva el texto visible.
+Prefiere una frase factual por claim; sólo combina claims compatibles con una unión gramatical neutra.
+IDENTITY_ONLY debe ser breve y puede devolver sections vacío;
 EDITORIAL_ENTRY o mayor requiere al menos una sección. No repitas literalmente definition como summary.
 No menciones JANO ni el proceso.`,
     input: {
@@ -246,9 +253,14 @@ export function validateMappedEditorialOutput(
   output: MappedEditorialOutput,
   claims: EditorialClaim[],
   target: EditorialEntity,
-  linkableEntities: EditorialEntity[],
+  linkableEntities: EditorialLinkableEntity[],
   depth = 'EDITORIAL_ENTRY',
+  targetAliases: string[] = [],
 ) {
+  const normalizedOutput = normalizeRichLinks(output, target, linkableEntities, targetAliases);
+  output.definition = normalizedOutput.definition;
+  output.summary = normalizedOutput.summary;
+  output.sections = normalizedOutput.sections;
   const byClaim = new Map(claims.map((claim) => [claim.id, claim]));
   const sentences = [
     output.definition,
@@ -264,21 +276,28 @@ export function validateMappedEditorialOutput(
   if (output.definition.text.length > 320) throw new Error('Definition is too long');
   if (!['IDENTITY_ONLY', 'BASIC_EXPLANATION'].includes(depth) && !(output.sections ?? []).length)
     throw new Error('Editorial depth requires at least one section');
-  const allowedLinks = new Set(linkableEntities.map((entity) => entity.canonicalName));
   for (const sentence of sentences) {
     if (!sentence?.text || !sentence.claimIds?.length) throw new Error('Unmapped public sentence');
     const referenced = sentence.claimIds.map((id) => byClaim.get(id));
     if (referenced.some((claim) => !claim)) throw new Error('Sentence references unknown claim');
     const support = referenced.map((claim) => claim!.statement).join(' ');
+    if (
+      sentence.claimIds.length > 1 &&
+      /\b(por tanto|porque|por lo tanto|lo que llevó a|como resultado|así pues|influye|influyó|fundamental|revolucionari[oa])\b/i.test(
+        sentence.text,
+      ) &&
+      !/\b(por tanto|porque|por lo tanto|lo que llevó a|como resultado|así pues|influye|influyó|fundamental|revolucionari[oa])\b/i.test(
+        support,
+      )
+    )
+      throw new Error('Sentence combines claims with unsupported connective');
     const allowedNumbers = new Set(support.match(/-?\d+(?:[.,]\d+)?/g) ?? []);
     const introducedNumber = (sentence.text.match(/-?\d+(?:[.,]\d+)?/g) ?? []).find(
       (number) => !allowedNumbers.has(number),
     );
     if (introducedNumber)
       throw new Error(`Sentence introduces unsupported number: ${introducedNumber}`);
-    for (const match of sentence.text.matchAll(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g)) {
-      if (!allowedLinks.has(match[1]))
-        throw new Error(`Sentence links unavailable entity: ${match[1]}`);
+    for (const match of sentence.text.matchAll(/\[\[[^\]|]+\|([^\]]+)\]\]/g)) {
       if (!normalize(support).includes(normalize(match[1])))
         throw new Error(`Sentence link is not supported by its claims: ${match[1]}`);
     }
@@ -290,6 +309,120 @@ export function validateMappedEditorialOutput(
   return sentences;
 }
 
+export function normalizeRichLinks(
+  output: MappedEditorialOutput,
+  target: EditorialEntity,
+  linkableEntities: EditorialLinkableEntity[],
+  targetAliases: string[] = [],
+): MappedEditorialOutput {
+  const targetNames = new Set([target.canonicalName, target.slug, ...targetAliases].map(normalize));
+  const candidates = new Map<string, EditorialLinkableEntity | null>();
+  for (const entity of linkableEntities) {
+    for (const name of [entity.canonicalName, entity.slug, ...(entity.aliases ?? [])]) {
+      const key = normalize(name);
+      if (candidates.has(key) && candidates.get(key)?.id !== entity.id) candidates.set(key, null);
+      else candidates.set(key, entity);
+    }
+  }
+  const rewrite = (value: string) =>
+    value.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_match, rawName, rawLabel) => {
+      const name = normalize(String(rawName));
+      const visible = String(rawLabel ?? rawName).trim();
+      if (targetNames.has(name)) return visible;
+      const entity = candidates.get(name);
+      if (entity === null) throw new Error(`Ambiguous rich link: ${rawName}`);
+      if (!entity) throw new Error(`Sentence links unavailable entity: ${rawName}`);
+      return `[[${entity.slug}|${entity.canonicalName}]]`;
+    });
+  return {
+    definition: { ...output.definition, text: rewrite(output.definition.text) },
+    summary: output.summary.map((sentence) => ({ ...sentence, text: rewrite(sentence.text) })),
+    sections: output.sections.map((section) => ({
+      ...section,
+      heading: rewrite(section.heading),
+      sentences: section.sentences.map((sentence) => ({
+        ...sentence,
+        text: rewrite(sentence.text),
+      })),
+    })),
+  };
+}
+
+export function validateSingleMappedSentence(
+  sentence: MappedSentence,
+  claims: EditorialClaim[],
+  target: EditorialEntity,
+  linkableEntities: EditorialLinkableEntity[],
+  targetAliases: string[] = [],
+) {
+  const normalized = normalizeRichLinks(
+    { definition: sentence, summary: [], sections: [] },
+    target,
+    linkableEntities,
+    targetAliases,
+  ).definition;
+  const byClaim = new Map(claims.map((claim) => [claim.id, claim]));
+  const referenced = normalized.claimIds.map((id) => byClaim.get(id));
+  if (!normalized.text || !normalized.claimIds.length || referenced.some((claim) => !claim))
+    throw new Error('Sentence references unknown claim');
+  const support = referenced.map((claim) => claim!.statement).join(' ');
+  if (
+    normalized.claimIds.length > 1 &&
+    /\b(por tanto|porque|por lo tanto|lo que llevó a|como resultado|así pues|influye|influyó|fundamental|revolucionari[oa])\b/i.test(
+      normalized.text,
+    ) &&
+    !/\b(por tanto|porque|por lo tanto|lo que llevó a|como resultado|así pues|influye|influyó|fundamental|revolucionari[oa])\b/i.test(
+      support,
+    )
+  )
+    throw new Error('Sentence combines claims with unsupported connective');
+  const allowedNumbers = new Set(support.match(/-?\d+(?:[.,]\d+)?/g) ?? []);
+  const introducedNumber = (normalized.text.match(/-?\d+(?:[.,]\d+)?/g) ?? []).find(
+    (number) => !allowedNumbers.has(number),
+  );
+  if (introducedNumber)
+    throw new Error(`Sentence introduces unsupported number: ${introducedNumber}`);
+  for (const match of normalized.text.matchAll(/\[\[[^\]|]+\|([^\]]+)\]\]/g)) {
+    if (!normalize(support).includes(normalize(match[1])))
+      throw new Error(`Sentence link is not supported by its claims: ${match[1]}`);
+  }
+  const internal = INTERNAL_LANGUAGE.find((phrase) =>
+    normalized.text.toLocaleLowerCase('es').includes(phrase),
+  );
+  if (internal) throw new Error(`Internal product language is forbidden: ${internal}`);
+  return normalized;
+}
+
+export function buildUncertainSentenceRepairRequest(
+  sentence: MappedSentence,
+  claims: EditorialClaim[],
+  reason: string,
+) {
+  return {
+    schemaVersion: 'claim-level-editorial-v1-repair',
+    task: `Reformula UNA sola frase para hacerla más conservadora. Usa exactamente los mismos claimIds y sólo
+los claims proporcionados. Elimina cualquier alcance, relación o interpretación dudosa; no añadas conocimiento.
+Devuelve la frase en español sin explicación adicional.`,
+    input: {
+      REJECTED_SENTENCE: sentence,
+      REFERENCED_CLAIMS: claims,
+      AUDITOR_REASON: reason,
+    },
+    outputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['id', 'text', 'claimIds'],
+      properties: {
+        id: { type: 'string' },
+        text: { type: 'string' },
+        claimIds: { type: 'array', items: { type: 'string' }, minItems: 1 },
+      },
+    },
+    maxOutputTokens: 500,
+    timeoutMs: 180_000,
+  };
+}
+
 export function buildSentenceEntailmentRequest(
   sentences: MappedSentence[],
   claims: EditorialClaim[],
@@ -298,7 +431,7 @@ export function buildSentenceEntailmentRequest(
   return {
     schemaVersion: 'claim-level-editorial-v1-entailment',
     task: `Comprueba si cada PUBLIC_SENTENCE está completamente implicada por sus REFERENCED_CLAIMS.
-ENTAILED sólo si no añade hechos, fechas, nombres, lugares, causalidad, intención, influencia o interpretación.
+SUPPORTED sólo si no añade hechos, fechas, nombres, lugares, causalidad, intención, influencia o interpretación.
 La síntesis retórica sin contenido factual nuevo es válida. Ante duda devuelve UNCERTAIN, nunca completes contexto.`,
     input: {
       SENTENCES: sentences.map((sentence) => ({
@@ -319,7 +452,7 @@ La síntesis retórica sin contenido factual nuevo es válida. Ante duda devuelv
             required: ['sentenceId', 'verdict', 'reason'],
             properties: {
               sentenceId: { type: 'string' },
-              verdict: { type: 'string', enum: ['ENTAILED', 'UNSUPPORTED', 'UNCERTAIN'] },
+              verdict: { type: 'string', enum: ['SUPPORTED', 'UNSUPPORTED', 'UNCERTAIN'] },
               reason: { type: 'string' },
             },
           },
@@ -340,7 +473,7 @@ export function validateSentenceEntailment(
   if (missing) throw new Error(`Entailment result missing sentence: ${missing.id}`);
   const rejected = sentences
     .map((sentence) => ({ sentence, result: byId.get(sentence.id)! }))
-    .filter(({ result }) => result.verdict !== 'ENTAILED');
+    .filter(({ result }) => result.verdict !== 'SUPPORTED');
   return { accepted: sentences.length - rejected.length, rejected };
 }
 
