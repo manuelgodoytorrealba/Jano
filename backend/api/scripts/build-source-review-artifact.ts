@@ -36,7 +36,7 @@ async function main() {
   );
   const selected = rows.filter(
     (row: any) =>
-      row.result.compositionSource === 'DETERMINISTIC_SAFE_KEEP' ||
+      ['DETERMINISTIC_SAFE_KEEP', 'SEMANTIC_RECOVERY'].includes(row.result.compositionSource) ||
       ['MODEL_REVIEW', 'SYSTEM_FAILSAFE_REVIEW'].includes(row.result.reviewKind),
   );
   const pool = new Pool({ connectionString: url });
@@ -120,8 +120,14 @@ async function main() {
       contextDependent,
       ephemeralOrInstitutionalContext: ephemeral,
       role: result.relevanceRole ?? null,
+      rawDimension: dimension,
       normalizedDimension,
       dimensionReviewRequired: normalizedDimension === null,
+      compositionSource:
+        result.compositionSource === 'SEMANTIC_RECOVERY'
+          ? 'SEMANTIC_RECOVERY_KEEP'
+          : (result.compositionSource ?? null),
+      v3CompositionSource: result.compositionSource ?? null,
       automatedReviewSuggestion: suggestion,
       automatedReviewReason: result.reason ?? null,
       humanDecision: null,
