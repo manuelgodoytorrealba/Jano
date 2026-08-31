@@ -44,6 +44,16 @@ function paragraphs(text: string) {
     .filter((x) => x.length >= 80)
     .slice(0, 12);
 }
+function acquisitionState(status: string, reason?: string | null) {
+  if (status === 'ALREADY_PREPARED') return 'ALREADY_ACQUIRED';
+  if (status === 'PREPARED') return 'ACQUIRED';
+  if (/429/.test(reason ?? '')) return 'HTTP_429';
+  if (/403/.test(reason ?? '')) return 'HTTP_403';
+  if (/404/.test(reason ?? '')) return 'HTTP_404';
+  if (/fetch failed|network/i.test(reason ?? '')) return 'NETWORK_FAILURE';
+  if (status === 'PREPARED_EMPTY') return 'PREPARED_EMPTY';
+  return 'EXTRACTION_FAILURE';
+}
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -115,6 +125,16 @@ async function main() {
         });
       }
       const texts = paragraphs(version.content ?? '');
+      if (!texts.length) {
+        row.status = 'PREPARED_EMPTY';
+        row.acquisitionState = 'PREPARED_EMPTY';
+        row.materialId = material.id;
+        row.versionId = version.id;
+        row.materialCreated = materialCreated;
+        row.versionCreated = versionCreated;
+        rows.push(row);
+        continue;
+      }
       for (let i = 0; i < texts.length; i++) {
         const text = texts[i];
         const excerpt = await prisma.libraryExcerpt.upsert({
@@ -133,6 +153,10 @@ async function main() {
           update: { text, locator: `paragraph-${i + 1}` },
         });
         row.excerpts.push(excerpt.id);
+        if (row.purpose === STRUCTURED_REFERENCE_PURPOSE) {
+          row.structuredRouted = true;
+          continue;
+        }
         for (const ref of source.refs) {
           const result = await classifier.classify(
             {
@@ -159,8 +183,10 @@ async function main() {
       row.versionId = version.id;
       row.materialCreated = materialCreated;
       row.versionCreated = versionCreated;
+      row.acquisitionState = acquisitionState(row.status);
     } catch (error) {
       row.failureReason = error instanceof Error ? error.message : String(error);
+      row.acquisitionState = acquisitionState(row.status, row.failureReason);
     }
     rows.push(row);
   }
@@ -176,8 +202,45 @@ async function main() {
       sourcesPrepared: rows.filter((r) => ['PREPARED', 'ALREADY_PREPARED'].includes(r.status))
         .length,
       sourcesFailed: rows.filter((r) => r.status === 'FAILED').length,
+      materialsCreated: rows.filter((r) => r.materialCreated).length,
+      versionsCreated: rows.filter((r) => r.versionCreated).length,
       excerptsCreated: rows.reduce((n, r) => n + r.excerpts.length, 0),
       semanticClassifications: rows.reduce((n, r) => n + r.classifications.length, 0),
+      documentarySourcesEffective: rows.filter(
+        (r) => r.purpose !== STRUCTURED_REFERENCE_PURPOSE && r.excerpts.length,
+      ).length,
+      structuredSources: rows.filter((r) => r.purpose === STRUCTURED_REFERENCE_PURPOSE).length,
+      structuredExcerpts: rows
+        .filter((r) => r.purpose === STRUCTURED_REFERENCE_PURPOSE)
+        .reduce((n, r) => n + r.excerpts.length, 0),
+      structuredRouted: rows
+        .filter((r) => r.structuredRouted)
+        .reduce((n, r) => n + r.excerpts.length, 0),
+      editorialClassifications: rows.reduce((n, r) => n + r.classifications.length, 0),
+      safeKeep: rows.reduce(
+        (n, r) =>
+          n +
+          r.classifications.filter(
+            (c: any) => c.result.compositionSource === 'DETERMINISTIC_SAFE_KEEP',
+          ).length,
+        0,
+      ),
+      modelReview: rows.reduce(
+        (n, r) =>
+          n + r.classifications.filter((c: any) => c.result.reviewKind === 'MODEL_REVIEW').length,
+        0,
+      ),
+      systemReview: rows.reduce(
+        (n, r) =>
+          n +
+          r.classifications.filter((c: any) => c.result.reviewKind === 'SYSTEM_FAILSAFE_REVIEW')
+            .length,
+        0,
+      ),
+      reject: rows.reduce(
+        (n, r) => n + r.classifications.filter((c: any) => c.result.decision === 'REJECT').length,
+        0,
+      ),
       noPromotion: true,
     },
     startedAt: new Date().toISOString(),
