@@ -1,0 +1,6 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "apply": false,
+  "items": [],
+  "reason": "No promotion before explicit human review."
+}

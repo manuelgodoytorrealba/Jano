@@ -1,0 +1,295 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "workingDatabase": {
+    "host": "db",
+    "name": "jano"
+  },
+  "classifierVersion": "semantic-evidence-v3",
+  "model": "unavailable",
+  "sourceIds": [
+    "cmtage9wq006is0kpmnmxb9a6",
+    "cmtagea1o006ms0kpqp0jld7t",
+    "cmtage95y000qs0kp8dvpd2mq",
+    "cmtage95g000ms0kp9z6y5cli",
+    "cmtage9iw003fs0kpiusi2ilw",
+    "cmtage97p0011s0kpne5kcla7",
+    "cmtage9w8006es0kp24pa1rw7",
+    "cmtagea2a006os0kpo6bn5tnk",
+    "cmtage972000xs0kplen7wyin",
+    "cmtage9xl006ks0kpnazpl9mu"
+  ],
+  "rows": [
+    {
+      "source": {
+        "id": "cmtage95g000ms0kp9z6y5cli",
+        "title": "Renaissance art",
+        "type": "WEBSITE",
+        "url": "https://www.metmuseum.org/toah/hd/reni/hd_reni.htm"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "failureReason": "URL returned HTTP 429",
+      "acquisitionState": "HTTP_429"
+    },
+    {
+      "source": {
+        "id": "cmtage95y000qs0kp8dvpd2mq",
+        "title": "Impressionism",
+        "type": "WEBSITE",
+        "url": "https://www.musee-orsay.fr/en/collections/works-in-focus/painting/commentaire_id/impression-sunrise-312.html"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "acquisitionState": "HTTP_403"
+    },
+    {
+      "source": {
+        "id": "cmtage972000xs0kplen7wyin",
+        "title": "Paris, Capital of the Arts",
+        "type": "WEBSITE",
+        "url": "https://www.metmuseum.org/art/metpublications/Paris_Capital_of_the_Arts_1900_1968"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "failureReason": "URL returned HTTP 429",
+      "acquisitionState": "HTTP_429"
+    },
+    {
+      "source": {
+        "id": "cmtage97p0011s0kpne5kcla7",
+        "title": "Art & Architecture Thesaurus",
+        "type": "WEBSITE",
+        "url": "https://www.getty.edu/research/tools/vocabularies/aat/"
+      },
+      "purpose": "STRUCTURED_REFERENCE",
+      "status": "PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthk6l1j000820ocie67fl0v",
+        "cmthk6l1k000920oci2w3m10n",
+        "cmthk6l1l000a20ocj6ny5ryj",
+        "cmthk6l1l000b20ocvusd8lut",
+        "cmthk6l1m000c20ocr8wcsxqw",
+        "cmthk6l1n000d20ocxqa7aeji",
+        "cmthk6l1n000e20ocxyorqdsa",
+        "cmthk6l1o000f20ocedeylb35",
+        "cmthk6l1p000g20oc8wmwfy7q"
+      ],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "structuredRouted": true,
+      "materialId": "cmthk6ktk000620oc0mntnpps",
+      "versionId": "cmthk6ktm000720ocjl2iip4f",
+      "acquisitionState": "ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtage9iw003fs0kpiusi2ilw",
+        "title": "Roma Capitale",
+        "type": "WEBSITE",
+        "url": "https://www.comune.roma.it/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "failureReason": "fetch failed",
+      "acquisitionState": "NETWORK_FAILURE"
+    },
+    {
+      "source": {
+        "id": "cmtage9w8006es0kp24pa1rw7",
+        "title": "Marcel Duchamp",
+        "type": "WEBSITE",
+        "url": "https://www.philamuseum.org/collection/artist/marcel-duchamp"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "failureReason": "URL returned HTTP 404",
+      "acquisitionState": "HTTP_404"
+    },
+    {
+      "source": {
+        "id": "cmtage9wq006is0kpmnmxb9a6",
+        "title": "Andy Warhol",
+        "type": "WEBSITE",
+        "url": "https://www.warhol.org/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "PREPARED_EMPTY",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "acquisitionState": "PREPARED_EMPTY",
+      "materialId": "cmthk6lr1000l20ocymxefs5y",
+      "versionId": "cmthk6lr2000m20ocd1e2mts9"
+    },
+    {
+      "source": {
+        "id": "cmtage9xl006ks0kpnazpl9mu",
+        "title": "Polykleitos",
+        "type": "WEBSITE",
+        "url": "https://www.metmuseum.org/toah/hd/polk/hd_polk.htm"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "failureReason": "URL returned HTTP 429",
+      "acquisitionState": "HTTP_429"
+    },
+    {
+      "source": {
+        "id": "cmtagea1o006ms0kpqp0jld7t",
+        "title": "Marilyn Diptych",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/artworks/warhol-marilyn-diptych-t03093"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthk6ptq000r20oc9rg860vf"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthk6ptq000r20oc9rg860vf",
+          "entity": {
+            "id": "cmsvvxikl00ny85sjt1lqzv9u",
+            "title": "Díptico de Marilyn"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthk6ptq000r20oc9rg860vf",
+          "entity": {
+            "id": "cmqmnymur004y4vsjxtd3rfir",
+            "title": "Marilyn Diptych"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "ABOUT",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REVIEW",
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT",
+            "reason": "MODEL_OUTPUT_INVALID: provider output could not be validated.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": false,
+            "entityCentered": false,
+            "atomic": false,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION"
+          }
+        }
+      ],
+      "materialCreated": true,
+      "versionCreated": true,
+      "materialId": "cmthk6pk4000p20octvii4t55",
+      "versionId": "cmthk6pk7000q20oc1ur0ozui",
+      "acquisitionState": "ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtagea2a006os0kpo6bn5tnk",
+        "title": "Benin Bronzes",
+        "type": "WEBSITE",
+        "url": "https://www.britishmuseum.org/collection/galleries/africa"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": true,
+      "versionCreated": true,
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "acquisitionState": "HTTP_403"
+    }
+  ],
+  "metrics": {
+    "sourcesAttempted": 10,
+    "sourcesPrepared": 2,
+    "sourcesFailed": 7,
+    "materialsCreated": 10,
+    "versionsCreated": 10,
+    "excerptsCreated": 10,
+    "semanticClassifications": 2,
+    "documentarySourcesEffective": 1,
+    "structuredSources": 1,
+    "structuredExcerpts": 9,
+    "structuredRouted": 9,
+    "editorialClassifications": 2,
+    "safeKeep": 0,
+    "modelReview": 0,
+    "systemReview": 1,
+    "reject": 1,
+    "noPromotion": true
+  },
+  "startedAt": "2026-08-31T18:15:28.651Z",
+  "finishedAt": "2026-08-31T18:15:28.651Z"
+}

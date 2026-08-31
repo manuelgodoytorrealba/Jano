@@ -1,0 +1,3269 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "workingDatabase": {
+    "host": "127.0.0.1",
+    "name": "jano"
+  },
+  "classifierVersion": "semantic-evidence-v3",
+  "model": "qwen2.5:14b",
+  "sourceIds": [
+    "cmtage95p000os0kp83phgo8x",
+    "cmtage91f0000s0kpjeilzvqc",
+    "cmtage9bs001ps0kp1j5mc43w",
+    "entierro-orgaz-santo-tome-source",
+    "cmtage9ba001ls0kpadu20fom",
+    "cmtage97p0011s0kpne5kcla7",
+    "cmtage94q000is0kpgyqpynty",
+    "cmtagea1o006ms0kpqp0jld7t",
+    "cmtage99x001bs0kp3qax6vlk",
+    "cmtage9in003ds0kpunn4erfv"
+  ],
+  "rows": [
+    {
+      "source": {
+        "id": "cmtage91f0000s0kpjeilzvqc",
+        "title": "Pablo Picasso",
+        "type": "WEBSITE",
+        "url": "https://guernica.museoreinasofia.es/agente/pablo-picasso-5322"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmtg2xuc4000e6vsjcw4ar4r6",
+        "cmtg2xucp000g6vsjqdl63rq8",
+        "cmtg2xucw000i6vsj0k13o4nb",
+        "cmtg2xud2000k6vsjbja2mw9y",
+        "cmthk9n2g0004qwfp4dqwii45",
+        "cmthk9q680005qwfpdmw8mncn",
+        "cmthk9q6a0006qwfpg72u53m9",
+        "cmthk9t8p0007qwfpzdzw7pse",
+        "cmthk9vs50008qwfprr7yqf21",
+        "cmthk9vs70009qwfp06907xvs",
+        "cmthk9vs8000aqwfprtxx7k8z",
+        "cmthk9zt6000bqwfpevefexql"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmtg2xuc4000e6vsjcw4ar4r6",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Pablo Picasso (Málaga, 1881 – Mougins, Francia, 1973) recibió, a través de la Embajada de España en París, el encargo de realizar una gran pintura para el pabellón español en la Exposición Internacional de París de 1937.",
+            "evidenceProposition": {
+              "statement": "Pablo Picasso recibió un encargo para pintar una obra para el pabellón español en la Exposición Internacional de París de 1937.",
+              "supportedDimension": "PROVENANCE_OR_COMMISSION",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "PROVENANCE_OR_COMMISSION",
+            "confidence": "HIGH",
+            "reason": "El texto proporciona información directa y específica sobre Pablo Picasso, incluyendo el encargo que recibió para una exposición internacional. La información es clara y relevante para el tema del artista.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 220,
+              "text": "Pablo Picasso (Málaga, 1881 – Mougins, Francia, 1973) recibió, a través de la Embajada de España en París, el encargo de realizar una gran pintura para el pabellón español en la Exposición Internacional de París de 1937."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmtg2xucp000g6vsjqdl63rq8",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Picasso era entonces el artista de mayor relevancia internacional, por lo que su colaboración con el Gobierno de la República sirvió también como reclamo.",
+            "evidenceProposition": {
+              "statement": "Picasso era el artista de mayor relevancia internacional en ese momento, y su colaboración con el Gobierno de la República sirvió como reclamo.",
+              "supportedDimension": "RELATION",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "RELATION",
+            "confidence": "HIGH",
+            "reason": "El texto proporciona una relación clara y directa entre Picasso y su colaboración con el Gobierno de la República, destacando su relevancia internacional y su papel como reclamo. La propuesta es atómica y se centra directamente en el candidato, preservando la incertidumbre y la interpretación del texto original.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 154,
+              "text": "Picasso era entonces el artista de mayor relevancia internacional, por lo que su colaboración con el Gobierno de la República sirvió también como reclamo."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmtg2xucw000i6vsj0k13o4nb",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Guernica resultó un ejercicio pictórico inédito en la trayectoria del artista e inmediatamente se reconoció el poder icónico de la obra como instrumento de propaganda política en el escenario de la Guerra Civil.",
+            "evidenceProposition": {
+              "statement": "Guernica es un ejercicio pictórico inédito en la trayectoria de Pablo Picasso y se reconoció rápidamente su poder icónico como instrumento de propaganda política durante la Guerra Civil.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "El párrafo proporciona información directa y sustancial sobre la obra 'Guernica' y su relevancia en la trayectoria de Pablo Picasso, cumpliendo con los criterios de PRIMARY_SUBJECT.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 211,
+              "text": "Guernica resultó un ejercicio pictórico inédito en la trayectoria del artista e inmediatamente se reconoció el poder icónico de la obra como instrumento de propaganda política en el escenario de la Guerra Civil."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmtg2xud2000k6vsjbja2mw9y",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 267,
+              "text": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthk9n2g0004qwfp4dqwii45",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Picasso se integró en esa modernidad no solo como pintor sino también como ilustrador.",
+            "evidenceProposition": {
+              "statement": "Pablo Picasso se integró en la modernidad tanto como pintor como ilustrador.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "El texto proporciona una definición directa y clara del papel de Pablo Picasso en la modernidad, destacando sus actividades tanto como pintor como ilustrador.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 86,
+              "text": "Picasso se integró en esa modernidad no solo como pintor sino también como ilustrador."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthk9q680005qwfpdmw8mncn",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Instalado en París en 1904, enseguida se convirtió en una figura de referencia que ocupó a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas, quienes reconocieron en su trabajo la expresión de un lenguaje nuevo por romper con los sistemas de representación tradicionales.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Instalado en París en 1904, enseguida se convirtió en una figura de referencia que ocupó a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas, quienes reconocieron en su trabajo la expresión de un lenguaje nuevo por romper con los sistemas de representación tradicionales.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 313,
+              "text": "Instalado en París en 1904, enseguida se convirtió en una figura de referencia que ocupó a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas, quienes reconocieron en su trabajo la expresión de un lenguaje nuevo por romper con los sistemas de representación tradicionales."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthk9q6a0006qwfpg72u53m9",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Su vida, casas, estudios y talleres, así como su trayectoria jalonan al tiempo que vertebran la historia del arte moderno, y la huella de su obra pervive en numerosos artistas contemporáneos.",
+            "evidenceProposition": {
+              "statement": "La vida, casas, estudios y talleres de Pablo Picasso, así como su trayectoria, son fundamentales para comprender la historia del arte moderno y su influencia persiste en artistas contemporáneos.",
+              "supportedDimension": "RELATION",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "RELATION",
+            "confidence": "HIGH",
+            "reason": "El fragmento proporciona una descripción directa y centralizada sobre Pablo Picasso, destacando su importancia en la historia del arte moderno y su influencia en artistas contemporáneos.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 191,
+              "text": "Su vida, casas, estudios y talleres, así como su trayectoria jalonan al tiempo que vertebran la historia del arte moderno, y la huella de su obra pervive en numerosos artistas contemporáneos."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthk9t8p0007qwfpzdzw7pse",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "En su dilatada carrera trabajó con una amplia diversidad de materiales, medios y soportes.",
+            "evidenceProposition": {
+              "statement": "Pablo Picasso trabajó con una amplia diversidad de materiales, medios y soportes a lo largo de su carrera.",
+              "supportedDimension": "PRACTICE_OR_METHOD",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "PRACTICE_OR_METHOD",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona información directa sobre las prácticas y métodos de trabajo de Pablo Picasso, lo que es relevante para su identidad como artista. La declaración es precisa y no añade interpretaciones no documentadas.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 90,
+              "text": "En su dilatada carrera trabajó con una amplia diversidad de materiales, medios y soportes."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthk9vs50008qwfprr7yqf21",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 252,
+              "text": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthk9vs70009qwfp06907xvs",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Dentro de los parámetros de la figuración en los que trabajó en el conjunto de su obra predominan tres líneas temáticas: el retrato, las naturalezas muertas y los interiores con personas, en los que el tema del pintor y la modelo y sus variantes ocupan un lugar destacado.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Dentro de los parámetros de la figuración en los que trabajó en el conjunto de su obra predominan tres líneas temáticas: el retrato, las naturalezas muertas y los interiores con personas, en los que el tema del pintor y la modelo y sus variantes ocupan un lugar destacado.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 272,
+              "text": "Dentro de los parámetros de la figuración en los que trabajó en el conjunto de su obra predominan tres líneas temáticas: el retrato, las naturalezas muertas y los interiores con personas, en los que el tema del pintor y la modelo y sus variantes ocupan un lugar destacado."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthk9vs8000aqwfprtxx7k8z",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Por otro lado, asuntos tomados de la mitología clásica y la actualización de obras paradigmáticas de una historia del arte canónica y del clasicismo francés le sirvieron como reto de superación y vía de inserción en dicha genealogía artística.",
+            "evidenceProposition": {
+              "statement": "Pablo Picasso utilizó temas de la mitología clásica y actualizó obras paradigmáticas del arte clásico francés como un reto y para insertarse en la genealogía artística.",
+              "supportedDimension": "PRACTICE_OR_METHOD",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "PRACTICE_OR_METHOD",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona información directa sobre las prácticas y métodos de trabajo de Pablo Picasso, incluyendo cómo se inspiró en la mitología clásica y obras clásicas para su propio arte, lo que es relevante para su práctica artística.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 243,
+              "text": "Por otro lado, asuntos tomados de la mitología clásica y la actualización de obras paradigmáticas de una historia del arte canónica y del clasicismo francés le sirvieron como reto de superación y vía de inserción en dicha genealogía artística."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthk9zt6000bqwfpevefexql",
+          "entity": {
+            "id": "cmsvvxi9700hc85sjjoidcq8a",
+            "title": "Pablo Picasso"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "En cuanto lenguaje, Guernica se suma a las irrupciones plásticas y a la crisis de los paradigmas de la representación en tiempos bélicos, como había ocurrido en la década de 1910 y el cubismo.",
+            "evidenceProposition": null,
+            "supportedDimension": "CHRONOLOGY",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto histórico sobre cómo la obra de Picasso se enmarca en un período específico y en relación con movimientos anteriores como el cubismo, pero no proporciona información directa sobre Picasso. La relevancia es CONTEXT_FOR ya que el texto se centra en el contexto histórico y artístico de la obra Guernica, pero no en la identidad o las características directas de Picasso.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 192,
+              "text": "En cuanto lenguaje, Guernica se suma a las irrupciones plásticas y a la crisis de los paradigmas de la representación en tiempos bélicos, como había ocurrido en la década de 1910 y el cubismo."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmtg2xu64000b6vsjlaxq9uak",
+      "versionId": "cmtg2xu68000c6vsj1707pm7v",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtage94q000is0kpgyqpynty",
+        "title": "Marcel Duchamp: Fountain",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/artworks/duchamp-fountain-t07573"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmtg2xuzn000z6vsjnumdnmlj",
+        "cmtg2xuzx00116vsjsk6a1x02"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmtg2xuzn000z6vsjnumdnmlj",
+          "entity": {
+            "id": "cmsvvxiit00my85sjnukobauz",
+            "title": "Fuente"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmtg2xuzx00116vsjsk6a1x02",
+          "entity": {
+            "id": "cmsvvxiit00my85sjnukobauz",
+            "title": "Fuente"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Marcel Duchamp\n1921, replica 1964\nThe Bride Stripped Bare by her Bachelors Even (The Green Box)\nMarcel Duchamp\n1934\nView by appointment\nCadeau\nMan Ray\n1921, editioned replica 1972\nOn display at Tate Modern\npart of In the Studio\nNine malic moulds\nMarcel Duchamp, Richard Hamilton\n1914–5, reconstruction by Richard Hamilton 1965",
+            "evidenceProposition": {
+              "statement": "El texto proporciona información sobre varias obras de Marcel Duchamp, incluyendo 'The Bride Stripped Bare by her Bachelors Even (The Green Box)', 'Cadeau' y 'Nine malic moulds', pero no proporciona detalles directos sobre la obra 'Fuente'.",
+              "supportedDimension": "CHRONOLOGY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "CHRONOLOGY",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto temporal y espacial para varias obras de Duchamp, pero no proporciona información directa sobre 'Fuente'. La relación entre 'Fuente' y el resto de las obras mencionadas es ambigua y requiere más contexto para determinar si es relevante o no.",
+            "supportQuoteStatus": "VALID_NORMALIZED",
+            "supportSpan": {
+              "start": 0,
+              "end": 339,
+              "text": "Marcel Duchamp \n1921, replica 1964 \nThe Bride Stripped Bare by her Bachelors Even (The Green Box) \nMarcel Duchamp \n1934 \nView by appointment \nCadeau \nMan Ray \n1921, editioned replica 1972 \nOn display at Tate Modern \npart of In the Studio \nNine malic moulds \nMarcel Duchamp, Richard Hamilton \n1914–5, reconstruction by Richard Hamilton 1965"
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmtg2xuvm000w6vsj7bi4s609",
+      "versionId": "cmtg2xuvn000x6vsj2h4f9eyq",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtage95p000os0kp83phgo8x",
+        "title": "Cubism",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/c/cubism"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmtg2y39200186vsjdwmljo23",
+        "cmtg2y39d001a6vsjnswbtzg8",
+        "cmtg2y39k001c6vsj1ngv4yox",
+        "cmtg2y39u001e6vsjvqcmo5gi",
+        "cmthka7x0000iqwfpuagcilup",
+        "cmthka7x1000jqwfp15xswbk8",
+        "cmthkabf3000kqwfpurj7kfjy",
+        "cmthkadoe000lqwfpifmgux79",
+        "cmthkahbc000mqwfpztlt84wx",
+        "cmthkahbd000nqwfp62d0hqcr",
+        "cmthkahbe000oqwfpa5wefcsb",
+        "cmthkake5000pqwfpw3mjbzhn"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmtg2y39200186vsjdwmljo23",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Cubism\nCubism was a revolutionary new approach to representing reality invented in around 1907–08 by artists Pablo Picasso and Georges Braque.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Cubism\nCubism was a revolutionary new approach to representing reality invented in around 1907–08 by artists Pablo Picasso and Georges Braque.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 142,
+              "text": "Cubism\nCubism was a revolutionary new approach to representing reality invented in around 1907–08 by artists Pablo Picasso and Georges Braque."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmtg2y39d001a6vsjnswbtzg8",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Cubism was one of the most influential styles of the twentieth century.",
+            "evidenceProposition": {
+              "statement": "El Cubismo fue uno de los estilos más influyentes del siglo XX.",
+              "supportedDimension": "RECEPTION_OR_LEGACY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "RECEPTION_OR_LEGACY",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona una afirmación directa sobre la influencia del Cubismo en el siglo XX, lo que se alinea con la definición de dimensión RECEPTION_OR_LEGACY. La declaración es clara y no requiere interpretación adicional.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 247,
+              "end": 318,
+              "text": "Cubism was one of the most influential styles of the twentieth century."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmtg2y39k001c6vsj1ngv4yox",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "It is generally agreed to have begun around 1907 with Picasso ’s celebrated painting Demoiselles D’Avignon which included elements of cubist style.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "It is generally agreed to have begun around 1907 with Picasso ’s celebrated painting Demoiselles D’Avignon which included elements of cubist style.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 147,
+              "text": "It is generally agreed to have begun around 1907 with Picasso ’s celebrated painting Demoiselles D’Avignon which included elements of cubist style."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmtg2y39u001e6vsjvqcmo5gi",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometric outlines, to cubes’.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometric outlines, to cubes’.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 242,
+              "text": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometric outlines, to cubes’."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthka7x0000iqwfpuagcilup",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Cubism opened up almost infinite new possibilities for the treatment of visual reality in art and was the starting point for many later abstract styles including constructivism and neo-plasticism .",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Cubism opened up almost infinite new possibilities for the treatment of visual reality in art and was the starting point for many later abstract styles including constructivism and neo-plasticism .",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 197,
+              "text": "Cubism opened up almost infinite new possibilities for the treatment of visual reality in art and was the starting point for many later abstract styles including constructivism and neo-plasticism ."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthka7x1000jqwfp15xswbk8",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "By breaking objects and figures down into distinct areas – or planes – the artists aimed to show different viewpoints at the same time and within the same space and so suggest their three dimensional form.",
+            "evidenceProposition": null,
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_PROPOSITION: Proposition removes uncertainty expressed by the support quote.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 205,
+              "text": "By breaking objects and figures down into distinct areas – or planes – the artists aimed to show different viewpoints at the same time and within the same space and so suggest their three dimensional form."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": false,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkabf3000kqwfpurj7kfjy",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "In doing so they also emphasized the two-dimensional flatness of the canvas instead of creating the illusion of depth.",
+            "evidenceProposition": {
+              "statement": "El Cubismo enfatizaba la dosdimensionalidad plana de la tela en lugar de crear la ilusión de profundidad.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona una característica definitoria del Cubismo, lo que hace que sea el tema principal del párrafo.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 118,
+              "text": "In doing so they also emphasized the two-dimensional flatness of the canvas instead of creating the illusion of depth."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkadoe000lqwfpifmgux79",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "This marked a revolutionary break with the European tradition of creating the illusion of real space from a fixed viewpoint using devices such as linear perspective, which had dominated representation from the Renaissance onwards.",
+            "evidenceProposition": {
+              "statement": "El Cubismo marcó una ruptura revolucionaria con la tradición europea de crear la ilusión de espacio real desde una perspectiva fija, utilizando dispositivos como la perspectiva lineal, que había dominado la representación desde el Renacimiento en adelante.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_SUPPORT_QUOTE: supportQuote cannot be verified in excerpt.",
+            "supportQuoteStatus": "INVALID",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkahbc000mqwfpztlt84wx",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Cubism was partly influenced by the late work of artist Paul Cézanne in which he can be seen to be painting things from slightly different points of view.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Cubism was partly influenced by the late work of artist Paul Cézanne in which he can be seen to be painting things from slightly different points of view.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 154,
+              "text": "Cubism was partly influenced by the late work of artist Paul Cézanne in which he can be seen to be painting things from slightly different points of view."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthkahbd000nqwfp62d0hqcr",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 149,
+              "text": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthkahbe000oqwfpa5wefcsb",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Cubism can be seen to have developed in two distinct phases: the initial and more austere analytical cubism, and a later phase of cubism known as synthetic cubism.",
+            "evidenceProposition": {
+              "statement": "El cubismo se desarrolló en dos fases distintas: la fase analítica inicial y austera, y una fase posterior conocida como cubismo sintético.",
+              "supportedDimension": "CHRONOLOGY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "CHRONOLOGY",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto cronológico sobre el desarrollo del cubismo, pero no se centra directamente en la definición o identidad del movimiento. La relación entre el fragmento y la entidad candidata es CONTEXT_FOR ya que el texto explica el desarrollo del cubismo sin centrarse en él como tema principal.",
+            "supportQuoteStatus": "INVALID",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkake5000pqwfpw3mjbzhn",
+          "entity": {
+            "id": "cmsvvxhgm002r85sjdntcbn33",
+            "title": "Cubismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Its artworks look more severe and are made up of an interweaving of planes and lines in muted tones of blacks, greys and ochres.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Its artworks look more severe and are made up of an interweaving of planes and lines in muted tones of blacks, greys and ochres.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 128,
+              "text": "Its artworks look more severe and are made up of an interweaving of planes and lines in muted tones of blacks, greys and ochres."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmtg2y35200156vsjy057zxyv",
+      "versionId": "cmtg2y35400166vsjodqxpeew",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtage97p0011s0kpne5kcla7",
+        "title": "Art & Architecture Thesaurus",
+        "type": "WEBSITE",
+        "url": "https://www.getty.edu/research/tools/vocabularies/aat/"
+      },
+      "purpose": "STRUCTURED_REFERENCE",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmtg2y6i4001u6vsjvavambpl",
+        "cmthkake7000rqwfp3g4lw4xl",
+        "cmthkake8000sqwfpp41gw7q6",
+        "cmthkake9000tqwfpr87b7mv2",
+        "cmthkakea000uqwfpw067bxm8",
+        "cmthkakeb000vqwfptzrletzi",
+        "cmthkakeb000wqwfpl2s3sonj",
+        "cmthkakec000xqwfpe84i4aua",
+        "cmthkaked000yqwfp6m7l72jo"
+      ],
+      "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
+      "structuredRouted": true,
+      "materialId": "cmtg2y6el001j6vsjm57ujkzt",
+      "versionId": "cmtg2y6ep001k6vsjl347oike",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtage99x001bs0kp3qax6vlk",
+        "title": "Lascaux",
+        "type": "WEBSITE",
+        "url": "https://archeologie.culture.gouv.fr/lascaux/en"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthkakee000zqwfp4yahz0ev",
+        "cmthkakee0010qwfpsf8wh0og"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthkakee000zqwfp4yahz0ev",
+          "entity": {
+            "id": "cmsvvxidp00jx85sjnnvtsi5f",
+            "title": "Pinturas de Lascaux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthkakee0010qwfpsf8wh0og",
+          "entity": {
+            "id": "cmsvvxidp00jx85sjnnvtsi5f",
+            "title": "Pinturas de Lascaux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmtg2y6id001w6vsjl04vds7m",
+      "versionId": "cmtg2y6if001x6vsj9ns6gj12",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtage9ba001ls0kpadu20fom",
+        "title": "The Bayeux Tapestry",
+        "type": "WEBSITE",
+        "url": "https://www.bayeuxmuseum.com/en/the-bayeux-tapestry/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmtg3bukw001gs2sjjgis4ibo",
+        "cmtg3bul3001is2sjs4aoht0w",
+        "cmtg3bul9001ks2sjobmdeamg",
+        "cmthkakeh0014qwfpxpm47je3",
+        "cmthkanvt0015qwfpps56syt6",
+        "cmthkanvv0016qwfpjl6393s0",
+        "cmthkanvw0017qwfpnz64jllk",
+        "cmthkanvw0018qwfpage6269i",
+        "cmthkanvx0019qwfp8eyygv69",
+        "cmthkanvy001aqwfppjn33m4i",
+        "cmthkanvz001bqwfp9lnqvccv"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmtg3bukw001gs2sjjgis4ibo",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmtg3bul3001is2sjs4aoht0w",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmtg3bul9001ks2sjobmdeamg",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthkakeh0014qwfpxpm47je3",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "The project to redeploy the Bayeux Tapestry Museum, entered a new phase in early 2024, with the presentation of the designs for the future museum to the public.",
+            "evidenceProposition": {
+              "statement": "El proyecto para reubicar el Museo del Tapiz de Bayeux entró en una nueva fase en principios de 2024, con la presentación de los diseños del futuro museo al público.",
+              "supportedDimension": "HISTORICAL_CONTEXT",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto histórico sobre el museo que alberga el Tapiz de Bayeux, pero no proporciona información directa sobre el tapiz en sí mismo. La relevancia es CONTEXT_FOR ya que el principal enfoque es el proyecto del museo, no el tapiz. La decisión es REVIEW debido a la ambigüedad sobre si este contexto es suficientemente relevante para el tapiz o si es mejor considerarlo contexto general.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 73,
+              "end": 233,
+              "text": "The project to redeploy the Bayeux Tapestry Museum, entered a new phase in early 2024, with the presentation of the designs for the future museum to the public."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkanvt0015qwfpps56syt6",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "The next aim is its opening in 2027\nWatch the video of the Bayeux Tapestry being removed \n14 October 2025 -->\nHow was the Bayeux Tapestry removed to its storage location during the museum renovation work?",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "The next aim is its opening in 2027\nWatch the video of the Bayeux Tapestry being removed \n14 October 2025 -->\nHow was the Bayeux Tapestry removed to its storage location during the museum renovation work?",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 204,
+              "text": "The next aim is its opening in 2027\nWatch the video of the Bayeux Tapestry being removed \n14 October 2025 -->\nHow was the Bayeux Tapestry removed to its storage location during the museum renovation work?"
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthkanvv0016qwfpjl6393s0",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "It is now possible to freely explore online the entire Bayeux Tapestry scene by scene with a never seen quality of images on Bayeux Museum website...",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "It is now possible to freely explore online the entire Bayeux Tapestry scene by scene with a never seen quality of images on Bayeux Museum website...",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 149,
+              "text": "It is now possible to freely explore online the entire Bayeux Tapestry scene by scene with a never seen quality of images on Bayeux Museum website..."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthkanvw0017qwfpnz64jllk",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "See more news \nThe Bayeux Tapestry, a unique artefact created in the 11th century\nStep into the engrossing story of the conquest of England by William, Duke of Normandy in 1066, told in a 70 meters long embroidery.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "See more news \nThe Bayeux Tapestry, a unique artefact created in the 11th century\nStep into the engrossing story of the conquest of England by William, Duke of Normandy in 1066, told in a 70 meters long embroidery.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 214,
+              "text": "See more news \nThe Bayeux Tapestry, a unique artefact created in the 11th century\nStep into the engrossing story of the conquest of England by William, Duke of Normandy in 1066, told in a 70 meters long embroidery."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthkanvw0018qwfpage6269i",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "With a visit to the museum, you can discover the complete Bayeux Tapestry, study it close up without causing damage to it, and understand its history and how it was created thanks to an audio-guide commentary available in 16 languages.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "With a visit to the museum, you can discover the complete Bayeux Tapestry, study it close up without causing damage to it, and understand its history and how it was created thanks to an audio-guide commentary available in 16 languages.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 235,
+              "text": "With a visit to the museum, you can discover the complete Bayeux Tapestry, study it close up without causing damage to it, and understand its history and how it was created thanks to an audio-guide commentary available in 16 languages."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthkanvx0019qwfp8eyygv69",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthkanvy001aqwfppjn33m4i",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthkanvz001bqwfp9lnqvccv",
+          "entity": {
+            "id": "cmsvvxiey00ko85sjzcckqm33",
+            "title": "Tapiz de Bayeux"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmtg3btkj001ds2sj7552ag56",
+      "versionId": "cmtg3btkn001es2sjdcq3xx23",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtage9bs001ps0kp1j5mc43w",
+        "title": "The Birth of Venus",
+        "type": "WEBSITE",
+        "url": "https://www.uffizi.it/en/artworks/birth-of-venus"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmtg8trgo0005w0sjnx52te9y",
+        "cmtg8trh10007w0sjn7n930om",
+        "cmtg8trh90009w0sjegl90x3h",
+        "cmtg8trho000bw0sjzyl51qyq",
+        "cmthkb5vx001gqwfp7zrrtipa",
+        "cmthkbc9o001hqwfpzbhfdgh0",
+        "cmthkbjpq001iqwfpe8kfcg66",
+        "cmthkbr2w001jqwfpawn5obur",
+        "cmthkbxh8001kqwfp1x82luas",
+        "cmthkc65t001lqwfp9u9fj6zv",
+        "cmthkcbso001mqwfpu53x8hb1",
+        "cmthkci35001nqwfpua7w65d7"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmtg8trgo0005w0sjnx52te9y",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmtg8trgo0005w0sjnx52te9y",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmtg8trh10007w0sjn7n930om",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura.",
+            "evidenceProposition": {
+              "statement": "El nacimiento de Venus es una composición que muestra a la diosa del amor y la belleza, Venus, llegando a tierra, específicamente a la isla de Chipre, nacida del rocío marino y llevada allí por los vientos, Zephyr y, quizás, Aura.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "El fragmento proporciona información directa y específica sobre la identidad y la representación de la obra 'El nacimiento de Venus', manteniendo la incertidumbre en la posible participación de Aura.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 87,
+              "end": 301,
+              "text": "Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmtg8trh10007w0sjn7n930om",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura.",
+            "evidenceProposition": null,
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt provides context for the artwork 'Birth of Venus' but does not directly discuss Sandro Botticelli. The decision is REVIEW due to ambiguity in whether this context is necessary for understanding Botticelli's work or if it is merely providing information about the artwork itself.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 87,
+              "end": 301,
+              "text": "Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmtg8trh90009w0sjegl90x3h",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "The goddess is standing on a giant scallop shell, as pure and as perfect as a pearl.",
+            "evidenceProposition": {
+              "statement": "El nacimiento de Venus muestra a la diosa sobre una gran concha de vieira, pura y perfecta como una perla.",
+              "supportedDimension": "FORM_OR_MATERIAL",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona una descripción directa y detallada del artefacto, lo que se alinea con la definición de la dimensión FORM_OR_MATERIAL. La propuesta es atómica y se centra directamente en la entidad candidata, sin agregar interpretaciones adicionales.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 84,
+              "text": "The goddess is standing on a giant scallop shell, as pure and as perfect as a pearl."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmtg8trh90009w0sjegl90x3h",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "The goddess is standing on a giant scallop shell, as pure and as perfect as a pearl.",
+            "evidenceProposition": null,
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt provides context about the artwork but does not directly focus on Sandro Botticelli. It describes the depiction of the goddess Venus, which is part of Botticelli's work but does not provide information about the artist himself or his practices. The decision is REVIEW due to the ambiguity of whether this context is necessary for understanding Botticelli's work or if it is merely about the artwork's content.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 84,
+              "text": "The goddess is standing on a giant scallop shell, as pure and as perfect as a pearl."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmtg8trho000bw0sjzyl51qyq",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "She is met by a young woman, who is sometimes identified as one of the Graces or as the Hora of spring, and who holds out a cloak covered in flowers.",
+            "evidenceProposition": {
+              "statement": "El nacimiento de Venus es recibido por una joven mujer, a veces identificada como una de las Gracias o como la Hora de la primavera, quien sostiene un manto cubierto de flores.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "El fragmento proporciona información directa sobre el artefacto 'El nacimiento de Venus', describiendo un elemento específico de la obra que es relevante para su identidad y definición.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 149,
+              "text": "She is met by a young woman, who is sometimes identified as one of the Graces or as the Hora of spring, and who holds out a cloak covered in flowers."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmtg8trho000bw0sjzyl51qyq",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "She is met by a young woman, who is sometimes identified as one of the Graces or as the Hora of spring, and who holds out a cloak covered in flowers.",
+            "evidenceProposition": null,
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt provides context for the artwork but does not focus directly on Sandro Botticelli. The proposition is centered on the interaction within the painting, which is necessary context for understanding Botticelli's work but does not provide substantive information about the artist himself.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 149,
+              "text": "She is met by a young woman, who is sometimes identified as one of the Graces or as the Hora of spring, and who holds out a cloak covered in flowers."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkb5vx001gqwfp7zrrtipa",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "The subject of the painting, which celebrates Venus as symbol of love and beauty, was perhaps suggested by the poet Agnolo Poliziano.",
+            "evidenceProposition": {
+              "statement": "El nacimiento de Venus, que celebra a Venus como símbolo de amor y belleza, pudo haber sido sugerido por el poeta Agnolo Poliziano.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "MEDIUM",
+            "reason": "La frase proporciona información directa sobre la obra, pero la conexión con el poeta Agnolo Poliziano es vaga y no está clara si es una afirmación definitiva o una suposición. Además, la relevancia de esta sugerencia para la definición o identidad de la obra es ambigua.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 133,
+              "text": "The subject of the painting, which celebrates Venus as symbol of love and beauty, was perhaps suggested by the poet Agnolo Poliziano."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkb5vx001gqwfp7zrrtipa",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "The subject of the painting, which celebrates Venus as symbol of love and beauty, was perhaps suggested by the poet Agnolo Poliziano.",
+            "evidenceProposition": null,
+            "supportedDimension": "RELATION",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt suggests a potential relation between the poet Agnolo Poliziano and the painting's subject, but it is not clear if this relation is directly about Sandro Botticelli or the painting itself. The uncertainty and the indirect nature of the relation make it suitable for review.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 133,
+              "text": "The subject of the painting, which celebrates Venus as symbol of love and beauty, was perhaps suggested by the poet Agnolo Poliziano."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkbc9o001hqwfpzbhfdgh0",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "It is highly probable that the work was commissioned by a member of the Medici family, although there is nothing written about the painting before 1550, when Giorgio Vasari describes it in the Medici’s Villa of Castello, owned by the cadet branch of the Medici family since the mid-15th century.",
+            "evidenceProposition": null,
+            "supportedDimension": "PROVENANCE_OR_COMMISSION",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto sobre la posible comisión de la obra por parte de la familia Medici, pero no proporciona información directa y sustancial sobre la obra en sí misma. La relación entre la obra y la comisión es plausible pero no está completamente clara, lo que lleva a la necesidad de una revisión.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 295,
+              "text": "It is highly probable that the work was commissioned by a member of the Medici family, although there is nothing written about the painting before 1550, when Giorgio Vasari describes it in the Medici’s Villa of Castello, owned by the cadet branch of the Medici family since the mid-15th century."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkbc9o001hqwfpzbhfdgh0",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "It is highly probable that the work was commissioned by a member of the Medici family, although there is nothing written about the painting before 1550, when Giorgio Vasari describes it in the Medici’s Villa of Castello, owned by the cadet branch of the Medici family since the mid-15th century.",
+            "evidenceProposition": null,
+            "supportedDimension": "PROVENANCE_OR_COMMISSION",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto sobre el encargo de la obra, pero no se centra directamente en Botticelli. La relación entre Botticelli y el encargo es plausible pero no está claramente establecida en el texto.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 295,
+              "text": "It is highly probable that the work was commissioned by a member of the Medici family, although there is nothing written about the painting before 1550, when Giorgio Vasari describes it in the Medici’s Villa of Castello, owned by the cadet branch of the Medici family since the mid-15th century."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkbjpq001iqwfpe8kfcg66",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "This hypothesis would seem to be born out by the orange trees in the painting, which are considered an emblem of the Medici dynasty, on account of the assonance between the family name and the name of the orange tree, which at the time was ‘mala medica’.",
+            "evidenceProposition": null,
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "MEDIUM",
+            "reason": "El texto proporciona contexto histórico sobre el significado simbólico de los naranjos en la pintura, pero no es el foco principal del párrafo. La relación entre el artefacto y el contexto histórico es necesaria pero no central.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 254,
+              "text": "This hypothesis would seem to be born out by the orange trees in the painting, which are considered an emblem of the Medici dynasty, on account of the assonance between the family name and the name of the orange tree, which at the time was ‘mala medica’."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": false,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkbjpq001iqwfpe8kfcg66",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "This hypothesis would seem to be born out by the orange trees in the painting, which are considered an emblem of the Medici dynasty, on account of the assonance between the family name and the name of the orange tree, which at the time was ‘mala medica’.",
+            "evidenceProposition": null,
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto histórico sobre la pintura, pero no proporciona información directa sobre Sandro Botticelli. La relación con Botticelli es indirecta y requiere interpretación adicional para establecer una conexión clara.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 254,
+              "text": "This hypothesis would seem to be born out by the orange trees in the painting, which are considered an emblem of the Medici dynasty, on account of the assonance between the family name and the name of the orange tree, which at the time was ‘mala medica’."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": false,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkbr2w001jqwfpawn5obur",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Unlike the “Allegory of Spring” , which is painted on wood, the “Birth of Venus” was painted on canvas, a support that was widely used throughout the 15th century for decorative works destined to noble houses.",
+            "evidenceProposition": {
+              "statement": "El nacimiento de Venus fue pintado en lienzo, un soporte ampliamente utilizado en el siglo XV para obras decorativas destinadas a casas nobles.",
+              "supportedDimension": "FORM_OR_MATERIAL",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona información directa sobre la forma y material del 'El nacimiento de Venus', cumpliendo con los criterios para KEEP.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 209,
+              "text": "Unlike the “Allegory of Spring” , which is painted on wood, the “Birth of Venus” was painted on canvas, a support that was widely used throughout the 15th century for decorative works destined to noble houses."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkbr2w001jqwfpawn5obur",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Unlike the “Allegory of Spring” , which is painted on wood, the “Birth of Venus” was painted on canvas, a support that was widely used throughout the 15th century for decorative works destined to noble houses.",
+            "evidenceProposition": null,
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt provides context about the material used for 'Birth of Venus', which is related to the candidate entity Sandro Botticelli, but does not directly focus on him. The relevance of this information to Botticelli's work needs further clarification.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 209,
+              "text": "Unlike the “Allegory of Spring” , which is painted on wood, the “Birth of Venus” was painted on canvas, a support that was widely used throughout the 15th century for decorative works destined to noble houses."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkbxh8001kqwfp1x82luas",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Botticelli takes his inspiration from classical statues for Venus’ modest pose, as she covers her nakedness with long, blond hair, which has reflections of light from the fact that it has been gilded; even the Winds, the pair flying in one another’s embrace, is based on an ancient work, a gem from the Hellenistic period, owned by Lorenzo the Magnificent.",
+            "evidenceProposition": {
+              "statement": "El nacimiento de Venus toma su inspiración de estatuas clásicas para la pose modesta de Venus, quien cubre su desnudez con su larga cabellera rubia, que refleja luz debido a que ha sido dorada; incluso los Vientos, la pareja que vuela abrazándose, está basada en una obra antigua, una joya del período helenístico, propiedad de Lorenzo el Magnífico.",
+              "supportedDimension": "FORM_OR_MATERIAL",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "HIGH",
+            "reason": "El fragmento proporciona información directa sobre el artefacto 'El nacimiento de Venus', describiendo cómo se inspiró en estatuas clásicas para la pose de Venus y cómo los Vientos están basados en una obra antigua. Esto proporciona detalles sobre la forma y el material del artefacto, lo que es relevante para su identidad y composición.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 356,
+              "text": "Botticelli takes his inspiration from classical statues for Venus’ modest pose, as she covers her nakedness with long, blond hair, which has reflections of light from the fact that it has been gilded; even the Winds, the pair flying in one another’s embrace, is based on an ancient work, a gem from the Hellenistic period, owned by Lorenzo the Magnificent."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkbxh8001kqwfp1x82luas",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Botticelli takes his inspiration from classical statues for Venus’ modest pose, as she covers her nakedness with long, blond hair, which has reflections of light from the fact that it has been gilded; even the Winds, the pair flying in one another’s embrace, is based on an ancient work, a gem from the Hellenistic period, owned by Lorenzo the Magnificent.",
+            "evidenceProposition": {
+              "statement": "Sandro Botticelli tomó su inspiración de estatuas clásicas para la pose modesta de Venus, cubriendo su desnudez con largos cabellos dorados, y los Vientos, que vuelan abrazándose, están basados en una obra antigua del período helenístico.",
+              "supportedDimension": "PRACTICE_OR_METHOD",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "PRACTICE_OR_METHOD",
+            "confidence": "HIGH",
+            "reason": "El fragmento proporciona información directa sobre las prácticas y métodos de Botticelli, incluyendo su inspiración de estatuas clásicas y la base de sus obras en trabajos antiguos.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 356,
+              "text": "Botticelli takes his inspiration from classical statues for Venus’ modest pose, as she covers her nakedness with long, blond hair, which has reflections of light from the fact that it has been gilded; even the Winds, the pair flying in one another’s embrace, is based on an ancient work, a gem from the Hellenistic period, owned by Lorenzo the Magnificent."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkc65t001lqwfp9u9fj6zv",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "The Uffizi\nUffizi for everyone - International Signs Video | Sandro Botticelli, Birth of Venus, 1485 ca.",
+            "evidenceProposition": {
+              "statement": "El nacimiento de Venus es una obra de Sandro Botticelli que se encuentra en el Uffizi y está etiquetada como perteneciente a la época renacentista de Florencia en el siglo XV.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "El texto proporciona información directa y específica sobre la obra 'El nacimiento de Venus', incluyendo su autor, ubicación y contexto histórico, lo que cumple con los criterios para la dimensión DEFINITION_OR_IDENTITY.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 76,
+              "end": 180,
+              "text": "The Uffizi\nUffizi for everyone - International Signs Video | Sandro Botticelli, Birth of Venus, 1485 ca."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkc65t001lqwfp9u9fj6zv",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Sandro Botticelli, Birth of Venus, 1485 ca.",
+            "evidenceProposition": {
+              "statement": "Sandro Botticelli es el artista responsable de la pintura 'Nacimiento de Venus' creada aproximadamente en 1485.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "El fragmento proporciona información directa y precisa sobre Botticelli como el creador de la obra 'Nacimiento de Venus', lo que es relevante para su identidad como artista.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 137,
+              "end": 180,
+              "text": "Sandro Botticelli, Birth of Venus, 1485 ca."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkcbso001mqwfpu53x8hb1",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "The composition shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura.",
+            "evidenceProposition": {
+              "statement": "El nacimiento de Venus muestra a la diosa del amor y la belleza llegando a tierra, en la isla de Chipre, nacida de la espuma del mar y llevada allí por los vientos, Zéfiro y, quizás, Aura.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona una descripción directa y detallada del artefacto, manteniendo la incertidumbre del texto original.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 174,
+              "text": "The composition shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkcbso001mqwfpu53x8hb1",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "The composition shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura.",
+            "evidenceProposition": null,
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt provides context for the artwork but does not focus directly on Sandro Botticelli. It describes the composition of the painting, which is relevant to understanding Botticelli's work but does not provide direct information about the artist himself.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 174,
+              "text": "The composition shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkci35001nqwfpua7w65d7",
+          "entity": {
+            "id": "cmsvvxif800ku85sjmrawpu0e",
+            "title": "El nacimiento de Venus"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthkci35001nqwfpua7w65d7",
+          "entity": {
+            "id": "cmsvvxi6400fl85sj2tu79wx0",
+            "title": "Sandro Botticelli"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmtg8tqvd0001w0sjzb1p7nxc",
+      "versionId": "cmtg8tqvk0002w0sj9ef9q82y",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtage9in003ds0kpunn4erfv",
+        "title": "Florence",
+        "type": "WEBSITE",
+        "url": "https://www.feelflorence.it/en"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmtg8tsvt000mw0sjlk1s7uwb"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmtg8tsvt000mw0sjlk1s7uwb",
+          "entity": {
+            "id": "cmsvvxhxg00bf85sjcv8h68sh",
+            "title": "Florencia"
+          },
+          "result": {
+            "decision": "REJECT",
+            "relevanceRole": "UNRELATED",
+            "supportQuote": null,
+            "evidenceProposition": null,
+            "supportedDimension": null,
+            "confidence": "LOW",
+            "reason": "The excerpt does not provide any substantive information about Florencia (Florence). It merely mentions events and festivals that are scheduled to take place in the Florence area in September 2026, which does not contribute to the definition, chronology, place, form or material, practice or method, historical context, relation, interpretation, reception or legacy, or provenance or commission of Florencia.",
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmtg8tsi2000jw0sjf3n6ap7a",
+      "versionId": "cmtg8tsi6000kw0sjm83va3dm",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmtagea1o006ms0kpqp0jld7t",
+        "title": "Marilyn Diptych",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/artworks/warhol-marilyn-diptych-t03093"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthk6ptq000r20oc9rg860vf"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthk6ptq000r20oc9rg860vf",
+          "entity": {
+            "id": "cmsvvxikl00ny85sjt1lqzv9u",
+            "title": "Díptico de Marilyn"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthk6ptq000r20oc9rg860vf",
+          "entity": {
+            "id": "cmqmnymur004y4vsjxtd3rfir",
+            "title": "Marilyn Diptych"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": null,
+            "evidenceProposition": null,
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "LOW",
+            "reason": "El fragmento proporcionado parece ser una lista de obras de Andy Warhol y Brooke Hayward, sin proporcionar información directa sobre 'Marilyn Diptych'. Sin embargo, la presencia de 'Marilyn Diptych' en el contexto puede sugerir un contexto histórico o una relación temporal que podría ser relevante para entender el contexto en el que se creó la obra. La decisión entre KEEP y REJECT es ambigua debido a la falta de información clara y directa sobre la obra en cuestión, por lo que se opta por REVIEW",
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmthk6pk4000p20octvii4t55",
+      "versionId": "cmthk6pk7000q20oc1ur0ozui",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "entierro-orgaz-santo-tome-source",
+        "title": "El entierro del señor de Orgaz",
+        "type": "WEBSITE",
+        "url": "https://santotome.org/la-iglesia/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmtg5srve0008absj8nisl4b6",
+        "cmtg5srvq000aabsjxuy92ezn",
+        "cmtg5srw6000cabsju6ljm8ro",
+        "cmtg5srwe000eabsjavkyscdr",
+        "cmthkd4uy001uqwfp3iz855mp",
+        "cmthkd4uz001vqwfpdi9c70rq",
+        "cmthkd4v0001wqwfp5mzkozxt",
+        "cmthkd9tu001xqwfpd51jtifn",
+        "cmthkdcm2001yqwfp0w5m9xh8",
+        "cmthkdfjb001zqwfppuobb8on",
+        "cmthkdios0020qwfpllk46003",
+        "cmthkdmdp0021qwfp081o0xqf"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmtg5srve0008absj8nisl4b6",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "REJECT",
+            "relevanceRole": "MENTION",
+            "supportQuote": null,
+            "evidenceProposition": null,
+            "supportedDimension": null,
+            "confidence": "LOW",
+            "reason": "El fragmento no proporciona información sustancial sobre la obra 'El entierro del conde de Orgaz'. Solo menciona la iglesia de Santo Tomé, donde se encuentra la obra, pero no se proporcionan detalles relevantes sobre la obra en sí misma.",
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmtg5srvq000aabsjxuy92ezn",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Del primer edificio mudéjar conserva el gran arco polilobulado superpuesto al actual arco toral, que separa la nave principal del presbiterio, junto con los recios machones de esta parte de la nave y un pequeño arquillo lobulado sobre un friso de ladrillos en esquinilla que sobrevive en la parte alta, en lo que fue la cabecera semicircular de la primitiva iglesia de una sola nave.",
+            "evidenceProposition": null,
+            "supportedDimension": "PLACE",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto histórico y arquitectónico que podría ser relevante para entender la ubicación y el contexto del entierro del conde de Orgaz, pero no proporciona información directa sobre la obra de arte en sí misma.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 383,
+              "text": "Del primer edificio mudéjar conserva el gran arco polilobulado superpuesto al actual arco toral, que separa la nave principal del presbiterio, junto con los recios machones de esta parte de la nave y un pequeño arquillo lobulado sobre un friso de ladrillos en esquinilla que sobrevive en la parte alta, en lo que fue la cabecera semicircular de la primitiva iglesia de una sola nave."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmtg5srw6000cabsju6ljm8ro",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Don Gonzalo Ruiz de Toledo, notario mayor de Castilla y señor de la villa de Orgaz, destacó por sus generosas obras de caridad, contribuyendo a la reconstrucción de iglesias parroquiales como ésta, San Justo y San Bartolomé y construyendo a sus expensas la iglesia de San Esteban del convento de los agustinos.",
+            "evidenceProposition": {
+              "statement": "Don Gonzalo Ruiz de Toledo, notario mayor de Castilla y señor de la villa de Orgaz, destacó por sus generosas obras de caridad, contribuyendo a la reconstrucción de iglesias parroquiales como ésta, San Justo y San Bartolomé y construyendo a sus expensas la iglesia de San Esteban del convento de los agustinos.",
+              "supportedDimension": "HISTORICAL_CONTEXT",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto histórico sobre Don Gonzalo Ruiz de Toledo, pero no proporciona información directa sobre la obra de arte 'El entierro del conde de Orgaz'. La relación entre el contexto histórico y la obra de arte es ambigua y requiere más contexto para determinar si es necesario para entender la obra de arte.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 49,
+              "end": 359,
+              "text": "Don Gonzalo Ruiz de Toledo, notario mayor de Castilla y señor de la villa de Orgaz, destacó por sus generosas obras de caridad, contribuyendo a la reconstrucción de iglesias parroquiales como ésta, San Justo y San Bartolomé y construyendo a sus expensas la iglesia de San Esteban del convento de los agustinos."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmtg5srwe000eabsjavkyscdr",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "En su testamento había dejado ordenada la donación anual a esta iglesia de unas mandas consistentes en 2 carneros, 2 pellejos de vino, 2 cargas de leña, 16 gallinas y 800 maravedíes para sostenimiento de los sacerdotes y los pobres de la parroquia, que debían recaudarse entre los habitantes de su señorío de Orgaz.",
+            "evidenceProposition": {
+              "statement": "El testamento del señor de Orgaz incluía donaciones anuales a la iglesia de Orgaz, consistente en 2 carneros, 2 pellejos de vino, 2 cargas de leña, 16 gallinas y 800 maravedíes para sostener a los sacerdotes y los pobres de la parroquia.",
+              "supportedDimension": "PROVENANCE_OR_COMMISSION",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "PROVENANCE_OR_COMMISSION",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto sobre el testamento del señor de Orgaz, pero no proporciona información directa sobre la obra de arte 'El entierro del conde de Orgaz'. La relación es indirecta y podría ser relevante para entender el contexto histórico, pero no está clara si es suficiente para ser considerado CONTEXT_FOR o si debería ser MENTION.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 315,
+              "text": "En su testamento había dejado ordenada la donación anual a esta iglesia de unas mandas consistentes en 2 carneros, 2 pellejos de vino, 2 cargas de leña, 16 gallinas y 800 maravedíes para sostenimiento de los sacerdotes y los pobres de la parroquia, que debían recaudarse entre los habitantes de su señorío de Orgaz."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkd4uy001uqwfp3iz855mp",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthkd4uz001vqwfpdi9c70rq",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthkd4v0001wqwfp5mzkozxt",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Cuando en 1327 fue trasladado su cuerpo difunto a su capilla de Santo Tomé los admirados asistentes cuentan que, estando celebrando la liturgia de difuntos, todos reconocieron al mismo san Agustín y al joven diácono san Esteban, quienes se presentaron en la iglesia y con sus propias manos lo depositaron en el sepulcro, como premio a su vida de caridad al tiempo que escuchaban: “tal galardón recibe quien a Dios y a sus santos sirve.”",
+            "evidenceProposition": {
+              "statement": "La tradición cuenta que en 1327, durante la liturgia de difuntos, san Agustín y san Esteban depositaron el cuerpo del señor de Orgaz en su capilla de Santo Tomé.",
+              "supportedDimension": "HISTORICAL_CONTEXT",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "MEDIUM",
+            "reason": "El texto proporciona contexto histórico sobre el entierro del señor de Orgaz, pero no se centra directamente en la obra de arte 'El entierro del conde de Orgaz'. La relación es indirecta y requiere evaluación adicional para determinar si proporciona contexto relevante para la obra.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 436,
+              "text": "Cuando en 1327 fue trasladado su cuerpo difunto a su capilla de Santo Tomé los admirados asistentes cuentan que, estando celebrando la liturgia de difuntos, todos reconocieron al mismo san Agustín y al joven diácono san Esteban, quienes se presentaron en la iglesia y con sus propias manos lo depositaron en el sepulcro, como premio a su vida de caridad al tiempo que escuchaban: “tal galardón recibe quien a Dios y a sus santos sirve.”"
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkd9tu001xqwfpd51jtifn",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Es el elemento que perdura de la primitiva iglesia, de cuya cabecera se encontraba exenta.",
+            "evidenceProposition": null,
+            "supportedDimension": "PLACE",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona contexto geográfico sobre la torre, pero no proporciona información directa sobre 'El entierro del conde de Orgaz'. La relevancia es CONTEXT_FOR ya que el texto explica un aspecto de la antigua iglesia, pero no es el foco principal del fragmento. La decisión es REVIEW debido a la ambigüedad sobre si este contexto es suficientemente relevante para el artefacto en cuestión.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 10,
+              "end": 100,
+              "text": "Es el elemento que perdura de la primitiva iglesia, de cuya cabecera se encontraba exenta."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthkdcm2001yqwfp0w5m9xh8",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "De planta cuadrada y siguiendo el esquema de los alminares islámicos, en el interior conserva el machón central alrededor del cual se disponen las escaleras.",
+            "evidenceProposition": {
+              "statement": "El entierro del conde de Orgaz tiene una planta cuadrada y sigue el esquema de los alminares islámicos, conservando un machón central con escaleras dispuestas alrededor.",
+              "supportedDimension": "FORM_OR_MATERIAL",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona información directa sobre la estructura y el diseño del artefacto, lo que es relevante para su forma y material.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 157,
+              "text": "De planta cuadrada y siguiendo el esquema de los alminares islámicos, en el interior conserva el machón central alrededor del cual se disponen las escaleras."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkdfjb001zqwfppuobb8on",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Sobre el cuerpo inferior de mampostería encintada se superponen dos cuerpos en ladrillo en los que se abren ventanas con arcos de herradura para acoger el campanario.",
+            "evidenceProposition": {
+              "statement": "El entierro del conde de Orgaz incluye dos cuerpos en ladrillo con ventanas de arcos de herradura que albergan el campanario.",
+              "supportedDimension": "FORM_OR_MATERIAL",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona información directa sobre la estructura y el material del edificio que alberga la obra de arte, lo que es relevante para su forma y material.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 166,
+              "text": "Sobre el cuerpo inferior de mampostería encintada se superponen dos cuerpos en ladrillo en los que se abren ventanas con arcos de herradura para acoger el campanario."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkdios0020qwfpllk46003",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Entre los dos cuerpos, destaca por su belleza, el friso de arcos ciegos polilobulados sostenidos por columnillas de cerámica vidriada de color verde y ocre, detalle que la pone en relación con las torres de San Román y San Miguel.",
+            "evidenceProposition": {
+              "statement": "El entierro del conde de Orgaz destaca por su friso de arcos ciegos polilobulados sostenidos por columnillas de cerámica vidriada de color verde y ocre, lo que la relaciona con las torres de San Román y San Miguel.",
+              "supportedDimension": "FORM_OR_MATERIAL",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "FORM_OR_MATERIAL",
+            "confidence": "HIGH",
+            "reason": "El fragmento proporciona información directa sobre la forma y material del artefacto, manteniendo la incertidumbre y la interpretación tal como aparece en el texto.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 230,
+              "text": "Entre los dos cuerpos, destaca por su belleza, el friso de arcos ciegos polilobulados sostenidos por columnillas de cerámica vidriada de color verde y ocre, detalle que la pone en relación con las torres de San Román y San Miguel."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthkdmdp0021qwfp081o0xqf",
+          "entity": {
+            "id": "cmsvvxig500ld85sj2uzez8t2",
+            "title": "El entierro del conde de Orgaz"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "A comienzos del siglo XVI, se decide reformar la cabecera ampliando la capilla mayor y cubriéndola con complejas bóvedas de crucería del último gótico.",
+            "evidenceProposition": {
+              "statement": "A comienzos del siglo XVI, se decide reformar la cabecera de la iglesia donde se encuentra 'El entierro del conde de Orgaz', ampliando la capilla mayor y cubriéndola con bóvedas de crucería del último gótico.",
+              "supportedDimension": "HISTORICAL_CONTEXT",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "MEDIUM",
+            "reason": "El texto proporciona contexto histórico sobre la reforma de la iglesia donde se encuentra 'El entierro del conde de Orgaz', pero no proporciona información directa sobre la obra de arte en sí misma. La relación entre la reforma y la obra es indirecta y requiere interpretación adicional para establecer una conexión clara.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 22,
+              "end": 173,
+              "text": "A comienzos del siglo XVI, se decide reformar la cabecera ampliando la capilla mayor y cubriéndola con complejas bóvedas de crucería del último gótico."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmtg5sq6q0005absjr0tpv28u",
+      "versionId": "cmtg5sq6s0006absjwqby2pjl",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    }
+  ],
+  "metrics": {
+    "sourcesAttempted": 10,
+    "sourcesPrepared": 10,
+    "sourcesFailed": 0,
+    "materialsCreated": 0,
+    "versionsCreated": 0,
+    "excerptsCreated": 74,
+    "semanticClassifications": 78,
+    "documentarySourcesEffective": 9,
+    "structuredSources": 1,
+    "structuredExcerpts": 9,
+    "structuredRouted": 9,
+    "editorialClassifications": 78,
+    "safeKeep": 15,
+    "modelReview": 22,
+    "systemReview": 2,
+    "reject": 18,
+    "noPromotion": true
+  },
+  "startedAt": "2026-08-31T18:24:30.713Z",
+  "finishedAt": "2026-08-31T18:24:30.713Z"
+}

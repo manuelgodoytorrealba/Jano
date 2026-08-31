@@ -25,7 +25,11 @@ const DEFAULT_IDS = [
   'cmt4l0fiz0000dyfpp2rzqau2',
 ];
 const manifestPath = process.argv.find((a) => a.startsWith('--manifest='))?.split('=')[1];
-const outputPath = resolve(process.cwd(), '../../artifacts/first-real-10-source-batch.json');
+const batchId = process.env.BATCH_ID ?? 'source-batch';
+const outputPath = resolve(
+  process.cwd(),
+  process.env.BATCH_OUTPUT ?? `../../artifacts/${batchId}.json`,
+);
 
 function localDatabase(url: string) {
   const parsed = new URL(url);
@@ -97,6 +101,14 @@ async function main() {
         ? LibraryMaterialKind.PDF
         : LibraryMaterialKind.URL;
       let material = source.libraryMaterials.find(
+        (m) =>
+          m.kind === kind &&
+          m.versions.some(
+            (candidate) =>
+              candidate.status === LibraryMaterialVersionStatus.READY && candidate.content?.trim(),
+          ),
+      );
+      material ??= source.libraryMaterials.find(
         (m) => m.kind === kind && m.title === `[BATCH] ${source.title}`,
       );
       if (!material) {
@@ -188,7 +200,7 @@ async function main() {
     rows.push(row);
   }
   const artifact = {
-    batchId: 'first-real-10-source-batch',
+    batchId,
     workingDatabase: { host: parsed.hostname, name: parsed.pathname.slice(1) },
     classifierVersion: 'semantic-evidence-v3',
     model: provider.metadata().model,

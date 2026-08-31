@@ -8,11 +8,17 @@ services:
       - jano_production_local_pgdata:/var/lib/postgresql/data
 
   backend:
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     ports: !override
       - '3300:3000'
       - '127.0.0.1:5556:5555'
     environment:
       MEDIA_PUBLIC_BASE_URL: http://localhost:3300
+      AI_PROVIDER: ollama
+      AI_MODEL: qwen2.5:14b
+      OLLAMA_MODEL: qwen2.5:14b
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
     command: ['npm', 'run', 'start:dev']
     volumes:
       - jano_production_local_uploads:/app/backend/api/uploads
