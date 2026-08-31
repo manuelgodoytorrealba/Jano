@@ -1,0 +1,365 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "items": [
+    {
+      "reviewItemId": "first-real-10-01",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-02",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-03",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-04",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-05",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-06",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-07",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-08",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-09",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-10",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-11",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-12",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-13",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-14",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-15",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-16",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-17",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-18",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-19",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-20",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-21",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-22",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-23",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-24",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-25",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-26",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-27",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-28",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-29",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-30",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-31",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-32",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-33",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-34",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-35",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-36",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-37",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-38",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-39",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-40",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-41",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-42",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-43",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-44",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-45",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-46",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-47",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-48",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-49",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-50",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-51",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-52",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-53",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-54",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-55",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-56",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-57",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-58",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-59",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    },
+    {
+      "reviewItemId": "first-real-10-60",
+      "humanDecision": null,
+      "humanReason": null,
+      "deferActions": []
+    }
+  ]
+}

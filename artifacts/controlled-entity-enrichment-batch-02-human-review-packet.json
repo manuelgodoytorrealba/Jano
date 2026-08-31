@@ -53,7 +53,17 @@
         "locator": "paragraph-1",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmtg2xuc4000e6vsjcw4ar4r6"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-02",
@@ -97,7 +107,17 @@
         "locator": "paragraph-2",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmtg2xucp000g6vsjqdl63rq8"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-03",
@@ -141,7 +161,19 @@
         "locator": "paragraph-3",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmtg2xucw000i6vsj0k13o4nb"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-04",
@@ -185,7 +217,19 @@
         "locator": "paragraph-4",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmtg2xud2000k6vsjbja2mw9y"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-05",
@@ -229,7 +273,17 @@
         "locator": "paragraph-5",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmthk9n2g0004qwfp4dqwii45"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-06",
@@ -273,7 +327,20 @@
         "locator": "paragraph-6",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmthk9q680005qwfpdmw8mncn"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-07",
@@ -317,7 +384,19 @@
         "locator": "paragraph-7",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmthk9q6a0006qwfpg72u53m9"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-08",
@@ -361,7 +440,19 @@
         "locator": "paragraph-8",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmthk9t8p0007qwfpzdzw7pse"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-09",
@@ -405,7 +496,20 @@
         "locator": "paragraph-9",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmthk9vs50008qwfprr7yqf21"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-10",
@@ -449,7 +553,20 @@
         "locator": "paragraph-10",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmthk9vs70009qwfp06907xvs"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-11",
@@ -493,7 +610,17 @@
         "locator": "paragraph-11",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmthk9vs8000aqwfprtxx7k8z"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-12",
@@ -537,7 +664,20 @@
         "locator": "paragraph-12",
         "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
         "excerptId": "cmthk9zt6000bqwfpevefexql"
-      }
+      },
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entityTitle": "Pablo Picasso",
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "sourceTitle": "Pablo Picasso",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-13",
@@ -581,7 +721,17 @@
         "locator": "paragraph-2",
         "materialVersionId": "cmtg2xuvn000x6vsj2h4f9eyq",
         "excerptId": "cmtg2xuzx00116vsjsk6a1x02"
-      }
+      },
+      "entityId": "cmsvvxiit00my85sjnukobauz",
+      "entityTitle": "Fuente",
+      "sourceId": "cmtage94q000is0kpgyqpynty",
+      "sourceTitle": "Marcel Duchamp: Fountain",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-14",
@@ -625,7 +775,20 @@
         "locator": "paragraph-1",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmtg2y39200186vsjdwmljo23"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-15",
@@ -669,7 +832,19 @@
         "locator": "paragraph-2",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmtg2y39d001a6vsjnswbtzg8"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-16",
@@ -713,7 +888,20 @@
         "locator": "paragraph-3",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmtg2y39k001c6vsj1ngv4yox"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-17",
@@ -757,7 +945,20 @@
         "locator": "paragraph-4",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmtg2y39u001e6vsjvqcmo5gi"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-18",
@@ -801,7 +1002,20 @@
         "locator": "paragraph-5",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmthka7x0000iqwfpuagcilup"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-19",
@@ -845,7 +1059,20 @@
         "locator": "paragraph-6",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmthka7x1000jqwfp15xswbk8"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-20",
@@ -889,7 +1116,19 @@
         "locator": "paragraph-7",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmthkabf3000kqwfpurj7kfjy"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-21",
@@ -933,7 +1172,20 @@
         "locator": "paragraph-8",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmthkadoe000lqwfpifmgux79"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "INVALID_QUOTE",
+        "MISSING_PROPOSITION"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-22",
@@ -977,7 +1229,20 @@
         "locator": "paragraph-9",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmthkahbc000mqwfpztlt84wx"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-23",
@@ -1021,7 +1286,20 @@
         "locator": "paragraph-10",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmthkahbd000nqwfp62d0hqcr"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-24",
@@ -1065,7 +1343,20 @@
         "locator": "paragraph-11",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmthkahbe000oqwfpa5wefcsb"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "INVALID_QUOTE",
+        "MISSING_PROPOSITION"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-25",
@@ -1109,7 +1400,20 @@
         "locator": "paragraph-12",
         "materialVersionId": "cmtg2y35400166vsjodqxpeew",
         "excerptId": "cmthkake5000pqwfpw3mjbzhn"
-      }
+      },
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entityTitle": "Cubismo",
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "sourceTitle": "Cubism",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED",
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-26",
@@ -1153,7 +1457,17 @@
         "locator": "paragraph-4",
         "materialVersionId": "cmtg3btkn001es2sjdcq3xx23",
         "excerptId": "cmthkakeh0014qwfpxpm47je3"
-      }
+      },
+      "entityId": "cmsvvxiey00ko85sjzcckqm33",
+      "entityTitle": "Tapiz de Bayeux",
+      "sourceId": "cmtage9ba001ls0kpadu20fom",
+      "sourceTitle": "The Bayeux Tapestry",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-27",
@@ -1197,7 +1511,19 @@
         "locator": "paragraph-5",
         "materialVersionId": "cmtg3btkn001es2sjdcq3xx23",
         "excerptId": "cmthkanvt0015qwfpps56syt6"
-      }
+      },
+      "entityId": "cmsvvxiey00ko85sjzcckqm33",
+      "entityTitle": "Tapiz de Bayeux",
+      "sourceId": "cmtage9ba001ls0kpadu20fom",
+      "sourceTitle": "The Bayeux Tapestry",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-28",
@@ -1241,7 +1567,19 @@
         "locator": "paragraph-6",
         "materialVersionId": "cmtg3btkn001es2sjdcq3xx23",
         "excerptId": "cmthkanvv0016qwfpjl6393s0"
-      }
+      },
+      "entityId": "cmsvvxiey00ko85sjzcckqm33",
+      "entityTitle": "Tapiz de Bayeux",
+      "sourceId": "cmtage9ba001ls0kpadu20fom",
+      "sourceTitle": "The Bayeux Tapestry",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-29",
@@ -1285,7 +1623,19 @@
         "locator": "paragraph-7",
         "materialVersionId": "cmtg3btkn001es2sjdcq3xx23",
         "excerptId": "cmthkanvw0017qwfpnz64jllk"
-      }
+      },
+      "entityId": "cmsvvxiey00ko85sjzcckqm33",
+      "entityTitle": "Tapiz de Bayeux",
+      "sourceId": "cmtage9ba001ls0kpadu20fom",
+      "sourceTitle": "The Bayeux Tapestry",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-30",
@@ -1329,7 +1679,19 @@
         "locator": "paragraph-8",
         "materialVersionId": "cmtg3btkn001es2sjdcq3xx23",
         "excerptId": "cmthkanvw0018qwfpage6269i"
-      }
+      },
+      "entityId": "cmsvvxiey00ko85sjzcckqm33",
+      "entityTitle": "Tapiz de Bayeux",
+      "sourceId": "cmtage9ba001ls0kpadu20fom",
+      "sourceTitle": "The Bayeux Tapestry",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "DIMENSION_REVIEW_REQUIRED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-31",
@@ -1373,7 +1735,17 @@
         "locator": "paragraph-2",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmtg8trh10007w0sjn7n930om"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-32",
@@ -1417,7 +1789,20 @@
         "locator": "paragraph-2",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmtg8trh10007w0sjn7n930om"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-33",
@@ -1461,7 +1846,19 @@
         "locator": "paragraph-3",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmtg8trh90009w0sjegl90x3h"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "CONTEXT_DEPENDENT"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-34",
@@ -1505,7 +1902,20 @@
         "locator": "paragraph-3",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmtg8trh90009w0sjegl90x3h"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-35",
@@ -1549,7 +1959,17 @@
         "locator": "paragraph-4",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmtg8trho000bw0sjzyl51qyq"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-36",
@@ -1593,7 +2013,20 @@
         "locator": "paragraph-4",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmtg8trho000bw0sjzyl51qyq"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-37",
@@ -1637,7 +2070,17 @@
         "locator": "paragraph-5",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkb5vx001gqwfp7zrrtipa"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-38",
@@ -1681,7 +2124,20 @@
         "locator": "paragraph-5",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkb5vx001gqwfp7zrrtipa"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-39",
@@ -1725,7 +2181,20 @@
         "locator": "paragraph-6",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkbc9o001hqwfpzbhfdgh0"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-40",
@@ -1769,7 +2238,20 @@
         "locator": "paragraph-6",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkbc9o001hqwfpzbhfdgh0"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-41",
@@ -1813,7 +2295,19 @@
         "locator": "paragraph-7",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkbjpq001iqwfpe8kfcg66"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-42",
@@ -1857,7 +2351,19 @@
         "locator": "paragraph-7",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkbjpq001iqwfpe8kfcg66"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-43",
@@ -1901,7 +2407,17 @@
         "locator": "paragraph-8",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkbr2w001jqwfpawn5obur"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-44",
@@ -1945,7 +2461,20 @@
         "locator": "paragraph-8",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkbr2w001jqwfpawn5obur"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-45",
@@ -1989,7 +2518,20 @@
         "locator": "paragraph-9",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkbxh8001kqwfp1x82luas"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MULTI_CLAIM",
+        "EPHEMERAL_OR_INSTITUTIONAL"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-46",
@@ -2033,7 +2575,19 @@
         "locator": "paragraph-9",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkbxh8001kqwfp1x82luas"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "EPHEMERAL_OR_INSTITUTIONAL"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-47",
@@ -2077,7 +2631,17 @@
         "locator": "paragraph-10",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkc65t001lqwfp9u9fj6zv"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-48",
@@ -2121,7 +2685,17 @@
         "locator": "paragraph-10",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkc65t001lqwfp9u9fj6zv"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-49",
@@ -2165,7 +2739,17 @@
         "locator": "paragraph-11",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkcbso001mqwfpu53x8hb1"
-      }
+      },
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entityTitle": "El nacimiento de Venus",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-50",
@@ -2209,7 +2793,20 @@
         "locator": "paragraph-11",
         "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
         "excerptId": "cmthkcbso001mqwfpu53x8hb1"
-      }
+      },
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entityTitle": "Sandro Botticelli",
+      "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+      "sourceTitle": "The Birth of Venus",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-51",
@@ -2253,7 +2850,21 @@
         "locator": "paragraph-1",
         "materialVersionId": "cmthk6pk7000q20oc1ur0ozui",
         "excerptId": "cmthk6ptq000r20oc9rg860vf"
-      }
+      },
+      "entityId": "cmqmnymur004y4vsjxtd3rfir",
+      "entityTitle": "Marilyn Diptych",
+      "sourceId": "cmtagea1o006ms0kpqp0jld7t",
+      "sourceTitle": "Marilyn Diptych",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "INVALID_QUOTE",
+        "MISSING_PROPOSITION",
+        "IDENTITY_REVIEW_REQUIRED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": true,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-52",
@@ -2297,7 +2908,20 @@
         "locator": "paragraph-2",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmtg5srvq000aabsjxuy92ezn"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-53",
@@ -2341,7 +2965,17 @@
         "locator": "paragraph-3",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmtg5srw6000cabsju6ljm8ro"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-54",
@@ -2385,7 +3019,17 @@
         "locator": "paragraph-4",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmtg5srwe000eabsjavkyscdr"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-55",
@@ -2429,7 +3073,17 @@
         "locator": "paragraph-7",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmthkd4v0001wqwfp5mzkozxt"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-56",
@@ -2473,7 +3127,20 @@
         "locator": "paragraph-8",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmthkd9tu001xqwfpd51jtifn"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [
+        "MISSING_PROPOSITION",
+        "ENTITY_NOT_CENTERED"
+      ],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-57",
@@ -2517,7 +3184,17 @@
         "locator": "paragraph-9",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmthkdcm2001yqwfp0w5m9xh8"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-58",
@@ -2561,7 +3238,17 @@
         "locator": "paragraph-10",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmthkdfjb001zqwfppuobb8on"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-59",
@@ -2605,7 +3292,17 @@
         "locator": "paragraph-11",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmthkdios0020qwfpllk46003"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": true,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     },
     {
       "reviewItemId": "first-real-10-60",
@@ -2649,7 +3346,48 @@
         "locator": "paragraph-12",
         "materialVersionId": "cmtg5sq6s0006absjwqby2pjl",
         "excerptId": "cmthkdmdp0021qwfp081o0xqf"
-      }
+      },
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entityTitle": "El entierro del conde de Orgaz",
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "sourceTitle": "El entierro del señor de Orgaz",
+      "sourcePurpose": "DOCUMENTARY_TEXT",
+      "candidateReason": "EXPLICIT_SOURCE_REF_CANDIDATE",
+      "contractBlockers": [],
+      "promotionReady": false,
+      "identityReviewRequired": false,
+      "relationSignalPresent": false
     }
+  ],
+  "identityAudit": {
+    "classification": "SAME_ENTITY_DUPLICATE",
+    "entities": [
+      {
+        "id": "cmqmnymur004y4vsjxtd3rfir",
+        "title": "Marilyn Diptych",
+        "type": "ARTWORK",
+        "startYear": 1962,
+        "endYear": 1962
+      },
+      {
+        "id": "cmsvvxikl00ny85sjt1lqzv9u",
+        "title": "Díptico de Marilyn",
+        "type": "ARTWORK",
+        "startYear": 1962,
+        "endYear": null
+      }
+    ],
+    "reason": "Misma obra/título traducido, mismo año; el dataset conserva dos nodos canónicos con distinta conectividad y SourceRefs. No se fusionan en esta fase.",
+    "promotionBlocked": true
+  },
+  "reviewContractBlockers": [
+    "INVALID_QUOTE",
+    "MISSING_PROPOSITION",
+    "MULTI_CLAIM",
+    "CONTEXT_DEPENDENT",
+    "ENTITY_NOT_CENTERED",
+    "DIMENSION_REVIEW_REQUIRED",
+    "EPHEMERAL_OR_INSTITUTIONAL",
+    "PROVENANCE_INCOMPLETE"
   ]
 }

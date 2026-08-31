@@ -1,0 +1,149 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "totalItems": 60,
+  "groups": [
+    {
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "entity": "Cubismo",
+      "totalItems": 12,
+      "deterministicKeep": 7,
+      "semanticRecoveryKeep": 2,
+      "modelReview": 1,
+      "systemFailsafeReview": 2,
+      "cleanKeepCandidates": 0,
+      "cleanDeterministicKeep": 0,
+      "cleanSemanticRecoveryKeep": 0,
+      "keepWithBlockers": 9,
+      "reviewItems": 3,
+      "identityBlockers": 0
+    },
+    {
+      "entityId": "cmsvvxig500ld85sj2uzez8t2",
+      "entity": "El entierro del conde de Orgaz",
+      "totalItems": 9,
+      "deterministicKeep": 0,
+      "semanticRecoveryKeep": 3,
+      "modelReview": 6,
+      "systemFailsafeReview": 0,
+      "cleanKeepCandidates": 3,
+      "cleanDeterministicKeep": 0,
+      "cleanSemanticRecoveryKeep": 3,
+      "keepWithBlockers": 0,
+      "reviewItems": 6,
+      "identityBlockers": 0
+    },
+    {
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "entity": "El nacimiento de Venus",
+      "totalItems": 10,
+      "deterministicKeep": 0,
+      "semanticRecoveryKeep": 7,
+      "modelReview": 3,
+      "systemFailsafeReview": 0,
+      "cleanKeepCandidates": 5,
+      "cleanDeterministicKeep": 0,
+      "cleanSemanticRecoveryKeep": 5,
+      "keepWithBlockers": 2,
+      "reviewItems": 3,
+      "identityBlockers": 0
+    },
+    {
+      "entityId": "cmsvvxiit00my85sjnukobauz",
+      "entity": "Fuente",
+      "totalItems": 1,
+      "deterministicKeep": 0,
+      "semanticRecoveryKeep": 0,
+      "modelReview": 1,
+      "systemFailsafeReview": 0,
+      "cleanKeepCandidates": 0,
+      "cleanDeterministicKeep": 0,
+      "cleanSemanticRecoveryKeep": 0,
+      "keepWithBlockers": 0,
+      "reviewItems": 1,
+      "identityBlockers": 0
+    },
+    {
+      "entityId": "cmqmnymur004y4vsjxtd3rfir",
+      "entity": "Marilyn Diptych",
+      "totalItems": 1,
+      "deterministicKeep": 0,
+      "semanticRecoveryKeep": 0,
+      "modelReview": 1,
+      "systemFailsafeReview": 0,
+      "cleanKeepCandidates": 0,
+      "cleanDeterministicKeep": 0,
+      "cleanSemanticRecoveryKeep": 0,
+      "keepWithBlockers": 0,
+      "reviewItems": 1,
+      "identityBlockers": 1
+    },
+    {
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "entity": "Pablo Picasso",
+      "totalItems": 12,
+      "deterministicKeep": 4,
+      "semanticRecoveryKeep": 7,
+      "modelReview": 1,
+      "systemFailsafeReview": 0,
+      "cleanKeepCandidates": 4,
+      "cleanDeterministicKeep": 0,
+      "cleanSemanticRecoveryKeep": 4,
+      "keepWithBlockers": 7,
+      "reviewItems": 1,
+      "identityBlockers": 0
+    },
+    {
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "entity": "Sandro Botticelli",
+      "totalItems": 10,
+      "deterministicKeep": 0,
+      "semanticRecoveryKeep": 2,
+      "modelReview": 8,
+      "systemFailsafeReview": 0,
+      "cleanKeepCandidates": 1,
+      "cleanDeterministicKeep": 0,
+      "cleanSemanticRecoveryKeep": 1,
+      "keepWithBlockers": 1,
+      "reviewItems": 8,
+      "identityBlockers": 0
+    },
+    {
+      "entityId": "cmsvvxiey00ko85sjzcckqm33",
+      "entity": "Tapiz de Bayeux",
+      "totalItems": 5,
+      "deterministicKeep": 4,
+      "semanticRecoveryKeep": 0,
+      "modelReview": 1,
+      "systemFailsafeReview": 0,
+      "cleanKeepCandidates": 0,
+      "cleanDeterministicKeep": 0,
+      "cleanSemanticRecoveryKeep": 0,
+      "keepWithBlockers": 4,
+      "reviewItems": 1,
+      "identityBlockers": 0
+    }
+  ],
+  "identityAudit": {
+    "classification": "SAME_ENTITY_DUPLICATE",
+    "entities": [
+      {
+        "id": "cmqmnymur004y4vsjxtd3rfir",
+        "title": "Marilyn Diptych",
+        "type": "ARTWORK",
+        "startYear": 1962,
+        "endYear": 1962
+      },
+      {
+        "id": "cmsvvxikl00ny85sjt1lqzv9u",
+        "title": "Díptico de Marilyn",
+        "type": "ARTWORK",
+        "startYear": 1962,
+        "endYear": null
+      }
+    ],
+    "reason": "Misma obra/título traducido, mismo año; el dataset conserva dos nodos canónicos con distinta conectividad y SourceRefs. No se fusionan en esta fase.",
+    "promotionBlocked": true
+  },
+  "promotionReadyCandidates": 13,
+  "humanApproved": 0
+}
