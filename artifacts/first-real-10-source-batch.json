@@ -1,0 +1,2901 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "workingDatabase": {
+    "host": "localhost",
+    "name": "jano"
+  },
+  "classifierVersion": "semantic-evidence-v3",
+  "model": "qwen2.5:14b",
+  "sourceIds": [
+    "cmt4l61eo0004q6fpw5gh0s41",
+    "cmt4l3a4a0000zufptarsa0c2",
+    "cmt4jjx1b000qtofp5gi588uz",
+    "cmt4jjx14000mtofpcqfisfaz",
+    "cmt4kq9kr00025xfp39ehkn8s",
+    "cmt4khppv00008mfp8q1ajstj",
+    "cmt4l61ee0000q6fpgzluop1q",
+    "cmt4l4p2y0000tbfpfj9g6pi4",
+    "cmt4jjx1r000xtofpryc5cvs0",
+    "cmt4l0fiz0000g3fpgrjo58pz"
+  ],
+  "rows": [
+    {
+      "source": {
+        "id": "cmt4jjx14000mtofpcqfisfaz",
+        "title": "Renaissance art",
+        "type": "WEBSITE",
+        "url": "https://www.metmuseum.org/toah/hd/reni/hd_reni.htm"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "failureReason": "URL returned HTTP 429"
+    },
+    {
+      "source": {
+        "id": "cmt4jjx1b000qtofp5gi588uz",
+        "title": "Impressionism",
+        "type": "WEBSITE",
+        "url": "https://www.musee-orsay.fr/en/collections/works-in-focus/painting/commentaire_id/impression-sunrise-312.html"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)"
+    },
+    {
+      "source": {
+        "id": "cmt4jjx1r000xtofpryc5cvs0",
+        "title": "Paris, Capital of the Arts",
+        "type": "WEBSITE",
+        "url": "https://www.metmuseum.org/art/metpublications/Paris_Capital_of_the_Arts_1900_1968"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "failureReason": "URL returned HTTP 429"
+    },
+    {
+      "source": {
+        "id": "cmt4khppv00008mfp8q1ajstj",
+        "title": "Art & Architecture Thesaurus",
+        "type": "WEBSITE",
+        "url": "https://www.getty.edu/research/tools/vocabularies/aat/"
+      },
+      "purpose": "STRUCTURED_REFERENCE",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthf6qnp0008hwfp4zfi5olq",
+        "cmthf6qnt0009hwfpv487x00w",
+        "cmthf6qnu000ahwfp54qamhvm",
+        "cmthf6qnv000bhwfpb5z2ti2i",
+        "cmthf6qnw000chwfp7ovr3o4n",
+        "cmthf6qnw000dhwfprisr04c8",
+        "cmthf6qny000ehwfp3oko3gud",
+        "cmthf6qny000fhwfp03qnf57m",
+        "cmthf6qnz000ghwfpzqpftmcr"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnp0008hwfp4zfi5olq",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnt0009hwfpv487x00w",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnu000ahwfp54qamhvm",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnv000bhwfpb5z2ti2i",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000chwfp7ovr3o4n",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnw000dhwfprisr04c8",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000ehwfp3oko3gud",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qny000fhwfp03qnf57m",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr75s0050odfp9tblxd09",
+            "title": "Muerte"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr75w0059odfpanmj9nu3",
+            "title": "Memoria"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr769005uodfpjpwqv92l",
+            "title": "Poder"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr76b005xodfpiwcjq2k4",
+            "title": "Religión"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr76h0069odfpgavg1mlc",
+            "title": "Paisaje"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr76w0070odfpc1pqwxdl",
+            "title": "Colonialismo"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr77k0086odfpwmjzcnsx",
+            "title": "Retrato"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr77x008xodfpn3rtve5i",
+            "title": "Arquitectura"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthf6qnz000ghwfpzqpftmcr",
+          "entity": {
+            "id": "cmsumr77z0090odfpt5up46ds",
+            "title": "Fotografía"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 0,
+              "noise": 0
+            },
+            "relevanceRole": "MENTION",
+            "evidenceProposition": null,
+            "structuredFactCandidate": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_STRUCTURED_REFERENCE",
+            "reason": "Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        }
+      ],
+      "materialId": "cmthf6qe50006hwfptzn6pvr5",
+      "versionId": "cmthf6qe70007hwfpv5synujw",
+      "materialCreated": false,
+      "versionCreated": false
+    },
+    {
+      "source": {
+        "id": "cmt4kq9kr00025xfp39ehkn8s",
+        "title": "Roma Capitale",
+        "type": "WEBSITE",
+        "url": "https://www.comune.roma.it/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "failureReason": "fetch failed"
+    },
+    {
+      "source": {
+        "id": "cmt4l0fiz0000g3fpgrjo58pz",
+        "title": "Polykleitos",
+        "type": "WEBSITE",
+        "url": "https://www.metmuseum.org/toah/hd/polk/hd_polk.htm"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "failureReason": "URL returned HTTP 429"
+    },
+    {
+      "source": {
+        "id": "cmt4l3a4a0000zufptarsa0c2",
+        "title": "Marilyn Diptych",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/artworks/warhol-marilyn-diptych-t03093"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthf6vvc000nhwfpvzfmq97c"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthf6vvc000nhwfpvzfmq97c",
+          "entity": {
+            "id": "cmsumr7gc00nyodfpwxw9ht12",
+            "title": "Díptico de Marilyn"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        }
+      ],
+      "materialId": "cmthf6uwz000lhwfpqyz4n842",
+      "versionId": "cmthf6ux1000mhwfpgt7yshe6",
+      "materialCreated": false,
+      "versionCreated": false
+    },
+    {
+      "source": {
+        "id": "cmt4l4p2y0000tbfpfj9g6pi4",
+        "title": "Benin Bronzes",
+        "type": "WEBSITE",
+        "url": "https://www.britishmuseum.org/collection/galleries/africa"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)"
+    },
+    {
+      "source": {
+        "id": "cmt4l61ee0000q6fpgzluop1q",
+        "title": "Marcel Duchamp",
+        "type": "WEBSITE",
+        "url": "https://www.philamuseum.org/collection/artist/marcel-duchamp"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "failureReason": "URL returned HTTP 404"
+    },
+    {
+      "source": {
+        "id": "cmt4l61eo0004q6fpw5gh0s41",
+        "title": "Andy Warhol",
+        "type": "WEBSITE",
+        "url": "https://www.warhol.org/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialId": "cmthf6wbe000shwfpqbb3fn53",
+      "versionId": "cmthf6wbg000thwfp22dmf95e",
+      "materialCreated": false,
+      "versionCreated": false
+    }
+  ],
+  "metrics": {
+    "sourcesAttempted": 10,
+    "sourcesPrepared": 3,
+    "sourcesFailed": 7,
+    "excerptsCreated": 10,
+    "semanticClassifications": 82,
+    "noPromotion": true
+  },
+  "startedAt": "2026-08-31T15:56:24.356Z",
+  "finishedAt": "2026-08-31T15:56:24.356Z"
+}

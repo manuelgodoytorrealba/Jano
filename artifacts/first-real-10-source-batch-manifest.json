@@ -1,0 +1,19 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "workingDatabase": "resolved from DATABASE_URL (local backend database)",
+  "sourceIds": [
+    "cmt4l61eo0004q6fpw5gh0s41",
+    "cmt4l3a4a0000zufptarsa0c2",
+    "cmt4jjx1b000qtofp5gi588uz",
+    "cmt4jjx14000mtofpcqfisfaz",
+    "cmt4kq9kr00025xfp39ehkn8s",
+    "cmt4khppv00008mfp8q1ajstj",
+    "cmt4l61ee0000q6fpgzluop1q",
+    "cmt4l4p2y0000tbfpfj9g6pi4",
+    "cmt4jjx1r000xtofpryc5cvs0",
+    "cmt4l0fiz0000g3fpgrjo58pz"
+  ],
+  "titles": ["Andy Warhol", "Marilyn Diptych", "Impressionism", "Renaissance art", "Roma Capitale", "Art & Architecture Thesaurus", "Marcel Duchamp", "Benin Bronzes", "Paris, Capital of the Arts", "Polykleitos"],
+  "classifierVersion": "semantic-evidence-v3",
+  "model": "qwen2.5:14b"
+}
