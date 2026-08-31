@@ -1,0 +1,67 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "apply": false,
+  "reason": "Stage 2 review artifact only; canonical promotion is intentionally disabled.",
+  "items": [
+    {
+      "evidenceId": null,
+      "entityId": "cmsumr74w003lodfpcuv3oj7q",
+      "proposition": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-1",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdfz2000bctfporvfcxat"
+      },
+      "supportedDimension": "context / characteristics",
+      "canonicalTarget": "ENRICH_EXISTING",
+      "action": "ENRICH_EXISTING",
+      "reviewItemId": "first-real-10-01"
+    },
+    {
+      "evidenceId": null,
+      "entityId": "cmsumr74w003lodfpcuv3oj7q",
+      "proposition": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-7",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdnx2000hctfpchxacgcf"
+      },
+      "supportedDimension": "context / characteristics",
+      "canonicalTarget": "ENRICH_EXISTING",
+      "action": "ENRICH_EXISTING",
+      "reviewItemId": "first-real-10-07"
+    },
+    {
+      "evidenceId": null,
+      "entityId": "cmsumr74w003lodfpcuv3oj7q",
+      "proposition": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-8",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdnx3000ictfpn7o3q0by"
+      },
+      "supportedDimension": "context / characteristics",
+      "canonicalTarget": "ENRICH_EXISTING",
+      "action": "ENRICH_EXISTING",
+      "reviewItemId": "first-real-10-08"
+    },
+    {
+      "evidenceId": null,
+      "entityId": "cmsumr74w003lodfpcuv3oj7q",
+      "proposition": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-9",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdnx4000jctfpkwse1g0s"
+      },
+      "supportedDimension": "context / characteristics",
+      "canonicalTarget": "ENRICH_EXISTING",
+      "action": "ENRICH_EXISTING",
+      "reviewItemId": "first-real-10-09"
+    }
+  ]
+}
