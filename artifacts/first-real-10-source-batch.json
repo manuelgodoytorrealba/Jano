@@ -31,6 +31,8 @@
       "materials": [],
       "excerpts": [],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "failureReason": "URL returned HTTP 429",
       "acquisitionState": "HTTP_429"
     },
@@ -46,6 +48,8 @@
       "materials": [],
       "excerpts": [],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
       "acquisitionState": "HTTP_403"
     },
@@ -61,6 +65,8 @@
       "materials": [],
       "excerpts": [],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "failureReason": "URL returned HTTP 429",
       "acquisitionState": "HTTP_429"
     },
@@ -86,11 +92,11 @@
         "cmthf6qnz000ghwfpzqpftmcr"
       ],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "structuredRouted": true,
       "materialId": "cmthf6qe50006hwfptzn6pvr5",
       "versionId": "cmthf6qe70007hwfpv5synujw",
-      "materialCreated": false,
-      "versionCreated": false,
       "acquisitionState": "ALREADY_ACQUIRED"
     },
     {
@@ -105,6 +111,8 @@
       "materials": [],
       "excerpts": [],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "failureReason": "fetch failed",
       "acquisitionState": "NETWORK_FAILURE"
     },
@@ -120,6 +128,8 @@
       "materials": [],
       "excerpts": [],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "failureReason": "URL returned HTTP 429",
       "acquisitionState": "HTTP_429"
     },
@@ -170,10 +180,10 @@
           }
         }
       ],
-      "materialId": "cmthf6uwz000lhwfpqyz4n842",
-      "versionId": "cmthf6ux1000mhwfpgt7yshe6",
       "materialCreated": false,
       "versionCreated": false,
+      "materialId": "cmthf6uwz000lhwfpqyz4n842",
+      "versionId": "cmthf6ux1000mhwfpgt7yshe6",
       "acquisitionState": "ALREADY_ACQUIRED"
     },
     {
@@ -188,6 +198,8 @@
       "materials": [],
       "excerpts": [],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
       "acquisitionState": "HTTP_403"
     },
@@ -203,6 +215,8 @@
       "materials": [],
       "excerpts": [],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "failureReason": "URL returned HTTP 404",
       "acquisitionState": "HTTP_404"
     },
@@ -218,11 +232,11 @@
       "materials": [],
       "excerpts": [],
       "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
       "acquisitionState": "PREPARED_EMPTY",
       "materialId": "cmthf6wbe000shwfpqbb3fn53",
-      "versionId": "cmthf6wbg000thwfp22dmf95e",
-      "materialCreated": false,
-      "versionCreated": false
+      "versionId": "cmthf6wbg000thwfp22dmf95e"
     }
   ],
   "metrics": {
@@ -244,6 +258,6 @@
     "reject": 1,
     "noPromotion": true
   },
-  "startedAt": "2026-08-31T16:20:23.680Z",
-  "finishedAt": "2026-08-31T16:20:23.680Z"
+  "startedAt": "2026-08-31T16:21:22.457Z",
+  "finishedAt": "2026-08-31T16:21:22.457Z"
 }

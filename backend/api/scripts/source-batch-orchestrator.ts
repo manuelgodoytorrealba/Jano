@@ -88,6 +88,8 @@ async function main() {
       materials: [],
       excerpts: [],
       classifications: [],
+      materialCreated: false,
+      versionCreated: false,
     };
     try {
       if (process.env.DATABASE_URL !== beforeUrl) throw new Error('DATABASE_URL_CHANGED');
@@ -97,16 +99,14 @@ async function main() {
       let material = source.libraryMaterials.find(
         (m) => m.kind === kind && m.title === `[BATCH] ${source.title}`,
       );
-      let materialCreated = false;
       if (!material) {
         material = await prisma.libraryMaterial.create({
           data: { sourceId: source.id, kind, title: `[BATCH] ${source.title}` },
           include: { versions: true },
         });
-        materialCreated = true;
+        row.materialCreated = true;
       }
       let version = material.versions.find((v) => v.url === source.url);
-      let versionCreated = false;
       if (!version) {
         version = await prisma.libraryMaterialVersion.create({
           data: {
@@ -116,7 +116,7 @@ async function main() {
             status: LibraryMaterialVersionStatus.PENDING_PREPARATION,
           },
         });
-        versionCreated = true;
+        row.versionCreated = true;
       }
       if (version.status !== LibraryMaterialVersionStatus.READY) {
         await preparation.prepare(version.id);
@@ -130,8 +130,7 @@ async function main() {
         row.acquisitionState = 'PREPARED_EMPTY';
         row.materialId = material.id;
         row.versionId = version.id;
-        row.materialCreated = materialCreated;
-        row.versionCreated = versionCreated;
+        row.acquisitionState = 'PREPARED_EMPTY';
         rows.push(row);
         continue;
       }
@@ -178,11 +177,9 @@ async function main() {
           });
         }
       }
-      row.status = materialCreated || versionCreated ? 'PREPARED' : 'ALREADY_PREPARED';
+      row.status = row.materialCreated || row.versionCreated ? 'PREPARED' : 'ALREADY_PREPARED';
       row.materialId = material.id;
       row.versionId = version.id;
-      row.materialCreated = materialCreated;
-      row.versionCreated = versionCreated;
       row.acquisitionState = acquisitionState(row.status);
     } catch (error) {
       row.failureReason = error instanceof Error ? error.message : String(error);
