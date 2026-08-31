@@ -1101,6 +1101,8 @@ async function main() {
       output = normalizeAndValidateEditorialOutput(
         response.output as EditorialGenerationOutput,
         context.availableEntities,
+        editorialDepth.depth,
+        [entity.title],
       );
       status = 'GENERATED_DRY_RUN';
     } else if (descriptor.slug === 'ritual') {

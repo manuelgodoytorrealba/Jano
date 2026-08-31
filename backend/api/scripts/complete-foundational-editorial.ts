@@ -3,6 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
+import { readFileSync } from 'node:fs';
 import { AIProvider } from '../src/ai/ai.provider';
 import {
   buildEditorialGenerationRequest,
@@ -16,6 +17,25 @@ const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 const apply = process.argv.includes('--apply');
 const generate = process.argv.includes('--generate');
 const onlySlug = process.argv.find((argument) => argument.startsWith('--slug='))?.split('=')[1];
+const inputPath = process.argv.find((argument) => argument.startsWith('--input='))?.split('=')[1];
+const inputOutputs = new Map<string, EditorialGenerationOutput>(
+  inputPath
+    ? ((
+        JSON.parse(readFileSync(inputPath, 'utf8')) as {
+          outputs?: Array<{ slug: string; output: EditorialGenerationOutput }>;
+        }
+      ).outputs?.map(({ slug, output }) => [slug, output]) ?? [])
+    : [],
+);
+const requestedDepth = process.argv
+  .find((argument) => argument.startsWith('--depth='))
+  ?.split('=')[1] as
+  | 'IDENTITY_ONLY'
+  | 'BASIC_EXPLANATION'
+  | 'EDITORIAL_ENTRY'
+  | 'CONTEXTUAL_ESSAY'
+  | 'DOCUMENTARY_ESSAY'
+  | undefined;
 
 type EntityRecord = Prisma.EntityGetPayload<{
   include: {
@@ -138,7 +158,7 @@ async function main() {
     canonicalName: entity.title,
     type: entity.type,
   }));
-  const provider = generate ? new AIProvider(new ConfigService()) : null;
+  const provider = generate && !inputPath ? new AIProvider(new ConfigService()) : null;
   if (provider && !provider.isAvailable()) {
     throw new Error('AI_PROVIDER=ollama is required with --generate');
   }
@@ -151,6 +171,7 @@ async function main() {
     details: 0,
     sources: 0,
     internalSources: [] as string[],
+    outputs: [] as Array<{ slug: string; output: EditorialGenerationOutput }>,
   };
 
   for (const entity of entities) {
@@ -158,11 +179,14 @@ async function main() {
     const es = entity.translations.find((item) => item.locale === 'es');
     const en = entity.translations.find((item) => item.locale === 'en');
     let generatedOutput: EditorialGenerationOutput | null =
-      entity.slug === 'ritual' ? RITUAL_EDITORIAL_REGRESSION : null;
+      inputOutputs.get(entity.slug) ??
+      (entity.slug === 'ritual' ? RITUAL_EDITORIAL_REGRESSION : null);
+    let normalized: EditorialGenerationOutput | null = null;
     if (provider) {
       const edges = edgesFor(entity);
       const request = buildEditorialGenerationRequest({
         locale: 'es',
+        maxSafeEditorialDepth: requestedDepth,
         entityData: {
           id: entity.id,
           canonicalName: entity.title,
@@ -251,12 +275,38 @@ async function main() {
             quote: clean(reference.quote),
           })),
       });
-      const result = await provider.runStructured(request);
-      generatedOutput = result.output as EditorialGenerationOutput;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const result = await provider.runStructured(request);
+        generatedOutput = result.output as EditorialGenerationOutput;
+        try {
+          normalized = normalizeAndValidateEditorialOutput(
+            generatedOutput,
+            availableEntities,
+            requestedDepth,
+            [entity.title, en?.title ?? ''].filter(Boolean),
+          );
+          break;
+        } catch (error) {
+          if (attempt === 1) {
+            if (process.env.DEBUG_EDITORIAL_OUTPUT === '1')
+              console.error(JSON.stringify({ slug: entity.slug, generatedOutput }, null, 2));
+            throw error;
+          }
+          request.task += `\n\nCORRECCIÓN OBLIGATORIA: la entidad objetivo es ${entity.title}, no una entidad relacionada. La salida anterior fue rechazada: ${
+            error instanceof Error ? error.message : String(error)
+          }. Devuelve una versión nueva que cumpla el contrato.`;
+        }
+      }
     }
-    const normalized = generatedOutput
-      ? normalizeAndValidateEditorialOutput(generatedOutput, availableEntities)
+    normalized ??= generatedOutput
+      ? normalizeAndValidateEditorialOutput(
+          generatedOutput,
+          availableEntities,
+          requestedDepth,
+          [entity.title, en?.title ?? ''].filter(Boolean),
+        )
       : null;
+    if (normalized) changes.outputs.push({ slug: entity.slug, output: normalized });
     const summaryEs = normalized?.summary ?? null;
     const definitionEs = normalized?.definition ?? null;
     const summaryEn = clean(en?.shortDescription) ? null : null;
@@ -290,6 +340,9 @@ async function main() {
         update: summaryEn ? { shortDescription: summaryEn } : {},
       });
     }
+
+    // Applying a reviewed generated artifact updates editorial copy only.
+    if (inputPath) continue;
 
     if (entity.type === 'ARTWORK') {
       const next = {

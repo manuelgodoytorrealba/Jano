@@ -23,6 +23,7 @@ describe('entity editorial generation contract', () => {
   it('gives the model grounded entity, relation, source and canonical catalog context', () => {
     const context: EditorialGenerationContext = {
       locale: 'es',
+      maxSafeEditorialDepth: 'BASIC_EXPLANATION',
       entityData: { title: 'Ritual', type: 'CONCEPT' },
       relations: [{ target: 'Pinturas de Lascaux', type: 'ABOUT_CONCEPT' }],
       relationMetadata: [{ target: 'Pinturas de Lascaux', certainty: 'interpretation' }],
@@ -31,7 +32,7 @@ describe('entity editorial generation contract', () => {
       documentaryContext: [{ quote: 'Zona profunda de la cueva' }],
     };
     const request = buildEditorialGenerationRequest(context);
-    expect(request.schemaVersion).toBe('entity-editorial-v2');
+    expect(request.schemaVersion).toBe('entity-editorial-v3');
     expect(request.input).toEqual(
       expect.objectContaining({
         ENTITY_DATA: context.entityData,
@@ -39,11 +40,16 @@ describe('entity editorial generation contract', () => {
         RELATION_METADATA: context.relationMetadata,
         SOURCES: context.sources,
         DOCUMENTARY_CONTEXT: context.documentaryContext,
+        MAX_SAFE_EDITORIAL_DEPTH: 'BASIC_EXPLANATION',
+        TARGET_ENTITY: { canonicalName: 'Ritual', type: 'CONCEPT' },
         AVAILABLE_ENTITIES: expect.arrayContaining([
           { canonicalName: 'Pinturas de Lascaux', type: 'ARTWORK' },
         ]),
       }),
     );
+    expect(request.maxOutputTokens).toBe(900);
+    expect(request.task).toContain('máximo 320 caracteres');
+    expect(request.outputSchema.properties.definition.maxLength).toBe(320);
   });
 
   it.each(INTERNAL_LANGUAGE)('rejects internal product language: %s', (phrase) => {
@@ -63,6 +69,48 @@ describe('entity editorial generation contract', () => {
     const result = normalizeAndValidateEditorialOutput(RITUAL_EDITORIAL_REGRESSION, catalog);
     expect(result.summary).not.toContain('[[');
     expect(result.essay).toContain('[[cueva-de-lascaux|Pinturas de Lascaux]]');
+  });
+
+  it('accepts a concise basic explanation without artificial section headings', () => {
+    expect(
+      normalizeAndValidateEditorialOutput(
+        {
+          definition: 'Definición breve.',
+          summary: 'Resumen autónomo.',
+          essay: 'Una explicación breve y suficiente para el conocimiento disponible.',
+        },
+        catalog,
+        'BASIC_EXPLANATION',
+      ).essay,
+    ).toMatch(/^Una explicación breve/);
+  });
+
+  it('normalizes valid Markdown heading levels for the public renderer', () => {
+    expect(
+      normalizeAndValidateEditorialOutput(
+        {
+          definition: 'Definición breve.',
+          summary: 'Resumen autónomo.',
+          essay: '### Un rasgo propio\n\nExplicación concreta.',
+        },
+        catalog,
+      ).essay,
+    ).toMatch(/^## Un rasgo propio/);
+  });
+
+  it('rejects a fluent essay about a related entity instead of the requested entity', () => {
+    expect(() =>
+      normalizeAndValidateEditorialOutput(
+        {
+          definition: 'Guernica es una pintura de 1937.',
+          summary: 'Guernica responde al bombardeo de la ciudad vasca.',
+          essay: '## Una pintura política\n\nLa obra representa el dolor civil.',
+        },
+        catalog,
+        'EDITORIAL_ENTRY',
+        ['Pablo Picasso'],
+      ),
+    ).toThrow('not centered on Pablo Picasso');
   });
 
   it('rejects invented entity links', () => {

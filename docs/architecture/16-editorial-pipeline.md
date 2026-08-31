@@ -77,6 +77,12 @@ contexto conserva una entrada breve y factual; sólo un corpus documental con ci
 profundidad máxima. El retrieval compartido puede elevar el nivel únicamente cuando recupera fragments
 relevantes y trazables desde entidades relacionadas.
 
+El contrato `entity-editorial-v3` declara la entidad objetivo por separado, limita los candidatos de
+`[[rich links]]` a esa entidad y sus relaciones explícitas, y aplica el presupuesto de salida correspondiente
+al `editorialDepth`. La validación rechaza una salida centrada en una entidad relacionada, lenguaje interno de
+producto y enlaces no canónicos. Las justificaciones-placeholder internas no se exponen en la página pública:
+la relación continúa siendo navegable, pero sólo una explicación sustantiva puede mostrarse como prosa.
+
 Las `ResearchEvidence` y `ResearchEntity` del Studio permanecen privadas y en revisión (`PENDING`) hasta
 una decisión explícita. El generador de entidades canónicas no las lee directamente: sólo podrá usar una
 Evidence cuando haya pasado el flujo de Knowledge Review/Promotion y su procedencia se haya materializado
