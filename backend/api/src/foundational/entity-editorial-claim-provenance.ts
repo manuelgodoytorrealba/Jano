@@ -243,6 +243,42 @@ No menciones JANO ni el proceso.`,
   };
 }
 
+export function buildDefinitionRepairRequest(args: {
+  entity: EditorialEntity;
+  definition: MappedSentence;
+  claims: EditorialClaim[];
+  maxCharacters: number;
+}) {
+  return {
+    schemaVersion: `${CLAIM_REALIZER_VERSION}-definition-repair`,
+    task: `Reescribe únicamente la definition de TARGET_ENTITY en <= ${args.maxCharacters} caracteres.
+Conserva sólo la información de ACCEPTED_DEFINITION_CLAIMS. No añadas hechos y mantén exactamente claimIds.
+Devuelve una sola frase breve y natural; no uses enlaces hacia TARGET_ENTITY.`,
+    input: {
+      TARGET_ENTITY: args.entity,
+      ORIGINAL_DEFINITION: args.definition,
+      ACCEPTED_DEFINITION_CLAIMS: args.claims,
+      MAXIMUM_CHARACTERS: args.maxCharacters,
+    },
+    outputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['id', 'text', 'claimIds'],
+      properties: {
+        id: { type: 'string', const: args.definition.id },
+        text: { type: 'string', maxLength: args.maxCharacters },
+        claimIds: {
+          type: 'array',
+          minItems: 1,
+          items: { type: 'string', enum: args.claims.map((claim) => claim.id) },
+        },
+      },
+    },
+    maxOutputTokens: 500,
+    timeoutMs: 120_000,
+  };
+}
+
 function realizerOutputBudget(depth: string, claimCount: number) {
   const base =
     depth === 'IDENTITY_ONLY'

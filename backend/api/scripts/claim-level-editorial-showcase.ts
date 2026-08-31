@@ -9,6 +9,7 @@ import { AIProvider } from '../src/ai/ai.provider';
 import { publicRelationJustification } from '../src/entities/entity.presenter';
 import {
   buildClaimPlannerRequest,
+  buildDefinitionRepairRequest,
   buildEditorialRealizerRequest,
   buildSentenceEntailmentRequest,
   buildUncertainSentenceRepairRequest,
@@ -425,32 +426,64 @@ async function main() {
           entity.aliases?.map((alias) => alias.value),
         );
       } catch (error) {
-        const failedArtifact = {
-          entity: canonicalEntity,
-          contextFingerprint: editorialContextFingerprint(entity.id, 'es', depth, units),
-          availableKnowledgeUnits: units,
-          proposedClaims: proposedPlan.claims,
-          acceptedClaims: accepted,
-          rejectedClaims: rejected,
-          invalidPlanReferences: invalidReferences,
-          mappedOutput,
-          publicOutput: null,
-          validationFailure: error instanceof Error ? error.message : String(error),
-          model: writer.metadata(),
-          promptVersion: {
-            planner: 'claim-level-editorial-v1-planner',
-            realizer: 'claim-level-editorial-v1-realizer',
-            entailment: 'claim-level-editorial-v1-entailment',
-          },
-          depth,
-          generatedAt: new Date().toISOString(),
-        };
-        writeFileSync(
-          resolve(outputDir, `claim-level-editorial-v1-${slug}-rejected.json`),
-          `${JSON.stringify(failedArtifact, null, 2)}\n`,
-          { mode: 0o600 },
-        );
-        throw error;
+        if (error instanceof Error && error.message === 'Definition is too long') {
+          try {
+            const repaired = await writer.runStructured(
+              buildDefinitionRepairRequest({
+                entity: canonicalEntity,
+                definition: mappedOutput.definition,
+                claims: accepted.filter((claim) =>
+                  mappedOutput.definition.claimIds.includes(claim.id),
+                ),
+                maxCharacters: 320,
+              }),
+            );
+            mappedOutput.definition = validateSingleMappedSentence(
+              repaired.output as MappedSentence,
+              accepted,
+              canonicalEntity,
+              linkableEntities,
+              entity.aliases?.map((alias) => alias.value),
+            );
+            sentences = validateMappedEditorialOutput(
+              mappedOutput,
+              accepted,
+              canonicalEntity,
+              linkableEntities,
+              depth,
+              entity.aliases?.map((alias) => alias.value),
+            );
+          } catch (repairError) {
+            throw repairError;
+          }
+        } else {
+          const failedArtifact = {
+            entity: canonicalEntity,
+            contextFingerprint: editorialContextFingerprint(entity.id, 'es', depth, units),
+            availableKnowledgeUnits: units,
+            proposedClaims: proposedPlan.claims,
+            acceptedClaims: accepted,
+            rejectedClaims: rejected,
+            invalidPlanReferences: invalidReferences,
+            mappedOutput,
+            publicOutput: null,
+            validationFailure: error instanceof Error ? error.message : String(error),
+            model: writer.metadata(),
+            promptVersion: {
+              planner: 'claim-level-editorial-v1-planner',
+              realizer: 'claim-level-editorial-v1-realizer',
+              entailment: 'claim-level-editorial-v1-entailment',
+            },
+            depth,
+            generatedAt: new Date().toISOString(),
+          };
+          writeFileSync(
+            resolve(outputDir, `claim-level-editorial-v1-${slug}-rejected.json`),
+            `${JSON.stringify(failedArtifact, null, 2)}\n`,
+            { mode: 0o600 },
+          );
+          throw error;
+        }
       }
       let entailmentResult = await validator.runStructured(
         buildSentenceEntailmentRequest(sentences, accepted),
