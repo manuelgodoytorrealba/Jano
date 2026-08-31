@@ -1,0 +1,835 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "workingDatabase": {
+    "host": "localhost",
+    "name": "jano"
+  },
+  "humanDecisionContract": [
+    "APPROVE",
+    "REJECT",
+    "DEFER"
+  ],
+  "humanDecisionsPending": true,
+  "items": [
+    {
+      "reviewItemId": "first-real-10-01",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdfz2000bctfporvfcxat",
+      "excerpt": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+      "previousContext": null,
+      "nextContext": "In the United States, pop style was a return to representational art (art that depicted the visual world in a recognisable way) and the use of hard edges and distinct forms after the painterly looseness of abstract expressionism .",
+      "rawModelProposition": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+      "validatedProposition": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+      "supportQuote": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+      "v3Decision": "KEEP",
+      "reviewKind": null,
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": null,
+      "dimensionReviewRequired": true,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "Subject explícito y proposition extractable sin añadir hechos.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-1",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdfz2000bctfporvfcxat"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-02",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdfz5000cctfpiarvu827",
+      "excerpt": "Different cultures and countries contributed to the movement during the 1960s and 70s\nRoy Lichtenstein\nWhaam! \n(1963)\nTate\n© Estate of Roy Lichtenstein \nEmerging in the mid 1950s in Britain and late 1950s in America, pop art reached its peak in the 1960s.",
+      "previousContext": "While employing irony and parody, it focused more on what American popular imagery represented, and its power in manipulating people’s lifestyles.",
+      "nextContext": "It began as a revolt against the dominant approaches to art and culture and traditional views on what art should be.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "Emerging in the mid 1950s in Britain and late 1950s in America, pop art reached its peak in the 1960s.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": false,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": "CHRONOLOGY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-2",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdfz5000cctfpiarvu827"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-03",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdip7000dctfp42cuhrrr",
+      "excerpt": "It began as a revolt against the dominant approaches to art and culture and traditional views on what art should be.",
+      "previousContext": "Different cultures and countries contributed to the movement during the 1960s and 70s\nRoy Lichtenstein\nWhaam! \n(1963)\nTate\n© Estate of Roy Lichtenstein \nEmerging in the mid 1950s in Britain and late 1950s in America, pop art reached its peak in the 1960s.",
+      "nextContext": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "It began as a revolt against the dominant approaches to art and culture and traditional views on what art should be.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": false,
+      "contextDependent": true,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": "DEFINITION_OR_IDENTITY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-3",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdip7000dctfp42cuhrrr"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-04",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdln6000ectfpii08o49n",
+      "excerpt": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+      "previousContext": "It began as a revolt against the dominant approaches to art and culture and traditional views on what art should be.",
+      "nextContext": "Instead they turned to sources such as Hollywood movies, advertising, product packaging, pop music and comic books for their imagery.",
+      "rawModelProposition": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+      "validatedProposition": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+      "supportQuote": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+      "v3Decision": "KEEP",
+      "reviewKind": null,
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": true,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": null,
+      "dimensionReviewRequired": true,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "Subject explícito y proposition extractable sin añadir hechos.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-4",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdln6000ectfpii08o49n"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-05",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdln8000fctfptqgzk5qa",
+      "excerpt": "Instead they turned to sources such as Hollywood movies, advertising, product packaging, pop music and comic books for their imagery.",
+      "previousContext": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+      "nextContext": "In 1957 pop artist Richard Hamilton listed the ‘characteristics of pop art’ in a letter to his friends the architects Peter and Alison Smithson:\nPop Art is: Popular (designed for a mass audience), Transient (short-term solution), Expendable (easily forgotten), Low cost, Mass produced, Young (aimed at youth), Witty, Sexy, Gimmicky, Glamorous, Big business\nModernist critics were horrified by the pop artists’ use of such ‘low’ subject matter and by their apparently uncritical treatment of it.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "Instead they turned to sources such as Hollywood movies, advertising, product packaging, pop music and comic books for their imagery.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": false,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": "DEFINITION_OR_IDENTITY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-5",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdln8000fctfptqgzk5qa"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-06",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdnwz000gctfpzepsxdft",
+      "excerpt": "In 1957 pop artist Richard Hamilton listed the ‘characteristics of pop art’ in a letter to his friends the architects Peter and Alison Smithson:\nPop Art is: Popular (designed for a mass audience), Transient (short-term solution), Expendable (easily forgotten), Low cost, Mass produced, Young (aimed at youth), Witty, Sexy, Gimmicky, Glamorous, Big business\nModernist critics were horrified by the pop artists’ use of such ‘low’ subject matter and by their apparently uncritical treatment of it.",
+      "previousContext": "Instead they turned to sources such as Hollywood movies, advertising, product packaging, pop music and comic books for their imagery.",
+      "nextContext": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+      "rawModelProposition": "In 1957 pop artist Richard Hamilton listed the ‘characteristics of pop art’ in a letter to his friends the architects Peter and Alison Smithson:, Expendable (easily forgotten), Low cost, Mass produced, Young (aimed at youth), Witty, Sexy, Gimmicky, Glamorous, Big business\nModernist critics were horrified by the pop artists’ use of such ‘low’ subject matter and by their apparently uncritical treatment of it.",
+      "validatedProposition": null,
+      "supportQuote": "In 1957 pop artist Richard Hamilton listed the ‘characteristics of pop art’ in a letter to his friends the architects Peter and Alison Smithson:, Expendable (easily forgotten), Low cost, Mass produced, Young (aimed at youth), Witty, Sexy, Gimmicky, Glamorous, Big business\nModernist critics were horrified by the pop artists’ use of such ‘low’ subject matter and by their apparently uncritical treatment of it.",
+      "v3Decision": "KEEP",
+      "reviewKind": null,
+      "quoteStatus": "INVALID",
+      "atomicityStatus": "MULTI_CLAIM_REQUIRES_SPLIT",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": null,
+      "dimensionReviewRequired": true,
+      "automatedReviewSuggestion": "REJECT",
+      "automatedReviewReason": "Subject explícito y proposition extractable sin añadir hechos.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-6",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdnwz000gctfpzepsxdft"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-07",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdnx2000hctfpchxacgcf",
+      "excerpt": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+      "previousContext": "In 1957 pop artist Richard Hamilton listed the ‘characteristics of pop art’ in a letter to his friends the architects Peter and Alison Smithson:\nPop Art is: Popular (designed for a mass audience), Transient (short-term solution), Expendable (easily forgotten), Low cost, Mass produced, Young (aimed at youth), Witty, Sexy, Gimmicky, Glamorous, Big business\nModernist critics were horrified by the pop artists’ use of such ‘low’ subject matter and by their apparently uncritical treatment of it.",
+      "nextContext": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+      "rawModelProposition": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+      "validatedProposition": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+      "supportQuote": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+      "v3Decision": "KEEP",
+      "reviewKind": null,
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": null,
+      "dimensionReviewRequired": true,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "Subject explícito y proposition extractable sin añadir hechos.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-7",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdnx2000hctfpchxacgcf"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-08",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdnx3000ictfpn7o3q0by",
+      "excerpt": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+      "previousContext": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+      "nextContext": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+      "rawModelProposition": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+      "validatedProposition": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+      "supportQuote": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+      "v3Decision": "KEEP",
+      "reviewKind": null,
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": null,
+      "dimensionReviewRequired": true,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "Subject explícito y proposition extractable sin añadir hechos.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-8",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdnx3000ictfpn7o3q0by"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-09",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdnx4000jctfpkwse1g0s",
+      "excerpt": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+      "previousContext": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+      "nextContext": null,
+      "rawModelProposition": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+      "validatedProposition": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+      "supportQuote": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+      "v3Decision": "KEEP",
+      "reviewKind": null,
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": null,
+      "dimensionReviewRequired": true,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "Subject explícito y proposition extractable sin añadir hechos.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-9",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdnx4000jctfpkwse1g0s"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-10",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdnx4000kctfpi6g8t4ck",
+      "excerpt": "In the United States, pop style was a return to representational art (art that depicted the visual world in a recognisable way) and the use of hard edges and distinct forms after the painterly looseness of abstract expressionism .",
+      "previousContext": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+      "nextContext": "By using impersonal, mundane imagery, pop artists also wanted to move away from the emphasis on personal feelings and personal symbolism that characterised abstract expressionism.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "In the United States, pop style was a return to representational art (art that depicted the visual world in a recognisable way) and the use of hard edges and distinct forms after the painterly looseness of abstract expressionism.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "INVALID",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": false,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": "DEFINITION_OR_IDENTITY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_SUPPORT_QUOTE: supportQuote cannot be verified in excerpt.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-10",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdnx4000kctfpi6g8t4ck"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-11",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdqfz000lctfpjq1vp0t1",
+      "excerpt": "By using impersonal, mundane imagery, pop artists also wanted to move away from the emphasis on personal feelings and personal symbolism that characterised abstract expressionism.",
+      "previousContext": "In the United States, pop style was a return to representational art (art that depicted the visual world in a recognisable way) and the use of hard edges and distinct forms after the painterly looseness of abstract expressionism .",
+      "nextContext": "While employing irony and parody, it focused more on what American popular imagery represented, and its power in manipulating people’s lifestyles.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "By using impersonal, mundane imagery, pop artists also wanted to move away from the emphasis on personal feelings and personal symbolism that characterised abstract expressionism.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": false,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": "DEFINITION_OR_IDENTITY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-11",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdqfz000lctfpjq1vp0t1"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-12",
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "excerptId": "cmthgdt5k000mctfp6ey0z9fp",
+      "excerpt": "While employing irony and parody, it focused more on what American popular imagery represented, and its power in manipulating people’s lifestyles.",
+      "previousContext": "By using impersonal, mundane imagery, pop artists also wanted to move away from the emphasis on personal feelings and personal symbolism that characterised abstract expressionism.",
+      "nextContext": "Different cultures and countries contributed to the movement during the 1960s and 70s\nRoy Lichtenstein\nWhaam! \n(1963)\nTate\n© Estate of Roy Lichtenstein \nEmerging in the mid 1950s in Britain and late 1950s in America, pop art reached its peak in the 1960s.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "While employing irony and parody, it focused more on what American popular imagery represented, and its power in manipulating people’s lifestyles.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": false,
+      "contextDependent": true,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": "DEFINITION_OR_IDENTITY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35c0004vwfppna63ccj",
+        "locator": "paragraph-12",
+        "materialVersionId": "cmthgdeky000actfpyu00oxwv",
+        "excerptId": "cmthgdt5k000mctfp6ey0z9fp"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-13",
+      "source": {
+        "id": "cmt4kt35k0008vwfpbo8yt2e3",
+        "title": "Conceptual Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/c/conceptual-art"
+      },
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "excerptId": "cmthgbnwn000guyfpm0jdknhu",
+      "excerpt": "Joseph Kosuth ’s series Titled (Art as Idea as Idea) 1966–7; the proposal for an exhibition Air Show Air/Conditioning 1966–7 by English artists Terry Atkinson and Michael Baldwin (founder members of the group Art & Language ); John Baldessari ’s word paintings exhibited in LA in 1968; and important group exhibitions such as that organised by art dealer Seth Siegelaub in New York in 1969, January 1-31: 0 Objects, 0 Painters, 0 Sculptors reflected this growing ideas-based approach to art-making.",
+      "previousContext": "Joseph Kosuth\nClock (One and Five), English/Latin Version \n(1965)\nTate\n© ARS, NY and DACS, London 2026 \nAlthough the term ‘concept art’ had been used in the early 1960s (Henry Flynt of the Fluxus group described his performance pieces as ‘concept art’ in 1961), it was not until the late sixties that conceptual art as a definable movement emerged.",
+      "nextContext": "The term conceptual art was first used to reference this distinct movement in an article written by Sol LeWitt in 1967:\nIn conceptual art the idea or concept is the most important aspect of the work.",
+      "rawModelProposition": "El arte conceptual se refleja en la serie de Joseph Kosuth 'Titled (Art as Idea as Idea)' de 1966-7, la propuesta de la exposición 'Air Show Air/Conditioning' de 1966-7 por los artistas ingleses Terry Atkinson y Michael Baldwin (fundadores del grupo Art & Language), las pinturas de palabras de John Baldessari exhibidas en LA en 1968 y en importantes exposiciones grupales como la organizada por el galerista Seth Siegelaub en Nueva York en 1969, del 1 al 31 de enero: 0 Objetos, 0 Pintores, 0 Escul",
+      "validatedProposition": null,
+      "supportQuote": "Joseph Kosuth ’s series Titled (Art as Idea as Idea) 1966–7; the proposal for an exhibition Air Show Air/Conditioning 1966–7 by English artists Terry Atkinson and Michael Baldwin (founder members of the group Art & Language); John Baldessari ’s word paintings exhibited in LA in 1968; and important group exhibitions such as that organised by art dealer Seth Siegelaub in New York in 1969, January 1-31: 0 Objects, 0 Painters, 0 Sculptors reflected this growing ideas-based approach to art-making.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "INVALID",
+      "atomicityStatus": "MULTI_CLAIM_REQUIRES_SPLIT",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "ABOUT",
+      "normalizedDimension": "DEFINITION_OR_IDENTITY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_SUPPORT_QUOTE: supportQuote cannot be verified in excerpt.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "locator": "paragraph-4",
+        "materialVersionId": "cmthgbhsw000cuyfpqmury2gt",
+        "excerptId": "cmthgbnwn000guyfpm0jdknhu"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-14",
+      "source": {
+        "id": "cmt4kt35k0008vwfpbo8yt2e3",
+        "title": "Conceptual Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/c/conceptual-art"
+      },
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "excerptId": "cmthgbwjk000juyfp156skvga",
+      "excerpt": "LeWitt, ‘Paragraphs on Conceptual Art’, Artforum Vol.5, no. 10, Summer 1967, pp. 79-83 \nIn 1973 a pioneering record of the early years of the movement appeared in the form of a book, Six Years , by the American critic Lucy Lippard.",
+      "previousContext": "When an artist uses a conceptual form of art, it means that all of the planning and decisions are made beforehand and the execution is a perfunctory affair.",
+      "nextContext": "The long subtitle of the book referred to ‘so-called conceptual or information or idea art’.",
+      "rawModelProposition": "En 1973, Lucy Lippard publicó un libro pionero que documenta los primeros años del movimiento del arte conceptual.",
+      "validatedProposition": null,
+      "supportQuote": "In 1973 a pioneering record of the early years of the movement appeared in the form of a book, Six Years, by the American critic Lucy Lippard.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "INVALID",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "ABOUT",
+      "normalizedDimension": "CHRONOLOGY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_SUPPORT_QUOTE: supportQuote cannot be verified in excerpt.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "locator": "paragraph-7",
+        "materialVersionId": "cmthgbhsw000cuyfpqmury2gt",
+        "excerptId": "cmthgbwjk000juyfp156skvga"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-15",
+      "source": {
+        "id": "cmt4kt35k0008vwfpbo8yt2e3",
+        "title": "Conceptual Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/c/conceptual-art"
+      },
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "excerptId": "cmthgc1h0000nuyfp8hjhv9qc",
+      "excerpt": "Although there is no one style or form used by conceptual artists, from the late 1960s certain trends emerged.",
+      "previousContext": "This is because, unlike a painter or sculptor who will think about how best they can express their idea using paint or sculptural materials and techniques, a conceptual artist uses whatever materials and whatever form is most appropriate to putting their idea across – this could be anything from a performance to a written description.",
+      "nextContext": "Read the captions in the artworks below to find out about some of the main ways conceptual artists explored and expressed their ideas.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "Although there is no one style or form used by conceptual artists, from the late 1960s certain trends emerged.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "ABOUT",
+      "normalizedDimension": "CHRONOLOGY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_PROPOSITION: Proposition adds a number, date or identifier absent from the support quote.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "locator": "paragraph-11",
+        "materialVersionId": "cmthgbhsw000cuyfpqmury2gt",
+        "excerptId": "cmthgc1h0000nuyfp8hjhv9qc"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-16",
+      "source": {
+        "id": "cmt4kxqnv0000r7fp99gqjgb2",
+        "title": "Auguste Rodin",
+        "type": "WEBSITE",
+        "url": "https://www.musee-rodin.fr/en"
+      },
+      "entity": {
+        "id": "cmsumr7cr00h6odfpntoohzgx",
+        "title": "Auguste Rodin"
+      },
+      "excerptId": "cmthgc6ld000tuyfp5u7jz6jp",
+      "excerpt": "Collective Celebration in Question \n13th Symposium for Young Researchers in Sculpture\nFriday, October 9, 2026\n21, Boulevard des Invalides, 75007 Paris \nYour day at the museum \nVue de l'oeuvre\nLe jardin de sculptures, un havre de paix\nPrenez un café à L'Augustine\nLes audioguides, pour toute la famille\nYourday at the museum next \nYourday at the museum previous \nRodin, a lifetime \nVue de l'oeuvre\nPause \nPlay \nChronology of Auguste Rodin\nCamille Claudel\nRodin and Monet\nRodin, a lifetime next \nRodin, a lifetime previous \nThe Musée Rodin - Meudon will reopen its doors on the weekend of March 28 and 29, 2026.",
+      "previousContext": "From Saturday, April 11 to Sunday, September 6, 2026, inclusive\n77 rue de Varenne \nRodin selon Rilke à la Fondation Pierre Gianadda \nUne exposition organisée par le musée Rodin\nDu 26 juin au 22 novembre 2026\nFondation Pierre Gianadda, Rue du Forum 59, CH – 1920 Martigny, Suisse \nWorkshops/Tours\nFamily Sundays \nGuided tours of the permanent collections for families\nSundays from September 2026 to August 2027, except for the first Sunday of each month from October 2026 to March 2027\n77, rue de Varenne, 75007 Paris \nWorkshops/Tours\nEuropean Heritage Days at the Musée Rodin in Meudon \nA weekend of heritage and photography\nSaturday 19 and Sunday 20 September 2026\n19 av.",
+      "nextContext": "The Shop \nDiscover our sculpture reproductions \nThe Kiss, miniature \nDiscover \nThe Cathedral, miniature \nDiscover \nWho Are we ?",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "Collective Celebration in Question\n13th Symposium for Young Researchers in Sculpture\nFriday, October 9, 2026\n21, Boulevard des Invalides, 75007 Paris",
+      "v3Decision": "MODEL_REVIEW",
+      "reviewKind": "MODEL_REVIEW",
+      "quoteStatus": "VALID_NORMALIZED",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": false,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": true,
+      "role": "CONTEXT_FOR",
+      "normalizedDimension": "CHRONOLOGY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "The excerpt provides a date and location for a symposium but does not directly relate to Auguste Rodin's work or life. It could be relevant context but lacks a clear connection to the candidate entity.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "MEDIUM",
+      "provenance": {
+        "sourceId": "cmt4kxqnv0000r7fp99gqjgb2",
+        "locator": "paragraph-3",
+        "materialVersionId": "cmthgc3n9000quyfpw5b1w4tz",
+        "excerptId": "cmthgc6ld000tuyfp5u7jz6jp"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-17",
+      "source": {
+        "id": "cmt4kxqob0008r7fpok102y4e",
+        "title": "Georgia O’Keeffe",
+        "type": "WEBSITE",
+        "url": "https://www.okeeffemuseum.org/"
+      },
+      "entity": {
+        "id": "cmsumr7de00ifodfpmp8smezz",
+        "title": "Georgia O'Keeffe"
+      },
+      "excerptId": "cmthgcc5j0011uyfp6ezffa2l",
+      "excerpt": "Learn More \nCelebrate the art, life, & independent spirit of Georgia O'Keeffe\nDive into Access O'Keeffe \nAccess O'Keeffe\n\"Access O’Keeffe\" combines the rich and prolific work of Georgia O’Keeffe with the Museum's extensive archive and historic home collections. \"Access O’Keeffe\" connects our collection with museums around the world.",
+      "previousContext": "Learn More \nAbiquiú, NM\nThe O’Keeffe Home & Studio\nTour season runs from March through November.",
+      "nextContext": "Access O'Keeffe\nAbout Georgia O'Keeffe\nOn View\nCurrent Exhibition\nNovember 7, 2025 - November 1, 2026\nTewa Nangeh/Tewa Country \nSanta Fe, NM \nGeorgia O'Keeffe Museum\nExplore Exhibition\nView All Exhibitions\nO’Keeffe at Home\nExperience O’Keeffe’s Life at Home Where She Drew Inspiration\nThe O’Keeffe Home & Studio, Abiquiú \nAbiquiú, NM\nThe O’Keeffe Home & Studio \nLocated 52 miles north of Santa Fe, O’Keeffe’s Home & Studio reflects a blend of Native American and Spanish Colonial building styles, regional architectural traditions dating back centuries.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": "\"Access O’Keeffe\" combines the rich and prolific work of Georgia O’Keeffe with the Museum's extensive archive and historic home collections. \"Access O’Keeffe\" connects our collection with museums around the world.",
+      "v3Decision": "SYSTEM_FAILSAFE_REVIEW",
+      "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "MULTI_CLAIM_REQUIRES_SPLIT",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": false,
+      "role": "PRIMARY_SUBJECT",
+      "normalizedDimension": "DEFINITION_OR_IDENTITY",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "INVALID_PROPOSITION: Proposition must express one atomic unit of knowledge.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "HIGH",
+      "provenance": {
+        "sourceId": "cmt4kxqob0008r7fpok102y4e",
+        "locator": "paragraph-4",
+        "materialVersionId": "cmthgcbr8000xuyfpx174jlm2",
+        "excerptId": "cmthgcc5j0011uyfp6ezffa2l"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-18",
+      "source": {
+        "id": "cmt4kxqob0008r7fpok102y4e",
+        "title": "Georgia O’Keeffe",
+        "type": "WEBSITE",
+        "url": "https://www.okeeffemuseum.org/"
+      },
+      "entity": {
+        "id": "cmsumr7de00ifodfpmp8smezz",
+        "title": "Georgia O'Keeffe"
+      },
+      "excerptId": "cmthgch9e0013uyfp8345y01j",
+      "excerpt": "More About the Historic Homes\nThe O'Keeffe Welcome Center \nAbiquiú, NM\nO'Keeffe Welcome Center, 10 minutes from the Home & Studio \nFree and open to the public.",
+      "previousContext": "Access O'Keeffe\nAbout Georgia O'Keeffe\nOn View\nCurrent Exhibition\nNovember 7, 2025 - November 1, 2026\nTewa Nangeh/Tewa Country \nSanta Fe, NM \nGeorgia O'Keeffe Museum\nExplore Exhibition\nView All Exhibitions\nO’Keeffe at Home\nExperience O’Keeffe’s Life at Home Where She Drew Inspiration\nThe O’Keeffe Home & Studio, Abiquiú \nAbiquiú, NM\nThe O’Keeffe Home & Studio \nLocated 52 miles north of Santa Fe, O’Keeffe’s Home & Studio reflects a blend of Native American and Spanish Colonial building styles, regional architectural traditions dating back centuries.",
+      "nextContext": "Learn More \nPrograms & Events\nSee What's Next at the O'Keeffe\nFirst Friday \nFriday, September 4 | 5:00 PM MT\nGeorgia O'Keeffe Museum | 217 Johnson Street, Santa Fe, MM 87501\nJoin us for extended hours at the Museum on the First Friday of every month.",
+      "rawModelProposition": "The O'Keeffe Welcome Center is located near the Home & Studio.",
+      "validatedProposition": null,
+      "supportQuote": "The O'Keeffe Welcome Center, 10 minutes from the Home & Studio",
+      "v3Decision": "MODEL_REVIEW",
+      "reviewKind": "MODEL_REVIEW",
+      "quoteStatus": "INVALID",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": true,
+      "role": "CONTEXT_FOR",
+      "normalizedDimension": "PLACE",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "The excerpt provides context about the location of the O'Keeffe Welcome Center, which is related to Georgia O'Keeffe but does not directly focus on her. The information is relevant to understanding the setting of her home and studio but does not provide substantive information about her as an artist.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "MEDIUM",
+      "provenance": {
+        "sourceId": "cmt4kxqob0008r7fpok102y4e",
+        "locator": "paragraph-6",
+        "materialVersionId": "cmthgcbr8000xuyfpx174jlm2",
+        "excerptId": "cmthgch9e0013uyfp8345y01j"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-19",
+      "source": {
+        "id": "cmt4kxqob0008r7fpok102y4e",
+        "title": "Georgia O’Keeffe",
+        "type": "WEBSITE",
+        "url": "https://www.okeeffemuseum.org/"
+      },
+      "entity": {
+        "id": "cmsumr7de00ifodfpmp8smezz",
+        "title": "Georgia O'Keeffe"
+      },
+      "excerptId": "cmthgcj8f0014uyfpyh11vmmv",
+      "excerpt": "Learn More \nPrograms & Events\nSee What's Next at the O'Keeffe\nFirst Friday \nFriday, September 4 | 5:00 PM MT\nGeorgia O'Keeffe Museum | 217 Johnson Street, Santa Fe, MM 87501\nJoin us for extended hours at the Museum on the First Friday of every month.",
+      "previousContext": "More About the Historic Homes\nThe O'Keeffe Welcome Center \nAbiquiú, NM\nO'Keeffe Welcome Center, 10 minutes from the Home & Studio \nFree and open to the public.",
+      "nextContext": "Admission is free all day for New Mexico residents and free for everyone…\nRegister Now\nSee Upcoming Events\nWatch Past Talks\nWatch Past Talks\nIn-Person Class: Exploring “Rams Skull with Brown Leaves,” 1936 in Soft Pastels (2 Parts) \nWednesday, September 30 | 9:00 AM MT\nO'KEEFFE MUSEUM CREATIVITY STUDIO | CORNER OF W MARCY ST AND SHERIDAN ST, SANTA FE, NM\nPart 1 | Wednesday, September 30, from 9:00 AM to 1:00 PM MT Part 2 | Thursday, October 1, from 9:00 AM to 1:00 PM…\nRegister Now\nMembership\nHelp Make This All Possible.",
+      "rawModelProposition": null,
+      "validatedProposition": null,
+      "supportQuote": null,
+      "v3Decision": "MODEL_REVIEW",
+      "reviewKind": "MODEL_REVIEW",
+      "quoteStatus": "INVALID",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": true,
+      "role": "CONTEXT_FOR",
+      "normalizedDimension": "HISTORICAL_CONTEXT",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "El fragmento proporciona información sobre eventos relacionados con el museo de Georgia O'Keeffe, pero no proporciona información directa sobre la artista. Sin embargo, podría ser relevante para entender el contexto en el que se encuentra el legado de O'Keeffe y cómo se preserva su obra. La decisión entre KEEP y REJECT es ambigua debido a la posible relevancia contextual.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "MEDIUM",
+      "provenance": {
+        "sourceId": "cmt4kxqob0008r7fpok102y4e",
+        "locator": "paragraph-7",
+        "materialVersionId": "cmthgcbr8000xuyfpx174jlm2",
+        "excerptId": "cmthgcj8f0014uyfpyh11vmmv"
+      }
+    },
+    {
+      "reviewItemId": "first-real-10-20",
+      "source": {
+        "id": "cmt4kxqob0008r7fpok102y4e",
+        "title": "Georgia O’Keeffe",
+        "type": "WEBSITE",
+        "url": "https://www.okeeffemuseum.org/"
+      },
+      "entity": {
+        "id": "cmsumr7de00ifodfpmp8smezz",
+        "title": "Georgia O'Keeffe"
+      },
+      "excerptId": "cmthgclab0015uyfprrldpxvy",
+      "excerpt": "Admission is free all day for New Mexico residents and free for everyone…\nRegister Now\nSee Upcoming Events\nWatch Past Talks\nWatch Past Talks\nIn-Person Class: Exploring “Rams Skull with Brown Leaves,” 1936 in Soft Pastels (2 Parts) \nWednesday, September 30 | 9:00 AM MT\nO'KEEFFE MUSEUM CREATIVITY STUDIO | CORNER OF W MARCY ST AND SHERIDAN ST, SANTA FE, NM\nPart 1 | Wednesday, September 30, from 9:00 AM to 1:00 PM MT Part 2 | Thursday, October 1, from 9:00 AM to 1:00 PM…\nRegister Now\nMembership\nHelp Make This All Possible.",
+      "previousContext": "Learn More \nPrograms & Events\nSee What's Next at the O'Keeffe\nFirst Friday \nFriday, September 4 | 5:00 PM MT\nGeorgia O'Keeffe Museum | 217 Johnson Street, Santa Fe, MM 87501\nJoin us for extended hours at the Museum on the First Friday of every month.",
+      "nextContext": "Become a Member\nFree Admission\nMembers receive free admission to the Museum for one year and members-only pricing on the Home & Studio tours in Abiquiú.",
+      "rawModelProposition": "An in-person class exploring Georgia O'Keeffe's work, specifically the painting “Rams Skull with Brown Leaves” from 1936, is scheduled at the O'Keeffe Museum Creativity Studio in Santa Fe, New Mexico.",
+      "validatedProposition": "An in-person class exploring Georgia O'Keeffe's work, specifically the painting “Rams Skull with Brown Leaves” from 1936, is scheduled at the O'Keeffe Museum Creativity Studio in Santa Fe, New Mexico.",
+      "supportQuote": "Admission is free all day for New Mexico residents and free for everyone…\nRegister Now\nSee Upcoming Events\nWatch Past Talks\nWatch Past Talks\nIn-Person Class: Exploring “Rams Skull with Brown Leaves,” 1936 in Soft Pastels (2 Parts) \nWednesday, September 30 | 9:00 AM MT\nO'KEEFFE MUSEUM CREATIVITY STUDIO | CORNER OF W MARCY ST AND SHERIDAN ST, SANTA FE, NM\nPart 1 | Wednesday, September 30, from 9:00 AM to 1:00 PM MT Part 2 | Thursday, October 1, from 9:00 AM to 1:00 PM…\nRegister Now\nMembership\nHelp",
+      "v3Decision": "MODEL_REVIEW",
+      "reviewKind": "MODEL_REVIEW",
+      "quoteStatus": "VALID_EXACT",
+      "atomicityStatus": "ATOMIC",
+      "entityCentered": true,
+      "contextDependent": false,
+      "ephemeralOrInstitutionalContext": true,
+      "role": "CONTEXT_FOR",
+      "normalizedDimension": "HISTORICAL_CONTEXT",
+      "dimensionReviewRequired": false,
+      "automatedReviewSuggestion": "DEFER",
+      "automatedReviewReason": "The excerpt provides context about an event related to Georgia O'Keeffe's work but does not directly provide substantive information about her. The event is a class exploring one of her paintings, which indirectly relates to her but does not focus on her directly.",
+      "humanDecision": null,
+      "humanReason": null,
+      "confidence": "MEDIUM",
+      "provenance": {
+        "sourceId": "cmt4kxqob0008r7fpok102y4e",
+        "locator": "paragraph-8",
+        "materialVersionId": "cmthgcbr8000xuyfpx174jlm2",
+        "excerptId": "cmthgclab0015uyfprrldpxvy"
+      }
+    }
+  ]
+}
