@@ -1,0 +1,30 @@
+{
+  "batchId": "first-real-10-source-batch-v2",
+  "workingDatabase": "jano",
+  "sourceIds": [
+    "cmt4l61ek0002q6fpnlgn5vf9",
+    "cmt4l3a4a0000zufptarsa0c2",
+    "cmt4kyrnv0006dyfpzfcimk9h",
+    "cmt4kyrns0004dyfpvmdo48iu",
+    "cmt4kyrnj0000dyfpmnvv3lzr",
+    "cmt4kxqob0008r7fpok102y4e",
+    "cmt4kxqnv0000r7fp99gqjgb2",
+    "cmt4kt35k0008vwfpbo8yt2e3",
+    "cmt4kt35c0004vwfppna63ccj",
+    "cmt4khppv00008mfp8q1ajstj"
+  ],
+  "slots": [
+    {"title":"Salvador Dalí","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"REPLACEMENT_SOURCE"},
+    {"title":"Marilyn Diptych","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"ORIGINAL_SOURCE"},
+    {"title":"Edward Hopper","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"REPLACEMENT_SOURCE"},
+    {"title":"Alberto Giacometti","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"REPLACEMENT_SOURCE"},
+    {"title":"Edvard Munch","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"REPLACEMENT_SOURCE"},
+    {"title":"Georgia O’Keeffe","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"REPLACEMENT_SOURCE"},
+    {"title":"Auguste Rodin","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"REPLACEMENT_SOURCE"},
+    {"title":"Conceptual Art","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"REPLACEMENT_SOURCE"},
+    {"title":"Pop Art","purpose":"DOCUMENTARY_TEXT","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"REPLACEMENT_SOURCE"},
+    {"title":"Art & Architecture Thesaurus","purpose":"STRUCTURED_REFERENCE","acquisitionMode":"REMOTE_HTML","verifiedAcquirable":true,"originalOrReplacement":"ORIGINAL_SOURCE"}
+  ],
+  "classifierVersion":"semantic-evidence-v3",
+  "model":"qwen2.5:14b"
+}
