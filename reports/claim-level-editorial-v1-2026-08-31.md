@@ -142,6 +142,14 @@ thin; Ritual is correctly minimal. Human editorial review remains required.
 
 ## Next Gate
 
-`EXPAND_TO_10_ENTITY_SHOWCASE` is technically allowed, but the next execution must first review the two local
-artifacts and approve their actual prose. No DB apply, public publication, Source processing or Knowledge Core
-promotion was performed in this phase.
+`EXPAND_TO_10_ENTITY_SHOWCASE` is prepared but currently stopped at the first rejected entity. The two passing
+artifacts require editorial approval before any controlled apply. No DB apply, public publication, Source
+processing or Knowledge Core promotion was performed in this phase.
+
+## Ten-entity expansion attempt
+
+The controlled artifact run was started with Ritual, Pablo Picasso, Cubismo, Guernica, Pinturas de Lascaux,
+París, Renacimiento, Fuente, Venus de Willendorf and Semillas de girasol. It stopped at Cubismo when the writer
+requested a self-link (`[[Cubismo]]`) that was not an allowed related entity. No later entities were called and
+no content was applied. Picasso also produced one `UNCERTAIN` summary sentence in the independent entailment
+audit, so its artifact has no public output. This confirms the fail-safe boundary at showcase scale.
