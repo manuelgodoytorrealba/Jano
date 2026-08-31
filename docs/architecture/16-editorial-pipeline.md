@@ -215,6 +215,12 @@ No puede aceptar Claims, consolidar Relations, decidir identidad definitiva, res
 Toda propuesta debe conservar documento, versión, segmento o Evidence de origen, pregunta relacionada, Job de procedencia y ejecución de IA cuando exista.
 Una propuesta individual que cite Evidence ajena a su lote o no resoluble se descarta antes de persistir; no invalida las demás propuestas fundamentadas del mismo lote.
 
+En una propuesta de Evidence, la quote documental y la proposition cumplen funciones distintas. El modelo copia una `supportQuote` literal del extracto; JANO verifica su unicidad y calcula offsets de forma determinista. La `evidenceProposition` puede ser una paráfrasis estrictamente implicada por esa quote, pero no puede añadir hechos, atribuciones, fechas, lugares, causalidad, intención, influencia o interpretación sin soporte. Una quote ausente o ambigua, un contrato inválido o una adición no sustentada nunca producen `KEEP`.
+
+La clasificación híbrida es asimétrica: un `SAFE_KEEP` determinista verificable se conserva sin invocar IA; un `HARD_REJECT` por incompatibilidad, ruido, metadata estructurada, falta de procedencia o irrelevancia clara no puede ser rescatado; sólo `UNCERTAIN` se delega al proveedor semántico. `REVIEW` es una decisión editorial para valor plausible con ambigüedad real y se registra separada de un fallback técnico.
+
+Los roles describen la relación del fragmento con la entidad, no su decisión: `PRIMARY_SUBJECT` trata principalmente la entidad; `ABOUT` aporta conocimiento directo; `CONTEXT_FOR` aporta contexto necesario cuyo claim principal trata de otra cosa; `SUPPORTS_RELATION` documenta una relación explícita en la que participa; `MENTION` sólo la nombra; `UNRELATED` carece de relación editorial suficiente. Las dimensiones operativas son `DEFINITION_OR_IDENTITY`, `CHRONOLOGY`, `PLACE`, `FORM_OR_MATERIAL`, `PRACTICE_OR_METHOD`, `HISTORICAL_CONTEXT`, `RELATION`, `INTERPRETATION`, `RECEPTION_OR_LEGACY` y `PROVENANCE_OR_COMMISSION`.
+
 ## Política de Ollama y neutralidad de proveedor
 
 Ollama es el proveedor local preferente para generar propuestas editoriales cuando esté disponible. No es propietario del pipeline ni requisito para el trabajo manual.

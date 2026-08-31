@@ -6,6 +6,18 @@ export type RelevanceRole =
   | 'MENTION'
   | 'UNRELATED';
 export type EvidenceDecision = 'KEEP' | 'REVIEW' | 'REJECT';
+export type UnsupportedAdditionSeverity = 'NONE' | 'MINOR' | 'MAJOR' | 'CRITICAL';
+export type DeterministicDecisionClass = 'SAFE_KEEP' | 'UNCERTAIN' | 'HARD_REJECT';
+export type DeterministicReasonCode =
+  | 'SAFE_DOCUMENTARY_PROPOSITION'
+  | 'UNCERTAIN_FACTUAL_SPAN'
+  | 'UNCERTAIN_PLAUSIBLE_FRAGMENT'
+  | 'HARD_INVALID_PROVENANCE'
+  | 'HARD_STRUCTURED_REFERENCE'
+  | 'HARD_INCOMPATIBLE_PURPOSE'
+  | 'HARD_METADATA_DUMP'
+  | 'HARD_NAVIGATION_OR_PROMOTION'
+  | 'HARD_CLEARLY_UNRELATED';
 
 export type SemanticEvidenceInput = {
   excerpt: string;
@@ -30,6 +42,8 @@ export type SemanticEvidenceResult = {
   confidence: 'HIGH' | 'MEDIUM' | 'LOW';
   decision: EvidenceDecision;
   reason: string;
+  deterministicClass?: DeterministicDecisionClass;
+  deterministicReasonCode?: DeterministicReasonCode;
   signals: { subjectClarity: number; extractability: number; purposeFit: number; noise: number };
   structuredFactCandidate?: { field: string; value: string; provenanceRequired: true } | null;
 };
@@ -46,6 +60,18 @@ const normalize = (value: string) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 export const STRUCTURED_REFERENCE_PURPOSE = 'STRUCTURED_REFERENCE';
+const METADATA_MARKER =
+  /\b(?:references?|retrieved|identifier|instance of|authority|occupation|genre|member of|language|label|description|also known as|default for all languages|edit|ID|Q\d+|VIAF)\b/gi;
+
+export function isStructuredMetadataDump(value: string): boolean {
+  const markers = value.match(METADATA_MARKER)?.length ?? 0;
+  const tokens = value.match(/[\p{L}\p{N}]{2,}/gu)?.length ?? 0;
+  return markers >= 3 && (tokens > 20 || value.length > 100);
+}
+
+export function isPromotionalChrome(value: string): boolean {
+  return (value.match(new RegExp(PROMOTIONAL.source, 'gi')) ?? []).length >= 2;
+}
 
 export interface SemanticEvidenceProvider {
   classify(input: SemanticEvidenceInput): Promise<SemanticEvidenceResult>;
@@ -68,7 +94,8 @@ export class DeterministicSemanticEvidenceClassifier implements SemanticEvidence
               : [];
     const subjectClarity =
       sourceTitle.includes(entity) || aliases.some((alias) => sourceTitle.includes(alias)) ? 1 : 0;
-    const noise = NOISE.test(excerpt) ? 1 : 0;
+    const noiseMarkers = (excerpt.match(new RegExp(NOISE.source, 'gi')) ?? []).length;
+    const noise = noiseMarkers ? 1 : 0;
     const purposeFit = [
       'VISUAL_PROVENANCE',
       'CANONICAL_METADATA',
@@ -87,40 +114,77 @@ export class DeterministicSemanticEvidenceClassifier implements SemanticEvidence
         ?.trim() ?? '';
     const extractability =
       sentence.length >= 70 && !/(\b[A-Z][a-z]+\s+[A-Z][a-z]+\s+\()/i.test(sentence) ? 1 : 0;
-    const promotionalDensity = (excerpt.match(new RegExp(PROMOTIONAL.source, 'gi')) ?? []).length;
+    const promotionalChrome = isPromotionalChrome(excerpt);
     const institutionalChrome =
       /closing for renovation|practical information|disabled visitor|you are a group|opening times|waiting time|getting here/i.test(
         excerpt,
       );
-    if ((noise && !extractability) || promotionalDensity >= 2 || institutionalChrome)
+    const normalizedExcerpt = normalize(excerpt);
+    const excerptNamesEntity =
+      normalizedExcerpt.includes(entity) ||
+      aliases.some((alias) => normalizedExcerpt.includes(alias));
+    const base = { signals: { subjectClarity, extractability, purposeFit, noise } };
+    if (!excerpt || !input.source.title.trim() || !input.candidateEntity.id)
       return {
+        ...base,
         relevanceRole: 'UNRELATED',
         evidenceProposition: null,
         confidence: 'HIGH',
         decision: 'REJECT',
-        reason: 'Chrome, navegación o promoción sin proposition editorial suficiente.',
-        signals: { subjectClarity, extractability, purposeFit, noise },
+        deterministicClass: 'HARD_REJECT',
+        deterministicReasonCode: 'HARD_INVALID_PROVENANCE',
+        reason: 'Excerpt, Source and candidate identity are required.',
       };
-    if (input.sourcePurpose === STRUCTURED_REFERENCE_PURPOSE) {
+    if (input.sourcePurpose === STRUCTURED_REFERENCE_PURPOSE)
       return {
+        ...base,
         relevanceRole: subjectClarity ? 'ABOUT' : 'MENTION',
         evidenceProposition: null,
         structuredFactCandidate: null,
         confidence: 'HIGH',
         decision: 'REJECT',
+        deterministicClass: 'HARD_REJECT',
+        deterministicReasonCode: 'HARD_STRUCTURED_REFERENCE',
         reason:
           'Structured reference routed to field/value fact extraction, never paragraph-style editorial Evidence.',
-        signals: { subjectClarity, extractability, purposeFit, noise },
       };
-    }
     if (!purposeFit)
       return {
+        ...base,
         relevanceRole: 'MENTION',
         evidenceProposition: null,
         confidence: 'HIGH',
         decision: 'REJECT',
+        deterministicClass: 'HARD_REJECT',
+        deterministicReasonCode: 'HARD_INCOMPATIBLE_PURPOSE',
         reason: 'Source purpose incompatible con Evidence editorial.',
-        signals: { subjectClarity, extractability, purposeFit, noise },
+      };
+    if (isStructuredMetadataDump(excerpt))
+      return {
+        ...base,
+        relevanceRole: 'UNRELATED',
+        evidenceProposition: null,
+        confidence: 'HIGH',
+        decision: 'REJECT',
+        deterministicClass: 'HARD_REJECT',
+        deterministicReasonCode: 'HARD_METADATA_DUMP',
+        reason: 'Structured metadata dump is not documentary editorial Evidence.',
+      };
+    if (
+      promotionalChrome ||
+      institutionalChrome ||
+      (noiseMarkers >= 2 && !excerptNamesEntity) ||
+      (noise && !sentence && !excerptNamesEntity && !subjectClarity)
+    )
+      return {
+        ...base,
+        relevanceRole: 'UNRELATED',
+        evidenceProposition: null,
+        confidence: 'HIGH',
+        decision: 'REJECT',
+        deterministicClass: 'HARD_REJECT',
+        deterministicReasonCode: 'HARD_NAVIGATION_OR_PROMOTION',
+        reason: 'Chrome, navegación o promoción sin proposition editorial suficiente.',
       };
     const propositionNamesEntity =
       sentence.toLocaleLowerCase().includes(entity) ||
@@ -131,6 +195,7 @@ export class DeterministicSemanticEvidenceClassifier implements SemanticEvidence
       (input.sourcePurpose === 'DOCUMENTARY_TEXT' || propositionNamesEntity)
     )
       return {
+        ...base,
         relevanceRole: 'PRIMARY_SUBJECT',
         evidenceProposition: {
           statement: sentence,
@@ -139,11 +204,13 @@ export class DeterministicSemanticEvidenceClassifier implements SemanticEvidence
         },
         confidence: 'HIGH',
         decision: 'KEEP',
+        deterministicClass: 'SAFE_KEEP',
+        deterministicReasonCode: 'SAFE_DOCUMENTARY_PROPOSITION',
         reason: 'Subject explícito y proposition extractable sin añadir hechos.',
-        signals: { subjectClarity, extractability, purposeFit, noise },
       };
     if (extractability)
       return {
+        ...base,
         relevanceRole: 'ABOUT',
         evidenceProposition: {
           statement: sentence,
@@ -152,16 +219,36 @@ export class DeterministicSemanticEvidenceClassifier implements SemanticEvidence
         },
         confidence: 'MEDIUM',
         decision: 'REVIEW',
+        deterministicClass: 'UNCERTAIN',
+        deterministicReasonCode: 'UNCERTAIN_FACTUAL_SPAN',
         reason: 'Existe contenido factual, pero falta desambiguar subject o suficiencia.',
-        signals: { subjectClarity, extractability, purposeFit, noise },
+      };
+    if (
+      subjectClarity ||
+      propositionNamesEntity ||
+      sentence ||
+      excerpt.length >= 140 ||
+      (noise && subjectClarity)
+    )
+      return {
+        ...base,
+        relevanceRole: subjectClarity ? 'ABOUT' : 'MENTION',
+        evidenceProposition: null,
+        confidence: 'LOW',
+        decision: 'REJECT',
+        deterministicClass: 'UNCERTAIN',
+        deterministicReasonCode: 'UNCERTAIN_PLAUSIBLE_FRAGMENT',
+        reason: 'Plausible fragment without a deterministically extractable proposition.',
       };
     return {
+      ...base,
       relevanceRole: 'UNRELATED',
       evidenceProposition: null,
       confidence: 'LOW',
       decision: 'REJECT',
+      deterministicClass: 'HARD_REJECT',
+      deterministicReasonCode: 'HARD_CLEARLY_UNRELATED',
       reason: 'No puede formularse una proposition concreta.',
-      signals: { subjectClarity, extractability, purposeFit, noise },
     };
   }
 }
@@ -170,31 +257,132 @@ export class DeterministicSemanticEvidenceClassifier implements SemanticEvidence
 export function validateEvidenceProposition(
   proposition: SemanticEvidenceResult['evidenceProposition'],
   input: SemanticEvidenceInput,
-): { valid: boolean; reason: string } {
-  if (!proposition?.statement?.trim()) return { valid: false, reason: 'Missing proposition.' };
+  supportQuote = input.excerpt,
+  relevanceRole?: RelevanceRole,
+): {
+  valid: boolean;
+  reason: string;
+  presentLiteral: boolean;
+  unsupportedAddition: UnsupportedAdditionSeverity;
+  uncertaintyPreserved: boolean;
+  entityCentered: boolean;
+  atomic: boolean;
+} {
+  const invalid = (
+    reason: string,
+    unsupportedAddition: UnsupportedAdditionSeverity = 'MAJOR',
+    presentLiteral = false,
+    uncertaintyPreserved = true,
+    entityCentered = true,
+    atomic = true,
+  ) => ({
+    valid: false,
+    reason,
+    presentLiteral,
+    unsupportedAddition,
+    uncertaintyPreserved,
+    entityCentered,
+    atomic,
+  });
+  if (!proposition?.statement?.trim()) return invalid('Missing proposition.');
   const statement = proposition.statement.trim();
-  if (statement.length < 20 || statement.length > input.excerpt.length)
-    return { valid: false, reason: 'Proposition length is not reconstructible from excerpt.' };
-  if (!input.excerpt.includes(statement))
-    return { valid: false, reason: 'Proposition is not a literal statement from the excerpt.' };
-  const tokenCount = (statement.match(/[\p{L}\p{N}]{2,}/gu) ?? []).length;
-  const delimiterCount = (
-    statement.match(
-      /\b(?:references?|retrieved|identifier|instance of|authority|occupation|genre|member of|ID|Q\d+)\b/gi,
-    ) ?? []
-  ).length;
-  if (
-    statement.length > 500 ||
-    (delimiterCount >= 3 && (tokenCount > 20 || statement.length > 100))
-  )
-    return {
-      valid: false,
-      reason: 'Proposition resembles a structured key/value dump or an unfocused enumeration.',
-    };
-  if (
-    /\b(always|never|therefore|intended to|caused|because)\b/i.test(statement) &&
-    !new RegExp(statement.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(input.excerpt)
-  )
-    return { valid: false, reason: 'Adds unsupported causality or intent.' };
-  return { valid: true, reason: 'Proposition is a bounded excerpt sentence with provenance.' };
+  const presentLiteral = supportQuote.includes(statement);
+  if (statement.length < 20 || statement.length > 500)
+    return invalid('Proposition must contain one bounded claim.', 'MAJOR', presentLiteral);
+  if (isStructuredMetadataDump(statement))
+    return invalid(
+      'Proposition resembles a structured key/value dump or an unfocused enumeration.',
+      'MAJOR',
+      presentLiteral,
+    );
+
+  const normalizedStatement = normalize(statement);
+  const normalizedQuote = normalize(supportQuote);
+  const atomic = !/(?:[.!?]\s+|\n\s*[-*])\S/u.test(statement);
+  if (!atomic)
+    return invalid(
+      'Proposition must express one atomic unit of knowledge.',
+      'MAJOR',
+      presentLiteral,
+      true,
+      true,
+      false,
+    );
+
+  const sourceUncertainty =
+    /\b(?:may|might|could|possibly|probably|perhaps|likely|seems?|would seem|suggests?|is thought to|are thought to|is considered|are considered|has been interpreted as|puede|podria|pudo|quizas|tal vez|probablemente|posiblemente|parece|se considera|se ha interpretado|sugiere|es probable)\b/i;
+  const propositionUncertainty =
+    /\b(?:may|might|could|possibly|probably|perhaps|likely|seems?|suggests?|puede|podria|pudo|quizas|tal vez|probablemente|posiblemente|parece|plantea|se considera|se ha interpretado|sugiere|es probable)\b/i;
+  const uncertaintyPreserved =
+    !sourceUncertainty.test(normalizedQuote) || propositionUncertainty.test(normalizedStatement);
+  if (!uncertaintyPreserved)
+    return invalid(
+      'Proposition removes uncertainty expressed by the support quote.',
+      'MAJOR',
+      presentLiteral,
+      false,
+    );
+
+  const insignificant = new Set([
+    'the',
+    'and',
+    'for',
+    'with',
+    'del',
+    'las',
+    'los',
+    'una',
+    'uno',
+    'por',
+    'para',
+  ]);
+  const entityTokens = normalize(input.candidateEntity.canonicalName)
+    .match(/[\p{L}\p{N}]+/gu)
+    ?.filter((token) => token.length >= 4 && !insignificant.has(token))
+    .sort((left, right) => right.length - left.length);
+  const entityCentered =
+    !relevanceRole ||
+    relevanceRole === 'UNRELATED' ||
+    relevanceRole === 'MENTION' ||
+    Boolean(entityTokens?.some((token) => normalizedStatement.includes(token)));
+  if (!entityCentered)
+    return invalid(
+      'Proposition is not centered on the candidate entity.',
+      'MAJOR',
+      presentLiteral,
+      true,
+      false,
+    );
+  const statementFacts = statement.match(/\b(?:\d{2,4}|Q\d+)\b/gi) ?? [];
+  const quoteFacts = new Set((supportQuote.match(/\b(?:\d{2,4}|Q\d+)\b/gi) ?? []).map(normalize));
+  if (statementFacts.some((fact) => !quoteFacts.has(normalize(fact))))
+    return invalid(
+      'Proposition adds a number, date or identifier absent from the support quote.',
+      'CRITICAL',
+      presentLiteral,
+    );
+
+  const unsupportedPredicate = [
+    /\b(?:because|therefore|caused|led to|resulted in|because of|porque|por tanto|caus[oó]|provoc[oó]|dio lugar|llevo a|condujo a)\b/i,
+    /\b(?:intended to|wanted to|sought to|pretend[ií]a|ten[ií]a la intenci[oó]n)\b/i,
+    /\b(?:influenced|inspired|influential|influenciado|influenciada|influido|influida|influ[yó]|inspir[oó])\b/i,
+  ].find((pattern) => pattern.test(normalizedStatement) && !pattern.test(normalizedQuote));
+  if (unsupportedPredicate)
+    return invalid(
+      'Proposition adds unsupported causality, intent or influence.',
+      'MAJOR',
+      presentLiteral,
+    );
+
+  return {
+    valid: true,
+    reason: presentLiteral
+      ? 'Proposition is literally present in the support quote.'
+      : 'No deterministic unsupported addition was detected in the grounded paraphrase.',
+    presentLiteral,
+    unsupportedAddition: 'NONE',
+    uncertaintyPreserved,
+    entityCentered,
+    atomic,
+  };
 }

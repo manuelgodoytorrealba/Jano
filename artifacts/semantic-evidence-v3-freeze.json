@@ -1,0 +1,31 @@
+{
+  "version": "SEMANTIC_EVIDENCE_V3",
+  "modelRole": "SEMANTIC_EVIDENCE_MODEL_V1",
+  "provider": "ollama",
+  "model": "qwen2.5:14b",
+  "providerNeutralConfiguration": ["AI_PROVIDER", "AI_MODEL", "OLLAMA_BASE_URL"],
+  "classifierSha256": "3f65080ffa5e97dca1255eba19560de0e4a91b9ebcc5c1ff9a9a81d5019857f0",
+  "deterministicGatesSha256": "a71ffaf8076ccadc1a7daa82f6ebcda956471ecb70e7835556e29139aa0dbe0c",
+  "evaluatorSha256": "2f21dd05cee73d93d0e7b7f45a1438c3bbc987eb9fdd2498dbad3ed27e0b1308",
+  "corpusSha256": "4b3b3c0216792851c38dedc5077e74a65e53a1f7149caee9d39385efb70c0dd5",
+  "configuration": {
+    "temperature": 0.2,
+    "maxOutputTokens": 500,
+    "providerRetries": 1,
+    "decisionDenominator": 48,
+    "roleDenominator": 51
+  },
+  "gate": {
+    "verdict": "PASS",
+    "baseDeterministicGoldKeep": 9,
+    "preservedDeterministicGoldKeep": 9,
+    "semanticRecoveredGoldKeep": 3,
+    "finalHybridGoldKeep": 12,
+    "keepPrecision": 0.9230769230769231,
+    "keepRecall": 0.75,
+    "falseKeep": 1,
+    "maxFalseKeepSeverity": "MEDIUM",
+    "highOrCriticalFalseKeep": 0
+  },
+  "frozenAt": "2026-08-31T11:31:02+02:00"
+}
