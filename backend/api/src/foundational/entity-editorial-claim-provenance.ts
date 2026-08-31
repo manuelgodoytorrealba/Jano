@@ -238,9 +238,23 @@ No menciones JANO ni el proceso.`,
         },
       },
     },
-    maxOutputTokens: args.depth === 'IDENTITY_ONLY' ? 500 : 1_800,
+    maxOutputTokens: realizerOutputBudget(args.depth, args.claims.length),
     timeoutMs: 240_000,
   };
+}
+
+function realizerOutputBudget(depth: string, claimCount: number) {
+  const base =
+    depth === 'IDENTITY_ONLY'
+      ? 700
+      : depth === 'BASIC_EXPLANATION'
+        ? 1_400
+        : depth === 'EDITORIAL_ENTRY'
+          ? 2_800
+          : depth === 'CONTEXTUAL_ESSAY'
+            ? 4_800
+            : 5_600;
+  return Math.min(base, Math.max(700, 700 + claimCount * 500));
 }
 
 function sentenceSchema(claimIds?: string[]) {
