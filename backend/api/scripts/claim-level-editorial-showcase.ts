@@ -299,8 +299,8 @@ async function main() {
       OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL ?? 'http://127.0.0.1:11434',
     }),
   );
-  if (!writer.isAvailable() || writer.metadata().model !== 'qwen3.8:27b')
-    throw new Error('Run with AI_PROVIDER=ollama AI_MODEL=qwen3.8:27b');
+  if (!writer.isAvailable() || !['qwen3.8:27b', 'qwen2.5:14b'].includes(writer.metadata().model))
+    throw new Error('Run with AI_PROVIDER=ollama AI_MODEL=qwen3.8:27b or qwen2.5:14b');
   mkdirSync(outputDir, { recursive: true });
 
   for (const slug of slugs) {

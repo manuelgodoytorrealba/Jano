@@ -214,8 +214,12 @@ No menciones JANO ni el proceso.`,
       additionalProperties: false,
       required: ['definition', 'summary', 'sections'],
       properties: {
-        definition: sentenceSchema(),
-        summary: { type: 'array', items: sentenceSchema(), minItems: 1 },
+        definition: sentenceSchema(args.claims.map((claim) => claim.id)),
+        summary: {
+          type: 'array',
+          items: sentenceSchema(args.claims.map((claim) => claim.id)),
+          minItems: 1,
+        },
         sections: {
           type: 'array',
           minItems: ['IDENTITY_ONLY', 'BASIC_EXPLANATION'].includes(args.depth) ? 0 : 1,
@@ -225,7 +229,10 @@ No menciones JANO ni el proceso.`,
             required: ['heading', 'sentences'],
             properties: {
               heading: { type: 'string' },
-              sentences: { type: 'array', items: sentenceSchema() },
+              sentences: {
+                type: 'array',
+                items: sentenceSchema(args.claims.map((claim) => claim.id)),
+              },
             },
           },
         },
@@ -236,7 +243,7 @@ No menciones JANO ni el proceso.`,
   };
 }
 
-function sentenceSchema() {
+function sentenceSchema(claimIds?: string[]) {
   return {
     type: 'object',
     additionalProperties: false,
@@ -244,7 +251,11 @@ function sentenceSchema() {
     properties: {
       id: { type: 'string' },
       text: { type: 'string' },
-      claimIds: { type: 'array', items: { type: 'string' }, minItems: 1 },
+      claimIds: {
+        type: 'array',
+        items: claimIds?.length ? { type: 'string', enum: claimIds } : { type: 'string' },
+        minItems: 1,
+      },
     },
   };
 }

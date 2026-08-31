@@ -1,5 +1,6 @@
 import {
   editorialContextFingerprint,
+  buildEditorialRealizerRequest,
   normalizeMappedSentenceIds,
   normalizeRichLinks,
   buildUncertainSentenceRepairRequest,
@@ -177,6 +178,34 @@ describe('claim-level editorial provenance', () => {
         [],
       ),
     ).toThrow('unsupported connective');
+  });
+
+  it('closes realizer claim references to the accepted claim enum', () => {
+    const request = buildEditorialRealizerRequest({
+      entity,
+      claims: [claim, { ...claim, id: 'c2' }, { ...claim, id: 'c3' }],
+      linkableEntities: [],
+      depth: 'IDENTITY_ONLY',
+      locale: 'es',
+    });
+    const items = request.outputSchema.properties.definition.properties.claimIds.items;
+    expect(items).toEqual({ type: 'string', enum: ['c1', 'c2', 'c3'] });
+    expect(() =>
+      validateSingleMappedSentence(
+        { id: 's', text: 'Pablo Picasso fue un artista.', claimIds: ['c4'] },
+        [claim],
+        entity,
+        [],
+      ),
+    ).toThrow('unknown claim');
+    expect(
+      validateSingleMappedSentence(
+        { id: 's', text: 'Pablo Picasso fue un artista.', claimIds: ['c1'] },
+        [claim],
+        entity,
+        [],
+      ).claimIds,
+    ).toEqual(['c1']);
   });
 
   it('builds a single constrained repair request', () => {
