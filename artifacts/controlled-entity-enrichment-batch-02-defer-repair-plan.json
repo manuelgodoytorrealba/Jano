@@ -1,0 +1,494 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "items": [
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-02",
+      "deferActions": [
+        "REPAIR_PROPOSITION",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere REPAIR_PROPOSITION, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Picasso era el artista de mayor relevancia internacional en ese momento, y su colaboración con el Gobierno de la República sirvió como reclamo.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-03",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "REROUTE_ENTITY"
+      ],
+      "why": "Requiere SPLIT_CLAIMS, REROUTE_ENTITY antes de volver a validarse.",
+      "potentialTarget": "Guernica",
+      "originalProposition": "Guernica es un ejercicio pictórico inédito en la trayectoria de Pablo Picasso y se reconoció rápidamente su poder icónico como instrumento de propaganda política durante la Guerra Civil.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-04",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere SPLIT_CLAIMS, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-05",
+      "deferActions": [
+        "RESOLVE_CONTEXT",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere RESOLVE_CONTEXT, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Pablo Picasso se integró en la modernidad tanto como pintor como ilustrador.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-06",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION",
+        "RESOLVE_CONTEXT"
+      ],
+      "why": "Requiere SPLIT_CLAIMS, NORMALIZE_DIMENSION, RESOLVE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Instalado en París en 1904, enseguida se convirtió en una figura de referencia que ocupó a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas, quienes reconocieron en su trabajo la expresión de un lenguaje nuevo por romper con los sistemas de representación tradicionales.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-07",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere SPLIT_CLAIMS, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "La vida, casas, estudios y talleres de Pablo Picasso, así como su trayectoria, son fundamentales para comprender la historia del arte moderno y su influencia persiste en artistas contemporáneos.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-08",
+      "deferActions": [
+        "RESOLVE_CONTEXT"
+      ],
+      "why": "Requiere RESOLVE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Pablo Picasso trabajó con una amplia diversidad de materiales, medios y soportes a lo largo de su carrera.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-09",
+      "deferActions": [
+        "NORMALIZE_DIMENSION",
+        "RESOLVE_CONTEXT"
+      ],
+      "why": "Requiere NORMALIZE_DIMENSION, RESOLVE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-10",
+      "deferActions": [
+        "NORMALIZE_DIMENSION",
+        "RESOLVE_CONTEXT"
+      ],
+      "why": "Requiere NORMALIZE_DIMENSION, RESOLVE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Dentro de los parámetros de la figuración en los que trabajó en el conjunto de su obra predominan tres líneas temáticas: el retrato, las naturalezas muertas y los interiores con personas, en los que el tema del pintor y la modelo y sus variantes ocupan un lugar destacado.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso"
+      },
+      "reviewItemId": "first-real-10-12",
+      "deferActions": [
+        "REROUTE_ENTITY",
+        "REROUTE_RELATION"
+      ],
+      "why": "Requiere REROUTE_ENTITY, REROUTE_RELATION antes de volver a validarse.",
+      "potentialTarget": "Guernica / Cubismo",
+      "originalProposition": null,
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo"
+      },
+      "reviewItemId": "first-real-10-14",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere SPLIT_CLAIMS, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Cubism\nCubism was a revolutionary new approach to representing reality invented in around 1907–08 by artists Pablo Picasso and Georges Braque.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo"
+      },
+      "reviewItemId": "first-real-10-18",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere SPLIT_CLAIMS, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Cubism opened up almost infinite new possibilities for the treatment of visual reality in art and was the starting point for many later abstract styles including constructivism and neo-plasticism .",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo"
+      },
+      "reviewItemId": "first-real-10-19",
+      "deferActions": [
+        "REPAIR_PROPOSITION",
+        "RESOLVE_CONTEXT"
+      ],
+      "why": "Requiere REPAIR_PROPOSITION, RESOLVE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": null,
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo"
+      },
+      "reviewItemId": "first-real-10-20",
+      "deferActions": [
+        "RESOLVE_CONTEXT"
+      ],
+      "why": "Requiere RESOLVE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "El Cubismo enfatizaba la dosdimensionalidad plana de la tela en lugar de crear la ilusión de profundidad.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo"
+      },
+      "reviewItemId": "first-real-10-21",
+      "deferActions": [
+        "NORMALIZE_QUOTE",
+        "REPAIR_PROPOSITION",
+        "RESOLVE_CONTEXT"
+      ],
+      "why": "Requiere NORMALIZE_QUOTE, REPAIR_PROPOSITION, RESOLVE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "El Cubismo marcó una ruptura revolucionaria con la tradición europea de crear la ilusión de espacio real desde una perspectiva fija, utilizando dispositivos como la perspectiva lineal, que había dominado la representación desde el Renacimiento en adelante.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo"
+      },
+      "reviewItemId": "first-real-10-23",
+      "deferActions": [
+        "REROUTE_ENTITY",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere REROUTE_ENTITY, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": "Pablo Picasso",
+      "originalProposition": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo"
+      },
+      "reviewItemId": "first-real-10-24",
+      "deferActions": [
+        "NORMALIZE_QUOTE",
+        "REPAIR_PROPOSITION"
+      ],
+      "why": "Requiere NORMALIZE_QUOTE, REPAIR_PROPOSITION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "El cubismo se desarrolló en dos fases distintas: la fase analítica inicial y austera, y una fase posterior conocida como cubismo sintético.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo"
+      },
+      "reviewItemId": "first-real-10-25",
+      "deferActions": [
+        "RESOLVE_CONTEXT",
+        "REROUTE_ENTITY"
+      ],
+      "why": "Requiere RESOLVE_CONTEXT, REROUTE_ENTITY antes de volver a validarse.",
+      "potentialTarget": "Cubismo analítico",
+      "originalProposition": "Its artworks look more severe and are made up of an interweaving of planes and lines in muted tones of blacks, greys and ochres.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxiey00ko85sjzcckqm33",
+        "title": "Tapiz de Bayeux"
+      },
+      "reviewItemId": "first-real-10-29",
+      "deferActions": [
+        "REPAIR_PROPOSITION",
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere REPAIR_PROPOSITION, SPLIT_CLAIMS, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "See more news \nThe Bayeux Tapestry, a unique artefact created in the 11th century\nStep into the engrossing story of the conquest of England by William, Duke of Normandy in 1066, told in a 70 meters long embroidery.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxif800ku85sjmrawpu0e",
+        "title": "El nacimiento de Venus"
+      },
+      "reviewItemId": "first-real-10-33",
+      "deferActions": [
+        "RESOLVE_CONTEXT"
+      ],
+      "why": "Requiere RESOLVE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "El nacimiento de Venus muestra a la diosa sobre una gran concha de vieira, pura y perfecta como una perla.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxif800ku85sjmrawpu0e",
+        "title": "El nacimiento de Venus"
+      },
+      "reviewItemId": "first-real-10-35",
+      "deferActions": [
+        "REPAIR_PROPOSITION"
+      ],
+      "why": "Requiere REPAIR_PROPOSITION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "El nacimiento de Venus es recibido por una joven mujer, a veces identificada como una de las Gracias o como la Hora de la primavera, quien sostiene un manto cubierto de flores.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxif800ku85sjmrawpu0e",
+        "title": "El nacimiento de Venus"
+      },
+      "reviewItemId": "first-real-10-37",
+      "deferActions": [
+        "REPAIR_PROPOSITION",
+        "NORMALIZE_DIMENSION"
+      ],
+      "why": "Requiere REPAIR_PROPOSITION, NORMALIZE_DIMENSION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "El nacimiento de Venus, que celebra a Venus como símbolo de amor y belleza, pudo haber sido sugerido por el poeta Agnolo Poliziano.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxif800ku85sjmrawpu0e",
+        "title": "El nacimiento de Venus"
+      },
+      "reviewItemId": "first-real-10-39",
+      "deferActions": [
+        "REPAIR_PROPOSITION"
+      ],
+      "why": "Requiere REPAIR_PROPOSITION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": null,
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxif800ku85sjmrawpu0e",
+        "title": "El nacimiento de Venus"
+      },
+      "reviewItemId": "first-real-10-41",
+      "deferActions": [
+        "RESOLVE_CONTEXT",
+        "REPAIR_PROPOSITION"
+      ],
+      "why": "Requiere RESOLVE_CONTEXT, REPAIR_PROPOSITION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": null,
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxif800ku85sjmrawpu0e",
+        "title": "El nacimiento de Venus"
+      },
+      "reviewItemId": "first-real-10-45",
+      "deferActions": [
+        "SPLIT_CLAIMS"
+      ],
+      "why": "Requiere SPLIT_CLAIMS antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "El nacimiento de Venus toma su inspiración de estatuas clásicas para la pose modesta de Venus, quien cubre su desnudez con su larga cabellera rubia, que refleja luz debido a que ha sido dorada; incluso los Vientos, la pareja que vuela abrazándose, está basada en una obra antigua, una joya del período helenístico, propiedad de Lorenzo el Magnífico.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxi6400fl85sj2tu79wx0",
+        "title": "Sandro Botticelli"
+      },
+      "reviewItemId": "first-real-10-46",
+      "deferActions": [
+        "SPLIT_CLAIMS"
+      ],
+      "why": "Requiere SPLIT_CLAIMS antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "Sandro Botticelli tomó su inspiración de estatuas clásicas para la pose modesta de Venus, cubriendo su desnudez con largos cabellos dorados, y los Vientos, que vuelan abrazándose, están basados en una obra antigua del período helenístico.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxif800ku85sjmrawpu0e",
+        "title": "El nacimiento de Venus"
+      },
+      "reviewItemId": "first-real-10-47",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "REPAIR_PROPOSITION"
+      ],
+      "why": "Requiere SPLIT_CLAIMS, REPAIR_PROPOSITION antes de volver a validarse.",
+      "potentialTarget": null,
+      "originalProposition": "El nacimiento de Venus es una obra de Sandro Botticelli que se encuentra en el Uffizi y está etiquetada como perteneciente a la época renacentista de Florencia en el siglo XV.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxig500ld85sj2uzez8t2",
+        "title": "El entierro del conde de Orgaz"
+      },
+      "reviewItemId": "first-real-10-52",
+      "deferActions": [
+        "REROUTE_ENTITY"
+      ],
+      "why": "Requiere REROUTE_ENTITY antes de volver a validarse.",
+      "potentialTarget": "Iglesia de Santo Tomé",
+      "originalProposition": null,
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxig500ld85sj2uzez8t2",
+        "title": "El entierro del conde de Orgaz"
+      },
+      "reviewItemId": "first-real-10-53",
+      "deferActions": [
+        "REROUTE_ENTITY",
+        "REROUTE_RELATION"
+      ],
+      "why": "Requiere REROUTE_ENTITY, REROUTE_RELATION antes de volver a validarse.",
+      "potentialTarget": "Don Gonzalo Ruiz de Toledo",
+      "originalProposition": "Don Gonzalo Ruiz de Toledo, notario mayor de Castilla y señor de la villa de Orgaz, destacó por sus generosas obras de caridad, contribuyendo a la reconstrucción de iglesias parroquiales como ésta, San Justo y San Bartolomé y construyendo a sus expensas la iglesia de San Esteban del convento de los agustinos.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxig500ld85sj2uzez8t2",
+        "title": "El entierro del conde de Orgaz"
+      },
+      "reviewItemId": "first-real-10-54",
+      "deferActions": [
+        "REROUTE_ENTITY",
+        "NEEDS_MORE_SOURCE_CONTEXT"
+      ],
+      "why": "Requiere REROUTE_ENTITY, NEEDS_MORE_SOURCE_CONTEXT antes de volver a validarse.",
+      "potentialTarget": "Don Gonzalo Ruiz de Toledo",
+      "originalProposition": "El testamento del señor de Orgaz incluía donaciones anuales a la iglesia de Orgaz, consistente en 2 carneros, 2 pellejos de vino, 2 cargas de leña, 16 gallinas y 800 maravedíes para sostener a los sacerdotes y los pobres de la parroquia.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxig500ld85sj2uzez8t2",
+        "title": "El entierro del conde de Orgaz"
+      },
+      "reviewItemId": "first-real-10-55",
+      "deferActions": [
+        "NEEDS_MORE_SOURCE_CONTEXT",
+        "REROUTE_RELATION"
+      ],
+      "why": "Requiere NEEDS_MORE_SOURCE_CONTEXT, REROUTE_RELATION antes de volver a validarse.",
+      "potentialTarget": "Milagro del entierro del señor de Orgaz",
+      "originalProposition": "La tradición cuenta que en 1327, durante la liturgia de difuntos, san Agustín y san Esteban depositaron el cuerpo del señor de Orgaz en su capilla de Santo Tomé.",
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxig500ld85sj2uzez8t2",
+        "title": "El entierro del conde de Orgaz"
+      },
+      "reviewItemId": "first-real-10-56",
+      "deferActions": [
+        "REROUTE_ENTITY"
+      ],
+      "why": "Requiere REROUTE_ENTITY antes de volver a validarse.",
+      "potentialTarget": "Iglesia de Santo Tomé",
+      "originalProposition": null,
+      "status": "PENDING"
+    },
+    {
+      "entity": {
+        "id": "cmsvvxig500ld85sj2uzez8t2",
+        "title": "El entierro del conde de Orgaz"
+      },
+      "reviewItemId": "first-real-10-60",
+      "deferActions": [
+        "REROUTE_ENTITY",
+        "REROUTE_RELATION"
+      ],
+      "why": "Requiere REROUTE_ENTITY, REROUTE_RELATION antes de volver a validarse.",
+      "potentialTarget": "Iglesia de Santo Tomé",
+      "originalProposition": "A comienzos del siglo XVI, se decide reformar la cabecera de la iglesia donde se encuentra 'El entierro del conde de Orgaz', ampliando la capilla mayor y cubriéndola con bóvedas de crucería del último gótico.",
+      "status": "PENDING"
+    }
+  ]
+}
