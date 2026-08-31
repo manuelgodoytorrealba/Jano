@@ -4,88 +4,76 @@
     "title": "Arte conceptual"
   },
   "currentSummary": null,
-  "proposedSummary": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final. El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto. El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria. El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+  "proposedSummary": "El arte conceptual coloca la idea o el concepto en el centro de la obra, por encima del objeto artístico final. Una referencia temprana al término aparece en un artículo de Sol LeWitt de 1967. En esta práctica, las decisiones y la planificación preceden a una ejecución más secundaria, y el artista puede escoger cualquier material o forma adecuada para comunicar la idea.",
   "currentContent": null,
-  "proposedContent": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final. El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto. El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria. El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+  "proposedContent": "El arte conceptual coloca la idea o el concepto en el centro de la obra, por encima del objeto artístico final. Una referencia temprana al término aparece en un artículo de Sol LeWitt de 1967. En esta práctica, las decisiones y la planificación preceden a una ejecución más secundaria, y el artista puede escoger cualquier material o forma adecuada para comunicar la idea.\n\nEsta prioridad de la idea modifica también la forma de trabajar: la planificación y las decisiones se toman antes de una ejecución que no concentra todo el sentido de la obra. Por eso los materiales y las formas no están fijados de antemano; pueden ir desde una performance hasta una descripción escrita, según lo que la idea necesite.",
   "currentContentLevel": "INTERMEDIATE",
-  "proposedContentLevel": "BASIC_EXPLANATION",
-  "newCanonicalKnowledgeUsed": [
+  "proposedContentLevel": "INTERMEDIATE",
+  "claims": [
     {
-      "claimId": "first-real-10-13",
-      "statement": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final.",
-      "provenanceRefs": [
-        "SOURCE_REF:cmthiuznx00000mfp1o1oqvae",
-        "CITATION:cmthiuzo000010mfp1yjxyl8s"
-      ]
+      "id": "C13",
+      "statement": "El arte conceptual sitúa la idea o el concepto por encima del objeto artístico final.",
+      "provenance": "cmthiuznx00000mfp1o1oqvae"
     },
     {
-      "claimId": "first-real-10-15",
-      "statement": "El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto.",
-      "provenanceRefs": [
-        "SOURCE_REF:cmthiuzo600020mfpnhddwzj9",
-        "CITATION:cmthiuzo800030mfpn8ss3hlt"
-      ]
+      "id": "C15",
+      "statement": "Una referencia temprana al uso del término «arte conceptual» aparece en un artículo de Sol LeWitt de 1967.",
+      "provenance": "cmthiuzo600020mfpnhddwzj9"
     },
     {
-      "claimId": "first-real-10-16",
-      "statement": "El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria.",
-      "provenanceRefs": [
-        "SOURCE_REF:cmthiuzoa00040mfpmmyyzcy7",
-        "CITATION:cmthiuzob00050mfp0sfzrcr2"
-      ]
+      "id": "C16",
+      "statement": "En esta práctica, la planificación y las decisiones preceden a una ejecución que ocupa un papel más secundario.",
+      "provenance": "cmthiuzoa00040mfpmmyyzcy7"
     },
     {
-      "claimId": "first-real-10-18",
-      "statement": "El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
-      "provenanceRefs": [
-        "SOURCE_REF:cmthiuzod00060mfpm8f8a0ym",
-        "CITATION:cmthiuzoe00070mfp14u1l2y5"
-      ]
+      "id": "C18",
+      "statement": "El artista conceptual puede elegir el material y la forma más adecuados para comunicar una idea, desde una performance hasta una descripción escrita.",
+      "provenance": "cmthiuzod00060mfpm8f8a0ym"
     }
   ],
   "claimMap": [
     {
-      "claimId": "first-real-10-13",
-      "statement": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final.",
-      "provenanceRefs": [
-        "SOURCE_REF:cmthiuznx00000mfp1o1oqvae",
-        "CITATION:cmthiuzo000010mfp1yjxyl8s"
+      "sentenceId": "S1",
+      "text": "El arte conceptual coloca la idea o el concepto en el centro de la obra, por encima del objeto artístico final.",
+      "claimIds": [
+        "C13"
       ]
     },
     {
-      "claimId": "first-real-10-15",
-      "statement": "El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto.",
-      "provenanceRefs": [
-        "SOURCE_REF:cmthiuzo600020mfpnhddwzj9",
-        "CITATION:cmthiuzo800030mfpn8ss3hlt"
+      "sentenceId": "S2",
+      "text": "Una referencia temprana al término aparece en un artículo de Sol LeWitt de 1967.",
+      "claimIds": [
+        "C15"
       ]
     },
     {
-      "claimId": "first-real-10-16",
-      "statement": "El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria.",
-      "provenanceRefs": [
-        "SOURCE_REF:cmthiuzoa00040mfpmmyyzcy7",
-        "CITATION:cmthiuzob00050mfp0sfzrcr2"
+      "sentenceId": "S3",
+      "text": "En esta práctica, las decisiones y la planificación se toman antes de una ejecución que no concentra todo el sentido de la obra.",
+      "claimIds": [
+        "C16"
       ]
     },
     {
-      "claimId": "first-real-10-18",
-      "statement": "El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
-      "provenanceRefs": [
-        "SOURCE_REF:cmthiuzod00060mfpm8f8a0ym",
-        "CITATION:cmthiuzoe00070mfp14u1l2y5"
+      "sentenceId": "S4",
+      "text": "Por eso los materiales y las formas no están fijados de antemano; pueden ir desde una performance hasta una descripción escrita, según lo que la idea necesite.",
+      "claimIds": [
+        "C18"
       ]
     }
   ],
   "validation": {
-    "supportedSentences": 4,
-    "uncertainSentences": 0,
-    "unsupportedSentences": 0,
+    "supported": 4,
+    "uncertain": 0,
+    "unsupported": 0,
     "unknownProvenance": 0,
-    "invalidLinks": 0,
+    "invalidNumber": 0,
+    "invalidDate": 0,
+    "invalidLink": 0,
     "selfLinks": 0,
+    "uncertaintyLoss": 0,
+    "privateResearchInput": 0,
     "model": "qwen2.5:14b",
-    "note": "Preview is claim-constrained; editorial content is not applied."
+    "input": "canonical knowledge only"
   },
-  "contextFingerprint": "76b4659015e71175961c6a19d0283f30c2b56f4cf40753331d76643304d4ce0c"
+  "contextFingerprint": "2eaaf08034d47be854216a1a1c0f1938acaa4efb867160341c30247d8ee8f6e4"
 }
