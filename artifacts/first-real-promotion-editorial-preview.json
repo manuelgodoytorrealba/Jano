@@ -1,0 +1,91 @@
+{
+  "entity": {
+    "id": "cmsumr74z003rodfppy1l9peb",
+    "title": "Arte conceptual"
+  },
+  "currentSummary": null,
+  "proposedSummary": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final. El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto. El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria. El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+  "currentContent": null,
+  "proposedContent": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final. El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto. El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria. El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+  "currentContentLevel": "INTERMEDIATE",
+  "proposedContentLevel": "BASIC_EXPLANATION",
+  "newCanonicalKnowledgeUsed": [
+    {
+      "claimId": "first-real-10-13",
+      "statement": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final.",
+      "provenanceRefs": [
+        "SOURCE_REF:cmthiuznx00000mfp1o1oqvae",
+        "CITATION:cmthiuzo000010mfp1yjxyl8s"
+      ]
+    },
+    {
+      "claimId": "first-real-10-15",
+      "statement": "El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto.",
+      "provenanceRefs": [
+        "SOURCE_REF:cmthiuzo600020mfpnhddwzj9",
+        "CITATION:cmthiuzo800030mfpn8ss3hlt"
+      ]
+    },
+    {
+      "claimId": "first-real-10-16",
+      "statement": "El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria.",
+      "provenanceRefs": [
+        "SOURCE_REF:cmthiuzoa00040mfpmmyyzcy7",
+        "CITATION:cmthiuzob00050mfp0sfzrcr2"
+      ]
+    },
+    {
+      "claimId": "first-real-10-18",
+      "statement": "El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+      "provenanceRefs": [
+        "SOURCE_REF:cmthiuzod00060mfpm8f8a0ym",
+        "CITATION:cmthiuzoe00070mfp14u1l2y5"
+      ]
+    }
+  ],
+  "claimMap": [
+    {
+      "claimId": "first-real-10-13",
+      "statement": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final.",
+      "provenanceRefs": [
+        "SOURCE_REF:cmthiuznx00000mfp1o1oqvae",
+        "CITATION:cmthiuzo000010mfp1yjxyl8s"
+      ]
+    },
+    {
+      "claimId": "first-real-10-15",
+      "statement": "El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto.",
+      "provenanceRefs": [
+        "SOURCE_REF:cmthiuzo600020mfpnhddwzj9",
+        "CITATION:cmthiuzo800030mfpn8ss3hlt"
+      ]
+    },
+    {
+      "claimId": "first-real-10-16",
+      "statement": "El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria.",
+      "provenanceRefs": [
+        "SOURCE_REF:cmthiuzoa00040mfpmmyyzcy7",
+        "CITATION:cmthiuzob00050mfp0sfzrcr2"
+      ]
+    },
+    {
+      "claimId": "first-real-10-18",
+      "statement": "El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+      "provenanceRefs": [
+        "SOURCE_REF:cmthiuzod00060mfpm8f8a0ym",
+        "CITATION:cmthiuzoe00070mfp14u1l2y5"
+      ]
+    }
+  ],
+  "validation": {
+    "supportedSentences": 4,
+    "uncertainSentences": 0,
+    "unsupportedSentences": 0,
+    "unknownProvenance": 0,
+    "invalidLinks": 0,
+    "selfLinks": 0,
+    "model": "qwen2.5:14b",
+    "note": "Preview is claim-constrained; editorial content is not applied."
+  },
+  "contextFingerprint": "76b4659015e71175961c6a19d0283f30c2b56f4cf40753331d76643304d4ce0c"
+}

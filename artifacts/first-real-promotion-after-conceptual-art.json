@@ -1,0 +1,153 @@
+{
+  "entity": {
+    "id": "cmsumr74z003rodfppy1l9peb",
+    "type": "MOVEMENT",
+    "kind": "ABSTRACTION",
+    "title": "Arte conceptual",
+    "slug": "arte-conceptual",
+    "summary": null,
+    "content": null,
+    "contentLevel": "INTERMEDIATE",
+    "status": "PUBLISHED",
+    "startYear": null,
+    "endYear": null,
+    "createdAt": "2026-08-15T17:08:41.315Z",
+    "updatedAt": "2026-08-22T15:37:15.198Z",
+    "sourceRefs": [
+      {
+        "id": "cmt4kt35l0009vwfp5qx0oncb",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "page": null,
+        "quote": null,
+        "note": "Institutional or curatorial reference for movement context."
+      },
+      {
+        "id": "cmthiuznx00000mfp1o1oqvae",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "page": "paragraph-1",
+        "quote": "Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art object.",
+        "note": "[DEFINITION_OR_IDENTITY] El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final."
+      },
+      {
+        "id": "cmthiuzo600020mfpnhddwzj9",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "page": "paragraph-5",
+        "quote": "The term conceptual art was first used to reference this distinct movement in an article written by Sol LeWitt in 1967: In conceptual art the idea or concept is the most important aspect of the work.",
+        "note": "[CHRONOLOGY] El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto."
+      },
+      {
+        "id": "cmthiuzoa00040mfpmmyyzcy7",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "page": "paragraph-6",
+        "quote": "When an artist uses a conceptual form of art, it means that all of the planning and decisions are made beforehand and the execution is a perfunctory affair.",
+        "note": "[PRACTICE_OR_METHOD] El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria."
+      },
+      {
+        "id": "cmthiuzod00060mfpm8f8a0ym",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "page": "paragraph-10",
+        "quote": "This is because, unlike a painter or sculptor who will think about how best they can express their idea using paint or sculptural materials and techniques, a conceptual artist uses whatever materials and whatever form is most appropriate to putting their idea across – this could be anything from a performance to a written description.",
+        "note": "[PRACTICE_OR_METHOD] El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita."
+      }
+    ],
+    "citations": [
+      {
+        "id": "cmthiuzo000010mfp1yjxyl8s",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "relationId": null,
+        "entityAttributeId": null,
+        "researchEvidenceId": "cmthi6rio0000wlfp8f9o01ev",
+        "stance": "SUPPORTS",
+        "locator": "paragraph-1",
+        "quote": "Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art object.",
+        "note": "[DEFINITION_OR_IDENTITY] El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final.",
+        "createdAt": "2026-08-31T17:38:21.840Z",
+        "updatedAt": "2026-08-31T17:38:21.840Z"
+      },
+      {
+        "id": "cmthiuzo800030mfpn8ss3hlt",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "relationId": null,
+        "entityAttributeId": null,
+        "researchEvidenceId": "cmthi6riu0001wlfpofes756e",
+        "stance": "SUPPORTS",
+        "locator": "paragraph-5",
+        "quote": "The term conceptual art was first used to reference this distinct movement in an article written by Sol LeWitt in 1967: In conceptual art the idea or concept is the most important aspect of the work.",
+        "note": "[CHRONOLOGY] El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto.",
+        "createdAt": "2026-08-31T17:38:21.848Z",
+        "updatedAt": "2026-08-31T17:38:21.848Z"
+      },
+      {
+        "id": "cmthiuzob00050mfp0sfzrcr2",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "relationId": null,
+        "entityAttributeId": null,
+        "researchEvidenceId": "cmthi6riy0002wlfp50rvoufk",
+        "stance": "SUPPORTS",
+        "locator": "paragraph-6",
+        "quote": "When an artist uses a conceptual form of art, it means that all of the planning and decisions are made beforehand and the execution is a perfunctory affair.",
+        "note": "[PRACTICE_OR_METHOD] El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria.",
+        "createdAt": "2026-08-31T17:38:21.851Z",
+        "updatedAt": "2026-08-31T17:38:21.851Z"
+      },
+      {
+        "id": "cmthiuzoe00070mfp14u1l2y5",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "relationId": null,
+        "entityAttributeId": null,
+        "researchEvidenceId": "cmthi6rj20003wlfpu9u4c0qu",
+        "stance": "SUPPORTS",
+        "locator": "paragraph-10",
+        "quote": "This is because, unlike a painter or sculptor who will think about how best they can express their idea using paint or sculptural materials and techniques, a conceptual artist uses whatever materials and whatever form is most appropriate to putting their idea across – this could be anything from a performance to a written description.",
+        "note": "[PRACTICE_OR_METHOD] El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+        "createdAt": "2026-08-31T17:38:21.854Z",
+        "updatedAt": "2026-08-31T17:38:21.854Z"
+      }
+    ],
+    "attributes": []
+  },
+  "knowledgeAdded": [
+    {
+      "item": "first-real-10-13",
+      "knowledgeStatus": "ADDITIONAL_PROVENANCE",
+      "promotionAction": "ADDED_PROVENANCE",
+      "canonicalKnowledgeId": "cmthiuznx00000mfp1o1oqvae",
+      "citationId": "cmthiuzo000010mfp1yjxyl8s",
+      "status": "APPLIED"
+    },
+    {
+      "item": "first-real-10-15",
+      "knowledgeStatus": "ADDITIONAL_PROVENANCE",
+      "promotionAction": "ADDED_PROVENANCE",
+      "canonicalKnowledgeId": "cmthiuzo600020mfpnhddwzj9",
+      "citationId": "cmthiuzo800030mfpn8ss3hlt",
+      "status": "APPLIED"
+    },
+    {
+      "item": "first-real-10-16",
+      "knowledgeStatus": "ADDITIONAL_PROVENANCE",
+      "promotionAction": "ADDED_PROVENANCE",
+      "canonicalKnowledgeId": "cmthiuzoa00040mfpmmyyzcy7",
+      "citationId": "cmthiuzob00050mfp0sfzrcr2",
+      "status": "APPLIED"
+    },
+    {
+      "item": "first-real-10-18",
+      "knowledgeStatus": "ADDITIONAL_PROVENANCE",
+      "promotionAction": "ADDED_PROVENANCE",
+      "canonicalKnowledgeId": "cmthiuzod00060mfpm8f8a0ym",
+      "citationId": "cmthiuzoe00070mfp14u1l2y5",
+      "status": "APPLIED"
+    }
+  ],
+  "contextFingerprint": "76b4659015e71175961c6a19d0283f30c2b56f4cf40753331d76643304d4ce0c"
+}

@@ -1,0 +1,30 @@
+{
+  "entity": {
+    "id": "cmsumr74z003rodfppy1l9peb",
+    "type": "MOVEMENT",
+    "kind": "ABSTRACTION",
+    "title": "Arte conceptual",
+    "slug": "arte-conceptual",
+    "summary": null,
+    "content": null,
+    "contentLevel": "INTERMEDIATE",
+    "status": "PUBLISHED",
+    "startYear": null,
+    "endYear": null,
+    "createdAt": "2026-08-15T17:08:41.315Z",
+    "updatedAt": "2026-08-22T15:37:15.198Z",
+    "sourceRefs": [
+      {
+        "id": "cmt4kt35l0009vwfp5qx0oncb",
+        "entityId": "cmsumr74z003rodfppy1l9peb",
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "page": null,
+        "quote": null,
+        "note": "Institutional or curatorial reference for movement context."
+      }
+    ],
+    "citations": [],
+    "attributes": []
+  },
+  "contextFingerprint": "pre-promotion-reconstructed-from-audit"
+}
