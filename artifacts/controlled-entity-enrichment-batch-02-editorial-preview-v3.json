@@ -1,0 +1,21 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "input": "canonical knowledge only",
+  "previews": [
+    {
+      "slug": "pablo-picasso",
+      "status": "WRITER_RUNTIME_BLOCKED",
+      "error": "PREVIEW_MISSING"
+    },
+    {
+      "slug": "cubismo",
+      "status": "WRITER_RUNTIME_BLOCKED",
+      "error": "PREVIEW_MISSING"
+    },
+    {
+      "slug": "el-nacimiento-de-venus",
+      "status": "WRITER_RUNTIME_BLOCKED",
+      "error": "PREVIEW_MISSING"
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import {
   buildClaimPlannerRequest,
   buildDefinitionRepairRequest,
   buildEditorialRealizerRequest,
+  buildClaimLockedSentenceRequest,
   buildSentenceEntailmentRequest,
   buildUncertainSentenceRepairRequest,
   editorialContextFingerprint,
@@ -403,18 +404,30 @@ async function main() {
           }),
         );
 
-      const realizerResult = await writer.runStructured(
-        buildEditorialRealizerRequest({
-          entity: canonicalEntity,
-          claims: accepted,
-          linkableEntities,
-          depth,
-          locale: 'es',
-        }),
-      );
-      const mappedOutput = normalizeMappedSentenceIds(
-        realizerResult.output as MappedEditorialOutput,
-      );
+      const realized = [] as MappedSentence[];
+      for (const claim of accepted) {
+        const result = await writer.runStructured(
+          buildClaimLockedSentenceRequest({
+            entity: canonicalEntity,
+            claim,
+            allowedLinkedEntities: linkableEntities,
+            locale: 'es',
+          }),
+        );
+        const output = result.output as { claimId: string; sentence: string };
+        if (output.claimId !== claim.id || !output.sentence?.trim())
+          throw new Error('Invalid per-claim realization');
+        realized.push({
+          id: `claim-${realized.length + 1}`,
+          text: output.sentence.trim(),
+          claimIds: [claim.id],
+        });
+      }
+      const mappedOutput: MappedEditorialOutput = {
+        definition: realized[0],
+        summary: realized.slice(0, Math.min(3, realized.length)),
+        sections: [{ heading: 'Contexto', sentences: realized.slice(1) }],
+      };
       let sentences;
       try {
         sentences = validateMappedEditorialOutput(

@@ -260,6 +260,38 @@ No menciones JANO ni el proceso.`,
   };
 }
 
+export function buildClaimLockedSentenceRequest(args: {
+  entity: EditorialEntity;
+  claim: EditorialClaim;
+  allowedLinkedEntities: EditorialLinkableEntity[];
+  locale: string;
+}) {
+  return {
+    schemaVersion: `${CLAIM_REALIZER_VERSION}-per-claim`,
+    task: `Reescribe UN SOLO claim canónico como UNA sola frase natural en español. Devuelve únicamente claimId y sentence. Expresa sólo la proposición dada; conserva incertidumbre, atribución, alcance, dirección de relación y precisión temporal. No añadas contexto, causalidad, nombres ni relaciones. No uses conocimiento del grafo.`,
+    input: {
+      CLAIM_ID: args.claim.id,
+      SUBJECT: args.entity.canonicalName,
+      CANONICAL_PROPOSITION: args.claim.statement,
+      CLAIM_TYPE: args.claim.claimType,
+      REQUIRED_QUALIFIERS: requiredQualifiers(args.claim.statement),
+      ALLOWED_LINKED_ENTITIES: args.allowedLinkedEntities,
+      LOCALE: args.locale,
+    },
+    outputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['claimId', 'sentence'],
+      properties: {
+        claimId: { type: 'string', const: args.claim.id },
+        sentence: { type: 'string' },
+      },
+    },
+    maxOutputTokens: 180,
+    timeoutMs: 120_000,
+  };
+}
+
 export function buildDefinitionRepairRequest(args: {
   entity: EditorialEntity;
   definition: MappedSentence;

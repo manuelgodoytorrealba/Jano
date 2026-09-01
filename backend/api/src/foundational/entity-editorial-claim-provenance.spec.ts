@@ -1,4 +1,5 @@
 import {
+  buildClaimLockedSentenceRequest,
   editorialContextFingerprint,
   buildEditorialRealizerRequest,
   normalizeMappedSentenceIds,
@@ -33,6 +34,18 @@ const claim: EditorialClaim = {
 };
 
 describe('claim-level editorial provenance', () => {
+  it('builds a one-claim, one-sentence request with a closed schema', () => {
+    const request = buildClaimLockedSentenceRequest({
+      entity,
+      claim,
+      allowedLinkedEntities: [],
+      locale: 'es',
+    });
+    expect(request.outputSchema.properties.claimId).toEqual({ type: 'string', const: 'c1' });
+    expect(request.outputSchema.properties.sentence).toEqual({ type: 'string' });
+    expect(request.maxOutputTokens).toBeLessThanOrEqual(180);
+    expect((request.input as any).CLAIM_ID).toBe('c1');
+  });
   it('rejects invented provenance and paraphrased planner claims', () => {
     expect(
       validateClaimPlan(
