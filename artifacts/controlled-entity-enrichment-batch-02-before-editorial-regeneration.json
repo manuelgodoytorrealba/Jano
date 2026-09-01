@@ -1,0 +1,114 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "createdAt": "2026-09-01T12:18:14.801Z",
+  "targets": [
+    {
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "title": "Cubismo",
+      "slug": "cubismo",
+      "summary": null,
+      "content": null,
+      "contentLevel": "INTERMEDIATE",
+      "translations": [
+        {
+          "id": "cmsvvxhgp002t85sjp86hsfbr",
+          "entityId": "cmsvvxhgm002r85sjdntcbn33",
+          "locale": "en",
+          "title": "Cubism",
+          "shortDescription": "Cubism was an investigation developed in Paris in the early twentieth century that challenged inherited perspective and the object’s stable unity. Picasso and Georges Braque fragmented forms and viewpoints to make the image a problem rather than a transparent window. In JANO, Cubism connects artists, works, and debates about representation, the modern city, and painting’s limits.",
+          "essay": null,
+          "notes": null,
+          "excerpt": null,
+          "createdAt": "2026-08-16T14:13:17.353Z",
+          "updatedAt": "2026-08-30T10:47:32.342Z"
+        },
+        {
+          "id": "cmsvvxhgn002s85sjbosyfljj",
+          "entityId": "cmsvvxhgm002r85sjdntcbn33",
+          "locale": "es",
+          "title": "Cubismo",
+          "shortDescription": "El cubismo fue una investigación desarrollada en París a comienzos del siglo XX que cuestionó la perspectiva heredada y la unidad estable del objeto. Picasso y Georges Braque fragmentaron formas y puntos de vista para construir la imagen como un problema, no como una ventana transparente. En JANO el cubismo conecta artistas, obras y debates sobre representación, ciudad moderna y los límites de la pintura.",
+          "essay": "## Contexto\n\nCubismo se presenta en JANO como un marco histórico que permite comparar sin borrar diferencias internas. La ficha evita convertir una relación editorial en una afirmación biográfica o histórica más precisa de lo que permiten los datos conservados.\n\n## Relaciones de lectura\n\nSu cronología se encuadra en Siglo XX. Modernidad ofrece una vía concreta para interpretar esta entidad. La entidad se comprende en diálogo con la influencia de Postimpresionismo. Abstracción ofrece una vía concreta para interpretar esta entidad. Violín y candela se estudia dentro de este marco. Armory Show mantiene una relación explícita con esta entidad. Pablo Picasso se estudia dentro de este marco.\n\n## Cómo continuar\n\nEl recorrido debe continuar desde las conexiones concretas de la ficha y sus fuentes. Cada relación responde a una razón visible; cuando una interpretación necesite ir más allá de esos datos, deberá incorporarse mediante revisión editorial y evidencia atribuible.",
+          "notes": null,
+          "excerpt": null,
+          "createdAt": "2026-08-16T14:13:17.351Z",
+          "updatedAt": "2026-08-30T15:05:32.350Z"
+        }
+      ],
+      "canonicalContextFingerprint": "ef533167a1262da3a0f6fcc36d141d3b920170e925efc45a36530798ead8c262",
+      "editorialFingerprint": "f19a92fd42d71144a6801b008fdffb5f26d679c00e204fba5eb81151d8a0d12d"
+    },
+    {
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "title": "Pablo Picasso",
+      "slug": "pablo-picasso",
+      "summary": null,
+      "content": null,
+      "contentLevel": "INTERMEDIATE",
+      "translations": [
+        {
+          "id": "cmsvvxi9a00he85sjyoeiqd2q",
+          "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+          "locale": "en",
+          "title": "Pablo Picasso",
+          "shortDescription": "Pablo Picasso was decisive in the reinvention of twentieth-century painting and sculpture. His work moved across markedly different registers, from Cubism to large political compositions, making formal experiment a way of thinking about the modern world. In JANO, he opens paths to Cubism, war, Paris, and works that transformed the very idea of representation.",
+          "essay": null,
+          "notes": null,
+          "excerpt": null,
+          "createdAt": "2026-08-16T14:13:18.382Z",
+          "updatedAt": "2026-08-30T10:47:33.285Z"
+        },
+        {
+          "id": "cmsvvxi9900hd85sj5pvnuce3",
+          "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+          "locale": "es",
+          "title": "Pablo Picasso",
+          "shortDescription": "Pablo Picasso fue una figura decisiva en la reinvención de la pintura y la escultura del siglo XX. Su obra atravesó registros muy distintos, desde el cubismo hasta grandes composiciones políticas, y convirtió la experimentación formal en una manera de pensar el mundo moderno. En JANO es una entrada hacia el cubismo, la guerra, París y algunas de las obras que transformaron la idea misma de representación.",
+          "essay": "## Contexto\n\nPablo Picasso (1881–1973) se presenta en JANO como una figura cultural situada mediante su producción y sus asociaciones históricas. La ficha evita convertir una relación editorial en una afirmación biográfica o histórica más precisa de lo que permiten los datos conservados.\n\n## Relaciones de lectura\n\nLa entidad se sitúa historiográficamente en relación con Cubismo. La entidad se comprende en diálogo con la influencia de Paul Cézanne. Las señoritas de Aviñón figura entre las obras atribuidas a esta entidad. Guernica figura entre las obras atribuidas a esta entidad. Georges Braque mantiene una relación explícita con esta entidad.\n\n## Cómo continuar\n\nEl recorrido debe continuar desde las conexiones concretas de la ficha y sus fuentes. Cada relación responde a una razón visible; cuando una interpretación necesite ir más allá de esos datos, deberá incorporarse mediante revisión editorial y evidencia atribuible.",
+          "notes": null,
+          "excerpt": null,
+          "createdAt": "2026-08-16T14:13:18.381Z",
+          "updatedAt": "2026-08-30T15:06:11.828Z"
+        }
+      ],
+      "canonicalContextFingerprint": "80f3df3eb8ed913344664997468903009a93809512bfe628e1cf4efaf55729a3",
+      "editorialFingerprint": "f19a92fd42d71144a6801b008fdffb5f26d679c00e204fba5eb81151d8a0d12d"
+    },
+    {
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "title": "El nacimiento de Venus",
+      "slug": "el-nacimiento-de-venus",
+      "summary": null,
+      "content": null,
+      "contentLevel": "INTERMEDIATE",
+      "translations": [
+        {
+          "id": "cmsvvxifa00kv85sjbasro1ja",
+          "entityId": "cmsvvxif800ku85sjmrawpu0e",
+          "locale": "es",
+          "title": "El nacimiento de Venus",
+          "shortDescription": "El nacimiento de Venus transforma un mito clásico en una imagen de belleza, deseo y prestigio cultural dentro de la Florencia medicea. No debe leerse sólo como una celebración abstracta de lo femenino: su cuerpo, sus referencias literarias y su circulación posterior abren preguntas sobre mirada y poder. En JANO conecta Botticelli, Renacimiento, mito, belleza y Uffizi.",
+          "essay": "## Contexto\n\nEl nacimiento de Venus (1484–1486) se presenta en JANO como una obra situada mediante datos de autoría, cronología, materialidad y contexto. La ficha evita convertir una relación editorial en una afirmación biográfica o histórica más precisa de lo que permiten los datos conservados.\n\n## Relaciones de lectura\n\nBelleza ofrece una vía concreta para interpretar esta entidad. Deseo ofrece una vía concreta para interpretar esta entidad. Vida ofrece una vía concreta para interpretar esta entidad. La autoría de la obra se atribuye a Sandro Botticelli. La entidad se sitúa historiográficamente en relación con Renacimiento italiano. Pintura al óleo figura como técnica o procedimiento empleado. Lienzo figura entre los materiales de la obra.\n\n## Cómo continuar\n\nEl recorrido debe continuar desde las conexiones concretas de la ficha y sus fuentes. Cada relación responde a una razón visible; cuando una interpretación necesite ir más allá de esos datos, deberá incorporarse mediante revisión editorial y evidencia atribuible.",
+          "notes": null,
+          "excerpt": null,
+          "createdAt": "2026-08-16T14:13:18.598Z",
+          "updatedAt": "2026-08-30T15:05:35.897Z"
+        },
+        {
+          "id": "cmsvvxifb00kw85sjycfbb0co",
+          "entityId": "cmsvvxif800ku85sjmrawpu0e",
+          "locale": "en",
+          "title": "The Birth of Venus",
+          "shortDescription": "The Birth of Venus turns a classical myth into an image of beauty, desire, and cultural prestige in Medici Florence. It should not be read simply as an abstract celebration of femininity: its body, literary references, and later circulation raise questions about looking and power. In JANO it connects Botticelli, Renaissance, myth, beauty, and the Uffizi.",
+          "essay": null,
+          "notes": null,
+          "excerpt": null,
+          "createdAt": "2026-08-16T14:13:18.599Z",
+          "updatedAt": "2026-08-30T10:47:33.522Z"
+        }
+      ],
+      "canonicalContextFingerprint": "7b651e532ba1712d372bd3974ac3f010f701fff9d8f1a884ae1703d24c567c86",
+      "editorialFingerprint": "f19a92fd42d71144a6801b008fdffb5f26d679c00e204fba5eb81151d8a0d12d"
+    }
+  ]
+}

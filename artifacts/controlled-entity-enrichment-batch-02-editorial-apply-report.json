@@ -1,0 +1,14 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "applied": false,
+  "reason": "REAL_WRITER_OUTPUT_DID_NOT_PASS_GROUNDING_GATE",
+  "targets": [
+    "pablo-picasso",
+    "cubismo",
+    "el-nacimiento-de-venus"
+  ],
+  "editorialApplied": [],
+  "databaseMutated": false,
+  "privateResearchInputs": 0,
+  "createdAt": "2026-09-01T12:18:14.802Z"
+}
