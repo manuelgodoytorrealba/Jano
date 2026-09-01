@@ -268,6 +268,29 @@ function maxDepth(units: EditorialKnowledgeUnit[]) {
   return 'CONTEXTUAL_ESSAY';
 }
 
+function deterministicClaimPlan(units: EditorialKnowledgeUnit[]): ClaimPlan {
+  const claims = units.map((unit, index) => ({
+    id: unit.id,
+    statement: unit.statement,
+    claimType:
+      unit.kind === 'SUPPORTED_RELATION'
+        ? 'RELATION'
+        : unit.kind === 'REVIEWED_EVIDENCE'
+          ? 'EVIDENCE'
+          : index === 0
+            ? 'IDENTITY'
+            : 'ATTRIBUTE',
+    provenanceRefs: [unit.id],
+    certainty: unit.certainty,
+  })) as EditorialClaim[];
+  return {
+    claims,
+    definitionClaimIds: claims.slice(0, 1).map((claim) => claim.id),
+    summaryClaimIds: claims.slice(0, Math.min(3, claims.length)).map((claim) => claim.id),
+    sections: [{ heading: 'Contexto', claimIds: claims.slice(1).map((claim) => claim.id) }],
+  };
+}
+
 function sentenceById(output: MappedEditorialOutput, id: string) {
   return [
     output.definition,
@@ -354,6 +377,14 @@ async function main() {
       let rejected: Array<{ claim: EditorialClaim; reason: string }> = [];
       let invalidReferences: string[] = [];
       for (let attempt = 0; attempt < 2 && !accepted.length; attempt += 1) {
+        if (process.env.EDITORIAL_PLANNER_MODE === 'deterministic') {
+          proposedPlan = deterministicClaimPlan(units);
+          const result = validateClaimPlan(proposedPlan, units);
+          accepted = result.accepted;
+          rejected = result.rejected;
+          invalidReferences = result.invalidReferences;
+          break;
+        }
         const request = buildClaimPlannerRequest({ entity: canonicalEntity, units, depth });
         if (attempt)
           request.task += `\n\nREINTENTO OBLIGATORIO: los provenanceRefs anteriores eran inválidos. Copia literalmente un id de AVAILABLE_KNOWLEDGE_UNITS, incluyendo su prefijo FACT:, EVIDENCE: o RELATION:. Nunca uses nombres de tablas ni inventes ids.`;
