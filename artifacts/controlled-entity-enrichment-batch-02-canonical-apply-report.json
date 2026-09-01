@@ -1,0 +1,182 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "applyAuthorization": "USER_EXPLICIT_CANONICAL_APPLY_APPROVAL",
+  "appliedItems": [
+    "first-real-10-01",
+    "first-real-10-11",
+    "first-real-10-15",
+    "first-real-10-16",
+    "first-real-10-17",
+    "first-real-10-22",
+    "first-real-10-31",
+    "first-real-10-43",
+    "first-real-10-48"
+  ],
+  "apply": true,
+  "operations": [
+    {
+      "kind": "ASSERTION",
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "relationId": null,
+      "sourceRefId": "cmtikq6k70000vifpzd2q0smc",
+      "citationId": "cmtikq6k90001vifprhvj4nlx",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "ASSERTION",
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "relationId": null,
+      "sourceRefId": "cmtikq6kb0002vifpdhgbh022",
+      "citationId": "cmtikq6kb0003vifp0k5t3jiz",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "ASSERTION",
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "relationId": null,
+      "sourceRefId": "cmtikq6kc0004vifp4bdrb4vn",
+      "citationId": "cmtikq6kd0005vifpw88238nu",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "ASSERTION",
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "relationId": null,
+      "sourceRefId": "cmtikq6ke0006vifpjibkr9mf",
+      "citationId": "cmtikq6kf0007vifpb3nz7agn",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "ASSERTION",
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "relationId": null,
+      "sourceRefId": "cmtikq6kg0008vifpzdg9fa3g",
+      "citationId": "cmtikq6kh0009vifpcpqca2jq",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "RELATION",
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "relationId": "cmtikq6kj000bvifprd0td82v",
+      "sourceRefId": null,
+      "citationId": "cmtikq6kl000cvifpowduff4d",
+      "action": "RELATION_ALREADY_PRESENT",
+      "citationCreated": false
+    },
+    {
+      "kind": "ASSERTION",
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "relationId": null,
+      "sourceRefId": "cmtikq6km000dvifp7ki5sjxa",
+      "citationId": "cmtikq6kn000evifp9rhz9xyo",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "PROVENANCE_RELATION",
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "relationId": "cmsvvxmpk02qu85sj68uveynm",
+      "sourceRefId": "cmtage9bv001qs0kpe4ii4f2k",
+      "citationId": "cmtikq6kp000fvifpz6nisqzz",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "ASSERTION",
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "relationId": null,
+      "sourceRefId": "cmtikq6kq000gvifpjwruywal",
+      "citationId": "cmtikq6kr000hvifps4vaax4o",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "PROVENANCE_RELATION",
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "relationId": "cmsvvxmip02ns85sj5hxljybn",
+      "sourceRefId": "cmtage9p4004ss0kpd2q9exvd",
+      "citationId": "cmtikq6ks000ivifpzcloq96c",
+      "action": "PROVENANCE_REUSED",
+      "citationCreated": false
+    },
+    {
+      "kind": "PROVENANCE_ENTITY",
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "relationId": null,
+      "sourceRefId": null,
+      "citationId": "cmtikq6kw000kvifpqt3a1ir9",
+      "action": "PROVENANCE_ATTACHED",
+      "citationCreated": false
+    }
+  ],
+  "newCanonicalAssertions": 7,
+  "provenanceAugmentations": 3,
+  "firstRunNewCanonicalAssertions": 7,
+  "firstRunNewRelations": 1,
+  "firstRunNewSourceRefs": 7,
+  "firstRunNewCitations": 11,
+  "rerun": {
+    "newCanonicalAssertions": 0,
+    "newRelations": 0,
+    "newSourceRefs": 0,
+    "newCitations": 0
+  },
+  "newRelations": 0,
+  "sourceRefsCreated": 0,
+  "sourceRefsReused": 9,
+  "citationsCreated": 0,
+  "citationsReused": 11,
+  "editorialApplied": 0,
+  "deferPromoted": 0,
+  "rejectPromoted": 0,
+  "marilynMutated": false,
+  "contextFingerprints": {
+    "cmsvvxhgm002r85sjdntcbn33": {
+      "before": "89895b0325ae1bf7fdd7f8a9019a911b04ae400c99bc5631087c23cca238424e",
+      "after": "61db1d8413bb4fce93a23361793e203eb6dabf883edd46b7f7fd66346a677042",
+      "changed": true
+    },
+    "cmsvvxi6400fl85sj2tu79wx0": {
+      "before": "c7f155f78c328f1acca7bc0328725fa33d3cc49800371e60296a740e5a2e86fb",
+      "after": "c7f155f78c328f1acca7bc0328725fa33d3cc49800371e60296a740e5a2e86fb",
+      "changed": false
+    },
+    "cmsvvxi8i00gx85sjt7t842n7": {
+      "before": "b701ef1649a3e0f90b5f57f2297b6058a302ce648e271f55dbd96e811a7e1cf2",
+      "after": "f739545bbc3d6611601fbb1f694df190edd9e961f3b0eafc0c6037a5afdd98fa",
+      "changed": true
+    },
+    "cmsvvxi9700hc85sjjoidcq8a": {
+      "before": "de5e40d7c62f72ec75d99b57bff1c6e450f7798c36947a922bd6c02ef8c2fb3a",
+      "after": "388ff433a43372b52de4ab3733dac40c8c441c53ec1efe40d5071525e2b3b616",
+      "changed": true
+    },
+    "cmsvvxif800ku85sjmrawpu0e": {
+      "before": "fe2cc630a1e2d626cb80e5d46da94835fef96e2c55502c01cbaff0e05ee43e1d",
+      "after": "d028a83d036e686f7a78df4c1bb5211935087e9ff213a7469e10deb2368349db",
+      "changed": true
+    }
+  },
+  "globalCountsBefore": {
+    "entities": 805,
+    "relations": 1387,
+    "sources": 590,
+    "researchEvidence": 62,
+    "sourceRefs": 831,
+    "citations": 1388
+  },
+  "globalCountsAfter": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "researchEvidence": 62,
+    "sourceRefs": 838,
+    "citations": 1399
+  },
+  "relationQualificationPreserved": true
+}
