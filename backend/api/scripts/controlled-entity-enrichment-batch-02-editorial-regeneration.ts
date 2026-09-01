@@ -9,7 +9,7 @@ const targets = ['pablo-picasso', 'cubismo', 'el-nacimiento-de-venus'];
 const beforePath = artifact(
   'controlled-entity-enrichment-batch-02-before-editorial-regeneration.json',
 );
-const previewPath = artifact('controlled-entity-enrichment-batch-02-editorial-preview.json');
+const previewPath = artifact('controlled-entity-enrichment-batch-02-editorial-preview-v2.json');
 const reportPath = artifact('controlled-entity-enrichment-batch-02-editorial-apply-report.json');
 
 const hash = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -58,7 +58,7 @@ async function main() {
     `${JSON.stringify({ batchId: 'controlled-entity-enrichment-batch-02', createdAt: new Date().toISOString(), targets: records }, null, 2)}\n`,
   );
   const previews = targets.map((slug) => {
-    const path = `/tmp/editorial-b02/claim-level-editorial-v1-${slug}.json`;
+    const path = `/tmp/editorial-b02-v2/claim-level-editorial-v1-${slug}.json`;
     if (!existsSync(path))
       return { slug, status: 'WRITER_RUNTIME_BLOCKED', error: 'PREVIEW_MISSING' };
     const generated = JSON.parse(readFileSync(path, 'utf8'));

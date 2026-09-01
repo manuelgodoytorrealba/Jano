@@ -190,15 +190,31 @@ export function buildEditorialRealizerRequest(args: {
   depth: string;
   locale: string;
 }) {
+  const claimLockedRealization = args.claims.map((claim) => ({
+    claimId: claim.id,
+    subject: args.entity.canonicalName,
+    claimType: claim.claimType,
+    proposition: claim.statement,
+    requiredQualifiers: requiredQualifiers(claim.statement),
+    requiredAttribution: /\b(según|according to|describe|caracteriza|Tate)\b/i.test(
+      claim.statement,
+    ),
+    forbiddenStrengthenings: [
+      'invented causality',
+      'stronger certainty',
+      'broader scope',
+      'transitive graph inference',
+    ],
+  }));
   return {
     schemaVersion: CLAIM_REALIZER_VERSION,
     task: `Escribe prosa natural que explique TARGET_ENTITY usando EXCLUSIVAMENTE ACCEPTED_CLAIMS.
-Cada frase debe devolver los claimIds que la sostienen. No añadas fechas, lugares, nombres, causalidad,
+Cada frase debe tener exactamente un claimId primario (claimIds con un solo elemento). No añadas fechas, lugares, nombres, causalidad,
 interpretaciones ni relaciones ausentes. Puedes sintetizar claims, pero no ampliar su significado.
 Usa ÚNICAMENTE los IDs exactos de ACCEPTED_CLAIMS; copia cada claimIds literalmente y no inventes IDs.
 La definición debe nombrar TARGET_ENTITY. Definition y summary pueden usar [[Nombre canónico]] sólo para
 LINKABLE_ENTITIES. TARGET_ENTITY nunca se enlaza consigo misma: elimina el marcado y conserva el texto visible.
-Prefiere una frase factual por claim; sólo combina claims compatibles con una unión gramatical neutra.
+Prefiere una frase factual por claim. Preserva todos los requiredQualifiers de CLAIM_LOCKED_REALIZATION: no conviertas partly en influencia total, around/approximately en fecha exacta, seems/perhaps en certeza, ni one of en the. No derives relaciones recorriendo el grafo.
 IDENTITY_ONLY debe ser breve y puede devolver sections vacío;
 EDITORIAL_ENTRY o mayor requiere al menos una sección. No repitas literalmente definition como summary.
 No menciones JANO ni el proceso.`,
@@ -208,6 +224,7 @@ No menciones JANO ni el proceso.`,
       LINKABLE_ENTITIES: args.linkableEntities,
       MAX_SAFE_EDITORIAL_DEPTH: args.depth,
       LOCALE: args.locale,
+      CLAIM_LOCKED_REALIZATION: claimLockedRealization,
     },
     outputSchema: {
       type: 'object',
@@ -288,8 +305,8 @@ function realizerOutputBudget(depth: string, claimCount: number) {
         : depth === 'EDITORIAL_ENTRY'
           ? 2_800
           : depth === 'CONTEXTUAL_ESSAY'
-            ? 4_800
-            : 5_600;
+            ? 7_000
+            : 7_500;
   return Math.min(base, Math.max(700, 700 + claimCount * 500));
 }
 
@@ -305,9 +322,39 @@ function sentenceSchema(claimIds?: string[]) {
         type: 'array',
         items: claimIds?.length ? { type: 'string', enum: claimIds } : { type: 'string' },
         minItems: 1,
+        maxItems: 1,
       },
     },
   };
+}
+
+function requiredQualifiers(statement: string) {
+  const qualifiers = [
+    'approximately',
+    'around',
+    'generally',
+    'seems',
+    'appears',
+    'perhaps',
+    'possibly',
+    'partly',
+    'late work',
+    'attributed to',
+    'according to',
+    'one of',
+    'aproximadamente',
+    'alrededor',
+    'generalmente',
+    'parece',
+    'quizá',
+    'quizás',
+    'parcialmente',
+    'obra tardía',
+    'atribuido',
+    'según',
+    'uno de',
+  ];
+  return qualifiers.filter((qualifier) => statement.toLocaleLowerCase().includes(qualifier));
 }
 
 export function validateMappedEditorialOutput(
@@ -339,6 +386,8 @@ export function validateMappedEditorialOutput(
     throw new Error('Editorial depth requires at least one section');
   for (const sentence of sentences) {
     if (!sentence?.text || !sentence.claimIds?.length) throw new Error('Unmapped public sentence');
+    if (sentence.claimIds.length !== 1)
+      throw new Error('Sentence must have exactly one primary claim');
     const referenced = sentence.claimIds.map((id) => byClaim.get(id));
     if (referenced.some((claim) => !claim)) throw new Error('Sentence references unknown claim');
     const support = referenced.map((claim) => claim!.statement).join(' ');
