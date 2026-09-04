@@ -297,9 +297,10 @@ model Entity {
   classifications EntityClassification[]
 
   // Canonical editorial assertions and evidence
-  attributes         EntityAttribute[]
-  citations          Citation[]        @relation("CitationEntity")
-  researchPromotions ResearchFinding[] @relation("ResearchFindingPromotedEntity")
+  attributes          EntityAttribute[]
+  citations           Citation[]           @relation("CitationEntity")
+  researchPromotions  ResearchFinding[]    @relation("ResearchFindingPromotedEntity")
+  canonicalAssertions CanonicalAssertion[]
 
   // Editorial translations
   translations EntityTranslation[]
@@ -644,31 +645,34 @@ model EntityAttribute {
 }
 
 model Citation {
-  id                 String         @id @default(cuid())
-  sourceId           String
-  entityId           String?
-  relationId         String?
-  entityAttributeId  String?
-  researchEvidenceId String?
-  stance             CitationStance @default(MENTIONS)
-  locator            String?
-  quote              String?
-  note               String?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  id                   String         @id @default(cuid())
+  sourceId             String
+  entityId             String?
+  relationId           String?
+  entityAttributeId    String?
+  researchEvidenceId   String?
+  canonicalAssertionId String?
+  stance               CitationStance @default(MENTIONS)
+  locator              String?
+  quote                String?
+  note                 String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 
-  source           Source                @relation(fields: [sourceId], references: [id], onDelete: Restrict)
-  entity           Entity?               @relation("CitationEntity", fields: [entityId], references: [id], onDelete: Cascade)
-  relation         Relation?             @relation("CitationRelation", fields: [relationId], references: [id], onDelete: Cascade)
-  entityAttribute  EntityAttribute?      @relation("CitationEntityAttribute", fields: [entityAttributeId], references: [id], onDelete: Cascade)
-  researchEvidence ResearchEvidence?     @relation(fields: [researchEvidenceId], references: [id], onDelete: SetNull)
-  translations     CitationTranslation[]
+  source             Source                @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  entity             Entity?               @relation("CitationEntity", fields: [entityId], references: [id], onDelete: Cascade)
+  relation           Relation?             @relation("CitationRelation", fields: [relationId], references: [id], onDelete: Cascade)
+  entityAttribute    EntityAttribute?      @relation("CitationEntityAttribute", fields: [entityAttributeId], references: [id], onDelete: Cascade)
+  researchEvidence   ResearchEvidence?     @relation(fields: [researchEvidenceId], references: [id], onDelete: SetNull)
+  canonicalAssertion CanonicalAssertion?   @relation(fields: [canonicalAssertionId], references: [id], onDelete: Cascade)
+  translations       CitationTranslation[]
 
   @@index([sourceId])
   @@index([entityId])
   @@index([relationId])
   @@index([entityAttributeId])
   @@index([researchEvidenceId])
+  @@index([canonicalAssertionId])
 }
 
 model CitationTranslation {
@@ -796,12 +800,65 @@ model SourceRef {
   quote String?
   note  String?
 
-  entity       Entity                 @relation(fields: [entityId], references: [id])
-  source       Source                 @relation(fields: [sourceId], references: [id])
+  entity       Entity                        @relation(fields: [entityId], references: [id])
+  source       Source                        @relation(fields: [sourceId], references: [id])
   translations SourceRefTranslation[]
+  assertions   CanonicalAssertionSourceRef[]
 
   @@index([entityId])
   @@index([sourceId])
+}
+
+model CanonicalAssertion {
+  id                    String                   @id @default(cuid())
+  entityId              String
+  dimension             String
+  proposition           String
+  normalizedFingerprint String
+  qualifiers            Json?
+  status                KnowledgeAssertionStatus @default(PUBLISHED)
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  entity     Entity                        @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  sourceRefs CanonicalAssertionSourceRef[]
+  citations  Citation[]
+
+  @@unique([entityId, dimension, normalizedFingerprint])
+  @@index([entityId, status])
+  @@index([normalizedFingerprint])
+}
+
+model CanonicalAssertionSourceRef {
+  assertionId String
+  sourceRefId String
+  createdAt   DateTime @default(now())
+
+  assertion CanonicalAssertion @relation(fields: [assertionId], references: [id], onDelete: Cascade)
+  sourceRef SourceRef          @relation(fields: [sourceRefId], references: [id], onDelete: Cascade)
+
+  @@id([assertionId, sourceRefId])
+  @@index([sourceRefId])
+}
+
+model SemanticResultCache {
+  id                         String    @id @default(cuid())
+  cacheKey                   String    @unique
+  classifierVersion          String
+  model                      String
+  inputContractVersion       String
+  excerptFingerprint         String
+  candidateEntityFingerprint String
+  inputFingerprint           String
+  result                     Json
+  hitCount                   Int       @default(0)
+  lastHitAt                  DateTime?
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+
+  @@index([classifierVersion, model])
+  @@index([excerptFingerprint])
+  @@index([candidateEntityFingerprint])
 }
 
 model SourceRefTranslation {
@@ -1312,6 +1369,14 @@ model ResearchFindingProposal {
   relationToKey       String?
   relationTypeId      String?
   explanation         String?
+  subjectRole         String?
+  targetStatus        String?
+  targetConfidence    Float?
+  supportSpan         String?
+  targetReason        String?
+  alternateTargets    Json?
+  identityDisposition String?
+  duplicateCandidates Json?
   reviewState         ResearchProposalReviewState @default(PENDING)
   createdAt           DateTime                    @default(now())
   updatedAt           DateTime                    @default(now()) @updatedAt
@@ -1325,6 +1390,7 @@ model ResearchFindingProposal {
   convertedEntity   ResearchEntity?                   @relation("ConvertedEntityProposal", fields: [convertedEntityId], references: [id], onDelete: SetNull)
   convertedRelation ResearchRelation?                 @relation("ConvertedRelationProposal", fields: [convertedRelationId], references: [id], onDelete: SetNull)
   evidence          ResearchFindingProposalEvidence[]
+  decisions         ResearchProposalDecision[]
 
   @@index([projectId, reviewState])
   @@index([jobId])
@@ -1334,6 +1400,24 @@ model ResearchFindingProposal {
   @@index([convertedFindingId])
   @@index([convertedEntityId])
   @@index([convertedRelationId])
+  @@index([projectId, type, reviewState])
+  @@index([targetStatus])
+  @@index([identityDisposition])
+}
+
+model ResearchProposalDecision {
+  id         String   @id @default(cuid())
+  proposalId String
+  action     String
+  actorId    String?
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  proposal ResearchFindingProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  actor    User?                   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([proposalId, createdAt])
+  @@index([action, createdAt])
 }
 
 model ResearchFindingProposalEvidence {
@@ -1540,15 +1624,16 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  savedEntities           SavedEntity[]
-  collections             Collection[]
-  discoverySignals        UserDiscoverySignal[]
-  researchDecisions       ResearchDecision[]
-  ownedResearch           ResearchProject[]        @relation("ResearchProjectOwner")
-  archivedResearch        ResearchProject[]        @relation("ResearchProjectArchivedBy")
-  researchDraftRevisions  ResearchDraftRevision[]
-  passwordResetTokens     PasswordResetToken[]
-  emailVerificationTokens EmailVerificationToken[]
+  savedEntities             SavedEntity[]
+  collections               Collection[]
+  discoverySignals          UserDiscoverySignal[]
+  researchDecisions         ResearchDecision[]
+  researchProposalDecisions ResearchProposalDecision[]
+  ownedResearch             ResearchProject[]          @relation("ResearchProjectOwner")
+  archivedResearch          ResearchProject[]          @relation("ResearchProjectArchivedBy")
+  researchDraftRevisions    ResearchDraftRevision[]
+  passwordResetTokens       PasswordResetToken[]
+  emailVerificationTokens   EmailVerificationToken[]
 }
 
 model EmailVerificationToken {

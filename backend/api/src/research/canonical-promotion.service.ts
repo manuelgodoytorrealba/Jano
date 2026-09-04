@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { assertionFingerprint } from '../knowledge/canonical-assertion.service';
+import { TargetStatus } from '../knowledge/entity-target-router';
 
 export type CanonicalPromotionOperation = {
   kind: 'ASSERTION' | 'PROVENANCE_RELATION' | 'PROVENANCE_ENTITY' | 'RELATION';
@@ -14,6 +16,7 @@ export type CanonicalPromotionOperation = {
   relationTypeId?: string;
   targetEntityId?: string;
   relationJustification?: string;
+  targetStatus?: TargetStatus;
 };
 
 @Injectable()
@@ -24,6 +27,11 @@ export class CanonicalPromotionService {
     return this.prisma.$transaction(async (tx) => {
       const results: any[] = [];
       for (const operation of operations) {
+        if (
+          operation.targetStatus &&
+          !['TARGET_CONFIRMED', 'MULTI_ENTITY_VALID'].includes(operation.targetStatus)
+        )
+          throw new Error(`TARGETING_GATE_BLOCKED:${operation.targetStatus}`);
         const evidence = await tx.researchEvidence.findUnique({
           where: { id: operation.evidenceId },
           select: { id: true, sourceId: true, libraryExcerptId: true },
@@ -137,12 +145,48 @@ export class CanonicalPromotionService {
               select: { id: true },
             })
           ).id;
+        let assertionId: string | null = null;
+        if (operation.kind === 'ASSERTION') {
+          const assertion = await tx.canonicalAssertion.upsert({
+            where: {
+              entityId_dimension_normalizedFingerprint: {
+                entityId: operation.entityId,
+                dimension: operation.dimension,
+                normalizedFingerprint: assertionFingerprint(operation.proposition),
+              },
+            },
+            create: {
+              entityId: operation.entityId,
+              dimension: operation.dimension,
+              proposition: operation.proposition,
+              normalizedFingerprint: assertionFingerprint(operation.proposition),
+            },
+            update: {},
+            select: { id: true },
+          });
+          assertionId = assertion.id;
+          await tx.canonicalAssertionSourceRef.upsert({
+            where: {
+              assertionId_sourceRefId: {
+                assertionId,
+                sourceRefId: sourceRefId!,
+              },
+            },
+            create: { assertionId, sourceRefId: sourceRefId! },
+            update: {},
+          });
+          await tx.citation.update({
+            where: { id: citationId },
+            data: { canonicalAssertionId: assertionId },
+          });
+        }
         results.push({
           kind: operation.kind,
           entityId: operation.entityId,
           relationId,
           sourceRefId,
           citationId,
+          assertionId,
           action,
           citationCreated: !citation,
         });
