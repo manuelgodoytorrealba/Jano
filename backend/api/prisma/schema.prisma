@@ -398,6 +398,7 @@ model Relation {
   translations RelationTranslation[]
   citations    Citation[]            @relation("CitationRelation")
 
+  @@unique([fromId, relationTypeId, toId])
   @@index([fromId])
   @@index([toId])
   @@index([relationTypeId])

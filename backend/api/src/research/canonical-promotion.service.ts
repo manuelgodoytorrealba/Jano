@@ -94,21 +94,38 @@ export class CanonicalPromotionService {
             },
             select: { id: true },
           });
-          relationId =
-            existing?.id ??
-            (
-              await tx.relation.create({
-                data: {
-                  fromId: operation.entityId,
-                  toId: operation.targetEntityId!,
-                  relationTypeId: operation.relationTypeId!,
-                  status: 'PUBLISHED',
-                  justification: operation.relationJustification ?? operation.proposition,
-                  confidence: 1,
-                },
-                select: { id: true },
-              })
-            ).id;
+          if (existing) relationId = existing.id;
+          else {
+            try {
+              relationId = (
+                await tx.relation.create({
+                  data: {
+                    fromId: operation.entityId,
+                    toId: operation.targetEntityId!,
+                    relationTypeId: operation.relationTypeId!,
+                    status: 'PUBLISHED',
+                    justification: operation.relationJustification ?? operation.proposition,
+                    confidence: 1,
+                  },
+                  select: { id: true },
+                })
+              ).id;
+            } catch (error) {
+              if ((error as { code?: unknown }).code !== 'P2002') throw error;
+              relationId = (
+                await tx.relation.findUniqueOrThrow({
+                  where: {
+                    fromId_relationTypeId_toId: {
+                      fromId: operation.entityId,
+                      relationTypeId: operation.relationTypeId!,
+                      toId: operation.targetEntityId!,
+                    },
+                  },
+                  select: { id: true },
+                })
+              ).id;
+            }
+          }
           action = existing ? 'RELATION_ALREADY_PRESENT' : 'RELATION_CREATED';
         }
         const citationWhere =

@@ -10,6 +10,9 @@ import {
 } from '@prisma/client';
 import { AIProvider, type AIProviderPort } from '../ai/ai.provider';
 import { PrismaService } from '../prisma/prisma.service';
+import { EntityIdentityResolver } from '../knowledge/entity-identity-resolver';
+import { EntityTargetRouter, type TargetCandidate } from '../knowledge/entity-target-router';
+import { SemanticResultCacheService } from '../knowledge/semantic-result-cache.service';
 
 const EXTRACT_FINDINGS_TASK = 'research.extract_findings';
 const EXTRACT_FINDINGS_SCHEMA_VERSION = '3';
@@ -130,11 +133,17 @@ export class ResearchAIService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(AIProvider) private readonly provider: AIProviderPort,
+    private readonly semanticCache?: SemanticResultCacheService,
   ) {}
 
   async extractFindings(job: ExtractFindingsJob): Promise<void> {
     const metadata = this.provider.metadata();
     const input = await this.buildExtractFindingsInput(job);
+    const targetCatalog = this.prisma.entity?.findMany
+      ? await this.prisma.entity.findMany({
+          select: { id: true, title: true, type: true, aliases: { select: { value: true } } },
+        })
+      : [];
     const batches = this.batch(input.evidence, EVIDENCE_BATCH_SIZE);
     await this.prisma.researchJob.update({
       where: { id: job.id },
@@ -162,16 +171,40 @@ export class ResearchAIService {
       });
       try {
         if (!this.provider.isAvailable()) throw new Error('AI provider is not available');
-        const result = await this.provider.runStructured({
-          task: EXTRACT_FINDINGS_TASK,
-          schemaVersion: EXTRACT_FINDINGS_SCHEMA_VERSION,
-          input: batchInput,
-          outputSchema: EXTRACT_FINDINGS_OUTPUT_SCHEMA(
-            input.relationTypes.map((item) => item.id),
-            evidence.map((item) => item.id),
-          ),
-          maxOutputTokens: 1_200,
-        });
+        const compute = async () => {
+          const result = await this.provider.runStructured({
+            task: EXTRACT_FINDINGS_TASK,
+            schemaVersion: EXTRACT_FINDINGS_SCHEMA_VERSION,
+            input: batchInput,
+            outputSchema: EXTRACT_FINDINGS_OUTPUT_SCHEMA(
+              input.relationTypes.map((item) => item.id),
+              evidence.map((item) => item.id),
+            ),
+            maxOutputTokens: 1_200,
+          });
+          return {
+            output: result.output as Prisma.JsonObject,
+            durationMs: result.durationMs ?? Date.now() - startedAt,
+            costCents: result.costCents ?? null,
+          };
+        };
+        const cached = this.semanticCache
+          ? await this.semanticCache.getOrCompute(
+              {
+                classifierVersion: `research-extraction-v${EXTRACT_FINDINGS_SCHEMA_VERSION}`,
+                model: metadata.model,
+                excerptFingerprint: this.fingerprint(
+                  ...evidence.map((item) => `${item.id}:${item.quote ?? ''}`),
+                ),
+                candidateEntityFingerprint: this.fingerprint(
+                  ...targetCatalog.map((item) => `${item.id}:${item.title}:${item.type}`),
+                ),
+                input: batchInput,
+              },
+              compute,
+            )
+          : { result: await compute(), status: 'CACHE_MISS' as const };
+        const result = cached.result;
         const output = this.namespaceOutput(
           this.validateExtractFindingsOutput(
             result.output,
@@ -190,7 +223,7 @@ export class ResearchAIService {
             },
           });
           for (const proposal of this.proposalsFromOutput(output))
-            await this.persistProposal(tx, job, execution.id, proposal);
+            await this.persistProposal(tx, job, execution.id, proposal, targetCatalog);
           await tx.researchJob.update({
             where: { id: job.id },
             data: { progressCurrent: index + 1 },
@@ -591,6 +624,12 @@ export class ResearchAIService {
     job: ExtractFindingsJob,
     aiExecutionId: string,
     proposal: ReturnType<ResearchAIService['proposalsFromOutput']>[number],
+    targetCatalog: Array<{
+      id: string;
+      title: string;
+      type: string;
+      aliases: Array<{ value: string }>;
+    }>,
   ) {
     // ponytail: the job identity plus typed result and Evidence makes retries idempotent; add a
     // dedicated result aggregate only if proposals later need cross-job reconciliation.
@@ -617,6 +656,58 @@ export class ResearchAIService {
     });
     if (existing) return;
     const { evidenceIds, ...proposalData } = proposal;
+    let targeting: Record<string, unknown> = {};
+    if (proposal.type === ResearchFindingProposalType.ENTITY) {
+      const evidence = tx.researchEvidence?.findMany
+        ? await tx.researchEvidence.findMany({
+            where: { id: { in: evidenceIds }, projectId: job.projectId },
+            select: { quote: true, context: true, source: { select: { title: true } } },
+          })
+        : [];
+      const candidate: TargetCandidate = {
+        id: `proposal:${proposal.proposalKey}`,
+        name: proposal.title,
+        type: proposal.entityKind ?? 'ABSTRACTION',
+      };
+      const catalog: TargetCandidate[] = targetCatalog.map((item) => ({
+        id: item.id,
+        name: item.title,
+        type: item.type,
+        aliases: item.aliases.map((alias) => alias.value),
+      }));
+      const routed = new EntityTargetRouter().route({
+        excerptId: evidenceIds[0] ?? proposal.proposalKey,
+        excerpt: evidence.map((item) => item.quote ?? item.context ?? '').join(' '),
+        candidate,
+        catalog,
+        sourceTitle: evidence[0]?.source.title,
+      });
+      const identity = new EntityIdentityResolver().resolve(
+        {
+          title: proposal.title,
+          type: proposal.entityKind ?? undefined,
+          sourceContext: evidence.map((item) => item.quote ?? item.context ?? '').join(' '),
+          meaningful: true,
+          independentlyIdentifiable: true,
+        },
+        targetCatalog.map((item) => ({
+          ...item,
+          aliases: item.aliases.map((alias) => alias.value),
+          meaningful: true,
+          independentlyIdentifiable: true,
+        })),
+      );
+      targeting = {
+        subjectRole: routed.subjectRole,
+        targetStatus: routed.targetStatus,
+        targetConfidence: routed.targetConfidence,
+        supportSpan: routed.supportSpan,
+        targetReason: routed.reason,
+        alternateTargets: routed.alternateTargets,
+        identityDisposition: identity.disposition,
+        duplicateCandidates: identity.candidates,
+      };
+    }
     let created: { id: string };
     try {
       created = await tx.researchFindingProposal.create({
@@ -626,6 +717,7 @@ export class ResearchAIService {
           aiExecutionId,
           resultFingerprint,
           ...proposalData,
+          ...targeting,
         },
         select: { id: true },
       });
