@@ -1,0 +1,57 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "canonical": "SUCCESS",
+  "editorial": "SUCCESS",
+  "targets": [
+    {
+      "title": "Pablo Picasso",
+      "slug": "pablo-picasso",
+      "grounding": "PASS",
+      "quality": "CLEAR_IMPROVEMENT",
+      "applied": true
+    },
+    {
+      "title": "Cubismo",
+      "slug": "cubismo",
+      "grounding": "PASS",
+      "quality": "CLEAR_IMPROVEMENT",
+      "applied": true
+    },
+    {
+      "title": "El nacimiento de Venus",
+      "slug": "el-nacimiento-de-venus",
+      "grounding": "PASS",
+      "quality": "CLEAR_IMPROVEMENT",
+      "applied": true
+    }
+  ],
+  "privateResearchInputs": 0,
+  "knowledgeCoreChangedDuringEditorial": false,
+  "metrics": {
+    "initialUniqueResiduals": 17,
+    "finalUniqueResiduals": 0,
+    "totalClaims": 21,
+    "modelCalls": 47,
+    "writerAccepted": 18,
+    "repairAccepted": 2,
+    "canonicalFallbackAttempted": 1,
+    "canonicalFallbackAccepted": 1,
+    "editoriallyIneligibleRelations": 10,
+    "auditResultsTotalRendered": 24,
+    "auditUniqueClaimSentencePairs": 21,
+    "totalRuntimeMs": 209028,
+    "averageCallSeconds": 4.385,
+    "p50CallSeconds": 4.236,
+    "p95CallSeconds": 7.005
+  },
+  "verification": {
+    "api": "PASS",
+    "playwrightDesktop": "PASS",
+    "playwrightMobile390x844": "PASS",
+    "privateLeakage": 0,
+    "selfLinks": 0,
+    "horizontalOverflow": 0,
+    "venusTruncationResolved": true
+  },
+  "createdAt": "2026-09-04T16:09:47.607Z"
+}

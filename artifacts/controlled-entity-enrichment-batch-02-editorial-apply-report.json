@@ -1,14 +1,47 @@
 {
   "batchId": "controlled-entity-enrichment-batch-02",
-  "applied": false,
-  "reason": "REAL_WRITER_OUTPUT_DID_NOT_PASS_GROUNDING_GATE",
+  "applied": true,
+  "reason": "GROUNDING_AND_QUALITY_GATES_PASSED",
   "targets": [
     "pablo-picasso",
     "cubismo",
     "el-nacimiento-de-venus"
   ],
-  "editorialApplied": [],
-  "databaseMutated": false,
+  "editorialApplied": [
+    "pablo-picasso",
+    "cubismo",
+    "el-nacimiento-de-venus"
+  ],
+  "databaseMutated": true,
+  "allowedFields": [
+    "summary",
+    "content",
+    "contentLevel"
+  ],
   "privateResearchInputs": 0,
-  "createdAt": "2026-09-01T12:58:32.761Z"
+  "beforeCounts": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "researchEvidence": 62,
+    "sourceRefs": 838,
+    "citations": 1399
+  },
+  "afterCounts": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "researchEvidence": 62,
+    "sourceRefs": 838,
+    "citations": 1399
+  },
+  "structuralDelta": {
+    "entities": 0,
+    "relations": 0,
+    "sources": 0,
+    "researchEvidence": 0,
+    "sourceRefs": 0,
+    "citations": 0
+  },
+  "createdAt": "2026-09-04T16:09:47.607Z"
 }

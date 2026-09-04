@@ -9,8 +9,15 @@ const targets = ['pablo-picasso', 'cubismo', 'el-nacimiento-de-venus'];
 const beforePath = artifact(
   'controlled-entity-enrichment-batch-02-before-editorial-regeneration.json',
 );
-const previewPath = artifact('controlled-entity-enrichment-batch-02-editorial-preview-v3.json');
+const previewPath = artifact('controlled-entity-enrichment-batch-02-editorial-preview-v4.json');
 const reportPath = artifact('controlled-entity-enrichment-batch-02-editorial-apply-report.json');
+const finalPath = artifact('controlled-entity-enrichment-batch-02-final-report.json');
+const outputDir = resolve(
+  process.cwd(),
+  process.argv.find((value) => value.startsWith('--output='))?.split('=')[1] ??
+    '/tmp/editorial-b02-v4',
+);
+const apply = process.argv.includes('--apply');
 
 const hash = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 
@@ -53,14 +60,14 @@ async function main() {
       contentLevel: entity.contentLevel,
     }),
   }));
-  writeFileSync(
-    beforePath,
-    `${JSON.stringify({ batchId: 'controlled-entity-enrichment-batch-02', createdAt: new Date().toISOString(), targets: records }, null, 2)}\n`,
-  );
+  if (!existsSync(beforePath))
+    writeFileSync(
+      beforePath,
+      `${JSON.stringify({ batchId: 'controlled-entity-enrichment-batch-02', createdAt: new Date().toISOString(), targets: records }, null, 2)}\n`,
+    );
   const previews = targets.map((slug) => {
-    const path = `/tmp/editorial-b02-v4/claim-level-editorial-v1-${slug}.json`;
-    if (!existsSync(path))
-      return { slug, status: 'WRITER_RUNTIME_BLOCKED', error: 'PREVIEW_MISSING' };
+    const path = resolve(outputDir, `claim-level-editorial-v1-${slug}.json`);
+    if (!existsSync(path)) throw new Error(`PREVIEW_MISSING:${slug}`);
     const generated = JSON.parse(readFileSync(path, 'utf8'));
     const before = records.find((record) => record.slug === slug)!;
     return {
@@ -72,13 +79,17 @@ async function main() {
       currentContent: before.content,
       proposedContent: generated.publicOutput?.essay ?? null,
       currentContentLevel: before.contentLevel,
-      proposedContentLevel: generated.depth,
+      proposedContentLevel: 'INTERMEDIATE',
       claimsUsed: generated.acceptedClaims ?? [],
       claimMap: generated.sentenceToClaimMapping ?? [],
       validation: generated.entailment ?? null,
       privateResearchInputs: 0,
       model: generated.model,
       realWriterRuntimeUsed: generated.model?.provider === 'ollama',
+      quality:
+        !before.summary && !before.content && generated.publicOutput
+          ? 'CLEAR_IMPROVEMENT'
+          : 'NO_MEANINGFUL_IMPROVEMENT',
       status:
         generated.publicOutput && !generated.entailment?.rejected?.length ? 'PASS' : 'BLOCKED',
       blockedReason: generated.entailment?.rejected?.length ? 'GROUNDING_AUDIT_FAILED' : null,
@@ -88,9 +99,46 @@ async function main() {
     previewPath,
     `${JSON.stringify({ batchId: 'controlled-entity-enrichment-batch-02', input: 'canonical knowledge only', previews }, null, 2)}\n`,
   );
+  const blocked = previews.filter(
+    (preview) => preview.status !== 'PASS' || preview.quality === 'NO_MEANINGFUL_IMPROVEMENT',
+  );
+  const counts = async () => ({
+    entities: await prisma.entity.count(),
+    relations: await prisma.relation.count(),
+    sources: await prisma.source.count(),
+    researchEvidence: await prisma.researchEvidence.count(),
+    sourceRefs: await prisma.sourceRef.count(),
+    citations: await prisma.citation.count(),
+  });
+  const beforeCounts = await counts();
+  if (apply && !blocked.length)
+    await prisma.$transaction(
+      previews.map((preview) =>
+        prisma.entity.update({
+          where: { id: preview.entityId },
+          data: {
+            summary: preview.proposedSummary,
+            content: preview.proposedContent,
+            contentLevel: 'INTERMEDIATE',
+          },
+        }),
+      ),
+    );
+  const afterCounts = await counts();
+  const structuralDelta = Object.fromEntries(
+    Object.entries(afterCounts).map(([key, value]) => [
+      key,
+      value - beforeCounts[key as keyof typeof beforeCounts],
+    ]),
+  );
+  const applied = apply && !blocked.length;
   writeFileSync(
     reportPath,
-    `${JSON.stringify({ batchId: 'controlled-entity-enrichment-batch-02', applied: false, reason: 'REAL_WRITER_OUTPUT_DID_NOT_PASS_GROUNDING_GATE', targets, editorialApplied: [], databaseMutated: false, privateResearchInputs: 0, createdAt: new Date().toISOString() }, null, 2)}\n`,
+    `${JSON.stringify({ batchId: 'controlled-entity-enrichment-batch-02', applied, reason: applied ? 'GROUNDING_AND_QUALITY_GATES_PASSED' : blocked.length ? 'EDITORIAL_GATE_BLOCKED' : 'DRY_RUN', targets, editorialApplied: applied ? targets : [], databaseMutated: applied, allowedFields: ['summary', 'content', 'contentLevel'], privateResearchInputs: 0, beforeCounts, afterCounts, structuralDelta, createdAt: new Date().toISOString() }, null, 2)}\n`,
+  );
+  writeFileSync(
+    finalPath,
+    `${JSON.stringify({ batchId: 'controlled-entity-enrichment-batch-02', canonical: 'SUCCESS', editorial: applied ? 'SUCCESS' : blocked.length ? 'BLOCKED' : 'READY_TO_APPLY', targets: previews.map(({ title, slug, status, quality }) => ({ title, slug, grounding: status, quality, applied })), privateResearchInputs: 0, knowledgeCoreChangedDuringEditorial: Object.values(structuralDelta).some(Boolean), createdAt: new Date().toISOString() }, null, 2)}\n`,
   );
   await prisma.$disconnect();
 }

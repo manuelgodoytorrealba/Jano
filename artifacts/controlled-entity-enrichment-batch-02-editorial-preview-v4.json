@@ -1,0 +1,426 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "input": "canonical knowledge only",
+  "previews": [
+    {
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "title": "Pablo Picasso",
+      "slug": "pablo-picasso",
+      "currentSummary": null,
+      "proposedSummary": "Pablo Picasso es un artista.",
+      "currentContent": null,
+      "proposedContent": "## Contexto\n\nPablo Picasso nació en 1881. Pablo Picasso murió en 1973. Pablo Picasso recibió el encargo de crear una gran pintura para el pabellón español en la Exposición Internacional de París en 1937. Picasso se basó en temas de la mitología clásica y reexaminó obras de la tradición artística y del clasicismo francés en su práctica. Se atribuye a Pablo Picasso la responsabilidad de la creación de Las señoritas de Aviñón. Guernica se atribuye a Pablo Picasso como responsable de su creación.",
+      "currentContentLevel": "INTERMEDIATE",
+      "proposedContentLevel": "INTERMEDIATE",
+      "claimsUsed": [
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:identity",
+          "statement": "Pablo Picasso es un artista.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear",
+          "statement": "Pablo Picasso nació en 1881.",
+          "claimType": "ATTRIBUTE",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear",
+          "statement": "Pablo Picasso murió en 1973.",
+          "claimType": "ATTRIBUTE",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6k70000vifpzd2q0smc",
+          "statement": "Pablo Picasso recibió el encargo de realizar una gran pintura para el pabellón español de la Exposición Internacional de París de 1937.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6k70000vifpzd2q0smc"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kb0002vifpdhgbh022",
+          "statement": "Picasso recurrió a asuntos de la mitología clásica y revisó obras de la tradición artística y del clasicismo francés como parte de su práctica.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6kb0002vifpdhgbh022"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmlc02p285sj2sdtxzvc",
+          "statement": "Las señoritas de Aviñón se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmlc02p285sj2sdtxzvc"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmlg02p485sjrorfyscl",
+          "statement": "Guernica se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmlg02p485sjrorfyscl"
+          ],
+          "certainty": "DOCUMENTED"
+        }
+      ],
+      "claimMap": [
+        {
+          "id": "claim-1",
+          "text": "Pablo Picasso es un artista.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ]
+        },
+        {
+          "id": "claim-2",
+          "text": "Pablo Picasso nació en 1881.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear"
+          ]
+        },
+        {
+          "id": "claim-3",
+          "text": "Pablo Picasso murió en 1973.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear"
+          ]
+        },
+        {
+          "id": "claim-4",
+          "text": "Pablo Picasso recibió el encargo de crear una gran pintura para el pabellón español en la Exposición Internacional de París en 1937.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6k70000vifpzd2q0smc"
+          ]
+        },
+        {
+          "id": "claim-5",
+          "text": "Picasso se basó en temas de la mitología clásica y reexaminó obras de la tradición artística y del clasicismo francés en su práctica.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6kb0002vifpdhgbh022"
+          ]
+        },
+        {
+          "id": "claim-6",
+          "text": "Se atribuye a Pablo Picasso la responsabilidad de la creación de Las señoritas de Aviñón.",
+          "claimIds": [
+            "RELATION:cmsvvxmlc02p285sj2sdtxzvc"
+          ]
+        },
+        {
+          "id": "claim-7",
+          "text": "Guernica se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimIds": [
+            "RELATION:cmsvvxmlg02p485sjrorfyscl"
+          ]
+        }
+      ],
+      "validation": {
+        "accepted": 7,
+        "rejected": []
+      },
+      "privateResearchInputs": 0,
+      "model": {
+        "provider": "ollama",
+        "model": "qwen2.5:14b"
+      },
+      "realWriterRuntimeUsed": true,
+      "quality": "CLEAR_IMPROVEMENT",
+      "status": "PASS",
+      "blockedReason": null
+    },
+    {
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "title": "Cubismo",
+      "slug": "cubismo",
+      "currentSummary": null,
+      "proposedSummary": "El cubismo es un movimiento cultural.",
+      "currentContent": null,
+      "proposedContent": "## Contexto\n\nTate caracteriza al cubismo como uno de los estilos más influyentes del siglo XX. Se considera generalmente que el cubismo comenzó alrededor de 1907, y que Les Demoiselles d’Avignon ya incluía elementos cubistas. El nombre «cubismo» parece derivar de un comentario de Louis Vauxcelles sobre las pinturas de Georges Braque expuestas en París en 1908. El cubismo se desarrolla durante el siglo XX. El cubismo estuvo parcialmente influenciado por la obra tardía de Paul Cézanne y sus distintos puntos de vista.",
+      "currentContentLevel": "INTERMEDIATE",
+      "proposedContentLevel": "INTERMEDIATE",
+      "claimsUsed": [
+        {
+          "id": "FACT:cmsvvxhgm002r85sjdntcbn33:identity",
+          "statement": "Cubismo es un movimiento cultural.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxhgm002r85sjdntcbn33:identity"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+          "statement": "Tate caracteriza al cubismo como uno de los estilos más influyentes del siglo XX.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6ke0006vifpjibkr9mf",
+          "statement": "Se considera generalmente que el cubismo comenzó alrededor de 1907, y que Les Demoiselles d’Avignon ya incluía elementos cubistas.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6ke0006vifpjibkr9mf"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kg0008vifpzdg9fa3g",
+          "statement": "El nombre «cubismo» parece derivar de un comentario de Louis Vauxcelles sobre pinturas de Georges Braque expuestas en París en 1908.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6kg0008vifpzdg9fa3g"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "RELATION:cmsvvxm8w02jp85sjuij0ubuz",
+          "statement": "Cubismo se encuadra cronológicamente en Siglo XX.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxm8w02jp85sjuij0ubuz"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmtikq6kj000bvifprd0td82v",
+          "statement": "el cubismo estuvo parcialmente influido por la obra tardía de Paul Cézanne y por sus distintos puntos de vista.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmtikq6kj000bvifprd0td82v"
+          ],
+          "certainty": "DOCUMENTED"
+        }
+      ],
+      "claimMap": [
+        {
+          "id": "claim-1",
+          "text": "El cubismo es un movimiento cultural.",
+          "claimIds": [
+            "FACT:cmsvvxhgm002r85sjdntcbn33:identity"
+          ]
+        },
+        {
+          "id": "claim-2",
+          "text": "Tate caracteriza al cubismo como uno de los estilos más influyentes del siglo XX.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+          ]
+        },
+        {
+          "id": "claim-3",
+          "text": "Se considera generalmente que el cubismo comenzó alrededor de 1907, y que Les Demoiselles d’Avignon ya incluía elementos cubistas.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6ke0006vifpjibkr9mf"
+          ]
+        },
+        {
+          "id": "claim-4",
+          "text": "El nombre «cubismo» parece derivar de un comentario de Louis Vauxcelles sobre las pinturas de Georges Braque expuestas en París en 1908.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6kg0008vifpzdg9fa3g"
+          ]
+        },
+        {
+          "id": "claim-5",
+          "text": "El cubismo se desarrolla durante el siglo XX.",
+          "claimIds": [
+            "RELATION:cmsvvxm8w02jp85sjuij0ubuz"
+          ]
+        },
+        {
+          "id": "claim-6",
+          "text": "El cubismo estuvo parcialmente influenciado por la obra tardía de Paul Cézanne y sus distintos puntos de vista.",
+          "claimIds": [
+            "RELATION:cmtikq6kj000bvifprd0td82v"
+          ]
+        }
+      ],
+      "validation": {
+        "accepted": 6,
+        "rejected": []
+      },
+      "privateResearchInputs": 0,
+      "model": {
+        "provider": "ollama",
+        "model": "qwen2.5:14b"
+      },
+      "realWriterRuntimeUsed": true,
+      "quality": "CLEAR_IMPROVEMENT",
+      "status": "PASS",
+      "blockedReason": null
+    },
+    {
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "title": "El nacimiento de Venus",
+      "slug": "el-nacimiento-de-venus",
+      "currentSummary": null,
+      "proposedSummary": "El nacimiento de Venus es una obra cultural.",
+      "currentContent": null,
+      "proposedContent": "## Contexto\n\nEl nacimiento de Venus está fechada en 1484. El nacimiento de Venus es una obra que presenta la técnica del temple. El Nacimiento de Venus es una obra en lienzo con temple. El nacimiento de Venus se encuentra en la Galería Uffizi, Florencia. La composición de El nacimiento de Venus representa a Venus llegando a Chipre desde el mar, impulsada por Céfiro y quizá Aura. El lienzo era un soporte ampliamente utilizado durante el siglo XV para obras decorativas destinadas a casas nobles. El nacimiento de Venus se atribuye a Sandro Botticelli como su creador.",
+      "currentContentLevel": "INTERMEDIATE",
+      "proposedContentLevel": "INTERMEDIATE",
+      "claimsUsed": [
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:identity",
+          "statement": "El nacimiento de Venus es una obra cultural.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:identity"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:startYear",
+          "statement": "El nacimiento de Venus está fechada en 1484.",
+          "claimType": "ATTRIBUTE",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:startYear"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:technique",
+          "statement": "El nacimiento de Venus: Temple",
+          "claimType": "ATTRIBUTE",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:technique"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:materials",
+          "statement": "El nacimiento de Venus: Temple sobre lienzo",
+          "claimType": "ATTRIBUTE",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:materials"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:location",
+          "statement": "El nacimiento de Venus: Galería Uffizi, Florencia",
+          "claimType": "ATTRIBUTE",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:location"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6km000dvifp7ki5sjxa",
+          "statement": "La composición de El nacimiento de Venus representa a Venus llegando a Chipre desde el mar, impulsada por Céfiro y quizá Aura.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6km000dvifp7ki5sjxa"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kq000gvifpjwruywal",
+          "statement": "El lienzo era un soporte ampliamente utilizado durante el siglo XV para obras decorativas destinadas a casas nobles.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6kq000gvifpjwruywal"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmip02ns85sj5hxljybn",
+          "statement": "El nacimiento de Venus se atribuye a Sandro Botticelli como responsable de su creación.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmip02ns85sj5hxljybn"
+          ],
+          "certainty": "DOCUMENTED"
+        }
+      ],
+      "claimMap": [
+        {
+          "id": "claim-1",
+          "text": "El nacimiento de Venus es una obra cultural.",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:identity"
+          ]
+        },
+        {
+          "id": "claim-2",
+          "text": "El nacimiento de Venus está fechada en 1484.",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:startYear"
+          ]
+        },
+        {
+          "id": "claim-3",
+          "text": "El nacimiento de Venus es una obra que presenta la técnica del temple.",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:technique"
+          ]
+        },
+        {
+          "id": "claim-4",
+          "text": "El Nacimiento de Venus es una obra en lienzo con temple.",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:materials"
+          ]
+        },
+        {
+          "id": "claim-5",
+          "text": "El nacimiento de Venus se encuentra en la Galería Uffizi, Florencia.",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:location"
+          ]
+        },
+        {
+          "id": "claim-6",
+          "text": "La composición de El nacimiento de Venus representa a Venus llegando a Chipre desde el mar, impulsada por Céfiro y quizá Aura.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6km000dvifp7ki5sjxa"
+          ]
+        },
+        {
+          "id": "claim-7",
+          "text": "El lienzo era un soporte ampliamente utilizado durante el siglo XV para obras decorativas destinadas a casas nobles.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6kq000gvifpjwruywal"
+          ]
+        },
+        {
+          "id": "claim-8",
+          "text": "El nacimiento de Venus se atribuye a Sandro Botticelli como su creador.",
+          "claimIds": [
+            "RELATION:cmsvvxmip02ns85sj5hxljybn"
+          ]
+        }
+      ],
+      "validation": {
+        "accepted": 8,
+        "rejected": []
+      },
+      "privateResearchInputs": 0,
+      "model": {
+        "provider": "ollama",
+        "model": "qwen2.5:14b"
+      },
+      "realWriterRuntimeUsed": true,
+      "quality": "CLEAR_IMPROVEMENT",
+      "status": "PASS",
+      "blockedReason": null
+    }
+  ]
+}
