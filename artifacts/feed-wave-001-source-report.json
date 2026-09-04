@@ -1,0 +1,1032 @@
+{
+  "wave": "001",
+  "project": {
+    "id": "cmtnh34150000iefpoyajveba",
+    "title": "Controlled ingestion pilot 2026-09-04T21:35:18.557Z",
+    "createdAt": "2026-09-04T21:35:18.569Z"
+  },
+  "generatedAt": "2026-09-04T22:06:29.321Z",
+  "canonicalBaseline": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "sourceRefs": 838,
+    "citations": 1399,
+    "canonicalAssertions": 7
+  },
+  "canonicalAfter": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "sourceRefs": 838,
+    "citations": 1399,
+    "canonicalAssertions": 7
+  },
+  "selected": 50,
+  "acquired": 50,
+  "prepared": 50,
+  "effective": 13,
+  "failedOrEmpty": 37,
+  "sources": [
+    {
+      "sourceId": "cmtfxykid000a42keu2qhbb0y",
+      "title": "Academia — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AAngelica_Kauffmann_by_Angelica_Kauffmann.jpg",
+      "targetEntity": {
+        "id": "cmsvvxjwp01hs85sj8fdwukto",
+        "title": "Academia",
+        "type": "CONCEPT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfzfo21000m1kph5hgydr1j",
+      "title": "Dana Schutz, How We Would Give Birth, 2007 — David Zwirner",
+      "url": "https://www.davidzwirner.com/artworks/dana-schutz-how-we-would-give-birth-ac493",
+      "targetEntity": {
+        "id": "cmsyp7mhl001k07p5wnyv8n18",
+        "title": "How We Would Give Birth",
+        "type": "ARTWORK",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtage9in003ds0kpunn4erfv",
+      "title": "Florence",
+      "url": "https://www.feelflorence.it/en",
+      "targetEntity": {
+        "id": "cmsvvxhxg00bf85sjcv8h68sh",
+        "title": "Florencia",
+        "type": "PLACE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 1
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 1
+    },
+    {
+      "sourceId": "cmtfzfo1m000i1kphutylnlfr",
+      "title": "Shahzia Sikander, Flesh Flush, 2004 — artist website",
+      "url": "https://www.shahziasikander.com/artworks/flesh-flush",
+      "targetEntity": {
+        "id": "cmsvvxjqj01dp85sjar1ltndp",
+        "title": "Flesh Flush",
+        "type": "ARTWORK",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 2,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxyncd00i942ke2ra174qf",
+      "title": "Donald Judd — registro de autoridad",
+      "url": "https://www.wikidata.org/wiki/Q250293",
+      "targetEntity": {
+        "id": "cmsvvxisc00sm85sjkrvyorwa",
+        "title": "Donald Judd",
+        "type": "ARTIST",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 1
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 1
+    },
+    {
+      "sourceId": "cmtfxymrc00fl42ket93zpnwa",
+      "title": "Dan Flavin — registro de autoridad",
+      "url": "https://www.wikidata.org/wiki/Q504395",
+      "targetEntity": {
+        "id": "cmsvvxjab014485sjbc26q3fp",
+        "title": "Dan Flavin",
+        "type": "ARTIST",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 1
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "cmtfxymg000f842keretvyms6",
+      "title": "Cy Twombly — registro de autoridad",
+      "url": "https://www.wikidata.org/wiki/Q159566",
+      "targetEntity": {
+        "id": "cmsvvxj9g013j85sjarguaj27",
+        "title": "Cy Twombly",
+        "type": "ARTIST",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 1
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "cmtfxylfv009742kerkm2oaa1",
+      "title": "Bretonas en el prado — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AEmile_Bernard_Bretonnes_dans_une_prairie_1892.jpg",
+      "targetEntity": {
+        "id": "cmsvvxjj6019m85sj4xbo632n",
+        "title": "Bretonas en el prado",
+        "type": "ARTWORK",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 2,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtage9j6003hs0kp2yjb5cw3",
+      "title": "Madrid Destino",
+      "url": "https://www.esmadrid.com/en",
+      "targetEntity": {
+        "id": "cmsvvxhyj00c085sjbzcb4gh7",
+        "title": "Madrid",
+        "type": "PLACE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 2
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "cmtage97p0011s0kpne5kcla7",
+      "title": "Art & Architecture Thesaurus",
+      "url": "https://www.getty.edu/research/tools/vocabularies/aat/",
+      "targetEntity": {
+        "id": "cmsvvxhkw005085sj3rdwmwdr",
+        "title": "Muerte",
+        "type": "CONCEPT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 2
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 1
+    },
+    {
+      "sourceId": "cmtfxykua006142kezpbqxz6t",
+      "title": "Arte rupestre — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ALascaux_painting.jpg",
+      "targetEntity": {
+        "id": "cmsvvxhcd000r85sjkqr6blt9",
+        "title": "Arte rupestre",
+        "type": "MOVEMENT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 3,
+          "incoming": 1
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtage9wq006is0kpmnmxb9a6",
+      "title": "Andy Warhol",
+      "url": "https://www.warhol.org/",
+      "targetEntity": {
+        "id": "cmsvvxibp00iu85sjbnjr42n4",
+        "title": "Andy Warhol",
+        "type": "ARTIST",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 3
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtage9ba001ls0kpadu20fom",
+      "title": "The Bayeux Tapestry",
+      "url": "https://www.bayeuxmuseum.com/en/the-bayeux-tapestry/",
+      "targetEntity": {
+        "id": "cmsvvxiey00ko85sjzcckqm33",
+        "title": "Tapiz de Bayeux",
+        "type": "ARTWORK",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 4,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "cmtage99x001bs0kp3qax6vlk",
+      "title": "Lascaux",
+      "url": "https://archeologie.culture.gouv.fr/lascaux/en",
+      "targetEntity": {
+        "id": "cmsvvxidp00jx85sjnnvtsi5f",
+        "title": "Pinturas de Lascaux",
+        "type": "ARTWORK",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 5,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "entierro-orgaz-santo-tome-source",
+      "title": "El entierro del señor de Orgaz",
+      "url": "https://santotome.org/la-iglesia/",
+      "targetEntity": {
+        "id": "cmsvvxig500ld85sj2uzez8t2",
+        "title": "El entierro del conde de Orgaz",
+        "type": "ARTWORK",
+        "_count": {
+          "sourceRefs": 2,
+          "outgoing": 6,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "semillas-girasol-aiweiwei-source",
+      "title": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+      "url": "https://www.aiweiwei.com/1000years-2",
+      "targetEntity": {
+        "id": "cmsvvxil400oa85sj9kpcnr65",
+        "title": "Semillas de girasol",
+        "type": "ARTWORK",
+        "_count": {
+          "sourceRefs": 2,
+          "outgoing": 7,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "cmtage91f0000s0kpjeilzvqc",
+      "title": "Pablo Picasso",
+      "url": "https://guernica.museoreinasofia.es/agente/pablo-picasso-5322",
+      "targetEntity": {
+        "id": "cmsvvxi9700hc85sjjoidcq8a",
+        "title": "Pablo Picasso",
+        "type": "ARTIST",
+        "_count": {
+          "sourceRefs": 3,
+          "outgoing": 2,
+          "incoming": 3
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "cmtage9cl001vs0kp10jrl6sx",
+      "title": "Raphael Rooms",
+      "url": "https://www.museivaticani.va/content/museivaticani/en/collezioni/musei/stanze-di-raffaello.html",
+      "targetEntity": {
+        "id": "cmsvvxifu00l785sj6x48bkmi",
+        "title": "La escuela de Atenas",
+        "type": "ARTWORK",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 10,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtage9kx003vs0kp5lsltt4l",
+      "title": "Neoclassicism",
+      "url": "https://www.tate.org.uk/art/art-terms/n/neoclassicism",
+      "targetEntity": {
+        "id": "cmsvvxhez001x85sjnaghwwqx",
+        "title": "Neoclasicismo",
+        "type": "MOVEMENT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 4,
+          "incoming": 9
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 2
+    },
+    {
+      "sourceId": "cmtage96b000ss0kpl7b7atwh",
+      "title": "The body in art",
+      "url": "https://www.tate.org.uk/art/art-terms/b/body-art",
+      "targetEntity": {
+        "id": "cmsvvxhkg004u85sjoq4l52tb",
+        "title": "Cuerpo",
+        "type": "CONCEPT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 20
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "cmtage95p000os0kp83phgo8x",
+      "title": "Cubism",
+      "url": "https://www.tate.org.uk/art/art-terms/c/cubism",
+      "targetEntity": {
+        "id": "cmsvvxhgm002r85sjdntcbn33",
+        "title": "Cubismo",
+        "type": "MOVEMENT",
+        "_count": {
+          "sourceRefs": 4,
+          "outgoing": 5,
+          "incoming": 10
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": true,
+      "evidenceCount": 3
+    },
+    {
+      "sourceId": "cmtfy06gi01xf42kehpckb8xq",
+      "title": "Zúrich — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AZ%C3%BCrich_view_Quaibr%C3%BCcke_20200702.jpg",
+      "targetEntity": {
+        "id": "cmsvvxiz200wp85sjhzojs2ac",
+        "title": "Zúrich",
+        "type": "PLACE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfy06eh01wc42kex3o1ipnr",
+      "title": "Weimar — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3APanorama_Weimar-68.jpg",
+      "targetEntity": {
+        "id": "cmsvvxiz700ws85sj2ejrq49c",
+        "title": "Weimar",
+        "type": "PLACE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfy03w401vd42ke64nnbobs",
+      "title": "Viena — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AVienna_skyline_across_the_Danube_river.jpg",
+      "targetEntity": {
+        "id": "cmsvvxhyu00c685sjkua2vzi1",
+        "title": "Viena",
+        "type": "PLACE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfy03uy01us42ke21k6ohu9",
+      "title": "Venecia — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3APanorama_of_Canal_Grande_and_Ponte_di_Rialto%2C_Venice_-_September_2017.jpg",
+      "targetEntity": {
+        "id": "cmsvvxhxx00bo85sjgpsmkghz",
+        "title": "Venecia",
+        "type": "PLACE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfy03u601uc42keocuddx15",
+      "title": "Vanguardias modernas para empezar — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AKazimir_Malevich%2C_1915%2C_Black_Suprematic_Square%2C_oil_on_linen_canvas%2C_79.5_x_79.5_cm%2C_Tretyakov_Gallery%2C_Moscow.jpg",
+      "targetEntity": {
+        "id": "cmqmnymva00554vsjc1vs3a94",
+        "title": "Vanguardias modernas para empezar",
+        "type": "ARTICLE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfy03qd01sj42kei5d526g4",
+      "title": "Tokio — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ATokyo_Tower%2C_Minato_City.jpg",
+      "targetEntity": {
+        "id": "cmsvvxhzw00cr85sjhh0q5zei",
+        "title": "Tokio",
+        "type": "PLACE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxzvxb01ll42kegovx71f1",
+      "title": "São Paulo — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ASao_Paulo_Brazil_Skyline_Aerial%2C_December_2024.jpg",
+      "targetEntity": {
+        "id": "cmsvvxizv00x785sjrh5jgoba",
+        "title": "São Paulo",
+        "type": "PLACE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxzgmg01ge42ke37zltd76",
+      "title": "Prehistoria — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AVenus_of_Willendorf_frontview_retouched_2.jpg",
+      "targetEntity": {
+        "id": "cmqsdch7d000s35nydpycvqyx",
+        "title": "Prehistoria",
+        "type": "PERIOD",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxzb1y018o42kezl38hil0",
+      "title": "Muerte y memoria visual — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AArnold_B%C3%B6cklin_-_Die_Toteninsel_III_(Alte_Nationalgalerie%2C_Berlin).jpg",
+      "targetEntity": {
+        "id": "cmqmnymv900544vsjd7rsgqta",
+        "title": "Muerte y memoria visual",
+        "type": "ARTICLE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxz90r014442keo4pn108k",
+      "title": "Manifiesto del surrealismo — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AAndr%C3%A9_Breton_1924.jpg",
+      "targetEntity": {
+        "id": "entity-manifiesto-surrealismo",
+        "title": "Manifiesto del surrealismo",
+        "type": "TEXT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxyznf00ta42kel0dfu2qf",
+      "title": "Gyotaku — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AGyotaku_Details_Life-Aquatic-April-2013-050.JPG",
+      "targetEntity": {
+        "id": "cmt2wjw9i004007p5tivkw02t",
+        "title": "Gyotaku",
+        "type": "CONCEPT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxypgc00qo42keshjt65wl",
+      "title": "Fuego — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ADiego_Vel%C3%A1zquez_-_The_Forge_of_Vulcan_-_WGA24376.jpg",
+      "targetEntity": {
+        "id": "cmsvvxjum01gd85sjhiut4xyp",
+        "title": "Fuego",
+        "type": "CONCEPT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxyoqa00o142kevai0vv0w",
+      "title": "Exposición Internacional del Surrealismo — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AExposition_surrealisme_Paris_1938_carton.jpg",
+      "targetEntity": {
+        "id": "entity-exposicion-surrealismo-1938",
+        "title": "Exposición Internacional del Surrealismo",
+        "type": "EVENT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxyoo800n442kei9x4shr4",
+      "title": "Espacio — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AArchitectural_sculpture%2C_Gallo-Roman_Museum_of_Tongeren%2C_Belgium_(27610083936).jpg",
+      "targetEntity": {
+        "id": "cmsvvxjst01f785sjb0sarkzt",
+        "title": "Espacio",
+        "type": "CONCEPT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxyofo00l442kea6z18118",
+      "title": "El cuerpo en el siglo XX — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AGuillermo_Kahlo_-_Frida_Kahlo%2C_June_15%2C_1919_-_Google_Art_Project.jpg",
+      "targetEntity": {
+        "id": "cmqmnymv500524vsj38zdd7i1",
+        "title": "El cuerpo en el siglo XX",
+        "type": "ARTICLE",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxynyq00jj42kegpwt1d05",
+      "title": "Edad Antigua — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ADoryphoros_MAN_Napoli_Inv6011.jpg",
+      "targetEntity": {
+        "id": "cmqsdieju000w35nypf4mrh56",
+        "title": "Edad Antigua",
+        "type": "PERIOD",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxyllf00bu42ke49vwksph",
+      "title": "Cerámica — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3APythokles_painter%2C_Symposium%2C_Ancient_Greek_pottery_in_the_Museo_Gregoriano_Etrusco_02.jpg",
+      "targetEntity": {
+        "id": "cmsvvxk0s01km85sjmbo318km",
+        "title": "Cerámica",
+        "type": "CONCEPT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxykxf007l42keq4c57kxt",
+      "title": "Bauhaus — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ABauhaus-Dessau_main_building.jpg",
+      "targetEntity": {
+        "id": "entity-bauhaus",
+        "title": "Bauhaus",
+        "type": "ORGANIZATION",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxyklw001s42ke63ozvfmk",
+      "title": "Alegoría — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ABotticelli-primavera.jpg",
+      "targetEntity": {
+        "id": "cmsvvxjre01ea85sjefbs159f",
+        "title": "Alegoría",
+        "type": "CONCEPT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfy03wt01vr42kecq4gepn6",
+      "title": "Vitruvio — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AVitruvio_Pollione_portrait_(cropped).jpg",
+      "targetEntity": {
+        "id": "cmsvvxj3a00zg85sj2xchocgm",
+        "title": "Vitruvio",
+        "type": "PERSON",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfy03jq01oq42kev4lg2589",
+      "title": "Sófocles — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ASophocles_Musei_Capitolini_MC560.jpg",
+      "targetEntity": {
+        "id": "cmsvvxj3600zd85sja3owie22",
+        "title": "Sófocles",
+        "type": "PERSON",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxzyhw01n342kex7zn0zcd",
+      "title": "Shirin Neshat — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AShirin_Neshat_(Regisseurin)_a.jpg",
+      "targetEntity": {
+        "id": "cmsvvxit100t185sjjktvkunp",
+        "title": "Shirin Neshat",
+        "type": "ARTIST",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxzgky01fq42ke9k4iescy",
+      "title": "Plinio el Viejo — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ACaius_Plinius_Secundus._Line_engraving._Wellcome_V0004717.jpg",
+      "targetEntity": {
+        "id": "cmsvvxio200q185sjblw2wyno",
+        "title": "Plinio el Viejo",
+        "type": "PERSON",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxzb6b01at42keo33uppis",
+      "title": "Neolítico — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AStonehenge2007_07_30.jpg",
+      "targetEntity": {
+        "id": "cmsvvxhaj000385sjvtzzzg31",
+        "title": "Neolítico",
+        "type": "PERIOD",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 1
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxzadu017a42kewl7hinze",
+      "title": "Modernismo brasileño — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ACannibal_Manifesto_1.jpg",
+      "targetEntity": {
+        "id": "cmsvvxhk7004r85sjtzx6cemm",
+        "title": "Modernismo brasileño",
+        "type": "MOVEMENT",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 1
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxza8r016042keb4qqpwvw",
+      "title": "Meret Oppenheim — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AMeret_Oppenheim.jpg",
+      "targetEntity": {
+        "id": "cmsvvxirs00sa85sjrvi3piuo",
+        "title": "Meret Oppenheim",
+        "type": "ARTIST",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxz7hq00yh42keaxtjwa34",
+      "title": "Joseph Kosuth — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AJoseph_Kosuth_(cropped).jpg",
+      "targetEntity": {
+        "id": "cmsvvxiu800ts85sjhjooyzwt",
+        "title": "Joseph Kosuth",
+        "type": "ARTIST",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 0,
+          "incoming": 1
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxz4u900wp42kei588f7yo",
+      "title": "Instituto Warburg — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3AWarburg_Institute_from_Woburn_Square.jpg",
+      "targetEntity": {
+        "id": "cmsvvxixw00vy85sjvc0tfssz",
+        "title": "Instituto Warburg",
+        "type": "ORGANIZATION",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    },
+    {
+      "sourceId": "cmtfxz28i00ur42keac4bvd52",
+      "title": "Homero — procedencia visual",
+      "url": "https://commons.wikimedia.org/wiki/File%3ABust_Homer_BM_1825.jpg",
+      "targetEntity": {
+        "id": "cmsvvxj3100za85sjys37hjb5",
+        "title": "Homero",
+        "type": "PERSON",
+        "_count": {
+          "sourceRefs": 1,
+          "outgoing": 1,
+          "incoming": 0
+        }
+      },
+      "selected": true,
+      "acquired": true,
+      "preparationStatus": "READY",
+      "documentaryEffective": false,
+      "evidenceCount": 0
+    }
+  ]
+}

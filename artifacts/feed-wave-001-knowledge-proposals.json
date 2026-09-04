@@ -1,0 +1,622 @@
+{
+  "wave": "001",
+  "project": {
+    "id": "cmtnh34150000iefpoyajveba",
+    "title": "Controlled ingestion pilot 2026-09-04T21:35:18.557Z",
+    "createdAt": "2026-09-04T21:35:18.569Z"
+  },
+  "generatedAt": "2026-09-04T22:06:29.321Z",
+  "canonicalBaseline": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "sourceRefs": 838,
+    "citations": 1399,
+    "canonicalAssertions": 7
+  },
+  "canonicalAfter": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "sourceRefs": 838,
+    "citations": 1399,
+    "canonicalAssertions": 7
+  },
+  "count": 23,
+  "status": "PENDING_HUMAN_REVIEW_AND_CANONICAL_DEDUP",
+  "autoPromoted": 0,
+  "proposals": [
+    {
+      "id": "cmtnhbx5f00074ffpaekw92cw",
+      "title": "Definición de Body Art",
+      "summary": "Body art es un tipo de arte que utiliza el cuerpo como medio principal y foco, abarcando una variedad de enfoques desde aproximadamente 1960.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage96b000ss0kpl7b7atwh",
+          "source": "The body in art",
+          "url": "https://www.tate.org.uk/art/art-terms/b/body-art",
+          "support": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus Arnulf Rainer Untitled (Body Language) (c.1973) Tate © Arnulf Rainer Body art covers a wide range of art from about 1960 on, encompassin",
+          "context": "Pilot candidate; primary entity: Cuerpo"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhbx5l00084ffpaa08363i",
+      "title": "Representación del cuerpo en el arte",
+      "summary": "El cuerpo es un tema recurrente en diversas formas de arte, incluyendo performance art, conceptual art y video art, con artistas como Nancy Spero y Ana Mendieta explorando sus propias representaciones corporales.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage96b000ss0kpl7b7atwh",
+          "source": "The body in art",
+          "url": "https://www.tate.org.uk/art/art-terms/b/body-art",
+          "support": "We would like to hear from you. read Performance art Artworks that are created through actions performed by the artist or other participants, which may be live or recorded, spontaneous … read Actionism Actionism is the English version of th",
+          "context": "Pilot candidate; primary entity: Cuerpo"
+        },
+        {
+          "sourceId": "cmtage96b000ss0kpl7b7atwh",
+          "source": "The body in art",
+          "url": "https://www.tate.org.uk/art/art-terms/b/body-art",
+          "support": "Walker In the early 1990s Nancy Spero (born 1926) composed a series of homages to the Cuban artist, Ana Mendieta (1948–1985). … read Extending bodies Lisa Le Feuvre How artists have explored and utilised prosthetic technologies both to sati",
+          "context": "Pilot candidate; primary entity: Cuerpo"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhd70a000k4ffp2cmeuvri",
+      "title": "Cierre del Museo del Tapiz de Bayeux",
+      "summary": "El Museo del Tapiz de Bayeux está cerrado para trabajos de renovación hasta 2027.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage9ba001ls0kpadu20fom",
+          "source": "The Bayeux Tapestry",
+          "url": "https://www.bayeuxmuseum.com/en/the-bayeux-tapestry/",
+          "support": "Bayeux Tapestry museum - Closing for renovation work until 2027 The 3 museums The Bayeux Tapestry Memorial Museum of the Battle of Normandy MAHB Museum of Art and History Baron Gérard Practical information Disabled visitor You are a group Y",
+          "context": "Pilot candidate; primary entity: Tapiz de Bayeux"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhd70d000l4ffp1s8m23pq",
+      "title": "Descripción del Tapiz de Bayeux",
+      "summary": "El Tapiz de Bayeux narra la épica aventura de Guillermo el Conquistador en 1066 y es considerado un recuerdo del mundo por la UNESCO.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage9ba001ls0kpadu20fom",
+          "source": "The Bayeux Tapestry",
+          "url": "https://www.bayeuxmuseum.com/en/the-bayeux-tapestry/",
+          "support": "The Bayeux Tapestry The epic adventure of William the Conqueror in 1066 Discover the museum 01 02 03 Discover the Bayeux Tapestry The museum in pictures The Bayeux Tapestry, a UNESCO's \"Memory of the World\" Discover Bayeux Museum What's on?",
+          "context": "Pilot candidate; primary entity: Tapiz de Bayeux"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhd70e000m4ffp9x3l0tkx",
+      "title": "Información práctica para visitar Bayeux",
+      "summary": "Se proporciona información práctica para visitar Bayeux, incluyendo cómo llegar por coche, avión y tren, así como horarios de apertura y precios.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage9ba001ls0kpadu20fom",
+          "source": "The Bayeux Tapestry",
+          "url": "https://www.bayeuxmuseum.com/en/the-bayeux-tapestry/",
+          "support": "Find out more PRACTICAL INFORMATION By car From Caen : N13 exit 36 to Bayeux From Rennes : A84 or E03 towards Caen exit 43, then D6 By plane Paris airport, then by train from Gare Saint-Lazare station, Paris, to Bayeux station By train Leav",
+          "context": "Pilot candidate; primary entity: Tapiz de Bayeux"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhk6v100154ffpln2ipyf0",
+      "title": "Donald Judd",
+      "summary": "Donald Clarence Judd, conocido como Donald Judd, fue un artista minimalista estadounidense que vivió entre 1928 y 1994.",
+      "kind": "CONCEPT",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtfxyncd00i942ke2ra174qf",
+          "source": "Donald Judd — registro de autoridad",
+          "url": "https://www.wikidata.org/wiki/Q250293",
+          "support": "From Wikidata American minimalist artist (1928–1994) Donald Clarence Judd Donarudo Jaddo Don Judd edit Language Label Description Also known as default for all languages Donald Judd – English Donald Judd American minimalist artist (1928–199",
+          "context": "Pilot candidate; primary entity: Donald Judd"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhl1c9001a4ffpsemhfvtq",
+      "title": "Fundación de la Iglesia de Santo Tomé",
+      "summary": "La parroquia de la Iglesia de Santo Tomé fue fundada después de la reconquista cristiana de Toledo por Alfonso VI en 1085, según la primera noticia de su existencia en 1142.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "entierro-orgaz-santo-tome-source",
+          "source": "El entierro del señor de Orgaz",
+          "url": "https://santotome.org/la-iglesia/",
+          "support": "La Iglesia | Santo Tomé Ir al contenido Tarifas y horarios El Greco La Iglesia Parroquia Noticias X Editar el contenido Contacto Plaza del Conde 4 45002 Toledo (+34) 925 256 098 info@santotome.org Horario 01 MAR - 15 OCT: 10:00 AM - 18:45 P",
+          "context": "Pilot candidate; primary entity: El entierro del conde de Orgaz"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhl1cb001b4ffpnj0ibqk8",
+      "title": "Características arquitectónicas de la Iglesia de Santo Tomé",
+      "summary": "La Iglesia de Santo Tomé conserva elementos del primer edificio mudéjar, incluyendo un gran arco polilobulado y un arquillo lobulado sobre un friso de ladrillos.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "entierro-orgaz-santo-tome-source",
+          "source": "El entierro del señor de Orgaz",
+          "url": "https://santotome.org/la-iglesia/",
+          "support": "Del primer edificio mudéjar conserva el gran arco polilobulado superpuesto al actual arco toral, que separa la nave principal del presbiterio, junto con los recios machones de esta parte de la nave y un pequeño arquillo lobulado sobre un fr",
+          "context": "Pilot candidate; primary entity: El entierro del conde de Orgaz"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhl1cc001c4ffprusuouhb",
+      "title": "Don Gonzalo Ruiz de Toledo y sus obras caritativas",
+      "summary": "Don Gonzalo Ruiz de Toledo, notario mayor de Castilla, contribuyó a la reconstrucción de iglesias parroquiales y construyó la iglesia de San Esteban del convento de los agustinos a sus expensas.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "entierro-orgaz-santo-tome-source",
+          "source": "El entierro del señor de Orgaz",
+          "url": "https://santotome.org/la-iglesia/",
+          "support": "Don Gonzalo Ruiz de Toledo Un generoso caballero Don Gonzalo Ruiz de Toledo, notario mayor de Castilla y señor de la villa de Orgaz, destacó por sus generosas obras de caridad, contribuyendo a la reconstrucción de iglesias parroquiales como",
+          "context": "Pilot candidate; primary entity: El entierro del conde de Orgaz"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhlqxc001j4ffph0oml9q8",
+      "title": "Memorias de Ai Weiwei",
+      "summary": "El artista Ai Weiwei ha escrito un extenso relato autobiográfico que abarca un siglo de historia china a través de la vida de su padre, Ai Qing, y su propia experiencia.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "semillas-girasol-aiweiwei-source",
+          "source": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+          "url": "https://www.aiweiwei.com/1000years-2",
+          "support": "\" data-localized=\"{\"invalidVideo\":\"Invalid video embed.\",\"playButton\":\"Play\"}\" > 1000 YEARS OF JOYS AND SORROWS In his widely anticipated memoir, “one of the most important artists working in the world today” (Financial Times) tells a centu",
+          "context": "Pilot candidate; primary entity: Semillas de girasol"
+        },
+        {
+          "sourceId": "semillas-girasol-aiweiwei-source",
+          "source": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+          "url": "https://www.aiweiwei.com/1000years-2",
+          "support": "Once an intimate of Mao Zedong and the nation’s most celebrated poet, Ai Weiwei’s father, Ai Qing, was branded a rightist during the Cultural Revolution, and he and his family were banished to a desolate place known as “Little Siberia,” whe",
+          "context": "Pilot candidate; primary entity: Semillas de girasol"
+        },
+        {
+          "sourceId": "semillas-girasol-aiweiwei-source",
+          "source": "1000 Years of Joys and Sorrows — Sunflower Seeds",
+          "url": "https://www.aiweiwei.com/1000years-2",
+          "support": "At once ambitious and intimate, 1000 Years of Joys and Sorrows offers a deep understanding of the myriad forces that have shaped modern China, and serves as a timely reminder of the urgent need to protect freedom of expression. “1000 Years ",
+          "context": "Pilot candidate; primary entity: Semillas de girasol"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhn1uu0002nbfpeqvantzu",
+      "title": "Formación académica de Picasso",
+      "summary": "Pablo Picasso fue formado en Bellas Artes según los patrones de la academia.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage91f0000s0kpjeilzvqc",
+          "source": "Pablo Picasso",
+          "url": "https://guernica.museoreinasofia.es/agente/pablo-picasso-5322",
+          "support": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y e",
+          "context": "Pilot candidate; primary entity: Pablo Picasso"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhn1ux0003nbfpe7egevwf",
+      "title": "Influencia de Barcelona en Picasso",
+      "summary": "Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage91f0000s0kpjeilzvqc",
+          "source": "Pablo Picasso",
+          "url": "https://guernica.museoreinasofia.es/agente/pablo-picasso-5322",
+          "support": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y e",
+          "context": "Pilot candidate; primary entity: Pablo Picasso"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhn1uz0004nbfpp6qiaq7b",
+      "title": "Reconocimiento de Picasso en París",
+      "summary": "Picasso se convirtió en una figura de referencia en París en 1904, ocupando a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage91f0000s0kpjeilzvqc",
+          "source": "Pablo Picasso",
+          "url": "https://guernica.museoreinasofia.es/agente/pablo-picasso-5322",
+          "support": "Instalado en París en 1904, enseguida se convirtió en una figura de referencia que ocupó a críticos e historiadores, marchantes, coleccionistas, poetas, artistas, músicos y cineastas, quienes reconocieron en su trabajo la expresión de un le",
+          "context": "Pilot candidate; primary entity: Pablo Picasso"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhn1v10005nbfpnabp6acn",
+      "title": "Enfoque artístico de Picasso",
+      "summary": "La obra de Picasso gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage91f0000s0kpjeilzvqc",
+          "source": "Pablo Picasso",
+          "url": "https://guernica.museoreinasofia.es/agente/pablo-picasso-5322",
+          "support": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados",
+          "context": "Pilot candidate; primary entity: Pablo Picasso"
+        }
+      ]
+    },
+    {
+      "id": "cmtnho914000dnbfppao29jgb",
+      "title": "Cubismo como estilo influente del siglo XX",
+      "summary": "El cubismo fue uno de los estilos más influyentes del siglo XX, según la evidencia proporcionada.",
+      "kind": "OPEN_QUESTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage95p000os0kp83phgo8x",
+          "source": "Cubism",
+          "url": "https://www.tate.org.uk/art/art-terms/c/cubism",
+          "support": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Paris and DACS, London ",
+          "context": "Pilot candidate; primary entity: Cubismo"
+        }
+      ]
+    },
+    {
+      "id": "cmtnho917000enbfp14sfelje",
+      "title": "Origen del término 'cubismo'",
+      "summary": "El término 'cubismo' parece haber surgido de un comentario del crítico Louis Vauxcelles en 1908.",
+      "kind": "OPEN_QUESTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage95p000os0kp83phgo8x",
+          "source": "Cubism",
+          "url": "https://www.tate.org.uk/art/art-terms/c/cubism",
+          "support": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometric outlines, to cubes",
+          "context": "Pilot candidate; primary entity: Cubismo"
+        }
+      ]
+    },
+    {
+      "id": "cmtnho918000fnbfpj0abk6f2",
+      "title": "Influencia de máscaras tribales africanas en Picasso",
+      "summary": "Pablo Picasso fue inspirado por máscaras tribales africanas en su obra.",
+      "kind": "OPEN_QUESTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage95p000os0kp83phgo8x",
+          "source": "Cubism",
+          "url": "https://www.tate.org.uk/art/art-terms/c/cubism",
+          "support": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image. ‘A head’, said Picasso, ‘is a matter of eyes, nose, mouth, which can be distributed in any",
+          "context": "Pilot candidate; primary entity: Cubismo"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhooeh000snbfpyflqqorp",
+      "title": "Festival de Rificolona",
+      "summary": "El texto menciona el festival de Rificolona en Florencia en septiembre de 2026.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage9in003ds0kpunn4erfv",
+          "source": "Florence",
+          "url": "https://www.feelflorence.it/en",
+          "support": "Filter by Discover Florence and its Metropolitan Area Previous \" class=\"btn btn-primary btn-sm glide__arrow glide__arrow--left border font-sans-serif\"> Next September 2026 in the Florence area The Burning of the Tower in Signa, the Rificolo",
+          "context": "Pilot candidate; primary entity: Florencia"
+        }
+      ]
+    },
+    {
+      "id": "cmtnht3zn0010nbfp9l77mggc",
+      "title": "Cy Twombly",
+      "summary": "Cy Twombly, también conocido como Edwin Parker Twombly Jr., fue un pintor, escultor y fotógrafo estadounidense nacido en 1928 y fallecido en 2011. Su nombre en su lengua nativa es Cy Twombly (inglés).",
+      "kind": "CONCEPT",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtfxymg000f842keretvyms6",
+          "source": "Cy Twombly — registro de autoridad",
+          "url": "https://www.wikidata.org/wiki/Q159566",
+          "support": "Twombly Edwin Parker Twobly Edwin Parker Twombly Jnr edit Language Label Description Also known as default for all languages Cy Twombly – English Cy Twombly American painter, sculptor and photographer (1928–2011) Edwin Parker Twombly Edwin ",
+          "context": "Pilot candidate; primary entity: Cy Twombly"
+        },
+        {
+          "sourceId": "cmtfxymg000f842keretvyms6",
+          "source": "Cy Twombly — registro de autoridad",
+          "url": "https://www.wikidata.org/wiki/Q159566",
+          "support": "Twombly Edwin Parker Twobly Edwin Parker Twombly Jnr Statements instance of human 3 references stated in BnF authorities Bibliothèque nationale de France ID 11991693f retrieved 10 October 2015 stated in datos.bne.es retrieved 25 February 20",
+          "context": "Pilot candidate; primary entity: Cy Twombly"
+        },
+        {
+          "sourceId": "cmtfxymg000f842keretvyms6",
+          "source": "Cy Twombly — registro de autoridad",
+          "url": "https://www.wikidata.org/wiki/Q159566",
+          "support": "Guggenheim Museum 1 reference retrieved 20 February 2021 inferred from Untitled Art Gallery of New South Wales 1 reference retrieved 20 February 2021 inferred from Three studies from the Temeraire Bavarian State Painting Collections 1 refer",
+          "context": "Pilot candidate; primary entity: Cy Twombly"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhuda50014nbfpl3qs8726",
+      "title": "Dan Flavin",
+      "summary": "Dan Flavin fue un artista estadounidense conocido por sus obras de arte de instalación y pintura. Nació en 1933 y falleció en 1996. Su trabajo es asociado con el movimiento minimalista.",
+      "kind": "CONCEPT",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtfxymrc00fl42ket93zpnwa",
+          "source": "Dan Flavin — registro de autoridad",
+          "url": "https://www.wikidata.org/wiki/Q504395",
+          "support": "From Wikidata American installation artist and painter 1933–1996) (1933–1996) edit Language Label Description Also known as default for all languages Dan Flavin – English Dan Flavin American installation artist and painter 1933–1996) (1933–",
+          "context": "Pilot candidate; primary entity: Dan Flavin"
+        },
+        {
+          "sourceId": "cmtfxymrc00fl42ket93zpnwa",
+          "source": "Dan Flavin — registro de autoridad",
+          "url": "https://www.wikidata.org/wiki/Q504395",
+          "support": "Reppin's survival (Dutch) reference URL https://vanabbemuseum.nl/en/collection/details/collection/?lookup%5B1673%5D%5Bfilter%5D%5B0%5D=id%3AC466 retrieved 5 July 2021 Stedelijk Museum Amsterdam 4 references title untitled (to Piet Mondrian ",
+          "context": "Pilot candidate; primary entity: Dan Flavin"
+        },
+        {
+          "sourceId": "cmtfxymrc00fl42ket93zpnwa",
+          "source": "Dan Flavin — registro de autoridad",
+          "url": "https://www.wikidata.org/wiki/Q504395",
+          "support": "Tatlin (English) reference URL https://www.stedelijk.nl/nl/collectie/1543-dan-flavin-%27%27monument%27%27-for-v.-tatlin retrieved 7 September 2021 title Zonder titel (English) reference URL https://www.stedelijk.nl/nl/collectie/26754-dan-fl",
+          "context": "Pilot candidate; primary entity: Dan Flavin"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhwyol0008gpfpjppwrjz6",
+      "title": "Madrid's Cultural and Touristic Attractions",
+      "summary": "Madrid offers a rich array of cultural and touristic attractions, including dining at Michelin-star restaurants, exploring the city's vibrant food scene, enjoying flamenco performances, shopping for artisanal products, visiting parks and ga",
+      "kind": "CONCEPT",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage9j6003hs0kp2yjb5cw3",
+          "source": "Madrid Destino",
+          "url": "https://www.esmadrid.com/en",
+          "support": "Explore the places and characters that raised the city to the top of the art and culture scene. --> Food and Drink Delve into Madrid’s exciting food scene with dinner at a Michelin-star restaurant, some tapas in a century-old taberna or a c",
+          "context": "Pilot candidate; primary entity: Madrid"
+        },
+        {
+          "sourceId": "cmtage9j6003hs0kp2yjb5cw3",
+          "source": "Madrid Destino",
+          "url": "https://www.esmadrid.com/en",
+          "support": "Check out our calendar of events. live like a madrileño --> Keep cool with these fans Whether you prefer lace, plain or hand-painted fans, you're bound to find the perfect summer accessory at these shops. --> Artisan ice cream parlours Beat",
+          "context": "Pilot candidate; primary entity: Madrid"
+        },
+        {
+          "sourceId": "cmtage9j6003hs0kp2yjb5cw3",
+          "source": "Madrid Destino",
+          "url": "https://www.esmadrid.com/en",
+          "support": "OFFICIAL PRODUCTS --> Madrid City Card The city&rsquo;s new official sightseeing and tourist travel pass. --> Panoramic views at 92 metres An observation deck offering wonderful vistas of the city. --> Official Madrid Shop Visit our store o",
+          "context": "Pilot candidate; primary entity: Madrid"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhxqcy000kgpfp5ze7z5cd",
+      "title": "Neoclassicism was a pure form of classicism",
+      "summary": "Neoclassicism emerged as a pure form of classicism around 1750, influenced by the discovery of Roman ruins in Pompeii and the publication of a history of ancient art by Winckelmann.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage9kx003vs0kp5lsltt4l",
+          "source": "Neoclassicism",
+          "url": "https://www.tate.org.uk/art/art-terms/n/neoclassicism",
+          "support": "Neoclassicism Neoclassicism was a particularly pure form of classicism that emerged from about 1750 selected artists in the collection selected artworks in the collection Sir Joshua Reynolds Three Ladies Adorning a Term of Hymen (1773) Tate",
+          "context": "Pilot candidate; primary entity: Neoclasicismo"
+        }
+      ]
+    },
+    {
+      "id": "cmtnhxqd0000lgpfpjhrzq2gx",
+      "title": "Academies aimed to improve art",
+      "summary": "During the Renaissance, academies were established to improve art and were run by artists.",
+      "kind": "ASSERTION",
+      "reviewState": "PENDING",
+      "targetStatus": null,
+      "targetConfidence": null,
+      "subjectRole": null,
+      "targetReason": null,
+      "supportSpan": null,
+      "identityDisposition": null,
+      "duplicateCandidates": null,
+      "provenance": [
+        {
+          "sourceId": "cmtage9kx003vs0kp5lsltt4l",
+          "source": "Neoclassicism",
+          "url": "https://www.tate.org.uk/art/art-terms/n/neoclassicism",
+          "support": "We would like to hear from you. read Classicism The term classicism is used to describe art that makes reference to ancient Greek or Roman style read Academy Established during the Renaissance and widespread by the seventeenth century, acad",
+          "context": "Pilot candidate; primary entity: Neoclasicismo"
+        }
+      ]
+    }
+  ]
+}

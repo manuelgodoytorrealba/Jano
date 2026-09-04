@@ -1,0 +1,67 @@
+{
+  "wave": "001",
+  "project": {
+    "id": "cmtnh34150000iefpoyajveba",
+    "title": "Controlled ingestion pilot 2026-09-04T21:35:18.557Z",
+    "createdAt": "2026-09-04T21:35:18.569Z"
+  },
+  "generatedAt": "2026-09-04T22:06:29.321Z",
+  "canonicalBaseline": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "sourceRefs": 838,
+    "citations": 1399,
+    "canonicalAssertions": 7
+  },
+  "canonicalAfter": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "sourceRefs": 838,
+    "citations": 1399,
+    "canonicalAssertions": 7
+  },
+  "projected": true,
+  "current": {
+    "metrics": {
+      "totalEntities": 805,
+      "totalRelations": 1388,
+      "totalSources": 590,
+      "medianRelationsPerEntity": 2,
+      "orphanEntities": 117,
+      "entitiesWithZeroSources": 0,
+      "entitiesWith1Source": 778,
+      "entitiesWith2PlusSources": 27,
+      "entitiesWithCanonicalAssertions": 3,
+      "entitiesWithEditorial": 39,
+      "entitiesWithMedia": 805,
+      "pendingEntityProposals": 34,
+      "pendingRelationProposals": 23,
+      "duplicateCandidates": 0,
+      "researchQueueSize": 804
+    },
+    "coverage": {
+      "MISSING": 0,
+      "WEAK": 771,
+      "ADEQUATE": 33,
+      "STRONG": 1
+    }
+  },
+  "potentiallyImprovedEntities": [
+    "cmsvvxhxg00bf85sjcv8h68sh",
+    "cmsvvxisc00sm85sjkrvyorwa",
+    "cmsvvxjab014485sjbc26q3fp",
+    "cmsvvxj9g013j85sjarguaj27",
+    "cmsvvxhyj00c085sjbzcb4gh7",
+    "cmsvvxhkw005085sj3rdwmwdr",
+    "cmsvvxiey00ko85sjzcckqm33",
+    "cmsvvxig500ld85sj2uzez8t2",
+    "cmsvvxil400oa85sj9kpcnr65",
+    "cmsvvxi9700hc85sjjoidcq8a",
+    "cmsvvxhez001x85sjnaghwwqx",
+    "cmsvvxhkg004u85sjoq4l52tb",
+    "cmsvvxhgm002r85sjdntcbn33"
+  ],
+  "caveat": "Projection only; no proposal has changed canonical coverage."
+}
