@@ -20,6 +20,7 @@ import { ResearchModule } from './research/research.module';
 import { validateEnv } from './config/env.validation';
 import { LibraryModule } from './library/library.module';
 import { HealthController } from './health.controller';
+import { KnowledgeModule } from './knowledge/knowledge.module';
 
 @Module({
   controllers: [HealthController],
@@ -47,6 +48,7 @@ import { HealthController } from './health.controller';
     CuratedModule,
     ResearchModule,
     LibraryModule,
+    KnowledgeModule,
   ],
 })
 export class AppModule {}

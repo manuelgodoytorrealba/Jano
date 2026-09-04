@@ -44,6 +44,7 @@ import { ReorderResearchOutlineSectionsDto } from './dto/reorder-research-outlin
 import { ReorderResearchQuestionsDto } from './dto/reorder-research-questions.dto';
 import { UpdateResearchOutlineSectionDto } from './dto/update-research-outline-section.dto';
 import { ReviewResearchProposalDto } from './dto/review-research-proposal.dto';
+import { ResearchProposalActionDto } from './dto/research-proposal-action.dto';
 import { CreateResearchEntityDto } from './dto/create-research-entity.dto';
 import { CreateResearchRelationDto } from './dto/create-research-relation.dto';
 import { PromoteResearchEntityDto } from './dto/promote-research-entity.dto';
@@ -419,6 +420,15 @@ export class ResearchController {
   @Post(':id/research-proposals/:proposalId/accept')
   acceptProposal(@Param('id') id: string, @Param('proposalId') proposalId: string) {
     return this.service.acceptProposal(id, proposalId);
+  }
+
+  @Post(':id/research-proposals/:proposalId/action')
+  proposalAction(
+    @Param('id') id: string,
+    @Param('proposalId') proposalId: string,
+    @Body() dto: ResearchProposalActionDto,
+  ) {
+    return this.service.applyProposalAction(id, proposalId, dto);
   }
 
   @Post(':id/research-proposals/:proposalId/merge')

@@ -15,10 +15,11 @@ import { ResearchDraftService } from './research-draft.service';
 import { ResearchSectionAssistantService } from './research-section-assistant.service';
 import { ReviewedResearchEvidenceService } from './reviewed-research-evidence.service';
 import { CanonicalPromotionService } from './canonical-promotion.service';
+import { KnowledgeModule } from '../knowledge/knowledge.module';
 
 import { ResearchOwnerGuard } from './research-owner.guard';
 @Module({
-  imports: [PrismaModule, AIModule, SourcesModule, LibraryModule, EntitiesModule],
+  imports: [PrismaModule, AIModule, SourcesModule, LibraryModule, EntitiesModule, KnowledgeModule],
   controllers: [ResearchController, ResearchPublicController],
   providers: [
     ResearchOwnerGuard,

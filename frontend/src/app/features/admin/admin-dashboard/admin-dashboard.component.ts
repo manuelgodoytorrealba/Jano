@@ -273,6 +273,12 @@ export class AdminDashboardComponent {
           this.sidebarItem('Artículos', 'ARTICLE', count(['ARTICLE', 'TEXT'])),
         ],
       },
+      {
+        label: 'Operaciones',
+        items: [
+          { label: 'Salud del conocimiento', route: '/admin/knowledge-operations', count: null },
+        ],
+      },
     ];
   }
 

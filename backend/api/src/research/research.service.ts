@@ -29,6 +29,7 @@ import { CreateResearchPdfMaterialDto } from './dto/create-research-pdf-material
 import { CreateResearchProjectDto } from './dto/create-research-project.dto';
 import { UpdateResearchProjectStatusDto } from './dto/update-research-project-status.dto';
 import { ReviewResearchProposalDto } from './dto/review-research-proposal.dto';
+import { ResearchProposalActionDto } from './dto/research-proposal-action.dto';
 import { UpdateResearchProposalDto } from './dto/update-research-proposal.dto';
 import { CreateResearchEntityDto } from './dto/create-research-entity.dto';
 import { CreateResearchRelationDto } from './dto/create-research-relation.dto';
@@ -1569,9 +1570,126 @@ export class ResearchService {
       where: { id: proposalId },
       data: { reviewState: dto.reviewState },
     });
+    await this.recordProposalDecision(
+      proposalId,
+      dto.reviewState === 'REVIEWED' ? 'APPROVE' : 'REJECT',
+    );
 
     await this.touchProject(projectId);
     return this.getProject(projectId);
+  }
+
+  async applyProposalAction(projectId: string, proposalId: string, dto: ResearchProposalActionDto) {
+    const proposal = await this.prisma.researchFindingProposal.findFirst({
+      where: { id: proposalId, projectId },
+      include: { evidence: { select: { evidenceId: true } } },
+    });
+    if (!proposal) throw new NotFoundException('Research proposal not found');
+    if (
+      dto.action === 'APPROVE' ||
+      dto.action === 'APPROVE_RELATION' ||
+      dto.action === 'APPROVE_NEW_ENTITY'
+    )
+      return this.acceptProposal(projectId, proposalId);
+    if (dto.action === 'RESOLVE_TO_EXISTING' || dto.action === 'REROUTE') {
+      if (!dto.canonicalEntityId && !dto.targetTitle)
+        throw new BadRequestException('Reroute requires a canonical target or target title');
+      const targetTitle = dto.targetTitle?.trim() || null;
+      const rerouted = await this.prisma.$transaction(async (tx) => {
+        const created = await tx.researchFindingProposal.create({
+          data: {
+            projectId,
+            jobId: proposal.jobId,
+            aiExecutionId: proposal.aiExecutionId,
+            type: proposal.type,
+            proposalKey: `${proposal.proposalKey ?? proposal.id}:reroute`,
+            resultFingerprint: `${proposal.resultFingerprint ?? proposal.id}:reroute:${dto.canonicalEntityId ?? targetTitle}`,
+            title: targetTitle ?? proposal.title,
+            summary: proposal.summary,
+            kind: proposal.kind,
+            claimKind: proposal.claimKind,
+            entityKind: proposal.entityKind,
+            relationFromKey: proposal.relationFromKey,
+            relationToKey: proposal.relationToKey,
+            relationTypeId: proposal.relationTypeId,
+            explanation: proposal.explanation,
+            targetStatus: dto.canonicalEntityId ? 'TARGET_CONFIRMED' : 'TARGET_LIKELY',
+            targetConfidence: dto.canonicalEntityId ? 1 : 0.7,
+            targetReason: 'Human reroute from an auditable proposal.',
+            identityDisposition: dto.canonicalEntityId ? 'EXISTING_ENTITY' : 'POSSIBLE_ENTITY',
+            reviewState: 'PENDING',
+            evidence: {
+              create: proposal.evidence.map((item) => ({ evidenceId: item.evidenceId })),
+            },
+          },
+          select: { id: true },
+        });
+        await tx.researchFindingProposal.update({
+          where: { id: proposal.id },
+          data: { reviewState: 'REVIEWED', targetStatus: 'TARGET_MISMATCH' },
+        });
+        return created;
+      });
+      await this.recordProposalDecision(proposalId, dto.action, {
+        replacementProposalId: rerouted.id,
+        canonicalEntityId: dto.canonicalEntityId,
+      });
+      return this.listProposals(projectId, { page: 1, limit: 100 });
+    }
+    if (dto.action === 'SPLIT') {
+      const titles = (dto.childTitles ?? []).map((title) => title.trim()).filter(Boolean);
+      if (titles.length < 2)
+        throw new BadRequestException('Split requires at least two child claims');
+      await this.prisma.$transaction(async (tx) => {
+        for (const [index, title] of titles.entries())
+          await tx.researchFindingProposal.create({
+            data: {
+              projectId,
+              jobId: proposal.jobId,
+              aiExecutionId: proposal.aiExecutionId,
+              type: 'CLAIM',
+              proposalKey: `${proposal.proposalKey ?? proposal.id}:child-${index + 1}`,
+              resultFingerprint: `${proposal.resultFingerprint ?? proposal.id}:child-${index + 1}`,
+              title,
+              summary: proposal.summary,
+              claimKind: proposal.claimKind ?? 'ASSERTION',
+              reviewState: 'PENDING',
+              evidence: {
+                create: proposal.evidence.map((item) => ({ evidenceId: item.evidenceId })),
+              },
+            },
+          });
+        await tx.researchFindingProposal.update({
+          where: { id: proposal.id },
+          data: { reviewState: 'REVIEWED' },
+        });
+      });
+      await this.recordProposalDecision(proposalId, 'SPLIT', { childTitles: titles });
+      return this.listProposals(projectId, { page: 1, limit: 100 });
+    }
+    const state =
+      dto.action === 'DEFER' || dto.action === 'REQUEST_MORE_CONTEXT' ? 'PENDING' : 'REJECTED';
+    await this.prisma.researchFindingProposal.update({
+      where: { id: proposalId },
+      data: { reviewState: state },
+    });
+    await this.recordProposalDecision(proposalId, dto.action);
+    return this.listProposals(projectId, { page: 1, limit: 100 });
+  }
+
+  private async recordProposalDecision(proposalId: string, action: string, payload?: object) {
+    if (!this.prisma.researchProposalDecision?.create) return;
+    await this.prisma.researchProposalDecision.create({
+      data: {
+        id: createHash('sha256')
+          .update(`${proposalId}:${action}:${Date.now()}`)
+          .digest('hex')
+          .slice(0, 24),
+        proposalId,
+        action,
+        payload,
+      },
+    });
   }
 
   async convertProposalToClaim(projectId: string, proposalId: string) {

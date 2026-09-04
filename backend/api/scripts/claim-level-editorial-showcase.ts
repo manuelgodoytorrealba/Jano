@@ -48,7 +48,13 @@ const outputDir = resolve(
 type EntityRecord = Prisma.EntityGetPayload<{
   include: {
     translations: true;
-    sourceRefs: { include: { source: true } };
+    sourceRefs: { include: { source: true; assertions: true } };
+    canonicalAssertions: {
+      include: {
+        sourceRefs: { include: { sourceRef: { include: { source: true } } } };
+        citations: true;
+      };
+    };
     attributes: { include: { definition: true; citations: { include: { source: true } } } };
     outgoing: {
       include: { relationType: true; to: true; citations: { include: { source: true } } };
@@ -166,7 +172,28 @@ function knowledgeUnits(entity: EntityRecord): EditorialKnowledgeUnit[] {
     );
   }
 
-  for (const reference of entity.sourceRefs) {
+  for (const assertion of entity.canonicalAssertions.filter(
+    (item) => item.status === 'PUBLISHED',
+  )) {
+    const reference = assertion.sourceRefs[0]?.sourceRef;
+    units.push({
+      id: `EVIDENCE:${assertion.id}`,
+      kind: 'REVIEWED_EVIDENCE',
+      statement: assertion.proposition,
+      certainty: 'ATTRIBUTED',
+      entityIds: [entity.id],
+      provenance: {
+        table: 'CanonicalAssertion',
+        id: assertion.id,
+        sourceId: reference?.sourceId,
+        sourceTitle: reference?.source.title,
+        locator: reference?.page,
+        citationIds: assertion.citations.map((citation) => citation.id),
+      },
+    });
+  }
+
+  for (const reference of entity.sourceRefs.filter((item) => !item.assertions.length)) {
     const quote = reference.quote?.trim();
     if (!quote) continue;
     units.push({
@@ -321,7 +348,13 @@ async function main() {
         where: { slug },
         include: {
           translations: true,
-          sourceRefs: { include: { source: true } },
+          sourceRefs: { include: { source: true, assertions: true } },
+          canonicalAssertions: {
+            include: {
+              sourceRefs: { include: { sourceRef: { include: { source: true } } } },
+              citations: true,
+            },
+          },
           attributes: { include: { definition: true, citations: { include: { source: true } } } },
           outgoing: {
             include: {
