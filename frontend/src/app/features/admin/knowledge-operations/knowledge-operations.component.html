@@ -1,0 +1,52 @@
+<main class="operations-page">
+  <header class="operations-head">
+    <div>
+      <p class="eyebrow">Knowledge operations</p>
+      <h1>Scale / Knowledge health</h1>
+      <p>Deterministic coverage and the next research needs across JANO.</p>
+    </div>
+    <a routerLink="/admin">Back to workspace</a>
+  </header>
+
+  @if (vm$ | async; as vm) {
+    @if (vm.state === 'loading') {
+      <p class="state">Loading snapshot…</p>
+    } @else if (vm.state === 'error') {
+      <p class="state state--error">Snapshot unavailable.</p>
+    } @else if (vm.data; as snapshot) {
+      <section class="metric-grid" aria-label="Knowledge metrics">
+        @for (metric of metricKeys; track metric[0]) {
+          <article class="metric">
+            <span>{{ metric[1] }}</span
+            ><strong>{{ snapshot.metrics[metric[0]] | number }}</strong>
+          </article>
+        }
+      </section>
+      <div class="operations-grid">
+        <section class="panel">
+          <h2>Coverage</h2>
+          @for (state of ['MISSING', 'WEAK', 'ADEQUATE', 'STRONG']; track state) {
+            <div class="coverage-row">
+              <span>{{ state }}</span
+              ><strong>{{ snapshot.coverage[state] | number }}</strong>
+            </div>
+          }
+        </section>
+        <section class="panel">
+          <h2>Research queue</h2>
+          @for (item of snapshot.queue.slice(0, 12); track item.entityId) {
+            <div class="queue-row">
+              <div>
+                <strong>{{ item.entity }}</strong
+                ><span>{{ item.mainGap || 'No open gap' }}</span>
+              </div>
+              <b>{{ item.priority }}</b>
+            </div>
+          } @empty {
+            <p class="state">No ranked needs.</p>
+          }
+        </section>
+      </div>
+    }
+  }
+</main>

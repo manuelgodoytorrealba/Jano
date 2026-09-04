@@ -1,0 +1,37 @@
+{
+  "workload": "scale-ready-5000-batch-100-dry-run",
+  "database": {
+    "host": "127.0.0.1",
+    "name": "jano"
+  },
+  "autoCreateEntities": 0,
+  "autoCreateRelations": 0,
+  "autoPromoteAssertions": 0,
+  "autoEditorialApply": 0,
+  "firstRun": {
+    "sourcesSelected": 100,
+    "sourcesEffective": 100,
+    "stagesResumed": 0,
+    "retries": 0,
+    "errors": 0,
+    "modelCalls": 0,
+    "cacheHits": 0,
+    "cacheMisses": 0,
+    "pass": true
+  },
+  "secondRun": {
+    "sourcesSelected": 100,
+    "sourcesEffective": 100,
+    "stagesResumed": 1100,
+    "retries": 0,
+    "errors": 0,
+    "modelCalls": 0,
+    "checkpointResumes": 1100,
+    "cacheHits": 0,
+    "cacheMisses": 0,
+    "pass": true
+  },
+  "stageCallsFirstRun": 1100,
+  "resumePass": true,
+  "writes": 0
+}

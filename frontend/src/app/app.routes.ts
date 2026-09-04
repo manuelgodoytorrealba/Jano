@@ -151,6 +151,13 @@ export const routes: Routes = [
         pathMatch: 'full',
       },
       {
+        path: 'knowledge-operations',
+        loadComponent: () =>
+          import('./features/admin/knowledge-operations/knowledge-operations.component').then(
+            (m) => m.KnowledgeOperationsComponent,
+          ),
+      },
+      {
         path: 'research/new',
         loadComponent: () =>
           import('./features/admin/admin-research/admin-research.component').then(

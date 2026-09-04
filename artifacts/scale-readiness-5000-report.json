@@ -1,0 +1,508 @@
+{
+  "generatedAt": "2026-09-04T21:05:05.816Z",
+  "database": {
+    "name": "jano",
+    "local": true
+  },
+  "baseline": {
+    "totalEntities": 805,
+    "totalRelations": 1388,
+    "totalSources": 590,
+    "medianRelationsPerEntity": 2,
+    "orphanEntities": 117,
+    "entitiesWithZeroSources": 0,
+    "entitiesWith1Source": 778,
+    "entitiesWith2PlusSources": 27,
+    "entitiesWithCanonicalAssertions": 3,
+    "entitiesWithEditorial": 39,
+    "entitiesWithMedia": 805,
+    "pendingEntityProposals": 0,
+    "pendingRelationProposals": 0,
+    "duplicateCandidates": 0,
+    "researchQueueSize": 804
+  },
+  "capabilities": {
+    "ENTITY_TARGETING": "READY",
+    "IDENTITY_RESOLUTION": "READY",
+    "ENTITY_PROPOSALS": "READY",
+    "RELATION_PROPOSALS": "READY",
+    "CANONICAL_ASSERTION_BOUNDARY": "READY",
+    "ASSERTION_DEDUPLICATION": "READY",
+    "COVERAGE_ENGINE": "READY",
+    "RESEARCH_QUEUE": "READY",
+    "HUMAN_REVIEW_WORKFLOW": "READY",
+    "SEMANTIC_RESULT_CACHE": "READY",
+    "BATCH_ORCHESTRATION": "READY",
+    "RESUME_RETRY": "READY",
+    "OBSERVABILITY": "READY",
+    "EDITORIAL_REGENERATION": "FROZEN_PASS",
+    "PUBLIC_PRIVATE_BOUNDARY": "PASS",
+    "PROVENANCE": "PASS"
+  },
+  "targetingBenchmark": {
+    "total": 3,
+    "correctTarget": 0,
+    "safeReview": 3,
+    "wrongTargetAccepted": 0,
+    "critical": [
+      {
+        "id": "57",
+        "status": "TARGET_MISMATCH"
+      },
+      {
+        "id": "58",
+        "status": "TARGET_AMBIGUOUS"
+      },
+      {
+        "id": "59",
+        "status": "TARGET_AMBIGUOUS"
+      }
+    ]
+  },
+  "coverage": {
+    "MISSING": 0,
+    "WEAK": 771,
+    "ADEQUATE": 33,
+    "STRONG": 1
+  },
+  "researchQueue": {
+    "size": 804,
+    "top": [
+      {
+        "entityId": "cmsvvxjwp01hs85sj8fdwukto",
+        "entity": "Academia",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk3501m785sj7vqda8q6",
+        "entity": "Accesibilidad",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk2o01lv85sjd9vgrjae",
+        "entity": "Activismo",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjuh01ga85sj7xgyncnh",
+        "entity": "Agua",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjyx01jd85sjshbiefe2",
+        "entity": "Agua y política",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjuw01gj85sjw93y5ead",
+        "entity": "Aire",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjre01ea85sjefbs159f",
+        "entity": "Alegoría",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxhyo00c385sjn5rt6xz6",
+        "entity": "Ámsterdam",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxju801g485sjddicvm1n",
+        "entity": "Animal",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjxv01im85sj91gbr9p9",
+        "entity": "Archivo vivo",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjzx01k185sj70fbxnli",
+        "entity": "Arquitectura doméstica",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxhz000c985sjdktcnz6g",
+        "entity": "Berlín",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk4q01n785sjla1ppdac",
+        "entity": "Bogotá",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjrj01ed85sj0776rc5t",
+        "entity": "Canon",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk2k01ls85sjz4uuupxd",
+        "entity": "Censura",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk0s01km85sjmbo318km",
+        "entity": "Cerámica",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjrs01ej85sjv4oe7p52",
+        "entity": "Claroscuro",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjyt01ja85sjcgkxa6ht",
+        "entity": "Clima",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk3u01mm85sj617rhrdx",
+        "entity": "Conservación",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk3a01ma85sj2iief46m",
+        "entity": "Cuerpo político",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk0f01kd85sj9z6xaivj",
+        "entity": "Cultura popular",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjzp01jv85sj79h68ua4",
+        "entity": "Danza",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxi0d00d085sja3r1ykyl",
+        "entity": "Delhi",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxk4h01n185sjixlqtmj8",
+        "entity": "Derechos culturales",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      },
+      {
+        "entityId": "cmsvvxjxf01ia85sjcixgpbdt",
+        "entity": "Digital",
+        "currentCoverage": "WEAK",
+        "mainGap": "NEEDS_DOCUMENTARY_SOURCE",
+        "priority": 78,
+        "suggestedResearchAction": "NEEDS_DOCUMENTARY_SOURCE",
+        "needs": [
+          "NEEDS_DOCUMENTARY_SOURCE",
+          "NEEDS_RELATIONS",
+          "NEEDS_RECEPTION",
+          "NEEDS_EDITORIAL_REGENERATION",
+          "NEEDS_PROVENANCE_DEPTH"
+        ]
+      }
+    ]
+  },
+  "batchScaleTest": {
+    "workload": "scale-ready-5000-batch-100-dry-run",
+    "database": {
+      "host": "127.0.0.1",
+      "name": "jano"
+    },
+    "autoCreateEntities": 0,
+    "autoCreateRelations": 0,
+    "autoPromoteAssertions": 0,
+    "autoEditorialApply": 0,
+    "firstRun": {
+      "sourcesSelected": 100,
+      "sourcesEffective": 100,
+      "stagesResumed": 0,
+      "retries": 0,
+      "errors": 0,
+      "modelCalls": 0,
+      "cacheHits": 0,
+      "cacheMisses": 0,
+      "pass": true
+    },
+    "secondRun": {
+      "sourcesSelected": 100,
+      "sourcesEffective": 100,
+      "stagesResumed": 1100,
+      "retries": 0,
+      "errors": 0,
+      "modelCalls": 0,
+      "checkpointResumes": 1100,
+      "cacheHits": 0,
+      "cacheMisses": 0,
+      "pass": true
+    },
+    "stageCallsFirstRun": 1100,
+    "resumePass": true,
+    "writes": 0
+  },
+  "safety": {
+    "autoCreatedEntities": 0,
+    "autoCreatedRelations": 0,
+    "autoPromotedAssertions": 0,
+    "productionMutated": false,
+    "privateResearchPublicLeakage": 0
+  },
+  "reviewUx": {
+    "implemented": true,
+    "browserVerification": "BLOCKED_AUTHENTICATION_REQUIRED"
+  },
+  "debt": {
+    "P0": [],
+    "P1": [
+      "Authenticated Playwright verification of the new admin Knowledge Operations route requires a test-session credential."
+    ],
+    "P2": [
+      "Historical unrelated research benchmark failures remain documented."
+    ],
+    "P3": [
+      "Dashboard can gain richer filters as review volume grows."
+    ]
+  }
+}
