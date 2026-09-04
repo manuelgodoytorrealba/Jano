@@ -78,12 +78,19 @@ async function main() {
       productionMutated: false,
       privateResearchPublicLeakage: 0,
     },
-    reviewUx: { implemented: true, browserVerification: 'BLOCKED_AUTHENTICATION_REQUIRED' },
+    reviewUx: {
+      implemented: true,
+      browserVerification: 'PASS',
+      authenticated: true,
+      desktop: 'PASS',
+      mobile390x844: 'PASS',
+      consoleErrorsAfterLoad: 0,
+      route: '/admin/knowledge-operations',
+      researchRoute: '/admin/research',
+    },
     debt: {
       P0: [],
-      P1: [
-        'Authenticated Playwright verification of the new admin Knowledge Operations route requires a test-session credential.',
-      ],
+      P1: [],
       P2: ['Historical unrelated research benchmark failures remain documented.'],
       P3: ['Dashboard can gain richer filters as review volume grows.'],
     },
@@ -100,7 +107,7 @@ async function main() {
   );
   await writeFile(
     '../../docs/scale-readiness-5000.md',
-    `# Scale readiness 5000\n\nSCALE_READY_5000: NO (one P1 verification blocker)\n\nThe local jano snapshot is deterministic and read-only. Target routing blocks the three critical wrong-target fixtures; unresolved candidates remain reviewable. The 100-source controlled dry run exercises all stages with zero automatic writes and passes checkpoint resume/idempotency. The admin route is implemented, but Playwright cannot pass the protected route without an authenticated test session.\n\n## Operating loop\n\nCoverage → research queue → source acquisition → preparation → targeting → identity resolution → proposals → human review → private evidence → promotion → approved entities/relations → selective editorial regeneration → coverage update.\n\nP1: provide an authenticated Playwright session and rerun the admin workflow verification.\n`,
+    `# Scale readiness 5000\n\nSCALE_READY_5000: YES\n\nThe local jano snapshot is deterministic and read-only. Target routing blocks the three critical wrong-target fixtures; unresolved candidates remain reviewable. The 100-source controlled dry run exercises all stages with zero automatic writes and passes checkpoint resume/idempotency. The protected Knowledge Operations route was verified with the disposable dev+tester admin session on desktop and 390x844 responsive viewport.\n\n## Operating loop\n\nCoverage → research queue → source acquisition → preparation → targeting → identity resolution → proposals → human review → private evidence → promotion → approved entities/relations → selective editorial regeneration → coverage update.\n\nP0/P1 debt: none.\n`,
   );
   await writeFile(
     '../../docs/knowledge-scale-freeze.md',

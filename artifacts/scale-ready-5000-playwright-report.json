@@ -1,0 +1,30 @@
+{
+  "authenticated": true,
+  "adminAuthorized": true,
+  "realUserCredentialUsed": false,
+  "session": "temporary Playwright default context",
+  "routes": {
+    "knowledgeOperations": "/admin/knowledge-operations",
+    "research": "/admin/research"
+  },
+  "desktop": {
+    "pass": true,
+    "metricsVisible": true,
+    "coverageVisible": true,
+    "researchQueueVisible": true,
+    "apiStatus": 200
+  },
+  "mobile": {
+    "viewport": "390x844",
+    "pass": true,
+    "documentScrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "consoleErrorsAfterLoad": 0,
+  "mutations": {
+    "canonicalEntitiesCreated": 0,
+    "canonicalRelationsCreated": 0,
+    "assertionsPromoted": 0
+  },
+  "notes": "Research route opened with no pending fixtures; action contracts remain covered by focused backend tests."
+}

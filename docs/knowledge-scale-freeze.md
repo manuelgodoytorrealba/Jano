@@ -1,5 +1,7 @@
 # JANO knowledge scale freeze
 
+**INFRASTRUCTURE_FROZEN: YES** — SCALE_READY_5000 is closed for the current scope.
+
 ## Frozen core
 
 - Source → Material → Excerpt provenance

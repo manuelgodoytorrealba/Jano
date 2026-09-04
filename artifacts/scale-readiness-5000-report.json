@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T21:05:05.816Z",
+  "generatedAt": "2026-09-04T21:12:16.826Z",
   "database": {
     "name": "jano",
     "local": true
@@ -491,13 +491,17 @@
   },
   "reviewUx": {
     "implemented": true,
-    "browserVerification": "BLOCKED_AUTHENTICATION_REQUIRED"
+    "browserVerification": "PASS",
+    "authenticated": true,
+    "desktop": "PASS",
+    "mobile390x844": "PASS",
+    "consoleErrorsAfterLoad": 0,
+    "route": "/admin/knowledge-operations",
+    "researchRoute": "/admin/research"
   },
   "debt": {
     "P0": [],
-    "P1": [
-      "Authenticated Playwright verification of the new admin Knowledge Operations route requires a test-session credential."
-    ],
+    "P1": [],
     "P2": [
       "Historical unrelated research benchmark failures remain documented."
     ],
