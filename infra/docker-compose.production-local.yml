@@ -1,0 +1,38 @@
+name: jano-production-local
+
+services:
+  db:
+    ports: !override
+      - '55432:5432'
+    volumes:
+      - jano_production_local_pgdata:/var/lib/postgresql/data
+
+  backend:
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports: !override
+      - '3300:3000'
+      - '127.0.0.1:5556:5555'
+    environment:
+      MEDIA_PUBLIC_BASE_URL: http://localhost:3300
+      AI_PROVIDER: ollama
+      AI_MODEL: qwen2.5:14b
+      OLLAMA_MODEL: qwen2.5:14b
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+    command: ['npm', 'run', 'start:dev']
+    volumes:
+      - jano_production_local_uploads:/app/backend/api/uploads
+      - ../backend/api:/app/backend/api
+
+  frontend:
+    ports: !override
+      - '4300:4200'
+    environment:
+      SSR_API_ORIGIN: http://backend:3000
+      API_PROXY_TARGET: http://backend:3000
+
+volumes:
+  jano_production_local_pgdata:
+  jano_production_local_uploads:
+    external: true
+    name: jano-production-local_jano_production_local_uploads

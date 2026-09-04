@@ -1,0 +1,29 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "workingDatabase": "jano",
+  "sourceIds": [
+    "cmtage95p000os0kp83phgo8x",
+    "cmtage91f0000s0kpjeilzvqc",
+    "cmtage9bs001ps0kp1j5mc43w",
+    "entierro-orgaz-santo-tome-source",
+    "cmtage9ba001ls0kpadu20fom",
+    "cmtage97p0011s0kpne5kcla7",
+    "cmtage94q000is0kpgyqpynty",
+    "cmtagea1o006ms0kpqp0jld7t",
+    "cmtage99x001bs0kp3qax6vlk",
+    "cmtage9in003ds0kpunn4erfv"
+  ],
+  "titles": [
+    "Cubism",
+    "Pablo Picasso",
+    "The Birth of Venus",
+    "El entierro del señor de Orgaz",
+    "The Bayeux Tapestry",
+    "Art & Architecture Thesaurus",
+    "Marcel Duchamp: Fountain",
+    "Marilyn Diptych",
+    "Lascaux",
+    "Florence"
+  ],
+  "mode": "PREPARE_CLASSIFY_REVIEW_ONLY"
+}

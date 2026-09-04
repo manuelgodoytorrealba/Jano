@@ -1,0 +1,66 @@
+{
+  "projectId": "cmtg5shkf0000absjdacomore",
+  "evidenceId": "cmtg5srvk0009absj12ov179i",
+  "proposalId": "cmtg5x7av0001gtsj3qry1h0c",
+  "claimId": "cmtg5x7c50002gtsj05cwawhz",
+  "privateBeforeReview": true,
+  "reviewState": "REVIEWED",
+  "publishedStatus": "PUBLISHED",
+  "canonicalBefore": [
+    {
+      "id": "cmsvvxig500ld85sj2uzez8t2",
+      "updatedAt": "2026-08-30T10:47:33.556Z",
+      "title": "El entierro del conde de Orgaz",
+      "summary": "Obra maestra de El Greco, pintada entre 1586 y 1588 para la iglesia de Santo Tomé de Toledo. El enorme lienzo representa el milagro del entierro de Gonzalo Ruiz de Toledo, señor de Orgaz: según la tradición, san Agustín y san Esteban descendieron para depositar su cuerpo en la sepultura como reconocimiento a su caridad. La composición une el cortejo terrestre y la gloria celestial, y convierte una memoria local en una meditación sobre muerte, fe, comunidad e imagen."
+    },
+    {
+      "id": "cmsvvxil400oa85sj9kpcnr65",
+      "updatedAt": "2026-08-30T10:47:33.769Z",
+      "title": "Semillas de girasol",
+      "summary": "Instalación de Ai Weiwei presentada en la Turbine Hall de Tate Modern en 2010: un campo de más de cien millones de semillas de girasol modeladas, pintadas y cocidas a mano en porcelana por artesanos de Jingdezhen. La obra convierte una multitud de objetos aparentemente idénticos en una reflexión sobre individualidad, trabajo, producción industrial, memoria política y la relación entre China y Occidente."
+    },
+    {
+      "id": "cmsvvxj9g013j85sjarguaj27",
+      "updatedAt": "2026-08-30T10:47:34.802Z",
+      "title": "Cy Twombly",
+      "summary": null
+    },
+    {
+      "id": "cmsvvxjab014485sjbc26q3fp",
+      "updatedAt": "2026-08-30T10:47:34.835Z",
+      "title": "Dan Flavin",
+      "summary": null
+    }
+  ],
+  "canonicalAfter": [
+    {
+      "id": "cmsvvxig500ld85sj2uzez8t2",
+      "updatedAt": "2026-08-30T10:47:33.556Z",
+      "title": "El entierro del conde de Orgaz",
+      "summary": "Obra maestra de El Greco, pintada entre 1586 y 1588 para la iglesia de Santo Tomé de Toledo. El enorme lienzo representa el milagro del entierro de Gonzalo Ruiz de Toledo, señor de Orgaz: según la tradición, san Agustín y san Esteban descendieron para depositar su cuerpo en la sepultura como reconocimiento a su caridad. La composición une el cortejo terrestre y la gloria celestial, y convierte una memoria local en una meditación sobre muerte, fe, comunidad e imagen."
+    },
+    {
+      "id": "cmsvvxil400oa85sj9kpcnr65",
+      "updatedAt": "2026-08-30T10:47:33.769Z",
+      "title": "Semillas de girasol",
+      "summary": "Instalación de Ai Weiwei presentada en la Turbine Hall de Tate Modern en 2010: un campo de más de cien millones de semillas de girasol modeladas, pintadas y cocidas a mano en porcelana por artesanos de Jingdezhen. La obra convierte una multitud de objetos aparentemente idénticos en una reflexión sobre individualidad, trabajo, producción industrial, memoria política y la relación entre China y Occidente."
+    },
+    {
+      "id": "cmsvvxj9g013j85sjarguaj27",
+      "updatedAt": "2026-08-30T10:47:34.802Z",
+      "title": "Cy Twombly",
+      "summary": null
+    },
+    {
+      "id": "cmsvvxjab014485sjbc26q3fp",
+      "updatedAt": "2026-08-30T10:47:34.835Z",
+      "title": "Dan Flavin",
+      "summary": null
+    }
+  ],
+  "canonicalMutated": false,
+  "proposalCount": 1,
+  "idempotent": true,
+  "rollback": "Research project returned to ARCHIVED; disposable pilot records can be removed by deleting project and [PILOT] materials.",
+  "note": "No canonical Entity/Relation mutation; publication is the existing Research project representation."
+}

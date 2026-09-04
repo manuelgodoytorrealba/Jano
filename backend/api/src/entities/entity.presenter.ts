@@ -175,8 +175,21 @@ export function relationDisplayLabel(
   );
 }
 
+export function publicRelationJustification(value: string | null | undefined): string | null {
+  const justification = value?.trim() || null;
+  if (!justification) return null;
+  return /(?:\bJANO\b|lectura editorial relevante|editorial reading|asociación histórica o profesional)/i.test(
+    justification,
+  )
+    ? null
+    : justification;
+}
+
 export function serializeRelation<T extends RelationRecord>(relation: T, locale?: string) {
   const type = canonicalRelationKey(relation);
+  const localized = translationField(relation, locale, 'justification');
+  const spanish = translationValueForLocale(relation, 'justification', 'es');
+  const english = translationValueForLocale(relation, 'justification', 'en');
   return {
     ...relation,
     type,
@@ -184,11 +197,9 @@ export function serializeRelation<T extends RelationRecord>(relation: T, locale?
     relationTypeLabel: relationDisplayLabel(relation, locale),
     relationTypeInverseLabel: relationDisplayLabel(relation, locale, true),
     directed: canonicalRelationDirected(relation),
-    justification:
-      translationField(relation, locale, 'justification') ?? relation.justification ?? null,
-    justificationEs:
-      translationValueForLocale(relation, 'justification', 'es') ?? relation.justification ?? null,
-    justificationEn: translationValueForLocale(relation, 'justification', 'en'),
+    justification: publicRelationJustification(localized ?? relation.justification),
+    justificationEs: publicRelationJustification(spanish ?? relation.justification),
+    justificationEn: publicRelationJustification(english),
   };
 }
 

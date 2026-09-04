@@ -1,0 +1,126 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "apply": false,
+  "items": [
+    {
+      "reviewItemId": "first-real-10-13",
+      "researchEvidenceId": "cmthi6rio0000wlfp8f9o01ev",
+      "canonicalEntityId": "cmsumr74z003rodfppy1l9peb",
+      "proposition": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final.",
+      "supportQuote": "Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art object.",
+      "source": {
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "locator": "paragraph-1",
+        "materialVersionId": "cmthgbhsw000cuyfpqmury2gt",
+        "excerptId": "cmthgbhvo000duyfpp8r9b8dq"
+      },
+      "dimension": "DEFINITION_OR_IDENTITY",
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE"
+    },
+    {
+      "reviewItemId": "first-real-10-15",
+      "researchEvidenceId": "cmthi6riu0001wlfpofes756e",
+      "canonicalEntityId": "cmsumr74z003rodfppy1l9peb",
+      "proposition": "El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto.",
+      "supportQuote": "The term conceptual art was first used to reference this distinct movement in an article written by Sol LeWitt in 1967: In conceptual art the idea or concept is the most important aspect of the work.",
+      "source": {
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "locator": "paragraph-5",
+        "materialVersionId": "cmthgbhsw000cuyfpqmury2gt",
+        "excerptId": "cmthgbs1u000huyfp3szcfrjd"
+      },
+      "dimension": "CHRONOLOGY",
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE"
+    },
+    {
+      "reviewItemId": "first-real-10-16",
+      "researchEvidenceId": "cmthi6riy0002wlfp50rvoufk",
+      "canonicalEntityId": "cmsumr74z003rodfppy1l9peb",
+      "proposition": "El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria.",
+      "supportQuote": "When an artist uses a conceptual form of art, it means that all of the planning and decisions are made beforehand and the execution is a perfunctory affair.",
+      "source": {
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "locator": "paragraph-6",
+        "materialVersionId": "cmthgbhsw000cuyfpqmury2gt",
+        "excerptId": "cmthgbu9j000iuyfp06gvw02o"
+      },
+      "dimension": "PRACTICE_OR_METHOD",
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE"
+    },
+    {
+      "reviewItemId": "first-real-10-18",
+      "researchEvidenceId": "cmthi6rj20003wlfpu9u4c0qu",
+      "canonicalEntityId": "cmsumr74z003rodfppy1l9peb",
+      "proposition": "El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+      "supportQuote": "This is because, unlike a painter or sculptor who will think about how best they can express their idea using paint or sculptural materials and techniques, a conceptual artist uses whatever materials and whatever form is most appropriate to putting their idea across – this could be anything from a performance to a written description.",
+      "source": {
+        "sourceId": "cmt4kt35k0008vwfpbo8yt2e3",
+        "locator": "paragraph-10",
+        "materialVersionId": "cmthgbhsw000cuyfpqmury2gt",
+        "excerptId": "cmthgbys8000muyfpn1hl89np"
+      },
+      "dimension": "PRACTICE_OR_METHOD",
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE"
+    }
+  ],
+  "validation": [
+    {
+      "reviewItemId": "first-real-10-13",
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "dimension": "DEFINITION_OR_IDENTITY",
+      "quote": "VALID_EXACT",
+      "atomicity": "ATOMIC",
+      "entityMatch": "CONFIRMED",
+      "status": "VALID"
+    },
+    {
+      "reviewItemId": "first-real-10-15",
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "dimension": "CHRONOLOGY",
+      "quote": "VALID_NORMALIZED",
+      "atomicity": "ATOMIC",
+      "entityMatch": "CONFIRMED",
+      "status": "VALID"
+    },
+    {
+      "reviewItemId": "first-real-10-16",
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "dimension": "PRACTICE_OR_METHOD",
+      "quote": "VALID_EXACT",
+      "atomicity": "ATOMIC",
+      "entityMatch": "CONFIRMED",
+      "status": "VALID"
+    },
+    {
+      "reviewItemId": "first-real-10-18",
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "dimension": "PRACTICE_OR_METHOD",
+      "quote": "VALID_EXACT",
+      "atomicity": "ATOMIC",
+      "entityMatch": "CONFIRMED",
+      "status": "VALID"
+    }
+  ],
+  "researchEvidenceCreated": 0,
+  "knowledgeCoreMutated": false
+}

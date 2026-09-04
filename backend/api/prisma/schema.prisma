@@ -84,6 +84,11 @@ enum EntityTypeStatus {
   INACTIVE
 }
 
+enum EntityTypeHomeCoverMode {
+  ALGORITHM
+  MANUAL
+}
+
 enum ContentLevel {
   BASIC
   INTERMEDIATE
@@ -310,24 +315,28 @@ model Entity {
 }
 
 model EntityTypeDefinition {
-  id           String              @id @default(cuid())
-  key          String              @unique
-  singularName String
-  pluralName   String
-  description  String?
-  icon         String              @default("•")
-  colorToken   String              @default("slate")
-  baseKind     KnowledgeEntityKind
-  status       EntityTypeStatus    @default(DRAFT)
-  systemType   Boolean             @default(false)
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  id               String                  @id @default(cuid())
+  key              String                  @unique
+  singularName     String
+  pluralName       String
+  description      String?
+  icon             String                  @default("•")
+  colorToken       String                  @default("slate")
+  baseKind         KnowledgeEntityKind
+  status           EntityTypeStatus        @default(DRAFT)
+  systemType       Boolean                 @default(false)
+  homeCoverMode    EntityTypeHomeCoverMode @default(ALGORITHM)
+  homeCoverMediaId String?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
 
-  entities Entity[]
-  fields   EntityTypeFieldDefinition[]
+  entities       Entity[]
+  fields         EntityTypeFieldDefinition[]
+  homeCoverMedia Media?                      @relation("EntityTypeHomeCoverMedia", fields: [homeCoverMediaId], references: [id], onDelete: SetNull)
 
   @@index([status, systemType])
   @@index([baseKind])
+  @@index([homeCoverMediaId])
 }
 
 model EntityTranslation {
@@ -706,11 +715,12 @@ model Media {
 
   createdAt DateTime @default(now())
 
-  derivedFromMedia Media?        @relation("MediaDerivation", fields: [derivedFromMediaId], references: [id])
-  derivedAssets    Media[]       @relation("MediaDerivation")
+  derivedFromMedia Media?                 @relation("MediaDerivation", fields: [derivedFromMediaId], references: [id])
+  derivedAssets    Media[]                @relation("MediaDerivation")
   entities         EntityMedia[]
-  collectionCovers Collection[]  @relation("CollectionCoverMedia")
-  homeDeckCovers   HomeDeck[]    @relation("HomeDeckCoverMedia")
+  collectionCovers Collection[]           @relation("CollectionCoverMedia")
+  homeDeckCovers   HomeDeck[]             @relation("HomeDeckCoverMedia")
+  entityTypeCovers EntityTypeDefinition[] @relation("EntityTypeHomeCoverMedia")
 
   @@index([derivedFromMediaId])
 }
@@ -842,12 +852,11 @@ model ResearchProject {
   relatedFrom      ResearchProjectRelation[] @relation("ResearchProjectRelationTarget")
   assistantThreads ResearchAssistantThread[]
 
-  owner      User  @relation("ResearchProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
-  archivedBy User? @relation("ResearchProjectArchivedBy", fields: [archivedById], references: [id], onDelete: SetNull)
+  owner      User  @relation("ResearchProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  archivedBy User? @relation("ResearchProjectArchivedBy", fields: [archivedById], references: [id], onDelete: SetNull, onUpdate: NoAction)
 
-  @@index([ownerId, lastActiveAt])
-  @@index([archivedById])
   @@index([status, lastActiveAt])
+  @@index([status, publishedAt])
   @@index([updatedAt])
 }
 
@@ -1305,7 +1314,7 @@ model ResearchFindingProposal {
   explanation         String?
   reviewState         ResearchProposalReviewState @default(PENDING)
   createdAt           DateTime                    @default(now())
-  updatedAt           DateTime                    @updatedAt
+  updatedAt           DateTime                    @default(now()) @updatedAt
 
   project           ResearchProject                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   job               ResearchJob?                      @relation(fields: [jobId], references: [id], onDelete: SetNull)
@@ -1323,6 +1332,8 @@ model ResearchFindingProposal {
   @@index([relationTypeId])
   @@index([convertedClaimId])
   @@index([convertedFindingId])
+  @@index([convertedEntityId])
+  @@index([convertedRelationId])
 }
 
 model ResearchFindingProposalEvidence {
@@ -1359,7 +1370,6 @@ model ResearchClaim {
   convertedProposals ResearchFindingProposal[] @relation("ConvertedClaimProposal")
 
   @@index([projectId, kind])
-  @@index([projectId, status])
   @@index([subjectClaimId])
   @@index([objectClaimId])
   @@index([updatedAt])

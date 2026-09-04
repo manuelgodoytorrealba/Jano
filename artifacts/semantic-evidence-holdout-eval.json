@@ -1,0 +1,308 @@
+{
+  "dataset": "post-freeze exploratory holdout",
+  "total": 10,
+  "predictions": {
+    "KEEP": 3,
+    "REVIEW": 0,
+    "REJECT": 7
+  },
+  "metrics": {
+    "classifierPrecision": 1,
+    "classifierRecall": 0.75,
+    "reviewRate": 0,
+    "rejectRate": 0.7,
+    "falseKeep": 0,
+    "falseReject": 1
+  },
+  "confusionMatrix": {
+    "KEEP": {
+      "KEEP": 3,
+      "REVIEW": 0,
+      "REJECT": 0
+    },
+    "REVIEW": {
+      "KEEP": 0,
+      "REVIEW": 0,
+      "REJECT": 0
+    },
+    "REJECT": {
+      "KEEP": 1,
+      "REVIEW": 0,
+      "REJECT": 6
+    }
+  },
+  "rows": [
+    {
+      "item": {
+        "pilot": "PILOT_1",
+        "source": "Pablo Picasso",
+        "index": 0,
+        "gold": "KEEP",
+        "role": "PRIMARY_SUBJECT",
+        "proposition": null,
+        "dimension": "biography",
+        "rationale": "Dedicated documentary paragraph."
+      },
+      "excerpt": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés.",
+      "prediction": {
+        "relevanceRole": "PRIMARY_SUBJECT",
+        "evidenceProposition": {
+          "statement": "Formado en Bellas Artes según los patrones de la academia, Picasso vivió en Barcelona en los años del cambio de siglo, donde conoció de primera mano una modernidad plástica y artística fundada principalmente en la bohemia, el simbolismo y el posimpresionismo francés.",
+          "supportedDimension": "context / characteristics",
+          "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+        },
+        "confidence": "HIGH",
+        "decision": "KEEP",
+        "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+        "signals": {
+          "subjectClarity": 1,
+          "extractability": 1,
+          "purposeFit": 1,
+          "noise": 0
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_1",
+        "source": "Pablo Picasso",
+        "index": 2,
+        "gold": "KEEP",
+        "role": "PRIMARY_SUBJECT",
+        "proposition": null,
+        "dimension": "development",
+        "rationale": "Dedicated documentary paragraph."
+      },
+      "excerpt": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages.",
+      "prediction": {
+        "relevanceRole": "PRIMARY_SUBJECT",
+        "evidenceProposition": {
+          "statement": "Desde el punto de vista plástico, su obra gira en torno a la idea de evidenciar y subvertir el principio de simulacro inherente al arte, de manera que apenas hay distancia conceptual y de tratamiento entre sus pinturas, esculturas, grabados o collages.",
+          "supportedDimension": "context / characteristics",
+          "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+        },
+        "confidence": "HIGH",
+        "decision": "KEEP",
+        "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+        "signals": {
+          "subjectClarity": 1,
+          "extractability": 1,
+          "purposeFit": 1,
+          "noise": 0
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_1",
+        "source": "Marcel Duchamp: Fountain",
+        "index": 0,
+        "gold": "REJECT",
+        "role": "UNRELATED",
+        "proposition": null,
+        "dimension": null,
+        "rationale": "Institutional collection/navigation text."
+      },
+      "excerpt": "You might like Left Right Woman at a Window Othon Friesz 1919 The Bride Stripped Bare by her Bachelors, Even (The Large Glass) Marcel Duchamp 1915–23, reconstruction by Richard Hamilton 1965–6, lower panel remade 1985 Coffee Mill Marcel Duchamp 1911 Female Fig Leaf Marcel Duchamp 1950, cast 1961 Dart Object Marcel Duchamp 1951, cast 1962 Wedge of Chastity Marcel Duchamp 1954, cast 1963 Fresh Widow Marcel Duchamp 1920, replica 1964 3 stoppages étalon (3 Standard Stoppages) Marcel Duchamp 1913–14, replica 1964 Why Not Sneeze Rose Sélavy?",
+      "prediction": {
+        "relevanceRole": "UNRELATED",
+        "evidenceProposition": null,
+        "confidence": "HIGH",
+        "decision": "REJECT",
+        "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+        "signals": {
+          "subjectClarity": 0,
+          "extractability": 0,
+          "purposeFit": 1,
+          "noise": 1
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_1",
+        "source": "Marcel Duchamp: Fountain",
+        "index": 1,
+        "gold": "REJECT",
+        "role": "UNRELATED",
+        "proposition": null,
+        "dimension": null,
+        "rationale": "Institutional navigation text."
+      },
+      "excerpt": "Marcel Duchamp 1921, replica 1964 The Bride Stripped Bare by her Bachelors Even (The Green Box) Marcel Duchamp 1934 View by appointment Cadeau Man Ray 1921, editioned replica 1972 On display at Tate Modern part of In the Studio Nine malic moulds Marcel Duchamp, Richard Hamilton 1914–5, reconstruction by Richard Hamilton 1965",
+      "prediction": {
+        "relevanceRole": "UNRELATED",
+        "evidenceProposition": null,
+        "confidence": "LOW",
+        "decision": "REJECT",
+        "reason": "No puede formularse una proposition concreta.",
+        "signals": {
+          "subjectClarity": 0,
+          "extractability": 0,
+          "purposeFit": 1,
+          "noise": 0
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_1",
+        "source": "Cubism",
+        "index": 0,
+        "gold": "KEEP",
+        "role": "PRIMARY_SUBJECT",
+        "proposition": null,
+        "dimension": "characteristics",
+        "rationale": "Documentary movement description."
+      },
+      "excerpt": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Paris and DACS, London 2026 Cubism was one of the most influential styles of the twentieth century.",
+      "prediction": {
+        "relevanceRole": "UNRELATED",
+        "evidenceProposition": null,
+        "confidence": "HIGH",
+        "decision": "REJECT",
+        "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+        "signals": {
+          "subjectClarity": 1,
+          "extractability": 0,
+          "purposeFit": 1,
+          "noise": 1
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_1",
+        "source": "Art & Architecture Thesaurus",
+        "index": 0,
+        "gold": "REJECT",
+        "role": "UNRELATED",
+        "proposition": null,
+        "dimension": null,
+        "rationale": "Taxonomy/reference navigation without a bounded claim."
+      },
+      "excerpt": "Art & Architecture Thesaurus (Getty Research Institute) Search Tools & Databases Library Catalog Getty Research Portal Become a Contributing Institution Finding Aids for Research Collections Photo Archive Guide to the Photo Archive Search the Photo Archive The Index of Christian Art Research Guides & Bibliographies Digital Collections Article & Research Databases A-Z List Ancient Arts & Cultures Art & Architecture Art Sales & Collecting Biographical Information Conservation, Science, & Technology Dictionaries General Resources History, Archaeology, & Cultural Studies Image Resources & Museum Collections Language & Literature Libraries Performing Arts Philosophy & Religion Ready Reference Getty Provenance Index BHA & RILA Getty Vocabularies Art & Architecture Thesaurus (AAT) ® About AAT AAT: Frequently Asked Questions How to use AAT Cultural Objects Name Authority (CONA) ® About CONA CONA: Frequently Asked Questions Getty Thesaurus of Geographic Names (TGN) ® About TGN TGN: Frequently Asked Questions How to use TGN Union List of Artist Names (ULAN) ® About ULAN ULAN: Frequently Asked Questions How to use ULAN Contribute Contributors Editorial Guidelines Getty Vocabularies as Linked Open Data Frequently Asked Questions Obtain the Getty Vocabularies Download Center OpenRefine Reconciliation Training Materials Art & Architecture Thesaurus® Online Note: Pop-up Search Browse the AAT hierarchies Copyright information REPLACE THIS TEXT WITH YOUR SPECIAL ANNOUNCEMENT. --> Search Tips For the Find Term or Note field, you may use AND and OR (all in upper case) [e.g., 1) windsor chairs, 2) chairs OR rockers, 3) chairs OR rockers OR armchairs, 4) bow-back AND windsor, 5) windsor AND (rockers OR chairs), 6) (windsor OR boston) AND (rockers OR chairs)].",
+      "prediction": {
+        "relevanceRole": "UNRELATED",
+        "evidenceProposition": null,
+        "confidence": "LOW",
+        "decision": "REJECT",
+        "reason": "No puede formularse una proposition concreta.",
+        "signals": {
+          "subjectClarity": 0,
+          "extractability": 0,
+          "purposeFit": 1,
+          "noise": 0
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_2",
+        "source": "The body in art",
+        "index": 0,
+        "gold": "KEEP",
+        "role": "PRIMARY_SUBJECT",
+        "proposition": null,
+        "dimension": "definition",
+        "rationale": "Explicit concept definition."
+      },
+      "excerpt": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus Arnulf Rainer Untitled (Body Language) (c.1973) Tate © Arnulf Rainer Body art covers a wide range of art from about 1960 on, encompassing a variety of different approaches.",
+      "prediction": {
+        "relevanceRole": "PRIMARY_SUBJECT",
+        "evidenceProposition": {
+          "statement": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus",
+          "supportedDimension": "context / characteristics",
+          "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+        },
+        "confidence": "HIGH",
+        "decision": "KEEP",
+        "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+        "signals": {
+          "subjectClarity": 1,
+          "extractability": 1,
+          "purposeFit": 1,
+          "noise": 1
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_2",
+        "source": "The Bayeux Tapestry",
+        "index": 2,
+        "gold": "REJECT",
+        "role": "UNRELATED",
+        "proposition": null,
+        "dimension": null,
+        "rationale": "Visitor logistics and legal footer."
+      },
+      "excerpt": "Find out more PRACTICAL INFORMATION By car From Caen : N13 exit 36 to Bayeux From Rennes : A84 or E03 towards Caen exit 43, then D6 By plane Paris airport, then by train from Gare Saint-Lazare station, Paris, to Bayeux station By train Leave the train at Bayeux station About 10-15 minutes walk from the station to the museums Getting here Opening times Prices Waiting time BAYEUX MUSEUM Contact us Visiting Bayeux What's on Practical information Press corner Visit with a group Accessibility Sitemap Legal information We are the official website for the 3 museums managed by the City of Bayeux © 2026 Bayeux Museum - All rights reserved..",
+      "prediction": {
+        "relevanceRole": "UNRELATED",
+        "evidenceProposition": null,
+        "confidence": "HIGH",
+        "decision": "REJECT",
+        "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+        "signals": {
+          "subjectClarity": 1,
+          "extractability": 1,
+          "purposeFit": 1,
+          "noise": 1
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_2",
+        "source": "Louise Bourgeois overview",
+        "index": 0,
+        "gold": "REJECT",
+        "role": "UNRELATED",
+        "proposition": null,
+        "dimension": null,
+        "rationale": "Exhibition promotion/listing."
+      },
+      "excerpt": "Our galleries See great art in London, Liverpool and Cornwall Tate Britain Free admission Millbank, London SW1P 4RG Tate Modern Free admission Bankside, London SE1 9TG Tate Liverpool + RIBA North Free admission Mann Island, Liverpool L3 1BP Tate St Ives Ticket or Membership required Porthmeor Beach, St Ives, Cornwall TR26 1TG What's on across Tate Plan your visit to our latest exhibitions and displays Left Right Exhibition Julio Le Parc: Light.",
+      "prediction": {
+        "relevanceRole": "UNRELATED",
+        "evidenceProposition": null,
+        "confidence": "HIGH",
+        "decision": "REJECT",
+        "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+        "signals": {
+          "subjectClarity": 0,
+          "extractability": 0,
+          "purposeFit": 1,
+          "noise": 1
+        }
+      }
+    },
+    {
+      "item": {
+        "pilot": "PILOT_1",
+        "source": "Madrid Destino",
+        "index": 0,
+        "gold": "REJECT",
+        "role": "UNRELATED",
+        "proposition": null,
+        "dimension": null,
+        "rationale": "Tourism/marketing listing."
+      },
+      "excerpt": "Explore the places and characters that raised the city to the top of the art and culture scene. --> Food and Drink Delve into Madrid’s exciting food scene with dinner at a Michelin-star restaurant, some tapas in a century-old taberna or a cocktail at a rooftop bar. --> Flamenco Discover the best spots in the city to enjoy Spain’s artistic expression par excellence . --> Shopping Art, fashion, luxury goods, antiques, music, technology gadgets… There’s nothing you can’t buy in Madrid. --> Parks and Gardens Madrid boasts an array of public parks and gardens from Casa de Campo, Spain's largest green space, to El Retiro Park, a UNESCO World Heritage Site. --> What’s On in Madrid The city is one of the busiest European capitals in terms of shows and cultural activities.",
+      "prediction": {
+        "relevanceRole": "UNRELATED",
+        "evidenceProposition": null,
+        "confidence": "HIGH",
+        "decision": "REJECT",
+        "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+        "signals": {
+          "subjectClarity": 1,
+          "extractability": 1,
+          "purposeFit": 1,
+          "noise": 0
+        }
+      }
+    }
+  ]
+}

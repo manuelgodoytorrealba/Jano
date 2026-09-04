@@ -1,0 +1,12 @@
+{
+  "hash": "e4fc02a9cdf061a6f91b5b7a7390e79c6d572c2b341e28704f2bf32e5df36e15",
+  "file": "backend/api/src/research/semantic-evidence-classifier.ts",
+  "config": {
+    "version": "semantic-evidence-classifier-v2.2",
+    "structuredReference": "route to structured facts; never editorial KEEP",
+    "editorialSpan": "coherent bounded non-dump span",
+    "proposition": "single reconstructible unit; reject lists/dumps",
+    "idempotency": "sourceId+kind+canonical URL material; contentHash version reuse"
+  },
+  "frozenAt": "2026-08-30T20:12:31.825Z"
+}

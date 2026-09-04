@@ -1,0 +1,341 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "items": [
+    {
+      "reviewItemId": "first-real-10-01",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION"
+      ],
+      "reason": "Pendiente: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-02",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": null,
+      "deferActions": [
+        "REPAIR_PROPOSITION"
+      ],
+      "reason": "Pendiente: REPAIR_PROPOSITION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-03",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": null,
+      "deferActions": [
+        "RESOLVE_CONTEXT",
+        "REPAIR_PROPOSITION"
+      ],
+      "reason": "Pendiente: RESOLVE_CONTEXT, REPAIR_PROPOSITION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-04",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+      "deferActions": [
+        "RESOLVE_CONTEXT",
+        "NORMALIZE_DIMENSION"
+      ],
+      "reason": "Pendiente: RESOLVE_CONTEXT, NORMALIZE_DIMENSION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-05",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": null,
+      "deferActions": [
+        "RESOLVE_CONTEXT",
+        "REPAIR_PROPOSITION"
+      ],
+      "reason": "Pendiente: RESOLVE_CONTEXT, REPAIR_PROPOSITION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-07",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION"
+      ],
+      "reason": "Pendiente: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-08",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+      "deferActions": [
+        "NORMALIZE_DIMENSION"
+      ],
+      "reason": "Pendiente: NORMALIZE_DIMENSION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-09",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_DIMENSION"
+      ],
+      "reason": "Pendiente: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-10",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": null,
+      "deferActions": [
+        "NORMALIZE_QUOTE",
+        "REPAIR_PROPOSITION"
+      ],
+      "reason": "Pendiente: NORMALIZE_QUOTE, REPAIR_PROPOSITION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-11",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": null,
+      "deferActions": [
+        "REPAIR_PROPOSITION"
+      ],
+      "reason": "Pendiente: REPAIR_PROPOSITION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-12",
+      "entity": {
+        "id": "cmsumr74w003lodfpcuv3oj7q",
+        "title": "Pop Art"
+      },
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "originalProposition": null,
+      "deferActions": [
+        "RESOLVE_CONTEXT",
+        "REPAIR_PROPOSITION"
+      ],
+      "reason": "Pendiente: RESOLVE_CONTEXT, REPAIR_PROPOSITION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-14",
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "source": {
+        "id": "cmt4kt35k0008vwfpbo8yt2e3",
+        "title": "Conceptual Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/c/conceptual-art"
+      },
+      "originalProposition": "El arte conceptual se refleja en la serie de Joseph Kosuth 'Titled (Art as Idea as Idea)' de 1966-7, la propuesta de la exposición 'Air Show Air/Conditioning' de 1966-7 por los artistas ingleses Terry Atkinson y Michael Baldwin (fundadores del grupo Art & Language), las pinturas de palabras de John Baldessari exhibidas en LA en 1968 y en importantes exposiciones grupales como la organizada por el galerista Seth Siegelaub en Nueva York en 1969, del 1 al 31 de enero: 0 Objetos, 0 Pintores, 0 Escul",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "NORMALIZE_QUOTE"
+      ],
+      "reason": "Pendiente: SPLIT_CLAIMS, NORMALIZE_QUOTE.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-17",
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "source": {
+        "id": "cmt4kt35k0008vwfpbo8yt2e3",
+        "title": "Conceptual Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/c/conceptual-art"
+      },
+      "originalProposition": "En 1973, Lucy Lippard publicó un libro pionero que documenta los primeros años del movimiento del arte conceptual.",
+      "deferActions": [
+        "NORMALIZE_QUOTE",
+        "REPAIR_PROPOSITION"
+      ],
+      "reason": "Pendiente: NORMALIZE_QUOTE, REPAIR_PROPOSITION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-19",
+      "entity": {
+        "id": "cmsumr74z003rodfppy1l9peb",
+        "title": "Arte conceptual"
+      },
+      "source": {
+        "id": "cmt4kt35k0008vwfpbo8yt2e3",
+        "title": "Conceptual Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/c/conceptual-art"
+      },
+      "originalProposition": null,
+      "deferActions": [
+        "REPAIR_PROPOSITION"
+      ],
+      "reason": "Pendiente: REPAIR_PROPOSITION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-21",
+      "entity": {
+        "id": "cmsumr7cr00h6odfpntoohzgx",
+        "title": "Auguste Rodin"
+      },
+      "source": {
+        "id": "cmt4kxqnv0000r7fp99gqjgb2",
+        "title": "Auguste Rodin",
+        "type": "WEBSITE",
+        "url": "https://www.musee-rodin.fr/en"
+      },
+      "originalProposition": "El Musée Rodin es el heredero del artista y es un museo autofinanciado que posee los originales de los bronces de Rodin.",
+      "deferActions": [
+        "SPLIT_CLAIMS",
+        "REROUTE_ENTITY",
+        "REROUTE_RELATION"
+      ],
+      "reason": "Pendiente: SPLIT_CLAIMS, REROUTE_ENTITY, REROUTE_RELATION.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-22",
+      "entity": {
+        "id": "cmsumr7de00ifodfpmp8smezz",
+        "title": "Georgia O'Keeffe"
+      },
+      "source": {
+        "id": "cmt4kxqob0008r7fpok102y4e",
+        "title": "Georgia O’Keeffe",
+        "type": "WEBSITE",
+        "url": "https://www.okeeffemuseum.org/"
+      },
+      "originalProposition": null,
+      "deferActions": [
+        "REROUTE_ENTITY"
+      ],
+      "reason": "Pendiente: REROUTE_ENTITY.",
+      "status": "PENDING"
+    },
+    {
+      "reviewItemId": "first-real-10-23",
+      "entity": {
+        "id": "cmsumr7de00ifodfpmp8smezz",
+        "title": "Georgia O'Keeffe"
+      },
+      "source": {
+        "id": "cmt4kxqob0008r7fpok102y4e",
+        "title": "Georgia O’Keeffe",
+        "type": "WEBSITE",
+        "url": "https://www.okeeffemuseum.org/"
+      },
+      "originalProposition": "Georgia O'Keeffe's Home & Studio, located 52 miles north of Santa Fe, incorporates Native American and Spanish Colonial architectural styles, reflecting regional traditions.",
+      "deferActions": [
+        "REROUTE_ENTITY",
+        "REROUTE_RELATION"
+      ],
+      "reason": "Pendiente: REROUTE_ENTITY, REROUTE_RELATION.",
+      "status": "PENDING"
+    }
+  ]
+}

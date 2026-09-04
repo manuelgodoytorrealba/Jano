@@ -337,23 +337,17 @@
               } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
                 <div class="facts-sheet facts-sheet--textual">
                   <div class="fact-note entity-glass-card">
-                    <div class="entity-prose">
-                      <app-rich-text
-                        [text]="entity.concept?.definition ?? ''"
-                        [previewAccess]="richTextPreviewAccess"
-                      ></app-rich-text>
-                    </div>
+                    <p class="entity-prose facts-sheet__definition">
+                      {{ entity.concept?.definition }}
+                    </p>
                   </div>
                 </div>
               } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
                 <div class="facts-sheet facts-sheet--textual">
                   <div class="fact-note entity-glass-card">
-                    <div class="entity-prose">
-                      <app-rich-text
-                        [text]="entity.period?.definition ?? ''"
-                        [previewAccess]="richTextPreviewAccess"
-                      ></app-rich-text>
-                    </div>
+                    <p class="entity-prose facts-sheet__definition">
+                      {{ entity.period?.definition }}
+                    </p>
                   </div>
                 </div>
               } @else {

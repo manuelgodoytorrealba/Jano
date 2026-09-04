@@ -1,0 +1,823 @@
+{
+  "mode": "DEVELOPMENT_APPLY",
+  "pilot": "PILOT_4_FINAL_VALIDATION",
+  "selectedSourceIds": [
+    "cmtage9ko003ts0kpmg855yf0",
+    "cmtage9kx003vs0kp5lsltt4l",
+    "cmtage9nn004hs0kp6w4jcrpd",
+    "cmtage9o3004ls0kp5wbzowtz",
+    "cmtage9in003ds0kpunn4erfv",
+    "cmtage9iw003fs0kpiusi2ilw",
+    "cmtage9bs001ps0kp1j5mc43w",
+    "cmtage9c1001rs0kplb97dmi4",
+    "cmtage9d1003zs0kprhbck0xb",
+    "cmtage9g2002ps0kpqgjd3yg1",
+    "cmtfxyncd00i942ke2ra174qf",
+    "cmtage9q80051s0kpy6itcr3n"
+  ],
+  "sourcePurposeModel": [
+    "VISUAL_PROVENANCE",
+    "CANONICAL_METADATA",
+    "STRUCTURED_REFERENCE",
+    "EDITORIAL_REFERENCE",
+    "DOCUMENTARY_TEXT",
+    "INTERPRETIVE_SOURCE",
+    "GENERAL_REFERENCE",
+    "OTHER_UNKNOWN"
+  ],
+  "sourceCountRequested": 12,
+  "sourceCountFound": 11,
+  "projectId": "cmtg8tquj0000w0sj1tqzrgtq",
+  "results": [
+    {
+      "source": {
+        "id": "cmtage9bs001ps0kp1j5mc43w",
+        "title": "The Birth of Venus",
+        "url": "https://www.uffizi.it/en/artworks/birth-of-venus",
+        "linkedEntities": [
+          "El nacimiento de Venus",
+          "Sandro Botticelli"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 3003,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "Filippo Lippi Technique Tempera on canvas Size 172.5 x 278.5 cm Inventory 1890 n. 878 Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura.",
+          "primaryEntity": "El nacimiento de Venus",
+          "entityAssociations": [
+            {
+              "entity": "El nacimiento de Venus",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [
+            "Sandro Botticelli"
+          ],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+            "materialId": "cmtg8tqvd0001w0sjzb1p7nxc",
+            "versionId": "cmtg8tqvk0002w0sj9ef9q82y"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "It is highly probable that the work was commissioned by a member of the Medici family, although there is nothing written about the painting before 1550, when Giorgio Vasari describes it in the Medici’s Villa of Castello, owned by the cadet branch of the Medici family since the mid-15th century.",
+          "primaryEntity": "El nacimiento de Venus",
+          "entityAssociations": [
+            {
+              "entity": "El nacimiento de Venus",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [
+            "Sandro Botticelli"
+          ],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+            "materialId": "cmtg8tqvd0001w0sjzb1p7nxc",
+            "versionId": "cmtg8tqvk0002w0sj9ef9q82y"
+          }
+        },
+        {
+          "locator": "paragraph-3",
+          "text": "This hypothesis would seem to be born out by the orange trees in the painting, which are considered an emblem of the Medici dynasty, on account of the assonance between the family name and the name of the orange tree, which at the time was ‘mala medica’.",
+          "primaryEntity": "El nacimiento de Venus",
+          "entityAssociations": [
+            {
+              "entity": "El nacimiento de Venus",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [
+            "Sandro Botticelli"
+          ],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+            "materialId": "cmtg8tqvd0001w0sjzb1p7nxc",
+            "versionId": "cmtg8tqvk0002w0sj9ef9q82y"
+          }
+        },
+        {
+          "locator": "paragraph-4",
+          "text": "Botticelli takes his inspiration from classical statues for Venus’ modest pose, as she covers her nakedness with long, blond hair, which has reflections of light from the fact that it has been gilded; even the Winds, the pair flying in one another’s embrace, is based on an ancient work, a gem from the Hellenistic period, owned by Lorenzo the Magnificent.",
+          "primaryEntity": "El nacimiento de Venus",
+          "entityAssociations": [
+            {
+              "entity": "El nacimiento de Venus",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [
+            "Sandro Botticelli"
+          ],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+            "materialId": "cmtg8tqvd0001w0sjzb1p7nxc",
+            "versionId": "cmtg8tqvk0002w0sj9ef9q82y"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "Filippo Lippi Technique Tempera on canvas Size 172.5 x 278.5 cm Inventory 1890 n. 878 Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "It is highly probable that the work was commissioned by a member of the Medici family, although there is nothing written about the painting before 1550, when Giorgio Vasari describes it in the Medici’s Villa of Castello, owned by the cadet branch of the Medici family since the mid-15th century.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "This hypothesis would seem to be born out by the orange trees in the painting, which are considered an emblem of the Medici dynasty, on account of the assonance between the family name and the name of the orange tree, which at the time was ‘mala medica’.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "3/4 evidence candidates from 3003 prepared chars",
+      "created": {
+        "materialId": "cmtg8tqvd0001w0sjzb1p7nxc",
+        "versionId": "cmtg8tqvk0002w0sj9ef9q82y",
+        "excerptIds": [
+          "cmtg8trgo0005w0sjnx52te9y",
+          "cmtg8trh10007w0sjn7n930om",
+          "cmtg8trh90009w0sjegl90x3h",
+          "cmtg8trho000bw0sjzyl51qyq"
+        ],
+        "evidenceIds": [
+          "cmtg8trgw0006w0sjr29xj98w",
+          "cmtg8trh50008w0sjlwn42wtx",
+          "cmtg8trhk000aw0sjqq2q3gk8"
+        ],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9c1001rs0kplb97dmi4",
+        "title": "The Last Supper",
+        "url": "https://whc.unesco.org/en/list/93/",
+        "linkedEntities": [
+          "La última cena"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg8trhu000cw0sjj0px6qh0",
+        "versionId": "cmtg8trhy000dw0sjw2rkc6v1",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9g2002ps0kpqgjd3yg1",
+        "title": "Maman",
+        "url": "https://www.tate.org.uk/art/artworks/bourgeois-maman-t12625",
+        "linkedEntities": [
+          "Maman"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": true,
+      "preparedTextChars": 532,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "LOW_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "You might like Left Right Single II Louise Bourgeois 1996 Cell XIV (Portrait) Louise Bourgeois 2000 Give or Take Louise Bourgeois 2002 Couple I Louise Bourgeois 1996 Spider I Louise Bourgeois 1995 Spider Louise Bourgeois 1994 Untitled Louise Bourgeois 1996 Scissors Louise Bourgeois 1994 Amputee with Crutch Louise Bourgeois 1998 View by appointment Blue Dress Louise Bourgeois 1998 View by appointment Cell (Eyes and Mirrors) Louise Bourgeois 1989–93 Mamelles Louise Bourgeois 1991, cast 2001",
+          "primaryEntity": "Maman",
+          "entityAssociations": [
+            {
+              "entity": "Maman",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9g2002ps0kpqgjd3yg1",
+            "materialId": "cmtg8trjq000ew0sj48d2jryw",
+            "versionId": "cmtg8trjt000fw0sjgiej4ssu"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "You might like Left Right Single II Louise Bourgeois 1996 Cell XIV (Portrait) Louise Bourgeois 2000 Give or Take Louise Bourgeois 2002 Couple I Louise Bourgeois 1996 Spider I Louise Bourgeois 1995 Spider Louise Bourgeois 1994 Untitled Louise Bourgeois 1996 Scissors Louise Bourgeois 1994 Amputee with Crutch Louise Bourgeois 1998 View by appointment Blue Dress Louise Bourgeois 1998 View by appointment Cell (Eyes and Mirrors) Louise Bourgeois 1989–93 Mamelles Louise Bourgeois 1991, cast 2001",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "1/1 evidence candidates from 532 prepared chars",
+      "created": {
+        "materialId": "cmtg8trjq000ew0sj48d2jryw",
+        "versionId": "cmtg8trjt000fw0sjgiej4ssu",
+        "excerptIds": [
+          "cmtg8tshs000hw0sjf5666o67"
+        ],
+        "evidenceIds": [
+          "cmtg8tshw000iw0sjz94ic1jx"
+        ],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9in003ds0kpunn4erfv",
+        "title": "Florence",
+        "url": "https://www.feelflorence.it/en",
+        "linkedEntities": [
+          "Florencia"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 285,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "UNUSABLE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "Filter by Discover Florence and its Metropolitan Area Previous \" class=\"btn btn-primary btn-sm glide__arrow glide__arrow--left border font-sans-serif\"> Next September 2026 in the Florence area The Burning of the Tower in Signa, the Rificolona festival, the 100th Grape [...] Read more",
+          "primaryEntity": "Florencia",
+          "entityAssociations": [
+            {
+              "entity": "Florencia",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9in003ds0kpunn4erfv",
+            "materialId": "cmtg8tsi2000jw0sjf3n6ap7a",
+            "versionId": "cmtg8tsi6000kw0sjm83va3dm"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "Filter by Discover Florence and its Metropolitan Area Previous \" class=\"btn btn-primary btn-sm glide__arrow glide__arrow--left border font-sans-serif\"> Next September 2026 in the Florence area The Burning of the Tower in Signa, the Rificolona festival, the 100th Grape [...] Read more",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "1/1 evidence candidates from 285 prepared chars",
+      "created": {
+        "materialId": "cmtg8tsi2000jw0sjf3n6ap7a",
+        "versionId": "cmtg8tsi6000kw0sjm83va3dm",
+        "excerptIds": [
+          "cmtg8tsvt000mw0sjlk1s7uwb"
+        ],
+        "evidenceIds": [
+          "cmtg8tsvy000nw0sjg3tn2eck"
+        ],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9iw003fs0kpiusi2ilw",
+        "title": "Roma Capitale",
+        "url": "https://www.comune.roma.it/",
+        "linkedEntities": [
+          "Roma"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "fetch failed",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg8tsw4000ow0sj8cw831e9",
+        "versionId": "cmtg8tsw7000pw0sj0dwfh5fs",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9ko003ts0kpmg855yf0",
+        "title": "Baroque Art",
+        "url": "https://www.metmuseum.org/toah/hd/baro/hd_baro.htm",
+        "linkedEntities": [
+          "Barroco"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 429",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg8tt2d000qw0sjn2y77h2e",
+        "versionId": "cmtg8tt2m000rw0sjzbigk1vr",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9kx003vs0kp5lsltt4l",
+        "title": "Neoclassicism",
+        "url": "https://www.tate.org.uk/art/art-terms/n/neoclassicism",
+        "linkedEntities": [
+          "Neoclasicismo"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": true,
+      "preparedTextChars": 2322,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "Neoclassicism Neoclassicism was a particularly pure form of classicism that emerged from about 1750 selected artists in the collection selected artworks in the collection Sir Joshua Reynolds Three Ladies Adorning a Term of Hymen (1773) Tate Following the discovery of the Roman ruins of Pompeii and also the publication in 1764 of a highly influential history of ancient art by German scholar Winckelmann, there was an intense flourishing of classicism in art, architecture and design in the eighteenth century.",
+          "primaryEntity": "Neoclasicismo",
+          "entityAssociations": [
+            {
+              "entity": "Neoclasicismo",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9kx003vs0kp5lsltt4l",
+            "materialId": "cmtg8tw89000sw0sjoe32olor",
+            "versionId": "cmtg8tw8i000tw0sj46mgobb2"
+          }
+        },
+        {
+          "locator": "paragraph-2",
+          "text": "We would like to hear from you. read Classicism The term classicism is used to describe art that makes reference to ancient Greek or Roman style read Academy Established during the Renaissance and widespread by the seventeenth century, academies were artist-run organisations whose aim was to improve the … read History painting The term history painting was introduced in the seventeenth century to describe paintings with subject matter drawn from classical history … read Narrative Narrative art is art that tells a story selected artists in the collection Left Right Sir Joshua Reynolds 1723–1792 Benjamin West 1738–1820 James Barry 1741–1806 Angelica Kauffman 1741–1807 John Flaxman 1755–1826 selected artworks in the collection Left Right Cleombrotus Ordered into Banishment by Leonidas II, King of Sparta Benjamin West 1768 On display at Tate Britain Part of Historic and Modern British Art Three Ladies Adorning a Term of Hymen Sir Joshua Reynolds 1773 On display at Tate Britain Part of Historic and Modern British Art Jupiter and Juno on Mount Ida James Barry c.1804–5 View by appointment Hector Taking Leave of Andromache Manner of Angelica Kauffman Alcestis and Admetus John Flaxman 1789 View by appointment",
+          "primaryEntity": "Neoclasicismo",
+          "entityAssociations": [
+            {
+              "entity": "Neoclasicismo",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtage9kx003vs0kp5lsltt4l",
+            "materialId": "cmtg8tw89000sw0sjoe32olor",
+            "versionId": "cmtg8tw8i000tw0sj46mgobb2"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "Neoclassicism Neoclassicism was a particularly pure form of classicism that emerged from about 1750 selected artists in the collection selected artworks in the collection Sir Joshua Reynolds Three Ladies Adorning a Term of Hymen (1773) Tate Following the discovery of the Roman ruins of Pompeii and also the publication in 1764 of a highly influential history of ancient art by German scholar Winckelmann, there was an intense flourishing of classicism in art, architecture and design in the eighteenth century.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        },
+        {
+          "text": "We would like to hear from you. read Classicism The term classicism is used to describe art that makes reference to ancient Greek or Roman style read Academy Established during the Renaissance and widespread by the seventeenth century, academies were artist-run organisations whose aim was to improve the … read History painting The term history painting was introduced in the seventeenth century to describe paintings with subject matter drawn from classical history … read Narrative Narrative art is art that tells a story selected artists in the collection Left Right Sir Joshua Reynolds 1723–1792 Benjamin West 1738–1820 James Barry 1741–1806 Angelica Kauffman 1741–1807 John Flaxman 1755–1826 selected artworks in the collection Left Right Cleombrotus Ordered into Banishment by Leonidas II, King of Sparta Benjamin West 1768 On display at Tate Britain Part of Historic and Modern British Art Three Ladies Adorning a Term of Hymen Sir Joshua Reynolds 1773 On display at Tate Britain Part of Historic and Modern British Art Jupiter and Juno on Mount Ida James Barry c.1804–5 View by appointment Hector Taking Leave of Andromache Manner of Angelica Kauffman Alcestis and Admetus John Flaxman 1789 View by appointment",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "2/2 evidence candidates from 2322 prepared chars",
+      "created": {
+        "materialId": "cmtg8tw89000sw0sjoe32olor",
+        "versionId": "cmtg8tw8i000tw0sj46mgobb2",
+        "excerptIds": [
+          "cmtg8twvz000vw0sjxn3h1z0o",
+          "cmtg8tww5000xw0sjgixojocg"
+        ],
+        "evidenceIds": [
+          "cmtg8tww2000ww0sjj91g8fo7",
+          "cmtg8tww9000yw0sjz8mx9f8i"
+        ],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9nn004hs0kp6w4jcrpd",
+        "title": "Ukiyo-e",
+        "url": "https://www.metmuseum.org/toah/hd/ukiy/hd_ukiy.htm",
+        "linkedEntities": [
+          "Ukiyo-e"
+        ]
+      },
+      "purpose": "EDITORIAL_REFERENCE",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 429",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg8twwf000zw0sjncd7s2a3",
+        "versionId": "cmtg8twwi0010w0sj93bi7qzz",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9o3004ls0kp5wbzowtz",
+        "title": "Arts of Africa",
+        "url": "https://www.metmuseum.org/art/collection/search#!?department=10",
+        "linkedEntities": [
+          "Arte africano"
+        ]
+      },
+      "purpose": "CANONICAL_METADATA",
+      "quality": "PRIMARY_AUTHORITATIVE",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 429",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg8u0220011w0sjx0n1wx56",
+        "versionId": "cmtg8u02b0012w0sj420ks5ux",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtage9q80051s0kpy6itcr3n",
+        "title": "Johannes Vermeer",
+        "url": "https://www.mauritshuis.nl/en/discover/mauritshuis-in-depth/johannes-vermeer/",
+        "linkedEntities": [
+          "Johannes Vermeer"
+        ]
+      },
+      "purpose": "GENERAL_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": false,
+      "preparedTextChars": 0,
+      "preparationStatus": "PENDING_PREPARATION",
+      "failureReason": "URL returned HTTP 403 (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)",
+      "contentQuality": "NOT_EVALUATED",
+      "excerptCandidates": [],
+      "evidenceCandidates": [],
+      "usefulYield": "0",
+      "created": {
+        "materialId": "cmtg8u3u50013w0sji6ua42ns",
+        "versionId": "cmtg8u3u90014w0sj6fykane1",
+        "excerptIds": [],
+        "evidenceIds": [],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    },
+    {
+      "source": {
+        "id": "cmtfxyncd00i942ke2ra174qf",
+        "title": "Donald Judd — registro de autoridad",
+        "url": "https://www.wikidata.org/wiki/Q250293",
+        "linkedEntities": [
+          "Donald Judd"
+        ]
+      },
+      "purpose": "STRUCTURED_REFERENCE",
+      "quality": "UNKNOWN",
+      "accessible": true,
+      "preparedTextChars": 30135,
+      "preparationStatus": "READY",
+      "failureReason": null,
+      "contentQuality": "HIGH_VALUE",
+      "excerptCandidates": [
+        {
+          "locator": "paragraph-1",
+          "text": "From Wikidata American minimalist artist (1928–1994) Donald Clarence Judd Donarudo Jaddo Don Judd edit Language Label Description Also known as default for all languages Donald Judd – English Donald Judd American minimalist artist (1928–1994) Donald Clarence Judd Donarudo Jaddo Don Judd Statements instance of human 3 references stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002556 reference URL https://collection.nationalmuseum.se/sv/artists/artist/9601 retrieved 26 June 2026 sex or gender male 5 references stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 stated in Museum of Modern Art online collection Museum of Modern Art artist ID 2948 retrieved 4 December 2019 stated in Archives Directory for the History of Collecting in America Archives Directory for the History of Collecting in America ID 2521 stated in Integrated Authority File GND ID 11888560X retrieved 11 July 2024 stated in RKDartists RKDartists ID 43040 retrieved 28 January 2025 country of citizenship United States 3 references imported from Wikimedia project German Wikipedia stated in Museum of Modern Art online collection Museum of Modern Art artist ID 2948 retrieved 4 December 2019 reference URL https://www.workwithdata.com/person/donald-judd-1928 retrieved 12 November 2024 given name Donald series ordinal 1 3 references stated in Integrated Authority File GND ID 11888560X retrieved 14 August 2015 reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in Union List of Artist Names Union List of Artist Names ID 500010358 Clarence series ordinal 2 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in Union List of Artist Names Union List of Artist Names ID 500010358 family name Judd 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in Union List of Artist Names Union List of Artist Names ID 500010358 pseudonym Jaddo, Donarudo 0 references Judd, Don 0 references date of birth 3 June 1928 Gregorian 15 references stated in Integrated Authority File retrieved 27 April 2014 stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 stated in RKDartists RKDartists ID 43040 title Donald Judd (English) stated in Benezit Dictionary of Artists Benezit ID B00096252 title Donald Judd (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Donald-Judd subject named as Donald Judd retrieved 9 October 2017 stated in SNAC SNAC ARK ID w6nk3g3v subject named as Donald Judd retrieved 9 October 2017 stated in Discogs Discogs artist ID 1593967 subject named as Donald Judd retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID judd-donald subject named as Donald Judd stated in Le Delarge Le Delarge artist ID 24517_artiste_JUDD_Donaldj_ subject named as Donald, JUDD stated in Judd, Donald subject named as Donald Judd stated in Artists of the World Online Artists of the World ID 00056674 subject named as Donald Judd stated in Proleksis Encyclopedia Proleksis enciklopedija ID 29361 subject named as Donald Judd stated in Croatian Encyclopedia Hrvatska enciklopedija ID 29436 subject named as Donald Judd stated in The Fine Art Archive abART person ID 58510 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000020762 retrieved 9 October 2017 subject named as Donald Judd place of birth Excelsior Springs 3 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in RKDartists RKDartists ID 43040 stated in ZKM Center for Art and Media Karlsruhe ZKM person ID donald-judd retrieved 30 June 2022 date of death 12 February 1994 14 references stated in Integrated Authority File retrieved 27 April 2014 stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 stated in RKDartists RKDartists ID 43040 stated in Benezit Dictionary of Artists Benezit ID B00096252 title Donald Judd (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Donald-Judd subject named as Donald Judd retrieved 9 October 2017 stated in SNAC SNAC ARK ID w6nk3g3v subject named as Donald Judd retrieved 9 October 2017 stated in Kunstindeks Danmark Kunstindeks Danmark Artist ID 2298 subject named as Donald Judd retrieved 9 October 2017 stated in Discogs Discogs artist ID 1593967 subject named as Donald Judd retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID judd-donald subject named as Donald Judd stated in Judd, Donald subject named as Donald Judd stated in Proleksis Encyclopedia Proleksis enciklopedija ID 29361 subject named as Donald Judd stated in Croatian Encyclopedia Hrvatska enciklopedija ID 29436 subject named as Donald Judd stated in The Fine Art Archive abART person ID 58510 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000020762 retrieved 9 October 2017 subject named as Donald Judd place of death New York City 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in RKDartists RKDartists ID 43040 manner of death natural causes 1 reference based on heuristic inferred from cause of death cause of death lymphoma 0 references spouse Julie Finch start time 1964 end time 1976 1 reference reference URL https://www.guggenheim.org/wp-content/uploads/2020/05/guggenheim-pci-judd-interview-20120529-julie-finch-info.pdf unmarried partner Lauretta Vinciarelli 1 reference reference URL https://juddfoundation.org/program/lauretta-vinciarelli/ child Flavin Judd 1 reference reference URL https://www.nytimes.com/2016/12/25/arts/design/donald-judd-writings-a-book-helped-along-by-his-children.html Rainer Judd 1 reference reference URL https://www.nytimes.com/2016/12/25/arts/design/donald-judd-writings-a-book-helped-along-by-his-children.html languages spoken, written or signed English 1 reference stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 occupation architect 2 references reference URL https://juddfoundation.org/artist/ stated in RKDartists RKDartists ID 43040 retrieved 10 December 2025 sculptor 4 references imported from Wikimedia project Picard Wikipedia stated in The Fine Art Archive abART person ID 58510 retrieved 1 April 2021 reference URL https://juddfoundation.org/artist/ stated in RKDartists RKDartists ID 43040 retrieved 10 December 2025 painter 3 references stated in The Fine Art Archive abART person ID 58510 retrieved 1 April 2021 reference URL https://juddfoundation.org/artist/ stated in RKDartists RKDartists ID 43040 retrieved 10 December 2025 draftsperson 1 reference inferred from Museum of Modern Art online collection Museum of Modern Art work ID 37059 retrieved 4 December 2019 architectural drafter 1 reference reference URL https://juddfoundation.org/artist/ designer 1 reference reference URL https://juddfoundation.org/artist/ installation artist 1 reference RKDartists ID 43040 stated in RKDartists retrieved 18 November 2021 visual artist 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002556 artist 1 reference reference URL https://www.workwithdata.com/person/donald-judd-1928 retrieved 12 November 2024 field of work art of sculpture 2 references imported from Wikimedia project English Wikipedia Wikimedia import URL https://en.wikipedia.org/w/index.php?title=Donald_Judd&oldid=937221859 stated in Czech National Authority Database NL CR AUT ID mzk2005295031 retrieved 7 November 2022 painting 1 reference stated in Czech National Authority Database NL CR AUT ID mzk2005295031 retrieved 7 November 2022 design 1 reference stated in Czech National Authority Database NL CR AUT ID mzk2005295031 retrieved 7 November 2022 educated at College of William & Mary 0 references Columbia University School of General Studies 0 references work location New York City 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in RKDartists RKDartists ID 43040 Marfa 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in RKDartists RKDartists ID 43040 floruit 1989 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002556 quotation 1989 (Dutch) start of work period 1953 1 reference stated in RKDartists RKDartists ID 43040 retrieved 29 September 2022 end of work period 1994 1 reference stated in RKDartists RKDartists ID 43040 retrieved 29 September 2022 sponsor Dia Art Foundation 0 references participant in 4. documenta 1 reference reference URL https://www.documenta.de/en/retrospective/4_documenta retrieved 3 September 2018 archive URL https://web.archive.org/web/20190313160457/https://www.documenta.de/en/retrospective/4_documenta archive date 13 March 2019 Documenta 6 1 reference reference URL https://www.documenta.de/en/retrospective/documenta_6 retrieved 5 September 2018 documenta 7 1 reference reference URL https://www.documenta.de/en/retrospective/documenta_7 retrieved 5 September 2018 participated in conflict Korean War 0 references notable work Untitled 0 references artist files at Smithsonian American Art and Portrait Gallery Library 1 reference reference URL https://library.si.edu/art-and-artist-files Frick Art Research Library 2 references Frick Art Research Library Artist File ID 991005677949707141 Frick Art Research Library Artist File ID 991005834259707141 College for Creative Studies Library 1 reference reference URL https://lib.collegeforcreativestudies.edu/cgi-bin/koha/opac-detail.pl?biblionumber=85919&query_desc=kw%2Cwrdl%3A%20Donald%20Judd National Gallery of Art Library 1 reference reference URL https://library.nga.gov/permalink/01NGA_INST/1cl1g8d/alma99992203504896 has works in the collection Museum Boijmans Van Beuningen 1 reference inferred from Collectie Boijmans Online Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P3888 https://www.wikidata.org/wiki/Property:P3888#P2302 Städel Museum 1 reference inferred from Städel Museum Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P4581 https://www.wikidata.org/wiki/Property:P4581#P2302 Museo Nacional Centro de Arte Reina Sofía 1 reference inferred from Museo Nacional Centro de Arte Reina Sofía Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P4439 https://www.wikidata.org/wiki/Property:P4439#P2302 Minneapolis Institute of Art 1 reference inferred from Minneapolis Institute of Art Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P3603 https://www.wikidata.org/wiki/Property:P3603#P2302 Art Institute of Chicago 1 reference inferred from Art Institute of Chicago Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P6295 https://www.wikidata.org/wiki/Property:P6295#P2302 The Nelson-Atkins Museum of Art 1 reference inferred from The Nelson-Atkins Museum of Art Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P5273 https://www.wikidata.org/wiki/Property:P5273#P2302 Finnish National Gallery 0 references Museum of Modern Art 2 references inferred from Museum of Modern Art Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P2174 https://www.wikidata.org/wiki/Property:P2174#P2302 inferred from Museum of Modern Art online collection Museum of Modern Art work ID 37059 retrieved 4 December 2019 Tate 0 references National Gallery of Victoria 1 reference inferred from National Gallery of Victoria Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P2041 https://www.wikidata.org/wiki/Property:P2041#P2302 National Gallery of Art 0 references National Gallery of Canada 0 references San Francisco Museum of Modern Art 1 reference stated in San Francisco Museum of Modern Art online collection SFMOMA artist ID donald_judd retrieved 6 December 2019 Stedelijk Museum voor Actuele Kunst 0 references Indianapolis Museum of Art 1 reference inferred from Untitled retrieved 19 February 2021 Israel Museum 1 reference inferred from Untitled retrieved 19 February 2021 Chinati Foundation 1 reference inferred from 100 Untitled Works In Mill Aluminum retrieved 21 February 2021 Royal Museums of Fine Arts of Belgium 1 reference retrieved 4 May 2021 reference URL https://www.fine-arts-museum.be/nl/de-collectie/artist/judd-donald-1 Van Abbemuseum 1 reference title Untitled (Progression) (Dutch) reference URL https://vanabbemuseum.nl/en/collection/details/collection/?lookup%5B1673%5D%5Bfilter%5D%5B0%5D=id%3AC522 retrieved 5 July 2021 Smithsonian American Art Museum 1 reference stated in Smithsonian American Art Museum person/institution ID Smithsonian American Art Museum person/institution ID 2515 retrieved 15 October 2021 Stedelijk Museum Amsterdam 3 references title Donald Judd 1960-1991 (English) reference URL https://www.stedelijk.nl/nl/collectie/96013-donald-judd-donald-judd-1960-1991 retrieved 7 September 2021 title Untitled (English) reference URL https://www.stedelijk.nl/nl/collectie/5963-donald-judd-untitled retrieved 7 September 2021 title Minimal art (English) reference URL https://www.stedelijk.nl/nl/collectie/68277-carl-andre-minimal-art retrieved 7 September 2021 Kunstmuseum Den Haag 1 reference inferred from Untitled retrieved 18 April 2022 ZKM Center for Art and Media Karlsruhe 1 reference stated in ZKM Center for Art and Media Karlsruhe ZKM person ID donald-judd retrieved 30 June 2022 Hessel Museum of Art 1 reference reference URL https://bard.emuseum.com/people/871/donald-judd Design Museum Den Bosch 1 reference reference URL https://hdl.handle.net/21.12135/obj3177 title zonder titel (Dutch) publication date 1992 retrieved 22 January 2024 subject named as Donald Judd Print Collection location New York Public Library Main Branch 1 reference archive URL https://web.archive.org/web/http://wallachprintsandphotos.nypl.org/catalog/315430 Mu.ZEE - Kunstmuseum aan Zee 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002556 ABN AMRO Kunstcollectie 1 reference reference URL https://vbcn.nl/nl/collecties/abn-amro retrieved 30 January 2025 Whitney Museum of American Art 1 reference Whitney Museum of American Art artist ID 662 Musée d'art de Joliette 0 references movement Minimalism 2 references Sotheby's person ID donald-judd stated in RKDartists RKDartists ID 43040 genre Minimalism 1 reference imported from Wikimedia project Dutch Wikipedia abstract art 1 reference stated in RKDartists RKDartists ID 43040 award received Guggenheim Fellowship point in time 1968 1 reference Guggenheim fellows ID donald-judd Sikkens Prize point in time 1993 1 reference reference URL http://www.sikkensprize.org/winnaar/donald-judd/ retrieved 18 April 2017 described at URL https://www.solisprints.co.uk/pages/artist-donald-judd language of work or name English 0 references represented by David Zwirner Gallery 1 reference reference URL https://www.davidzwirner.com/artists retrieved 7 April 2018 Pace Gallery 1 reference reference URL https://www.pacegallery.com/ retrieved 7 April 2018 Artists Rights Society object of statement has role copyright collective 1 reference reference URL https://www.arsny.com/mostwanted/ retrieved 19 August 2018 on focus list of Wikimedia project WikiProject PCC Wikidata Pilot/Frick Art Reference Library 0 references WikiProject PCC Wikidata Pilot — Smithsonian Libraries — Artists Files 0 references NADD Wikidata project 1 reference reference URL https://hdl.handle.net/21.12135/obj3177 title zonder titel (Dutch) publication date 1992 retrieved 22 January 2024 subject named as Donald Judd WikiProject New York Public Library 0 references copyright representative reproduction right represented by CISAC-member 3 references ADAGP artist ID donald-judd-25178 retrieved 19 October 2019 subject named as Donald Judd (1928-1994) stated in ADAGP directory stated in DACS register retrieved 19 October 2019 DACS ID (former) 2d067c58-41ff-4291-a88f-3d5bd85a3596 Museum of Modern Art work ID 78800 retrieved 2 November 2019 subject named as © 2019 Judd Foundation / Artists Rights Society (ARS), New York stated in Museum of Modern Art online collection Judd Foundation represented by Artists Rights Society 1 reference inferred from Untitled stated in Museum of Modern Art online collection Museum of Modern Art work ID 78800 retrieved 2 November 2019 subject named as © 2019 Judd Foundation / Artists Rights Society (ARS), New York Artists Rights Society represents Judd Foundation 1 reference inferred from Untitled stated in Museum of Modern Art online collection Museum of Modern Art work ID 78800 retrieved 2 November 2019 subject named as © 2019 Judd Foundation / Artists Rights Society (ARS), New York copyright status as a creator works protected by copyrights determination method or standard 50 years or more after author(s) death applies to jurisdiction countries with 50 years pma or shorter 1 reference retrieved 6 March 2020 date of death 12 February 1994 related image Judd Muenster.JPG 3,648 × 2,736; 5.08 MB 0 references Commons Creator page Donald Judd 0 references Commons category Donald Judd 0 references Identifiers VIAF cluster ID 34478944 2 references imported from Wikimedia project English Wikipedia stated in Japan Search Japan Search name ID ドナルド・ジャド retrieved 21 March 2020 ISNI 000000008113086X 1 reference stated in International Standard Name Identifier BIBSYS ID 90213531 0 references CANTIC ID 981058611295106706 0 references National Library of Spain SpMaBN ID (BNE v1.0) XX5128602 0 references Bibliothèque nationale de France ID 120647237 1 reference imported from Wikimedia project French Wikipedia Canadiana Name Authority ID ncf10029461 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 20 January 2021 Canadiana Authorities ID (former scheme) 0000F9274 0 references GND ID 11888560X 1 reference imported from Wikimedia project English Wikipedia Deutsche Biographie (GND) ID 11888560X 0 references DDB person (GND) ID 11888560X 0 references Kalliope-Verbund (GND) ID 11888560X 0 references ELNET ID a12321278 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 12 April 2025 a12321291 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 12 April 2025 FAST ID 261083 0 references SBN author ID VEAV025372 subject named as Judd, Donald Clarence 0 references J9U entity ID 987007509751305171 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 20 January 2021 Union List of Artist Names ID 500010358 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 16 December 2014 National Library of Korea ID KAC202301128 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 12 April 2025 Library of Congress Authorities ID n89668022 1 reference imported from Wikimedia project English Wikipedia National Library of Lithuania ID LNB:V*163855;=BO 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 20 January 2021 National Library of Latvia ID 000192538 0 references NDL Authority ID 00855869 0 references NACSIS-CAT author ID DA04288851 1 reference stated in CiNii Research CiNii Research ID 1140845216813018496 retrieved 8 March 2023 NL CR AUT ID mzk2005295031 1 reference imported from Wikimedia project Czech Wikipedia Libraries Australia ID 35240733 0 references Nationale Thesaurus voor Auteursnamen ID 068372833 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 16 December 2014 NUKAT ID n01715873 0 references RILM ID 38835 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 12 April 2025 National Library of Poland MMS ID 9810559358905606 0 references RERO ID (legacy) A003433889 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 20 January 2021 Libris-URI zw9cf84h3r5q4l2 1 reference stated in LIBRIS publication date 10 May 2004 retrieved 24 August 2018 SELIBR ID 237285 0 references IdRef ID 028908813 1 reference imported from Wikimedia project French Wikipedia WorldCat Entities ID E39PBJy49YWcm9p7GvFCPBCRKd 1 reference matched by identifier from Library of Congress Authorities Library of Congress Authorities ID n89668022 retrieved 23 April 2024 abART person ID 58510 0 references ADAGP artist ID donald-judd-25178 0 references American Academy in Rome ID 12470538 0 references American National Biography ID 1701622 0 references archINFORM person/group ID 773 1 reference reference URL https://www.archinform.net/service/wd_aiarch.php retrieved 24 July 2018 Archives Directory for the History of Collecting in America ID 2521 0 references Art Gallery of South Australia creator ID 3339 0 references Art UK artist ID judd-donald-19281994 0 references ArtBrokerage artist ID Donald-Judd 0 references Artcyclopedia artist ID judd_donald 0 references ARTIC artist ID 35162 0 references artist-info artist ID 16781 0 references Artists of the World ID 00056674 1 reference archINFORM person/group ID 773 stated in archINFORM retrieved 23 January 2024 Artnet artist ID donald-judd 0 references Artsy artist ID donald-judd 0 references askArt person ID 32009 0 references Athenaeum person ID 11671 0 references Awards & Winners artist ID 0295sg 0 references Benezit ID B00096252 0 references BNB person ID (OBSOLETE) JuddDonald1928-1994 0 references Boijmans artist ID 9499 0 references British Museum person or institution ID 147071 0 references Brockhaus Enzyklopädie online ID judd-donald 0 references Christie's creator ID 29291 0 references CiNii Research ID 1140845216813018496 0 references Cultureel Woordenboek ID internationale-beeldende-kunst-vanaf-1850/donald-judd 0 references DACS ID (2022) 000525 subject named as Judd, Donald 0 references DACS ID (former) 2d067c58-41ff-4291-a88f-3d5bd85a3596 1 reference retrieved 10 February 2018 De Agostini ID Judd,+Donald subject named as Judd, Donald 0 references DFK Paris person ID 0009903061 0 references DigitaltMuseum ID 021039688496 0 references Discogs artist ID 1593967 0 references Enciclopedia Galega Universal ID 140831 0 references Encyclopædia Britannica Online ID biography/Donald-Judd subject named as Donald Judd author name string Lisa S.",
+          "primaryEntity": "Donald Judd",
+          "entityAssociations": [
+            {
+              "entity": "Donald Judd",
+              "role": "PRIMARY_SUBJECT",
+              "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+            }
+          ],
+          "otherMentionOnlyEntities": [],
+          "supportedDimension": "context / characteristics",
+          "provenance": {
+            "sourceId": "cmtfxyncd00i942ke2ra174qf",
+            "materialId": "cmtg8u3yr0015w0sju0husjz7",
+            "versionId": "cmtg8u3yv0016w0sja4sixn0i"
+          }
+        }
+      ],
+      "evidenceCandidates": [
+        {
+          "text": "From Wikidata American minimalist artist (1928–1994) Donald Clarence Judd Donarudo Jaddo Don Judd edit Language Label Description Also known as default for all languages Donald Judd – English Donald Judd American minimalist artist (1928–1994) Donald Clarence Judd Donarudo Jaddo Don Judd Statements instance of human 3 references stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002556 reference URL https://collection.nationalmuseum.se/sv/artists/artist/9601 retrieved 26 June 2026 sex or gender male 5 references stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 stated in Museum of Modern Art online collection Museum of Modern Art artist ID 2948 retrieved 4 December 2019 stated in Archives Directory for the History of Collecting in America Archives Directory for the History of Collecting in America ID 2521 stated in Integrated Authority File GND ID 11888560X retrieved 11 July 2024 stated in RKDartists RKDartists ID 43040 retrieved 28 January 2025 country of citizenship United States 3 references imported from Wikimedia project German Wikipedia stated in Museum of Modern Art online collection Museum of Modern Art artist ID 2948 retrieved 4 December 2019 reference URL https://www.workwithdata.com/person/donald-judd-1928 retrieved 12 November 2024 given name Donald series ordinal 1 3 references stated in Integrated Authority File GND ID 11888560X retrieved 14 August 2015 reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in Union List of Artist Names Union List of Artist Names ID 500010358 Clarence series ordinal 2 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in Union List of Artist Names Union List of Artist Names ID 500010358 family name Judd 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in Union List of Artist Names Union List of Artist Names ID 500010358 pseudonym Jaddo, Donarudo 0 references Judd, Don 0 references date of birth 3 June 1928 Gregorian 15 references stated in Integrated Authority File retrieved 27 April 2014 stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 stated in RKDartists RKDartists ID 43040 title Donald Judd (English) stated in Benezit Dictionary of Artists Benezit ID B00096252 title Donald Judd (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Donald-Judd subject named as Donald Judd retrieved 9 October 2017 stated in SNAC SNAC ARK ID w6nk3g3v subject named as Donald Judd retrieved 9 October 2017 stated in Discogs Discogs artist ID 1593967 subject named as Donald Judd retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID judd-donald subject named as Donald Judd stated in Le Delarge Le Delarge artist ID 24517_artiste_JUDD_Donaldj_ subject named as Donald, JUDD stated in Judd, Donald subject named as Donald Judd stated in Artists of the World Online Artists of the World ID 00056674 subject named as Donald Judd stated in Proleksis Encyclopedia Proleksis enciklopedija ID 29361 subject named as Donald Judd stated in Croatian Encyclopedia Hrvatska enciklopedija ID 29436 subject named as Donald Judd stated in The Fine Art Archive abART person ID 58510 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000020762 retrieved 9 October 2017 subject named as Donald Judd place of birth Excelsior Springs 3 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in RKDartists RKDartists ID 43040 stated in ZKM Center for Art and Media Karlsruhe ZKM person ID donald-judd retrieved 30 June 2022 date of death 12 February 1994 14 references stated in Integrated Authority File retrieved 27 April 2014 stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 stated in RKDartists RKDartists ID 43040 stated in Benezit Dictionary of Artists Benezit ID B00096252 title Donald Judd (English) stated in Encyclopædia Britannica Online Encyclopædia Britannica Online ID biography/Donald-Judd subject named as Donald Judd retrieved 9 October 2017 stated in SNAC SNAC ARK ID w6nk3g3v subject named as Donald Judd retrieved 9 October 2017 stated in Kunstindeks Danmark Kunstindeks Danmark Artist ID 2298 subject named as Donald Judd retrieved 9 October 2017 stated in Discogs Discogs artist ID 1593967 subject named as Donald Judd retrieved 9 October 2017 stated in Brockhaus Enzyklopädie Brockhaus Enzyklopädie online ID judd-donald subject named as Donald Judd stated in Judd, Donald subject named as Donald Judd stated in Proleksis Encyclopedia Proleksis enciklopedija ID 29361 subject named as Donald Judd stated in Croatian Encyclopedia Hrvatska enciklopedija ID 29436 subject named as Donald Judd stated in The Fine Art Archive abART person ID 58510 retrieved 1 April 2021 stated in Munzinger Personen Munzinger person ID 00000020762 retrieved 9 October 2017 subject named as Donald Judd place of death New York City 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in RKDartists RKDartists ID 43040 manner of death natural causes 1 reference based on heuristic inferred from cause of death cause of death lymphoma 0 references spouse Julie Finch start time 1964 end time 1976 1 reference reference URL https://www.guggenheim.org/wp-content/uploads/2020/05/guggenheim-pci-judd-interview-20120529-julie-finch-info.pdf unmarried partner Lauretta Vinciarelli 1 reference reference URL https://juddfoundation.org/program/lauretta-vinciarelli/ child Flavin Judd 1 reference reference URL https://www.nytimes.com/2016/12/25/arts/design/donald-judd-writings-a-book-helped-along-by-his-children.html Rainer Judd 1 reference reference URL https://www.nytimes.com/2016/12/25/arts/design/donald-judd-writings-a-book-helped-along-by-his-children.html languages spoken, written or signed English 1 reference stated in BnF authorities Bibliothèque nationale de France ID 120647237 retrieved 10 October 2015 occupation architect 2 references reference URL https://juddfoundation.org/artist/ stated in RKDartists RKDartists ID 43040 retrieved 10 December 2025 sculptor 4 references imported from Wikimedia project Picard Wikipedia stated in The Fine Art Archive abART person ID 58510 retrieved 1 April 2021 reference URL https://juddfoundation.org/artist/ stated in RKDartists RKDartists ID 43040 retrieved 10 December 2025 painter 3 references stated in The Fine Art Archive abART person ID 58510 retrieved 1 April 2021 reference URL https://juddfoundation.org/artist/ stated in RKDartists RKDartists ID 43040 retrieved 10 December 2025 draftsperson 1 reference inferred from Museum of Modern Art online collection Museum of Modern Art work ID 37059 retrieved 4 December 2019 architectural drafter 1 reference reference URL https://juddfoundation.org/artist/ designer 1 reference reference URL https://juddfoundation.org/artist/ installation artist 1 reference RKDartists ID 43040 stated in RKDartists retrieved 18 November 2021 visual artist 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002556 artist 1 reference reference URL https://www.workwithdata.com/person/donald-judd-1928 retrieved 12 November 2024 field of work art of sculpture 2 references imported from Wikimedia project English Wikipedia Wikimedia import URL https://en.wikipedia.org/w/index.php?title=Donald_Judd&oldid=937221859 stated in Czech National Authority Database NL CR AUT ID mzk2005295031 retrieved 7 November 2022 painting 1 reference stated in Czech National Authority Database NL CR AUT ID mzk2005295031 retrieved 7 November 2022 design 1 reference stated in Czech National Authority Database NL CR AUT ID mzk2005295031 retrieved 7 November 2022 educated at College of William & Mary 0 references Columbia University School of General Studies 0 references work location New York City 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in RKDartists RKDartists ID 43040 Marfa 2 references reference URL http://www.getty.edu/vow/ULANFullDisplay?find=donald+judd&role=&nation=&prev_page=1&subjectid=500010358 stated in RKDartists RKDartists ID 43040 floruit 1989 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002556 quotation 1989 (Dutch) start of work period 1953 1 reference stated in RKDartists RKDartists ID 43040 retrieved 29 September 2022 end of work period 1994 1 reference stated in RKDartists RKDartists ID 43040 retrieved 29 September 2022 sponsor Dia Art Foundation 0 references participant in 4. documenta 1 reference reference URL https://www.documenta.de/en/retrospective/4_documenta retrieved 3 September 2018 archive URL https://web.archive.org/web/20190313160457/https://www.documenta.de/en/retrospective/4_documenta archive date 13 March 2019 Documenta 6 1 reference reference URL https://www.documenta.de/en/retrospective/documenta_6 retrieved 5 September 2018 documenta 7 1 reference reference URL https://www.documenta.de/en/retrospective/documenta_7 retrieved 5 September 2018 participated in conflict Korean War 0 references notable work Untitled 0 references artist files at Smithsonian American Art and Portrait Gallery Library 1 reference reference URL https://library.si.edu/art-and-artist-files Frick Art Research Library 2 references Frick Art Research Library Artist File ID 991005677949707141 Frick Art Research Library Artist File ID 991005834259707141 College for Creative Studies Library 1 reference reference URL https://lib.collegeforcreativestudies.edu/cgi-bin/koha/opac-detail.pl?biblionumber=85919&query_desc=kw%2Cwrdl%3A%20Donald%20Judd National Gallery of Art Library 1 reference reference URL https://library.nga.gov/permalink/01NGA_INST/1cl1g8d/alma99992203504896 has works in the collection Museum Boijmans Van Beuningen 1 reference inferred from Collectie Boijmans Online Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P3888 https://www.wikidata.org/wiki/Property:P3888#P2302 Städel Museum 1 reference inferred from Städel Museum Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P4581 https://www.wikidata.org/wiki/Property:P4581#P2302 Museo Nacional Centro de Arte Reina Sofía 1 reference inferred from Museo Nacional Centro de Arte Reina Sofía Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P4439 https://www.wikidata.org/wiki/Property:P4439#P2302 Minneapolis Institute of Art 1 reference inferred from Minneapolis Institute of Art Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P3603 https://www.wikidata.org/wiki/Property:P3603#P2302 Art Institute of Chicago 1 reference inferred from Art Institute of Chicago Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P6295 https://www.wikidata.org/wiki/Property:P6295#P2302 The Nelson-Atkins Museum of Art 1 reference inferred from The Nelson-Atkins Museum of Art Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P5273 https://www.wikidata.org/wiki/Property:P5273#P2302 Finnish National Gallery 0 references Museum of Modern Art 2 references inferred from Museum of Modern Art Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P2174 https://www.wikidata.org/wiki/Property:P2174#P2302 inferred from Museum of Modern Art online collection Museum of Modern Art work ID 37059 retrieved 4 December 2019 Tate 0 references National Gallery of Victoria 1 reference inferred from National Gallery of Victoria Wikimedia import URL https://www.wikidata.org/wiki/Q250293#P2041 https://www.wikidata.org/wiki/Property:P2041#P2302 National Gallery of Art 0 references National Gallery of Canada 0 references San Francisco Museum of Modern Art 1 reference stated in San Francisco Museum of Modern Art online collection SFMOMA artist ID donald_judd retrieved 6 December 2019 Stedelijk Museum voor Actuele Kunst 0 references Indianapolis Museum of Art 1 reference inferred from Untitled retrieved 19 February 2021 Israel Museum 1 reference inferred from Untitled retrieved 19 February 2021 Chinati Foundation 1 reference inferred from 100 Untitled Works In Mill Aluminum retrieved 21 February 2021 Royal Museums of Fine Arts of Belgium 1 reference retrieved 4 May 2021 reference URL https://www.fine-arts-museum.be/nl/de-collectie/artist/judd-donald-1 Van Abbemuseum 1 reference title Untitled (Progression) (Dutch) reference URL https://vanabbemuseum.nl/en/collection/details/collection/?lookup%5B1673%5D%5Bfilter%5D%5B0%5D=id%3AC522 retrieved 5 July 2021 Smithsonian American Art Museum 1 reference stated in Smithsonian American Art Museum person/institution ID Smithsonian American Art Museum person/institution ID 2515 retrieved 15 October 2021 Stedelijk Museum Amsterdam 3 references title Donald Judd 1960-1991 (English) reference URL https://www.stedelijk.nl/nl/collectie/96013-donald-judd-donald-judd-1960-1991 retrieved 7 September 2021 title Untitled (English) reference URL https://www.stedelijk.nl/nl/collectie/5963-donald-judd-untitled retrieved 7 September 2021 title Minimal art (English) reference URL https://www.stedelijk.nl/nl/collectie/68277-carl-andre-minimal-art retrieved 7 September 2021 Kunstmuseum Den Haag 1 reference inferred from Untitled retrieved 18 April 2022 ZKM Center for Art and Media Karlsruhe 1 reference stated in ZKM Center for Art and Media Karlsruhe ZKM person ID donald-judd retrieved 30 June 2022 Hessel Museum of Art 1 reference reference URL https://bard.emuseum.com/people/871/donald-judd Design Museum Den Bosch 1 reference reference URL https://hdl.handle.net/21.12135/obj3177 title zonder titel (Dutch) publication date 1992 retrieved 22 January 2024 subject named as Donald Judd Print Collection location New York Public Library Main Branch 1 reference archive URL https://web.archive.org/web/http://wallachprintsandphotos.nypl.org/catalog/315430 Mu.ZEE - Kunstmuseum aan Zee 1 reference retrieved 29 April 2024 reference URL http://muzee.be/collection/work/data/SM002556 ABN AMRO Kunstcollectie 1 reference reference URL https://vbcn.nl/nl/collecties/abn-amro retrieved 30 January 2025 Whitney Museum of American Art 1 reference Whitney Museum of American Art artist ID 662 Musée d'art de Joliette 0 references movement Minimalism 2 references Sotheby's person ID donald-judd stated in RKDartists RKDartists ID 43040 genre Minimalism 1 reference imported from Wikimedia project Dutch Wikipedia abstract art 1 reference stated in RKDartists RKDartists ID 43040 award received Guggenheim Fellowship point in time 1968 1 reference Guggenheim fellows ID donald-judd Sikkens Prize point in time 1993 1 reference reference URL http://www.sikkensprize.org/winnaar/donald-judd/ retrieved 18 April 2017 described at URL https://www.solisprints.co.uk/pages/artist-donald-judd language of work or name English 0 references represented by David Zwirner Gallery 1 reference reference URL https://www.davidzwirner.com/artists retrieved 7 April 2018 Pace Gallery 1 reference reference URL https://www.pacegallery.com/ retrieved 7 April 2018 Artists Rights Society object of statement has role copyright collective 1 reference reference URL https://www.arsny.com/mostwanted/ retrieved 19 August 2018 on focus list of Wikimedia project WikiProject PCC Wikidata Pilot/Frick Art Reference Library 0 references WikiProject PCC Wikidata Pilot — Smithsonian Libraries — Artists Files 0 references NADD Wikidata project 1 reference reference URL https://hdl.handle.net/21.12135/obj3177 title zonder titel (Dutch) publication date 1992 retrieved 22 January 2024 subject named as Donald Judd WikiProject New York Public Library 0 references copyright representative reproduction right represented by CISAC-member 3 references ADAGP artist ID donald-judd-25178 retrieved 19 October 2019 subject named as Donald Judd (1928-1994) stated in ADAGP directory stated in DACS register retrieved 19 October 2019 DACS ID (former) 2d067c58-41ff-4291-a88f-3d5bd85a3596 Museum of Modern Art work ID 78800 retrieved 2 November 2019 subject named as © 2019 Judd Foundation / Artists Rights Society (ARS), New York stated in Museum of Modern Art online collection Judd Foundation represented by Artists Rights Society 1 reference inferred from Untitled stated in Museum of Modern Art online collection Museum of Modern Art work ID 78800 retrieved 2 November 2019 subject named as © 2019 Judd Foundation / Artists Rights Society (ARS), New York Artists Rights Society represents Judd Foundation 1 reference inferred from Untitled stated in Museum of Modern Art online collection Museum of Modern Art work ID 78800 retrieved 2 November 2019 subject named as © 2019 Judd Foundation / Artists Rights Society (ARS), New York copyright status as a creator works protected by copyrights determination method or standard 50 years or more after author(s) death applies to jurisdiction countries with 50 years pma or shorter 1 reference retrieved 6 March 2020 date of death 12 February 1994 related image Judd Muenster.JPG 3,648 × 2,736; 5.08 MB 0 references Commons Creator page Donald Judd 0 references Commons category Donald Judd 0 references Identifiers VIAF cluster ID 34478944 2 references imported from Wikimedia project English Wikipedia stated in Japan Search Japan Search name ID ドナルド・ジャド retrieved 21 March 2020 ISNI 000000008113086X 1 reference stated in International Standard Name Identifier BIBSYS ID 90213531 0 references CANTIC ID 981058611295106706 0 references National Library of Spain SpMaBN ID (BNE v1.0) XX5128602 0 references Bibliothèque nationale de France ID 120647237 1 reference imported from Wikimedia project French Wikipedia Canadiana Name Authority ID ncf10029461 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 20 January 2021 Canadiana Authorities ID (former scheme) 0000F9274 0 references GND ID 11888560X 1 reference imported from Wikimedia project English Wikipedia Deutsche Biographie (GND) ID 11888560X 0 references DDB person (GND) ID 11888560X 0 references Kalliope-Verbund (GND) ID 11888560X 0 references ELNET ID a12321278 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 12 April 2025 a12321291 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 12 April 2025 FAST ID 261083 0 references SBN author ID VEAV025372 subject named as Judd, Donald Clarence 0 references J9U entity ID 987007509751305171 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 20 January 2021 Union List of Artist Names ID 500010358 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 16 December 2014 National Library of Korea ID KAC202301128 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 12 April 2025 Library of Congress Authorities ID n89668022 1 reference imported from Wikimedia project English Wikipedia National Library of Lithuania ID LNB:V*163855;=BO 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 20 January 2021 National Library of Latvia ID 000192538 0 references NDL Authority ID 00855869 0 references NACSIS-CAT author ID DA04288851 1 reference stated in CiNii Research CiNii Research ID 1140845216813018496 retrieved 8 March 2023 NL CR AUT ID mzk2005295031 1 reference imported from Wikimedia project Czech Wikipedia Libraries Australia ID 35240733 0 references Nationale Thesaurus voor Auteursnamen ID 068372833 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 16 December 2014 NUKAT ID n01715873 0 references RILM ID 38835 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 12 April 2025 National Library of Poland MMS ID 9810559358905606 0 references RERO ID (legacy) A003433889 1 reference stated in Virtual International Authority File VIAF cluster ID 34478944 retrieved 20 January 2021 Libris-URI zw9cf84h3r5q4l2 1 reference stated in LIBRIS publication date 10 May 2004 retrieved 24 August 2018 SELIBR ID 237285 0 references IdRef ID 028908813 1 reference imported from Wikimedia project French Wikipedia WorldCat Entities ID E39PBJy49YWcm9p7GvFCPBCRKd 1 reference matched by identifier from Library of Congress Authorities Library of Congress Authorities ID n89668022 retrieved 23 April 2024 abART person ID 58510 0 references ADAGP artist ID donald-judd-25178 0 references American Academy in Rome ID 12470538 0 references American National Biography ID 1701622 0 references archINFORM person/group ID 773 1 reference reference URL https://www.archinform.net/service/wd_aiarch.php retrieved 24 July 2018 Archives Directory for the History of Collecting in America ID 2521 0 references Art Gallery of South Australia creator ID 3339 0 references Art UK artist ID judd-donald-19281994 0 references ArtBrokerage artist ID Donald-Judd 0 references Artcyclopedia artist ID judd_donald 0 references ARTIC artist ID 35162 0 references artist-info artist ID 16781 0 references Artists of the World ID 00056674 1 reference archINFORM person/group ID 773 stated in archINFORM retrieved 23 January 2024 Artnet artist ID donald-judd 0 references Artsy artist ID donald-judd 0 references askArt person ID 32009 0 references Athenaeum person ID 11671 0 references Awards & Winners artist ID 0295sg 0 references Benezit ID B00096252 0 references BNB person ID (OBSOLETE) JuddDonald1928-1994 0 references Boijmans artist ID 9499 0 references British Museum person or institution ID 147071 0 references Brockhaus Enzyklopädie online ID judd-donald 0 references Christie's creator ID 29291 0 references CiNii Research ID 1140845216813018496 0 references Cultureel Woordenboek ID internationale-beeldende-kunst-vanaf-1850/donald-judd 0 references DACS ID (2022) 000525 subject named as Judd, Donald 0 references DACS ID (former) 2d067c58-41ff-4291-a88f-3d5bd85a3596 1 reference retrieved 10 February 2018 De Agostini ID Judd,+Donald subject named as Judd, Donald 0 references DFK Paris person ID 0009903061 0 references DigitaltMuseum ID 021039688496 0 references Discogs artist ID 1593967 0 references Enciclopedia Galega Universal ID 140831 0 references Encyclopædia Britannica Online ID biography/Donald-Judd subject named as Donald Judd author name string Lisa S.",
+          "classification": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "confidence": "medium"
+        }
+      ],
+      "usefulYield": "1/1 evidence candidates from 30135 prepared chars",
+      "created": {
+        "materialId": "cmtg8u3yr0015w0sju0husjz7",
+        "versionId": "cmtg8u3yv0016w0sja4sixn0i",
+        "excerptIds": [
+          "cmtg8u44j0018w0sjk9mkgckx"
+        ],
+        "evidenceIds": [
+          "cmtg8u44p0019w0sjc109ihpu"
+        ],
+        "projectId": "cmtg8tquj0000w0sj1tqzrgtq"
+      }
+    }
+  ],
+  "associationAudit": {
+    "total": 9,
+    "valid": 0,
+    "weak": 9,
+    "incorrect": 0,
+    "mentionOnly": 0,
+    "items": [
+      {
+        "source": "The Birth of Venus",
+        "excerptSummary": "Filippo Lippi Technique Tempera on canvas Size 172.5 x 278.5 cm Inventory 1890 n. 878 Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus",
+        "primarySubject": "El nacimiento de Venus",
+        "entityAssociations": [
+          {
+            "entity": "El nacimiento de Venus",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The Birth of Venus",
+        "excerptSummary": "It is highly probable that the work was commissioned by a member of the Medici family, although there is nothing written about the painting before 1550, when Giorgio Vasari describes it in the Medici’s Villa of Castello,",
+        "primarySubject": "El nacimiento de Venus",
+        "entityAssociations": [
+          {
+            "entity": "El nacimiento de Venus",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The Birth of Venus",
+        "excerptSummary": "This hypothesis would seem to be born out by the orange trees in the painting, which are considered an emblem of the Medici dynasty, on account of the assonance between the family name and the name of the orange tree, wh",
+        "primarySubject": "El nacimiento de Venus",
+        "entityAssociations": [
+          {
+            "entity": "El nacimiento de Venus",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The Birth of Venus",
+        "excerptSummary": "Botticelli takes his inspiration from classical statues for Venus’ modest pose, as she covers her nakedness with long, blond hair, which has reflections of light from the fact that it has been gilded; even the Winds, the",
+        "primarySubject": "El nacimiento de Venus",
+        "entityAssociations": [
+          {
+            "entity": "El nacimiento de Venus",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "Maman",
+        "excerptSummary": "You might like Left Right Single II Louise Bourgeois 1996 Cell XIV (Portrait) Louise Bourgeois 2000 Give or Take Louise Bourgeois 2002 Couple I Louise Bourgeois 1996 Spider I Louise Bourgeois 1995 Spider Louise Bourgeois",
+        "primarySubject": "Maman",
+        "entityAssociations": [
+          {
+            "entity": "Maman",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "Florence",
+        "excerptSummary": "Filter by Discover Florence and its Metropolitan Area Previous \" class=\"btn btn-primary btn-sm glide__arrow glide__arrow--left border font-sans-serif\"> Next September 2026 in the Florence area The Burning of the Tower in",
+        "primarySubject": "Florencia",
+        "entityAssociations": [
+          {
+            "entity": "Florencia",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "Neoclassicism",
+        "excerptSummary": "Neoclassicism Neoclassicism was a particularly pure form of classicism that emerged from about 1750 selected artists in the collection selected artworks in the collection Sir Joshua Reynolds Three Ladies Adorning a Term ",
+        "primarySubject": "Neoclasicismo",
+        "entityAssociations": [
+          {
+            "entity": "Neoclasicismo",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "Neoclassicism",
+        "excerptSummary": "We would like to hear from you. read Classicism The term classicism is used to describe art that makes reference to ancient Greek or Roman style read Academy Established during the Renaissance and widespread by the seven",
+        "primarySubject": "Neoclasicismo",
+        "entityAssociations": [
+          {
+            "entity": "Neoclasicismo",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "Donald Judd — registro de autoridad",
+        "excerptSummary": "From Wikidata American minimalist artist (1928–1994) Donald Clarence Judd Donarudo Jaddo Don Judd edit Language Label Description Also known as default for all languages Donald Judd – English Donald Judd American minimal",
+        "primarySubject": "Donald Judd",
+        "entityAssociations": [
+          {
+            "entity": "Donald Judd",
+            "role": "PRIMARY_SUBJECT",
+            "why": "source is explicitly linked to this entity; no automatic association to other linked entities"
+          }
+        ],
+        "role": "REVIEW",
+        "why": "source link exists but independent semantic check is insufficient",
+        "decision": "REVIEW"
+      }
+    ]
+  },
+  "entityImpact": [
+    {
+      "entity": "el-nacimiento-de-venus",
+      "title": "El nacimiento de Venus",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 3,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "ultima-cena",
+      "title": "La última cena",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "maman",
+      "title": "Maman",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 1,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "florencia",
+      "title": "Florencia",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 1,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "roma",
+      "title": "Roma",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "barroco",
+      "title": "Barroco",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "neoclasicismo",
+      "title": "Neoclasicismo",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 2,
+      "depthAfter": "EDITORIAL_ENTRY",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    },
+    {
+      "entity": "ukiyo-e",
+      "title": "Ukiyo-e",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "arte-africano",
+      "title": "Arte africano",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "johannes-vermeer",
+      "title": "Johannes Vermeer",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 0,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "nothing"
+    },
+    {
+      "entity": "donald-judd",
+      "title": "Donald Judd",
+      "depthBefore": "BASIC_EXPLANATION",
+      "newEvidence": 1,
+      "depthAfter": "BASIC_EXPLANATION",
+      "whatBecameExplainable": "claims covered by pilot evidence candidates; requires editorial review"
+    }
+  ],
+  "rollback": "Delete ResearchProject cmtg8tquj0000w0sj1tqzrgtq; cascades pilot Evidence, Excerpts and ResearchLibraryMaterial. Delete pilot LibraryMaterials separately by title prefix [PILOT].",
+  "note": "No LLM, no external bulk downloads, development only."
+}

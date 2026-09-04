@@ -1,0 +1,221 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "decisions": [
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-01",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-02",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-03",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: RESOLVE_CONTEXT, REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-04",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: RESOLVE_CONTEXT, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-05",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: RESOLVE_CONTEXT, REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-06",
+      "humanDecision": "REJECT",
+      "humanReason": "Quote inválida y multi-claim; no está lista para promotion.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-07",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-08",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-09",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-10",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: NORMALIZE_QUOTE, REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-11",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-12",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: RESOLVE_CONTEXT, REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-13",
+      "humanDecision": "APPROVE",
+      "humanReason": "Definición directa, atómica, centrada en la entidad, quote exacta y provenance válida.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-14",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: SPLIT_CLAIMS, NORMALIZE_QUOTE.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-15",
+      "humanDecision": "APPROVE",
+      "humanReason": "Claim cronológico/histórico soportado por quote normalizada, atómico y trazable.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-16",
+      "humanDecision": "APPROVE",
+      "humanReason": "Claim sustantivo y directamente soportado sobre la práctica conceptual.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-17",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: NORMALIZE_QUOTE, REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-18",
+      "humanDecision": "APPROVE",
+      "humanReason": "Claim sustantivo y directamente soportado sobre materiales y formas de trabajo.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-19",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-20",
+      "humanDecision": "REJECT",
+      "humanReason": "Evento contemporáneo del museo, no conocimiento sustantivo sobre Rodin.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-21",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: SPLIT_CLAIMS, REROUTE_ENTITY, REROUTE_RELATION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-22",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: REROUTE_ENTITY.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-23",
+      "humanDecision": "DEFER",
+      "humanReason": "Pendiente: REROUTE_ENTITY, REROUTE_RELATION.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-24",
+      "humanDecision": "REJECT",
+      "humanReason": "Información incidental del Welcome Center.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-25",
+      "humanDecision": "REJECT",
+      "humanReason": "Evento/horario del museo, no conocimiento sobre la artista.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-26",
+      "humanDecision": "REJECT",
+      "humanReason": "Clase contemporánea sobre una obra; contexto institucional efímero.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "first-real-10-source-batch",
+      "reviewItemId": "first-real-10-27",
+      "humanDecision": "REJECT",
+      "humanReason": "Fundraising/membership institucional, no Evidence sustantiva sobre el legado artístico.",
+      "decisionConfirmedAt": "2026-08-31T17:19:40.356Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    }
+  ]
+}

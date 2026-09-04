@@ -1,0 +1,637 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "input": "canonical knowledge only",
+  "previews": [
+    {
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "title": "Pablo Picasso",
+      "slug": "pablo-picasso",
+      "currentSummary": null,
+      "proposedSummary": null,
+      "currentContent": null,
+      "proposedContent": null,
+      "currentContentLevel": "INTERMEDIATE",
+      "proposedContentLevel": "CONTEXTUAL_ESSAY",
+      "claimsUsed": [
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:identity",
+          "statement": "Pablo Picasso es un artista.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear",
+          "statement": "Pablo Picasso nació en 1881.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear",
+          "statement": "Pablo Picasso murió en 1973.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6k70000vifpzd2q0smc",
+          "statement": "Pablo Picasso (Málaga, 1881 – Mougins, Francia, 1973) recibió, a través de la Embajada de España en París, el encargo de realizar una gran pintura para el pabellón español en la Exposición Internacional de París de 1937.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6k70000vifpzd2q0smc"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmdk02lm85sjs00ddh9i",
+          "statement": "Pablo Picasso se sitúa historiográficamente en relación con Cubismo.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmdk02lm85sjs00ddh9i"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmrs02rr85sj2k82hvpj",
+          "statement": "Pablo Picasso se comprende en diálogo con la influencia de Paul Cézanne.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmrs02rr85sj2k82hvpj"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmlc02p285sj2sdtxzvc",
+          "statement": "Las señoritas de Aviñón se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmlc02p285sj2sdtxzvc"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmlg02p485sjrorfyscl",
+          "statement": "Guernica se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmlg02p485sjrorfyscl"
+          ],
+          "certainty": "DOCUMENTED"
+        }
+      ],
+      "claimMap": [
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:identity",
+          "text": "Pablo Picasso es un artista.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear",
+          "text": "Pablo Picasso nació en 1881.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear",
+          "text": "Pablo Picasso murió en 1973.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear"
+          ]
+        },
+        {
+          "id": "section-1-1-0",
+          "text": "Pablo Picasso es un artista.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ]
+        },
+        {
+          "id": "section-2-1-1",
+          "text": "Pablo Picasso nació en 1881.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear"
+          ]
+        },
+        {
+          "id": "section-2-2-2",
+          "text": "Pablo Picasso murió en 1973.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmdk02lm85sjs00ddh9i",
+          "text": "Pablo Picasso es reconocido históricamente como figura central del Cubismo.",
+          "claimIds": [
+            "RELATION:cmsvvxmdk02lm85sjs00ddh9i"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmrs02rr85sj2k82hvpj",
+          "text": "Pablo Picasso fue influenciado por Paul Cézanne.",
+          "claimIds": [
+            "RELATION:cmsvvxmrs02rr85sj2k82hvpj"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmlc02p285sj2sdtxzvc",
+          "text": "Las señoritas de Aviñón se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimIds": [
+            "RELATION:cmsvvxmlc02p285sj2sdtxzvc"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmlg02p485sjrorfyscl",
+          "text": "Guernica se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimIds": [
+            "RELATION:cmsvvxmlg02p485sjrorfyscl"
+          ]
+        }
+      ],
+      "validation": {
+        "accepted": 6,
+        "rejected": [
+          {
+            "sentence": {
+              "id": "RELATION:cmsvvxmdk02lm85sjs00ddh9i",
+              "text": "Pablo Picasso es reconocido históricamente como figura central del Cubismo.",
+              "claimIds": [
+                "RELATION:cmsvvxmdk02lm85sjs00ddh9i"
+              ]
+            },
+            "result": {
+              "sentenceId": "RELATION:cmsvvxmdk02lm85sjs00ddh9i",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia presenta una interpretación histórica que va más allá de una simple afirmación de identidad o hecho. Involucra una interpretación de la posición de Picasso en relación con el Cubismo."
+            }
+          },
+          {
+            "sentence": {
+              "id": "RELATION:cmsvvxmrs02rr85sj2k82hvpj",
+              "text": "Pablo Picasso fue influenciado por Paul Cézanne.",
+              "claimIds": [
+                "RELATION:cmsvvxmrs02rr85sj2k82hvpj"
+              ]
+            },
+            "result": {
+              "sentenceId": "RELATION:cmsvvxmrs02rr85sj2k82hvpj",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia sugiere una influencia entre artistas, lo cual implica una interpretación o análisis que va más allá de una simple afirmación de hecho."
+            }
+          },
+          {
+            "sentence": {
+              "id": "RELATION:cmsvvxmlc02p285sj2sdtxzvc",
+              "text": "Las señoritas de Aviñón se atribuye a Pablo Picasso como responsable de su creación.",
+              "claimIds": [
+                "RELATION:cmsvvxmlc02p285sj2sdtxzvc"
+              ]
+            },
+            "result": {
+              "sentenceId": "RELATION:cmsvvxmlc02p285sj2sdtxzvc",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia atribuye la creación de una obra específica a Picasso, lo cual implica una interpretación o análisis que va más allá de una simple afirmación de hecho."
+            }
+          },
+          {
+            "sentence": {
+              "id": "RELATION:cmsvvxmlg02p485sjrorfyscl",
+              "text": "Guernica se atribuye a Pablo Picasso como responsable de su creación.",
+              "claimIds": [
+                "RELATION:cmsvvxmlg02p485sjrorfyscl"
+              ]
+            },
+            "result": {
+              "sentenceId": "RELATION:cmsvvxmlg02p485sjrorfyscl",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia atribuye la creación de una obra específica a Picasso, lo cual implica una interpretación o análisis que va más allá de una simple afirmación de hecho."
+            }
+          }
+        ]
+      },
+      "privateResearchInputs": 0,
+      "model": {
+        "provider": "ollama",
+        "model": "qwen2.5:14b"
+      },
+      "realWriterRuntimeUsed": true,
+      "status": "BLOCKED",
+      "blockedReason": "GROUNDING_AUDIT_FAILED"
+    },
+    {
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "title": "Cubismo",
+      "slug": "cubismo",
+      "currentSummary": null,
+      "proposedSummary": null,
+      "currentContent": null,
+      "proposedContent": null,
+      "currentContentLevel": "INTERMEDIATE",
+      "proposedContentLevel": "CONTEXTUAL_ESSAY",
+      "claimsUsed": [
+        {
+          "id": "FACT:cmsvvxhgm002r85sjdntcbn33:identity",
+          "statement": "Cubismo es un movimiento cultural.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxhgm002r85sjdntcbn33:identity"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+          "statement": "Cubism was one of the most influential styles of the twentieth century.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "RELATION:cmsvvxm8w02jp85sjuij0ubuz",
+          "statement": "Cubismo se encuadra cronológicamente en Siglo XX.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxm8w02jp85sjuij0ubuz"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxo9k03dv85sjnihqrn5w",
+          "statement": "Cubismo se comprende en diálogo con la influencia de Postimpresionismo.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxo9k03dv85sjnihqrn5w"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmtikq6kj000bvifprd0td82v",
+          "statement": "La Source documenta que el cubismo estuvo parcialmente influido por la obra tardía de Paul Cézanne y por sus distintos puntos de vista.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmtikq6kj000bvifprd0td82v"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmdk02lm85sjs00ddh9i",
+          "statement": "Pablo Picasso se sitúa historiográficamente en relación con Cubismo.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmdk02lm85sjs00ddh9i"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmdq02lo85sjsn3395rq",
+          "statement": "Georges Braque se sitúa historiográficamente en relación con Cubismo.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmdq02lo85sjsn3395rq"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmle02p385sjsshg97js",
+          "statement": "Las señoritas de Aviñón se sitúa historiográficamente en relación con Cubismo.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmle02p385sjsshg97js"
+          ],
+          "certainty": "DOCUMENTED"
+        }
+      ],
+      "claimMap": [
+        {
+          "id": "cmsvvxhgm002r85sjdntcbn33",
+          "text": "Cubismo es un movimiento cultural.",
+          "claimIds": [
+            "FACT:cmsvvxhgm002r85sjdntcbn33:identity"
+          ]
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+          "text": "El cubismo fue un estilo importante del siglo XX.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxm8w02jp85sjuij0ubuz",
+          "text": "Cubismo se encuadra cronológicamente en el Siglo XX.",
+          "claimIds": [
+            "RELATION:cmsvvxm8w02jp85sjuij0ubuz"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxo9k03dv85sjnihqrn5w",
+          "text": "Cubismo se deriva directamente de Postimpresionismo.",
+          "claimIds": [
+            "RELATION:cmsvvxo9k03dv85sjnihqrn5w"
+          ]
+        },
+        {
+          "id": "RELATION:cmtikq6kj000bvifprd0td82v",
+          "text": "El cubismo estuvo influido por la obra de Paul Cézanne.",
+          "claimIds": [
+            "RELATION:cmtikq6kj000bvifprd0td82v"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmdk02lm85sjs00ddh9i",
+          "text": "Pablo Picasso se sitúa historiográficamente en relación con Cubismo.",
+          "claimIds": [
+            "RELATION:cmsvvxmdk02lm85sjs00ddh9i"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmdq02lo85sjsn3395rq",
+          "text": "Georges Braque se sitúa historiográficamente en relación con Cubismo.",
+          "claimIds": [
+            "RELATION:cmsvvxmdq02lo85sjsn3395rq"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmle02p385sjsshg97js",
+          "text": "Las señoritas de Aviñón se sitúa historiográficamente en relación con Cubismo.",
+          "claimIds": [
+            "RELATION:cmsvvxmle02p385sjsshg97js"
+          ]
+        }
+      ],
+      "validation": {
+        "accepted": 5,
+        "rejected": [
+          {
+            "sentence": {
+              "id": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+              "text": "El cubismo fue un estilo importante del siglo XX.",
+              "claimIds": [
+                "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+              ]
+            },
+            "result": {
+              "sentenceId": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia añade una interpretación sobre la influencia del cubismo en el siglo XX, lo cual va más allá de lo que se afirma en el claim de referencia."
+            }
+          },
+          {
+            "sentence": {
+              "id": "RELATION:cmsvvxo9k03dv85sjnihqrn5w",
+              "text": "Cubismo se deriva directamente de Postimpresionismo.",
+              "claimIds": [
+                "RELATION:cmsvvxo9k03dv85sjnihqrn5w"
+              ]
+            },
+            "result": {
+              "sentenceId": "RELATION:cmsvvxo9k03dv85sjnihqrn5w",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia sugiere una relación directa entre el cubismo y el postimpresionismo, mientras que el claim de referencia indica una influencia en diálogo, lo que implica una interpretación más compleja."
+            }
+          },
+          {
+            "sentence": {
+              "id": "RELATION:cmtikq6kj000bvifprd0td82v",
+              "text": "El cubismo estuvo influido por la obra de Paul Cézanne.",
+              "claimIds": [
+                "RELATION:cmtikq6kj000bvifprd0td82v"
+              ]
+            },
+            "result": {
+              "sentenceId": "RELATION:cmtikq6kj000bvifprd0td82v",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia simplifica la influencia de Paul Cézanne en el cubismo a una mera influencia, mientras que el claim de referencia especifica que fue parcial y menciona distintos puntos de vista, lo que va más allá de lo que la sentencia afirma."
+            }
+          }
+        ]
+      },
+      "privateResearchInputs": 0,
+      "model": {
+        "provider": "ollama",
+        "model": "qwen2.5:14b"
+      },
+      "realWriterRuntimeUsed": true,
+      "status": "BLOCKED",
+      "blockedReason": "GROUNDING_AUDIT_FAILED"
+    },
+    {
+      "entityId": "cmsvvxif800ku85sjmrawpu0e",
+      "title": "El nacimiento de Venus",
+      "slug": "el-nacimiento-de-venus",
+      "currentSummary": null,
+      "proposedSummary": null,
+      "currentContent": null,
+      "proposedContent": null,
+      "currentContentLevel": "INTERMEDIATE",
+      "proposedContentLevel": "CONTEXTUAL_ESSAY",
+      "claimsUsed": [
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:identity",
+          "statement": "El nacimiento de Venus es una obra cultural.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:identity"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:startYear",
+          "statement": "El nacimiento de Venus está fechada en 1484.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:startYear"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:technique",
+          "statement": "El nacimiento de Venus: Temple",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:technique"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:materials",
+          "statement": "El nacimiento de Venus: Temple sobre lienzo",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:materials"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:location",
+          "statement": "El nacimiento de Venus: Galería Uffizi, Florencia",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:location"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6km000dvifp7ki5sjxa",
+          "statement": "Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6km000dvifp7ki5sjxa"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kq000gvifpjwruywal",
+          "statement": "Unlike the “Allegory of Spring” , which is painted on wood, the “Birth of Venus” was painted on canvas, a support that was widely used throughout the 15th century for decorative works destined to noble houses.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6kq000gvifpjwruywal"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmip02ns85sj5hxljybn",
+          "statement": "El nacimiento de Venus se atribuye a Sandro Botticelli como responsable de su creación.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmip02ns85sj5hxljybn"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmir02nt85sjpaydo4z7",
+          "statement": "El nacimiento de Venus se sitúa historiográficamente en relación con Renacimiento italiano.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmir02nt85sjpaydo4z7"
+          ],
+          "certainty": "DOCUMENTED"
+        }
+      ],
+      "claimMap": [
+        {
+          "id": "cmsvvxif800ku85sjmrawpu0e",
+          "text": "El nacimiento de Venus es una obra cultural.",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:identity"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:identity",
+          "text": "El nacimiento de Venus es una obra cultural.",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:identity"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:startYear",
+          "text": "El nacimiento de Venus está fechada en 1484.",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:startYear"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:technique",
+          "text": "El nacimiento de Venus: Temple",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:technique"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:materials",
+          "text": "El nacimiento de Venus: Temple sobre lienzo",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:materials"
+          ]
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kq000gvifpjwruywal",
+          "text": "A diferencia de la “Allegory of Spring”, que está pintada en madera, la “Birth of Venus” fue pintada en lienzo, un soporte utilizado en el siglo XV para obras destinadas a casas nobles.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6kq000gvifpjwruywal"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxif800ku85sjmrawpu0e:location",
+          "text": "El nacimiento de Venus: Galería Uffizi, Florencia",
+          "claimIds": [
+            "FACT:cmsvvxif800ku85sjmrawpu0e:location"
+          ]
+        },
+        {
+          "id": "EVIDENCE:cmtikq6km000dvifp7ki5sjxa",
+          "text": "Conocida como el “Nacimiento de Venus”, la composición muestra a la diosa del amor y la belleza llegando a la isla de Chipre, nacida de la espuma del mar y llevada allí por los vientos, Zephyr y, quizás, Aura.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6km000dvifp7ki5sjxa"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmip02ns85sj5hxljybn",
+          "text": "El nacimiento de Venus se atribuye a Sandro Botticelli como responsable de su creación.",
+          "claimIds": [
+            "RELATION:cmsvvxmip02ns85sj5hxljybn"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmir02nt85sjpaydo4z7",
+          "text": "El nacimiento de Venus se sitúa historiográficamente en relación con el Renacimiento italiano.",
+          "claimIds": [
+            "RELATION:cmsvvxmir02nt85sjpaydo4z7"
+          ]
+        }
+      ],
+      "validation": {
+        "accepted": 8,
+        "rejected": [
+          {
+            "sentence": {
+              "id": "EVIDENCE:cmtikq6kq000gvifpjwruywal",
+              "text": "A diferencia de la “Allegory of Spring”, que está pintada en madera, la “Birth of Venus” fue pintada en lienzo, un soporte utilizado en el siglo XV para obras destinadas a casas nobles.",
+              "claimIds": [
+                "EVIDENCE:cmtikq6kq000gvifpjwruywal"
+              ]
+            },
+            "result": {
+              "sentenceId": "EVIDENCE:cmtikq6kq000gvifpjwruywal",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia compara dos obras y proporciona detalles sobre el soporte utilizado para cada una, lo que va más allá del simple claim de identidad."
+            }
+          },
+          {
+            "sentence": {
+              "id": "EVIDENCE:cmtikq6km000dvifp7ki5sjxa",
+              "text": "Conocida como el “Nacimiento de Venus”, la composición muestra a la diosa del amor y la belleza llegando a la isla de Chipre, nacida de la espuma del mar y llevada allí por los vientos, Zephyr y, quizás, Aura.",
+              "claimIds": [
+                "EVIDENCE:cmtikq6km000dvifp7ki5sjxa"
+              ]
+            },
+            "result": {
+              "sentenceId": "EVIDENCE:cmtikq6km000dvifp7ki5sjxa",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia describe el contenido de la obra y proporciona detalles sobre el significado simbólico, lo que va más allá del simple claim de identidad."
+            }
+          }
+        ]
+      },
+      "privateResearchInputs": 0,
+      "model": {
+        "provider": "ollama",
+        "model": "qwen2.5:14b"
+      },
+      "realWriterRuntimeUsed": true,
+      "status": "BLOCKED",
+      "blockedReason": "GROUNDING_AUDIT_FAILED"
+    }
+  ]
+}

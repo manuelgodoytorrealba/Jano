@@ -1,0 +1,1905 @@
+{
+  "batchId": "first-real-10-source-batch",
+  "workingDatabase": {
+    "host": "localhost",
+    "name": "jano"
+  },
+  "classifierVersion": "semantic-evidence-v3",
+  "model": "qwen2.5:14b",
+  "sourceIds": [
+    "cmt4l61ek0002q6fpnlgn5vf9",
+    "cmt4l3a4a0000zufptarsa0c2",
+    "cmt4kyrnv0006dyfpzfcimk9h",
+    "cmt4kyrns0004dyfpvmdo48iu",
+    "cmt4kyrnj0000dyfpmnvv3lzr",
+    "cmt4kxqob0008r7fpok102y4e",
+    "cmt4kxqnv0000r7fp99gqjgb2",
+    "cmt4kt35k0008vwfpbo8yt2e3",
+    "cmt4kt35c0004vwfppna63ccj",
+    "cmt4khppv00008mfp8q1ajstj"
+  ],
+  "rows": [
+    {
+      "source": {
+        "id": "cmt4khppv00008mfp8q1ajstj",
+        "title": "Art & Architecture Thesaurus",
+        "type": "WEBSITE",
+        "url": "https://www.getty.edu/research/tools/vocabularies/aat/"
+      },
+      "purpose": "STRUCTURED_REFERENCE",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthf6qnp0008hwfp4zfi5olq",
+        "cmthf6qnt0009hwfpv487x00w",
+        "cmthf6qnu000ahwfp54qamhvm",
+        "cmthf6qnv000bhwfpb5z2ti2i",
+        "cmthf6qnw000chwfp7ovr3o4n",
+        "cmthf6qnw000dhwfprisr04c8",
+        "cmthf6qny000ehwfp3oko3gud",
+        "cmthf6qny000fhwfp03qnf57m",
+        "cmthf6qnz000ghwfpzqpftmcr"
+      ],
+      "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
+      "structuredRouted": true,
+      "materialId": "cmthf6qe50006hwfptzn6pvr5",
+      "versionId": "cmthf6qe70007hwfpv5synujw",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmt4kt35c0004vwfppna63ccj",
+        "title": "Pop Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/p/pop-art"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthgdfz2000bctfporvfcxat",
+        "cmthgdfz5000cctfpiarvu827",
+        "cmthgdip7000dctfp42cuhrrr",
+        "cmthgdln6000ectfpii08o49n",
+        "cmthgdln8000fctfptqgzk5qa",
+        "cmthgdnwz000gctfpzepsxdft",
+        "cmthgdnx2000hctfpchxacgcf",
+        "cmthgdnx3000ictfpn7o3q0by",
+        "cmthgdnx4000jctfpkwse1g0s",
+        "cmthgdnx4000kctfpi6g8t4ck",
+        "cmthgdqfz000lctfpjq1vp0t1",
+        "cmthgdt5k000mctfp6ey0z9fp"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthgdfz2000bctfporvfcxat",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 180,
+              "text": "Pop art\nPop art is an art movement that emerged in the 1950s and flourished in the 1960s in America and Britain, drawing inspiration from sources in popular and commercial culture."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthgdfz5000cctfpiarvu827",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Emerging in the mid 1950s in Britain and late 1950s in America, pop art reached its peak in the 1960s.",
+            "evidenceProposition": null,
+            "supportedDimension": "CHRONOLOGY",
+            "confidence": "HIGH",
+            "reason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 153,
+              "end": 255,
+              "text": "Emerging in the mid 1950s in Britain and late 1950s in America, pop art reached its peak in the 1960s."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgdip7000dctfp42cuhrrr",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "It began as a revolt against the dominant approaches to art and culture and traditional views on what art should be.",
+            "evidenceProposition": null,
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 116,
+              "text": "It began as a revolt against the dominant approaches to art and culture and traditional views on what art should be."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgdln6000ectfpii08o49n",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 179,
+              "text": "Young artists felt that what they were taught at art school and what they saw in museums did not have anything to do with their lives or the things they saw around them every day."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthgdln8000fctfptqgzk5qa",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Instead they turned to sources such as Hollywood movies, advertising, product packaging, pop music and comic books for their imagery.",
+            "evidenceProposition": null,
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 133,
+              "text": "Instead they turned to sources such as Hollywood movies, advertising, product packaging, pop music and comic books for their imagery."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgdnwz000gctfpzepsxdft",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "In 1957 pop artist Richard Hamilton listed the ‘characteristics of pop art’ in a letter to his friends the architects Peter and Alison Smithson:, Expendable (easily forgotten), Low cost, Mass produced, Young (aimed at youth), Witty, Sexy, Gimmicky, Glamorous, Big business\nModernist critics were horrified by the pop artists’ use of such ‘low’ subject matter and by their apparently uncritical treatment of it.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "In 1957 pop artist Richard Hamilton listed the ‘characteristics of pop art’ in a letter to his friends the architects Peter and Alison Smithson:, Expendable (easily forgotten), Low cost, Mass produced, Young (aimed at youth), Witty, Sexy, Gimmicky, Glamorous, Big business\nModernist critics were horrified by the pop artists’ use of such ‘low’ subject matter and by their apparently uncritical treatment of it.",
+            "supportQuoteStatus": "INVALID",
+            "supportSpan": null,
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthgdnx2000hctfpchxacgcf",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism .",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 175,
+              "text": "In fact pop both took art into new areas of subject matter and developed new ways of presenting it in art and can be seen as one of the first manifestations of postmodernism ."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthgdnx3000ictfpn7o3q0by",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 126,
+              "text": "British pop\nAlthough they were inspired by similar subject matter, British pop is often seen as distinctive from American pop."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthgdnx4000jctfpkwse1g0s",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "evidenceProposition": {
+              "statement": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+              "supportedDimension": "context / characteristics",
+              "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE"
+            },
+            "confidence": "HIGH",
+            "decision": "KEEP",
+            "deterministicClass": "SAFE_KEEP",
+            "deterministicReasonCode": "SAFE_DOCUMENTARY_PROPOSITION",
+            "reason": "Subject explícito y proposition extractable sin añadir hechos.",
+            "supportQuote": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 190,
+              "text": "Early pop art in Britain was fuelled by American popular culture viewed from a distance, while the American artists were inspired by what they saw and experienced living within that culture."
+            },
+            "propositionPresentLiteral": true,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_SAFE_KEEP"
+          }
+        },
+        {
+          "excerptId": "cmthgdnx4000kctfpi6g8t4ck",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "In the United States, pop style was a return to representational art (art that depicted the visual world in a recognisable way) and the use of hard edges and distinct forms after the painterly looseness of abstract expressionism.",
+            "evidenceProposition": null,
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_SUPPORT_QUOTE: supportQuote cannot be verified in excerpt.",
+            "supportQuoteStatus": "INVALID",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgdqfz000lctfpjq1vp0t1",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "By using impersonal, mundane imagery, pop artists also wanted to move away from the emphasis on personal feelings and personal symbolism that characterised abstract expressionism.",
+            "evidenceProposition": null,
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 179,
+              "text": "By using impersonal, mundane imagery, pop artists also wanted to move away from the emphasis on personal feelings and personal symbolism that characterised abstract expressionism."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgdt5k000mctfp6ey0z9fp",
+          "entity": {
+            "id": "cmsumr74w003lodfpcuv3oj7q",
+            "title": "Pop Art"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "While employing irony and parody, it focused more on what American popular imagery represented, and its power in manipulating people’s lifestyles.",
+            "evidenceProposition": null,
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_PROPOSITION: Proposition is not centered on the candidate entity.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 146,
+              "text": "While employing irony and parody, it focused more on what American popular imagery represented, and its power in manipulating people’s lifestyles."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmthgdekw0009ctfp3xbmzpbi",
+      "versionId": "cmthgdeky000actfpyu00oxwv",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmt4kt35k0008vwfpbo8yt2e3",
+        "title": "Conceptual Art",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/art-terms/c/conceptual-art"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthgbhvo000duyfpp8r9b8dq",
+        "cmthgbnwj000euyfpaebrxws8",
+        "cmthgbnwm000fuyfp8egg6inz",
+        "cmthgbnwn000guyfpm0jdknhu",
+        "cmthgbs1u000huyfp3szcfrjd",
+        "cmthgbu9j000iuyfp06gvw02o",
+        "cmthgbwjk000juyfp156skvga",
+        "cmthgbys6000kuyfpdicdv9xp",
+        "cmthgbys7000luyfpf6dyvsw5",
+        "cmthgbys8000muyfpn1hl89np",
+        "cmthgc1h0000nuyfp8hjhv9qc",
+        "cmthgc3n6000ouyfpt6u4und2"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthgbhvo000duyfpp8r9b8dq",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art object.",
+            "evidenceProposition": {
+              "statement": "El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona una definición clara y directa del arte conceptual, lo que cumple con los criterios para la dimensión DEFINITION_OR_IDENTITY. La propuesta es una paráfrasis precisa de la cita y no añade información no documentada.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 15,
+              "end": 132,
+              "text": "Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art object."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgbnwj000euyfpaebrxws8",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgbnwm000fuyfp8egg6inz",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgbnwn000guyfpm0jdknhu",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Joseph Kosuth ’s series Titled (Art as Idea as Idea) 1966–7; the proposal for an exhibition Air Show Air/Conditioning 1966–7 by English artists Terry Atkinson and Michael Baldwin (founder members of the group Art & Language); John Baldessari ’s word paintings exhibited in LA in 1968; and important group exhibitions such as that organised by art dealer Seth Siegelaub in New York in 1969, January 1-31: 0 Objects, 0 Painters, 0 Sculptors reflected this growing ideas-based approach to art-making.",
+            "evidenceProposition": {
+              "statement": "El arte conceptual se refleja en la serie de Joseph Kosuth 'Titled (Art as Idea as Idea)' de 1966-7, la propuesta de la exposición 'Air Show Air/Conditioning' de 1966-7 por los artistas ingleses Terry Atkinson y Michael Baldwin (fundadores del grupo Art & Language), las pinturas de palabras de John Baldessari exhibidas en LA en 1968 y en importantes exposiciones grupales como la organizada por el galerista Seth Siegelaub en Nueva York en 1969, del 1 al 31 de enero: 0 Objetos, 0 Pintores, 0 Escul",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_SUPPORT_QUOTE: supportQuote cannot be verified in excerpt.",
+            "supportQuoteStatus": "INVALID",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgbs1u000huyfp3szcfrjd",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "The term conceptual art was first used to reference this distinct movement in an article written by Sol LeWitt in 1967: In conceptual art the idea or concept is the most important aspect of the work.",
+            "evidenceProposition": {
+              "statement": "El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona una definición clara del arte conceptual y establece que Sol LeWitt introdujo el término en un artículo en 1967, lo que es relevante para la identidad y definición del movimiento.",
+            "supportQuoteStatus": "VALID_NORMALIZED",
+            "supportSpan": {
+              "start": 0,
+              "end": 199,
+              "text": "The term conceptual art was first used to reference this distinct movement in an article written by Sol LeWitt in 1967:\nIn conceptual art the idea or concept is the most important aspect of the work."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthgbu9j000iuyfp06gvw02o",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "When an artist uses a conceptual form of art, it means that all of the planning and decisions are made beforehand and the execution is a perfunctory affair.",
+            "evidenceProposition": {
+              "statement": "El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona una definición clara y directa del arte conceptual, manteniendo la incertidumbre y la interpretación tal como aparece en el texto. La propuesta es atómica y se centra directamente en el arte conceptual como entidad principal.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 156,
+              "text": "When an artist uses a conceptual form of art, it means that all of the planning and decisions are made beforehand and the execution is a perfunctory affair."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthgbwjk000juyfp156skvga",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "In 1973 a pioneering record of the early years of the movement appeared in the form of a book, Six Years, by the American critic Lucy Lippard.",
+            "evidenceProposition": {
+              "statement": "En 1973, Lucy Lippard publicó un libro pionero que documenta los primeros años del movimiento del arte conceptual.",
+              "supportedDimension": "CHRONOLOGY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "CHRONOLOGY",
+            "confidence": "HIGH",
+            "reason": "INVALID_SUPPORT_QUOTE: supportQuote cannot be verified in excerpt.",
+            "supportQuoteStatus": "INVALID",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgbys6000kuyfpdicdv9xp",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgbys7000luyfpf6dyvsw5",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgbys8000muyfpn1hl89np",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "This is because, unlike a painter or sculptor who will think about how best they can express their idea using paint or sculptural materials and techniques, a conceptual artist uses whatever materials and whatever form is most appropriate to putting their idea across – this could be anything from a performance to a written description.",
+            "evidenceProposition": {
+              "statement": "El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.",
+              "supportedDimension": "DEFINITION_OR_IDENTITY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "El fragmento proporciona una definición clara del arte conceptual, destacando cómo difiere de otras formas de arte en términos de material y forma utilizados para transmitir ideas. La cita es precisa y no añade interpretaciones adicionales.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 336,
+              "text": "This is because, unlike a painter or sculptor who will think about how best they can express their idea using paint or sculptural materials and techniques, a conceptual artist uses whatever materials and whatever form is most appropriate to putting their idea across – this could be anything from a performance to a written description."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthgc1h0000nuyfp8hjhv9qc",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Although there is no one style or form used by conceptual artists, from the late 1960s certain trends emerged.",
+            "evidenceProposition": null,
+            "supportedDimension": "CHRONOLOGY",
+            "confidence": "HIGH",
+            "reason": "INVALID_PROPOSITION: Proposition adds a number, date or identifier absent from the support quote.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 110,
+              "text": "Although there is no one style or form used by conceptual artists, from the late 1960s certain trends emerged."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "CRITICAL",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthgc3n6000ouyfpt6u4und2",
+          "entity": {
+            "id": "cmsumr74z003rodfppy1l9peb",
+            "title": "Arte conceptual"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmthgbhsu000buyfp55j9d1xt",
+      "versionId": "cmthgbhsw000cuyfpqmury2gt",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmt4kxqnv0000r7fp99gqjgb2",
+        "title": "Auguste Rodin",
+        "type": "WEBSITE",
+        "url": "https://www.musee-rodin.fr/en"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthgc51o000ruyfpum9f0jkt",
+        "cmthgc51p000suyfpp631v943",
+        "cmthgc6ld000tuyfp5u7jz6jp",
+        "cmthgc9h6000uuyfpqq5g05s7",
+        "cmthgc9h8000vuyfpdzujz8gw"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthgc51o000ruyfpum9f0jkt",
+          "entity": {
+            "id": "cmsumr7cr00h6odfpntoohzgx",
+            "title": "Auguste Rodin"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgc51p000suyfpp631v943",
+          "entity": {
+            "id": "cmsumr7cr00h6odfpntoohzgx",
+            "title": "Auguste Rodin"
+          },
+          "result": {
+            "decision": "REJECT",
+            "relevanceRole": "MENTION",
+            "supportQuote": null,
+            "evidenceProposition": null,
+            "supportedDimension": null,
+            "confidence": "LOW",
+            "reason": "The excerpt mentions Auguste Rodin in the context of an exhibition, but it does not provide any substantive information about the artist. It is primarily logistical information about an event and does not contribute to defining, contextualizing, or relating to Rodin in a meaningful way.",
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgc6ld000tuyfp5u7jz6jp",
+          "entity": {
+            "id": "cmsumr7cr00h6odfpntoohzgx",
+            "title": "Auguste Rodin"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Collective Celebration in Question\n13th Symposium for Young Researchers in Sculpture\nFriday, October 9, 2026\n21, Boulevard des Invalides, 75007 Paris",
+            "evidenceProposition": null,
+            "supportedDimension": "CHRONOLOGY",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt provides a date and location for a symposium but does not directly relate to Auguste Rodin's work or life. It could be relevant context but lacks a clear connection to the candidate entity.",
+            "supportQuoteStatus": "VALID_NORMALIZED",
+            "supportSpan": {
+              "start": 0,
+              "end": 150,
+              "text": "Collective Celebration in Question \n13th Symposium for Young Researchers in Sculpture\nFriday, October 9, 2026\n21, Boulevard des Invalides, 75007 Paris"
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": false,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgc9h6000uuyfpqq5g05s7",
+          "entity": {
+            "id": "cmsumr7cr00h6odfpntoohzgx",
+            "title": "Auguste Rodin"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgc9h8000vuyfpdzujz8gw",
+          "entity": {
+            "id": "cmsumr7cr00h6odfpntoohzgx",
+            "title": "Auguste Rodin"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "The Musée Rodin, the artist's heir\nA self-funding museum\nThe original bronze casts",
+            "evidenceProposition": {
+              "statement": "El Musée Rodin es el heredero del artista y es un museo autofinanciado que posee los originales de los bronces de Rodin.",
+              "supportedDimension": "PROVENANCE_OR_COMMISSION",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "PROVENANCE_OR_COMMISSION",
+            "confidence": "HIGH",
+            "reason": "El texto proporciona información directa y sustancial sobre el Museo Rodin en relación con Auguste Rodin, incluyendo su estatus como heredero del artista y la posesión de los originales de los bronces de Rodin.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 16,
+              "end": 98,
+              "text": "The Musée Rodin, the artist's heir\nA self-funding museum\nThe original bronze casts"
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmthgc3n8000puyfpp8u76ok5",
+      "versionId": "cmthgc3n9000quyfpw5b1w4tz",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmt4kxqob0008r7fpok102y4e",
+        "title": "Georgia O’Keeffe",
+        "type": "WEBSITE",
+        "url": "https://www.okeeffemuseum.org/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthgcc5h000yuyfpysi6270i",
+        "cmthgcc5i000zuyfpyx6efmqi",
+        "cmthgcc5j0010uyfpl9ypuw9h",
+        "cmthgcc5j0011uyfp6ezffa2l",
+        "cmthgcf370012uyfpzsp5wqt0",
+        "cmthgch9e0013uyfp8345y01j",
+        "cmthgcj8f0014uyfpyh11vmmv",
+        "cmthgclab0015uyfprrldpxvy",
+        "cmthgcpou0016uyfp6l25t5io",
+        "cmthgcpov0017uyfph4r60v42",
+        "cmthgcpow0018uyfpp9bsuyf2",
+        "cmthgcpox0019uyfpwufi6gf5"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthgcc5h000yuyfpysi6270i",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgcc5i000zuyfpyx6efmqi",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgcc5j0010uyfpl9ypuw9h",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgcc5j0011uyfp6ezffa2l",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "PRIMARY_SUBJECT",
+            "supportQuote": "\"Access O’Keeffe\" combines the rich and prolific work of Georgia O’Keeffe with the Museum's extensive archive and historic home collections. \"Access O’Keeffe\" connects our collection with museums around the world.",
+            "evidenceProposition": null,
+            "supportedDimension": "DEFINITION_OR_IDENTITY",
+            "confidence": "HIGH",
+            "reason": "INVALID_PROPOSITION: Proposition must express one atomic unit of knowledge.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 121,
+              "end": 334,
+              "text": "\"Access O’Keeffe\" combines the rich and prolific work of Georgia O’Keeffe with the Museum's extensive archive and historic home collections. \"Access O’Keeffe\" connects our collection with museums around the world."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "MAJOR",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": false,
+            "reviewKind": "SYSTEM_FAILSAFE_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthgcf370012uyfpzsp5wqt0",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "Located 52 miles north of Santa Fe, O’Keeffe’s Home & Studio reflects a blend of Native American and Spanish Colonial building styles, regional architectural traditions dating back centuries.",
+            "evidenceProposition": {
+              "statement": "Georgia O'Keeffe's Home & Studio, located 52 miles north of Santa Fe, incorporates Native American and Spanish Colonial architectural styles, reflecting regional traditions.",
+              "supportedDimension": "PLACE",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "PLACE",
+            "confidence": "HIGH",
+            "reason": "The excerpt provides substantive information directly about Georgia O'Keeffe's Home & Studio, including its location and architectural style, which is directly relevant to the candidate entity.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 362,
+              "end": 553,
+              "text": "Located 52 miles north of Santa Fe, O’Keeffe’s Home & Studio reflects a blend of Native American and Spanish Colonial building styles, regional architectural traditions dating back centuries."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgch9e0013uyfp8345y01j",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "The O'Keeffe Welcome Center, 10 minutes from the Home & Studio",
+            "evidenceProposition": {
+              "statement": "The O'Keeffe Welcome Center is located near the Home & Studio.",
+              "supportedDimension": "PLACE",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "PLACE",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt provides context about the location of the O'Keeffe Welcome Center, which is related to Georgia O'Keeffe but does not directly focus on her. The information is relevant to understanding the setting of her home and studio but does not provide substantive information about her as an artist.",
+            "supportQuoteStatus": "INVALID",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgcj8f0014uyfpyh11vmmv",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": null,
+            "evidenceProposition": null,
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "MEDIUM",
+            "reason": "El fragmento proporciona información sobre eventos relacionados con el museo de Georgia O'Keeffe, pero no proporciona información directa sobre la artista. Sin embargo, podría ser relevante para entender el contexto en el que se encuentra el legado de O'Keeffe y cómo se preserva su obra. La decisión entre KEEP y REJECT es ambigua debido a la posible relevancia contextual.",
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgclab0015uyfprrldpxvy",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "decision": "REVIEW",
+            "relevanceRole": "CONTEXT_FOR",
+            "supportQuote": "Admission is free all day for New Mexico residents and free for everyone…\nRegister Now\nSee Upcoming Events\nWatch Past Talks\nWatch Past Talks\nIn-Person Class: Exploring “Rams Skull with Brown Leaves,” 1936 in Soft Pastels (2 Parts) \nWednesday, September 30 | 9:00 AM MT\nO'KEEFFE MUSEUM CREATIVITY STUDIO | CORNER OF W MARCY ST AND SHERIDAN ST, SANTA FE, NM\nPart 1 | Wednesday, September 30, from 9:00 AM to 1:00 PM MT Part 2 | Thursday, October 1, from 9:00 AM to 1:00 PM…\nRegister Now\nMembership\nHelp",
+            "evidenceProposition": {
+              "statement": "An in-person class exploring Georgia O'Keeffe's work, specifically the painting “Rams Skull with Brown Leaves” from 1936, is scheduled at the O'Keeffe Museum Creativity Studio in Santa Fe, New Mexico.",
+              "supportedDimension": "HISTORICAL_CONTEXT",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "HISTORICAL_CONTEXT",
+            "confidence": "MEDIUM",
+            "reason": "The excerpt provides context about an event related to Georgia O'Keeffe's work but does not directly provide substantive information about her. The event is a class exploring one of her paintings, which indirectly relates to her but does not focus on her directly.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 0,
+              "end": 500,
+              "text": "Admission is free all day for New Mexico residents and free for everyone…\nRegister Now\nSee Upcoming Events\nWatch Past Talks\nWatch Past Talks\nIn-Person Class: Exploring “Rams Skull with Brown Leaves,” 1936 in Soft Pastels (2 Parts) \nWednesday, September 30 | 9:00 AM MT\nO'KEEFFE MUSEUM CREATIVITY STUDIO | CORNER OF W MARCY ST AND SHERIDAN ST, SANTA FE, NM\nPart 1 | Wednesday, September 30, from 9:00 AM to 1:00 PM MT Part 2 | Thursday, October 1, from 9:00 AM to 1:00 PM…\nRegister Now\nMembership\nHelp"
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": "MODEL_REVIEW",
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        },
+        {
+          "excerptId": "cmthgcpou0016uyfp6l25t5io",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgcpov0017uyfph4r60v42",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgcpow0018uyfpp9bsuyf2",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "LOW",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_CLEARLY_UNRELATED",
+            "reason": "No puede formularse una proposition concreta.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgcpox0019uyfpwufi6gf5",
+          "entity": {
+            "id": "cmsumr7de00ifodfpmp8smezz",
+            "title": "Georgia O'Keeffe"
+          },
+          "result": {
+            "decision": "KEEP",
+            "relevanceRole": "ABOUT",
+            "supportQuote": "You sustain the Museum and make our work to preserve, present, and advance the artistic legacy of Georgia O’Keeffe possible.",
+            "evidenceProposition": {
+              "statement": "El patrocinio y el apoyo al museo permiten preservar, presentar y avanzar en la herencia artística de Georgia O'Keeffe.",
+              "supportedDimension": "RECEPTION_OR_LEGACY",
+              "evidenceRole": "PARAPHRASED_DOCUMENTARY_SUPPORT"
+            },
+            "supportedDimension": "RECEPTION_OR_LEGACY",
+            "confidence": "HIGH",
+            "reason": "La cita proporciona información directa sobre el legado artístico de Georgia O'Keeffe, lo que se clasifica como RECEPTION_OR_LEGACY ya que se refiere a la preservación y presentación de su obra. La relevancia es clara y el enunciado es atómico y coherente con la cita.",
+            "supportQuoteStatus": "VALID_EXACT",
+            "supportSpan": {
+              "start": 20,
+              "end": 144,
+              "text": "You sustain the Museum and make our work to preserve, present, and advance the artistic legacy of Georgia O’Keeffe possible."
+            },
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_RECOVERY",
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_FACTUAL_SPAN"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmthgcbr6000wuyfp1uq33v2r",
+      "versionId": "cmthgcbr8000xuyfpx174jlm2",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmt4kyrnj0000dyfpmnvv3lzr",
+        "title": "Edvard Munch",
+        "type": "WEBSITE",
+        "url": "https://www.munchmuseet.no/en/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
+      "failureReason": "fetch failed",
+      "acquisitionState": "NETWORK_FAILURE"
+    },
+    {
+      "source": {
+        "id": "cmt4kyrns0004dyfpvmdo48iu",
+        "title": "Alberto Giacometti",
+        "type": "WEBSITE",
+        "url": "https://www.fondation-giacometti.fr/en"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "FAILED",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
+      "failureReason": "Document preparation produced no readable text",
+      "acquisitionState": "EXTRACTION_FAILURE"
+    },
+    {
+      "source": {
+        "id": "cmt4kyrnv0006dyfpzfcimk9h",
+        "title": "Edward Hopper",
+        "type": "WEBSITE",
+        "url": "https://whitney.org/artists/611"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "PREPARED_EMPTY",
+      "materials": [],
+      "excerpts": [],
+      "classifications": [],
+      "materialCreated": false,
+      "versionCreated": false,
+      "acquisitionState": "PREPARED_EMPTY",
+      "materialId": "cmthgcs3n001euyfp79goyf5b",
+      "versionId": "cmthgcs3p001fuyfprj90qnr6"
+    },
+    {
+      "source": {
+        "id": "cmt4l3a4a0000zufptarsa0c2",
+        "title": "Marilyn Diptych",
+        "type": "WEBSITE",
+        "url": "https://www.tate.org.uk/art/artworks/warhol-marilyn-diptych-t03093"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthf6vvc000nhwfpvzfmq97c"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthf6vvc000nhwfpvzfmq97c",
+          "entity": {
+            "id": "cmsumr7gc00nyodfpwxw9ht12",
+            "title": "Díptico de Marilyn"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 0,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 1
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmthf6uwz000lhwfpqyz4n842",
+      "versionId": "cmthf6ux1000mhwfpgt7yshe6",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    },
+    {
+      "source": {
+        "id": "cmt4l61ek0002q6fpnlgn5vf9",
+        "title": "Salvador Dalí",
+        "type": "WEBSITE",
+        "url": "https://www.salvador-dali.org/en/"
+      },
+      "purpose": "DOCUMENTARY_TEXT",
+      "status": "ALREADY_PREPARED",
+      "materials": [],
+      "excerpts": [
+        "cmthgctg3001juyfpts9xfv8q",
+        "cmthgctg4001kuyfptmsidk1y",
+        "cmthgcuyf001luyfpetzbr0w1"
+      ],
+      "classifications": [
+        {
+          "excerptId": "cmthgctg3001juyfpts9xfv8q",
+          "entity": {
+            "id": "cmsumr7d500hxodfppv8ex4h3",
+            "title": "Salvador Dalí"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        },
+        {
+          "excerptId": "cmthgctg4001kuyfptmsidk1y",
+          "entity": {
+            "id": "cmsumr7d500hxodfppv8ex4h3",
+            "title": "Salvador Dalí"
+          },
+          "result": {
+            "decision": "REJECT",
+            "relevanceRole": "MENTION",
+            "supportQuote": null,
+            "evidenceProposition": null,
+            "supportedDimension": null,
+            "confidence": "LOW",
+            "reason": "The excerpt is primarily concerned with logistical information about the Dalí Theatre-Museum and does not provide substantive information about Salvador Dalí as an artist. It only mentions his name in relation to the museum named after him, which does not contribute to understanding his artistic practice, chronology, or any other relevant dimension.",
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "SEMANTIC_DECISION",
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 0,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "deterministicClass": "UNCERTAIN",
+            "deterministicReasonCode": "UNCERTAIN_PLAUSIBLE_FRAGMENT"
+          }
+        },
+        {
+          "excerptId": "cmthgcuyf001luyfpetzbr0w1",
+          "entity": {
+            "id": "cmsumr7d500hxodfppv8ex4h3",
+            "title": "Salvador Dalí"
+          },
+          "result": {
+            "signals": {
+              "subjectClarity": 1,
+              "extractability": 1,
+              "purposeFit": 1,
+              "noise": 0
+            },
+            "relevanceRole": "UNRELATED",
+            "evidenceProposition": null,
+            "confidence": "HIGH",
+            "decision": "REJECT",
+            "deterministicClass": "HARD_REJECT",
+            "deterministicReasonCode": "HARD_NAVIGATION_OR_PROMOTION",
+            "reason": "Chrome, navegación o promoción sin proposition editorial suficiente.",
+            "supportQuote": null,
+            "supportQuoteStatus": "MISSING",
+            "supportSpan": null,
+            "propositionPresentLiteral": false,
+            "unsupportedAddition": "NONE",
+            "uncertaintyPreserved": true,
+            "entityCentered": true,
+            "atomic": true,
+            "reviewKind": null,
+            "compositionSource": "DETERMINISTIC_HARD_REJECT"
+          }
+        }
+      ],
+      "materialCreated": false,
+      "versionCreated": false,
+      "materialId": "cmthgcsyt001huyfpm496i30v",
+      "versionId": "cmthgcsyu001iuyfpk36p7yix",
+      "acquisitionState": "ALREADY_ACQUIRED"
+    }
+  ],
+  "metrics": {
+    "sourcesAttempted": 10,
+    "sourcesPrepared": 7,
+    "sourcesFailed": 2,
+    "materialsCreated": 0,
+    "versionsCreated": 0,
+    "excerptsCreated": 54,
+    "semanticClassifications": 45,
+    "documentarySourcesEffective": 6,
+    "structuredSources": 1,
+    "structuredExcerpts": 9,
+    "structuredRouted": 9,
+    "editorialClassifications": 45,
+    "safeKeep": 6,
+    "modelReview": 4,
+    "systemReview": 10,
+    "reject": 18,
+    "noPromotion": true
+  },
+  "startedAt": "2026-08-31T16:31:40.948Z",
+  "finishedAt": "2026-08-31T16:31:40.948Z"
+}

@@ -63,13 +63,23 @@ export function resolveEntityTranslation<T extends LegacyEntityLike>(
   const englishFallback = translations.find((item) => item?.locale === FALLBACK_CONTENT_LOCALE);
   const resolved = requested ?? defaultTranslation ?? englishFallback ?? null;
   const resolvedLocale = resolved?.locale ?? DEFAULT_CONTENT_LOCALE;
+  // The canonical Entity fields are the source of truth for the default
+  // Spanish public representation. Legacy translations may otherwise mask
+  // newly applied editorial content with stale shortDescription/essay data.
+  const useCanonicalDefault = locale === DEFAULT_CONTENT_LOCALE;
 
   return {
     ...entity,
     title: resolved?.title?.trim() || entity.title,
     summary:
-      resolved?.shortDescription?.trim() || resolved?.excerpt?.trim() || (entity.summary ?? null),
-    content: resolved?.essay?.trim() || (entity.content ?? null),
+      (useCanonicalDefault ? entity.summary?.trim() : null) ||
+      resolved?.shortDescription?.trim() ||
+      resolved?.excerpt?.trim() ||
+      (entity.summary ?? null),
+    content:
+      (useCanonicalDefault ? entity.content?.trim() : null) ||
+      resolved?.essay?.trim() ||
+      (entity.content ?? null),
     translationMeta: {
       requestedLocale: locale,
       resolvedLocale,

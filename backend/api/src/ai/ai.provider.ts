@@ -20,6 +20,7 @@ export type AIStructuredRequest = {
   input: unknown;
   outputSchema?: unknown;
   maxOutputTokens?: number;
+  timeoutMs?: number;
 };
 
 export type AIStructuredResult = {
@@ -44,7 +45,8 @@ export class AIProvider {
 
   constructor(config: ConfigService) {
     this.provider = config.get<string>('AI_PROVIDER') ?? 'noop';
-    this.model = config.get<string>('OLLAMA_MODEL') ?? 'qwen2.5:7b';
+    this.model =
+      config.get<string>('AI_MODEL') ?? config.get<string>('OLLAMA_MODEL') ?? 'qwen2.5:7b';
     this.ollamaBaseUrl = (
       config.get<string>('OLLAMA_BASE_URL') ?? 'http://127.0.0.1:11434'
     ).replace(/\/$/, '');
@@ -75,16 +77,17 @@ export class AIProvider {
         response = await fetch(`${this.ollamaBaseUrl}/api/generate`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          signal: AbortSignal.timeout(60_000),
+          signal: AbortSignal.timeout(request.timeoutMs ?? 60_000),
           body: JSON.stringify({
             model: this.model,
             stream: false,
+            think: false,
             format: request.outputSchema ?? 'json',
             options: { temperature: 0.2, num_predict: request.maxOutputTokens ?? 1_200 },
             prompt: [
               'Eres un asistente editorial de investigación cultural. Responde en español.',
               'Usa exclusivamente el contexto proporcionado. No inventes hechos, citas ni referencias.',
-              'Devuelve JSON válido, sin markdown, conforme al contrato solicitado.',
+              'Devuelve JSON válido, sin fences ni texto fuera del objeto; los campos string pueden contener Markdown sólo cuando la tarea lo exija.',
               `Tarea: ${request.task} (contrato ${request.schemaVersion}).`,
               JSON.stringify(request.input),
             ].join('\n\n'),

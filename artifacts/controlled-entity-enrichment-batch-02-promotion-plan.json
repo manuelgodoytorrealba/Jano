@@ -1,0 +1,221 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "apply": false,
+  "items": [
+    {
+      "reviewItemId": "first-real-10-01",
+      "researchEvidenceId": "cmthlr9pl00005kfp80sf95ai",
+      "canonicalEntityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "canonicalEntityTitle": "Pablo Picasso",
+      "humanApprovedProposition": "Pablo Picasso recibió el encargo de realizar una gran pintura para el pabellón español de la Exposición Internacional de París de 1937.",
+      "supportQuote": "Pablo Picasso (Málaga, 1881 – Mougins, Francia, 1973) recibió, a través de la Embajada de España en París, el encargo de realizar una gran pintura para el pabellón español en la Exposición Internacional de París de 1937.",
+      "finalDimension": "PROVENANCE_OR_COMMISSION",
+      "provenance": {
+        "sourceId": "cmtage91f0000s0kpjeilzvqc",
+        "locator": "paragraph-1",
+        "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
+        "excerptId": "cmtg2xuc4000e6vsjcw4ar4r6"
+      },
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE",
+      "relationProposal": null,
+      "apply": false
+    },
+    {
+      "reviewItemId": "first-real-10-11",
+      "researchEvidenceId": "cmthlr9pr00015kfpdeegb6et",
+      "canonicalEntityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "canonicalEntityTitle": "Pablo Picasso",
+      "humanApprovedProposition": "Picasso recurrió a asuntos de la mitología clásica y revisó obras de la tradición artística y del clasicismo francés como parte de su práctica.",
+      "supportQuote": "Por otro lado, asuntos tomados de la mitología clásica y la actualización de obras paradigmáticas de una historia del arte canónica y del clasicismo francés le sirvieron como reto de superación y vía de inserción en dicha genealogía artística.",
+      "finalDimension": "PRACTICE_OR_METHOD",
+      "provenance": {
+        "sourceId": "cmtage91f0000s0kpjeilzvqc",
+        "locator": "paragraph-11",
+        "materialVersionId": "cmtg2xu68000c6vsj1707pm7v",
+        "excerptId": "cmthk9vs8000aqwfprtxx7k8z"
+      },
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE",
+      "relationProposal": null,
+      "apply": false
+    },
+    {
+      "reviewItemId": "first-real-10-15",
+      "researchEvidenceId": "cmthlr9pw00025kfpgyastohe",
+      "canonicalEntityId": "cmsvvxhgm002r85sjdntcbn33",
+      "canonicalEntityTitle": "Cubismo",
+      "humanApprovedProposition": "Tate caracteriza al cubismo como uno de los estilos más influyentes del siglo XX.",
+      "supportQuote": "Cubism was one of the most influential styles of the twentieth century.",
+      "finalDimension": "RECEPTION_OR_LEGACY",
+      "provenance": {
+        "sourceId": "cmtage95p000os0kp83phgo8x",
+        "locator": "paragraph-2",
+        "materialVersionId": "cmtg2y35400166vsjodqxpeew",
+        "excerptId": "cmtg2y39d001a6vsjnswbtzg8"
+      },
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE",
+      "relationProposal": null,
+      "apply": false
+    },
+    {
+      "reviewItemId": "first-real-10-16",
+      "researchEvidenceId": "cmthlr9q000035kfp6ntqsp93",
+      "canonicalEntityId": "cmsvvxhgm002r85sjdntcbn33",
+      "canonicalEntityTitle": "Cubismo",
+      "humanApprovedProposition": "Se considera generalmente que el cubismo comenzó alrededor de 1907, y que Les Demoiselles d’Avignon ya incluía elementos cubistas.",
+      "supportQuote": "It is generally agreed to have begun around 1907 with Picasso ’s celebrated painting Demoiselles D’Avignon which included elements of cubist style.",
+      "finalDimension": "CHRONOLOGY",
+      "provenance": {
+        "sourceId": "cmtage95p000os0kp83phgo8x",
+        "locator": "paragraph-3",
+        "materialVersionId": "cmtg2y35400166vsjodqxpeew",
+        "excerptId": "cmtg2y39k001c6vsj1ngv4yox"
+      },
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE",
+      "relationProposal": null,
+      "apply": false
+    },
+    {
+      "reviewItemId": "first-real-10-17",
+      "researchEvidenceId": "cmthlr9q400045kfp14zpfo88",
+      "canonicalEntityId": "cmsvvxhgm002r85sjdntcbn33",
+      "canonicalEntityTitle": "Cubismo",
+      "humanApprovedProposition": "El nombre «cubismo» parece derivar de un comentario de Louis Vauxcelles sobre pinturas de Georges Braque expuestas en París en 1908.",
+      "supportQuote": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometric outlines, to cubes’.",
+      "finalDimension": "HISTORICAL_CONTEXT",
+      "provenance": {
+        "sourceId": "cmtage95p000os0kp83phgo8x",
+        "locator": "paragraph-4",
+        "materialVersionId": "cmtg2y35400166vsjodqxpeew",
+        "excerptId": "cmtg2y39u001e6vsjvqcmo5gi"
+      },
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE",
+      "relationProposal": null,
+      "apply": false
+    },
+    {
+      "reviewItemId": "first-real-10-22",
+      "researchEvidenceId": "cmthlr9q800055kfpe15vw6iu",
+      "canonicalEntityId": "cmsvvxhgm002r85sjdntcbn33",
+      "canonicalEntityTitle": "Cubismo",
+      "humanApprovedProposition": "El cubismo estuvo parcialmente influido por la obra tardía de Paul Cézanne, en particular por el uso de puntos de vista ligeramente diferentes.",
+      "supportQuote": "Cubism was partly influenced by the late work of artist Paul Cézanne in which he can be seen to be painting things from slightly different points of view.",
+      "finalDimension": "RELATION",
+      "provenance": {
+        "sourceId": "cmtage95p000os0kp83phgo8x",
+        "locator": "paragraph-9",
+        "materialVersionId": "cmtg2y35400166vsjodqxpeew",
+        "excerptId": "cmthkahbc000mqwfpztlt84wx"
+      },
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "RELATION_PROPOSAL",
+      "proposedAction": "REVIEW_RELATION",
+      "relationProposal": {
+        "sourceEntity": {
+          "id": "cmsvvxhgm002r85sjdntcbn33",
+          "title": "Cubismo"
+        },
+        "targetEntity": {
+          "id": "cmsvvxi8i00gx85sjt7t842n7",
+          "title": "Paul Cézanne"
+        },
+        "candidatePredicate": {
+          "id": "cmqmnymjk000r4vsjl7pq8ztg",
+          "key": "INFLUENCED_BY"
+        },
+        "humanReviewRequired": true,
+        "apply": false
+      },
+      "apply": false
+    },
+    {
+      "reviewItemId": "first-real-10-31",
+      "researchEvidenceId": "cmthlr9qe00065kfpzd4hp1vl",
+      "canonicalEntityId": "cmsvvxif800ku85sjmrawpu0e",
+      "canonicalEntityTitle": "El nacimiento de Venus",
+      "humanApprovedProposition": "La composición de El nacimiento de Venus representa a Venus llegando a Chipre desde el mar, impulsada por Céfiro y quizá Aura.",
+      "supportQuote": "Known as the “Birth of Venus”, the composition actually shows the goddess of love and beauty arriving on land, on the island of Cyprus, born of the sea spray and blown there by the winds, Zephyr and, perhaps, Aura.",
+      "finalDimension": "DEFINITION_OR_IDENTITY",
+      "provenance": {
+        "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+        "locator": "paragraph-2",
+        "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
+        "excerptId": "cmtg8trh10007w0sjn7n930om"
+      },
+      "knowledgeStatus": "NEW_KNOWLEDGE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "CREATE_CANONICAL_KNOWLEDGE",
+      "relationProposal": null,
+      "apply": false
+    },
+    {
+      "reviewItemId": "first-real-10-43",
+      "researchEvidenceId": "cmthlr9qi00075kfpccugglm6",
+      "canonicalEntityId": "cmsvvxif800ku85sjmrawpu0e",
+      "canonicalEntityTitle": "El nacimiento de Venus",
+      "humanApprovedProposition": "El nacimiento de Venus fue pintado sobre lienzo, soporte común en el siglo XV para obras decorativas destinadas a casas nobles.",
+      "supportQuote": "Unlike the “Allegory of Spring” , which is painted on wood, the “Birth of Venus” was painted on canvas, a support that was widely used throughout the 15th century for decorative works destined to noble houses.",
+      "finalDimension": "FORM_OR_MATERIAL",
+      "provenance": {
+        "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+        "locator": "paragraph-8",
+        "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
+        "excerptId": "cmthkbr2w001jqwfpawn5obur"
+      },
+      "knowledgeStatus": "ADDITIONAL_PROVENANCE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "ADD_PROVENANCE",
+      "relationProposal": null,
+      "apply": false
+    },
+    {
+      "reviewItemId": "first-real-10-48",
+      "researchEvidenceId": "cmthlr9qm00085kfp8r5n5w0w",
+      "canonicalEntityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "canonicalEntityTitle": "Sandro Botticelli",
+      "humanApprovedProposition": "Sandro Botticelli es el autor de El nacimiento de Venus, datada aproximadamente hacia 1485.",
+      "supportQuote": "Sandro Botticelli, Birth of Venus, 1485 ca.",
+      "finalDimension": "DEFINITION_OR_IDENTITY",
+      "provenance": {
+        "sourceId": "cmtage9bs001ps0kp1j5mc43w",
+        "locator": "paragraph-10",
+        "materialVersionId": "cmtg8tqvk0002w0sj9ef9q82y",
+        "excerptId": "cmthkc65t001lqwfp9u9fj6zv"
+      },
+      "knowledgeStatus": "ADDITIONAL_PROVENANCE",
+      "promotionTarget": "ENTITY_KNOWLEDGE",
+      "proposedAction": "ADD_PROVENANCE",
+      "relationProposal": null,
+      "apply": false
+    }
+  ],
+  "affectedEntities": [
+    {
+      "id": "cmsvvxi9700hc85sjjoidcq8a",
+      "title": "Pablo Picasso"
+    },
+    {
+      "id": "cmsvvxhgm002r85sjdntcbn33",
+      "title": "Cubismo"
+    },
+    {
+      "id": "cmsvvxif800ku85sjmrawpu0e",
+      "title": "El nacimiento de Venus"
+    },
+    {
+      "id": "cmsvvxi6400fl85sj2tu79wx0",
+      "title": "Sandro Botticelli"
+    }
+  ],
+  "knowledgeCoreMutated": false,
+  "canonicalRelationsCreated": 0
+}

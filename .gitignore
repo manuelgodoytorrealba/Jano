@@ -4,6 +4,11 @@ infra/.env.production
 .deploy/
 .worktrees/
 artifacts/
+.tools/
+
+# Local AI runtimes and model caches
+.ollama/
+ollama-models/
 
 node_modules
 .playwright-cli/

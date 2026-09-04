@@ -1,0 +1,311 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "input": "canonical knowledge only",
+  "previews": [
+    {
+      "entityId": "cmsvvxi9700hc85sjjoidcq8a",
+      "title": "Pablo Picasso",
+      "slug": "pablo-picasso",
+      "currentSummary": null,
+      "proposedSummary": null,
+      "currentContent": null,
+      "proposedContent": null,
+      "currentContentLevel": "INTERMEDIATE",
+      "proposedContentLevel": "CONTEXTUAL_ESSAY",
+      "claimsUsed": [
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:identity",
+          "statement": "Pablo Picasso es un artista.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear",
+          "statement": "Pablo Picasso nació en 1881.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear",
+          "statement": "Pablo Picasso murió en 1973.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6k70000vifpzd2q0smc",
+          "statement": "Pablo Picasso (Málaga, 1881 – Mougins, Francia, 1973) recibió, a través de la Embajada de España en París, el encargo de realizar una gran pintura para el pabellón español en la Exposición Internacional de París de 1937.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6k70000vifpzd2q0smc"
+          ],
+          "certainty": "ATTRIBUTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmdk02lm85sjs00ddh9i",
+          "statement": "Pablo Picasso se sitúa historiográficamente en relación con Cubismo.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmdk02lm85sjs00ddh9i"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmrs02rr85sj2k82hvpj",
+          "statement": "Pablo Picasso se comprende en diálogo con la influencia de Paul Cézanne.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmrs02rr85sj2k82hvpj"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmlc02p285sj2sdtxzvc",
+          "statement": "Las señoritas de Aviñón se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmlc02p285sj2sdtxzvc"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "RELATION:cmsvvxmlg02p485sjrorfyscl",
+          "statement": "Guernica se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimType": "RELATION",
+          "provenanceRefs": [
+            "RELATION:cmsvvxmlg02p485sjrorfyscl"
+          ],
+          "certainty": "DOCUMENTED"
+        }
+      ],
+      "claimMap": [
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:identity",
+          "text": "Pablo Picasso es un artista.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ]
+        },
+        {
+          "id": "summary-1-0",
+          "text": "Pablo Picasso es un artista.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ]
+        },
+        {
+          "id": "section-1-1-1",
+          "text": "Pablo Picasso es un artista.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:identity"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear",
+          "text": "Pablo Picasso nació en 1881.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:startYear"
+          ]
+        },
+        {
+          "id": "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear",
+          "text": "Pablo Picasso murió en 1973.",
+          "claimIds": [
+            "FACT:cmsvvxi9700hc85sjjoidcq8a:endYear"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmdk02lm85sjs00ddh9i",
+          "text": "Pablo Picasso se sitúa historiográficamente en relación con el Cubismo.",
+          "claimIds": [
+            "RELATION:cmsvvxmdk02lm85sjs00ddh9i"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmrs02rr85sj2k82hvpj",
+          "text": "Pablo Picasso fue influenciado por Paul Cézanne.",
+          "claimIds": [
+            "RELATION:cmsvvxmrs02rr85sj2k82hvpj"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmlc02p285sj2sdtxzvc",
+          "text": "Las señoritas de Aviñón se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimIds": [
+            "RELATION:cmsvvxmlc02p285sj2sdtxzvc"
+          ]
+        },
+        {
+          "id": "RELATION:cmsvvxmlg02p485sjrorfyscl",
+          "text": "Guernica se atribuye a Pablo Picasso como responsable de su creación.",
+          "claimIds": [
+            "RELATION:cmsvvxmlg02p485sjrorfyscl"
+          ]
+        },
+        {
+          "id": "EVIDENCE:cmtikq6k70000vifpzd2q0smc",
+          "text": "Pablo Picasso recibió, a través de la Embajada de España en París, el encargo de realizar una gran pintura para el pabellón español en la Exposición Internacional de París de 1937.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6k70000vifpzd2q0smc"
+          ]
+        }
+      ],
+      "validation": {
+        "accepted": 8,
+        "rejected": [
+          {
+            "sentence": {
+              "id": "RELATION:cmsvvxmrs02rr85sj2k82hvpj",
+              "text": "Pablo Picasso fue influenciado por Paul Cézanne.",
+              "claimIds": [
+                "RELATION:cmsvvxmrs02rr85sj2k82hvpj"
+              ]
+            },
+            "result": {
+              "sentenceId": "RELATION:cmsvvxmrs02rr85sj2k82hvpj",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia añade una interpretación ('en diálogo con') que no está presente en el claim referenciado."
+            }
+          },
+          {
+            "sentence": {
+              "id": "EVIDENCE:cmtikq6k70000vifpzd2q0smc",
+              "text": "Pablo Picasso recibió, a través de la Embajada de España en París, el encargo de realizar una gran pintura para el pabellón español en la Exposición Internacional de París de 1937.",
+              "claimIds": [
+                "EVIDENCE:cmtikq6k70000vifpzd2q0smc"
+              ]
+            },
+            "result": {
+              "sentenceId": "EVIDENCE:cmtikq6k70000vifpzd2q0smc",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia añade detalles biográficos (fechas de nacimiento y muerte) que no están presentes en el claim referenciado."
+            }
+          }
+        ]
+      },
+      "privateResearchInputs": 0,
+      "model": {
+        "provider": "ollama",
+        "model": "qwen2.5:14b"
+      },
+      "realWriterRuntimeUsed": true,
+      "status": "BLOCKED",
+      "blockedReason": "GROUNDING_AUDIT_FAILED"
+    },
+    {
+      "entityId": "cmsvvxhgm002r85sjdntcbn33",
+      "title": "Cubismo",
+      "slug": "cubismo",
+      "currentSummary": null,
+      "proposedSummary": null,
+      "currentContent": null,
+      "proposedContent": null,
+      "currentContentLevel": "INTERMEDIATE",
+      "proposedContentLevel": "CONTEXTUAL_ESSAY",
+      "claimsUsed": [
+        {
+          "id": "FACT:cmsvvxhgm002r85sjdntcbn33:identity",
+          "statement": "Cubismo es un movimiento cultural.",
+          "claimType": "IDENTITY",
+          "provenanceRefs": [
+            "FACT:cmsvvxhgm002r85sjdntcbn33:identity"
+          ],
+          "certainty": "DOCUMENTED"
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+          "statement": "Cubism was one of the most influential styles of the twentieth century.",
+          "claimType": "EVIDENCE",
+          "provenanceRefs": [
+            "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+          ],
+          "certainty": "ATTRIBUTED"
+        }
+      ],
+      "claimMap": [
+        {
+          "id": "FACT:cmsvvxhgm002r85sjdntcbn33:identity",
+          "text": "Cubismo es un movimiento cultural.",
+          "claimIds": [
+            "FACT:cmsvvxhgm002r85sjdntcbn33:identity"
+          ]
+        },
+        {
+          "id": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+          "text": "El cubismo fue un estilo cultural significativo del siglo XX.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+          ]
+        },
+        {
+          "id": "section-1-1-0",
+          "text": "Cubismo es un movimiento cultural.",
+          "claimIds": [
+            "FACT:cmsvvxhgm002r85sjdntcbn33:identity"
+          ]
+        },
+        {
+          "id": "section-2-1-1",
+          "text": "El cubismo fue una de las corrientes artísticas más destacadas del siglo XX.",
+          "claimIds": [
+            "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+          ]
+        }
+      ],
+      "validation": {
+        "accepted": 2,
+        "rejected": [
+          {
+            "sentence": {
+              "id": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+              "text": "El cubismo fue un estilo cultural significativo del siglo XX.",
+              "claimIds": [
+                "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+              ]
+            },
+            "result": {
+              "sentenceId": "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia 'El cubismo fue un estilo cultural significativo del siglo XX' añade especificidad sobre la importancia del cubismo en el siglo XX, lo cual no está completamente implicado por el claim 'Cubism was one of the most influential styles of the twentieth century' sin agregar interpretación o contexto adicional."
+            }
+          },
+          {
+            "sentence": {
+              "id": "section-2-1-1",
+              "text": "El cubismo fue una de las corrientes artísticas más destacadas del siglo XX.",
+              "claimIds": [
+                "EVIDENCE:cmtikq6kc0004vifp4bdrb4vn"
+              ]
+            },
+            "result": {
+              "sentenceId": "section-2-1-1",
+              "verdict": "UNCERTAIN",
+              "reason": "La sentencia 'El cubismo fue una de las corrientes artísticas más destacadas del siglo XX' añade especificidad sobre la importancia del cubismo en el siglo XX, lo cual no está completamente implicado por el claim 'Cubism was one of the most influential styles of the twentieth century' sin agregar interpretación o contexto adicional."
+            }
+          }
+        ]
+      },
+      "privateResearchInputs": 0,
+      "model": {
+        "provider": "ollama",
+        "model": "qwen2.5:14b"
+      },
+      "realWriterRuntimeUsed": true,
+      "status": "BLOCKED",
+      "blockedReason": "GROUNDING_AUDIT_FAILED"
+    },
+    {
+      "slug": "el-nacimiento-de-venus",
+      "status": "WRITER_RUNTIME_BLOCKED",
+      "error": "PREVIEW_MISSING"
+    }
+  ]
+}

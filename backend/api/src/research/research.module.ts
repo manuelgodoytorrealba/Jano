@@ -13,6 +13,8 @@ import { ResearchService } from './research.service';
 import { ResearchOutlineService } from './research-outline.service';
 import { ResearchDraftService } from './research-draft.service';
 import { ResearchSectionAssistantService } from './research-section-assistant.service';
+import { ReviewedResearchEvidenceService } from './reviewed-research-evidence.service';
+import { CanonicalPromotionService } from './canonical-promotion.service';
 
 import { ResearchOwnerGuard } from './research-owner.guard';
 @Module({
@@ -27,6 +29,8 @@ import { ResearchOwnerGuard } from './research-owner.guard';
     ResearchJobRunnerService,
     ResearchAIService,
     LibraryMaterialPreparationService,
+    ReviewedResearchEvidenceService,
+    CanonicalPromotionService,
   ],
 })
 export class ResearchModule {}

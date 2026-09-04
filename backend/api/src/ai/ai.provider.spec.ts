@@ -5,6 +5,14 @@ import { AIProvider } from './ai.provider';
 describe('AIProvider', () => {
   afterEach(() => jest.restoreAllMocks());
 
+  it('prefers neutral AI_MODEL configuration while keeping OLLAMA_MODEL compatible', () => {
+    const provider = new AIProvider({
+      get: (key: string) =>
+        ({ AI_PROVIDER: 'ollama', AI_MODEL: 'editorial-model', OLLAMA_MODEL: 'legacy-model' })[key],
+    } as ConfigService);
+    expect(provider.metadata()).toEqual({ provider: 'ollama', model: 'editorial-model' });
+  });
+
   it('retries once when Ollama returns malformed structured output', async () => {
     const fetchMock = jest
       .spyOn(global, 'fetch')

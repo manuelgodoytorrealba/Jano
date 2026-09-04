@@ -1,0 +1,485 @@
+{
+  "batchId": "controlled-entity-enrichment-batch-02",
+  "items": [
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-01",
+      "humanDecision": "APPROVE",
+      "humanReason": "Encargo documentado, atómico y trazable.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-02",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REPAIR_PROPOSITION, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-03",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS, REROUTE_ENTITY.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-04",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-05",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: RESOLVE_CONTEXT, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-06",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS, NORMALIZE_DIMENSION, RESOLVE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-07",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-08",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: RESOLVE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-09",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: NORMALIZE_DIMENSION, RESOLVE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-10",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: NORMALIZE_DIMENSION, RESOLVE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-11",
+      "humanDecision": "APPROVE",
+      "humanReason": "Práctica artística directamente sustentada.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-12",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REROUTE_ENTITY, REROUTE_RELATION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-13",
+      "humanDecision": "REJECT",
+      "humanReason": "Navegación y recomendaciones, no conocimiento sobre Fuente.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-14",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-15",
+      "humanDecision": "APPROVE",
+      "humanReason": "Valoración institucional explícita y atribuida.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-16",
+      "humanDecision": "APPROVE",
+      "humanReason": "Cronología aprobada conservando «generally» y «around».",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-17",
+      "humanDecision": "APPROVE",
+      "humanReason": "Origen terminológico aprobado conservando «seems».",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-18",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-19",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REPAIR_PROPOSITION, RESOLVE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-20",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: RESOLVE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-21",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: NORMALIZE_QUOTE, REPAIR_PROPOSITION, RESOLVE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-22",
+      "humanDecision": "APPROVE",
+      "humanReason": "Influencia parcial explícitamente documentada.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-23",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REROUTE_ENTITY, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-24",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: NORMALIZE_QUOTE, REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-25",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: RESOLVE_CONTEXT, REROUTE_ENTITY.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-26",
+      "humanDecision": "REJECT",
+      "humanReason": "Contexto institucional contemporáneo sobre redevelopment, no conocimiento del Tapiz de Bayeux.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-27",
+      "humanDecision": "REJECT",
+      "humanReason": "Información de apertura/acceso institucional, no conocimiento del Tapiz de Bayeux.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-28",
+      "humanDecision": "REJECT",
+      "humanReason": "Información web institucional, no conocimiento del Tapiz de Bayeux.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-29",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REPAIR_PROPOSITION, SPLIT_CLAIMS, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-30",
+      "humanDecision": "REJECT",
+      "humanReason": "Información de visita o audioguía, no conocimiento del Tapiz de Bayeux.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-31",
+      "humanDecision": "APPROVE",
+      "humanReason": "Iconografía directamente descrita con incertidumbre preservada.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-32",
+      "humanDecision": "REJECT",
+      "humanReason": "Contenido de la obra atribuido incorrectamente al artista.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-33",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: RESOLVE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-34",
+      "humanDecision": "REJECT",
+      "humanReason": "Iconografía de la obra atribuida incorrectamente al artista.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-35",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-36",
+      "humanDecision": "REJECT",
+      "humanReason": "Contenido de la obra atribuido incorrectamente al artista.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-37",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REPAIR_PROPOSITION, NORMALIZE_DIMENSION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-38",
+      "humanDecision": "REJECT",
+      "humanReason": "Interpretación de la obra atribuida incorrectamente al artista.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-39",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-40",
+      "humanDecision": "REJECT",
+      "humanReason": "Provenance de la obra atribuida incorrectamente al artista.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-41",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: RESOLVE_CONTEXT, REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-42",
+      "humanDecision": "REJECT",
+      "humanReason": "Iconografía de la obra atribuida incorrectamente al artista.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-43",
+      "humanDecision": "APPROVE",
+      "humanReason": "Material y contexto de uso directamente sustentados.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-44",
+      "humanDecision": "REJECT",
+      "humanReason": "Material de la obra atribuido incorrectamente al artista.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-45",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-46",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-47",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: SPLIT_CLAIMS, REPAIR_PROPOSITION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-48",
+      "humanDecision": "APPROVE",
+      "humanReason": "Autoría y datación aproximada documentadas.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-49",
+      "humanDecision": "REJECT",
+      "humanReason": "Repetición del conocimiento iconográfico ya representado por otro candidato de la misma Source.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-50",
+      "humanDecision": "REJECT",
+      "humanReason": "Contenido de la obra atribuido incorrectamente al artista.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-51",
+      "humanDecision": "REJECT",
+      "humanReason": "Navegación sin conocimiento sobre Marilyn Diptych; identidad duplicada pendiente por separado.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-52",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REROUTE_ENTITY.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-53",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REROUTE_ENTITY, REROUTE_RELATION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-54",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REROUTE_ENTITY, NEEDS_MORE_SOURCE_CONTEXT.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-55",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: NEEDS_MORE_SOURCE_CONTEXT, REROUTE_RELATION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-56",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REROUTE_ENTITY.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-57",
+      "humanDecision": "REJECT",
+      "humanReason": "Arquitectura de Santo Tomé, no características de la pintura.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-58",
+      "humanDecision": "REJECT",
+      "humanReason": "Arquitectura de la torre de Santo Tomé, no características de la pintura.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-59",
+      "humanDecision": "REJECT",
+      "humanReason": "Decoración arquitectónica de Santo Tomé, no características de la pintura.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    },
+    {
+      "batchId": "controlled-entity-enrichment-batch-02",
+      "reviewItemId": "first-real-10-60",
+      "humanDecision": "DEFER",
+      "humanReason": "Acciones pendientes: REROUTE_ENTITY, REROUTE_RELATION.",
+      "decisionConfirmedAt": "2026-08-31T00:00:00.000Z",
+      "decisionSource": "USER_CONFIRMED_REVIEW"
+    }
+  ]
+}

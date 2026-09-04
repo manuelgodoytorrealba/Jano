@@ -1,0 +1,483 @@
+{
+  "generatedAt": "2026-08-30T17:43:12.303Z",
+  "pilot1": {
+    "pilot": "PILOT_1",
+    "before": {
+      "KEEP": 0,
+      "REVIEW": 7,
+      "REJECT": 0
+    },
+    "after": {
+      "KEEP": 4,
+      "REVIEW": 0,
+      "REJECT": 3
+    },
+    "precision": 0.5714285714285714,
+    "items": [
+      {
+        "source": "Marcel Duchamp: Fountain",
+        "excerptText": "You might like Left Right Woman at a Window Othon Friesz 1919 The Bride Stripped Bare by her Bachelors, Even (The Large Glass) Marcel Duchamp 1915–23, reconstruction by Richard Hamilton 1965–6, lower panel remade 1985 Co",
+        "currentEntity": "Fuente",
+        "sourcePurpose": null,
+        "actualInformation": "You might like Left Right Woman at a Window Othon Friesz 1919 The Bride Stripped Bare by her Bachelors, Even (The Large Glass) Marcel Duchamp 1915–23, reconstruction by Richard Hamilton 1965–6, lower panel remade 1985 Co",
+        "potentialPrimarySubject": "Fuente",
+        "otherPossibleEntities": [],
+        "associationRole": "UNRELATED",
+        "why": "Navegación, promoción o metadata sin conocimiento sustantivo.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "NONE",
+        "decision": "REJECT"
+      },
+      {
+        "source": "Marcel Duchamp: Fountain",
+        "excerptText": "Marcel Duchamp 1921, replica 1964 The Bride Stripped Bare by her Bachelors Even (The Green Box) Marcel Duchamp 1934 View by appointment Cadeau Man Ray 1921, editioned replica 1972 On display at Tate Modern part of In the",
+        "currentEntity": "Fuente",
+        "sourcePurpose": null,
+        "actualInformation": "Marcel Duchamp 1921, replica 1964 The Bride Stripped Bare by her Bachelors Even (The Green Box) Marcel Duchamp 1934 View by appointment Cadeau Man Ray 1921, editioned replica 1972 On display at Tate Modern part of In the",
+        "potentialPrimarySubject": "Fuente",
+        "otherPossibleEntities": [],
+        "associationRole": "UNRELATED",
+        "why": "No se puede formular un claim útil sin añadir información externa.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "NONE",
+        "decision": "REJECT"
+      },
+      {
+        "source": "Cubism",
+        "excerptText": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Par",
+        "currentEntity": "Cubismo",
+        "sourcePurpose": null,
+        "actualInformation": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Par",
+        "potentialPrimarySubject": "Cubismo",
+        "otherPossibleEntities": [],
+        "associationRole": "PRIMARY_SUBJECT",
+        "why": "El fragmento explica rasgos/origen del cubismo y la Source es específica del movimiento.",
+        "evidenceProposition": {
+          "statement": "They brought different views of subjects (usually objects or figures) together in the same picture, resulting in paintings that appear fragmented and abstracted Georges Braque Woman with Mandolin (1945) Tate © ADAGP, Par",
+          "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "supportedEntity": "Cubismo",
+          "supportedDimension": "context / characteristics",
+          "source": "Cubism",
+          "locator": null,
+          "confidence": "high"
+        },
+        "evidenceSufficiency": "SUFFICIENT_FOR_NARROW_CLAIM",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Cubism",
+        "excerptText": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometri",
+        "currentEntity": "Cubismo",
+        "sourcePurpose": null,
+        "actualInformation": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometri",
+        "potentialPrimarySubject": "Cubismo",
+        "otherPossibleEntities": [],
+        "associationRole": "PRIMARY_SUBJECT",
+        "why": "El fragmento explica rasgos/origen del cubismo y la Source es específica del movimiento.",
+        "evidenceProposition": {
+          "statement": "The name ‘cubism’ seems to have derived from a comment made by the critic Louis Vauxcelles who, on seeing some of Georges Braque ’s paintings exhibited in Paris in 1908, described them as reducing everything to ‘geometri",
+          "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "supportedEntity": "Cubismo",
+          "supportedDimension": "context / characteristics",
+          "source": "Cubism",
+          "locator": null,
+          "confidence": "high"
+        },
+        "evidenceSufficiency": "SUFFICIENT_FOR_NARROW_CLAIM",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Cubism",
+        "excerptText": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image. ‘A head’, said Picasso, ‘is a matter of eyes, nose, mouth, which can b",
+        "currentEntity": "Cubismo",
+        "sourcePurpose": null,
+        "actualInformation": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image. ‘A head’, said Picasso, ‘is a matter of eyes, nose, mouth, which can b",
+        "potentialPrimarySubject": "Cubismo",
+        "otherPossibleEntities": [],
+        "associationRole": "PRIMARY_SUBJECT",
+        "why": "El fragmento explica rasgos/origen del cubismo y la Source es específica del movimiento.",
+        "evidenceProposition": {
+          "statement": "Pablo Picasso was also inspired by African tribal masks which are highly stylised, or non-naturalistic, but nevertheless present a vivid human image.",
+          "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "supportedEntity": "Cubismo",
+          "supportedDimension": "context / characteristics",
+          "source": "Cubism",
+          "locator": null,
+          "confidence": "high"
+        },
+        "evidenceSufficiency": "SUFFICIENT_FOR_NARROW_CLAIM",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Cubism",
+        "excerptText": "Georges Braque Mandora (1909–10) Tate © ADAGP, Paris and DACS, London 2026 Pablo Picasso Bottle of Vieux Marc, Glass, Guitar and Newspaper (1913) Tate © Succession Picasso/DACS 2026 Types of cubism: Analytical vs. synthe",
+        "currentEntity": "Cubismo",
+        "sourcePurpose": null,
+        "actualInformation": "Georges Braque Mandora (1909–10) Tate © ADAGP, Paris and DACS, London 2026 Pablo Picasso Bottle of Vieux Marc, Glass, Guitar and Newspaper (1913) Tate © Succession Picasso/DACS 2026 Types of cubism: Analytical vs. synthe",
+        "potentialPrimarySubject": "Cubismo",
+        "otherPossibleEntities": [],
+        "associationRole": "PRIMARY_SUBJECT",
+        "why": "El fragmento explica rasgos/origen del cubismo y la Source es específica del movimiento.",
+        "evidenceProposition": {
+          "statement": "Georges Braque Mandora (1909–10) Tate © ADAGP, Paris and DACS, London 2026 Pablo Picasso Bottle of Vieux Marc, Glass, Guitar and Newspaper (1913) Tate © Succession Picasso/DACS 2026 Types of cubism: Analytical vs.",
+          "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "supportedEntity": "Cubismo",
+          "supportedDimension": "context / characteristics",
+          "source": "Cubism",
+          "locator": null,
+          "confidence": "high"
+        },
+        "evidenceSufficiency": "SUFFICIENT_FOR_NARROW_CLAIM",
+        "decision": "KEEP"
+      },
+      {
+        "source": "Art & Architecture Thesaurus",
+        "excerptText": "Art & Architecture Thesaurus (Getty Research Institute) Search Tools & Databases Library Catalog Getty Research Portal Become a Contributing Institution Finding Aids for Research Collections Photo Archive Guide to the Ph",
+        "currentEntity": "Muerte",
+        "sourcePurpose": null,
+        "actualInformation": "Art & Architecture Thesaurus (Getty Research Institute) Search Tools & Databases Library Catalog Getty Research Portal Become a Contributing Institution Finding Aids for Research Collections Photo Archive Guide to the Ph",
+        "potentialPrimarySubject": "Muerte",
+        "otherPossibleEntities": [],
+        "associationRole": "UNRELATED",
+        "why": "No se puede formular un claim útil sin añadir información externa.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "NONE",
+        "decision": "REJECT"
+      }
+    ]
+  },
+  "pilot2": {
+    "pilot": "PILOT_2",
+    "before": {
+      "KEEP": 0,
+      "REVIEW": 8,
+      "REJECT": 0
+    },
+    "after": {
+      "KEEP": 1,
+      "REVIEW": 5,
+      "REJECT": 2
+    },
+    "precision": 0.3333333333333333,
+    "items": [
+      {
+        "source": "Louise Bourgeois overview",
+        "excerptText": "Our galleries See great art in London, Liverpool and Cornwall Tate Britain Free admission Millbank, London SW1P 4RG Tate Modern Free admission Bankside, London SE1 9TG Tate Liverpool + RIBA North Free admission Mann Isla",
+        "currentEntity": "Maman",
+        "sourcePurpose": null,
+        "actualInformation": "Our galleries See great art in London, Liverpool and Cornwall Tate Britain Free admission Millbank, London SW1P 4RG Tate Modern Free admission Bankside, London SE1 9TG Tate Liverpool + RIBA North Free admission Mann Isla",
+        "potentialPrimarySubject": "Maman",
+        "otherPossibleEntities": [],
+        "associationRole": "UNRELATED",
+        "why": "Navegación, promoción o metadata sin conocimiento sustantivo.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "NONE",
+        "decision": "REJECT"
+      },
+      {
+        "source": "Louise Bourgeois overview",
+        "excerptText": "Discover seven decades of joyful works by Argentinian artist Julio Le Parc, which turns visitors into active participants Tate Modern Until 3 May 2027 FREE FOR MEMBERS Exhibition Frida: The Making of an Icon Step into th",
+        "currentEntity": "Maman",
+        "sourcePurpose": null,
+        "actualInformation": "Discover seven decades of joyful works by Argentinian artist Julio Le Parc, which turns visitors into active participants Tate Modern Until 3 May 2027 FREE FOR MEMBERS Exhibition Frida: The Making of an Icon Step into th",
+        "potentialPrimarySubject": "Maman",
+        "otherPossibleEntities": [],
+        "associationRole": "CONTEXT_FOR",
+        "why": "Puede contener contexto, pero la entidad primaria o la proposition requieren revisión humana.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "PARTIAL",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The body in art",
+        "excerptText": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus Arnulf Rainer Untitled (Body Language) (c.1973) Tate © Arnulf Rainer Body art covers a wide range of art from about ",
+        "currentEntity": "Cuerpo",
+        "sourcePurpose": null,
+        "actualInformation": "Body art Body art is art in which the body, often that of the artist, is the principal medium and focus Arnulf Rainer Untitled (Body Language) (c.1973) Tate © Arnulf Rainer Body art covers a wide range of art from about ",
+        "potentialPrimarySubject": "Cuerpo",
+        "otherPossibleEntities": [],
+        "associationRole": "PRIMARY_SUBJECT",
+        "why": "Definición explícita, entidad y dimensión coinciden.",
+        "evidenceProposition": {
+          "statement": "Body art es una práctica artística en la que el cuerpo es el medio y foco principal.",
+          "evidenceRole": "DIRECT_DOCUMENTARY_EVIDENCE",
+          "supportedEntity": "Cuerpo",
+          "supportedDimension": "context / characteristics",
+          "source": "The body in art",
+          "locator": null,
+          "confidence": "high"
+        },
+        "evidenceSufficiency": "SUFFICIENT_FOR_NARROW_CLAIM",
+        "decision": "KEEP"
+      },
+      {
+        "source": "The body in art",
+        "excerptText": "We would like to hear from you. read Performance art Artworks that are created through actions performed by the artist or other participants, which may be live or recorded, spontaneous … read Actionism Actionism is the E",
+        "currentEntity": "Cuerpo",
+        "sourcePurpose": null,
+        "actualInformation": "We would like to hear from you. read Performance art Artworks that are created through actions performed by the artist or other participants, which may be live or recorded, spontaneous … read Actionism Actionism is the E",
+        "potentialPrimarySubject": "Cuerpo",
+        "otherPossibleEntities": [],
+        "associationRole": "CONTEXT_FOR",
+        "why": "Puede contener contexto, pero la entidad primaria o la proposition requieren revisión humana.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "PARTIAL",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The body in art",
+        "excerptText": "Walker In the early 1990s Nancy Spero (born 1926) composed a series of homages to the Cuban artist, Ana Mendieta (1948–1985). … read Extending bodies Lisa Le Feuvre How artists have explored and utilised prosthetic techn",
+        "currentEntity": "Cuerpo",
+        "sourcePurpose": null,
+        "actualInformation": "Walker In the early 1990s Nancy Spero (born 1926) composed a series of homages to the Cuban artist, Ana Mendieta (1948–1985). … read Extending bodies Lisa Le Feuvre How artists have explored and utilised prosthetic techn",
+        "potentialPrimarySubject": "Cuerpo",
+        "otherPossibleEntities": [],
+        "associationRole": "CONTEXT_FOR",
+        "why": "Puede contener contexto, pero la entidad primaria o la proposition requieren revisión humana.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "PARTIAL",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The Bayeux Tapestry",
+        "excerptText": "Bayeux Tapestry museum - Closing for renovation work until 2027 The 3 museums The Bayeux Tapestry Memorial Museum of the Battle of Normandy MAHB Museum of Art and History Baron Gérard Practical information Disabled visit",
+        "currentEntity": "Tapiz de Bayeux",
+        "sourcePurpose": null,
+        "actualInformation": "Bayeux Tapestry museum - Closing for renovation work until 2027 The 3 museums The Bayeux Tapestry Memorial Museum of the Battle of Normandy MAHB Museum of Art and History Baron Gérard Practical information Disabled visit",
+        "potentialPrimarySubject": "Tapiz de Bayeux",
+        "otherPossibleEntities": [],
+        "associationRole": "UNRELATED",
+        "why": "Navegación, promoción o metadata sin conocimiento sustantivo.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "NONE",
+        "decision": "REJECT"
+      },
+      {
+        "source": "The Bayeux Tapestry",
+        "excerptText": "The Bayeux Tapestry The epic adventure of William the Conqueror in 1066 Discover the museum 01 02 03 Discover the Bayeux Tapestry The museum in pictures The Bayeux Tapestry, a UNESCO's \"Memory of the World\" Discover Baye",
+        "currentEntity": "Tapiz de Bayeux",
+        "sourcePurpose": null,
+        "actualInformation": "The Bayeux Tapestry The epic adventure of William the Conqueror in 1066 Discover the museum 01 02 03 Discover the Bayeux Tapestry The museum in pictures The Bayeux Tapestry, a UNESCO's \"Memory of the World\" Discover Baye",
+        "potentialPrimarySubject": "Tapiz de Bayeux",
+        "otherPossibleEntities": [],
+        "associationRole": "ABOUT",
+        "why": "Identifica tema y fecha, pero el texto es promocional y no basta para una proposition documental amplia.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "PARTIAL",
+        "decision": "REVIEW"
+      },
+      {
+        "source": "The Bayeux Tapestry",
+        "excerptText": "Find out more PRACTICAL INFORMATION By car From Caen : N13 exit 36 to Bayeux From Rennes : A84 or E03 towards Caen exit 43, then D6 By plane Paris airport, then by train from Gare Saint-Lazare station, Paris, to Bayeux s",
+        "currentEntity": "Tapiz de Bayeux",
+        "sourcePurpose": null,
+        "actualInformation": "Find out more PRACTICAL INFORMATION By car From Caen : N13 exit 36 to Bayeux From Rennes : A84 or E03 towards Caen exit 43, then D6 By plane Paris airport, then by train from Gare Saint-Lazare station, Paris, to Bayeux s",
+        "potentialPrimarySubject": "Tapiz de Bayeux",
+        "otherPossibleEntities": [],
+        "associationRole": "CONTEXT_FOR",
+        "why": "Puede contener contexto, pero la entidad primaria o la proposition requieren revisión humana.",
+        "evidenceProposition": null,
+        "evidenceSufficiency": "PARTIAL",
+        "decision": "REVIEW"
+      }
+    ]
+  },
+  "semanticContract": [
+    "PRIMARY_SUBJECT",
+    "ABOUT",
+    "CONTEXT_FOR",
+    "SUPPORTS_RELATION",
+    "MENTION",
+    "UNRELATED"
+  ],
+  "evidencePropositionContract": [
+    "statement",
+    "evidenceRole",
+    "supportedEntity",
+    "supportedDimension",
+    "source",
+    "locator",
+    "confidence"
+  ],
+  "rolloutReadiness": {
+    "score": 63,
+    "currentStage": "STAGE_0_EXPERIMENTAL",
+    "nextStage": "STAGE_1_SMALL_BATCH_READY",
+    "distanceToNextStage": "2 critical blockers: semantic evidence precision and review workflow; 1 important improvement: excerpt selection",
+    "dimensions": [
+      {
+        "id": "A",
+        "name": "Source ingestion reliability",
+        "score": 52,
+        "status": "IMPORTANT",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": "Needs validation",
+        "whatWouldRaiseIt": "validated semantic propositions and review decisions"
+      },
+      {
+        "id": "B",
+        "name": "Source purpose classification",
+        "score": 72,
+        "status": "IMPORTANT",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": null,
+        "whatWouldRaiseIt": "additional cross-domain validation"
+      },
+      {
+        "id": "C",
+        "name": "Excerpt selection quality",
+        "score": 46,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": "Needs validation",
+        "whatWouldRaiseIt": "validated semantic propositions and review decisions"
+      },
+      {
+        "id": "D",
+        "name": "Evidence precision",
+        "score": 44,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": "Needs validation",
+        "whatWouldRaiseIt": "validated semantic propositions and review decisions"
+      },
+      {
+        "id": "E",
+        "name": "Entity association precision",
+        "score": 45,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": "Needs validation",
+        "whatWouldRaiseIt": "validated semantic propositions and review decisions"
+      },
+      {
+        "id": "F",
+        "name": "Provenance completeness",
+        "score": 82,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": null,
+        "whatWouldRaiseIt": "additional cross-domain validation"
+      },
+      {
+        "id": "G",
+        "name": "Research/Core boundary safety",
+        "score": 94,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": null,
+        "whatWouldRaiseIt": "additional cross-domain validation"
+      },
+      {
+        "id": "H",
+        "name": "Human review workflow",
+        "score": 58,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": "Needs validation",
+        "whatWouldRaiseIt": "validated semantic propositions and review decisions"
+      },
+      {
+        "id": "I",
+        "name": "Promotion safety",
+        "score": 86,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": null,
+        "whatWouldRaiseIt": "additional cross-domain validation"
+      },
+      {
+        "id": "J",
+        "name": "Context retrieval quality",
+        "score": 40,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": "Needs validation",
+        "whatWouldRaiseIt": "validated semantic propositions and review decisions"
+      },
+      {
+        "id": "K",
+        "name": "Editorial depth assignment",
+        "score": 76,
+        "status": "IMPORTANT",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": null,
+        "whatWouldRaiseIt": "additional cross-domain validation"
+      },
+      {
+        "id": "L",
+        "name": "Editorial generation quality",
+        "score": 62,
+        "status": "IMPORTANT",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": null,
+        "whatWouldRaiseIt": "additional cross-domain validation"
+      },
+      {
+        "id": "M",
+        "name": "Rollback / observability",
+        "score": 80,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": null,
+        "whatWouldRaiseIt": "additional cross-domain validation"
+      },
+      {
+        "id": "N",
+        "name": "Batch processing safety",
+        "score": 55,
+        "status": "CRITICAL",
+        "evidence": "Pilot 1/Pilot 2 results and existing architecture",
+        "blockers": "Needs validation",
+        "whatWouldRaiseIt": "validated semantic propositions and review decisions"
+      }
+    ],
+    "criticalBlockers": [
+      {
+        "id": "B-01",
+        "description": "Evidence/excerpt relevance still produces REVIEW-heavy candidates.",
+        "firstDetected": "Pilot 2",
+        "status": "OPEN",
+        "exitCriteria": "Independent review on Pilot 1 + Pilot 2 with high KEEP precision and correct REJECT decisions."
+      },
+      {
+        "id": "B-02",
+        "description": "Human review workflow is not yet operationalized for semantic propositions.",
+        "firstDetected": "Pilot 2",
+        "status": "OPEN",
+        "exitCriteria": "Reviewer can accept/reject a candidate with source, span, role and proposition."
+      }
+    ],
+    "importantBlockers": [
+      {
+        "id": "B-03",
+        "description": "Excerpt selector retains navigation/promotional paragraphs in some pages.",
+        "firstDetected": "Pilot 1",
+        "status": "OPEN",
+        "exitCriteria": "Noise rejected consistently across both pilots."
+      }
+    ],
+    "nonBlockingImprovements": [
+      "additional host-specific ingestion telemetry"
+    ],
+    "majorStepsRemaining": 4,
+    "validationBatchesRemaining": 1,
+    "knowledgeCoverage": "Separate from pipeline readiness; most entities remain bibliography-only.",
+    "estimatedWorkRemaining": "HIGH",
+    "pathToFullSeed": [
+      "semantic classifier/review contract",
+      "100-source controlled batch",
+      "250-source batch with review-load metrics",
+      "full-seed dry run",
+      "full-seed apply only after explicit review policy"
+    ],
+    "fullSeedGate": "NOT_READY",
+    "fullSeedGateMissing": [
+      "semantic evidence precision",
+      "review workflow",
+      "batch review-load validation",
+      "context retrieval quality"
+    ]
+  },
+  "note": "Audit-only over Pilot 1/Pilot 2; no new Sources, no LLM, no writes."
+}
