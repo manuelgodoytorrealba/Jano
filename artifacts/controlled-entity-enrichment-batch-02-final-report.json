@@ -36,7 +36,7 @@
     "repairAccepted": 2,
     "canonicalFallbackAttempted": 1,
     "canonicalFallbackAccepted": 1,
-    "editoriallyIneligibleRelations": 10,
+    "editoriallyIneligibleRelations": 13,
     "auditResultsTotalRendered": 24,
     "auditUniqueClaimSentencePairs": 21,
     "totalRuntimeMs": 209028,
