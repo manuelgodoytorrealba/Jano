@@ -360,7 +360,7 @@ function sentenceSchema(claimIds?: string[]) {
   };
 }
 
-function requiredQualifiers(statement: string) {
+export function requiredQualifiers(statement: string) {
   const qualifiers = [
     'approximately',
     'around',
@@ -387,6 +387,103 @@ function requiredQualifiers(statement: string) {
     'uno de',
   ];
   return qualifiers.filter((qualifier) => statement.toLocaleLowerCase().includes(qualifier));
+}
+
+export function canonicalPublicProposition(quote: string, note?: string | null) {
+  return note?.match(/^\[[^\]]+\]\s*(.+)$/s)?.[1]?.trim() || quote.trim();
+}
+
+export function isEditoriallyClaimableRelation(statement: string) {
+  return !/(?:se sitúa historiográficamente en relación con|se comprende en diálogo con|https?:\/\/|\bSource\b)/i.test(
+    statement.replace(/^La Source documenta que\s+/i, ''),
+  );
+}
+
+function validateQualifierPreservation(sentence: string, support: string) {
+  const missing = requiredQualifiers(support).find(
+    (qualifier) => !sentence.toLocaleLowerCase().includes(qualifier),
+  );
+  if (missing) throw new Error(`Sentence loses required qualifier: ${missing}`);
+  const attribution = support.match(/\b(Tate|MoMA)\b/i)?.[0];
+  if (attribution && !sentence.toLocaleLowerCase().includes(attribution.toLocaleLowerCase()))
+    throw new Error(`Sentence loses required attribution: ${attribution}`);
+}
+
+export function uniqueSentenceClaimPairs(sentences: MappedSentence[]) {
+  const seen = new Set<string>();
+  return sentences.filter((sentence) => {
+    const key = `${[...sentence.claimIds].sort().join('\u0000')}\u0000${normalize(sentence.text).toLocaleLowerCase('es')}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+export function editorialAssemblyLocations(output: MappedEditorialOutput) {
+  const locations = new Map<string, string[]>();
+  const add = (sentence: MappedSentence, location: string) => {
+    const key = `${[...sentence.claimIds].sort().join('\u0000')}\u0000${normalize(sentence.text).toLocaleLowerCase('es')}`;
+    locations.set(key, [...(locations.get(key) ?? []), location]);
+  };
+  add(output.definition, 'definition');
+  output.summary.forEach((sentence) => add(sentence, 'summary'));
+  output.sections.forEach((section) =>
+    section.sentences.forEach((sentence) => add(sentence, 'section')),
+  );
+  return [...locations.values()];
+}
+
+type AuditedSentence = {
+  sentence: MappedSentence;
+  result: SentenceEntailmentAudit['results'][number];
+  supported: boolean;
+};
+
+export async function realizeClaimWithFallback(args: {
+  claim: EditorialClaim;
+  writerSentence: MappedSentence;
+  audit: (sentence: MappedSentence) => Promise<AuditedSentence>;
+  repair: (sentence: MappedSentence, reason: string) => Promise<MappedSentence>;
+}) {
+  const writer = await args.audit(args.writerSentence);
+  let repair: AuditedSentence | null = null;
+  let canonicalFallback: AuditedSentence | null = null;
+  if (!writer.supported) {
+    try {
+      repair = await args.audit(await args.repair(args.writerSentence, writer.result.reason));
+    } catch (error) {
+      repair = {
+        sentence: args.writerSentence,
+        result: {
+          sentenceId: args.writerSentence.id,
+          verdict: 'UNSUPPORTED',
+          reason: error instanceof Error ? error.message : String(error),
+        },
+        supported: false,
+      };
+    }
+  }
+  const selected = writer.supported ? writer : repair?.supported ? repair : null;
+  if (!selected) {
+    canonicalFallback = await args.audit({
+      id: args.writerSentence.id,
+      text: args.claim.statement,
+      claimIds: [args.claim.id],
+    });
+  }
+  return {
+    selected: selected ?? canonicalFallback!,
+    writer,
+    repair,
+    canonicalFallback,
+    acceptedBy: writer.supported
+      ? 'WRITER'
+      : repair?.supported
+        ? 'REPAIR'
+        : canonicalFallback?.supported
+          ? 'CANONICAL_FALLBACK'
+          : 'BLOCKED',
+  } as const;
 }
 
 export function validateMappedEditorialOutput(
@@ -423,6 +520,7 @@ export function validateMappedEditorialOutput(
     const referenced = sentence.claimIds.map((id) => byClaim.get(id));
     if (referenced.some((claim) => !claim)) throw new Error('Sentence references unknown claim');
     const support = referenced.map((claim) => claim!.statement).join(' ');
+    validateQualifierPreservation(sentence.text, support);
     if (
       sentence.claimIds.length > 1 &&
       /\b(por tanto|porque|por lo tanto|lo que llevó a|como resultado|así pues|influye|influyó|fundamental|revolucionari[oa])\b/i.test(
@@ -508,6 +606,7 @@ export function validateSingleMappedSentence(
   if (!normalized.text || !normalized.claimIds.length || referenced.some((claim) => !claim))
     throw new Error('Sentence references unknown claim');
   const support = referenced.map((claim) => claim!.statement).join(' ');
+  validateQualifierPreservation(normalized.text, support);
   if (
     normalized.claimIds.length > 1 &&
     /\b(por tanto|porque|por lo tanto|lo que llevó a|como resultado|así pues|influye|influyó|fundamental|revolucionari[oa])\b/i.test(

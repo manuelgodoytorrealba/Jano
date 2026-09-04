@@ -9,18 +9,22 @@ import { AIProvider } from '../src/ai/ai.provider';
 import { publicRelationJustification } from '../src/entities/entity.presenter';
 import {
   buildClaimPlannerRequest,
-  buildDefinitionRepairRequest,
+  canonicalPublicProposition,
   buildEditorialRealizerRequest,
   buildClaimLockedSentenceRequest,
   buildSentenceEntailmentRequest,
   buildUncertainSentenceRepairRequest,
   editorialContextFingerprint,
+  editorialAssemblyLocations,
   publicOutputFromMapped,
+  realizeClaimWithFallback,
   validateClaimPlan,
   validateMappedEditorialOutput,
   validateSingleMappedSentence,
   normalizeMappedSentenceIds,
+  isEditoriallyClaimableRelation,
   validateSentenceEntailment,
+  uniqueSentenceClaimPairs,
   type ClaimPlan,
   type EditorialClaim,
   type EditorialLinkableEntity,
@@ -168,7 +172,7 @@ function knowledgeUnits(entity: EntityRecord): EditorialKnowledgeUnit[] {
     units.push({
       id: `EVIDENCE:${reference.id}`,
       kind: 'REVIEWED_EVIDENCE',
-      statement: quote,
+      statement: canonicalPublicProposition(quote, reference.note),
       certainty: 'ATTRIBUTED',
       entityIds: [entity.id],
       provenance: {
@@ -193,11 +197,17 @@ function knowledgeUnits(entity: EntityRecord): EditorialKnowledgeUnit[] {
     )
       continue;
     const statement = publicRelationJustification(relation.justification);
-    if (relation.status !== 'PUBLISHED' || !statement || !relation.citations.length) continue;
+    if (
+      relation.status !== 'PUBLISHED' ||
+      !statement ||
+      !relation.citations.length ||
+      !isEditoriallyClaimableRelation(statement)
+    )
+      continue;
     units.push({
       id: `RELATION:${relation.id}`,
       kind: 'SUPPORTED_RELATION',
-      statement,
+      statement: statement.replace(/^La Source documenta que\s+/i, ''),
       certainty: 'DOCUMENTED',
       entityIds: [entity.id, relation.other.id],
       provenance: {
@@ -229,7 +239,8 @@ function classifyRelations(entity: EntityRecord) {
     const supported =
       relation.status === 'PUBLISHED' &&
       relation.citations.length > 0 &&
-      Boolean(publicRelationJustification(relation.justification));
+      Boolean(publicRelationJustification(relation.justification)) &&
+      isEditoriallyClaimableRelation(publicRelationJustification(relation.justification)!);
     return {
       id: relation.id,
       type: relation.relationType.key,
@@ -289,30 +300,6 @@ function deterministicClaimPlan(units: EditorialKnowledgeUnit[]): ClaimPlan {
     summaryClaimIds: claims.slice(0, Math.min(3, claims.length)).map((claim) => claim.id),
     sections: [{ heading: 'Contexto', claimIds: claims.slice(1).map((claim) => claim.id) }],
   };
-}
-
-function sentenceById(output: MappedEditorialOutput, id: string) {
-  return [
-    output.definition,
-    ...output.summary,
-    ...output.sections.flatMap((section) => section.sentences),
-  ].find((sentence) => sentence.id === id);
-}
-
-function replaceSentence(
-  output: MappedEditorialOutput,
-  replacement: MappedEditorialOutput['definition'],
-) {
-  if (output.definition.id === replacement.id) output.definition = replacement;
-  output.summary = output.summary.map((sentence) =>
-    sentence.id === replacement.id ? replacement : sentence,
-  );
-  output.sections = output.sections.map((section) => ({
-    ...section,
-    sentences: section.sentences.map((sentence) =>
-      sentence.id === replacement.id ? replacement : sentence,
-    ),
-  }));
 }
 
 async function main() {
@@ -436,8 +423,11 @@ async function main() {
         );
 
       const realized = [] as MappedSentence[];
+      const realizationAttempts: Array<Record<string, unknown>> = [];
+      const finalAuditResults = [] as SentenceEntailmentAudit['results'];
       for (const claim of accepted) {
-        const result = await writer.runStructured(
+        const sentenceId = `claim-${realized.length + 1}`;
+        const writerResult = await writer.runStructured(
           buildClaimLockedSentenceRequest({
             entity: canonicalEntity,
             claim,
@@ -445,154 +435,86 @@ async function main() {
             locale: 'es',
           }),
         );
-        const output = result.output as { claimId: string; sentence: string };
+        const output = writerResult.output as { claimId: string; sentence: string };
         if (output.claimId !== claim.id || !output.sentence?.trim())
           throw new Error('Invalid per-claim realization');
-        realized.push({
-          id: `claim-${realized.length + 1}`,
+        const writerSentence = {
+          id: sentenceId,
           text: output.sentence.trim(),
           claimIds: [claim.id],
+        };
+        const audit = async (candidate: MappedSentence) => {
+          try {
+            const validated = validateSingleMappedSentence(
+              candidate,
+              accepted,
+              canonicalEntity,
+              linkableEntities,
+              entity.aliases?.map((alias) => alias.value),
+            );
+            const result = await validator.runStructured(
+              buildSentenceEntailmentRequest([validated], [claim]),
+            );
+            const entailment = validateSentenceEntailment(
+              [validated],
+              result.output as SentenceEntailmentAudit,
+            );
+            return {
+              sentence: validated,
+              result: (result.output as SentenceEntailmentAudit).results[0],
+              supported: !entailment.rejected.length,
+            };
+          } catch (error) {
+            return {
+              sentence: candidate,
+              result: {
+                sentenceId,
+                verdict: 'UNSUPPORTED' as const,
+                reason: error instanceof Error ? error.message : String(error),
+              },
+              supported: false,
+            };
+          }
+        };
+        const resolution = await realizeClaimWithFallback({
+          claim,
+          writerSentence,
+          audit,
+          repair: async (sentence, reason) => {
+            const repairResult = await writer.runStructured(
+              buildUncertainSentenceRepairRequest(sentence, [claim], reason),
+            );
+            const candidate = repairResult.output as MappedSentence;
+            if (candidate.id !== sentenceId || candidate.claimIds?.[0] !== claim.id)
+              throw new Error('Repair changed sentence id or claim references');
+            return candidate;
+          },
+        });
+        realized.push(resolution.selected.sentence);
+        finalAuditResults.push(resolution.selected.result);
+        realizationAttempts.push({
+          claimId: claim.id,
+          writer: resolution.writer,
+          repair: resolution.repair,
+          canonicalFallback: resolution.canonicalFallback,
+          acceptedBy: resolution.acceptedBy,
         });
       }
       const mappedOutput: MappedEditorialOutput = {
         definition: realized[0],
-        summary: realized.slice(0, Math.min(3, realized.length)),
+        summary: realized.slice(0, 1),
         sections: [{ heading: 'Contexto', sentences: realized.slice(1) }],
       };
-      let sentences;
-      try {
-        sentences = validateMappedEditorialOutput(
-          mappedOutput,
-          accepted,
-          canonicalEntity,
-          linkableEntities,
-          depth,
-          entity.aliases?.map((alias) => alias.value),
-        );
-      } catch (error) {
-        if (error instanceof Error && error.message === 'Definition is too long') {
-          try {
-            const repaired = await writer.runStructured(
-              buildDefinitionRepairRequest({
-                entity: canonicalEntity,
-                definition: mappedOutput.definition,
-                claims: accepted.filter((claim) =>
-                  mappedOutput.definition.claimIds.includes(claim.id),
-                ),
-                maxCharacters: 320,
-              }),
-            );
-            mappedOutput.definition = validateSingleMappedSentence(
-              repaired.output as MappedSentence,
-              accepted,
-              canonicalEntity,
-              linkableEntities,
-              entity.aliases?.map((alias) => alias.value),
-            );
-            sentences = validateMappedEditorialOutput(
-              mappedOutput,
-              accepted,
-              canonicalEntity,
-              linkableEntities,
-              depth,
-              entity.aliases?.map((alias) => alias.value),
-            );
-          } catch (repairError) {
-            throw repairError;
-          }
-        } else {
-          const failedArtifact = {
-            entity: canonicalEntity,
-            contextFingerprint: editorialContextFingerprint(entity.id, 'es', depth, units),
-            availableKnowledgeUnits: units,
-            proposedClaims: proposedPlan.claims,
-            acceptedClaims: accepted,
-            rejectedClaims: rejected,
-            invalidPlanReferences: invalidReferences,
-            mappedOutput,
-            publicOutput: null,
-            validationFailure: error instanceof Error ? error.message : String(error),
-            model: writer.metadata(),
-            promptVersion: {
-              planner: 'claim-level-editorial-v1-planner',
-              realizer: 'claim-level-editorial-v1-realizer',
-              entailment: 'claim-level-editorial-v1-entailment',
-            },
-            depth,
-            generatedAt: new Date().toISOString(),
-          };
-          writeFileSync(
-            resolve(outputDir, `claim-level-editorial-v1-${slug}-rejected.json`),
-            `${JSON.stringify(failedArtifact, null, 2)}\n`,
-            { mode: 0o600 },
-          );
-          throw error;
-        }
-      }
-      let entailmentResult = await validator.runStructured(
-        buildSentenceEntailmentRequest(sentences, accepted),
+      const renderedSentences = validateMappedEditorialOutput(
+        mappedOutput,
+        accepted,
+        canonicalEntity,
+        linkableEntities,
+        depth,
+        entity.aliases?.map((alias) => alias.value),
       );
-      let entailment = validateSentenceEntailment(
-        sentences,
-        entailmentResult.output as SentenceEntailmentAudit,
-      );
-      const repairs: Array<{ sentenceId: string; status: string; reason?: string }> = [];
-      for (const rejectedSentence of entailment.rejected.filter(
-        ({ result }) => result.verdict === 'UNCERTAIN',
-      )) {
-        const original = sentenceById(mappedOutput, rejectedSentence.sentence.id);
-        if (!original) continue;
-        try {
-          const repairResult = await writer.runStructured(
-            buildUncertainSentenceRepairRequest(
-              original,
-              original.claimIds
-                .map((id) => accepted.find((claim) => claim.id === id)!)
-                .filter(Boolean),
-              rejectedSentence.result.reason,
-            ),
-          );
-          const candidate = repairResult.output as MappedSentence;
-          if (
-            candidate.id !== original.id ||
-            JSON.stringify([...candidate.claimIds].sort()) !==
-              JSON.stringify([...original.claimIds].sort())
-          )
-            throw new Error('Repair changed sentence id or claim references');
-          const repaired = validateSingleMappedSentence(
-            candidate,
-            accepted,
-            canonicalEntity,
-            linkableEntities,
-            entity.aliases?.map((alias) => alias.value),
-          );
-          replaceSentence(mappedOutput, repaired);
-          repairs.push({ sentenceId: original.id, status: 'REPAIRED' });
-        } catch (error) {
-          repairs.push({
-            sentenceId: original.id,
-            status: 'REPAIR_FAILED',
-            reason: error instanceof Error ? error.message : String(error),
-          });
-        }
-      }
-      if (repairs.some((repair) => repair.status === 'REPAIRED')) {
-        sentences = validateMappedEditorialOutput(
-          mappedOutput,
-          accepted,
-          canonicalEntity,
-          linkableEntities,
-          depth,
-          entity.aliases?.map((alias) => alias.value),
-        );
-        entailmentResult = await validator.runStructured(
-          buildSentenceEntailmentRequest(sentences, accepted),
-        );
-        entailment = validateSentenceEntailment(
-          sentences,
-          entailmentResult.output as SentenceEntailmentAudit,
-        );
-      }
+      const sentences = uniqueSentenceClaimPairs(renderedSentences);
+      const entailment = validateSentenceEntailment(sentences, { results: finalAuditResults });
       const publicOutput = entailment.rejected.length
         ? null
         : publicOutputFromMapped(mappedOutput, linkableEntities);
@@ -608,8 +530,11 @@ async function main() {
         mappedOutput,
         publicOutput,
         sentenceToClaimMapping: sentences,
+        auditResultsTotalRendered: renderedSentences.length,
+        auditUniqueClaimSentencePairs: sentences.length,
+        assemblyLocations: editorialAssemblyLocations(mappedOutput),
         entailment,
-        repairs,
+        realizationAttempts,
         parametricKnowledgeTest: {
           omittedFact:
             slug === 'guernica' ? 'bombing circumstances and location' : 'specific ritual examples',

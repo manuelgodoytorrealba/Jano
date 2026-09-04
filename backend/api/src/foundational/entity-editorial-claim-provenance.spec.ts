@@ -1,15 +1,20 @@
 import {
   buildClaimLockedSentenceRequest,
+  canonicalPublicProposition,
   editorialContextFingerprint,
   buildEditorialRealizerRequest,
   normalizeMappedSentenceIds,
   normalizeRichLinks,
   buildUncertainSentenceRepairRequest,
+  editorialAssemblyLocations,
   validateSingleMappedSentence,
   validateSentenceEntailment,
   publicOutputFromMapped,
+  realizeClaimWithFallback,
+  isEditoriallyClaimableRelation,
   validateClaimPlan,
   validateMappedEditorialOutput,
+  uniqueSentenceClaimPairs,
   type EditorialClaim,
   type EditorialKnowledgeUnit,
 } from './entity-editorial-claim-provenance';
@@ -241,5 +246,85 @@ describe('claim-level editorial provenance', () => {
         results: [{ sentenceId: 's1', verdict: 'UNCERTAIN', reason: 'Scope ambiguo' }],
       }).rejected,
     ).toHaveLength(1);
+  });
+
+  it('deduplicates only the same normalized sentence and claim mapping', () => {
+    const sentences = [
+      { id: 'definition', text: 'Pablo Picasso fue un artista.', claimIds: ['c1'] },
+      { id: 'summary', text: '  Pablo Picasso fue un artista. ', claimIds: ['c1'] },
+      { id: 'body', text: 'Picasso fue un artista.', claimIds: ['c1'] },
+    ];
+    expect(uniqueSentenceClaimPairs(sentences).map(({ id }) => id)).toEqual(['definition', 'body']);
+  });
+
+  it('keeps summary and body locations while auditing an exact reuse once', () => {
+    const sentence = { id: 'claim-1', text: 'Pablo Picasso fue un artista.', claimIds: ['c1'] };
+    const output = {
+      definition: sentence,
+      summary: [sentence],
+      sections: [{ heading: 'Contexto', sentences: [] }],
+    };
+    expect(editorialAssemblyLocations(output)).toEqual([['definition', 'summary']]);
+    expect(
+      uniqueSentenceClaimPairs(validateMappedEditorialOutput(output, [claim], entity, [])),
+    ).toHaveLength(1);
+  });
+
+  it('reaches and accepts the exact canonical fallback after one rejected repair', async () => {
+    const audit = jest.fn(async (sentence) => {
+      const supported = sentence.text === claim.statement;
+      return {
+        sentence,
+        result: {
+          sentenceId: sentence.id,
+          verdict: supported ? ('SUPPORTED' as const) : ('UNCERTAIN' as const),
+          reason: supported ? 'Exact claim.' : 'Scope changed.',
+        },
+        supported,
+      };
+    });
+    const result = await realizeClaimWithFallback({
+      claim,
+      writerSentence: { id: 's', text: 'Picasso nació.', claimIds: ['c1'] },
+      audit,
+      repair: async () => ({ id: 's', text: 'Picasso nació en torno a 1881.', claimIds: ['c1'] }),
+    });
+    expect(result.acceptedBy).toBe('CANONICAL_FALLBACK');
+    expect(result.canonicalFallback?.sentence.text).toBe(claim.statement);
+    expect(audit).toHaveBeenCalledTimes(3);
+  });
+
+  it('uses promoted public propositions and preserves qualified relation scope', () => {
+    expect(
+      canonicalPublicProposition(
+        'Raw quote',
+        '[RELATION] El cubismo estuvo parcialmente influido.',
+      ),
+    ).toBe('El cubismo estuvo parcialmente influido.');
+    const qualified = {
+      ...claim,
+      statement: 'El cubismo estuvo parcialmente influido por la obra tardía de Paul Cézanne.',
+    };
+    expect(() =>
+      validateSingleMappedSentence(
+        { id: 's', text: 'El cubismo estuvo influido por Paul Cézanne.', claimIds: ['c1'] },
+        [qualified],
+        entity,
+        [],
+      ),
+    ).toThrow('loses required qualifier');
+  });
+
+  it('keeps precise supported relations out of the navigational-only filter', () => {
+    expect(
+      isEditoriallyClaimableRelation(
+        'El cubismo estuvo parcialmente influido por la obra tardía de Paul Cézanne.',
+      ),
+    ).toBe(true);
+    expect(
+      isEditoriallyClaimableRelation(
+        'Pablo Picasso se comprende en diálogo con la influencia de Paul Cézanne.',
+      ),
+    ).toBe(false);
   });
 });
