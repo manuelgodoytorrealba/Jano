@@ -48,7 +48,7 @@
     ]
   },
   "relationMappingVersion": "relation-mapping-v2",
-  "wave001Replay": {"total":23,"validRelation":0,"additionalProvenanceCandidate":0,"assertionInstead":7,"noSupportedRelation":3,"blockedByEntity":11,"reviewMapping":2,"wrongRelationReady":0},
+  "wave001Replay": {"total":23,"validRelation":0,"additionalProvenanceCandidate":0,"assertionInstead":5,"noSupportedRelation":2,"blockedByEntity":12,"reviewMapping":4,"wrongRelationReady":0},
   "historicalRiskGroups": {"LOW_RISK":1332,"MEDIUM_RISK":0,"HIGH_RISK":56,"semanticChecks":56,"uncertain":56,"repairProposals":0},
   "remainingWork": [
     "Complete risk-stratified canonical provenance review and historical repair queue; do not equate template justifications with independent support.",
