@@ -1,0 +1,8 @@
+{
+  "wave": "001",
+  "authorization": "USER_EXPLICIT_CANONICAL_APPLY_APPROVAL",
+  "before": {"entities": 805, "relations": 1388, "canonicalAssertions": 7, "sourceRefs": 838, "citations": 1399},
+  "planned": {"newEntities": 8, "newRelations": 0, "newCanonicalAssertions": 17, "sourceRefs": 12, "citations": 12, "relationProvenanceAdditions": 0, "idempotentNoops": 2},
+  "scope": "approved Wave 001 decisions only",
+  "executed": true
+}

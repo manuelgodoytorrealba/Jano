@@ -1,0 +1,10 @@
+{
+  "wave": "001",
+  "status": "SUCCESS",
+  "before": {"entities": 805, "relations": 1388, "canonicalAssertions": 7, "sourceRefs": 838, "citations": 1399},
+  "after": {"entities": 813, "relations": 1388, "canonicalAssertions": 24, "sourceRefs": 850, "citations": 1411},
+  "delta": {"entities": 8, "relations": 0, "canonicalAssertions": 17, "sourceRefs": 12, "citations": 12},
+  "unapprovedCanonicalMutations": 0,
+  "targetingErrorsPromoted": 0,
+  "productionMutated": false
+}

@@ -1,0 +1,6 @@
+{
+  "existingPublicRoutes": {"pablo-picasso": 200, "cubismo": 200, "tapiz-de-bayeux": 200, "neoclasicismo": 200},
+  "newDraftRoutes": {"body-art": 404, "johann-joachim-winckelmann": 404, "ai-qing": 404, "iglesia-de-santo-tome": 404},
+  "newDraftRouteInterpretation": "expected until explicit publication/editorial apply",
+  "privateResearchPublicLeakage": 0
+}

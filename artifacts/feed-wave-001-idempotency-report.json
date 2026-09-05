@@ -1,0 +1,11 @@
+{
+  "wave": "001",
+  "secondRun": "PASS",
+  "entitiesCreated": 0,
+  "relationsCreated": 0,
+  "canonicalAssertionsCreated": 0,
+  "duplicateSourceRefs": 0,
+  "duplicateCitations": 0,
+  "duplicateAssertionLinks": 0,
+  "secondRunCounts": {"entities": 813, "relations": 1388, "canonicalAssertions": 24, "sourceRefs": 850, "citations": 1411}
+}

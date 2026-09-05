@@ -1,0 +1,8 @@
+{
+  "status": "BLOCKED_PROVIDER_TRANSPORT",
+  "editorialApplied": [],
+  "attempted": ["pablo-picasso", "cubismo", "tapiz-de-bayeux", "neoclasicismo"],
+  "failures": ["Ollama transport failed"],
+  "privateResearchInputs": 0,
+  "reason": "New entities are DRAFT and no generic selective realizer/apply command is exposed in the running image; no ungrounded editorial text was generated."
+}

@@ -1,0 +1,22 @@
+{
+  "sourcesSelected": 50,
+  "sourcesEffective": 13,
+  "entityProposalsReviewed": 34,
+  "newEntitiesCreated": 8,
+  "entityProposalsResolvedExisting": 15,
+  "entityProposalsDeferred": 6,
+  "entityProposalsRejected": 5,
+  "relationProposalsReviewed": 23,
+  "newRelationsCreated": 0,
+  "relationProvenanceAdded": 0,
+  "relationAssertionsRouted": 6,
+  "knowledgeItemsReviewed": 24,
+  "newCanonicalAssertionsCreated": 17,
+  "assertionProvenanceAdded": 0,
+  "sourceRefsCreated": 12,
+  "citationsCreated": 12,
+  "idempotentNoops": 6,
+  "canonicalMutationsWithoutHumanApproval": 0,
+  "targetingErrorsPromoted": 0,
+  "historicalRelationRepairQueue": 56
+}

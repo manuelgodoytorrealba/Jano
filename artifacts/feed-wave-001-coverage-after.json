@@ -1,0 +1,8 @@
+{
+  "status": "READ_ONLY_POST_APPLY_SNAPSHOT",
+  "canonicalEntities": 813,
+  "canonicalRelations": 1388,
+  "canonicalAssertions": 24,
+  "coverageEngineMutation": false,
+  "note": "Deterministic coverage endpoint was unavailable in the running backend image; canonical counts and provenance integrity were verified directly."
+}
