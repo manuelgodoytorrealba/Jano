@@ -5,4 +5,5 @@ export const KNOWLEDGE_CONTRACT_VERSIONS = Object.freeze({
   targetRouter: 'target-router-v1',
   coverage: 'coverage-v1',
   semanticCacheInput: 'semantic-cache-input-v1',
+  relationMapping: 'relation-mapping-v2',
 });
