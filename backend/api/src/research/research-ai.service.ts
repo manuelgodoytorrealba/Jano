@@ -13,6 +13,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EntityIdentityResolver } from '../knowledge/entity-identity-resolver';
 import { EntityTargetRouter, type TargetCandidate } from '../knowledge/entity-target-router';
 import { SemanticResultCacheService } from '../knowledge/semantic-result-cache.service';
+import { RELATION_CONTRACTS } from '../knowledge/relation-mapping';
 
 const EXTRACT_FINDINGS_TASK = 'research.extract_findings';
 const EXTRACT_FINDINGS_SCHEMA_VERSION = '3';
@@ -307,7 +308,8 @@ export class ResearchAIService {
         draft: section.drafts[0]?.currentRevision?.content?.slice(0, 2_000) ?? null,
       })),
       canonicalEntityKinds: ['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'],
-      relationTypes,
+      relationTypes: relationTypes.map((item) => ({ ...item, semanticContract: RELATION_CONTRACTS[item.key] ?? 'Unknown contract: use null; requires mapping review.' })),
+      relationSafety: 'Zero relations is valid. Precision over recall. Determine supported proposition, graph-worthiness, faithful predicate and semantic direction separately. Co-occurrence is not a relation. Preserve all qualifiers. Never use a nearest predicate: return null when none fits. Put supported residence/family/naming propositions in claims, not relations. Do not infer movement membership from a topic page or reference list.',
       outputContract:
         'Devuelve sólo propuestas relevantes para el objetivo y el Índice. Contrato mecánico: localId es un identificador local y temporal sin significado semántico. Cada Claim, Entity y Relation debe tener localId, y cada localId debe ser único dentro de su propio array; no reutilices evidenceIds, sourceIds, relationTypeIds ni IDs de entidades existentes como localId. Ejemplos válidos: claim-1, claim-2; entity-1, entity-2; relation-1, relation-2. En cada Relation, fromLocalId y toLocalId deben copiar exactamente los localId de dos Entities distintas incluidas en entities de esta misma respuesta; no uses evidenceIds, títulos ni IDs externos como endpoints. relationTypeId debe ser exactamente el campo id de uno de los objetos entregados en relationTypes, nunca su key ni su label; por ejemplo, para { id: "rt_123", key: "CREATED_BY", label: "Creada por" }, devuelve "relationTypeId": "rt_123", no "CREATED_BY" ni "Creada por". Usa null si ningún RelationType encaja. Usa exactamente los evidenceIds del lote. Omite menciones administrativas o periféricas sin valor editorial. Usa [] cuando no haya propuestas.',
     };
@@ -602,16 +604,17 @@ export class ResearchAIService {
         explanation: null,
         evidenceIds: item.evidenceIds,
       })),
-      ...output.relations.map((item) => ({
-        type: ResearchFindingProposalType.RELATION,
-        proposalKey: item.localId,
+      ...output.relations.filter((item) => item.relationTypeId || item.explanation?.trim()).map((item) => ({
+        // No predicate is a private assertion candidate, never an acceptable null edge.
+        type: item.relationTypeId ? ResearchFindingProposalType.RELATION : ResearchFindingProposalType.CLAIM,
+        proposalKey: item.relationTypeId ? item.localId : `assertion:${item.localId}`,
         title: item.explanation?.trim() || 'Relación propuesta',
         summary: null,
         kind: null,
-        claimKind: null,
+        claimKind: item.relationTypeId ? null : ResearchClaimKind.ASSERTION,
         entityKind: null,
-        relationFromKey: item.fromLocalId,
-        relationToKey: item.toLocalId,
+        relationFromKey: item.relationTypeId ? item.fromLocalId : null,
+        relationToKey: item.relationTypeId ? item.toLocalId : null,
         relationTypeId: item.relationTypeId,
         explanation: item.explanation,
         evidenceIds: item.evidenceIds,

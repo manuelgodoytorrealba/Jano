@@ -1,0 +1,19 @@
+{
+  "status": "COMPLETED_STRUCTURAL_RISK_AUDIT_SEMANTIC_REVIEW_QUEUE",
+  "batch02ApplyReport": "controlled-entity-enrichment-batch-02-canonical-apply-report.json",
+  "traceableBatch02RelationOperations": 3,
+  "newRelationsInOriginalBatch02Apply": 1,
+  "relations": [
+    {"id":"cmtikq6kj000bvifprd0td82v","triple":["Cubismo","INFLUENCED_BY","Paul Cézanne"],"operation":"NEW_RELATION","structuralResult":"COMPATIBLE_WITH_REVIEWED_DOMAIN_EXCEPTION","qualificationPresent":"partially influenced by late work and differing viewpoints","historicalRepairRecommended":false},
+    {"id":"cmsvvxmpk02qu85sj68uveynm","triple":["El nacimiento de Venus","USES_MATERIAL","Lienzo"],"operation":"ADDITIONAL_PROVENANCE","structuralResult":"COMPATIBLE","semanticReaudit":"NOT_COMPLETED"},
+    {"id":"cmsvvxmip02ns85sj5hxljybn","triple":["El nacimiento de Venus","CREATED_BY","Sandro Botticelli"],"operation":"ADDITIONAL_PROVENANCE","structuralResult":"COMPATIBLE","semanticReaudit":"NOT_COMPLETED"}
+  ],
+  "sameMapperLineage": "NOT_ESTABLISHED: controlled canonical apply uses CanonicalPromotionService; Wave 001 proposals originate in ResearchAIService.",
+  "riskGroups": {"LOW_RISK": 1332, "MEDIUM_RISK": 0, "HIGH_RISK": 56},
+  "highRiskDefinition": "Generic/weak predicates (ASSOCIATED_WITH, RELATED_TO, INSPIRED_BY, MENTIONS) requiring proposition review; deterministic endpoint anomalies were separately checked and found zero.",
+  "semanticSample": {"target": 56, "audited": 56, "classification": "NEEDS_REVIEW", "supported": 0, "likelySupported": 0, "uncertain": 56, "likelyWrong": 0, "highConfidenceInvalid": 0, "reason": "Canonical citations and template justifications establish traceability, not entailment. No private Evidence was auto-read as a semantic verdict."},
+  "historicalRepairProposals": 0,
+  "firstControlledBatchFullAudit": "No traceable Relation proposal lineage found in current private project records; canonical seed/import paths require separate provenance backfill.",
+  "canonicalMutation": false,
+  "noAutomaticHistoricalRepair": true
+}

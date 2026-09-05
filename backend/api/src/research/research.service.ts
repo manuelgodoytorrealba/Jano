@@ -15,6 +15,7 @@ import {
 import { EntityEditorialService } from '../entities/entity-editorial.service';
 import { LibraryService } from '../library/library.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { validateRelationProposal } from './relation-proposal-validation';
 import { AddResearchProjectSourceDto } from './dto/add-research-project-source.dto';
 import { AssociateResearchLibraryMaterialDto } from './dto/associate-research-library-material.dto';
 import { CiteResearchItemDto } from './dto/cite-research-item.dto';
@@ -1562,9 +1563,14 @@ export class ResearchService {
 
     const proposal = await this.prisma.researchFindingProposal.findFirst({
       where: { id: proposalId, projectId },
-      select: { id: true },
+      select: { id: true, type: true },
     });
     if (!proposal) throw new NotFoundException('Research proposal not found');
+
+    if (proposal.type === 'RELATION' && dto.reviewState === 'REVIEWED') {
+      const mapping = await validateRelationProposal(this.prisma, projectId, proposalId);
+      if (mapping.classification !== 'VALID_RELATION') throw new BadRequestException(mapping);
+    }
 
     await this.prisma.researchFindingProposal.update({
       where: { id: proposalId },
@@ -1919,6 +1925,8 @@ export class ResearchService {
     },
   ) {
     if (proposal.convertedRelationId) return this.getProject(projectId);
+    const mapping = await validateRelationProposal(this.prisma, projectId, proposal.id);
+    if (mapping.classification !== 'VALID_RELATION') throw new BadRequestException(mapping);
     if (!proposal.jobId || !proposal.relationFromKey || !proposal.relationToKey) {
       throw new BadRequestException('Relation proposal endpoints are unavailable');
     }
@@ -1931,8 +1939,8 @@ export class ResearchService {
       select: { proposalKey: true, convertedEntityId: true },
     });
     const ids = new Map(endpoints.map((item) => [item.proposalKey, item.convertedEntityId]));
-    const fromEntityId = ids.get(proposal.relationFromKey);
-    const toEntityId = ids.get(proposal.relationToKey);
+    const fromEntityId = ids.get(mapping.fromKey);
+    const toEntityId = ids.get(mapping.toKey);
     if (!fromEntityId || !toEntityId) {
       throw new BadRequestException('Accept both entity proposals before accepting this relation');
     }

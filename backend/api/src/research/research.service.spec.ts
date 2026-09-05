@@ -78,6 +78,7 @@ describe('ResearchService', () => {
     },
     researchFindingProposal: {
       findFirst: jest.fn(),
+      findFirstOrThrow: jest.fn(),
       update: jest.fn(),
       findMany: jest.fn(),
       count: jest.fn(),
@@ -1238,7 +1239,7 @@ describe('ResearchService', () => {
 
     expect(prisma.researchFindingProposal.findFirst).toHaveBeenCalledWith({
       where: { id: 'proposal-1', projectId: 'project-1' },
-      select: { id: true },
+      select: { id: true, type: true },
     });
     expect(prisma.researchFindingProposal.update).toHaveBeenCalledWith({
       where: { id: 'proposal-1' },
@@ -1387,6 +1388,9 @@ describe('ResearchService', () => {
   });
 
   it('requires accepted private entity endpoints before accepting a relation proposal', async () => {
+    prisma.researchFindingProposal.findFirstOrThrow.mockResolvedValue({
+      relationFromKey: 'from', relationToKey: 'to', relationType: null, explanation: '', evidence: [],
+    });
     prisma.researchFindingProposal.findFirst.mockResolvedValue({
       id: 'proposal-relation',
       type: 'RELATION',
@@ -1401,8 +1405,8 @@ describe('ResearchService', () => {
       evidence: [],
     });
     prisma.researchFindingProposal.findMany.mockResolvedValue([
-      { proposalKey: 'from', convertedEntityId: 'entity-1' },
-      { proposalKey: 'to', convertedEntityId: null },
+      { proposalKey: 'from', title: 'First', convertedEntityId: 'entity-1', decisions: [] },
+      { proposalKey: 'to', title: 'Second', convertedEntityId: null, decisions: [] },
     ]);
 
     await expect(service.acceptProposal('project-1', 'proposal-relation')).rejects.toBeInstanceOf(
