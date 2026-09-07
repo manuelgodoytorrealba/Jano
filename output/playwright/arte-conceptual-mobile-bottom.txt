@@ -1,0 +1,155 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - banner:
+      - link "Ir al inicio de JANO":
+        - /url: /home
+        - generic: JANO
+      - generic:
+        - search:
+          - searchbox "Buscar en JANO..."
+      - navigation "Navegación principal":
+        - link "Inicio":
+          - /url: /home
+        - link "Archivo":
+          - /url: /entities
+        - link "Artículos":
+          - /url: /entities/article
+        - link "Investigaciones":
+          - /url: /research
+      - generic:
+        - generic:
+          - link "Entrar":
+            - /url: /login
+          - link "Crear cuenta":
+            - /url: /register
+      - button "Ocultar cabecera":
+        - generic: ×
+    - button "Mostrar cabecera" [ref=e717] [cursor=pointer]
+    - complementary "Utilidades" [ref=e718]:
+      - button "Compartir" [ref=e719] [cursor=pointer]
+      - button "Guardar" [ref=e720] [cursor=pointer]
+      - button "Cambiar a modo claro" [ref=e722] [cursor=pointer]
+      - button "Cambiar a inglés" [active] [ref=e723] [cursor=pointer]:
+        - generic [ref=e387]: ES
+  - main [ref=e28]:
+    - generic [ref=e726]:
+      - toolbar "Modo del workspace" [ref=e728]:
+        - generic [ref=e729]:
+          - button "Imagen" [ref=e731] [cursor=pointer]
+          - button "Grafo" [pressed] [ref=e732] [cursor=pointer]
+          - button "Info" [ref=e1053] [cursor=pointer]
+      - generic [ref=e747]:
+        - generic [ref=e749]:
+          - generic [ref=e750]: 17 nodos · 16 relaciones
+          - button "Capas" [ref=e756] [cursor=pointer]
+        - generic [ref=e762]:
+          - button "Enfoque" [ref=e1055] [cursor=pointer]
+          - img [ref=e764]:
+            - generic [ref=e765]:
+              - generic [ref=e769] [cursor=pointer]
+              - generic [ref=e773] [cursor=pointer]
+              - generic [ref=e777] [cursor=pointer]
+              - generic [ref=e782] [cursor=pointer]
+              - generic [ref=e786] [cursor=pointer]
+              - generic [ref=e790] [cursor=pointer]
+              - generic [ref=e795] [cursor=pointer]
+              - generic [ref=e799] [cursor=pointer]
+              - generic [ref=e803] [cursor=pointer]
+              - generic [ref=e807] [cursor=pointer]
+              - generic [ref=e811] [cursor=pointer]
+              - generic [ref=e815] [cursor=pointer]
+              - generic [ref=e819] [cursor=pointer]
+              - generic [ref=e823] [cursor=pointer]
+              - generic [ref=e827] [cursor=pointer]
+              - generic [ref=e831] [cursor=pointer]
+              - generic [ref=e832] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Arte conceptual
+                  - generic: Abstracción
+              - generic [ref=e837] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Autoría
+                  - generic: Abstracción
+              - generic [ref=e842] [cursor=pointer]:
+                - generic: O
+                - generic:
+                  - generic: Black Mountain College
+                  - generic: Organización
+              - generic [ref=e847] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Dadaísmo
+                  - generic: Abstracción
+              - generic [ref=e852] [cursor=pointer]:
+                - generic: P
+                - generic:
+                  - generic: Hans Haacke
+                  - generic: Persona
+              - generic [ref=e857] [cursor=pointer]:
+                - generic: P
+                - generic:
+                  - generic: Judy Chicago
+                  - generic: Persona
+              - generic [ref=e862] [cursor=pointer]:
+                - generic: O
+                - generic:
+                  - generic: Manhattan Real Estate Holdings
+                  - generic: Obra
+              - generic [ref=e867] [cursor=pointer]:
+                - generic: P
+                - generic:
+                  - generic: Martha Rosler
+                  - generic: Persona
+              - generic [ref=e872] [cursor=pointer]:
+                - generic: O
+                - generic:
+                  - generic: One and Three Chairs
+                  - generic: Obra
+              - generic [ref=e877] [cursor=pointer]:
+                - generic: O
+                - generic:
+                  - generic: Semiotics of the Kitchen
+                  - generic: Obra
+              - generic [ref=e882] [cursor=pointer]:
+                - generic: O
+                - generic:
+                  - generic: Shibboleth
+                  - generic: Obra
+              - generic [ref=e887] [cursor=pointer]:
+                - generic: P
+                - generic:
+                  - generic: Shirin Neshat
+                  - generic: Persona
+              - generic [ref=e892] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Siglo XX
+                  - generic: Abstracción
+              - generic [ref=e897] [cursor=pointer]:
+                - generic: P
+                - generic:
+                  - generic: Sol LeWitt
+                  - generic: Persona
+              - generic [ref=e902] [cursor=pointer]:
+                - generic: O
+                - generic:
+                  - generic: The Dinner Party
+                  - generic: Obra
+              - generic [ref=e907] [cursor=pointer]:
+                - generic: P
+                - generic:
+                  - generic: Theaster Gates
+                  - generic: Persona
+              - generic [ref=e912] [cursor=pointer]:
+                - generic: O
+                - generic:
+                  - generic: Tropicália
+                  - generic: Obra
+        - generic [ref=e917]:
+          - generic [ref=e918]: 16 de 59 Relaciones
+          - generic [ref=e919]:
+            - generic [ref=e920]: "Capas activas: Abstracción · Organización · Persona · Obra"
+            - button "Explorar 8 más" [ref=e1059] [cursor=pointer]
+            - button "Ver menos" [ref=e1060] [cursor=pointer]

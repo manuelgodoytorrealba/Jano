@@ -84,7 +84,8 @@ async function main() {
   );
   const preparation = new LibraryMaterialPreparationService(prisma as never);
   const rows: any[] = [];
-  for (const source of sources) {
+  for (const selectedSource of sources) {
+    let source = selectedSource;
     const row: any = {
       source: { id: source.id, title: source.title, type: source.type, url: source.url },
       purpose: purpose(source.title),
@@ -97,6 +98,41 @@ async function main() {
     };
     try {
       if (process.env.DATABASE_URL !== beforeUrl) throw new Error('DATABASE_URL_CHANGED');
+      if (!source.url) throw new Error('Source URL unavailable; manual Library material required');
+      const acquisition = await preparation.acquireSource(
+        {
+          url: source.url,
+          title: source.title,
+          publisher: source.publisher ?? undefined,
+          documentaryQuality: 80,
+          targetRelevance: 80,
+          qualityClass:
+            purpose(source.title) === STRUCTURED_REFERENCE_PURPOSE
+              ? 'STRUCTURED_REFERENCE'
+              : 'DOCUMENTARY',
+          provenanceOnly: purpose(source.title) === STRUCTURED_REFERENCE_PURPOSE,
+        },
+        batchId,
+      );
+      row.acquisition = acquisition;
+      if (!acquisition.prepared) throw new Error(`Acquisition terminal: ${acquisition.terminal}`);
+      const acquiredVersion = await prisma.libraryMaterialVersion.findUniqueOrThrow({
+        where: { id: (acquisition.prepared as { versionId: string }).versionId },
+        include: { material: true },
+      });
+      if (acquiredVersion.material.sourceId)
+        source = await prisma.source.findUniqueOrThrow({
+          where: { id: acquiredVersion.material.sourceId },
+          include: {
+            refs: { include: { entity: true } },
+            libraryMaterials: { include: { versions: true } },
+          },
+        });
+      row.requestedSourceId = selectedSource.id;
+      row.purpose = acquiredVersion.mimeType?.includes('json')
+        ? STRUCTURED_REFERENCE_PURPOSE
+        : purpose(source.title);
+      row.source = { id: source.id, title: source.title, type: source.type, url: source.url };
       const kind = /\.pdf$/i.test(source.url ?? '')
         ? LibraryMaterialKind.PDF
         : LibraryMaterialKind.URL;
@@ -118,7 +154,7 @@ async function main() {
         });
         row.materialCreated = true;
       }
-      let version = material.versions.find((v) => v.url === source.url);
+      let version = material.versions.find((v) => v.id === acquiredVersion.id);
       if (!version) {
         version = await prisma.libraryMaterialVersion.create({
           data: {

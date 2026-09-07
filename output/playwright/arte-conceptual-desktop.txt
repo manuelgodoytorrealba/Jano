@@ -1,0 +1,262 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - banner:
+      - link "Go to JANO home":
+        - /url: /home
+        - generic: JANO
+      - generic:
+        - search:
+          - searchbox "Search JANO..."
+      - navigation "Primary navigation":
+        - link "Home":
+          - /url: /home
+        - link "Archive":
+          - /url: /entities
+        - link "Articles":
+          - /url: /entities/article
+        - link "Research":
+          - /url: /research
+      - generic:
+        - generic:
+          - link "Enter":
+            - /url: /login
+          - link "Create account":
+            - /url: /register
+    - button "Show header" [ref=e360] [cursor=pointer]
+    - complementary "Utilities" [ref=e27]:
+      - button "Share" [ref=e361] [cursor=pointer]
+      - button "Save" [ref=e371] [cursor=pointer]
+      - button "Home" [ref=e376] [cursor=pointer]
+      - button "Switch to light mode" [ref=e382] [cursor=pointer]
+      - button "Switch to Spanish" [ref=e386] [cursor=pointer]:
+        - generic [ref=e387]: EN
+  - main [ref=e28]:
+    - generic [ref=e390]:
+      - toolbar "Workspace mode" [ref=e392]:
+        - generic [ref=e393]:
+          - button "Split View" [pressed] [ref=e394] [cursor=pointer]
+          - button "Image" [ref=e395] [cursor=pointer]
+          - button "Graph" [ref=e396] [cursor=pointer]
+        - button "Focus" [ref=e397] [cursor=pointer]
+      - generic [ref=e401]:
+        - generic [ref=e403]:
+          - generic:
+            - img "Conceptual art"
+          - generic [ref=e406]:
+            - generic [ref=e407]:
+              - button "+" [ref=e408] [cursor=pointer]
+              - button "−" [ref=e409] [cursor=pointer]
+            - button "Reset" [ref=e410] [cursor=pointer]
+        - generic [ref=e411]:
+          - generic [ref=e413]:
+            - generic [ref=e414]: 17 nodes · 16 relations · 24%
+            - generic [ref=e417]:
+              - generic [ref=e418]:
+                - button "Labels Auto" [ref=e419] [cursor=pointer]
+                - button "Layers" [ref=e420] [cursor=pointer]
+              - generic [ref=e421]:
+                - button "Center" [ref=e422] [cursor=pointer]
+                - button "+" [ref=e423] [cursor=pointer]
+                - button "−" [ref=e424] [cursor=pointer]
+                - button "Reset" [ref=e425] [cursor=pointer]
+          - img [ref=e428]:
+            - generic [ref=e429]:
+              - generic [ref=e433] [cursor=pointer]
+              - generic [ref=e437] [cursor=pointer]
+              - generic [ref=e438]:
+                - generic [ref=e441] [cursor=pointer]
+                - generic [ref=e442]: Belongs to movement
+              - generic [ref=e446] [cursor=pointer]
+              - generic [ref=e450] [cursor=pointer]
+              - generic [ref=e451]:
+                - generic [ref=e454] [cursor=pointer]
+                - generic [ref=e455]: Belongs to movement
+              - generic [ref=e459] [cursor=pointer]
+              - generic [ref=e463] [cursor=pointer]
+              - generic [ref=e467] [cursor=pointer]
+              - generic [ref=e471] [cursor=pointer]
+              - generic [ref=e475] [cursor=pointer]
+              - generic [ref=e479] [cursor=pointer]
+              - generic [ref=e483] [cursor=pointer]
+              - generic [ref=e487] [cursor=pointer]
+              - generic [ref=e491] [cursor=pointer]
+              - generic [ref=e495] [cursor=pointer]
+              - generic [ref=e496] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Conceptual art
+                  - generic: Abstraction
+              - generic [ref=e501] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: 20th Century
+                  - generic: Abstraction
+              - generic [ref=e506] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Authorship
+                  - generic: Abstraction
+              - generic [ref=e511] [cursor=pointer]: O
+              - generic [ref=e516] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Dada
+                  - generic: Abstraction
+              - generic [ref=e521] [cursor=pointer]: P
+              - generic [ref=e526] [cursor=pointer]: P
+              - generic [ref=e531] [cursor=pointer]: O
+              - generic [ref=e536] [cursor=pointer]: P
+              - generic [ref=e541] [cursor=pointer]: O
+              - generic [ref=e546] [cursor=pointer]: O
+              - generic [ref=e551] [cursor=pointer]: O
+              - generic [ref=e556] [cursor=pointer]: P
+              - generic [ref=e561] [cursor=pointer]:
+                - generic: P
+                - generic:
+                  - generic: Sol LeWitt
+                  - generic: Person
+              - generic [ref=e566] [cursor=pointer]: O
+              - generic [ref=e571] [cursor=pointer]: P
+              - generic [ref=e576] [cursor=pointer]: O
+          - generic [ref=e581]:
+            - generic [ref=e582]: 16 of 59 Relations
+            - generic [ref=e583]:
+              - generic [ref=e584]: "Active layers: Abstraction · Organization · Person · Work"
+              - button "Explore 12 more" [ref=e585] [cursor=pointer]
+      - generic [ref=e586]:
+        - generic [ref=e590]:
+          - heading "Conceptual art" [level=1] [ref=e591]
+          - paragraph [ref=e592]: Movement
+          - generic [ref=e594]:
+            - generic [ref=e595]: Published
+            - generic [ref=e596]: Intermediate
+            - generic [ref=e597]: Movement
+        - generic [ref=e598]: "Conceptual art names practices in which idea, instruction, language, document, or system may matter more than a unique object. It does not eliminate materiality: it shifts it toward supports, institutions, and modes of circulation. In JANO it explores authorship, archive, museums, and Duchamp’s legacies without reducing them to one genealogy."
+        - paragraph [ref=e600]: Essay
+        - generic [ref=e603]:
+          - paragraph [ref=e604]: El arte conceptual coloca la idea o el concepto en el centro de la obra, por encima del objeto artístico final. Una referencia temprana al término aparece en un artículo de Sol LeWitt de 1967. En esta práctica, las decisiones y la planificación preceden a una ejecución más secundaria, y el artista puede escoger cualquier material o forma adecuada para comunicar la idea.
+          - paragraph [ref=e605]: "Esta prioridad de la idea modifica también la forma de trabajar: la planificación y las decisiones se toman antes de una ejecución que no concentra todo el sentido de la obra. Por eso los materiales y las formas no están fijados de antemano; pueden ir desde una performance hasta una descripción escrita, según lo que la idea necesite."
+      - generic [ref=e606]:
+        - generic [ref=e607]:
+          - paragraph [ref=e609]: Sheet
+          - paragraph [ref=e610]: No specific sheet for this type.
+        - generic [ref=e611]:
+          - paragraph [ref=e613]: Relations
+          - generic [ref=e614]:
+            - heading "Connects with" [level=3] [ref=e615]
+            - list [ref=e616]:
+              - listitem [ref=e617]:
+                - generic [ref=e618]:
+                  - generic [ref=e619]: Located in
+                  - 'link "Open entity: Black Mountain College" [ref=e620] [cursor=pointer]':
+                    - /url: /entity/black-mountain-college
+                    - text: Black Mountain College
+              - listitem [ref=e621]:
+                - generic [ref=e622]:
+                  - generic [ref=e623]: Belongs to period
+                  - 'link "Open entity: 20th Century" [ref=e624] [cursor=pointer]':
+                    - /url: /entity/siglo-xx
+                    - text: 20th Century
+              - listitem [ref=e625]:
+                - generic [ref=e626]:
+                  - generic [ref=e627]: Explores concept
+                  - 'link "Open entity: Authorship" [ref=e628] [cursor=pointer]':
+                    - /url: /entity/autoria
+                    - text: Authorship
+              - listitem [ref=e629]:
+                - generic [ref=e630]:
+                  - generic [ref=e631]: Influenced by
+                  - 'link "Open entity: Dada" [ref=e632] [cursor=pointer]':
+                    - /url: /entity/dadaismo
+                    - text: Dada
+          - generic [ref=e633]:
+            - heading "Also appears in" [level=3] [ref=e634]
+            - list [ref=e635]:
+              - listitem [ref=e636]:
+                - generic [ref=e637]:
+                  - generic [ref=e638]: Includes entity
+                  - 'link "Open entity: Sol LeWitt" [ref=e639] [cursor=pointer]':
+                    - /url: /entity/sol-lewitt
+                    - text: Sol LeWitt
+              - listitem [ref=e640]:
+                - generic [ref=e641]:
+                  - generic [ref=e642]: Includes entity
+                  - 'link "Open entity: Theaster Gates" [ref=e643] [cursor=pointer]':
+                    - /url: /entity/theaster-gates
+                    - text: Theaster Gates
+              - listitem [ref=e644]:
+                - generic [ref=e645]:
+                  - generic [ref=e646]: Includes entity
+                  - 'link "Open entity: One and Three Chairs" [ref=e647] [cursor=pointer]':
+                    - /url: /entity/obra-de-arte-en-el-tiempo
+                    - text: One and Three Chairs
+              - listitem [ref=e648]:
+                - generic [ref=e649]:
+                  - generic [ref=e650]: Includes entity
+                  - 'link "Open entity: Tropicália" [ref=e651] [cursor=pointer]':
+                    - /url: /entity/tropicalia-obra
+                    - text: Tropicália
+              - listitem [ref=e652]:
+                - generic [ref=e653]:
+                  - generic [ref=e654]: Includes entity
+                  - 'link "Open entity: Judy Chicago" [ref=e655] [cursor=pointer]':
+                    - /url: /entity/judy-chicago
+                    - text: Judy Chicago
+              - listitem [ref=e656]:
+                - generic [ref=e657]:
+                  - generic [ref=e658]: Includes entity
+                  - 'link "Open entity: Hans Haacke" [ref=e659] [cursor=pointer]':
+                    - /url: /entity/hans-haacke
+                    - text: Hans Haacke
+            - button "Show All" [ref=e660] [cursor=pointer]
+      - generic [ref=e661]:
+        - paragraph [ref=e663]: Sources
+        - list [ref=e664]:
+          - listitem [ref=e665]:
+            - generic [ref=e666]:
+              - generic [ref=e667]: Website
+              - generic [ref=e668]:
+                - strong [ref=e669]: Conceptual Art
+                - text: (Tate )
+            - paragraph [ref=e673]: Institutional or curatorial reference for movement context.
+          - listitem [ref=e674]:
+            - generic [ref=e675]:
+              - generic [ref=e676]: Website
+              - generic [ref=e677]:
+                - strong [ref=e678]: Conceptual Art
+                - text: (Tate ) — p. paragraph-1
+            - generic [ref=e679]: “Conceptual art is art for which the idea (or concept) behind the work is more important than the finished art object.”
+            - paragraph [ref=e683]:
+              - text: "[DEFINITION"
+              - emphasis [ref=e684]: OR
+              - text: IDENTITY] El arte conceptual es un tipo de arte para el cual la idea o concepto detrás de la obra es más importante que el objeto artístico final.
+          - listitem [ref=e685]:
+            - generic [ref=e686]:
+              - generic [ref=e687]: Website
+              - generic [ref=e688]:
+                - strong [ref=e689]: Conceptual Art
+                - text: (Tate ) — p. paragraph-5
+            - generic [ref=e690]: "“The term conceptual art was first used to reference this distinct movement in an article written by Sol LeWitt in 1967: In conceptual art the idea or concept is the most important aspect of the work.”"
+            - paragraph [ref=e694]: "[CHRONOLOGY] El término arte conceptual fue utilizado por primera vez en 1967 en un artículo escrito por Sol LeWitt para referirse a este movimiento distinto."
+          - listitem [ref=e695]:
+            - generic [ref=e696]:
+              - generic [ref=e697]: Website
+              - generic [ref=e698]:
+                - strong [ref=e699]: Conceptual Art
+                - text: (Tate ) — p. paragraph-6
+            - generic [ref=e700]: “When an artist uses a conceptual form of art, it means that all of the planning and decisions are made beforehand and the execution is a perfunctory affair.”
+            - paragraph [ref=e704]:
+              - text: "[PRACTICE"
+              - emphasis [ref=e705]: OR
+              - text: METHOD] El arte conceptual implica que toda la planificación y las decisiones se realizan antes de la ejecución, que es una cuestión rutinaria.
+          - listitem [ref=e706]:
+            - generic [ref=e707]:
+              - generic [ref=e708]: Website
+              - generic [ref=e709]:
+                - strong [ref=e710]: Conceptual Art
+                - text: (Tate ) — p. paragraph-10
+            - generic [ref=e711]: “This is because, unlike a painter or sculptor who will think about how best they can express their idea using paint or sculptural materials and techniques, a conceptual artist uses whatever materials and whatever form is most appropriate to putting their idea across – this could be anything from a performance to a written description.”
+            - paragraph [ref=e715]:
+              - text: "[PRACTICE"
+              - emphasis [ref=e716]: OR
+              - text: METHOD] El arte conceptual utiliza cualquier material y forma apropiada para transmitir una idea, lo que puede variar desde un performance hasta una descripción escrita.

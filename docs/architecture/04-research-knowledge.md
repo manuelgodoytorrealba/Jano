@@ -131,3 +131,13 @@ flowchart LR
 ## Extensiones futuras
 
 La detección automática, la extracción y los agentes pueden crear propuestas privadas, pero nunca aceptar Claims ni promover conocimiento.
+
+## Evidence review decisions V1 (2026-09-07)
+
+Human review may address an existing ResearchEvidence without an AI proposal.
+ResearchEvidenceDecision records project, Evidence, logical review ID, active admin
+reviewer, decision, reason and reviewed payload. It coexists with proposal decisions.
+Identical retries return the original decision; conflicting retries are rejected.
+Approval records intent pending explicit later apply, never creates knowledge or
+promoted provenance. Private reporting reads both decision models independently;
+historical proposal anchors remain unchanged and are labelled LEGACY_REVIEW_ANCHOR.

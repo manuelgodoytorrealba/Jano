@@ -2,35 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { LibraryMaterialKind, LibraryMaterialVersionStatus } from '@prisma/client';
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { lookup } from 'node:dns/promises';
 import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
-import { isIP } from 'node:net';
 import { join, normalize, relative } from 'node:path';
 import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';
+import { SourceAcquisition } from './source-acquisition';
+import {
+  AcquisitionCandidate,
+  normalizeSourceUrl,
+  contentRoute,
+} from './source-acquisition-policy';
 import { PrismaService } from '../prisma/prisma.service';
 
 const execFileAsync = promisify(execFile);
 const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 15_000;
-const MAX_FETCH_RETRIES = 3;
-const HOST_LAST_REQUEST = new Map<string, number>();
-const URL_TEXT_CACHE = new Map<string, string>();
-
-function isPrivateAddress(address: string) {
-  if (address === '::1' || address.startsWith('fc') || address.startsWith('fd')) return true;
-  const parts = address.split('.').map(Number);
-  return (
-    parts.length === 4 &&
-    (parts[0] === 10 ||
-      parts[0] === 127 ||
-      (parts[0] === 169 && parts[1] === 254) ||
-      (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) ||
-      (parts[0] === 192 && parts[1] === 168) ||
-      parts[0] === 0)
-  );
-}
-
 const HTML_ENTITIES: Record<string, string> = {
   amp: '&',
   apos: "'",
@@ -110,20 +96,35 @@ export function textFromHtml(value: string) {
 
 @Injectable()
 export class LibraryMaterialPreparationService {
+  private readonly acquisition = new SourceAcquisition();
   constructor(private readonly prisma: PrismaService) {}
 
   async prepare(materialVersionId: string) {
     const version = await this.prisma.libraryMaterialVersion.findUnique({
       where: { id: materialVersionId },
-      select: { id: true, url: true, storageKey: true, material: { select: { kind: true } } },
+      select: {
+        id: true,
+        url: true,
+        storageKey: true,
+        status: true,
+        content: true,
+        material: { select: { kind: true, title: true, source: { select: { publisher: true } } } },
+      },
     });
     if (!version) throw new Error('Library material version not found');
 
+    if (version.status === LibraryMaterialVersionStatus.READY && version.content?.trim()) return;
     const content =
-      version.material.kind === LibraryMaterialKind.PDF
+      version.material.kind === LibraryMaterialKind.PDF && version.storageKey
         ? await this.extractPdf(version.storageKey)
-        : version.material.kind === LibraryMaterialKind.URL
-          ? await this.fetchUrl(version.url)
+        : version.material.kind === LibraryMaterialKind.URL ||
+            version.material.kind === LibraryMaterialKind.PDF
+          ? await this.fetchUrl(
+              version.url,
+              version.id,
+              version.material.title,
+              version.material.source?.publisher ?? null,
+            )
           : null;
     if (!content) throw new Error('Document preparation produced no readable text');
 
@@ -135,6 +136,95 @@ export class LibraryMaterialPreparationService {
         status: LibraryMaterialVersionStatus.READY,
       },
     });
+  }
+
+  /** Batch acquisition entry: alternative documents retain their own Source and version. */
+  async acquireSource(candidate: AcquisitionCandidate, wave: string) {
+    const cached = async () =>
+      this.prisma.libraryMaterialVersion
+        .findFirst({
+          where: {
+            url: normalizeSourceUrl(candidate.url),
+            status: LibraryMaterialVersionStatus.READY,
+            content: { not: null },
+          },
+          select: { id: true, materialId: true, content: true },
+        })
+        .then((v) => (v?.content?.trim() ? { versionId: v.id, materialId: v.materialId } : null));
+    return this.acquisition.resolve(
+      candidate,
+      wave,
+      async (access, actualSource) => {
+        const url = normalizeSourceUrl(actualSource.url);
+        const version = await this.prisma.$transaction(async (tx) => {
+          // Serialize Source/version reuse across workers without adding a second identity table.
+          await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${url}))`;
+          let source = await tx.source.findFirst({ where: { url }, orderBy: { createdAt: 'asc' } });
+          source ??= await tx.source.create({
+            data: {
+              type: 'ARTICLE',
+              url,
+              title: actualSource.title,
+              publisher: actualSource.publisher,
+            },
+          });
+          let material = await tx.libraryMaterial.findFirst({
+            where: { sourceId: source.id },
+            orderBy: { createdAt: 'asc' },
+          });
+          material ??= await tx.libraryMaterial.create({
+            data: {
+              sourceId: source.id,
+              title: actualSource.title,
+              kind: contentRoute(access.mime) === 'PDF' ? 'PDF' : 'URL',
+            },
+          });
+          const storageKey = relative(join(process.cwd(), 'uploads'), access.bodyPath!);
+          const same = await tx.libraryMaterialVersion.findFirst({
+            where: { materialId: material.id, storageKey },
+          });
+          if (same) return same;
+          const last = await tx.libraryMaterialVersion.aggregate({
+            where: { materialId: material.id },
+            _max: { version: true },
+          });
+          return tx.libraryMaterialVersion.create({
+            data: {
+              materialId: material.id,
+              version: (last._max.version ?? 0) + 1,
+              url,
+              mimeType: access.mime,
+              storageKey,
+              sizeBytes: access.size,
+              originalName: actualSource.title,
+              status: LibraryMaterialVersionStatus.PENDING_PREPARATION,
+            },
+          });
+        });
+        await this.prepare(version.id);
+        let pageCount: number | null = null;
+        if (contentRoute(access.mime) === 'PDF') {
+          const info = await execFileAsync('pdfinfo', [access.bodyPath!], {
+            timeout: FETCH_TIMEOUT_MS,
+          }).catch(() => null);
+          pageCount = Number(info?.stdout.match(/^Pages:\s+(\d+)/m)?.[1]) || null;
+        }
+        this.acquisition.write(`version:${version.id}`, {
+          versionId: version.id,
+          requestedUrl: candidate.url,
+          acquiredSourceUrl: actualSource.url,
+          finalUrl: access.finalUrl,
+          publisher: actualSource.publisher,
+          title: actualSource.title,
+          retrievedAt: access.retrievedAt,
+          mime: access.mime,
+          documentHash: access.documentHash,
+          pageCount,
+        });
+        return { versionId: version.id, materialId: version.materialId };
+      },
+      cached,
+    );
   }
 
   async markFailed(materialVersionId: string) {
@@ -184,57 +274,56 @@ export class LibraryMaterialPreparationService {
     }
   }
 
-  private async fetchUrl(rawUrl: string | null) {
+  private async fetchUrl(
+    rawUrl: string | null,
+    versionId: string,
+    title: string,
+    publisher: string | null,
+  ) {
     if (!rawUrl) throw new Error('URL is unavailable');
-    const url = new URL(rawUrl);
-    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
-      throw new Error('Only public HTTP(S) URLs can be prepared');
+    const result = await this.acquisition.download(rawUrl);
+    if (!result.bodyPath || !result.state.startsWith('ACCESSIBLE'))
+      throw new Error(
+        `Acquisition ${result.state}: HTTP ${result.status}; ${result.error ?? 'manual or alternate source required'}`,
+      );
+    const bytes = this.acquisition.body(result);
+    const route = contentRoute(result.mime);
+    let content: string;
+    if (route === 'PDF') {
+      // Acquisition stores the original before the existing PDF/OCR preparator reads it.
+      content = await this.extractPdf(relative(join(process.cwd(), 'uploads'), result.bodyPath));
+    } else if (route === 'JSON') {
+      // Structured reference stays visibly structured; never manufacture documentary paragraphs.
+      content = JSON.stringify(JSON.parse(bytes.toString('utf8')), null, 2);
+    } else
+      content =
+        route === 'HTML' ? textFromHtml(bytes.toString('utf8')) : bytes.toString('utf8').trim();
+    await this.prisma.libraryMaterialVersion.update({
+      where: { id: versionId },
+      data: {
+        mimeType: result.mime,
+        sizeBytes: bytes.length,
+        storageKey: relative(join(process.cwd(), 'uploads'), result.bodyPath),
+      },
+    });
+    let pageCount: number | null = null;
+    if (route === 'PDF') {
+      const info = await execFileAsync('pdfinfo', [result.bodyPath], {
+        timeout: FETCH_TIMEOUT_MS,
+      }).catch(() => null);
+      pageCount = Number(info?.stdout.match(/^Pages:\s+(\d+)/m)?.[1]) || null;
     }
-    if (isIP(url.hostname) && isPrivateAddress(url.hostname))
-      throw new Error('Private URL is blocked');
-    const address = await lookup(url.hostname);
-    if (isPrivateAddress(address.address)) throw new Error('Private URL is blocked');
-
-    const cached = URL_TEXT_CACHE.get(url.toString());
-    if (cached) return cached;
-    for (let attempt = 0; attempt <= MAX_FETCH_RETRIES; attempt += 1) {
-      const waitMs = Math.max(0, 750 - (Date.now() - (HOST_LAST_REQUEST.get(url.hostname) ?? 0)));
-      if (waitMs) await new Promise((resolve) => setTimeout(resolve, waitMs));
-      HOST_LAST_REQUEST.set(url.hostname, Date.now());
-      const response = await fetch(url, {
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-        redirect: 'error',
-        headers: { Accept: 'text/html,text/plain;q=0.9' },
-      });
-      if (response.status === 429 && attempt < MAX_FETCH_RETRIES) {
-        const retryAfter = Number(response.headers.get('retry-after') ?? 0);
-        await new Promise((resolve) =>
-          setTimeout(
-            resolve,
-            Math.min(30_000, retryAfter > 0 ? retryAfter * 1000 : 500 * 2 ** attempt),
-          ),
-        );
-        continue;
-      }
-      if (!response.ok)
-        throw new Error(
-          `URL returned HTTP ${response.status}${response.status === 403 ? ' (ACCESS_DENIED; MANUAL_ACQUISITION_REQUIRED)' : ''}`,
-        );
-      const type = response.headers.get('content-type') ?? '';
-      if (!/^(text\/html|text\/plain)/i.test(type))
-        throw new Error(
-          'URL did not return HTML or text; PUBLIC_DOCUMENT requires Library material acquisition',
-        );
-      const length = Number(response.headers.get('content-length') ?? 0);
-      if (length > MAX_DOCUMENT_BYTES) throw new Error('URL content exceeds 5 MB');
-      const text = await response.text();
-      if (Buffer.byteLength(text) > MAX_DOCUMENT_BYTES) throw new Error('URL content exceeds 5 MB');
-      const prepared = type.toLowerCase().startsWith('text/html')
-        ? textFromHtml(text)
-        : text.trim();
-      URL_TEXT_CACHE.set(url.toString(), prepared);
-      return prepared;
-    }
-    throw new Error('URL returned HTTP 429 (RETRYABLE; retry limit reached)');
+    this.acquisition.write(`version:${versionId}`, {
+      versionId,
+      title,
+      publisher,
+      requestedUrl: rawUrl,
+      finalUrl: result.finalUrl,
+      retrievedAt: result.retrievedAt,
+      mime: result.mime,
+      documentHash: result.documentHash,
+      pageCount,
+    });
+    return content;
   }
 }

@@ -14,14 +14,14 @@ describe('Research assisted proposal contract', () => {
 
   it('keeps historical proposals readable as LEGACY rows while new proposals are typed', () => {
     expect(schema).toContain('enum ResearchFindingProposalType');
-    expect(schema).toContain('type               ResearchFindingProposalType @default(LEGACY)');
-    expect(schema).toContain('jobId              String?');
+    expect(schema).toMatch(/type\s+ResearchFindingProposalType\s+@default\(LEGACY\)/);
+    expect(schema).toMatch(/jobId\s+String\?/);
     expect(migration).toContain("DEFAULT 'LEGACY'");
     expect(migration).toContain('ADD COLUMN "proposalKey" TEXT');
   });
 
   it('uses Job plus the typed result fingerprint as the persistent idempotency boundary', () => {
-    expect(schema).toContain('resultFingerprint  String?');
+    expect(schema).toMatch(/resultFingerprint\s+String\?/);
     expect(migration).toContain('ResearchFindingProposal_jobId_resultFingerprint_key');
     expect(migration).toContain('WHERE "jobId" IS NOT NULL AND "resultFingerprint" IS NOT NULL');
   });

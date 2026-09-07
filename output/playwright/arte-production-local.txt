@@ -1,0 +1,231 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - banner:
+      - link "Go to JANO home":
+        - /url: /home
+        - generic: JANO
+      - generic:
+        - search:
+          - searchbox "Search JANO..."
+      - navigation "Primary navigation":
+        - link "Home":
+          - /url: /home
+        - link "Archive":
+          - /url: /entities
+        - link "Articles":
+          - /url: /entities/article
+        - link "Research":
+          - /url: /research
+      - generic:
+        - generic:
+          - link "Enter":
+            - /url: /login
+          - link "Create account":
+            - /url: /register
+    - button "Show header" [ref=e5] [cursor=pointer]
+    - complementary "Utilities" [ref=e10]:
+      - button "Share" [ref=e11] [cursor=pointer]
+      - button "Save" [ref=e21] [cursor=pointer]
+      - button "Home" [ref=e26] [cursor=pointer]
+      - button "Switch to light mode" [ref=e32] [cursor=pointer]
+      - button "Switch to Spanish" [ref=e36] [cursor=pointer]:
+        - generic [ref=e37]: EN
+  - main [ref=e38]:
+    - generic [ref=e42]:
+      - toolbar "Workspace mode" [ref=e44]:
+        - generic [ref=e45]:
+          - button "Split View" [pressed] [ref=e46] [cursor=pointer]
+          - button "Image" [ref=e47] [cursor=pointer]
+          - button "Graph" [ref=e48] [cursor=pointer]
+        - button "Focus" [ref=e49] [cursor=pointer]
+      - generic [ref=e53]:
+        - generic [ref=e55]:
+          - generic [ref=e57]:
+            - img "Fisicromía — Homenaje a Don Andrés Bello, de Carlos Cruz-Diez, en la Plaza Venezuela de Caracas"
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - button "+" [ref=e61] [cursor=pointer]
+              - button "−" [ref=e62] [cursor=pointer]
+            - button "Reset" [ref=e63] [cursor=pointer]
+          - generic [ref=e64]:
+            - button "Creditos" [ref=e65] [cursor=pointer]
+            - generic:
+              - generic:
+                - strong: Source
+                - text: Wikimedia Commons
+              - generic:
+                - strong: Photo
+                - text: Jeragox
+              - generic:
+                - strong: License
+                - text: CC BY-SA 3.0
+        - generic [ref=e66]:
+          - generic [ref=e68]:
+            - generic [ref=e69]: 17 nodes · 16 relations · 24%
+            - generic [ref=e72]:
+              - generic [ref=e73]:
+                - button "Labels Auto" [ref=e74] [cursor=pointer]
+                - button "Layers" [ref=e75] [cursor=pointer]
+              - generic [ref=e76]:
+                - button "Center" [ref=e77] [cursor=pointer]
+                - button "+" [ref=e78] [cursor=pointer]
+                - button "−" [ref=e79] [cursor=pointer]
+                - button "Reset" [ref=e80] [cursor=pointer]
+          - img [ref=e83]:
+            - generic [ref=e84]:
+              - generic [ref=e88] [cursor=pointer]
+              - generic [ref=e89]:
+                - generic [ref=e92] [cursor=pointer]
+                - generic [ref=e93]: Belongs to movement
+              - generic [ref=e97] [cursor=pointer]
+              - generic [ref=e101] [cursor=pointer]
+              - generic [ref=e102]:
+                - generic [ref=e105] [cursor=pointer]
+                - generic [ref=e106]: Belongs to movement
+              - generic [ref=e110] [cursor=pointer]
+              - generic [ref=e114] [cursor=pointer]
+              - generic [ref=e118] [cursor=pointer]
+              - generic [ref=e122] [cursor=pointer]
+              - generic [ref=e126] [cursor=pointer]
+              - generic [ref=e130] [cursor=pointer]
+              - generic [ref=e134] [cursor=pointer]
+              - generic [ref=e138] [cursor=pointer]
+              - generic [ref=e142] [cursor=pointer]
+              - generic [ref=e146] [cursor=pointer]
+              - generic [ref=e150] [cursor=pointer]
+              - generic [ref=e151] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Conceptual art
+                  - generic: Abstraction
+              - generic [ref=e156] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: 20th Century
+                  - generic: Abstraction
+              - generic [ref=e161] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Authorship
+                  - generic: Abstraction
+              - generic [ref=e166] [cursor=pointer]:
+                - generic: A
+                - generic:
+                  - generic: Dada
+                  - generic: Abstraction
+              - generic [ref=e171] [cursor=pointer]: P
+              - generic [ref=e176] [cursor=pointer]: P
+              - generic [ref=e181] [cursor=pointer]: P
+              - generic [ref=e186] [cursor=pointer]: O
+              - generic [ref=e191] [cursor=pointer]: P
+              - generic [ref=e196] [cursor=pointer]: O
+              - generic [ref=e201] [cursor=pointer]: O
+              - generic [ref=e206] [cursor=pointer]: O
+              - generic [ref=e211] [cursor=pointer]: P
+              - generic [ref=e216] [cursor=pointer]:
+                - generic: P
+                - generic:
+                  - generic: Sol LeWitt
+                  - generic: Person
+              - generic [ref=e221] [cursor=pointer]: O
+              - generic [ref=e226] [cursor=pointer]: P
+              - generic [ref=e231] [cursor=pointer]: O
+          - generic [ref=e236]:
+            - generic [ref=e237]: 16 of 56 Relations
+            - generic [ref=e238]:
+              - generic [ref=e239]: "Active layers: Abstraction · Person · Work"
+              - button "Explore 12 more" [ref=e240] [cursor=pointer]
+      - generic [ref=e241]:
+        - generic [ref=e245]:
+          - heading "Conceptual art" [level=1] [ref=e246]
+          - paragraph [ref=e247]: Movement
+          - generic [ref=e249]:
+            - generic [ref=e250]: Published
+            - generic [ref=e251]: Intermediate
+            - generic [ref=e252]: Movement
+        - generic [ref=e253]: "Conceptual art names practices in which idea, instruction, language, document, or system may matter more than a unique object. It does not eliminate materiality: it shifts it toward supports, institutions, and modes of circulation. In JANO it explores authorship, archive, museums, and Duchamp’s legacies without reducing them to one genealogy."
+      - generic [ref=e254]:
+        - generic [ref=e255]:
+          - paragraph [ref=e257]: Sheet
+          - paragraph [ref=e258]: No specific sheet for this type.
+        - generic [ref=e259]:
+          - paragraph [ref=e261]: Relations
+          - generic [ref=e262]:
+            - heading "Connects with" [level=3] [ref=e263]
+            - list [ref=e264]:
+              - listitem [ref=e265]:
+                - generic [ref=e266]:
+                  - generic [ref=e267]: Explores concept
+                  - 'link "Open entity: Authorship" [ref=e268] [cursor=pointer]':
+                    - /url: /entity/autoria
+                    - text: Authorship
+              - listitem [ref=e269]:
+                - generic [ref=e270]:
+                  - generic [ref=e271]: Belongs to period
+                  - 'link "Open entity: 20th Century" [ref=e272] [cursor=pointer]':
+                    - /url: /entity/siglo-xx
+                    - text: 20th Century
+                - paragraph [ref=e276]: Arte conceptual se encuadra cronológicamente en Siglo XX.
+              - listitem [ref=e277]:
+                - generic [ref=e278]:
+                  - generic [ref=e279]: Influenced by
+                  - 'link "Open entity: Dada" [ref=e280] [cursor=pointer]':
+                    - /url: /entity/dadaismo
+                    - text: Dada
+                - paragraph [ref=e284]: Arte conceptual se comprende en diálogo con la influencia de Dadaísmo.
+          - generic [ref=e285]:
+            - heading "Also appears in" [level=3] [ref=e286]
+            - list [ref=e287]:
+              - listitem [ref=e288]:
+                - generic [ref=e289]:
+                  - generic [ref=e290]: Includes entity
+                  - 'link "Open entity: Sol LeWitt" [ref=e291] [cursor=pointer]':
+                    - /url: /entity/sol-lewitt
+                    - text: Sol LeWitt
+                - paragraph [ref=e295]: Sol LeWitt se sitúa historiográficamente en relación con Arte conceptual.
+              - listitem [ref=e296]:
+                - generic [ref=e297]:
+                  - generic [ref=e298]: Includes entity
+                  - 'link "Open entity: Shirin Neshat" [ref=e299] [cursor=pointer]':
+                    - /url: /entity/shirin-neshat
+                    - text: Shirin Neshat
+                - paragraph [ref=e303]: Shirin Neshat se sitúa historiográficamente en relación con Arte conceptual.
+              - listitem [ref=e304]:
+                - generic [ref=e305]:
+                  - generic [ref=e306]: Includes entity
+                  - 'link "Open entity: Theaster Gates" [ref=e307] [cursor=pointer]':
+                    - /url: /entity/theaster-gates
+                    - text: Theaster Gates
+                - paragraph [ref=e311]: Theaster Gates se sitúa historiográficamente en relación con Arte conceptual.
+              - listitem [ref=e312]:
+                - generic [ref=e313]:
+                  - generic [ref=e314]: Includes entity
+                  - 'link "Open entity: One and Three Chairs" [ref=e315] [cursor=pointer]':
+                    - /url: /entity/obra-de-arte-en-el-tiempo
+                    - text: One and Three Chairs
+                - paragraph [ref=e319]: One and Three Chairs se sitúa historiográficamente en relación con Arte conceptual.
+              - listitem [ref=e320]:
+                - generic [ref=e321]:
+                  - generic [ref=e322]: Includes entity
+                  - 'link "Open entity: Shibboleth" [ref=e323] [cursor=pointer]':
+                    - /url: /entity/shibboleth
+                    - text: Shibboleth
+                - paragraph [ref=e327]: Shibboleth se sitúa historiográficamente en relación con Arte conceptual.
+              - listitem [ref=e328]:
+                - generic [ref=e329]:
+                  - generic [ref=e330]: Includes entity
+                  - 'link "Open entity: Tropicália" [ref=e331] [cursor=pointer]':
+                    - /url: /entity/tropicalia-obra
+                    - text: Tropicália
+                - paragraph [ref=e335]: Tropicália se sitúa historiográficamente en relación con Arte conceptual.
+            - button "Show All" [ref=e336] [cursor=pointer]
+      - generic [ref=e337]:
+        - paragraph [ref=e339]: Sources
+        - list [ref=e340]:
+          - listitem [ref=e341]:
+            - generic [ref=e342]:
+              - generic [ref=e343]: Website
+              - generic [ref=e344]:
+                - strong [ref=e345]: Conceptual Art
+                - text: (Tate )
+            - paragraph [ref=e349]: Institutional or curatorial reference for movement context.

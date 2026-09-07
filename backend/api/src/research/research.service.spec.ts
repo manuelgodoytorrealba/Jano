@@ -35,6 +35,7 @@ describe('ResearchService', () => {
     researchEvidence: { upsert: jest.fn() },
   };
   const prisma = {
+    entityTypeDefinition: { findUnique: jest.fn().mockResolvedValue({ status: 'ACTIVE', baseKind: 'WORK' }) },
     $transaction: jest.fn(async (callback: (client: typeof tx) => Promise<unknown>) =>
       callback(tx),
     ),
@@ -105,6 +106,7 @@ describe('ResearchService', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    prisma.entityTypeDefinition.findUnique.mockResolvedValue({ status: 'ACTIVE', baseKind: 'WORK' });
     prisma.$transaction.mockImplementation(async (callback) => callback(tx));
     prisma.relation.findMany.mockResolvedValue([]);
     service = new ResearchService(

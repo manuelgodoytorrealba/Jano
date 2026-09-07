@@ -1,0 +1,2 @@
+const {PrismaService}=require('../src/prisma/prisma.service');
+(async()=>{const d=new PrismaService(); const m=['entity','relation','canonicalAssertion','sourceRef','citation','researchFindingProposal','researchEvidenceDecision','researchProposalDecision']; const out={}; for(const k of m){try{out[k]=await d[k].count()}catch(e){out[k]=e.code||e.message}} console.log(JSON.stringify(out)); await d.onModuleDestroy()})()

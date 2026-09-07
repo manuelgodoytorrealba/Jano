@@ -1,0 +1,2 @@
+const {PrismaService}=require('../src/prisma/prisma.service');
+(async()=>{const d=new PrismaService(); const ids=['cmtrfzh8f0002ggss3l8fbimr','cmtrfzh8l0005ggssxy59x3dq','cmtrfzh8o0008ggssj8967dxg','cmtrfzh8q000bggssmtkw478h','cmtrfzh8s000eggsst7avyesy']; const p=await d.researchFindingProposal.findMany({where:{id:{in:ids}},include:{evidence:{include:{evidence:{include:{source:true}}}},decisions:true}}); console.log(JSON.stringify(p,null,2)); const a=await d.canonicalAssertion.findMany({where:{entityId:{in:[]}}}); await d.onModuleDestroy()})()

@@ -94,6 +94,15 @@ almacenarse como `LibraryMaterialVersion` antes de llamar al preparador PDF; `Li
 no descarga PDFs arbitrariamente. Las respuestas HTTP 403 se registran como acceso denegado/manual y las
 429 se reintentan con backoff, `Retry-After`, cache por URL y un límite finito.
 
+Source Acquisition V2 separa disponibilidad técnica y calidad documental antes de la preparación.
+Reutiliza versiones disponibles, conserva historial/cooldown por dominio y busca únicamente alternativas
+públicas con procedencia institucional explícita. Una alternativa conserva su propia Source; nunca
+sustituye la identidad bibliográfica del original. Los bytes PDF se adquieren y almacenan antes de la
+extracción existente. Los checkpoints y perfiles operativos viven en el almacenamiento privado de Research,
+sin modificar Evidence, promoción ni revisión humana. Las tasas de adquisición, rendimiento de conocimiento
+y efectividad total se reportan separadas; preparar texto no demuestra efectividad semántica.
+El contrato operativo y sus límites están en [Source Acquisition V2](../source-acquisition-v2.md).
+
 ## Tipos de entrada y disponibilidad actual
 
 | Entrada                     | Tratamiento editorial                                                   | Disponibilidad actual                                                                |

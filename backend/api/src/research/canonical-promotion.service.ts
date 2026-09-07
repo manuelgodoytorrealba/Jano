@@ -9,6 +9,7 @@ export type CanonicalPromotionOperation = {
   sourceId: string;
   evidenceId: string;
   excerptId: string;
+  sourceRefId?: string;
   quote: string;
   proposition: string;
   dimension: string;
@@ -42,7 +43,12 @@ export class CanonicalPromotionService {
           evidence.libraryExcerptId !== operation.excerptId
         )
           throw new Error(`EVIDENCE_PROVENANCE_MISMATCH:${operation.evidenceId}`);
-        const sourceRef =
+        const sourceRef = operation.sourceRefId
+          ? await tx.sourceRef.findFirst({
+              where: { id: operation.sourceRefId, entityId: operation.entityId, sourceId: operation.sourceId },
+              select: { id: true },
+            })
+          :
           operation.kind === 'PROVENANCE_RELATION'
             ? await tx.sourceRef.findFirst({
                 where: { entityId: operation.entityId, sourceId: operation.sourceId },

@@ -1,3 +1,4 @@
+import { RecordEvidenceDecisionDto } from './dto/record-evidence-decision.dto';
 import {
   Body,
   Controller,
@@ -77,6 +78,16 @@ export class ResearchController {
     private readonly drafts: ResearchDraftService,
     private readonly assistant: ResearchSectionAssistantService,
   ) {}
+
+  @Post(':id/evidence-decisions')
+  recordEvidenceDecision(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Body() dto: RecordEvidenceDecisionDto) {
+    return this.service.recordEvidenceDecision(id, req.user.userId, dto);
+  }
+
+  @Get(':id/review-decisions')
+  readReviewDecisions(@Param('id') id: string) {
+    return this.service.readReviewDecisions(id);
+  }
 
   @Get()
   list(@Req() req: AuthenticatedRequest) {

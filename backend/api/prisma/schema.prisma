@@ -878,6 +878,7 @@ model SourceRefTranslation {
 }
 
 model ResearchProject {
+  evidenceDecisions ResearchEvidenceDecision[]
   id            String                @id @default(cuid())
   title         String
   ownerId       String
@@ -1139,7 +1140,38 @@ model ResearchProjectCitation {
   @@index([projectId, createdAt])
 }
 
+enum ResearchEvidenceDecisionAction {
+  APPROVE_CLAIM
+  ADDITIONAL_PROVENANCE
+  DEFER
+  REJECT_SOURCE_CONTEXT
+  REJECT_TARGET_MISMATCH
+  REJECT_INSUFFICIENT_SUPPORT
+  SEMANTIC_DUPLICATE
+}
+
+model ResearchEvidenceDecision {
+  id String @id @default(cuid())
+  projectId String
+  evidenceId String
+  logicalReviewId String
+  reviewerId String
+  decision ResearchEvidenceDecisionAction
+  reason String?
+  payload Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project ResearchProject @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  evidence ResearchEvidence @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+  reviewer User @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+  @@unique([projectId, logicalReviewId])
+  @@index([projectId])
+  @@index([evidenceId])
+  @@index([reviewerId])
+}
+
 model ResearchEvidence {
+  reviewDecisions ResearchEvidenceDecision[]
   id               String   @id @default(cuid())
   projectId        String
   sourceId         String
@@ -1610,6 +1642,7 @@ model PeriodDetailsTranslation {
 }
 
 model User {
+  evidenceDecisions ResearchEvidenceDecision[]
   id              String        @id @default(cuid())
   email           String        @unique
   passwordHash    String
