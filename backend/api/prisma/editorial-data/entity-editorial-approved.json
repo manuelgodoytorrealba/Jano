@@ -1,6 +1,6 @@
 {
   "source": "development",
-  "rowCount": 807,
+  "rowCount": 800,
   "rows": [
     {
       "slug": "abaporu",
@@ -2521,18 +2521,6 @@
       "summaryEn": "Double Plot is a work by Otobong Nkanga dated 2018. Associated with Conceptual art, it invites reflection on how a work can create relationships among material, space, and meaning without being reduced to a single reading.",
       "essayEn": "## A work open to several readings\n\nDouble Plot by [[otobong-nkanga|Otobong Nkanga]] belongs to [[arte-conceptual|Conceptual art]]. The title announces a doubling or overlapping of plots and directs attention to the relationships a work establishes among its elements.\n\nIts importance lies in keeping interpretation open without making it arbitrary. Conceptual art does not depend only on a recognisable object; it can also organise questions about how meaning is constructed and shared.",
       "excerptEn": "Double Plot is a work by Otobong Nkanga dated 2018. Associated with Conceptual art, it invites reflection on how a work can create relationships among material, space, and meaning without being reduced to a single reading."
-    },
-    {
-      "slug": "_draft-b358f61f-dce5-489e-8b19-d143ef7f57aa",
-      "type": "CONCEPT",
-      "summaryEs": "El periodo en el cual una mujer se convierte en madre",
-      "essayEs": null,
-      "summaryEsTranslation": "El periodo en el cual una mujer se convierte en madre",
-      "essayEsTranslation": "## Contexto\n\nMaternidad se presenta en JANO como una pregunta transversal de lectura, no como una etiqueta que vuelve equivalentes todas sus apariciones. La ficha evita convertir una relación editorial en una afirmación biográfica o histórica más precisa de lo que permiten los datos conservados.\n\n## Relaciones de lectura\n\nHow we would give birth mantiene una relación explícita con esta entidad.\n\n## Cómo continuar\n\nEl recorrido debe continuar desde las conexiones concretas de la ficha y sus fuentes. Cada relación responde a una razón visible; cuando una interpretación necesite ir más allá de esos datos, deberá incorporarse mediante revisión editorial y evidencia atribuible.",
-      "excerptEs": "El periodo en el cual una mujer se convierte en madre",
-      "summaryEn": "Maternidad is a transversal reading concept in JANO. It connects works and cultural contexts through explicit relations, allowing comparison while preserving the differences between periods, media, and uses; current paths include How we would give birth.",
-      "essayEn": null,
-      "excerptEn": null
     },
     {
       "slug": "duelo",
@@ -9469,78 +9457,6 @@
       "summaryEn": "Wassily Kandinsky (1866–1944) is a cultural figure whose JANO record is organised around documented works, contexts, and historical associations, including Composición VIII. These links provide entry points to the practices and debates in which the figure took part.",
       "essayEn": null,
       "excerptEn": null
-    },
-    {
-      "slug": "_wave002-02ab0af431ef65b2",
-      "type": "PERSON",
-      "summaryEs": "John Cage aparece citado en una fuente del Black Mountain College Museum + Arts Center en el contexto de un acontecimiento que reunió música, cine, danza, sonidos y vida cotidiana.",
-      "essayEs": "## Un acontecimiento expandido\n\nUna fuente del Black Mountain College Museum + Arts Center cita a John Cage hablando sobre la relación entre música y budismo zen mientras se proyectaba una película, Merce bailaba, sonaba un piano preparado, había silbidos y se servían cafés.\n\nEl episodio reúne música, movimiento, ruido y acciones cotidianas en una misma situación.",
-      "summaryEsTranslation": "John Cage aparece citado en una fuente del Black Mountain College Museum + Arts Center en el contexto de un acontecimiento que reunió música, cine, danza, sonidos y vida cotidiana.",
-      "essayEsTranslation": "## Un acontecimiento expandido\n\nUna fuente del Black Mountain College Museum + Arts Center cita a John Cage hablando sobre la relación entre música y budismo zen mientras se proyectaba una película, Merce bailaba, sonaba un piano preparado, había silbidos y se servían cafés.\n\nEl episodio reúne música, movimiento, ruido y acciones cotidianas en una misma situación.",
-      "excerptEs": "John Cage aparece citado en una fuente del Black Mountain College Museum + Arts Center en el contexto de un acontecimiento que reunió música, cine, danza, sonidos y vida cotidiana.",
-      "summaryEn": "John Cage is cited in a Black Mountain College Museum + Arts Center source in the context of an event that brought together music, film, dance, sounds, and everyday life.",
-      "essayEn": "## An expanded event\n\nA Black Mountain College Museum + Arts Center source quotes John Cage speaking about the relationship between music and Zen Buddhism while a film was shown, Merce danced, a prepared piano was played, whistles sounded, and coffee was served.\n\nThe episode brings music, movement, noise, and everyday actions together in one situation.",
-      "excerptEn": "John Cage is cited in a Black Mountain College Museum + Arts Center source in the context of an event that brought together music, film, dance, sounds, and everyday life."
-    },
-    {
-      "slug": "_wave002-2bb9a92d7a020f5b",
-      "type": "PERSON",
-      "summaryEs": "Lucy Lippard creó Six Years, una publicación que reunió escritos sobre el desarrollo del arte conceptual y ayudó a catalogar y describir sus obras, artistas y colectivos.",
-      "essayEs": "## Escribir sobre el conceptualismo\n\nLucy Lippard creó Six Years. El Walker Art Center describe la publicación como una compilación de sus escritos que catalogó y describió el desarrollo del arte conceptual y presentó a los lectores obras de artistas y colectivos.",
-      "summaryEsTranslation": "Lucy Lippard creó Six Years, una publicación que reunió escritos sobre el desarrollo del arte conceptual y ayudó a catalogar y describir sus obras, artistas y colectivos.",
-      "essayEsTranslation": "## Escribir sobre el conceptualismo\n\nLucy Lippard creó Six Years. El Walker Art Center describe la publicación como una compilación de sus escritos que catalogó y describió el desarrollo del arte conceptual y presentó a los lectores obras de artistas y colectivos.",
-      "excerptEs": "Lucy Lippard creó Six Years, una publicación que reunió escritos sobre el desarrollo del arte conceptual y ayudó a catalogar y describir sus obras, artistas y colectivos.",
-      "summaryEn": "Lucy Lippard created Six Years, a publication that gathered writings on the development of Conceptual art and helped catalogue and describe its works, artists, and collectives.",
-      "essayEn": "## Writing about Conceptual art\n\nLucy Lippard created Six Years. The Walker Art Center describes the publication as a compilation of her writings that catalogued and described the development of Conceptual art and introduced readers to the work of artists and collectives.",
-      "excerptEn": "Lucy Lippard created Six Years, a publication that gathered writings on the development of Conceptual art and helped catalogue and describe its works, artists, and collectives."
-    },
-    {
-      "slug": "_wave002-397bedf198c65b9d",
-      "type": "ARTIST",
-      "summaryEs": "Judith Baca es pintora, muralista y académica que trabaja de forma colaborativa con comunidades para crear lugares de memoria pública. El Smithsonian American Art Museum relaciona sus iniciativas con poblaciones históricamente marginadas.",
-      "essayEs": "## Comunidad y memoria pública\n\nJudith Baca es pintora, muralista y académica. El testimonio conservado por el Smithsonian American Art Museum describe su trabajo colaborativo con comunidades para crear lugares de memoria pública.\n\nLa misma fuente relaciona sus iniciativas con mujeres, trabajadores pobres, jóvenes, personas mayores, comunidades LGBTQ+ y comunidades inmigrantes. En 1977, Baca también relató que su equipo rechazó el diseño de *Uprising of the Mujeres*; esa experiencia forma parte del contexto documentado de su práctica mural.",
-      "summaryEsTranslation": "Judith Baca es pintora, muralista y académica; trabaja de forma colaborativa con comunidades para crear lugares de memoria pública. Sus iniciativas atienden especialmente a poblaciones históricamente marginadas y convierten el mural en una práctica social.",
-      "essayEsTranslation": "## Contexto\n\nJudith Baca trabaja con comunidades para crear sitios de memoria pública. El testimonio conservado del Smithsonian American Art Museum relaciona esa práctica con mujeres, trabajadores pobres, jóvenes, personas mayores, comunidades LGBTQ+ y comunidades inmigrantes.\n\nSu trabajo muestra que un mural puede ser simultáneamente una imagen, un proceso colectivo y un lugar donde una comunidad hace visible su propia historia. La dimensión pública no es un añadido a la obra: forma parte de su método y de su significado.",
-      "excerptEs": "Judith Baca es pintora, muralista y académica; trabaja de forma colaborativa con comunidades para crear lugares de memoria pública. Sus iniciativas atienden especialmente a poblaciones históricamente marginadas y convierten el mural en una práctica social.",
-      "summaryEn": "Judith Baca is a painter, muralist, and scholar who works collaboratively with communities to create sites of public memory. The Smithsonian American Art Museum relates her initiatives to historically marginalized populations.",
-      "essayEn": "## Community and public memory\n\nJudith Baca is a painter, muralist, and scholar. A testimony preserved by the Smithsonian American Art Museum describes her collaborative work with communities to create sites of public memory.\n\nThe same source relates her initiatives to women, the working poor, youth, older people, LGBTQ+ communities, and immigrant communities. In 1977, Baca also recounted that her team rejected the design for *Uprising of the Mujeres*; that experience is part of the documented context of her mural practice.",
-      "excerptEn": "Judith Baca is a painter, muralist, and scholar who works collaboratively with communities to create sites of public memory. The Smithsonian American Art Museum relates her initiatives to historically marginalized populations."
-    },
-    {
-      "slug": "_wave002-499508459a2cf989",
-      "type": "ARTIST",
-      "summaryEs": "Jim Hodges es un artista que, según un recuerdo citado por Whitney, dejó temporalmente la pintura por el dibujo al buscar una voz propia en los años ochenta.",
-      "essayEs": "## Del cuadro al dibujo\n\nSegún un recuerdo de Jim Hodges citado por Whitney, en los años ochenta le costaba encontrar su propia voz en la pintura. Dejó temporalmente los lienzos y se volvió hacia el dibujo, especialmente el carbón y el papel.",
-      "summaryEsTranslation": "Jim Hodges es un artista que, según un recuerdo citado por Whitney, dejó temporalmente la pintura por el dibujo al buscar una voz propia en los años ochenta.",
-      "essayEsTranslation": "## Del cuadro al dibujo\n\nSegún un recuerdo de Jim Hodges citado por Whitney, en los años ochenta le costaba encontrar su propia voz en la pintura. Dejó temporalmente los lienzos y se volvió hacia el dibujo, especialmente el carbón y el papel.",
-      "excerptEs": "Jim Hodges es un artista que, según un recuerdo citado por Whitney, dejó temporalmente la pintura por el dibujo al buscar una voz propia en los años ochenta.",
-      "summaryEn": "Jim Hodges is an artist who, in a recollection quoted by the Whitney, temporarily left painting for drawing while searching for his own voice in the 1980s.",
-      "essayEn": "## From painting to drawing\n\nIn a recollection by Jim Hodges quoted by the Whitney, he describes struggling to find his own voice in painting during the 1980s. He temporarily set aside his canvases and turned to drawing, especially charcoal and paper.",
-      "excerptEn": "Jim Hodges is an artist who, in a recollection quoted by the Whitney, temporarily left painting for drawing while searching for his own voice in the 1980s."
-    },
-    {
-      "slug": "_wave002-807694c624b3ebf6",
-      "type": "ARTIST",
-      "summaryEs": "Según Walker, Mario García Torres investiga la historia del arte conceptual para recuperar narrativas poco conocidas. La exposición Illusion Brought Me Here lo presenta como investigador y narrador.",
-      "essayEs": "## Investigación y narración\n\nSegún Walker, la obra de Mario García Torres investiga la historia del arte conceptual para recuperar narrativas poco conocidas. Walker presenta a García Torres como investigador y narrador en la exposición Illusion Brought Me Here.",
-      "summaryEsTranslation": "Según Walker, Mario García Torres investiga la historia del arte conceptual para recuperar narrativas poco conocidas. La exposición Illusion Brought Me Here lo presenta como investigador y narrador.",
-      "essayEsTranslation": "## Investigación y narración\n\nSegún Walker, la obra de Mario García Torres investiga la historia del arte conceptual para recuperar narrativas poco conocidas. Walker presenta a García Torres como investigador y narrador en la exposición Illusion Brought Me Here.",
-      "excerptEs": "Según Walker, Mario García Torres investiga la historia del arte conceptual para recuperar narrativas poco conocidas. La exposición Illusion Brought Me Here lo presenta como investigador y narrador.",
-      "summaryEn": "According to Walker, Mario García Torres investigates the history of Conceptual art to recover little-known narratives. The exhibition Illusion Brought Me Here presents him as a researcher and storyteller.",
-      "essayEn": "## Research and storytelling\n\nAccording to Walker, Mario García Torres’s work investigates the history of Conceptual art to recover little-known narratives. Walker presents García Torres as a researcher and storyteller in the exhibition Illusion Brought Me Here.",
-      "excerptEn": "According to Walker, Mario García Torres investigates the history of Conceptual art to recover little-known narratives. The exhibition Illusion Brought Me Here presents him as a researcher and storyteller."
-    },
-    {
-      "slug": "_wave002-9e02455aa003ca73",
-      "type": "TEXT",
-      "summaryEs": "Six Years es un trabajo perteneciente al periodo del arte conceptual. El Walker Art Center lo vincula con escritos de Lucy Lippard publicados en 1973.",
-      "essayEs": "## Un texto del arte conceptual\n\nSix Years pertenece al periodo del arte conceptual. El Walker Art Center lo describe en el contexto de los escritos de Lucy Lippard, cuya publicación culminó en 1973 con la aparición de esta compilación.",
-      "summaryEsTranslation": "Six Years es un trabajo perteneciente al periodo del arte conceptual. El Walker Art Center lo vincula con escritos de Lucy Lippard publicados en 1973.",
-      "essayEsTranslation": "## Un texto del arte conceptual\n\nSix Years pertenece al periodo del arte conceptual. El Walker Art Center lo describe en el contexto de los escritos de Lucy Lippard, cuya publicación culminó en 1973 con la aparición de esta compilación.",
-      "excerptEs": "Six Years es un trabajo perteneciente al periodo del arte conceptual. El Walker Art Center lo vincula con escritos de Lucy Lippard publicados en 1973.",
-      "summaryEn": "Six Years is a work belonging to the period of Conceptual art. The Walker Art Center links it to Lucy Lippard’s writings released in 1973.",
-      "essayEn": "## A text from Conceptual art\n\nSix Years belongs to the period of Conceptual art. The Walker Art Center describes it in the context of Lucy Lippard’s writings, whose publication culminated in 1973 with the release of this compendium.",
-      "excerptEn": "Six Years is a work belonging to the period of Conceptual art. The Walker Art Center links it to Lucy Lippard’s writings released in 1973."
     },
     {
       "slug": "weimar",

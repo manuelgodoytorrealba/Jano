@@ -27,6 +27,7 @@ async function exportRows() {
     LEFT JOIN "EntityTranslation" es ON es."entityId" = e.id AND es.locale = 'es'
     LEFT JOIN "EntityTranslation" en ON en."entityId" = e.id AND en.locale = 'en'
     WHERE e.status = 'PUBLISHED'
+      AND e.slug NOT LIKE '\\_%' ESCAPE '\\'
       AND (
         nullif(e.summary, '') IS NOT NULL OR nullif(e.content, '') IS NOT NULL OR
         nullif(es."shortDescription", '') IS NOT NULL OR nullif(es.essay, '') IS NOT NULL OR
