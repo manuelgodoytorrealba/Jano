@@ -60,6 +60,15 @@
         animation: jano-boot-pulse 1.2s ease-in-out infinite alternate;
       }
 
+      /* Safari samples fixed backgrounds before Angular replaces the boot screen. */
+      @media (max-width: 860px) {
+        html,
+        body,
+        .jano-boot {
+          background: #19231d;
+        }
+      }
+
       @keyframes jano-boot-pulse {
         to {
           opacity: 0.5;
