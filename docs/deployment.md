@@ -171,6 +171,33 @@ docker compose -f infra/docker-compose.prod.yml run --rm migrate npx prisma migr
 
 `migrate deploy` aplica migraciones pendientes, pero no genera Prisma Client ni detecta drift completo. La generación pertenece al build de la imagen. El status y la revisión del SQL son gates independientes.
 
+### 2.4 Importación editorial aprobada
+
+La migración de `EditorialRelationJustification` crea la estructura, pero las filas editoriales aprobadas se transfieren mediante el artefacto versionado en `backend/api/prisma/editorial-data`. Después de `prod.sh deploy`, y con la release ya saludable, ejecutar desde el checkout de la misma release:
+
+```bash
+docker compose --env-file infra/.env.production \
+  -f infra/docker-compose.prod.yml \
+  run --rm --no-deps migrate \
+  node /app/backend/api/prisma/editorial-data/editorial-relation-justifications-transfer.cjs import --dry-run
+
+docker compose --env-file infra/.env.production \
+  -f infra/docker-compose.prod.yml \
+  run --rm --no-deps migrate \
+  node /app/backend/api/prisma/editorial-data/editorial-relation-justifications-transfer.cjs import
+```
+
+El primer comando debe confirmar que las 1.928 filas resuelven contra relaciones publicadas. El segundo es idempotente: inserta o actualiza por `relationId + locale`, conserva los metadatos públicos y no modifica entidades, relaciones canónicas ni fuentes. Verificar después:
+
+```bash
+docker compose --env-file infra/.env.production \
+  -f infra/docker-compose.prod.yml exec -T db \
+  psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c \
+  'SELECT status, locale, COUNT(*) FROM "EditorialRelationJustification" GROUP BY status, locale ORDER BY status, locale;'
+```
+
+El resultado esperado es `APPROVED|en|964` y `APPROVED|es|964`. No ejecutar los scripts de generación de batches contra producción.
+
 ### 2.5 Fallo de migración
 
 1. Mantener backend detenido y mantenimiento activo.
