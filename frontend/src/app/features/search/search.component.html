@@ -14,6 +14,20 @@
       }
     </header>
 
+    <form class="search-query-form" (submit)="submitSearch($event, searchInput.value)">
+      <label class="sr-only" for="search-query">{{ i18n.t('search.headerPlaceholder') }}</label>
+      <input
+        #searchInput
+        id="search-query"
+        class="ds-input search-query-form__input"
+        type="search"
+        [value]="vm.query"
+        [placeholder]="i18n.t('search.headerPlaceholder')"
+        [attr.aria-label]="i18n.t('search.headerPlaceholder')"
+      />
+      <button type="submit" class="search-query-form__submit">{{ i18n.t('search.title') }}</button>
+    </form>
+
     @if (vm.error) {
       <p class="search-state" role="alert">{{ i18n.t('search.error') }}</p>
     } @else if (!vm.query) {

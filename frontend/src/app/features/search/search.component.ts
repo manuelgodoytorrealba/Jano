@@ -84,6 +84,12 @@ export class SearchComponent {
     void this.router.navigate(['/entity', result.slug]);
   }
 
+  submitSearch(event: Event, query: string): void {
+    event.preventDefault();
+    const value = query.trim();
+    void this.router.navigate(['/search'], value ? { queryParams: { q: value } } : undefined);
+  }
+
   setFilter(filter: SearchFilter): void {
     this.activeFilter.set(filter);
   }
