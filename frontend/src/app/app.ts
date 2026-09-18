@@ -71,7 +71,7 @@ export class App {
     effect(() => {
       const isMobile =
         typeof window !== 'undefined' && window.matchMedia('(max-width: 860px)').matches;
-      const themeColor = isMobile ? '#231d1b' : '#0a0a0a';
+      const themeColor = isMobile ? '#19231d' : '#0a0a0a';
       this.setThemeColor(themeColor);
     });
   }
