@@ -198,6 +198,24 @@ docker compose --env-file infra/.env.production \
 
 El resultado esperado es `APPROVED|en|964` y `APPROVED|es|964`. No ejecutar los scripts de generación de batches contra producción.
 
+### 2.5 Sincronización de resumen y ensayo editorial
+
+Los resúmenes y ensayos públicos no viajan con una migración de Prisma. El artefacto `backend/api/prisma/editorial-data/entity-editorial-approved.json` contiene la instantánea editorial publicada de desarrollo. Tras desplegar la imagen que lo contiene, validar e importar:
+
+```bash
+docker compose --env-file infra/.env.production \
+  -f infra/docker-compose.prod.yml \
+  run --rm --no-deps migrate \
+  node /app/backend/api/prisma/editorial-data/entity-editorial-transfer.cjs import --dry-run
+
+docker compose --env-file infra/.env.production \
+  -f infra/docker-compose.prod.yml \
+  run --rm --no-deps migrate \
+  node /app/backend/api/prisma/editorial-data/entity-editorial-transfer.cjs import
+```
+
+El importador exige que todas las entidades del artefacto existan como publicadas en producción; si falta alguna, aborta sin aplicar cambios. Sólo actualiza `Entity.summary`, `Entity.content` y los campos editoriales de las traducciones `es`/`en`. No crea, elimina ni modifica identidad, relaciones canónicas, assertions ni fuentes.
+
 ### 2.5 Fallo de migración
 
 1. Mantener backend detenido y mantenimiento activo.
