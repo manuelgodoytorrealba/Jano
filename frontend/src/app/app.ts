@@ -72,6 +72,11 @@ export class App {
       const isMobile =
         typeof window !== 'undefined' && window.matchMedia('(max-width: 860px)').matches;
       const themeColor = isMobile ? '#19231d' : '#0a0a0a';
+      if (isMobile) {
+        this.setThemeColor('#111b16');
+        requestAnimationFrame(() => this.setThemeColor(themeColor));
+        return;
+      }
       this.setThemeColor(themeColor);
     });
   }
