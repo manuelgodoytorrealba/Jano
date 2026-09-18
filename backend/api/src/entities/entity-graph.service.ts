@@ -9,6 +9,7 @@ import {
 import { normalizeLocale, resolveEntityTranslation } from './entity-translation.resolver';
 import {
   localizedInclude,
+  editorialRelationJustification,
   publicRelationJustification,
   relationDisplayLabel,
   relationLabel,
@@ -147,6 +148,10 @@ export class EntityGraphService {
           },
         },
         translations: localizedInclude(locale),
+        editorialJustifications: {
+          where: { status: 'APPROVED' },
+          orderBy: { locale: 'asc' },
+        },
       },
     });
 
@@ -187,9 +192,11 @@ export class EntityGraphService {
       label: relationDisplayLabel(relation, locale),
       directed: canonicalRelationDirected(relation),
       weight: relation.weight ?? 1,
-      justification: publicRelationJustification(
-        translationField(relation, locale, 'justification') ?? relation.justification,
-      ),
+      justification:
+        editorialRelationJustification(relation, locale) ??
+        publicRelationJustification(
+          translationField(relation, locale, 'justification') ?? relation.justification,
+        ),
     }));
 
     return {

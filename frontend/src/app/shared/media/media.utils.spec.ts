@@ -57,6 +57,20 @@ describe('media.utils', () => {
     expect(resolveEntityMediaItem(entity, 'explorer3d')?.id).toBe('card-media');
   });
 
+  it('falls back to another resolved slot after the requested image fails', () => {
+    const entity = {
+      type: 'ARTWORK',
+      resolvedMedia: {
+        detail: { id: 'broken-detail', url: 'https://example.com/broken.jpg', role: 'DETAIL' },
+        card: { id: 'working-card', url: 'https://example.com/card.jpg', role: 'CARD' },
+      },
+    };
+
+    expect(resolveEntityMediaItem(entity, 'detail', 'https://example.com/broken.jpg')?.id).toBe(
+      'working-card',
+    );
+  });
+
   it('falls back to media.url when admin data carries an empty displayUrl string', () => {
     expect(
       mediaDisplayUrl({

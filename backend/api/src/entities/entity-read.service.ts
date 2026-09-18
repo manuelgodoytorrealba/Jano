@@ -202,6 +202,10 @@ export class EntityReadService {
           include: {
             relationType: { include: { translations: localizedInclude(locale) } },
             translations: localizedInclude(locale),
+            editorialJustifications: {
+              where: { status: 'APPROVED' },
+              orderBy: { locale: 'asc' },
+            },
             to: {
               include: {
                 translations: localizedInclude(locale),
@@ -223,6 +227,10 @@ export class EntityReadService {
           include: {
             relationType: { include: { translations: localizedInclude(locale) } },
             translations: localizedInclude(locale),
+            editorialJustifications: {
+              where: { status: 'APPROVED' },
+              orderBy: { locale: 'asc' },
+            },
             from: {
               include: {
                 translations: localizedInclude(locale),

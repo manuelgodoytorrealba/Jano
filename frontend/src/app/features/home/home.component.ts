@@ -19,6 +19,7 @@ import { I18nService } from '../../core/i18n/i18n.service';
 import { navigateToAppSearch } from '../../core/search/search-navigation';
 import { EntityDeckComponent } from '../../shared/ui/entity-deck/entity-deck.component';
 import { DeckItem, DeckRailAction } from '../../shared/ui/entity-deck/entity-deck.types';
+import { resolveEntityMediaItem } from '../../shared/media/media.utils';
 
 type HomeLoadState = 'loading' | 'ready' | 'empty' | 'error';
 
@@ -139,8 +140,7 @@ export class HomeComponent {
       description: type.systemType ? this.coreTypeDescription(type.key) : (type.description ?? ''),
       meta: entity?.title ?? type.pluralName,
       cta: `${this.i18n.t('home.viewSelection')} →`,
-      image:
-        entity?.resolvedMedia?.card?.url ?? entity?.resolvedMedia?.hero?.url ?? entity?.image ?? '',
+      image: resolveEntityMediaItem(entity, 'card')?.url ?? entity?.image ?? '',
       routeType: type.key.toLowerCase(),
       ctaRoute: `/entities/${type.key.toLowerCase()}`,
       adminEditRoute: '/admin/entity-types',

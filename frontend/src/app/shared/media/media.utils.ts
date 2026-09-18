@@ -155,8 +155,9 @@ export function selectPrimaryVisualMedia(
 export function resolveEntityMediaItem(
   entity: EntityWithResolvedMedia | null | undefined,
   usage: Exclude<MediaUsage, 'gallery'> = 'card',
+  failedSrc: string | null = null,
 ): ResolvedMediaItem | null {
-  return selectResolvedMediaItem(entity, usage);
+  return selectResolvedMediaItem(entity, usage, failedSrc);
 }
 
 export function resolveEntityMediaGallery(
@@ -281,6 +282,7 @@ export function editorialImageFilter(usage: MediaUsage = 'card'): string {
 function selectResolvedMediaItem(
   entity: EntityWithResolvedMedia | null | undefined,
   usage: Exclude<MediaUsage, 'gallery'>,
+  failedSrc: string | null = null,
 ): ResolvedMediaItem | null {
   const resolved = entity?.resolvedMedia ?? null;
 
@@ -288,13 +290,22 @@ function selectResolvedMediaItem(
     return null;
   }
 
-  const candidates =
-    usage === 'explorer3d'
-      ? [resolved.explorer3d, resolved.card, resolved.primary, resolved.thumbnail]
-      : [resolved[usage]];
+  const candidates = [
+    resolved[usage],
+    resolved.hero,
+    resolved.card,
+    resolved.detail,
+    resolved.thumbnail,
+    resolved.primary,
+  ];
 
   for (const candidate of candidates) {
-    if (candidate && !Array.isArray(candidate) && isRenderableRasterMedia(candidate)) {
+    if (
+      candidate &&
+      !Array.isArray(candidate) &&
+      mediaDisplayUrl(candidate) !== failedSrc &&
+      isRenderableRasterMedia(candidate)
+    ) {
       return candidate;
     }
   }

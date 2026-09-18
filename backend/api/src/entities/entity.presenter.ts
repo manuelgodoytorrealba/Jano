@@ -26,6 +26,7 @@ export type EntityTypedDetailsRecord = {
 type RelationRecord = {
   justification?: string | null;
   translations?: TranslationRecord[] | null;
+  editorialJustifications?: TranslationRecord[] | null;
   relationType: {
     label?: string | null;
     inverseLabel?: string | null;
@@ -36,6 +37,18 @@ type RelationRecord = {
     > | null;
   };
 };
+
+export function editorialRelationJustification(
+  relation: RelationRecord,
+  locale?: string,
+): string | null {
+  const approved = (relation.editorialJustifications ?? []).filter(
+    (item) => item?.status === 'APPROVED',
+  );
+  return publicRelationJustification(
+    translationField({ translations: approved }, locale, 'text'),
+  );
+}
 
 type SourceRecord = {
   title?: string | null;
@@ -190,6 +203,8 @@ export function serializeRelation<T extends RelationRecord>(relation: T, locale?
   const localized = translationField(relation, locale, 'justification');
   const spanish = translationValueForLocale(relation, 'justification', 'es');
   const english = translationValueForLocale(relation, 'justification', 'en');
+  const editorialSpanish = editorialRelationJustification(relation, 'es');
+  const editorialEnglish = editorialRelationJustification(relation, 'en');
   return {
     ...relation,
     type,
@@ -197,9 +212,12 @@ export function serializeRelation<T extends RelationRecord>(relation: T, locale?
     relationTypeLabel: relationDisplayLabel(relation, locale),
     relationTypeInverseLabel: relationDisplayLabel(relation, locale, true),
     directed: canonicalRelationDirected(relation),
-    justification: publicRelationJustification(localized ?? relation.justification),
-    justificationEs: publicRelationJustification(spanish ?? relation.justification),
-    justificationEn: publicRelationJustification(english),
+    justification:
+      editorialRelationJustification(relation, locale) ??
+      publicRelationJustification(localized ?? relation.justification),
+    justificationEs:
+      editorialSpanish ?? publicRelationJustification(spanish ?? relation.justification),
+    justificationEn: editorialEnglish ?? publicRelationJustification(english),
   };
 }
 

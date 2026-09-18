@@ -57,6 +57,13 @@ enum KnowledgeAssertionStatus {
   REJECTED
 }
 
+enum EditorialRelationJustificationStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
 enum CitationStance {
   SUPPORTS
   CONTRADICTS
@@ -396,6 +403,7 @@ model Relation {
   to           Entity                @relation("incoming", fields: [toId], references: [id])
   relationType RelationType          @relation(fields: [relationTypeId], references: [id])
   translations RelationTranslation[]
+  editorialJustifications EditorialRelationJustification[]
   citations    Citation[]            @relation("CitationRelation")
 
   @@unique([fromId, relationTypeId, toId])
@@ -416,6 +424,25 @@ model RelationTranslation {
 
   @@unique([relationId, locale])
   @@index([locale])
+}
+
+model EditorialRelationJustification {
+  id          String                                @id @default(cuid())
+  relationId  String
+  locale      String
+  text        String
+  status      EditorialRelationJustificationStatus @default(DRAFT)
+  claimsUsed  Json?
+  sourcesUsed Json?
+  reviewNote  String?
+  createdAt   DateTime                              @default(now())
+  updatedAt   DateTime                              @updatedAt
+
+  relation Relation @relation(fields: [relationId], references: [id], onDelete: Cascade)
+
+  @@unique([relationId, locale])
+  @@index([relationId])
+  @@index([locale, status])
 }
 
 model RelationType {

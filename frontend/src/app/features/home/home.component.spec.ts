@@ -49,6 +49,9 @@ describe('HomeComponent', () => {
       ctaRoute: '/entities/meme',
     });
 
+    response.next([{ ...memeCard, type: artistType, entity: artistWithoutMedia }]);
+    expect(component.deckItems()[0].image).toBe('');
+
     fixture.destroy();
   });
 });
@@ -67,3 +70,19 @@ const memeCard: PublicHomeEntityTypeCard = {
   },
   entity: null,
 };
+
+const artistType = {
+  ...memeCard.type,
+  key: 'ARTIST',
+  singularName: 'Artist',
+  pluralName: 'Artists',
+  systemType: true,
+} satisfies PublicHomeEntityTypeCard['type'];
+
+const artistWithoutMedia = {
+  id: 'artist-1',
+  type: 'ARTIST',
+  title: 'Artist without media',
+  slug: 'artist-without-media',
+  resolvedMedia: null,
+} satisfies NonNullable<PublicHomeEntityTypeCard['entity']>;

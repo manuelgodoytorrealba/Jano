@@ -13,6 +13,12 @@ Everything built inside JANO must reinforce that vision.
 
 ## Research Studio documentation
 
+For public summary/essay work, also read
+[`docs/editorial-bilingual-policy.md`](docs/editorial-bilingual-policy.md) and
+[`docs/editorial-grounding-recovery-20260909.md`](docs/editorial-grounding-recovery-20260909.md).
+Nonempty bilingual fields are coverage, not verified editorial completion.
+Batch 007 is gated on the grounding recovery; never count pending reviews as PASS.
+
 Before changing Research, Library, Research Knowledge, Research Graph, document processing or AI proposals, read [`docs/architecture/README.md`](docs/architecture/README.md), [`15-research-studio-experience.md`](docs/architecture/15-research-studio-experience.md) and [`16-editorial-pipeline.md`](docs/architecture/16-editorial-pipeline.md). They are the normative product and functional references; domain ownership remains in the linked architecture documents.
 
 Product Principles

@@ -1,0 +1,4 @@
+# Development recovery only: do not run schema migrations during editorial work.
+services:
+  backend:
+    command: ["npm", "run", "start:dev"]

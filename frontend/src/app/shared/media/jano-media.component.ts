@@ -231,7 +231,7 @@ export class JanoMediaComponent implements OnChanges, AfterViewInit {
       return resolveEntityMediaGallery(this.entity)[0] ?? null;
     }
 
-    const media = resolveEntityMediaItem(this.entity, this.usage);
+    const media = resolveEntityMediaItem(this.entity, this.usage, this.failedSrc);
     if (media) {
       return media;
     }
