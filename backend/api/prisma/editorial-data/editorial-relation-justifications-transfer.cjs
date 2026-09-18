@@ -118,8 +118,8 @@ async function importRows() {
       await client.query(
         `
         INSERT INTO "EditorialRelationJustification"
-          ("id", "relationId", "locale", "text", "status", "claimsUsed", "sourcesUsed", "reviewNote")
-        VALUES ($1, $2, $3, $4, 'APPROVED', $5::jsonb, $6::jsonb, $7)
+          ("id", "relationId", "locale", "text", "status", "claimsUsed", "sourcesUsed", "reviewNote", "createdAt", "updatedAt")
+        VALUES ($1, $2, $3, $4, 'APPROVED', $5::jsonb, $6::jsonb, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         ON CONFLICT ("relationId", "locale") DO UPDATE SET
           "text" = EXCLUDED."text",
           "status" = 'APPROVED',
