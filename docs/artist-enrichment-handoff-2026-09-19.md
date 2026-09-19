@@ -39,7 +39,7 @@ npm run frontend:dev
 
 - Frontend: `http://localhost:4200`
 - Backend: `http://localhost:3000`
-- Adminer: `http://localhost:8080`
+- Adminer: `http://localhost:8082`
 
 ## Aplicar el punto de partida editorial
 
@@ -51,7 +51,7 @@ Con la base de datos local levantada:
 
 ```bash
 node scripts/apply-artist-editorial-batches.cjs \
-  | docker exec -i infra-db-1 psql -U jano -d jano -v ON_ERROR_STOP=1
+   | docker compose -f infra/docker-compose.yml exec -T db psql -U jano -d jano -v ON_ERROR_STOP=1
 ```
 
 El script es idempotente para el contenido editorial y valida atómicamente que
