@@ -4,6 +4,7 @@ infra/.env.production
 .deploy/
 .worktrees/
 artifacts/
+backups/jano-handoff-20260919/
 .tools/
 
 # Local AI runtimes and model caches
