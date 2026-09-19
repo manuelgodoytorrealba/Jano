@@ -12,6 +12,8 @@ type MediaLinkOverride = Partial<{
   mediaId: string;
   url: string;
   displayUrl: string;
+  originType: string;
+  storageKey: string;
   canonicalUrl: string | null;
   sourcePageUrl: string | null;
   mimeType: string;
@@ -39,6 +41,8 @@ describe('media.resolver', () => {
       id: overrides.mediaId ?? 'media-1',
       url: overrides.url ?? 'https://example.com/image.jpg',
       displayUrl: overrides.displayUrl ?? overrides.url ?? 'https://example.com/image.jpg',
+      originType: overrides.originType ?? null,
+      storageKey: overrides.storageKey ?? null,
       canonicalUrl: overrides.canonicalUrl ?? null,
       sourcePageUrl: overrides.sourcePageUrl ?? null,
       mimeType: overrides.mimeType ?? 'image/jpeg',
@@ -83,6 +87,22 @@ describe('media.resolver', () => {
     expect(resolved.detail).toBeNull();
     expect(resolved.explorer3d).toBeNull();
     expect(library.coverageSummary.coveredSlots).toEqual([]);
+  });
+
+  it('resolves restored uploads to same-origin paths', () => {
+    const resolved = buildResolvedMedia({
+      type: 'ARTWORK',
+      mediaLinks: [
+        createLink({
+          originType: 'INGESTED',
+          storageKey: 'media/ingested/red-house/master.jpg',
+          url: 'https://jano.manuelgodoy.eu/uploads/media/ingested/red-house/master.jpg',
+        }),
+      ],
+    });
+
+    expect(resolved.primary?.url).toBe('/uploads/media/ingested/red-house/master.jpg');
+    expect(resolved.primary?.displayUrl).toBe('/uploads/media/ingested/red-house/master.jpg');
   });
 
   it('falls back to legacy primary when no explicit usage role exists', () => {

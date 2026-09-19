@@ -1,3 +1,5 @@
+import { resolveStoredMediaUrl } from '../common/media-url.util';
+
 type MediaLike = {
   id: string;
   url: string;
@@ -517,14 +519,24 @@ export function toResolvedMediaItem(
   const crop = cropPresetForSlot(link, slotKey);
   const assetFocalX = normalizeFocal(link.media.focalX);
   const assetFocalY = normalizeFocal(link.media.focalY);
+  const localUrl = resolveStoredMediaUrl(
+    link.media.originType,
+    link.media.storageKey,
+    link.media.url,
+  );
+  const localDisplayUrl = resolveStoredMediaUrl(
+    link.media.originType,
+    link.media.storageKey,
+    link.media.displayUrl,
+  );
 
   return {
     id: link.media.id,
-    url: link.media.url,
+    url: localUrl ?? link.media.url,
     originType: link.media.originType ?? null,
     derivedFromMediaId: link.media.derivedFromMediaId ?? null,
     canonicalUrl: link.media.canonicalUrl ?? null,
-    displayUrl: link.media.displayUrl ?? null,
+    displayUrl: localDisplayUrl,
     sourcePageUrl: link.media.sourcePageUrl ?? null,
     storageKey: link.media.storageKey ?? null,
     originalFilename: link.media.originalFilename ?? null,

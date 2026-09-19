@@ -106,6 +106,13 @@ export type MediaPresentation = {
 };
 
 export function mediaDisplayUrl(media: MediaLike | null | undefined): string | null {
+  if (
+    (media?.originType === 'UPLOAD' || media?.originType === 'INGESTED') &&
+    media.storageKey?.trim()
+  ) {
+    return `/uploads/${media.storageKey.replace(/^\/+/, '')}`;
+  }
+
   const displayUrl = normalizeMediaUrlValue(media?.displayUrl);
   const url = normalizeMediaUrlValue(media?.url);
 

@@ -14,6 +14,22 @@ export function buildPublicUploadUrl(storageKey: string, mediaPublicBaseUrl: str
     : `/uploads/${normalizedKey}`;
 }
 
+export function buildLocalUploadPath(storageKey: string): string {
+  return `/uploads/${storageKey.replace(/^\/+/, '')}`;
+}
+
+export function resolveStoredMediaUrl(
+  originType: string | null | undefined,
+  storageKey: string | null | undefined,
+  fallbackUrl: string | null | undefined,
+): string | null {
+  if ((originType === 'UPLOAD' || originType === 'INGESTED') && storageKey?.trim()) {
+    return buildLocalUploadPath(storageKey);
+  }
+
+  return fallbackUrl?.trim() || null;
+}
+
 export function normalizeStoredUploadUrl(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
   if (!trimmed) {

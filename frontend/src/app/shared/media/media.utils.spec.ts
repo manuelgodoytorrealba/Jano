@@ -117,6 +117,16 @@ describe('media.utils', () => {
     ).toBe('/uploads/media/uploaded-file.jpg?size=large');
   });
 
+  it('rewrites restored uploaded media from production URLs using its storage key', () => {
+    expect(
+      mediaDisplayUrl({
+        originType: 'INGESTED',
+        storageKey: 'media/ingested/red-house/master.jpg',
+        url: 'https://jano.manuelgodoy.eu/uploads/media/ingested/red-house/master.jpg',
+      }),
+    ).toBe('/uploads/media/ingested/red-house/master.jpg');
+  });
+
   it('builds a crop-first presentation model that public renderers can reuse', () => {
     expect(
       resolveMediaPresentation(
