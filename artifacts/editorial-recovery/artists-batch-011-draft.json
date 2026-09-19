@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_011",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Eleventh five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "donald-judd",
+      "entityId": "cmsvvxisc00sm85sjkrvyorwa",
+      "sourceUrls": ["https://www.moma.org/collection/artists/2948"],
+      "claims": ["Donald Judd, 1928–1994", "American artist and critic", "Specific Objects and real space", "industrial materials, modular form and Minimalism"],
+      "relationsUsed": ["minimalismo", "sin-titulo-judd"],
+      "after": {
+        "summary_es": "Donald Judd (1928–1994) desplazó la escultura hacia objetos específicos que se relacionan directamente con el espacio real. Sus volúmenes modulares, realizados con materiales industriales y formas unificadas, hacen que escala, repetición y arquitectura sean parte inseparable de la obra.",
+        "essay_es": "## El objeto en el espacio real\n\nJudd cuestionó la necesidad de que una obra representara algo o expresara una interioridad del artista. Sus estructuras rectilíneas no ocultan sus materiales ni su modo de fabricación: ocupan el espacio y obligan a percibir sus proporciones, intervalos y relaciones con la pared o el suelo.\n\n[[sin-titulo-judd|Sin título]] articula esa búsqueda dentro del [[minimalismo|minimalismo]]. La repetición modular no es una fórmula decorativa, sino una manera de hacer visible cómo el objeto organiza el espacio que comparte con el espectador.",
+        "summary_en": "Donald Judd (1928–1994) shifted sculpture toward specific objects that relate directly to real space. His modular volumes, made with industrial materials and unified forms, make scale, repetition, and architecture inseparable from the work.",
+        "essay_en": "## The object in real space\n\nJudd questioned the need for a work to represent something or express the artist’s interiority. His rectilinear structures do not conceal their materials or method of making: they occupy space and require attention to proportion, intervals, and relations with wall or floor.\n\n[[sin-titulo-judd|Untitled]] articulates this investigation within [[minimalismo|Minimalism]]. Modular repetition is not a decorative formula, but a way of making visible how the object organises the space it shares with the viewer."
+      },
+      "rejectedUnsupported": "The draft avoids treating Judd as the sole author of Minimalism and does not equate industrial fabrication with a lack of artistic decisions."
+    },
+    {
+      "slug": "donatello",
+      "entityId": "cmsvvxj3s00zs85sj00l7a1t8",
+      "sourceUrls": ["https://www.nationalgallery.org.uk/artists/donatello"],
+      "claims": ["Donatello, about 1386–1466", "Florentine sculptor", "stone, metal, wood, terracotta and bronze", "early Renaissance innovation and relief perspective"],
+      "relationsUsed": ["renacimiento-italiano", "san-jorge-donato"],
+      "after": {
+        "summary_es": "Donatello (hacia 1386–1466) fue un escultor florentino decisivo para el Renacimiento temprano. Trabajó piedra, metal, madera, terracota y bronce, y exploró cómo volumen, gesto y perspectiva podían producir figuras con una presencia física y emocional renovada.",
+        "essay_es": "## La figura como presencia\n\nDonatello amplió las posibilidades de la escultura al tratar el cuerpo como una estructura de tensión, movimiento y carácter. En relieves y figuras exentas, la relación entre superficie, profundidad y gesto permite que la obra parezca responder al espacio que la rodea.\n\n[[san-jorge-donato|San Jorge]] sitúa esa investigación en el [[renacimiento-italiano|Renacimiento italiano]]. La innovación no depende sólo de recuperar modelos antiguos: consiste en hacer que la figura vuelva a tener peso, decisión y presencia frente al espectador.",
+        "summary_en": "Donatello (about 1386–1466) was a decisive Florentine sculptor of the early Renaissance. He worked in stone, metal, wood, terracotta, and bronze, exploring how volume, gesture, and perspective could give figures renewed physical and emotional presence.",
+        "essay_en": "## The figure as presence\n\nDonatello expanded sculpture’s possibilities by treating the body as a structure of tension, movement, and character. In reliefs and freestanding figures, the relation among surface, depth, and gesture allows the work to seem responsive to the space around it.\n\n[[san-jorge-donato|Saint George]] places this investigation within the [[renacimiento-italiano|Italian Renaissance]]. Innovation does not depend only on recovering ancient models: it consists in making the figure regain weight, agency, and presence before the viewer."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Donatello to classical revival and does not infer exact workshop participation without specific evidence."
+    },
+    {
+      "slug": "doris-salcedo",
+      "entityId": "cmtaf2hm0000707qtw9vc7i9y",
+      "sourceUrls": ["https://www.moma.org/collection/artists/7488"],
+      "claims": ["Doris Salcedo, born 1958", "Colombian artist", "sculpture and public interventions", "testimony, mourning, absence and political violence"],
+      "relationsUsed": ["arte-conceptual", "shibboleth"],
+      "after": {
+        "summary_es": "Doris Salcedo (nacida en 1958) trabaja con muebles, arquitectura y espacios públicos para dar forma a experiencias de duelo, ausencia y violencia política. Sus obras parten de testimonios y memorias concretas, pero las transforman en situaciones materiales que el espectador debe atravesar o reconocer.",
+        "essay_es": "## Hacer visible la ausencia\n\nSalcedo modifica objetos domésticos y lugares compartidos hasta volverlos extraños, incompletos o difíciles de usar. Una puerta bloqueada, una grieta o un mueble alterado no representan una pérdida de manera literal: hacen que la ausencia se vuelva una condición física del espacio.\n\n[[shibboleth|Shibboleth]] conecta esa estrategia con el [[arte-conceptual|arte conceptual]] y con la intervención pública. La obra no habla en nombre de quienes sufrieron; construye un lugar incómodo desde el que la memoria puede ser atendida sin quedar convertida en imagen consumible.",
+        "summary_en": "Doris Salcedo (born 1958) works with furniture, architecture, and public space to give form to experiences of mourning, absence, and political violence. Her works begin with testimony and specific memories, transforming them into material situations that viewers must cross or recognise.",
+        "essay_en": "## Making absence visible\n\nSalcedo alters domestic objects and shared places until they become strange, incomplete, or difficult to use. A blocked door, a crack, or a modified piece of furniture does not represent loss literally: it makes absence a physical condition of space.\n\n[[shibboleth|Shibboleth]] connects this strategy with [[arte-conceptual|conceptual art]] and public intervention. The work does not speak on behalf of those who suffered; it constructs an uncomfortable place where memory can be attended to without becoming a consumable image."
+      },
+      "rejectedUnsupported": "The draft avoids treating Salcedo's works as illustrations of individual testimonies and does not generalise one political context to every project."
+    },
+    {
+      "slug": "dorothea-lange",
+      "entityId": "cmsvvxib500ii85sjzz659s9m",
+      "sourceUrls": ["https://www.moma.org/collection/artists/3373"],
+      "claims": ["Dorothea Lange, 1895–1965", "American photographer", "documentary photography and social change", "Migrant Mother and Depression-era agricultural workers"],
+      "relationsUsed": ["fotografia", "migrant-mother"],
+      "after": {
+        "summary_es": "Dorothea Lange (1895–1965) utilizó la fotografía para documentar condiciones sociales y hacer visible la experiencia de personas afectadas por la pobreza, la migración y la crisis económica. Sus imágenes unen observación, encuadre y responsabilidad pública sin separar la forma de las circunstancias que registra.",
+        "essay_es": "## Mirar las condiciones de vida\n\nLange pasó del retrato de estudio a fotografiar calles, colas de desempleados y campamentos agrícolas durante la Gran Depresión. Sus imágenes no son neutrales, pero tampoco reducen a las personas a símbolos: el encuadre concentra una situación y deja abierta su dimensión humana y política.\n\n[[migrant-mother|Madre migrante]] muestra cómo una fotografía puede convertirse en memoria pública. La [[fotografia|fotografía]] no sólo conserva un rostro: relaciona gesto, contexto y circulación para intervenir en la manera en que una sociedad reconoce el sufrimiento.",
+        "summary_en": "Dorothea Lange (1895–1965) used photography to document social conditions and make visible the experience of people affected by poverty, migration, and economic crisis. Her images join observation, framing, and public responsibility without separating form from the circumstances recorded.",
+        "essay_en": "## Looking at living conditions\n\nLange moved from studio portraiture to photographing streets, breadlines, and agricultural camps during the Great Depression. Her images are not neutral, but neither do they reduce people to symbols: the frame concentrates a situation while leaving its human and political dimensions open.\n\n[[migrant-mother|Migrant Mother]] shows how a photograph can become public memory. [[fotografia|Photography]] does not only preserve a face: it connects gesture, context, and circulation to intervene in how a society recognises suffering."
+      },
+      "rejectedUnsupported": "The draft avoids treating Lange's documentary images as transparent records and does not claim that one photograph represents her entire practice."
+    },
+    {
+      "slug": "egon-schiele",
+      "entityId": "cmsvvxiqm00rm85sjp4alt19r",
+      "sourceUrls": ["https://www.leopoldmuseum.org/en/collection/egon-schiele"],
+      "claims": ["Egon Schiele, 1890–1918", "Austrian painter of Viennese Modernism", "self-portraiture and the human body", "expressionist line, gesture and existential tension"],
+      "relationsUsed": ["expresionismo", "autorretrato-con-linterna"],
+      "after": {
+        "summary_es": "Egon Schiele (1890–1918) exploró el cuerpo, el autorretrato y el paisaje con una línea tensa y gestos que convierten la figura en una superficie de conflicto. Su obra pertenece a la modernidad vienesa y formula una intensidad expresionista marcada por la exposición de la subjetividad.",
+        "essay_es": "## El cuerpo como interrogación\n\nSchiele no presenta el cuerpo como una forma estable o ideal. Las posturas angulosas, los contornos quebrados y las manos o rostros intensamente marcados hacen que cada figura parezca observarse a sí misma mientras se ofrece a la mirada ajena.\n\nEn [[autorretrato-con-linterna|Autorretrato con farol chino]], el [[expresionismo|expresionismo]] se articula como una investigación sobre presencia y vulnerabilidad. El autorretrato no es sólo identificación: convierte el cuerpo en el lugar donde se cruzan percepción, deseo y conciencia de la propia finitud.",
+        "summary_en": "Egon Schiele (1890–1918) explored the body, self-portraiture, and landscape through tense lines and gestures that turn the figure into a surface of conflict. His work belongs to Viennese Modernism and expresses an Expressionist intensity marked by exposed subjectivity.",
+        "essay_en": "## The body as question\n\nSchiele does not present the body as a stable or ideal form. Angular poses, broken contours, and intensely marked hands or faces make each figure seem to observe itself while offering itself to another gaze.\n\nIn [[autorretrato-con-linterna|Self-Portrait with Chinese Lantern]], [[expresionismo|Expressionism]] becomes an investigation of presence and vulnerability. Self-portraiture is not only identification: it turns the body into the place where perception, desire, and awareness of finitude intersect."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Schiele to erotic subject matter and does not treat psychological interpretations as settled facts."
+    }
+  ]
+}

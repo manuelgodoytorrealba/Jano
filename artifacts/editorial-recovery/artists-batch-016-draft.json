@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_016",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Sixteenth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "helen-frankenthaler",
+      "entityId": "cmsvvxj9b013g85sjb1axbysx",
+      "sourceUrls": ["https://www.frankenthalerfoundation.org/helen/biography"],
+      "claims": ["Helen Frankenthaler, 1928–2011", "American abstract painter", "soak-stain technique", "transition from Abstract Expressionism to Color Field painting"],
+      "relationsUsed": ["expresionismo-abstracto", "montanas-y-mar"],
+      "after": {
+        "summary_es": "Helen Frankenthaler (1928–2011) amplió las posibilidades de la pintura abstracta al dejar que el color penetrara y se extendiera por la tela. Su técnica soak-stain relaciona mancha, soporte, paisaje y espacio en una superficie donde la imagen parece surgir desde dentro del material.",
+        "essay_es": "## El color atraviesa la tela\n\nFrankenthaler colocaba el lienzo en el suelo y vertía o extendía la pintura para que el color se impregnara en las fibras. La imagen no se superpone simplemente al soporte: nace de una relación física entre fluidez, absorción y control compositivo.\n\n[[montanas-y-mar|Montañas y mar]] sitúa esa investigación en el tránsito desde el [[expresionismo-abstracto|expresionismo abstracto]] hacia el Color Field. El paisaje no aparece como una escena que copiar, sino como una forma de distribuir atmósfera, profundidad y memoria sobre la tela.",
+        "summary_en": "Helen Frankenthaler (1928–2011) expanded abstract painting by allowing colour to penetrate and spread through the canvas. Her soak-stain technique connects stain, support, landscape, and space on a surface where the image seems to emerge from within the material.",
+        "essay_en": "## Colour passes through the canvas\n\nFrankenthaler placed the canvas on the floor and poured or spread paint so that colour soaked into its fibres. The image is not simply laid over the support: it emerges from a physical relation among fluidity, absorption, and compositional control.\n\n[[montanas-y-mar|Mountains and Sea]] places this investigation in the transition from [[expresionismo-abstracto|Abstract Expressionism]] to Color Field painting. Landscape does not appear as a scene to copy, but as a way of distributing atmosphere, depth, and memory across the canvas."
+      },
+      "rejectedUnsupported": "The draft avoids treating Frankenthaler's technique as purely accidental and does not reduce her practice to landscape abstraction."
+    },
+    {
+      "slug": "toulouse-lautrec",
+      "entityId": "cmsvvxj6t011s85sj5a5uoqye",
+      "sourceUrls": ["https://www.musee-toulouse-lautrec.com/en/collections/henry-of-toulouse-lautrec/"],
+      "claims": ["Henri de Toulouse-Lautrec, 1864–1901", "French painter and lithographer", "Montmartre nightlife and modern portraiture", "poster design, expressive contour and everyday scenes"],
+      "relationsUsed": ["postimpresionismo", "moulin-rouge-la-goulue"],
+      "after": {
+        "summary_es": "Henri de Toulouse-Lautrec (1864–1901) convirtió la vida nocturna de Montmartre, sus artistas y sus públicos en imágenes de contornos incisivos y gestos inmediatos. Entre pintura, dibujo y litografía, hizo de la cultura urbana moderna un laboratorio de encuadre, ritmo y reconocimiento.",
+        "essay_es": "## La noche como escena moderna\n\nLautrec observó cafés, cabarets y espectáculos sin convertirlos en simples decorados pintorescos. Sus figuras aparecen recortadas, sorprendidas en mitad de una acción o desplazadas hacia el borde, como si el encuadre compartiera la inestabilidad de la vida nocturna.\n\n[[moulin-rouge-la-goulue|Moulin Rouge: La Goulue]] relaciona esa mirada con el [[postimpresionismo|postimpresionismo]]. La litografía añade circulación pública a la imagen: el cartel no sólo anuncia un espectáculo, también construye una nueva forma de mirar la ciudad.",
+        "summary_en": "Henri de Toulouse-Lautrec (1864–1901) turned the nightlife of Montmartre, its performers, and its audiences into images of incisive contours and immediate gestures. Across painting, drawing, and lithography, he made modern urban culture a laboratory of framing, rhythm, and recognition.",
+        "essay_en": "## Night as a modern scene\n\nLautrec observed cafés, cabarets, and performances without turning them into merely picturesque settings. Figures appear cropped, caught in the middle of an action, or pushed toward the edge, as if the frame shared the instability of nightlife.\n\n[[moulin-rouge-la-goulue|Moulin Rouge: La Goulue]] connects this view with [[postimpresionismo|Post-Impressionism]]. Lithography adds public circulation to the image: the poster does not only announce a show, it constructs a new way of looking at the city."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Lautrec to cabaret imagery and does not explain his style through biography alone."
+    },
+    {
+      "slug": "henrike-naumann",
+      "entityId": "cmsvvxjd6015y85sj0r20a25p",
+      "sourceUrls": ["https://www.belvedere.at/en/henrike-naumann", "https://museum-abteiberg.de/exhibitions/exhibition-retrospective/2020-16-en/2018-henrike-naumann/?lang=en"],
+      "claims": ["Henrike Naumann, born 1984", "German installation artist", "furniture, video and sound environments", "radicalisation, youth culture and political aesthetics"],
+      "relationsUsed": ["arte-conceptual", "modern-magic"],
+      "after": {
+        "summary_es": "Henrike Naumann (nacida en 1984) construye instalaciones inmersivas con muebles, vídeo y sonido para examinar cómo el gusto cotidiano puede vincularse con la radicalización política. Sus espacios escenográficos convierten interiores aparentemente familiares en escenarios de memoria, conflicto y persuasión.",
+        "essay_es": "## El interior como campo político\n\nNaumann trabaja con muebles, estilos decorativos y objetos asociados a distintas épocas para mostrar que el diseño nunca es completamente inocente. Una habitación puede prometer seguridad y, al mismo tiempo, organizar nostalgias, exclusiones o deseos de pertenencia.\n\n[[modern-magic|2000]] relaciona esa arqueología estética con el [[arte-conceptual|arte conceptual]]. La instalación no ofrece una tesis desde fuera: hace que el espectador recorra un ambiente donde las decisiones de gusto adquieren consecuencias sociales.",
+        "summary_en": "Henrike Naumann (born 1984) builds immersive installations with furniture, video, and sound to examine how everyday taste can connect with political radicalisation. Her scenographic spaces turn apparently familiar interiors into settings of memory, conflict, and persuasion.",
+        "essay_en": "## The interior as a political field\n\nNaumann works with furniture, decorative styles, and objects associated with different periods to show that design is never entirely innocent. A room can promise security while also organising nostalgia, exclusion, or desires for belonging.\n\n[[modern-magic|2000]] connects this aesthetic archaeology with [[arte-conceptual|conceptual art]]. The installation does not offer a thesis from outside: it makes viewers move through an environment where choices of taste acquire social consequences."
+      },
+      "rejectedUnsupported": "The draft avoids equating domestic aesthetics with extremism and does not infer one fixed political reading for every installation."
+    },
+    {
+      "slug": "hilma-af-klint",
+      "entityId": "cmsvvxiaw00ic85sj624f4ub3",
+      "sourceUrls": ["https://www.moma.org/collection/artists/71905", "https://www.modernamuseet.se/en/stockholm/exhibitions/hilma-af-klint-de-tio-storsta-2022/biografi/"],
+      "claims": ["Hilma af Klint, 1862–1944", "Swedish artist", "geometric and organic forms", "early abstraction, series and spiritual research"],
+      "relationsUsed": ["abstraccion", "los-diez-mayores"],
+      "after": {
+        "summary_es": "Hilma af Klint (1862–1944) desarrolló un lenguaje abstracto de formas geométricas, orgánicas y simbólicas a partir de una investigación sostenida sobre naturaleza, espiritualidad y estructura. Sus series convierten la pintura en un sistema de relaciones que se despliega a través del tiempo.",
+        "essay_es": "## Una abstracción en forma de serie\n\nAf Klint combinó círculos, espirales, diagramas y campos cromáticos para construir imágenes que no dependen de representar un objeto reconocible. Sin embargo, sus pinturas no son puramente formales: conservan una dimensión de investigación sobre correspondencias, crecimiento y transformación.\n\n[[los-diez-mayores|Los diez mayores]] sitúa esa búsqueda dentro de la [[abstraccion|abstracción]]. La serie importa tanto como cada lienzo: el sentido se desplaza entre edades, estados, oposiciones y ritmos de una arquitectura visual mayor.",
+        "summary_en": "Hilma af Klint (1862–1944) developed an abstract language of geometric, organic, and symbolic forms through sustained research into nature, spirituality, and structure. Her series turn painting into a system of relations unfolding through time.",
+        "essay_en": "## Abstraction as a series\n\nAf Klint combined circles, spirals, diagrams, and fields of colour to construct images that do not depend on representing a recognisable object. Yet her paintings are not purely formal: they retain an investigative dimension concerned with correspondence, growth, and transformation.\n\n[[los-diez-mayores|The Ten Largest]] places this search within [[abstraccion|abstraction]]. The series matters as much as each canvas: meaning shifts among ages, states, oppositions, and rhythms within a larger visual architecture."
+      },
+      "rejectedUnsupported": "The draft avoids treating spiritual references as the sole explanation of af Klint's abstraction and does not claim a single starting point for modern abstraction."
+    },
+    {
+      "slug": "hiroshi-sugimoto",
+      "entityId": "cmsvvxjdu016d85sj4tkrcxcq",
+      "sourceUrls": ["https://www.moma.org/artists/5721-hiroshi-sugimoto", "https://www.singaporeartmuseum.sg/-/media/SAM/Files/Exhibitions/Hiroshi-Sugimoto/Room-Sheets/Hiroshi-Sugimoto-Guide-English.pdf?inline=1"],
+      "claims": ["Hiroshi Sugimoto, born 1948", "Japanese photographer and multidisciplinary artist", "long exposure and serial photography", "time, memory and the limits of photographic representation"],
+      "relationsUsed": ["fotografia-moderna", "seascapes"],
+      "after": {
+        "summary_es": "Hiroshi Sugimoto (nacido en 1948) utiliza la fotografía para condensar tiempos prolongados en imágenes de precisión serena. Sus series de teatros, dioramas, retratos y paisajes marinos exploran qué puede conservar una imagen cuando la duración, la memoria y la percepción se vuelven parte del motivo.",
+        "essay_es": "## Fotografiar la duración\n\nSugimoto trabaja con exposiciones largas, encuadres frontales y series que repiten una estructura para revelar diferencias mínimas. En lugar de congelar un instante, la fotografía acumula tiempo hasta producir una imagen que parece suspendida fuera de la experiencia ordinaria.\n\n[[seascapes|Seascapes]] sitúa esa estrategia dentro de la [[fotografia-moderna|fotografía moderna]]. El horizonte se repite a través de épocas y geografías, pero cada variación recuerda que incluso una forma elemental depende de luz, atmósfera y mirada.",
+        "summary_en": "Hiroshi Sugimoto (born 1948) uses photography to condense extended time into images of serene precision. His series of theatres, dioramas, portraits, and seascapes explore what an image can preserve when duration, memory, and perception become part of the subject.",
+        "essay_en": "## Photographing duration\n\nSugimoto works with long exposures, frontal framing, and series that repeat a structure in order to reveal minimal differences. Rather than freezing an instant, photography accumulates time until it produces an image that seems suspended outside ordinary experience.\n\n[[seascapes|Seascapes]] places this strategy within [[fotografia-moderna|modern photography]]. The horizon repeats across periods and geographies, yet each variation recalls that even an elementary form depends on light, atmosphere, and looking."
+      },
+      "rejectedUnsupported": "The draft avoids treating long exposure as a purely technical effect and does not reduce Sugimoto's practice to seascapes."
+    }
+  ]
+}

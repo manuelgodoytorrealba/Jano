@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_008",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Eighth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "ben-shahn",
+      "entityId": "cmsvvxj8x013785sjopi63mj4",
+      "sourceUrls": ["https://americanart.si.edu/artist/ben-shahn-4384"],
+      "claims": ["Ben Shahn, 1898–1969", "American painter and graphic artist", "socially engaged images", "war, migration and public life"],
+      "relationsUsed": ["realismo", "cartel-de-la-guerra"],
+      "after": {
+        "summary_es": "Ben Shahn (1898–1969) desarrolló una obra en la que pintura, dibujo y gráfica abordaron conflictos sociales y políticos. Sus imágenes combinan figuras reconocibles, contornos directos y una atención sostenida a la guerra, la migración y la vida pública.",
+        "essay_es": "## La imagen como testimonio\n\nShahn trabajó con una figuración clara, capaz de hacer legible una escena sin borrar su carga moral. En sus dibujos, pinturas y carteles, la economía del contorno convive con rostros, gestos y signos que sitúan la experiencia individual dentro de una historia colectiva.\n\nEl [[realismo|realismo]] de Shahn no busca neutralidad. En [[cartel-de-la-guerra|Cartel de la guerra]], la imagen funciona como una forma de atención pública: organiza la mirada y convierte la representación en una posición ante aquello que ocurre.",
+        "summary_en": "Ben Shahn (1898–1969) developed a body of work in which painting, drawing, and graphic art addressed social and political conflict. His images combine recognisable figures, direct contours, and sustained attention to war, migration, and public life.",
+        "essay_en": "## The image as testimony\n\nShahn worked with a clear figuration able to make a scene legible without removing its moral charge. In his drawings, paintings, and posters, economical contours coexist with faces, gestures, and signs that place individual experience within collective history.\n\nShahn’s [[realismo|realism]] does not seek neutrality. In [[cartel-de-la-guerra|War Poster]], the image becomes a form of public attention: it organises looking and turns representation into a position toward what is happening."
+      },
+      "rejectedUnsupported": "The draft avoids assigning a single political doctrine to Shahn and does not infer specific events from undated works."
+    },
+    {
+      "slug": "berthe-morisot",
+      "entityId": "cmsvvxiq300ra85sjjkk4zgwq",
+      "sourceUrls": ["https://www.nationalgallery.org.uk/artists/berthe-morisot"],
+      "claims": ["Berthe Morisot, 1841–1895", "French painter", "Impressionist exhibitions", "domestic life, landscape and open brushwork"],
+      "relationsUsed": ["impresionismo", "la-cuna"],
+      "after": {
+        "summary_es": "Berthe Morisot (1841–1895) participó en el desarrollo del impresionismo con una pintura atenta a la vida doméstica, el paisaje y las variaciones de luz. Su pincelada abierta y sus encuadres próximos convierten escenas aparentemente íntimas en investigaciones sobre percepción y tiempo.",
+        "essay_es": "## La intimidad en movimiento\n\nMorisot encontró motivos en interiores, jardines, figuras en reposo y escenas familiares, pero su pintura no los trata como imágenes inmóviles. La pincelada deja visibles cambios de luz, contornos incompletos y relaciones espaciales que hacen que la escena parezca continuar más allá del marco.\n\nDentro del [[impresionismo|impresionismo]], esa atención a lo cercano amplía el campo de la modernidad pictórica. [[la-cuna|La cuna]] muestra cómo una situación doméstica puede sostener una compleja organización de miradas, telas, sombras y presencia.",
+        "summary_en": "Berthe Morisot (1841–1895) contributed to the development of Impressionism with a painting attentive to domestic life, landscape, and changing light. Her open brushwork and close framings turn apparently intimate scenes into investigations of perception and time.",
+        "essay_en": "## Intimacy in motion\n\nMorisot found subjects in interiors, gardens, resting figures, and family scenes, but her painting does not treat them as still images. The brushwork leaves changes of light, unfinished contours, and spatial relations visible, making the scene seem to continue beyond the frame.\n\nWithin [[impresionismo|Impressionism]], this attention to proximity expands the field of modern painting. [[la-cuna|The Cradle]] shows how a domestic situation can sustain a complex organisation of gazes, fabrics, shadows, and presence."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Morisot's work to domestic subjects or explaining its intimacy through biography alone."
+    },
+    {
+      "slug": "bridget-riley",
+      "entityId": "cmsvvxj9y013v85sj4m9niqf7",
+      "sourceUrls": ["https://www.nga.gov/artists/1828-bridget-riley"],
+      "claims": ["Bridget Riley, born 1931", "British painter and printmaker", "repetition, colour and optical movement", "abstraction and viewer perception"],
+      "relationsUsed": ["minimalismo", "catarata"],
+      "after": {
+        "summary_es": "Bridget Riley (nacida en 1931) construye pinturas y estampas abstractas mediante repeticiones de líneas, formas y colores. Sus composiciones no representan un movimiento externo: hacen que la percepción del espectador produzca vibración, ritmo y profundidad cambiante.",
+        "essay_es": "## Cuando la superficie se activa\n\nLas formas de Riley parecen estables hasta que la mirada empieza a recorrerlas. Ondulaciones, franjas, círculos y contrastes cromáticos generan relaciones que no se resuelven en una lectura única: el plano pictórico se vuelve una experiencia temporal.\n\nLa obra [[catarata|Catarata]] permite entender esa lógica como una investigación sobre ritmo y percepción. Su cercanía con el [[minimalismo|minimalismo]] no implica reducirla a una geometría fría: la superficie depende de la respuesta corporal y visual de quien la observa.",
+        "summary_en": "Bridget Riley (born 1931) constructs abstract paintings and prints through repeated lines, forms, and colours. Her compositions do not represent movement outside the picture: they make the viewer’s perception produce vibration, rhythm, and shifting depth.",
+        "essay_en": "## When the surface becomes active\n\nRiley’s forms appear stable until the eye begins to move across them. Waves, bands, circles, and colour contrasts generate relations that cannot be resolved in a single reading: the pictorial plane becomes a temporal experience.\n\nThe work [[catarata|Cataract]] makes this logic legible as an investigation of rhythm and perception. Its proximity to [[minimalismo|Minimalism]] does not mean reducing it to cold geometry: the surface depends on the viewer’s bodily and visual response."
+      },
+      "rejectedUnsupported": "The draft avoids treating Riley's practice as purely optical and does not assign a fixed interpretation to the viewer's response."
+    },
+    {
+      "slug": "camille-pissarro",
+      "entityId": "cmsvvxj6g011j85sj6b4cgpal",
+      "sourceUrls": ["https://www.nga.gov/artists/1791-camille-pissarro"],
+      "claims": ["Camille Pissarro, 1830–1903", "Danish-French painter", "Impressionist landscapes and Parisian cityscapes", "changing light and pointillist experimentation"],
+      "relationsUsed": ["impresionismo", "boulevard-montmartre"],
+      "after": {
+        "summary_es": "Camille Pissarro (1830–1903) exploró paisaje rural y ciudad moderna desde una atención constante a la luz cambiante. Vinculado al impresionismo y abierto a experiencias neoimpresionistas, convirtió caminos, plazas y bulevares en escenas donde atmósfera, ritmo urbano y pincelada se organizan juntos.",
+        "essay_es": "## La ciudad como atmósfera\n\nPissarro no pinta el paisaje como un escenario inmóvil. La luz transforma las superficies, los grupos de figuras introducen escala y las pinceladas construyen una visión que parece modificarse mientras se contempla. La naturaleza y la ciudad comparten esa inestabilidad perceptiva.\n\nEn [[boulevard-montmartre|Boulevard Montmartre]], el motivo urbano se convierte en una secuencia de condiciones atmosféricas. El [[impresionismo|impresionismo]] aparece así como una práctica de observación: no sólo registra un lugar, sino la duración de una mirada sobre él.",
+        "summary_en": "Camille Pissarro (1830–1903) explored rural landscape and modern city life through sustained attention to changing light. Connected with Impressionism and open to Neo-Impressionist experiments, he turned roads, squares, and boulevards into scenes where atmosphere, urban rhythm, and brushwork operate together.",
+        "essay_en": "## The city as atmosphere\n\nPissarro does not paint landscape as an unmoving stage. Light transforms surfaces, groups of figures introduce scale, and brushstrokes construct a vision that seems to change while it is being viewed. Nature and city share this perceptual instability.\n\nIn [[boulevard-montmartre|Boulevard Montmartre]], the urban subject becomes a sequence of atmospheric conditions. [[impresionismo|Impressionism]] appears as a practice of observation: it does not only record a place, but the duration of a gaze upon it."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Pissarro as only a landscape painter and does not generalise his pointillist experiments across the whole career."
+    },
+    {
+      "slug": "canaletto",
+      "entityId": "cmsvvxipf00qv85sjd6d3rb61",
+      "sourceUrls": ["https://www.nationalgallery.org.uk/artists/canaletto"],
+      "claims": ["Canaletto, 1697–1768", "Venetian painter Giovanni Antonio Canal", "precise and evocative vedute", "architectural observation and compositional invention"],
+      "relationsUsed": ["rococo", "canaletto-gran-canal"],
+      "after": {
+        "summary_es": "Canaletto, Giovanni Antonio Canal (1697–1768), hizo de las vistas de Venecia un campo de precisión arquitectónica, atmósfera y diseño compositivo. Sus vedute registran lugares reconocibles, pero también ajustan escala, perspectiva y actividad para construir una experiencia visual convincente de la ciudad.",
+        "essay_es": "## Ver y componer la ciudad\n\nLas vedute de Canaletto parecen ofrecer una mirada exacta sobre Venecia, pero su fuerza no procede de copiar mecánicamente cada edificio. La arquitectura, el agua, las embarcaciones y las figuras se ordenan para producir una escena equilibrada, legible y teatral.\n\n[[canaletto-gran-canal|El Gran Canal]] muestra cómo un lugar conocido puede convertirse en una composición nueva. En relación con el [[rococo|rococó]], la imagen combina observación, movimiento y elegancia sin separar la descripción urbana de la invención pictórica.",
+        "summary_en": "Canaletto, Giovanni Antonio Canal (1697–1768), made views of Venice a field of architectural precision, atmosphere, and compositional design. His vedute record recognisable places, but also adjust scale, perspective, and activity to construct a convincing visual experience of the city.",
+        "essay_en": "## Seeing and composing the city\n\nCanaletto’s vedute seem to offer an exact view of Venice, but their force does not come from mechanically copying every building. Architecture, water, boats, and figures are arranged to produce a balanced, legible, and theatrical scene.\n\n[[canaletto-gran-canal|The Grand Canal]] shows how a familiar place can become a new composition. In relation to [[rococo|Rococo]], the image joins observation, movement, and elegance without separating urban description from pictorial invention."
+      },
+      "rejectedUnsupported": "The draft avoids claiming that Canaletto used a camera obscura in every work and does not treat the vedute as neutral documentary records."
+    }
+  ]
+}

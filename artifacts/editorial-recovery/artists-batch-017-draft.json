@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_017",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Seventeenth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "honore-daumier",
+      "entityId": "cmsvvxj61011a85sjazfrtlsx",
+      "sourceUrls": ["https://www.musee-orsay.fr/en/program/whats-on/exhibitions/presentation/daumier"],
+      "claims": ["Honoré Daumier, 1808–1879", "French painter, draughtsman, sculptor and lithographer", "satirical critique of society", "everyday urban life and expressive realism"],
+      "relationsUsed": ["realismo", "el-tranvia-de-tercera-clase"],
+      "after": {
+        "summary_es": "Honoré Daumier (1808–1879) utilizó dibujo, pintura, escultura y litografía para observar con ironía las instituciones y desigualdades de la sociedad moderna. Sus figuras condensan gesto, presión social y vida urbana en imágenes de gran intensidad expresiva.",
+        "essay_es": "## La sociedad entra en cuadro\n\nDaumier convirtió tribunales, parlamentos, calles y transportes en escenarios donde los cuerpos revelan jerarquías y cansancio. La caricatura no funciona sólo como deformación humorística: hace visible la estructura de poder que organiza una escena cotidiana.\n\n[[el-tranvia-de-tercera-clase|El vagón de tercera clase]] sitúa esa mirada dentro del [[realismo|realismo]]. La imagen no necesita explicar a cada pasajero: la proximidad, las posturas y la materia de los rostros producen una experiencia colectiva de vulnerabilidad.",
+        "summary_en": "Honoré Daumier (1808–1879) used drawing, painting, sculpture, and lithography to observe the institutions and inequalities of modern society with irony. His figures condense gesture, social pressure, and urban life in images of great expressive intensity.",
+        "essay_en": "## Society enters the frame\n\nDaumier turned courts, parliaments, streets, and public transport into scenes where bodies reveal hierarchy and fatigue. Caricature does not function only as humorous distortion: it makes visible the structure of power organising an everyday scene.\n\n[[el-tranvia-de-tercera-clase|The Third-Class Carriage]] places this view within [[realismo|Realism]]. The image does not need to explain each passenger: proximity, posture, and the materiality of faces produce a collective experience of vulnerability."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Daumier to caricature and does not treat social realism as a neutral record."
+    },
+    {
+      "slug": "jan-van-eyck",
+      "entityId": "cmsvvxioh00qa85sj61bh6jsg",
+      "sourceUrls": ["https://www.nationalgallery.org.uk/artists/jan-van-eyck"],
+      "claims": ["Jan van Eyck, active 1422–1441", "Netherlandish painter", "oil medium, translucent layers and natural light", "portraiture, material detail and Northern Renaissance"],
+      "relationsUsed": ["renacimiento-nordico", "retrato-de-giovanni-arnolfini"],
+      "after": {
+        "summary_es": "Jan van Eyck (activo entre 1422 y 1441) desarrolló una pintura de precisión minuciosa en la que aceite, capas translúcidas y luz natural hacen que superficies y objetos adquieran una presencia extraordinaria. Sus retratos y escenas religiosas combinan detalle material, símbolo y observación.",
+        "essay_es": "## La realidad como superficie construida\n\nEn la pintura de Van Eyck, una piel, un metal, un vidrio o una tela no son detalles secundarios. Las capas de color y el control de la luz convierten cada superficie en una prueba de cómo la imagen puede producir credibilidad sin dejar de ser una construcción.\n\n[[retrato-de-giovanni-arnolfini|Retrato de Giovanni Arnolfini]] sitúa esa investigación en el [[renacimiento-nordico|Renacimiento nórdico]]. El realismo no elimina el enigma: cuanto más convincente es el espacio, más preguntas generan sus objetos, reflejos e inscripciones.",
+        "summary_en": "Jan van Eyck (active 1422–1441) developed a meticulous painting in which oil, translucent layers, and natural light give surfaces and objects extraordinary presence. His portraits and religious scenes combine material detail, symbolism, and observation.",
+        "essay_en": "## Reality as a constructed surface\n\nIn Van Eyck’s painting, skin, metal, glass, and cloth are not secondary details. Layers of colour and controlled light turn each surface into evidence of how an image can produce credibility while remaining a construction.\n\n[[retrato-de-giovanni-arnolfini|The Arnolfini Portrait]] places this investigation within the [[renacimiento-nordico|Northern Renaissance]]. Realism does not remove enigma: the more convincing the space becomes, the more questions its objects, reflections, and inscriptions generate."
+      },
+      "rejectedUnsupported": "The draft avoids attributing every technical effect to oil alone and does not impose a definitive interpretation on the Arnolfini Portrait."
+    },
+    {
+      "slug": "jasper-johns",
+      "entityId": "cmsvvxj9p013p85sjjwk47yhx",
+      "sourceUrls": ["https://www.nga.gov/artists/2136-jasper-johns"],
+      "claims": ["Jasper Johns, born 1930", "American artist", "flags, targets, numbers and familiar signs", "painting, sculpture, drawing and printmaking as material investigations"],
+      "relationsUsed": ["pop-art", "bandera"],
+      "after": {
+        "summary_es": "Jasper Johns (nacido en 1930) convirtió banderas, dianas, números y otros signos familiares en objetos de investigación pictórica. Sus obras exploran la distancia entre una imagen reconocible y los materiales, gestos y procedimientos que hacen que esa imagen vuelva a aparecer.",
+        "essay_es": "## Cuando el signo se vuelve objeto\n\nUna bandera parece llegar a la pintura con un significado ya dado, pero Johns la cubre de encáustica, pinceladas y textura hasta hacer perceptible su fabricación. El signo continúa siendo legible y, al mismo tiempo, deja de funcionar como una respuesta inmediata.\n\n[[bandera|Bandera]] relaciona esa ambivalencia con el [[pop-art|pop art]]. La obra no celebra simplemente una imagen popular: pregunta cómo el reconocimiento, la materia y la repetición producen significado.",
+        "summary_en": "Jasper Johns (born 1930) turned flags, targets, numbers, and other familiar signs into objects of pictorial investigation. His works explore the distance between a recognisable image and the materials, gestures, and procedures that make it appear again.",
+        "essay_en": "## When the sign becomes an object\n\nA flag seems to enter painting with meaning already given, yet Johns covers it with encaustic, brushwork, and texture until its making becomes perceptible. The sign remains legible while no longer functioning as an immediate answer.\n\n[[bandera|Flag]] connects this ambivalence with [[pop-art|Pop Art]]. The work does not simply celebrate a popular image: it asks how recognition, material, and repetition produce meaning."
+      },
+      "rejectedUnsupported": "The draft avoids treating Johns as merely a Pop artist and does not assign one fixed political meaning to the flag motif."
+    },
+    {
+      "slug": "jean-fautrier",
+      "entityId": "cmsvvxkd801s185sjbapf3tbz",
+      "sourceUrls": ["https://www.mam.paris.fr/sites/default/files/documents/dp_jean_fautrier_anglais_-_impression_22.01.2018.pdf"],
+      "claims": ["Jean Fautrier, 1898–1964", "French painter and sculptor", "matter painting and Informalism", "thick pigment, traces of the body and wartime series"],
+      "relationsUsed": ["informalismo", "otages-fautrier"],
+      "after": {
+        "summary_es": "Jean Fautrier (1898–1964) convirtió la materia pictórica en un lugar de tensión entre cuerpo, huella y memoria. Sus empastes, pigmentos y superficies irregulares hacen que la imagen parezca emerger de una sustancia vulnerable dentro de la renovación informalista del arte moderno.",
+        "essay_es": "## La materia conserva una herida\n\nFautrier construyó formas mediante capas de pintura, arena, pigmento y transparencias que no describen un cuerpo desde fuera. La figura aparece como una concentración de materia, una presencia dañada o incompleta que resiste ser convertida en relato cerrado.\n\n[[otages-fautrier|Rehenes]] sitúa esa investigación dentro del [[informalismo|informalismo]]. La textura no es un efecto superficial: es el lugar donde la pintura registra presión, violencia y memoria sin ofrecer una imagen estabilizada del acontecimiento.",
+        "summary_en": "Jean Fautrier (1898–1964) turned pictorial matter into a site of tension among body, trace, and memory. His impasto, pigments, and irregular surfaces make the image seem to emerge from a vulnerable substance within the renewal of modern Informalism.",
+        "essay_en": "## Matter preserves a wound\n\nFautrier built forms through layers of paint, sand, pigment, and transparencies that do not describe a body from the outside. The figure appears as a concentration of matter, a damaged or incomplete presence resisting conversion into a closed narrative.\n\n[[otages-fautrier|Hostages]] places this investigation within [[informalismo|Informalism]]. Texture is not a surface effect: it is where painting records pressure, violence, and memory without offering a stabilised image of the event."
+      },
+      "rejectedUnsupported": "The draft avoids treating the Hostages series as a literal illustration and does not reduce Fautrier's practice to wartime trauma alone."
+    },
+    {
+      "slug": "jean-francois-millet",
+      "entityId": "cmsvvxj67011d85sjg0ihveek",
+      "sourceUrls": ["https://sammlung.staedelmuseum.de/en/person/millet-jean-francois"],
+      "claims": ["Jean-François Millet, 1814–1875", "French painter and draughtsman", "peasants, labour and rural landscape", "Realism and Barbizon context"],
+      "relationsUsed": ["realismo", "las-espigadoras"],
+      "after": {
+        "summary_es": "Jean-François Millet (1814–1875) otorgó a campesinos, labores agrícolas y paisajes rurales una gravedad monumental. Su pintura realista no convierte el trabajo en una escena anecdótica: organiza cuerpos, tierra y horizonte para hacer visible una relación material con el mundo.",
+        "essay_es": "## El trabajo ocupa el horizonte\n\nMillet representa figuras inclinadas, arrodilladas o detenidas en medio de una tarea, pero no las reduce a gestos aislados. La escala de los cuerpos y la continuidad del paisaje hacen que el trabajo parezca una condición estructural de la vida rural.\n\n[[las-espigadoras|Las espigadoras]] relaciona esa mirada con el [[realismo|realismo]]. La pintura no idealiza por completo ni dramatiza de forma espectacular: sostiene la presencia de quienes trabajan en el límite entre visibilidad social y anonimato.",
+        "summary_en": "Jean-François Millet (1814–1875) gave peasants, agricultural labour, and rural landscapes monumental gravity. His Realist painting does not turn work into anecdote: it organises bodies, earth, and horizon to make a material relation with the world visible.",
+        "essay_en": "## Labour occupies the horizon\n\nMillet represents figures bending, kneeling, or pausing in the middle of a task, but does not reduce them to isolated gestures. The scale of bodies and continuity of landscape make work seem a structural condition of rural life.\n\n[[las-espigadoras|The Gleaners]] connects this view with [[realismo|Realism]]. The painting neither idealises completely nor dramatises spectacularly: it sustains the presence of people working at the boundary between social visibility and anonymity."
+      },
+      "rejectedUnsupported": "The draft avoids treating Millet's peasants as purely political symbols and does not separate rural labour from landscape and composition."
+    }
+  ]
+}

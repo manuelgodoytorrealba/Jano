@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_015",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Fifteenth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "guido-reni",
+      "entityId": "cmsvvxj4s010g85sjr5sr1tld",
+      "sourceUrls": ["https://www.museodelprado.es/en/the-collection/artist/reni-guido/aadea094-cc1f-4e3e-8f33-2ca683330cc6"],
+      "claims": ["Guido Reni, 1575–1642", "Bolognese painter", "classical idealism and lyrical equilibrium", "Baroque composition, refined forms and emotional restraint"],
+      "relationsUsed": ["barroco", "hipomenes-y-atlanta"],
+      "after": {
+        "summary_es": "Guido Reni (1575–1642) convirtió el ideal clásico en una pintura de equilibrio, elegancia y emoción contenida. Formado en Bolonia y activo en Roma, articuló figuras refinadas, ritmos serenos y una claridad compositiva propia del barroco italiano.",
+        "essay_es": "## La serenidad como construcción\n\nReni organizó sus composiciones para que la belleza pareciera natural, aunque dependiera de un control preciso de gesto, proporción y color. Incluso cuando representa violencia o martirio, la imagen conserva una tensión entre intensidad dramática y equilibrio formal.\n\n[[hipomenes-y-atlanta|Hipómenes y Atalanta]] sitúa esa búsqueda dentro del [[barroco|barroco]]. La emoción no se abandona, pero se filtra a través de una forma que convierte el movimiento en elegancia y la narración en ritmo visual.",
+        "summary_en": "Guido Reni (1575–1642) turned classical idealism into a painting of balance, elegance, and restrained emotion. Trained in Bologna and active in Rome, he joined refined figures, calm rhythms, and compositional clarity within the Italian Baroque.",
+        "essay_en": "## Serenity as construction\n\nReni organised his compositions so that beauty might appear natural, even though it depended on precise control of gesture, proportion, and colour. Even when depicting violence or martyrdom, the image retains a tension between dramatic intensity and formal balance.\n\n[[hipomenes-y-atlanta|Hippomenes and Atalanta]] places this investigation within the [[barroco|Baroque]]. Emotion is not abandoned, but filtered through a form that turns movement into elegance and narrative into visual rhythm."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Reni to academic idealism and does not treat serenity as absence of dramatic content."
+    },
+    {
+      "slug": "guillermo-kuitca",
+      "entityId": "cmsvvxjau014g85sjd7v1o3ui",
+      "sourceUrls": ["https://www.moma.org/artists/7122-guillermo-kuitca", "https://www.museoreinasofia.es/en/collections/artist/kuitca-guillermo/"],
+      "claims": ["Guillermo Kuitca, born 1961", "Argentine artist", "theatre plans, maps and architectural interiors", "space, memory and displacement"],
+      "relationsUsed": ["arte-conceptual", "nadie-olvida-nada-1"],
+      "after": {
+        "summary_es": "Guillermo Kuitca (nacido en 1961) construye pinturas donde teatros, planos, camas y arquitecturas se convierten en mapas de memoria y distancia. Sus espacios parecen reconocibles, pero la perspectiva y la escala los separan de una experiencia estable y habitable.",
+        "essay_es": "## Espacios para una memoria incompleta\n\nKuitca pinta lugares que prometen orientación y, al mismo tiempo, la niegan. Un plano puede parecer una guía, pero también una superficie abstracta; un teatro puede contener una escena sin actores; una cama puede sugerir intimidad y abandono.\n\n[[nadie-olvida-nada-1|Nadie olvida nada]] sitúa esa ambivalencia junto al [[arte-conceptual|arte conceptual]]. La obra no ilustra un recuerdo concreto: construye un espacio mental en el que arquitectura, ausencia y narración permanecen abiertos.",
+        "summary_en": "Guillermo Kuitca (born 1961) creates paintings in which theatres, plans, beds, and architectures become maps of memory and distance. His spaces seem recognisable, yet perspective and scale separate them from any stable, inhabitable experience.",
+        "essay_en": "## Spaces for incomplete memory\n\nKuitca paints places that promise orientation while denying it. A plan may look like a guide but also like an abstract surface; a theatre can contain a scene without actors; a bed can suggest intimacy and abandonment.\n\n[[nadie-olvida-nada-1|Nobody Forgets Anything]] places this ambivalence alongside [[arte-conceptual|conceptual art]]. The work does not illustrate one specific memory: it constructs a mental space where architecture, absence, and narrative remain open."
+      },
+      "rejectedUnsupported": "The draft avoids assigning a single autobiographical meaning to Kuitca's recurring architectural motifs."
+    },
+    {
+      "slug": "gustave-courbet",
+      "entityId": "cmsvvxi7t00gi85sjw6fi0xnc",
+      "sourceUrls": ["https://musee-courbet.fr/bienvenue-au-pays-de-courbet/qui-est-courbet/"],
+      "claims": ["Gustave Courbet, 1819–1877", "French painter", "Realism and enlarged scenes of everyday life", "landscape, material brushwork and rejection of academic hierarchy"],
+      "relationsUsed": ["realismo", "entierro-en-ornans"],
+      "after": {
+        "summary_es": "Gustave Courbet (1819–1877) otorgó a escenas cotidianas, paisajes y cuerpos una escala y una materia pictórica que tradicionalmente se reservaban a la pintura de historia. Su realismo no busca neutralidad: convierte lo visible y lo social en un campo de conflicto artístico.",
+        "essay_es": "## Lo cotidiano adquiere otra escala\n\nCourbet pintó aldeanos, trabajadores, funerales y paisajes con una presencia física que desafía las jerarquías académicas. La pincelada no disimula la materia: hace que la superficie parezca tan concreta como el mundo que representa.\n\n[[entierro-en-ornans|Un entierro en Ornans]] articula esa decisión dentro del [[realismo|realismo]]. La pintura no necesita convertir a sus figuras en héroes para producir gravedad; basta con situarlas juntas, a tamaño casi real, ante la mirada pública.",
+        "summary_en": "Gustave Courbet (1819–1877) gave everyday scenes, landscapes, and bodies a scale and pictorial materiality traditionally reserved for history painting. His Realism does not seek neutrality: it turns the visible and the social into a field of artistic conflict.",
+        "essay_en": "## The everyday acquires another scale\n\nCourbet painted villagers, workers, funerals, and landscapes with a physical presence that challenged academic hierarchies. The brushwork does not conceal materiality: it makes the surface seem as concrete as the world it represents.\n\n[[entierro-en-ornans|A Burial at Ornans]] articulates this decision within [[realismo|Realism]]. Painting does not need to turn its figures into heroes to produce gravity; it is enough to place them together, near life-size, before the public gaze."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Courbet as the sole origin of Realism and does not treat social subject matter as automatically politically progressive."
+    },
+    {
+      "slug": "gustave-moreau",
+      "entityId": "cmsvvxj6c011g85sjmnymlzw5",
+      "sourceUrls": ["https://musee-moreau.fr/en/biography-gustave-moreau"],
+      "claims": ["Gustave Moreau, 1826–1898", "French Symbolist painter", "mythological and biblical imagery", "ornamental detail, dreamlike space and imaginative ambiguity"],
+      "relationsUsed": ["simbolismo", "jupiter-y-semele"],
+      "after": {
+        "summary_es": "Gustave Moreau (1826–1898) desarrolló una pintura simbólica en la que mitología, religión y ornamentación producen escenas de intensidad visionaria. Sus superficies reúnen detalles preciosos, cuerpos suspendidos y espacios difíciles de ordenar como una narración única.",
+        "essay_es": "## El mito como espacio mental\n\nMoreau no utiliza el mito sólo para reconstruir una historia antigua. Sus figuras y atributos se acumulan como signos, mientras el color y la ornamentación hacen que la escena parezca pertenecer a un tiempo interior, más cercano al sueño que a la descripción.\n\n[[jupiter-y-semele|Júpiter y Sémele]] muestra esa lógica dentro del [[simbolismo|simbolismo]]. La pintura no resuelve todas sus correspondencias: invita a recorrer una constelación de formas donde deseo, destrucción y transformación permanecen unidos.",
+        "summary_en": "Gustave Moreau (1826–1898) developed a Symbolist painting in which mythology, religion, and ornament produce visionary intensity. His surfaces gather precious detail, suspended bodies, and spaces difficult to organise as a single narrative.",
+        "essay_en": "## Myth as mental space\n\nMoreau does not use myth only to reconstruct an ancient story. Figures and attributes accumulate as signs, while colour and ornament make the scene seem to belong to an interior time, closer to dream than description.\n\n[[jupiter-y-semele|Jupiter and Semele]] shows this logic within [[simbolismo|Symbolism]]. The painting does not resolve all its correspondences: it invites a passage through a constellation of forms where desire, destruction, and transformation remain joined."
+      },
+      "rejectedUnsupported": "The draft avoids treating Moreau's symbols as a fixed private code and does not reduce Symbolism to literary illustration."
+    },
+    {
+      "slug": "hannah-hoch",
+      "entityId": "cmsvvxirb00s185sj1g9hjian",
+      "sourceUrls": ["https://www.moma.org/collection/artists/2675"],
+      "claims": ["Hannah Höch, 1889–1978", "German artist", "pioneering photomontage", "mass media, gender roles and critique of Weimar society"],
+      "relationsUsed": ["dadaismo", "corte-con-el-cuchillo-de-cocina"],
+      "after": {
+        "summary_es": "Hannah Höch (1889–1978) convirtió el fotomontaje en una herramienta para desmontar imágenes de la cultura de masas y cuestionar los roles sociales de género. Sus collages combinan fragmentos, texto y humor para revelar que la realidad pública también es una construcción visual.",
+        "essay_es": "## Cortar la imagen pública\n\nHöch recortaba fotografías, titulares y signos reproducidos por la prensa para recombinarlos en escenas imposibles. El montaje no busca una imagen más coherente: hace visible la violencia con la que los medios clasifican cuerpos, comportamientos y posiciones sociales.\n\n[[corte-con-el-cuchillo-de-cocina|Corte con el cuchillo de cocina]] sitúa esa operación dentro del [[dadaismo|dadaísmo]]. El gesto de cortar es material y político a la vez: separa los fragmentos de su autoridad original y los devuelve al espectador como una pregunta.",
+        "summary_en": "Hannah Höch (1889–1978) turned photomontage into a tool for dismantling mass-media images and questioning social gender roles. Her collages combine fragments, text, and humour to reveal that public reality is also a visual construction.",
+        "essay_en": "## Cutting the public image\n\nHöch cut photographs, headlines, and signs reproduced by the press and recombined them into impossible scenes. Montage does not seek a more coherent image: it makes visible the violence through which media classify bodies, behaviours, and social positions.\n\n[[corte-con-el-cuchillo-de-cocina|Cut with the Kitchen Knife]] places this operation within [[dadaismo|Dada]]. Cutting is material and political at once: it separates fragments from their original authority and returns them to the viewer as a question."
+      },
+      "rejectedUnsupported": "The draft avoids treating Höch's collages as simple illustrations of Dada and does not reduce their critique to gender alone."
+    }
+  ]
+}

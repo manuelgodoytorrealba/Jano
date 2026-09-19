@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_005",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN → ES",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Fifth five incomplete published artists selected from the institutional-source queue.",
+  "rows": [
+    {
+      "slug": "jmw-turner",
+      "entityId": "cmsvvxipo00r185sjaf232ka1",
+      "sourceUrls": ["https://www.tate.org.uk/art/artists/jmw-turner-558"],
+      "claims": ["J. M. W. Turner, 1775–1851", "landscape and history painter", "draughtsman and watercolourist", "light, atmosphere, travel and historical meaning"],
+      "relationsUsed": ["romanticismo"],
+      "after": {
+        "summary_es": "J. M. W. Turner (1775–1851) llevó el paisaje hacia problemas de luz, atmósfera, velocidad y transformación material. Pintor, dibujante y acuarelista, trató el mar, el viaje y la historia como situaciones en las que la percepción cambia con el clima, el movimiento y la intensidad cromática.",
+        "essay_es": "## La luz en movimiento\n\nTurner trabajó el paisaje como una forma capaz de contener experiencia histórica, emoción y observación atmosférica. Sus acuarelas, dibujos y pinturas registran cambios de luz y condiciones meteorológicas sin separar la precisión del lugar de la libertad de la percepción.\n\nSu relación con el [[romanticismo|romanticismo]] no consiste sólo en representar escenas sublimes. El cielo, el agua, el humo y la velocidad alteran la estabilidad de las formas, haciendo que el paisaje se convierta en una experiencia de transformación continua.",
+        "summary_en": "J. M. W. Turner (1775–1851) brought landscape towards questions of light, atmosphere, speed, and material transformation. A painter, draughtsman, and watercolourist, he treated sea, travel, and history as situations in which perception changes with weather, movement, and chromatic intensity.",
+        "essay_en": "## Light in motion\n\nTurner worked with landscape as a form capable of holding historical experience, emotion, and atmospheric observation. His watercolours, drawings, and paintings register changing light and weather without separating precision of place from freedom of perception.\n\nHis relation to [[romanticismo|Romanticism]] is not only a matter of representing sublime scenes. Sky, water, smoke, and speed unsettle the stability of forms, turning landscape into an experience of continuous transformation."
+      },
+      "rejectedUnsupported": "The draft omits claims about abolitionism, specific paintings, and direct influence on Impressionism because they require more precise source mapping."
+    },
+    {
+      "slug": "leonardo-da-vinci",
+      "entityId": "cmsvvxi5e00fa85sjz514bq4m",
+      "sourceUrls": ["https://presse.louvre.fr/leonardo-da-vinci/?lang=en"],
+      "claims": ["Leonardo da Vinci, 1452–1519", "born near Florence and died in Amboise", "painting, drawing and investigation across artistic and scientific fields", "Italian Renaissance context"],
+      "relationsUsed": ["renacimiento-italiano"],
+      "after": {
+        "summary_es": "Leonardo da Vinci (1452–1519) desarrolló una práctica en la que pintura, dibujo, observación e investigación se alimentan mutuamente. Sus obras conservadas son relativamente pocas, pero su modo de estudiar cuerpos, naturaleza, luz y movimiento convirtió la imagen en un instrumento de conocimiento del Renacimiento italiano.",
+        "essay_es": "## Observar para construir\n\nLeonardo no separó con facilidad la práctica artística de la investigación del mundo. El dibujo le permitió estudiar anatomía, plantas, agua, máquinas y expresiones, mientras la pintura transformaba esas observaciones en relaciones de luz, gesto y espacio.\n\nLa obra de Leonardo no se entiende sólo por la fama de algunas imágenes. Su importancia también reside en el proceso: mirar, comparar y revisar se convierten en operaciones que conectan la representación con la producción de conocimiento dentro del [[renacimiento-italiano|Renacimiento italiano]].",
+        "summary_en": "Leonardo da Vinci (1452–1519) developed a practice in which painting, drawing, observation, and investigation continually inform one another. His relatively small surviving body of work made the image an instrument for studying bodies, nature, light, and movement within the Italian Renaissance.",
+        "essay_en": "## Observing in order to construct\n\nLeonardo did not sharply separate artistic practice from the investigation of the world. Drawing allowed him to study anatomy, plants, water, machines, and expression, while painting transformed those observations into relations of light, gesture, and space.\n\nLeonardo’s work cannot be understood only through the fame of a few images. Its importance also lies in the process: looking, comparing, and revising become operations that connect representation with the production of knowledge within the [[renacimiento-italiano|Italian Renaissance]]."
+      },
+      "rejectedUnsupported": "The draft avoids calling Leonardo a universal genius and omits disputed attributions, inventions, and claims about unfinished works."
+    },
+    {
+      "slug": "marina-abramovic",
+      "entityId": "cmsvvxic600j385sjwf28oa1c",
+      "sourceUrls": ["https://www.moma.org/artists/26439-marina-abramovic"],
+      "claims": ["Marina Abramović, born 1946", "Serbian artist", "performance and video", "duration, presence and relation between artist and audience"],
+      "relationsUsed": ["arte-performance", "performance"],
+      "after": {
+        "summary_es": "Marina Abramović (nacida en 1946) ha desarrollado una práctica centrada en la performance, el vídeo y la relación directa entre presencia, duración y espectador. Sus obras desplazan la atención desde el objeto artístico hacia una situación compartida en la que el cuerpo y el tiempo se convierten en materiales.",
+        "essay_es": "## El cuerpo como situación\n\nEn la obra de Abramović, la performance no es sólo una acción que ocurre delante de un público. También es una forma de organizar duración, atención y vulnerabilidad, haciendo que la presencia del artista y la respuesta del espectador formen parte de la obra.\n\nEl [[arte-performance|arte de performance]] modifica la pregunta por lo que se conserva. Una acción puede dejar registros, vídeos y relatos, pero su núcleo depende de una relación temporal que no se repite exactamente. Por eso la experiencia del público no es un elemento externo, sino una condición del trabajo.",
+        "summary_en": "Marina Abramović (born 1946) has developed a practice centred on performance, video, and the direct relation among presence, duration, and viewer. Her works shift attention from the art object to a shared situation in which body and time become materials.",
+        "essay_en": "## The body as situation\n\nIn Abramović’s work, performance is not only an action taking place before an audience. It is also a way of organising duration, attention, and vulnerability, making the artist’s presence and the viewer’s response part of the work.\n\n[[arte-performance|Performance art]] changes the question of what can be preserved. An action may leave records, videos, and accounts, but its core depends on a temporal relation that is never repeated exactly. The audience’s experience is therefore not external to the work; it is one of its conditions."
+      },
+      "rejectedUnsupported": "The draft omits specific performance histories, personal risk claims, and interpretations of audience behaviour not present in the selected MoMA record."
+    },
+    {
+      "slug": "salvador-dali",
+      "entityId": "cmsvvxia700hx85sjeqsqxfel",
+      "sourceUrls": ["https://www.salvador-dali.org/en/"],
+      "claims": ["Salvador Dalí, 1904–1989", "painter and cultural figure", "Surrealism context", "images built through precision, transformation and unexpected juxtapositions"],
+      "relationsUsed": ["surrealismo"],
+      "after": {
+        "summary_es": "Salvador Dalí (1904–1989) construyó imágenes de precisión reconocible y asociaciones inesperadas, situadas en el campo del surrealismo. Su práctica no se limitó a la pintura: articuló imagen, escritura, diseño y una figura pública que convirtió la identidad del artista en parte visible de su producción cultural.",
+        "essay_es": "## La imagen como transformación\n\nDalí trabajó con objetos, cuerpos y paisajes reconocibles para alterar sus proporciones, sus relaciones y su estabilidad. La precisión de los detalles no busca fijar una realidad objetiva: permite que una escena familiar se vuelva extraña mediante desplazamientos y combinaciones improbables.\n\nEl [[surrealismo|surrealismo]] ofrece un marco histórico para seguir esa práctica, pero la obra de Dalí también incluye una construcción consciente de su presencia pública. Pintura, escritura, diseño y declaraciones forman parte de una cultura visual en la que la imagen circula más allá del cuadro.",
+        "summary_en": "Salvador Dalí (1904–1989) constructed images of recognisable precision and unexpected associations within the field of Surrealism. His practice was not limited to painting: it connected image, writing, design, and a public persona that made the artist’s identity part of his cultural production.",
+        "essay_en": "## The image as transformation\n\nDalí worked with recognisable objects, bodies, and landscapes in order to alter their proportions, relations, and stability. The precision of detail does not seek to fix an objective reality; it allows a familiar scene to become strange through displacement and improbable combinations.\n\n[[surrealismo|Surrealism]] provides a historical framework for following this practice, but Dalí’s work also includes a conscious construction of public presence. Painting, writing, design, and statements belong to a visual culture in which the image circulates beyond the canvas."
+      },
+      "rejectedUnsupported": "The draft avoids psychoanalytic diagnosis, reducing Dalí to eccentricity, and assigning a single meaning to recurring motifs."
+    },
+    {
+      "slug": "vincent-van-gogh",
+      "entityId": "cmsvvxi8n00h085sj8cnvwbek",
+      "sourceUrls": ["https://www.vangoghmuseum.nl/en"],
+      "claims": ["Vincent van Gogh, 1853–1890", "Dutch artist", "painting and drawing", "colour, brushwork, landscape, still life, portrait and labour", "Post-Impressionism context"],
+      "relationsUsed": ["postimpresionismo"],
+      "after": {
+        "summary_es": "Vincent van Gogh (1853–1890) utilizó color, pincelada y composición para intensificar la experiencia de paisaje, interior, retrato y trabajo. Su trayectoria breve se desarrolló mediante cambios de lugar, motivos y técnica, y se sitúa en el postimpresionismo por la manera en que transforma la percepción en materia visible.",
+        "essay_es": "## Color y experiencia\n\nVan Gogh trató el color como una herramienta para construir intensidad, no como una simple descripción de la apariencia. Paisajes, interiores, retratos y escenas de trabajo adquieren ritmo mediante pinceladas que hacen visible la dirección de la mirada y la energía de la superficie.\n\nEl [[postimpresionismo|postimpresionismo]] permite situar su obra junto a otras investigaciones que ampliaron los problemas del impresionismo. La singularidad de Van Gogh está en cómo convierte esa búsqueda en una práctica de observación, lectura y trabajo material sobre cada imagen.",
+        "summary_en": "Vincent van Gogh (1853–1890) used colour, brushwork, and composition to intensify the experience of landscape, interior, portraiture, and labour. His short career developed through changes of place, subject, and technique, and belongs to Post-Impressionism through the way it turns perception into visible material.",
+        "essay_en": "## Colour and experience\n\nVan Gogh treated colour as a tool for constructing intensity rather than as a simple description of appearance. Landscapes, interiors, portraits, and scenes of labour acquire rhythm through brushstrokes that make the direction of looking and the energy of the surface visible.\n\n[[postimpresionismo|Post-Impressionism]] situates his work alongside other investigations that expanded the problems of Impressionism. Van Gogh’s singularity lies in how he turns that search into a practice of observation, reading, and material work on each image."
+      },
+      "rejectedUnsupported": "The draft avoids the myth of isolated genius, medical explanations, and claims about the artist's intentions or reception beyond the selected museum context."
+    }
+  ]
+}

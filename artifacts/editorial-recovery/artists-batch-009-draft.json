@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_009",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Ninth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "carlos-cruz-diez",
+      "entityId": "cmsvvxjaz014j85sjyiknn8vk",
+      "sourceUrls": ["https://www.moma.org/artists/1321-carlos-cruz-diez", "https://cruz-diez.com/about/"],
+      "claims": ["Carlos Cruz-Diez, 1923–2019", "Venezuelan artist", "colour as an autonomous perceptual event", "Physichromie and kinetic colour research"],
+      "relationsUsed": ["fisicromia", "arte-conceptual"],
+      "after": {
+        "summary_es": "Carlos Cruz-Diez (1923–2019) investigó el color como un fenómeno que ocurre en el espacio y el tiempo de la percepción. Sus fisicromías y otros dispositivos cromáticos hacen que la obra cambie con el desplazamiento del espectador, sin depender de una imagen representada.",
+        "essay_es": "## El color en movimiento\n\nCruz-Diez no trató el color como una capa estable aplicada sobre una forma. Sus estructuras organizan franjas, reflejos y contrastes para que la experiencia cromática se modifique según la posición, la luz y el recorrido de quien observa.\n\nLa [[fisicromia|fisicromía]] convierte esa investigación en una situación perceptiva. En diálogo con el [[arte-conceptual|arte conceptual]], la obra deja de ser sólo un objeto que contiene color y pasa a activar un acontecimiento que el espectador completa con su mirada.",
+        "summary_en": "Carlos Cruz-Diez (1923–2019) investigated colour as a phenomenon occurring in the space and time of perception. His Physichromies and other chromatic devices change as viewers move, without depending on a represented image.",
+        "essay_en": "## Colour in motion\n\nCruz-Diez did not treat colour as a stable layer applied to a form. His structures organise bands, reflections, and contrasts so that chromatic experience changes with the viewer’s position, light, and movement.\n\nThe [[fisicromia|Physichromie]] turns this investigation into a perceptual situation. In dialogue with [[arte-conceptual|conceptual art]], the work is no longer only an object containing colour: it activates an event completed by the viewer’s gaze."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Cruz-Diez to Op Art and does not treat the work's perceptual change as an effect independent of viewing conditions."
+    },
+    {
+      "slug": "carrie-mae-weems",
+      "entityId": "cmsvvxisw00sy85sj4kquwu08",
+      "sourceUrls": ["https://www.nga.gov/artists/36700-carrie-mae-weems"],
+      "claims": ["Carrie Mae Weems, born 1953", "American artist", "photography, video, sculpture and public art", "identity, race, power and historical narrative"],
+      "relationsUsed": ["fotografia", "from-here-i-saw-what-happened"],
+      "after": {
+        "summary_es": "Carrie Mae Weems (nacida en 1953) trabaja con fotografía, vídeo, escultura e instalación para examinar cómo las imágenes construyen identidad, raza, poder y memoria histórica. Sus escenas escenificadas y sus series narrativas convierten la mirada en una forma de intervención crítica.",
+        "essay_es": "## Quién puede aparecer en la historia\n\nWeems utiliza la fotografía para poner en tensión la autoridad de las imágenes y las historias que han dejado fuera. Puede recurrir a la escena doméstica, al autorretrato, al archivo o a la instalación, pero siempre mantiene abierta la pregunta por quién mira, quién queda representado y quién controla el relato.\n\nEn [[from-here-i-saw-what-happened|From Here I Saw What Happened]], la [[fotografia|fotografía]] funciona como una estructura de memoria y disputa. El encuadre no sólo muestra una historia: también examina las condiciones desde las que esa historia fue producida y recibida.",
+        "summary_en": "Carrie Mae Weems (born 1953) works with photography, video, sculpture, and installation to examine how images construct identity, race, power, and historical memory. Her staged scenes and narrative series turn looking into a form of critical intervention.",
+        "essay_en": "## Who can appear in history\n\nWeems uses photography to place the authority of images and the histories they exclude under pressure. She may turn to domestic scenes, self-portraiture, archives, or installation, while keeping open the question of who looks, who is represented, and who controls the narrative.\n\nIn [[from-here-i-saw-what-happened|From Here I Saw What Happened]], [[fotografia|photography]] becomes a structure of memory and dispute. The frame does not only show a history: it examines the conditions through which that history was produced and received."
+      },
+      "rejectedUnsupported": "The draft avoids treating Weems's practice as solely autobiographical and does not collapse its different media into photography alone."
+    },
+    {
+      "slug": "cildo-meireles",
+      "entityId": "cmsvvxjbc014s85sjn9x5eb3i",
+      "sourceUrls": ["https://www.moma.org/collection/artists/7007"],
+      "claims": ["Cildo Meireles, born 1948", "Brazilian artist", "objects, installations and systems of circulation", "political intervention through everyday materials"],
+      "relationsUsed": ["arte-conceptual", "insertion-into-circuit"],
+      "after": {
+        "summary_es": "Cildo Meireles (nacido en 1948) crea instalaciones y objetos que alteran circuitos cotidianos de circulación, intercambio y comunicación. Al intervenir botellas, billetes, espacios o sistemas de medida, transforma materiales comunes en dispositivos para hacer visibles relaciones de poder.",
+        "essay_es": "## Intervenir el circuito\n\nMeireles desplaza la obra fuera del objeto autónomo y la introduce en redes ya existentes. Un billete, una botella o una medida no llegan al espectador como soportes neutrales: conservan su uso social, pero incorporan una desviación que hace circular otra información.\n\n[[insertion-into-circuit|Inserción en circuitos ideológicos]] muestra cómo una intervención mínima puede alterar un sistema completo. En conexión con el [[arte-conceptual|arte conceptual]], la idea no sustituye a la materia: se activa precisamente a través de su recorrido por el mundo.",
+        "summary_en": "Cildo Meireles (born 1948) creates installations and objects that alter everyday circuits of circulation, exchange, and communication. By intervening in bottles, banknotes, spaces, or systems of measurement, he turns common materials into devices that reveal relations of power.",
+        "essay_en": "## Intervening in the circuit\n\nMeireles moves the work beyond the autonomous object and inserts it into existing networks. A banknote, bottle, or measurement does not reach the viewer as a neutral support: it retains its social use while carrying a deviation that makes another kind of information circulate.\n\n[[insertion-into-circuit|Insertions into Ideological Circuits]] shows how a minimal intervention can alter an entire system. In connection with [[arte-conceptual|conceptual art]], the idea does not replace matter: it becomes active through matter’s passage through the world."
+      },
+      "rejectedUnsupported": "The draft avoids assigning one fixed political message to every work and does not treat participation as guaranteed for all viewers."
+    },
+    {
+      "slug": "claes-oldenburg",
+      "entityId": "cmsvvxj9t013s85sjxhqf2won",
+      "sourceUrls": ["https://www.nga.gov/artists/2215-claes-oldenburg", "https://www.moma.org/artists/4397-claes-oldenburg"],
+      "claims": ["Claes Oldenburg, 1929–2022", "American artist born in Sweden", "Pop Art and sculpture", "everyday objects, scale and soft materials"],
+      "relationsUsed": ["soft-sculpture", "pop-art"],
+      "after": {
+        "summary_es": "Claes Oldenburg (1929–2022) transformó objetos cotidianos en esculturas que alteran su escala, peso y materialidad. Desde los primeros entornos comerciales hasta sus formas blandas y monumentales, su obra convierte lo familiar en una experiencia física, cómica y extrañamente monumental dentro del pop art.",
+        "essay_es": "## Cuando el objeto cambia de cuerpo\n\nOldenburg tomó alimentos, herramientas y productos reconocibles para devolverlos como formas demasiado grandes, demasiado blandas o materialmente improbables. El humor no es un añadido: revela que el tamaño, la textura y el contexto determinan cómo entendemos un objeto.\n\nLa [[soft-sculpture|escultura blanda]] introduce una contradicción física en el campo del [[pop-art|pop art]]. Lo que parecía duro puede ceder; lo que parecía pequeño puede ocupar el espacio. La obra convierte el consumo cotidiano en una pregunta sobre deseo, escala y presencia.",
+        "summary_en": "Claes Oldenburg (1929–2022) transformed everyday objects into sculptures that alter their scale, weight, and materiality. From early store environments to soft and monumental forms, his work turns the familiar into a physical, comic, and strangely monumental experience within Pop Art.",
+        "essay_en": "## When the object changes body\n\nOldenburg took recognisable foods, tools, and products and returned them as forms that were too large, too soft, or materially improbable. Humour is not an addition: it reveals that size, texture, and context determine how we understand an object.\n\n[[soft-sculpture|Soft sculpture]] introduces a physical contradiction into [[pop-art|Pop Art]]. What seemed hard can yield; what seemed small can occupy space. The work turns everyday consumption into a question about desire, scale, and presence."
+      },
+      "rejectedUnsupported": "The draft avoids attributing every soft sculpture to Oldenburg alone and does not reduce Pop Art to consumerist celebration."
+    },
+    {
+      "slug": "constantin-brancusi",
+      "entityId": "cmsvvxis200sg85sjo46l7005",
+      "sourceUrls": ["https://www.moma.org/artists/738-constantin-brancusi"],
+      "claims": ["Constantin Brâncuși, 1876–1957", "French artist born in Romania", "modern sculpture and abstraction", "simplified form, material and essential presence"],
+      "relationsUsed": ["abstraccion", "pajaro-en-el-espacio"],
+      "after": {
+        "summary_es": "Constantin Brâncuși (1876–1957) llevó la escultura moderna hacia formas concentradas en las que materia, superficie y presencia dejan de depender de una descripción literal. Sus esculturas simplifican el motivo sin vaciarlo: convierten la forma esencial en una experiencia corporal y espacial.",
+        "essay_es": "## La forma como presencia\n\nBrâncuși trabajó la escultura como una búsqueda de concentración. El pulido, la curva, la verticalidad y la relación entre pedestal y figura modifican la manera en que el cuerpo del espectador encuentra la obra en el espacio.\n\nEn [[pajaro-en-el-espacio|Pájaro en el espacio]], la [[abstraccion|abstracción]] no elimina el recuerdo del vuelo, pero tampoco lo ilustra de manera narrativa. La forma sostiene una tensión entre materia pesada y sensación de elevación, entre objeto concreto y aparición.",
+        "summary_en": "Constantin Brâncuși (1876–1957) moved modern sculpture toward concentrated forms in which material, surface, and presence no longer depend on literal description. His sculptures simplify the subject without emptying it, turning essential form into a bodily and spatial experience.",
+        "essay_en": "## Form as presence\n\nBrâncuși treated sculpture as a search for concentration. Polish, curve, verticality, and the relation between pedestal and figure change how the viewer’s body encounters the work in space.\n\nIn [[pajaro-en-el-espacio|Bird in Space]], [[abstraccion|abstraction]] does not erase the memory of flight, but neither does it illustrate it narratively. The form sustains a tension between heavy matter and the sensation of elevation, between concrete object and apparition."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Brâncuși as the sole founder of modern sculpture and does not interpret the works through biography alone."
+    }
+  ]
+}

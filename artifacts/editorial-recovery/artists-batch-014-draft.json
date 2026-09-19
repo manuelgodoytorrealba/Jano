@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_014",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Fourteenth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "georges-de-la-tour",
+      "entityId": "cmsvvxj51010m85sjll7z6jfz",
+      "sourceUrls": ["https://www.nga.gov/artists/1461-georges-de-la-tour"],
+      "claims": ["Georges de La Tour, 1593–1652", "French Baroque painter", "candlelit scenes and concentrated chiaroscuro", "quiet gestures, meditation and material light"],
+      "relationsUsed": ["barroco", "la-magdalena-penitente"],
+      "after": {
+        "summary_es": "Georges de La Tour (1593–1652) construyó escenas de luz concentrada en las que una vela, un gesto y unos pocos objetos organizan una experiencia de silencio. Su pintura barroca convierte la oscuridad en un espacio activo de atención, meditación y presencia material.",
+        "essay_es": "## La luz como acontecimiento\n\nEn las escenas de La Tour, la vela no sólo ilumina: establece una relación entre las figuras, los objetos y el tiempo de la mirada. El claroscuro reduce el mundo visible, pero esa reducción intensifica cada superficie, cada mano y cada pausa.\n\n[[la-magdalena-penitente|La Magdalena penitente]] sitúa esa investigación dentro del [[barroco|barroco]]. La imagen no necesita abundancia narrativa para producir profundidad: la concentración de la luz convierte la quietud en una acción perceptiva.",
+        "summary_en": "Georges de La Tour (1593–1652) constructed scenes of concentrated light in which a candle, a gesture, and a few objects organise an experience of silence. His Baroque painting turns darkness into an active space of attention, meditation, and material presence.",
+        "essay_en": "## Light as event\n\nIn La Tour’s scenes, the candle does not simply illuminate: it establishes a relation among figures, objects, and the duration of looking. Chiaroscuro reduces the visible world, but that reduction intensifies every surface, hand, and pause.\n\n[[la-magdalena-penitente|The Penitent Magdalen]] places this investigation within the [[barroco|Baroque]]. The image does not need narrative abundance to produce depth: concentrated light turns stillness into a perceptual action."
+      },
+      "rejectedUnsupported": "The draft avoids treating candlelight as a complete symbolic key and does not infer private devotion from the paintings."
+    },
+    {
+      "slug": "georges-seurat",
+      "entityId": "cmsvvxj6p011p85sjhbkkffuv",
+      "sourceUrls": ["https://www.moma.org/collection/artists/5358"],
+      "claims": ["Georges Seurat, 1859–1891", "French painter", "pointillist technique and optical colour", "structured modern scenes and Post-Impressionism"],
+      "relationsUsed": ["postimpresionismo", "una-tarde-de-domingo"],
+      "after": {
+        "summary_es": "Georges Seurat (1859–1891) convirtió la pintura de la vida moderna en una investigación estructurada sobre color, luz y percepción. Sus pequeñas pinceladas de tonos puros producen superficies luminosas que el ojo organiza como una imagen unificada dentro del postimpresionismo.",
+        "essay_es": "## La imagen construida por la mirada\n\nSeurat sustituyó la mezcla tradicional por una disposición calculada de puntos y trazos de color. La pintura parece ordenada y fragmentaria al mismo tiempo: la superficie muestra sus unidades, mientras la distancia permite que se integren en una atmósfera común.\n\n[[una-tarde-de-domingo|Una tarde de domingo]] sitúa esa técnica en una escena de ocio urbano. El [[postimpresionismo|postimpresionismo]] aparece como una forma de organizar la experiencia moderna, no como una renuncia a la observación del mundo visible.",
+        "summary_en": "Georges Seurat (1859–1891) turned modern life into a structured investigation of colour, light, and perception. His small strokes of pure colour produce luminous surfaces that the eye organises as a unified image within Post-Impressionism.",
+        "essay_en": "## The image constructed by looking\n\nSeurat replaced traditional mixing with a calculated arrangement of colour points and strokes. The painting seems ordered and fragmentary at once: the surface shows its units, while distance allows them to merge into a shared atmosphere.\n\n[[una-tarde-de-domingo|A Sunday Afternoon]] places this technique within a scene of urban leisure. [[postimpresionismo|Post-Impressionism]] appears as a way of organising modern experience, not as a retreat from observing the visible world."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Seurat to a mechanical formula and does not claim that optical theory alone explains the paintings."
+    },
+    {
+      "slug": "giambologna",
+      "entityId": "cmsvvxj4i010a85sjdboid02q",
+      "sourceUrls": ["https://www.museodelprado.es/coleccion/artista/juan-de-giambologna-bolonia/fda18105-e19c-4a77-abdd-3fbdfb26871a"],
+      "claims": ["Giambologna, 1529–1608", "Flemish-born sculptor active in Italy", "Mannerist movement", "spiral movement, multiple viewpoints and virtuoso marble"],
+      "relationsUsed": ["manierismo", "rapto-de-las-sabinas"],
+      "after": {
+        "summary_es": "Giambologna (1529–1608) llevó la escultura manierista hacia composiciones de movimiento continuo y múltiples puntos de vista. Sus figuras parecen ascender, girar y entrelazarse alrededor de un eje, haciendo que el espectador tenga que desplazarse para completar la forma.",
+        "essay_es": "## Una escultura sin frente único\n\nGiambologna organizó cuerpos y gestos en espirales que impiden reducir la obra a una sola imagen frontal. La materia parece conservar el esfuerzo del giro, mientras cada cambio de posición del espectador revela nuevas relaciones entre equilibrio, tensión y contacto.\n\n[[rapto-de-las-sabinas|Rapto de las sabinas]] expresa esa lógica dentro del [[manierismo|manierismo]]. El virtuosismo no es sólo destreza técnica: convierte la escultura en una experiencia temporal de recorrido y descubrimiento.",
+        "summary_en": "Giambologna (1529–1608) pushed Mannerist sculpture toward compositions of continuous movement and multiple viewpoints. His figures seem to rise, turn, and interlace around an axis, requiring viewers to move in order to complete the form.",
+        "essay_en": "## Sculpture without a single front\n\nGiambologna organised bodies and gestures into spirals that prevent the work from being reduced to one frontal image. The material seems to retain the effort of turning, while each change in the viewer’s position reveals new relations among balance, tension, and contact.\n\n[[rapto-de-las-sabinas|The Rape of the Sabine Women]] expresses this logic within [[manierismo|Mannerism]]. Virtuosity is not only technical skill: it turns sculpture into a temporal experience of movement and discovery."
+      },
+      "rejectedUnsupported": "The draft avoids treating the sculpture as a single narrative instant and does not infer the artist's intention from the title alone."
+    },
+    {
+      "slug": "giorgione",
+      "entityId": "cmsvvxj4a010485sjp46kv3bz",
+      "sourceUrls": ["https://sammlung.staedelmuseum.de/en/person/giorgione"],
+      "claims": ["Giorgione, about 1477/1478–1510", "Venetian painter", "poetic and enigmatic subjects", "saturated colour, landscape atmosphere and attribution uncertainty"],
+      "relationsUsed": ["renacimiento-italiano", "la-tempestad"],
+      "after": {
+        "summary_es": "Giorgione (hacia 1477/1478–1510) hizo del paisaje, el color saturado y el enigma narrativo elementos centrales de la pintura veneciana. La escasez de datos sobre su vida y la dificultad de atribuir algunas obras forman parte de la experiencia histórica de un legado breve e influyente.",
+        "essay_es": "## Pintar lo que no termina de explicarse\n\nEn las obras asociadas a Giorgione, el paisaje no funciona como fondo pasivo. La atmósfera, la luz y la relación entre figuras producen una escena cuyo significado permanece abierto, como si la pintura ofreciera indicios sin cerrar el relato.\n\n[[la-tempestad|La tempestad]] sitúa esa ambigüedad dentro del [[renacimiento-italiano|Renacimiento italiano]]. La incertidumbre de las atribuciones no es un argumento para abandonar la obra: recuerda que mirar también implica distinguir entre lo que la imagen muestra y lo que la historia puede afirmar.",
+        "summary_en": "Giorgione (about 1477/1478–1510) made landscape, saturated colour, and narrative enigma central to Venetian painting. The scarcity of information about his life and the difficulty of attributing some works are part of the historical experience of a brief and influential legacy.",
+        "essay_en": "## Painting what cannot quite be explained\n\nIn works associated with Giorgione, landscape is not a passive background. Atmosphere, light, and the relation among figures produce a scene whose meaning remains open, as if the painting offered clues without closing the narrative.\n\n[[la-tempestad|The Tempest]] places this ambiguity within the [[renacimiento-italiano|Italian Renaissance]]. Attribution uncertainty is not a reason to abandon the work: it reminds us that looking also means distinguishing between what the image shows and what history can affirm."
+      },
+      "rejectedUnsupported": "The draft preserves attribution uncertainty and avoids turning The Tempest into an illustration of one definitive interpretation."
+    },
+    {
+      "slug": "giotto",
+      "entityId": "cmsvvxioc00q785sj6uyl6ew2",
+      "sourceUrls": ["https://www.nga.gov/artists/1342-giotto"],
+      "claims": ["Giotto di Bondone, about 1265–1337", "Florentine painter and architect", "expressive weight and convincing architectural space", "transition from Byzantine conventions toward Italian naturalism"],
+      "relationsUsed": ["gotico", "campanile-de-giotto"],
+      "after": {
+        "summary_es": "Giotto di Bondone (hacia 1265–1337) dio a la pintura italiana una nueva relación entre figura, espacio y emoción. Sus frescos y paneles construyen cuerpos con peso, gestos reconocibles y arquitecturas convincentes, abriendo posibilidades decisivas para la pintura posterior.",
+        "essay_es": "## El peso de las figuras\n\nGiotto organizó escenas religiosas mediante cuerpos que parecen ocupar un lugar concreto. Las miradas, los abrazos y las posturas no son signos aislados: construyen relaciones físicas que hacen que la historia pintada pueda sentirse como un acontecimiento compartido.\n\nEl [[campanile-de-giotto|Campanile de Giotto]] prolonga esa atención hacia la arquitectura. En el horizonte [[gotico|gótico]], pintura, escultura y edificio participan de una misma búsqueda de presencia, escala y claridad narrativa.",
+        "summary_en": "Giotto di Bondone (about 1265–1337) gave Italian painting a new relation among figure, space, and emotion. His frescoes and panels construct bodies with weight, recognisable gestures, and convincing architecture, opening decisive possibilities for later painting.",
+        "essay_en": "## The weight of figures\n\nGiotto organised religious scenes through bodies that seem to occupy a concrete place. Gazes, embraces, and postures are not isolated signs: they construct physical relations that make the painted story feel like a shared event.\n\nThe [[campanile-de-giotto|Campanile of Giotto]] extends this attention into architecture. Within the [[gotico|Gothic]] horizon, painting, sculpture, and building participate in the same search for presence, scale, and narrative clarity."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Giotto as a solitary break from Byzantine painting and does not assign every architectural project to his direct hand."
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_012",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Twelfth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "el-anatsui",
+      "entityId": "cmsvvxit600t485sjbtatsymd",
+      "sourceUrls": ["https://elanatsui.art/biography"],
+      "claims": ["El Anatsui, born 1944", "Ghanaian sculptor working in Nigeria", "discarded materials and malleable installations", "reuse, transformation and African artistic traditions"],
+      "relationsUsed": ["arte-africano", "tierra-desarrollando-mas-raices"],
+      "after": {
+        "summary_es": "El Anatsui (nacido en 1944) transforma materiales descartados, como tapas de botellas y planchas de impresión, en grandes superficies escultóricas flexibles. Sus instalaciones relacionan reutilización, memoria material y tradiciones africanas con una forma abierta que cambia en cada montaje.",
+        "essay_es": "## La materia cambia de estado\n\nAnatsui reúne miles de fragmentos y los enlaza hasta producir superficies que pueden parecer tela, metal, paisaje o arquitectura. El material conserva las huellas de su circulación anterior, pero adquiere una nueva escala y una nueva capacidad de cubrir, plegarse y reflejar la luz.\n\n[[tierra-desarrollando-mas-raices|Tierra desarrollando más raíces]] muestra esa tensión entre estabilidad y transformación. En diálogo con el [[arte-africano|arte africano]], la obra no trata la reutilización como un simple procedimiento técnico: la convierte en una reflexión sobre consumo, memoria y continuidad cultural.",
+        "summary_en": "El Anatsui (born 1944) transforms discarded materials such as bottle caps and printing plates into large, flexible sculptural surfaces. His installations connect reuse, material memory, and African traditions with an open form that changes in each installation.",
+        "essay_en": "## Matter changes state\n\nAnatsui gathers thousands of fragments and links them into surfaces that can resemble cloth, metal, landscape, or architecture. The material retains traces of its earlier circulation while gaining a new scale and ability to cover, fold, and reflect light.\n\n[[tierra-desarrollando-mas-raices|Earth Developing More Roots]] shows this tension between stability and transformation. In dialogue with [[arte-africano|African art]], reuse is not merely a technical procedure: it becomes a reflection on consumption, memory, and cultural continuity."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Anatsui's work to recycling and does not assign one fixed cultural meaning to every material."
+    },
+    {
+      "slug": "elena-guro",
+      "entityId": "cmsvvxj7w012j85sj9i8gst8j",
+      "sourceUrls": ["https://www.moma.org/artists/12025-elena-guro"],
+      "claims": ["Elena Guro, 1877–1913", "Russian artist and writer", "early Russian avant-garde context", "poetic relation between image, language and nature"],
+      "relationsUsed": ["futurismo", "el-pequeno-camello"],
+      "after": {
+        "summary_es": "Elena Guro (1877–1913) desarrolló una práctica que unía pintura, dibujo y escritura dentro de la vanguardia rusa. Sus imágenes y textos exploran una percepción poética de la naturaleza, donde lo cotidiano puede adquirir una intensidad extraña, mínima y cambiante.",
+        "essay_es": "## Entre imagen y palabra\n\nGuro no separó con claridad la obra visual de la escritura. Animales, paisajes y escenas pequeñas aparecen como presencias sensibles más que como temas cerrados; la imagen conserva algo de relato y el relato algo de dibujo.\n\n[[el-pequeno-camello|El pequeño camello]] permite acercarse a esa economía de lo maravilloso. Su relación con el [[futurismo|futurismo]] no implica sólo velocidad o máquina: también abre un espacio para alterar la percepción ordinaria mediante asociaciones breves y formas de atención intensificada.",
+        "summary_en": "Elena Guro (1877–1913) developed a practice joining painting, drawing, and writing within the Russian avant-garde. Her images and texts explore a poetic perception of nature, where the everyday can acquire a strange, minimal, and shifting intensity.",
+        "essay_en": "## Between image and word\n\nGuro did not clearly separate visual work from writing. Animals, landscapes, and small scenes appear as sensitive presences rather than closed subjects; the image retains something of narrative, and the narrative something of drawing.\n\n[[el-pequeno-camello|The Little Camel]] offers an approach to this economy of wonder. Its relation to [[futurismo|Futurism]] is not only about speed or machines: it also opens a space for altering ordinary perception through brief associations and intensified attention."
+      },
+      "rejectedUnsupported": "The draft avoids reconstructing Guro's biography from literary motifs and does not treat Futurism as an exhaustive label for her practice."
+    },
+    {
+      "slug": "el-lissitzky",
+      "entityId": "cmsvvxir600ry85sj1flvdlm4",
+      "sourceUrls": ["https://www.museothyssen.org/en/collection/artists/lissitzky"],
+      "claims": ["El Lissitzky, 1890–1941", "Russian avant-garde artist, designer and architect", "Proun compositions and spatial geometry", "bridge between Suprematism and Constructivism"],
+      "relationsUsed": ["constructivismo", "vence-a-los-blancos-con-la-cuna-roja"],
+      "after": {
+        "summary_es": "El Lissitzky (1890–1941) conectó pintura, arquitectura, diseño gráfico y espacio expositivo en una búsqueda de nuevas formas de organización visual. Sus composiciones geométricas y sus proyectos Proun convierten el plano en un campo de relaciones espaciales, tipográficas y constructivas.",
+        "essay_es": "## Del plano al espacio\n\nLissitzky trató la geometría como una herramienta para hacer que la imagen pareciera expandirse más allá de su soporte. Perspectivas quebradas, formas suspendidas y elementos tipográficos construyen una escena en la que mirar implica orientarse dentro de un sistema.\n\n[[vence-a-los-blancos-con-la-cuna-roja|Vence a los blancos con la cuña roja]] muestra cómo la imagen puede intervenir en la esfera pública. En relación con el [[constructivismo|constructivismo]], el diseño no es un acabado posterior: organiza la circulación de ideas, cuerpos y espacios.",
+        "summary_en": "El Lissitzky (1890–1941) connected painting, architecture, graphic design, and exhibition space in a search for new forms of visual organisation. His geometric compositions and Proun projects turn the plane into a field of spatial, typographic, and constructive relations.",
+        "essay_en": "## From plane to space\n\nLissitzky treated geometry as a tool for making the image seem to expand beyond its support. Broken perspectives, suspended forms, and typographic elements construct a scene in which looking means orienting oneself within a system.\n\n[[vence-a-los-blancos-con-la-cuna-roja|Beat the Whites with the Red Wedge]] shows how an image can intervene in public life. In relation to [[constructivismo|Constructivism]], design is not a later finish: it organises the circulation of ideas, bodies, and spaces."
+      },
+      "rejectedUnsupported": "The draft avoids treating Lissitzky's political graphics and abstract projects as identical and does not reduce Constructivism to geometry alone."
+    },
+    {
+      "slug": "emile-bernard",
+      "entityId": "cmsvvxj6y011v85sjtxjgk5m3",
+      "sourceUrls": ["https://www.museothyssen.org/en/collection/artists/bernard-emile"],
+      "claims": ["Émile Bernard, 1868–1941", "French painter and writer", "Pont-Aven and synthetic simplification", "cloisonnism, Symbolism and later return to classicism"],
+      "relationsUsed": ["postimpresionismo", "bretonas-en-el-prado"],
+      "after": {
+        "summary_es": "Émile Bernard (1868–1941) participó en la renovación pictórica de Pont-Aven mediante contornos marcados y una simplificación sintética de la imagen. Su trayectoria pasó por el postimpresionismo, el simbolismo y posteriores cambios de lenguaje, sin quedar reducida a una sola etapa.",
+        "essay_es": "## Simplificar no es empobrecer\n\nBernard buscó una pintura capaz de condensar una idea en formas y colores organizados. Los contornos separan zonas de la imagen y hacen visible que la escena no es una copia inmediata, sino una construcción donde memoria, símbolo y percepción se encuentran.\n\n[[bretonas-en-el-prado|Bretonas en el prado]] sitúa esa investigación dentro del [[postimpresionismo|postimpresionismo]]. La simplificación no elimina el mundo visible: lo reorganiza para que la pintura pueda sostener una intensidad simbólica propia.",
+        "summary_en": "Émile Bernard (1868–1941) contributed to pictorial renewal at Pont-Aven through strong contours and synthetic simplification. His career moved through Post-Impressionism, Symbolism, and later changes of language, and cannot be reduced to a single period.",
+        "essay_en": "## Simplification is not impoverishment\n\nBernard sought a painting able to condense an idea into organised forms and colours. Contours separate areas of the image and make clear that the scene is not an immediate copy, but a construction where memory, symbol, and perception meet.\n\n[[bretonas-en-el-prado|Breton Women in the Meadow]] places this investigation within [[postimpresionismo|Post-Impressionism]]. Simplification does not remove the visible world: it reorganises it so painting can sustain an intensity of its own."
+      },
+      "rejectedUnsupported": "The draft avoids assigning sole priority for Pont-Aven innovations and does not treat Bernard's later classicism as a simple rejection of the avant-garde."
+    },
+    {
+      "slug": "ernst-ludwig-kirchner",
+      "entityId": "cmsvvxiqr00rp85sjg02kc8hb",
+      "sourceUrls": ["https://www.museothyssen.org/en/collection/artists/kirchner-ernst-ludwig"],
+      "claims": ["Ernst Ludwig Kirchner, 1880–1938", "German painter, printmaker and sculptor", "Die Brücke and German Expressionism", "urban scenes, intensified line and printmaking"],
+      "relationsUsed": ["expresionismo", "calle-de-berlin"],
+      "after": {
+        "summary_es": "Ernst Ludwig Kirchner (1880–1938) convirtió la ciudad, el cuerpo y la vida moderna en escenas de líneas tensas y colores intensificados. Como fundador de Die Brücke, exploró pintura, grabado y escultura para hacer visible una experiencia urbana marcada por velocidad, deseo e inquietud.",
+        "essay_es": "## La ciudad como tensión\n\nLas figuras de Kirchner no se integran dócilmente en el espacio urbano. Sus cuerpos angulosos, contornos abruptos y ritmos cromáticos hacen que calles y locales parezcan escenarios de contacto y distancia al mismo tiempo. La ciudad se vuelve una experiencia psicológica además de un lugar.\n\n[[calle-de-berlin|Calle de Berlín]] articula esa mirada dentro del [[expresionismo|expresionismo]]. El grabado y la pintura comparten una línea que no describe de manera neutral: comprime el movimiento y transforma la percepción en una forma de intensidad.",
+        "summary_en": "Ernst Ludwig Kirchner (1880–1938) turned the city, the body, and modern life into scenes of tense lines and intensified colour. As a founder of Die Brücke, he explored painting, printmaking, and sculpture to make visible an urban experience marked by speed, desire, and unease.",
+        "essay_en": "## The city as tension\n\nKirchner’s figures do not settle comfortably into urban space. Angular bodies, abrupt contours, and chromatic rhythms make streets and venues feel like scenes of contact and distance at once. The city becomes a psychological experience as well as a place.\n\n[[calle-de-berlin|Berlin Street]] articulates this view within [[expresionismo|Expressionism]]. Printmaking and painting share a line that does not describe neutrally: it compresses movement and turns perception into a form of intensity."
+      },
+      "rejectedUnsupported": "The draft avoids explaining Kirchner's urban figures only through psychology and does not treat Expressionism as a uniform style."
+    }
+  ]
+}

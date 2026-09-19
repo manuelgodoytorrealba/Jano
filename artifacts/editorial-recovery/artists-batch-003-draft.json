@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_003",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN → ES",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Third five incomplete published artists selected from the institutional-source queue.",
+  "rows": [
+    {
+      "slug": "frank-lloyd-wright",
+      "entityId": "cmsvvxiam00i685sj4kns6mm5",
+      "sourceUrls": ["https://franklloydwright.org/"],
+      "claims": ["Frank Lloyd Wright, 1867–1959", "architect and designer", "integration of architecture, landscape and domestic life", "organic architecture context"],
+      "relationsUsed": ["arquitectura-moderna"],
+      "after": {
+        "summary_es": "Frank Lloyd Wright (1867–1959) entendió la arquitectura como una relación entre edificio, lugar, estructura y vida cotidiana. Sus casas y proyectos públicos buscaron integrar espacio, materiales y paisaje, convirtiendo la experiencia de habitar en una cuestión central de la arquitectura moderna.",
+        "essay_es": "## Arquitectura y lugar\n\nWright trató la vivienda como algo más que un contenedor funcional. La distribución de los espacios, la relación con el terreno, la entrada de la luz y la continuidad entre interior y exterior forman parte de una misma investigación arquitectónica.\n\nSu obra permite recorrer la arquitectura moderna desde una tensión concreta: crear formas nuevas sin separar el edificio de la experiencia cotidiana ni del paisaje que lo recibe. La idea de integración no elimina los problemas técnicos y sociales del proyecto, pero hace visible cómo se relacionan estructura, uso y lugar.",
+        "summary_en": "Frank Lloyd Wright (1867–1959) understood architecture as a relation among building, site, structure, and everyday life. His houses and public projects sought to integrate space, materials, and landscape, making the experience of inhabiting a central question of modern architecture.",
+        "essay_en": "## Architecture and place\n\nWright treated the house as more than a functional container. The organisation of space, the relation to the site, the entry of light, and continuity between interior and exterior belong to the same architectural investigation.\n\nHis work allows modern architecture to be approached through a concrete tension: creating new forms without separating the building from everyday experience or the landscape that receives it. The idea of integration does not remove the project’s technical and social problems, but makes the relation among structure, use, and place visible."
+      },
+      "rejectedUnsupported": "Specific buildings, personal doctrine, and claims about social effects were omitted unless supported by the selected foundation source."
+    },
+    {
+      "slug": "georgia-okeeffe",
+      "entityId": "cmsvvxib000if85sjlfo6emxp",
+      "sourceUrls": ["https://www.okeeffemuseum.org/"],
+      "claims": ["Georgia O'Keeffe, 1887–1986", "American artist", "painting and drawing", "abstraction and enlarged natural forms"],
+      "relationsUsed": ["abstraccion"],
+      "after": {
+        "summary_es": "Georgia O’Keeffe (1887–1986) desarrolló una práctica pictórica atenta a flores, paisajes, huesos, edificios y formas abstractas. Sus ampliaciones y simplificaciones no convierten la naturaleza en un motivo único: exploran cómo escala, contorno y color pueden transformar la percepción de un objeto.",
+        "essay_es": "## Escala, forma y percepción\n\nO’Keeffe trabajó con motivos naturales y arquitectónicos que podían aparecer reconocibles y, al mismo tiempo, alejarse de una descripción literal. Una flor ampliada, una línea del paisaje o una forma reducida funcionan como decisiones de encuadre y de escala que modifican la atención del espectador.\n\nSu relación con la [[abstraccion|abstracción]] no consiste en abandonar el mundo visible. La pintura mantiene una tensión productiva entre referencia y autonomía: parte de algo que puede identificarse, pero reorganiza sus proporciones, sus límites y su intensidad cromática.",
+        "summary_en": "Georgia O’Keeffe (1887–1986) developed a painting practice attentive to flowers, landscapes, bones, buildings, and abstract forms. Her enlargements and simplifications do not turn nature into a single subject: they explore how scale, contour, and colour can transform the perception of an object.",
+        "essay_en": "## Scale, form, and perception\n\nO’Keeffe worked with natural and architectural motifs that could remain recognisable while moving away from literal description. An enlarged flower, a line in the landscape, or a reduced form becomes a decision about framing and scale that changes the viewer’s attention.\n\nHer relation to [[abstraccion|abstraction]] does not mean leaving the visible world behind. The painting sustains a productive tension between reference and autonomy: it begins with something identifiable but reorganises its proportions, boundaries, and chromatic intensity."
+      },
+      "rejectedUnsupported": "The draft avoids treating flowers as a fixed symbol of sexuality or reducing the artist's career to New Mexico and natural motifs."
+    },
+    {
+      "slug": "gian-lorenzo-bernini",
+      "entityId": "cmtaf2hmm000m07qtpnx5ugj5",
+      "sourceUrls": ["https://galleriaborghese.cultura.gov.it/en/archivio-schede/david/"],
+      "claims": ["Gian Lorenzo Bernini, 1598–1680", "Italian Baroque artist", "sculptor working in Rome", "early marble groups commissioned by Cardinal Scipione Borghese", "sculpture organised around action and viewer movement"],
+      "relationsUsed": ["barroco"],
+      "after": {
+        "summary_es": "Gian Lorenzo Bernini (1598–1680) fue una figura decisiva del barroco italiano y trabajó como escultor, arquitecto y artista al servicio de encargos públicos y privados. Sus esculturas convierten el movimiento, el gesto y la relación con el espacio del espectador en elementos inseparables de la obra.",
+        "essay_es": "## Escultura en acción\n\nLas primeras grandes esculturas de Bernini para el cardenal Scipione Borghese muestran una preocupación por representar cuerpos en el momento de una acción. El mármol no aparece como una materia inmóvil: torsiones, diagonales y gestos dirigen la mirada alrededor del grupo y hacen que el tiempo parezca incorporarse a la forma.\n\nEsta lógica se prolonga en su arquitectura y en sus proyectos públicos. La obra no se agota en una vista frontal, sino que organiza una experiencia espacial en la que el movimiento del espectador participa en la construcción de la imagen.",
+        "summary_en": "Gian Lorenzo Bernini (1598–1680) was a decisive figure in the Italian Baroque and worked as a sculptor, architect, and artist for public and private commissions. His sculptures make movement, gesture, and the viewer’s relation to space inseparable from the work.",
+        "essay_en": "## Sculpture in action\n\nBernini’s early major sculptures for Cardinal Scipione Borghese show a concern with representing bodies at the moment of action. Marble does not appear as inert matter: twists, diagonals, and gestures direct the eye around the group and make time seem to enter the form.\n\nThis logic continues in his architecture and public projects. The work is not exhausted by a frontal view; it organises a spatial experience in which the viewer’s movement participates in constructing the image."
+      },
+      "rejectedUnsupported": "The draft does not generalise from one sculpture to all of Bernini's production or infer religious intention beyond the documented commission and spatial form."
+    },
+    {
+      "slug": "henri-matisse",
+      "entityId": "cmsvvxi9200h985sjnjqy3rem",
+      "sourceUrls": ["https://www.moma.org/collection/artists/3832"],
+      "claims": ["Henri Matisse, 1869–1954", "French painter, sculptor, draftsman and printmaker", "Fauvism and bright contrasting colour", "long career using different artistic means"],
+      "relationsUsed": ["fauvismo"],
+      "after": {
+        "summary_es": "Henri Matisse (1869–1954) desarrolló una práctica que atravesó pintura, escultura, dibujo y obra gráfica. Su búsqueda de la expresión mediante el color alcanzó una primera formulación decisiva en el fauvismo, pero continuó transformándose a través de distintos medios y soluciones formales.",
+        "essay_es": "## El color como estructura\n\nMatisse no trató el color como un acabado aplicado a una forma ya resuelta. En sus composiciones, los colores organizan relaciones entre cuerpos, objetos, interiores y superficies, y pueden producir ritmo incluso cuando la profundidad espacial se reduce.\n\nEl [[fauvismo|fauvismo]] fue una etapa importante de esa investigación, no su definición completa. La trayectoria posterior muestra una búsqueda persistente que pasa de la pintura al dibujo, la escultura y la obra gráfica sin abandonar la pregunta por cómo una imagen puede producir expresión.",
+        "summary_en": "Henri Matisse (1869–1954) developed a practice spanning painting, sculpture, drawing, and printmaking. His search for expression through colour received an early decisive formulation in Fauvism, but continued to change through different media and formal solutions.",
+        "essay_en": "## Colour as structure\n\nMatisse did not treat colour as a finish applied to an already resolved form. In his compositions, colours organise relations among bodies, objects, interiors, and surfaces, and can produce rhythm even when spatial depth is reduced.\n\n[[fauvismo|Fauvism]] was an important stage in this investigation, not its complete definition. His later career shows a persistent search that moves from painting to drawing, sculpture, and printmaking without abandoning the question of how an image can produce expression."
+      },
+      "rejectedUnsupported": "The draft avoids claiming a single style for the whole career and avoids unsupported statements about influence on later movements."
+    },
+    {
+      "slug": "jackson-pollock",
+      "entityId": "cmsvvxibf00io85sjjxyx2ouw",
+      "sourceUrls": ["https://www.moma.org/collection/artists/4675"],
+      "claims": ["Jackson Pollock, 1912–1956", "American artist", "Abstract Expressionism", "Allover painting", "paint handling and compositions extending across the canvas"],
+      "relationsUsed": ["expresionismo-abstracto"],
+      "after": {
+        "summary_es": "Jackson Pollock (1912–1956) exploró una pintura en la que el gesto, el recorrido de la materia y la extensión de la composición por toda la superficie alteran la relación tradicional entre figura y fondo. Asociado al expresionismo abstracto, convirtió el proceso de pintar en parte visible de la experiencia de la obra.",
+        "essay_es": "## Pintura como recorrido\n\nEn las composiciones de Pollock, la pintura se distribuye mediante goteos, salpicaduras y trazos que atraviesan el campo visual. La superficie deja de funcionar como un fondo pasivo: cada marca participa en una red continua que obliga a recorrer el cuadro sin un único punto de entrada.\n\nEl término [[expresionismo-abstracto|expresionismo abstracto]] sitúa esta práctica históricamente, pero no sustituye su observación concreta. La obra conserva las huellas de una acción y, al mismo tiempo, exige que el espectador reconstruya sus ritmos, densidades y pausas.",
+        "summary_en": "Jackson Pollock (1912–1956) explored a painting in which gesture, the movement of material, and compositions extending across the entire surface alter the traditional relation between figure and ground. Associated with Abstract Expressionism, he made the process of painting part of the work’s visible experience.",
+        "essay_en": "## Painting as a path\n\nIn Pollock’s compositions, paint is distributed through drips, splashes, and strokes that cross the visual field. The surface no longer functions as a passive background: each mark participates in a continuous network that asks the viewer to move through the picture without a single point of entry.\n\nThe term [[expresionismo-abstracto|Abstract Expressionism]] places this practice historically, but does not replace close observation. The work preserves traces of an action while requiring viewers to reconstruct its rhythms, densities, and pauses."
+      },
+      "rejectedUnsupported": "The draft avoids the myth of spontaneous chaos, private biography, and political claims not required by the selected museum record."
+    }
+  ]
+}

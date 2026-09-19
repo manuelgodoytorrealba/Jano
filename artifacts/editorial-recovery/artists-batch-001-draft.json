@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_001",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN → ES",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "First five incomplete published artists selected from the institutional-source queue.",
+  "rows": [
+    {
+      "slug": "paul-cezanne",
+      "entityId": "cmsvvxi8i00gx85sjt7t842n7",
+      "sourceUrls": ["https://www.artic.edu/artists/34798/paul-cezanne"],
+      "claims": ["Paul Cézanne, 1839–1906", "painting across landscape, still life and figure", "Post-Impressionism", "colour, volume and spatial construction"],
+      "relationsUsed": ["postimpresionismo"],
+      "after": {
+        "summary_es": "Paul Cézanne (1839–1906) convirtió el paisaje, la naturaleza muerta y la figura en campos de investigación sobre el color, el volumen y la construcción del espacio pictórico. Asociado al postimpresionismo, su obra mantiene la observación del mundo mientras hace visible cómo una pintura organiza lo que vemos.",
+        "essay_es": "## Construir la mirada\n\nPaul Cézanne trabajó con géneros reconocibles —el paisaje, la naturaleza muerta y la figura—, pero los trató como problemas de estructura. El color no aparece sólo como superficie: ayuda a establecer relaciones de volumen, distancia y peso dentro del cuadro.\n\nSu importancia está en hacer perceptible el proceso mediante el que una imagen se construye. La pintura conserva una relación con el mundo observado, aunque no se limita a reproducirlo; cada pincelada participa en la organización del espacio y de la mirada.",
+        "summary_en": "Paul Cézanne (1839–1906) turned landscape, still life, and the figure into fields of research on colour, volume, and the construction of pictorial space. Associated with Post-Impressionism, his work remains attentive to the visible world while making clear how a painting organises what we see.",
+        "essay_en": "## Constructing the gaze\n\nPaul Cézanne worked with recognisable genres—landscape, still life, and the figure—but treated them as problems of structure. Colour is not merely a surface: it helps establish relations of volume, distance, and weight within the picture.\n\nHis importance lies in making the process by which an image is constructed perceptible. The painting remains related to the observed world without simply reproducing it; each brushstroke participates in organising space and looking."
+      },
+      "rejectedUnsupported": "Nationality, city, influence on Cubism, and claims about artistic intention were omitted because the current canonical record does not provide sufficient claim-level grounding."
+    },
+    {
+      "slug": "edvard-munch",
+      "entityId": "cmtaf2hma000d07qt01xme0lb",
+      "sourceUrls": ["https://www.munch.no/en/edvard-munch/"],
+      "claims": ["Edvard Munch, 1863–1944", "painting, graphic art, drawing, sculpture, photography and film", "Symbolism in the 1890s", "pioneer of Expressionism from the early 1900s"],
+      "relationsUsed": ["simbolismo", "expresionismo"],
+      "after": {
+        "summary_es": "Edvard Munch (1863–1944) desarrolló una práctica que atravesó pintura, obra gráfica, dibujo, escultura, fotografía y cine. Vinculado al simbolismo en la década de 1890 y pionero del expresionismo desde comienzos del siglo XX, convirtió la experiencia interior y sus motivos recurrentes en una investigación visual abierta.",
+        "essay_es": "## Una práctica de variaciones\n\nEdvard Munch no limitó su trabajo a la pintura. Su experimentación con obra gráfica, dibujo, escultura, fotografía y cine amplió las formas en que un motivo podía reaparecer, cambiar de escala y adquirir otra intensidad.\n\nEl grito pertenece a ese mundo de variaciones, pero no lo agota. La trayectoria de Munch muestra cómo una imagen puede funcionar como una secuencia de investigaciones sobre experiencia, memoria y percepción, en lugar de quedar fijada en una única versión definitiva.",
+        "summary_en": "Edvard Munch (1863–1944) developed a practice spanning painting, graphic art, drawing, sculpture, photography, and film. Connected to Symbolism in the 1890s and a pioneer of Expressionism from the early twentieth century, he turned inner experience and recurring motifs into an open visual investigation.",
+        "essay_en": "## A practice of variations\n\nEdvard Munch did not restrict his work to painting. His experiments with graphic art, drawing, sculpture, photography, and film expanded the ways a motif could return, change scale, and acquire a different intensity.\n\nThe Scream belongs to this world of variations, but does not exhaust it. Munch’s career shows how an image can become a sequence of investigations into experience, memory, and perception rather than remain fixed in a single definitive version."
+      },
+      "rejectedUnsupported": "Family history, medical claims, and psychological explanations were omitted; the text uses the museum's documented media and movement framing only."
+    },
+    {
+      "slug": "francisco-de-goya",
+      "entityId": "cmsvvxi7d00g985sj3of3xp04",
+      "sourceUrls": ["https://www.museodelprado.es/coleccion/artista/goya-y-lucientes-francisco-de/39568a17-81b5-4d6f-84fa-12db60780812"],
+      "claims": ["Francisco de Goya, 1746–1828", "court painter", "painting and printmaking", "career connected with Zaragoza, Madrid and the Spanish court"],
+      "relationsUsed": ["romanticismo"],
+      "after": {
+        "summary_es": "Francisco de Goya (1746–1828) desarrolló una trayectoria que pasó por la pintura de corte, el retrato, la obra religiosa y el grabado. Su producción registra encargos, tradiciones y conflictos de la España de su tiempo sin reducirse a una sola lectura histórica. En JANO conecta Madrid, el romanticismo, la guerra y las posibilidades críticas de la imagen.",
+        "essay_es": "## Entre encargo y crítica\n\nGoya trabajó para instituciones y clientes concretos, desde encargos religiosos hasta la corte, y construyó también una obra gráfica de gran autonomía. Esa combinación permite seguir el desplazamiento de una imagen entre el espacio oficial, la observación social y la imaginación.\n\nSu obra no ofrece un comentario único sobre la historia. Retratos, escenas de guerra, estampas y pinturas de asunto religioso exigen atender a cada contexto y a los procedimientos con los que Goya transforma una situación en imagen.",
+        "summary_en": "Francisco de Goya (1746–1828) developed a career that included court painting, portraiture, religious work, and printmaking. His production records commissions, traditions, and conflicts in the Spain of his time without reducing them to a single historical reading. In JANO he connects Madrid, Romanticism, war, and the critical possibilities of the image.",
+        "essay_en": "## Between commission and critique\n\nGoya worked for specific institutions and patrons, from religious commissions to the court, while also developing a highly independent graphic œuvre. This combination allows an image to be followed between official space, social observation, and imagination.\n\nHis work does not offer one single commentary on history. Portraits, scenes of war, prints, and religious paintings require attention to their individual contexts and to the procedures through which Goya turns a situation into an image."
+      },
+      "rejectedUnsupported": "The draft avoids assigning a uniform political intention, a definitive Romanticism label, or biographical interpretations not established by the available source."
+    },
+    {
+      "slug": "frida-kahlo",
+      "entityId": "cmsvvxi9w00hr85sji6qb9o9y",
+      "sourceUrls": ["https://www.museofridakahlo.org.mx/wp/wp-content/uploads/2022/08/Biografias-Frida-Kahlo-ingles.pdf"],
+      "claims": ["Frida Kahlo, 1907–1954", "Mexican painter", "self-portraiture", "Casa Azul and Mexican cultural references"],
+      "relationsUsed": ["muralismo-mexicano"],
+      "after": {
+        "summary_es": "Frida Kahlo (1907–1954) fue una pintora mexicana cuya obra convirtió el autorretrato en un espacio de construcción de identidad, memoria y experiencia corporal. Sus imágenes combinan una escala íntima con referencias culturales mexicanas y una composición cuidadosamente controlada. En JANO se relaciona con el muralismo mexicano y con los debates sobre representación del cuerpo.",
+        "essay_es": "## El autorretrato como construcción\n\nEn la obra de Frida Kahlo, el autorretrato no funciona sólo como registro de una apariencia. La artista organiza postura, vestuario, objetos y fondo para construir una imagen de sí misma y situarla dentro de una cultura visual mexicana.\n\nLa dimensión corporal de estas pinturas no debe separarse de su composición. El cuerpo aparece como experiencia, símbolo y superficie de representación; por eso sus imágenes permiten recorrer simultáneamente identidad, memoria y la elaboración pública de una figura artística.",
+        "summary_en": "Frida Kahlo (1907–1954) was a Mexican painter whose work turned self-portraiture into a space for constructing identity, memory, and bodily experience. Her images combine intimate scale with Mexican cultural references and carefully controlled composition. In JANO she relates to Mexican Muralism and debates around the representation of the body.",
+        "essay_en": "## Self-portraiture as construction\n\nIn Frida Kahlo’s work, the self-portrait is not only a record of appearance. She arranges posture, clothing, objects, and background to construct an image of herself and place it within a Mexican visual culture.\n\nThe bodily dimension of these paintings cannot be separated from their composition. The body appears as experience, symbol, and surface of representation; her images therefore allow identity, memory, and the public construction of an artistic figure to be considered together."
+      },
+      "rejectedUnsupported": "Specific medical diagnoses, private biography, and claims about political intention were omitted unless directly supported by the selected museum biography."
+    },
+    {
+      "slug": "jacques-louis-david",
+      "entityId": "cmsvvxi7i00gc85sjkzxprdnb",
+      "sourceUrls": ["https://www.metmuseum.org/toah/hd/david/hd_david.htm"],
+      "claims": ["Jacques-Louis David, 1748–1825", "French Neoclassical painter", "Revolutionary and Napoleonic political context", "antiquity as a civic and visual model"],
+      "relationsUsed": ["neoclasicismo"],
+      "after": {
+        "summary_es": "Jacques-Louis David (1748–1825) fue una figura central de la pintura neoclásica francesa y trabajó en un periodo marcado por la Revolución y el Imperio napoleónico. Sus composiciones recurrieron a la antigüedad para organizar escenas de virtud, sacrificio y autoridad. En JANO conecta el neoclasicismo, la historia y la función pública de la pintura.",
+        "essay_es": "## La pintura como escena pública\n\nDavid hizo de la historia antigua un repertorio visual para pensar el presente. Gestos, cuerpos y composiciones ordenadas convierten el cuadro histórico en una escena donde se representan deber, sacrificio y pertenencia colectiva.\n\nEse lenguaje no quedó separado de la política de su tiempo. La trayectoria del artista atraviesa la Revolución francesa y el periodo napoleónico, de modo que sus imágenes permiten estudiar cómo la pintura puede participar en la formación de modelos públicos y no sólo ilustrar un episodio pasado.",
+        "summary_en": "Jacques-Louis David (1748–1825) was a central figure in French Neoclassical painting and worked during a period shaped by the Revolution and the Napoleonic Empire. His compositions used antiquity to organise scenes of virtue, sacrifice, and authority. In JANO he connects Neoclassicism, history, and the public role of painting.",
+        "essay_en": "## Painting as a public scene\n\nDavid made ancient history a visual repertoire for thinking about the present. Gestures, bodies, and ordered compositions turn history painting into a scene in which duty, sacrifice, and collective belonging are represented.\n\nThis language was not separate from the politics of his time. The artist’s career crossed the French Revolution and the Napoleonic period, allowing his images to be studied as part of the formation of public models rather than as illustrations of a distant past alone."
+      },
+      "rejectedUnsupported": "The draft does not assign a single political message to every work or treat the existing relation as evidence for intention beyond the institutional historical framing."
+    }
+  ]
+}

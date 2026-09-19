@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_006",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN → ES",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Sixth five incomplete published artists selected from the institutional-source queue.",
+  "rows": [
+    {
+      "slug": "johannes-vermeer",
+      "entityId": "cmsvvxi7800g685sjyxtik8pl",
+      "sourceUrls": ["https://www.mauritshuis.nl/en/our-collection/our-masters/johannes-vermeer"],
+      "claims": ["Johannes Vermeer, 1632–1675", "Dutch painter who lived and worked in Delft", "intimate household scenes", "light, perspective and slow observation"],
+      "relationsUsed": ["barroco"],
+      "after": {
+        "summary_es": "Johannes Vermeer (1632–1675) construyó escenas domésticas de escala contenida en las que luz, perspectiva y disposición espacial producen una concentración extraordinaria. Su pintura convierte acciones ordinarias y habitaciones silenciosas en situaciones de atención prolongada dentro de la tradición barroca neerlandesa.",
+        "essay_es": "## La atención de lo cotidiano\n\nVermeer trabajó principalmente con interiores domésticos en los que una figura vierte leche, lee, toca música o realiza una tarea sencilla. La escena parece detenida, pero la luz que entra por la ventana, la perspectiva y los pequeños reflejos distribuyen el tiempo dentro del cuadro.\n\nSu relación con el [[barroco|barroco]] no depende de la abundancia narrativa. La imagen concentra pocos elementos y exige mirarlos con lentitud: la vida cotidiana se convierte en una construcción precisa de espacio, luz y presencia.",
+        "summary_en": "Johannes Vermeer (1632–1675) constructed intimate domestic scenes in which light, perspective, and spatial arrangement produce extraordinary concentration. His painting turns ordinary actions and quiet rooms into situations of sustained attention within the Dutch Baroque tradition.",
+        "essay_en": "## Attention to the everyday\n\nVermeer worked mainly with domestic interiors in which a figure pours milk, reads, plays music, or performs a simple task. The scene appears still, yet window light, perspective, and small reflections distribute time throughout the picture.\n\nHis relation to the [[barroco|Baroque]] does not depend on narrative abundance. The image concentrates a few elements and asks to be looked at slowly: everyday life becomes a precise construction of space, light, and presence."
+      },
+      "rejectedUnsupported": "The draft avoids claims about optical devices, private biography, and definitive explanations of the calm atmosphere."
+    },
+    {
+      "slug": "katsushika-hokusai",
+      "entityId": "cmsvvxicm00jc85sjh0hya4t8",
+      "sourceUrls": ["https://www.metmuseum.org/art/collection/search/39799"],
+      "claims": ["Katsushika Hokusai, 1760–1849", "Japanese artist of the Edo period", "woodblock print practice", "landscape, movement and serial views of Mount Fuji", "ukiyo-e context"],
+      "relationsUsed": ["ukiyo-e"],
+      "after": {
+        "summary_es": "Katsushika Hokusai (1760–1849) exploró paisaje, movimiento y vida cotidiana mediante dibujo y estampas xilográficas. La serie de vistas del monte Fuji muestra cómo una imagen reproducible puede convertir un mismo motivo en múltiples encuadres, ritmos y condiciones visuales dentro del ukiyo-e.",
+        "essay_es": "## El paisaje como serie\n\nHokusai convirtió el paisaje en un campo de variaciones. En lugar de fijar una única vista del monte Fuji, sus estampas cambian la distancia, la estación, la actividad humana y la relación entre una forma estable y un entorno en movimiento.\n\nEl [[ukiyo-e|ukiyo-e]] vincula la imagen con la reproducción y la circulación. La fuerza de estas composiciones no depende sólo del tema: surge de la claridad de las líneas, la organización de los planos y la capacidad de una estampa para condensar una escena amplia en una superficie limitada.",
+        "summary_en": "Katsushika Hokusai (1760–1849) explored landscape, movement, and everyday life through drawing and woodblock prints. His series of views of Mount Fuji shows how a reproducible image can turn one motif into multiple framings, rhythms, and visual conditions within ukiyo-e.",
+        "essay_en": "## Landscape as a series\n\nHokusai turned landscape into a field of variations. Rather than fixing one view of Mount Fuji, his prints change distance, season, human activity, and the relation between a stable form and a moving environment.\n\n[[ukiyo-e|Ukiyo-e]] connects the image to reproduction and circulation. The force of these compositions depends not only on subject: it comes from the clarity of line, the organisation of planes, and the ability of a print to condense a broad scene onto a limited surface."
+      },
+      "rejectedUnsupported": "The draft stays within the selected Met object record and omits broad claims about influence on European modernism or the artist's full biography."
+    },
+    {
+      "slug": "le-corbusier",
+      "entityId": "cmsvvxiah00i385sj0m4wlj3l",
+      "sourceUrls": ["https://whc.unesco.org/en/list/1321"],
+      "claims": ["Le Corbusier, 1887–1965", "architect, urban planner and theorist", "Modern Movement", "Villa Savoye and housing as responses to contemporary society", "architecture across several countries"],
+      "relationsUsed": ["bauhaus-movement"],
+      "after": {
+        "summary_es": "Le Corbusier (1887–1965) trabajó como arquitecto, urbanista, teórico y diseñador, y convirtió vivienda, ciudad, técnica y paisaje en problemas conectados. Su obra forma parte del Movimiento Moderno y combina una búsqueda de lenguaje arquitectónico nuevo con propuestas para las necesidades sociales de la vida contemporánea.",
+        "essay_es": "## La vivienda como proyecto moderno\n\nLa arquitectura de Le Corbusier no se limita a una colección de edificios singulares. Sus proyectos relacionan estructura, circulación, luz, proporción y uso, desde casas como la Villa Savoye hasta propuestas de vivienda colectiva y planificación urbana.\n\nLa pertenencia al Movimiento Moderno sitúa su obra en un debate internacional sobre cómo transformar las técnicas y los espacios para responder a la sociedad contemporánea. Esa ambición también exige examinar las tensiones entre programa, experiencia cotidiana y escala urbana, en diálogo con la [[bauhaus-movement|Bauhaus]].",
+        "summary_en": "Le Corbusier (1887–1965) worked as an architect, urban planner, theorist, and designer, connecting housing, city, technology, and landscape. His work belongs to the Modern Movement and combines a search for a new architectural language with proposals for the social needs of contemporary life.",
+        "essay_en": "## Housing as a modern project\n\nLe Corbusier’s architecture is not limited to a collection of singular buildings. His projects connect structure, circulation, light, proportion, and use, from houses such as Villa Savoye to proposals for collective housing and urban planning.\n\nHis place in the Modern Movement situates the work within an international debate about transforming techniques and spaces in response to contemporary society. This ambition also requires attention to tensions among programme, everyday experience, and urban scale, in dialogue with the [[bauhaus-movement|Bauhaus]]."
+      },
+      "rejectedUnsupported": "The draft avoids celebrating standardisation without qualification and does not attribute social effects to the architect's projects without specific evidence."
+    },
+    {
+      "slug": "sandro-botticelli",
+      "entityId": "cmsvvxi6400fl85sj2tu79wx0",
+      "sourceUrls": ["https://www.uffizi.it/en/artworks/birth-of-venus"],
+      "claims": ["Sandro Botticelli, about 1445–1510", "Florentine painter and draughtsman", "Medici patronage and secular subjects", "linear rhythm, mythological imagery and Renaissance context"],
+      "relationsUsed": ["renacimiento-italiano"],
+      "after": {
+        "summary_es": "Sandro Botticelli (hacia 1445–1510) fue un pintor y dibujante florentino cuya obra articuló línea, ritmo y referencias mitológicas o religiosas. Sus composiciones, vinculadas al patrocinio mediceo y al Renacimiento italiano, convierten la figura y el movimiento del contorno en instrumentos para construir significado.",
+        "essay_es": "## Línea, mito y movimiento\n\nBotticelli desarrolló una pintura en la que la línea organiza tanto la figura como el espacio. En sus escenas mitológicas, el cabello, los paños y los gestos producen una circulación rítmica que relaciona cuerpos, paisaje y relato sin depender de una ilusión espacial profunda.\n\nEl [[renacimiento-italiano|Renacimiento italiano]] ofrece el marco cultural de esa investigación, pero sus imágenes no se reducen a una etiqueta de belleza ideal. El mito, el encargo y la forma se encuentran en composiciones que convierten la superficie en una estructura activa.",
+        "summary_en": "Sandro Botticelli (about 1445–1510) was a Florentine painter and draughtsman whose work joined line, rhythm, and mythological or religious reference. His compositions, connected with Medici patronage and the Italian Renaissance, use figure and contour as instruments for constructing meaning.",
+        "essay_en": "## Line, myth, and movement\n\nBotticelli developed a painting in which line organises both figure and space. In his mythological scenes, hair, drapery, and gestures create a rhythmic circulation that relates bodies, landscape, and narrative without depending on deep spatial illusion.\n\nThe [[renacimiento-italiano|Italian Renaissance]] provides the cultural framework for this investigation, but his images cannot be reduced to an ideal of beauty. Myth, commission, and form meet in compositions that turn the surface into an active structure."
+      },
+      "rejectedUnsupported": "The draft avoids treating Botticelli's mythological paintings as a single philosophical programme and omits uncertain workshop or dating claims."
+    },
+    {
+      "slug": "tiziano",
+      "entityId": "cmsvvxi6900fo85sjno1xfbjb",
+      "sourceUrls": ["https://www.nationalgallery.org.uk/artists/titian"],
+      "claims": ["Titian, 1488–1576", "Venetian painter", "portraiture, religious and mythological painting", "colour and pictorial matter", "Italian Renaissance context"],
+      "relationsUsed": ["renacimiento-italiano"],
+      "after": {
+        "summary_es": "Tiziano Vecellio (hacia 1488–1576) convirtió el color y la materia pictórica en elementos decisivos de la pintura veneciana del siglo XVI. Trabajó en retratos, asuntos religiosos y mitológicos, adaptando sus soluciones a distintos encargos dentro del Renacimiento italiano.",
+        "essay_es": "## Color y presencia\n\nTiziano trató el color como una forma de construir presencia. En retratos, escenas religiosas y composiciones mitológicas, los tonos, las transparencias y la materia de la pincelada organizan la relación entre cuerpo, superficie y espacio.\n\nSu carrera se desarrolló en una Venecia conectada con cortes, iglesias y coleccionistas. El [[renacimiento-italiano|Renacimiento italiano]] no aparece como un estilo uniforme, sino como un campo de encargos y transformaciones en el que la pintura podía producir autoridad, intimidad o intensidad sensorial.",
+        "summary_en": "Titian (about 1488–1576) made colour and pictorial matter decisive elements of sixteenth-century Venetian painting. He worked in portraiture, religious, and mythological subjects, adapting his solutions to different commissions within the Italian Renaissance.",
+        "essay_en": "## Colour and presence\n\nTitian treated colour as a way of constructing presence. In portraits, religious scenes, and mythological compositions, tones, transparencies, and the materiality of the brushstroke organise the relation among body, surface, and space.\n\nHis career developed in a Venice connected to courts, churches, and collectors. The [[renacimiento-italiano|Italian Renaissance]] does not appear as a uniform style, but as a field of commissions and transformations in which painting could produce authority, intimacy, or sensory intensity."
+      },
+      "rejectedUnsupported": "The draft preserves uncertainty around the exact birth year and avoids treating every early attribution or later influence as settled fact."
+    }
+  ]
+}

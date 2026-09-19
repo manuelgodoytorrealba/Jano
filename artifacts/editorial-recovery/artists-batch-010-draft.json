@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_010",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Tenth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "cy-twombly",
+      "entityId": "cmsvvxj9g013j85sjarguaj27",
+      "sourceUrls": ["https://cytwombly.org/artist/biography"],
+      "claims": ["Cy Twombly, 1928–2011", "American painter, sculptor and photographer", "calligraphic marks and cultural references", "classical antiquity, poetry and Abstract Expressionist context"],
+      "relationsUsed": ["expresionismo-abstracto", "sin-titulo-twombly"],
+      "after": {
+        "summary_es": "Cy Twombly (1928–2011) desarrolló una pintura de trazos, signos y referencias culturales en la que la escritura parece emerger de la materia pictórica. Sus superficies relacionan gesto, memoria y poesía sin abandonar la tensión entre abstracción y huella reconocible.",
+        "essay_es": "## El gesto como memoria\n\nTwombly convirtió la marca en un espacio de asociaciones. Sus líneas pueden recordar una escritura, un mapa o un resto arqueológico, pero no se dejan leer como un mensaje estable. El gesto conserva la energía del cuerpo y, al mismo tiempo, parece erosionarse sobre la superficie.\n\nEn [[sin-titulo-twombly|Sin título]], la relación con el [[expresionismo-abstracto|expresionismo abstracto]] no se limita al gesto espontáneo. La pintura incorpora poesía, mitología e historia como capas que hacen de la abstracción una forma de memoria cultural.",
+        "summary_en": "Cy Twombly (1928–2011) developed a painting of marks, signs, and cultural references in which writing seems to emerge from pictorial matter. His surfaces connect gesture, memory, and poetry without abandoning the tension between abstraction and recognisable trace.",
+        "essay_en": "## Gesture as memory\n\nTwombly turned the mark into a space of associations. His lines may recall writing, a map, or an archaeological remainder, but they do not settle into a stable message. The gesture preserves the body’s energy while also seeming to erode across the surface.\n\nIn [[sin-titulo-twombly|Untitled]], the relation to [[expresionismo-abstracto|Abstract Expressionism]] is not limited to spontaneous gesture. The painting incorporates poetry, mythology, and history as layers that make abstraction a form of cultural memory."
+      },
+      "rejectedUnsupported": "The draft avoids treating Twombly's marks as illegible writing with a single decoded meaning."
+    },
+    {
+      "slug": "dan-flavin",
+      "entityId": "cmsvvxjab014485sjbc26q3fp",
+      "sourceUrls": ["https://www.sfmoma.org/artist/Dan_Flavin/"],
+      "claims": ["Dan Flavin, 1933–1996", "American artist", "fluorescent light installations", "serial repetition, industrial production and spatial experience"],
+      "relationsUsed": ["minimalismo", "monumento-para-v"],
+      "after": {
+        "summary_es": "Dan Flavin (1933–1996) hizo de los tubos fluorescentes un material escultórico capaz de transformar la percepción del espacio. La repetición serial y la producción industrial no eliminan la experiencia sensible: la luz dibuja límites, altera superficies y reorganiza el recorrido del espectador.",
+        "essay_es": "## La luz ocupa el espacio\n\nFlavin no trata la luz como iluminación secundaria, sino como materia que construye una situación. El tubo industrial conserva su forma reconocible, pero su emisión cromática modifica paredes, esquinas y cuerpos, haciendo visible el espacio como una experiencia cambiante.\n\n[[monumento-para-v|Monumento para V. Tatlin]] muestra esa tensión entre homenaje, serie y estructura. En el [[minimalismo|minimalismo]], la reducción formal no significa ausencia de contenido: cada variación de luz produce una relación distinta entre objeto, arquitectura y mirada.",
+        "summary_en": "Dan Flavin (1933–1996) made fluorescent tubes into sculptural material capable of transforming the perception of space. Serial repetition and industrial production do not remove sensory experience: light draws boundaries, alters surfaces, and reorganises the viewer’s movement.",
+        "essay_en": "## Light occupies space\n\nFlavin does not treat light as secondary illumination, but as material that constructs a situation. The industrial tube retains its recognisable form, yet its coloured emission changes walls, corners, and bodies, making space visible as a shifting experience.\n\n[[monumento-para-v|Monument for V. Tatlin]] shows this tension among homage, series, and structure. In [[minimalismo|Minimalism]], formal reduction does not mean an absence of content: each variation of light produces a different relation among object, architecture, and gaze."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Flavin's works as interchangeable industrial products and does not reduce Minimalism to neutrality."
+    },
+    {
+      "slug": "david-alfaro-siqueiros",
+      "entityId": "cmsvvxiu400tp85sj226qx6sg",
+      "sourceUrls": ["https://www.gob.mx/cultura/prensa/david-alfaro-siqueiros-artista-que-renovo-los-canones-de-la-pintura"],
+      "claims": ["David Alfaro Siqueiros, 1896–1974", "Mexican painter and muralist", "technical experimentation and public mural painting", "political and social commitment"],
+      "relationsUsed": ["muralismo-mexicano", "eco-de-un-grito"],
+      "after": {
+        "summary_es": "David Alfaro Siqueiros (1896–1974) renovó la pintura mural mexicana mediante una combinación de experimentación técnica, escala pública y compromiso político y social. Sus composiciones buscan envolver al espectador y convertir el espacio colectivo en parte activa de la imagen.",
+        "essay_es": "## Pintura para el espacio común\n\nSiqueiros entendió el mural como una forma de intervención pública. La perspectiva, el dinamismo de las figuras y la relación entre arquitectura y superficie hacen que la imagen no se contemple desde un único punto fijo, sino que acompañe el movimiento del cuerpo.\n\nEn [[eco-de-un-grito|Eco de un grito]], el [[muralismo-mexicano|muralismo mexicano]] aparece como una práctica que une materia, técnica y conflicto histórico. La escala monumental no es sólo una ampliación: cambia quién puede encontrarse con la obra y cómo se construye una memoria común.",
+        "summary_en": "David Alfaro Siqueiros (1896–1974) renewed Mexican mural painting through technical experimentation, public scale, and political and social commitment. His compositions seek to surround the viewer and make collective space an active part of the image.",
+        "essay_en": "## Painting for common space\n\nSiqueiros understood the mural as a form of public intervention. Perspective, the dynamism of figures, and the relation between architecture and surface mean that the image is not seen from a single fixed point, but accompanies the body’s movement.\n\nIn [[eco-de-un-grito|Echo of a Scream]], [[muralismo-mexicano|Mexican muralism]] appears as a practice joining matter, technique, and historical conflict. Monumental scale is not merely enlargement: it changes who can encounter the work and how shared memory is constructed."
+      },
+      "rejectedUnsupported": "The draft avoids attributing a single political programme to every mural and does not generalise the artist's techniques across all periods."
+    },
+    {
+      "slug": "diego-rivera",
+      "entityId": "cmsvvxia200hu85sjt84za4ro",
+      "sourceUrls": ["https://www.diegorivera.org/biography.jsp"],
+      "claims": ["Diego Rivera, 1886–1957", "Mexican painter and muralist", "public art and social history", "European modernism and Mexican mural movement"],
+      "relationsUsed": ["muralismo-mexicano", "hombre-en-la-encrucijada"],
+      "after": {
+        "summary_es": "Diego Rivera (1886–1957) convirtió la pintura mural en un espacio para relacionar historia, trabajo, conflicto y vida colectiva. Su lenguaje combina figuras monumentales, narración pública y una síntesis personal de aprendizajes europeos con la tradición política y visual mexicana.",
+        "essay_es": "## Historia a escala pública\n\nLos murales de Rivera organizan escenas densas en las que trabajadores, instituciones, máquinas y episodios históricos comparten una superficie continua. La claridad narrativa permite que la imagen funcione en un espacio público, pero la composición también produce tensiones entre individuos, fuerzas económicas y proyectos políticos.\n\n[[hombre-en-la-encrucijada|El hombre en la encrucijada]] sitúa esa investigación dentro del [[muralismo-mexicano|muralismo mexicano]]. La pintura no ilustra simplemente una historia: construye un escenario donde el espectador debe orientarse entre opciones sobre el futuro común.",
+        "summary_en": "Diego Rivera (1886–1957) turned mural painting into a space connecting history, labour, conflict, and collective life. His language combines monumental figures, public narrative, and a personal synthesis of European lessons with Mexico’s political and visual traditions.",
+        "essay_en": "## History at public scale\n\nRivera’s murals organise dense scenes in which workers, institutions, machines, and historical episodes share a continuous surface. Narrative clarity allows the image to function in public space, but the composition also creates tensions among individuals, economic forces, and political projects.\n\n[[hombre-en-la-encrucijada|Man at the Crossroads]] places this investigation within [[muralismo-mexicano|Mexican muralism]]. The painting does not simply illustrate history: it constructs a scene in which viewers must orient themselves among possible futures for common life."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Rivera to political muralism and does not present his European influences as a simple break with Mexican traditions."
+    },
+    {
+      "slug": "do-ho-suh",
+      "entityId": "cmsvvxjc9015d85sjnrasvtrr",
+      "sourceUrls": ["https://www.moma.org/artists/8198-do-ho-suh", "https://americanart.si.edu/exhibitions/suh"],
+      "claims": ["Do Ho Suh, born 1962", "South Korean artist", "fabric architecture and installation", "home, memory, migration and scale"],
+      "relationsUsed": ["arte-conceptual", "seul-hogar"],
+      "after": {
+        "summary_es": "Do Ho Suh (nacido en 1962) construye arquitecturas textiles y esculturas instalativas que examinan cómo habitamos los espacios y recordamos los lugares que dejamos atrás. Sus casas translúcidas y figuras repetidas convierten hogar, migración y escala en experiencias físicas y colectivas.",
+        "essay_es": "## La casa como memoria móvil\n\nSuh utiliza tela, hilo y estructuras ligeras para reconstruir habitaciones, fachadas y recorridos. La arquitectura conserva su capacidad de ordenar el cuerpo, pero pierde solidez: puede plegarse, atravesarse y trasladarse, como una memoria que acompaña a quien migra.\n\n[[seul-hogar|Seoul Home]] relaciona esa experiencia con el [[arte-conceptual|arte conceptual]] sin abandonar la dimensión material. La obra no propone una casa ideal, sino una pregunta sobre pertenencia, intimidad y la posibilidad de llevar un lugar dentro de otro.",
+        "summary_en": "Do Ho Suh (born 1962) constructs textile architectures and installations that examine how we inhabit spaces and remember places we have left behind. His translucent houses and repeated figures turn home, migration, and scale into physical and collective experiences.",
+        "essay_en": "## The house as mobile memory\n\nSuh uses fabric, thread, and light structures to reconstruct rooms, facades, and passages. Architecture retains its ability to organise the body but loses solidity: it can fold, be crossed, and be moved, like a memory carried by someone who migrates.\n\n[[seul-hogar|Seoul Home]] connects this experience with [[arte-conceptual|conceptual art]] without abandoning material presence. The work does not propose an ideal house, but asks about belonging, intimacy, and the possibility of carrying one place inside another."
+      },
+      "rejectedUnsupported": "The draft avoids treating home as a purely private category and does not infer one fixed autobiographical meaning for every architectural installation."
+    }
+  ]
+}

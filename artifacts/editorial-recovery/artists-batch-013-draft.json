@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_013",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Thirteenth five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "eva-hesse",
+      "entityId": "cmsvvxis700sj85sj4omb1oqw",
+      "sourceUrls": ["https://www.moma.org/artists/2623-eva-hesse"],
+      "claims": ["Eva Hesse, 1936–1970", "American artist born in Germany", "unstable materials and serial forms", "body, repetition and post-Minimalist sculpture"],
+      "relationsUsed": ["minimalismo", "contingente"],
+      "after": {
+        "summary_es": "Eva Hesse (1936–1970) exploró materiales frágiles, formas repetidas y estructuras que parecen encontrarse entre el orden y el accidente. Su escultura introduce peso, vulnerabilidad y tiempo en un diálogo crítico con la austeridad del minimalismo.",
+        "essay_es": "## La forma cuando deja de obedecer\n\nHesse trabajó con látex, fibra de vidrio, cuerda y otros materiales cuya transformación altera la obra con el paso del tiempo. Las series y repeticiones no producen una regularidad cerrada: dejan aparecer desviaciones, desequilibrios y una sensación de cuerpo suspendido.\n\n[[contingente|Contingente]] sitúa esa fragilidad dentro de una conversación con el [[minimalismo|minimalismo]]. La obra conserva la claridad de una estructura, pero hace que su materialidad parezca vulnerable, provisional y afectada por las condiciones de su existencia.",
+        "summary_en": "Eva Hesse (1936–1970) explored fragile materials, repeated forms, and structures poised between order and accident. Her sculpture introduces weight, vulnerability, and time into a critical dialogue with the austerity of Minimalism.",
+        "essay_en": "## Form when it stops obeying\n\nHesse worked with latex, fibreglass, rope, and other materials whose transformation changes the work over time. Series and repetition do not produce a closed regularity: they allow deviations, imbalance, and the sense of a suspended body to appear.\n\n[[contingente|Contingent]] places this fragility within a conversation with [[minimalismo|Minimalism]]. The work retains the clarity of a structure while making its materiality seem vulnerable, provisional, and affected by the conditions of its existence."
+      },
+      "rejectedUnsupported": "The draft avoids treating material decay as a failure and does not reduce Hesse's work to a reaction against Minimalism."
+    },
+    {
+      "slug": "fra-angelico",
+      "entityId": "cmsvvxj3x00zv85sja9gdn80z",
+      "sourceUrls": ["https://www.metmuseum.org/exhibitions/listings/2005/fra-angelico"],
+      "claims": ["Fra Angelico, about 1395–1455", "Florentine Dominican painter", "religious subjects and altarpieces", "psychological presence, light and early Renaissance space"],
+      "relationsUsed": ["renacimiento-italiano", "la-anunciacion-fra-angelico"],
+      "after": {
+        "summary_es": "Fra Angelico (hacia 1395–1455) desarrolló una pintura religiosa en la que luz, arquitectura y gesto construyen una experiencia de atención silenciosa. Sus retablos y frescos combinan claridad espacial con una intensidad psicológica que sitúa la escena sagrada dentro de una presencia concreta.",
+        "essay_es": "## La quietud como composición\n\nEn las escenas de Fra Angelico, la serenidad no nace de vaciar la imagen, sino de organizarla con precisión. Figuras, columnas, jardines y zonas de luz establecen un ritmo que ralentiza la mirada y convierte el encuentro religioso en una experiencia espacial.\n\n[[la-anunciacion-fra-angelico|La Anunciación]] pertenece al horizonte del [[renacimiento-italiano|Renacimiento italiano]], pero su fuerza no depende sólo de la perspectiva. El gesto contenido y la relación entre interior y jardín hacen visible una forma de tiempo suspendido.",
+        "summary_en": "Fra Angelico (about 1395–1455) developed religious painting in which light, architecture, and gesture construct an experience of quiet attention. His altarpieces and frescoes combine spatial clarity with psychological intensity, placing the sacred scene within a concrete presence.",
+        "essay_en": "## Stillness as composition\n\nIn Fra Angelico’s scenes, serenity does not come from emptying the image, but from organising it precisely. Figures, columns, gardens, and zones of light establish a rhythm that slows the gaze and turns the religious encounter into a spatial experience.\n\n[[la-anunciacion-fra-angelico|The Annunciation]] belongs to the horizon of the [[renacimiento-italiano|Italian Renaissance]], but its force depends on more than perspective. Restrained gesture and the relation between interior and garden make a suspended form of time visible."
+      },
+      "rejectedUnsupported": "The draft avoids equating devotional intent with a single emotional response and does not claim that all works were painted by Fra Angelico's hand alone."
+    },
+    {
+      "slug": "francis-picabia",
+      "entityId": "cmsvvxj7a012485sjtar012bl",
+      "sourceUrls": ["https://www.nationalgallery.org.uk/artists/francis-picabia"],
+      "claims": ["Francis Picabia, 1879–1953", "French artist and writer", "stylistic volatility across modern movements", "Dada, machines and changing visual languages"],
+      "relationsUsed": ["dadaismo", "dama-en-la-calle"],
+      "after": {
+        "summary_es": "Francis Picabia (1879–1953) recorrió múltiples lenguajes de la modernidad, desde el impresionismo y la abstracción hasta el dadaísmo y el surrealismo. Su movilidad estilística convierte el cambio de registro en una estrategia para cuestionar la estabilidad de la identidad artística.",
+        "essay_es": "## Cambiar de estilo como método\n\nPicabia no construyó una firma visual única y reconocible en el sentido convencional. Pasó de paisajes y planos abstractos a máquinas, transparencias y composiciones figurativas, haciendo que cada lenguaje pareciera a la vez una convicción y una provocación.\n\n[[dama-en-la-calle|Dama en la calle]] puede leerse junto al [[dadaismo|dadaísmo]] como parte de esa libertad de desplazamiento. La obra no busca resolver las contradicciones entre estilos: las mantiene activas para cuestionar qué esperamos de un artista y de una imagen.",
+        "summary_en": "Francis Picabia (1879–1953) moved through many languages of modern art, from Impressionism and abstraction to Dada and Surrealism. His stylistic mobility turns changing register into a strategy for questioning the stability of artistic identity.",
+        "essay_en": "## Changing style as method\n\nPicabia did not construct a single, recognisable visual signature in the conventional sense. He moved from landscapes and abstract planes to machines, transparencies, and figurative compositions, making each language seem both a conviction and a provocation.\n\n[[dama-en-la-calle|Woman in the Street]] can be read alongside [[dadaismo|Dada]] as part of this freedom of movement. The work does not resolve contradictions among styles: it keeps them active in order to question what we expect from an artist and an image."
+      },
+      "rejectedUnsupported": "The draft avoids treating stylistic change as inconsistency and does not assign one definitive movement to Picabia's full career."
+    },
+    {
+      "slug": "francois-boucher",
+      "entityId": "cmsvvxj5b010s85sjk64vnn2e",
+      "sourceUrls": ["https://www.nga.gov/artists/996-francois-boucher"],
+      "claims": ["François Boucher, 1703–1770", "French painter, draughtsman and printmaker", "courtly taste and Madame de Pompadour patronage", "Rococo colour, ornament and varied subjects"],
+      "relationsUsed": ["rococo", "madame-de-pompadour"],
+      "after": {
+        "summary_es": "François Boucher (1703–1770) desarrolló una pintura de color luminoso, sensualidad ornamental y gran variedad de temas. Vinculado a la cultura cortesana de Luis XV y al patrocinio de Madame de Pompadour, trabajó entre escenas mitológicas, retratos, paisajes, asuntos religiosos y diseño decorativo.",
+        "essay_es": "## Elegancia y construcción del deseo\n\nBoucher organizó figuras, tejidos, flores y arquitecturas para producir imágenes de abundancia visual. La ligereza aparente de sus composiciones depende de una disciplina de color, gesto y superficie que convierte la escena en una experiencia cuidadosamente dirigida.\n\n[[madame-de-pompadour|Madame de Pompadour]] sitúa esa pintura en una red de patronazgo y representación. El [[rococo|rococó]] no aparece sólo como decoración: también revela cómo el gusto, la intimidad y el poder pueden construirse a través de la imagen.",
+        "summary_en": "François Boucher (1703–1770) developed a painting of luminous colour, ornamental sensuality, and varied subjects. Connected with the court culture of Louis XV and Madame de Pompadour’s patronage, he worked across mythology, portraiture, landscape, religious subjects, and decorative design.",
+        "essay_en": "## Elegance and the construction of desire\n\nBoucher arranged figures, fabrics, flowers, and architecture to produce images of visual abundance. The apparent lightness of his compositions depends on a discipline of colour, gesture, and surface that turns the scene into a carefully directed experience.\n\n[[madame-de-pompadour|Madame de Pompadour]] places this painting within a network of patronage and representation. [[rococo|Rococo]] is not only decoration: it also reveals how taste, intimacy, and power can be constructed through images."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Boucher to erotic or decorative painting and does not present court patronage as his only artistic context."
+    },
+    {
+      "slug": "frans-hals",
+      "entityId": "cmsvvxj4w010j85sjdilyz7ra",
+      "sourceUrls": ["https://franshalsmuseum.nl/en/about-us/about-frans-hals"],
+      "claims": ["Frans Hals, about 1582/1583–1666", "Dutch portrait painter", "lively loose brushwork", "individual presence, civic groups and Haarlem portrait culture"],
+      "relationsUsed": ["barroco", "caballero-sonriente"],
+      "after": {
+        "summary_es": "Frans Hals (hacia 1582/1583–1666) renovó el retrato neerlandés mediante una pincelada suelta y vivaz que hace que las figuras parezcan responder al instante. Sus retratos individuales y colectivos convierten gesto, postura y expresión en formas de presencia social.",
+        "essay_es": "## El retrato como instante\n\nHals no alisa la superficie para fijar una identidad inmóvil. Sus pinceladas dejan que el rostro, la ropa y las manos aparezcan a través de una ejecución rápida y visible, como si la persona estuviera entrando o saliendo de la pose.\n\n[[caballero-sonriente|El caballero sonriente]] muestra esa tensión dentro del [[barroco|barroco]]. La pintura no sólo describe a un individuo: construye una relación entre mirada, gesto y vida pública, haciendo que el retrato parezca ocurrir delante de nosotros.",
+        "summary_en": "Frans Hals (about 1582/1583–1666) renewed Dutch portraiture through lively, loose brushwork that makes figures seem to respond in the instant. His individual and group portraits turn gesture, posture, and expression into forms of social presence.",
+        "essay_en": "## Portrait as an instant\n\nHals does not smooth the surface in order to fix an unmoving identity. His brushstrokes allow face, clothing, and hands to emerge through quick, visible execution, as if the person were entering or leaving the pose.\n\n[[caballero-sonriente|The Laughing Cavalier]] shows this tension within the [[barroco|Baroque]]. The painting does not only describe an individual: it constructs a relation among gaze, gesture, and public life, making the portrait seem to happen before us."
+      },
+      "rejectedUnsupported": "The draft avoids treating Hals's brushwork as purely spontaneous and does not reduce his portraits to expressions of personality alone."
+    }
+  ]
+}

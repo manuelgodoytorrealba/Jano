@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_004",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN → ES",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Fourth five incomplete published artists selected from the institutional-source queue.",
+  "rows": [
+    {
+      "slug": "mark-rothko",
+      "entityId": "cmsvvxibk00ir85sjh2rrmqg9",
+      "sourceUrls": ["https://www.nga.gov/artists/1892-mark-rothko"],
+      "claims": ["Mark Rothko, 1903–1970", "American artist", "Abstract Expressionism", "large fields of colour and atmospheric space"],
+      "relationsUsed": ["expresionismo-abstracto"],
+      "after": {
+        "summary_es": "Mark Rothko (1903–1970) desarrolló una pintura de campos de color que convierte la superficie en un espacio de percepción lenta. Asociado al expresionismo abstracto, sus composiciones organizan rectángulos suspendidos, bordes difusos y variaciones cromáticas que modifican la experiencia del espectador.",
+        "essay_es": "## El color como espacio\n\nRothko redujo con frecuencia la imagen a grandes zonas cromáticas, pero esa reducción no equivale a una fórmula simple. El tamaño del cuadro, la proximidad del espectador y la relación entre campos de color producen una experiencia en la que la superficie parece abrirse hacia una profundidad atmosférica.\n\nEl [[expresionismo-abstracto|expresionismo abstracto]] ofrece un marco histórico para su obra, aunque no agota su lectura. En Rothko, el color funciona simultáneamente como materia, intervalo y acontecimiento perceptivo: no describe un lugar, pero construye las condiciones para permanecer ante una imagen.",
+        "summary_en": "Mark Rothko (1903–1970) developed a painting of colour fields that turns the surface into a space for slow perception. Associated with Abstract Expressionism, his compositions organise suspended rectangles, softened edges, and chromatic variations that alter the viewer’s experience.",
+        "essay_en": "## Colour as space\n\nRothko often reduced the image to large chromatic zones, but that reduction does not amount to a simple formula. The size of the painting, the viewer’s proximity, and the relation among colour fields create an experience in which the surface seems to open into atmospheric depth.\n\n[[expresionismo-abstracto|Abstract Expressionism]] offers a historical framework for his work without exhausting its meaning. In Rothko, colour functions at once as material, interval, and perceptual event: it does not describe a place, but constructs the conditions for remaining before an image."
+      },
+      "rejectedUnsupported": "The draft avoids psychological readings, biographical explanations, and claims about a single spiritual meaning for every colour-field painting."
+    },
+    {
+      "slug": "caravaggio",
+      "entityId": "cmsvvxi6p00fw85sj6tri6mdb",
+      "sourceUrls": ["https://barberinicorsini.org/en/"],
+      "claims": ["Michelangelo Merisi da Caravaggio, 1571–1610", "Italian painter", "Roman and Neapolitan contexts", "dramatic light, observed figures and religious scenes"],
+      "relationsUsed": ["barroco"],
+      "after": {
+        "summary_es": "Michelangelo Merisi da Caravaggio (1571–1610) transformó la pintura italiana mediante figuras de presencia física inmediata, contrastes intensos de luz y escenas religiosas construidas a partir de gestos y cuerpos observables. Su obra ocupa un lugar central en el desarrollo del barroco y en la renovación de la imagen narrativa.",
+        "essay_es": "## La escena como encuentro\n\nCaravaggio acercó las escenas religiosas a una escala corporal y cotidiana. La luz recorta rostros, manos y objetos, mientras la composición concentra la acción en un instante que parece producirse delante del espectador.\n\nSu relación con el [[barroco|barroco]] no se reduce al dramatismo. La intensidad depende también de cómo la pintura distribuye la atención: cuerpos observados, espacios oscuros y gestos decisivos convierten la narración en un encuentro físico con la imagen.",
+        "summary_en": "Michelangelo Merisi da Caravaggio (1571–1610) transformed Italian painting through figures of immediate physical presence, intense contrasts of light, and religious scenes built from observable gestures and bodies. His work occupies a central place in the development of the Baroque and the renewal of narrative images.",
+        "essay_en": "## The scene as encounter\n\nCaravaggio brought religious scenes closer to a bodily and everyday scale. Light cuts across faces, hands, and objects, while the composition concentrates action in an instant that seems to take place before the viewer.\n\nHis relation to the [[barroco|Baroque]] is not reducible to drama. Intensity also depends on how the painting distributes attention: observed bodies, dark spaces, and decisive gestures turn narrative into a physical encounter with the image."
+      },
+      "rejectedUnsupported": "The draft omits criminal biography, a uniform realism claim, and interpretations of religious intention not established by the selected institutional record."
+    },
+    {
+      "slug": "miguel-angel",
+      "entityId": "cmsvvxi5m00fd85sjupdf8c5q",
+      "sourceUrls": ["https://www.galleriaaccademiafirenze.it/en/artists/michelangelo/"],
+      "claims": ["Michelangelo Buonarroti, 1475–1564", "sculptor, painter and architect", "Florence and Rome", "David and large-scale projects across media"],
+      "relationsUsed": ["renacimiento-italiano"],
+      "after": {
+        "summary_es": "Miguel Ángel Buonarroti (1475–1564) desarrolló una práctica que atravesó escultura, pintura y arquitectura. Entre Florencia y Roma, trató el cuerpo, la escala y la materia como problemas comunes a distintos medios, desde el David hasta los grandes encargos papales del Renacimiento italiano.",
+        "essay_es": "## El cuerpo y la escala\n\nEn la obra de Miguel Ángel, la figura humana organiza tanto la escultura como la pintura y la arquitectura. El cuerpo no es sólo un tema representado: determina proporciones, tensiones y recorridos espaciales.\n\nEl David muestra cómo una forma monumental puede concentrar energía antes de la acción. En sus proyectos florentinos y romanos, la misma atención a la materia y a la escala se desplaza entre medios, haciendo visible una práctica que no cabe en una sola categoría artística.",
+        "summary_en": "Michelangelo Buonarroti (1475–1564) developed a practice spanning sculpture, painting, and architecture. Between Florence and Rome, he treated the body, scale, and material as shared problems across media, from David to the major papal commissions of the Italian Renaissance.",
+        "essay_en": "## The body and scale\n\nIn Michelangelo’s work, the human figure organises sculpture, painting, and architecture alike. The body is not only a represented subject: it determines proportions, tensions, and spatial paths.\n\nDavid shows how a monumental form can concentrate energy before action. Across his Florentine and Roman projects, the same attention to material and scale moves between media, making visible a practice that cannot be contained within a single artistic category."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Michelangelo as a solitary genius and does not assign a single meaning to the David or the papal commissions."
+    },
+    {
+      "slug": "rafael",
+      "entityId": "cmsvvxi5v00fh85sjn2agrsw7",
+      "sourceUrls": ["https://www.museivaticani.va/content/museivaticani/en/collezioni/musei/stanze-di-raffaello.html"],
+      "claims": ["Raphael, 1483–1520", "Italian painter and architect", "Urbino, Florence and Rome", "papal commissions, monumental frescoes and workshop practice", "High Renaissance context"],
+      "relationsUsed": ["renacimiento-italiano"],
+      "after": {
+        "summary_es": "Rafael (1483–1520) articuló claridad compositiva, atención a la figura humana y diálogo con la antigüedad en una carrera breve desarrollada entre Urbino, Florencia y Roma. Sus pinturas, dibujos y proyectos arquitectónicos muestran cómo el Renacimiento italiano podía integrar imagen, espacio y programa cultural.",
+        "essay_es": "## Composición y programa\n\nRafael convirtió escenas complejas en estructuras legibles mediante grupos de figuras, gestos y arquitecturas que orientan la mirada. En Roma, sus encargos para las estancias papales ampliaron la escala de esa investigación y relacionaron pintura, conocimiento y representación institucional.\n\nLa claridad de sus composiciones no implica simplicidad. Cada figura participa en una red de acciones y relaciones espaciales, mientras el trabajo de taller permite entender la pintura como una práctica colectiva organizada alrededor de diseños, modelos y superficies monumentales.",
+        "summary_en": "Raphael (1483–1520) joined compositional clarity, attention to the human figure, and dialogue with antiquity in a short career developed between Urbino, Florence, and Rome. His paintings, drawings, and architectural projects show how the Italian Renaissance could integrate image, space, and cultural programme.",
+        "essay_en": "## Composition and programme\n\nRaphael turned complex scenes into legible structures through groups of figures, gestures, and architecture that guide the eye. In Rome, his commissions for the papal rooms expanded this investigation in scale and connected painting with knowledge and institutional representation.\n\nThe clarity of his compositions does not imply simplicity. Each figure participates in a network of actions and spatial relations, while the workshop makes it possible to understand painting as a collective practice organised around designs, models, and monumental surfaces."
+      },
+      "rejectedUnsupported": "The draft avoids treating Raphael's workshop as secondary or assigning a definitive ideal of beauty to the whole career."
+    },
+    {
+      "slug": "rembrandt",
+      "entityId": "cmsvvxi7300g385sj8scpqs4f",
+      "sourceUrls": ["https://www.rijksmuseum.nl/en/collection/creators/rembrandt-van-rijn"],
+      "claims": ["Rembrandt van Rijn, 1606–1669", "Dutch painter, draughtsman and printmaker", "Leiden and Amsterdam", "portraits, biblical scenes, landscapes and graphic work"],
+      "relationsUsed": ["barroco"],
+      "after": {
+        "summary_es": "Rembrandt van Rijn (1606–1669) exploró retrato, escena bíblica, paisaje, dibujo y grabado en la República neerlandesa del siglo XVII. Su obra combina atención a la apariencia, variaciones de luz y una relación intensa con la materia, situándose en el amplio campo del barroco sin quedar reducida a una sola fórmula visual.",
+        "essay_es": "## Luz, materia y presencia\n\nRembrandt trabajó con distintos géneros y medios, desde retratos y escenas bíblicas hasta paisajes, dibujos y estampas. En todos ellos, la luz no funciona únicamente como efecto: modela cuerpos, descubre superficies y establece una relación variable entre lo visible y lo oculto.\n\nEl [[barroco|barroco]] ofrece un contexto para seguir esa movilidad, pero la obra de Rembrandt exige atender también a sus procedimientos. La pincelada, la textura y la huella del grabado hacen que la imagen conserve algo de su propia fabricación.",
+        "summary_en": "Rembrandt van Rijn (1606–1669) explored portraiture, biblical scenes, landscape, drawing, and printmaking in the seventeenth-century Dutch Republic. His work combines attention to appearance, variations of light, and an intense relation to material, occupying the broad field of the Baroque without being reduced to one visual formula.",
+        "essay_en": "## Light, material, and presence\n\nRembrandt worked across genres and media, from portraits and biblical scenes to landscapes, drawings, and prints. In all of them, light is not merely an effect: it models bodies, reveals surfaces, and establishes a shifting relation between what is visible and what remains concealed.\n\nThe [[barroco|Baroque]] provides a context for following this mobility, but Rembrandt’s work also demands attention to its procedures. Brushwork, texture, and the trace of the print allow the image to retain something of its own making."
+      },
+      "rejectedUnsupported": "The draft avoids romanticising hardship, reducing Rembrandt to self-portraiture, or turning light into a single psychological symbol."
+    }
+  ]
+}

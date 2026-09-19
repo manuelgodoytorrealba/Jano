@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_007",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Seventh five incomplete published artists selected from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "yayoi-kusama",
+      "entityId": "cmsvvxich00j985sj0dkpq82y",
+      "sourceUrls": ["https://www.tate.org.uk/art/artists/yayoi-kusama-13807"],
+      "claims": ["Yayoi Kusama, born 1929", "painting, sculpture and installation", "repetition, dots and immersive environments", "contemporary art context"],
+      "relationsUsed": ["infinity-mirrored-room", "arte-conceptual"],
+      "after": {
+        "summary_es": "Yayoi Kusama (nacida en 1929) ha desarrollado una práctica que atraviesa pintura, escultura, instalación y escritura. La repetición de puntos, redes y formas especulares convierte la percepción en una experiencia envolvente, mientras sus ambientes multiplican la relación entre cuerpo, espacio e infinito.",
+        "essay_es": "## Repetición y entorno\n\nEn la obra de Kusama, un motivo aparentemente elemental puede expandirse hasta ocupar una superficie, un objeto o una habitación. Los puntos y las redes no funcionan sólo como decoración: producen ritmos que alteran la escala y hacen que el espectador perciba su propio cuerpo dentro de una continuidad visual.\n\nLa [[infinity-mirrored-room|Infinity Mirrored Room]] lleva esa lógica al espacio inmersivo. En diálogo con el [[arte-conceptual|arte conceptual]], su práctica desplaza la obra desde el objeto aislado hacia una situación perceptiva en la que repetición, reflejo y participación se vuelven inseparables.",
+        "summary_en": "Yayoi Kusama (born 1929) has developed a practice spanning painting, sculpture, installation, and writing. Repeated dots, nets, and mirrored forms turn perception into an enveloping experience, while her environments multiply the relation among body, space, and infinity.",
+        "essay_en": "## Repetition and environment\n\nIn Kusama’s work, an apparently simple motif can expand until it occupies a surface, an object, or a room. Dots and nets do not function only as decoration: they create rhythms that alter scale and make viewers perceive their own bodies within a visual continuity.\n\nThe [[infinity-mirrored-room|Infinity Mirrored Room]] brings this logic into immersive space. In dialogue with [[arte-conceptual|conceptual art]], her practice shifts the work from an isolated object toward a perceptual situation in which repetition, reflection, and participation become inseparable."
+      },
+      "rejectedUnsupported": "The draft avoids claims about current health or death status and does not reduce Kusama's practice to a single motif."
+    },
+    {
+      "slug": "georges-braque",
+      "entityId": "cmsvvxi9c00hf85sjuso3yqus",
+      "sourceUrls": ["https://www.nga.gov/artists/1027-georges-braque"],
+      "claims": ["Georges Braque, 1882–1963", "French painter", "co-developer of Cubism with Pablo Picasso", "Fauvism, collage and the constructed picture plane"],
+      "relationsUsed": ["cubismo", "pablo-picasso"],
+      "after": {
+        "summary_es": "Georges Braque (1882–1963) desarrolló junto con Pablo Picasso los principios del cubismo y participó antes en la experiencia fauvista. Su pintura fragmenta objetos, cuestiona la perspectiva única y convierte el plano del cuadro en una construcción visible de formas, signos y materiales.",
+        "essay_es": "## Construir la imagen\n\nBraque no trató el cuadro como una ventana transparente. En sus composiciones cubistas, los objetos se descomponen en planos y puntos de vista que hacen perceptible la tensión entre reconocer algo y construirlo visualmente. La superficie deja de ocultar su condición de superficie.\n\nEl [[cubismo|cubismo]] fue también una investigación compartida. Su relación con [[pablo-picasso|Pablo Picasso]] produjo una transformación decisiva de la perspectiva y abrió el camino a procedimientos como el collage, donde materiales y signos cotidianos pasan a formar parte de la arquitectura de la imagen.",
+        "summary_en": "Georges Braque (1882–1963) developed the principles of Cubism with Pablo Picasso and had earlier participated in the Fauvist experience. His painting fragments objects, questions single-point perspective, and turns the picture plane into a visible construction of forms, signs, and materials.",
+        "essay_en": "## Constructing the image\n\nBraque did not treat the picture as a transparent window. In his Cubist compositions, objects break into planes and viewpoints that make visible the tension between recognising something and constructing it visually. The surface no longer hides its condition as a surface.\n\n[[cubismo|Cubism]] was also a shared investigation. His relation with [[pablo-picasso|Pablo Picasso]] produced a decisive transformation of perspective and opened the way to procedures such as collage, where everyday materials and signs become part of the image’s architecture."
+      },
+      "rejectedUnsupported": "The draft does not assign sole authorship of Cubism to Braque or Picasso and avoids a complete account of his later career."
+    },
+    {
+      "slug": "gustav-klimt",
+      "entityId": "cmsvvxiqh00rj85sjs0sb1sw4",
+      "sourceUrls": ["https://www.belvedere.at/en/stories/who-was-gustav-klimt"],
+      "claims": ["Gustav Klimt, 1862–1918", "Austrian painter of Viennese Modernism", "co-founder and first president of the Vienna Secession", "gold, ornament and symbolic figuration"],
+      "relationsUsed": ["art-nouveau", "retrato-de-adele-bloch-bauer-i", "el-beso-klimt"],
+      "after": {
+        "summary_es": "Gustav Klimt (1862–1918) fue un pintor austriaco central en la modernidad vienesa y cofundador de la Secesión de Viena. Su obra combina figura, ornamentación y simbolismo, y alcanza una intensidad reconocible en el uso del oro, la superficie decorativa y la representación del cuerpo.",
+        "essay_es": "## Ornamentar la modernidad\n\nKlimt convirtió la superficie pictórica en un lugar de tensión entre cuerpo, patrón y símbolo. Los fondos ornamentales no son un marco pasivo: envuelven las figuras, interrumpen la profundidad y hacen que la pintura oscile entre retrato, alegoría y objeto precioso.\n\nEn relación con el [[art-nouveau|Art Nouveau]], su trabajo participa de una cultura visual que quiso superar la separación entre artes mayores y aplicadas. Obras como [[retrato-de-adele-bloch-bauer-i|Retrato de Adele Bloch-Bauer I]] y [[el-beso-klimt|El beso]] muestran cómo el ornamento puede construir identidad, deseo y presencia sin abandonar la tensión del cuerpo representado.",
+        "summary_en": "Gustav Klimt (1862–1918) was an Austrian painter central to Viennese Modernism and a co-founder of the Vienna Secession. His work combines figure, ornament, and symbolism, reaching a distinctive intensity through gold, decorative surfaces, and representations of the body.",
+        "essay_en": "## Ornamenting modernity\n\nKlimt turned the pictorial surface into a site of tension among body, pattern, and symbol. Ornamental backgrounds are not passive frames: they surround figures, interrupt depth, and make painting oscillate among portrait, allegory, and precious object.\n\nIn relation to [[art-nouveau|Art Nouveau]], his work belongs to a visual culture that sought to overcome the separation between fine and applied arts. Works such as [[retrato-de-adele-bloch-bauer-i|Portrait of Adele Bloch-Bauer I]] and [[el-beso-klimt|The Kiss]] show how ornament can construct identity, desire, and presence without abandoning the tension of the represented body."
+      },
+      "rejectedUnsupported": "The draft avoids treating the Golden Period as the whole of Klimt's practice and does not infer private biography from portraits."
+    },
+    {
+      "slug": "man-ray",
+      "entityId": "cmsvvxj76012185sjzhgu8t93",
+      "sourceUrls": ["https://www.moma.org/collection/artists/3716"],
+      "claims": ["Man Ray, 1890–1976", "American artist Emmanuel Radnitzky", "Dada and Surrealist contexts", "rayographs and work across photography, painting and objects"],
+      "relationsUsed": ["dadaismo", "rayografia", "objeto-para-ser-destruido"],
+      "after": {
+        "summary_es": "Man Ray (1890–1976), nacido Emmanuel Radnitzky, trabajó entre fotografía, pintura, objetos y cine. Sus experimentos con imágenes sin cámara, conocidos como rayografías, y su participación en los entornos dadaísta y surrealista convirtieron la luz, el azar y el objeto cotidiano en materiales de invención.",
+        "essay_es": "## La fotografía como experimento\n\nMan Ray entendió la fotografía como una práctica capaz de producir, no sólo registrar, imágenes. En las [[rayografia|rayografías]], objetos colocados sobre papel sensible dejan huellas de luz que suspenden su identidad y los convierten en formas, ritmos y accidentes.\n\nEse interés por el procedimiento enlaza con el [[dadaismo|dadaísmo]] y con una cultura de experimentación que también aparece en objetos como [[objeto-para-ser-destruido|Objeto para ser destruido]]. La obra no se limita a representar una cosa: pone en crisis su uso, su nombre y la manera en que llega a ser imagen.",
+        "summary_en": "Man Ray (1890–1976), born Emmanuel Radnitzky, worked across photography, painting, objects, and film. His experiments with camera-less images, known as rayographs, and his participation in Dada and Surrealist contexts turned light, chance, and the everyday object into materials for invention.",
+        "essay_en": "## Photography as experiment\n\nMan Ray understood photography as a practice capable of producing images, not merely recording them. In [[rayografia|rayographs]], objects placed on light-sensitive paper leave traces that suspend their identity and turn them into forms, rhythms, and accidents.\n\nThis interest in procedure connects with [[dadaismo|Dada]] and with a culture of experimentation that also appears in objects such as [[objeto-para-ser-destruido|Object to Be Destroyed]]. The work does not simply represent a thing: it unsettles its use, its name, and the way it becomes an image."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Man Ray to photography and does not present Dada or Surrealism as exclusive categories for the full practice."
+    },
+    {
+      "slug": "rene-magritte",
+      "entityId": "cmsvvxirg00s485sjrtidfg4y",
+      "sourceUrls": ["https://www.moma.org/collection/artists/3692"],
+      "claims": ["René Magritte, 1898–1967", "Belgian painter", "Surrealist practice", "ordinary objects, visual puzzles and questions of representation"],
+      "relationsUsed": ["surrealismo", "el-hijo-del-hombre", "la-traicion-de-las-imagenes"],
+      "after": {
+        "summary_es": "René Magritte (1898–1967) fue un pintor belga asociado al surrealismo que convirtió objetos corrientes, palabras y escenas reconocibles en problemas de representación. Sus imágenes no abandonan la apariencia cotidiana: la hacen extraña al separar lo que vemos de lo que esperamos que signifique.",
+        "essay_es": "## La extrañeza de lo familiar\n\nMagritte construyó escenas de apariencia clara en las que algo no termina de encajar: un objeto cambia de escala, una palabra contradice la imagen o un rostro queda oculto. La precisión de la representación no resuelve el enigma; lo vuelve más insistente.\n\nEn el [[surrealismo|surrealismo]], esta estrategia transforma la pintura en una investigación sobre lenguaje y realidad. [[el-hijo-del-hombre|El hijo del hombre]] y [[la-traicion-de-las-imagenes|La traición de las imágenes]] muestran dos vías de esa tensión: la imagen puede ocultar lo que promete revelar y una frase puede recordar que una representación nunca es la cosa misma.",
+        "summary_en": "René Magritte (1898–1967) was a Belgian painter associated with Surrealism who turned ordinary objects, words, and recognisable scenes into problems of representation. His images do not abandon everyday appearance: they make it strange by separating what we see from what we expect it to mean.",
+        "essay_en": "## The strangeness of the familiar\n\nMagritte built scenes of apparent clarity in which something fails to fit: an object changes scale, a word contradicts the image, or a face remains concealed. The precision of representation does not solve the enigma; it makes it more insistent.\n\nWithin [[surrealismo|Surrealism]], this strategy turns painting into an investigation of language and reality. [[el-hijo-del-hombre|The Son of Man]] and [[la-traicion-de-las-imagenes|The Treachery of Images]] show two paths through this tension: an image can conceal what it promises to reveal, and a sentence can remind us that representation is never the thing itself."
+      },
+      "rejectedUnsupported": "The draft avoids treating every work as a direct illustration of one theory and does not infer personal meanings from recurring motifs."
+    }
+  ]
+}

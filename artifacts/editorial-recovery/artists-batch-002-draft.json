@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_002",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN → ES",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Second five incomplete published artists selected from the institutional-source queue.",
+  "rows": [
+    {
+      "slug": "cindy-sherman",
+      "entityId": "cmsvvxisr00sv85sjjmtj62l6",
+      "sourceUrls": ["https://www.moma.org/collection/artists/5392"],
+      "claims": ["Cindy Sherman, born 1954", "American artist", "four decades of work", "construction of identity through visual and cultural codes of art, celebrity, gender and photography"],
+      "relationsUsed": ["fotografia"],
+      "after": {
+        "summary_es": "Cindy Sherman (nacida en 1954) examina cómo las imágenes construyen identidad mediante fotografía, representación y códigos culturales. Sus obras ponen en escena personajes y apariencias sin convertir la imagen en un autorretrato transparente; cada figura revela también las convenciones que la hacen reconocible.",
+        "essay_es": "## Identidad como puesta en escena\n\nCindy Sherman utiliza la fotografía para investigar cómo se fabrican las identidades visibles. Sus imágenes recurren a códigos de arte, cine, celebridad y género, pero no los presentan como categorías estables: los desplazan mediante personajes, gestos y apariencias construidas.\n\nLa cámara no funciona aquí como una ventana neutral. La artista aparece delante de ella, aunque la cuestión central no es descubrir una identidad privada, sino observar cómo una imagen produce una figura y cómo esa figura puede cambiar cuando cambian sus códigos.",
+        "summary_en": "Cindy Sherman (born 1954) examines how images construct identity through photography, representation, and cultural codes. Her works stage characters and appearances without turning the image into a transparent self-portrait; each figure also reveals the conventions that make it recognisable.",
+        "essay_en": "## Identity as staging\n\nCindy Sherman uses photography to investigate how visible identities are made. Her images draw on the codes of art, cinema, celebrity, and gender, but do not present them as stable categories: they displace them through constructed characters, gestures, and appearances.\n\nThe camera does not function here as a neutral window. The artist appears before it, but the central question is not the discovery of a private identity. It is the observation of how an image produces a figure and how that figure can change when its codes change."
+      },
+      "rejectedUnsupported": "Specific series, dates, feminist intention, and claims about the artist's private identity were omitted because the selected source does not establish them at claim level."
+    },
+    {
+      "slug": "diego-velazquez",
+      "entityId": "cmsvvxi6y00g085sjif6vz2pk",
+      "sourceUrls": ["https://www.museodelprado.es/en/the-collection/artist/velazquez-diego-rodriguez-de-silva-y/434337e9-77e4-4597-a962-ef47304d930d"],
+      "claims": ["Diego Rodríguez de Silva y Velázquez, 1599–1660", "born in Seville and died in Madrid", "court painter and painter of religious, historical and mythological subjects", "Spanish Baroque context"],
+      "relationsUsed": ["barroco"],
+      "after": {
+        "summary_es": "Diego Rodríguez de Silva y Velázquez (1599–1660) desarrolló su carrera entre Sevilla y Madrid y llegó a trabajar para la corte de Felipe IV. Su pintura recorre el retrato, la escena religiosa, la historia y la mitología, con una atención sostenida a la presencia de las figuras y a la complejidad de la mirada.",
+        "essay_es": "## Pintar la presencia\n\nVelázquez trabajó en distintos registros, desde los retratos de la corte hasta escenas religiosas, históricas y mitológicas. Esa amplitud no elimina la singularidad de cada encargo: la escala, la posición de los cuerpos y la relación entre quienes miran organizan cada imagen de manera distinta.\n\nSu lugar en el [[barroco|barroco]] español no depende sólo de una apariencia reconocible. Sus cuadros convierten la representación en una situación: el espectador debe orientarse ante figuras que ocupan el espacio, devuelven la mirada o quedan parcialmente ocultas por la propia estructura de la escena.",
+        "summary_en": "Diego Rodríguez de Silva y Velázquez (1599–1660) developed his career between Seville and Madrid and eventually worked for the court of Philip IV. His painting ranges across portraiture, religious, historical, and mythological subjects, with sustained attention to the presence of figures and the complexity of looking.",
+        "essay_en": "## Painting presence\n\nVelázquez worked across several registers, from court portraits to religious, historical, and mythological scenes. This range does not erase the singularity of each commission: scale, the position of bodies, and the relation among viewers organise each image differently.\n\nHis place in the Spanish [[barroco|Baroque]] does not depend only on a recognisable appearance. His paintings turn representation into a situation: viewers must orient themselves among figures that occupy space, return the gaze, or remain partly concealed by the structure of the scene itself."
+      },
+      "rejectedUnsupported": "The draft avoids calling him the greatest painter of the Spanish Golden Age and avoids assigning intentions to specific works beyond the documented court and subject context."
+    },
+    {
+      "slug": "el-greco",
+      "entityId": "cmsvvxi6h00fs85sjzwiakhcj",
+      "sourceUrls": ["https://www.museodelprado.es/en/the-collection/artist/el-greco-domenikos-theotokopoulos/b031da57-6a7e-43f2-a855-293275efc340"],
+      "claims": ["Doménikos Theotokópoulos, 1541–1614", "born in Candia, Crete and died in Toledo", "worked in Spain after a career connected with Italy", "paintings and altarpieces for religious and private contexts"],
+      "relationsUsed": ["manierismo"],
+      "after": {
+        "summary_es": "Doménikos Theotokópoulos, conocido como El Greco (1541–1614), nació en Candía y consolidó su carrera en Toledo después de su formación y actividad en Italia. Sus pinturas y retablos articulan figuras alargadas, color intenso y una expresividad que sitúa cada escena entre devoción, espacio y presencia corporal.",
+        "essay_es": "## De Candía a Toledo\n\nEl Greco llegó a España después de una trayectoria que pasó por Creta e Italia. En Toledo trabajó para catedrales, conventos, parroquias y clientes privados, desarrollando una práctica que incluía pinturas y retablos de distintas escalas.\n\nLa singularidad de sus figuras no debe separarse de esos contextos. El alargamiento, el color y la tensión de las composiciones forman parte de una manera de organizar la experiencia religiosa y el espacio pictórico, dentro de un recorrido que se relaciona con el [[manierismo|manierismo]].",
+        "summary_en": "Doménikos Theotokópoulos, known as El Greco (1541–1614), was born in Candia and established his career in Toledo after training and working in Italy. His paintings and altarpieces bring elongated figures, intense colour, and an expressiveness that places each scene between devotion, space, and bodily presence.",
+        "essay_en": "## From Candia to Toledo\n\nEl Greco arrived in Spain after a career that passed through Crete and Italy. In Toledo he worked for cathedrals, convents, parishes, and private clients, developing a practice that included paintings and altarpieces of different scales.\n\nThe singularity of his figures should not be separated from these contexts. Elongation, colour, and compositional tension form part of a way of organising religious experience and pictorial space within a trajectory related to [[manierismo|Mannerism]]."
+      },
+      "rejectedUnsupported": "The draft does not present disputed workshop attributions as certain and avoids treating the artist's style as a psychological or prophetic condition."
+    },
+    {
+      "slug": "edgar-degas",
+      "entityId": "cmsvvxi8800gr85sjnbrvimmw",
+      "sourceUrls": ["https://www.nga.gov/artists/1219-edgar-degas"],
+      "claims": ["Edgar Degas, 1834–1917", "French artist", "academic training and study of Old Masters", "painting, drawing, sculpture and scenes of dancers, work and modern life"],
+      "relationsUsed": ["impresionismo"],
+      "after": {
+        "summary_es": "Edgar Degas (1834–1917) observó el cuerpo en movimiento, el trabajo y la vida moderna mediante pintura, dibujo y escultura. Su formación académica y su estudio de los maestros antiguos convivieron con encuadres y composiciones que hacen visible una mirada fragmentaria, especialmente en sus escenas de danza.",
+        "essay_es": "## Movimiento y encuadre\n\nDegas combinó una formación académica y el estudio de los maestros antiguos con una atención constante a escenas contemporáneas. Bailarinas, ensayos, carreras y espacios de trabajo aparecen organizados mediante encuadres que interrumpen la escena y distribuyen el movimiento de forma poco convencional.\n\nSu relación con el [[impresionismo|impresionismo]] no elimina esa singularidad. El dibujo, la composición y la escultura tienen un peso propio: más que registrar un instante, sus obras hacen que el espectador reconstruya la acción a partir de cuerpos que entran, salen o quedan parcialmente fuera del campo visual.",
+        "summary_en": "Edgar Degas (1834–1917) studied the moving body, labour, and modern life through painting, drawing, and sculpture. His academic training and study of the Old Masters coexisted with framings and compositions that make a fragmentary gaze visible, especially in his scenes of dance.",
+        "essay_en": "## Movement and framing\n\nDegas combined academic training and the study of the Old Masters with sustained attention to contemporary scenes. Dancers, rehearsals, races, and workplaces are organised through framings that interrupt the scene and distribute movement in unconventional ways.\n\nHis relation to [[impresionismo|Impressionism]] does not erase this singularity. Drawing, composition, and sculpture have an independent weight: rather than simply recording an instant, his works ask viewers to reconstruct action from bodies that enter, leave, or remain partly outside the frame."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Degas to dancers, declaring a uniform Impressionist identity, or assigning a single social interpretation to his subjects."
+    },
+    {
+      "slug": "eugene-delacroix",
+      "entityId": "cmsvvxi7p00gf85sjyj82e2cl",
+      "sourceUrls": ["https://www.louvre.fr/en/what-s-on/exhibitions/delacroix-1798-1863"],
+      "claims": ["Eugène Delacroix, 1798–1863", "French painter", "Salon successes in the 1820s", "religious paintings, landscapes, history and literary subjects", "tension between individuality and engagement with Flemish and Venetian masters"],
+      "relationsUsed": ["romanticismo"],
+      "after": {
+        "summary_es": "Eugène Delacroix (1798–1863) desarrolló una pintura de color, movimiento y tensión que atravesó asuntos históricos, literarios, religiosos y paisajes. Desde sus éxitos en los Salones de la década de 1820 hasta sus obras tardías, su trayectoria combina la búsqueda de una voz individual con el diálogo con tradiciones pictóricas anteriores.",
+        "essay_es": "## Intensidad y tradición\n\nDelacroix construyó una trayectoria pública desde los grandes cuadros presentados en los Salones de la década de 1820. Sus temas procedían de la historia, la literatura, la religión y el paisaje, pero la variedad de asuntos no oculta una preocupación constante por el color, el movimiento y la intensidad de la escena.\n\nEl [[romanticismo|romanticismo]] de Delacroix no equivale a romper con toda tradición. Su pintura busca una individualidad propia mientras estudia la herencia flamenca y veneciana; esa tensión entre afirmación y continuidad sostiene buena parte de su recorrido.",
+        "summary_en": "Eugène Delacroix (1798–1863) developed a painting of colour, movement, and tension across historical, literary, religious, and landscape subjects. From his Salon successes in the 1820s to his later works, his career combines the search for an individual voice with dialogue with earlier pictorial traditions.",
+        "essay_en": "## Intensity and tradition\n\nDelacroix built a public career through the large paintings shown at the Salons of the 1820s. His subjects came from history, literature, religion, and landscape, yet this variety does not conceal a sustained concern with colour, movement, and the intensity of the scene.\n\nDelacroix’s [[romanticismo|Romanticism]] does not mean a break with every tradition. His painting seeks an individual voice while studying Flemish and Venetian inheritance; this tension between assertion and continuity sustains much of his career."
+      },
+      "rejectedUnsupported": "The draft omits claims about political intention, Orientalism, and influence unless they are directly supported by the selected Louvre material."
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_018",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "browserRoutes": "5/5 routes rendered in both locales",
+    "localeToggle": "5/5 ES → EN",
+    "selfLinks": 0,
+    "metaLanguage": 0,
+    "expectedConsoleErrors": "401 /api/auth/me for unauthenticated browser session"
+  },
+  "scope": "Next five incomplete published artists from the connected-artists queue.",
+  "rows": [
+    {
+      "slug": "pierre-auguste-renoir",
+      "entityId": "cmsvvxi8d00gu85sjh93qecx8",
+      "sourceUrls": ["https://www.nga.gov/artists/1823-auguste-renoir", "https://www.musee-orsay.fr/en/program/whats-on/exhibitions/presentation/renoir-dessinateur"],
+      "claims": ["Pierre-Auguste Renoir, 1841–1919", "founding Impressionist", "light, colour and modern leisure", "drawing and painting practice"],
+      "relationsUsed": ["impresionismo", "almuerzo-de-los-remeros"],
+      "after": {
+        "summary_es": "Pierre-Auguste Renoir (1841–1919) convirtió la luz, el color y la vida moderna en una experiencia pictórica de intimidad y movimiento. Aunque fue una figura fundadora del impresionismo, su trayectoria también incluye una búsqueda posterior de estructura, dibujo y referencias clásicas.",
+        "essay_es": "## La luz se vuelve experiencia\n\nRenoir pintó reuniones, paisajes y figuras sin separar la percepción del vínculo social. La pincelada y el color no describen sólo una escena: construyen la sensación de estar dentro de ella, entre cuerpos, reflejos y aire compartido.\n\n[[almuerzo-de-los-remeros|Almuerzo de los remeros]] concentra esa relación entre ocio moderno y [[impresionismo|impresionismo]]. La imagen parece espontánea, pero su ligereza depende de una composición cuidadosamente organizada y de una atención constante al dibujo.",
+        "summary_en": "Pierre-Auguste Renoir (1841–1919) turned light, colour, and modern life into a pictorial experience of intimacy and movement. Though a founding figure of Impressionism, his career also included a later search for structure, drawing, and classical references.",
+        "essay_en": "## Light becomes experience\n\nRenoir painted gatherings, landscapes, and figures without separating perception from social connection. Brushwork and colour do not merely describe a scene: they construct the sensation of being inside it, among bodies, reflections, and shared air.\n\n[[almuerzo-de-los-remeros|Luncheon of the Boating Party]] concentrates that relation between modern leisure and [[impresionismo|Impressionism]]. The image seems spontaneous, yet its lightness depends on carefully organised composition and sustained attention to drawing."
+      },
+      "rejectedUnsupported": "The draft does not reduce Renoir to a single Impressionist formula or treat later classical references as a complete break."
+    },
+    {
+      "slug": "paul-gauguin",
+      "entityId": "cmsvvxi8s00h385sjcy8r74ej",
+      "sourceUrls": ["https://www.musee-orsay.fr/fr/ressources/repertoire-artistes-personnalites/paul-gauguin-13270", "https://www.musee-orsay.fr/es/node/83"],
+      "claims": ["Paul Gauguin, 1848–1903", "painter, sculptor, printmaker and ceramicist", "Pont-Aven, synthesis and colour", "travels to Martinique, Tahiti and the Marquesas"],
+      "relationsUsed": ["postimpresionismo", "vision-despues-del-sermon"],
+      "after": {
+        "summary_es": "Paul Gauguin (1848–1903) buscó una pintura que reorganizara la experiencia mediante color, contorno y memoria, desde Bretaña hasta sus viajes por el Pacífico. Su obra participa del postimpresionismo y convierte la escena visible en una construcción simbólica, aunque su legado exige también una lectura crítica de las relaciones coloniales que atraviesan sus imágenes.",
+        "essay_es": "## El color deja de obedecer a la apariencia\n\nGauguin no entendía la pintura como una copia neutral del mundo. En sus escenas, las superficies se simplifican, los colores se intensifican y el espacio se reorganiza para producir una emoción o una idea antes que una ilusión óptica.\n\n[[vision-despues-del-sermon|Visión después del sermón]] muestra esa transformación dentro del [[postimpresionismo|postimpresionismo]]. El cuadro superpone experiencia religiosa, paisaje y representación mental; su potencia formal no debe ocultar las asimetrías históricas y culturales desde las que fue producido.",
+        "summary_en": "Paul Gauguin (1848–1903) sought a painting that reorganised experience through colour, contour, and memory, from Brittany to his travels in the Pacific. His work belongs to Post-Impressionism and turns the visible scene into a symbolic construction, while also requiring critical attention to the colonial relations that run through his images.",
+        "essay_en": "## Colour no longer obeys appearance\n\nGauguin did not understand painting as a neutral copy of the world. In his scenes, surfaces are simplified, colours intensified, and space reorganised to produce an emotion or idea rather than an optical illusion.\n\n[[vision-despues-del-sermon|Vision after the Sermon]] shows that transformation within [[postimpresionismo|Post-Impressionism]]. The painting overlays religious experience, landscape, and mental representation; its formal power should not conceal the historical and cultural asymmetries from which it was produced."
+      },
+      "rejectedUnsupported": "The draft avoids romanticising Gauguin's travels or presenting colonial contexts as merely decorative background."
+    },
+    {
+      "slug": "wassily-kandinsky",
+      "entityId": "cmsvvxi9h00hi85sj5pt29pan",
+      "sourceUrls": ["https://www.centrepompidou.fr/fr/ressources/personne/co46yKq", "https://www.centrepompidou.fr/en/program/calendar/event/mVF6xxV"],
+      "claims": ["Wassily Kandinsky, 1866–1944", "Russian-born painter", "pioneer of abstract painting", "colour, music, inner necessity and Bauhaus teaching"],
+      "relationsUsed": ["expresionismo", "composicion-viii"],
+      "after": {
+        "summary_es": "Wassily Kandinsky (1866–1944) desarrolló una pintura en la que color, línea y ritmo podían actuar más allá de la representación directa. Su tránsito desde el paisaje hacia la abstracción vinculó investigación formal, resonancia musical y una idea de necesidad interior.",
+        "essay_es": "## Pintar como si el color tuviera sonido\n\nKandinsky liberó progresivamente la imagen de la obligación de reconocer un objeto. Las formas no desaparecen: se convierten en fuerzas que ordenan tensión, dirección y ritmo dentro del plano.\n\n[[composicion-viii|Composición VIII]] lleva esa investigación al terreno de la abstracción y conserva una relación con el [[expresionismo|expresionismo]]: la pintura no imita un estado emocional, sino que intenta producirlo mediante relaciones visuales. La geometría puede ser rigurosa sin dejar de ser sensible.",
+        "summary_en": "Wassily Kandinsky (1866–1944) developed a painting in which colour, line, and rhythm could act beyond direct representation. His movement from landscape towards abstraction joined formal research, musical resonance, and an idea of inner necessity.",
+        "essay_en": "## Painting as if colour had sound\n\nKandinsky progressively freed the image from the obligation to identify an object. Forms do not disappear: they become forces that organise tension, direction, and rhythm across the plane.\n\n[[composicion-viii|Composition VIII]] carries that investigation into abstraction while retaining a relation to [[expresionismo|Expressionism]]: painting does not imitate an emotional state but seeks to produce one through visual relationships. Geometry can be rigorous without ceasing to be sensuous."
+      },
+      "rejectedUnsupported": "The draft avoids claiming that Kandinsky single-handedly invented abstraction or reducing his work to a simple music analogy."
+    },
+    {
+      "slug": "kazimir-malevich",
+      "entityId": "cmsvvxi9m00hl85sj7jcodk1n",
+      "sourceUrls": ["https://www.moma.org/artists/3710-kazimir-malevich", "https://www.moma.org/collection/works/79269"],
+      "claims": ["Kazimir Malevich, 1878–1935", "Russian-born artist", "founder of Suprematism", "geometric forms, non-objective painting and the Black Square"],
+      "relationsUsed": ["suprematismo", "cuadrado-negro"],
+      "after": {
+        "summary_es": "Kazimir Malevich (1878–1935) llevó la pintura hacia formas geométricas no objetivas y formuló el suprematismo como una investigación sobre la sensación y los elementos básicos del lenguaje pictórico. El cuadrado, el plano y el blanco dejan de ser recursos secundarios para convertirse en protagonistas.",
+        "essay_es": "## El cuadro como umbral\n\nMalevich entendió que una pintura podía abandonar la semejanza sin abandonar la experiencia. Al reducir la imagen a formas, color y espacio, hizo visible aquello que normalmente queda subordinado a la representación: el peso de un plano, la dirección de una figura y la tensión del vacío.\n\n[[cuadrado-negro|Cuadrado negro]] condensa esa apuesta dentro del [[suprematismo|suprematismo]]. No es sólo una figura geométrica: es una prueba de hasta dónde puede llegar una pintura cuando convierte sus propias condiciones en asunto.",
+        "summary_en": "Kazimir Malevich (1878–1935) pushed painting towards non-objective geometric forms and formulated Suprematism as an investigation into sensation and the basic elements of pictorial language. The square, plane, and white ground become protagonists rather than secondary devices.",
+        "essay_en": "## The picture as threshold\n\nMalevich understood that a painting could abandon likeness without abandoning experience. By reducing the image to form, colour, and space, he made visible what representation usually subordinates: the weight of a plane, the direction of a figure, and the tension of emptiness.\n\n[[cuadrado-negro|Black Square]] condenses that wager within [[suprematismo|Suprematism]]. It is not only a geometric figure: it tests how far painting can go when it makes its own conditions the subject."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Suprematism as a purely formal style without historical stakes or assigning one final meaning to Black Square."
+    },
+    {
+      "slug": "joan-miro",
+      "entityId": "cmsvvxiac00i085sjxvn1nc8n",
+      "sourceUrls": ["https://www.museoreinasofia.es/colecciones/artista/miro-joan/", "https://www.museoreinasofia.es/exposicion/miro-grabador-en-las-colecciones-mncars/"],
+      "claims": ["Joan Miró, 1893–1983", "born in Barcelona and died in Palma", "painting, sculpture, ceramics and printmaking", "surrealist proximity and signs between image and writing"],
+      "relationsUsed": ["surrealismo", "carnaval-del-arlequin"],
+      "after": {
+        "summary_es": "Joan Miró (1893–1983) construyó un lenguaje de signos, manchas y figuras que atraviesa pintura, escultura, cerámica y grabado. Su proximidad al surrealismo abrió la imagen a asociaciones poéticas, pero su práctica también depende de una atención concreta a la materia, el gesto y el soporte.",
+        "essay_es": "## El signo conserva su libertad\n\nEn Miró, una línea puede sugerir un cuerpo, una constelación o una escritura sin quedar fijada a una sola lectura. La imagen se organiza como un campo de encuentros donde manchas, colores y formas parecen aparecer antes de ser nombrados.\n\n[[carnaval-del-arlequin|Carnaval del Arlequín]] relaciona esa movilidad con el [[surrealismo|surrealismo]]. La obra no funciona como un código que haya que descifrar: invita a seguir cómo cada signo cambia de escala, ritmo y significado al entrar en contacto con los demás.",
+        "summary_en": "Joan Miró (1893–1983) built a language of signs, stains, and figures across painting, sculpture, ceramics, and printmaking. His proximity to Surrealism opened the image to poetic associations, while his practice also depends on close attention to matter, gesture, and support.",
+        "essay_en": "## The sign remains free\n\nIn Miró, a line can suggest a body, a constellation, or a form of writing without being fixed to a single reading. The image is organised as a field of encounters where stains, colours, and shapes seem to appear before they are named.\n\n[[carnaval-del-arlequin|Harlequin’s Carnival]] connects that mobility with [[surrealismo|Surrealism]]. The work is not a code to be deciphered: it invites us to follow how each sign changes scale, rhythm, and meaning when it meets the others."
+      },
+      "rejectedUnsupported": "The draft avoids treating Miró's signs as a fixed private alphabet or reducing his practice to Surrealism alone."
+    }
+  ]
+}
