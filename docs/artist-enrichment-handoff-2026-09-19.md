@@ -58,6 +58,14 @@ El script es idempotente para el contenido editorial y valida atómicamente que
 los 100 artistas de los lotes tengan resumen y ensayo en ambos idiomas. No
 modifica relaciones, fuentes, assertions ni datos privados.
 
+## Paquete exacto de esta instancia
+
+Además del estado reproducible de los artistas, existe un paquete local en
+`backups/jano-handoff-20260919/` con la base PostgreSQL completa y el volumen
+de uploads. Incluye `README.md`, `jano.dump`, `uploads.tar.gz` y
+`SHA256SUMS`. Debe transferirse por un canal privado: no se versiona ni se
+sube a GitHub porque el dump puede contener usuarios y datos privados.
+
 ## Continuar el flujo
 
 1. Seleccionar sólo artistas `PUBLISHED` con algún campo editorial bilingüe pendiente.
