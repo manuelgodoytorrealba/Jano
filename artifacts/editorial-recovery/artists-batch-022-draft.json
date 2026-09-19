@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_022",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "apiRoutes": "5/5 entities returned in both locales",
+    "browserRoutes": "5/5 frontend routes returned HTTP 200",
+    "localeToggle": "5/5 ES and EN API translations present",
+    "selfLinks": 0,
+    "metaLanguage": 0
+  },
+  "scope": "Five grounded published artists selected after the 2026-09-19 handoff.",
+  "rows": [
+    {
+      "slug": "geta-bratescu",
+      "entityId": "cmsvvxjcj015j85sjmyjekpdu",
+      "sourceUrls": ["https://www.moma.org/artists/43150-geta-bratescu", "https://www.museoreinasofia.es/colecciones/artista/bratescu-geta/"],
+      "claims": ["Geta Brătescu, 1926–2018, Romanian artist", "drawing, printmaking, film and installation appear across her practice", "the studio and the artist's desk are recurring subjects", "her work engages identity, body and artistic process"],
+      "relationsUsed": ["arte-conceptual"],
+      "after": {
+        "summary_es": "Geta Brătescu (1926–2018) exploró dibujo, grabado, cine, instalación y tejido como formas de pensar el cuerpo y el trabajo artístico. El estudio, la mesa y la repetición de gestos convierten su práctica en una investigación sobre cómo una imagen se construye.",
+        "essay_es": "## El estudio también es una imagen\n\nBrătescu convierte el espacio de trabajo en un campo de pruebas: una mesa puede ser soporte, escenario y medida del cuerpo, mientras una secuencia de dibujos hace visible la duración del gesto. La obra no se cierra en un objeto único, sino que conserva rastros de procedimiento.\n\n[[arte-conceptual|El arte conceptual]] ayuda a situar esa atención al proceso, pero las piezas de Brătescu mantienen una densidad material propia: pensar significa tocar, repetir, doblar y volver a mirar.",
+        "summary_en": "Geta Brătescu (1926–2018) explored drawing, printmaking, film, installation, and textile as ways of thinking through the body and artistic labour. The studio, the desk, and repeated gestures turn her practice into an investigation of how an image is made.",
+        "essay_en": "## The studio is also an image\n\nBrătescu turns the workspace into a testing ground: a desk can be support, stage, and measure of the body, while a sequence of drawings makes the duration of a gesture visible. The work does not close into a single object but preserves traces of procedure.\n\n[[arte-conceptual|Conceptual art]] helps situate this attention to process, yet Brătescu’s pieces retain their own material density: thinking means touching, repeating, folding, and looking again."
+      },
+      "rejectedUnsupported": "The draft avoids assigning a single medium or fixed meaning to Brătescu's multidisciplinary practice."
+    },
+    {
+      "slug": "hans-haacke",
+      "entityId": "cmsvvxjaj014a85sjdrj3e277",
+      "sourceUrls": ["https://www.moma.org/artists/2429-hans-haacke", "https://www.macba.cat/en/actor/hans-haacke/"],
+      "claims": ["Hans Haacke, born 1936, German artist", "early work engaged biological and physical systems", "later work examined institutions, property and political power", "Conceptual art and social research are central contexts"],
+      "relationsUsed": ["arte-conceptual", "manhattan-real-estate-holdings"],
+      "after": {
+        "summary_es": "Hans Haacke (nacido en 1936) ha desarrollado una práctica que examina sistemas físicos, instituciones y relaciones de propiedad. Sus obras hacen visible cómo circulan la materia, la información y el poder, desplazando la obra desde el objeto aislado hacia sus condiciones de existencia.",
+        "essay_es": "## Hacer visible un sistema\n\nHaacke puede comenzar con agua, condensación o una estructura material, pero la investigación no termina en el fenómeno físico. Cuando la obra sigue documentos, edificios o propietarios, el museo se vuelve un lugar desde el que observar redes de decisión y desigualdad.\n\n[[manhattan-real-estate-holdings|Manhattan Real Estate Holdings]] prolonga esa estrategia dentro del [[arte-conceptual|arte conceptual]]: los datos no ilustran una tesis exterior, sino que forman la materia pública de la obra.",
+        "summary_en": "Hans Haacke (born 1936) has developed a practice examining physical systems, institutions, and property relations. His works make the circulation of matter, information, and power visible, shifting art from the isolated object towards its conditions of existence.",
+        "essay_en": "## Making a system visible\n\nHaacke may begin with water, condensation, or a material structure, but the investigation does not end with the physical phenomenon. When the work follows documents, buildings, or owners, the museum becomes a place from which to observe networks of decision and inequality.\n\n[[manhattan-real-estate-holdings|Manhattan Real Estate Holdings]] extends that strategy within [[arte-conceptual|Conceptual art]]: the data do not illustrate an external thesis but form the public material of the work."
+      },
+      "rejectedUnsupported": "The draft avoids attributing a single political programme to all of Haacke's works and avoids inferring private motives."
+    },
+    {
+      "slug": "heli-oiticica",
+      "entityId": "cmsvvxiud00tv85sjn2qo8fia",
+      "sourceUrls": ["https://mam.rio/artistas/helio-oiticica-2/", "https://mam.rio/artistas-cancao-enigmatica/helio-oiticica/"],
+      "claims": ["Hélio Oiticica, 1937–1980, Brazilian artist", "his practice moved from concrete experiments towards participatory and environmental work", "the body and public participation became active elements", "Tropicália and Parangolés connect colour, movement and space"],
+      "relationsUsed": ["tropicalia-obra"],
+      "after": {
+        "summary_es": "Hélio Oiticica (1937–1980) desplazó la obra desde la superficie contemplada hacia experiencias que implican cuerpo, espacio y participación. Sus investigaciones sobre color, movimiento y ambiente convierten al espectador en parte activa de la situación artística.",
+        "essay_es": "## La obra necesita un cuerpo\n\nEn Oiticica, el color no permanece quieto sobre un plano: puede envolverse, atravesarse, recorrerse o encontrarse en una situación colectiva. La obra propone condiciones para que el público deje de mirar desde fuera y produzca una experiencia espacial.\n\n[[tropicalia-obra|Tropicália]] concentra ese giro: el ambiente combina recorrido, arquitectura y percepción, y hace que la participación no sea un añadido, sino el modo en que la obra sucede.",
+        "summary_en": "Hélio Oiticica (1937–1980) shifted art from a surface to be contemplated towards experiences involving body, space, and participation. His investigations of colour, movement, and environment make the viewer an active part of the artistic situation.",
+        "essay_en": "## The work needs a body\n\nFor Oiticica, colour does not remain still on a plane: it can be worn, entered, traversed, or encountered in a collective situation. The work establishes conditions in which the public stops looking from outside and produces a spatial experience.\n\n[[tropicalia-obra|Tropicália]] concentrates that turn: the environment combines movement, architecture, and perception, making participation not an addition but the way the work happens."
+      },
+      "rejectedUnsupported": "The draft avoids treating participation as automatically emancipatory and does not claim that every work has the same social effect."
+    },
+    {
+      "slug": "ibrahim-el-salahi",
+      "entityId": "cmsvvxjcs015p85sj5vfq1yul",
+      "sourceUrls": ["https://www.moma.org/artists/5121-ibrahim-el-salahi", "https://islamicworld.britishmuseum.org/collection/RFM2098", "https://www.ashmolean.org/node/282111"],
+      "claims": ["Ibrahim El-Salahi, born 1930, Sudanese artist", "his work joins Arabic calligraphy with African and European modernist traditions", "he studied in Khartoum and at the Slade School of Fine Art", "he was a founding figure of the Khartoum School"],
+      "relationsUsed": ["arte-africano", "the-last-sound"],
+      "after": {
+        "summary_es": "Ibrahim El-Salahi (nacido en 1930) desarrolló un lenguaje moderno que enlaza caligrafía árabe, tradiciones sudanesas y recursos de la pintura europea. Sus dibujos y pinturas transforman letras, figuras y signos en formas de memoria, espiritualidad y movimiento.",
+        "essay_es": "## La escritura se vuelve figura\n\nEn El-Salahi, la caligrafía no funciona sólo como texto: sus curvas pueden sugerir cuerpos, animales y arquitecturas interiores. Esa transformación mantiene visible el origen de la línea mientras la desplaza hacia una imagen abierta y compleja.\n\n[[the-last-sound|The Last Sound]] sitúa esa búsqueda dentro del [[arte-africano|arte africano]] moderno: la obra no elige entre herencia y experimentación, sino que hace de su encuentro una forma de lenguaje.",
+        "summary_en": "Ibrahim El-Salahi (born 1930) developed a modern language joining Arabic calligraphy, Sudanese traditions, and resources from European painting. His drawings and paintings transform letters, figures, and signs into forms of memory, spirituality, and movement.",
+        "essay_en": "## Writing becomes figure\n\nIn El-Salahi, calligraphy does not function only as text: its curves can suggest bodies, animals, and inner architectures. The transformation keeps the line’s origin visible while moving it towards an open and complex image.\n\n[[the-last-sound|The Last Sound]] places this search within modern [[arte-africano|African art]]: the work does not choose between inheritance and experiment but makes their encounter a form of language."
+      },
+      "rejectedUnsupported": "The draft avoids treating calligraphic references as a complete explanation of El-Salahi's work and excludes unsupported autobiographical readings."
+    },
+    {
+      "slug": "jean-honore-fragonard",
+      "entityId": "cmsvvxj5f010v85sjuc90mj1l",
+      "sourceUrls": ["https://www.metmuseum.org/ko/essays/jean-honore-fragonard", "https://www.metmuseum.org/exhibitions/listings/2016/fragonard"],
+      "claims": ["Jean Honoré Fragonard, 1732–1806, French artist", "painter, draftsman and printmaker", "his work developed the Rococo idiom through private commissions", "drawing and etching were independent fields of invention as well as preparation"],
+      "relationsUsed": ["rococo", "el-columpio"],
+      "after": {
+        "summary_es": "Jean-Honoré Fragonard (1732–1806) trabajó como pintor, dibujante y grabador con una soltura que convirtió la línea, la luz y el movimiento en formas de invención. Sus escenas íntimas y sus paisajes prolongan el Rococó hacia una pintura de gran libertad técnica.",
+        "essay_es": "## La línea conserva el movimiento\n\nFragonard trató el dibujo como una práctica autónoma, no sólo como preparación para una pintura. El lápiz, la tinta y la aguada podían registrar una idea veloz, una atmósfera o una figura antes de que la imagen quedara fijada en una composición mayor.\n\n[[el-columpio|El columpio]] concentra la ligereza y el juego del [[rococo|Rococó]], pero la rapidez de su superficie también revela una disciplina: la espontaneidad aparece construida mediante decisiones precisas de luz, gesto y color.",
+        "summary_en": "Jean Honoré Fragonard (1732–1806) worked as a painter, draughtsman, and printmaker with a fluency that turned line, light, and movement into forms of invention. His intimate scenes and landscapes extend the Rococo into painting of great technical freedom.",
+        "essay_en": "## The line preserves movement\n\nFragonard treated drawing as an autonomous practice, not only as preparation for painting. Pencil, ink, and wash could register a quick idea, an atmosphere, or a figure before the image was fixed in a larger composition.\n\n[[el-columpio|The Swing]] concentrates the lightness and play of the [[rococo|Rococo]], but the speed of its surface also reveals discipline: spontaneity is built through precise decisions of light, gesture, and colour."
+      },
+      "rejectedUnsupported": "The draft avoids reading Fragonard's imagery as autobiography and avoids claiming a direct, singular line from his work to Impressionism."
+    }
+  ]
+}

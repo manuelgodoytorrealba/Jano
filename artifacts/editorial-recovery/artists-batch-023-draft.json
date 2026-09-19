@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_023",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "apiRoutes": "5/5 entities returned in both locales",
+    "browserRoutes": "5/5 frontend routes returned HTTP 200",
+    "localeToggle": "5/5 ES and EN API translations present",
+    "selfLinks": 0,
+    "metaLanguage": 0
+  },
+  "scope": "Five grounded published artists selected after the 2026-09-19 handoff.",
+  "rows": [
+    {
+      "slug": "joseph-kosuth",
+      "entityId": "cmsvvxiu800ts85sjhjooyzwt",
+      "sourceUrls": ["https://www.moma.org/artists/3228-joseph-kosuth", "https://www.moma.org/artists/3228-joseph-kosuth"],
+      "claims": ["Joseph Kosuth, born 1945, American artist", "language, definition and analytical propositions are central materials", "One and Three Chairs is a documented work from 1965", "the work shifts attention from visual appearance towards concepts and relations"],
+      "relationsUsed": ["obra-de-arte-en-el-tiempo"],
+      "after": {
+        "summary_es": "Joseph Kosuth (nacido en 1945) convirtió el lenguaje, la definición y la relación entre objeto e idea en materiales artísticos. Sus obras analíticas desplazan la atención desde la apariencia de una cosa hacia las condiciones que permiten reconocerla y hablar de ella.",
+        "essay_es": "## Cuando definir también es hacer\n\nKosuth presenta palabras, objetos y definiciones dentro de una misma situación para que el espectador compare sus funciones. La obra no depende sólo de mirar una forma: obliga a preguntarse qué tipo de conocimiento produce cada representación.\n\n[[obra-de-arte-en-el-tiempo|Una y tres sillas]] concentra esa operación. El objeto cotidiano, su imagen y su descripción no son equivalentes, pero juntos convierten la pregunta por el significado en la experiencia misma de la obra.",
+        "summary_en": "Joseph Kosuth (born 1945) made language, definition, and the relation between object and idea into artistic materials. His analytical works shift attention from the appearance of a thing towards the conditions that allow it to be recognised and discussed.",
+        "essay_en": "## When defining is also making\n\nKosuth places words, objects, and definitions in one situation so that viewers can compare their functions. The work does not depend only on looking at a form: it asks what kind of knowledge each representation produces.\n\n[[obra-de-arte-en-el-tiempo|One and Three Chairs]] concentrates that operation. The everyday object, its image, and its description are not equivalent, but together they make the question of meaning into the work’s experience."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Kosuth to a single slogan about conceptual art and avoids claiming that visual form disappears from his work."
+    },
+    {
+      "slug": "judy-chicago",
+      "entityId": "cmsvvxjaf014785sje9l1nync",
+      "sourceUrls": ["https://judychicago.com/about/biography/", "https://judychicago.com/chicago_gazette/chicago-gazette-3/"],
+      "claims": ["Judy Chicago, born 1939, American artist", "pioneered feminist art and art education", "The Dinner Party was made between 1974 and 1979 with hundreds of volunteers", "her practice combines painting, installation, writing, teaching and collaboration"],
+      "relationsUsed": ["arte-conceptual", "the-dinner-party"],
+      "after": {
+        "summary_es": "Judy Chicago (nacida en 1939) ha unido instalación, pintura, escritura, enseñanza y colaboración para cuestionar la representación de las mujeres en la historia del arte. Su práctica convirtió la investigación y el trabajo colectivo en parte visible de la producción artística.",
+        "essay_es": "## La historia también se puede construir en común\n\nChicago trabaja con símbolos, archivos y técnicas asociadas a lo doméstico para disputar qué vidas merecen memoria pública. La colaboración no es sólo un método de producción: hace visible que una obra histórica puede reunir muchas manos y muchas formas de conocimiento.\n\n[[the-dinner-party|The Dinner Party]] articula esa estrategia mediante una instalación monumental, mientras [[arte-conceptual|el arte conceptual]] ofrece un contexto para entender cómo la idea, el proceso y la organización social pueden formar parte de la obra.",
+        "summary_en": "Judy Chicago (born 1939) has joined installation, painting, writing, teaching, and collaboration to question the representation of women in art history. Her practice made research and collective labour visible parts of artistic production.",
+        "essay_en": "## History can also be built together\n\nChicago works with symbols, archives, and techniques associated with domestic life to contest whose lives receive public memory. Collaboration is not only a production method: it shows that a historical artwork can gather many hands and many forms of knowledge.\n\n[[the-dinner-party|The Dinner Party]] articulates that strategy through a monumental installation, while [[arte-conceptual|Conceptual art]] provides a context for understanding how idea, process, and social organisation can belong to the work."
+      },
+      "rejectedUnsupported": "The draft avoids treating The Dinner Party as the whole of Chicago's career and avoids reducing feminist art to a single medium or message."
+    },
+    {
+      "slug": "laszlo-moholy-nagy",
+      "entityId": "cmsvvxj8e012v85sjw9o0yasd",
+      "sourceUrls": ["https://www.bauhaus.de/files/press%20release%20Moholy-Nagy_exhibition.pdf", "https://www.bauhaus.de/en/das_bauhaus/81/"],
+      "claims": ["László Moholy-Nagy, 1895–1946, Hungarian artist and teacher", "worked across painting, photography, typography, film, design and stage", "taught at the Bauhaus and founded the New Bauhaus in Chicago in 1937", "light and technology were treated as active artistic materials"],
+      "relationsUsed": ["bauhaus-movement", "modulador-espacio-luz"],
+      "after": {
+        "summary_es": "László Moholy-Nagy (1895–1946) entendió el arte como una investigación transversal sobre luz, movimiento, tecnología y percepción. Su trabajo enlazó pintura, fotografía, tipografía, cine y diseño con una pedagogía que trasladó la experimentación del taller al entorno moderno.",
+        "essay_es": "## La luz se convierte en material\n\nMoholy-Nagy no trató la fotografía o la tecnología como simples herramientas para reproducir imágenes. Las utilizó para estudiar cómo la luz corta, proyecta, multiplica y reorganiza el espacio, haciendo que la percepción forme parte de la construcción de la obra.\n\n[[modulador-espacio-luz|Modulador espacio-luz]] resume esa investigación dentro del [[bauhaus-movement|Bauhaus]]: el dispositivo no representa el movimiento, sino que lo produce como una experiencia cambiante.",
+        "summary_en": "László Moholy-Nagy (1895–1946) understood art as a cross-disciplinary investigation of light, movement, technology, and perception. His work joined painting, photography, typography, film, and design with a pedagogy that carried workshop experimentation into the modern environment.",
+        "essay_en": "## Light becomes material\n\nMoholy-Nagy did not treat photography or technology as simple tools for reproducing images. He used them to study how light cuts, projects, multiplies, and reorganises space, making perception part of the work’s construction.\n\n[[modulador-espacio-luz|Light-Space Modulator]] summarises that investigation within the [[bauhaus-movement|Bauhaus]]: the device does not represent movement but produces it as a changing experience."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Moholy-Nagy as the sole author of Bauhaus pedagogy and avoids claiming that technology has one predetermined social meaning."
+    },
+    {
+      "slug": "lee-krasner",
+      "entityId": "cmsvvxj96013d85sjmqy8z7d8",
+      "sourceUrls": ["https://www.nga.gov/artists/5761-lee-krasner", "https://www.nga.gov/educational-resources/uncovering-america/expressing-individual"],
+      "claims": ["Lee Krasner, 1908–1984, American artist", "painting, collage and drawing were recurring practices", "she repeatedly changed her methods and reworked earlier material", "her work is associated with Abstract Expressionism without being reduced to that label"],
+      "relationsUsed": ["expresionismo-abstracto", "composicion"],
+      "after": {
+        "summary_es": "Lee Krasner (1908–1984) desarrolló una práctica de pintura, dibujo y collage basada en la transformación continua de formas y materiales. Sus composiciones no mantienen un estilo único: reorganizan fragmentos, gestos y superficies para convertir el cambio en método.",
+        "essay_es": "## Volver a trabajar también es una forma\n\nKrasner recuperaba dibujos, cortaba superficies y trasladaba fragmentos de una obra a otra. Ese proceso hace que la composición no sea un estado definitivo, sino una negociación entre memoria material, ritmo y decisión presente.\n\n[[composicion|Composición]] permite seguir esa lógica dentro del [[expresionismo-abstracto|Expresionismo abstracto]]: la energía de la pincelada importa, pero también la capacidad de desmontar y volver a ordenar la imagen.",
+        "summary_en": "Lee Krasner (1908–1984) developed a practice of painting, drawing, and collage based on the continual transformation of forms and materials. Her compositions do not maintain a single style: they reorganise fragments, gestures, and surfaces, making change a method.",
+        "essay_en": "## Reworking is also a form\n\nKrasner retrieved drawings, cut surfaces, and moved fragments from one work into another. The process makes composition not a final state but a negotiation among material memory, rhythm, and present decision.\n\n[[composicion|Composition]] allows that logic to be followed within [[expresionismo-abstracto|Abstract Expressionism]]: the energy of the brushstroke matters, but so does the capacity to dismantle and reorder the image."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Krasner only in relation to Jackson Pollock and avoids treating Abstract Expressionism as a complete explanation of her practice."
+    },
+    {
+      "slug": "liubov-popova",
+      "entityId": "cmsvvxj7s012g85sj3ucxnju9",
+      "sourceUrls": ["https://www.moma.org/collection/artists/4694", "https://www.moma.org/calendar/exhibitions/328", "https://www.museothyssen.org/en/collection/artists/popova-liubov"],
+      "claims": ["Liubov Popova, 1889–1924, Russian artist", "moved from figurative work towards abstraction and Constructivist design", "taught colour and design and worked for theatre and textiles", "Painterly Architectonics explored dynamic spatial relations"],
+      "relationsUsed": ["constructivismo", "cuadro-negro-popova"],
+      "after": {
+        "summary_es": "Liubov Popova (1889–1924) llevó la pintura desde la investigación abstracta hacia el diseño, el teatro y los textiles. Sus formas geométricas no son estáticas: organizan tensiones de color, dirección y espacio, y convierten la composición en una construcción activa.",
+        "essay_es": "## La pintura aprende a construir\n\nEn las arquitecturas pictóricas de Popova, planos y líneas parecen desplazarse unos sobre otros. Más tarde, esa lógica pasó a escenarios, vestuario y superficies de uso cotidiano, donde la imagen debía funcionar dentro de una situación concreta y no sólo como cuadro autónomo.\n\n[[cuadro-negro-popova|Cuadro negro de Popova]] sitúa esa búsqueda dentro del [[constructivismo|Constructivismo]]: la abstracción se vuelve una manera de organizar fuerzas, materiales y acciones.",
+        "summary_en": "Liubov Popova (1889–1924) carried painting from abstract investigation into design, theatre, and textiles. Her geometric forms are not static: they organise tensions of colour, direction, and space, turning composition into an active construction.",
+        "essay_en": "## Painting learns to construct\n\nIn Popova’s painterly architectonics, planes and lines seem to move across one another. Later, that logic entered stages, costumes, and everyday surfaces, where the image had to function within a concrete situation rather than only as an autonomous picture.\n\n[[cuadro-negro-popova|Popova’s Black Painting]] places that search within [[constructivismo|Constructivism]]: abstraction becomes a way of organising forces, materials, and actions."
+      },
+      "rejectedUnsupported": "The draft avoids treating Popova as a secondary figure to her male colleagues and avoids reducing Constructivism to geometry alone."
+    }
+  ]
+}

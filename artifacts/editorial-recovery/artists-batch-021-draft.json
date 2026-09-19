@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_021",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-19",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "apiRoutes": "5/5 entities returned in both locales",
+    "browserRoutes": "5/5 frontend routes returned HTTP 200",
+    "localeToggle": "5/5 ES and EN API translations present",
+    "selfLinks": 0,
+    "metaLanguage": 0
+  },
+  "scope": "Next five incomplete published artists selected in the 2026-09-19 handoff.",
+  "rows": [
+    {
+      "slug": "peter-paul-rubens",
+      "entityId": "cmsvvxiov00qj85sjacw53jtb",
+      "sourceUrls": ["https://www.metmuseum.org/exhibitions/listings/2005/rubens-drawings", "https://www.metmuseum.org/toah/hd/lpnd/ho_14.40.614.htm"],
+      "claims": ["Peter Paul Rubens, 1577–1640, Flemish artist", "Baroque artist active across painting, drawing, commissions and diplomacy", "drawings functioned as studies for paintings, prints and sculpture", "landscapes combine realistic observation with mythic and metaphorical qualities"],
+      "relationsUsed": ["barroco", "elevacion-de-la-cruz"],
+      "after": {
+        "summary_es": "Peter Paul Rubens (1577–1640) convirtió la pintura, el dibujo y la organización del taller en una práctica internacional del Barroco. Sus imágenes combinan el estudio de la figura, la memoria de la Antigüedad y una atención flexible a encargos, paisajes y ceremonias.",
+        "essay_es": "## El dibujo abre la obra\n\nEn Rubens, el dibujo no es un ensayo aislado: puede ordenar una composición, estudiar una figura o preparar la traducción de una imagen hacia la pintura, la estampa o la escultura. El papel conserva así decisiones provisionales y métodos de colaboración.\n\n[[elevacion-de-la-cruz|La elevación de la cruz]] permite situar esa energía dentro del [[barroco|Barroco]]: el movimiento de los cuerpos, la tensión del gesto y la escala del encargo convierten la preparación en una forma de pensamiento visual.",
+        "summary_en": "Peter Paul Rubens (1577–1640) turned painting, drawing, and studio organisation into an international Baroque practice. His images combine the study of the figure, the memory of antiquity, and a flexible attention to commissions, landscapes, and ceremony.",
+        "essay_en": "## Drawing opens the work\n\nFor Rubens, drawing is not an isolated rehearsal: it can organise a composition, study a figure, or prepare the translation of an image into painting, print, or sculpture. Paper therefore preserves provisional decisions as well as methods of collaboration.\n\n[[elevacion-de-la-cruz|The Raising of the Cross]] places that energy within the [[barroco|Baroque]]: the movement of bodies, the tension of gesture, and the scale of the commission turn preparation into a form of visual thought."
+      },
+      "rejectedUnsupported": "The draft avoids treating Rubens as the sole maker of every studio production and avoids unqualified claims about influence or intention."
+    },
+    {
+      "slug": "jose-de-ribera",
+      "entityId": "cmsvvxip500qp85sjphv12re5",
+      "sourceUrls": ["https://www.museodelprado.es/coleccion/artista/jose-de-ribera/37bb9553-eccf-459b-8d69-33a6f3cfd004", "https://www.museodelprado.es/actualidad/actividad/ribera-maestro-del-dibujo/05cd4031-4eab-481a-a9ad-abc4c874bf20"],
+      "claims": ["José de Ribera, Játiva 1591–Nápoles 1652", "Spanish painter active mainly in Naples", "naturalism associated with Caravaggio and other artistic languages", "drawing addressed religious, mythological, everyday and bodily subjects"],
+      "relationsUsed": ["barroco", "el-pie-zambo"],
+      "after": {
+        "summary_es": "José de Ribera (Játiva, 1591–Nápoles, 1652) desarrolló en Italia una pintura de naturalismo intenso, atenta a la luz, la materia y la presencia concreta de los cuerpos. Su trayectoria napolitana reúne asuntos religiosos, mitológicos, cotidianos y estudios de una gran diversidad humana.",
+        "essay_es": "## La materia reclama una mirada\n\nRibera construye sus figuras desde la fricción entre luz y sombra, pero su naturalismo no se reduce al contraste: también depende de la densidad de la piel, de la aspereza de los rostros y de la variedad de gestos que el dibujo puede registrar.\n\n[[el-pie-zambo|El pie zambo]] sitúa esa atención corporal dentro del [[barroco|Barroco]] y muestra cómo una imagen puede sostener la dignidad del personaje sin borrar la singularidad física que la pintura observa.",
+        "summary_en": "José de Ribera (Játiva, 1591–Naples, 1652) developed an intense naturalism in Italy, attentive to light, material presence, and the concreteness of bodies. His Neapolitan career brought together religious, mythological, everyday, and studies of human variety.",
+        "essay_en": "## Matter demands a way of looking\n\nRibera builds his figures through the friction of light and shadow, but his naturalism is not reduced to contrast: it also depends on the density of skin, the roughness of faces, and the range of gestures that drawing can record.\n\n[[el-pie-zambo|The Clubfoot]] places that bodily attention within the [[barroco|Baroque]] and shows how an image can sustain a sitter’s dignity without erasing the physical singularity that painting observes."
+      },
+      "rejectedUnsupported": "The draft avoids repeating uncertain anecdotes about Ribera's early life and avoids reducing his work to a single Caravaggist formula."
+    },
+    {
+      "slug": "william-blake",
+      "entityId": "cmsvvxipj00qy85sjcjt70vki",
+      "sourceUrls": ["https://www.tate.org.uk/art/artists/william-blake-39", "https://www.nga.gov/artists/970-william-blake"],
+      "claims": ["William Blake, 1757–1827, British artist", "poetry, painting and printmaking form an integrated practice", "illuminated books join verbal and visual invention", "mythological imagery engages historical and political questions"],
+      "relationsUsed": ["romanticismo", "el-anciano-de-los-dias"],
+      "after": {
+        "summary_es": "William Blake (1757–1827) unió poesía, pintura y grabado en una práctica de imaginación visionaria y experimentación técnica. Sus libros iluminados hacen que palabra, imagen y secuencia formen una sola arquitectura, capaz de abordar mitología, libertad y conflicto histórico.",
+        "essay_es": "## La página se convierte en mundo\n\nBlake no separa con facilidad el poema de su imagen: el texto puede adquirir ritmo visual y la figura puede comportarse como una idea en movimiento. La impresión iluminada convierte cada página en una unidad donde lectura, color y dibujo se condicionan mutuamente.\n\n[[el-anciano-de-los-dias|El anciano de los días]] concentra esa ambición dentro del [[romanticismo|Romanticismo]]: la imagen no ilustra simplemente un relato, sino que construye un sistema propio de símbolos y fuerzas.",
+        "summary_en": "William Blake (1757–1827) joined poetry, painting, and printmaking in a practice of visionary imagination and technical experiment. His illuminated books make word, image, and sequence into one architecture capable of addressing mythology, liberty, and historical conflict.",
+        "essay_en": "## The page becomes a world\n\nBlake does not easily separate poem from image: text can acquire visual rhythm, while a figure can behave like an idea in motion. Illuminated printing makes each page a unit in which reading, colour, and drawing condition one another.\n\n[[el-anciano-de-los-dias|The Ancient of Days]] concentrates that ambition within [[romanticismo|Romanticism]]: the image does not simply illustrate a story but builds its own system of symbols and forces."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Blake’s reported visions as independently verifiable facts and avoids treating his symbolism as a fixed code."
+    },
+    {
+      "slug": "john-constable",
+      "entityId": "cmsvvxipt00r485sjvqcofda0",
+      "sourceUrls": ["https://www.metmuseum.org/de/essays/john-constable-1776-1837", "https://shop.tate.org.uk/artists-series-john-constable/29029.html"],
+      "claims": ["John Constable, 1776–1837, English landscape painter", "the Stour Valley and familiar places remained central to his practice", "open-air studies informed large studio landscapes", "cloud studies and changing weather shaped his atmospheric effects"],
+      "relationsUsed": ["romanticismo", "el-carro-de-heno"],
+      "after": {
+        "summary_es": "John Constable (1776–1837) hizo del paisaje inglés conocido un campo de observación y memoria. Sus estudios al aire libre, sus nubes y sus cambios de luz alimentaron composiciones donde el clima transforma la percepción de la tierra trabajada.",
+        "essay_es": "## El tiempo entra en el paisaje\n\nConstable observaba lugares cercanos con una atención sostenida: el río, los caminos, los campos y el cielo no aparecen como decorado, sino como condiciones cambiantes de una experiencia. Sus estudios rápidos permitían llevar al cuadro mayor la inestabilidad de la atmósfera.\n\n[[el-carro-de-heno|El carro de heno]] prolonga esa investigación dentro del [[romanticismo|Romanticismo]]: la escena rural adquiere escala histórica sin perder el detalle de un lugar vivido.",
+        "summary_en": "John Constable (1776–1837) made the familiar English landscape a field of observation and memory. His outdoor studies, clouds, and changing light fed compositions in which weather transforms the perception of worked land.",
+        "essay_en": "## Time enters the landscape\n\nConstable observed nearby places with sustained attention: river, roads, fields, and sky do not appear as scenery but as changing conditions of experience. His rapid studies allowed the larger painting to carry the instability of the atmosphere.\n\n[[el-carro-de-heno|The Hay Wain]] extends that investigation within [[romanticismo|Romanticism]]: the rural scene gains historical scale without losing the detail of a lived place."
+      },
+      "rejectedUnsupported": "The draft avoids claiming that Constable painted only directly from nature or assigning a simple causal influence to later French painting."
+    },
+    {
+      "slug": "rosa-bonheur",
+      "entityId": "cmsvvxipy00r785sjzgrww0zp",
+      "sourceUrls": ["https://www.nga.gov/artists/15002-rosa-bonheur", "https://www.metmuseum.org/ja/essays/women-artists-in-nineteenth-century-france", "https://www.metmuseum.org/fr/art/collection/search/435702"],
+      "claims": ["Rosa Bonheur, 1822–1899, French artist", "specialised in animal painting", "The Horse Fair brought public and critical success", "trained by her father and received major international honours"],
+      "relationsUsed": ["realismo", "la-feria-de-caballos"],
+      "after": {
+        "summary_es": "Rosa Bonheur (1822–1899) convirtió la pintura animal en un campo de gran escala, precisión y energía. Su formación familiar, su estudio atento de los animales y el éxito de La feria de caballos sostuvieron una carrera pública excepcional para una artista francesa del siglo XIX.",
+        "essay_es": "## Dar escala a lo que se mira de cerca\n\nBonheur estudió los animales como cuerpos en acción: peso, musculatura, dirección y ritmo organizan la superficie pictórica. Esa observación no reduce la escena a una descripción; convierte el movimiento colectivo en una estructura capaz de ocupar un gran formato.\n\n[[la-feria-de-caballos|La feria de caballos]] concentra esa propuesta dentro del [[realismo|Realismo]]: el trabajo, el transporte y la presencia animal entran en la historia de la pintura con una autoridad monumental.",
+        "summary_en": "Rosa Bonheur (1822–1899) turned animal painting into a field of scale, precision, and energy. Her family training, close study of animals, and the success of The Horse Fair supported an exceptional public career for a nineteenth-century French artist.",
+        "essay_en": "## Giving scale to what is closely observed\n\nBonheur studied animals as bodies in action: weight, musculature, direction, and rhythm organise the painted surface. This observation does not reduce the scene to description; it turns collective movement into a structure capable of occupying a monumental format.\n\n[[la-feria-de-caballos|The Horse Fair]] concentrates that proposal within [[realismo|Realism]]: work, transport, and animal presence enter the history of painting with monumental authority."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Bonheur’s career to gender convention alone and avoids asserting undocumented intentions for The Horse Fair."
+    }
+  ]
+}
