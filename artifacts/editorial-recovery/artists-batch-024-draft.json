@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_024",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-20",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "apiRoutes": "5/5 entities returned in both locales",
+    "browserRoutes": "5/5 frontend routes returned HTTP 200",
+    "localeToggle": "5/5 ES and EN API translations present",
+    "selfLinks": 0,
+    "metaLanguage": 0
+  },
+  "scope": "Five grounded published artists selected after the 2026-09-19 handoff.",
+  "rows": [
+    {
+      "slug": "lygia-clark",
+      "entityId": "cmsvvxjb3014m85sjn18x17d3",
+      "sourceUrls": ["https://mam.rio/artistas/lygia-clark/"],
+      "claims": ["Lygia Clark, 1920–1988, Brazilian artist", "signatory of the 1959 Neo-Concrete Manifesto", "her practice moved from geometric painting towards participatory objects", "Bichos make the relation between body, object and action central"],
+      "relationsUsed": ["arte-conceptual", "los-guerreros"],
+      "after": {
+        "summary_es": "Lygia Clark (1920–1988) desplazó la pintura geométrica hacia objetos y situaciones que necesitan la acción del cuerpo. Sus investigaciones neoconcretas convierten la obra en una relación cambiante entre forma, tacto, espacio y experiencia.",
+        "essay_es": "## La forma pide una acción\n\nClark no trata el objeto como una superficie cerrada: sus piezas se abren, se articulan o cambian cuando alguien las manipula. La percepción deja de ser una contemplación distante y se convierte en una práctica corporal.\n\n[[los-guerreros|Los guerreros]] permite leer esa búsqueda dentro del [[arte-conceptual|arte conceptual]]: la obra no se agota en su apariencia, porque su sentido depende de las relaciones que activa entre objeto, espacio y participante.",
+        "summary_en": "Lygia Clark (1920–1988) shifted geometric painting towards objects and situations that require bodily action. Her Neo-Concrete investigations turn art into a changing relation among form, touch, space, and experience.",
+        "essay_en": "## Form asks for an action\n\nClark does not treat the object as a closed surface: her pieces open, articulate, or change when someone handles them. Perception stops being distant contemplation and becomes a bodily practice.\n\n[[los-guerreros|Los guerreros]] allows this search to be read within [[arte-conceptual|Conceptual art]]: the work is not exhausted by appearance because its meaning depends on the relations it activates among object, space, and participant."
+      },
+      "rejectedUnsupported": "The draft avoids treating participation as a universal formula for Clark's work and does not claim a single therapeutic meaning for her objects."
+    },
+    {
+      "slug": "lygia-pape",
+      "entityId": "cmsvvxjb8014p85sjeq1ul52z",
+      "sourceUrls": ["https://www.museoreinasofia.es/coleccion/proyectos-investigacion/lygia-pape/", "https://museoreinasofia.es/coleccion/proyectos-investigacion/lygia-pape/"],
+      "claims": ["Lygia Pape, 1927–2004, Brazilian artist", "associated with the Neo-Concrete movement", "worked across books, woodcuts, film, performance and installation", "Divisor makes collective movement and public space part of the work"],
+      "relationsUsed": ["arte-conceptual", "divisor"],
+      "after": {
+        "summary_es": "Lygia Pape (1927–2004) amplió la experiencia artística mediante libros, xilografías, cine, performance y acciones colectivas. Su práctica neoconcreta transforma la geometría en una experiencia sensorial en la que cuerpo, espacio público y juego adquieren un papel decisivo.",
+        "essay_es": "## El libro puede abrirse al espacio\n\nPape trata la página como una estructura que puede desplegarse, multiplicarse y entrar en contacto con otros cuerpos. La obra deja de ser un recipiente neutral para convertirse en una secuencia de decisiones, recorridos y encuentros.\n\n[[divisor|Divisor]] lleva esa lógica al espacio público: muchas personas comparten una superficie textil y hacen visible la relación entre acción colectiva y forma, dentro del horizonte del [[arte-conceptual|arte conceptual]].",
+        "summary_en": "Lygia Pape (1927–2004) expanded artistic experience through books, woodcuts, film, performance, and collective actions. Her Neo-Concrete practice turns geometry into a sensory experience in which the body, public space, and play become decisive.",
+        "essay_en": "## The book can open into space\n\nPape treats the page as a structure that can unfold, multiply, and come into contact with other bodies. The work stops being a neutral container and becomes a sequence of decisions, paths, and encounters.\n\n[[divisor|Divisor]] carries that logic into public space: many people share a textile surface and make the relation between collective action and form visible within the horizon of [[arte-conceptual|Conceptual art]]."
+      },
+      "rejectedUnsupported": "The draft avoids treating Pape's media as separate careers and avoids reducing Neo-Concrete practice to geometric abstraction alone."
+    },
+    {
+      "slug": "lyonel-feininger",
+      "entityId": "cmsvvxj85012p85sj3z8aw1v4",
+      "sourceUrls": ["https://www.moma.org/artists/1832-lyonel-feininger", "https://www.moma.org/s/ge/collection_ge/artist/artist_id-1832.html"],
+      "claims": ["Lyonel Feininger, 1871–1956, American artist who lived and worked in Germany", "painter, printmaker, draftsman and photographer", "crystalline interlocking planes structure landscapes, villages, sea and architecture", "taught at the Bauhaus and directed its printing workshop until 1925"],
+      "relationsUsed": ["bauhaus-movement", "la-ciudad-al-final-del-mundo"],
+      "after": {
+        "summary_es": "Lyonel Feininger (1871–1956) construyó paisajes, pueblos y arquitecturas mediante planos cristalinos, líneas oblicuas y una imaginación que conserva el pulso de la ilustración. Su trabajo enlazó pintura, grabado y dibujo con la enseñanza del Bauhaus.",
+        "essay_es": "## La ciudad se vuelve una estructura de luz\n\nFeininger no describe la arquitectura como un inventario de fachadas: la reorganiza en planos que parecen vibrar y desplazarse. La perspectiva conserva un anclaje reconocible, pero cada edificio participa en una composición de ritmos, transparencias y tensiones.\n\n[[la-ciudad-al-final-del-mundo|La ciudad al final del mundo]] sitúa esa visión dentro del [[bauhaus-movement|Bauhaus]], donde la imagen puede ser simultáneamente observación, construcción y diseño.",
+        "summary_en": "Lyonel Feininger (1871–1956) built landscapes, villages, and architecture through crystalline planes, oblique lines, and an imagination retaining the pulse of illustration. His work joined painting, printmaking, and drawing with Bauhaus teaching.",
+        "essay_en": "## The city becomes a structure of light\n\nFeininger does not describe architecture as an inventory of façades: he reorganises it into planes that seem to vibrate and shift. Perspective remains recognisable, but each building participates in a composition of rhythms, transparencies, and tensions.\n\n[[la-ciudad-al-final-del-mundo|The City at the End of the World]] places that vision within the [[bauhaus-movement|Bauhaus]], where an image can be observation, construction, and design at once."
+      },
+      "rejectedUnsupported": "The draft avoids treating Feininger's Bauhaus role as the sole explanation of his work and avoids claiming that his landscapes are purely abstract."
+    },
+    {
+      "slug": "manuela-ballester",
+      "entityId": "cmsvvxj8n013185sjs85f8x5a",
+      "sourceUrls": ["https://recursos.museoreinasofia.es/descargas/Documento/nota_de_prensa_arco_2021.pdf"],
+      "claims": ["Manuela Ballester, 1908–1994, Spanish painter, illustrator, poster artist, writer, editor and poet", "associated with Spanish realism and the Valencian generation of the 1930s", "made political posters during the Spanish Civil War", "continued artistic work in exile in France and Mexico"],
+      "relationsUsed": ["muralismo-mexicano", "autorretrato-manuela-ballester"],
+      "after": {
+        "summary_es": "Manuela Ballester (1908–1994) trabajó entre pintura, ilustración, cartel, escritura y edición, vinculando la práctica artística con la vida política y el exilio. Su trayectoria atraviesa el realismo español, la guerra civil y la continuidad de su trabajo en México.",
+        "essay_es": "## La imagen también organiza una comunidad\n\nBallester utilizó la claridad del dibujo y del cartel para intervenir en un tiempo de conflicto, pero su producción no se limita a la propaganda. El retrato, la escritura y la edición muestran cómo una artista podía construir presencia pública desde varios lenguajes.\n\n[[autorretrato-manuela-ballester|Autorretrato de Manuela Ballester]] mantiene esa dimensión personal, mientras [[muralismo-mexicano|el muralismo mexicano]] ayuda a situar el horizonte americano de su exilio y de sus intercambios artísticos.",
+        "summary_en": "Manuela Ballester (1908–1994) worked across painting, illustration, posters, writing, and editing, linking artistic practice with political life and exile. Her career crosses Spanish realism, the Civil War, and the continuation of her work in Mexico.",
+        "essay_en": "## Images can also organise a community\n\nBallester used the clarity of drawing and the poster to intervene in a time of conflict, but her production is not limited to propaganda. Portraiture, writing, and editing show how an artist could build a public presence across several languages.\n\n[[autorretrato-manuela-ballester|Manuela Ballester’s Self-Portrait]] retains that personal dimension, while [[muralismo-mexicano|Mexican muralism]] helps situate the American horizon of her exile and artistic exchanges."
+      },
+      "rejectedUnsupported": "The draft avoids treating Ballester only as a political poster artist and does not infer private intentions from the self-portrait."
+    },
+    {
+      "slug": "marlene-dumas",
+      "entityId": "cmsvvxjbr015185sji9d0x0nw",
+      "sourceUrls": ["https://www.moma.org/artists/7521-marlene-dumas", "https://www.moma.org/collection/works/101473", "https://shop.tate.org.uk/marlene-dumas-the-image-as-burden/16388.html"],
+      "claims": ["Marlene Dumas, born 1953, South African artist", "painting, drawing, ink and portraiture are central practices", "works draw on photographs and visual archives", "images address bodies, identity, sexuality, love, death and guilt with psychological intensity"],
+      "relationsUsed": ["arte-conceptual", "magdalena"],
+      "after": {
+        "summary_es": "Marlene Dumas (nacida en 1953) trabaja con pintura, dibujo, tinta y retrato para examinar cómo una imagen transforma un cuerpo en una figura pública. Sus fuentes fotográficas y sus cambios de escala mantienen abiertas las tensiones entre intimidad, deseo, memoria y representación.",
+        "essay_es": "## El retrato nunca llega vacío\n\nDumas parte a menudo de imágenes ya circuladas: fotografías, recortes y recuerdos visuales que llegan cargados de historia. Al trasladarlos a una pintura líquida y ambigua, no los vuelve transparentes; hace visible la distancia entre mirar un cuerpo y comprenderlo.\n\n[[magdalena|Magdalena]] concentra esa tensión y puede leerse junto al [[arte-conceptual|arte conceptual]] por su atención a los marcos de representación, aunque la materia pictórica conserva toda su intensidad afectiva.",
+        "summary_en": "Marlene Dumas (born 1953) works with painting, drawing, ink, and portraiture to examine how an image turns a body into a public figure. Her photographic sources and shifts of scale keep tensions among intimacy, desire, memory, and representation open.",
+        "essay_en": "## A portrait never arrives empty\n\nDumas often starts from images that have already circulated: photographs, clippings, and visual memories carrying their own histories. By moving them into a fluid and ambiguous painting, she does not make them transparent; she makes visible the distance between looking at a body and understanding it.\n\n[[magdalena|Magdalena]] concentrates that tension and can be read alongside [[arte-conceptual|Conceptual art]] through its attention to the frames of representation, while the painted material retains its affective intensity."
+      },
+      "rejectedUnsupported": "The draft avoids diagnosing subjects, treating every portrait as autobiography, or reducing Dumas's practice to a single psychological theme."
+    }
+  ]
+}

@@ -5,11 +5,11 @@ Estado dejado el **19 de septiembre de 2026**, en la rama `develop`.
 ## Punto exacto de partida
 
 - Artistas totales: **209**.
-- Artistas completos en español e inglés: **153**.
-- Artistas pendientes: **56**.
-- Artistas publicados pendientes: **54**.
-- Último lote aplicado: **023**.
-- Lotes 021–023 aplicados y verificados. El lote 023 incluye `joseph-kosuth`, `judy-chicago`, `laszlo-moholy-nagy`, `lee-krasner` y `liubov-popova`.
+- Artistas completos en español e inglés: **178**.
+- Artistas pendientes: **31**.
+- Artistas publicados pendientes: **29**.
+- Último lote aplicado: **028**.
+- Lotes 021–028 aplicados y verificados. El lote 028 incluye `piero-della-francesca`, `piet-mondrian`, `pontormo`, `remedios-varo` y `richard-serra`.
 - `dionisio` queda bloqueado provisionalmente por identidad ambigua y grounding institucional insuficiente; no se ha modificado.
 
 Los lotes 001–023 contienen los cuatro campos públicos de cada artista:

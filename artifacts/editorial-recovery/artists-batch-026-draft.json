@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_026",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-20",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "apiRoutes": "5/5 entities returned in both locales",
+    "browserRoutes": "5/5 frontend routes returned HTTP 200",
+    "localeToggle": "5/5 ES and EN API translations present",
+    "selfLinks": 0,
+    "metaLanguage": 0
+  },
+  "scope": "Five grounded published artists selected after the 2026-09-19 handoff.",
+  "rows": [
+    {
+      "slug": "mona-hatoum",
+      "entityId": "cmsvvxjdb016185sjnuqg24pa",
+      "sourceUrls": ["https://shop.tate.org.uk/mona-hatoum/17730.html"],
+      "claims": ["Mona Hatoum, born 1952, Palestinian artist born in Beirut and based in Britain", "works across video, performance, sculpture and installation", "the body, violence, oppression and voyeurism recur as charged themes", "her installations juxtapose beauty and horror, attraction and repulsion"],
+      "relationsUsed": ["arte-conceptual", "hot-spot"],
+      "after": {
+        "summary_es": "Mona Hatoum (nacida en 1952) trabaja con vídeo, performance, escultura e instalación para convertir el cuerpo y el espacio cotidiano en territorios de tensión. Sus obras enfrentan atracción y amenaza, belleza y violencia, sin dejar que el espectador observe desde una distancia segura.",
+        "essay_es": "## El espacio doméstico puede volverse inhóspito\n\nHatoum altera objetos familiares y escalas conocidas hasta que dejan de ofrecer refugio. Una superficie, una rejilla o un mapa pueden conservar su apariencia reconocible y, al mismo tiempo, sugerir vigilancia, desplazamiento o vulnerabilidad.\n\n[[hot-spot|Hot Spot]] concentra esa tensión dentro del [[arte-conceptual|arte conceptual]]: el mapa no funciona sólo como representación geográfica, sino como un campo material donde se cruzan pertenencia, conflicto y peligro.",
+        "summary_en": "Mona Hatoum (born 1952) works across video, performance, sculpture, and installation to turn the body and everyday space into territories of tension. Her works confront attraction with threat, and beauty with violence, without allowing viewers a secure distance.",
+        "essay_en": "## Domestic space can become inhospitable\n\nHatoum alters familiar objects and known scales until they stop offering shelter. A surface, a grid, or a map can remain recognisable while suggesting surveillance, displacement, or vulnerability.\n\n[[hot-spot|Hot Spot]] concentrates that tension within [[arte-conceptual|Conceptual art]]: the map is not only geographic representation but a material field where belonging, conflict, and danger intersect."
+      },
+      "rejectedUnsupported": "The draft avoids diagnosing the artist or treating every installation as a direct political allegory."
+    },
+    {
+      "slug": "monir-shahroudy-farmanfarmaian",
+      "entityId": "cmsvvxjce015g85sjtz7du879",
+      "sourceUrls": ["https://www.metmuseum.org/art/collection/search/497677", "https://www.metmuseum.org/it/essays/artists-of-the-saqqakhana-movement-1950s60s"],
+      "claims": ["Monir Shahroudy Farmanfarmaian, 1923–2019, Iranian artist", "worked with reverse-glass painting and mirror mosaics", "Islamic geometry and modern minimalism meet in her practice", "her work connects Iranian material traditions with international modern art"],
+      "relationsUsed": ["arte-conceptual", "mirror-ball"],
+      "after": {
+        "summary_es": "Monir Shahroudy Farmanfarmaian (1923–2019) unió mosaico de espejos, pintura sobre vidrio invertido y geometría islámica con una sensibilidad moderna. Sus superficies fragmentan la luz y transforman la tradición material iraní en una experiencia espacial y cambiante.",
+        "essay_es": "## La geometría también puede reflejar\n\nEn las obras de Monir, el patrón no es un adorno inmóvil: cada fragmento devuelve una luz distinta y obliga al cuerpo a percibir la forma desde varios ángulos. La repetición produce orden, pero el reflejo introduce variación y movimiento.\n\n[[mirror-ball|Mirror Ball]] sitúa esa investigación dentro del [[arte-conceptual|arte conceptual]] sin borrar su raíz material: la obra piensa con vidrio, espejo, pegamento, geometría y la presencia del espectador.",
+        "summary_en": "Monir Shahroudy Farmanfarmaian (1923–2019) joined mirror mosaic, reverse-glass painting, and Islamic geometry with a modern sensibility. Her surfaces fracture light and turn Iranian material tradition into a changing spatial experience.",
+        "essay_en": "## Geometry can also reflect\n\nIn Monir’s works, pattern is not still ornament: each fragment returns light differently and asks the body to perceive form from several angles. Repetition produces order, while reflection introduces variation and movement.\n\n[[mirror-ball|Mirror Ball]] places that investigation within [[arte-conceptual|Conceptual art]] without erasing its material root: the work thinks through glass, mirror, glue, geometry, and the viewer’s presence."
+      },
+      "rejectedUnsupported": "The draft avoids treating Iranian tradition as a fixed source and avoids reducing the work to decorative geometry."
+    },
+    {
+      "slug": "natalia-goncharova",
+      "entityId": "cmsvvxj80012m85sjycwzc7zx",
+      "sourceUrls": ["https://www.moma.org/collection/artists/2229", "https://www.moma.org/collection/works/95053"],
+      "claims": ["Natalia Goncharova, 1881–1962, Russian artist", "painting, prints, artists’ books, theatre and ballet design formed a multidisciplinary practice", "she combined modern European movements with Russian, Eastern and folk sources", "her work developed through Neo-Primitivism and Rayism"],
+      "relationsUsed": ["futurismo", "el-ciclista"],
+      "after": {
+        "summary_es": "Natalia Goncharova (1881–1962) desarrolló una práctica que atravesó pintura, grabado, libros de artista, teatro y ballet. Su vanguardia no abandonó las tradiciones rusas: combinó iconos, arte popular y formas orientales con cubismo, futurismo y rayonismo.",
+        "essay_es": "## La vanguardia puede mirar hacia atrás\n\nGoncharova no entendía la modernidad como una ruptura que obligara a borrar la memoria. Sus figuras simplificadas, sus colores intensos y sus composiciones dinámicas hacen convivir fuentes antiguas, populares y contemporáneas dentro de una misma imagen.\n\n[[el-ciclista|El ciclista]] permite seguir esa energía entre movimiento y signo, mientras [[futurismo|el Futurismo]] sitúa su interés por la velocidad y la transformación de la vida moderna.",
+        "summary_en": "Natalia Goncharova (1881–1962) developed a practice spanning painting, printmaking, artists’ books, theatre, and ballet. Her avant-garde work did not abandon Russian traditions: it combined icons, folk art, and Eastern forms with Cubism, Futurism, and Rayism.",
+        "essay_en": "## The avant-garde can look backwards\n\nGoncharova did not understand modernity as a rupture requiring memory to be erased. Her simplified figures, intense colours, and dynamic compositions allow ancient, popular, and contemporary sources to coexist within one image.\n\n[[el-ciclista|The Cyclist]] lets that energy be followed between movement and sign, while [[futurismo|Futurism]] situates her interest in speed and the transformation of modern life."
+      },
+      "rejectedUnsupported": "The draft avoids treating Goncharova as derivative of Western movements and avoids assigning a single national identity to her sources."
+    },
+    {
+      "slug": "odilon-redon",
+      "entityId": "cmsvvxiqd00rg85sjnpqv3fwp",
+      "sourceUrls": ["https://store.metmuseum.org/blog/fantastic-blooms-odilon-redon-in-the-met-collection", "https://resources.metmuseum.org/resources/metpublications/pdf/French_Prints_in_the_Era_of_Impressionism_and_Symbolism_The_Metropolitan_Museum_of_Art_Bulletin_v_46_no_1_Summer_1988.pdf"],
+      "claims": ["Odilon Redon, 1840–1916, French artist", "worked in charcoal, lithography, etching, painting and pastel", "his art moves between observed nature and dreamlike imagination", "Symbolist contexts and the poetics of the unseen are important to his work"],
+      "relationsUsed": ["simbolismo", "el-ojo-como-globo-extrano"],
+      "after": {
+        "summary_es": "Odilon Redon (1840–1916) llevó el dibujo, el grabado, el pastel y la pintura hacia imágenes donde la naturaleza puede transformarse en sueño. Su obra oscila entre lo visible y lo imaginado, entre la precisión de una forma y la aparición de una criatura imposible.",
+        "essay_es": "## La imaginación también tiene una materia\n\nRedon no abandona la textura del carbón, la piedra litográfica o el pigmento cuando se aleja del mundo observable. Al contrario, esos materiales sostienen la incertidumbre de sus flores, ojos, seres híbridos y paisajes interiores.\n\n[[el-ojo-como-globo-extrano|El ojo como globo extraño]] concentra esa poética dentro del [[simbolismo|Simbolismo]]: la imagen no resuelve el misterio, lo convierte en una forma que puede seguir transformándose ante la mirada.",
+        "summary_en": "Odilon Redon (1840–1916) carried drawing, printmaking, pastel, and painting towards images in which nature can become dream. His work moves between the visible and the imagined, between the precision of a form and the appearance of an impossible creature.",
+        "essay_en": "## Imagination also has a material\n\nRedon does not abandon the texture of charcoal, lithographic stone, or pigment when he moves away from the observable world. Those materials instead sustain the uncertainty of his flowers, eyes, hybrid beings, and inward landscapes.\n\n[[el-ojo-como-globo-extrano|The Eye Like a Strange Balloon]] concentrates that poetics within [[simbolismo|Symbolism]]: the image does not solve mystery but turns it into a form that can keep changing before the gaze."
+      },
+      "rejectedUnsupported": "The draft avoids treating Redon's imagery as a fixed personal code and avoids separating his black-and-white work from his later colour."
+    },
+    {
+      "slug": "oscar-murillo",
+      "entityId": "cmsvvxjbm014y85sjfnimkcey",
+      "sourceUrls": ["https://www.moma.org/artists/45404-oscar-murillo", "https://www.davidzwirner.com/artists/oscar-murillo"],
+      "claims": ["Oscar Murillo, born 1986, Colombian artist", "practice spans painting, works on paper, sculpture, installation, actions, live events and video", "cultural exchange and displacement of objects and languages recur in his work", "The Cleaner belongs to a contemporary practice attentive to labour and circulation"],
+      "relationsUsed": ["arte-conceptual", "the-cleaner"],
+      "after": {
+        "summary_es": "Óscar Murillo (nacido en 1986) trabaja entre pintura, papel, escultura, instalación, vídeo y acciones para observar cómo circulan objetos, lenguajes y formas de trabajo. Su práctica entiende la cultura como un espacio de intercambio, desplazamiento y fricción.",
+        "essay_es": "## La circulación también deja una huella\n\nMurillo reúne materiales y gestos que no permanecen dentro de un solo lugar: una superficie puede registrar trabajo, viaje, conversación o colaboración. La obra conserva esa inestabilidad en vez de ocultarla bajo una imagen perfectamente cerrada.\n\n[[the-cleaner|The Cleaner]] permite leer esa atención al trabajo y a la movilidad dentro del [[arte-conceptual|arte conceptual]]: el objeto artístico aparece conectado con las condiciones sociales que lo producen y lo hacen circular.",
+        "summary_en": "Oscar Murillo (born 1986) works across painting, paper, sculpture, installation, video, and actions to observe how objects, languages, and forms of labour circulate. His practice understands culture as a space of exchange, displacement, and friction.",
+        "essay_en": "## Circulation also leaves a trace\n\nMurillo brings together materials and gestures that do not remain in one place: a surface can record labour, travel, conversation, or collaboration. The work preserves that instability instead of hiding it beneath a perfectly closed image.\n\n[[the-cleaner|The Cleaner]] allows this attention to labour and mobility to be read within [[arte-conceptual|Conceptual art]]: the artwork appears connected to the social conditions that produce it and set it in circulation."
+      },
+      "rejectedUnsupported": "The draft avoids assigning one political programme to Murillo and avoids treating circulation as a complete interpretation of every work."
+    }
+  ]
+}

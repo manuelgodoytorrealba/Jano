@@ -1,0 +1,87 @@
+{
+  "batch": "ARTISTS_EDITORIAL_025",
+  "status": "APPLIED_VERIFIED",
+  "appliedAt": "2026-09-20",
+  "verification": {
+    "database": "infra-db-1/jano",
+    "editorialFields": "5/5 entities complete in ES and EN",
+    "apiRoutes": "5/5 entities returned in both locales",
+    "browserRoutes": "5/5 frontend routes returned HTTP 200",
+    "localeToggle": "5/5 ES and EN API translations present",
+    "selfLinks": 0,
+    "metaLanguage": 0
+  },
+  "scope": "Five grounded published artists selected after the 2026-09-19 handoff.",
+  "rows": [
+    {
+      "slug": "martha-rosler",
+      "entityId": "cmsvvxjap014d85sjyh97a7m2",
+      "sourceUrls": ["https://www.moma.org/artists/6832-martha-rosler", "https://www.moma.org/interactives/exhibitions/2012/garagesale/about.html"],
+      "claims": ["Martha Rosler, born 1943, American artist", "works across photography, performance, video, installation and writing", "her practice examines everyday life and social power", "photomontage contrasts domestic imagery with war and political conflict"],
+      "relationsUsed": ["arte-conceptual", "semiotica-de-la-cocina"],
+      "after": {
+        "summary_es": "Martha Rosler (nacida en 1943) trabaja con fotografía, fotomontaje, vídeo, performance, instalación y escritura para examinar cómo la vida cotidiana organiza relaciones de poder. Sus imágenes hacen chocar lo doméstico con la guerra, el consumo y la desigualdad.",
+        "essay_es": "## Lo cotidiano también tiene una política\n\nRosler no presenta la casa como un espacio separado de la historia: una cocina, una revista o una mesa pueden contener las mismas jerarquías que aparecen en la calle y en los medios. El montaje vuelve visible esa continuidad al colocar imágenes incompatibles dentro de un mismo marco.\n\n[[semiotica-de-la-cocina|Semiótica de la cocina]] concentra esa crítica desde el gesto y el lenguaje, mientras [[arte-conceptual|el arte conceptual]] ayuda a entender cómo una operación cotidiana puede convertirse en una herramienta de análisis.",
+        "summary_en": "Martha Rosler (born 1943) works across photography, photomontage, video, performance, installation, and writing to examine how everyday life organises relations of power. Her images bring domestic space into collision with war, consumption, and inequality.",
+        "essay_en": "## The everyday also has a politics\n\nRosler does not present the home as separate from history: a kitchen, a magazine, or a table can contain the same hierarchies that appear in streets and media. Montage makes that continuity visible by placing incompatible images within one frame.\n\n[[semiotica-de-la-cocina|Semiotics of the Kitchen]] concentrates that critique through gesture and language, while [[arte-conceptual|Conceptual art]] helps explain how an everyday operation can become a tool of analysis."
+      },
+      "rejectedUnsupported": "The draft avoids reducing Rosler to photomontage alone and avoids assigning a single political interpretation to every work."
+    },
+    {
+      "slug": "mary-cassatt",
+      "entityId": "cmsvvxiq800rd85sjse1usn2j",
+      "sourceUrls": ["https://www.nga.gov/artists/1107-mary-cassatt", "https://www.nga.gov/research/publications/mary-cassatt-1844-1926", "https://www.nga.gov/content/dam/ngaweb/Education/learning-resources/an-eye-for-art/AnEyeforArt-MaryCassatt.pdf"],
+      "claims": ["Mary Cassatt, 1844–1926, American artist active in Paris", "painting and printmaking are central practices", "mother-and-child scenes and modern daily life recur in her work", "she absorbed Impressionist and Japanese print influences into a distinct practice"],
+      "relationsUsed": ["impresionismo", "el-bano-del-nino"],
+      "after": {
+        "summary_es": "Mary Cassatt (1844–1926) desarrolló en París una pintura y una obra gráfica atentas a la vida moderna, la intimidad y las relaciones entre madres y niños. Su práctica combina la experiencia impresionista con una observación precisa de gestos, encuadres y superficies.",
+        "essay_es": "## La intimidad también puede ser una escena moderna\n\nCassatt observa el cuidado, la lectura, el paseo y la conversación sin convertirlos en episodios menores. El encuadre cercano y la atención a las manos, los tejidos y las miradas hacen que una acción cotidiana adquiera estructura visual.\n\n[[el-bano-del-nino|El baño del niño]] sitúa esa sensibilidad dentro del [[impresionismo|Impresionismo]]: la escena no es sólo un tema doméstico, sino una investigación sobre cómo vemos y compartimos el tiempo.",
+        "summary_en": "Mary Cassatt (1844–1926) developed painting and graphic work in Paris attentive to modern life, intimacy, and relations between mothers and children. Her practice combines Impressionist experience with precise observation of gestures, framing, and surfaces.",
+        "essay_en": "## Intimacy can also be a modern scene\n\nCassatt observes care, reading, walks, and conversation without turning them into minor episodes. Close framing and attention to hands, fabrics, and glances give an everyday action visual structure.\n\n[[el-bano-del-nino|The Child’s Bath]] places that sensibility within [[impresionismo|Impressionism]]: the scene is not only a domestic subject but an investigation into how we see and share time."
+      },
+      "rejectedUnsupported": "The draft avoids treating Cassatt's subjects as purely autobiographical and avoids reducing her work to maternal imagery."
+    },
+    {
+      "slug": "masaccio",
+      "entityId": "cmsvvxj3o00zp85sjf7eb3y9z",
+      "sourceUrls": ["https://82nd-and-fifth.metmuseum.org/toah/ht/08/eustc.html"],
+      "claims": ["Masaccio, 1401–ca. 1428, Florentine painter", "his brief career produced landmarks of early fifteenth-century Italian painting", "linear perspective and classical proportion shaped his frescoes", "his figures combine spatial construction with psychological depth"],
+      "relationsUsed": ["renacimiento-italiano", "la-expulsion-del-paraiso"],
+      "after": {
+        "summary_es": "Masaccio (1401–ca. 1428) transformó la pintura florentina al unir perspectiva, proporción y una presencia corporal de gran intensidad. En una carrera breve, sus frescos construyeron espacios convincentes y figuras cuya emoción parece depender de su peso dentro del mundo.",
+        "essay_es": "## El espacio puede hacer visible una emoción\n\nEn Masaccio, la perspectiva no funciona sólo como demostración geométrica. Ordena el lugar que ocupan los cuerpos, mide la distancia entre ellos y convierte un gesto en una consecuencia espacial. La pintura hace que la escena parezca habitable y moralmente tensa.\n\n[[la-expulsion-del-paraiso|La expulsión del paraíso]] permite seguir esa unión dentro del [[renacimiento-italiano|Renacimiento italiano]]: el dolor no flota ante un fondo, sino que se inscribe en una arquitectura y en unos cuerpos sometidos a gravedad.",
+        "summary_en": "Masaccio (1401–c. 1428) transformed Florentine painting by joining perspective, proportion, and intensely present bodies. In a brief career, his frescoes built convincing spaces and figures whose emotion seems to depend on their weight within the world.",
+        "essay_en": "## Space can make emotion visible\n\nFor Masaccio, perspective is not only a geometric demonstration. It orders the place occupied by bodies, measures the distance between them, and turns a gesture into a spatial consequence. Painting makes the scene seem inhabitable and morally tense.\n\n[[la-expulsion-del-paraiso|The Expulsion from Paradise]] allows that union to be followed within the [[renacimiento-italiano|Italian Renaissance]]: grief does not float before a background but is inscribed in architecture and bodies subject to gravity."
+      },
+      "rejectedUnsupported": "The draft avoids presenting Masaccio as the sole inventor of perspective and avoids converting a theological scene into a psychological biography."
+    },
+    {
+      "slug": "max-ernst",
+      "entityId": "cmsvvxirn00s785sj0cbmrmwi",
+      "sourceUrls": ["https://www.moma.org/collection/artists/1752", "https://www.moma.org/calendar/exhibitions/390"],
+      "claims": ["Max Ernst, 1891–1976, born in Germany and later French and American", "key member of Dada and Surrealism", "worked across painting, collage, printmaking and sculpture", "frottage and collage introduced chance, fragments and unconscious associations"],
+      "relationsUsed": ["surrealismo", "dos-ninos-amenazados-por-un-ruisenor"],
+      "after": {
+        "summary_es": "Max Ernst (1891–1976) utilizó collage, pintura, grabado, escultura y procedimientos de dibujo para convertir fragmentos y accidentes en imágenes inquietantes. Su paso por Dadá y el Surrealismo abrió una práctica donde memoria, mito y azar alteran la lógica cotidiana.",
+        "essay_es": "## Una imagen puede nacer de un accidente\n\nErnst no buscaba controlar cada detalle desde el comienzo. El frotado sobre una superficie y el ensamblaje de imágenes encontradas introducen texturas, cortes y asociaciones que la razón no organiza por completo; después, el artista decide cómo sostener esa aparición.\n\n[[dos-ninos-amenazados-por-un-ruisenor|Dos niños amenazados por un ruiseñor]] sitúa esa mezcla de familiaridad y extrañeza dentro del [[surrealismo|Surrealismo]], donde lo imposible puede adquirir una forma visual convincente.",
+        "summary_en": "Max Ernst (1891–1976) used collage, painting, printmaking, sculpture, and drawing procedures to turn fragments and accidents into unsettling images. His passage through Dada and Surrealism opened a practice in which memory, myth, and chance disturb everyday logic.",
+        "essay_en": "## An image can begin with an accident\n\nErnst did not seek to control every detail from the start. Rubbing across a textured surface and assembling found images introduce textures, cuts, and associations that reason cannot fully organise; the artist then decides how to sustain their appearance.\n\n[[dos-ninos-amenazados-por-un-ruisenor|Two Children Are Threatened by a Nightingale]] places that mixture of familiarity and strangeness within [[surrealismo|Surrealism]], where the impossible can acquire a convincing visual form."
+      },
+      "rejectedUnsupported": "The draft avoids treating chance as the only method in Ernst's work and avoids reducing Surrealism to irrationality without construction."
+    },
+    {
+      "slug": "meret-oppenheim",
+      "entityId": "cmsvvxirs00sa85sjrvi3piuo",
+      "sourceUrls": ["https://www.moma.org/collection/artists/4416", "https://press.moma.org/wp-content/uploads/2022/10/220927_MO_IntroText_04-2-2.pdf"],
+      "claims": ["Meret Oppenheim, 1913–1985, Swiss artist", "worked across objects, painting, drawing and collage", "Object combines familiar domestic forms with fur and Surrealist displacement", "her later practice includes abstraction, natural materials and landscape"],
+      "relationsUsed": ["surrealismo"],
+      "after": {
+        "summary_es": "Meret Oppenheim (1913–1985) transformó objetos cotidianos y materiales naturales para alterar sus usos, texturas y asociaciones. Su obra atraviesa el Surrealismo, la pintura, el dibujo y el collage sin quedar reducida a un único objeto emblemático.",
+        "essay_es": "## El material puede cambiar una cosa sin cambiar su forma\n\nOppenheim trabaja con el reconocimiento y la extrañeza: una taza sigue pareciendo una taza, pero el contacto con el pelo modifica lo que esperamos de ella. La materia introduce una contradicción física que obliga a mirar de nuevo y a desconfiar de los usos aprendidos.\n\n[[surrealismo|El Surrealismo]] nombra el contexto de esa operación, pero la trayectoria de Oppenheim continúa después hacia pinturas, dibujos, collages y esculturas donde naturaleza, abstracción y objeto vuelven a encontrarse.",
+        "summary_en": "Meret Oppenheim (1913–1985) transformed everyday objects and natural materials to alter their uses, textures, and associations. Her work crosses Surrealism, painting, drawing, and collage without being reduced to one emblematic object.",
+        "essay_en": "## Material can change a thing without changing its shape\n\nOppenheim works with recognition and strangeness: a cup still looks like a cup, but contact with fur changes what we expect from it. Material introduces a physical contradiction that makes us look again and distrust learned uses.\n\n[[surrealismo|Surrealism]] names the context of that operation, but Oppenheim’s career continues into paintings, drawings, collages, and sculptures where nature, abstraction, and object meet again."
+      },
+      "rejectedUnsupported": "The draft avoids treating Oppenheim as a one-work artist and avoids claiming a fixed psychological meaning for Object."
+    }
+  ]
+}
