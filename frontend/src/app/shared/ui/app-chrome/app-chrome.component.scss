@@ -72,6 +72,10 @@
   pointer-events: none;
 }
 
+.app-chrome__header--dragging {
+  transition: none;
+}
+
 .app-chrome__header--detail {
   transform-origin: 50% 0;
   top: calc(var(--app-safe-top) + var(--app-shell-gap));
@@ -152,14 +156,16 @@
   height: 34px;
   border-radius: 12px;
   padding: 0;
-  font-size: 1.18rem;
   line-height: 1;
 }
 
-.app-chrome__header-toggle--close span {
-  display: block;
-  line-height: 1;
-  transform: translateY(-0.5px);
+.app-chrome__close-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.1;
+  stroke-linecap: round;
 }
 
 .app-chrome__header-toggle--open {
@@ -1371,10 +1377,11 @@
 
 @media (max-width: 620px) {
   .app-chrome__header {
-    top: calc(var(--app-safe-top) + 12px);
+    top: auto;
     bottom: calc(var(--app-safe-bottom) + 12px);
+    box-shadow: none;
     padding: 40px 20px 16px;
-    gap: 10px;
+    gap: 16px;
     align-content: start;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -1383,15 +1390,39 @@
 
   .app-chrome__sheet-handle {
     position: absolute;
-    top: 18px;
-    left: 50%;
+    top: 8px;
+    left: 0;
     display: block;
+    width: 100%;
+    height: 44px;
+    padding: 8px;
+    border: 0;
+    border-radius: 32px 32px 0 0;
+    background: transparent;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .app-chrome__sheet-handle span {
+    display: block;
+    margin: 0 auto;
     width: 72px;
     height: 6px;
-    transform: translateX(-50%);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.28);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+
+  .app-chrome__sheet-handle:active {
+    cursor: grabbing;
+  }
+
+  .app-chrome__header--collapsed {
+    transform: translateY(calc(100% + 28px));
+  }
+
+  .app-chrome__header-toggle--close {
+    display: none;
   }
 
   .app-chrome__brand {
@@ -1413,16 +1444,55 @@
     letter-spacing: 0.08em;
   }
 
-  .app-chrome__header-toggle--close {
-    top: 40px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    font-size: 1.75rem;
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__nav {
+    display: none;
   }
 
-  .app-chrome__header:has(app-global-search.search-open) .app-chrome__nav {
+  .app-chrome__header:has(app-global-search.search-open) {
+    inset-inline: var(--app-search-inset, 10px);
+    top: var(--app-search-top, calc(var(--app-safe-top) + 6px));
+    bottom: auto;
+    height: var(
+      --app-search-height,
+      calc(var(--app-visual-viewport-height) - var(--app-safe-top) - 12px)
+    );
+    grid-template-rows: var(--app-search-grid-rows, auto minmax(0, 1fr));
+    gap: var(--app-search-gap, 12px);
+    padding: var(--app-search-padding, 44px 20px 12px);
+    overflow: hidden;
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__sheet-handle {
+    top: 4px;
+    display: var(--app-search-brand-display, block);
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__brand {
+    display: var(--app-search-brand-display, flex);
+    min-height: 44px;
+    justify-content: center;
+    gap: 0;
+    padding: 0 52px;
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__brand-mark {
+    display: none;
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__brand-name {
+    font-family: var(--font-sans);
+    font-size: 1.45rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+  }
+
+  app-global-search.search-open {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__account,
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__preferences {
     display: none;
   }
 
@@ -1530,6 +1600,7 @@
   }
 
   .app-chrome__preference-toggle {
+    width: 148px;
     display: inline-flex;
     gap: 2px;
     padding: 3px;
@@ -1539,7 +1610,8 @@
   }
 
   .app-chrome__preference-toggle button {
-    min-width: 42px;
+    flex: 1 1 0;
+    min-width: 0;
     min-height: 44px;
     padding: 0 10px;
     border: 0;

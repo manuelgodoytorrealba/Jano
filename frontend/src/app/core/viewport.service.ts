@@ -76,10 +76,12 @@ export class ViewportService {
     const layoutHeight = window.innerHeight || root.clientHeight;
     const visualHeight = viewport?.height || layoutHeight;
     const width = viewport?.width || window.innerWidth || root.clientWidth;
+    const keyboardOpen = layoutHeight - visualHeight > 150;
 
     root.style.setProperty('--app-visual-viewport-height', `${Math.round(visualHeight)}px`);
     root.style.setProperty('--app-layout-viewport-height', `${Math.round(layoutHeight)}px`);
     root.style.setProperty('--app-real-viewport-height', `${Math.round(visualHeight)}px`);
     root.style.setProperty('--app-real-viewport-width', `${Math.round(width)}px`);
+    root.classList.toggle('app-keyboard-open', keyboardOpen);
   }
 }

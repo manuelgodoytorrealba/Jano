@@ -11,6 +11,15 @@
   z-index: 1;
 }
 
+.app-chrome__search-control {
+  position: relative;
+}
+
+.app-chrome__search-back,
+.app-chrome__mobile-search-prelude {
+  display: none;
+}
+
 .app-chrome__search-icon {
   position: absolute;
   left: 14px;
@@ -50,6 +59,10 @@
   color: rgba(255, 247, 239, 0.54);
 }
 
+.app-chrome__search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
 /* Search autocomplete */
 
 /* App Chrome search prelude */
@@ -67,17 +80,15 @@
   padding: 28px;
   align-content: start;
   border-radius: 26px;
-  border: 1px solid rgba(255, 235, 219, 0.38);
-  background: linear-gradient(135deg, rgba(29, 30, 36, 0.985), rgba(25, 22, 29, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
+    rgba(20, 20, 20, 0.9);
   box-shadow:
-    0 28px 70px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    0 24px 64px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(242, 241, 238, 0.12),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   overflow: hidden;
-}
-
-.app-chrome__search-prelude-state {
-  display: grid;
-  place-items: center;
 }
 
 .app-chrome__search-prelude-section {
@@ -93,85 +104,6 @@
   text-transform: uppercase;
 }
 
-.app-chrome__search-trends,
-.app-chrome__search-picks {
-  display: grid;
-  gap: 6px;
-  min-height: 0;
-  height: 100%;
-  align-content: stretch;
-}
-
-.app-chrome__search-trends {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-.app-chrome__search-picks {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.app-chrome__trend-card,
-.app-chrome__pick-card {
-  position: relative;
-  overflow: hidden;
-  min-height: 0;
-  height: 100%;
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  cursor: pointer;
-}
-
-.app-chrome__trend-card {
-  aspect-ratio: 0.82;
-}
-
-.app-chrome__pick-card {
-  aspect-ratio: 1.3;
-}
-
-.app-chrome__trend-card::before,
-.app-chrome__pick-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(8, 8, 8, 0.1), rgba(8, 8, 8, 0.84)),
-    var(--trend-image, var(--pick-image)) center/cover;
-}
-
-.app-chrome__trend-card-copy,
-.app-chrome__pick-card-copy {
-  position: relative;
-  display: flex;
-  min-height: 100%;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 3px;
-  padding: 10px;
-}
-
-.app-chrome__trend-card-copy strong,
-.app-chrome__pick-card-copy strong {
-  display: -webkit-box;
-  overflow: hidden;
-  font-size: 0.78rem;
-  line-height: 1.05;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.app-chrome__trend-card-copy small,
-.app-chrome__pick-card-copy small {
-  display: -webkit-box;
-  overflow: hidden;
-  font-size: 0.65rem;
-  color: rgba(255, 245, 236, 0.72);
-  line-height: 1.05;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-}
-
 .app-chrome__search-categories {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -180,7 +112,7 @@
 
 .app-chrome__search-category {
   min-height: 138px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 24px;
   display: grid;
   justify-items: center;
@@ -189,8 +121,8 @@
   padding: 18px 10px;
   text-align: center;
   cursor: pointer;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025));
-  color: rgba(255, 250, 244, 0.92);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.88);
   font-size: 0.98rem;
   transition:
     background 180ms ease,
@@ -199,8 +131,8 @@
 }
 .app-chrome__search-category:hover,
 .app-chrome__search-category:focus-visible {
-  background: rgba(255, 255, 255, 0.13);
-  border-color: rgba(255, 235, 219, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.18);
   outline: none;
   transform: translateY(-1px);
 }
@@ -255,8 +187,8 @@
   border: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0 0 26px 26px;
-  background: linear-gradient(100deg, rgba(255, 255, 255, 0.07), rgba(198, 131, 100, 0.14));
-  color: rgba(255, 250, 244, 0.78);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.78);
   text-align: left;
   font: inherit;
   font-size: 1rem;
@@ -264,7 +196,7 @@
 }
 .app-chrome__search-prompt span,
 .app-chrome__search-prompt strong {
-  color: rgba(250, 203, 159, 0.95);
+  color: rgba(255, 255, 255, 0.9);
 }
 .app-chrome__search-prompt span {
   margin-right: 12px;
@@ -407,8 +339,6 @@
     color: rgba(24, 22, 19, 0.78);
   }
 
-  .app-chrome__trend-card,
-  .app-chrome__pick-card,
   .app-chrome__search-category {
     border-color: rgba(24, 22, 19, 0.16);
     background: rgba(255, 255, 255, 0.48);
@@ -435,7 +365,7 @@
 
   .app-chrome__search-prompt span,
   .app-chrome__search-prompt strong {
-    color: #9d5428;
+    color: var(--color-text);
   }
 }
 
@@ -456,44 +386,6 @@
 
   .app-chrome__search-prelude-section {
     gap: 7px;
-  }
-
-  .app-chrome__search-trends {
-    gap: 6px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .app-chrome__search-picks {
-    gap: 6px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .app-chrome__trend-card,
-  .app-chrome__pick-card {
-    border-radius: 14px;
-  }
-
-  .app-chrome__trend-card {
-    aspect-ratio: 1.15;
-  }
-
-  .app-chrome__pick-card {
-    aspect-ratio: 1.72;
-  }
-
-  .app-chrome__trend-card-copy,
-  .app-chrome__pick-card-copy {
-    padding: 10px;
-  }
-
-  .app-chrome__trend-card-copy strong,
-  .app-chrome__pick-card-copy strong {
-    font-size: 0.8rem;
-  }
-
-  .app-chrome__trend-card-copy small,
-  .app-chrome__pick-card-copy small {
-    font-size: 0.65rem;
   }
 
   .app-chrome__search-categories {
@@ -522,6 +414,158 @@
 }
 
 @media (max-width: 620px) {
+  :host(.search-open) {
+    display: block;
+    height: 100%;
+    min-height: 0;
+  }
+
+  :host(.search-open) .app-chrome__search {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  :host(.search-open) .app-chrome__search-control {
+    flex: 0 0 auto;
+  }
+
+  :host-context(.app-keyboard-open):host(.search-open) .app-chrome__search {
+    padding-left: 52px;
+  }
+
+  :host-context(.app-keyboard-open):host(.search-open) .app-chrome__search-back {
+    top: 6px;
+  }
+
+  :host-context(.app-keyboard-open) .app-chrome__mobile-search-prelude {
+    gap: 10px;
+    padding-top: 10px;
+  }
+
+  :host-context(.app-keyboard-open) .app-chrome__mobile-search-links button {
+    min-height: 56px;
+  }
+
+  :host(.search-open) .app-chrome__search-back {
+    position: absolute;
+    top: -62px;
+    left: 0;
+    z-index: 4;
+    display: grid;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.055);
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+  }
+
+  .app-chrome__search-back svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .app-chrome__search-prelude--desktop {
+    display: none;
+  }
+
+  .app-chrome__mobile-search-prelude {
+    display: flex;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 18px;
+    padding-top: 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .app-chrome__mobile-search-prelude::-webkit-scrollbar,
+  .app-chrome__mobile-search-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-chrome__mobile-search-filters {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 8px;
+    padding: 0 4px 4px 0;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .app-chrome__mobile-search-filters button {
+    min-height: 42px;
+    padding: 0 17px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.035);
+    color: rgba(255, 255, 255, 0.76);
+    font: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
+  .app-chrome__mobile-search-filters button.is-active {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.96);
+  }
+
+  .app-chrome__mobile-search-links {
+    display: grid;
+    padding: 0 2px;
+  }
+
+  .app-chrome__mobile-search-links button {
+    display: grid;
+    min-height: 68px;
+    grid-template-columns: 28px minmax(0, 1fr) 24px;
+    align-items: center;
+    gap: 14px;
+    padding: 0 8px;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.9);
+    font: inherit;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .app-chrome__mobile-search-links svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.55;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .app-chrome__mobile-search-links b {
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 1.65rem;
+    font-weight: 300;
+    line-height: 1;
+  }
+
   .app-chrome__search-prelude {
     height: auto;
     max-height: none;
@@ -529,16 +573,8 @@
     padding: 16px;
     overflow: visible;
   }
-  .app-chrome__search-trends,
-  .app-chrome__search-picks,
   .app-chrome__search-categories {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .app-chrome__trend-card,
-  .app-chrome__pick-card {
-    min-height: 78px;
-    aspect-ratio: auto;
-    border-radius: 14px;
   }
   .app-chrome__search-category {
     min-height: 94px;
@@ -599,6 +635,12 @@
     outline: none;
   }
   .app-chrome__search-suggestions {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    flex: 1 1 auto;
+    margin-top: 12px;
     max-height: min(42dvh, 19rem);
     overflow-y: auto;
     overscroll-behavior: contain;

@@ -56,6 +56,17 @@ body {
   }
 }
 
+@media (max-width: 620px) {
+  html.app-search-open,
+  html.app-search-open body {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+}
+
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   width: 0;

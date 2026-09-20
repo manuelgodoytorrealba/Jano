@@ -3,8 +3,17 @@
   [class.app-chrome__header--collapsed]="headerCollapsed()"
   [class.app-chrome__header--detail]="detailHeaderMode()"
   [class.app-chrome__header--admin]="isAdminRoute()"
+  [class.app-chrome__header--dragging]="headerDragOffset() > 0"
+  [style.translate]="headerDragOffset() ? '0 ' + headerDragOffset() + 'px' : null"
 >
-  <span class="app-chrome__sheet-handle" aria-hidden="true"></span>
+  <button
+    class="app-chrome__sheet-handle"
+    type="button"
+    [attr.aria-label]="i18n.t('chrome.hideHeader')"
+    (pointerdown)="onSheetPointerDown($event)"
+  >
+    <span aria-hidden="true"></span>
+  </button>
 
   <a
     class="app-chrome__brand"
@@ -32,7 +41,7 @@
   </a>
 
   @if (!isAdminRoute()) {
-    <app-global-search />
+    <app-global-search (navigated)="collapseHeader()" />
   }
 
   <nav
@@ -227,7 +236,9 @@
       [title]="i18n.t('chrome.hideHeader')"
       (click)="collapseHeader()"
     >
-      <span aria-hidden="true">×</span>
+      <svg class="app-chrome__close-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 7l10 10M17 7L7 17" />
+      </svg>
     </button>
   }
 </header>

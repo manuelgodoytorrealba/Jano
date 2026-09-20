@@ -1,57 +1,59 @@
 <form class="app-chrome__search" role="search" (submit)="onSearchSubmit($event, searchInput)">
-  <span class="app-chrome__search-icon" aria-hidden="true">
-    <svg viewBox="0 0 24 24">
-      <path
-        d="M10.5 5.5a5 5 0 1 0 0 10a5 5 0 0 0 0-10Z"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-      />
-      <path
-        d="m14 14 4.5 4.5"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-      />
-    </svg>
-  </span>
-  <input
-    #searchInput
-    class="ds-input app-chrome__search-input"
-    type="search"
-    autocomplete="off"
-    [placeholder]="i18n.t('search.headerPlaceholder')"
-    [attr.aria-label]="i18n.t('search.headerPlaceholder')"
-    [attr.aria-expanded]="showSearchSuggestions()"
-    (input)="onSearchInput(searchInput.value)"
-    (focus)="onSearchFocus(searchInput.value)"
-    (keydown)="onSearchKeydown($event)"
-    (keydown.escape)="closeSearchUi()"
-  />
-  @if (searchDraft()) {
-    <button
-      type="button"
-      class="app-chrome__search-clear"
-      [attr.aria-label]="i18n.t('search.clear')"
-      [title]="i18n.t('search.clear')"
-      (click)="clearSearchInput(searchInput)"
-    >
-      ×
-    </button>
-  }
-
   <button
-    type="submit"
-    class="app-chrome__search-submit"
-    [attr.aria-label]="i18n.t('search.searchFor')"
-    [title]="i18n.t('search.searchFor')"
+    type="button"
+    class="app-chrome__search-back"
+    [attr.aria-label]="i18n.t('search.mobile.back')"
+    (click)="exitMobileSearch(searchInput)"
   >
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M10.5 5.5a5 5 0 1 0 0 10a5 5 0 0 0 0-10Z" />
-      <path d="m14 14 4.5 4.5" />
+      <path d="m14.5 6.5-5.5 5.5 5.5 5.5" />
     </svg>
   </button>
+
+  <div class="app-chrome__search-control">
+    <span class="app-chrome__search-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <circle cx="10.75" cy="10.75" r="5.75" />
+        <path d="m15 15 4.25 4.25" />
+      </svg>
+    </span>
+    <input
+      #searchInput
+      class="ds-input app-chrome__search-input"
+      type="search"
+      autocomplete="off"
+      [placeholder]="i18n.t('search.headerPlaceholder')"
+      [attr.aria-label]="i18n.t('search.headerPlaceholder')"
+      [attr.aria-expanded]="showSearchSuggestions()"
+      (input)="onSearchInput(searchInput.value)"
+      (focus)="onSearchFocus(searchInput.value)"
+      (keydown)="onSearchKeydown($event)"
+      (keydown.escape)="closeSearchUi()"
+    />
+    @if (searchDraft()) {
+      <button
+        type="button"
+        class="app-chrome__search-clear"
+        [attr.aria-label]="i18n.t('search.clear')"
+        [title]="i18n.t('search.clear')"
+        (click)="clearSearchInput(searchInput)"
+      >
+        ×
+      </button>
+    }
+
+    <button
+      type="submit"
+      class="app-chrome__search-submit"
+      [attr.aria-label]="i18n.t('search.searchFor')"
+      [title]="i18n.t('search.searchFor')"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="10.75" cy="10.75" r="5.75" />
+        <path d="m15 15 4.25 4.25" />
+      </svg>
+    </button>
+  </div>
 
   @if (showSearchSuggestions()) {
     <div
@@ -85,7 +87,69 @@
   }
 
   @if (showPreparationPanel()) {
-    <section class="app-chrome__search-prelude app-glass">
+    <section class="app-chrome__mobile-search-prelude">
+      <div
+        #mobileCategoryRail
+        class="app-chrome__mobile-search-filters"
+        [attr.aria-label]="i18n.t('search.filterAria')"
+      >
+        <button type="button" class="is-active">{{ i18n.t('search.type.all') }}</button>
+        <button type="button" (click)="openPreparationCategory('ARTWORK')">
+          {{ i18n.t('search.type.artworks') }}
+        </button>
+        <button type="button" (click)="openPreparationCategory('ARTIST')">
+          {{ i18n.t('search.type.artists') }}
+        </button>
+        <button type="button" (click)="scrollMobileCategories(mobileCategoryRail)">
+          {{ i18n.t('search.mobile.more') }}
+        </button>
+        <button type="button" (click)="openPreparationCategory('ARTICLE')">
+          {{ i18n.t('search.type.articles') }}
+        </button>
+        <button type="button" (click)="openPreparationCategory('MOVEMENT')">
+          {{ i18n.t('search.type.movements') }}
+        </button>
+        <button type="button" (click)="openPreparationCategory('CONCEPT')">
+          {{ i18n.t('search.type.concepts') }}
+        </button>
+        <button type="button" (click)="openPreparationCategory('PLACE')">
+          {{ i18n.t('search.type.places') }}
+        </button>
+        <button type="button" (click)="openPreparationCategory('PERIOD')">
+          {{ i18n.t('search.type.periods') }}
+        </button>
+      </div>
+
+      <div class="app-chrome__mobile-search-links">
+        <button type="button" (click)="openMobileDiscovery('/entities/artwork')">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 4.5h9l3 3v12H6zM15 4.5v3h3" />
+          </svg>
+          <span>{{ i18n.t('search.mobile.recentWorks') }}</span
+          ><b aria-hidden="true">›</b>
+        </button>
+        <button type="button" (click)="openMobileDiscovery('/entities/artist')">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="7" r="3.2" />
+            <path d="M5.5 19c1.2-3.1 3.6-4.7 6.5-4.7s5.3 1.6 6.5 4.7" />
+          </svg>
+          <span>{{ i18n.t('search.mobile.featuredArtists') }}</span
+          ><b aria-hidden="true">›</b>
+        </button>
+        <button type="button" (click)="openMobileDiscovery('/entities')">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4.5" y="4.5" width="6" height="6" rx="1" />
+            <rect x="13.5" y="4.5" width="6" height="6" rx="1" />
+            <rect x="4.5" y="13.5" width="6" height="6" rx="1" />
+            <rect x="13.5" y="13.5" width="6" height="6" rx="1" />
+          </svg>
+          <span>{{ i18n.t('search.mobile.exploreCategories') }}</span
+          ><b aria-hidden="true">›</b>
+        </button>
+      </div>
+    </section>
+
+    <section class="app-chrome__search-prelude app-chrome__search-prelude--desktop app-glass">
       <section class="app-chrome__search-prelude-section">
         <div class="app-chrome__search-prelude-head">
           <h2>{{ i18n.t('search.prep.categories') }}</h2>
