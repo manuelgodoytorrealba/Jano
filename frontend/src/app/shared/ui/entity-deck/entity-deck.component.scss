@@ -871,7 +871,11 @@
   }
 
   .entity-deck--mobile-editorial .entity-deck__dots {
-    display: none;
+    display: flex;
+  }
+
+  .entity-deck--mobile-editorial .entity-deck__card {
+    width: min(88vw, 520px);
   }
 
   .entity-deck--mobile-editorial .entity-deck__card.is-active {

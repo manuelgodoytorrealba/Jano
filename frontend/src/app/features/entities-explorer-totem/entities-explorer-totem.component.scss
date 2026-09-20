@@ -34,6 +34,14 @@
   opacity: 0.5;
 }
 
+.explorer-totem.is-info-open::before {
+  z-index: 5;
+  opacity: 1;
+  background:
+    linear-gradient(180deg, var(--app-mobile-edge-color), rgba(25, 35, 29, 0) 112px),
+    linear-gradient(0deg, var(--app-mobile-edge-color), rgba(25, 35, 29, 0) 112px);
+}
+
 .explorer-totem__stack {
   position: absolute;
   inset: 0;
