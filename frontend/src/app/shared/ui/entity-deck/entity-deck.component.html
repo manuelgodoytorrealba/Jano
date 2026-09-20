@@ -160,13 +160,15 @@
                     </button>
                   }
 
-                  <button
-                    class="entity-deck__chip"
-                    type="button"
-                    (click)="onExpandClick($event, item)"
-                  >
-                    {{ i18n.t('deck.enter') }}
-                  </button>
+                  @if (showExpand()) {
+                    <button
+                      class="entity-deck__chip"
+                      type="button"
+                      (click)="onExpandClick($event, item)"
+                    >
+                      {{ i18n.t('deck.enter') }}
+                    </button>
+                  }
                 </div>
               </div>
 
