@@ -41,6 +41,18 @@
     </button>
   }
 
+  <button
+    type="submit"
+    class="app-chrome__search-submit"
+    [attr.aria-label]="i18n.t('search.searchFor')"
+    [title]="i18n.t('search.searchFor')"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M10.5 5.5a5 5 0 1 0 0 10a5 5 0 0 0 0-10Z" />
+      <path d="m14 14 4.5 4.5" />
+    </svg>
+  </button>
+
   @if (showSearchSuggestions()) {
     <div
       class="app-chrome__search-suggestions app-glass"

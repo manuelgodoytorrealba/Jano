@@ -27,6 +27,7 @@ type HeaderNavItem = {
   route?: string;
   kind: 'route' | 'placeholder';
   exact?: boolean;
+  icon: 'home' | 'archive' | 'articles' | 'research';
 };
 
 type UtilityItem = {
@@ -68,10 +69,10 @@ export class AppChromeComponent {
   }
 
   readonly navItems: HeaderNavItem[] = [
-    { label: 'nav.discover', route: '/home', kind: 'route', exact: true },
-    { label: 'nav.explore', route: '/entities', kind: 'route', exact: true },
-    { label: 'nav.articles', route: '/entities/article', kind: 'route' },
-    { label: 'nav.research', route: '/research', kind: 'route' },
+    { label: 'nav.discover', route: '/home', kind: 'route', exact: true, icon: 'home' },
+    { label: 'nav.explore', route: '/entities', kind: 'route', exact: true, icon: 'archive' },
+    { label: 'nav.articles', route: '/entities/article', kind: 'route', icon: 'articles' },
+    { label: 'nav.research', route: '/research', kind: 'route', icon: 'research' },
   ];
 
   readonly utilityItems: UtilityItem[] = [
