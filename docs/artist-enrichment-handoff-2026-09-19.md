@@ -5,11 +5,11 @@ Estado dejado el **19 de septiembre de 2026**, en la rama `develop`.
 ## Punto exacto de partida
 
 - Artistas totales: **209**.
-- Artistas completos en español e inglés: **178**.
-- Artistas pendientes: **31**.
-- Artistas publicados pendientes: **29**.
-- Último lote aplicado: **028**.
-- Lotes 021–028 aplicados y verificados. El lote 028 incluye `piero-della-francesca`, `piet-mondrian`, `pontormo`, `remedios-varo` y `richard-serra`.
+- Artistas completos en español e inglés: **206**.
+- Artistas pendientes: **3**.
+- Artistas publicados pendientes: **1**.
+- Último lote aplicado: **034**.
+- Lotes 021–034 aplicados y verificados. El lote 034 incluye `winslow-homer`, `wolfgang-tillmans` y `zanele-muholi`.
 - `dionisio` queda bloqueado provisionalmente por identidad ambigua y grounding institucional insuficiente; no se ha modificado.
 
 Los lotes 001–023 contienen los cuatro campos públicos de cada artista:
