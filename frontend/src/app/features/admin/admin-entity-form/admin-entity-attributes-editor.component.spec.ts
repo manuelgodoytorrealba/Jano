@@ -12,7 +12,6 @@ import { AdminEntityAttributesEditorComponent } from './admin-entity-attributes-
 
 describe('AdminEntityAttributesEditorComponent', () => {
   it('updates an attribute and preserves null when clearing assertion metadata', () => {
-    let payload: EntityAttributeMutationPayload | undefined;
     const definition: AttributeDefinition = {
       id: 'title',
       key: 'title',
@@ -29,8 +28,7 @@ describe('AdminEntityAttributesEditorComponent', () => {
       validFromYear: 1937,
     };
     const api = {
-      update: vi.fn((_id: string, value: EntityAttributeMutationPayload) => {
-        payload = value;
+      update: vi.fn((_id: string, _value: EntityAttributeMutationPayload) => {
         return of({ ...attribute, confidence: null, validFromYear: null });
       }),
     };

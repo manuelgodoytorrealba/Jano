@@ -6,3 +6,12 @@ out-tsc
 .playwright-cli
 backend/api/uploads
 package-lock.json
+
+# Historical editorial operations and generated evidence are immutable audit
+# records, not maintained application source.
+backend/api/**/*.cjs
+backend/api/scripts/**/*.js
+artifacts
+backups
+output
+reports

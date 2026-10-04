@@ -76,7 +76,8 @@ un ensayo breve de 1–2 secciones; EDITORIAL_ENTRY, 2–4 secciones; CONTEXTUAL
 DOCUMENTARY_ESSAY, 4–8 secciones con fuentes documentales suficientes. Nunca alargues para alcanzar un nivel.`.trim();
 
 export function buildEditorialGenerationRequest(context: EditorialGenerationContext) {
-  const targetName = String(context.entityData.canonicalName ?? context.entityData.title ?? '');
+  const rawTargetName = context.entityData.canonicalName ?? context.entityData.title;
+  const targetName = typeof rawTargetName === 'string' ? rawTargetName : '';
   const linkCandidates = new Set([
     targetName,
     ...context.relations.flatMap((relation) =>

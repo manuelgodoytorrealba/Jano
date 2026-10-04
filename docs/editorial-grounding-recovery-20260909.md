@@ -5,13 +5,13 @@
 Read-only snapshot: `infra-db-1/jano`. No editorial or canonical database writes
 have been made by this recovery. The earlier resumption note is preserved.
 
-| Metric | All entities | Published only |
-| --- | ---: | ---: |
-| Total | 824 | 812 |
-| Bilingual field coverage | 138 | 135 |
-| Field coverage backlog | 686 | 677 |
-| Editorial verified bilingual in this recovery | 134 | 134 |
-| True editorial backlog (not yet certified) | 690 | 678 |
+| Metric                                        | All entities | Published only |
+| --------------------------------------------- | -----------: | -------------: |
+| Total                                         |          824 |            812 |
+| Bilingual field coverage                      |          138 |            135 |
+| Field coverage backlog                        |          686 |            677 |
+| Editorial verified bilingual in this recovery |          134 |            134 |
+| True editorial backlog (not yet certified)    |          690 |            678 |
 
 The previous 138 completion count tested nonempty fields, not factual quality.
 The old count of 138 was field presence, not quality. The recovery has now

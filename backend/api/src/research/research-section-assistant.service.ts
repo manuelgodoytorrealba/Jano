@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, ResearchAssistantMessageRole } from '@prisma/client';
+import { ResearchAssistantMessageRole } from '@prisma/client';
 import { AIProvider, type AIProviderPort } from '../ai/ai.provider';
 import { PrismaService } from '../prisma/prisma.service';
 

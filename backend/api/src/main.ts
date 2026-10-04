@@ -18,6 +18,8 @@ async function bootstrap() {
     .map((origin) => origin.trim())
     .filter(Boolean);
 
+  app.enableShutdownHooks();
+
   expressInstance.disable('x-powered-by');
   app.use((_req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -70,5 +72,7 @@ async function bootstrap() {
 }
 bootstrap().catch((error: unknown) => {
   console.error(error);
-  process.exitCode = 1;
+  // A failed bootstrap may already own database handles; terminate instead of
+  // leaving a stale process that can poison the next watch reload.
+  process.exit(1);
 });

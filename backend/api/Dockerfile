@@ -34,15 +34,20 @@ RUN npm run build \
 FROM base AS production-dependencies
 ENV NODE_ENV=production
 RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --workspace=backend/api
-
-COPY backend/api/prisma ./backend/api/prisma
-COPY backend/api/prisma.config.ts ./backend/api/prisma.config.ts
+# Prisma's CLI is an optional peer of the runtime client. The generated client is
+# copied from the build stage, so shipping the CLI and its database drivers only
+# increases the production image and its advisory surface.
+RUN rm -rf \
+  /app/node_modules/prisma \
+  /app/node_modules/@prisma/config \
+  /app/node_modules/deepmerge-ts \
+  /app/node_modules/mysql2
 WORKDIR /app/backend/api
-RUN npm exec -- prisma generate
 
 FROM production-dependencies AS runtime
 ARG JANO_RELEASE
 LABEL org.opencontainers.image.revision="$JANO_RELEASE"
+COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=build /app/backend/api/dist ./dist
 
 EXPOSE 3000

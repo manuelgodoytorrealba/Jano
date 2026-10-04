@@ -113,10 +113,8 @@ export class ProfileComponent {
 
   resendVerification(): void {
     this.verificationMessage.set('');
-    this.auth
-      .resendVerification()
-      .subscribe({
-        next: () => this.verificationMessage.set(this.i18n.t('auth.verificationSent')),
-      });
+    this.auth.resendVerification().subscribe({
+      next: () => this.verificationMessage.set(this.i18n.t('auth.verificationSent')),
+    });
   }
 }

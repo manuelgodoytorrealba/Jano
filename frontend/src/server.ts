@@ -6,6 +6,8 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 const backendOrigin = (
@@ -71,7 +73,10 @@ async function validateAuthSession(req: express.Request): Promise<'ok' | 'unauth
     return 'unauthorized';
   }
 
-  const response = await fetch(backendOrigin + '/api/auth/me', { headers });
+  const response = await fetch(backendOrigin + '/api/auth/me', {
+    headers,
+    signal: AbortSignal.timeout(5_000),
+  });
 
   if (response.status === 401) return 'unauthorized';
   if (!response.ok) return 'unauthorized';
@@ -120,8 +125,6 @@ function hasFingerprint(assetPath: string): boolean {
   return /-[A-Z0-9]{6,}\.(?:js|mjs|css|woff2?|png|jpg|jpeg|webp|avif|svg)$/i.test(assetPath);
 }
 
-app.use(['/api', '/uploads'], express.raw({ type: '*/*', limit: '300mb' }));
-
 app.use(['/api', '/uploads'], (req, res, next) => {
   void (async () => {
     const targetUrl = `${backendOrigin}${req.originalUrl}`;
@@ -145,8 +148,9 @@ app.use(['/api', '/uploads'], (req, res, next) => {
     const upstream = await fetch(targetUrl, {
       method: req.method,
       headers,
-      body: req.method === 'GET' || req.method === 'HEAD' ? undefined : req.body,
+      body: req.method === 'GET' || req.method === 'HEAD' ? undefined : req,
       duplex: 'half',
+      signal: AbortSignal.timeout(310_000),
     } as RequestInit);
 
     res.status(upstream.status);
@@ -159,8 +163,12 @@ app.use(['/api', '/uploads'], (req, res, next) => {
       res.setHeader(key, value);
     });
 
-    const body = Buffer.from(await upstream.arrayBuffer());
-    res.send(body);
+    if (!upstream.body) {
+      res.end();
+      return;
+    }
+
+    await pipeline(Readable.fromWeb(upstream.body as never), res);
   })().catch(next);
 });
 

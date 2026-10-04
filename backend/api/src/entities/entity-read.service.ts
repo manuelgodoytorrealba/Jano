@@ -10,7 +10,6 @@ import {
   resolveLocalizedEntity,
   resolveLocalizedEntityWithDetails,
   serializeRelation,
-  serializeSourceRef,
   type EntityTypedDetailsRecord,
   type TranslationRecord,
 } from './entity.presenter';
@@ -39,31 +38,6 @@ type JustificationTranslationRecord = TranslationRecord & {
 type SerializedRelationRecord = RelationLabelRecord & {
   justification?: string | null;
   translations?: JustificationTranslationRecord[] | null;
-};
-
-type SourceTranslationRecord = TranslationRecord & {
-  title?: string | null;
-  author?: string | null;
-  publisher?: string | null;
-};
-
-type SerializedSourceRecord = {
-  title?: string | null;
-  author?: string | null;
-  publisher?: string | null;
-  translations?: SourceTranslationRecord[] | null;
-};
-
-type SourceRefTranslationRecord = TranslationRecord & {
-  quote?: string | null;
-  note?: string | null;
-};
-
-type SerializedSourceRefRecord = {
-  quote?: string | null;
-  note?: string | null;
-  source?: SerializedSourceRecord | null;
-  translations?: SourceRefTranslationRecord[] | null;
 };
 
 type PublicEntityAttributeRecord = {

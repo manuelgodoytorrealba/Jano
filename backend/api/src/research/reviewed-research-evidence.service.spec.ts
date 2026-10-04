@@ -1,4 +1,5 @@
 import { ReviewedResearchEvidenceService } from './reviewed-research-evidence.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 describe('ReviewedResearchEvidenceService', () => {
   const input = {
@@ -17,7 +18,7 @@ describe('ReviewedResearchEvidenceService', () => {
   };
 
   it('reuses the stable fingerprint without creating duplicate private Evidence', async () => {
-    const prisma: any = {
+    const prisma = {
       source: { findUnique: jest.fn().mockResolvedValue({ id: 'source-1' }) },
       entity: { findUnique: jest.fn().mockResolvedValue({ id: 'entity-1', title: 'Entity' }) },
       libraryExcerpt: {
@@ -29,13 +30,13 @@ describe('ReviewedResearchEvidenceService', () => {
         }),
       },
       researchEvidence: { findUnique: jest.fn().mockResolvedValue({ id: 'evidence-1' }) },
-    };
+    } as unknown as PrismaService;
     const result = await new ReviewedResearchEvidenceService(prisma).materialize(input);
     expect(result).toMatchObject({ evidenceId: 'evidence-1', created: false });
   });
 
   it('rejects an approved item whose quote is not in the stored excerpt', async () => {
-    const prisma: any = {
+    const prisma = {
       source: { findUnique: jest.fn().mockResolvedValue({ id: 'source-1' }) },
       entity: { findUnique: jest.fn().mockResolvedValue({ id: 'entity-1', title: 'Entity' }) },
       libraryExcerpt: {
@@ -46,7 +47,7 @@ describe('ReviewedResearchEvidenceService', () => {
           materialVersion: { id: 'v1', version: 1, materialId: 'm1' },
         }),
       },
-    };
+    } as unknown as PrismaService;
     await expect(new ReviewedResearchEvidenceService(prisma).materialize(input)).rejects.toThrow(
       'INVALID_SUPPORT_QUOTE:item-1',
     );

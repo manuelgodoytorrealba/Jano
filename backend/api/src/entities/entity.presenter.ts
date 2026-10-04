@@ -45,9 +45,7 @@ export function editorialRelationJustification(
   const approved = (relation.editorialJustifications ?? []).filter(
     (item) => item?.status === 'APPROVED',
   );
-  return publicRelationJustification(
-    translationField({ translations: approved }, locale, 'text'),
-  );
+  return publicRelationJustification(translationField({ translations: approved }, locale, 'text'));
 }
 
 type SourceRecord = {

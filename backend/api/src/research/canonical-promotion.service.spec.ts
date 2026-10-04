@@ -1,8 +1,9 @@
 import { CanonicalPromotionService } from './canonical-promotion.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 describe('CanonicalPromotionService', () => {
   it('does not create a SourceRef for relation or entity provenance operations', async () => {
-    const tx: any = {
+    const tx = {
       researchEvidence: {
         findUnique: jest.fn().mockResolvedValue({ id: 'e', sourceId: 's', libraryExcerptId: 'x' }),
       },
@@ -11,7 +12,9 @@ describe('CanonicalPromotionService', () => {
       citation: { findFirst: jest.fn().mockResolvedValue({ id: 'c' }), create: jest.fn() },
       libraryExcerpt: { findUniqueOrThrow: jest.fn().mockResolvedValue({ locator: 'p' }) },
     };
-    const prisma: any = { $transaction: (fn: any) => fn(tx) };
+    const prisma = {
+      $transaction: (fn: (client: typeof tx) => unknown) => fn(tx),
+    } as unknown as PrismaService;
     const result = await new CanonicalPromotionService(prisma).apply([
       {
         kind: 'RELATION',
@@ -37,14 +40,16 @@ describe('CanonicalPromotionService', () => {
       },
     ]);
     expect(tx.sourceRef.create).not.toHaveBeenCalled();
-    expect(result.map((x: any) => x.action)).toEqual([
+    expect(result.map((entry) => entry.action)).toEqual([
       'RELATION_ALREADY_PRESENT',
       'PROVENANCE_ATTACHED',
     ]);
   });
 
   it('blocks promotion when the target router has not confirmed the entity', async () => {
-    const prisma: any = { $transaction: (fn: any) => fn({}) };
+    const prisma = {
+      $transaction: (fn: (client: Record<string, never>) => unknown) => fn({}),
+    } as unknown as PrismaService;
     await expect(
       new CanonicalPromotionService(prisma).apply([
         {
@@ -63,7 +68,7 @@ describe('CanonicalPromotionService', () => {
   });
 
   it('materializes a canonical assertion and its provenance idempotently', async () => {
-    const tx: any = {
+    const tx = {
       researchEvidence: {
         findUnique: jest.fn().mockResolvedValue({ id: 'e', sourceId: 's', libraryExcerptId: 'x' }),
       },
@@ -80,7 +85,9 @@ describe('CanonicalPromotionService', () => {
       canonicalAssertionSourceRef: { upsert: jest.fn() },
       libraryExcerpt: { findUniqueOrThrow: jest.fn().mockResolvedValue({ locator: 'p' }) },
     };
-    const prisma: any = { $transaction: (fn: any) => fn(tx) };
+    const prisma = {
+      $transaction: (fn: (client: typeof tx) => unknown) => fn(tx),
+    } as unknown as PrismaService;
     const [result] = await new CanonicalPromotionService(prisma).apply([
       {
         kind: 'ASSERTION',
