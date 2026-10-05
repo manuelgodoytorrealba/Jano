@@ -4,14 +4,188 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: 22.14.0
+
 jobs:
-  quality:
+  lint:
+    name: Lint and format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
-      - run: npm run check
+      - run: npm run lint
+      - run: npm run editorial-ops:check
+      - run: npm run format:check
+
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm test --workspaces --if-present -- --watch=false
+
+  build:
+    name: Production builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run backend:build
+      - run: npm run frontend:build
+
+  container-build:
+    name: Production container images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production targets
+        run: |
+          docker build --target runtime --build-arg JANO_RELEASE=ci -t jano-backend:ci -f backend/api/Dockerfile .
+          docker build --target migration --build-arg JANO_RELEASE=ci -t jano-migrate:ci -f backend/api/Dockerfile .
+          docker build --target runtime --build-arg JANO_RELEASE=ci -t jano-frontend:ci -f frontend/Dockerfile .
+      - name: Verify least-privilege images
+        run: |
+          test "$(docker image inspect --format '{{.Config.User}}' jano-backend:ci)" = node
+          test "$(docker image inspect --format '{{.Config.User}}' jano-migrate:ci)" = node
+          test "$(docker image inspect --format '{{.Config.User}}' jano-frontend:ci)" = node
+          docker run --rm jano-backend:ci sh -c 'test ! -d /app/node_modules/prisma'
+          docker run --rm \
+            -e DATABASE_URL='postgresql://ci:ci@localhost:5432/ci?schema=public' \
+            jano-migrate:ci npm exec -- prisma validate
+
+  audit:
+    name: Runtime dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run audit:runtime
+
+  migrations:
+    name: Database migrations
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: jano
+          POSTGRES_PASSWORD: jano
+          POSTGRES_DB: jano
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U jano -d jano"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://jano:jano@localhost:5432/jano?schema=public
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:deploy
+
+  smoke:
+    name: Production smoke test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: jano
+          POSTGRES_PASSWORD: jano
+          POSTGRES_DB: jano
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U jano -d jano"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://jano:jano@localhost:5432/jano?schema=public
+      NODE_ENV: production
+      JWT_SECRET: ci-only-secret-with-at-least-thirty-two-characters
+      FRONTEND_ORIGIN: http://127.0.0.1:4200
+      APP_PUBLIC_URL: http://127.0.0.1:4200
+      MEDIA_PUBLIC_BASE_URL: http://127.0.0.1:3000
+      MAIL_PROVIDER: resend
+      MAIL_FROM: ci@example.invalid
+      RESEND_API_KEY: ci-placeholder-not-used
+      AI_PROVIDER: noop
+      SSR_API_ORIGIN: http://127.0.0.1:3000
+      API_PROXY_TARGET: http://127.0.0.1:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:deploy
+      - run: npm run backend:build && npm run frontend:build
+      - name: Start production services and verify health
+        shell: bash
+        run: |
+          PORT=3000 HOST=127.0.0.1 npm --prefix backend/api run start:prod > /tmp/jano-backend.log 2>&1 &
+          backend_pid=$!
+          PORT=4200 npm --prefix frontend run serve:ssr:jano-web-app > /tmp/jano-frontend.log 2>&1 &
+          frontend_pid=$!
+          trap 'kill "$backend_pid" "$frontend_pid" 2>/dev/null || true' EXIT
+
+          check_url() {
+            local name="$1"
+            local url="$2"
+            for attempt in {1..30}; do
+              if curl --fail --silent --show-error "$url" > /dev/null; then
+                echo "$name is healthy"
+                return 0
+              fi
+              sleep 1
+            done
+            echo "$name did not become healthy: $url"
+            cat /tmp/jano-backend.log
+            cat /tmp/jano-frontend.log
+            return 1
+          }
+
+          check_url "Backend readiness" "http://127.0.0.1:3000/api/health/ready"
+          check_url "Frontend SSR" "http://127.0.0.1:4200/healthz"
+          check_url "Frontend API proxy" "http://127.0.0.1:4200/api/health/ready"

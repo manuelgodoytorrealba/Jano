@@ -132,6 +132,6 @@ biographical interpretation was added.
 
 READY_FOR_BATCH_007: NO. Recommended size after recovery passes: 20.
 
-Re-run the deterministic inventory from repository root with
-`node backend/api/scripts/editorial-recovery-audit.cjs`.
-Snapshot scripts use read-only transactions and refuse to overwrite snapshots.
+The deterministic inventory script used for this recovery was retired with the other completed
+one-off operations. Its exact source remains recoverable from Git commit `b8aa86c`; see
+[the archived operations inventory](reports/archived-editorial-operations-2026-10-05.md).

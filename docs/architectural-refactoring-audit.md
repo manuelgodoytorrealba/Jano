@@ -1,13 +1,16 @@
 # JANO — Auditoría y plan de refactorización arquitectónica
 
 Fecha inicial: 2026-06-27
-Última revisión: 2026-06-30
-Estado: **COMPLETED — 45/45 unidades**
+Última revisión: 2026-10-05
+Estado: **COMPLETED — 45/45 unidades; UI smoke Playwright PASS**
 Alcance: Angular, NestJS, Prisma, estructura, dependencias, estado, presentación y reglas de evolución
 
 > Las secciones 1-3 conservan el diagnóstico inicial. La arquitectura vigente está en
 > [`architecture-overview.md`](./architecture-overview.md); las fases siguientes registran la
 > ejecución y su cierre.
+>
+> La verificación final de UI está registrada en
+> [`reports/playwright-ui-smoke-2026-10-05.md`](./reports/playwright-ui-smoke-2026-10-05.md).
 
 ## Resumen ejecutivo
 

@@ -23,23 +23,44 @@ import {
 import {
   ResearchApi,
   CreateResearchEntityPayload,
-  ResearchClaim,
   ResearchClaimKind,
   ResearchClaimStatus,
   ResearchDecisionAction,
   ResearchEvidence,
-  ResearchJob,
   ResearchDocumentKind,
   ResearchProject,
   ResearchProposalReviewState,
   ResearchProjectStatus,
   ResearchProjectSummary,
-  ResearchProjectSource,
   ResearchSourceRecord,
 } from '../../../core/api/research.api';
 import { RelationTypesApi } from '../../../core/api/relation-types.api';
 import { LibraryApi, LibraryMaterial } from '../../../core/api/library.api';
 import { MaterialContextMenuComponent, MaterialMenuState } from './material-context-menu.component';
+import {
+  aiExecutionStateLabel,
+  claimIds,
+  claimKindLabel,
+  claimStatusLabel,
+  decisionActionLabel,
+  displayedClaims,
+  evidenceByIds,
+  evidenceSourceTitle,
+  filterResearchEvidence,
+  groupEvidenceBySource,
+  hasQueuedJobs,
+  jobStatusLabel,
+  jobTypeLabel,
+  materialKindLabel,
+  materialSize,
+  materialStatusLabel,
+  projectMeta,
+  projectSourceTitle,
+  proposalReviewStateLabel,
+  sourceRecordLabel,
+  sourceTitle,
+  statusLabel,
+} from './research-list.presenter';
 
 type ResearchStatusFilter = '' | ResearchProjectStatus;
 
@@ -55,12 +76,6 @@ type ResearchListVm = {
   createMode: boolean;
   libraryMode: boolean;
   libraryMaterials: LibraryMaterial[];
-};
-
-type ResearchEvidenceGroup = {
-  sourceId: string;
-  title: string;
-  evidence: ResearchEvidence[];
 };
 
 @Component({
@@ -746,178 +761,33 @@ export class AdminResearchComponent {
   hasEvidenceFilters(): boolean {
     return Boolean(this.evidenceSearch.trim() || this.evidenceSourceFilter);
   }
+  readonly statusLabel = statusLabel;
+  readonly jobTypeLabel = jobTypeLabel;
+  readonly jobStatusLabel = jobStatusLabel;
+  readonly proposalReviewStateLabel = proposalReviewStateLabel;
+  readonly materialKindLabel = materialKindLabel;
+  readonly materialStatusLabel = materialStatusLabel;
+  readonly claimKindLabel = claimKindLabel;
+  readonly claimStatusLabel = claimStatusLabel;
+  readonly displayedClaims = displayedClaims;
+  readonly materialSize = materialSize;
+  readonly aiExecutionStateLabel = aiExecutionStateLabel;
+  readonly hasQueuedJobs = hasQueuedJobs;
+  readonly decisionActionLabel = decisionActionLabel;
+  readonly projectMeta = projectMeta;
+  readonly sourceTitle = sourceTitle;
+  readonly sourceRecordLabel = sourceRecordLabel;
+  readonly evidenceSourceTitle = evidenceSourceTitle;
+  readonly projectSourceTitle = projectSourceTitle;
+  readonly evidenceByIds = evidenceByIds;
+  readonly claimIds = claimIds;
 
-  statusLabel(status: string | null | undefined): string {
-    const labels: Record<string, string> = {
-      ACTIVE: 'Activa',
-      PAUSED: 'Pausada',
-      READY_TO_DECIDE: 'Lista para decidir',
-      ARCHIVED: 'Archivada',
-    };
-    return labels[(status ?? '').toUpperCase()] ?? 'Investigación';
-  }
-
-  jobTypeLabel(type: ResearchJob['type'] | string | null | undefined): string {
-    const labels: Record<string, string> = {
-      PREPARE_SOURCE: 'Preparar fuente',
-      EXTRACT_FINDINGS: 'Extraer hallazgos',
-    };
-    return labels[(type ?? '').toUpperCase()] ?? 'Trabajo';
-  }
-
-  jobStatusLabel(status: ResearchJob['status'] | string | null | undefined): string {
-    const labels: Record<string, string> = {
-      QUEUED: 'En cola',
-      RUNNING: 'En curso',
-      SUCCEEDED: 'Completado',
-      FAILED: 'Fallido',
-    };
-    return labels[(status ?? '').toUpperCase()] ?? 'Estado desconocido';
-  }
-
-  proposalReviewStateLabel(state: string | null | undefined): string {
-    const labels: Record<string, string> = {
-      PENDING: 'Pendiente',
-      REVIEWED: 'Revisada',
-      REJECTED: 'Rechazada',
-    };
-    return labels[(state ?? '').toUpperCase()] ?? 'Sin revisar';
-  }
-
-  materialKindLabel(kind: ResearchDocumentKind | string): string {
-    return { TEXT: 'Texto', URL: 'Enlace', PDF: 'PDF' }[kind] ?? 'Material';
-  }
-
-  materialStatusLabel(status: string): string {
-    return (
-      {
-        READY: 'Listo',
-        PENDING_PREPARATION: 'Pendiente de preparación',
-        FAILED: 'Fallido',
-      }[status] ?? 'Pendiente'
-    );
-  }
-
-  claimKindLabel(kind: ResearchClaimKind | string): string {
-    return (
-      {
-        ASSERTION: 'Afirmación',
-        CONNECTION_HYPOTHESIS: 'Relación provisional',
-        CONCEPT: 'Concepto',
-        CONTRADICTION: 'Contradicción',
-        OPEN_QUESTION: 'Pregunta abierta',
-        SYNTHESIS_STATEMENT: 'Afirmación de síntesis',
-      }[kind] ?? 'Síntesis'
-    );
-  }
-
-  claimStatusLabel(status: ResearchClaimStatus): string {
-    return {
-      DRAFT: 'Borrador',
-      SUPPORTED: 'Respaldado',
-      QUESTIONED: 'Cuestionado',
-      CONTRADICTED: 'Contradicho',
-    }[status];
-  }
-
-  displayedClaims(project: ResearchProject): ResearchClaim[] {
-    return project.knowledge.claims.filter((claim) => claim.kind !== 'CONNECTION_HYPOTHESIS');
-  }
-
-  materialSize(size: number | null): string {
-    if (!size) return '';
-    return size >= 1024 * 1024
-      ? `${(size / (1024 * 1024)).toFixed(1)} MB`
-      : `${Math.ceil(size / 1024)} KB`;
-  }
-
-  aiExecutionStateLabel(error: string | null | undefined): string {
-    return error ? 'Fallida' : 'Registrada';
-  }
-
-  hasQueuedJobs(project: ResearchProject): boolean {
-    return project.jobs.some((job) => job.status === 'QUEUED');
-  }
-
-  decisionActionLabel(action: ResearchDecisionAction | string | null | undefined): string {
-    const labels: Record<string, string> = {
-      INCORPORATE: 'Incorporar',
-      REJECT: 'Rechazar',
-      POSTPONE: 'Posponer',
-    };
-    return labels[(action ?? '').toUpperCase()] ?? 'Decisión';
-  }
-
-  projectMeta(project: ResearchProjectSummary): string {
-    const counts = project._count;
-    if (!counts) return project.scope ?? 'Investigación documental';
-    return `${counts.materials ?? 0} materiales · ${counts.evidence} evidencias · ${counts.claims ?? 0} síntesis`;
-  }
-
-  sourceTitle(item: ResearchProjectSource): string {
-    const source = item.source;
-    if (!source) return 'Fuente asociada';
-    return this.sourceRecordLabel(source);
-  }
-
-  sourceRecordLabel(source: ResearchSourceRecord): string {
-    return source.author ? `${source.title} · ${source.author}` : source.title;
-  }
-
-  evidenceSourceTitle(project: ResearchProject, evidence: ResearchEvidence): string {
-    return this.projectSourceTitle(project, evidence.sourceId);
-  }
-
-  projectSourceTitle(project: ResearchProject, sourceId: string): string {
-    const item = project.sources.find((source) => source.sourceId === sourceId);
-    return item ? this.sourceTitle(item) : 'Fuente asociada';
-  }
-
-  evidenceBySource(project: ResearchProject): ResearchEvidenceGroup[] {
-    const groups = new Map<string, ResearchEvidence[]>();
-    for (const evidence of this.filteredEvidence(project)) {
-      groups.set(evidence.sourceId, [...(groups.get(evidence.sourceId) ?? []), evidence]);
-    }
-    return [...groups.entries()].map(([sourceId, evidence]) => ({
-      sourceId,
-      title: this.projectSourceTitle(project, sourceId),
-      evidence,
-    }));
+  evidenceBySource(project: ResearchProject) {
+    return groupEvidenceBySource(project, this.filteredEvidence(project));
   }
 
   filteredEvidence(project: ResearchProject): ResearchEvidence[] {
-    const query = this.evidenceSearch.trim().toLowerCase();
-    return project.evidence.filter((evidence) => {
-      const matchesSource =
-        !this.evidenceSourceFilter || evidence.sourceId === this.evidenceSourceFilter;
-      if (!matchesSource) return false;
-      if (!query) return true;
-
-      const source = project.sources.find((item) => item.sourceId === evidence.sourceId)?.source;
-      const text = [
-        evidence.quote,
-        evidence.locator,
-        evidence.sourceVersion,
-        evidence.context,
-        evidence.note,
-        source?.title,
-        source?.author,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-      return text.includes(query);
-    });
-  }
-
-  evidenceByIds(project: ResearchProject, claimIds: string[]): ResearchEvidence[] {
-    return claimIds
-      .map((id) => project.evidence.find((evidence) => evidence.id === id))
-      .filter((evidence): evidence is ResearchEvidence => Boolean(evidence));
-  }
-
-  claimIds(evidence: ResearchEvidence[]): string[] {
-    return evidence.map((item) => item.id);
+    return filterResearchEvidence(project, this.evidenceSearch, this.evidenceSourceFilter);
   }
 
   private runProjectAction(

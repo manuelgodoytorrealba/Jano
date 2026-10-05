@@ -9,6 +9,14 @@ x-logging: &default-logging
 services:
   db:
     image: postgres:16
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - compute_query_id=on
+      - -c
+      - pg_stat_statements.track=top
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
@@ -37,6 +45,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      uploads-permissions:
+        condition: service_completed_successfully
     environment: &backend-environment
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -46,6 +56,11 @@ services:
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
       MEDIA_PUBLIC_BASE_URL: ${MEDIA_PUBLIC_BASE_URL:?MEDIA_PUBLIC_BASE_URL is required}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JANO_RELEASE: ${JANO_RELEASE:?JANO_RELEASE is required}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+      SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0}
 
       MAIL_PROVIDER: ${MAIL_PROVIDER:?MAIL_PROVIDER is required}
       MAIL_FROM: ${MAIL_FROM:?MAIL_FROM is required}
@@ -55,6 +70,13 @@ services:
       - '${BACKEND_BIND:-127.0.0.1}:${BACKEND_PORT:-3000}:3000'
     volumes:
       - backend_uploads:/app/backend/api/uploads
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     healthcheck:
       test:
         [
@@ -71,8 +93,14 @@ services:
     logging: *default-logging
 
   migrate:
-    image: jano-backend:${JANO_RELEASE:?JANO_RELEASE is required}
+    image: jano-migrate:${JANO_RELEASE:?JANO_RELEASE is required}
     pull_policy: never
+    build:
+      context: ..
+      dockerfile: backend/api/Dockerfile
+      target: migration
+      args:
+        JANO_RELEASE: ${JANO_RELEASE:?JANO_RELEASE is required}
     init: true
     profiles: [release]
     depends_on:
@@ -81,7 +109,26 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      NPM_CONFIG_CACHE: /tmp/npm
     command: ['npm', 'exec', '--', 'prisma', 'migrate', 'deploy']
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: 'no'
+    logging: *default-logging
+
+  uploads-permissions:
+    image: jano-backend:${JANO_RELEASE:?JANO_RELEASE is required}
+    pull_policy: never
+    user: '0:0'
+    volumes:
+      - backend_uploads:/app/backend/api/uploads
+    command: ['chown', '-R', 'node:node', '/app/backend/api/uploads']
+    read_only: true
     restart: 'no'
     logging: *default-logging
 
@@ -107,6 +154,13 @@ services:
       NG_ALLOWED_HOSTS: ${NG_ALLOWED_HOSTS:?NG_ALLOWED_HOSTS is required}
     ports:
       - '${FRONTEND_BIND:-127.0.0.1}:${FRONTEND_PORT:-4200}:4200'
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     healthcheck:
       test:
         [

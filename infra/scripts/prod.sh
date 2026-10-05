@@ -374,9 +374,10 @@ deploy_failed() {
 validate_release_images() {
   local backend_image="jano-backend:$RELEASE"
   local frontend_image="jano-frontend:$RELEASE"
+  local migration_image="jano-migrate:$RELEASE"
   local image revision command
 
-  for image in "$backend_image" "$frontend_image"; do
+  for image in "$backend_image" "$frontend_image" "$migration_image"; do
     docker image inspect "$image" >/dev/null 2>&1 || die "Missing release image: $image"
     revision="$(docker image inspect --format "{{index .Config.Labels \"org.opencontainers.image.revision\"}}" "$image")"
     [[ "$revision" == "$RELEASE" ]] || die "$image revision is ${revision:-missing}; expected $RELEASE"
@@ -386,24 +387,36 @@ validate_release_images() {
   [[ "$command" == *"dist/src/main.js"* && "$command" != *"start:dev"* ]] || die "Invalid backend runtime command: $command"
   command="$(docker image inspect --format "{{json .Config.Cmd}}" "$frontend_image")"
   [[ "$command" == *"serve:ssr:jano-web-app"* && "$command" != *"start:dev"* ]] || die "Invalid frontend runtime command: $command"
+  command="$(docker image inspect --format "{{json .Config.Cmd}}" "$migration_image")"
+  [[ "$command" == *"prisma"* && "$command" == *"migrate"* ]] || die "Invalid migration command: $command"
+
+  [[ "$(docker image inspect --format '{{.Config.User}}' "$backend_image")" == 'node' ]] || die 'Backend runtime must use the node user'
+  [[ "$(docker image inspect --format '{{.Config.User}}' "$frontend_image")" == 'node' ]] || die 'Frontend runtime must use the node user'
+  [[ "$(docker image inspect --format '{{.Config.User}}' "$migration_image")" == 'node' ]] || die 'Migration image must use the node user'
 }
 
 build_images() {
   local backend_image="jano-backend:$RELEASE"
   local frontend_image="jano-frontend:$RELEASE"
+  local migration_image="jano-migrate:$RELEASE"
 
-  if docker image inspect "$backend_image" "$frontend_image" >/dev/null 2>&1; then
+  if docker image inspect "$backend_image" "$frontend_image" "$migration_image" >/dev/null 2>&1; then
     validate_release_images
     log "Reusing validated images for immutable release $RELEASE"
     return
   fi
-  if docker image inspect "$backend_image" >/dev/null 2>&1 || docker image inspect "$frontend_image" >/dev/null 2>&1; then
+  if docker image inspect "$backend_image" >/dev/null 2>&1 || docker image inspect "$frontend_image" >/dev/null 2>&1 || docker image inspect "$migration_image" >/dev/null 2>&1; then
     die "Only one release image exists for $RELEASE; refusing an incomplete release"
   fi
 
   log "Building immutable images for $RELEASE"
-  compose build --pull backend frontend
+  compose build --pull backend frontend migrate
   validate_release_images
+}
+
+prepare_upload_permissions() {
+  log 'Preparing the uploads volume for the non-root backend runtime'
+  compose run --rm --no-deps uploads-permissions
 }
 
 deploy() {
@@ -431,6 +444,7 @@ deploy() {
   backup
   run_migrations
 
+  prepare_upload_permissions
   compose up -d --no-deps backend
   wait_for_health backend 120
   compose up -d --no-deps frontend
@@ -450,7 +464,8 @@ rollback_failed() {
   if valid_release "$ROLLBACK_RECOVERY_RELEASE" && \
     docker image inspect "jano-backend:$ROLLBACK_RECOVERY_RELEASE" "jano-frontend:$ROLLBACK_RECOVERY_RELEASE" >/dev/null 2>&1; then
     RELEASE="$ROLLBACK_RECOVERY_RELEASE"
-    if compose up -d --no-deps backend && \
+    if prepare_upload_permissions && \
+      compose up -d --no-deps backend && \
       wait_for_health backend 120 && \
       compose up -d --no-deps frontend && \
       healthcheck && smoke_tests; then
@@ -482,6 +497,7 @@ rollback() {
 
   log "Rolling application back to $RELEASE without changing PostgreSQL"
   compose stop frontend backend
+  prepare_upload_permissions
   compose up -d --no-deps backend
   wait_for_health backend 120
   compose up -d --no-deps frontend

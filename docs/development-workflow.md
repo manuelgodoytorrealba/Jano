@@ -71,6 +71,9 @@ Guia completa: [beta-tester-setup.md](beta-tester-setup.md).
 ### `.env` en la raíz
 
 Se usa para Docker Compose y para puertos compartidos del stack.
+En Linux, ajusta `LOCAL_UID` y `LOCAL_GID` con los resultados de `id -u` e
+`id -g`. El backend de desarrollo usa esos identificadores para que `dist` y
+los uploads no queden propiedad de `root` en el host.
 
 ### `backend/api/.env`
 

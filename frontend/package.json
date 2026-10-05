@@ -11,7 +11,7 @@
     "start:host": "node scripts/dev-server.mjs host",
     "build": "node scripts/generate-i18n-release.mjs && npm run validate:i18n && ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "node scripts/test.mjs",
     "typecheck": "ngc -p tsconfig.app.json --noEmit && ngc -p tsconfig.spec.json --noEmit",
     "validate:i18n": "node scripts/validate-i18n.mjs",
     "serve:ssr:jano-web-app": "node dist/jano-web-app/server/server.mjs",

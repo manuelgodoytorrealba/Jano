@@ -33,7 +33,8 @@ FROM production-dependencies AS runtime
 ARG JANO_RELEASE
 LABEL org.opencontainers.image.revision="$JANO_RELEASE"
 WORKDIR /app/frontend
-COPY --from=build /app/frontend/dist ./dist
+COPY --chown=node:node --from=build /app/frontend/dist ./dist
 
 EXPOSE 4200
+USER node
 CMD ["npm", "run", "serve:ssr:jano-web-app"]

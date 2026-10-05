@@ -8,6 +8,7 @@ import express from 'express';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { validateSsrAuth } from './ssr-auth';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 const backendOrigin = (
@@ -58,30 +59,14 @@ function loginRedirectFor(req: express.Request): string {
   return `/login?redirectTo=${redirectTo}`;
 }
 
-async function validateAuthSession(req: express.Request): Promise<'ok' | 'unauthorized'> {
+async function validateAuthSession(req: express.Request) {
   const authorization = firstHeaderValue(req.headers.authorization);
   const cookieToken = cookieValue(req.headers.cookie, 'jano_access_token');
-  const headers = new Headers();
 
-  if (authorization) {
-    headers.set('authorization', authorization);
-  } else if (cookieToken) {
-    headers.set('authorization', 'Bearer ' + cookieToken);
-  }
-
-  if (!headers.has('authorization')) {
-    return 'unauthorized';
-  }
-
-  const response = await fetch(backendOrigin + '/api/auth/me', {
-    headers,
-    signal: AbortSignal.timeout(5_000),
+  return validateSsrAuth({
+    backendOrigin,
+    authorization: authorization ?? (cookieToken ? `Bearer ${cookieToken}` : null),
   });
-
-  if (response.status === 401) return 'unauthorized';
-  if (!response.ok) return 'unauthorized';
-
-  return 'ok';
 }
 
 const allowedHosts = Array.from(
@@ -185,22 +170,16 @@ app.use((req, res, next) => {
         return;
       }
 
+      if (session === 'unavailable') {
+        res.setHeader('Retry-After', '5');
+        res.status(503).send('Authentication service temporarily unavailable');
+        return;
+      }
+
       res.redirect(302, loginRedirectFor(req));
     })
     .catch(next);
 });
-
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
 
 /**
  * Serve static files from /browser
@@ -248,6 +227,6 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
 }
 
 /**
- * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
+ * Request handler used by the Angular CLI during development and builds.
  */
 export const reqHandler = createNodeRequestHandler(app);
