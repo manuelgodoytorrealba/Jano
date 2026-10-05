@@ -22,6 +22,7 @@ type CardUserData = {
   entryRotation?: THREE.Euler;
   entryScale?: number;
   entryDistance?: number;
+  entryOpacity?: number;
 };
 
 type Card3D = {
@@ -33,16 +34,18 @@ type Card3D = {
 
 export type EntryAnimationState = 'idle' | 'running' | 'complete';
 
-const ENTRY_DURATION_MS = 560;
-const ENTRY_STAGGER_MS = 22;
+const ENTRY_DURATION_MS = 720;
+const ENTRY_STAGGER_MS = 48;
 const MAX_RENDER_PIXEL_RATIO = 1.5;
 
 export function entryAnimationProgress(elapsedMs: number, distance: number): number {
   return THREE.MathUtils.clamp((elapsedMs - distance * ENTRY_STAGGER_MS) / ENTRY_DURATION_MS, 0, 1);
 }
 
-function easeOutQuart(progress: number): number {
-  return 1 - Math.pow(1 - progress, 4);
+export function spatialEntryEase(progress: number): number {
+  const bounded = THREE.MathUtils.clamp(progress, 0, 1);
+  const eased = 1 - Math.pow(1 - bounded, 4);
+  return THREE.MathUtils.clamp(eased + Math.sin(Math.PI * bounded) * (1 - bounded) * 0.025, 0, 1);
 }
 
 export class Explorer3dScene {
@@ -108,7 +111,15 @@ export class Explorer3dScene {
     this.renderer.setSize(width, height);
     host.replaceChildren(this.renderer.domElement);
     this.buildCards();
-    this.updateTargets();
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.updateTargets(reducedMotion);
+    if (reducedMotion) {
+      this._entryAnimationState = 'complete';
+      this.onEntryAnimationComplete?.();
+      this.startLoop();
+      this.observeResize(host);
+      return;
+    }
     this.prepareInitialDeckState();
     this.startEntryAnimation();
     this.startLoop();
@@ -357,15 +368,20 @@ export class Explorer3dScene {
 
       const offset = circularOffset(index, this.activeIndex, this.items.length);
       const distance = Math.abs(offset);
+      const direction = Math.sign(offset);
       data.entryPosition = new THREE.Vector3(
-        activeTarget.x + offset * profile.cardWidth * 0.035,
-        activeTarget.y - distance * profile.cardHeight * 0.012,
-        activeTarget.z - distance * profile.depthSpacing * 0.11,
+        activeTarget.x + direction * Math.min(distance, 2) * profile.cardWidth * 0.018,
+        activeTarget.y - distance * profile.cardHeight * 0.018,
+        activeTarget.z - 0.24 - distance * profile.depthSpacing * 0.075,
       );
-      data.entryRotation = new THREE.Euler(0, offset * -0.006, offset * -0.004);
-      data.entryScale = data.targetScale * 0.94;
+      data.entryRotation = new THREE.Euler(0, offset * -0.012, offset * -0.006);
+      data.entryScale =
+        distance === 0
+          ? data.targetScale * 0.985
+          : profile.activeScale * Math.max(0.83, 0.91 - distance * 0.012);
       data.entryDistance = distance;
-      data.layoutOpacity = data.targetOpacity;
+      data.entryOpacity = distance === 0 ? 1 : 0;
+      data.layoutOpacity = data.entryOpacity;
 
       card.group.position.copy(data.entryPosition);
       card.group.rotation.copy(data.entryRotation);
@@ -451,7 +467,7 @@ export class Explorer3dScene {
       }
 
       const progress = entryAnimationProgress(elapsed, data.entryDistance ?? 0);
-      const eased = easeOutQuart(progress);
+      const eased = spatialEntryEase(progress);
       card.group.position.lerpVectors(data.entryPosition, data.targetPosition, eased);
       card.group.rotation.set(
         THREE.MathUtils.lerp(data.entryRotation.x, data.targetRotation.x, eased),
@@ -459,7 +475,11 @@ export class Explorer3dScene {
         THREE.MathUtils.lerp(data.entryRotation.z, data.targetRotation.z, eased),
       );
       card.group.scale.setScalar(THREE.MathUtils.lerp(data.entryScale, data.targetScale, eased));
-      data.layoutOpacity = data.targetOpacity;
+      data.layoutOpacity = THREE.MathUtils.lerp(
+        data.entryOpacity ?? 0,
+        data.targetOpacity ?? 1,
+        eased,
+      );
       if (progress < 1) complete = false;
     }
 
@@ -480,6 +500,7 @@ export class Explorer3dScene {
       data.entryRotation = undefined;
       data.entryScale = undefined;
       data.entryDistance = undefined;
+      data.entryOpacity = undefined;
     }
 
     this.entryStartedAt = null;
