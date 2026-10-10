@@ -1764,3 +1764,47 @@
 :host(.app-chrome--orientation-lock) .app-chrome__orientation-lock {
   display: grid;
 }
+
+.app-chrome__header--detail:has(.app-chrome__detail-preferences) {
+  right: var(--detail-chrome-inset);
+  left: var(--detail-chrome-inset);
+  grid-template-columns: auto minmax(140px, 1fr) auto auto auto;
+  gap: 10px;
+}
+.app-chrome__detail-preferences {
+  display: flex;
+  gap: 6px;
+}
+@media (max-width: 1200px) {
+  .app-chrome__header--detail:has(.app-chrome__detail-preferences) {
+    grid-template-columns: auto minmax(120px, 1fr) auto auto;
+  }
+  .app-chrome__header--detail:has(.app-chrome__detail-preferences) .app-chrome__nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+@media (max-width: 860px) {
+  .app-chrome__header--detail:has(.app-chrome__detail-preferences) {
+    left: var(--app-shell-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-chrome__header--detail:has(.app-chrome__detail-preferences) .app-chrome__nav {
+    grid-row: auto;
+  }
+}
+
+.app-chrome__detail-preferences button {
+  min-width: 36px;
+  min-height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app-chrome__header--detail + .app-chrome__header-toggle--open {
+  left: auto;
+  right: calc(var(--app-safe-right) + var(--app-shell-gap));
+}

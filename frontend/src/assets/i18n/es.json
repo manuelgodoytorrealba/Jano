@@ -1,4 +1,14 @@
 {
+  "entity.imageCredit": "Crédito de la imagen",
+  "entity.fact.concepts": "Conceptos",
+  "entity.fact.movement": "Movimiento",
+  "entity.fact.date": "Fecha registrada",
+  "entity.fact.type": "Tipo",
+  "entity.fact.authorship": "Autoría",
+  "entity.noSources": "No hay fuentes disponibles.",
+  "entity.information": "Información de la entidad",
+  "entity.context": "Contexto",
+  "detail.pageNavigation": "Desplazarse por la página",
   "nav.discover": "Inicio",
   "nav.explore": "Archivo",
   "nav.articles": "Artículos",
@@ -730,5 +740,14 @@
   "research.publication.noSources": "Esta publicación todavía no incluye fuentes públicas.",
   "research.publication.continueExploring": "Continuar explorando",
   "research.publication.noRelated": "Todavía no hay otras investigaciones publicadas para continuar el recorrido.",
-  "research.publication.noContent": "Esta investigación aún no tiene contenido editorial publicado."
+  "research.publication.noContent": "Esta investigación aún no tiene contenido editorial publicado.",
+  "workspace.fullscreen": "Ampliar a pantalla completa",
+  "workspace.exitFullscreen": "Salir de pantalla completa",
+  "workspace.fullscreenFailed": "No se pudo ampliar el panel. Prueba de nuevo en un navegador compatible.",
+  "detail.favoriteSave": "Favorito",
+  "detail.favoriteSaved": "Favorito",
+  "collection.search": "Buscar colección…",
+  "collection.loadFailed": "No se pudieron cargar las colecciones. Vuelve a abrir el selector para intentarlo de nuevo.",
+  "collection.noMatches": "No hay colecciones que mostrar. Puedes crear una abajo.",
+  "collection.addedShort": "Añadida"
 }

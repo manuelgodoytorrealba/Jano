@@ -8,7 +8,73 @@
     [class.entity-detail--info-focus]="workspaceMode === 'info'"
     [class.entity-detail--artwork-arrival]="artworkArrivalActive(entity)"
   >
+    <app-entity-scroll-progress />
     <div class="entity-detail__layout">
+      <ng-template #entityContext>
+        <div class="entity-context">
+          <div class="entity-context__heading">
+            <p class="entity-context__title">{{ entity.title }}</p>
+            @if (detailHeroSubtitle(entity); as subtitle) {
+              <p class="entity-context__subtitle">{{ subtitle }}</p>
+            }
+          </div>
+          @if (showActions) {
+            <div class="entity-context__actions">
+              <button
+                type="button"
+                (click)="onSave(entity.id)"
+                [disabled]="saveLoading"
+                [attr.aria-pressed]="isSaved"
+                [attr.aria-busy]="saveLoading"
+                [attr.aria-label]="
+                  isSaved ? i18n.t('detail.favoriteSaved') : i18n.t('detail.favoriteSave')
+                "
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 3h12v18l-6-4-6 4z" [attr.fill]="isSaved ? 'currentColor' : 'none'" />
+                </svg>
+                <span>{{
+                  isSaved ? i18n.t('detail.favoriteSaved') : i18n.t('detail.favoriteSave')
+                }}</span>
+                <span class="entity-context__action-sizer" aria-hidden="true">{{
+                  i18n.t('detail.favoriteSaved')
+                }}</span>
+              </button>
+              <button
+                type="button"
+                class="entity-collections-toggle"
+                (click)="onCollections()"
+                [attr.aria-expanded]="collectionsOpen"
+                aria-controls="entity-collections-panel"
+                [attr.aria-label]="i18n.t('mySpace.collections')"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 3h9v12H3z" /></svg>
+                <span>{{ i18n.t('mySpace.collections') }}</span>
+              </button>
+              <button type="button" (click)="onShare()" [attr.aria-label]="i18n.t('button.share')">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <path d="m9 10 6-4M9 14l6 4" />
+                </svg>
+                <span>{{ i18n.t('button.share') }}</span>
+              </button>
+              @if (actionFeedback) {
+                <p
+                  class="entity-action-feedback"
+                  [class.entity-action-feedback--error]="actionFeedbackError"
+                  role="status"
+                >
+                  {{ actionFeedback }}
+                </p>
+              }
+              <ng-content select="[entityCollections]"></ng-content>
+            </div>
+          }
+        </div>
+      </ng-template>
+      <ng-container *ngTemplateOutlet="entityContext"></ng-container>
       @if (isArticle(entity)) {
         <section class="entity-section entity-glass entity-section--wide entity-article-hero">
           <div class="entity-article-hero__media">
@@ -55,41 +121,6 @@
           </div>
         </section>
       } @else {
-        <div
-          class="entity-explorer__workspace-deck"
-          [class.entity-explorer__workspace-deck--arrival-revealed]="revealArrivalControls(entity)"
-        >
-          <div
-            class="entity-explorer__workspace-bar"
-            role="toolbar"
-            [attr.aria-label]="i18n.t('workspace.aria')"
-          >
-            <span class="entity-explorer__workspace-label">{{ i18n.t('workspace.label') }}</span>
-            <div class="entity-explorer__workspace-switch">
-              @for (mode of workspaceModes; track mode.value) {
-                <button
-                  type="button"
-                  class="entity-explorer__workspace-btn"
-                  [class.is-active]="workspaceMode === mode.value"
-                  [attr.aria-pressed]="workspaceMode === mode.value"
-                  (click)="setWorkspaceMode(mode.value)"
-                >
-                  {{ i18n.t(mode.labelKey) }}
-                </button>
-              }
-            </div>
-            @if (!isMobileViewport) {
-              <button
-                type="button"
-                class="entity-explorer__workspace-btn entity-explorer__workspace-btn--focus"
-                [attr.aria-pressed]="workspaceFocused"
-                (click)="toggleWorkspaceFocus()"
-              >
-                {{ workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus') }}
-              </button>
-            }
-          </div>
-        </div>
         @if (showWorkspace(entity)) {
           <section
             class="entity-explorer entity-glass"
@@ -99,6 +130,7 @@
             @if (renderGraph) {
               <app-graph
                 [slug]="entity.slug"
+                [detailLayout]="true"
                 [workspaceMode]="graphWorkspaceMode"
                 [imageMedia]="detailMedia(entity)"
                 [imageUrl]="visualUrl(entity)"
@@ -221,213 +253,364 @@
       }
 
       @if (showEditorialFlow(entity)) {
-        <section
-          class="entity-section entity-glass entity-section--wide entity-story"
-          [class.entity-story--article]="isArticle(entity)"
-        >
-          <header class="entity-topbar entity-topbar--embedded">
-            <ng-container
-              *ngTemplateOutlet="detailHeaderBlock; context: { $implicit: entity, mobile: false }"
-            ></ng-container>
+        <section class="entity-information entity-section entity-glass entity-section--wide">
+          <header class="entity-information__header">
+            <div>
+              @if (isArticle(entity)) {
+                <h2 class="entity-information__title">{{ entity.title }}</h2>
+              } @else {
+                <h1 class="entity-information__title">{{ entity.title }}</h1>
+              }
+              @if (detailHeroSubtitle(entity); as subtitle) {
+                <p class="entity-information__subtitle">{{ subtitle }}</p>
+              }
+            </div>
+            <div
+              class="entity-information__tabs"
+              role="tablist"
+              [attr.aria-label]="i18n.t('entity.information')"
+            >
+              @for (tab of informationTabs; track tab.id) {
+                <button
+                  type="button"
+                  role="tab"
+                  [id]="'entity-tab-' + tab.id"
+                  [attr.aria-controls]="'entity-panel-' + tab.id"
+                  [attr.aria-selected]="informationTab === tab.id"
+                  [attr.tabindex]="informationTab === tab.id ? 0 : -1"
+                  (click)="informationTab = tab.id"
+                  (keydown)="onInformationTabKeydown($event)"
+                >
+                  {{
+                    i18n.t(
+                      tab.id === 'sheet' && isArticle(entity) ? 'entity.connectionMap' : tab.label
+                    )
+                  }}
+                </button>
+              }
+            </div>
           </header>
+          <div
+            class="entity-information__panel"
+            role="tabpanel"
+            id="entity-panel-context"
+            aria-labelledby="entity-tab-context"
+            tabindex="0"
+            [hidden]="informationTab !== 'context'"
+          >
+            @if (entity.summary) {
+              <div class="entity-prose">{{ entity.summary }}</div>
+            }
 
-          @if (entity.summary) {
-            <div class="entity-prose">{{ entity.summary }}</div>
-          }
-
-          @if (entity.content) {
-            <div class="entity-section__head">
-              <p class="section-label">{{ storySectionLabel(entity) }}</p>
-            </div>
-            <div class="entity-prose">
-              <app-rich-text
-                [text]="entity.content"
-                [previewAccess]="richTextPreviewAccess"
-              ></app-rich-text>
-            </div>
-          }
-        </section>
-
-        <div class="entity-detail__sections">
-          @if (isArticle(entity)) {
-            <section class="entity-section entity-glass entity-article-graph">
+            @if (entity.content) {
               <div class="entity-section__head">
-                <p class="section-label">{{ i18n.t('entity.connectionMap') }}</p>
+                <p class="section-label">{{ storySectionLabel(entity) }}</p>
               </div>
-              @if (renderGraph) {
-                @defer (on idle) {
-                  <app-graph
-                    [slug]="entity.slug"
-                    [workspaceMode]="graphWorkspaceMode"
-                    [entityTitle]="entity.title"
-                    [entityType]="entity.type"
-                    [hideImagePane]="true"
-                  />
-                } @placeholder {
-                  <div
-                    class="entity-explorer__skeleton"
-                    aria-hidden="true"
-                    style="grid-template-columns: 1fr"
-                  >
+              <div class="entity-prose">
+                <app-rich-text
+                  [text]="entity.content"
+                  [previewAccess]="richTextPreviewAccess"
+                ></app-rich-text>
+              </div>
+            }
+          </div>
+          <div
+            class="entity-information__panel"
+            role="tabpanel"
+            id="entity-panel-sheet"
+            aria-labelledby="entity-tab-sheet"
+            tabindex="0"
+            [hidden]="informationTab !== 'sheet'"
+          >
+            @if (isArticle(entity)) {
+              <section class="entity-article-graph">
+                <div class="entity-section__head">
+                  <p class="section-label">{{ i18n.t('entity.connectionMap') }}</p>
+                </div>
+                @if (renderGraph) {
+                  @defer (on idle) {
+                    <app-graph
+                      [slug]="entity.slug"
+                      [workspaceMode]="graphWorkspaceMode"
+                      [entityTitle]="entity.title"
+                      [entityType]="entity.type"
+                      [hideImagePane]="true"
+                    />
+                  } @placeholder {
                     <div
-                      class="entity-explorer__skeleton-pane"
-                      style="
-                        background: linear-gradient(
-                          180deg,
-                          rgba(8, 11, 16, 0.94),
-                          rgba(3, 5, 8, 0.98)
-                        );
-                        border: 1px solid rgba(255, 255, 255, 0.1);
-                      "
+                      class="entity-explorer__skeleton"
+                      aria-hidden="true"
+                      style="grid-template-columns: 1fr"
                     >
-                      <div class="entity-explorer__skeleton-toolbar">
+                      <div
+                        class="entity-explorer__skeleton-pane"
+                        style="
+                          background: linear-gradient(
+                            180deg,
+                            rgba(8, 11, 16, 0.94),
+                            rgba(3, 5, 8, 0.98)
+                          );
+                          border: 1px solid rgba(255, 255, 255, 0.1);
+                        "
+                      >
+                        <div class="entity-explorer__skeleton-toolbar">
+                          <div
+                            style="
+                              width: 6rem;
+                              height: 1.05rem;
+                              border-radius: 999px;
+                              background: rgba(255, 255, 255, 0.12);
+                            "
+                          ></div>
+                          <div class="entity-explorer__skeleton-actions">
+                            <span style="width: 3rem; height: 1.8rem"></span>
+                            <span style="width: 3rem; height: 1.8rem"></span>
+                            <span style="width: 3rem; height: 1.8rem"></span>
+                          </div>
+                        </div>
                         <div
                           style="
-                            width: 6rem;
-                            height: 1.05rem;
-                            border-radius: 999px;
-                            background: rgba(255, 255, 255, 0.12);
+                            min-height: 440px;
+                            border-radius: 22px;
+                            background: rgba(255, 255, 255, 0.06);
                           "
                         ></div>
-                        <div class="entity-explorer__skeleton-actions">
-                          <span style="width: 3rem; height: 1.8rem"></span>
-                          <span style="width: 3rem; height: 1.8rem"></span>
-                          <span style="width: 3rem; height: 1.8rem"></span>
-                        </div>
                       </div>
-                      <div
-                        style="
-                          min-height: 440px;
-                          border-radius: 22px;
-                          background: rgba(255, 255, 255, 0.06);
-                        "
-                      ></div>
                     </div>
+                  }
+                } @else {
+                  <div class="entity-article-graph__empty" role="status">
+                    {{ i18n.t('entity.noGraph') }}
                   </div>
                 }
-              } @else {
-                <div class="entity-article-graph__empty" role="status">
-                  {{ i18n.t('entity.noGraph') }}
+              </section>
+            } @else {
+              <section class="entity-information__section">
+                <div class="entity-section__head">
+                  <p class="section-label">{{ i18n.t('entity.sheet') }}</p>
                 </div>
-              }
-            </section>
-          } @else {
-            <section class="entity-section entity-glass">
+                <div class="entity-topbar__meta">
+                  <div class="entity-header__badges">
+                    <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
+                    @if (entity.contentLevel) {
+                      <span class="ds-badge entity-badge">{{
+                        contentLevelLabel(entity.contentLevel)
+                      }}</span>
+                    }
+                  </div>
+                  @if (entityTags(entity).length) {
+                    <div class="entity-header__badges entity-header__badges--tags">
+                      @for (tag of entityTags(entity); track tag.id ?? tag.slug) {
+                        <a
+                          class="ds-badge entity-badge"
+                          [routerLink]="['/search']"
+                          [queryParams]="{ tag: tag.slug, q: tag.label }"
+                          >{{ tag.label }}</a
+                        >
+                      }
+                    </div>
+                  }
+                </div>
+                @if (detailFacts(entity).length) {
+                  <div class="facts-sheet">
+                    <dl class="facts-grid">
+                      @for (fact of detailFacts(entity); track fact.label) {
+                        <div
+                          class="fact-card"
+                          [class.fact-card--wide]="fact.label === i18n.t('entity.fact.concepts')"
+                        >
+                          <dt class="fact-card__label">{{ fact.label }}</dt>
+                          <dd class="fact-card__value">{{ fact.value }}</dd>
+                        </div>
+                      }
+                    </dl>
+                  </div>
+                } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
+                  <div class="facts-sheet facts-sheet--textual">
+                    <div class="fact-note entity-glass-card">
+                      <p class="entity-prose facts-sheet__definition">
+                        {{ entity.concept?.definition }}
+                      </p>
+                    </div>
+                  </div>
+                } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
+                  <div class="facts-sheet facts-sheet--textual">
+                    <div class="fact-note entity-glass-card">
+                      <p class="entity-prose facts-sheet__definition">
+                        {{ entity.period?.definition }}
+                      </p>
+                    </div>
+                  </div>
+                } @else {
+                  <p class="text-muted">{{ i18n.t('entity.noSheet') }}</p>
+                }
+              </section>
+            }
+          </div>
+          <div
+            class="entity-information__panel"
+            role="tabpanel"
+            id="entity-panel-relations"
+            aria-labelledby="entity-tab-relations"
+            tabindex="0"
+            [hidden]="informationTab !== 'relations'"
+          >
+            <section class="entity-information__section">
               <div class="entity-section__head">
-                <p class="section-label">{{ i18n.t('entity.sheet') }}</p>
+                <p class="section-label">{{ i18n.t('entity.relations') }}</p>
               </div>
-              @if (detailFacts(entity).length) {
-                <div class="facts-sheet">
-                  <div class="facts-sheet__intro">
-                    <span class="facts-sheet__kicker">{{ detailFactKicker(entity) }}</span>
-                    <h3 class="facts-sheet__title">{{ detailFactTitle(entity) }}</h3>
-                    @if (detailFactSummary(entity); as summary) {
-                      <p class="facts-sheet__summary">{{ summary }}</p>
-                    }
-                  </div>
-                  <div class="facts-grid">
-                    @for (fact of detailFacts(entity); track fact.label) {
-                      <article class="fact-card entity-glass-card">
-                        <span class="fact-card__label">{{ fact.label }}</span>
-                        <p class="fact-card__value">{{ fact.value }}</p>
-                      </article>
-                    }
-                  </div>
-                </div>
-              } @else if (entity.type === 'CONCEPT' && entity.concept?.definition) {
-                <div class="facts-sheet facts-sheet--textual">
-                  <div class="fact-note entity-glass-card">
-                    <p class="entity-prose facts-sheet__definition">
-                      {{ entity.concept?.definition }}
-                    </p>
-                  </div>
-                </div>
-              } @else if (entity.type === 'PERIOD' && entity.period?.definition) {
-                <div class="facts-sheet facts-sheet--textual">
-                  <div class="fact-note entity-glass-card">
-                    <p class="entity-prose facts-sheet__definition">
-                      {{ entity.period?.definition }}
-                    </p>
-                  </div>
-                </div>
-              } @else {
-                <p class="text-muted">{{ i18n.t('entity.noSheet') }}</p>
-              }
-            </section>
-          }
-
-          <section class="entity-section entity-glass">
-            <div class="entity-section__head">
-              <p class="section-label">{{ i18n.t('entity.relations') }}</p>
-            </div>
-            <div class="relations-group">
-              <h3 class="title-section entity-subtitle">{{ i18n.t('entity.connectsWith') }}</h3>
-              @if ((entity.outgoing?.length ?? 0) === 0) {
-                <p class="text-muted">{{ i18n.t('entity.noOutgoing') }}</p>
-              } @else {
-                <ul class="relations-list">
-                  @for (r of visibleOutgoingRelations(entity); track r.id) {
-                    <li class="relation-card entity-glass-card relation-card--friendly">
-                      <div class="relation-card__topline">
-                        <span class="relation-card__label">{{
-                          r.relationTypeLabel ??
-                            relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing')
-                        }}</span>
-                        <a
-                          class="relation-card__link"
-                          [routerLink]="['/entity', r.to.slug]"
-                          [attr.aria-label]="i18n.t('entity.open') + ': ' + r.to.title"
-                          >{{ r.to.title }}</a
-                        >
-                      </div>
-                      @if (r.justification) {
-                        <div class="relation-card__text">
-                          <app-rich-text
-                            [text]="r.justification"
-                            [previewAccess]="richTextPreviewAccess"
-                          ></app-rich-text>
-                        </div>
-                      }
-                    </li>
-                  }
-                </ul>
-                @if (hiddenOutgoingRelations(entity) > 0) {
-                  <button
-                    type="button"
-                    class="relations-reveal"
-                    (click)="showAllOutgoingRelations(entity)"
-                  >
-                    {{ i18n.t('common.show') }} {{ i18n.t('common.all') }}
-                  </button>
-                }
-              }
-            </div>
-
-            <div class="relations-group">
-              <h3 class="title-section entity-subtitle">{{ i18n.t('entity.alsoAppearsIn') }}</h3>
-              @if ((entity.incoming?.length ?? 0) === 0) {
-                <p class="text-muted">{{ i18n.t('entity.noIncoming') }}</p>
-              } @else {
-                <ul class="relations-list">
-                  @for (r of visibleIncomingRelations(entity); track r.id) {
-                    <li class="relation-card entity-glass-card relation-card--friendly">
-                      <div class="relation-card__topline">
-                        <span class="relation-card__label">{{
-                          r.relationTypeInverseLabel ??
+              <div class="relations-group">
+                <h3 class="title-section entity-subtitle">{{ i18n.t('entity.connectsWith') }}</h3>
+                @if ((entity.outgoing?.length ?? 0) === 0) {
+                  <p class="text-muted">{{ i18n.t('entity.noOutgoing') }}</p>
+                } @else {
+                  <ul class="relations-list">
+                    @for (r of visibleOutgoingRelations(entity); track r.id) {
+                      <li class="relation-card relation-card--friendly entity-glass">
+                        <app-relation-controls
+                          [endpoint]="r.to"
+                          [label]="i18n.t('entity.open') + ': ' + r.to.title"
+                        />
+                        <div class="relation-card__topline">
+                          <span class="relation-card__label">{{
                             r.relationTypeLabel ??
-                            relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming')
-                        }}</span>
-                        <a
-                          class="relation-card__link"
-                          [routerLink]="['/entity', r.from.slug]"
-                          [attr.aria-label]="i18n.t('entity.open') + ': ' + r.from.title"
-                          >{{ r.from.title }}</a
-                        >
+                              relationDirectionLabel(r.relationTypeKey ?? r.type, 'outgoing')
+                          }}</span>
+                          <a
+                            class="relation-card__link"
+                            [routerLink]="['/entity', r.to.slug]"
+                            [attr.aria-label]="i18n.t('entity.open') + ': ' + r.to.title"
+                            >{{ r.to.title }}</a
+                          >
+                          <span class="relation-card__type">{{ entityTypeLabel(r.to.type) }}</span>
+                        </div>
+                        @if (r.justification) {
+                          <div class="relation-card__text">
+                            <app-rich-text
+                              [text]="r.justification"
+                              [previewAccess]="richTextPreviewAccess"
+                            ></app-rich-text>
+                          </div>
+                        }
+                      </li>
+                    }
+                  </ul>
+                  @if (hiddenOutgoingRelations(entity) > 0) {
+                    <button
+                      type="button"
+                      class="relations-reveal"
+                      (click)="showAllOutgoingRelations(entity)"
+                    >
+                      {{ i18n.t('common.show') }} {{ i18n.t('common.all') }}
+                    </button>
+                  }
+                }
+              </div>
+
+              <div class="relations-group">
+                <h3 class="title-section entity-subtitle">{{ i18n.t('entity.alsoAppearsIn') }}</h3>
+                @if ((entity.incoming?.length ?? 0) === 0) {
+                  <p class="text-muted">{{ i18n.t('entity.noIncoming') }}</p>
+                } @else {
+                  <ul class="relations-list">
+                    @for (r of visibleIncomingRelations(entity); track r.id) {
+                      <li class="relation-card relation-card--friendly entity-glass">
+                        <app-relation-controls
+                          [endpoint]="r.from"
+                          [label]="i18n.t('entity.open') + ': ' + r.from.title"
+                        />
+                        <div class="relation-card__topline">
+                          <span class="relation-card__label">{{
+                            r.relationTypeInverseLabel ??
+                              r.relationTypeLabel ??
+                              relationDirectionLabel(r.relationTypeKey ?? r.type, 'incoming')
+                          }}</span>
+                          <a
+                            class="relation-card__link"
+                            [routerLink]="['/entity', r.from.slug]"
+                            [attr.aria-label]="i18n.t('entity.open') + ': ' + r.from.title"
+                            >{{ r.from.title }}</a
+                          >
+                          <span class="relation-card__type">{{
+                            entityTypeLabel(r.from.type)
+                          }}</span>
+                        </div>
+                        @if (r.justification) {
+                          <div class="relation-card__text">
+                            <app-rich-text
+                              [text]="r.justification"
+                              [previewAccess]="richTextPreviewAccess"
+                            ></app-rich-text>
+                          </div>
+                        }
+                      </li>
+                    }
+                  </ul>
+                  @if (hiddenIncomingRelations(entity) > 0) {
+                    <button
+                      type="button"
+                      class="relations-reveal"
+                      (click)="showAllIncomingRelations(entity)"
+                    >
+                      {{ i18n.t('common.show') }} {{ i18n.t('common.all') }}
+                    </button>
+                  }
+                }
+              </div>
+            </section>
+          </div>
+          <div
+            class="entity-information__panel"
+            role="tabpanel"
+            id="entity-panel-sources"
+            aria-labelledby="entity-tab-sources"
+            tabindex="0"
+            [hidden]="informationTab !== 'sources'"
+          >
+            @if ((entity.sourceRefs?.length ?? 0) > 0) {
+              <section class="entity-information__section">
+                <div class="entity-section__head">
+                  <p class="section-label">{{ i18n.t('entity.sources') }}</p>
+                </div>
+                <ul class="relations-list">
+                  @for (r of entity.sourceRefs; track r.id) {
+                    <li class="relation-source">
+                      <div class="source-reference">
+                        <span class="source-reference__icon" aria-hidden="true">▤</span>
+                        <div class="source-reference__content">
+                          <span class="source-reference__type">{{
+                            sourceTypeLabel(r.source?.type ?? r.sourceType)
+                          }}</span>
+                          <span class="relation-card__text">
+                            <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
+                            @if (r.source?.author || r.sourceAuthor) {
+                              — {{ r.source?.author ?? r.sourceAuthor }}
+                            }
+                            @if (
+                              r.source?.publisher ||
+                              r.sourcePublisher ||
+                              r.source?.year ||
+                              r.sourceYear
+                            ) {
+                              ({{ r.source?.publisher ?? r.sourcePublisher ?? '' }}
+                              @if (r.source?.year || r.sourceYear) {
+                                , {{ r.source?.year ?? r.sourceYear }}
+                              }
+                              )
+                            }
+                            @if (r.page) {
+                              — p. {{ r.page }}
+                            }
+                          </span>
+                        </div>
                       </div>
-                      @if (r.justification) {
+                      @if (r.quote) {
+                        <div class="quote-block">“{{ r.quote }}”</div>
+                      }
+                      @if (r.note) {
                         <div class="relation-card__text">
                           <app-rich-text
-                            [text]="r.justification"
+                            [text]="r.note"
                             [previewAccess]="richTextPreviewAccess"
                           ></app-rich-text>
                         </div>
@@ -435,125 +618,32 @@
                     </li>
                   }
                 </ul>
-                @if (hiddenIncomingRelations(entity) > 0) {
-                  <button
-                    type="button"
-                    class="relations-reveal"
-                    (click)="showAllIncomingRelations(entity)"
-                  >
-                    {{ i18n.t('common.show') }} {{ i18n.t('common.all') }}
-                  </button>
-                }
-              }
-            </div>
-          </section>
-        </div>
-
-        @if ((entity.sourceRefs?.length ?? 0) > 0) {
-          <section class="entity-section entity-glass entity-section--wide">
-            <div class="entity-section__head">
-              <p class="section-label">{{ i18n.t('entity.sources') }}</p>
-            </div>
-            <ul class="relations-list">
-              @for (r of entity.sourceRefs; track r.id) {
-                <li class="relation-source">
-                  <div class="relation-card entity-glass-card">
-                    <span class="ds-badge entity-badge">{{
-                      sourceTypeLabel(r.source?.type ?? r.sourceType)
-                    }}</span>
-                    <span class="relation-card__text">
-                      <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
-                      @if (r.source?.author || r.sourceAuthor) {
-                        — {{ r.source?.author ?? r.sourceAuthor }}
-                      }
-                      @if (
-                        r.source?.publisher || r.sourcePublisher || r.source?.year || r.sourceYear
-                      ) {
-                        ({{ r.source?.publisher ?? r.sourcePublisher ?? '' }}
-                        @if (r.source?.year || r.sourceYear) {
-                          , {{ r.source?.year ?? r.sourceYear }}
-                        }
-                        )
-                      }
-                      @if (r.page) {
-                        — p. {{ r.page }}
-                      }
-                    </span>
+              </section>
+            } @else {
+              <p class="text-muted">{{ i18n.t('entity.noSources') }}</p>
+            }
+            @if (detailMedia(entity); as media) {
+              @if (media.source || media.photoBy || media.license) {
+                <section class="source-reference source-reference--credit">
+                  <span class="source-reference__icon" aria-hidden="true">▧</span>
+                  <div class="source-reference__content">
+                    <span class="source-reference__type">{{ i18n.t('entity.imageCredit') }}</span>
+                    @if (media.source) {
+                      <strong>{{ media.source }}</strong>
+                    }
+                    @if (media.photoBy) {
+                      <p>{{ media.photoBy }}</p>
+                    }
+                    @if (media.license) {
+                      <p>{{ i18n.t('graph.license') }}: {{ media.license }}</p>
+                    }
                   </div>
-                  @if (r.quote) {
-                    <div class="quote-block">“{{ r.quote }}”</div>
-                  }
-                  @if (r.note) {
-                    <div class="relation-card__text">
-                      <app-rich-text
-                        [text]="r.note"
-                        [previewAccess]="richTextPreviewAccess"
-                      ></app-rich-text>
-                    </div>
-                  }
-                </li>
+                </section>
               }
-            </ul>
-          </section>
-        }
+            }
+          </div>
+        </section>
       }
     </div>
   </div>
-
-  <ng-template #detailHeaderBlock let-entity let-mobile="mobile">
-    <div class="entity-topbar__row" [class.entity-topbar__row--mobile]="mobile">
-      <div class="entity-topbar__lead">
-        <div class="entity-topbar__title-block">
-          <h1
-            class="title-display entity-header__title"
-            [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)"
-          >
-            {{ entity.title }}
-          </h1>
-          @if (detailHeroSubtitle(entity); as subtitle) {
-            <p
-              class="entity-topbar__subtitle"
-              [class.entity-arrival-copy--visible]="revealArrivalTitle(entity)"
-            >
-              {{ subtitle }}
-            </p>
-          }
-          <div
-            class="entity-topbar__meta"
-            [class.entity-arrival-copy--visible]="revealArrivalMeta(entity)"
-          >
-            <div class="entity-header__badges">
-              <span class="ds-badge entity-badge">{{ statusLabel(entity.status) }}</span>
-              @if (entity.contentLevel) {
-                <span class="ds-badge entity-badge">{{
-                  contentLevelLabel(entity.contentLevel)
-                }}</span>
-              }
-              <span class="ds-badge entity-badge">{{ entityTypeLabel(entity.type) }}</span>
-            </div>
-            @if (entityTags(entity).length) {
-              <div class="entity-header__badges entity-header__badges--tags">
-                @for (tag of entityTags(entity); track tag.id ?? tag.slug) {
-                  <a
-                    class="ds-badge entity-badge"
-                    [routerLink]="['/search']"
-                    [queryParams]="{ tag: tag.slug, q: tag.label }"
-                    >{{ tag.label }}</a
-                  >
-                }
-              </div>
-            }
-            @if (entity.startYear || entity.endYear) {
-              <span class="ds-pill entity-pill"
-                >{{ entity.startYear ?? '' }}
-                @if (entity.endYear) {
-                  –{{ entity.endYear }}
-                }
-              </span>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-  </ng-template>
 }

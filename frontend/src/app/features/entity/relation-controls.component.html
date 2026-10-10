@@ -1,0 +1,24 @@
+<span
+  class="relation-entity-icon"
+  [attr.data-type]="endpoint().type"
+  [attr.data-kind]="endpoint().kind"
+  aria-hidden="true"
+>
+  <svg viewBox="0 0 48 48" [style.color]="symbol().color">
+    @switch (symbol().shape) {
+      @case ('diamond') {
+        <path class="icon-outline" d="m24 3 21 21-21 21L3 24z" />
+      }
+      @case ('rounded-square') {
+        <rect class="icon-outline" x="3" y="3" width="42" height="42" rx="11" />
+      }
+      @default {
+        <circle class="icon-outline" cx="24" cy="24" r="21" />
+      }
+    }
+    <path [attr.d]="symbol().path" transform="translate(12 12)" />
+  </svg>
+</span>
+<a class="relation-open" [routerLink]="['/entity', endpoint().slug]" [attr.aria-label]="label()"
+  ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg
+></a>

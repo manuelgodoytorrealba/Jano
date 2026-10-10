@@ -1,3 +1,6 @@
+@if (fullscreenFailed()) {
+  <p role="alert">{{ i18n.t('workspace.fullscreenFailed') }}</p>
+}
 @if (error()) {
   <div class="explorer-state explorer-state--error">{{ i18n.t(error()!) }}</div>
 } @else if (graph(); as graphData) {
@@ -131,19 +134,21 @@
               </aside>
             }
 
-            @if (isMobileViewport) {
+            @if (detailLayout || isMobileViewport) {
               <button
                 type="button"
                 class="stage-focus-toggle"
-                [class.is-active]="workspaceFocused"
+                [class.is-active]="detailLayout ? fullscreenPanel() !== null : workspaceFocused"
                 (pointerdown)="$event.stopPropagation()"
-                (click)="toggleWorkspaceFocusStage()"
+                (click)="togglePanelFullscreen('image', $event)"
                 [attr.aria-label]="
-                  workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus')
+                  (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
+                    ? i18n.t('workspace.exitFullscreen')
+                    : i18n.t('workspace.fullscreen')
                 "
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                  @if (workspaceFocused) {
+                  @if (detailLayout ? fullscreenPanel() !== null : workspaceFocused) {
                     <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
                     <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
                   } @else {
@@ -234,6 +239,7 @@
       >
         @if (showControls) {
           <app-graph-controls-bar
+            [detailLayout]="detailLayout"
             [labelsMode]="labelsMode()"
             [nodeCount]="graphDerived().filteredNodes.length"
             [edgeCount]="graphDerived().filteredEdges.length"
@@ -259,19 +265,21 @@
           (pointerup)="onGraphStagePointerUp($event)"
           (pointercancel)="onGraphStagePointerUp($event)"
         >
-          @if (isMobileViewport) {
+          @if (detailLayout || isMobileViewport) {
             <button
               type="button"
               class="stage-focus-toggle"
-              [class.is-active]="workspaceFocused"
+              [class.is-active]="detailLayout ? fullscreenPanel() !== null : workspaceFocused"
               (pointerdown)="$event.stopPropagation()"
-              (click)="toggleWorkspaceFocusStage()"
+              (click)="togglePanelFullscreen('graph', $event)"
               [attr.aria-label]="
-                workspaceFocused ? i18n.t('workspace.exitFocus') : i18n.t('workspace.focus')
+                (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
+                  ? i18n.t('workspace.exitFullscreen')
+                  : i18n.t('workspace.fullscreen')
               "
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                @if (workspaceFocused) {
+                @if (detailLayout ? fullscreenPanel() !== null : workspaceFocused) {
                   <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
                   <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
                 } @else {

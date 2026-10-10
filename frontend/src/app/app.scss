@@ -295,3 +295,36 @@ body.jano-artwork-route-graph .explorer-graph-pane {
       );
   }
 }
+
+/* Entity actions live in the detail, so the workspace no longer reserves a rail. */
+.app-shell--detail {
+  --app-rail-width: 0px;
+  --detail-menu-space: 68px;
+  --detail-chrome-inset: max(
+    calc(var(--app-shell-gap) + clamp(0.32rem, 1vw, 0.82rem)),
+    calc(50vw - 940px + 0.82rem)
+  );
+}
+.app-shell--detail .app-shell__content {
+  padding-inline: var(--app-shell-gap);
+  padding-top: calc(var(--app-safe-top) + 8px);
+}
+.app-shell--detail:has(.app-chrome__header:not(.app-chrome__header--collapsed)) {
+  --detail-header-space: 100px;
+
+}
+.app-shell--detail:has(.app-chrome__header:not(.app-chrome__header--collapsed))
+  .app-shell__content {
+  padding-top: calc(var(--app-safe-top) + var(--detail-header-space));
+}
+@media (max-width: 860px) {
+  .app-shell--detail:has(.app-chrome__header:not(.app-chrome__header--collapsed)) {
+    --detail-header-space: 0px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell--detail {
+    --detail-menu-space: 54px;
+  }
+}

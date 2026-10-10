@@ -139,7 +139,7 @@ export class AppChromeComponent {
           this.orientationLockVisible.set(this.readOrientationLockVisible());
           this.compactHeaderEnabled.set(compact);
 
-          this.syncHeaderState();
+          if (!this.isDetailRoute()) this.syncHeaderState();
         });
 
       fromEvent<KeyboardEvent>(window, 'keydown')
@@ -308,7 +308,8 @@ export class AppChromeComponent {
     }
 
     this.accountMenuOpen.set(false);
-    if (this.isDetailRoute() && !this.headerCollapsed()) this.collapseHeader();
+    if (this.rail.contextualRail()?.kind === 'publication' && !this.headerCollapsed())
+      this.collapseHeader();
   }
 
   detailHeaderMode(): boolean {
@@ -320,7 +321,7 @@ export class AppChromeComponent {
   }
 
   showHeaderCloseButton(): boolean {
-    return this.compactHeaderEnabled();
+    return this.compactHeaderEnabled() || this.detailHeaderMode();
   }
 
   accountName(): string {

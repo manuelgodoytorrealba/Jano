@@ -413,3 +413,39 @@
     border-radius: 18px;
   }
 }
+
+:host(.graph-controls--detail) {
+  position: absolute;
+  inset: 12px;
+  z-index: 4;
+  pointer-events: none;
+  .graph-panel-bar {
+    display: block;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .graph-panel-bar__group--meta {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .graph-panel-bar__group--actions {
+    display: contents;
+  }
+  .graph-panel-bar__toggles {
+    position: absolute;
+    top: 0;
+    right: 54px;
+    pointer-events: auto;
+  }
+  .surface-controls {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    pointer-events: auto;
+  }
+}

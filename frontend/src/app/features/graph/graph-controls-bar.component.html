@@ -36,7 +36,7 @@
       </button>
     </div>
 
-    @if (!isMobileViewport) {
+    @if (detailLayout || !isMobileViewport) {
       <div class="surface-controls surface-controls--graph">
         <button
           type="button"

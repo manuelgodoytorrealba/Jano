@@ -1,16 +1,20 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outputFile = path.resolve(__dirname, '../src/app/core/i18n/i18n-release.ts');
 
-const release = process.env.JANO_RELEASE?.trim() || process.env.GIT_COMMIT?.trim();
-
-if (!release) {
-  console.log('i18n release version: development (source file unchanged)');
-  process.exit(0);
-}
+const dictionaries = await Promise.all(
+  ['es', 'en'].map((locale) =>
+    readFile(path.resolve(__dirname, `../src/assets/i18n/${locale}.json`)),
+  ),
+);
+const release =
+  process.env.JANO_RELEASE?.trim() ||
+  process.env.GIT_COMMIT?.trim() ||
+  createHash('sha256').update(Buffer.concat(dictionaries)).digest('hex').slice(0, 12);
 
 await mkdir(path.dirname(outputFile), { recursive: true });
 await writeFile(

@@ -1,7 +1,13 @@
 import { GraphEdgeDto, GraphNodeDto } from '../../core/api/graph.models';
 import { GraphPoint } from './graph-primitives';
 
-export type GraphEntityShape = 'circle' | 'square' | 'diamond' | 'hexagon' | 'triangle';
+export type GraphEntityShape =
+  | 'circle'
+  | 'square'
+  | 'rounded-square'
+  | 'diamond'
+  | 'hexagon'
+  | 'triangle';
 export type GraphLineStyle = 'solid' | 'dashed' | 'dotted';
 
 export interface GraphEntityVisualConfig {
@@ -102,8 +108,10 @@ export interface GraphRenderedNode {
   size: number;
   haloSize: number;
   shapePath: string;
+  symbolPath?: string;
   labelTransform: string;
-  labelTextAnchor: 'start' | 'end';
+  labelTextAnchor: 'start' | 'end' | 'middle';
+  renderScale?: number;
   nodeVisual: GraphEntityVisualConfig;
   titleLabel: string;
   typeLabel: string;

@@ -126,26 +126,35 @@ function approximateNodeLabelBox(node: GraphRenderedNode): GraphLabelBox {
   const offsetMatch = /translate\(([-\d.]+)\s+([-\d.]+)\)/.exec(node.labelTransform);
   const offsetX = offsetMatch ? Number(offsetMatch[1]) : node.size + 18;
   const offsetY = offsetMatch ? Number(offsetMatch[2]) : 0;
-  const anchorX = node.point.x + offsetX;
-  const anchorY = node.point.y + offsetY;
+  const scale = node.renderScale ?? 1;
+  const anchorX = node.point.x + offsetX * scale;
+  const anchorY = node.point.y + offsetY * scale;
   const width =
     Math.max(
       approximateTextWidth(node.titleLabel, 14, 0.62),
       approximateTextWidth(node.typeLabel, 10, 0.58),
     ) + 10;
 
+  if (node.labelTextAnchor === 'middle')
+    return {
+      left: anchorX - (width * scale) / 2,
+      right: anchorX + (width * scale) / 2,
+      top: anchorY - 16 * scale,
+      bottom: anchorY + (NODE_LABEL_HEIGHT - 16) * scale,
+    };
+
   return node.labelTextAnchor === 'start'
     ? {
         left: anchorX - 2,
-        right: anchorX + width,
-        top: anchorY - 16,
-        bottom: anchorY - 16 + NODE_LABEL_HEIGHT,
+        right: anchorX + width * scale,
+        top: anchorY - 16 * scale,
+        bottom: anchorY + (NODE_LABEL_HEIGHT - 16) * scale,
       }
     : {
-        left: anchorX - width,
+        left: anchorX - width * scale,
         right: anchorX + 2,
-        top: anchorY - 16,
-        bottom: anchorY - 16 + NODE_LABEL_HEIGHT,
+        top: anchorY - 16 * scale,
+        bottom: anchorY + (NODE_LABEL_HEIGHT - 16) * scale,
       };
 }
 

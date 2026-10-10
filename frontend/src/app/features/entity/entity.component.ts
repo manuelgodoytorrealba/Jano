@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnDestroy,
+  HostListener,
   effect,
   inject,
   signal,
@@ -100,11 +101,32 @@ export class EntityComponent implements OnDestroy {
 
     const payload = { title, text, url };
 
+    if (nav.clipboard?.writeText && url) {
+      nav.clipboard
+        .writeText(url)
+        .then(() => {
+          this.saved.showFeedback(
+            'share',
+            this.i18n.t('share.linkCopied'),
+            this.i18n.t('share.linkCopiedMessage'),
+            { autoCloseMs: 2200 },
+          );
+        })
+        .catch(() => {
+          this.saved.showFeedback(
+            'error',
+            this.i18n.t('share.failed'),
+            this.i18n.t('share.copyFailed'),
+          );
+        });
+      return;
+    }
+
     if (typeof nav.share === 'function') {
       nav
         .share(payload)
         .then(() => {
-          this.saved.openPopup(
+          this.saved.showFeedback(
             'share',
             this.i18n.t('share.shared'),
             this.i18n.t('share.sharedMessage'),
@@ -118,7 +140,7 @@ export class EntityComponent implements OnDestroy {
             return;
           }
 
-          this.saved.openPopup(
+          this.saved.showFeedback(
             'error',
             this.i18n.t('share.failed'),
             this.i18n.t('share.openFailed'),
@@ -127,28 +149,11 @@ export class EntityComponent implements OnDestroy {
       return;
     }
 
-    if (nav.clipboard?.writeText && url) {
-      nav.clipboard
-        .writeText(url)
-        .then(() => {
-          this.saved.openPopup(
-            'share',
-            this.i18n.t('share.linkCopied'),
-            this.i18n.t('share.linkCopiedMessage'),
-            { autoCloseMs: 2200 },
-          );
-        })
-        .catch(() => {
-          this.saved.openPopup(
-            'error',
-            this.i18n.t('share.failed'),
-            this.i18n.t('share.copyFailed'),
-          );
-        });
-      return;
-    }
-
-    this.saved.openPopup('error', this.i18n.t('share.failed'), this.i18n.t('share.notAvailable'));
+    this.saved.showFeedback(
+      'error',
+      this.i18n.t('share.failed'),
+      this.i18n.t('share.notAvailable'),
+    );
   }
 
   private normalizeWorkspaceMode(value: string | null): DetailWorkspaceMode | null {
@@ -171,7 +176,35 @@ export class EntityComponent implements OnDestroy {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  private saveOrAuthenticate(entity: PublicEntity): void {
+  @HostListener('document:click', ['$event'])
+  closeCollectionsOutside(event: Event): void {
+    if (
+      this.saved.showCollectionsPanel() &&
+      event.target instanceof Element &&
+      !event.target.closest('.collections-panel, .entity-collections-toggle')
+    )
+      this.saved.closeCollectionsPanel();
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  closeCollectionsWithEscape(event: Event): void {
+    if (!this.saved.showCollectionsPanel()) return;
+    event.stopPropagation();
+    this.saved.closeCollectionsPanel();
+    document.querySelector<HTMLButtonElement>('.entity-collections-toggle')?.focus();
+  }
+
+  collectionsOrAuthenticate(entity: PublicEntity): void {
+    if (!this.auth.isLoggedIn) {
+      void this.router.navigate(['/login'], {
+        queryParams: { redirectTo: `/entity/${entity.slug}` },
+      });
+      return;
+    }
+    this.saved.toggleCollectionsPanel();
+  }
+
+  saveOrAuthenticate(entity: PublicEntity): void {
     if (!this.auth.isLoggedIn) {
       void this.router.navigate(['/login'], {
         queryParams: { redirectTo: `/entity/${entity.slug}` },

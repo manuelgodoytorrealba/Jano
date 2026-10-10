@@ -125,15 +125,39 @@ export function detailFacts(
   entity: PublicEntity | null | undefined,
   context: PresenterContext,
 ): DetailFact[] {
-  if (entity?.type === 'ARTWORK' && entity.artwork) {
+  if (entity?.type === 'ARTWORK') {
     return compactFacts([
-      { label: context.t('entity.fact.technique'), value: entity.artwork.technique },
-      { label: context.t('entity.fact.materials'), value: entity.artwork.materials },
-      { label: context.t('entity.fact.dimensions'), value: entity.artwork.dimensions },
-      { label: context.t('entity.fact.location'), value: entity.artwork.location },
-      { label: context.t('entity.fact.collection'), value: entity.artwork.collection },
-      { label: context.t('common.status'), value: entity.artwork.state },
-      { label: context.t('entity.fact.authorNation'), value: entity.artwork.authorNation },
+      {
+        label: context.t('entity.fact.authorship'),
+        value: firstRelated(entity, 'CREATED_BY')?.title,
+      },
+      { label: context.t('entity.fact.type'), value: entityTypeLabel(entity.type, context.t) },
+      {
+        label: context.t('entity.fact.date'),
+        value:
+          entity.startYear != null && entity.endYear != null && entity.startYear !== entity.endYear
+            ? `${entity.startYear}–${entity.endYear}`
+            : (entity.startYear ?? entity.endYear),
+      },
+      {
+        label: context.t('entity.fact.movement'),
+        value: relatedOutgoing(entity, 'BELONGS_TO_MOVEMENT')
+          .map((item) => item.title)
+          .join(', '),
+      },
+      {
+        label: context.t('entity.fact.concepts'),
+        value: relatedOutgoing(entity, 'ABOUT_CONCEPT')
+          .map((item) => item.title)
+          .join(', '),
+      },
+      { label: context.t('entity.fact.technique'), value: entity.artwork?.technique },
+      { label: context.t('entity.fact.materials'), value: entity.artwork?.materials },
+      { label: context.t('entity.fact.dimensions'), value: entity.artwork?.dimensions },
+      { label: context.t('entity.fact.location'), value: entity.artwork?.location },
+      { label: context.t('entity.fact.collection'), value: entity.artwork?.collection },
+      { label: context.t('common.status'), value: entity.artwork?.state },
+      { label: context.t('entity.fact.authorNation'), value: entity.artwork?.authorNation },
     ]);
   }
 
