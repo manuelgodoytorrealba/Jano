@@ -1615,3 +1615,59 @@
   height: auto;
   border-radius: 18px 18px 0 0;
 }
+
+// Keep filters out of the canvas layout: opening them must not resize the graph.
+.explorer-graph-pane > app-graph-inspector-panel {
+  position: absolute;
+  z-index: 6;
+  top: 64px;
+  right: 12px;
+  width: min(340px, calc(100% - 24px));
+  max-height: calc(100% - 144px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: #171c23;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+:host .explorer-graph-pane,
+:host(.graph-detail-layout) .explorer-graph-pane,
+:host(.graph-detail-layout) .explorer-graph-pane:fullscreen {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+:host(.graph-detail-layout) .explorer-graph-pane,
+:host(.graph-detail-layout) .explorer-graph-pane:fullscreen {
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+:host(.graph-detail-layout) .explorer-graph-pane .graph-stage {
+  padding-top: 64px;
+}
+.graph-progressive-disclosure {
+  border: 0;
+  padding: 0;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+.graph-progressive-disclosure button {
+  min-height: 44px;
+  border-radius: 10px;
+}
+.explorer-graph-pane .stage-focus-toggle {
+  top: 12px;
+  right: 12px;
+  bottom: auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+@media (max-width: 600px) {
+  :host(.graph-detail-layout) .explorer-graph-pane .graph-stage {
+    padding-top: 112px;
+  }
+  .explorer-graph-pane > app-graph-inspector-panel {
+    top: 112px;
+    max-height: calc(100% - 240px);
+  }
+}

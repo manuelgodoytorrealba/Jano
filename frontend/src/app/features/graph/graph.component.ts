@@ -1335,6 +1335,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   @HostListener('document:keydown.escape', ['$event'])
   exitPanelFullscreen(event: Event): void {
+    if (this.inspectorVisible()) {
+      this.inspectorVisible.set(false);
+      event.stopPropagation();
+      return;
+    }
     if (!this.fullscreenPanel() || !document.fullscreenElement) return;
     event.stopPropagation();
     void document.exitFullscreen().catch(() => this.fullscreenFailed.set(true));

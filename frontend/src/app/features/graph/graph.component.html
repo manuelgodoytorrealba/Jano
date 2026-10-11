@@ -196,6 +196,31 @@
           />
         }
 
+        @if (detailLayout || isMobileViewport) {
+          <button
+            type="button"
+            class="stage-focus-toggle"
+            [class.is-active]="detailLayout ? fullscreenPanel() !== null : workspaceFocused"
+            (pointerdown)="$event.stopPropagation()"
+            (click)="togglePanelFullscreen('graph', $event)"
+            [attr.aria-label]="
+              (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
+                ? i18n.t('workspace.exitFullscreen')
+                : i18n.t('workspace.fullscreen')
+            "
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              @if (detailLayout ? fullscreenPanel() !== null : workspaceFocused) {
+                <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
+                <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
+              } @else {
+                <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+                <path d="M10 10 4 4M14 10l6-6M10 14l-6 6M14 14l6 6" />
+              }
+            </svg>
+          </button>
+        }
+
         <div
           #graphStage
           class="graph-stage"
@@ -206,31 +231,6 @@
           (pointerup)="onGraphStagePointerUp($event)"
           (pointercancel)="onGraphStagePointerUp($event)"
         >
-          @if (detailLayout || isMobileViewport) {
-            <button
-              type="button"
-              class="stage-focus-toggle"
-              [class.is-active]="detailLayout ? fullscreenPanel() !== null : workspaceFocused"
-              (pointerdown)="$event.stopPropagation()"
-              (click)="togglePanelFullscreen('graph', $event)"
-              [attr.aria-label]="
-                (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
-                  ? i18n.t('workspace.exitFullscreen')
-                  : i18n.t('workspace.fullscreen')
-              "
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                @if (detailLayout ? fullscreenPanel() !== null : workspaceFocused) {
-                  <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
-                  <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
-                } @else {
-                  <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
-                  <path d="M10 10 4 4M14 10l6-6M10 14l-6 6M14 14l6 6" />
-                }
-              </svg>
-            </button>
-          }
-
           <app-graph-scene
             [ambientFields]="ambientFields()"
             [markerDefs]="graphDerived().relationMarkerDefs"
@@ -254,40 +254,53 @@
           />
         </div>
 
-        @if (graphDerived().hiddenRelationshipCount > 0 || canShowFewerRelationships()) {
-          <div class="graph-progressive-disclosure">
-            <span>
-              {{ relationshipProgressLabel() }}
-            </span>
-            <div class="graph-progressive-disclosure__actions">
-              @if (graphDerived().hiddenRelationshipCount > 0) {
-                <span class="graph-progressive-disclosure__layer">
-                  {{ relationshipExpansionLayersLabel() }}
+        @if (showControls) {
+          <app-graph-controls-bar
+            [footerOnly]="true"
+            [labelsMode]="labelsMode()"
+            [nodeCount]="graphDerived().filteredNodes.length"
+            [edgeCount]="graphDerived().filteredEdges.length"
+            [scalePercent]="+(graphViewport().scale * 100).toFixed(0)"
+            [graphReady]="!!graphData"
+            (centerSelection)="centerSelection()"
+            (graphZoom)="adjustGraphZoom($event)"
+            (resetGraphView)="resetGraphView()"
+          >
+            @if (graphDerived().hiddenRelationshipCount > 0 || canShowFewerRelationships()) {
+              <div class="graph-progressive-disclosure">
+                <span>
+                  {{ relationshipProgressLabel() }}
                 </span>
-                <button
-                  type="button"
-                  class="graph-progressive-disclosure__button graph-progressive-disclosure__button--primary"
-                  (click)="showMoreRelationships()"
-                >
-                  {{ relationshipExpansionLabel() }}
-                </button>
-              }
-              @if (canShowFewerRelationships()) {
-                <button
-                  type="button"
-                  class="graph-progressive-disclosure__button"
-                  (click)="showFewerRelationships()"
-                >
-                  {{ i18n.t('graph.showLess') }}
-                </button>
-              }
-            </div>
-          </div>
+                <div class="graph-progressive-disclosure__actions">
+                  @if (graphDerived().hiddenRelationshipCount > 0) {
+                    <button
+                      type="button"
+                      class="graph-progressive-disclosure__button graph-progressive-disclosure__button--primary"
+                      (click)="showMoreRelationships()"
+                    >
+                      {{ relationshipExpansionLabel() }}
+                    </button>
+                  }
+                  @if (canShowFewerRelationships()) {
+                    <button
+                      type="button"
+                      class="graph-progressive-disclosure__button"
+                      (click)="showFewerRelationships()"
+                    >
+                      {{ i18n.t('graph.showLess') }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </app-graph-controls-bar>
         }
 
-        @if (showInspector && inspectorVisible() && !isMobileViewport) {
+        @if (showInspector && inspectorVisible()) {
           <app-graph-inspector-panel
+            [filtersOnly]="true"
             [isMobileViewport]="false"
+            (closeInspector)="toggleInspector()"
             [nodeCount]="graphDerived().filteredNodes.length"
             [edgeCount]="graphDerived().filteredEdges.length"
             [selectedNode]="graphDerived().contextualNode"
@@ -309,42 +322,6 @@
             (setAllRelationTypes)="setAllRelationTypes($event)"
             (toggleRelationType)="toggleRelationType($event)"
           />
-        }
-
-        @if (showInspector && inspectorVisible() && isMobileViewport) {
-          <button
-            type="button"
-            class="graph-inspector-backdrop"
-            (click)="toggleInspector()"
-            [attr.aria-label]="i18n.t('button.close')"
-          ></button>
-
-          <aside class="graph-inspector-sheet">
-            <app-graph-inspector-panel
-              [isMobileViewport]="true"
-              [nodeCount]="graphDerived().filteredNodes.length"
-              [edgeCount]="graphDerived().filteredEdges.length"
-              [selectedNode]="graphDerived().contextualNode"
-              [selectedNodeMeta]="graphDerived().contextualNodeMeta"
-              [centerNode]="graphDerived().centerNode"
-              [focusedNodeIsCenter]="inspectorFocusedNodeIsCenter()"
-              [contextualEdges]="graphDerived().contextualEdges"
-              [allEdges]="graph()?.edges ?? []"
-              [nodeMap]="graphDerived().nodeMap"
-              [entityTypes]="graphData.entityTypes"
-              [relationTypes]="graphData.relationTypes"
-              [entityTypeFilters]="entityTypeFilters()"
-              [relationTypeFilters]="relationTypeFilters()"
-              [entityTypeMeta]="graphDerived().entityTypeMeta"
-              [relationTypeMeta]="graphDerived().relationTypeMeta"
-              (closeInspector)="toggleInspector()"
-              (openSelectedEntity)="openSelectedEntity()"
-              (setAllEntityTypes)="setAllEntityTypes($event)"
-              (toggleEntityType)="toggleEntityType($event)"
-              (setAllRelationTypes)="setAllRelationTypes($event)"
-              (toggleRelationType)="toggleRelationType($event)"
-            />
-          </aside>
         }
       </section>
     </div>

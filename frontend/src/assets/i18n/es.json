@@ -754,5 +754,8 @@
   "graph.imageZoom": "Zoom de imagen",
   "graph.imageZoomOut": "Alejar imagen",
   "graph.imageZoomIn": "Acercar imagen",
-  "graph.imageReset": "Restablecer"
+  "graph.imageReset": "Restablecer",
+  "graph.controls": "Controles del grafo",
+  "graph.zoomOut": "Alejar grafo",
+  "graph.zoomIn": "Acercar grafo"
 }

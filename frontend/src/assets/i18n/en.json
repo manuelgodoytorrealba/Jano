@@ -754,5 +754,8 @@
   "graph.imageZoom": "Image zoom",
   "graph.imageZoomOut": "Zoom out image",
   "graph.imageZoomIn": "Zoom in image",
-  "graph.imageReset": "Reset"
+  "graph.imageReset": "Reset",
+  "graph.controls": "Graph controls",
+  "graph.zoomOut": "Zoom out graph",
+  "graph.zoomIn": "Zoom in graph"
 }
