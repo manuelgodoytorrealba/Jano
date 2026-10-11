@@ -204,7 +204,9 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      (changes['entity'] && !changes['entity'].firstChange) ||
+      (changes['entity'] &&
+        !changes['entity'].firstChange &&
+        changes['entity'].previousValue?.slug !== changes['entity'].currentValue?.slug) ||
       (changes['preferredWorkspaceMode'] && !changes['preferredWorkspaceMode'].firstChange)
     ) {
       this.informationTab = 'context';

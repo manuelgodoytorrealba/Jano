@@ -10,15 +10,7 @@ import {
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import {
-  combineLatest,
-  distinctUntilChanged,
-  map,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { distinctUntilChanged, map, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { PublicEntity } from '../../core/api/entities.models';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
@@ -239,8 +231,14 @@ export class EntityComponent implements OnDestroy {
     }),
   );
 
-  entity$ = combineLatest([this.slug$, toObservable(this.i18n.locale)]).pipe(
-    switchMap(([slug]) => this.api.get(slug).pipe(startWith(null))),
+  private readonly locale$ = toObservable(this.i18n.locale);
+  entity$ = this.slug$.pipe(
+    switchMap((slug) =>
+      this.locale$.pipe(
+        switchMap(() => this.api.get(slug)),
+        startWith(null),
+      ),
+    ),
     tap((entity) => {
       if (!entity) {
         return;

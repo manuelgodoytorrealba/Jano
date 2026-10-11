@@ -1,3 +1,4 @@
+import { resolveMediaPresentation } from '../../shared/media/media.utils';
 import { SimpleChanges } from '@angular/core';
 import { ExplorerPersistedState } from './graph-persistence';
 import { GraphData, GraphPoint } from './graph.models';
@@ -99,9 +100,16 @@ export function resolveGraphInputChangesRuntime(options: {
   shouldLoadGraph: boolean;
 } {
   const slugChanged = !!options.changes['slug']?.currentValue;
+  const imageUrlChange = options.changes['imageUrl'];
+  const imageMediaChange = options.changes['imageMedia'];
   const imageChanged =
-    (!!options.changes['imageUrl'] && !options.changes['imageUrl'].firstChange) ||
-    (!!options.changes['imageMedia'] && !options.changes['imageMedia'].firstChange);
+    (!!imageUrlChange &&
+      !imageUrlChange.firstChange &&
+      imageUrlChange.previousValue !== imageUrlChange.currentValue) ||
+    (!!imageMediaChange &&
+      !imageMediaChange.firstChange &&
+      JSON.stringify(resolveMediaPresentation(imageMediaChange.previousValue)) !==
+        JSON.stringify(resolveMediaPresentation(imageMediaChange.currentValue)));
 
   return {
     slugState: slugChanged

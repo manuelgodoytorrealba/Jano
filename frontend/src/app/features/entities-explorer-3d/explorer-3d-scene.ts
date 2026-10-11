@@ -212,6 +212,7 @@ export class Explorer3dScene {
 
   private buildCards(): void {
     this.disposeCards();
+    if (!this.items.length) return;
     const cardsVersion = this.cardsVersion;
     const profile = this.viewportProfile();
     this.cardProfileKey = profile.key;
@@ -220,17 +221,20 @@ export class Explorer3dScene {
     const glassWidth = profile.cardWidth - profile.imageInset;
     const glassHeight = profile.cardHeight - profile.imageInset * 1.55;
 
+    const frameTexture = createRoundedRectTexture(
+      1100,
+      1200,
+      58,
+      'rgba(255,255,255,0.08)',
+      'rgba(255,255,255,0.52)',
+      6,
+      1,
+    );
+    const glassTexture = createSpecularHighlightTexture(1100, 1200, 54);
+
     this.items.forEach((item, index) => {
       const frameMaterial = new THREE.MeshBasicMaterial({
-        map: createRoundedRectTexture(
-          1100,
-          1200,
-          58,
-          'rgba(255,255,255,0.08)',
-          'rgba(255,255,255,0.52)',
-          6,
-          1,
-        ),
+        map: frameTexture,
         transparent: true,
         opacity: 0.42,
         depthWrite: false,
@@ -241,7 +245,7 @@ export class Explorer3dScene {
         opacity: 1,
       });
       const glassMaterial = new THREE.MeshBasicMaterial({
-        map: createSpecularHighlightTexture(1100, 1200, 54),
+        map: glassTexture,
         transparent: true,
         opacity: 0.18,
         depthWrite: false,
@@ -289,7 +293,7 @@ export class Explorer3dScene {
 
           if (cardsVersion !== this.cardsVersion) return;
           imageMaterial.map?.dispose();
-          imageMaterial.map = createRoundedImageTexture(source, 1100, 1200, 48, media);
+          imageMaterial.map = createRoundedImageTexture(source, 550, 600, 24, media);
           imageMaterial.color.set('#ffffff');
           imageMaterial.needsUpdate = true;
         };
@@ -602,14 +606,16 @@ export class Explorer3dScene {
 
   private disposeCards(): void {
     this.cardsVersion += 1;
+    const textures = new Set<THREE.Texture>();
     for (const card of this.cards) {
       for (const mesh of [card.frame, card.image, card.glass]) {
         mesh.geometry.dispose();
-        mesh.material.map?.dispose();
+        if (mesh.material.map) textures.add(mesh.material.map);
         mesh.material.dispose();
       }
       this.scene.remove(card.group);
     }
+    for (const texture of textures) texture.dispose();
     this.cards = [];
     this.raycastTargets = [];
   }

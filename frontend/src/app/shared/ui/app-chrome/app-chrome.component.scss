@@ -24,7 +24,7 @@
   padding: 12px 16px;
   border-radius: var(--radius-2xl);
   display: grid;
-  grid-template-columns: auto minmax(260px, 1fr) auto auto;
+  grid-template-columns: auto minmax(140px, 1fr) auto auto auto;
   align-items: center;
   gap: 14px;
   border: 1px solid var(--color-border);
@@ -1720,20 +1720,20 @@
   gap: 6px;
 }
 @media (max-width: 1200px) {
-  .app-chrome__header--detail:has(.app-chrome__detail-preferences) {
+  .app-chrome__header:has(.app-chrome__detail-preferences) {
     grid-template-columns: auto minmax(120px, 1fr) auto auto;
   }
-  .app-chrome__header--detail:has(.app-chrome__detail-preferences) .app-chrome__nav {
+  .app-chrome__header:has(.app-chrome__detail-preferences) .app-chrome__nav {
     grid-column: 1 / -1;
     grid-row: 2;
   }
 }
 @media (max-width: 860px) {
-  .app-chrome__header--detail:has(.app-chrome__detail-preferences) {
+  .app-chrome__header:has(.app-chrome__detail-preferences) {
     left: var(--app-shell-gap);
     grid-template-columns: minmax(0, 1fr);
   }
-  .app-chrome__header--detail:has(.app-chrome__detail-preferences) .app-chrome__nav {
+  .app-chrome__header:has(.app-chrome__detail-preferences) .app-chrome__nav {
     grid-row: auto;
   }
 }

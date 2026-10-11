@@ -125,6 +125,9 @@
               <app-entities-explorer-totem
                 [items]="pageVm.results.items"
                 [activeIndex]="activeIndex()"
+                [hasPreviousPage]="pageVm.results.page > 1"
+                [hasNextPage]="pageVm.results.page < pageVm.results.totalPages"
+                (pageChange)="changeExplorerPage($event, pageVm.results.totalPages)"
                 [infoOpen]="infoPanelOpen()"
                 (activeIndexChange)="activeIndex.set($event)"
                 (openEntity)="go($event)"
@@ -136,6 +139,9 @@
               <app-entities-explorer-3d
                 [items]="pageVm.results.items"
                 [activeIndex]="activeIndex()"
+                [hasPreviousPage]="pageVm.results.page > 1"
+                [hasNextPage]="pageVm.results.page < pageVm.results.totalPages"
+                (pageChange)="changeExplorerPage($event, pageVm.results.totalPages)"
                 [infoOpen]="infoPanelOpen()"
                 [infoClosable]="true"
                 [infoModal]="isMobilePortraitTotem()"
@@ -155,7 +161,7 @@
           </div>
         }
       } @else {
-        <div class="entities-stage-shell entities-stage-shell--list">
+        <div #listStage class="entities-stage-shell entities-stage-shell--list">
           @if (pageVm.results.items.length) {
             <section class="entities-grid">
               @for (entity of pageVm.results.items; track entity.slug) {
@@ -253,7 +259,7 @@
           </div>
         </div>
       } @else {
-        <div class="entities-stage-shell entities-stage-shell--list">
+        <div #listStage class="entities-stage-shell entities-stage-shell--list">
           <section class="entities-grid">
             @for (_ of skeleton; track $index) {
               <article class="entity-card entity-card--skeleton ds-card">

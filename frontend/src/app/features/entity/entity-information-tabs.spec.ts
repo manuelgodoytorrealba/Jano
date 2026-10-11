@@ -1,7 +1,30 @@
-import { describe, expect, it } from 'vitest';
+import { SimpleChange } from '@angular/core';
+import { describe, expect, it, vi } from 'vitest';
 import { EntityDetailViewComponent } from './entity-detail-view.component';
 
 describe('entity information tabs', () => {
+  it('keeps the reading state when the same entity receives a translated response', () => {
+    const state = {
+      informationTab: 'sheet',
+      workspaceMode: 'graph',
+      workspaceFocused: true,
+      clearTransitionTimer: vi.fn(),
+      resetRelationLimits: vi.fn(),
+      syncImmersiveBodyState: vi.fn(),
+    };
+    const update = (slug: string) =>
+      EntityDetailViewComponent.prototype.ngOnChanges.call(
+        state as unknown as EntityDetailViewComponent,
+        { entity: new SimpleChange({ slug: 'same' }, { slug }, false) },
+      );
+    update('same');
+    expect(state.informationTab).toBe('sheet');
+    expect(state.workspaceMode).toBe('graph');
+    expect(state.workspaceFocused).toBe(true);
+    update('different');
+    expect(state.informationTab).toBe('context');
+    expect(state.workspaceMode).toBe('split');
+  });
   it('cycles tabs with the keyboard, moves focus and leaves other keys alone', () => {
     const tablist = document.createElement('div');
     tablist.setAttribute('role', 'tablist');

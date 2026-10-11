@@ -1,8 +1,16 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostListener,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, map, tap } from 'rxjs';
+import { distinctUntilChanged, tap } from 'rxjs';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -77,6 +85,9 @@ export class EntitiesListComponent {
   readonly isAdmin = signal(this.auth.currentUser?.role === 'ADMIN');
 
   readonly pageVm$ = this.facade.pageVm$;
+  private pendingPageDirection: -1 | 1 | null = null;
+  private scrollOnPageLoad = false;
+  @ViewChild('listStage') listStage?: ElementRef<HTMLElement>;
   readonly skeleton = Array.from({ length: 8 });
   readonly filterSkeleton = Array.from({ length: 4 });
   readonly viewportWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 0);
@@ -93,12 +104,27 @@ export class EntitiesListComponent {
     this.auth.user$.pipe(takeUntilDestroyed()).subscribe((user) => {
       this.isAdmin.set(user?.role === 'ADMIN');
     });
-    this.pageVm$
+    this.facade.results$
       .pipe(
-        map((pageVm) => pageVm.results.items.length),
-        distinctUntilChanged(),
-        tap((total) => {
-          const nextIndex = total > 0 ? Math.floor((total - 1) / 2) : 0;
+        distinctUntilChanged(
+          (a, b) =>
+            a.page === b.page &&
+            a.items.map((item) => item.slug).join() === b.items.map((item) => item.slug).join(),
+        ),
+        tap((results) => {
+          const total = results.items.length;
+          const nextIndex =
+            this.pendingPageDirection === 1
+              ? 0
+              : this.pendingPageDirection === -1
+                ? Math.max(0, total - 1)
+                : 0;
+          this.pendingPageDirection = null;
+          if (this.scrollOnPageLoad && typeof window !== 'undefined') {
+            if (this.listStage) this.listStage.nativeElement.scrollTop = 0;
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }
+          this.scrollOnPageLoad = false;
           if (this.activeIndex() !== nextIndex) {
             this.activeIndex.set(nextIndex);
           }
@@ -361,11 +387,23 @@ export class EntitiesListComponent {
   }
 
   prevPage() {
+    this.scrollOnPageLoad = true;
     void this.facade.goToPreviousPage();
   }
 
   nextPage(totalPages: number) {
+    this.scrollOnPageLoad = true;
     void this.facade.goToNextPage(totalPages);
+  }
+
+  changeExplorerPage(direction: -1 | 1, totalPages: number) {
+    if (this.pendingPageDirection !== null) return;
+    this.pendingPageDirection = direction;
+    const navigation =
+      direction === 1 ? this.facade.goToNextPage(totalPages) : this.facade.goToPreviousPage();
+    void navigation.then((changed) => {
+      if (!changed) this.pendingPageDirection = null;
+    });
   }
 
   toggleStatus(next: Status) {

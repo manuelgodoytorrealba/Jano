@@ -1,3 +1,5 @@
+import { ElementRef } from '@angular/core';
+import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, map, of } from 'rxjs';
@@ -362,7 +364,7 @@ describe('EntitiesListComponent filters', () => {
     component.pageVm$.subscribe();
 
     await new Promise((resolve) => setTimeout(resolve, 350));
-    expect(component.activeIndex()).toBe(1);
+    expect(component.activeIndex()).toBe(0);
 
     component.activeIndex.set(2);
 
@@ -379,6 +381,39 @@ describe('EntitiesListComponent filters', () => {
     await new Promise((resolve) => setTimeout(resolve, 350));
 
     expect(component.activeIndex()).toBe(0);
+  });
+
+  it('continues to the next result page at its first entity and preserves the selection on duplicate emissions', async () => {
+    const component = TestBed.createComponent(EntitiesListComponent).componentInstance;
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    component.changeExplorerPage(1, 3);
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(component.activeIndex()).toBe(0);
+    component.activeIndex.set(2);
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(component.activeIndex()).toBe(2);
+    component.changeExplorerPage(-1, 3);
+    queryParamMap$.next(convertToParamMap({ page: '1' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(component.activeIndex()).toBe(2);
+  });
+
+  it('scrolls to the start after the next list page arrives', async () => {
+    const scroll = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    const component = TestBed.createComponent(EntitiesListComponent).componentInstance;
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    const stage = document.createElement('div');
+    stage.scrollTop = 900;
+    component.listStage = new ElementRef(stage);
+    component.nextPage(3);
+    expect(scroll).not.toHaveBeenCalled();
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(scroll).toHaveBeenCalledWith({ top: 0, behavior: 'instant' });
+    expect(stage.scrollTop).toBe(0);
+    scroll.mockRestore();
   });
 
   it('resetFilters clears movement and period along with the existing filter params', () => {

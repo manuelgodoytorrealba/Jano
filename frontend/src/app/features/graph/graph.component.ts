@@ -18,7 +18,9 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { EMPTY, Subscription, catchError, skip, switchMap } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { toGraphData } from './graph-setup';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
@@ -386,6 +388,24 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
     return visible;
   });
+
+  constructor() {
+    toObservable(this.i18n.locale)
+      .pipe(
+        skip(1),
+        switchMap(() =>
+          this.isBrowser && this.graph() && !this.graphData
+            ? this.api.graph(this.slug).pipe(catchError(() => EMPTY))
+            : EMPTY,
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((response) => {
+        if (response.centerId !== this.graph()?.centerId) return;
+        this.graph.set(toGraphData(response));
+        this.tooltip.set(null);
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (

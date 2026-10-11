@@ -7,6 +7,7 @@ import {
   HostListener,
   Inject,
   Input,
+  NgZone,
   OnChanges,
   OnDestroy,
   Output,
@@ -36,6 +37,9 @@ type NavDirection = -1 | 1;
 export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() items: Entity[] = [];
   @Input() activeIndex = 0;
+  @Input() hasPreviousPage = false;
+  @Input() hasNextPage = false;
+  @Output() pageChange = new EventEmitter<-1 | 1>();
   @Input() infoOpen = false;
   @Input() infoClosable = false;
   @Input() infoModal = false;
@@ -56,11 +60,12 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   @ViewChild('infoToggle')
   infoToggleRef?: ElementRef<HTMLButtonElement>;
 
+  private readonly zone = inject(NgZone);
   private readonly isBrowser: boolean;
   readonly i18n = inject(I18nService);
 
   private readonly scene = new Explorer3dScene(
-    () => this.syncCanvasInteractionState(),
+    () => this.zone.run(() => this.syncCanvasInteractionState()),
     (type) => this.typeLabel(type),
   );
   private canvasInteractionsAttached = false;
@@ -86,7 +91,9 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
 
-    this.scene.initialize(this.canvasHostRef.nativeElement, this.items, this.activeIndex);
+    this.zone.runOutsideAngular(() =>
+      this.scene.initialize(this.canvasHostRef.nativeElement, this.items, this.activeIndex),
+    );
     this.syncCanvasInteractionState();
     this.queueInfoTogglePosition();
   }
@@ -95,7 +102,7 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     if (!this.isBrowser) return;
 
     if (changes['items']) {
-      this.scene.setItems(this.items);
+      this.zone.runOutsideAngular(() => this.scene.setItems(this.items));
     }
 
     if (changes['activeIndex']) {
@@ -300,12 +307,14 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     const canvas = this.scene.domElement;
     if (!canvas || this.canvasInteractionsAttached) return;
 
-    canvas.addEventListener('pointerdown', this.onPointerDown);
-    canvas.addEventListener('pointermove', this.onPointerMove);
-    canvas.addEventListener('pointerup', this.onPointerUp);
-    canvas.addEventListener('pointerleave', this.onPointerLeave);
-    canvas.addEventListener('wheel', this.onWheel as EventListener, {
-      passive: false,
+    this.zone.runOutsideAngular(() => {
+      canvas.addEventListener('pointerdown', this.onPointerDown);
+      canvas.addEventListener('pointermove', this.onPointerMove);
+      canvas.addEventListener('pointerup', this.onPointerUp);
+      canvas.addEventListener('pointerleave', this.onPointerLeave);
+      canvas.addEventListener('wheel', this.onWheel as EventListener, {
+        passive: false,
+      });
     });
     this.canvasInteractionsAttached = true;
   }
@@ -330,14 +339,19 @@ export class EntitiesExplorer3dComponent implements AfterViewInit, OnChanges, On
     const total = this.items.length;
     if (!total) return;
 
-    let circular = next;
+    const circular = next;
 
-    if (circular < 0) circular = total - 1;
-    if (circular >= total) circular = 0;
+    if (circular < 0 || circular >= total) {
+      const direction = circular < 0 ? -1 : 1;
+      if (direction === -1 ? this.hasPreviousPage : this.hasNextPage) {
+        this.zone.run(() => this.pageChange.emit(direction));
+      }
+      return;
+    }
 
     if (circular === this.activeIndex) return;
 
-    this.activeIndexChange.emit(circular);
+    this.zone.run(() => this.activeIndexChange.emit(circular));
   }
 
   private next(): void {
