@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   combineLatest,
@@ -174,6 +175,8 @@ export class EntitiesListFacade {
   private readonly seo = inject(SeoService);
   private readonly i18n = inject(I18nService);
 
+  private readonly locale$ = toObservable(this.i18n.locale);
+
   private readonly limit = 24;
   private readonly contextualFilterKeys = [
     'movement',
@@ -237,6 +240,7 @@ export class EntitiesListFacade {
     this.route.paramMap,
     this.route.queryParamMap,
     this.typeDefinitions$,
+    this.locale$,
   ]).pipe(
     map(([paramMap, queryParamMap, typeDefinitions]) => {
       const routeTypeSlug = (paramMap.get('type') ?? '').toLowerCase();
@@ -286,6 +290,7 @@ export class EntitiesListFacade {
     ),
     this.queryState$,
     this.auth.user$,
+    this.locale$,
   ]).pipe(
     switchMap(([debouncedQuery, state, user]) =>
       user && this.shouldUseArchiveRecommendations(state)

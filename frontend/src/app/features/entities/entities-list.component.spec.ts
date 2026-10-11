@@ -1,4 +1,4 @@
-import { ElementRef } from '@angular/core';
+import { ElementRef, signal } from '@angular/core';
 import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
@@ -149,6 +149,7 @@ describe('EntitiesListComponent filters', () => {
   };
 
   const i18nStub = {
+    locale: signal('en'),
     t: (key: string) =>
       (
         ({
@@ -187,6 +188,7 @@ describe('EntitiesListComponent filters', () => {
   };
 
   beforeEach(async () => {
+    i18nStub.locale.set('en');
     paramMap$.next(convertToParamMap({ type: 'artwork' }));
     queryParamMap$.next(
       convertToParamMap({
@@ -221,6 +223,28 @@ describe('EntitiesListComponent filters', () => {
         set: { template: '' },
       })
       .compileComponents();
+  });
+
+  it('reloads localized content without resetting the page or explorer selection', async () => {
+    queryParamMap$.next(convertToParamMap({ page: '3' }));
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const component = fixture.componentInstance;
+    const subscription = component.pageVm$.subscribe();
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    component.activeIndex.set(2);
+    const previousCalls = listCalls.filter((params) => params.limit === 24).length;
+
+    i18nStub.locale.set('es');
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    const requests = listCalls.filter((params) => params.limit === 24);
+    expect(requests.length).toBeGreaterThan(previousCalls);
+    expect(requests.at(-1)?.page).toBe(3);
+    expect(component.activeIndex()).toBe(2);
+    expect(navigateCalls).toEqual([]);
+    subscription.unsubscribe();
   });
 
   it('loads the canonical kind catalog without applying a legacy type', async () => {
