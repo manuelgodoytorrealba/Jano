@@ -1,0 +1,62 @@
+<div class="image-toolbar">
+  @if (meta?.source || meta?.photoBy || meta?.license) {
+    <details class="image-credits" (keydown.escape)="credits.removeAttribute('open')" #credits>
+      <summary>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 11v6M12 7v.5" />
+        </svg>
+        {{ i18n.t('graph.imageCredits') }}
+      </summary>
+      <div class="image-credits__card">
+        @if (meta?.source) {
+          <div>
+            <strong>{{ i18n.t('graph.source') }}</strong
+            ><span>{{ meta?.source }}</span>
+          </div>
+        }
+        @if (meta?.photoBy) {
+          <div>
+            <strong>{{ i18n.t('graph.photo') }}</strong
+            ><span>{{ meta?.photoBy }}</span>
+          </div>
+        }
+        @if (meta?.license) {
+          <div>
+            <strong>{{ i18n.t('graph.license') }}</strong
+            ><span>{{ meta?.license }}</span>
+          </div>
+        }
+      </div>
+    </details>
+  }
+  <div class="image-zoom" role="group" [attr.aria-label]="i18n.t('graph.imageZoom')">
+    <button
+      type="button"
+      [disabled]="!ready"
+      (click)="zoom.emit(0.88)"
+      [attr.aria-label]="i18n.t('graph.imageZoomOut')"
+    >
+      −
+    </button>
+    <span class="image-zoom__value">{{ scalePercent }}%</span>
+    <button
+      type="button"
+      [disabled]="!ready"
+      (click)="zoom.emit(1.14)"
+      [attr.aria-label]="i18n.t('graph.imageZoomIn')"
+    >
+      +
+    </button>
+    <button
+      type="button"
+      class="image-zoom__reset"
+      [attr.aria-label]="i18n.t('graph.imageReset')"
+      [disabled]="!ready"
+      (click)="resetView.emit()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1 7M4 4v6h6" /></svg>
+      <span>{{ i18n.t('graph.imageReset') }}</span>
+    </button>
+  </div>
+</div>

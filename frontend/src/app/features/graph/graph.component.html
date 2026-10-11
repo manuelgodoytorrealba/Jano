@@ -158,73 +158,14 @@
                 </svg>
               </button>
             }
-
-            <div class="image-overlay-bar">
-              @if (!isMobileViewport) {
-                <div class="surface-controls surface-controls--image">
-                  <div class="surface-controls__cluster">
-                    <button
-                      type="button"
-                      class="surface-control surface-control--iconic"
-                      [disabled]="!imageAsset()"
-                      (pointerdown)="$event.stopPropagation()"
-                      (click)="adjustImageZoom(1.14)"
-                    >
-                      +
-                    </button>
-                    <button
-                      type="button"
-                      class="surface-control surface-control--iconic"
-                      [disabled]="!imageAsset()"
-                      (pointerdown)="$event.stopPropagation()"
-                      (click)="adjustImageZoom(0.88)"
-                    >
-                      −
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    class="surface-control surface-control--wide"
-                    [disabled]="!imageAsset()"
-                    (pointerdown)="$event.stopPropagation()"
-                    (click)="resetImageView()"
-                  >
-                    Reset
-                  </button>
-                </div>
-              }
-            </div>
-
-            @if (imageMeta?.source || imageMeta?.photoBy || imageMeta?.license) {
-              <div class="image-meta-dock">
-                <button
-                  type="button"
-                  class="image-meta-dock__toggle"
-                  (pointerdown)="$event.stopPropagation()"
-                >
-                  Creditos
-                </button>
-
-                <div class="image-meta-card">
-                  @if (imageMeta?.source) {
-                    <div>
-                      <strong>{{ i18n.t('graph.source') }}</strong> {{ imageMeta?.source }}
-                    </div>
-                  }
-                  @if (imageMeta?.photoBy) {
-                    <div>
-                      <strong>{{ i18n.t('graph.photo') }}</strong> {{ imageMeta?.photoBy }}
-                    </div>
-                  }
-                  @if (imageMeta?.license) {
-                    <div>
-                      <strong>{{ i18n.t('graph.license') }}</strong> {{ imageMeta?.license }}
-                    </div>
-                  }
-                </div>
-              </div>
-            }
           </div>
+          <app-image-controls
+            [ready]="!!imageAsset()"
+            [scalePercent]="imageZoomPercent()"
+            [meta]="imageMeta"
+            (zoom)="adjustImageZoom($event)"
+            (resetView)="resetImageView()"
+          />
         </section>
       }
 

@@ -38,6 +38,7 @@ import {
 } from './graph.models';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import { ExplorerPersistedState, saveExplorerState } from './graph-persistence';
+import { ImageControlsComponent } from './image-controls.component';
 import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
 import { GraphSceneComponent } from './graph-scene.component';
@@ -134,6 +135,7 @@ type GraphEntityInfo = {
   imports: [
     CommonModule,
     GraphControlsBarComponent,
+    ImageControlsComponent,
     GraphSceneComponent,
     GraphInspectorPanelComponent,
   ],
@@ -205,6 +207,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly labelsMode = signal<'auto' | 'always' | 'hidden'>('auto');
   readonly graphViewport = signal<GraphViewport>({ x: 0, y: 0, scale: 0.82 });
   readonly imageViewport = signal<ImageViewport>({ x: 0, y: 0, scale: 1, fitScale: 1 });
+  readonly imageZoomPercent = computed(() => {
+    const viewport = this.imageViewport();
+    return Math.round((viewport.scale / viewport.fitScale) * 100);
+  });
   readonly graphSize = signal({ width: 0, height: 0 });
   readonly imageSize = signal({ width: 0, height: 0 });
   readonly imageAsset = signal<ImageAssetSize | null>(null);

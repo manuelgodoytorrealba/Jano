@@ -749,5 +749,10 @@
   "collection.search": "Search collections…",
   "collection.loadFailed": "Could not load collections. Reopen the selector to try again.",
   "collection.noMatches": "No collections to display. You can create one below.",
-  "collection.addedShort": "Added"
+  "collection.addedShort": "Added",
+  "graph.imageCredits": "Credits",
+  "graph.imageZoom": "Image zoom",
+  "graph.imageZoomOut": "Zoom out image",
+  "graph.imageZoomIn": "Zoom in image",
+  "graph.imageReset": "Reset"
 }

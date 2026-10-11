@@ -749,5 +749,10 @@
   "collection.search": "Buscar colección…",
   "collection.loadFailed": "No se pudieron cargar las colecciones. Vuelve a abrir el selector para intentarlo de nuevo.",
   "collection.noMatches": "No hay colecciones que mostrar. Puedes crear una abajo.",
-  "collection.addedShort": "Añadida"
+  "collection.addedShort": "Añadida",
+  "graph.imageCredits": "Créditos",
+  "graph.imageZoom": "Zoom de imagen",
+  "graph.imageZoomOut": "Alejar imagen",
+  "graph.imageZoomIn": "Acercar imagen",
+  "graph.imageReset": "Restablecer"
 }
