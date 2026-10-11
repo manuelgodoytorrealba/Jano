@@ -137,7 +137,7 @@ describe('EntitiesListComponent filters', () => {
   };
 
   const authStub = {
-    user$: new BehaviorSubject(null),
+    user$: new BehaviorSubject<{ id: string; role: string } | null>(null),
   };
 
   const seoStub = {
@@ -189,6 +189,7 @@ describe('EntitiesListComponent filters', () => {
 
   beforeEach(async () => {
     i18nStub.locale.set('en');
+    authStub.user$.next(null);
     paramMap$.next(convertToParamMap({ type: 'artwork' }));
     queryParamMap$.next(
       convertToParamMap({
@@ -285,6 +286,24 @@ describe('EntitiesListComponent filters', () => {
 
     expect(archiveRecommendationCalls).toBe(0);
     expect(listCalls.some((params) => !params.type && !params.q)).toBe(true);
+    fixture.destroy();
+  });
+
+  it('keeps the full paginated catalog for signed-in visitors', async () => {
+    paramMap$.next(convertToParamMap({}));
+    queryParamMap$.next(convertToParamMap({}));
+    authStub.user$.next({ id: 'sister', role: 'USER' });
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const subscription = fixture.componentInstance.pageVm$.subscribe();
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(archiveRecommendationCalls).toBe(0);
+    expect(listCalls.some((params) => params.limit === 24 && params.page === 1)).toBe(true);
+
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(listCalls.some((params) => params.limit === 24 && params.page === 2)).toBe(true);
+    subscription.unsubscribe();
     fixture.destroy();
   });
 
