@@ -95,22 +95,18 @@ export function buildRenderedGraphNodes(options: {
     const symbol = entitySymbol(node.type, node.kind);
     const nodeVisual = {
       ...getEntityTypeConfig(graphNodeTypeKey(node)),
-      shape: symbol.shape,
+      shape: node.image
+        ? node.kind === 'PERSON' || node.type === 'ARTIST'
+          ? ('circle' as const)
+          : ('rounded-square' as const)
+        : symbol.shape,
       color: symbol.color,
       accent: symbol.color,
       halo: symbol.color + '18',
     };
     const imageUrl = graphNodeImage(node, options.viewportScale ?? 1);
-    const size = Math.max(
-      graphNodeSize(node, options.centerId, options.selectedNodeId),
-      imageUrl ? 52 : 0,
-    );
-    const renderScale = imageUrl
-      ? 1 / (options.viewportScale ?? 1)
-      : options.readableScale
-        ? 1 / options.readableScale
-        : 1;
-    const labelDirection = node.id === options.centerId || point.x >= centerPoint.x ? 1 : -1;
+    const size = node.id === options.centerId ? 42 : 28;
+    const renderScale = 1 / Math.max(options.viewportScale ?? options.readableScale ?? 1, 0.1);
     const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
 
     return {
@@ -136,16 +132,8 @@ export function buildRenderedGraphNodes(options: {
       haloSize: size + 12,
       shapePath: graphNodeShapePath(nodeVisual.shape, size),
       symbolPath: symbol.path,
-      labelTransform:
-        options.readableScale && (node.id === options.centerId || options.compactLabels)
-          ? `translate(0 ${options.compactLabels && node.id !== options.centerId && point.y <= centerPoint.y ? -size - 26 : size + 22})`
-          : `translate(${labelDirection * (size + 18)} 0)`,
-      labelTextAnchor:
-        options.readableScale && (node.id === options.centerId || options.compactLabels)
-          ? 'middle'
-          : labelDirection === 1
-            ? 'start'
-            : 'end',
+      labelTransform: `translate(0 ${size + 22})`,
+      labelTextAnchor: 'middle',
       nodeVisual,
       titleLabel: compactGraphLabel(
         node.label,
@@ -322,8 +310,8 @@ function resolveEdgeDepthTier(
 }
 
 export function graphNodeImage(node: GraphNode, scale: number): string | null {
-  // Only existing thumbnails: original artwork files can be several megabytes.
-  return scale >= 0.45 && node.image && /thumbnail|thumb[-_/]/i.test(node.image)
+  // Local derivatives and existing thumbnails only; no full-resolution downloads.
+  return scale > 0 && node.image && /graph-thumbnail|thumbnail|thumb[-_/]/i.test(node.image)
     ? node.image
     : null;
 }

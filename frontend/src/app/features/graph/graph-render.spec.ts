@@ -39,8 +39,9 @@ describe('experimental graph thumbnails', () => {
     degree: 0,
     image: '/uploads/thumbnail-400.webp',
   };
-  it('loads thumbnails only at readable zoom and never downloads original files', () => {
-    expect(graphNodeImage(node, 0.44)).toBeNull();
+  it('loads thumbnails from the initial view and never downloads original files', () => {
+    expect(graphNodeImage(node, 0)).toBeNull();
+    expect(graphNodeImage(node, 0.24)).toBe(node.image);
     expect(graphNodeImage(node, 0.45)).toBe(node.image);
     expect(graphNodeImage({ ...node, image: '/uploads/master.jpg' }, 1)).toBeNull();
     expect(graphNodeImage({ ...node, image: null }, 1)).toBeNull();

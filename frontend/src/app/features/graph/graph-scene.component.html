@@ -207,7 +207,7 @@
           />
         }
 
-        @if (renderedNode.imageUrl || nodeLabelVisibility[renderedNode.node.id]) {
+        @if (nodeLabelVisibility[renderedNode.node.id]) {
           <g
             class="graph-node__label"
             [attr.transform]="renderedNode.labelTransform"
