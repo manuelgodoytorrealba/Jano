@@ -1641,6 +1641,7 @@
     background: transparent;
   }
   &::-webkit-scrollbar-track {
+    margin-block: 16px;
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
