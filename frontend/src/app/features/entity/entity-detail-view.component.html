@@ -281,11 +281,20 @@
                   (click)="informationTab = tab.id"
                   (keydown)="onInformationTabKeydown($event)"
                 >
-                  {{
-                    i18n.t(
-                      tab.id === 'sheet' && isArticle(entity) ? 'entity.connectionMap' : tab.label
-                    )
-                  }}
+                  <svg class="entity-information__tab-icon" viewBox="0 0 32 32" aria-hidden="true">
+                    <path class="entity-information__icon-shape" [attr.d]="tab.icon" />
+                    <path class="entity-information__icon-detail" [attr.d]="tab.detail" />
+                  </svg>
+                  <span class="entity-information__tab-copy">
+                    <span class="entity-information__tab-label">{{
+                      i18n.t(
+                        tab.id === 'sheet' && isArticle(entity) ? 'entity.connectionMap' : tab.label
+                      )
+                    }}</span>
+                    <span class="entity-information__tab-description">{{
+                      i18n.t(tab.description)
+                    }}</span>
+                  </span>
                 </button>
               }
             </div>
@@ -576,7 +585,21 @@
                   @for (r of entity.sourceRefs; track r.id) {
                     <li class="relation-source">
                       <div class="source-reference">
-                        <span class="source-reference__icon" aria-hidden="true">▤</span>
+                        <span class="source-reference__icon" aria-hidden="true">
+                          <svg class="source-reference__symbol" viewBox="0 0 32 32">
+                            <path
+                              class="entity-information__icon-shape"
+                              d="M7 3h12l6 6v19a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
+                            />
+                            <path
+                              class="entity-information__icon-detail"
+                              d="M19 3v6h6M10 10h5M10 14h10M10 18h7M10 22h4"
+                            />
+                            <path
+                              d="m18 24 2.5-2.5a3 3 0 0 1 4.2 4.2L23 27.4m-3-1.8-2.5 2.5a3 3 0 0 1-4.2-4.2L15 22.2"
+                            />
+                          </svg>
+                        </span>
                         <div class="source-reference__content">
                           <span class="source-reference__type">{{
                             sourceTypeLabel(r.source?.type ?? r.sourceType)
@@ -625,7 +648,19 @@
             @if (detailMedia(entity); as media) {
               @if (media.source || media.photoBy || media.license) {
                 <section class="source-reference source-reference--credit">
-                  <span class="source-reference__icon" aria-hidden="true">▧</span>
+                  <span class="source-reference__icon" aria-hidden="true">
+                    <svg class="source-reference__symbol" viewBox="0 0 32 32">
+                      <path
+                        class="entity-information__icon-shape"
+                        d="M6 5h20a2 2 0 0 1 2 2v17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"
+                      />
+                      <path
+                        class="entity-information__icon-detail"
+                        d="M8 29h18M20 11a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                      />
+                      <path d="m4 22 8-9 8 9m-3-3 5-5 6 7" />
+                    </svg>
+                  </span>
                   <div class="source-reference__content">
                     <span class="source-reference__type">{{ i18n.t('entity.imageCredit') }}</span>
                     @if (media.source) {
