@@ -1630,10 +1630,15 @@
   border-radius: 16px;
   background: #171c23;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(190, 199, 212, 0.5) transparent;
+  scrollbar-width: auto;
+  scrollbar-color: auto;
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(190, 199, 212, 0.5) transparent;
+  }
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    background: transparent;
   }
   &::-webkit-scrollbar-track {
     background: transparent;
@@ -1641,8 +1646,11 @@
   &::-webkit-scrollbar-thumb {
     background: rgba(190, 199, 212, 0.5);
     border-radius: 999px;
+    border: 2px solid #171c23;
   }
   &::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
     display: none;
   }
 }
