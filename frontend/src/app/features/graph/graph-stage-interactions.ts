@@ -193,7 +193,7 @@ export function createEdgeHoverTooltip(event: PointerEvent, edge: GraphEdge): Gr
     {
       kind: 'edge',
       title: edge.label,
-      subtitle: edge.relationType,
+      subtitle: '',
       body: edge.justification ?? null,
     },
     { x: event.clientX, y: event.clientY },

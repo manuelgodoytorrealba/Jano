@@ -1630,6 +1630,21 @@
   border-radius: 16px;
   background: #171c23;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(190, 199, 212, 0.5) transparent;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(190, 199, 212, 0.5);
+    border-radius: 999px;
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
 }
 :host .explorer-graph-pane,
 :host(.graph-detail-layout) .explorer-graph-pane,

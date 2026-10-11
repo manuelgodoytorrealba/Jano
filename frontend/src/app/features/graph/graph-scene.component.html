@@ -196,7 +196,9 @@
 @if (tooltip) {
   <div class="graph-tooltip" [ngStyle]="tooltipStyle">
     <div class="graph-tooltip__title">{{ tooltip.title }}</div>
-    <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>
+    @if (tooltip.subtitle) {
+      <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>
+    }
     @if (tooltip.body) {
       <div class="graph-tooltip__body">{{ tooltip.body }}</div>
     }

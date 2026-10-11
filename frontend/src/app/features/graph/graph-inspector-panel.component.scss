@@ -642,3 +642,13 @@
 .graph-panel-footer--filters .filter-chip {
   font-size: 0.875rem;
 }
+
+.graph-panel-footer--filters .graph-panel-footer__mobile-head {
+  position: sticky;
+  top: -16px;
+  z-index: 1;
+  margin: -16px -16px 0;
+  padding: 16px;
+  background: #171c23;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
