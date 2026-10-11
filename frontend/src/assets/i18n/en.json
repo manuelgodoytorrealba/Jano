@@ -388,6 +388,8 @@
   "graph.labels.always": "Always",
   "graph.labels.hidden": "Never",
   "graph.info": "Info",
+  "graph.images.show": "Show images",
+  "graph.images.hide": "Hide images",
   "graph.layers": "Layers",
   "graph.of": "of",
   "graph.explore": "Explore",

@@ -9,6 +9,26 @@ import {
 import { focusGraphPoint } from './graph-viewport';
 
 const STORAGE_PREFIX = 'jano:entity-explorer';
+const GRAPH_IMAGES_KEY = 'jano:graph-images';
+
+export function loadGraphImagesPreference(): boolean {
+  try {
+    return (
+      typeof window === 'undefined' || window.localStorage.getItem(GRAPH_IMAGES_KEY) !== 'false'
+    );
+  } catch {
+    return true;
+  }
+}
+
+export function saveGraphImagesPreference(enabled: boolean): void {
+  try {
+    if (typeof window !== 'undefined')
+      window.localStorage.setItem(GRAPH_IMAGES_KEY, String(enabled));
+  } catch {
+    // Storage may be unavailable; the display toggle must still work.
+  }
+}
 
 export interface ExplorerPersistedState {
   graph?: {

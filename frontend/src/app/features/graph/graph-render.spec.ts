@@ -46,4 +46,23 @@ describe('experimental graph thumbnails', () => {
     expect(graphNodeImage({ ...node, image: '/uploads/master.jpg' }, 1)).toBeNull();
     expect(graphNodeImage({ ...node, image: null }, 1)).toBeNull();
   });
+  it('changes presentation without changing node position, size, scale or selection', async () => {
+    const { buildRenderedGraphNodes } = await import('./graph-render');
+    const options = {
+      nodes: [node],
+      positions: { image: { x: 100, y: 200 } },
+      centerId: 'image',
+      selectedNodeId: 'image',
+      selectedNeighbors: new Set<string>(),
+      viewportScale: 0.36,
+    };
+    const photo = buildRenderedGraphNodes(options)[0];
+    const icon = buildRenderedGraphNodes({ ...options, imagesEnabled: false })[0];
+    expect(photo.imageUrl).toBe(node.image);
+    expect(icon.imageUrl).toBeNull();
+    expect(icon.point).toEqual(photo.point);
+    expect(icon.transform).toBe(photo.transform);
+    expect(icon.size).toBe(photo.size);
+    expect(icon.selected).toBe(photo.selected);
+  });
 });

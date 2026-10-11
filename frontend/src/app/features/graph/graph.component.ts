@@ -37,7 +37,12 @@ import {
   graphNodeTypeKey,
 } from './graph.models';
 import { GraphResponseDto } from '../../core/api/graph.models';
-import { ExplorerPersistedState, saveExplorerState } from './graph-persistence';
+import {
+  ExplorerPersistedState,
+  loadGraphImagesPreference,
+  saveGraphImagesPreference,
+  saveExplorerState,
+} from './graph-persistence';
 import { ImageControlsComponent } from './image-controls.component';
 import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
@@ -204,6 +209,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly hoveredNodeId = signal<string | null>(null);
   readonly hoveredEdgeId = signal<string | null>(null);
   readonly tooltip = signal<GraphTooltip | null>(null);
+  readonly imagesEnabled = signal(this.isBrowser ? loadGraphImagesPreference() : true);
   readonly labelsMode = signal<'auto' | 'always' | 'hidden'>('auto');
   readonly graphViewport = signal<GraphViewport>({ x: 0, y: 0, scale: 0.82 });
   readonly graphScale = computed(() => this.graphViewport().scale);
@@ -300,6 +306,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId,
       selectedNodeId,
       selectedNeighbors,
+      imagesEnabled: this.imagesEnabled(),
       viewportScale: this.graphViewportReady ? this.graphScale() : 0,
       compactLabels: this.detailLayout && this.isMobileViewport,
       readableScale:
@@ -1305,6 +1312,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       .map((type) => this.graphDerived().entityTypeMeta[type]?.label ?? type);
 
     return `${this.i18n.t(layers.length === 1 ? 'graph.activeLayer' : 'graph.activeLayers')}: ${layers.join(' · ')}`;
+  }
+
+  toggleGraphImages(): void {
+    this.imagesEnabled.update((enabled) => !enabled);
+    saveGraphImagesPreference(this.imagesEnabled());
   }
 
   setLabelsMode(mode: 'auto' | 'always' | 'hidden'): void {

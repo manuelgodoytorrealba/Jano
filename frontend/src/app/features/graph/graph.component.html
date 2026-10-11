@@ -182,6 +182,7 @@
           <app-graph-controls-bar
             [detailLayout]="detailLayout"
             [labelsMode]="labelsMode()"
+            [imagesEnabled]="imagesEnabled()"
             [nodeCount]="graphDerived().filteredNodes.length"
             [edgeCount]="graphDerived().filteredEdges.length"
             [scalePercent]="+(graphViewport().scale * 100).toFixed(0)"
@@ -189,6 +190,7 @@
             [inspectorVisible]="inspectorVisible()"
             [isMobileViewport]="isMobileViewport"
             (labelsModeChange)="setLabelsMode($event)"
+            (toggleImages)="toggleGraphImages()"
             (centerSelection)="centerSelection()"
             (graphZoom)="adjustGraphZoom($event)"
             (resetGraphView)="resetGraphView()"

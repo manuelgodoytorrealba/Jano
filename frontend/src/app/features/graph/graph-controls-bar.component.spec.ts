@@ -5,6 +5,31 @@ import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
 
 describe('graph toolbar and layers', () => {
+  it('exposes an accessible image toggle with a stable icon in both states', () => {
+    TestBed.configureTestingModule({
+      imports: [GraphControlsBarComponent],
+      providers: [{ provide: I18nService, useValue: { t: (key: string) => key } }],
+    });
+    const fixture = TestBed.createComponent(GraphControlsBarComponent);
+    fixture.componentRef.setInput('labelsMode', 'auto');
+    fixture.componentRef.setInput('graphReady', true);
+    fixture.detectChanges();
+    const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      '.graph-utility-btn--images',
+    )!;
+    const icon = button.querySelector('svg')!.innerHTML;
+    const toggle = vi.fn();
+    fixture.componentInstance.toggleImages.subscribe(toggle);
+    expect(button.getAttribute('aria-pressed')).toBe('true');
+    expect(button.getAttribute('aria-label')).toBe('graph.images.hide');
+    button.click();
+    expect(toggle).toHaveBeenCalledOnce();
+    fixture.componentRef.setInput('imagesEnabled', false);
+    fixture.detectChanges();
+    expect(button.getAttribute('aria-pressed')).toBe('false');
+    expect(button.getAttribute('aria-label')).toBe('graph.images.show');
+    expect(button.querySelector('svg')!.innerHTML).toBe(icon);
+  });
   it('separates layers from navigation and emits existing zoom actions', () => {
     TestBed.configureTestingModule({
       imports: [GraphControlsBarComponent],

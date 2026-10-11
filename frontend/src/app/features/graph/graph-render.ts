@@ -85,6 +85,7 @@ export function buildRenderedGraphNodes(options: {
   readableScale?: number;
   compactLabels?: boolean;
   viewportScale?: number;
+  imagesEnabled?: boolean;
 }): GraphRenderedNode[] {
   const centerPoint = options.centerId
     ? (options.positions[options.centerId] ?? { x: 0, y: 0 })
@@ -95,16 +96,18 @@ export function buildRenderedGraphNodes(options: {
     const symbol = entitySymbol(node.type, node.kind);
     const nodeVisual = {
       ...getEntityTypeConfig(graphNodeTypeKey(node)),
-      shape: node.image
-        ? node.kind === 'PERSON' || node.type === 'ARTIST'
-          ? ('circle' as const)
-          : ('rounded-square' as const)
-        : symbol.shape,
+      shape:
+        node.image && options.imagesEnabled !== false
+          ? node.kind === 'PERSON' || node.type === 'ARTIST'
+            ? ('circle' as const)
+            : ('rounded-square' as const)
+          : symbol.shape,
       color: symbol.color,
       accent: symbol.color,
       halo: symbol.color + '18',
     };
-    const imageUrl = graphNodeImage(node, options.viewportScale ?? 1);
+    const imageUrl =
+      options.imagesEnabled === false ? null : graphNodeImage(node, options.viewportScale ?? 1);
     const size = node.id === options.centerId ? 34 : 28;
     const renderScale = 1 / Math.max(options.viewportScale ?? options.readableScale ?? 1, 0.1);
     const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
