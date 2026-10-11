@@ -14,7 +14,9 @@
   cursor: grab;
   touch-action: none;
 }
-.entity-scroll-progress:active { cursor: grabbing; }
+.entity-scroll-progress:active {
+  cursor: grabbing;
+}
 .entity-scroll-progress:focus-visible {
   outline: 1px solid var(--color-text);
   outline-offset: 3px;
@@ -51,5 +53,7 @@
   box-shadow: 0 0 12px color-mix(in srgb, var(--color-text) 20%, transparent);
 }
 @media (max-width: 760px) {
-  .entity-scroll-progress { right: calc(var(--detail-chrome-inset, 16px) + 7.5px); }
+  .entity-scroll-progress {
+    right: calc(var(--detail-chrome-inset, 16px) + 7.5px);
+  }
 }

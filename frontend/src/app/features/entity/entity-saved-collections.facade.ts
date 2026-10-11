@@ -186,7 +186,11 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
   }
 
   toggleCollection(collection: Collection, entityId: string): void {
-    this.setCollectionMembership(collection.id, entityId, !this.containsEntity(collection, entityId));
+    this.setCollectionMembership(
+      collection.id,
+      entityId,
+      !this.containsEntity(collection, entityId),
+    );
   }
 
   addToCollection(collectionId: string, entityId: string): void {
@@ -203,12 +207,18 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
     request.subscribe({
       next: () => {
         this.addingToCollection.set(false);
-        this.collectionMembership.update((membership) => ({ ...membership, [collectionId]: present }));
+        this.collectionMembership.update((membership) => ({
+          ...membership,
+          [collectionId]: present,
+        }));
         this.refresh$.next();
       },
       error: (error) => {
         this.addingToCollection.set(false);
-        this.collectionMessage.set(error?.error?.message ?? this.i18n.t(present ? 'collection.addError' : 'error.removeFailed'));
+        this.collectionMessage.set(
+          error?.error?.message ??
+            this.i18n.t(present ? 'collection.addError' : 'error.removeFailed'),
+        );
       },
     });
   }

@@ -29,7 +29,9 @@ describe('image controls', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('114%');
     const credits = (fixture.nativeElement as HTMLElement).querySelector('details')!;
     credits.open = true;
-    credits.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    credits
+      .querySelector('summary')!
+      .dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(credits.open).toBe(false);
   });
 });

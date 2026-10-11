@@ -60,8 +60,6 @@ export function entitySymbol(type: string, kind?: string | null) {
   };
   const key = aliases[type] ?? type;
   return (
-    ENTITY_SYMBOLS[key] ??
-    ENTITY_SYMBOLS[(aliases[kind ?? ''] ?? kind)] ??
-    ENTITY_SYMBOLS.ENTITY
+    ENTITY_SYMBOLS[key] ?? ENTITY_SYMBOLS[aliases[kind ?? ''] ?? kind] ?? ENTITY_SYMBOLS.ENTITY
   );
 }

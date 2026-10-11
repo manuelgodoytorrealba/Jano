@@ -1,7 +1,7 @@
 <div class="image-toolbar">
   @if (meta?.source || meta?.photoBy || meta?.license) {
-    <details class="image-credits" (keydown.escape)="credits.removeAttribute('open')" #credits>
-      <summary>
+    <details class="image-credits" #credits>
+      <summary (keydown.escape)="credits.removeAttribute('open')">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="9" />
           <path d="M12 11v6M12 7v.5" />
