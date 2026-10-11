@@ -45,7 +45,7 @@ type UtilityItem = {
   selector: 'app-app-chrome',
   imports: [RouterLink, GlobalSearchComponent],
   templateUrl: './app-chrome.component.html',
-  styleUrl: './app-chrome.component.scss',
+  styleUrls: ['./app-chrome.component.scss', './app-chrome-orientation-lock.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppChromeComponent {
