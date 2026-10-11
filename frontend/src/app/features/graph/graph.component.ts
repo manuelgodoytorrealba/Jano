@@ -299,6 +299,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId,
       selectedNodeId,
       selectedNeighbors,
+      viewportScale: this.graphViewportReady ? this.graphViewport().scale : 0,
       compactLabels: this.detailLayout && this.isMobileViewport,
       readableScale:
         this.detailLayout && (graph?.nodes.length ?? 0) <= 12

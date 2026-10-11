@@ -6,6 +6,7 @@ import {
   HostBinding,
   Input,
   Output,
+  signal,
 } from '@angular/core';
 import {
   GraphAmbientField,
@@ -24,6 +25,12 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GraphSceneComponent {
+  readonly failedImages = signal<Set<string>>(new Set());
+
+  imageFailed(url: string): void {
+    this.failedImages.update((failed) => new Set([...failed, url]));
+  }
+
   @Input() ambientFields: GraphAmbientField[] = [];
   @Input({ required: true }) markerDefs: Array<{ id: string; color: string }> = [];
   @Input({ required: true }) viewportTransform = '';

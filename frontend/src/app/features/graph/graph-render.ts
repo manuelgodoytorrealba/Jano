@@ -84,6 +84,7 @@ export function buildRenderedGraphNodes(options: {
   selectedNeighbors: Set<string>;
   readableScale?: number;
   compactLabels?: boolean;
+  viewportScale?: number;
 }): GraphRenderedNode[] {
   const centerPoint = options.centerId
     ? (options.positions[options.centerId] ?? { x: 0, y: 0 })
@@ -99,15 +100,25 @@ export function buildRenderedGraphNodes(options: {
       accent: symbol.color,
       halo: symbol.color + '18',
     };
-    const size = graphNodeSize(node, options.centerId, options.selectedNodeId);
+    const imageUrl = graphNodeImage(node, options.viewportScale ?? 1);
+    const size = Math.max(
+      graphNodeSize(node, options.centerId, options.selectedNodeId),
+      imageUrl ? 52 : 0,
+    );
+    const renderScale = imageUrl
+      ? 1 / (options.viewportScale ?? 1)
+      : options.readableScale
+        ? 1 / options.readableScale
+        : 1;
     const labelDirection = node.id === options.centerId || point.x >= centerPoint.x ? 1 : -1;
     const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
 
     return {
       node,
+      imageUrl,
       point,
-      transform: `translate(${point.x} ${point.y})${options.readableScale ? ` scale(${1 / options.readableScale})` : ''}`,
-      renderScale: options.readableScale ? 1 / options.readableScale : 1,
+      transform: `translate(${point.x} ${point.y})${renderScale !== 1 ? ` scale(${renderScale})` : ''}`,
+      renderScale,
       selected: options.selectedNodeId === node.id,
       depthTier: resolveNodeDepthTier(
         node,
@@ -308,4 +319,11 @@ function resolveEdgeDepthTier(
   }
 
   return 'far';
+}
+
+export function graphNodeImage(node: GraphNode, scale: number): string | null {
+  // Only existing thumbnails: original artwork files can be several megabytes.
+  return scale >= 0.45 && node.image && /thumbnail|thumb[-_/]/i.test(node.image)
+    ? node.image
+    : null;
 }

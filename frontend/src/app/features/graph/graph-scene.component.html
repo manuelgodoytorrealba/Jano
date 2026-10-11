@@ -178,7 +178,36 @@
           pointer-events="none"
         />
 
-        @if (nodeLabelVisibility[renderedNode.node.id]) {
+        @if (renderedNode.imageUrl && !failedImages().has(renderedNode.imageUrl)) {
+          <clipPath [attr.id]="'node-image-' + renderedNode.node.id">
+            <path [attr.d]="renderedNode.shapePath" />
+          </clipPath>
+          <foreignObject
+            [attr.x]="-renderedNode.size"
+            [attr.y]="-renderedNode.size"
+            [attr.width]="renderedNode.size * 2"
+            [attr.height]="renderedNode.size * 2"
+            [attr.clip-path]="'url(#node-image-' + renderedNode.node.id + ')'"
+            pointer-events="none"
+          >
+            <img
+              xmlns="http://www.w3.org/1999/xhtml"
+              class="graph-node__image"
+              [src]="renderedNode.imageUrl"
+              alt=""
+              loading="lazy"
+              decoding="async"
+              (error)="imageFailed(renderedNode.imageUrl)"
+            />
+          </foreignObject>
+          <path
+            class="graph-node__image-rim"
+            [attr.d]="renderedNode.shapePath"
+            [attr.stroke]="renderedNode.nodeVisual.accent"
+          />
+        }
+
+        @if (renderedNode.imageUrl || nodeLabelVisibility[renderedNode.node.id]) {
           <g
             class="graph-node__label"
             [attr.transform]="renderedNode.labelTransform"

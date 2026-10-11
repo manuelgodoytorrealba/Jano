@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { graphTooltipStyle } from './graph-render';
+import { graphNodeImage, graphTooltipStyle } from './graph-render';
 
 describe('graph tooltip positioning', () => {
   it('converts pointer coordinates to the graph stage coordinate space', () => {
@@ -27,5 +27,22 @@ describe('small detail graph readability', () => {
     expect(nodes[0].point).toEqual({ x: 400, y: 0 });
     expect(nodes[0].transform).toBe('translate(400 0) scale(2)');
     expect(nodes[0].labelTextAnchor).toBe('middle');
+  });
+});
+
+describe('experimental graph thumbnails', () => {
+  const node = {
+    id: 'image',
+    label: 'Work',
+    slug: 'work',
+    type: 'ARTWORK',
+    degree: 0,
+    image: '/uploads/thumbnail-400.webp',
+  };
+  it('loads thumbnails only at readable zoom and never downloads original files', () => {
+    expect(graphNodeImage(node, 0.44)).toBeNull();
+    expect(graphNodeImage(node, 0.45)).toBe(node.image);
+    expect(graphNodeImage({ ...node, image: '/uploads/master.jpg' }, 1)).toBeNull();
+    expect(graphNodeImage({ ...node, image: null }, 1)).toBeNull();
   });
 });
