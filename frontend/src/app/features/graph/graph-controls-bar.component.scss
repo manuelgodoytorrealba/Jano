@@ -21,6 +21,8 @@
   gap: 8px;
 }
 button {
+  display: grid;
+  place-items: center;
   min-width: 44px;
   height: 44px;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -70,8 +72,6 @@ button svg {
   white-space: nowrap;
 }
 .surface-control {
-  display: grid;
-  place-items: center;
   font-size: 1.3rem;
 }
 .graph-scale {
