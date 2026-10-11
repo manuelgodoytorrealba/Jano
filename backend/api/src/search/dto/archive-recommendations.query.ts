@@ -16,6 +16,13 @@ export class ArchiveRecommendationsQuery {
   limit?: number = 24;
 
   @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100000)
+  page?: number = 1;
+
+  @IsOptional()
   @IsString()
   @Transform(({ value }) => String(value ?? '').trim())
   locale?: string;

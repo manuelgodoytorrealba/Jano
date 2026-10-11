@@ -29,6 +29,7 @@ describe('EntitiesListComponent filters', () => {
   let navigateCalls: Parameters<Router['navigate']>[] = [];
   let listCalls: EntitiesListParams[] = [];
   let archiveRecommendationCalls = 0;
+  let archiveRecommendationParams: Array<{ page?: number }> = [];
 
   const routeStub = {
     paramMap: paramMap$.asObservable(),
@@ -130,7 +131,8 @@ describe('EntitiesListComponent filters', () => {
   };
 
   const searchApiStub = {
-    archiveRecommendations: () => {
+    archiveRecommendations: (params: { page?: number }) => {
+      archiveRecommendationParams.push(params);
       archiveRecommendationCalls += 1;
       return of({ items: [], page: 1, limit: 24, total: 0, totalPages: 1, personalized: false });
     },
@@ -204,6 +206,7 @@ describe('EntitiesListComponent filters', () => {
     navigateCalls = [];
     listCalls = [];
     archiveRecommendationCalls = 0;
+    archiveRecommendationParams = [];
 
     await TestBed.configureTestingModule({
       imports: [EntitiesListComponent],
@@ -289,7 +292,7 @@ describe('EntitiesListComponent filters', () => {
     fixture.destroy();
   });
 
-  it('keeps the full paginated catalog for signed-in visitors', async () => {
+  it('continues personalized archive recommendations on subsequent pages', async () => {
     paramMap$.next(convertToParamMap({}));
     queryParamMap$.next(convertToParamMap({}));
     authStub.user$.next({ id: 'sister', role: 'USER' });
@@ -297,12 +300,13 @@ describe('EntitiesListComponent filters', () => {
     const subscription = fixture.componentInstance.pageVm$.subscribe();
     fixture.detectChanges();
     await new Promise((resolve) => setTimeout(resolve, 350));
-    expect(archiveRecommendationCalls).toBe(0);
-    expect(listCalls.some((params) => params.limit === 24 && params.page === 1)).toBe(true);
+    expect(archiveRecommendationCalls).toBeGreaterThan(0);
+    const initialCalls = archiveRecommendationCalls;
 
     queryParamMap$.next(convertToParamMap({ page: '2' }));
     await new Promise((resolve) => setTimeout(resolve, 350));
-    expect(listCalls.some((params) => params.limit === 24 && params.page === 2)).toBe(true);
+    expect(archiveRecommendationCalls).toBeGreaterThan(initialCalls);
+    expect(archiveRecommendationParams.at(-1)?.page).toBe(2);
     subscription.unsubscribe();
     fixture.destroy();
   });

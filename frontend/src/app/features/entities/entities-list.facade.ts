@@ -22,6 +22,7 @@ import {
 } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { SeoService } from '../../core/seo/seo.service';
+import { SearchApi } from '../../core/api/search.api';
 import { Tag, TagsApi } from '../../core/api/tags.api';
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -165,6 +166,7 @@ const KIND_LABEL_KEYS: Record<Exclude<EntitiesListKind, ''>, string> = {
 @Injectable()
 export class EntitiesListFacade {
   private readonly api = inject(EntitiesApi);
+  private readonly searchApi = inject(SearchApi);
   private readonly tagsApi = inject(TagsApi);
   private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
@@ -290,22 +292,32 @@ export class EntitiesListFacade {
     this.auth.user$,
     this.locale$,
   ]).pipe(
-    switchMap(([debouncedQuery, state]) =>
-      this.api.list({
-        type: state.type || undefined,
-        kind: state.kind || undefined,
-        q: debouncedQuery || undefined,
-        page: state.page,
-        limit: this.limit,
-        sort: state.sort === 'relevance' && !debouncedQuery ? 'recent' : state.sort,
-        status: state.status || undefined,
-        contentLevel: state.contentLevel || undefined,
-        movement: state.filterSupport.movement ? state.movement || undefined : undefined,
-        period: state.filterSupport.period ? state.period || undefined : undefined,
-        institution: state.filterSupport.institution ? state.institution || undefined : undefined,
-        nationality: state.filterSupport.nationality ? state.nationality || undefined : undefined,
-        tag: state.tag || undefined,
-      }),
+    switchMap(([debouncedQuery, state, user]) =>
+      user && this.shouldUseArchiveRecommendations(state)
+        ? this.searchApi.archiveRecommendations({
+            ...(state.type ? { type: state.type } : {}),
+            limit: this.limit,
+            page: state.page,
+          })
+        : this.api.list({
+            type: state.type || undefined,
+            kind: state.kind || undefined,
+            q: debouncedQuery || undefined,
+            page: state.page,
+            limit: this.limit,
+            sort: state.sort === 'relevance' && !debouncedQuery ? 'recent' : state.sort,
+            status: state.status || undefined,
+            contentLevel: state.contentLevel || undefined,
+            movement: state.filterSupport.movement ? state.movement || undefined : undefined,
+            period: state.filterSupport.period ? state.period || undefined : undefined,
+            institution: state.filterSupport.institution
+              ? state.institution || undefined
+              : undefined,
+            nationality: state.filterSupport.nationality
+              ? state.nationality || undefined
+              : undefined,
+            tag: state.tag || undefined,
+          }),
     ),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
@@ -706,6 +718,22 @@ export class EntitiesListFacade {
     if (!type) return '';
     const translationKey = TYPE_ROUTE_LABELS[type.key.toLowerCase()];
     return type.systemType && translationKey ? this.i18n.t(translationKey) : type.singularName;
+  }
+
+  private shouldUseArchiveRecommendations(state: EntitiesListQueryState): boolean {
+    return (
+      !state.type &&
+      !state.kind &&
+      !state.q &&
+      !state.tag &&
+      !state.status &&
+      !state.contentLevel &&
+      !state.movement &&
+      !state.period &&
+      !state.institution &&
+      !state.nationality &&
+      state.sort === 'recent'
+    );
   }
 
   private normalizeStatus(value: string | null): Status {

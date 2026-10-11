@@ -10,6 +10,7 @@ describe('SearchService', () => {
   const prisma = {
     $queryRaw: jest.fn(),
     entity: {
+      count: jest.fn(),
       findMany: jest.fn(),
     },
     researchProject: {
@@ -33,6 +34,8 @@ describe('SearchService', () => {
   beforeEach(async () => {
     prisma.$queryRaw.mockReset();
     prisma.entity.findMany.mockReset();
+    prisma.entity.count.mockReset();
+    prisma.entity.count.mockResolvedValue(1);
     prisma.researchProject.findMany.mockReset();
     prisma.relation.findMany.mockReset();
     prisma.userDiscoverySignal.create.mockReset();
@@ -159,6 +162,15 @@ describe('SearchService', () => {
     );
   });
 
+  it('paginates beyond the initial recommendations without loading the whole catalog', async () => {
+    prisma.entity.count.mockResolvedValue(125);
+    const result = await service.archiveRecommendations('user-1', { page: 3, limit: 24 });
+    expect(result).toEqual(expect.objectContaining({ page: 3, total: 125, totalPages: 6 }));
+    expect(prisma.entity.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 48, take: 24 }),
+    );
+  });
+
   it('returns published research separately and never queries private projects', async () => {
     prisma.$queryRaw.mockResolvedValue([]);
     prisma.researchProject.findMany.mockResolvedValue([
@@ -240,6 +252,28 @@ describe('SearchService', () => {
         recommendationReason: 'Conectado con tus búsquedas recientes',
       }),
     ]);
+    const candidates = await prisma.entity.findMany.mock.results[1].value;
+    prisma.entity.count.mockResolvedValue(100);
+    prisma.entity.findMany.mockResolvedValue([]);
+    const nextPage = await service['archiveResponse'](
+      candidates,
+      'es',
+      24,
+      true,
+      new Map(),
+      new Set(['artwork-1']),
+      new Map(),
+      [],
+      2,
+    );
+    expect(nextPage).toEqual(expect.objectContaining({ page: 2, total: 100, totalPages: 5 }));
+    expect(prisma.entity.findMany).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        where: { status: 'PUBLISHED', id: { notIn: ['artwork-1'] } },
+        skip: 23,
+        take: 24,
+      }),
+    );
   });
 
   it('returns only direct entity results instead of derived discovery sections', async () => {

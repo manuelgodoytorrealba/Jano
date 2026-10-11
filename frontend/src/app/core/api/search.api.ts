@@ -123,7 +123,7 @@ export class SearchApi {
     return this.http.get<SearchResponse>(apiUrl('/search'), { params: httpParams });
   }
 
-  archiveRecommendations(params: { type?: string; limit?: number } = {}) {
+  archiveRecommendations(params: { type?: string; limit?: number; page?: number } = {}) {
     return this.http.get<
       PublicEntityListResponse<ArchiveRecommendation> & { personalized: boolean }
     >(apiUrl('/search/recommendations/archive'), { params });
