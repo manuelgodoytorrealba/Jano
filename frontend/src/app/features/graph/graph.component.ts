@@ -206,6 +206,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly tooltip = signal<GraphTooltip | null>(null);
   readonly labelsMode = signal<'auto' | 'always' | 'hidden'>('auto');
   readonly graphViewport = signal<GraphViewport>({ x: 0, y: 0, scale: 0.82 });
+  readonly graphScale = computed(() => this.graphViewport().scale);
   readonly imageViewport = signal<ImageViewport>({ x: 0, y: 0, scale: 1, fitScale: 1 });
   readonly imageZoomPercent = computed(() => {
     const viewport = this.imageViewport();
@@ -263,7 +264,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       hoveredEdgeId: this.hoveredEdgeId(),
       labelsMode: this.labelsMode(),
       labelScaleBucket: this.labelScaleBucket(),
-      viewportScale: this.graphViewport().scale,
+      viewportScale: this.graphScale(),
       overviewMode: this.overviewMode,
       showAllOverviewRelations: this.showAllOverviewRelations,
       relationshipLimit: this.relationshipLimit(),
@@ -299,11 +300,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId,
       selectedNodeId,
       selectedNeighbors,
-      viewportScale: this.graphViewportReady ? this.graphViewport().scale : 0,
+      viewportScale: this.graphViewportReady ? this.graphScale() : 0,
       compactLabels: this.detailLayout && this.isMobileViewport,
       readableScale:
         this.detailLayout && (graph?.nodes.length ?? 0) <= 12
-          ? Math.min(1, this.graphViewport().scale)
+          ? Math.min(1, this.graphScale())
           : undefined,
     });
   });
@@ -317,7 +318,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }),
   );
 
-  readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphViewport().scale));
+  readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphScale()));
   readonly imagePresentation = computed(() => resolveMediaPresentation(this.imageMedia));
   readonly inspectorFocusedNodeIsCenter = computed(() => {
     const derived = this.graphDerived();
@@ -332,7 +333,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId: this.graph()?.centerId ?? null,
       selectedNodeId: this.selectedNodeId(),
       hoveredNodeId: this.hoveredNodeId(),
-      scale: this.graphViewport().scale,
+      scale: this.graphScale(),
     }),
   );
   readonly resolvedEdgeLabelVisibility = computed(() =>
@@ -342,7 +343,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId: this.graph()?.centerId ?? null,
       selectedNodeId: this.selectedNodeId(),
       hoveredEdgeId: this.hoveredEdgeId(),
-      scale: this.graphViewport().scale,
+      scale: this.graphScale(),
       occupiedBoxes: visibleLabelBoxes({
         nodes: this.renderedNodes(),
         nodeVisibility: this.resolvedNodeLabelVisibility(),
@@ -1465,7 +1466,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         ? 76
         : this.overviewMode
           ? this.overviewViewportPadding()
-          : 108,
+          : this.detailLayout
+            ? 72
+            : 108,
     });
   }
 

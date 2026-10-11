@@ -1,7 +1,6 @@
 import { getRelationTypeConfig } from './graph.config';
 import {
   graphEdgeLabelBudget,
-  graphNodeLabelBudget,
   selectRankedGraphLabels,
   shouldRenderGraphLabel,
 } from './graph-labels';
@@ -394,35 +393,19 @@ function buildNodeLabelVisibility(options: {
     }, {});
   }
 
-  const budget = graphNodeLabelBudget({
-    scale: options.labelScaleBucket,
-    nodeCount: options.filteredNodes.length,
-    edgeCount: options.edgeCount,
-  });
+  const explicitSelection =
+    !!options.selectedNodeId && options.selectedNodeId !== options.graph.centerId;
 
-  return selectRankedGraphLabels(
-    options.filteredNodes.map((node) => {
-      const isCenter = node.id === options.graph.centerId;
-      const isSelected = node.id === options.selectedNodeId;
-      const isHovered = node.id === options.hoveredNodeId;
-      const isNeighbor = options.selectedNeighbors.has(node.id);
-      const isHub = options.overviewMode && isOverviewHubNode(node.id);
-      const priority =
-        (isCenter ? 1000 : 0) +
-        (isSelected ? 840 : 0) +
-        (isHovered ? 760 : 0) +
-        (isHub ? 520 : 0) +
-        (isNeighbor ? 260 : 0) +
-        Math.min(node.degree ?? 0, 8) * 28;
-
-      return {
-        id: node.id,
-        priority,
-        forced: isCenter || isSelected || isHovered || isHub,
-      };
-    }),
-    budget,
-  );
+  return options.filteredNodes.reduce<Record<string, boolean>>((visible, node) => {
+    if (
+      node.id === options.graph.centerId ||
+      node.id === options.hoveredNodeId ||
+      (explicitSelection &&
+        (node.id === options.selectedNodeId || options.selectedNeighbors.has(node.id)))
+    )
+      visible[node.id] = true;
+    return visible;
+  }, {});
 }
 
 function buildEdgeLabelVisibility(options: {
@@ -446,14 +429,19 @@ function buildEdgeLabelVisibility(options: {
   }
 
   const sparseVisibility = options.filteredEdges.reduce<Record<string, boolean>>((acc, edge) => {
-    acc[edge.id] = shouldRenderGraphLabel({
-      mode: options.labelsMode,
-      scale: options.labelScaleBucket,
-      edgeCount: options.edgeCount,
-      highlighted: options.hoveredEdgeId === edge.id,
-      connectedToSelection:
-        edge.source === options.selectedNodeId || edge.target === options.selectedNodeId,
-    });
+    acc[edge.id] =
+      (options.hoveredEdgeId === edge.id ||
+        (!!options.selectedNodeId &&
+          options.selectedNodeId !== options.graph.centerId &&
+          (edge.source === options.selectedNodeId || edge.target === options.selectedNodeId))) &&
+      shouldRenderGraphLabel({
+        mode: options.labelsMode,
+        scale: options.labelScaleBucket,
+        edgeCount: options.edgeCount,
+        highlighted: options.hoveredEdgeId === edge.id,
+        connectedToSelection:
+          edge.source === options.selectedNodeId || edge.target === options.selectedNodeId,
+      });
     return acc;
   }, {});
 

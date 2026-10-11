@@ -20,9 +20,9 @@ export function isFocalRelationshipGraph(graph: GraphData, edges = graph.edges):
 }
 
 export function initialRelationshipLimit(total: number, isMobile: boolean): number {
-  if (total <= (isMobile ? 10 : 16)) return total;
+  if (total <= 10) return total;
   // The P99 hubs in the foundational seed need a deliberately quieter first ring.
-  return Math.min(total, isMobile ? (total >= 64 ? 8 : 10) : total >= 64 ? 12 : 16);
+  return Math.min(total, isMobile ? (total >= 64 ? 8 : 10) : total >= 64 ? 12 : 10);
 }
 
 export function nextRelationshipLimit(current: number, total: number, isMobile: boolean): number {

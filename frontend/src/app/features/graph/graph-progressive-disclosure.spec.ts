@@ -83,6 +83,7 @@ describe('progressive graph disclosure', () => {
 
   it('keeps small nodes complete and expands hubs in bounded batches', () => {
     expect(initialRelationshipLimit(5, false)).toBe(5);
+    expect(initialRelationshipLimit(25, false)).toBe(10);
     expect(initialRelationshipLimit(98, false)).toBe(12);
     expect(nextRelationshipLimit(12, 98, false)).toBe(24);
     expect(previousRelationshipLimit(36, 98, false)).toBe(24);

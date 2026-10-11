@@ -128,14 +128,11 @@
         [class.graph-node--mid]="renderedNode.depthTier === 'mid'"
         [class.graph-node--far]="renderedNode.depthTier === 'far'"
         (pointerdown)="nodePointerDown.emit({ event: $event, nodeId: renderedNode.node.id })"
-        (pointermove)="
-          nodePointerMove.emit($event);
-          nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })
-        "
+        (pointermove)="nodePointerMove.emit($event); hoverNode($event, renderedNode.node.id)"
         (pointerup)="nodePointerUp.emit({ event: $event, nodeId: renderedNode.node.id })"
         (pointercancel)="nodePointerCancel.emit($event)"
-        (pointerenter)="nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })"
-        (pointerleave)="clearHover.emit()"
+        (pointerenter)="hoverNode($event, renderedNode.node.id)"
+        (pointerleave)="leaveNode()"
       >
         <circle
           class="graph-node__halo"

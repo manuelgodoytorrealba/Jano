@@ -105,7 +105,7 @@ export function buildRenderedGraphNodes(options: {
       halo: symbol.color + '18',
     };
     const imageUrl = graphNodeImage(node, options.viewportScale ?? 1);
-    const size = node.id === options.centerId ? 42 : 28;
+    const size = node.id === options.centerId ? 34 : 28;
     const renderScale = 1 / Math.max(options.viewportScale ?? options.readableScale ?? 1, 0.1);
     const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
 
@@ -132,7 +132,7 @@ export function buildRenderedGraphNodes(options: {
       haloSize: size + 12,
       shapePath: graphNodeShapePath(nodeVisual.shape, size),
       symbolPath: symbol.path,
-      labelTransform: `translate(0 ${size + 22})`,
+      labelTransform: `translate(0 ${size + 26})`,
       labelTextAnchor: 'middle',
       nodeVisual,
       titleLabel: compactGraphLabel(

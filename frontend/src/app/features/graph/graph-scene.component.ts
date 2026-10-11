@@ -6,6 +6,7 @@ import {
   HostBinding,
   Input,
   Output,
+  OnDestroy,
   signal,
 } from '@angular/core';
 import {
@@ -24,7 +25,46 @@ import {
   styleUrl: './graph-scene.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GraphSceneComponent {
+export class GraphSceneComponent implements OnDestroy {
+  private hoverTimer: ReturnType<typeof setTimeout> | null = null;
+  private pendingHover: { event: PointerEvent; nodeId: string } | null = null;
+  private activeHoverId: string | null = null;
+
+  hoverNode(event: PointerEvent, nodeId: string): void {
+    if (event.pointerType === 'touch' || event.buttons || this.interactionActive) return;
+    if (this.activeHoverId === nodeId) {
+      this.nodeHover.emit({ event, nodeId });
+      return;
+    }
+    this.pendingHover = { event, nodeId };
+    if (this.hoverTimer) return;
+    this.hoverTimer = setTimeout(() => {
+      this.hoverTimer = null;
+      if (!this.pendingHover || this.interactionActive) {
+        this.pendingHover = null;
+        return;
+      }
+      this.activeHoverId = this.pendingHover.nodeId;
+      this.nodeHover.emit(this.pendingHover);
+      this.pendingHover = null;
+    }, 140);
+  }
+
+  leaveNode(): void {
+    this.cancelPendingHover();
+    this.clearHover.emit();
+  }
+
+  ngOnDestroy(): void {
+    this.cancelPendingHover();
+  }
+
+  private cancelPendingHover(): void {
+    if (this.hoverTimer) clearTimeout(this.hoverTimer);
+    this.hoverTimer = null;
+    this.pendingHover = null;
+    this.activeHoverId = null;
+  }
   readonly failedImages = signal<Set<string>>(new Set());
 
   imageFailed(url: string): void {
