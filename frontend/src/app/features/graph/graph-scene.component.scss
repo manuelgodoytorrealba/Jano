@@ -290,12 +290,6 @@
       var(--workspace-ink)
     );
   }
-  .graph-edge:not(.graph-edge--aura) {
-    stroke: var(--workspace-edge);
-  }
-  marker path {
-    fill: var(--workspace-edge);
-  }
   .graph-node__title,
   .graph-edge-label {
     fill: var(--workspace-ink);

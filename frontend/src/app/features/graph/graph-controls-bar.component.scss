@@ -143,6 +143,9 @@ button svg {
     color: inherit;
     border-color: currentColor;
   }
+  .graph-utility-btn--images.is-active {
+    border-color: var(--workspace-images-active-border);
+  }
   button:focus-visible {
     outline-color: currentColor;
   }

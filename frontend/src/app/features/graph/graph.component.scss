@@ -1558,14 +1558,14 @@
 
 // Local palette: only the entity image/graph workspace uses these surfaces.
 :host(.graph-detail-layout) {
-  --workspace-surface: #1e1e1e;
+  --workspace-surface: #222222;
   --workspace-image: #292929;
-  --workspace-control: #292929;
+  --workspace-control: #303030;
   --workspace-hover: #343434;
   --workspace-border: rgba(255, 255, 255, 0.14);
   --workspace-ink: var(--color-text);
   --workspace-muted: var(--color-text-muted);
-  --workspace-edge: #929292;
+  --workspace-images-active-border: #79bea5;
   --workspace-accent-weight: 100%;
   color: var(--workspace-ink);
 
@@ -1616,12 +1616,14 @@
   }
 }
 :host-context([data-theme='light']) {
-  --workspace-surface: #f7f7f8;
-  --workspace-image: #e4e4e5;
-  --workspace-control: #fafafa;
-  --workspace-hover: #ededee;
+  --workspace-surface: #d8d5cf;
+  --workspace-image: #c9c6c0;
+  --workspace-control: #e8e5df;
+  --workspace-hover: #dedbd5;
   --workspace-border: rgba(0, 0, 0, 0.13);
-  --workspace-edge: #747474;
+  --workspace-ink: #292827;
+  --workspace-muted: #5b5751;
+  --workspace-images-active-border: #347c61;
   --workspace-accent-weight: 65%;
 }
 :host(.graph-detail-layout)
