@@ -763,5 +763,7 @@
   "graph.imageReset": "Restablecer",
   "graph.controls": "Controles del grafo",
   "graph.zoomOut": "Alejar grafo",
-  "graph.zoomIn": "Acercar grafo"
+  "graph.zoomIn": "Acercar grafo",
+  "navigation.returnToExploration": "Volver al recorrido",
+  "navigation.entities": "Navegar entidades"
 }

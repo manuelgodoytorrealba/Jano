@@ -15,6 +15,7 @@ import { EntityRouteArtworkTransitionService } from './core/entity-route-artwork
 import { CommonModule } from '@angular/common';
 import { ViewportService } from './core/viewport.service';
 import { filter } from 'rxjs';
+import { NavigationMemoryService } from './core/navigation-memory.service';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,7 @@ import { filter } from 'rxjs';
   styleUrl: './app.scss',
 })
 export class App {
+  protected readonly navigationMemory = inject(NavigationMemoryService);
   private readonly router = inject(Router);
   private readonly appearance = inject(AppAppearanceService);
   protected readonly artworkTransition = inject(EntityRouteArtworkTransitionService);

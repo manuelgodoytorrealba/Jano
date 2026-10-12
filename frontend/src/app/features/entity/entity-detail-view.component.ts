@@ -2,6 +2,9 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  DestroyRef,
+  Injector,
+  afterNextRender,
   EventEmitter,
   HostListener,
   Input,
@@ -28,6 +31,7 @@ import {
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
+import { NavigationMemoryService } from '../../core/navigation-memory.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import {
   articleByline,
@@ -63,6 +67,18 @@ type GraphEntityInfo = {
   badges: string[];
 };
 
+type DetailVisitState = {
+  slug: string;
+  tab: string;
+  windowY: number;
+  workspaceMode: DetailWorkspaceMode;
+  workspaceFocused: boolean;
+  outgoingLimit: number;
+  incomingLimit: number;
+  focusHref: string | null;
+  focusId: string | null;
+};
+
 @Component({
   standalone: true,
   selector: 'app-entity-detail-view',
@@ -90,6 +106,10 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   private readonly renderer = inject(Renderer2);
   readonly artworkTransition = inject(EntityRouteArtworkTransitionService);
   readonly i18n = inject(I18nService);
+  readonly navigation = inject(NavigationMemoryService);
+  private readonly injector = inject(Injector);
+  private restoredVisitKey = '';
+  private pendingScroll: number | null = null;
   private transitionTimer: ReturnType<typeof setTimeout> | null = null;
 
   @Input() entity: PublicEntity | null = null;
@@ -162,6 +182,24 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   constructor() {
     this.syncViewportState();
     this.workspaceMode = 'split';
+    this.navigation.register(
+      'detail',
+      () =>
+        ({
+          slug: this.entity?.slug ?? '',
+          tab: this.informationTab,
+          windowY: this.pendingScroll ?? (this.isBrowser ? window.scrollY : 0),
+          workspaceMode: this.workspaceMode,
+          workspaceFocused: this.workspaceFocused,
+          outgoingLimit: this.outgoingRelationLimit,
+          incomingLimit: this.incomingRelationLimit,
+          focusHref: this.isBrowser
+            ? (this.document.activeElement?.closest('a')?.getAttribute('href') ?? null)
+            : null,
+          focusId: this.document.activeElement?.id || null,
+        }) satisfies DetailVisitState,
+      inject(DestroyRef),
+    );
   }
 
   get workspaceModes(): Array<{ value: DetailWorkspaceMode; labelKey: string }> {
@@ -217,6 +255,44 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
       this.resetRelationLimits();
       this.syncImmersiveBodyState(false);
     }
+    this.restoreNavigationState();
+  }
+
+  private restoreNavigationState(): void {
+    if (!this.entity || !this.isBrowser || !this.navigation.visit().url.startsWith('/entity/'))
+      return;
+    const key = this.navigation.visit().key;
+    if (key === this.restoredVisitKey) return;
+    this.restoredVisitKey = key;
+    const state = this.navigation.read<DetailVisitState>('detail');
+    if (!state || state.slug !== this.entity.slug) return;
+    this.informationTab = this.informationTabs.some((tab) => tab.id === state.tab)
+      ? state.tab
+      : 'context';
+    this.workspaceMode = this.workspaceModes.some((mode) => mode.value === state.workspaceMode)
+      ? state.workspaceMode
+      : 'split';
+    this.workspaceFocused = Boolean(state.workspaceFocused);
+    this.outgoingRelationLimit = Math.max(6, state.outgoingLimit);
+    this.incomingRelationLimit = Math.max(6, state.incomingLimit);
+    this.syncImmersiveBodyState(this.workspaceFocused);
+    this.pendingScroll = state.windowY;
+    afterNextRender(
+      () => {
+        if (this.navigation.visit().key !== key) return;
+        window.scrollTo({ top: state.windowY, behavior: 'instant' });
+        this.pendingScroll = null;
+        const focus = state.focusHref
+          ? this.document.querySelector<HTMLAnchorElement>(
+              `a[href="${CSS.escape(state.focusHref)}"]`,
+            )
+          : state.focusId
+            ? this.document.getElementById(state.focusId)
+            : null;
+        focus?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
 
   ngOnDestroy(): void {

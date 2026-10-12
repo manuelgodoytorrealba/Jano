@@ -1,4 +1,5 @@
 import { NgStyle } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -46,7 +47,7 @@ type RibbonCard = {
 @Component({
   standalone: true,
   selector: 'app-entities-explorer-totem',
-  imports: [NgStyle, JanoMediaComponent],
+  imports: [NgStyle, JanoMediaComponent, RouterLink],
   templateUrl: './entities-explorer-totem.component.html',
   styleUrl: './entities-explorer-totem.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,6 +73,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   private readonly isBrowser: boolean;
   private resizeObserver?: ResizeObserver;
   private pointerId: number | null = null;
+  private pointerStartIndex: number | null = null;
   private startY = 0;
   private pendingDragOffset = 0;
   private dragFrame: number | null = null;
@@ -196,7 +198,15 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
       return;
     }
 
-    if (!event.isPrimary || this.isInteractiveTarget(event.target)) {
+    if (
+      !event.isPrimary ||
+      event.button !== 0 ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.altKey ||
+      this.isInteractiveTarget(event.target)
+    ) {
       return;
     }
 
@@ -204,6 +214,11 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     this.cancelDragFrame();
     this.syncPanelIndex(false);
     this.pointerId = event.pointerId;
+    const cardIndex =
+      event.target instanceof Element
+        ? event.target.closest('[data-index]')?.getAttribute('data-index')
+        : null;
+    this.pointerStartIndex = cardIndex == null ? null : Number(cardIndex);
     this.startY = event.clientY;
     this.pendingDragOffset = 0;
     this.dragOffset.set(0);
@@ -251,7 +266,11 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
       this.dragging.set(false);
       this.settling.set(false);
       this.dragOffset.set(0);
-      this.openActive();
+      if (this.pointerStartIndex !== null && this.pointerStartIndex !== this.activeIndex) {
+        this.activeIndexChange.emit(this.pointerStartIndex);
+      } else {
+        this.openActive();
+      }
       return;
     }
 
@@ -496,6 +515,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   }
 
   private isInteractiveTarget(target: EventTarget | null): boolean {
+    if (target instanceof Element && target.closest('.explorer-totem__card-link')) return false;
     if (!(target instanceof HTMLElement)) {
       return false;
     }

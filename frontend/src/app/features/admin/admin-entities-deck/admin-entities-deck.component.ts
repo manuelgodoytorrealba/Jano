@@ -80,7 +80,10 @@ export class AdminEntitiesDeckComponent {
         image: '/assets/home/concept.jpg',
         routeType: 'concept',
       },
-    ];
+    ].map((item) => ({
+      ...item,
+      ctaRoute: `/admin/entities?type=${item.routeType.toUpperCase()}`,
+    }));
   }
 
   backgroundImage(): string {

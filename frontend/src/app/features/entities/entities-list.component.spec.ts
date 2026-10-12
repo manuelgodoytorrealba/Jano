@@ -11,6 +11,7 @@ import { SeoService } from '../../core/seo/seo.service';
 import { SearchApi } from '../../core/api/search.api';
 import { TagsApi } from '../../core/api/tags.api';
 import { AuthService } from '../../core/auth/auth.service';
+import { NavigationMemoryService } from '../../core/navigation-memory.service';
 import { EntitiesListComponent } from './entities-list.component';
 import { EntitiesListPageVm } from './entities-list.facade';
 
@@ -227,6 +228,32 @@ describe('EntitiesListComponent filters', () => {
         set: { template: '' },
       })
       .compileComponents();
+  });
+
+  it('reuses the exact catalog snapshot when rebuilding a visited page', async () => {
+    const snapshots: Record<string, unknown> = {};
+    TestBed.overrideProvider(NavigationMemoryService, {
+      useValue: {
+        visit: () => ({ key: 'original-page' }),
+        read: (slot: string) => snapshots[slot] ?? null,
+        write: (slot: string, value: unknown) => {
+          snapshots[slot] = value;
+        },
+        register: () => undefined,
+      },
+    });
+    const first = TestBed.createComponent(EntitiesListComponent);
+    first.componentInstance.pageVm$.subscribe();
+    first.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    const requests = listCalls.filter((params) => params.limit === 24).length;
+    first.destroy();
+    const returned = TestBed.createComponent(EntitiesListComponent);
+    returned.componentInstance.pageVm$.subscribe();
+    returned.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(listCalls.filter((params) => params.limit === 24)).toHaveLength(requests);
+    returned.destroy();
   });
 
   it('reloads localized content without resetting the page or explorer selection', async () => {

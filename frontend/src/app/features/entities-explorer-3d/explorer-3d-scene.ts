@@ -89,7 +89,12 @@ export class Explorer3dScene {
     return this._entryAnimationState === 'running';
   }
 
-  initialize(host: HTMLElement, items: PublicEntityListItem[], activeIndex: number): void {
+  initialize(
+    host: HTMLElement,
+    items: PublicEntityListItem[],
+    activeIndex: number,
+    restoreLayout = false,
+  ): void {
     const width = host.clientWidth || 1200;
     const height = host.clientHeight || 700;
     this.viewportWidth = width;
@@ -112,8 +117,8 @@ export class Explorer3dScene {
     host.replaceChildren(this.renderer.domElement);
     this.buildCards();
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.updateTargets(reducedMotion);
-    if (reducedMotion) {
+    this.updateTargets(reducedMotion || restoreLayout);
+    if (reducedMotion || restoreLayout) {
       this._entryAnimationState = 'complete';
       this.onEntryAnimationComplete?.();
       this.startLoop();
@@ -310,7 +315,7 @@ export class Explorer3dScene {
     if (!this.items.length) return;
     const profile = this.viewportProfile();
     this.cards.forEach((card, index) => {
-      const offset = circularOffset(index, this.activeIndex, this.items.length);
+      const offset = linearOffset(index, this.activeIndex);
       const distance = Math.abs(offset);
       card.group.visible = distance <= Math.min(5, Math.floor(this.items.length / 2));
       if (!card.group.visible) return;
@@ -370,7 +375,7 @@ export class Explorer3dScene {
         continue;
       }
 
-      const offset = circularOffset(index, this.activeIndex, this.items.length);
+      const offset = linearOffset(index, this.activeIndex);
       const distance = Math.abs(offset);
       const direction = Math.sign(offset);
       data.entryPosition = new THREE.Vector3(
@@ -621,10 +626,6 @@ export class Explorer3dScene {
   }
 }
 
-export function circularOffset(index: number, active: number, total: number): number {
-  let offset = index - active;
-  const half = Math.floor(total / 2);
-  if (offset > half) offset -= total;
-  if (offset < -half) offset += total;
-  return offset;
+export function linearOffset(index: number, active: number): number {
+  return index - active;
 }

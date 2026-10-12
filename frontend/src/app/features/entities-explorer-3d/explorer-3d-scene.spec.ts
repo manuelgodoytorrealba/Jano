@@ -1,6 +1,20 @@
 import * as THREE from 'three';
 import { describe, expect, it, vi } from 'vitest';
-import { Explorer3dScene, entryAnimationProgress, spatialEntryEase } from './explorer-3d-scene';
+import {
+  Explorer3dScene,
+  entryAnimationProgress,
+  spatialEntryEase,
+  linearOffset,
+} from './explorer-3d-scene';
+
+describe('linear deck geometry', () => {
+  it('never displays the end of a batch before its first card', () => {
+    expect(linearOffset(23, 0)).toBe(23);
+    expect(linearOffset(0, 23)).toBe(-23);
+    expect(linearOffset(17, 18)).toBe(-1);
+    expect(linearOffset(19, 18)).toBe(1);
+  });
+});
 
 describe('explorer 3d entry animation', () => {
   it('spreads from the center with a bounded, distance-based stagger', () => {

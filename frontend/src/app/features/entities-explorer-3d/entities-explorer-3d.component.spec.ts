@@ -1,9 +1,36 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { EntitiesExplorer3dComponent } from './entities-explorer-3d.component';
 
 describe('explorer page boundaries', () => {
+  it('leaves modified native link clicks to the browser and suppresses clicks after dragging', () => {
+    TestBed.configureTestingModule({
+      providers: [{ provide: I18nService, useValue: { t: (key: string) => key } }],
+    });
+    const component = TestBed.runInInjectionContext(() => new EntitiesExplorer3dComponent({}));
+    expect(component.entityHref({ slug: 'work', type: 'ARTWORK' } as never)).toBe('/entity/work');
+    expect(component.entityHref({ slug: 'publication', type: 'RESEARCH' } as never)).toBe(
+      '/research/publication',
+    );
+    const open = vi.spyOn(component, 'openActive').mockImplementation(() => undefined);
+    for (const options of [
+      { ctrlKey: true },
+      { metaKey: true },
+      { shiftKey: true },
+      { button: 1 },
+    ]) {
+      const event = new MouseEvent('click', { cancelable: true, ...options });
+      component.onEntityLinkClick(event);
+      expect(event.defaultPrevented).toBe(false);
+    }
+    expect(open).not.toHaveBeenCalled();
+    (component as unknown as { dragMoved: boolean }).dragMoved = true;
+    const dragged = new MouseEvent('click', { cancelable: true });
+    component.onEntityLinkClick(dragged);
+    expect(dragged.defaultPrevented).toBe(true);
+    expect(open).not.toHaveBeenCalled();
+  });
   it('requests the next page instead of wrapping to the first card', () => {
     TestBed.configureTestingModule({
       providers: [{ provide: I18nService, useValue: { t: (key: string) => key } }],

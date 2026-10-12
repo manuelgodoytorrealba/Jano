@@ -13,6 +13,15 @@
       <ng-template #entityContext>
         <div class="entity-context">
           <div class="entity-context__heading">
+            @if (navigation.origin) {
+              <button
+                class="entity-context__return"
+                type="button"
+                (click)="navigation.returnToOrigin()"
+              >
+                <span aria-hidden="true">‹</span> {{ i18n.t('navigation.returnToExploration') }}
+              </button>
+            }
             <p class="entity-context__title">{{ entity.title }}</p>
             @if (detailHeroSubtitle(entity); as subtitle) {
               <p class="entity-context__subtitle">{{ subtitle }}</p>

@@ -7,6 +7,7 @@ import {
   distinctUntilChanged,
   map,
   shareReplay,
+  of,
   switchMap,
   tap,
 } from 'rxjs';
@@ -25,6 +26,7 @@ import { SeoService } from '../../core/seo/seo.service';
 import { SearchApi } from '../../core/api/search.api';
 import { Tag, TagsApi } from '../../core/api/tags.api';
 import { AuthService } from '../../core/auth/auth.service';
+import { NavigationMemoryService } from '../../core/navigation-memory.service';
 
 export type Sort = 'recent' | 'title' | 'relevance';
 export type Status = 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED' | '';
@@ -177,6 +179,8 @@ export class EntitiesListFacade {
 
   private readonly locale$ = toObservable(this.i18n.locale);
 
+  private readonly navigation = inject(NavigationMemoryService);
+
   private readonly limit = 24;
   private readonly contextualFilterKeys = [
     'movement',
@@ -292,33 +296,46 @@ export class EntitiesListFacade {
     this.auth.user$,
     this.locale$,
   ]).pipe(
-    switchMap(([debouncedQuery, state, user]) =>
-      user && this.shouldUseArchiveRecommendations(state)
-        ? this.searchApi.archiveRecommendations({
-            ...(state.type ? { type: state.type } : {}),
-            limit: this.limit,
-            page: state.page,
-          })
-        : this.api.list({
-            type: state.type || undefined,
-            kind: state.kind || undefined,
-            q: debouncedQuery || undefined,
-            page: state.page,
-            limit: this.limit,
-            sort: state.sort === 'relevance' && !debouncedQuery ? 'recent' : state.sort,
-            status: state.status || undefined,
-            contentLevel: state.contentLevel || undefined,
-            movement: state.filterSupport.movement ? state.movement || undefined : undefined,
-            period: state.filterSupport.period ? state.period || undefined : undefined,
-            institution: state.filterSupport.institution
-              ? state.institution || undefined
-              : undefined,
-            nationality: state.filterSupport.nationality
-              ? state.nationality || undefined
-              : undefined,
-            tag: state.tag || undefined,
-          }),
-    ),
+    switchMap(([debouncedQuery, state, user]) => {
+      const signature = JSON.stringify({
+        state,
+        query: debouncedQuery,
+        locale: this.i18n.locale(),
+        user: user?.id,
+      });
+      const cached = this.navigation.read<{ signature: string; results: EntityListVm }>('catalog');
+      if (cached?.signature === signature) return of(cached.results);
+      const key = this.navigation.visit().key;
+      const request =
+        user && this.shouldUseArchiveRecommendations(state)
+          ? this.searchApi.archiveRecommendations({
+              ...(state.type ? { type: state.type } : {}),
+              limit: this.limit,
+              page: state.page,
+            })
+          : this.api.list({
+              type: state.type || undefined,
+              kind: state.kind || undefined,
+              q: debouncedQuery || undefined,
+              page: state.page,
+              limit: this.limit,
+              sort: state.sort === 'relevance' && !debouncedQuery ? 'recent' : state.sort,
+              status: state.status || undefined,
+              contentLevel: state.contentLevel || undefined,
+              movement: state.filterSupport.movement ? state.movement || undefined : undefined,
+              period: state.filterSupport.period ? state.period || undefined : undefined,
+              institution: state.filterSupport.institution
+                ? state.institution || undefined
+                : undefined,
+              nationality: state.filterSupport.nationality
+                ? state.nationality || undefined
+                : undefined,
+              tag: state.tag || undefined,
+            });
+      return request.pipe(
+        tap((results) => this.navigation.write('catalog', { signature, results }, key)),
+      );
+    }),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 

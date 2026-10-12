@@ -2,6 +2,10 @@ import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  Injector,
+  afterNextRender,
+  effect,
   ElementRef,
   HostListener,
   ViewChild,
@@ -11,6 +15,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, tap } from 'rxjs';
+import { NavigationMemoryService } from '../../core/navigation-memory.service';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -60,6 +65,16 @@ const CONTENT_LEVEL_KEYS: Record<Exclude<Level, ''>, string> = {
   ADVANCED: 'level.advanced',
 };
 
+type ArchiveVisitState = {
+  viewMode: ViewMode;
+  activeSlug: string | null;
+  scrollTop: number;
+  windowY: number;
+  filtersOpen: boolean;
+  infoOpen: boolean;
+  focusedSlug: string | null;
+};
+
 @Component({
   standalone: true,
   selector: 'app-entities-list',
@@ -84,6 +99,11 @@ export class EntitiesListComponent {
   readonly auth = inject(AuthService);
   readonly isAdmin = signal(this.auth.currentUser?.role === 'ADMIN');
 
+  private readonly navigation = inject(NavigationMemoryService);
+  private readonly injector = inject(Injector);
+  private items: PublicEntityListItem[] = [];
+  private restoredKey = '';
+  private pendingScroll: ArchiveVisitState | null = null;
   readonly pageVm$ = this.facade.pageVm$;
   private pendingPageDirection: -1 | 1 | null = null;
   private scrollOnPageLoad = false;
@@ -101,6 +121,32 @@ export class EntitiesListComponent {
   viewMode: ViewMode = 'explore';
 
   constructor() {
+    this.restoreVisit();
+    this.navigation.register(
+      'archive',
+      () =>
+        ({
+          viewMode: this.viewMode,
+          activeSlug: this.items[this.activeIndex()]?.slug ?? null,
+          scrollTop: this.pendingScroll?.scrollTop ?? this.listStage?.nativeElement.scrollTop ?? 0,
+          windowY:
+            this.pendingScroll?.windowY ?? (typeof window === 'undefined' ? 0 : window.scrollY),
+          filtersOpen: this.filtersPanelOpen(),
+          infoOpen: this.infoPanelOpen(),
+          focusedSlug:
+            typeof document === 'undefined'
+              ? null
+              : (document.activeElement
+                  ?.closest('a[href*="/entity/"]')
+                  ?.getAttribute('href')
+                  ?.split('/entity/')[1] ?? null),
+        }) satisfies ArchiveVisitState,
+      inject(DestroyRef),
+    );
+    effect(() => {
+      this.navigation.visit();
+      this.restoreVisit();
+    });
     this.auth.user$.pipe(takeUntilDestroyed()).subscribe((user) => {
       this.isAdmin.set(user?.role === 'ADMIN');
     });
@@ -112,14 +158,23 @@ export class EntitiesListComponent {
             a.items.map((item) => item.slug).join() === b.items.map((item) => item.slug).join(),
         ),
         tap((results) => {
+          this.items = results.items;
+          const restored = this.navigation.read<ArchiveVisitState>('archive');
+          const restoredIndex = restored?.activeSlug
+            ? results.items.findIndex((item) => item.slug === restored.activeSlug)
+            : -1;
           const total = results.items.length;
           const nextIndex =
-            this.pendingPageDirection === 1
-              ? 0
-              : this.pendingPageDirection === -1
-                ? Math.max(0, total - 1)
-                : 0;
+            restoredIndex >= 0
+              ? restoredIndex
+              : this.pendingPageDirection === 1
+                ? 0
+                : this.pendingPageDirection === -1
+                  ? Math.max(0, total - 1)
+                  : 0;
           this.pendingPageDirection = null;
+          this.restoreVisit();
+          if (restored) this.restoreScroll(restored);
           if (this.scrollOnPageLoad && typeof window !== 'undefined') {
             if (this.listStage) this.listStage.nativeElement.scrollTop = 0;
             window.scrollTo({ top: 0, behavior: 'instant' });
@@ -132,6 +187,41 @@ export class EntitiesListComponent {
         takeUntilDestroyed(),
       )
       .subscribe();
+  }
+
+  private restoreVisit(): void {
+    const state = this.navigation.read<ArchiveVisitState>('archive');
+    const key = this.navigation.visit().key;
+    if (!state || this.restoredKey === key) return;
+    this.restoredKey = key;
+    this.pendingScroll = state;
+    this.viewMode = state.viewMode === 'list' ? 'list' : 'explore';
+    this.filtersPanelOpen.set(Boolean(state.filtersOpen));
+    this.infoPanelOpen.set(Boolean(state.infoOpen));
+    const index = this.items.findIndex((item) => item.slug === state.activeSlug);
+    if (index >= 0) this.activeIndex.set(index);
+  }
+
+  isRestoredVisit(): boolean {
+    return this.restoredKey === this.navigation.visit().key && !!this.restoredKey;
+  }
+
+  private restoreScroll(state: ArchiveVisitState): void {
+    this.pendingScroll = state;
+    const key = this.navigation.visit().key;
+    afterNextRender(
+      () => {
+        if (this.navigation.visit().key !== key) return;
+        if (this.listStage) this.listStage.nativeElement.scrollTop = state.scrollTop;
+        window.scrollTo({ top: state.windowY, behavior: 'instant' });
+        this.pendingScroll = null;
+        if (state.focusedSlug)
+          document
+            .querySelector<HTMLAnchorElement>(`a[href="/entity/${CSS.escape(state.focusedSlug)}"]`)
+            ?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
 
   isMobilePortraitTotem(): boolean {
@@ -211,8 +301,8 @@ export class EntitiesListComponent {
   }
 
   breadcrumbSectionRoute(pageVm: { title: string; type: string }): string {
-    const type = (pageVm.type ?? '').trim().toLowerCase();
-    return type ? `/entities/${type}` : '/entities';
+    void pageVm;
+    return '/entities';
   }
 
   breadcrumbCurrentLabel(pageVm: {
@@ -224,11 +314,7 @@ export class EntitiesListComponent {
       return '';
     }
 
-    if (pageVm.recommendationsActive) {
-      return this.i18n.t('explorer.view.explorer');
-    }
-
-    return pageVm.title;
+    return pageVm.type ? pageVm.title : '';
   }
 
   openInfoPanel() {

@@ -11,6 +11,7 @@ describe('entity information tabs', () => {
       clearTransitionTimer: vi.fn(),
       resetRelationLimits: vi.fn(),
       syncImmersiveBodyState: vi.fn(),
+      restoreNavigationState: vi.fn(),
     };
     const update = (slug: string) =>
       EntityDetailViewComponent.prototype.ngOnChanges.call(
