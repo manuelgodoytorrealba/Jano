@@ -1082,6 +1082,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       persist: () => this.persistExplorerState(),
     });
     this.markGraphInteractionActive(120);
+    if (
+      this.tooltip() &&
+      !(event.target as Element | null)?.closest(
+        '.graph-node, .graph-edge-hit, .graph-edge-label, .graph-tooltip',
+      )
+    ) {
+      this.clearHover();
+    }
   }
 
   onNodePointerDown(event: PointerEvent, nodeId: string): void {
@@ -1227,13 +1235,18 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   clearHover(): void {
-    if (this.graphStage?.nativeElement.querySelector('.graph-tooltip:focus-within')) return;
+    if (
+      this.graphStage?.nativeElement.querySelector(
+        '.graph-tooltip:focus-visible, .graph-tooltip :focus-visible',
+      )
+    )
+      return;
     this.clearHoverClearTimer();
     this.hoverClearTimer = setTimeout(() => {
       this.hoverClearTimer = null;
       if (!canHandleHover(this.interactions.pointerSession)) return;
       this.dismissTooltip();
-    }, 350);
+    }, 200);
   }
 
   dismissTooltip(): void {

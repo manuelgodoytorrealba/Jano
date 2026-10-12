@@ -109,6 +109,7 @@
             [attr.y]="renderedEdge.labelPoint.y"
             (pointerenter)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
             (pointermove)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
+            (pointerleave)="clearHover.emit()"
           >
             {{ renderedEdge.displayLabel }}
           </text>
