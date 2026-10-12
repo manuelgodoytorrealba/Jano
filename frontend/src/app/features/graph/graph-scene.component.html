@@ -119,6 +119,7 @@
     @for (renderedNode of renderedNodes; track renderedNode.node.id) {
       <g
         class="graph-node"
+        [style.--node-accent]="renderedNode.nodeVisual.accent"
         [attr.data-node-id]="renderedNode.node.id"
         [class.is-candidate]="renderedNode.node.state === 'candidate'"
         [attr.transform]="renderedNode.transform"

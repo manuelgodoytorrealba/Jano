@@ -121,3 +121,29 @@ button svg {
     transition: none;
   }
 }
+
+:host-context(.graph-detail-layout) {
+  color: var(--workspace-ink);
+  .graph-panel-bar__meta {
+    color: var(--workspace-muted);
+  }
+  .graph-footer {
+    background: var(--workspace-surface);
+    border-color: var(--workspace-border);
+  }
+  button {
+    background: var(--workspace-control);
+    border-color: var(--workspace-border);
+    box-shadow: none;
+  }
+  button:hover {
+    background: var(--workspace-hover);
+  }
+  button.is-active {
+    color: inherit;
+    border-color: currentColor;
+  }
+  button:focus-visible {
+    outline-color: currentColor;
+  }
+}

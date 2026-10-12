@@ -269,3 +269,52 @@
   stroke-width: 2;
   pointer-events: none;
 }
+
+:host-context(.graph-detail-layout) {
+  .graph-ambient-field,
+  .graph-depth-vignette,
+  .graph-edge--aura,
+  .graph-node__halo,
+  .graph-node__echo {
+    display: none;
+  }
+  .graph-node__shape--inner {
+    display: none;
+  }
+  .graph-node__shape,
+  .graph-node__symbol,
+  .graph-node__image-rim {
+    stroke: color-mix(
+      in srgb,
+      var(--node-accent) var(--workspace-accent-weight),
+      var(--workspace-ink)
+    );
+  }
+  .graph-edge:not(.graph-edge--aura) {
+    stroke: var(--workspace-edge);
+  }
+  marker path {
+    fill: var(--workspace-edge);
+  }
+  .graph-node__title,
+  .graph-edge-label {
+    fill: var(--workspace-ink);
+    stroke: var(--workspace-surface);
+  }
+  .graph-node__subtitle {
+    fill: var(--workspace-muted);
+    stroke: var(--workspace-surface);
+  }
+  .graph-tooltip {
+    background: var(--workspace-control);
+    border-color: var(--workspace-border);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+  .graph-tooltip__title {
+    color: var(--workspace-ink);
+  }
+  .graph-tooltip__subtitle,
+  .graph-tooltip__body {
+    color: var(--workspace-muted);
+  }
+}
