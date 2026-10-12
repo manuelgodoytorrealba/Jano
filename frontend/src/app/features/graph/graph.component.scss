@@ -1569,6 +1569,18 @@
   --workspace-accent-weight: 100%;
   color: var(--workspace-ink);
 
+  .graph-progressive-disclosure {
+    color: var(--workspace-muted);
+  }
+  .graph-progressive-disclosure button {
+    color: var(--workspace-ink);
+    background: var(--workspace-control);
+    border-color: var(--workspace-border);
+  }
+  .graph-progressive-disclosure button:hover {
+    background: var(--workspace-hover);
+  }
+
   .explorer-image-pane,
   .explorer-graph-pane,
   .explorer-image-pane:fullscreen,

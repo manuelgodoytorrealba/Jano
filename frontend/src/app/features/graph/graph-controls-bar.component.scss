@@ -144,6 +144,7 @@ button svg {
     border-color: currentColor;
   }
   .graph-utility-btn--images.is-active {
+    color: var(--workspace-images-active-border);
     border-color: var(--workspace-images-active-border);
   }
   button:focus-visible {
