@@ -20,7 +20,7 @@ describe('graph hover during dragging', () => {
         { pointerType: 'mouse' } as PointerEvent,
         'node',
       );
-      GraphComponent.prototype.onTooltipMove.call(state, { pointerType: 'mouse' } as PointerEvent);
+      GraphComponent.prototype.onTooltipMove.call(state);
     }
     expect(hoveredNodeId).not.toHaveBeenCalled();
     expect(tooltip).not.toHaveBeenCalled();

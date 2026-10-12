@@ -70,7 +70,6 @@ import {
   graphImageBackdrop,
   graphNodeHaloSize,
   graphNodeSize,
-  graphTooltipStyle,
 } from './graph-render';
 import {
   resolveEdgeLabelOcclusion,
@@ -1052,7 +1051,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       currentViewport: this.currentGraphViewportState(),
       cancelInitialFocus: () => this.cancelPendingInitialGraphFocus(true),
       clearViewportTarget: () => this.camera.clearViewportTarget(),
-      clearTooltip: () => this.tooltip.set(null),
+      clearTooltip: () => this.clearHoverClearTimer(),
     });
     this.markGraphInteractionActive(240);
   }
@@ -1181,7 +1180,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     const node = this.graphDerived().nodeMap.get(nodeId);
     if (!node || !canHandleHover(this.interactions.pointerSession)) return;
     if (this.hoveredNodeId() === node.id && this.tooltip()) {
-      this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
       return;
     }
     this.interruptGraphViewportAutomation();
@@ -1222,27 +1220,28 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.applyEdgeHover(event, edge);
   }
 
-  onTooltipMove(event: PointerEvent): void {
+  onTooltipMove(): void {
     this.clearHoverClearTimer();
     if (!canHandleHover(this.interactions.pointerSession) || !this.tooltip()) return;
     this.interruptGraphViewportAutomation();
-    this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
   }
 
   clearHover(): void {
+    if (this.graphStage?.nativeElement.querySelector('.graph-tooltip:focus-within')) return;
     this.clearHoverClearTimer();
     this.hoverClearTimer = setTimeout(() => {
       this.hoverClearTimer = null;
       if (!canHandleHover(this.interactions.pointerSession)) return;
-      this.hoveredNodeId.set(null);
-      this.hoveredEdgeId.set(null);
-      this.camera.clearTooltip();
-      this.tooltip.set(null);
-    }, 72);
+      this.dismissTooltip();
+    }, 350);
   }
 
-  tooltipStyle(): Record<string, string> {
-    return graphTooltipStyle(this.tooltip(), this.graphStage?.nativeElement);
+  dismissTooltip(): void {
+    this.clearHoverClearTimer();
+    this.hoveredNodeId.set(null);
+    this.hoveredEdgeId.set(null);
+    this.camera.clearTooltip();
+    this.tooltip.set(null);
   }
 
   toggleEntityType(type: string): void {
@@ -1680,7 +1679,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private applyEdgeHover(event: PointerEvent, edge: GraphEdge): void {
     if (!canHandleHover(this.interactions.pointerSession)) return;
     if (this.hoveredEdgeId() === edge.id && this.tooltip()) {
-      this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
       return;
     }
     this.interruptGraphViewportAutomation();
@@ -1697,15 +1695,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   private flushPendingGraphViewport(): void {
     this.camera.flushViewport((viewport) => this.graphViewport.set(viewport));
-  }
-
-  private scheduleTooltipPosition(point: GraphPoint): void {
-    this.camera.scheduleTooltip(
-      point,
-      this.isBrowser,
-      () => this.tooltip(),
-      (tooltip) => this.tooltip.set(tooltip),
-    );
   }
 
   private syncImageViewport(

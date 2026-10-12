@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { GraphTooltipPositionDirective } from './graph-tooltip-position.directive';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,7 +21,7 @@ import {
 @Component({
   standalone: true,
   selector: 'app-graph-scene',
-  imports: [CommonModule],
+  imports: [CommonModule, GraphTooltipPositionDirective],
   templateUrl: './graph-scene.component.html',
   styleUrl: './graph-scene.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -80,7 +81,7 @@ export class GraphSceneComponent implements OnDestroy {
   @Input({ required: true }) nodeLabelVisibility: Record<string, boolean> = {};
   @Input() interactionActive = false;
   @Input() tooltip: GraphTooltip | null = null;
-  @Input() tooltipStyle: Record<string, string> = {};
+  @Input() tooltipAnchorId: string | null = null;
 
   @HostBinding('class.is-interacting')
   get isInteracting(): boolean {
@@ -94,6 +95,7 @@ export class GraphSceneComponent implements OnDestroy {
   @Output() nodeHover = new EventEmitter<{ event: PointerEvent; nodeId: string }>();
   @Output() edgeHover = new EventEmitter<{ event: PointerEvent; edge: GraphEdge }>();
   @Output() edgeActivate = new EventEmitter<{ event: PointerEvent; edge: GraphEdge }>();
-  @Output() tooltipMove = new EventEmitter<PointerEvent>();
+  @Output() dismissTooltip = new EventEmitter<void>();
+  @Output() retainTooltip = new EventEmitter<void>();
   @Output() clearHover = new EventEmitter<void>();
 }

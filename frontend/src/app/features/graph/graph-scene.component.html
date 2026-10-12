@@ -221,7 +221,23 @@
 </svg>
 
 @if (tooltip) {
-  <div class="graph-tooltip" [ngStyle]="tooltipStyle">
+  <div
+    class="graph-tooltip"
+    [appGraphTooltipPosition]="tooltip"
+    [tooltipAnchorId]="tooltipAnchorId"
+    [tooltipCamera]="viewportTransform"
+    (anchorHidden)="dismissTooltip.emit()"
+    (keydown.escape)="dismissTooltip.emit(); $event.stopPropagation()"
+    (pointerenter)="retainTooltip.emit()"
+    (focusin)="retainTooltip.emit()"
+    (focusout)="clearHover.emit()"
+    tabindex="0"
+    role="region"
+    [attr.aria-label]="tooltip.title"
+    (pointerleave)="clearHover.emit()"
+    (pointerdown)="$event.stopPropagation()"
+    (wheel)="$event.stopPropagation()"
+  >
     <div class="graph-tooltip__title">{{ tooltip.title }}</div>
     @if (tooltip.subtitle) {
       <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>

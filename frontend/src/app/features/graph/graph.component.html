@@ -243,7 +243,7 @@
             [nodeLabelVisibility]="activeNodeLabelVisibility()"
             [interactionActive]="graphInteractionActive()"
             [tooltip]="tooltip()"
-            [tooltipStyle]="tooltipStyle()"
+            [tooltipAnchorId]="hoveredNodeId() ?? hoveredEdgeId()"
             (nodePointerDown)="onNodePointerDown($event.event, $event.nodeId)"
             (nodePointerMove)="onNodePointerMove($event)"
             (nodePointerUp)="onNodePointerUp($event.event)"
@@ -251,7 +251,8 @@
             (nodeHover)="onNodeHover($event.event, $event.nodeId)"
             (edgeHover)="onEdgeHover($event.event, $event.edge)"
             (edgeActivate)="onEdgeActivate($event.event, $event.edge)"
-            (tooltipMove)="onTooltipMove($event)"
+            (retainTooltip)="onTooltipMove()"
+            (dismissTooltip)="dismissTooltip()"
             (clearHover)="clearHover()"
           />
         </div>

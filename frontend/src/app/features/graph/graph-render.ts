@@ -14,7 +14,6 @@ import {
   GraphPoint,
   GraphRenderedEdge,
   GraphRenderedNode,
-  GraphTooltip,
   GraphTypeMeta,
   graphNodeTypeKey,
 } from './graph.models';
@@ -241,24 +240,6 @@ export function buildGraphAmbientFields(options: {
     .sort((left, right) => right.priority - left.priority)
     .slice(0, 3)
     .map(({ priority: _priority, ...field }) => field);
-}
-
-export function graphTooltipStyle(
-  tooltip: GraphTooltip | null,
-  host: HTMLElement | null | undefined,
-): Record<string, string> {
-  if (!tooltip) {
-    return {};
-  }
-
-  const hostRect = host?.getBoundingClientRect();
-  const left = hostRect ? tooltip.x - hostRect.left : tooltip.x;
-  const top = hostRect ? tooltip.y - hostRect.top : tooltip.y;
-
-  return {
-    left: `${left + 18}px`,
-    top: `${top + 18}px`,
-  };
 }
 
 function resolveNodeDepthTier(
