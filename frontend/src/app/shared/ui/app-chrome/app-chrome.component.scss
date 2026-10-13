@@ -98,7 +98,7 @@
 }
 
 .app-chrome__header--admin {
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
 }
 
 .app-chrome__header--detail .app-chrome__header-toggle--close,
@@ -150,7 +150,7 @@
 
 .app-chrome__header-toggle--close {
   position: absolute;
-  top: 12px;
+  top: 20px;
   right: 16px;
   width: 34px;
   height: 34px;
@@ -325,10 +325,6 @@
     transform 160ms ease,
     box-shadow 160ms ease,
     filter 160ms ease;
-}
-
-.app-chrome__header--detail .app-chrome__brand {
-  gap: 12px;
 }
 
 .app-chrome__header--detail .app-chrome__brand-copy {
@@ -1121,16 +1117,19 @@
   }
 }
 
-@media (min-width: 1201px) and (max-width: 1400px) {
+@media (min-width: 1025px) and (max-width: 1400px) {
   .app-chrome__header {
     padding: 10px 12px;
     gap: 10px;
-    grid-template-columns: auto minmax(220px, 1fr) auto auto;
+    grid-template-columns: auto minmax(140px, 1fr) auto auto auto;
   }
 
   .app-chrome__header--detail {
-    padding: 10px 12px 10px 12px;
-    grid-template-columns: auto minmax(220px, 1fr) auto auto;
+    padding: 10px 56px 10px 12px;
+  }
+
+  .app-chrome__header--admin {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
   }
 
   .app-chrome__brand {
@@ -1157,11 +1156,31 @@
   .app-chrome__nav-link {
     height: 40px;
     padding: 0 10px;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
+  }
+
+  .app-chrome__account-actions {
+    gap: 8px;
+  }
+
+  .app-chrome__auth-link {
+    padding: 0 14px;
+    font-size: 0.875rem;
+  }
+
+  .app-chrome__auth-link--register {
+    min-width: 0;
+  }
+
+  .app-chrome__account-trigger > span:first-of-type {
+    max-width: 112px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   .app-chrome__header {
     grid-template-columns: auto minmax(180px, 1fr) auto auto;
     padding-right: 56px;
@@ -1188,16 +1207,6 @@
 
   .app-chrome__header-toggle {
     display: inline-flex;
-  }
-}
-
-@media (min-width: 1201px) and (max-width: 1500px) {
-  .app-chrome__header {
-    grid-template-columns: auto minmax(280px, 1fr) auto auto;
-  }
-
-  .app-chrome__header--detail {
-    grid-template-columns: auto minmax(280px, 1fr) auto auto;
   }
 }
 
@@ -1719,7 +1728,7 @@
   display: flex;
   gap: 6px;
 }
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   .app-chrome__header:has(.app-chrome__detail-preferences) {
     grid-template-columns: auto minmax(120px, 1fr) auto auto;
   }
