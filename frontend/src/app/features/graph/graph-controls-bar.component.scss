@@ -8,7 +8,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 66px 12px 12px;
+  padding: var(--graph-controls-inset, 12px);
+  padding-right: calc(var(--graph-controls-inset, 12px) + 54px);
 }
 .graph-panel-bar__meta {
   color: var(--color-text-muted);
@@ -85,7 +86,7 @@ button svg {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px;
+  padding: var(--graph-controls-inset, 12px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(5, 8, 12, 0.3);
 }
@@ -130,6 +131,7 @@ button svg {
   .graph-footer {
     background: var(--workspace-surface);
     border-color: var(--workspace-border);
+    border-radius: 0 0 var(--graph-footer-radius, 18px) var(--graph-footer-radius, 18px);
   }
   button {
     background: var(--workspace-control);

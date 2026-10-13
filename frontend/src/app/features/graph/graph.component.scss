@@ -1428,8 +1428,10 @@
     height: 100%;
   }
   .explorer-graph-pane:fullscreen {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
+    --graph-controls-inset: clamp(16px, 2vw, 28px);
+    --graph-footer-radius: 0px;
+    padding: 0;
+    border: 0;
   }
   .explorer-graph-pane:fullscreen .graph-stage {
     min-height: 0;
@@ -1456,9 +1458,6 @@
   .image-meta-dock {
     justify-items: start;
     width: max-content;
-  }
-  .explorer-graph-pane:fullscreen {
-    grid-template-rows: minmax(0, 1fr);
   }
 }
 
@@ -1523,9 +1522,19 @@
 :host(.graph-detail-layout) .explorer-graph-pane,
 :host(.graph-detail-layout) .explorer-graph-pane:fullscreen {
   grid-template-rows: minmax(0, 1fr) auto;
+  gap: 0;
 }
 :host(.graph-detail-layout) .explorer-graph-pane .graph-stage {
   padding-top: 64px;
+  border: 0;
+  border-radius: 18px 18px 0 0;
+}
+:host(.graph-detail-layout) .explorer-graph-pane:fullscreen .graph-stage {
+  border-radius: 0;
+}
+:host(.graph-detail-layout) .explorer-graph-pane:fullscreen > app-graph-inspector-panel {
+  top: calc(var(--graph-controls-inset) + 52px);
+  right: var(--graph-controls-inset);
 }
 .graph-progressive-disclosure {
   border: 0;
@@ -1538,8 +1547,8 @@
   border-radius: 10px;
 }
 .explorer-graph-pane .stage-focus-toggle {
-  top: 12px;
-  right: 12px;
+  top: var(--graph-controls-inset, 12px);
+  right: var(--graph-controls-inset, 12px);
   bottom: auto;
   width: 44px;
   height: 44px;
