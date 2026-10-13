@@ -38,9 +38,7 @@ async function exportRows() {
     ORDER BY source.slug, target.slug, rt.key, ej.locale
   `);
 
-  if (rows.length !== 1928) {
-    throw new Error(`Expected 1928 approved rows, found ${rows.length}`);
-  }
+  if (!rows.length) throw new Error('No approved editorial relation justifications found');
 
   const keys = new Set();
   for (const row of rows) {
@@ -69,8 +67,12 @@ async function exportRows() {
 
 async function importRows() {
   const document = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
-  if (document.rowCount !== 1928 || document.rows?.length !== 1928) {
-    throw new Error('Transfer artifact must contain exactly 1928 rows');
+  if (
+    !Number.isInteger(document.rowCount) ||
+    document.rowCount < 1 ||
+    document.rows?.length !== document.rowCount
+  ) {
+    throw new Error('Transfer artifact must contain a positive, self-consistent row count');
   }
 
   const client = await pool.connect();
