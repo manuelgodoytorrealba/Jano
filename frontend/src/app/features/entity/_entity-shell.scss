@@ -55,6 +55,7 @@
   position: relative;
   z-index: 1;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(0.42rem, 0.8vw, 0.68rem);
   min-width: 0;
   transition:

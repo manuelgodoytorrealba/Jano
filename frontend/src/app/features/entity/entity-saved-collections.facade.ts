@@ -14,15 +14,6 @@ import { SavedApi } from '../../core/api/saved.api';
 import { AuthService } from '../../core/auth/auth.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 
-export type DetailPopupKind =
-  | 'saved'
-  | 'manage'
-  | 'removed'
-  | 'share'
-  | 'error'
-  | 'collections'
-  | 'collectionSaved';
-
 @Injectable()
 export class EntitySavedCollectionsFacade implements OnDestroy {
   readonly isSaved = signal(false);
@@ -32,10 +23,12 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
   readonly collectionsLoading = signal(false);
   readonly addingToCollection = signal(false);
   readonly creatingCollection = signal(false);
-  readonly collectionsChooserOpen = signal(false);
-  readonly popupKind = signal<DetailPopupKind>('saved');
-  readonly popupTitle = signal('');
   readonly collectionMessage = signal('');
+  readonly feedback = signal('');
+  readonly feedbackError = signal(false);
+  readonly collectionSearch = signal('');
+  readonly createOpen = signal(false);
+  readonly collectionMembership = signal<Record<string, boolean>>({});
   readonly createCollectionName = signal('');
   readonly createCollectionDescription = signal('');
 
@@ -61,6 +54,7 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
           tap(() => this.collectionsLoading.set(false)),
           catchError(() => {
             this.collectionsLoading.set(false);
+            this.collectionMessage.set(this.i18n.t('collection.loadFailed'));
             return of([]);
           }),
         );
@@ -74,9 +68,12 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
   }
 
   reset(): void {
+    this.clearPopupAutoClose();
     this.isSaved.set(false);
     this.saveStatusResolved.set(false);
     this.closeCollectionsPanel();
+    this.feedback.set('');
+    this.collectionMembership.set({});
   }
 
   resolveSavedStatus(entityId: string): void {
@@ -100,11 +97,7 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
   toggleSave(entityId: string): void {
     if (!this.auth.isLoggedIn || this.saveLoading() || !this.saveStatusResolved()) return;
     if (this.isSaved()) {
-      this.openPopup(
-        'manage',
-        this.i18n.t('popup.manage.title'),
-        this.i18n.t('popup.manage.message'),
-      );
+      this.removeSavedEntity(entityId);
       return;
     }
     this.saveLoading.set(true);
@@ -112,15 +105,10 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
       next: () => {
         this.isSaved.set(true);
         this.saveLoading.set(false);
-        this.openPopup(
-          'saved',
-          this.i18n.t('popup.saved.title'),
-          this.i18n.t('popup.saved.message'),
-        );
       },
       error: () => {
         this.saveLoading.set(false);
-        this.openPopup('error', this.i18n.t('error.saveFailed'), this.i18n.t('error.tryAgain'));
+        this.showFeedback('error', this.i18n.t('error.saveFailed'), this.i18n.t('error.tryAgain'));
       },
     });
   }
@@ -132,45 +120,45 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
       next: () => {
         this.isSaved.set(false);
         this.saveLoading.set(false);
-        this.openPopup(
-          'removed',
-          this.i18n.t('popup.removed.title'),
-          this.i18n.t('popup.removed.message'),
-          { autoCloseMs: 2200 },
-        );
       },
       error: () => {
         this.saveLoading.set(false);
-        this.openPopup('error', this.i18n.t('error.removeFailed'), this.i18n.t('error.tryAgain'));
+        this.showFeedback(
+          'error',
+          this.i18n.t('error.removeFailed'),
+          this.i18n.t('error.tryAgain'),
+        );
       },
     });
   }
 
   toggleCollectionsPanel(): void {
-    this.clearPopupAutoClose();
-    this.showCollectionsPanel.update((visible) => {
-      if (visible) {
-        this.collectionsChooserOpen.set(false);
-        this.collectionMessage.set('');
-      }
-      return !visible;
-    });
+    if (this.showCollectionsPanel()) this.closeCollectionsPanel();
+    else this.openCollectionsChooser();
   }
 
   closeCollectionsPanel(): void {
-    this.clearPopupAutoClose();
     this.showCollectionsPanel.set(false);
-    this.collectionsChooserOpen.set(false);
-    this.popupTitle.set('');
     this.collectionMessage.set('');
+    this.createOpen.set(false);
+    this.collectionSearch.set('');
   }
 
   openCollectionsChooser(): void {
-    this.openPopup(
-      'collections',
-      this.i18n.t('collection.addTo'),
-      this.i18n.t('collection.chooseForEntity'),
-      { showChooser: true },
+    this.showCollectionsPanel.set(true);
+    this.collectionMessage.set('');
+    this.refresh$.next();
+  }
+
+  filteredCollections(collections: Collection[]): Collection[] {
+    const query = this.collectionSearch().trim().toLocaleLowerCase();
+    return collections.filter((collection) => collection.name.toLocaleLowerCase().includes(query));
+  }
+
+  containsEntity(collection: Collection, entityId: string): boolean {
+    return (
+      this.collectionMembership()[collection.id] ??
+      collection.items.some((item) => item.entityId === entityId)
     );
   }
 
@@ -180,7 +168,6 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
     if (!name || this.creatingCollection()) return;
     this.creatingCollection.set(true);
     this.clearPopupAutoClose();
-    this.popupKind.set('collections');
     this.collectionMessage.set('');
     this.collectionsApi.create({ name, description: description || undefined }).subscribe({
       next: (collection) => {
@@ -188,64 +175,67 @@ export class EntitySavedCollectionsFacade implements OnDestroy {
         this.createCollectionDescription.set('');
         this.refresh$.next();
         this.creatingCollection.set(false);
-        this.addToCollection(collection.id, entityId, true);
+        this.createOpen.set(false);
+        this.addToCollection(collection.id, entityId);
       },
       error: (error) => {
         this.creatingCollection.set(false);
-        this.popupKind.set('error');
-        this.popupTitle.set(this.i18n.t('collection.createFailed'));
         this.collectionMessage.set(error?.error?.message ?? this.i18n.t('mySpace.createError'));
       },
     });
   }
 
-  addToCollection(collectionId: string, entityId: string, createdNow = false): void {
+  toggleCollection(collection: Collection, entityId: string): void {
+    this.setCollectionMembership(
+      collection.id,
+      entityId,
+      !this.containsEntity(collection, entityId),
+    );
+  }
+
+  addToCollection(collectionId: string, entityId: string): void {
+    this.setCollectionMembership(collectionId, entityId, true);
+  }
+
+  private setCollectionMembership(collectionId: string, entityId: string, present: boolean): void {
     if (this.addingToCollection()) return;
     this.addingToCollection.set(true);
     this.collectionMessage.set('');
-    this.collectionsApi.addEntity(collectionId, entityId).subscribe({
+    const request: Observable<unknown> = present
+      ? this.collectionsApi.addEntity(collectionId, entityId)
+      : this.collectionsApi.removeEntity(collectionId, entityId);
+    request.subscribe({
       next: () => {
         this.addingToCollection.set(false);
-        this.collectionsChooserOpen.set(false);
+        this.collectionMembership.update((membership) => ({
+          ...membership,
+          [collectionId]: present,
+        }));
         this.refresh$.next();
-        this.popupKind.set('collectionSaved');
-        this.popupTitle.set(
-          createdNow ? this.i18n.t('collection.created') : this.i18n.t('collection.added'),
-        );
-        this.collectionMessage.set(
-          createdNow
-            ? this.i18n.t('collection.createdAndAdded')
-            : this.i18n.t('collection.entityAdded'),
-        );
-        this.scheduleClose(createdNow ? 1800 : 1600);
       },
       error: (error) => {
         this.addingToCollection.set(false);
-        this.popupKind.set('error');
-        this.popupTitle.set(this.i18n.t('collection.addFailed'));
-        this.collectionMessage.set(error?.error?.message ?? this.i18n.t('collection.addError'));
+        this.collectionMessage.set(
+          error?.error?.message ??
+            this.i18n.t(present ? 'collection.addError' : 'error.removeFailed'),
+        );
       },
     });
   }
 
-  openPopup(
-    kind: DetailPopupKind,
+  showFeedback(
+    kind: 'share' | 'error',
     title: string,
     message: string,
-    options?: { showChooser?: boolean; autoCloseMs?: number },
+    options?: { autoCloseMs?: number },
   ): void {
     this.clearPopupAutoClose();
-    this.showCollectionsPanel.set(true);
-    this.collectionsChooserOpen.set(options?.showChooser ?? false);
-    this.popupKind.set(kind);
-    this.popupTitle.set(title);
-    this.collectionMessage.set(message);
-    if (options?.autoCloseMs) this.scheduleClose(options.autoCloseMs);
-  }
-
-  private scheduleClose(delay: number): void {
-    this.clearPopupAutoClose();
-    this.popupAutoCloseTimer = setTimeout(() => this.closeCollectionsPanel(), delay);
+    this.feedback.set(kind === 'error' ? `${title}. ${message}` : title);
+    this.feedbackError.set(kind === 'error');
+    this.popupAutoCloseTimer = setTimeout(
+      () => this.feedback.set(''),
+      kind === 'error' ? 8000 : (options?.autoCloseMs ?? 2500),
+    );
   }
 
   private clearPopupAutoClose(): void {

@@ -43,6 +43,7 @@ export class EntityDeckComponent {
   showDots = input<boolean>(true);
   showNav = input<boolean>(true);
   showBottomSearch = input<boolean>(true);
+  showExpand = input<boolean>(true);
   fullViewport = input<boolean>(false);
   showAdminEdit = input<boolean>(false);
   mobileVariant = input<MobileDeckVariant>('default');

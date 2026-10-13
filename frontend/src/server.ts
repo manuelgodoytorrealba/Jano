@@ -6,6 +6,9 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import { validateSsrAuth } from './ssr-auth';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 const backendOrigin = (
@@ -56,27 +59,14 @@ function loginRedirectFor(req: express.Request): string {
   return `/login?redirectTo=${redirectTo}`;
 }
 
-async function validateAuthSession(req: express.Request): Promise<'ok' | 'unauthorized'> {
+async function validateAuthSession(req: express.Request) {
   const authorization = firstHeaderValue(req.headers.authorization);
   const cookieToken = cookieValue(req.headers.cookie, 'jano_access_token');
-  const headers = new Headers();
 
-  if (authorization) {
-    headers.set('authorization', authorization);
-  } else if (cookieToken) {
-    headers.set('authorization', 'Bearer ' + cookieToken);
-  }
-
-  if (!headers.has('authorization')) {
-    return 'unauthorized';
-  }
-
-  const response = await fetch(backendOrigin + '/api/auth/me', { headers });
-
-  if (response.status === 401) return 'unauthorized';
-  if (!response.ok) return 'unauthorized';
-
-  return 'ok';
+  return validateSsrAuth({
+    backendOrigin,
+    authorization: authorization ?? (cookieToken ? `Bearer ${cookieToken}` : null),
+  });
 }
 
 const allowedHosts = Array.from(
@@ -120,8 +110,6 @@ function hasFingerprint(assetPath: string): boolean {
   return /-[A-Z0-9]{6,}\.(?:js|mjs|css|woff2?|png|jpg|jpeg|webp|avif|svg)$/i.test(assetPath);
 }
 
-app.use(['/api', '/uploads'], express.raw({ type: '*/*', limit: '300mb' }));
-
 app.use(['/api', '/uploads'], (req, res, next) => {
   void (async () => {
     const targetUrl = `${backendOrigin}${req.originalUrl}`;
@@ -145,8 +133,9 @@ app.use(['/api', '/uploads'], (req, res, next) => {
     const upstream = await fetch(targetUrl, {
       method: req.method,
       headers,
-      body: req.method === 'GET' || req.method === 'HEAD' ? undefined : req.body,
+      body: req.method === 'GET' || req.method === 'HEAD' ? undefined : req,
       duplex: 'half',
+      signal: AbortSignal.timeout(310_000),
     } as RequestInit);
 
     res.status(upstream.status);
@@ -159,8 +148,12 @@ app.use(['/api', '/uploads'], (req, res, next) => {
       res.setHeader(key, value);
     });
 
-    const body = Buffer.from(await upstream.arrayBuffer());
-    res.send(body);
+    if (!upstream.body) {
+      res.end();
+      return;
+    }
+
+    await pipeline(Readable.fromWeb(upstream.body as never), res);
   })().catch(next);
 });
 
@@ -177,22 +170,16 @@ app.use((req, res, next) => {
         return;
       }
 
+      if (session === 'unavailable') {
+        res.setHeader('Retry-After', '5');
+        res.status(503).send('Authentication service temporarily unavailable');
+        return;
+      }
+
       res.redirect(302, loginRedirectFor(req));
     })
     .catch(next);
 });
-
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
 
 /**
  * Serve static files from /browser
@@ -240,6 +227,6 @@ if (isMainModule(import.meta.url) || process.env['pm_id']) {
 }
 
 /**
- * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
+ * Request handler used by the Angular CLI during development and builds.
  */
 export const reqHandler = createNodeRequestHandler(app);

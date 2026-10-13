@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { I18N_RELEASE } from './i18n-release';
 import { I18nService } from './i18n.service';
 
 describe('I18nService', () => {
@@ -25,9 +26,9 @@ describe('I18nService', () => {
 
   function load() {
     service.load().subscribe();
-    http.expectOne('/assets/i18n/es.json?v=development').flush({ greeting: 'Hola' });
+    http.expectOne(`/assets/i18n/es.json?v=${I18N_RELEASE}`).flush({ greeting: 'Hola' });
     http
-      .expectOne('/assets/i18n/en.json?v=development')
+      .expectOne(`/assets/i18n/en.json?v=${I18N_RELEASE}`)
       .flush({ greeting: 'Hello', englishOnly: 'English only' });
   }
 

@@ -1,3 +1,4 @@
+import { entitySymbol } from '../../shared/entity-symbols';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -38,7 +39,9 @@ type MobileConnectionGroup = {
 })
 export class GraphInspectorPanelComponent {
   readonly i18n = inject(I18nService);
+  readonly entitySymbol = entitySymbol;
   @Input() isMobileViewport = false;
+  @Input() filtersOnly = false;
   @Input() nodeCount = 0;
   @Input() edgeCount = 0;
   @Input() selectedNode: GraphNode | null = null;

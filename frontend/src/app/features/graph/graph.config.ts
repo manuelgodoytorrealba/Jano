@@ -320,6 +320,11 @@ export function lineDasharray(style: GraphRelationVisualConfig['style']): string
 
 export function graphNodeShapePath(shape: GraphEntityShape, size: number): string {
   switch (shape) {
+    case 'rounded-square': {
+      const radius = size * 0.35;
+      const inset = size - radius;
+      return `M ${-inset} ${-size} H ${inset} Q ${size} ${-size} ${size} ${-inset} V ${inset} Q ${size} ${size} ${inset} ${size} H ${-inset} Q ${-size} ${size} ${-size} ${inset} V ${-inset} Q ${-size} ${-size} ${-inset} ${-size} Z`;
+    }
     case 'square':
       return `M ${-size} ${-size} L ${size} ${-size} L ${size} ${size} L ${-size} ${size} Z`;
     case 'diamond':

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LibraryMaterialKind, LibraryMaterialVersionStatus } from '@prisma/client';
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readdir, rm } from 'node:fs/promises';
 import { join, normalize, relative } from 'node:path';
 import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';

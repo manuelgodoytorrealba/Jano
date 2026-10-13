@@ -20,13 +20,24 @@ export type CanonicalPromotionOperation = {
   targetStatus?: TargetStatus;
 };
 
+export type CanonicalPromotionResult = {
+  kind: CanonicalPromotionOperation['kind'];
+  entityId: string;
+  relationId: string | null;
+  sourceRefId: string | null;
+  citationId: string;
+  assertionId: string | null;
+  action: string;
+  citationCreated: boolean;
+};
+
 @Injectable()
 export class CanonicalPromotionService {
   constructor(private readonly prisma: PrismaService) {}
 
   async apply(operations: CanonicalPromotionOperation[]) {
     return this.prisma.$transaction(async (tx) => {
-      const results: any[] = [];
+      const results: CanonicalPromotionResult[] = [];
       for (const operation of operations) {
         if (
           operation.targetStatus &&
@@ -45,11 +56,14 @@ export class CanonicalPromotionService {
           throw new Error(`EVIDENCE_PROVENANCE_MISMATCH:${operation.evidenceId}`);
         const sourceRef = operation.sourceRefId
           ? await tx.sourceRef.findFirst({
-              where: { id: operation.sourceRefId, entityId: operation.entityId, sourceId: operation.sourceId },
+              where: {
+                id: operation.sourceRefId,
+                entityId: operation.entityId,
+                sourceId: operation.sourceId,
+              },
               select: { id: true },
             })
-          :
-          operation.kind === 'PROVENANCE_RELATION'
+          : operation.kind === 'PROVENANCE_RELATION'
             ? await tx.sourceRef.findFirst({
                 where: { entityId: operation.entityId, sourceId: operation.sourceId },
                 orderBy: { id: 'asc' },

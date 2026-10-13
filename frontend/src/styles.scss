@@ -5,6 +5,12 @@
 @use './styles/components';
 @use './styles/features/entities-explorer-shell';
 
+@media (max-width: 1200px) {
+  app-app-chrome:not(.app-chrome--ready) .app-chrome__header {
+    visibility: hidden;
+  }
+}
+
 body.app-stage-immersive .app-shell {
   height: var(--app-viewport-height);
   overflow: hidden;

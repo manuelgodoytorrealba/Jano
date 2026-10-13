@@ -135,6 +135,16 @@
   }
 }
 
+html.app-keyboard-open {
+  --app-search-brand-display: none;
+  --app-search-grid-rows: minmax(0, 1fr);
+  --app-search-gap: 0;
+  --app-search-padding: 10px 14px;
+  --app-search-inset: 16px;
+  --app-search-top: calc(var(--app-safe-top) + 24px);
+  --app-search-height: calc(var(--app-visual-viewport-height) - var(--app-safe-top) - 44px);
+}
+
 :root[data-theme='light'] {
   --color-bg: #e7e2d8;
   --color-bg-deep: #d7d0c4;

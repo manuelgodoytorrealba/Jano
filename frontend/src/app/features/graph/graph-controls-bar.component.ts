@@ -11,6 +11,10 @@ import { I18nService } from '../../core/i18n/i18n.service';
 @Component({
   standalone: true,
   selector: 'app-graph-controls-bar',
+  host: {
+    '[class.graph-controls--detail]': 'detailLayout',
+    '[class.graph-controls--footer]': 'footerOnly',
+  },
   templateUrl: './graph-controls-bar.component.html',
   styleUrl: './graph-controls-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,6 +25,8 @@ export class GraphControlsBarComponent {
   @Input({ required: true }) nodeCount = 0;
   @Input({ required: true }) edgeCount = 0;
   @Input({ required: true }) scalePercent = 100;
+  @Input() detailLayout = false;
+  @Input() footerOnly = false;
   @Input() graphReady = false;
   @Input() inspectorVisible = true;
   @Input() isMobileViewport = false;

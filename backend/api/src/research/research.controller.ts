@@ -80,7 +80,11 @@ export class ResearchController {
   ) {}
 
   @Post(':id/evidence-decisions')
-  recordEvidenceDecision(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Body() dto: RecordEvidenceDecisionDto) {
+  recordEvidenceDecision(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: RecordEvidenceDecisionDto,
+  ) {
     return this.service.recordEvidenceDecision(id, req.user.userId, dto);
   }
 

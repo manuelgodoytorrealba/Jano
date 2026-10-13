@@ -3,8 +3,12 @@
 infra/.env.production
 .deploy/
 .worktrees/
-artifacts/
-backups/jano-handoff-20260919/
+artifacts/*
+!artifacts/README.md
+backups/*
+!backups/README.md
+output/playwright/*
+!output/playwright/README.md
 .tools/
 
 # Local AI runtimes and model caches

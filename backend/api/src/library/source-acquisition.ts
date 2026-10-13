@@ -25,6 +25,10 @@ import {
   retryAfterMs,
   sourceScore,
 } from './source-acquisition-policy';
+import {
+  buildAcquisitionProfiles,
+  type AcquisitionJournalRecord,
+} from './source-acquisition-profiles';
 
 const hash = (s: string | Buffer) => createHash('sha256').update(s).digest('hex');
 const MAX_BYTES = 20 * 1024 * 1024;
@@ -503,61 +507,8 @@ export class SourceAcquisition {
     // ponytail: scan the small durable acquisition journal; index when measured volume warrants it.
     const records = readdirSync(this.root)
       .filter((f) => f.endsWith('.json'))
-      .map((f) => JSON.parse(readFileSync(join(this.root, f), 'utf8')));
-    const domains: Record<string, any> = {};
-    for (const row of records) {
-      const domain = row.domain ?? (row.candidate ? new URL(row.candidate.url).hostname : null);
-      if (!domain) continue;
-      const d = (domains[domain] ??= {
-        domain,
-        attempts: 0,
-        successes: 0,
-        '403_count': 0,
-        '429_count': 0,
-        other_failures: 0,
-        selected_count: 0,
-        prepared_count: 0,
-        effective_count: 0,
-        assessed_count: 0,
-        response_time_total: 0,
-        last_success_at: null,
-        last_failure_at: null,
-      });
-      if (row.event) {
-        d.attempts++;
-        d.response_time_total += row.responseMs;
-        if (row.status >= 200 && row.status < 400) {
-          d.successes++;
-          d.last_success_at = [d.last_success_at, row.at].filter(Boolean).sort().at(-1);
-        } else {
-          d[
-            row.status === 403 ? '403_count' : row.status === 429 ? '429_count' : 'other_failures'
-          ]++;
-          d.last_failure_at = [d.last_failure_at, row.at].filter(Boolean).sort().at(-1);
-        }
-      } else if (row.candidate) {
-        d.selected_count++;
-        if (row.prepared) d.prepared_count++;
-        if (row.effective !== undefined) d.assessed_count++;
-        if (row.effective) d.effective_count++;
-      }
-    }
-    return Object.values(domains).map((d) => ({
-      ...d,
-      average_response_time: d.attempts ? d.response_time_total / d.attempts : null,
-      acquisition_success_rate: d.selected_count ? d.prepared_count / d.selected_count : null,
-      knowledge_yield_rate:
-        d.assessed_count === d.prepared_count && d.prepared_count
-          ? d.effective_count / d.prepared_count
-          : null,
-      assessed_knowledge_yield_rate: d.assessed_count ? d.effective_count / d.assessed_count : null,
-      recommended_acquisition_strategy:
-        d['403_count'] / d.attempts > 0.5
-          ? 'OFFICIAL_ALTERNATIVE_OR_MANUAL'
-          : d['429_count'] / d.attempts > 0.25
-            ? 'COOLDOWN_AND_DIVERSIFY'
-            : 'DIRECT_PUBLIC',
-    }));
+      .map((f) => JSON.parse(readFileSync(join(this.root, f), 'utf8')) as AcquisitionJournalRecord);
+    return buildAcquisitionProfiles(records);
   }
   async select(
     candidates: AcquisitionCandidate[],
@@ -596,8 +547,8 @@ export class SourceAcquisition {
         probe,
         score: sourceScore(candidate, probe.state.startsWith('ACCESSIBLE') ? 1 : 0, {
           yield: p?.knowledge_yield_rate ?? 0.5,
-          block: p?.['403_count'] / (p?.attempts || 1) || 0,
-          rateLimit: p?.['429_count'] / (p?.attempts || 1) || 0,
+          block: (p?.['403_count'] ?? 0) / (p?.attempts || 1),
+          rateLimit: (p?.['429_count'] ?? 0) / (p?.attempts || 1),
         }),
       });
     }

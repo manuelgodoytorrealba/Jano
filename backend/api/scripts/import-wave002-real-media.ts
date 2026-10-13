@@ -65,7 +65,8 @@ const sources: Source[] = [
   {
     slug: '_wave002-87a4c47fed1aba8f',
     alt: 'Revolución de julio de 1830',
-    pageUrl: 'https://commons.wikimedia.org/wiki/File:Eug%C3%A8ne_Delacroix_-_La_libert%C3%A9_guidant_le_peuple.jpg',
+    pageUrl:
+      'https://commons.wikimedia.org/wiki/File:Eug%C3%A8ne_Delacroix_-_La_libert%C3%A9_guidant_le_peuple.jpg',
     commonsFile: 'File:Eugène Delacroix - La liberté guidant le peuple.jpg',
     provider: MediaProvider.WIKIMEDIA_COMMONS,
     license: 'Public domain',
@@ -105,8 +106,10 @@ const sources: Source[] = [
   {
     slug: '_wave002-2bb9a92d7a020f5b',
     alt: 'Lucy Lippard',
-    pageUrl: 'https://commons.wikimedia.org/wiki/File:Lucy_Lippard,_Getty_Furst,_Edie_Williamson_-_DPLA_-_17b7945f3de60490fd10eb061eaeb459.jpg',
-    commonsFile: 'File:Lucy Lippard, Getty Furst, Edie Williamson - DPLA - 17b7945f3de60490fd10eb061eaeb459.jpg',
+    pageUrl:
+      'https://commons.wikimedia.org/wiki/File:Lucy_Lippard,_Getty_Furst,_Edie_Williamson_-_DPLA_-_17b7945f3de60490fd10eb061eaeb459.jpg',
+    commonsFile:
+      'File:Lucy Lippard, Getty Furst, Edie Williamson - DPLA - 17b7945f3de60490fd10eb061eaeb459.jpg',
     provider: MediaProvider.WIKIMEDIA_COMMONS,
     license: 'Wikimedia Commons license',
   },
@@ -123,16 +126,24 @@ const sources: Source[] = [
 async function commons(file: string) {
   const api = new URL('https://commons.wikimedia.org/w/api.php');
   api.search = new URLSearchParams({
-    action: 'query', format: 'json', titles: file, prop: 'imageinfo',
-    iiprop: 'url|mime|size|extmetadata', iiurlwidth: '1800',
+    action: 'query',
+    format: 'json',
+    titles: file,
+    prop: 'imageinfo',
+    iiprop: 'url|mime|size|extmetadata',
+    iiurlwidth: '1800',
   }).toString();
   const response = await fetch(api, { headers: { 'User-Agent': userAgent } });
   if (!response.ok) throw new Error(`Commons metadata failed: ${response.status}`);
   const json = (await response.json()) as any;
   const info = Object.values(json.query?.pages ?? {})[0] as any;
   const image = info?.imageinfo?.[0];
-  if (!image?.thumburl || !String(image.mime).startsWith('image/')) throw new Error(`No image for ${file}`);
-  return { url: String(image.thumburl).replace(/\?.*$/, ''), pageUrl: `https://commons.wikimedia.org/wiki/${encodeURIComponent(String(info.title).replace(/ /g, '_'))}` };
+  if (!image?.thumburl || !String(image.mime).startsWith('image/'))
+    throw new Error(`No image for ${file}`);
+  return {
+    url: String(image.thumburl).replace(/\?.*$/, ''),
+    pageUrl: `https://commons.wikimedia.org/wiki/${encodeURIComponent(String(info.title).replace(/ /g, '_'))}`,
+  };
 }
 
 async function main() {
@@ -140,16 +151,25 @@ async function main() {
   const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
   try {
     for (const source of sources) {
-      const entity = await prisma.entity.findUnique({ where: { slug: source.slug }, include: { mediaLinks: true } });
+      const entity = await prisma.entity.findUnique({
+        where: { slug: source.slug },
+        include: { mediaLinks: true },
+      });
       if (!entity) throw new Error(`Missing entity ${source.slug}`);
-      if (entity.mediaLinks.length) { console.log(`KEEP ${source.slug}`); continue; }
-      const resolved = source.commonsFile ? await commons(source.commonsFile) : { url: source.url!, pageUrl: source.pageUrl };
+      if (entity.mediaLinks.length) {
+        console.log(`KEEP ${source.slug}`);
+        continue;
+      }
+      const resolved = source.commonsFile
+        ? await commons(source.commonsFile)
+        : { url: source.url!, pageUrl: source.pageUrl };
       const response = await fetch(resolved.url, { headers: { 'User-Agent': userAgent } });
       if (!response.ok) throw new Error(`${source.slug}: image HTTP ${response.status}`);
       const bytes = Buffer.from(await response.arrayBuffer());
       const image = sharp(bytes, { limitInputPixels: 80_000_000 });
       const metadata = await image.metadata();
-      if (!metadata.width || !metadata.height || !metadata.format) throw new Error(`${source.slug}: invalid image`);
+      if (!metadata.width || !metadata.height || !metadata.format)
+        throw new Error(`${source.slug}: invalid image`);
       const hash = createHash('sha256').update(bytes).digest('hex');
       const root = `media/ingested/wave002/${hash.slice(0, 2)}/${hash}`;
       const ext = metadata.format === 'jpeg' ? 'jpg' : metadata.format;
@@ -158,24 +178,49 @@ async function main() {
       if (!apply) continue;
       const path = join(uploadsRoot, key);
       await mkdir(join(path, '..'), { recursive: true });
-      await writeFile(path, bytes, { flag: 'wx' }).catch((error: any) => { if (error.code !== 'EEXIST') throw error; });
+      await writeFile(path, bytes, { flag: 'wx' }).catch((error: any) => {
+        if (error.code !== 'EEXIST') throw error;
+      });
       await prisma.$transaction(async (tx) => {
-        const media = await tx.media.create({ data: {
-          url: buildPublicUploadUrl(key, publicBase), displayUrl: buildPublicUploadUrl(key, publicBase),
-          canonicalUrl: resolved.url, sourcePageUrl: resolved.pageUrl, storageKey: key,
-          originalFilename: `${source.slug}.${ext}`, fileSize: bytes.length,
-          mimeType: `image/${metadata.format === 'jpeg' ? 'jpeg' : metadata.format}`,
-          width: metadata.width, height: metadata.height, provider: source.provider,
-          qualityTier: MediaQualityTier.HIGH, originType: MediaOriginType.INGESTED,
-          alt: source.alt, source: resolved.pageUrl, license: source.license,
-        } });
-        await tx.entityMedia.create({ data: {
-          entityId: entity.id, mediaId: media.id, role: MediaRole.CARD, sortOrder: 0,
-          isPrimary: true, displayMode: 'COVER',
-        } });
+        const media = await tx.media.create({
+          data: {
+            url: buildPublicUploadUrl(key, publicBase),
+            displayUrl: buildPublicUploadUrl(key, publicBase),
+            canonicalUrl: resolved.url,
+            sourcePageUrl: resolved.pageUrl,
+            storageKey: key,
+            originalFilename: `${source.slug}.${ext}`,
+            fileSize: bytes.length,
+            mimeType: `image/${metadata.format === 'jpeg' ? 'jpeg' : metadata.format}`,
+            width: metadata.width,
+            height: metadata.height,
+            provider: source.provider,
+            qualityTier: MediaQualityTier.HIGH,
+            originType: MediaOriginType.INGESTED,
+            alt: source.alt,
+            source: resolved.pageUrl,
+            license: source.license,
+          },
+        });
+        await tx.entityMedia.create({
+          data: {
+            entityId: entity.id,
+            mediaId: media.id,
+            role: MediaRole.CARD,
+            sortOrder: 0,
+            isPrimary: true,
+            displayMode: 'COVER',
+          },
+        });
       });
     }
-  } finally { await prisma.$disconnect(); await pool.end(); }
+  } finally {
+    await prisma.$disconnect();
+    await pool.end();
+  }
 }
 
-main().catch((error) => { console.error(error); process.exitCode = 1; });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

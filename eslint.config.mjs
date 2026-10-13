@@ -32,6 +32,9 @@ export default tseslint.config(
       '**/out-tsc/**',
       '.playwright-cli/**',
       'backend/api/uploads/**',
+      // Historical, one-off editorial operations. These are retained as an
+      // audit trail, but are not maintained as part of the application gate.
+      'backend/api/scripts/**/*.cjs',
     ],
   },
   {

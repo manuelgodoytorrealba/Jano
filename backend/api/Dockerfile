@@ -23,8 +23,15 @@ WORKDIR /app/backend/api
 RUN npm exec -- prisma generate
 
 FROM development-dependencies AS dev
+ARG LOCAL_UID=1000
+ARG LOCAL_GID=1000
 ENV NODE_ENV=development
 COPY backend/api ./
+RUN groupmod --gid "$LOCAL_GID" node \
+  && usermod --uid "$LOCAL_UID" --gid "$LOCAL_GID" node \
+  && mkdir -p dist uploads \
+  && chown -R node:node /app/backend/api
+USER node
 CMD ["npm", "run", "start:dev"]
 
 FROM dev AS build
@@ -35,15 +42,33 @@ FROM base AS production-dependencies
 ENV NODE_ENV=production
 RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --workspace=backend/api
 
-COPY backend/api/prisma ./backend/api/prisma
-COPY backend/api/prisma.config.ts ./backend/api/prisma.config.ts
-WORKDIR /app/backend/api
-RUN npm exec -- prisma generate
-
-FROM production-dependencies AS runtime
+FROM production-dependencies AS migration
 ARG JANO_RELEASE
 LABEL org.opencontainers.image.revision="$JANO_RELEASE"
-COPY --from=build /app/backend/api/dist ./dist
+WORKDIR /app/backend/api
+COPY --chown=node:node backend/api/prisma ./prisma
+COPY --chown=node:node backend/api/prisma.config.ts ./prisma.config.ts
+USER node
+CMD ["npm", "exec", "--", "prisma", "migrate", "deploy"]
+
+FROM production-dependencies AS runtime-dependencies
+# Prisma's CLI is an optional peer of the runtime client. The generated client is
+# copied from the build stage, so shipping the CLI and its database drivers only
+# increases the production image and its advisory surface.
+RUN rm -rf \
+  /app/node_modules/prisma \
+  /app/node_modules/@prisma/config \
+  /app/node_modules/deepmerge-ts \
+  /app/node_modules/mysql2
+
+FROM runtime-dependencies AS runtime
+ARG JANO_RELEASE
+LABEL org.opencontainers.image.revision="$JANO_RELEASE"
+WORKDIR /app/backend/api
+COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
+COPY --chown=node:node --from=build /app/backend/api/dist ./dist
+RUN mkdir -p uploads && chown node:node uploads
 
 EXPOSE 3000
+USER node
 CMD ["node", "dist/src/main.js"]

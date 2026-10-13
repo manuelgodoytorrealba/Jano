@@ -180,7 +180,7 @@
   fill: rgba(214, 230, 243, 0.72);
   font-size: 10px;
   letter-spacing: 0;
-  text-transform: uppercase;
+  text-transform: none;
   paint-order: stroke;
   stroke: rgba(3, 6, 10, 0.68);
   stroke-width: 2.3px;
@@ -229,7 +229,7 @@
   color: rgba(182, 207, 228, 0.72);
   font-size: 0.78rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .graph-tooltip__body {

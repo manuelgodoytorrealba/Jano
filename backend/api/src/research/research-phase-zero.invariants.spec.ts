@@ -1,12 +1,25 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ResearchService } from './research.service';
+import { ResearchProjectLifecycleService } from './research-project-lifecycle.service';
 
 describe('Research phase-zero invariants', () => {
   it('archives without deleting private Research state', async () => {
     const prisma = { researchProject: { update: jest.fn() } };
     const service = new ResearchService(
-      prisma as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      new ResearchProjectLifecycleService(prisma as never),
       {} as never,
       {} as never,
       {} as never,

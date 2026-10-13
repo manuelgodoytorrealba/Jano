@@ -10,6 +10,20 @@ import {
 } from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
 import { ResearchService } from './research.service';
+import { ResearchKnowledgeService } from './research-knowledge.service';
+import { ResearchCitationService } from './research-citation.service';
+import { ResearchMaterialLinkService } from './research-material-link.service';
+import { ResearchJobQueueService } from './research-job-queue.service';
+import { ResearchProposalReviewService } from './research-proposal-review.service';
+import { ResearchProposalAcceptanceService } from './research-proposal-acceptance.service';
+import { ResearchGraphManagementService } from './research-graph-management.service';
+import { ResearchMaterialService } from './research-material.service';
+import { ResearchEvidenceService } from './research-evidence.service';
+import { ResearchProjectLifecycleService } from './research-project-lifecycle.service';
+import { ResearchPublicationReadService } from './research-publication-read.service';
+import { ResearchProjectReadService } from './research-project-read.service';
+import { ResearchEvidencePromotionService } from './research-evidence-promotion.service';
+import { ResearchGenerationStatusService } from './research-generation-status.service';
 
 describe('ResearchService', () => {
   const tx = {
@@ -35,7 +49,9 @@ describe('ResearchService', () => {
     researchEvidence: { upsert: jest.fn() },
   };
   const prisma = {
-    entityTypeDefinition: { findUnique: jest.fn().mockResolvedValue({ status: 'ACTIVE', baseKind: 'WORK' }) },
+    entityTypeDefinition: {
+      findUnique: jest.fn().mockResolvedValue({ status: 'ACTIVE', baseKind: 'WORK' }),
+    },
     $transaction: jest.fn(async (callback: (client: typeof tx) => Promise<unknown>) =>
       callback(tx),
     ),
@@ -106,15 +122,33 @@ describe('ResearchService', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    prisma.entityTypeDefinition.findUnique.mockResolvedValue({ status: 'ACTIVE', baseKind: 'WORK' });
+    prisma.entityTypeDefinition.findUnique.mockResolvedValue({
+      status: 'ACTIVE',
+      baseKind: 'WORK',
+    });
     prisma.$transaction.mockImplementation(async (callback) => callback(tx));
     prisma.relation.findMany.mockResolvedValue([]);
     service = new ResearchService(
-      prisma as unknown as PrismaService,
       sources as never,
-      library as never,
       outline as never,
-      entityEditorial as never,
+      {} as never,
+      new ResearchKnowledgeService(prisma as unknown as PrismaService),
+      new ResearchCitationService(prisma as unknown as PrismaService),
+      new ResearchMaterialLinkService(prisma as unknown as PrismaService),
+      new ResearchJobQueueService(prisma as unknown as PrismaService),
+      new ResearchProposalReviewService(prisma as unknown as PrismaService),
+      new ResearchProposalAcceptanceService(prisma as unknown as PrismaService),
+      new ResearchGraphManagementService(
+        prisma as unknown as PrismaService,
+        entityEditorial as never,
+      ),
+      new ResearchMaterialService(prisma as unknown as PrismaService, library as never),
+      new ResearchEvidenceService(prisma as unknown as PrismaService, library as never),
+      new ResearchProjectLifecycleService(prisma as unknown as PrismaService),
+      new ResearchPublicationReadService(prisma as unknown as PrismaService),
+      new ResearchProjectReadService(prisma as unknown as PrismaService),
+      new ResearchEvidencePromotionService(prisma as unknown as PrismaService),
+      new ResearchGenerationStatusService(prisma as unknown as PrismaService),
     );
   });
 

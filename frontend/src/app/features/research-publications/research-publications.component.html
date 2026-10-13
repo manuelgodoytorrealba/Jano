@@ -100,7 +100,14 @@
             <div class="entities-stage-shell entities-stage-shell--list">
               <section class="entities-grid" aria-label="Lista de publicaciones">
                 @for (publication of items; track publication.id; let index = $index) {
-                  <article class="entity-card ds-card" tabindex="0" (click)="open(publication)">
+                  <article
+                    class="entity-card ds-card"
+                    role="button"
+                    tabindex="0"
+                    (click)="open(publication)"
+                    (keydown.enter)="open(publication)"
+                    (keydown.space)="open(publication); $event.preventDefault()"
+                  >
                     <div class="entity-card__thumb">
                       <app-jano-media
                         [entity]="publication"

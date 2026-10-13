@@ -49,7 +49,7 @@ describe('claim-level editorial provenance', () => {
     expect(request.outputSchema.properties.claimId).toEqual({ type: 'string', const: 'c1' });
     expect(request.outputSchema.properties.sentence).toEqual({ type: 'string' });
     expect(request.maxOutputTokens).toBeLessThanOrEqual(180);
-    expect((request.input as any).CLAIM_ID).toBe('c1');
+    expect(request.input.CLAIM_ID).toBe('c1');
   });
   it('rejects invented provenance and paraphrased planner claims', () => {
     expect(

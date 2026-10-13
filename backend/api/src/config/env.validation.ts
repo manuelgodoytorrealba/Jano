@@ -21,6 +21,7 @@ type AppEnv = {
   AI_PROVIDER: 'noop' | 'ollama';
   OLLAMA_BASE_URL: string;
   OLLAMA_MODEL: string;
+  METRICS_TOKEN?: string;
 };
 
 const DEV_FALLBACK_JWT_SECRET = 'dev-secret-change-me';
@@ -120,6 +121,10 @@ export function validateEnv(env: RawEnv): AppEnv {
   const AI_PROVIDER = readAIProvider(env);
   const OLLAMA_BASE_URL = readString(env, 'OLLAMA_BASE_URL') ?? 'http://127.0.0.1:11434';
   const OLLAMA_MODEL = readString(env, 'OLLAMA_MODEL') ?? 'qwen2.5:7b';
+  const METRICS_TOKEN = readString(env, 'METRICS_TOKEN');
+  if (METRICS_TOKEN && METRICS_TOKEN.length < 32) {
+    throw new Error(error('Invalid env var: METRICS_TOKEN must contain at least 32 characters'));
+  }
   const AUTH_RATE_LIMIT = readPositiveInteger(env, 'AUTH_RATE_LIMIT', 10);
   const AUTH_RATE_LIMIT_TTL_SECONDS = readPositiveInteger(env, 'AUTH_RATE_LIMIT_TTL_SECONDS', 60);
   const PASSWORD_RESET_TOKEN_TTL_MINUTES = readPositiveInteger(
@@ -179,6 +184,7 @@ export function validateEnv(env: RawEnv): AppEnv {
     AI_PROVIDER,
     OLLAMA_BASE_URL,
     OLLAMA_MODEL,
+    METRICS_TOKEN,
   };
 
   logEnvSummary(validatedEnv, usingFallbackJwtSecret);

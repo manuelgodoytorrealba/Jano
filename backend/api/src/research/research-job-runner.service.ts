@@ -87,7 +87,7 @@ export class ResearchJobRunnerService implements OnModuleInit {
       return this.preparation.prepare(job.materialVersionId);
     }
     if (job.type !== ResearchJobType.PREPARE_SOURCE) {
-      throw new Error(`Unsupported research job type: ${job.type}`);
+      throw new Error('Unsupported research job type');
     }
     if (!job.sourceId) throw new Error('Research job source not found');
     const projectSource = await this.prisma.researchProjectSource.findUnique({

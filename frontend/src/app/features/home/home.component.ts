@@ -135,11 +135,12 @@ export class HomeComponent {
   private setCoreDecks(cards: PublicHomeEntityTypeCard[]): void {
     const items = cards.map(({ type, entity }) => ({
       id: `core-${type.key}`,
-      eyebrow: this.i18n.t('home.defaultEyebrow'),
       title: type.systemType ? entityTypeLabel(type.key, this.i18n) : type.singularName,
       description: type.systemType ? this.coreTypeDescription(type.key) : (type.description ?? ''),
-      meta: entity?.title ?? type.pluralName,
-      cta: `${this.i18n.t('home.viewSelection')} →`,
+      meta: entity?.title
+        ? `${this.i18n.t('home.featuredSelection')} · ${entity.title}`
+        : type.pluralName,
+      cta: this.i18n.t('home.exploreSelection'),
       image: resolveEntityMediaItem(entity, 'card')?.url ?? entity?.image ?? '',
       routeType: type.key.toLowerCase(),
       ctaRoute: `/entities/${type.key.toLowerCase()}`,

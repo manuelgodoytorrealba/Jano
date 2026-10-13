@@ -99,9 +99,12 @@ async function fixture(canonicalEntityId: string | null = 'canonical-1') {
 describe('ResearchGraphComponent', () => {
   it('renders Research through the shared GraphComponent', async () => {
     const { result } = await fixture();
-    expect(result.nativeElement.querySelector('app-graph')).toBeTruthy();
+    const graph = result.debugElement.query(By.directive(GraphComponent));
+    expect(graph).toBeTruthy();
     expect(result.nativeElement.querySelector('.research-graph__canvas')).toBeNull();
-    expect(result.nativeElement.querySelector('.graph-node.is-candidate')).toBeTruthy();
+    expect(graph.componentInstance.graphData.nodes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ state: 'candidate' })]),
+    );
   });
 
   it('loads traceability when a private node is selected', async () => {

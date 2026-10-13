@@ -1,5 +1,6 @@
 import { BENCHMARK_DATASET, provenanceReport } from '../../scripts/editorial-quality-benchmark';
 import { RITUAL_BASIC_EXPLANATION } from './entity-editorial-generation.fixtures';
+import type { EditorialGenerationContext } from './entity-editorial-generation';
 
 describe('editorial quality benchmark dataset', () => {
   it('contains 24 deliberately varied real seed cases', () => {
@@ -47,6 +48,7 @@ describe('editorial quality benchmark dataset', () => {
         essay: '## Contexto\nLa obra se usó en una ceremonia.',
       },
       {
+        locale: 'es',
         entityData: { canonicalName: 'Objeto', type: 'ARTWORK', metadata: {} },
         relations: [{ canonicalName: 'Ritual', type: 'ABOUT_CONCEPT' }],
         relationMetadata: [
@@ -60,7 +62,7 @@ describe('editorial quality benchmark dataset', () => {
         availableEntities: [{ id: '1', slug: 'ritual', canonicalName: 'Ritual', type: 'CONCEPT' }],
         sources: [],
         documentaryContext: [],
-      } as any,
+      } satisfies EditorialGenerationContext,
     );
     expect(report.claims.some((claim) => claim.classification === 'UNSUPPORTED')).toBe(true);
     expect(report.claims.some((claim) => claim.classification === 'RELATION_EVIDENCE')).toBe(false);

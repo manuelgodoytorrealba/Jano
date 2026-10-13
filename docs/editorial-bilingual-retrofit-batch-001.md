@@ -19,17 +19,17 @@ La métrica maestra actual es la unión deduplicada de:
 
 La cobertura semántica completa no se puede deducir sólo de longitud. Por eso las señales de “grounded content not reflected” se reportan aparte y no sustituyen la revisión de claims.
 
-| Métrica pública en español | Entidades publicadas |
-|---|---:|
-| SUMMARY_META_LANGUAGE | 732 |
-| SUMMARY_MISSING | 1 |
-| SUMMARY_TOO_GENERIC | incluida en la unión; no hay una cifra adicional separable sin doble conteo |
-| SUMMARY_GROUNDED_CONTENT_NOT_REFLECTED | señal separada; requiere revisión de claims |
-| SUMMARY_NEEDS_IMPROVEMENT_UNION | 773 |
-| ESSAY_META_LANGUAGE | 769 |
-| ESSAY_MISSING | 10 |
-| ESSAY_GROUNDED_CONTENT_NOT_REFLECTED | señal separada; requiere revisión de claims |
-| ESSAY_NEEDS_IMPROVEMENT_UNION | 789 |
+| Métrica pública en español             |                                                        Entidades publicadas |
+| -------------------------------------- | --------------------------------------------------------------------------: |
+| SUMMARY_META_LANGUAGE                  |                                                                         732 |
+| SUMMARY_MISSING                        |                                                                           1 |
+| SUMMARY_TOO_GENERIC                    | incluida en la unión; no hay una cifra adicional separable sin doble conteo |
+| SUMMARY_GROUNDED_CONTENT_NOT_REFLECTED |                                 señal separada; requiere revisión de claims |
+| SUMMARY_NEEDS_IMPROVEMENT_UNION        |                                                                         773 |
+| ESSAY_META_LANGUAGE                    |                                                                         769 |
+| ESSAY_MISSING                          |                                                                          10 |
+| ESSAY_GROUNDED_CONTENT_NOT_REFLECTED   |                                 señal separada; requiere revisión de claims |
+| ESSAY_NEEDS_IMPROVEMENT_UNION          |                                                                         789 |
 
 En la población completa de 824 entidades, las uniones equivalentes son 777 para resumen español, 802 para ensayo español, 451 para resumen inglés y 801 para ensayo inglés.
 
@@ -77,14 +77,14 @@ El `401 /api/auth/me` observado corresponde a la sesión anónima de desarrollo.
 
 La métrica global determinista, sobre las 812 entidades publicadas, queda así:
 
-| Métrica | Resultado |
-|---|---:|
-| TOTAL_ENTITIES | 824 |
-| EDITORIAL_COMPLETE_ES | 32 |
-| EDITORIAL_COMPLETE_EN | 38 |
-| EDITORIAL_COMPLETE_BILINGUAL | 29 |
-| NEED_IMPROVEMENT_BILINGUAL | 783 |
-| RELATION_JUSTIFICATION_BLOCKED_ENTITIES | 662 |
+| Métrica                                 | Resultado |
+| --------------------------------------- | --------: |
+| TOTAL_ENTITIES                          |       824 |
+| EDITORIAL_COMPLETE_ES                   |        32 |
+| EDITORIAL_COMPLETE_EN                   |        38 |
+| EDITORIAL_COMPLETE_BILINGUAL            |        29 |
+| NEED_IMPROVEMENT_BILINGUAL              |       783 |
+| RELATION_JUSTIFICATION_BLOCKED_ENTITIES |       662 |
 
 `EDITORIAL_COMPLETE_BILINGUAL` sólo cuenta summary y essay en ambos idiomas, sin meta-JANO, ausencia o plantilla genérica. No cuenta como completitud total mientras las justificaciones canónicas estén bloqueadas; ese backlog se sigue por separado.
 

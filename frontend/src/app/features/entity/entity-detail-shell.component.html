@@ -1,198 +1,113 @@
 @if (entity$ | async; as entity) {
   <app-entity-detail-view
     [entity]="entity"
-    [showActions]="auth.isLoggedIn"
+    [showActions]="true"
     [isSaved]="saved.isSaved()"
-    [saveLoading]="saved.saveLoading()"
+    [saveLoading]="saved.saveLoading() || !saved.saveStatusResolved()"
     [collectionsLoading]="saved.collectionsLoading()"
     [preferredWorkspaceMode]="preferredWorkspaceMode"
-    (saveToggle)="saved.toggleSave($event)"
-    (collectionsToggle)="saved.toggleCollectionsPanel()"
+    (saveToggle)="saveOrAuthenticate(entity)"
+    (collectionsToggle)="collectionsOrAuthenticate(entity)"
+    [collectionsOpen]="saved.showCollectionsPanel()"
+    [actionFeedback]="saved.feedback()"
+    [actionFeedbackError]="saved.feedbackError()"
     (shareToggle)="shareEntity(entity)"
-  ></app-entity-detail-view>
+  >
+    @if (saved.showCollectionsPanel() && auth.isLoggedIn) {
+      <section
+        entityCollections
+        id="entity-collections-panel"
+        class="collections-panel"
+        [attr.aria-label]="i18n.t('collection.addTo')"
+      >
+        <header>
+          <h2>{{ i18n.t('collection.addTo') }}</h2>
+          <button
+            type="button"
+            (click)="saved.closeCollectionsPanel()"
+            [attr.aria-label]="i18n.t('button.close')"
+          >
+            ×
+          </button>
+        </header>
+        <input
+          class="ds-input"
+          type="search"
+          [attr.aria-label]="i18n.t('collection.search')"
+          [placeholder]="i18n.t('collection.search')"
+          [value]="saved.collectionSearch()"
+          (input)="saved.collectionSearch.set($any($event.target).value)"
+        />
+        @if (saved.collectionMessage()) {
+          <p role="alert">{{ saved.collectionMessage() }}</p>
+        }
+        @if (saved.collections$ | async; as collections) {
+          @if (saved.collectionsLoading() && !collections.length) {
+            <p role="status">{{ i18n.t('common.loading') }}</p>
+          } @else {
+            <div class="collections-panel__list">
+              @for (collection of saved.filteredCollections(collections); track collection.id) {
+                <div class="collection-option">
+                  <div>
+                    <strong>{{ collection.name }}</strong
+                    ><small>{{ collection.itemCount }} {{ i18n.t('common.items') }}</small>
+                  </div>
+                  <button
+                    type="button"
+                    [disabled]="saved.addingToCollection()"
+                    (click)="saved.toggleCollection(collection, entity.id)"
+                    [attr.aria-label]="
+                      (saved.containsEntity(collection, entity.id)
+                        ? i18n.t('button.remove')
+                        : i18n.t('button.add')) +
+                      ': ' +
+                      collection.name
+                    "
+                  >
+                    {{
+                      saved.containsEntity(collection, entity.id)
+                        ? '✓ ' + i18n.t('button.remove')
+                        : i18n.t('button.add')
+                    }}
+                  </button>
+                </div>
+              } @empty {
+                <p>{{ i18n.t('collection.noMatches') }}</p>
+              }
+            </div>
+          }
+        }
+        <button
+          type="button"
+          (click)="saved.createOpen.set(!saved.createOpen())"
+          [attr.aria-expanded]="saved.createOpen()"
+        >
+          + {{ i18n.t('collection.new') }}
+        </button>
+        @if (saved.createOpen()) {
+          <form (submit)="$event.preventDefault(); saved.createCollectionAndAttach(entity.id)">
+            <input
+              class="ds-input"
+              required
+              [attr.aria-label]="i18n.t('collection.namePlaceholder')"
+              [placeholder]="i18n.t('collection.namePlaceholder')"
+              [value]="saved.createCollectionName()"
+              (input)="saved.createCollectionName.set($any($event.target).value)"
+            />
+            <button
+              type="submit"
+              [disabled]="saved.creatingCollection() || !saved.createCollectionName().trim()"
+            >
+              {{ i18n.t('collection.create') }}
+            </button>
+          </form>
+        }
+      </section>
+    }
+  </app-entity-detail-view>
   @if (entity.translationMeta?.isFallback) {
     <div class="entity-translation-notice entity-glass">
       {{ i18n.t('editorial.fallback.' + (entity.translationMeta?.resolvedLocale ?? 'es')) }}
-    </div>
-  }
-
-  @if (saved.showCollectionsPanel() && auth.isLoggedIn) {
-    <div class="entity-detail-popup-wrap" aria-live="polite">
-      <section
-        class="collections-panel entity-glass"
-        [class.collections-panel--notice]="!saved.collectionsChooserOpen()"
-        [class.collections-panel--chooser]="saved.collectionsChooserOpen()"
-        [class.collections-panel--toast]="saved.popupKind() === 'collectionSaved'"
-        [attr.data-kind]="saved.popupKind()"
-      >
-        <div class="collections-panel__head">
-          <div class="collections-panel__title-block">
-            <div class="collections-panel__eyebrow">
-              <span class="collections-panel__state-dot" aria-hidden="true"></span>
-              <p class="section-label">
-                @switch (saved.popupKind()) {
-                  @case ('manage') {
-                    {{ i18n.t('popup.state.saved') }}
-                  }
-                  @case ('removed') {
-                    {{ i18n.t('popup.state.removed') }}
-                  }
-                  @case ('share') {
-                    {{ i18n.t('popup.state.share') }}
-                  }
-                  @case ('error') {
-                    {{ i18n.t('popup.state.notice') }}
-                  }
-                  @case ('collections') {
-                    {{ i18n.t('mySpace.collections') }}
-                  }
-                  @case ('collectionSaved') {
-                    {{ i18n.t('popup.state.saved') }}
-                  }
-                  @default {
-                    {{ i18n.t('popup.state.saved') }}
-                  }
-                }
-              </p>
-            </div>
-            <h2 class="title-section">{{ saved.popupTitle() }}</h2>
-          </div>
-          @if (saved.popupKind() !== 'collectionSaved') {
-            <button
-              class="ds-btn collections-panel__close"
-              type="button"
-              (click)="saved.closeCollectionsPanel()"
-            >
-              {{ i18n.t('button.close') }}
-            </button>
-          }
-        </div>
-
-        @if (saved.collectionMessage()) {
-          <div
-            class="collections-panel__message"
-            [class.collections-panel__message--positive]="
-              saved.popupKind() === 'saved' ||
-              saved.popupKind() === 'collectionSaved' ||
-              saved.popupKind() === 'share'
-            "
-          >
-            <span class="collections-panel__message-icon" aria-hidden="true"></span>
-            <p class="collections-panel__message-text">{{ saved.collectionMessage() }}</p>
-          </div>
-        }
-
-        @if (saved.collectionsChooserOpen()) {
-          <div class="collections-panel__create entity-glass-card">
-            <div class="collections-panel__create-head">
-              <h3 class="collections-panel__create-title">{{ i18n.t('collection.new') }}</h3>
-              <p class="collections-panel__create-subtitle">
-                {{ i18n.t('collection.createAndAttach') }}
-              </p>
-            </div>
-            <div class="collections-panel__create-fields">
-              <input
-                class="ds-input collections-panel__input"
-                type="text"
-                placeholder="{{ i18n.t('collection.namePlaceholder') }}"
-                [value]="saved.createCollectionName()"
-                (input)="saved.createCollectionName.set($any($event.target).value)"
-              />
-              <input
-                class="ds-input collections-panel__input"
-                type="text"
-                placeholder="{{ i18n.t('collection.descriptionPlaceholder') }}"
-                [value]="saved.createCollectionDescription()"
-                (input)="saved.createCollectionDescription.set($any($event.target).value)"
-              />
-            </div>
-            <button
-              class="ds-btn entity-action entity-action--primary collections-panel__create-btn"
-              type="button"
-              [disabled]="saved.creatingCollection() || !saved.createCollectionName().trim()"
-              (click)="saved.createCollectionAndAttach(entity.id)"
-            >
-              @if (saved.creatingCollection()) {
-                {{ i18n.t('common.creating') }}
-              } @else {
-                {{ i18n.t('collection.create') }}
-              }
-            </button>
-          </div>
-
-          @if (saved.collections$ | async; as collections) {
-            @if (collections.length) {
-              <div class="collections-panel__list">
-                @for (collection of collections; track collection.id) {
-                  <button
-                    type="button"
-                    class="collection-option entity-glass-card"
-                    [disabled]="saved.addingToCollection()"
-                    (click)="saved.addToCollection(collection.id, entity.id)"
-                  >
-                    <div class="collection-option__body">
-                      <div class="collection-option__name">{{ collection.name }}</div>
-                      <div class="collection-option__meta">
-                        {{ collection.itemCount }} {{ i18n.t('common.items') }}
-                      </div>
-                    </div>
-                    <span class="collection-option__cta" aria-hidden="true">{{
-                      i18n.t('button.add')
-                    }}</span>
-                  </button>
-                }
-              </div>
-            } @else {
-              <p class="text-muted">{{ i18n.t('collection.noneYet') }}</p>
-            }
-          }
-        } @else {
-          <div class="collections-panel__choices">
-            @if (saved.popupKind() === 'saved' || saved.popupKind() === 'manage') {
-              <div class="collections-panel__primary-actions">
-                <button
-                  class="ds-btn entity-action"
-                  type="button"
-                  (click)="saved.closeCollectionsPanel()"
-                >
-                  {{ i18n.t('button.continue') }}
-                </button>
-                <button
-                  class="ds-btn entity-action entity-action--primary"
-                  type="button"
-                  (click)="saved.openCollectionsChooser()"
-                >
-                  {{ i18n.t('button.addToCollection') }}
-                </button>
-              </div>
-              @if (saved.popupKind() === 'manage') {
-                <div class="collections-panel__secondary-actions">
-                  <button
-                    class="ds-btn entity-action entity-action--danger entity-action--quiet-danger"
-                    type="button"
-                    [disabled]="saved.saveLoading()"
-                    (click)="saved.removeSavedEntity(entity.id)"
-                  >
-                    @if (saved.saveLoading()) {
-                      {{ i18n.t('common.removing') }}
-                    } @else {
-                      {{ i18n.t('button.removeSaved') }}
-                    }
-                  </button>
-                </div>
-              }
-            } @else if (saved.popupKind() !== 'collectionSaved') {
-              <button
-                class="ds-btn entity-action entity-action--primary"
-                type="button"
-                (click)="saved.closeCollectionsPanel()"
-              >
-                {{ i18n.t('button.ok') }}
-              </button>
-            }
-          </div>
-        }
-      </section>
     </div>
   }
 } @else {

@@ -1,9 +1,21 @@
 <header
   class="app-chrome__header app-glass"
   [class.app-chrome__header--collapsed]="headerCollapsed()"
+  [attr.inert]="headerCollapsed() ? '' : null"
   [class.app-chrome__header--detail]="detailHeaderMode()"
   [class.app-chrome__header--admin]="isAdminRoute()"
+  [class.app-chrome__header--dragging]="headerDragOffset() > 0"
+  [style.translate]="headerDragOffset() ? '0 ' + headerDragOffset() + 'px' : null"
 >
+  <button
+    class="app-chrome__sheet-handle"
+    type="button"
+    [attr.aria-label]="i18n.t('chrome.hideHeader')"
+    (pointerdown)="onSheetPointerDown($event)"
+  >
+    <span aria-hidden="true"></span>
+  </button>
+
   <a
     class="app-chrome__brand"
     routerLink="/home"
@@ -30,7 +42,7 @@
   </a>
 
   @if (!isAdminRoute()) {
-    <app-global-search />
+    <app-global-search (navigated)="collapseHeader()" />
   }
 
   <nav
@@ -47,7 +59,35 @@
           [routerLink]="targetRoute(item)"
           (click)="primeRoute(item)"
         >
+          <span class="app-chrome__nav-icon" aria-hidden="true">
+            @switch (item.icon) {
+              @case ('home') {
+                <svg viewBox="0 0 24 24">
+                  <path d="m4 10.5 8-6 8 6v8.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z" />
+                  <path d="M9.5 20.5v-6h5v6" />
+                </svg>
+              }
+              @case ('archive') {
+                <svg viewBox="0 0 24 24">
+                  <path d="M4.5 7.5h15v11h-15z" />
+                  <path d="M3.5 5h17v2.5h-17zM9 11h6" />
+                </svg>
+              }
+              @case ('articles') {
+                <svg viewBox="0 0 24 24">
+                  <path d="M6 4.5h9l3 3v12H6z" />
+                  <path d="M15 4.5v3h3M9 11h6M9 14.5h6M9 18h4" />
+                </svg>
+              }
+              @case ('research') {
+                <svg viewBox="0 0 24 24">
+                  <path d="M6 18V9M12 18V5M18 18v-7" />
+                </svg>
+              }
+            }
+          </span>
           {{ i18n.t(item.label) }}
+          <span class="app-chrome__nav-arrow" aria-hidden="true">›</span>
         </a>
       } @else {
         <button
@@ -55,12 +95,51 @@
           class="app-chrome__nav-link is-placeholder"
           (click)="preventPlaceholderAction($event)"
         >
+          <span class="app-chrome__nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 4.5h9l3 3v12H6z" />
+              <path d="M15 4.5v3h3" />
+            </svg>
+          </span>
           {{ i18n.t(item.label) }}
+          <span class="app-chrome__nav-arrow" aria-hidden="true">›</span>
         </button>
       }
     }
   </nav>
 
+  @if (rail.contextualRail()?.kind === 'detail') {
+    <div class="app-chrome__detail-preferences app-chrome__preference-toggle">
+      <button
+        type="button"
+        (click)="toggleTheme()"
+        [attr.aria-label]="themeToggleLabel()"
+        [title]="themeToggleLabel()"
+      >
+        <svg
+          class="app-chrome__utility-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path
+            d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"
+          />
+        </svg>
+      </button>
+      <button
+        type="button"
+        (click)="toggleLocale()"
+        [attr.aria-label]="localeToggleLabel()"
+        [title]="localeToggleLabel()"
+      >
+        {{ i18n.locale().toUpperCase() }}
+      </button>
+    </div>
+  }
   <div class="app-chrome__account">
     @if (auth.currentUser) {
       <button
@@ -107,14 +186,79 @@
       }
     } @else {
       <div class="app-chrome__account-actions">
-        <a class="app-chrome__auth-link app-chrome__auth-link--login" routerLink="/login">{{
-          i18n.t('auth.login')
-        }}</a>
-        <a class="app-chrome__auth-link app-chrome__auth-link--register" routerLink="/register">{{
-          i18n.t('auth.registerTitle')
-        }}</a>
+        <a class="app-chrome__auth-link app-chrome__auth-link--login" routerLink="/login">
+          <span class="app-chrome__auth-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="7" r="3.2" />
+              <path d="M5.5 19c1.2-3.1 3.6-4.7 6.5-4.7s5.3 1.6 6.5 4.7" />
+            </svg>
+          </span>
+          <span>{{ i18n.t('auth.login') }}</span>
+        </a>
+        <a class="app-chrome__auth-link app-chrome__auth-link--register" routerLink="/register">
+          <span class="app-chrome__auth-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="7.5" />
+              <path d="M12 8v8M8 12h8" />
+            </svg>
+          </span>
+          <span>{{ i18n.t('auth.registerTitle') }}</span>
+        </a>
       </div>
     }
+
+    <div class="app-chrome__preferences" [attr.aria-label]="i18n.t('chrome.appearance')">
+      <div class="app-chrome__preference-row">
+        <span class="app-chrome__preference-label">{{ i18n.t('settings.language.label') }}</span>
+        <div
+          class="app-chrome__preference-toggle"
+          role="group"
+          [attr.aria-label]="i18n.t('settings.language.label')"
+        >
+          <button
+            type="button"
+            [class.is-active]="i18n.locale() === 'es'"
+            [attr.aria-pressed]="i18n.locale() === 'es'"
+            (click)="i18n.setLocale('es')"
+          >
+            ES
+          </button>
+          <button
+            type="button"
+            [class.is-active]="i18n.locale() === 'en'"
+            [attr.aria-pressed]="i18n.locale() === 'en'"
+            (click)="i18n.setLocale('en')"
+          >
+            EN
+          </button>
+        </div>
+      </div>
+      <div class="app-chrome__preference-row">
+        <span class="app-chrome__preference-label">{{ i18n.t('chrome.appearance') }}</span>
+        <div
+          class="app-chrome__preference-toggle"
+          role="group"
+          [attr.aria-label]="i18n.t('chrome.appearance')"
+        >
+          <button
+            type="button"
+            [class.is-active]="appearance.resolvedTheme() === 'light'"
+            [attr.aria-pressed]="appearance.resolvedTheme() === 'light'"
+            (click)="appearance.setThemePreference('light')"
+          >
+            {{ i18n.t('chrome.light') }}
+          </button>
+          <button
+            type="button"
+            [class.is-active]="appearance.resolvedTheme() === 'dark'"
+            [attr.aria-pressed]="appearance.resolvedTheme() === 'dark'"
+            (click)="appearance.setThemePreference('dark')"
+          >
+            {{ i18n.t('chrome.dark') }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   @if (showHeaderCloseButton()) {
@@ -125,7 +269,9 @@
       [title]="i18n.t('chrome.hideHeader')"
       (click)="collapseHeader()"
     >
-      <span aria-hidden="true">×</span>
+      <svg class="app-chrome__close-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 7l10 10M17 7L7 17" />
+      </svg>
     </button>
   }
 </header>
@@ -150,6 +296,7 @@
 }
 
 <aside
+  [style.display]="rail.contextualRail()?.kind === 'detail' ? 'none' : null"
   class="app-chrome__utility app-glass"
   [class.app-chrome__utility--hidden]="!isDetailRoute()"
   [class.app-chrome__utility--contextual]="isDetailRoute()"

@@ -29,11 +29,7 @@ export interface InitializedLoadedGraphState extends PreparedGraphState {
 }
 
 export function toGraphData(response: GraphResponseDto): GraphData {
-  const entityTypes = normalizeGraphFilterValues(
-    response.filters?.entityKinds ??
-      response.filters?.entityTypes ??
-      response.nodes.map(graphNodeTypeKey),
-  );
+  const entityTypes = normalizeGraphFilterValues(response.nodes.map(graphNodeTypeKey));
   const relationTypes = normalizeGraphFilterValues(
     response.filters?.relationTypes ?? response.edges.map((edge) => edge.relationType),
   );

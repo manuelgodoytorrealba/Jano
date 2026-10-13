@@ -560,3 +560,95 @@
     width: 0.78rem;
   }
 }
+
+.graph-panel-footer--filters {
+  padding: 16px;
+  background: transparent;
+  border: 0;
+  .graph-panel-footer__mobile-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .graph-panel-footer__eyebrow {
+    display: none;
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .graph-filter-tray {
+    display: grid;
+    gap: 16px;
+  }
+  .graph-filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+  }
+  .filter-group__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .filter-chip {
+    min-height: 44px;
+    border-radius: 8px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    justify-content: flex-start;
+    white-space: normal;
+    padding: 8px;
+  }
+  .filter-chip::after {
+    content: '✓';
+    margin-left: auto;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    color: var(--chip-color);
+  }
+  .filter-chip:not(.is-active)::after {
+    content: '';
+  }
+  .filter-chip:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  button:focus-visible {
+    outline: 2px solid #a8d9ce;
+    outline-offset: 2px;
+  }
+}
+
+.filter-chip__symbol {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.graph-panel-footer--filters .filter-chip {
+  font-size: 0.875rem;
+}
+
+.graph-panel-footer--filters .graph-panel-footer__mobile-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: -16px -16px 0;
+  padding: 16px;
+  background: #171c23;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}

@@ -62,10 +62,18 @@
   opacity: 0.92;
 }
 
+.app-chrome__sheet-handle {
+  display: none;
+}
+
 .app-chrome__header--collapsed {
   transform: translateY(calc(-100% - 18px));
   opacity: 0;
   pointer-events: none;
+}
+
+.app-chrome__header--dragging {
+  transition: none;
 }
 
 .app-chrome__header--detail {
@@ -148,14 +156,16 @@
   height: 34px;
   border-radius: 12px;
   padding: 0;
-  font-size: 1.18rem;
   line-height: 1;
 }
 
-.app-chrome__header-toggle--close span {
-  display: block;
-  line-height: 1;
-  transform: translateY(-0.5px);
+.app-chrome__close-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.1;
+  stroke-linecap: round;
 }
 
 .app-chrome__header-toggle--open {
@@ -383,6 +393,11 @@
   text-decoration: none;
 }
 
+.app-chrome__nav-icon,
+.app-chrome__nav-arrow {
+  display: none;
+}
+
 .app-chrome__nav-link:hover {
   color: var(--color-text);
   background: rgba(242, 241, 238, 0.05);
@@ -413,6 +428,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.app-chrome__preferences {
+  display: none;
 }
 
 .app-chrome__auth-link {
@@ -1021,6 +1040,29 @@
     opacity: 0.9;
   }
 
+  .app-chrome__preferences {
+    border-color: rgba(24, 22, 19, 0.12);
+  }
+
+  .app-chrome__preference-label {
+    color: rgba(24, 22, 19, 0.56);
+  }
+
+  .app-chrome__preference-toggle {
+    border-color: rgba(24, 22, 19, 0.12);
+    background: rgba(24, 22, 19, 0.04);
+  }
+
+  .app-chrome__preference-toggle button {
+    color: rgba(24, 22, 19, 0.56);
+  }
+
+  .app-chrome__preference-toggle button.is-active {
+    background: rgba(24, 22, 19, 0.12);
+    color: rgba(24, 22, 19, 0.9);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
   .app-chrome__utility-btn[data-action='save'] {
     color: rgba(28, 27, 24, 0.92);
   }
@@ -1335,40 +1377,262 @@
 
 @media (max-width: 620px) {
   .app-chrome__header {
-    padding: 8px 9px 9px;
+    top: auto;
+    bottom: calc(var(--app-safe-bottom) + 12px);
+    box-shadow: none;
+    padding: 40px 20px 16px;
+    gap: 16px;
+    align-content: start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 32px;
+  }
+
+  .app-chrome__sheet-handle {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 44px;
+    padding: 8px;
+    border: 0;
+    border-radius: 32px 32px 0 0;
+    background: transparent;
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .app-chrome__sheet-handle span {
+    display: block;
+    margin: 0 auto;
+    width: 72px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+
+  .app-chrome__sheet-handle:active {
+    cursor: grabbing;
+  }
+
+  .app-chrome__header--collapsed {
+    transform: translateY(calc(100% + 28px));
+  }
+
+  .app-chrome__header-toggle--close {
+    display: none;
+  }
+
+  .app-chrome__brand {
+    gap: 16px;
+    padding-right: 72px;
   }
 
   .app-chrome__brand-mark {
-    width: 40px;
-    height: 40px;
-    flex-basis: 40px;
-    border-radius: 14px;
+    width: 52px;
+    height: 52px;
+    flex-basis: 52px;
+    border-radius: 22px;
   }
 
   .app-chrome__brand-name {
-    font-size: 1rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
   }
 
   .app-chrome__header:has(app-global-search.search-open) .app-chrome__nav {
     display: none;
   }
 
+  .app-chrome__header:has(app-global-search.search-open) {
+    inset-inline: var(--app-search-inset, 10px);
+    top: var(--app-search-top, calc(var(--app-safe-top) + 6px));
+    bottom: auto;
+    height: var(
+      --app-search-height,
+      calc(var(--app-visual-viewport-height) - var(--app-safe-top) - 12px)
+    );
+    grid-template-rows: var(--app-search-grid-rows, auto minmax(0, 1fr));
+    gap: var(--app-search-gap, 12px);
+    padding: var(--app-search-padding, 44px 20px 12px);
+    overflow: hidden;
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__sheet-handle {
+    top: 4px;
+    display: var(--app-search-brand-display, block);
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__brand {
+    display: var(--app-search-brand-display, flex);
+    min-height: 44px;
+    justify-content: center;
+    gap: 0;
+    padding: 0 52px;
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__brand-mark {
+    display: none;
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__brand-name {
+    font-family: var(--font-sans);
+    font-size: 1.45rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+  }
+
+  app-global-search.search-open {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__account,
+  .app-chrome__header:has(app-global-search.search-open) .app-chrome__preferences {
+    display: none;
+  }
+
   .app-chrome__nav {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     width: 100%;
     min-width: 0;
     overflow: visible;
-    border-radius: 26px;
-    gap: 10px 12px;
-    padding: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
-      rgba(18, 20, 26, 0.46);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 10px 24px rgba(8, 9, 12, 0.18);
+    gap: 4px;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-chrome__account {
+    order: 5;
+    justify-self: stretch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-chrome__account-actions {
+    display: grid;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 8px 8px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .app-chrome__account .app-chrome__auth-link {
+    min-width: 0;
+    min-height: 44px;
+    height: 44px;
+    justify-content: flex-start;
+    gap: 18px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    background: transparent;
+    box-shadow: none;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .app-chrome__account .app-chrome__auth-link:hover,
+  .app-chrome__account .app-chrome__auth-link:focus-visible {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.045);
+    outline: none;
+    transform: none;
+  }
+
+  .app-chrome__account .app-chrome__auth-link--register {
+    min-width: 0;
+    color: rgba(255, 255, 255, 0.86);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-chrome__auth-icon {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .app-chrome__auth-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .app-chrome__preferences {
+    order: -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 10px;
+    padding: 0;
+  }
+
+  .app-chrome__preference-row {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-height: 42px;
+  }
+
+  .app-chrome__preference-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .app-chrome__preference-toggle {
+    width: 148px;
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .app-chrome__preference-toggle button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.58);
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .app-chrome__preference-toggle button.is-active {
+    background: rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.96);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .app-chrome__preference-toggle button:focus-visible {
+    outline: 1px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 2px;
   }
 
   .app-chrome__nav::-webkit-scrollbar {
@@ -1376,99 +1640,115 @@
   }
 
   .app-chrome__nav-link {
-    min-height: 74px;
-    height: auto;
-    padding: 0.95rem 0.6rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
-      rgba(255, 255, 255, 0.022);
+    min-height: 48px;
+    height: 48px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px;
+    justify-content: stretch;
+    border-radius: 18px;
+    border: 1px solid transparent;
+    background: transparent;
     color: rgba(245, 241, 235, 0.84);
-    font-size: 0.88rem;
-    font-weight: 650;
-    line-height: 1.18;
+    font-size: 1rem;
+    font-weight: 560;
+    line-height: 1;
     white-space: nowrap;
-    text-wrap: balance;
     overflow: visible;
     text-overflow: clip;
-    overflow-wrap: break-word;
     word-break: keep-all;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 6px 14px rgba(8, 9, 12, 0.12);
+    text-align: left;
+    box-shadow: none;
   }
 
   .app-chrome__nav-link:hover {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.024)),
-      rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.045);
   }
 
   .app-chrome__nav-link.is-active {
-    background:
-      linear-gradient(180deg, rgba(244, 242, 238, 0.13), rgba(244, 242, 238, 0.05)),
-      rgba(244, 242, 238, 0.035);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.08);
     color: rgba(255, 249, 243, 0.98);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 10px 20px rgba(8, 9, 12, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .app-chrome__nav-icon {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .app-chrome__nav-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.65;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .app-chrome__nav-arrow {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 1.8rem;
+    font-weight: 300;
+    line-height: 0.7;
+  }
+
+  .app-chrome__nav-link:not(.is-active) .app-chrome__nav-icon,
+  .app-chrome__nav-link:not(.is-active) .app-chrome__nav-arrow {
+    color: rgba(255, 255, 255, 0.58);
   }
 }
 
-.app-chrome__orientation-lock {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 150;
-  place-items: center;
-  padding: clamp(20px, 3vw, 36px);
-  background: linear-gradient(160deg, rgba(10, 10, 12, 0.96), rgba(4, 4, 5, 0.985));
+.app-chrome__header--detail:has(.app-chrome__detail-preferences) {
+  right: var(--detail-chrome-inset);
+  left: var(--detail-chrome-inset);
+  grid-template-columns: auto minmax(140px, 1fr) auto auto auto;
+  gap: 10px;
+}
+.app-chrome__detail-preferences {
+  display: flex;
+  gap: 6px;
+}
+@media (max-width: 1200px) {
+  .app-chrome__header--detail:has(.app-chrome__detail-preferences) {
+    grid-template-columns: auto minmax(120px, 1fr) auto auto;
+  }
+  .app-chrome__header--detail:has(.app-chrome__detail-preferences) .app-chrome__nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+@media (max-width: 860px) {
+  .app-chrome__header--detail:has(.app-chrome__detail-preferences) {
+    left: var(--app-shell-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-chrome__header--detail:has(.app-chrome__detail-preferences) .app-chrome__nav {
+    grid-row: auto;
+  }
 }
 
-.app-chrome__orientation-lock-card {
-  width: min(460px, 100%);
-  padding: 30px 28px 26px;
-  border-radius: 30px;
-  text-align: center;
-  color: var(--color-text);
+.app-chrome__detail-preferences button {
+  min-width: 36px;
+  min-height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
 }
 
-.app-chrome__orientation-lock-kicker {
-  display: block;
-  margin-bottom: 12px;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: var(--tracking-ui);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.app-chrome__orientation-lock-title {
-  margin: 0;
-  font-size: clamp(2rem, 5.8vw, 2.8rem);
-  line-height: 0.98;
-  letter-spacing: var(--tracking-tight);
-}
-
-.app-chrome__orientation-lock-copy {
-  margin: 14px 0 0;
-  font-size: 1rem;
-  line-height: 1.68;
-  color: var(--color-text-soft);
-}
-
-:host(.app-chrome--orientation-lock) {
-  overflow: hidden;
-}
-
-:host(.app-chrome--orientation-lock) .app-chrome__header,
-:host(.app-chrome--orientation-lock) .app-chrome__header-toggle,
-:host(.app-chrome--orientation-lock) .app-chrome__utility {
-  display: none;
-}
-
-:host(.app-chrome--orientation-lock) .app-chrome__orientation-lock {
-  display: grid;
+.app-chrome__header--detail + .app-chrome__header-toggle--open {
+  left: auto;
+  right: calc(var(--app-safe-right) + var(--app-shell-gap));
 }

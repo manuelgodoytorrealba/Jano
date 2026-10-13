@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  HostListener,
   ChangeDetectionStrategy,
   Component,
   PLATFORM_ID,
@@ -37,6 +38,7 @@ import {
 } from './graph.models';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import { ExplorerPersistedState, saveExplorerState } from './graph-persistence';
+import { ImageControlsComponent } from './image-controls.component';
 import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
 import { GraphSceneComponent } from './graph-scene.component';
@@ -128,10 +130,12 @@ type GraphEntityInfo = {
 @Component({
   standalone: true,
   selector: 'app-graph',
+  host: { '[class.graph-detail-layout]': 'detailLayout' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     GraphControlsBarComponent,
+    ImageControlsComponent,
     GraphSceneComponent,
     GraphInspectorPanelComponent,
   ],
@@ -151,6 +155,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   @Input() slug = '';
   @Input() graphData: GraphResponseDto | null = null;
+  @Input() detailLayout = false;
   @Input() workspaceMode: GraphWorkspaceMode = 'split';
   @Input() imageMedia: MediaLike | null = null;
   @Input() imageUrl: string | null = null;
@@ -202,6 +207,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly labelsMode = signal<'auto' | 'always' | 'hidden'>('auto');
   readonly graphViewport = signal<GraphViewport>({ x: 0, y: 0, scale: 0.82 });
   readonly imageViewport = signal<ImageViewport>({ x: 0, y: 0, scale: 1, fitScale: 1 });
+  readonly imageZoomPercent = computed(() => {
+    const viewport = this.imageViewport();
+    return Math.round((viewport.scale / viewport.fitScale) * 100);
+  });
   readonly graphSize = signal({ width: 0, height: 0 });
   readonly imageSize = signal({ width: 0, height: 0 });
   readonly imageAsset = signal<ImageAssetSize | null>(null);
@@ -290,6 +299,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId,
       selectedNodeId,
       selectedNeighbors,
+      compactLabels: this.detailLayout && this.isMobileViewport,
+      readableScale:
+        this.detailLayout && (graph?.nodes.length ?? 0) <= 12
+          ? Math.min(1, this.graphViewport().scale)
+          : undefined,
     });
   });
   readonly ambientFields = computed(() =>
@@ -697,6 +711,16 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.graphStageRectCache = null;
 
     if (!this.graph()) {
+      return;
+    }
+
+    if (
+      this.detailLayout &&
+      !this.hasUserAdjustedGraphView &&
+      !this.pendingInitialEntityFocus &&
+      !document.fullscreenElement
+    ) {
+      this.focusCurrentEntity(false);
       return;
     }
 
@@ -1126,11 +1150,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   onNodeHover(event: PointerEvent, nodeId: string): void {
     this.clearHoverClearTimer();
     const node = this.graphDerived().nodeMap.get(nodeId);
-    if (
-      !node ||
-      (!canHandleHover(this.interactions.pointerSession) && event.pointerType !== 'mouse')
-    )
-      return;
+    if (!node || !canHandleHover(this.interactions.pointerSession)) return;
     if (this.hoveredNodeId() === node.id && this.tooltip()) {
       this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
       return;
@@ -1175,11 +1195,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   onTooltipMove(event: PointerEvent): void {
     this.clearHoverClearTimer();
-    if (
-      (!canHandleHover(this.interactions.pointerSession) && event.pointerType !== 'mouse') ||
-      !this.tooltip()
-    )
-      return;
+    if (!canHandleHover(this.interactions.pointerSession) || !this.tooltip()) return;
     this.interruptGraphViewportAutomation();
     this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
   }
@@ -1314,12 +1330,45 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.imageInfoOpen.set(false);
   }
 
-  toggleWorkspaceFocusStage(): void {
-    if (!this.isMobileViewport) {
+  readonly fullscreenPanel = signal<'image' | 'graph' | null>(null);
+  readonly fullscreenFailed = signal(false);
+
+  @HostListener('document:keydown.escape', ['$event'])
+  exitPanelFullscreen(event: Event): void {
+    if (this.inspectorVisible()) {
+      this.inspectorVisible.set(false);
+      event.stopPropagation();
       return;
     }
+    if (!this.fullscreenPanel() || !document.fullscreenElement) return;
+    event.stopPropagation();
+    void document.exitFullscreen().catch(() => this.fullscreenFailed.set(true));
+  }
 
-    this.workspaceFocusToggle.emit();
+  @HostListener('document:fullscreenchange')
+  onFullscreenChange(): void {
+    if (!document.fullscreenElement) this.fullscreenPanel.set(null);
+  }
+
+  async togglePanelFullscreen(panel: 'image' | 'graph', event: MouseEvent): Promise<void> {
+    if (!this.detailLayout) {
+      this.workspaceFocusToggle.emit();
+      return;
+    }
+    const button = event.currentTarget as HTMLElement;
+    const element = button.closest<HTMLElement>('.explorer-image-pane, .explorer-graph-pane');
+    if (!element) return;
+    this.fullscreenFailed.set(false);
+    try {
+      if (document.fullscreenElement === element) {
+        await document.exitFullscreen();
+      } else {
+        await element.requestFullscreen();
+        this.fullscreenPanel.set(panel);
+      }
+    } catch {
+      this.fullscreenFailed.set(true);
+    }
   }
 
   private ensureSelectionVisible(): void {
@@ -1593,7 +1642,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private applyEdgeHover(event: PointerEvent, edge: GraphEdge): void {
-    if (!canHandleHover(this.interactions.pointerSession) && event.pointerType !== 'mouse') return;
+    if (!canHandleHover(this.interactions.pointerSession)) return;
     if (this.hoveredEdgeId() === edge.id && this.tooltip()) {
       this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
       return;

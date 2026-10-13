@@ -7,9 +7,10 @@ import {
   HostListener,
   PLATFORM_ID,
   inject,
+  output,
   signal,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { catchError, debounceTime, distinctUntilChanged, map, of, Subject, switchMap } from 'rxjs';
@@ -49,10 +50,12 @@ const SEARCH_CATEGORIES: Array<{
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalSearchComponent {
+  readonly navigated = output<void>();
   private readonly router = inject(Router);
   private readonly searchApi = inject(SearchApi);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
   readonly i18n = inject(I18nService);
 
@@ -65,13 +68,22 @@ export class GlobalSearchComponent {
   readonly recentSearches = signal<string[]>(this.readRecentSearches());
 
   private readonly searchInput$ = new Subject<string>();
+  private readonly preventPageTouchMove = (event: TouchEvent): void => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest('.app-chrome__mobile-search-filters, .app-chrome__search-suggestions')) {
+      return;
+    }
+    event.preventDefault();
+  };
 
   @HostBinding('class.search-open')
   get searchOpen(): boolean {
-    return this.showSearchSuggestions();
+    return this.searchFocused();
   }
 
   constructor() {
+    this.destroyRef.onDestroy(() => this.lockPageTouch(false));
+
     this.searchInput$
       .pipe(
         debounceTime(180),
@@ -106,13 +118,13 @@ export class GlobalSearchComponent {
 
   onSearchInput(value: string): void {
     this.searchDraft.set(value);
-    this.searchFocused.set(true);
+    this.setSearchFocused(true);
     this.activeSuggestionIndex.set(-1);
     this.searchInput$.next(value);
   }
 
   onSearchFocus(value: string): void {
-    this.searchFocused.set(true);
+    this.setSearchFocused(true);
     if (value.trim() && !this.searchSuggestions().length) this.searchInput$.next(value);
   }
 
@@ -125,8 +137,17 @@ export class GlobalSearchComponent {
   }
 
   openPreparationCategory(type: SearchCategoryType): void {
-    this.closeSearchUi();
+    this.closeForNavigation();
     void this.router.navigateByUrl(searchCategoryRoute(type));
+  }
+
+  openMobileDiscovery(route: string): void {
+    this.closeForNavigation();
+    void this.router.navigateByUrl(route);
+  }
+
+  scrollMobileCategories(container: HTMLElement): void {
+    container.scrollBy({ left: container.clientWidth * 0.72, behavior: 'smooth' });
   }
 
   moveSearchSuggestion(delta: number): void {
@@ -190,8 +211,13 @@ export class GlobalSearchComponent {
   }
 
   closeSearchUi(): void {
-    this.searchFocused.set(false);
+    this.setSearchFocused(false);
     this.activeSuggestionIndex.set(-1);
+  }
+
+  exitMobileSearch(input: HTMLInputElement): void {
+    input.blur();
+    this.closeSearchUi();
   }
 
   private reset(input: HTMLInputElement): void {
@@ -199,7 +225,28 @@ export class GlobalSearchComponent {
     this.searchDraft.set('');
     this.searchSuggestions.set([]);
     this.activeSuggestionIndex.set(-1);
-    this.searchFocused.set(false);
+    this.setSearchFocused(false);
+    this.navigated.emit();
+  }
+
+  private closeForNavigation(): void {
+    this.closeSearchUi();
+    this.navigated.emit();
+  }
+
+  private setSearchFocused(focused: boolean): void {
+    this.searchFocused.set(focused);
+    this.lockPageTouch(focused);
+  }
+
+  private lockPageTouch(locked: boolean): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.document.documentElement.classList.toggle('app-search-open', locked);
+    if (locked) {
+      this.document.addEventListener('touchmove', this.preventPageTouchMove, { passive: false });
+    } else {
+      this.document.removeEventListener('touchmove', this.preventPageTouchMove);
+    }
   }
 
   private readRecentSearches(): string[] {

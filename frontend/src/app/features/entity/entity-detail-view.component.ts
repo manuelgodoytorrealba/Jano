@@ -16,6 +16,8 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { RelationControlsComponent } from './relation-controls.component';
+import { EntityScrollProgressComponent } from './entity-scroll-progress.component';
 import { GraphComponent } from '../graph/graph.component';
 import {
   PublicEntity,
@@ -65,9 +67,17 @@ type GraphEntityInfo = {
   standalone: true,
   selector: 'app-entity-detail-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, GraphComponent, RichTextComponent, JanoMediaComponent],
+  imports: [
+    NgTemplateOutlet,
+    RelationControlsComponent,
+    RouterLink,
+    GraphComponent,
+    RichTextComponent,
+    JanoMediaComponent,
+    EntityScrollProgressComponent,
+  ],
   templateUrl: './entity-detail-view.component.html',
-  styleUrls: ['./entity-detail-view.component.scss'],
+  styleUrls: ['./entity-detail-view.component.scss', './entity-information-tabs.scss'],
 })
 export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   private static readonly MOBILE_BREAKPOINT = 760;
@@ -87,6 +97,9 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   @Input() isSaved = false;
   @Input() saveLoading = false;
   @Input() collectionsLoading = false;
+  @Input() collectionsOpen = false;
+  @Input() actionFeedback = '';
+  @Input() actionFeedbackError = false;
   @Input() renderGraph = true;
   @Input() preferredWorkspaceMode: DetailWorkspaceMode | null = null;
   @Input() richTextPreviewAccess: 'public' | 'admin' = 'public';
@@ -95,6 +108,40 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   @Output() collectionsToggle = new EventEmitter<void>();
   @Output() shareToggle = new EventEmitter<void>();
   isMobileViewport = false;
+  readonly informationTabs = [
+    {
+      id: 'context',
+      label: 'entity.context',
+      description: 'entity.contextDescription',
+      icon: 'M16 8C12.5 5.4 7.5 5.1 3 6.7v19c4.5-1.6 9.5-1.3 13 1.3 3.5-2.6 8.5-2.9 13-1.3v-19C24.5 5.1 19.5 5.4 16 8Z',
+      detail:
+        'M16 8v19M7 11c2.2-.4 4.2-.1 6 1M7 15c2.2-.4 4.2-.1 6 1M7 19c2.2-.4 4.2-.1 6 1M19 12c1.8-1.1 3.8-1.4 6-1M19 16c1.8-1.1 3.8-1.4 6-1M19 20c1.8-1.1 3.8-1.4 6-1',
+    },
+    {
+      id: 'sheet',
+      label: 'entity.sheet',
+      description: 'entity.sheetDescription',
+      icon: 'M10 4h15a2 2 0 0 1 2 2v22a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z',
+      detail: 'M5 25V4a2 2 0 0 1 2-2h15M12 9h5v5h-5ZM20 9h3M20 13h3M12 19h11M12 23h11M12 27h7',
+    },
+    {
+      id: 'relations',
+      label: 'entity.relations',
+      description: 'entity.relationsDescription',
+      icon: 'M20 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM8 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM30 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM11 27a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM30 26a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
+      detail:
+        'm7.3 8.9 5.6 4.7m6.1-.3 5.8-5.4M13.6 19.2l-3.8 5.4m9.2-6 5.8 5.4M8 6.7c4.6-2 9.9-2.2 16-.7M11 27c4.7 1.7 9 1.3 13-.5',
+    },
+    {
+      id: 'sources',
+      label: 'entity.sources',
+      description: 'entity.sourcesDescription',
+      icon: 'M3 5h7v23H3ZM10 8h7v20h-7ZM19 5l6-1.5 5.8 22.3-6 1.5Z',
+      detail:
+        'M3 10h7M3 23h7M6.5 14v5M10 13h7M10 23h7M13.5 17v3m6.8-10 6-1.5m-2.1 14 6-1.5M23 13l1.7 6.4M2 30h28',
+    },
+  ];
+  informationTab = 'context';
   workspaceMode: DetailWorkspaceMode = 'split';
   workspaceFocused = false;
   workspaceTransitioning = false;
@@ -114,7 +161,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
 
   constructor() {
     this.syncViewportState();
-    this.workspaceMode = this.defaultWorkspaceMode();
+    this.workspaceMode = 'split';
   }
 
   get workspaceModes(): Array<{ value: DetailWorkspaceMode; labelKey: string }> {
@@ -160,7 +207,8 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
       (changes['entity'] && !changes['entity'].firstChange) ||
       (changes['preferredWorkspaceMode'] && !changes['preferredWorkspaceMode'].firstChange)
     ) {
-      this.workspaceMode = this.defaultWorkspaceMode();
+      this.informationTab = 'context';
+      this.workspaceMode = 'split';
       this.workspaceFocused = false;
       this.workspaceTransitioning = false;
       this.clearTransitionTimer();
@@ -177,6 +225,33 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   @HostListener('window:resize')
   onWindowResize(): void {
     this.syncViewportState();
+  }
+
+  onInformationTabKeydown(event: KeyboardEvent): void {
+    const index = this.informationTabs.findIndex((tab) => tab.id === this.informationTab);
+    let next: number;
+    switch (event.key) {
+      case 'ArrowRight':
+        next = (index + 1) % this.informationTabs.length;
+        break;
+      case 'ArrowLeft':
+        next = (index + this.informationTabs.length - 1) % this.informationTabs.length;
+        break;
+      case 'Home':
+        next = 0;
+        break;
+      case 'End':
+        next = this.informationTabs.length - 1;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    this.informationTab = this.informationTabs[next].id;
+    (event.currentTarget as HTMLElement)
+      .closest('[role="tablist"]')
+      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+      [next]?.focus();
   }
 
   setWorkspaceMode(mode: DetailWorkspaceMode): void {
@@ -245,7 +320,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   }
 
   showEditorialFlow(entity: PublicEntity | null): boolean {
-    return this.isArticle(entity) || !this.isMobileViewport || this.workspaceMode === 'info';
+    return !!entity;
   }
 
   revealArrivalTitle(entity: PublicEntity | null): boolean {
@@ -445,7 +520,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
       return this.preferredWorkspaceMode;
     }
 
-    return this.isMobileViewport ? 'graph' : 'split';
+    return 'split';
   }
 
   private syncViewportState(): void {
@@ -461,7 +536,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
 
     if (this.isMobileViewport) {
       if (this.workspaceMode === 'split') {
-        this.workspaceMode = 'graph';
+        this.workspaceMode = 'split';
       }
     } else {
       if (this.workspaceFocused) {

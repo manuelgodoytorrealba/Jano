@@ -3,6 +3,7 @@ import {
   Component,
   HostBinding,
   HostListener,
+  afterNextRender,
   inject,
   signal,
 } from '@angular/core';
@@ -27,6 +28,7 @@ type HeaderNavItem = {
   route?: string;
   kind: 'route' | 'placeholder';
   exact?: boolean;
+  icon: 'home' | 'archive' | 'articles' | 'research';
 };
 
 type UtilityItem = {
@@ -43,7 +45,7 @@ type UtilityItem = {
   selector: 'app-app-chrome',
   imports: [RouterLink, GlobalSearchComponent],
   templateUrl: './app-chrome.component.html',
-  styleUrl: './app-chrome.component.scss',
+  styleUrls: ['./app-chrome.component.scss', './app-chrome-orientation-lock.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppChromeComponent {
@@ -61,17 +63,30 @@ export class AppChromeComponent {
   readonly detailHeaderRevealed = signal(false);
   readonly brandPressing = signal(false);
   readonly orientationLockVisible = signal(this.readOrientationLockVisible());
+  readonly headerDragOffset = signal(0);
+  readonly chromeReady = signal(false);
+  private sheetPointerId: number | null = null;
+  private sheetPointerStartY = 0;
+  private sheetPointerStartX = 0;
+  private sheetPointerLastY = 0;
+  private sheetPointerLastAt = 0;
+  private sheetPointerVelocity = 0;
 
   @HostBinding('class.app-chrome--orientation-lock')
   get orientationLockActive(): boolean {
     return this.orientationLockVisible();
   }
 
+  @HostBinding('class.app-chrome--ready')
+  get ready(): boolean {
+    return this.chromeReady();
+  }
+
   readonly navItems: HeaderNavItem[] = [
-    { label: 'nav.discover', route: '/home', kind: 'route', exact: true },
-    { label: 'nav.explore', route: '/entities', kind: 'route', exact: true },
-    { label: 'nav.articles', route: '/entities/article', kind: 'route' },
-    { label: 'nav.research', route: '/research', kind: 'route' },
+    { label: 'nav.discover', route: '/home', kind: 'route', exact: true, icon: 'home' },
+    { label: 'nav.explore', route: '/entities', kind: 'route', icon: 'archive' },
+    { label: 'nav.articles', route: '/entities/article', kind: 'route', icon: 'articles' },
+    { label: 'nav.research', route: '/research', kind: 'route', icon: 'research' },
   ];
 
   readonly utilityItems: UtilityItem[] = [
@@ -92,6 +107,8 @@ export class AppChromeComponent {
   }
 
   constructor() {
+    afterNextRender(() => this.chromeReady.set(true));
+
     this.router.events
       .pipe(
         filter(
@@ -122,7 +139,7 @@ export class AppChromeComponent {
           this.orientationLockVisible.set(this.readOrientationLockVisible());
           this.compactHeaderEnabled.set(compact);
 
-          this.syncHeaderState();
+          if (!this.isDetailRoute()) this.syncHeaderState();
         });
 
       fromEvent<KeyboardEvent>(window, 'keydown')
@@ -143,7 +160,7 @@ export class AppChromeComponent {
 
   private shouldStartHeaderCollapsed(): boolean {
     const url = this.normalizeUrl(this.router.url);
-    return url.startsWith('/entity/') || (url === '/' && this.readCompactHeaderEnabled());
+    return shouldCollapseHeaderInitially(this.readCompactHeaderEnabled(), url);
   }
 
   private readOrientationLockVisible(): boolean {
@@ -191,11 +208,13 @@ export class AppChromeComponent {
       return;
     }
 
+    this.headerDragOffset.set(0);
     this.headerCollapsed.set(true);
     this.detailHeaderRevealed.set(false);
   }
 
   expandHeader(): void {
+    this.headerDragOffset.set(0);
     this.headerCollapsed.set(false);
     if (this.isDetailRoute()) {
       this.detailHeaderRevealed.set(true);
@@ -216,6 +235,67 @@ export class AppChromeComponent {
     this.collapseHeader();
   }
 
+  onSheetPointerDown(event: PointerEvent): void {
+    if (this.headerCollapsed() || !this.compactHeaderEnabled()) {
+      return;
+    }
+
+    this.sheetPointerId = event.pointerId;
+    this.sheetPointerStartY = event.clientY;
+    this.sheetPointerStartX = event.clientX;
+    this.sheetPointerLastY = event.clientY;
+    this.sheetPointerLastAt = performance.now();
+    this.sheetPointerVelocity = 0;
+    this.headerDragOffset.set(0);
+    (event.currentTarget as HTMLElement | null)?.setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+  }
+
+  @HostListener('document:pointermove', ['$event'])
+  onSheetPointerMove(event: PointerEvent): void {
+    if (event.pointerId !== this.sheetPointerId) return;
+
+    const horizontalDistance = Math.abs(event.clientX - this.sheetPointerStartX);
+    const verticalDistance = event.clientY - this.sheetPointerStartY;
+    const now = performance.now();
+    const elapsed = Math.max(1, now - this.sheetPointerLastAt);
+
+    this.sheetPointerVelocity = (event.clientY - this.sheetPointerLastY) / elapsed;
+    this.sheetPointerLastY = event.clientY;
+    this.sheetPointerLastAt = now;
+
+    if (horizontalDistance > Math.abs(verticalDistance) && horizontalDistance > 12) {
+      this.headerDragOffset.set(0);
+      return;
+    }
+
+    this.headerDragOffset.set(Math.max(0, verticalDistance));
+  }
+
+  @HostListener('document:pointerup', ['$event'])
+  onSheetPointerUp(event: PointerEvent): void {
+    if (event.pointerId !== this.sheetPointerId) return;
+
+    const distance = this.headerDragOffset();
+    const headerHeight =
+      document.querySelector<HTMLElement>('.app-chrome__header')?.offsetHeight ?? 620;
+    const distanceThreshold = Math.min(160, Math.max(96, headerHeight * 0.22));
+    const shouldCollapse =
+      distance >= distanceThreshold || (distance >= 48 && this.sheetPointerVelocity > 0.7);
+    this.sheetPointerId = null;
+    this.headerDragOffset.set(0);
+
+    if (shouldCollapse) this.collapseHeader();
+  }
+
+  @HostListener('document:pointercancel', ['$event'])
+  onSheetPointerCancel(event: PointerEvent): void {
+    if (event.pointerId !== this.sheetPointerId) return;
+
+    this.sheetPointerId = null;
+    this.headerDragOffset.set(0);
+  }
+
   @HostListener('document:mousedown', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target;
@@ -228,7 +308,8 @@ export class AppChromeComponent {
     }
 
     this.accountMenuOpen.set(false);
-    if (this.isDetailRoute() && !this.headerCollapsed()) this.collapseHeader();
+    if (this.rail.contextualRail()?.kind === 'publication' && !this.headerCollapsed())
+      this.collapseHeader();
   }
 
   detailHeaderMode(): boolean {
@@ -240,7 +321,7 @@ export class AppChromeComponent {
   }
 
   showHeaderCloseButton(): boolean {
-    return this.compactHeaderEnabled();
+    return this.compactHeaderEnabled() || this.detailHeaderMode();
   }
 
   accountName(): string {
@@ -364,20 +445,7 @@ export class AppChromeComponent {
   isRouteActive(item: HeaderNavItem | UtilityItem): boolean {
     const route = this.targetRoute(item);
     const activeUrl = this.activeUrl();
-
-    if (!route) {
-      return false;
-    }
-
-    if ('exact' in item && item.exact) {
-      return activeUrl === route;
-    }
-
-    if (route === '/') {
-      return activeUrl === '/';
-    }
-
-    return activeUrl.startsWith(route);
+    return isHeaderRouteActive(route, activeUrl, 'exact' in item && !!item.exact);
   }
 
   activeNavIndex(): number {
@@ -481,4 +549,19 @@ export class AppChromeComponent {
   preventPlaceholderAction(event: Event): void {
     event.preventDefault();
   }
+}
+
+export function isHeaderRouteActive(route: string, activeUrl: string, exact = false): boolean {
+  if (route === '/entities') {
+    return (
+      activeUrl === route ||
+      (activeUrl.startsWith(`${route}/`) && !activeUrl.startsWith('/entities/article'))
+    );
+  }
+  if (exact || route === '/') return activeUrl === route;
+  return activeUrl.startsWith(route);
+}
+
+export function shouldCollapseHeaderInitially(compact: boolean, url: string): boolean {
+  return compact || url.startsWith('/entity/') || /^\/research\/[^/]+$/.test(url);
 }

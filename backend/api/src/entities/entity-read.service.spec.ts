@@ -1055,8 +1055,16 @@ describe('EntityReadService.list filters', () => {
           type: 'ARTWORK',
           kind: 'WORK',
           slug: 'guernica',
-          image: expect.any(String),
-          resolvedMedia: expect.any(Object),
+          image: null,
+          resolvedMedia: {
+            primary: null,
+            hero: null,
+            card: null,
+            detail: null,
+            thumbnail: null,
+            explorer3d: null,
+            gallery: [],
+          },
           metadata: {
             summary: null,
             startYear: null,

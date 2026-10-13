@@ -15,3 +15,23 @@ describe('toGraphData', () => {
     expect(graph.entityTypes).toEqual(['PERSON']);
   });
 });
+
+it('separates specific abstraction types consistently with the displayed filters', () => {
+  const graph = toGraphData({
+    centerId: 'concept',
+    nodes: ['CONCEPT', 'MOVEMENT', 'PERIOD', 'PLACE'].map((type) => ({
+      id: type.toLowerCase(),
+      label: type,
+      slug: type.toLowerCase(),
+      type,
+      kind: 'ABSTRACTION',
+    })),
+    edges: [],
+    filters: {
+      entityTypes: ['CONCEPT', 'MOVEMENT', 'PERIOD', 'PLACE'],
+      entityKinds: ['ABSTRACTION'],
+      relationTypes: [],
+    },
+  });
+  expect([...graph.entityTypes].sort()).toEqual(['CONCEPT', 'MOVEMENT', 'PERIOD', 'PLACE']);
+});

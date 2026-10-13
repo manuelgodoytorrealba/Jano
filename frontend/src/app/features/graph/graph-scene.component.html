@@ -95,11 +95,7 @@
           [attr.d]="renderedEdge.path"
           vector-effect="non-scaling-stroke"
           (pointerenter)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
-          (mouseenter)="edgeHover.emit({ event: $any($event), edge: renderedEdge.edge })"
-          (pointermove)="
-            edgeHover.emit({ event: $event, edge: renderedEdge.edge }); tooltipMove.emit($event)
-          "
-          (mousemove)="tooltipMove.emit($any($event))"
+          (pointermove)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
           (pointerup)="edgeActivate.emit({ event: $event, edge: renderedEdge.edge })"
           (pointerleave)="clearHover.emit()"
         ></path>
@@ -112,11 +108,7 @@
             [attr.x]="renderedEdge.labelPoint.x"
             [attr.y]="renderedEdge.labelPoint.y"
             (pointerenter)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
-            (mouseenter)="edgeHover.emit({ event: $any($event), edge: renderedEdge.edge })"
-            (pointermove)="
-              edgeHover.emit({ event: $event, edge: renderedEdge.edge }); tooltipMove.emit($event)
-            "
-            (mousemove)="tooltipMove.emit($any($event))"
+            (pointermove)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
           >
             {{ renderedEdge.displayLabel }}
           </text>
@@ -143,8 +135,6 @@
         (pointerup)="nodePointerUp.emit({ event: $event, nodeId: renderedNode.node.id })"
         (pointercancel)="nodePointerCancel.emit($event)"
         (pointerenter)="nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })"
-        (mouseenter)="nodeHover.emit({ event: $any($event), nodeId: renderedNode.node.id })"
-        (mousemove)="nodeHover.emit({ event: $any($event), nodeId: renderedNode.node.id })"
         (pointerleave)="clearHover.emit()"
       >
         <circle
@@ -166,26 +156,27 @@
         <path
           class="graph-node__shape"
           [attr.d]="renderedNode.shapePath"
-          [attr.fill]="renderedNode.nodeVisual.color"
+          fill="var(--color-surface, #171c22)"
           [attr.stroke]="renderedNode.nodeVisual.accent"
-          (mousemove)="nodeHover.emit({ event: $any($event), nodeId: renderedNode.node.id })"
         ></path>
 
         <path
           class="graph-node__shape graph-node__shape--inner"
           [attr.d]="renderedNode.shapePath"
-          [attr.fill]="renderedNode.nodeVisual.color"
-          (mousemove)="nodeHover.emit({ event: $any($event), nodeId: renderedNode.node.id })"
+          fill="var(--color-surface, #171c22)"
         ></path>
 
-        <text
-          class="graph-node__icon"
-          text-anchor="middle"
-          dy="0.35em"
-          [attr.fill]="renderedNode.nodeVisual.textColor"
-        >
-          {{ renderedNode.nodeVisual.icon }}
-        </text>
+        <path
+          class="graph-node__symbol"
+          [attr.d]="renderedNode.symbolPath"
+          [attr.transform]="'scale(' + renderedNode.size / 18 + ') translate(-12 -12)'"
+          [attr.stroke]="renderedNode.nodeVisual.accent"
+          fill="none"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          pointer-events="none"
+        />
 
         @if (nodeLabelVisibility[renderedNode.node.id]) {
           <g
@@ -205,7 +196,9 @@
 @if (tooltip) {
   <div class="graph-tooltip" [ngStyle]="tooltipStyle">
     <div class="graph-tooltip__title">{{ tooltip.title }}</div>
-    <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>
+    @if (tooltip.subtitle) {
+      <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>
+    }
     @if (tooltip.body) {
       <div class="graph-tooltip__body">{{ tooltip.body }}</div>
     }

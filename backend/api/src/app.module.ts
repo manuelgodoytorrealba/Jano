@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { EntitiesModule } from './entities/entities.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
@@ -21,10 +23,14 @@ import { validateEnv } from './config/env.validation';
 import { LibraryModule } from './library/library.module';
 import { HealthController } from './health.controller';
 import { KnowledgeModule } from './knowledge/knowledge.module';
+import { MetricsController } from './observability/metrics.controller';
+import { MetricsService } from './observability/metrics';
 
 @Module({
-  controllers: [HealthController],
+  controllers: [HealthController, MetricsController],
+  providers: [{ provide: APP_FILTER, useClass: SentryGlobalFilter }, MetricsService],
   imports: [
+    SentryModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,

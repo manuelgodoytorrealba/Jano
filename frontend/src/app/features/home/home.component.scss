@@ -172,6 +172,13 @@
   padding: 34px 34px 32px;
 }
 
+.home-page__deck::ng-deep .entity-deck__meta {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: none;
+}
+
 .home-page__deck::ng-deep .entity-deck__card.is-active .entity-deck__body {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),

@@ -3,6 +3,9 @@
 Estado: procedimiento P0 implementado  
 Objetivo: despliegues repetibles en un único servidor Ubuntu con Docker Compose, PostgreSQL y datos reales.
 
+Los objetivos de disponibilidad, latencia, capacidad y recuperación están definidos en
+[operations-slo.md](operations-slo.md).
+
 ## 0. Decisiones no negociables
 
 - La base de datos y `backend_uploads` son datos de producción. Ambos se respaldan.
@@ -281,7 +284,10 @@ El restore debe usar `pg_restore --exit-on-error --single-transaction` sobre una
 - Los volúmenes existentes son externos y el backup incluye DB y uploads.
 - Los logs Docker tienen rotación.
 
-Riesgo pendiente: los runtimes todavía se ejecutan como root. Cambiar a usuario no root queda en P1 porque requiere validar permisos del volumen de uploads.
+Backend y frontend se ejecutan como el usuario no privilegiado `node`, con filesystem raíz de solo
+lectura y capacidades Linux eliminadas. Antes de iniciar el backend, el servicio one-shot
+`uploads-permissions` ajusta exclusivamente el volumen de uploads. La imagen separada
+`jano-migrate` conserva el CLI de Prisma solo durante la migración y tampoco se ejecuta como root.
 
 ### 4.2 Compose recomendado
 
