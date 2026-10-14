@@ -42,6 +42,7 @@ import {
   mergeExplorationGraph,
   explorationNeighbors,
   seedMobileExploration,
+  mobileExplorationCenter,
   placeExplorationNodes,
 } from './graph-exploration';
 import { selectProgressiveRelationships } from './graph-progressive-disclosure';
@@ -1704,8 +1705,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private createEntityFocusedGraphViewport(): GraphViewport | null {
     if (this.isMobileViewport && this.detailLayout && this.revealedNodeIds()) {
       if (!this.hasUserAdjustedGraphView) this.seedMobileGraph();
-      const size = this.currentGraphStageSize();
-      return this.createViewportCenteredOnPoint({ x: 0, y: size.height * 0.15 }, 1);
+      const points = this.graphDerived()
+        .filteredNodes.map((node) => this.positions[node.id])
+        .filter((point): point is GraphPoint => !!point);
+      return this.createViewportCenteredOnPoint(mobileExplorationCenter(points), 1);
     }
     return this.createFittedGraphViewport();
   }

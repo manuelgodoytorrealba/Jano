@@ -69,3 +69,17 @@ export function placeExplorationNodes(
   }
   return result;
 }
+
+export function mobileExplorationCenter(points: GraphPoint[]): GraphPoint {
+  if (!points.length) return { x: 0, y: 0 };
+  return {
+    x:
+      (Math.min(...points.map((point) => point.x)) + Math.max(...points.map((point) => point.x))) /
+      2,
+    // Captions sit below each node; include their height in the visual center.
+    y:
+      (Math.min(...points.map((point) => point.y)) + Math.max(...points.map((point) => point.y))) /
+        2 +
+      24,
+  };
+}

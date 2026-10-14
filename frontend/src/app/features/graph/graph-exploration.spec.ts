@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { mergeExplorationGraph, placeExplorationNodes } from './graph-exploration';
+import {
+  mergeExplorationGraph,
+  placeExplorationNodes,
+  mobileExplorationCenter,
+} from './graph-exploration';
 import { toGraphData } from './graph-setup';
 import { buildGraphDerivedState } from './graph-derived';
 
@@ -64,5 +68,18 @@ describe('cumulative graph exploration', () => {
         ).toBe(true);
     }
     expect(next['child']).not.toEqual(next['another']);
+  });
+});
+
+describe('mobile graph framing', () => {
+  it('centers a sparse asymmetric group including its captions, rather than anchoring the root near the top', () => {
+    expect(
+      mobileExplorationCenter([
+        { x: 0, y: 0 },
+        { x: -120, y: -180 },
+        { x: 120, y: -180 },
+      ]),
+    ).toEqual({ x: 0, y: -66 });
+    expect(mobileExplorationCenter([])).toEqual({ x: 0, y: 0 });
   });
 });

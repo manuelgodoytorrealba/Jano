@@ -1515,7 +1515,7 @@
 
 // Local palette: only the entity image/graph workspace uses these surfaces.
 :host(.graph-detail-layout) {
-  --workspace-surface: #222222;
+  --workspace-surface: var(--color-reading-surface);
   --workspace-image: #292929;
   --workspace-control: #303030;
   --workspace-hover: #343434;
