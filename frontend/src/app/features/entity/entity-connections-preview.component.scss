@@ -33,10 +33,9 @@ h2 {
 .connections__map {
   position: relative;
   display: grid;
-  grid-template: 1fr 1fr / repeat(3, minmax(0, 1fr));
-  gap: 16px 12px;
-  min-height: 380px;
-  margin: 28px 0;
+  grid-template-columns: minmax(0, 1.25fr) 64px minmax(0, 1fr);
+  gap: 32px 0;
+  margin: 36px 0;
 }
 .connections__lines {
   position: absolute;
@@ -71,7 +70,7 @@ h2 {
 }
 .connections__node img,
 .connections__placeholder {
-  width: 100%;
+  width: 72px;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 6px;
@@ -94,21 +93,18 @@ h2 {
   color: var(--color-text-muted);
 }
 .connections__center {
-  grid-area: 1 / 2 / 3 / 3;
+  grid-column: 1;
   align-self: center;
-  img {
-    aspect-ratio: 2 / 3;
+  img,
+  .connections__placeholder {
+    width: 100%;
+    aspect-ratio: auto 4 / 5;
+    max-height: 260px;
+    object-fit: contain;
   }
 }
-.connections__node--0 {
-  grid-area: 1 / 1 / 3 / 2;
-  align-self: center;
-}
-.connections__node--1 {
-  grid-area: 1 / 3 / 2 / 4;
-}
-.connections__node--2 {
-  grid-area: 2 / 3 / 3 / 4;
+a.connections__node {
+  grid-column: 3;
 }
 .connections__open {
   display: flex;

@@ -13,31 +13,27 @@
   @if (loading()) {
     <p class="connections__status" role="status">{{ i18n.t('detail.connectionsLoading') }}</p>
   } @else if (connections().length) {
-    <div class="connections__map" [attr.aria-label]="i18n.t('entity.connectionMap')">
-      <svg
-        class="connections__lines"
-        viewBox="0 0 360 380"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <path d="M180 158H128Q116 158 116 146V132Q116 120 104 120H54" />
-        @if (connections().length > 1) {
-          <path d="M180 158H236Q248 158 248 146V62Q248 50 260 50H306" />
-        }
-        @if (connections().length > 2) {
-          <path d="M180 158H236Q248 158 248 170V252Q248 264 260 264H306" />
+    <div #map class="connections__map" [attr.aria-label]="i18n.t('entity.connectionMap')">
+      <svg class="connections__lines" aria-hidden="true">
+        @for (path of paths(); track $index) {
+          <path [attr.d]="path" />
         }
       </svg>
       <button
         class="connections__node connections__center"
+        [style.grid-row]="'1 / span ' + connections().length"
         type="button"
         (click)="openMap.emit()"
         [attr.aria-label]="i18n.t('detail.mobileOpenMap')"
       >
         @if (image) {
-          <img [src]="image" alt="" loading="lazy" />
+          <img class="connections__visual" [src]="image" alt="" loading="lazy" />
         } @else {
-          <svg class="connections__placeholder" viewBox="0 0 24 24" aria-hidden="true">
+          <svg
+            class="connections__placeholder connections__visual"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
             <path [attr.d]="symbol(entity.type, entity.kind).path" />
           </svg>
         }
@@ -46,14 +42,14 @@
       @for (item of connections(); track item.node.id; let index = $index) {
         <a
           class="connections__node"
-          [class]="'connections__node connections__node--' + index"
+          [style.grid-row]="index + 1"
           [routerLink]="['/entity', item.node.slug]"
         >
           @if (item.node.image) {
-            <img [src]="item.node.image" alt="" loading="lazy" />
+            <img class="connections__visual" [src]="item.node.image" alt="" loading="lazy" />
           } @else {
             <svg
-              class="connections__placeholder"
+              class="connections__placeholder connections__visual"
               viewBox="0 0 24 24"
               [style.color]="symbol(item.node.type, item.node.kind).color"
               aria-hidden="true"

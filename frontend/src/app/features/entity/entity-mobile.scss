@@ -123,6 +123,7 @@
     backdrop-filter: none;
   }
   .entity-information__header {
+    border-bottom: 0;
     gap: 0;
     margin-bottom: 20px;
     padding-bottom: 0;
@@ -218,6 +219,12 @@
     > .entity-information.entity-section.entity-glass:not(.entity-story) {
     background: var(--color-reading-surface);
     box-shadow: none;
+  }
+  :host-context([data-theme='light']) .entity-information .relation-card--friendly {
+    background: none;
+    box-shadow: none;
+    border: 0;
+    border-bottom: 1px solid var(--color-border-strong);
   }
   :host-context([data-theme='light']) .entity-context {
     background: none;

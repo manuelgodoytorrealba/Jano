@@ -2,6 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  ElementRef,
+  ViewChild,
   Input,
   OnChanges,
   OnDestroy,
@@ -64,6 +66,36 @@ export class EntityConnectionsPreviewComponent implements OnChanges, OnDestroy {
   readonly failed = signal(false);
   private readonly api = inject(EntitiesApi);
   private request?: Subscription;
+  private mapObserver?: ResizeObserver;
+  readonly paths = signal<string[]>([]);
+
+  @ViewChild('map') set map(element: ElementRef<HTMLElement> | undefined) {
+    this.mapObserver?.disconnect();
+    if (!element || typeof ResizeObserver === 'undefined') return;
+    const map = element.nativeElement;
+    this.mapObserver = new ResizeObserver(() => {
+      const bounds = map.getBoundingClientRect();
+      const center = map
+        .querySelector('.connections__center .connections__visual')
+        ?.getBoundingClientRect();
+      if (!center) return;
+      const targets = [...map.querySelectorAll('a .connections__visual')];
+      this.paths.set(
+        targets.map((target, index) => {
+          const rect = target.getBoundingClientRect();
+          const x1 = center.right - bounds.left + 12;
+          const y1 =
+            center.top - bounds.top + center.height / 2 + (index - (targets.length - 1) / 2) * 12;
+          const x2 = rect.left - bounds.left - 12;
+          const y2 = rect.top - bounds.top + rect.height / 2;
+          const middle = (x1 + x2) / 2;
+          return `M${x1} ${y1}C${middle} ${y1} ${middle} ${y2} ${x2} ${y2}`;
+        }),
+      );
+    });
+    this.mapObserver.observe(map);
+    map.querySelectorAll('.connections__node').forEach((node) => this.mapObserver?.observe(node));
+  }
 
   get centerTitle(): string {
     return this.entity.title.split(' — ').at(-1) || this.entity.title;
@@ -99,6 +131,7 @@ export class EntityConnectionsPreviewComponent implements OnChanges, OnDestroy {
     });
   }
   ngOnDestroy(): void {
+    this.mapObserver?.disconnect();
     this.request?.unsubscribe();
   }
 }
