@@ -518,3 +518,50 @@
     min-height: 42px;
   }
 }
+
+.explorer3d__active-link {
+  position: absolute;
+  z-index: 2;
+  border-radius: 24px;
+  pointer-events: none;
+  &.is-visible {
+    pointer-events: auto;
+  }
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+}
+.explorer3d__navigation {
+  position: absolute;
+  z-index: 3;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 80%;
+  padding: 4px 8px;
+  border-radius: 16px;
+  a {
+    color: inherit;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  button {
+    flex: 0 0 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+}

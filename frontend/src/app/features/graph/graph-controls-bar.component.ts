@@ -25,6 +25,7 @@ export class GraphControlsBarComponent {
   @Input({ required: true }) nodeCount = 0;
   @Input({ required: true }) edgeCount = 0;
   @Input({ required: true }) scalePercent = 100;
+  @Input() imagesEnabled = true;
   @Input() detailLayout = false;
   @Input() footerOnly = false;
   @Input() graphReady = false;
@@ -35,6 +36,7 @@ export class GraphControlsBarComponent {
   @Output() centerSelection = new EventEmitter<void>();
   @Output() graphZoom = new EventEmitter<number>();
   @Output() resetGraphView = new EventEmitter<void>();
+  @Output() toggleImages = new EventEmitter<void>();
   @Output() toggleInspector = new EventEmitter<void>();
 
   setLabelsMode(mode: 'auto' | 'always' | 'hidden'): void {

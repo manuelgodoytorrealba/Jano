@@ -10,15 +10,8 @@ import {
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import {
-  combineLatest,
-  distinctUntilChanged,
-  map,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { distinctUntilChanged, map, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { NavigationMemoryService } from '../../core/navigation-memory.service';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { PublicEntity } from '../../core/api/entities.models';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
@@ -42,6 +35,7 @@ type DetailWorkspaceMode = 'split' | 'image' | 'graph' | 'info';
   styleUrls: ['./entity.component.scss'],
 })
 export class EntityComponent implements OnDestroy {
+  private readonly navigation = inject(NavigationMemoryService);
   private api = inject(EntitiesApi);
   private readonly seo = inject(SeoService);
   private readonly chromeRail = inject(AppChromeRailService);
@@ -218,9 +212,12 @@ export class EntityComponent implements OnDestroy {
   private slug$ = this.route.paramMap.pipe(
     map((p) => p.get('slug') ?? ''),
     distinctUntilChanged(),
-    tap(() => {
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'auto' });
+    tap((slug) => {
+      if (
+        typeof window !== 'undefined' &&
+        this.navigation.read<{ slug: string }>('detail')?.slug !== slug
+      ) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
       }
 
       this.currentEntity.set(null);
@@ -239,8 +236,27 @@ export class EntityComponent implements OnDestroy {
     }),
   );
 
-  entity$ = combineLatest([this.slug$, toObservable(this.i18n.locale)]).pipe(
-    switchMap(([slug]) => this.api.get(slug).pipe(startWith(null))),
+  private readonly locale$ = toObservable(this.i18n.locale);
+  entity$ = this.slug$.pipe(
+    switchMap((slug) =>
+      this.locale$.pipe(
+        switchMap((locale) => {
+          const cached = this.navigation.read<{ locale: string; entity: PublicEntity }>(
+            'entity-data',
+          );
+          if (cached?.locale === locale && cached.entity.slug === slug) return of(cached.entity);
+          const key = this.navigation.visit().key;
+          return this.api
+            .get(slug)
+            .pipe(
+              tap((entity) =>
+                this.navigation.writeTransient('entity-data', { locale, entity }, key),
+              ),
+            );
+        }),
+        startWith(this.navigation.read<{ entity: PublicEntity }>('entity-data')?.entity ?? null),
+      ),
+    ),
     tap((entity) => {
       if (!entity) {
         return;

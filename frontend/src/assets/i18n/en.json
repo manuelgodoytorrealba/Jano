@@ -1,4 +1,8 @@
 {
+  "detail.mobileMapDescription": "Explore how this entity connects to others. The map opens in a dedicated view.",
+  "detail.mobileRelationList": "View relationships as a list",
+  "detail.mobileCredits": "Credits",
+  "detail.mobileOpenMap": "Open relationship map",
   "entity.imageCredit": "Image credit",
   "entity.fact.concepts": "Concepts",
   "entity.fact.movement": "Movement",
@@ -388,6 +392,8 @@
   "graph.labels.always": "Always",
   "graph.labels.hidden": "Never",
   "graph.info": "Info",
+  "graph.images.show": "Show images",
+  "graph.images.hide": "Hide images",
   "graph.layers": "Layers",
   "graph.of": "of",
   "graph.explore": "Explore",
@@ -761,5 +767,7 @@
   "graph.imageReset": "Reset",
   "graph.controls": "Graph controls",
   "graph.zoomOut": "Zoom out graph",
-  "graph.zoomIn": "Zoom in graph"
+  "graph.zoomIn": "Zoom in graph",
+  "navigation.returnToExploration": "Back to exploration",
+  "navigation.entities": "Navigate entities"
 }

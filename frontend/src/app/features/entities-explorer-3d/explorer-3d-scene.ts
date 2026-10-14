@@ -89,7 +89,12 @@ export class Explorer3dScene {
     return this._entryAnimationState === 'running';
   }
 
-  initialize(host: HTMLElement, items: PublicEntityListItem[], activeIndex: number): void {
+  initialize(
+    host: HTMLElement,
+    items: PublicEntityListItem[],
+    activeIndex: number,
+    restoreLayout = false,
+  ): void {
     const width = host.clientWidth || 1200;
     const height = host.clientHeight || 700;
     this.viewportWidth = width;
@@ -112,8 +117,8 @@ export class Explorer3dScene {
     host.replaceChildren(this.renderer.domElement);
     this.buildCards();
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.updateTargets(reducedMotion);
-    if (reducedMotion) {
+    this.updateTargets(reducedMotion || restoreLayout);
+    if (reducedMotion || restoreLayout) {
       this._entryAnimationState = 'complete';
       this.onEntryAnimationComplete?.();
       this.startLoop();
@@ -212,6 +217,7 @@ export class Explorer3dScene {
 
   private buildCards(): void {
     this.disposeCards();
+    if (!this.items.length) return;
     const cardsVersion = this.cardsVersion;
     const profile = this.viewportProfile();
     this.cardProfileKey = profile.key;
@@ -220,17 +226,20 @@ export class Explorer3dScene {
     const glassWidth = profile.cardWidth - profile.imageInset;
     const glassHeight = profile.cardHeight - profile.imageInset * 1.55;
 
+    const frameTexture = createRoundedRectTexture(
+      1100,
+      1200,
+      58,
+      'rgba(255,255,255,0.08)',
+      'rgba(255,255,255,0.52)',
+      6,
+      1,
+    );
+    const glassTexture = createSpecularHighlightTexture(1100, 1200, 54);
+
     this.items.forEach((item, index) => {
       const frameMaterial = new THREE.MeshBasicMaterial({
-        map: createRoundedRectTexture(
-          1100,
-          1200,
-          58,
-          'rgba(255,255,255,0.08)',
-          'rgba(255,255,255,0.52)',
-          6,
-          1,
-        ),
+        map: frameTexture,
         transparent: true,
         opacity: 0.42,
         depthWrite: false,
@@ -241,7 +250,7 @@ export class Explorer3dScene {
         opacity: 1,
       });
       const glassMaterial = new THREE.MeshBasicMaterial({
-        map: createSpecularHighlightTexture(1100, 1200, 54),
+        map: glassTexture,
         transparent: true,
         opacity: 0.18,
         depthWrite: false,
@@ -289,7 +298,7 @@ export class Explorer3dScene {
 
           if (cardsVersion !== this.cardsVersion) return;
           imageMaterial.map?.dispose();
-          imageMaterial.map = createRoundedImageTexture(source, 1100, 1200, 48, media);
+          imageMaterial.map = createRoundedImageTexture(source, 550, 600, 24, media);
           imageMaterial.color.set('#ffffff');
           imageMaterial.needsUpdate = true;
         };
@@ -306,7 +315,7 @@ export class Explorer3dScene {
     if (!this.items.length) return;
     const profile = this.viewportProfile();
     this.cards.forEach((card, index) => {
-      const offset = circularOffset(index, this.activeIndex, this.items.length);
+      const offset = linearOffset(index, this.activeIndex);
       const distance = Math.abs(offset);
       card.group.visible = distance <= Math.min(5, Math.floor(this.items.length / 2));
       if (!card.group.visible) return;
@@ -366,7 +375,7 @@ export class Explorer3dScene {
         continue;
       }
 
-      const offset = circularOffset(index, this.activeIndex, this.items.length);
+      const offset = linearOffset(index, this.activeIndex);
       const distance = Math.abs(offset);
       const direction = Math.sign(offset);
       data.entryPosition = new THREE.Vector3(
@@ -602,23 +611,21 @@ export class Explorer3dScene {
 
   private disposeCards(): void {
     this.cardsVersion += 1;
+    const textures = new Set<THREE.Texture>();
     for (const card of this.cards) {
       for (const mesh of [card.frame, card.image, card.glass]) {
         mesh.geometry.dispose();
-        mesh.material.map?.dispose();
+        if (mesh.material.map) textures.add(mesh.material.map);
         mesh.material.dispose();
       }
       this.scene.remove(card.group);
     }
+    for (const texture of textures) texture.dispose();
     this.cards = [];
     this.raycastTargets = [];
   }
 }
 
-export function circularOffset(index: number, active: number, total: number): number {
-  let offset = index - active;
-  const half = Math.floor(total / 2);
-  if (offset > half) offset -= total;
-  if (offset < -half) offset += total;
-  return offset;
+export function linearOffset(index: number, active: number): number {
+  return index - active;
 }

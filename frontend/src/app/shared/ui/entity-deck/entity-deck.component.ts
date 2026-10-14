@@ -201,7 +201,31 @@ export class EntityDeckComponent {
     return diff;
   }
 
+  onDestinationClick(event: MouseEvent, item: DeckItem): void {
+    event.stopPropagation();
+    if (this.isSwipeSuppressed()) {
+      event.preventDefault();
+      return;
+    }
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    event.preventDefault();
+    this.onCardClick(item);
+  }
+
+  destination(item: DeckItem): string | null {
+    return item.ctaUrl || item.ctaRoute || (item.routeType ? `/entities/${item.routeType}` : null);
+  }
+
   private isInteractiveTarget(target: EventTarget | null): boolean {
+    if (target instanceof Element && target.closest('.entity-deck__destination')) return false;
     return target instanceof HTMLElement
       ? !!target.closest(
           'button, a, input, textarea, select, option, [role=button], [contenteditable=true]',
@@ -298,6 +322,19 @@ export class EntityDeckComponent {
 
   @HostListener('window:keydown', ['$event'])
   onKey(event: KeyboardEvent): void {
+    const target = event.target;
+    if (
+      event.defaultPrevented ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      (target instanceof Element &&
+        target.closest(
+          'input, textarea, select, button, a, [contenteditable]:not([contenteditable="false"]), [role="combobox"], [role="listbox"], [role="slider"], [role="tablist"], [role="menu"]',
+        ))
+    )
+      return;
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
       this.prev();

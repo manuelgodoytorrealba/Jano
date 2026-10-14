@@ -110,11 +110,24 @@
             [style.zIndex]="cardStates()[$index].zIndex"
             [style.transform]="cardStates()[$index].transform"
             [style.opacity]="cardStates()[$index].opacity"
-            [attr.tabindex]="$index === activeIndex() ? 0 : -1"
+            [attr.tabindex]="$index === activeIndex() && !destination(item) ? 0 : -1"
             (click)="onCardClick(item)"
-            (keydown.enter)="onCardClick(item)"
-            (keydown.space)="onCardClick(item); $event.preventDefault()"
+            (keydown.enter)="destination(item) ? undefined : onCardClick(item)"
+            (keydown.space)="
+              destination(item) ? undefined : onCardClick(item);
+              destination(item) ? undefined : $event.preventDefault()
+            "
           >
+            @if (destination(item); as href) {
+              <a
+                class="entity-deck__destination"
+                draggable="false"
+                [href]="href"
+                [attr.tabindex]="$index === activeIndex() ? 0 : -1"
+                [attr.aria-label]="item.cta + ' ' + item.title"
+                (click)="onDestinationClick($event, item)"
+              ></a>
+            }
             <div class="entity-deck__media">
               <app-jano-media
                 [media]="deckMedia(item)"

@@ -1,5 +1,20 @@
-import { describe, expect, it } from 'vitest';
-import { entryAnimationProgress, spatialEntryEase } from './explorer-3d-scene';
+import * as THREE from 'three';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  Explorer3dScene,
+  entryAnimationProgress,
+  spatialEntryEase,
+  linearOffset,
+} from './explorer-3d-scene';
+
+describe('linear deck geometry', () => {
+  it('never displays the end of a batch before its first card', () => {
+    expect(linearOffset(23, 0)).toBe(23);
+    expect(linearOffset(0, 23)).toBe(-23);
+    expect(linearOffset(17, 18)).toBe(-1);
+    expect(linearOffset(19, 18)).toBe(1);
+  });
+});
 
 describe('explorer 3d entry animation', () => {
   it('spreads from the center with a bounded, distance-based stagger', () => {
@@ -14,5 +29,30 @@ describe('explorer 3d entry animation', () => {
     expect(spatialEntryEase(0.25)).toBeGreaterThan(0.65);
     expect(spatialEntryEase(1)).toBe(1);
     expect(spatialEntryEase(2)).toBe(1);
+  });
+});
+
+describe('explorer shared textures', () => {
+  it('releases shared decoration textures once when cards are destroyed', () => {
+    const scene = new Explorer3dScene();
+    const frame = new THREE.Texture();
+    const glass = new THREE.Texture();
+    const frameDispose = vi.spyOn(frame, 'dispose');
+    const glassDispose = vi.spyOn(glass, 'dispose');
+    const images = [new THREE.Texture(), new THREE.Texture()];
+    const imageDisposes = images.map((texture) => vi.spyOn(texture, 'dispose'));
+    const mesh = (map: THREE.Texture) =>
+      new THREE.Mesh(new THREE.PlaneGeometry(), new THREE.MeshBasicMaterial({ map }));
+    const cards = images.map((image) => ({
+      group: new THREE.Group(),
+      frame: mesh(frame),
+      glass: mesh(glass),
+      image: mesh(image),
+    }));
+    (scene as unknown as { cards: typeof cards }).cards = cards;
+    scene.destroy();
+    expect(frameDispose).toHaveBeenCalledTimes(1);
+    expect(glassDispose).toHaveBeenCalledTimes(1);
+    imageDisposes.forEach((dispose) => expect(dispose).toHaveBeenCalledTimes(1));
   });
 });

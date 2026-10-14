@@ -45,7 +45,12 @@ export function createGraphZoomViewport(options: {
 }
 
 export function beginGraphPanSession(event: PointerEvent): GraphPointerSession | null {
-  if ((event.target as HTMLElement | null)?.closest('.graph-node')) {
+  if (
+    event.button !== 0 ||
+    (event.target as Element | null)?.closest(
+      '.graph-node, .graph-edge-hit, .graph-edge-label, .graph-tooltip',
+    )
+  ) {
     return null;
   }
 

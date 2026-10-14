@@ -652,3 +652,56 @@
   background: #171c23;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+:host-context(.graph-detail-layout) {
+  .graph-panel-footer,
+  .graph-filter-group,
+  .selection-card {
+    background: var(--workspace-surface);
+    border-color: var(--workspace-border);
+    box-shadow: none;
+    color: var(--workspace-ink);
+  }
+  .filter-group__label,
+  .filter-group__head,
+  .selection-card p {
+    color: var(--workspace-muted);
+  }
+  .filter-chip {
+    color: var(--workspace-ink);
+  }
+  .filter-chip:hover {
+    background: var(--workspace-hover);
+  }
+  .graph-panel-footer__mobile-intro h2,
+  .selection-card h3,
+  .graph-context-block__title {
+    color: var(--workspace-ink);
+  }
+  .selection-card p,
+  .selection-card__meta,
+  .graph-context-block__summary,
+  .graph-panel-footer__eyebrow {
+    color: var(--workspace-muted);
+  }
+  .graph-panel-footer__close,
+  .filter-action {
+    color: var(--workspace-ink);
+    background: var(--workspace-control);
+    border-color: var(--workspace-border);
+  }
+  .graph-panel-footer--filters .graph-panel-footer__mobile-head {
+    background: var(--workspace-surface);
+    border-color: var(--workspace-border);
+  }
+  .filter-chip__symbol {
+    stroke: color-mix(in srgb, currentColor var(--workspace-accent-weight), var(--workspace-ink));
+  }
+  .filter-chip::after {
+    color: color-mix(
+      in srgb,
+      var(--chip-color) var(--workspace-accent-weight),
+      var(--workspace-ink)
+    );
+  }
+}

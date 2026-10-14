@@ -14,7 +14,6 @@ import {
   GraphPoint,
   GraphRenderedEdge,
   GraphRenderedNode,
-  GraphTooltip,
   GraphTypeMeta,
   graphNodeTypeKey,
 } from './graph.models';
@@ -84,30 +83,47 @@ export function buildRenderedGraphNodes(options: {
   selectedNeighbors: Set<string>;
   readableScale?: number;
   compactLabels?: boolean;
+  viewportScale?: number;
+  fitScale?: number;
+  imagesEnabled?: boolean;
 }): GraphRenderedNode[] {
   const centerPoint = options.centerId
     ? (options.positions[options.centerId] ?? { x: 0, y: 0 })
     : { x: 0, y: 0 };
+  const viewportScale = Math.max(options.viewportScale ?? options.readableScale ?? 1, 0.1);
+  const zoomSize = Math.min(
+    2.25,
+    Math.max(1, viewportScale / Math.max(options.fitScale ?? viewportScale, 0.1)),
+  );
 
   return options.nodes.map((node) => {
     const point = options.positions[node.id] ?? { x: 0, y: 0 };
     const symbol = entitySymbol(node.type, node.kind);
     const nodeVisual = {
       ...getEntityTypeConfig(graphNodeTypeKey(node)),
-      shape: symbol.shape,
+      shape:
+        node.image && options.imagesEnabled !== false
+          ? node.kind === 'PERSON' || node.type === 'ARTIST'
+            ? ('circle' as const)
+            : ('rounded-square' as const)
+          : symbol.shape,
       color: symbol.color,
       accent: symbol.color,
       halo: symbol.color + '18',
     };
-    const size = graphNodeSize(node, options.centerId, options.selectedNodeId);
-    const labelDirection = node.id === options.centerId || point.x >= centerPoint.x ? 1 : -1;
+    const imageUrl =
+      options.imagesEnabled === false ? null : graphNodeImage(node, options.viewportScale ?? 1);
+    // Grow geometry while compensating the group so captions and borders stay readable.
+    const size = (node.id === options.centerId ? 34 : 28) * zoomSize;
+    const renderScale = 1 / viewportScale;
     const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
 
     return {
       node,
+      imageUrl,
       point,
-      transform: `translate(${point.x} ${point.y})${options.readableScale ? ` scale(${1 / options.readableScale})` : ''}`,
-      renderScale: options.readableScale ? 1 / options.readableScale : 1,
+      transform: `translate(${point.x} ${point.y})${renderScale !== 1 ? ` scale(${renderScale})` : ''}`,
+      renderScale,
       selected: options.selectedNodeId === node.id,
       depthTier: resolveNodeDepthTier(
         node,
@@ -125,16 +141,8 @@ export function buildRenderedGraphNodes(options: {
       haloSize: size + 12,
       shapePath: graphNodeShapePath(nodeVisual.shape, size),
       symbolPath: symbol.path,
-      labelTransform:
-        options.readableScale && (node.id === options.centerId || options.compactLabels)
-          ? `translate(0 ${options.compactLabels && node.id !== options.centerId && point.y <= centerPoint.y ? -size - 26 : size + 22})`
-          : `translate(${labelDirection * (size + 18)} 0)`,
-      labelTextAnchor:
-        options.readableScale && (node.id === options.centerId || options.compactLabels)
-          ? 'middle'
-          : labelDirection === 1
-            ? 'start'
-            : 'end',
+      labelTransform: `translate(0 ${size + 26})`,
+      labelTextAnchor: 'middle',
       nodeVisual,
       titleLabel: compactGraphLabel(
         node.label,
@@ -241,24 +249,6 @@ export function buildGraphAmbientFields(options: {
     .map(({ priority: _priority, ...field }) => field);
 }
 
-export function graphTooltipStyle(
-  tooltip: GraphTooltip | null,
-  host: HTMLElement | null | undefined,
-): Record<string, string> {
-  if (!tooltip) {
-    return {};
-  }
-
-  const hostRect = host?.getBoundingClientRect();
-  const left = hostRect ? tooltip.x - hostRect.left : tooltip.x;
-  const top = hostRect ? tooltip.y - hostRect.top : tooltip.y;
-
-  return {
-    left: `${left + 18}px`,
-    top: `${top + 18}px`,
-  };
-}
-
 function resolveNodeDepthTier(
   node: GraphNode,
   point: GraphPoint,
@@ -308,4 +298,11 @@ function resolveEdgeDepthTier(
   }
 
   return 'far';
+}
+
+export function graphNodeImage(node: GraphNode, scale: number): string | null {
+  // Local derivatives and existing thumbnails only; no full-resolution downloads.
+  return scale > 0 && node.image && /graph-thumbnail|thumbnail|thumb[-_/]/i.test(node.image)
+    ? node.image
+    : null;
 }

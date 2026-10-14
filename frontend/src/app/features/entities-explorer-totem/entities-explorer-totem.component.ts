@@ -1,4 +1,5 @@
 import { NgStyle } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -46,7 +47,7 @@ type RibbonCard = {
 @Component({
   standalone: true,
   selector: 'app-entities-explorer-totem',
-  imports: [NgStyle, JanoMediaComponent],
+  imports: [NgStyle, JanoMediaComponent, RouterLink],
   templateUrl: './entities-explorer-totem.component.html',
   styleUrl: './entities-explorer-totem.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,6 +55,9 @@ type RibbonCard = {
 export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() items: Entity[] = [];
   @Input() activeIndex = 0;
+  @Input() hasPreviousPage = false;
+  @Input() hasNextPage = false;
+  @Output() pageChange = new EventEmitter<-1 | 1>();
   @Input() infoOpen = false;
 
   @Output() activeIndexChange = new EventEmitter<number>();
@@ -69,6 +73,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   private readonly isBrowser: boolean;
   private resizeObserver?: ResizeObserver;
   private pointerId: number | null = null;
+  private pointerStartIndex: number | null = null;
   private startY = 0;
   private pendingDragOffset = 0;
   private dragFrame: number | null = null;
@@ -123,7 +128,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
     return ([-1, 0, 1] as TotemWindowRole[])
       .map((role) => {
-        const index = this.wrapIndex(this.activeIndex + role, total);
+        const index = this.activeIndex + role;
         const item = this.items[index];
 
         return item
@@ -193,7 +198,15 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
       return;
     }
 
-    if (!event.isPrimary || this.isInteractiveTarget(event.target)) {
+    if (
+      !event.isPrimary ||
+      event.button !== 0 ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.altKey ||
+      this.isInteractiveTarget(event.target)
+    ) {
       return;
     }
 
@@ -201,6 +214,11 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     this.cancelDragFrame();
     this.syncPanelIndex(false);
     this.pointerId = event.pointerId;
+    const cardIndex =
+      event.target instanceof Element
+        ? event.target.closest('[data-index]')?.getAttribute('data-index')
+        : null;
+    this.pointerStartIndex = cardIndex == null ? null : Number(cardIndex);
     this.startY = event.clientY;
     this.pendingDragOffset = 0;
     this.dragOffset.set(0);
@@ -248,7 +266,11 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
       this.dragging.set(false);
       this.settling.set(false);
       this.dragOffset.set(0);
-      this.openActive();
+      if (this.pointerStartIndex !== null && this.pointerStartIndex !== this.activeIndex) {
+        this.activeIndexChange.emit(this.pointerStartIndex);
+      } else {
+        this.openActive();
+      }
       return;
     }
 
@@ -371,7 +393,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
       return null;
     }
 
-    return this.items[this.wrapIndex(this.activeIndex + offset, total)] ?? null;
+    return this.items[this.activeIndex + offset] ?? null;
   }
 
   private wrapIndex(index: number, total: number): number {
@@ -399,7 +421,14 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     this.dragOffset.set(direction === 1 ? -settleMagnitude : settleMagnitude);
 
     this.animationTimer = window.setTimeout(() => {
-      this.activeIndexChange.emit(this.wrapIndex(this.activeIndex + direction, this.items.length));
+      const next = this.activeIndex + direction;
+      if (next < 0 || next >= this.items.length) {
+        if (direction === -1 ? this.hasPreviousPage : this.hasNextPage) {
+          this.pageChange.emit(direction);
+        }
+      } else {
+        this.activeIndexChange.emit(next);
+      }
       this.dragOffset.set(0);
       this.animationTimer = null;
 
@@ -486,6 +515,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   }
 
   private isInteractiveTarget(target: EventTarget | null): boolean {
+    if (target instanceof Element && target.closest('.explorer-totem__card-link')) return false;
     if (!(target instanceof HTMLElement)) {
       return false;
     }

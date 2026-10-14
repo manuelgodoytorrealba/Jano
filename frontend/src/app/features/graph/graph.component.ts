@@ -18,7 +18,9 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { EMPTY, Subscription, catchError, skip, switchMap } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { toGraphData } from './graph-setup';
 import { EntitiesApi } from '../../core/api/entities.api';
 import { EntityRouteArtworkTransitionService } from '../../core/entity-route-artwork-transition.service';
 import { I18nService } from '../../core/i18n/i18n.service';
@@ -37,7 +39,12 @@ import {
   graphNodeTypeKey,
 } from './graph.models';
 import { GraphResponseDto } from '../../core/api/graph.models';
-import { ExplorerPersistedState, saveExplorerState } from './graph-persistence';
+import {
+  ExplorerPersistedState,
+  loadGraphImagesPreference,
+  saveGraphImagesPreference,
+  saveExplorerState,
+} from './graph-persistence';
 import { ImageControlsComponent } from './image-controls.component';
 import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
@@ -63,7 +70,6 @@ import {
   graphImageBackdrop,
   graphNodeHaloSize,
   graphNodeSize,
-  graphTooltipStyle,
 } from './graph-render';
 import {
   resolveEdgeLabelOcclusion,
@@ -204,8 +210,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly hoveredNodeId = signal<string | null>(null);
   readonly hoveredEdgeId = signal<string | null>(null);
   readonly tooltip = signal<GraphTooltip | null>(null);
+  readonly imagesEnabled = signal(this.isBrowser ? loadGraphImagesPreference() : true);
   readonly labelsMode = signal<'auto' | 'always' | 'hidden'>('auto');
   readonly graphViewport = signal<GraphViewport>({ x: 0, y: 0, scale: 0.82 });
+  readonly graphScale = computed(() => this.graphViewport().scale);
+  readonly graphNodeFitScale = signal<number | null>(null);
   readonly imageViewport = signal<ImageViewport>({ x: 0, y: 0, scale: 1, fitScale: 1 });
   readonly imageZoomPercent = computed(() => {
     const viewport = this.imageViewport();
@@ -263,7 +272,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       hoveredEdgeId: this.hoveredEdgeId(),
       labelsMode: this.labelsMode(),
       labelScaleBucket: this.labelScaleBucket(),
-      viewportScale: this.graphViewport().scale,
+      viewportScale: this.graphScale(),
       overviewMode: this.overviewMode,
       showAllOverviewRelations: this.showAllOverviewRelations,
       relationshipLimit: this.relationshipLimit(),
@@ -299,10 +308,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId,
       selectedNodeId,
       selectedNeighbors,
+      imagesEnabled: this.imagesEnabled(),
+      viewportScale: this.graphViewportReady ? this.graphScale() : 0,
+      fitScale: this.graphNodeFitScale() ?? this.graphScale(),
       compactLabels: this.detailLayout && this.isMobileViewport,
       readableScale:
         this.detailLayout && (graph?.nodes.length ?? 0) <= 12
-          ? Math.min(1, this.graphViewport().scale)
+          ? Math.min(1, this.graphScale())
           : undefined,
     });
   });
@@ -316,7 +328,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }),
   );
 
-  readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphViewport().scale));
+  readonly labelScaleBucket = computed(() => graphLabelScaleBucket(this.graphScale()));
   readonly imagePresentation = computed(() => resolveMediaPresentation(this.imageMedia));
   readonly inspectorFocusedNodeIsCenter = computed(() => {
     const derived = this.graphDerived();
@@ -331,7 +343,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId: this.graph()?.centerId ?? null,
       selectedNodeId: this.selectedNodeId(),
       hoveredNodeId: this.hoveredNodeId(),
-      scale: this.graphViewport().scale,
+      scale: this.graphScale(),
     }),
   );
   readonly resolvedEdgeLabelVisibility = computed(() =>
@@ -341,7 +353,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       centerId: this.graph()?.centerId ?? null,
       selectedNodeId: this.selectedNodeId(),
       hoveredEdgeId: this.hoveredEdgeId(),
-      scale: this.graphViewport().scale,
+      scale: this.graphScale(),
       occupiedBoxes: visibleLabelBoxes({
         nodes: this.renderedNodes(),
         nodeVisibility: this.resolvedNodeLabelVisibility(),
@@ -377,6 +389,24 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     }
     return visible;
   });
+
+  constructor() {
+    toObservable(this.i18n.locale)
+      .pipe(
+        skip(1),
+        switchMap(() =>
+          this.isBrowser && this.graph() && !this.graphData
+            ? this.api.graph(this.slug).pipe(catchError(() => EMPTY))
+            : EMPTY,
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((response) => {
+        if (response.centerId !== this.graph()?.centerId) return;
+        this.graph.set(toGraphData(response));
+        this.tooltip.set(null);
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
@@ -499,6 +529,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     const previousGraph = this.graph();
     const previousSelectedNodeId = this.selectedNodeId();
     const shouldPreserveRuntime = this.preserveRuntimeOnGraphChange && !!previousGraph;
+    if (!shouldPreserveRuntime) this.graphNodeFitScale.set(null);
     const loadedState = buildLoadedGraphRuntime({
       initialized: initializeLoadedGraphState(response, this.persistedState?.graph),
     });
@@ -1023,7 +1054,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       currentViewport: this.currentGraphViewportState(),
       cancelInitialFocus: () => this.cancelPendingInitialGraphFocus(true),
       clearViewportTarget: () => this.camera.clearViewportTarget(),
-      clearTooltip: () => this.tooltip.set(null),
+      clearTooltip: () => this.clearHoverClearTimer(),
     });
     this.markGraphInteractionActive(240);
   }
@@ -1048,12 +1079,27 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onGraphStagePointerUp(event: PointerEvent): void {
-    this.interactions.graphStagePointerUp({
+    const clickedCanvas = this.interactions.graphStagePointerUp({
       event,
       flushViewport: () => this.flushPendingGraphViewport(),
       persist: () => this.persistExplorerState(),
     });
+    if (clickedCanvas) {
+      this.selectedNodeId.set(null);
+      this.selectedNodeSource = 'center';
+      this.lastNodeActivation = null;
+      this.dismissTooltip();
+      this.persistExplorerState();
+    }
     this.markGraphInteractionActive(120);
+    if (
+      this.tooltip() &&
+      !(event.target as Element | null)?.closest(
+        '.graph-node, .graph-edge-hit, .graph-edge-label, .graph-tooltip',
+      )
+    ) {
+      this.clearHover();
+    }
   }
 
   onNodePointerDown(event: PointerEvent, nodeId: string): void {
@@ -1152,7 +1198,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     const node = this.graphDerived().nodeMap.get(nodeId);
     if (!node || !canHandleHover(this.interactions.pointerSession)) return;
     if (this.hoveredNodeId() === node.id && this.tooltip()) {
-      this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
       return;
     }
     this.interruptGraphViewportAutomation();
@@ -1193,27 +1238,33 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.applyEdgeHover(event, edge);
   }
 
-  onTooltipMove(event: PointerEvent): void {
+  onTooltipMove(): void {
     this.clearHoverClearTimer();
     if (!canHandleHover(this.interactions.pointerSession) || !this.tooltip()) return;
     this.interruptGraphViewportAutomation();
-    this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
   }
 
   clearHover(): void {
+    if (
+      this.graphStage?.nativeElement.querySelector(
+        '.graph-tooltip:focus-visible, .graph-tooltip :focus-visible',
+      )
+    )
+      return;
     this.clearHoverClearTimer();
     this.hoverClearTimer = setTimeout(() => {
       this.hoverClearTimer = null;
       if (!canHandleHover(this.interactions.pointerSession)) return;
-      this.hoveredNodeId.set(null);
-      this.hoveredEdgeId.set(null);
-      this.camera.clearTooltip();
-      this.tooltip.set(null);
-    }, 72);
+      this.dismissTooltip();
+    }, 200);
   }
 
-  tooltipStyle(): Record<string, string> {
-    return graphTooltipStyle(this.tooltip(), this.graphStage?.nativeElement);
+  dismissTooltip(): void {
+    this.clearHoverClearTimer();
+    this.hoveredNodeId.set(null);
+    this.hoveredEdgeId.set(null);
+    this.camera.clearTooltip();
+    this.tooltip.set(null);
   }
 
   toggleEntityType(type: string): void {
@@ -1305,6 +1356,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     return `${this.i18n.t(layers.length === 1 ? 'graph.activeLayer' : 'graph.activeLayers')}: ${layers.join(' · ')}`;
   }
 
+  toggleGraphImages(): void {
+    this.imagesEnabled.update((enabled) => !enabled);
+    saveGraphImagesPreference(this.imagesEnabled());
+  }
+
   setLabelsMode(mode: 'auto' | 'always' | 'hidden'): void {
     this.labelsMode.set(mode);
     this.persistExplorerState();
@@ -1351,7 +1407,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   async togglePanelFullscreen(panel: 'image' | 'graph', event: MouseEvent): Promise<void> {
-    if (!this.detailLayout) {
+    if (!this.detailLayout || (this.isMobileViewport && this.workspaceFocused)) {
       this.workspaceFocusToggle.emit();
       return;
     }
@@ -1453,7 +1509,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private createFittedGraphViewport(): GraphViewport | null {
-    return createGraphFocusedViewport({
+    const viewport = createGraphFocusedViewport({
       graph: this.graph(),
       size: this.currentGraphStageSize(),
       positions: this.positions,
@@ -1464,8 +1520,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         ? 76
         : this.overviewMode
           ? this.overviewViewportPadding()
-          : 108,
+          : this.detailLayout
+            ? 72
+            : 108,
     });
+    if (viewport && this.graphNodeFitScale() === null) {
+      this.graphNodeFitScale.set(viewport.scale);
+    }
+    return viewport;
   }
 
   private overviewViewportPadding(): number {
@@ -1644,7 +1706,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private applyEdgeHover(event: PointerEvent, edge: GraphEdge): void {
     if (!canHandleHover(this.interactions.pointerSession)) return;
     if (this.hoveredEdgeId() === edge.id && this.tooltip()) {
-      this.scheduleTooltipPosition({ x: event.clientX, y: event.clientY });
       return;
     }
     this.interruptGraphViewportAutomation();
@@ -1661,15 +1722,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   private flushPendingGraphViewport(): void {
     this.camera.flushViewport((viewport) => this.graphViewport.set(viewport));
-  }
-
-  private scheduleTooltipPosition(point: GraphPoint): void {
-    this.camera.scheduleTooltip(
-      point,
-      this.isBrowser,
-      () => this.tooltip(),
-      (tooltip) => this.tooltip.set(tooltip),
-    );
   }
 
   private syncImageViewport(

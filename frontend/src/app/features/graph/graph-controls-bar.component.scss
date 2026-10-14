@@ -8,7 +8,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 66px 12px 12px;
+  padding: var(--graph-controls-inset, 12px);
+  padding-right: calc(var(--graph-controls-inset, 12px) + 54px);
 }
 .graph-panel-bar__meta {
   color: var(--color-text-muted);
@@ -21,6 +22,8 @@
   gap: 8px;
 }
 button {
+  display: grid;
+  place-items: center;
   min-width: 44px;
   height: 44px;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -70,8 +73,6 @@ button svg {
   white-space: nowrap;
 }
 .surface-control {
-  display: grid;
-  place-items: center;
   font-size: 1.3rem;
 }
 .graph-scale {
@@ -85,7 +86,7 @@ button svg {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px;
+  padding: var(--graph-controls-inset, 12px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(5, 8, 12, 0.3);
 }
@@ -119,5 +120,36 @@ button svg {
 @media (prefers-reduced-motion: reduce) {
   button {
     transition: none;
+  }
+}
+
+:host-context(.graph-detail-layout) {
+  color: var(--workspace-ink);
+  .graph-panel-bar__meta {
+    color: var(--workspace-muted);
+  }
+  .graph-footer {
+    background: var(--workspace-surface);
+    border-color: var(--workspace-border);
+    border-radius: 0 0 var(--graph-footer-radius, 18px) var(--graph-footer-radius, 18px);
+  }
+  button {
+    background: var(--workspace-control);
+    border-color: var(--workspace-border);
+    box-shadow: none;
+  }
+  button:hover {
+    background: var(--workspace-hover);
+  }
+  button.is-active {
+    color: inherit;
+    border-color: currentColor;
+  }
+  .graph-utility-btn--images.is-active {
+    color: var(--workspace-images-active-border);
+    border-color: var(--workspace-images-active-border);
+  }
+  button:focus-visible {
+    outline-color: currentColor;
   }
 }

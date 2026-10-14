@@ -105,6 +105,7 @@ export interface GraphRenderedEdge {
 }
 
 export interface GraphRenderedNode {
+  imageUrl?: string | null;
   node: GraphNode;
   point: GraphPoint;
   transform: string;

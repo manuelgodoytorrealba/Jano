@@ -5,7 +5,7 @@
 @use './styles/components';
 @use './styles/features/entities-explorer-shell';
 
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   app-app-chrome:not(.app-chrome--ready) .app-chrome__header {
     visibility: hidden;
   }

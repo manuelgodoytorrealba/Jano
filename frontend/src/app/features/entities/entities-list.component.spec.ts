@@ -1,3 +1,5 @@
+import { ElementRef, signal } from '@angular/core';
+import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, map, of } from 'rxjs';
@@ -9,6 +11,7 @@ import { SeoService } from '../../core/seo/seo.service';
 import { SearchApi } from '../../core/api/search.api';
 import { TagsApi } from '../../core/api/tags.api';
 import { AuthService } from '../../core/auth/auth.service';
+import { NavigationMemoryService } from '../../core/navigation-memory.service';
 import { EntitiesListComponent } from './entities-list.component';
 import { EntitiesListPageVm } from './entities-list.facade';
 
@@ -27,6 +30,7 @@ describe('EntitiesListComponent filters', () => {
   let navigateCalls: Parameters<Router['navigate']>[] = [];
   let listCalls: EntitiesListParams[] = [];
   let archiveRecommendationCalls = 0;
+  let archiveRecommendationParams: Array<{ page?: number }> = [];
 
   const routeStub = {
     paramMap: paramMap$.asObservable(),
@@ -128,14 +132,15 @@ describe('EntitiesListComponent filters', () => {
   };
 
   const searchApiStub = {
-    archiveRecommendations: () => {
+    archiveRecommendations: (params: { page?: number }) => {
+      archiveRecommendationParams.push(params);
       archiveRecommendationCalls += 1;
       return of({ items: [], page: 1, limit: 24, total: 0, totalPages: 1, personalized: false });
     },
   };
 
   const authStub = {
-    user$: new BehaviorSubject(null),
+    user$: new BehaviorSubject<{ id: string; role: string } | null>(null),
   };
 
   const seoStub = {
@@ -147,6 +152,7 @@ describe('EntitiesListComponent filters', () => {
   };
 
   const i18nStub = {
+    locale: signal('en'),
     t: (key: string) =>
       (
         ({
@@ -185,6 +191,8 @@ describe('EntitiesListComponent filters', () => {
   };
 
   beforeEach(async () => {
+    i18nStub.locale.set('en');
+    authStub.user$.next(null);
     paramMap$.next(convertToParamMap({ type: 'artwork' }));
     queryParamMap$.next(
       convertToParamMap({
@@ -199,6 +207,7 @@ describe('EntitiesListComponent filters', () => {
     navigateCalls = [];
     listCalls = [];
     archiveRecommendationCalls = 0;
+    archiveRecommendationParams = [];
 
     await TestBed.configureTestingModule({
       imports: [EntitiesListComponent],
@@ -219,6 +228,54 @@ describe('EntitiesListComponent filters', () => {
         set: { template: '' },
       })
       .compileComponents();
+  });
+
+  it('reuses the exact catalog snapshot when rebuilding a visited page', async () => {
+    const snapshots: Record<string, unknown> = {};
+    TestBed.overrideProvider(NavigationMemoryService, {
+      useValue: {
+        visit: () => ({ key: 'original-page' }),
+        read: (slot: string) => snapshots[slot] ?? null,
+        write: (slot: string, value: unknown) => {
+          snapshots[slot] = value;
+        },
+        register: () => undefined,
+      },
+    });
+    const first = TestBed.createComponent(EntitiesListComponent);
+    first.componentInstance.pageVm$.subscribe();
+    first.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    const requests = listCalls.filter((params) => params.limit === 24).length;
+    first.destroy();
+    const returned = TestBed.createComponent(EntitiesListComponent);
+    returned.componentInstance.pageVm$.subscribe();
+    returned.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(listCalls.filter((params) => params.limit === 24)).toHaveLength(requests);
+    returned.destroy();
+  });
+
+  it('reloads localized content without resetting the page or explorer selection', async () => {
+    queryParamMap$.next(convertToParamMap({ page: '3' }));
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const component = fixture.componentInstance;
+    const subscription = component.pageVm$.subscribe();
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    component.activeIndex.set(2);
+    const previousCalls = listCalls.filter((params) => params.limit === 24).length;
+
+    i18nStub.locale.set('es');
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    const requests = listCalls.filter((params) => params.limit === 24);
+    expect(requests.length).toBeGreaterThan(previousCalls);
+    expect(requests.at(-1)?.page).toBe(3);
+    expect(component.activeIndex()).toBe(2);
+    expect(navigateCalls).toEqual([]);
+    subscription.unsubscribe();
   });
 
   it('loads the canonical kind catalog without applying a legacy type', async () => {
@@ -259,6 +316,25 @@ describe('EntitiesListComponent filters', () => {
 
     expect(archiveRecommendationCalls).toBe(0);
     expect(listCalls.some((params) => !params.type && !params.q)).toBe(true);
+    fixture.destroy();
+  });
+
+  it('continues personalized archive recommendations on subsequent pages', async () => {
+    paramMap$.next(convertToParamMap({}));
+    queryParamMap$.next(convertToParamMap({}));
+    authStub.user$.next({ id: 'sister', role: 'USER' });
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const subscription = fixture.componentInstance.pageVm$.subscribe();
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(archiveRecommendationCalls).toBeGreaterThan(0);
+    const initialCalls = archiveRecommendationCalls;
+
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(archiveRecommendationCalls).toBeGreaterThan(initialCalls);
+    expect(archiveRecommendationParams.at(-1)?.page).toBe(2);
+    subscription.unsubscribe();
     fixture.destroy();
   });
 
@@ -362,7 +438,7 @@ describe('EntitiesListComponent filters', () => {
     component.pageVm$.subscribe();
 
     await new Promise((resolve) => setTimeout(resolve, 350));
-    expect(component.activeIndex()).toBe(1);
+    expect(component.activeIndex()).toBe(0);
 
     component.activeIndex.set(2);
 
@@ -379,6 +455,39 @@ describe('EntitiesListComponent filters', () => {
     await new Promise((resolve) => setTimeout(resolve, 350));
 
     expect(component.activeIndex()).toBe(0);
+  });
+
+  it('continues to the next result page at its first entity and preserves the selection on duplicate emissions', async () => {
+    const component = TestBed.createComponent(EntitiesListComponent).componentInstance;
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    component.changeExplorerPage(1, 3);
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(component.activeIndex()).toBe(0);
+    component.activeIndex.set(2);
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(component.activeIndex()).toBe(2);
+    component.changeExplorerPage(-1, 3);
+    queryParamMap$.next(convertToParamMap({ page: '1' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(component.activeIndex()).toBe(2);
+  });
+
+  it('scrolls to the start after the next list page arrives', async () => {
+    const scroll = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    const component = TestBed.createComponent(EntitiesListComponent).componentInstance;
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    const stage = document.createElement('div');
+    stage.scrollTop = 900;
+    component.listStage = new ElementRef(stage);
+    component.nextPage(3);
+    expect(scroll).not.toHaveBeenCalled();
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(scroll).toHaveBeenCalledWith({ top: 0, behavior: 'instant' });
+    expect(stage.scrollTop).toBe(0);
+    scroll.mockRestore();
   });
 
   it('resetFilters clears movement and period along with the existing filter params', () => {

@@ -317,3 +317,10 @@
     width: min(272px, calc(100vw - 44px));
   }
 }
+
+.explorer-totem__card-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+}

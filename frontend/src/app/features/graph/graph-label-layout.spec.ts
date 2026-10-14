@@ -120,4 +120,17 @@ describe('graph-label-layout', () => {
 
     expect(visible['edge-1']).toBeUndefined();
   });
+
+  it('reserves the screen-sized relation caption when zoomed out', () => {
+    const options = {
+      edges: [createEdge({ labelPoint: { x: 110, y: 0 } })],
+      requestedVisibility: { edge: true },
+      centerId: null,
+      selectedNodeId: null,
+      hoveredEdgeId: null,
+      occupiedBoxes: [{ left: 0, right: 20, top: -18, bottom: 20 }],
+    };
+    expect(resolveEdgeLabelOcclusion({ ...options, scale: 0.5 })['edge']).toBeUndefined();
+    expect(resolveEdgeLabelOcclusion({ ...options, scale: 1 })['edge']).toBe(true);
+  });
 });

@@ -19,20 +19,27 @@
         [attr.data-role]="card.role"
         [ngStyle]="cardStyle(card.role)"
         [attr.aria-hidden]="!card.active"
-        [attr.tabindex]="card.active ? 0 : -1"
-        [attr.role]="card.active ? 'button' : 'presentation'"
-        (keydown.enter)="card.active && openActive()"
-        (keydown.space)="card.active && openActive()"
+        [attr.data-index]="card.index"
+        [attr.role]="card.active ? 'group' : 'presentation'"
         [attr.aria-label]="card.active ? i18n.t('entity.open') + ' ' + card.item.title : null"
       >
         <span class="explorer-totem__card-shell">
-          <app-jano-media
-            [entity]="card.item"
-            usage="explorer3d"
-            [alt]="card.item.title"
-            [lazy]="!card.active"
-            [priority]="card.active ? 'high' : 'low'"
-          ></app-jano-media>
+          <a
+            class="explorer-totem__card-link"
+            draggable="false"
+            (dragstart)="$event.preventDefault()"
+            [routerLink]="card.active ? ['/entity', card.item.slug] : null"
+            [attr.tabindex]="card.active ? 0 : -1"
+            [attr.aria-label]="i18n.t('entity.open') + ' ' + card.item.title"
+          >
+            <app-jano-media
+              [entity]="card.item"
+              usage="explorer3d"
+              [alt]="card.item.title"
+              [lazy]="!card.active"
+              [priority]="card.active ? 'high' : 'low'"
+            ></app-jano-media>
+          </a>
           @if (card.active) {
             <button
               class="explorer-totem__info-toggle"
@@ -89,9 +96,9 @@
           <p class="explorer-totem__summary">{{ cleanWiki(active.summary) }}</p>
         }
 
-        <button class="ds-btn explorer-totem__cta" type="button" (click)="openPanelItem()">
+        <a class="ds-btn explorer-totem__cta" [routerLink]="['/entity', active.slug]">
           {{ i18n.t('entity.open') }}
-        </button>
+        </a>
       </div>
     </aside>
   }

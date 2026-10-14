@@ -103,12 +103,14 @@
         @if (edgeLabelVisibility[renderedEdge.edge.id]) {
           <text
             class="graph-edge-label"
+            [style.font-size.px]="10.5 / viewportScale"
             [attr.data-edge-id]="renderedEdge.edge.id"
             [class.is-muted]="renderedEdge.muted"
             [attr.x]="renderedEdge.labelPoint.x"
             [attr.y]="renderedEdge.labelPoint.y"
             (pointerenter)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
             (pointermove)="edgeHover.emit({ event: $event, edge: renderedEdge.edge })"
+            (pointerleave)="clearHover.emit()"
           >
             {{ renderedEdge.displayLabel }}
           </text>
@@ -119,6 +121,7 @@
     @for (renderedNode of renderedNodes; track renderedNode.node.id) {
       <g
         class="graph-node"
+        [style.--node-accent]="renderedNode.nodeVisual.accent"
         [attr.data-node-id]="renderedNode.node.id"
         [class.is-candidate]="renderedNode.node.state === 'candidate'"
         [attr.transform]="renderedNode.transform"
@@ -128,14 +131,11 @@
         [class.graph-node--mid]="renderedNode.depthTier === 'mid'"
         [class.graph-node--far]="renderedNode.depthTier === 'far'"
         (pointerdown)="nodePointerDown.emit({ event: $event, nodeId: renderedNode.node.id })"
-        (pointermove)="
-          nodePointerMove.emit($event);
-          nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })
-        "
+        (pointermove)="nodePointerMove.emit($event); hoverNode($event, renderedNode.node.id)"
         (pointerup)="nodePointerUp.emit({ event: $event, nodeId: renderedNode.node.id })"
         (pointercancel)="nodePointerCancel.emit($event)"
-        (pointerenter)="nodeHover.emit({ event: $event, nodeId: renderedNode.node.id })"
-        (pointerleave)="clearHover.emit()"
+        (pointerenter)="hoverNode($event, renderedNode.node.id)"
+        (pointerleave)="leaveNode()"
       >
         <circle
           class="graph-node__halo"
@@ -178,6 +178,35 @@
           pointer-events="none"
         />
 
+        @if (renderedNode.imageUrl && !failedImages().has(renderedNode.imageUrl)) {
+          <clipPath [attr.id]="'node-image-' + renderedNode.node.id">
+            <path [attr.d]="renderedNode.shapePath" />
+          </clipPath>
+          <foreignObject
+            [attr.x]="-renderedNode.size"
+            [attr.y]="-renderedNode.size"
+            [attr.width]="renderedNode.size * 2"
+            [attr.height]="renderedNode.size * 2"
+            [attr.clip-path]="'url(#node-image-' + renderedNode.node.id + ')'"
+            pointer-events="none"
+          >
+            <img
+              xmlns="http://www.w3.org/1999/xhtml"
+              class="graph-node__image"
+              [src]="renderedNode.imageUrl"
+              alt=""
+              loading="lazy"
+              decoding="async"
+              (error)="imageFailed(renderedNode.imageUrl)"
+            />
+          </foreignObject>
+          <path
+            class="graph-node__image-rim"
+            [attr.d]="renderedNode.shapePath"
+            [attr.stroke]="renderedNode.nodeVisual.accent"
+          />
+        }
+
         @if (nodeLabelVisibility[renderedNode.node.id]) {
           <g
             class="graph-node__label"
@@ -194,7 +223,23 @@
 </svg>
 
 @if (tooltip) {
-  <div class="graph-tooltip" [ngStyle]="tooltipStyle">
+  <div
+    class="graph-tooltip"
+    [appGraphTooltipPosition]="tooltip"
+    [tooltipAnchorId]="tooltipAnchorId"
+    [tooltipCamera]="viewportTransform"
+    (anchorHidden)="dismissTooltip.emit()"
+    (keydown.escape)="dismissTooltip.emit(); $event.stopPropagation()"
+    (pointerenter)="retainTooltip.emit()"
+    (focusin)="retainTooltip.emit()"
+    (focusout)="clearHover.emit()"
+    tabindex="0"
+    role="region"
+    [attr.aria-label]="tooltip.title"
+    (pointerleave)="clearHover.emit()"
+    (pointerdown)="$event.stopPropagation()"
+    (wheel)="$event.stopPropagation()"
+  >
     <div class="graph-tooltip__title">{{ tooltip.title }}</div>
     @if (tooltip.subtitle) {
       <div class="graph-tooltip__subtitle">{{ tooltip.subtitle }}</div>

@@ -257,6 +257,7 @@ export class SearchService {
     const locale = normalizeLocale(query.locale);
     const type = query.type;
     const limit = Math.min(24, Math.max(1, Number(query.limit ?? 24)));
+    const page = Math.max(1, Number(query.page ?? 1));
     const since = new Date();
     since.setDate(since.getDate() - 90);
     const signals = await this.prisma.userDiscoverySignal.findMany({
@@ -270,13 +271,18 @@ export class SearchService {
     });
 
     if (!signals.length) {
-      const items = await this.prisma.entity.findMany({
-        where: { status: EntityStatus.PUBLISHED, ...(type ? { type } : {}) },
-        orderBy: { updatedAt: 'desc' },
-        take: limit,
-        include: this.entityInclude(locale),
-      });
-      return this.archiveResponse(items, locale, limit, false, new Map(), new Set());
+      return this.archiveResponse(
+        [],
+        locale,
+        limit,
+        false,
+        new Map(),
+        new Set(),
+        new Map(),
+        [],
+        page,
+        type,
+      );
     }
 
     const seedScores = new Map<string, number>();
@@ -299,7 +305,18 @@ export class SearchService {
 
     const seedIds = Array.from(seedScores.keys());
     if (!seedIds.length) {
-      return { items: [], page: 1, limit, total: 0, totalPages: 1, personalized: true };
+      return this.archiveResponse(
+        [],
+        locale,
+        limit,
+        false,
+        new Map(),
+        new Set(),
+        new Map(),
+        [],
+        page,
+        type,
+      );
     }
 
     const seeds = await this.prisma.entity.findMany({
@@ -331,6 +348,7 @@ export class SearchService {
         ],
       },
       include: this.entityInclude(locale),
+      orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
       take: 180,
     });
 
@@ -343,6 +361,8 @@ export class SearchService {
       connectedIds,
       seedScores,
       tagIds,
+      page,
+      type,
     );
   }
 
@@ -356,7 +376,7 @@ export class SearchService {
     });
   }
 
-  private archiveResponse(
+  private async archiveResponse(
     entities: SearchEntityRecord[],
     locale: string,
     limit: number,
@@ -365,9 +385,11 @@ export class SearchService {
     connectedIds: Set<string>,
     seedScores = new Map<string, number>(),
     tagIds: string[] = [],
+    page = 1,
+    type?: string,
   ) {
     const tagSet = new Set(tagIds);
-    const items = entities
+    const ranked = entities
       .map((entity) => {
         const directScore = seedScores.get(entity.id) ?? 0;
         const graphScore = connectedIds.has(entity.id) ? 4 : 0;
@@ -385,15 +407,40 @@ export class SearchService {
           recommendationScore: directScore + graphScore + tagScore,
         };
       })
-      .sort((left, right) => right.recommendationScore - left.recommendationScore)
-      .slice(0, limit);
+      .sort(
+        (left, right) =>
+          right.recommendationScore - left.recommendationScore || left.id.localeCompare(right.id),
+      );
+    const where = { status: EntityStatus.PUBLISHED, ...(type ? { type } : {}) };
+    const total = await this.prisma.entity.count({ where });
+    const offset = (page - 1) * limit;
+    const items = ranked.slice(offset, offset + limit);
+    if (items.length < limit && offset + items.length < total) {
+      const more = await this.prisma.entity.findMany({
+        where: {
+          ...where,
+          ...(ranked.length ? { id: { notIn: ranked.map((item) => item.id) } } : {}),
+        },
+        orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
+        skip: Math.max(0, offset - ranked.length),
+        take: limit - items.length,
+        include: this.entityInclude(locale),
+      });
+      items.push(
+        ...more.map((entity) => ({
+          ...this.serializeSearchEntity(entity, locale, 0),
+          recommendationReason: locale === 'en' ? 'Explore the archive' : 'Explora el archivo',
+          recommendationScore: 0,
+        })),
+      );
+    }
 
     return {
       items,
-      page: 1,
+      page,
       limit,
-      total: items.length,
-      totalPages: 1,
+      total,
+      totalPages: Math.max(1, Math.ceil(total / limit)),
       personalized,
     };
   }

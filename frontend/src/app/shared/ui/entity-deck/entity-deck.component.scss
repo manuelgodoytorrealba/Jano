@@ -1021,3 +1021,18 @@
     width: 20px;
   }
 }
+
+.entity-deck__destination {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+}
+.entity-deck__destination:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+.entity-deck__top-actions {
+  position: relative;
+  z-index: 3;
+}

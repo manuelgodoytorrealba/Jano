@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { graphThumbnail } from '../media/graph-thumbnail';
 import { EntityStatus } from '@prisma/client';
 import { resolvedMediaUrl, type ResolvedMediaPayload } from '../media/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
@@ -84,7 +85,9 @@ export class EntityGraphService {
       type: node.type,
       kind: node.kind ?? null,
       slug: node.slug,
-      image: image ?? null,
+      image: image?.startsWith('/uploads/')
+        ? `/api/entities/${encodeURIComponent(node.slug)}/graph-thumbnail`
+        : (image ?? null),
       resolvedMedia: resolvedNode.resolvedMedia,
       metadata: {
         summary: resolvedNode.summary ?? null,
@@ -113,6 +116,29 @@ export class EntityGraphService {
         endYear: node.endYear ?? null,
       },
     };
+  }
+
+  async thumbnailBySlug(slug: string) {
+    const entity = await this.prisma.entity.findFirst({
+      where: { slug, status: EntityStatus.PUBLISHED },
+      include: this.graphMediaInclude(),
+    });
+    if (!entity) throw new NotFoundException('Entity not found');
+    const resolved = resolveLocalizedEntity(entity);
+    const media = resolved.resolvedMedia;
+    const image =
+      resolvedMediaUrl(media.thumbnail) ??
+      resolvedMediaUrl(media.card) ??
+      resolvedMediaUrl(media.detail) ??
+      resolvedMediaUrl(media.hero) ??
+      resolvedMediaUrl(media.explorer3d) ??
+      resolvedMediaUrl(media.primary);
+    if (!image) throw new NotFoundException('Image not found');
+    try {
+      return await graphThumbnail(image);
+    } catch {
+      throw new NotFoundException('Thumbnail unavailable');
+    }
   }
 
   async graphBySlug(slug: string, locale?: string) {

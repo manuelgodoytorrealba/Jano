@@ -1,4 +1,8 @@
 {
+  "detail.mobileMapDescription": "Explora visualmente cómo se conecta esta entidad con otras. El mapa se abre en una vista dedicada.",
+  "detail.mobileRelationList": "Ver relaciones en lista",
+  "detail.mobileCredits": "Créditos",
+  "detail.mobileOpenMap": "Abrir mapa de relaciones",
   "entity.imageCredit": "Crédito de la imagen",
   "entity.fact.concepts": "Conceptos",
   "entity.fact.movement": "Movimiento",
@@ -388,6 +392,8 @@
   "graph.labels.always": "Siempre",
   "graph.labels.hidden": "Nunca",
   "graph.info": "Info",
+  "graph.images.show": "Mostrar imágenes",
+  "graph.images.hide": "Ocultar imágenes",
   "graph.layers": "Capas",
   "graph.of": "de",
   "graph.explore": "Explorar",
@@ -761,5 +767,7 @@
   "graph.imageReset": "Restablecer",
   "graph.controls": "Controles del grafo",
   "graph.zoomOut": "Alejar grafo",
-  "graph.zoomIn": "Acercar grafo"
+  "graph.zoomIn": "Acercar grafo",
+  "navigation.returnToExploration": "Volver al recorrido",
+  "navigation.entities": "Navegar entidades"
 }

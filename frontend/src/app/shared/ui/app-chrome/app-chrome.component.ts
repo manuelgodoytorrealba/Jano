@@ -49,7 +49,7 @@ type UtilityItem = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppChromeComponent {
-  private static readonly COLLAPSIBLE_HEADER_MAX_WIDTH = 1200;
+  private static readonly COLLAPSIBLE_HEADER_MAX_WIDTH = 1024;
   private readonly router = inject(Router);
   readonly rail = inject(AppChromeRailService);
   readonly auth = inject(AuthService);

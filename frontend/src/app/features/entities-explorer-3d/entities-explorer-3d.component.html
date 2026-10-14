@@ -12,6 +12,41 @@
   <div #canvasHost class="explorer3d__canvas"></div>
 
   @if (activeItem; as active) {
+    <a
+      #activeLink
+      class="explorer3d__active-link"
+      draggable="false"
+      [class.is-visible]="!infoOpen && sceneEntryReady"
+      [attr.tabindex]="!infoOpen && sceneEntryReady ? 0 : -1"
+      [attr.aria-hidden]="infoOpen || !sceneEntryReady"
+      [href]="entityHref(active)"
+      (click)="onEntityLinkClick($event)"
+      [attr.aria-label]="i18n.t('entity.open') + ' ' + active.title"
+    ></a>
+    @if (!infoOpen) {
+      <nav
+        class="explorer3d__navigation ds-panel"
+        [attr.aria-label]="i18n.t('navigation.entities')"
+      >
+        <button
+          type="button"
+          (click)="prev()"
+          [disabled]="activeIndex === 0 && !hasPreviousPage"
+          [attr.aria-label]="i18n.t('pager.prev')"
+        >
+          ‹
+        </button>
+        <a [href]="entityHref(active)" (click)="onEntityLinkClick($event)">{{ active.title }}</a>
+        <button
+          type="button"
+          (click)="next()"
+          [disabled]="activeIndex === items.length - 1 && !hasNextPage"
+          [attr.aria-label]="i18n.t('pager.next')"
+        >
+          ›
+        </button>
+      </nav>
+    }
     @if (infoClosable) {
       <button
         #infoToggle
@@ -73,9 +108,13 @@
       }
 
       @if (showOpenAction) {
-        <button class="ds-btn explorer3d__cta" type="button" (click)="openActive()">
+        <a
+          class="ds-btn explorer3d__cta"
+          [href]="entityHref(active)"
+          (click)="onEntityLinkClick($event)"
+        >
           {{ i18n.t(openActionKey) }}
-        </button>
+        </a>
       }
 
       @if (formatDate(active.createdAt) || tags(active).length || collection(active)) {

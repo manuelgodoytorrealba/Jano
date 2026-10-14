@@ -139,3 +139,34 @@ svg {
     transition: none;
   }
 }
+
+:host-context(.graph-detail-layout) {
+  .image-toolbar {
+    background: var(--workspace-surface);
+    color: var(--workspace-ink);
+    border-color: var(--workspace-border);
+  }
+  button,
+  summary,
+  .image-zoom,
+  .image-credits__card {
+    background: var(--workspace-control);
+    border-color: var(--workspace-border);
+    box-shadow: none;
+  }
+  .image-zoom button {
+    background: transparent;
+  }
+  button:hover:not(:disabled),
+  summary:hover {
+    background: var(--workspace-hover);
+  }
+  button:focus-visible,
+  summary:focus-visible {
+    outline-color: currentColor;
+  }
+  .image-zoom__value,
+  .image-zoom .image-zoom__reset {
+    border-color: var(--workspace-border);
+  }
+}

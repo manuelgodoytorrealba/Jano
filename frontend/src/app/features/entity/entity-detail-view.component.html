@@ -13,9 +13,25 @@
       <ng-template #entityContext>
         <div class="entity-context">
           <div class="entity-context__heading">
-            <p class="entity-context__title">{{ entity.title }}</p>
+            @if (navigation.origin) {
+              <button
+                class="entity-context__return"
+                type="button"
+                (click)="navigation.returnToOrigin()"
+              >
+                <span aria-hidden="true">‹</span> {{ i18n.t('navigation.returnToExploration') }}
+              </button>
+            }
+            @if (isMobileViewport && !isArticle(entity)) {
+              <h1 class="entity-context__title">{{ entity.title }}</h1>
+            } @else {
+              <p class="entity-context__title">{{ entity.title }}</p>
+            }
             @if (detailHeroSubtitle(entity); as subtitle) {
               <p class="entity-context__subtitle">{{ subtitle }}</p>
+            }
+            @if (isMobileViewport && !isArticle(entity) && entity.summary) {
+              <p class="entity-context__summary">{{ entity.summary }}</p>
             }
           </div>
           @if (showActions) {
@@ -75,6 +91,38 @@
         </div>
       </ng-template>
       <ng-container *ngTemplateOutlet="entityContext"></ng-container>
+      @if (isMobileViewport && !isArticle(entity) && !workspaceFocused) {
+        <figure class="entity-mobile-media">
+          <button
+            type="button"
+            class="entity-mobile-media__open"
+            (click)="openMobileWorkspace('image')"
+            [attr.aria-label]="i18n.t('workspace.fullscreen')"
+          >
+            <app-jano-media
+              [entity]="entity"
+              [media]="detailMedia(entity)"
+              usage="hero"
+              [alt]="visualAlt(entity)"
+              [lazy]="false"
+              priority="high"
+            />
+            <span class="entity-mobile-media__expand" aria-hidden="true">⛶</span>
+          </button>
+          <figcaption>{{ visualAlt(entity) }}</figcaption>
+          @if (detailMedia(entity); as media) {
+            @if (media.photoBy || media.source || media.license) {
+              <details class="entity-mobile-media__credits">
+                <summary>{{ i18n.t('detail.mobileCredits') }}</summary>
+                <p>{{ media.photoBy }} {{ media.source }} {{ media.license }}</p>
+              </details>
+            }
+          }
+        </figure>
+      }
+      @if (!isMobileViewport || workspaceFocused) {
+        <ng-container *ngTemplateOutlet="entityWorkspace"></ng-container>
+      }
       @if (isArticle(entity)) {
         <section class="entity-section entity-glass entity-section--wide entity-article-hero">
           <div class="entity-article-hero__media">
@@ -120,7 +168,8 @@
             </div>
           </div>
         </section>
-      } @else {
+      }
+      <ng-template #entityWorkspace>
         @if (showWorkspace(entity)) {
           <section
             class="entity-explorer entity-glass"
@@ -131,7 +180,10 @@
               <app-graph
                 [slug]="entity.slug"
                 [detailLayout]="true"
-                [workspaceMode]="graphWorkspaceMode"
+                [hideImagePane]="isMobileViewport && !workspaceFocused"
+                [workspaceMode]="
+                  isMobileViewport && !workspaceFocused ? 'graph' : graphWorkspaceMode
+                "
                 [imageMedia]="detailMedia(entity)"
                 [imageUrl]="visualUrl(entity)"
                 [imageAlt]="visualAlt(entity)"
@@ -146,7 +198,11 @@
                   photoBy: detailMedia(entity)?.photoBy ?? null,
                   license: detailMedia(entity)?.license ?? null,
                 }"
-                (workspaceFocusToggle)="toggleWorkspaceFocus()"
+                (workspaceFocusToggle)="
+                  isMobileViewport && !workspaceFocused
+                    ? openMobileWorkspace('graph')
+                    : toggleWorkspaceFocus()
+                "
               />
             } @else {
               <ng-container *ngTemplateOutlet="explorerFallback"></ng-container>
@@ -250,16 +306,20 @@
             </ng-template>
           </section>
         }
-      }
+      </ng-template>
 
-      @if (showEditorialFlow(entity)) {
+      @if (showEditorialFlow(entity) && (!isMobileViewport || !workspaceFocused)) {
         <section class="entity-information entity-section entity-glass entity-section--wide">
           <header class="entity-information__header">
             <div>
               @if (isArticle(entity)) {
                 <h2 class="entity-information__title">{{ entity.title }}</h2>
               } @else {
-                <h1 class="entity-information__title">{{ entity.title }}</h1>
+                @if (isMobileViewport) {
+                  <h2 class="entity-information__title">{{ entity.title }}</h2>
+                } @else {
+                  <h1 class="entity-information__title">{{ entity.title }}</h1>
+                }
               }
               @if (detailHeroSubtitle(entity); as subtitle) {
                 <p class="entity-information__subtitle">{{ subtitle }}</p>
@@ -307,7 +367,7 @@
             tabindex="0"
             [hidden]="informationTab !== 'context'"
           >
-            @if (entity.summary) {
+            @if (entity.summary && (!isMobileViewport || isArticle(entity))) {
               <div class="entity-prose">{{ entity.summary }}</div>
             }
 
@@ -494,12 +554,22 @@
                           <span class="relation-card__type">{{ entityTypeLabel(r.to.type) }}</span>
                         </div>
                         @if (r.justification) {
-                          <div class="relation-card__text">
-                            <app-rich-text
-                              [text]="r.justification"
-                              [previewAccess]="richTextPreviewAccess"
-                            ></app-rich-text>
-                          </div>
+                          @if (isMobileViewport) {
+                            <details class="relation-card__explanation">
+                              <summary>{{ i18n.t('search.whyRelated') }}</summary>
+                              <app-rich-text
+                                [text]="r.justification"
+                                [previewAccess]="richTextPreviewAccess"
+                              />
+                            </details>
+                          } @else {
+                            <div class="relation-card__text">
+                              <app-rich-text
+                                [text]="r.justification"
+                                [previewAccess]="richTextPreviewAccess"
+                              ></app-rich-text>
+                            </div>
+                          }
                         }
                       </li>
                     }
@@ -545,12 +615,22 @@
                           }}</span>
                         </div>
                         @if (r.justification) {
-                          <div class="relation-card__text">
-                            <app-rich-text
-                              [text]="r.justification"
-                              [previewAccess]="richTextPreviewAccess"
-                            ></app-rich-text>
-                          </div>
+                          @if (isMobileViewport) {
+                            <details class="relation-card__explanation">
+                              <summary>{{ i18n.t('search.whyRelated') }}</summary>
+                              <app-rich-text
+                                [text]="r.justification"
+                                [previewAccess]="richTextPreviewAccess"
+                              />
+                            </details>
+                          } @else {
+                            <div class="relation-card__text">
+                              <app-rich-text
+                                [text]="r.justification"
+                                [previewAccess]="richTextPreviewAccess"
+                              ></app-rich-text>
+                            </div>
+                          }
                         }
                       </li>
                     }
@@ -677,6 +757,22 @@
               }
             }
           </div>
+        </section>
+      }
+      @if (isMobileViewport && !isArticle(entity) && !workspaceFocused && renderGraph) {
+        <section class="entity-mobile-map" aria-labelledby="entity-mobile-map-title">
+          <h2 id="entity-mobile-map-title">{{ i18n.t('entity.connectionMap') }}</h2>
+          <p class="entity-mobile-map__description">{{ i18n.t('detail.mobileMapDescription') }}</p>
+          <button
+            type="button"
+            class="entity-mobile-map__open"
+            (click)="openMobileWorkspace('graph')"
+          >
+            {{ i18n.t('detail.mobileOpenMap') }} <span aria-hidden="true">↗</span>
+          </button>
+          <button type="button" class="entity-mobile-map__list" (click)="showMobileRelations()">
+            {{ i18n.t('detail.mobileRelationList') }}
+          </button>
         </section>
       }
     </div>

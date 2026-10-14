@@ -108,38 +108,36 @@
     }
   </nav>
 
-  @if (rail.contextualRail()?.kind === 'detail') {
-    <div class="app-chrome__detail-preferences app-chrome__preference-toggle">
-      <button
-        type="button"
-        (click)="toggleTheme()"
-        [attr.aria-label]="themeToggleLabel()"
-        [title]="themeToggleLabel()"
+  <div class="app-chrome__detail-preferences app-chrome__preference-toggle">
+    <button
+      type="button"
+      (click)="toggleTheme()"
+      [attr.aria-label]="themeToggleLabel()"
+      [title]="themeToggleLabel()"
+    >
+      <svg
+        class="app-chrome__utility-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        aria-hidden="true"
       >
-        <svg
-          class="app-chrome__utility-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.6"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="4" />
-          <path
-            d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"
-          />
-        </svg>
-      </button>
-      <button
-        type="button"
-        (click)="toggleLocale()"
-        [attr.aria-label]="localeToggleLabel()"
-        [title]="localeToggleLabel()"
-      >
-        {{ i18n.locale().toUpperCase() }}
-      </button>
-    </div>
-  }
+        <circle cx="12" cy="12" r="4" />
+        <path
+          d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"
+        />
+      </svg>
+    </button>
+    <button
+      type="button"
+      (click)="toggleLocale()"
+      [attr.aria-label]="localeToggleLabel()"
+      [title]="localeToggleLabel()"
+    >
+      {{ i18n.locale().toUpperCase() }}
+    </button>
+  </div>
   <div class="app-chrome__account">
     @if (auth.currentUser) {
       <button
