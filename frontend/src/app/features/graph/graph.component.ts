@@ -1687,6 +1687,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.ensureSelectionVisible();
   }
 
+  remainingSelectedConnections(): number | null {
+    const node = this.graphDerived().selectedNode;
+    const graph = this.graph();
+    if (!node || !graph || !this.expandedNodeIds.has(node.id)) return null;
+    return explorationNeighbors(graph, node.id).filter((id) => !this.revealedNodeIds()?.has(id))
+      .length;
+  }
+
   canExpandSelectedNode(): boolean {
     const node = this.graphDerived().selectedNode;
     return (
@@ -1702,7 +1710,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     const node = this.graphDerived().selectedNode;
     const original = this.graph();
     if (!node?.slug || !original || !this.canExpandSelectedNode()) return;
-    this.contextVisible.set(false);
     this.expansionError.set(false);
     if (this.expandedNodeIds.has(node.id)) {
       this.revealConnections(node.id);

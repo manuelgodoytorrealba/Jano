@@ -771,8 +771,12 @@
   "navigation.returnToExploration": "Back to exploration",
   "navigation.entities": "Navigate entities",
   "graph.addConnections": "Add connections",
-  "graph.expandNode": "Explore from here",
+  "graph.expandNode": "Show more connections",
   "graph.expandingNode": "Exploring…",
   "graph.expansionError": "These connections could not be loaded. You can try again.",
-  "graph.explorationLayer": "Exploration layer"
+  "graph.explorationLayer": "Exploration layer",
+  "graph.moreConnectionsHint": "Show up to 3 connections at a time. Keep expanding this map to see more.",
+  "graph.connectionsRemaining": "connections left to show",
+  "graph.allConnectionsShown": "All its connections are now shown.",
+  "graph.readFullProfile": "View full profile"
 }

@@ -771,8 +771,12 @@
   "navigation.returnToExploration": "Volver al recorrido",
   "navigation.entities": "Navegar entidades",
   "graph.addConnections": "Añadir conexiones",
-  "graph.expandNode": "Explorar desde aquí",
+  "graph.expandNode": "Mostrar más conexiones",
   "graph.expandingNode": "Explorando…",
   "graph.expansionError": "No se pudieron cargar estas conexiones. Puedes volver a intentarlo.",
-  "graph.explorationLayer": "Capa del recorrido"
+  "graph.explorationLayer": "Capa del recorrido",
+  "graph.moreConnectionsHint": "Se muestran hasta 3 conexiones cada vez. Puedes seguir ampliando este mapa.",
+  "graph.connectionsRemaining": "conexiones por mostrar",
+  "graph.allConnectionsShown": "Ya se muestran todas sus conexiones.",
+  "graph.readFullProfile": "Ver ficha completa"
 }

@@ -44,6 +44,7 @@ export class GraphInspectorPanelComponent {
   @Input() filtersOnly = false;
   @Input() contextOnly = false;
   @Input() canExpand = false;
+  @Input() remainingConnections: number | null = null;
   @Input() expanding = false;
   @Input() expansionFailed = false;
   @Input() explorationLayers: number[] = [];

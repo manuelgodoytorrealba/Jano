@@ -73,6 +73,15 @@
         }
       </div>
     }
+    <p class="graph-context-progress" aria-live="polite">
+      @if (remainingConnections === null) {
+        {{ i18n.t('graph.moreConnectionsHint') }}
+      } @else if (remainingConnections > 0) {
+        {{ remainingConnections }} {{ i18n.t('graph.connectionsRemaining') }}
+      } @else {
+        {{ i18n.t('graph.allConnectionsShown') }}
+      }
+    </p>
     <div class="graph-context-actions">
       @if (expansionFailed) {
         <p role="alert">{{ i18n.t('graph.expansionError') }}</p>
@@ -86,9 +95,12 @@
       >
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
         {{ i18n.t(expanding ? 'graph.expandingNode' : 'graph.expandNode') }}
+        @if (remainingConnections !== null && remainingConnections > 0) {
+          · {{ remainingConnections > 3 ? 3 : remainingConnections }}
+        }
       </button>
       <button class="graph-context-read" type="button" (click)="openSelectedEntity.emit()">
-        {{ i18n.t('entity.open') }}
+        {{ i18n.t('graph.readFullProfile') }}
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
       </button>
     </div>
