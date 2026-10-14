@@ -366,8 +366,8 @@
   }
 
   .rt {
-    font-size: max(15px, 0.96rem);
-    line-height: 1.7;
+    font-size: var(--rt-reading-size, max(15px, 0.96rem));
+    line-height: var(--rt-reading-line-height, 1.7);
   }
 }
 

@@ -236,7 +236,7 @@ body.jano-artwork-route-graph .explorer-graph-pane {
   }
 
   .app-shell--entities .app-shell__mobile-edge-fade,
-  .app-shell:has(.entity-detail--workspace-focus) .app-shell__mobile-edge-fade {
+  .app-shell:has(.entity-detail) .app-shell__mobile-edge-fade {
     display: none;
   }
 
@@ -326,5 +326,11 @@ body.jano-artwork-route-graph .explorer-graph-pane {
 @media (max-width: 760px) {
   .app-shell--detail {
     --detail-menu-space: 54px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell--detail .app-shell__content {
+    padding-inline: var(--app-safe-left) var(--app-safe-right);
   }
 }
