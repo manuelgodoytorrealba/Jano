@@ -1,3 +1,5 @@
+import { signal } from '@angular/core';
+import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { App } from './app';
@@ -31,6 +33,7 @@ describe('App', () => {
           useValue: {
             load: () => of(true),
             currentBackgroundImageUrl: () => null,
+            resolvedTheme: signal('dark'),
           },
         },
         {
@@ -64,5 +67,20 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance as unknown as { title: () => string };
     expect(app.title()).toBe('jano-web-app');
+  });
+  it('matches the mobile browser chrome to the detail surface in both themes', () => {
+    const media = window.matchMedia('(max-width: 860px)');
+    vi.spyOn(window, 'matchMedia').mockReturnValue({ ...media, matches: true });
+    const fixture = TestBed.createComponent(App);
+    vi.spyOn(fixture.componentInstance, 'isEntityDetailRoute').mockReturnValue(true);
+    fixture.detectChanges();
+    expect(document.querySelector('meta[name="theme-color"]')?.getAttribute('content')).toBe(
+      '#222222',
+    );
+    TestBed.inject(AppAppearanceService).resolvedTheme.set('light');
+    fixture.detectChanges();
+    expect(document.querySelector('meta[name="theme-color"]')?.getAttribute('content')).toBe(
+      '#e7e2d8',
+    );
   });
 });

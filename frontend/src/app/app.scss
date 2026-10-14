@@ -330,7 +330,15 @@ body.jano-artwork-route-graph .explorer-graph-pane {
 }
 
 @media (max-width: 760px) {
+  .app-shell--detail {
+    background: var(--color-reading-surface);
+  }
+  .app-shell--detail::before,
+  .app-shell--detail::after {
+    display: none;
+  }
   .app-shell--detail .app-shell__content {
     padding-inline: var(--app-safe-left) var(--app-safe-right);
+    padding-bottom: calc(var(--app-safe-bottom) + 16px);
   }
 }

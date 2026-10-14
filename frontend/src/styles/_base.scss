@@ -135,3 +135,10 @@ p {
 ::selection {
   background: var(--color-accent-gold-soft);
 }
+
+@media (max-width: 760px) {
+  html:has(.app-shell--detail),
+  body:has(.app-shell--detail) {
+    background: var(--color-reading-surface);
+  }
+}

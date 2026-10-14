@@ -2,6 +2,7 @@
 @media (max-width: 760px) {
   .entity-detail:not(.entity-detail--workspace-focus).page-shell {
     padding-inline: 16px;
+    padding-bottom: 0;
   }
   .entity-detail:not(.entity-detail--workspace-focus) .entity-detail__layout {
     gap: 24px;

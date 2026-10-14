@@ -71,10 +71,13 @@ export class App {
       });
 
     effect(() => {
+      this.routeTransitioning();
+      const detailColor = this.appearance.resolvedTheme() === 'light' ? '#e7e2d8' : '#222222';
+      const isDetail = this.isEntityDetailRoute();
       const isMobile =
         typeof window !== 'undefined' && window.matchMedia('(max-width: 860px)').matches;
-      const themeColor = isMobile ? '#19231d' : '#0a0a0a';
-      if (isMobile) {
+      const themeColor = isMobile ? (isDetail ? detailColor : '#19231d') : '#0a0a0a';
+      if (isMobile && !isDetail) {
         this.setThemeColor('#111b16');
         requestAnimationFrame(() => this.setThemeColor(themeColor));
         return;
