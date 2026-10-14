@@ -54,17 +54,23 @@
   </div>
 } @else {
   <div class="graph-panel-bar">
-    <span class="graph-panel-bar__meta"
-      >{{ nodeCount }} {{ i18n.t('graph.nodes') }} · {{ edgeCount }}
-      {{ i18n.t('graph.edges') }}</span
-    >
+    <span class="graph-panel-bar__meta">
+      <span>{{ nodeCount }} {{ i18n.t('graph.nodes') }}</span>
+      <span>{{ edgeCount }} {{ i18n.t('graph.edges') }}</span>
+    </span>
     <div class="graph-panel-bar__toggles">
       <button
         type="button"
         class="graph-utility-btn graph-utility-btn--mode"
+        [class.is-active]="labelsMode !== 'hidden'"
+        [attr.aria-label]="i18n.t('graph.labels') + ' ' + labelsModeLabel()"
+        [title]="i18n.t('graph.labels') + ' ' + labelsModeLabel()"
         (click)="cycleLabelsMode()"
       >
-        {{ i18n.t('graph.labels') }} {{ labelsModeLabel() }}
+        <span class="graph-utility-btn__symbol" aria-hidden="true">Aa</span>
+        <span class="graph-utility-btn__text"
+          >{{ i18n.t('graph.labels') }} {{ labelsModeLabel() }}</span
+        >
       </button>
       <button
         type="button"

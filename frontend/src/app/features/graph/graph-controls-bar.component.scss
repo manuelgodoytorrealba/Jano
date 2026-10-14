@@ -1,3 +1,6 @@
+.graph-utility-btn__symbol {
+  display: none;
+}
 :host {
   display: block;
   min-width: 0;
@@ -104,16 +107,38 @@ button svg {
 }
 @media (max-width: 600px) {
   .graph-footer__progress {
-    width: 100%;
+    flex: 1;
   }
   .graph-footer {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 8px;
   }
   .surface-controls {
     margin-left: auto;
   }
   .graph-panel-bar {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .graph-panel-bar__meta {
+    display: grid;
+    font-size: 11px;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .graph-utility-btn__text {
+    display: none;
+  }
+  .graph-utility-btn__symbol {
+    display: inline;
+    font-size: 17px;
+  }
+  .graph-utility-btn--mode {
+    width: 44px;
+    padding: 0;
+  }
+  .surface-controls {
+    flex-shrink: 0;
     gap: 6px;
   }
   .graph-panel-bar__toggles {

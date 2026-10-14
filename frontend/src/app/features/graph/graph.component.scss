@@ -533,17 +533,6 @@
   font-weight: 600;
 }
 
-.explorer-shell--focused .image-overlay-bar {
-  opacity: 0.42;
-  transition: opacity 180ms ease;
-}
-
-.explorer-shell--focused .image-stage:hover .image-overlay-bar,
-.explorer-shell--focused .image-stage:focus-within .image-overlay-bar {
-  opacity: 1;
-}
-
-.explorer-shell--focused.explorer-shell--mode-graph .image-overlay-bar,
 .explorer-shell--focused.explorer-shell--mode-image .image-meta-dock,
 .explorer-shell--focused.explorer-shell--mode-graph .image-meta-dock {
   display: none;
@@ -1638,9 +1627,16 @@
 @media (max-width: 760px) {
   .graph-progressive-disclosure {
     width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-2);
+    > span:not(.sr-only) {
+      display: none;
+    }
+    align-items: center;
+    gap: 0;
+  }
+  .graph-progressive-disclosure__actions {
+    flex: 1;
+    flex-wrap: nowrap;
+    gap: 6px;
   }
   .graph-progressive-disclosure__button {
     white-space: nowrap;
@@ -1649,7 +1645,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-2);
+    gap: 4px;
+    padding: 0 6px;
     min-height: 44px;
+    font-size: 12px;
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
   }
 }

@@ -296,7 +296,7 @@
                   }}
                 </span>
                 @if (isMobileViewport) {
-                  <span role="status">{{
+                  <span role="status" class="sr-only">{{
                     i18n.t(
                       expandingNodeId()
                         ? 'graph.expandingNode'
@@ -307,14 +307,14 @@
                   }}</span>
                 }
                 <div class="graph-progressive-disclosure__actions">
-                  @if (hasMoreRelationships()) {
+                  @if (isMobileViewport || hasMoreRelationships()) {
                     <button
                       type="button"
                       class="graph-progressive-disclosure__button graph-progressive-disclosure__button--primary"
                       [attr.aria-label]="
                         relationshipExpansionLabel() + ' ' + i18n.t('graph.entities')
                       "
-                      [disabled]="!!expandingNodeId()"
+                      [disabled]="!hasMoreRelationships() || !!expandingNodeId()"
                       (click)="showMoreRelationships()"
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -323,23 +323,24 @@
                       {{ relationshipExpansionLabel() }}
                     </button>
                   }
-                  @if (canShowFewerRelationships()) {
+                  @if (isMobileViewport || canShowFewerRelationships()) {
                     <button
                       type="button"
                       class="graph-progressive-disclosure__button"
                       [attr.aria-label]="
                         i18n.t('graph.fewerEntities') +
                         ' ' +
-                        (explorationBatches().at(-1)?.length ?? '') +
+                        (explorationBatches().at(-1)?.length ?? 0) +
                         ' ' +
                         i18n.t('graph.entities')
                       "
+                      [disabled]="!canShowFewerRelationships() || !!expandingNodeId()"
                       (click)="showFewerRelationships()"
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
                       {{ i18n.t(isMobileViewport ? 'graph.fewerEntities' : 'graph.showLess') }}
                       @if (isMobileViewport) {
-                        {{ explorationBatches().at(-1)?.length }}
+                        {{ explorationBatches().at(-1)?.length ?? 0 }}
                       }
                     </button>
                   }
