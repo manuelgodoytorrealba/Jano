@@ -88,7 +88,8 @@ describe('progressive graph disclosure', () => {
     expect(nextRelationshipLimit(12, 98, false)).toBe(24);
     expect(previousRelationshipLimit(36, 98, false)).toBe(24);
     expect(previousRelationshipLimit(24, 98, false)).toBe(12);
-    expect(initialRelationshipLimit(218, true)).toBe(8);
+    expect(initialRelationshipLimit(218, true)).toBe(5);
+    expect(nextRelationshipLimit(5, 218, true)).toBe(8);
   });
 
   it('applies filters before the cap and returns focus to the visible center', () => {

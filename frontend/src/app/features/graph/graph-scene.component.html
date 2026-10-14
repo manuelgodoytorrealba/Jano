@@ -121,6 +121,7 @@
     @for (renderedNode of renderedNodes; track renderedNode.node.id) {
       <g
         class="graph-node"
+        [class.graph-node--arriving]="arrivalNodeIds.has(renderedNode.node.id)"
         [style.--node-accent]="renderedNode.nodeVisual.accent"
         [attr.data-node-id]="renderedNode.node.id"
         [class.is-candidate]="renderedNode.node.state === 'candidate'"

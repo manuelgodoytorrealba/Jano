@@ -20,6 +20,7 @@ export function isFocalRelationshipGraph(graph: GraphData, edges = graph.edges):
 }
 
 export function initialRelationshipLimit(total: number, isMobile: boolean): number {
+  if (isMobile) return Math.min(total, 5);
   if (total <= 10) return total;
   // The P99 hubs in the foundational seed need a deliberately quieter first ring.
   return Math.min(total, isMobile ? (total >= 64 ? 8 : 10) : total >= 64 ? 12 : 10);
@@ -27,7 +28,7 @@ export function initialRelationshipLimit(total: number, isMobile: boolean): numb
 
 export function nextRelationshipLimit(current: number, total: number, isMobile: boolean): number {
   if (current >= total) return total;
-  return Math.min(total, current + (isMobile ? 8 : 12));
+  return Math.min(total, current + (isMobile ? 3 : 12));
 }
 
 export function previousRelationshipLimit(
@@ -35,7 +36,7 @@ export function previousRelationshipLimit(
   total: number,
   isMobile: boolean,
 ): number {
-  return Math.max(initialRelationshipLimit(total, isMobile), current - (isMobile ? 8 : 12));
+  return Math.max(initialRelationshipLimit(total, isMobile), current - (isMobile ? 3 : 12));
 }
 
 export function selectProgressiveRelationships(options: {

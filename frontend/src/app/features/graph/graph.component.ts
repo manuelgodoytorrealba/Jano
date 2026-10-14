@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { EMPTY, Subscription, catchError, skip, switchMap } from 'rxjs';
+import { EMPTY, Subscription, catchError, skip, switchMap, forkJoin, map } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { toGraphData } from './graph-setup';
 import { EntitiesApi } from '../../core/api/entities.api';
@@ -38,6 +38,13 @@ import {
   GraphViewport,
   graphNodeTypeKey,
 } from './graph.models';
+import {
+  mergeExplorationGraph,
+  explorationNeighbors,
+  seedMobileExploration,
+  placeExplorationNodes,
+} from './graph-exploration';
+import { selectProgressiveRelationships } from './graph-progressive-disclosure';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import {
   ExplorerPersistedState,
@@ -227,6 +234,34 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly entityTypeFilters = signal<Record<string, boolean>>({});
   readonly relationTypeFilters = signal<Record<string, boolean>>({});
   readonly relationshipLimit = signal(0);
+  readonly revealedNodeIds = signal<Set<string> | null>(null);
+  readonly expandingNodeId = signal<string | null>(null);
+  readonly expansionError = signal(false);
+  readonly contextVisible = signal(false);
+  readonly arrivalNodeIds = signal<ReadonlySet<string>>(new Set());
+  readonly explorationDepths = signal<Record<string, number>>({});
+  readonly hiddenDepths = signal<Set<number>>(new Set());
+  readonly explorationParents = signal<Record<string, string>>({});
+  private expandedNodeIds = new Set<string>();
+  private expansionSub?: Subscription;
+  readonly visibleExplorationIds = computed(() => {
+    const ids = this.revealedNodeIds();
+    return ids
+      ? new Set(
+          [...ids].filter((id) => !this.hiddenDepths().has(this.explorationDepths()[id] ?? 0)),
+        )
+      : null;
+  });
+  readonly explorationLayers = computed(() =>
+    [...new Set(Object.values(this.explorationDepths()))].filter((depth) => depth > 0).sort(),
+  );
+  readonly contextOriginNode = computed(() => {
+    const id = this.selectedNodeId();
+    return (
+      this.graphDerived().nodeMap.get(id ? this.explorationParents()[id] : '') ??
+      this.graphDerived().centerNode
+    );
+  });
   readonly renderTick = signal(0);
   readonly initialGraphViewportReady = signal(true);
   readonly graphViewportAnimating = signal(false);
@@ -276,6 +311,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       overviewMode: this.overviewMode,
       showAllOverviewRelations: this.showAllOverviewRelations,
       relationshipLimit: this.relationshipLimit(),
+      revealedNodeIds: this.visibleExplorationIds(),
     }),
   );
   readonly layoutGraph = computed<GraphData | null>(() => {
@@ -339,7 +375,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly resolvedNodeLabelVisibility = computed(() =>
     resolveNodeLabelOcclusion({
       nodes: this.renderedNodes(),
-      requestedVisibility: this.graphDerived().nodeLabelVisibility,
+      requestedVisibility:
+        this.isMobileViewport && this.labelsMode() !== 'hidden'
+          ? Object.fromEntries(this.graphDerived().filteredNodes.map((node) => [node.id, true]))
+          : this.graphDerived().nodeLabelVisibility,
       centerId: this.graph()?.centerId ?? null,
       selectedNodeId: this.selectedNodeId(),
       hoveredNodeId: this.hoveredNodeId(),
@@ -368,13 +407,6 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     return this.graphInteractionActive() ? {} : this.resolvedEdgeLabelVisibility();
   });
   readonly activeNodeLabelVisibility = computed(() => {
-    if (this.isMobileViewport) {
-      return this.graphDerived().filteredNodes.reduce<Record<string, boolean>>((visible, node) => {
-        visible[node.id] = true;
-        return visible;
-      }, {});
-    }
-
     const derived = this.graphDerived();
     if (!this.graphInteractionActive()) {
       return this.resolvedNodeLabelVisibility();
@@ -396,14 +428,30 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         skip(1),
         switchMap(() =>
           this.isBrowser && this.graph() && !this.graphData
-            ? this.api.graph(this.slug).pipe(catchError(() => EMPTY))
+            ? forkJoin(
+                [...new Set([this.graph()!.centerId, ...this.expandedNodeIds])].map((id) =>
+                  this.api.graph(this.graphDerived().nodeMap.get(id)!.slug),
+                ),
+              ).pipe(
+                map((responses) =>
+                  responses.reduce(
+                    (graph, response) => mergeExplorationGraph(graph, response),
+                    this.graph()!,
+                  ),
+                ),
+                catchError(() => EMPTY),
+              )
             : EMPTY,
         ),
         takeUntilDestroyed(),
       )
       .subscribe((response) => {
         if (response.centerId !== this.graph()?.centerId) return;
-        this.graph.set(toGraphData(response));
+        this.graph.update((current) =>
+          current && this.revealedNodeIds()
+            ? mergeExplorationGraph(current, response)
+            : toGraphData(response),
+        );
         this.tooltip.set(null);
       });
   }
@@ -491,6 +539,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.flushPendingGraphViewport();
     this.persistExplorerState();
     this.loadSub?.unsubscribe();
+    this.expansionSub?.unsubscribe();
     this.graphResizeObserver?.disconnect();
     this.imageResizeObserver?.disconnect();
 
@@ -506,6 +555,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    this.expansionSub?.unsubscribe();
+    this.expandingNodeId.set(null);
+    this.contextVisible.set(false);
     this.loading.set(true);
     this.initialGraphViewportReady.set(false);
     this.graph.set(null);
@@ -538,6 +590,30 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.relationshipLimit.set(
       initialRelationshipLimit(loadedState.graph.edges.length, this.isMobileViewport),
     );
+    if (!this.graphData && !this.overviewMode && !shouldPreserveRuntime) {
+      const edges = selectProgressiveRelationships({
+        graph: loadedState.graph,
+        edges: loadedState.graph.edges,
+        limit: this.relationshipLimit(),
+      });
+      const ids = new Set([
+        loadedState.graph.centerId,
+        ...edges.flatMap((edge) => [edge.source, edge.target]),
+      ]);
+      this.revealedNodeIds.set(ids);
+      this.explorationDepths.set(
+        Object.fromEntries([...ids].map((id) => [id, id === loadedState.graph.centerId ? 0 : 1])),
+      );
+      this.explorationParents.set(
+        Object.fromEntries(
+          [...ids]
+            .filter((id) => id !== loadedState.graph.centerId)
+            .map((id) => [id, loadedState.graph.centerId]),
+        ),
+      );
+      this.hiddenDepths.set(new Set());
+      this.expandedNodeIds = new Set([loadedState.graph.centerId]);
+    } else if (this.graphData || this.overviewMode) this.revealedNodeIds.set(null);
     this.positions = shouldPreserveRuntime
       ? reuseGraphPositions(loadedState.graph, this.positions, loadedState.positions)
       : loadedState.positions;
@@ -586,7 +662,9 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       ? this.graphViewportReady
       : loadedState.graphViewportReady;
     this.initialGraphViewportReady.set(shouldPreserveRuntime);
-    this.graphLayoutActive = loadedState.graphLayoutActive;
+    this.graphLayoutActive =
+      !(this.isMobileViewport && this.detailLayout && this.revealedNodeIds()) &&
+      loadedState.graphLayoutActive;
     this.graphLayoutFrames = loadedState.graphLayoutFrames;
     this.graphSettledFrames = loadedState.graphSettledFrames;
 
@@ -627,6 +705,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
+    if (this.isMobileViewport && this.detailLayout && this.revealedNodeIds()) {
+      this.seedMobileGraph();
+      return;
+    }
     warmupPreparedGraphLayout(
       graph,
       this.positions,
@@ -1300,6 +1382,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   showMoreRelationships(): void {
+    const graph = this.graph();
+    if (graph && this.revealedNodeIds()) {
+      this.revealConnections(graph.centerId);
+      return;
+    }
     const total = this.graphDerived().totalRelationshipCount;
     this.relationshipLimit.update((current) =>
       nextRelationshipLimit(current, total, this.isMobileViewport),
@@ -1327,7 +1414,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   canShowFewerRelationships(): boolean {
     const total = this.graph()?.edges.length ?? 0;
-    return this.relationshipLimit() > initialRelationshipLimit(total, this.isMobileViewport);
+    return (
+      !this.revealedNodeIds() &&
+      this.relationshipLimit() > initialRelationshipLimit(total, this.isMobileViewport)
+    );
   }
 
   relationshipBatchSize(): number {
@@ -1339,8 +1429,27 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     return `${derived.filteredEdges.length} ${this.i18n.t('graph.of')} ${derived.totalRelationshipCount} ${this.i18n.t('graph.relations')}`;
   }
 
+  hasMoreRelationships(): boolean {
+    const graph = this.graph();
+    const visible = this.revealedNodeIds();
+    return graph && visible
+      ? explorationNeighbors(graph, graph.centerId).some(
+          (id) =>
+            !visible.has(id) &&
+            this.entityTypeFilters()[graphNodeTypeKey(this.graphDerived().nodeMap.get(id))] !==
+              false &&
+            graph.edges.some(
+              (edge) =>
+                ((edge.source === graph.centerId && edge.target === id) ||
+                  (edge.target === graph.centerId && edge.source === id)) &&
+                this.relationTypeFilters()[edge.relationType] !== false,
+            ),
+        )
+      : this.graphDerived().hiddenRelationshipCount > 0;
+  }
+
   relationshipExpansionLabel(): string {
-    return `${this.i18n.t('graph.explore')} ${Math.min(this.graphDerived().hiddenRelationshipCount, this.relationshipBatchSize())} ${this.i18n.t('graph.more')}`;
+    return `${this.i18n.t('graph.addConnections')} · ${Math.min(this.graphDerived().hiddenRelationshipCount, this.isMobileViewport ? 3 : this.relationshipBatchSize())}`;
   }
 
   relationshipExpansionLayersLabel(): string {
@@ -1454,6 +1563,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.focusNode(nodeId);
     }
     this.emitNodeSelection(nodeId);
+    if (this.detailLayout && !this.graphData && nodeId !== this.graph()?.centerId) {
+      this.contextVisible.set(true);
+      this.dismissTooltip();
+    }
 
     if (this.openNodeOnSelect) {
       this.openNodeEntity(nodeId);
@@ -1541,7 +1654,135 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private createEntityFocusedGraphViewport(): GraphViewport | null {
+    if (this.isMobileViewport && this.detailLayout && this.revealedNodeIds()) {
+      if (!this.hasUserAdjustedGraphView) this.seedMobileGraph();
+      const size = this.currentGraphStageSize();
+      return this.createViewportCenteredOnPoint({ x: 0, y: size.height * 0.15 }, 1);
+    }
     return this.createFittedGraphViewport();
+  }
+
+  private seedMobileGraph(): void {
+    const graph = this.graph();
+    if (!graph) return;
+    const size = this.currentGraphStageSize();
+    const ids = this.graphDerived()
+      .filteredNodes.map((node) => node.id)
+      .filter((id) => id !== graph.centerId);
+    this.positions = {
+      ...this.positions,
+      ...seedMobileExploration(ids.slice(0, 5), size.width || 350, size.height || 440),
+      [graph.centerId]: { x: 0, y: 0 },
+    };
+    this.renderTick.update((value) => value + 1);
+  }
+
+  toggleExplorationLayer(depth: number): void {
+    this.hiddenDepths.update((current) => {
+      const next = new Set(current);
+      if (next.has(depth)) next.delete(depth);
+      else next.add(depth);
+      return next;
+    });
+    this.ensureSelectionVisible();
+  }
+
+  canExpandSelectedNode(): boolean {
+    const node = this.graphDerived().selectedNode;
+    return (
+      !!node &&
+      !this.graphData &&
+      !this.expandingNodeId() &&
+      (!this.expandedNodeIds.has(node.id) ||
+        explorationNeighbors(this.graph()!, node.id).some((id) => !this.revealedNodeIds()?.has(id)))
+    );
+  }
+
+  expandSelectedNode(): void {
+    const node = this.graphDerived().selectedNode;
+    const original = this.graph();
+    if (!node?.slug || !original || !this.canExpandSelectedNode()) return;
+    this.contextVisible.set(false);
+    this.expansionError.set(false);
+    if (this.expandedNodeIds.has(node.id)) {
+      this.revealConnections(node.id);
+      return;
+    }
+    this.expandingNodeId.set(node.id);
+    this.expansionSub?.unsubscribe();
+    this.expansionSub = this.api.graph(node.slug).subscribe({
+      next: (response) => {
+        if (this.graph()?.centerId !== original.centerId || response.centerId !== node.id) return;
+        const merged = mergeExplorationGraph(this.graph()!, response);
+        this.graph.set(merged);
+        this.entityTypeFilters.set(
+          reconcileGraphFilters(merged.entityTypes, this.entityTypeFilters()),
+        );
+        this.relationTypeFilters.set(
+          reconcileGraphFilters(merged.relationTypes, this.relationTypeFilters()),
+        );
+        this.expandedNodeIds.add(node.id);
+        this.expandingNodeId.set(null);
+        this.revealConnections(node.id);
+      },
+      error: () => {
+        this.expandingNodeId.set(null);
+        this.expansionError.set(true);
+        this.contextVisible.set(true);
+      },
+    });
+  }
+
+  private revealConnections(parentId: string): void {
+    const graph = this.graph();
+    const visible = this.revealedNodeIds();
+    if (!graph || !visible) return;
+    const ids = explorationNeighbors(graph, parentId)
+      .filter((id) => {
+        const node = graph.nodes.find((node) => node.id === id);
+        return (
+          !visible.has(id) &&
+          node &&
+          this.entityTypeFilters()[graphNodeTypeKey(node)] !== false &&
+          graph.edges.some(
+            (edge) =>
+              ((edge.source === parentId && edge.target === id) ||
+                (edge.target === parentId && edge.source === id)) &&
+              this.relationTypeFilters()[edge.relationType] !== false,
+          )
+        );
+      })
+      .slice(0, this.isMobileViewport ? 3 : 12);
+    if (!ids.length) return;
+    this.cancelPendingInitialGraphFocus(true);
+    this.stabilizeGraphLayout();
+    const parent = this.positions[parentId] ?? { x: 0, y: 0 };
+    this.positions = placeExplorationNodes(ids, parent, this.positions, visible);
+    this.revealedNodeIds.set(new Set([...visible, ...ids]));
+    this.arrivalNodeIds.set(new Set(ids));
+    this.explorationDepths.update((depths) => ({
+      ...depths,
+      ...Object.fromEntries(ids.map((id) => [id, (depths[parentId] ?? 0) + 1])),
+    }));
+    this.explorationParents.update((parents) => ({
+      ...parents,
+      ...Object.fromEntries(ids.map((id) => [id, parentId])),
+    }));
+    this.hiddenDepths.set(new Set());
+    this.renderTick.update((value) => value + 1);
+    const points = [parent, ...ids.map((id) => this.positions[id])];
+    const point = {
+      x: (Math.min(...points.map((p) => p.x)) + Math.max(...points.map((p) => p.x))) / 2,
+      y: (Math.min(...points.map((p) => p.y)) + Math.max(...points.map((p) => p.y))) / 2,
+    };
+    const viewport = this.createViewportCenteredOnPoint(
+      point,
+      this.currentGraphViewportState().scale,
+    );
+    if (viewport) {
+      this.camera.clearViewportTarget();
+      this.graphViewport.set(viewport);
+    }
   }
 
   private scheduleInitialEntityFocus(): void {

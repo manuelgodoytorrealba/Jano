@@ -1,5 +1,6 @@
 <div
   class="graph-panel-footer"
+  [class.graph-panel-footer--context]="contextOnly"
   [class.graph-panel-footer--mobile]="isMobileViewport"
   [class.graph-panel-footer--filters]="filtersOnly"
 >
@@ -16,251 +17,319 @@
         (click)="closeInspector.emit()"
         [attr.aria-label]="i18n.t('button.close')"
       >
-        <span aria-hidden="true">×</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
       </button>
     </div>
   }
 
-  @if (!filtersOnly) {
-    @if (selectedNode && selectedNodeMeta) {
-      <button
-        type="button"
-        class="selection-card selection-card--interactive"
-        (click)="openSelectedEntity.emit()"
-      >
-        <div class="selection-card__head">
-          <span class="selection-card__type" [style.--node-color]="selectedNodeMeta.color">
-            {{ selectedNodeMeta.label }}
-          </span>
-          <span class="selection-card__meta"
-            >{{ selectedNode.degree }} {{ i18n.t('graph.connections') }}</span
+  @if (filtersOnly) {
+    <div class="filter-group">
+      <div class="filter-group__label">{{ i18n.t('graph.explorationLayer') }}</div>
+      <div class="filter-chips">
+        @for (depth of explorationLayers; track depth) {
+          <button
+            class="filter-chip"
+            [class.is-active]="!hiddenDepths.has(depth)"
+            [attr.aria-pressed]="!hiddenDepths.has(depth)"
+            type="button"
+            (click)="toggleExplorationLayer.emit(depth)"
           >
-        </div>
-
-        @if (isMobileViewport) {
-          <div class="selection-card__eyebrow">{{ i18n.t('graph.activeEntity') }}</div>
+            {{ i18n.t('graph.explorationLayer') }} {{ depth }}
+          </button>
         }
+      </div>
+    </div>
+  }
+  @if (contextOnly && selectedNode) {
+    <div class="selection-card graph-context-selection">
+      @if (selectedNode.image) {
+        <img [src]="selectedNode.image" [alt]="selectedNode.label" />
+      }
+      <div>
+        <span class="selection-card__type">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path [attr.d]="entitySymbol(selectedNode.type, selectedNode.kind).path" />
+          </svg>
+          {{ selectedNodeMeta?.label }}
+        </span>
         <h3>{{ selectedNode.label }}</h3>
-        @if (selectedNode.metadata?.summary) {
-          <p>{{ selectedNode.metadata?.summary }}</p>
+      </div>
+    </div>
+    @for (item of primaryConnections(); track item.edgeId) {
+      <div class="graph-context-block">
+        <span class="graph-context-block__label"
+          >{{ item.relationLabel }} · {{ item.nodeLabel }}</span
+        >
+        @if (item.relationJustification) {
+          <p class="graph-connection-item__body">{{ item.relationJustification }}</p>
         }
-      </button>
+      </div>
     }
-
-    @if (isMobileViewport && selectedNode) {
-      @if (focusedNodeIsCenter) {
-        <section class="graph-context-block">
-          <div class="graph-context-block__head">
-            <span class="graph-context-block__label">{{ i18n.t('graph.connectionOverview') }}</span>
-            <p class="graph-context-block__summary">
-              {{ focusedNodeConnectionCount() }} {{ i18n.t('graph.connections') }} ·
-              {{ focusedNodeConnectedTypeCount() }} {{ i18n.t('graph.connectedTypes') }}
-            </p>
+    <div class="graph-context-actions">
+      @if (expansionFailed) {
+        <p role="alert">{{ i18n.t('graph.expansionError') }}</p>
+      }
+      <button
+        class="filter-action"
+        type="button"
+        [disabled]="!canExpand"
+        [attr.aria-busy]="expanding"
+        (click)="expandNode.emit()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+        {{ i18n.t(expanding ? 'graph.expandingNode' : 'graph.expandNode') }}
+      </button>
+    </div>
+    <button class="graph-context-read" type="button" (click)="openSelectedEntity.emit()">
+      {{ i18n.t('entity.open') }}
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
+    </button>
+  } @else {
+    @if (!filtersOnly) {
+      @if (selectedNode && selectedNodeMeta) {
+        <button
+          type="button"
+          class="selection-card selection-card--interactive"
+          (click)="openSelectedEntity.emit()"
+        >
+          <div class="selection-card__head">
+            <span class="selection-card__type" [style.--node-color]="selectedNodeMeta.color">
+              {{ selectedNodeMeta.label }}
+            </span>
+            <span class="selection-card__meta"
+              >{{ selectedNode.degree }} {{ i18n.t('graph.connections') }}</span
+            >
           </div>
 
-          @if (centerConnectionGroups().length) {
-            <div class="graph-connection-groups">
-              @for (group of centerConnectionGroups(); track group.type) {
-                <article class="graph-connection-group">
-                  <div class="graph-connection-group__head">
-                    <span
-                      class="graph-connection-group__type"
-                      [style.--group-color]="group.color"
-                      >{{ group.typeLabel }}</span
-                    >
-                    <span class="graph-connection-group__count">{{ group.count }}</span>
-                  </div>
-
-                  <div class="graph-connection-list">
-                    @for (item of group.items; track item.edgeId) {
-                      <div class="graph-connection-item">
-                        <span
-                          class="graph-connection-item__relation"
-                          [style.--relation-color]="item.relationColor"
-                          >{{ item.relationLabel }}</span
-                        >
-                        <span class="graph-connection-item__node">{{ item.nodeLabel }}</span>
-                        <span class="graph-connection-item__meta">{{ item.nodeTypeLabel }}</span>
-                        @if (item.relationJustification) {
-                          <p class="graph-connection-item__body">
-                            {{ item.relationJustification }}
-                          </p>
-                        }
-                      </div>
-                    }
-                  </div>
-                </article>
-              }
-            </div>
-          } @else {
-            <p class="graph-context-block__empty">{{ i18n.t('graph.noContextConnections') }}</p>
+          @if (isMobileViewport) {
+            <div class="selection-card__eyebrow">{{ i18n.t('graph.activeEntity') }}</div>
           }
-        </section>
-      } @else {
-        <section class="graph-context-block">
-          <div class="graph-context-block__head">
-            <span class="graph-context-block__label">{{ i18n.t('graph.primaryConnection') }}</span>
-            @if (centerNode) {
-              <p class="graph-context-block__summary">
-                {{ i18n.t('graph.withMainEntity') }} {{ centerNode.label }}
-              </p>
-            }
-          </div>
-
-          @if (primaryConnections().length) {
-            <div class="graph-connection-list">
-              @for (item of primaryConnections(); track item.edgeId) {
-                <div class="graph-connection-item graph-connection-item--stacked">
-                  <span
-                    class="graph-connection-item__relation"
-                    [style.--relation-color]="item.relationColor"
-                    >{{ item.relationLabel }}</span
-                  >
-                  <span class="graph-connection-item__node">{{ item.nodeLabel }}</span>
-                  <span class="graph-connection-item__meta">{{ item.nodeTypeLabel }}</span>
-                  @if (item.relationJustification) {
-                    <p class="graph-connection-item__body">{{ item.relationJustification }}</p>
-                  }
-                </div>
-              }
-            </div>
-          } @else {
-            <p class="graph-context-block__empty">{{ i18n.t('graph.noPrimaryConnection') }}</p>
+          <h3>{{ selectedNode.label }}</h3>
+          @if (selectedNode.metadata?.summary) {
+            <p>{{ selectedNode.metadata?.summary }}</p>
           }
-        </section>
+        </button>
+      }
 
-        @if (otherVisibleConnections().length) {
+      @if (isMobileViewport && selectedNode) {
+        @if (focusedNodeIsCenter) {
           <section class="graph-context-block">
             <div class="graph-context-block__head">
               <span class="graph-context-block__label">{{
-                i18n.t('graph.otherVisibleConnections')
+                i18n.t('graph.connectionOverview')
               }}</span>
               <p class="graph-context-block__summary">
-                {{ otherVisibleConnections().length }} {{ i18n.t('graph.connections') }}
+                {{ focusedNodeConnectionCount() }} {{ i18n.t('graph.connections') }} ·
+                {{ focusedNodeConnectedTypeCount() }} {{ i18n.t('graph.connectedTypes') }}
               </p>
             </div>
 
-            <div class="graph-connection-list">
-              @for (item of otherVisibleConnections(); track item.edgeId) {
-                <div class="graph-connection-item">
-                  <span
-                    class="graph-connection-item__relation"
-                    [style.--relation-color]="item.relationColor"
-                    >{{ item.relationLabel }}</span
-                  >
-                  <span class="graph-connection-item__node">{{ item.nodeLabel }}</span>
-                  <span class="graph-connection-item__meta">{{ item.nodeTypeLabel }}</span>
-                  @if (item.relationJustification) {
-                    <p class="graph-connection-item__body">{{ item.relationJustification }}</p>
-                  }
-                </div>
+            @if (centerConnectionGroups().length) {
+              <div class="graph-connection-groups">
+                @for (group of centerConnectionGroups(); track group.type) {
+                  <article class="graph-connection-group">
+                    <div class="graph-connection-group__head">
+                      <span
+                        class="graph-connection-group__type"
+                        [style.--group-color]="group.color"
+                        >{{ group.typeLabel }}</span
+                      >
+                      <span class="graph-connection-group__count">{{ group.count }}</span>
+                    </div>
+
+                    <div class="graph-connection-list">
+                      @for (item of group.items; track item.edgeId) {
+                        <div class="graph-connection-item">
+                          <span
+                            class="graph-connection-item__relation"
+                            [style.--relation-color]="item.relationColor"
+                            >{{ item.relationLabel }}</span
+                          >
+                          <span class="graph-connection-item__node">{{ item.nodeLabel }}</span>
+                          <span class="graph-connection-item__meta">{{ item.nodeTypeLabel }}</span>
+                          @if (item.relationJustification) {
+                            <p class="graph-connection-item__body">
+                              {{ item.relationJustification }}
+                            </p>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <p class="graph-context-block__empty">{{ i18n.t('graph.noContextConnections') }}</p>
+            }
+          </section>
+        } @else {
+          <section class="graph-context-block">
+            <div class="graph-context-block__head">
+              <span class="graph-context-block__label">{{
+                i18n.t('graph.primaryConnection')
+              }}</span>
+              @if (centerNode) {
+                <p class="graph-context-block__summary">
+                  {{ i18n.t('graph.withMainEntity') }} {{ centerNode.label }}
+                </p>
               }
             </div>
+
+            @if (primaryConnections().length) {
+              <div class="graph-connection-list">
+                @for (item of primaryConnections(); track item.edgeId) {
+                  <div class="graph-connection-item graph-connection-item--stacked">
+                    <span
+                      class="graph-connection-item__relation"
+                      [style.--relation-color]="item.relationColor"
+                      >{{ item.relationLabel }}</span
+                    >
+                    <span class="graph-connection-item__node">{{ item.nodeLabel }}</span>
+                    <span class="graph-connection-item__meta">{{ item.nodeTypeLabel }}</span>
+                    @if (item.relationJustification) {
+                      <p class="graph-connection-item__body">{{ item.relationJustification }}</p>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="graph-context-block__empty">{{ i18n.t('graph.noPrimaryConnection') }}</p>
+            }
           </section>
-        }
-      }
 
-      <div class="graph-panel-footer__mobile-summary">
-        <div class="graph-stat-card">
-          <span class="graph-stat-card__value">{{ nodeCount }}</span>
-          <span class="graph-stat-card__label">{{ i18n.t('graph.nodes') }}</span>
-        </div>
-        <div class="graph-stat-card">
-          <span class="graph-stat-card__value">{{ edgeCount }}</span>
-          <span class="graph-stat-card__label">{{ i18n.t('graph.edges') }}</span>
-        </div>
-        <div class="graph-stat-card">
-          <span class="graph-stat-card__value">{{ activeEntityTypesCount() }}</span>
-          <span class="graph-stat-card__label">{{ i18n.t('graph.types') }}</span>
-        </div>
-        <div class="graph-stat-card">
-          <span class="graph-stat-card__value">{{ activeRelationTypesCount() }}</span>
-          <span class="graph-stat-card__label">{{ i18n.t('graph.relations') }}</span>
-        </div>
-      </div>
-    } @else if (isMobileViewport) {
-      <div class="graph-panel-footer__mobile-summary">
-        <div class="graph-stat-card">
-          <span class="graph-stat-card__value">{{ nodeCount }}</span>
-          <span class="graph-stat-card__label">{{ i18n.t('graph.nodes') }}</span>
-        </div>
-        <div class="graph-stat-card">
-          <span class="graph-stat-card__value">{{ edgeCount }}</span>
-          <span class="graph-stat-card__label">{{ i18n.t('graph.edges') }}</span>
-        </div>
-        <div class="graph-stat-card">
-          <span class="graph-stat-card__value">{{ activeEntityTypesCount() }}</span>
-          <span class="graph-stat-card__label">{{ i18n.t('graph.types') }}</span>
-        </div>
-        <div class="graph-stat-card">
-          <span class="graph-stat-card__value">{{ activeRelationTypesCount() }}</span>
-          <span class="graph-stat-card__label">{{ i18n.t('graph.relations') }}</span>
-        </div>
-      </div>
-    }
-  }
-  <div class="graph-filter-tray">
-    <div class="graph-filter-group">
-      <div class="filter-group__head">
-        <span class="filter-group__label">{{
-          filtersOnly ? i18n.t('search.filter.entity') : i18n.t('graph.layers')
-        }}</span>
-        <button type="button" class="filter-action" (click)="setAllEntityTypes.emit(true)">
-          {{ i18n.t('graph.allPlural') }}
-        </button>
-      </div>
-      @if (isMobileViewport) {
-        <p class="filter-group__summary">{{ activeEntityTypesCount() }} activas</p>
-      }
-      @for (type of entityTypes; track type) {
-        <button
-          type="button"
-          class="filter-chip"
-          [class.is-active]="entityTypeFilters[type] !== false"
-          [style.--chip-color]="entityTypeMeta[type]?.color"
-          [attr.aria-pressed]="entityTypeFilters[type] !== false"
-          (click)="toggleEntityType.emit(type)"
-        >
-          @if (filtersOnly) {
-            <svg
-              class="filter-chip__symbol"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              [style.color]="entitySymbol(type).color"
-            >
-              <path [attr.d]="entitySymbol(type).path" />
-            </svg>
-          } @else {
-            <span class="filter-chip__dot"></span>
+          @if (otherVisibleConnections().length) {
+            <section class="graph-context-block">
+              <div class="graph-context-block__head">
+                <span class="graph-context-block__label">{{
+                  i18n.t('graph.otherVisibleConnections')
+                }}</span>
+                <p class="graph-context-block__summary">
+                  {{ otherVisibleConnections().length }} {{ i18n.t('graph.connections') }}
+                </p>
+              </div>
+
+              <div class="graph-connection-list">
+                @for (item of otherVisibleConnections(); track item.edgeId) {
+                  <div class="graph-connection-item">
+                    <span
+                      class="graph-connection-item__relation"
+                      [style.--relation-color]="item.relationColor"
+                      >{{ item.relationLabel }}</span
+                    >
+                    <span class="graph-connection-item__node">{{ item.nodeLabel }}</span>
+                    <span class="graph-connection-item__meta">{{ item.nodeTypeLabel }}</span>
+                    @if (item.relationJustification) {
+                      <p class="graph-connection-item__body">{{ item.relationJustification }}</p>
+                    }
+                  </div>
+                }
+              </div>
+            </section>
           }
-          {{ entityTypeMeta[type]?.label ?? type }} · {{ layerCount(type) }}
-        </button>
-      }
-    </div>
+        }
 
-    <div class="graph-filter-group">
-      <div class="filter-group__head">
-        <span class="filter-group__label">{{ i18n.t('graph.relations') }}</span>
-        <button type="button" class="filter-action" (click)="setAllRelationTypes.emit(true)">
-          {{ i18n.t('graph.allFeminine') }}
-        </button>
+        <div class="graph-panel-footer__mobile-summary">
+          <div class="graph-stat-card">
+            <span class="graph-stat-card__value">{{ nodeCount }}</span>
+            <span class="graph-stat-card__label">{{ i18n.t('graph.nodes') }}</span>
+          </div>
+          <div class="graph-stat-card">
+            <span class="graph-stat-card__value">{{ edgeCount }}</span>
+            <span class="graph-stat-card__label">{{ i18n.t('graph.edges') }}</span>
+          </div>
+          <div class="graph-stat-card">
+            <span class="graph-stat-card__value">{{ activeEntityTypesCount() }}</span>
+            <span class="graph-stat-card__label">{{ i18n.t('graph.types') }}</span>
+          </div>
+          <div class="graph-stat-card">
+            <span class="graph-stat-card__value">{{ activeRelationTypesCount() }}</span>
+            <span class="graph-stat-card__label">{{ i18n.t('graph.relations') }}</span>
+          </div>
+        </div>
+      } @else if (isMobileViewport) {
+        <div class="graph-panel-footer__mobile-summary">
+          <div class="graph-stat-card">
+            <span class="graph-stat-card__value">{{ nodeCount }}</span>
+            <span class="graph-stat-card__label">{{ i18n.t('graph.nodes') }}</span>
+          </div>
+          <div class="graph-stat-card">
+            <span class="graph-stat-card__value">{{ edgeCount }}</span>
+            <span class="graph-stat-card__label">{{ i18n.t('graph.edges') }}</span>
+          </div>
+          <div class="graph-stat-card">
+            <span class="graph-stat-card__value">{{ activeEntityTypesCount() }}</span>
+            <span class="graph-stat-card__label">{{ i18n.t('graph.types') }}</span>
+          </div>
+          <div class="graph-stat-card">
+            <span class="graph-stat-card__value">{{ activeRelationTypesCount() }}</span>
+            <span class="graph-stat-card__label">{{ i18n.t('graph.relations') }}</span>
+          </div>
+        </div>
+      }
+    }
+    <div class="graph-filter-tray">
+      <div class="graph-filter-group">
+        <div class="filter-group__head">
+          <span class="filter-group__label">{{
+            filtersOnly ? i18n.t('search.filter.entity') : i18n.t('graph.layers')
+          }}</span>
+          <button type="button" class="filter-action" (click)="setAllEntityTypes.emit(true)">
+            {{ i18n.t('graph.allPlural') }}
+          </button>
+        </div>
+        @if (isMobileViewport) {
+          <p class="filter-group__summary">{{ activeEntityTypesCount() }} activas</p>
+        }
+        @for (type of entityTypes; track type) {
+          <button
+            type="button"
+            class="filter-chip"
+            [class.is-active]="entityTypeFilters[type] !== false"
+            [style.--chip-color]="entityTypeMeta[type]?.color"
+            [attr.aria-pressed]="entityTypeFilters[type] !== false"
+            (click)="toggleEntityType.emit(type)"
+          >
+            @if (filtersOnly) {
+              <svg
+                class="filter-chip__symbol"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                [style.color]="entitySymbol(type).color"
+              >
+                <path [attr.d]="entitySymbol(type).path" />
+              </svg>
+            } @else {
+              <span class="filter-chip__dot"></span>
+            }
+            {{ entityTypeMeta[type]?.label ?? type }} · {{ layerCount(type) }}
+          </button>
+        }
       </div>
-      @if (isMobileViewport) {
-        <p class="filter-group__summary">{{ activeRelationTypesCount() }} activas</p>
-      }
-      @for (type of relationTypes; track type) {
-        <button
-          type="button"
-          class="filter-chip filter-chip--relation"
-          [class.is-active]="relationTypeFilters[type] !== false"
-          [style.--chip-color]="relationTypeMeta[type]?.color"
-          [attr.aria-pressed]="relationTypeFilters[type] !== false"
-          (click)="toggleRelationType.emit(type)"
-        >
-          <span class="filter-chip__line"></span>
-          {{ relationTypeMeta[type]?.label ?? type }}
-        </button>
-      }
+
+      <div class="graph-filter-group">
+        <div class="filter-group__head">
+          <span class="filter-group__label">{{ i18n.t('graph.relations') }}</span>
+          <button type="button" class="filter-action" (click)="setAllRelationTypes.emit(true)">
+            {{ i18n.t('graph.allFeminine') }}
+          </button>
+        </div>
+        @if (isMobileViewport) {
+          <p class="filter-group__summary">{{ activeRelationTypesCount() }} activas</p>
+        }
+        @for (type of relationTypes; track type) {
+          <button
+            type="button"
+            class="filter-chip filter-chip--relation"
+            [class.is-active]="relationTypeFilters[type] !== false"
+            [style.--chip-color]="relationTypeMeta[type]?.color"
+            [attr.aria-pressed]="relationTypeFilters[type] !== false"
+            (click)="toggleRelationType.emit(type)"
+          >
+            <span class="filter-chip__line"></span>
+            {{ relationTypeMeta[type]?.label ?? type }}
+          </button>
+        }
+      </div>
     </div>
-  </div>
+  }
 </div>

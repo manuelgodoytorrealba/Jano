@@ -921,20 +921,6 @@
   }
 }
 
-@media (max-width: 1320px) {
-  .graph-panel-bar {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .graph-panel-bar__meta {
-    justify-content: flex-start;
-  }
-
-  .graph-panel-bar__group--actions {
-    justify-content: flex-start;
-  }
-}
-
 @media (max-width: 1480px) {
   :host {
     --detail-split-height: clamp(
@@ -1291,11 +1277,11 @@
   .explorer-shell--focused.explorer-shell--mode-graph
     .explorer-graph-pane
     > app-graph-controls-bar:not(.graph-controls--footer) {
-    position: absolute;
-    top: calc(var(--app-safe-top) + 0.7rem);
-    left: 0.7rem;
-    right: 0.7rem;
+    position: relative;
+    inset: auto;
     z-index: 5;
+    background: var(--workspace-surface);
+    padding-top: var(--app-safe-top);
   }
 
   .explorer-shell--focused.explorer-shell--mode-image .explorer-canvas,
@@ -1321,19 +1307,6 @@
   .graph-stage {
     min-height: 0;
     border-radius: 24px;
-  }
-
-  .graph-panel-bar,
-  .graph-panel-footer {
-    padding: 0.72rem 0.74rem;
-    border-radius: 18px;
-  }
-
-  .image-overlay-bar {
-    right: 0.8rem;
-    left: 0.8rem;
-    top: 0.8rem;
-    justify-content: flex-start;
   }
 
   .image-meta-card {
@@ -1476,7 +1449,7 @@
 }
 
 // Keep filters out of the canvas layout: opening them must not resize the graph.
-.explorer-graph-pane > app-graph-inspector-panel {
+.explorer-graph-pane > app-graph-inspector-panel:not(.graph-context-panel) {
   position: absolute;
   z-index: 6;
   top: 64px;
@@ -1521,7 +1494,7 @@
 }
 :host(.graph-detail-layout) .explorer-graph-pane,
 :host(.graph-detail-layout) .explorer-graph-pane:fullscreen {
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 0;
 }
 :host(.graph-detail-layout) .explorer-graph-pane .graph-stage {
@@ -1532,7 +1505,9 @@
 :host(.graph-detail-layout) .explorer-graph-pane:fullscreen .graph-stage {
   border-radius: 0;
 }
-:host(.graph-detail-layout) .explorer-graph-pane:fullscreen > app-graph-inspector-panel {
+:host(.graph-detail-layout)
+  .explorer-graph-pane:fullscreen
+  > app-graph-inspector-panel:not(.graph-context-panel) {
   top: calc(var(--graph-controls-inset) + 52px);
   right: var(--graph-controls-inset);
 }
@@ -1557,9 +1532,9 @@
 
 @media (max-width: 600px) {
   :host(.graph-detail-layout) .explorer-graph-pane .graph-stage {
-    padding-top: 112px;
+    padding-top: 0;
   }
-  .explorer-graph-pane > app-graph-inspector-panel {
+  .explorer-graph-pane > app-graph-inspector-panel:not(.graph-context-panel) {
     top: 112px;
     max-height: calc(100% - 240px);
   }
@@ -1597,7 +1572,7 @@
   .explorer-shell--mode-image .explorer-canvas,
   .explorer-shell--mode-graph .explorer-canvas,
   .graph-stage,
-  .explorer-graph-pane > app-graph-inspector-panel,
+  .explorer-graph-pane > app-graph-inspector-panel:not(.graph-context-panel),
   .graph-inspector-sheet {
     background: var(--workspace-surface);
     border-color: var(--workspace-border);
@@ -1649,20 +1624,29 @@
 }
 :host(.graph-detail-layout)
   .explorer-graph-pane
-  > app-graph-inspector-panel::-webkit-scrollbar-thumb {
+  > app-graph-inspector-panel:not(.graph-context-panel)::-webkit-scrollbar-thumb {
   background: var(--workspace-muted);
   border-color: var(--workspace-surface);
 }
 
 @media (max-width: 760px) {
   .explorer-shell--focused.explorer-shell--mode-graph .explorer-graph-pane {
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
   .explorer-shell--focused.explorer-shell--mode-graph .graph-stage {
     min-height: 0;
     height: 100%;
   }
   .explorer-shell--focused .stage-focus-toggle {
+    top: calc(var(--app-safe-top) + 12px);
     z-index: 7;
   }
+}
+.graph-progressive-disclosure__button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
 }

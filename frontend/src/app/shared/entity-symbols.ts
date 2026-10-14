@@ -9,6 +9,11 @@ export const ENTITY_SYMBOLS = {
     shape: 'rounded-square',
     path: 'M3 3h18v18H3ZM3 16l5-5 4 4 3-3 6 6M16 7h.01',
   },
+  FASHION_COLLECTION: {
+    color: '#8ec9ee',
+    shape: 'rounded-square',
+    path: 'M7 3h14v14M3 7h14v14H3ZM7 11h6M7 15h6',
+  },
   CONCEPT: {
     color: '#ecc18a',
     shape: 'rounded-square',
@@ -55,6 +60,7 @@ export function entitySymbol(type: string, kind?: string | null) {
   const aliases: Record<string, keyof typeof ENTITY_SYMBOLS> = {
     ARTIST: 'PERSON',
     ARTWORK: 'WORK',
+    FASHION_PIECE: 'WORK',
     ARTICLE: 'TEXT',
     ABSTRACTION: 'CONCEPT',
   };

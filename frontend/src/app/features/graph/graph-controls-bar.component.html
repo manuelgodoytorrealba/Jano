@@ -23,7 +23,7 @@
         (click)="zoom(0.88)"
         [attr.aria-label]="i18n.t('graph.zoomOut')"
       >
-        −
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
       </button>
       <span class="graph-scale">{{ scalePercent }}%</span>
       <button
@@ -33,7 +33,7 @@
         (click)="zoom(1.14)"
         [attr.aria-label]="i18n.t('graph.zoomIn')"
       >
-        +
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
       </button>
       <button
         type="button"

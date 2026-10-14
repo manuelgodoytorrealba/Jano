@@ -257,6 +257,7 @@
             [edgeLabelVisibility]="activeEdgeLabelVisibility()"
             [nodeLabelVisibility]="activeNodeLabelVisibility()"
             [interactionActive]="graphInteractionActive()"
+            [arrivalNodeIds]="arrivalNodeIds()"
             [tooltip]="tooltip()"
             [tooltipAnchorId]="hoveredNodeId() ?? hoveredEdgeId()"
             (nodePointerDown)="onNodePointerDown($event.event, $event.nodeId)"
@@ -284,18 +285,21 @@
             (graphZoom)="adjustGraphZoom($event)"
             (resetGraphView)="resetGraphView()"
           >
-            @if (graphDerived().hiddenRelationshipCount > 0 || canShowFewerRelationships()) {
+            @if (hasMoreRelationships() || canShowFewerRelationships()) {
               <div class="graph-progressive-disclosure">
                 <span>
                   {{ relationshipProgressLabel() }}
                 </span>
                 <div class="graph-progressive-disclosure__actions">
-                  @if (graphDerived().hiddenRelationshipCount > 0) {
+                  @if (hasMoreRelationships()) {
                     <button
                       type="button"
                       class="graph-progressive-disclosure__button graph-progressive-disclosure__button--primary"
                       (click)="showMoreRelationships()"
                     >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
                       {{ relationshipExpansionLabel() }}
                     </button>
                   }
@@ -317,7 +321,10 @@
         @if (showInspector && inspectorVisible()) {
           <app-graph-inspector-panel
             [filtersOnly]="true"
-            [isMobileViewport]="false"
+            [explorationLayers]="explorationLayers()"
+            [hiddenDepths]="hiddenDepths()"
+            (toggleExplorationLayer)="toggleExplorationLayer($event)"
+            [isMobileViewport]="isMobileViewport"
             (closeInspector)="toggleInspector()"
             [nodeCount]="graphDerived().filteredNodes.length"
             [edgeCount]="graphDerived().filteredEdges.length"
@@ -339,7 +346,34 @@
             (toggleEntityType)="toggleEntityType($event)"
             (setAllRelationTypes)="setAllRelationTypes($event)"
             (toggleRelationType)="toggleRelationType($event)"
-          />
+          >
+          </app-graph-inspector-panel>
+        }
+
+        @if (
+          detailLayout && contextVisible() && !inspectorVisible() && graphDerived().selectedNode;
+          as node
+        ) {
+          <app-graph-inspector-panel
+            class="graph-context-panel"
+            [contextOnly]="true"
+            [canExpand]="canExpandSelectedNode()"
+            [expanding]="!!expandingNodeId()"
+            [expansionFailed]="expansionError()"
+            (expandNode)="expandSelectedNode()"
+            [isMobileViewport]="true"
+            [selectedNode]="graphDerived().selectedNode"
+            [selectedNodeMeta]="graphDerived().contextualNodeMeta"
+            [centerNode]="contextOriginNode()"
+            [contextualEdges]="graphDerived().contextualEdges"
+            [nodeMap]="graphDerived().nodeMap"
+            [entityTypeMeta]="graphDerived().entityTypeMeta"
+            [relationTypeMeta]="graphDerived().relationTypeMeta"
+            [focusedNodeIsCenter]="false"
+            (closeInspector)="contextVisible.set(false)"
+            (openSelectedEntity)="openSelectedEntity()"
+          >
+          </app-graph-inspector-panel>
         }
       </section>
     </div>

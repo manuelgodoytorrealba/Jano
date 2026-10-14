@@ -40,6 +40,7 @@ export interface GraphNode extends GraphNodeDto {
 export function graphNodeTypeKey(
   node: Pick<GraphNodeDto, 'type' | 'kind'> | null | undefined,
 ): string {
+  if (node?.type === 'FASHION_COLLECTION' || node?.type === 'FASHION_PIECE') return node.type;
   if (
     node?.kind === 'ABSTRACTION' &&
     ['CONCEPT', 'MOVEMENT', 'PERIOD', 'PLACE'].includes(node.type)

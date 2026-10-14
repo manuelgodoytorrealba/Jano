@@ -42,6 +42,14 @@ export class GraphInspectorPanelComponent {
   readonly entitySymbol = entitySymbol;
   @Input() isMobileViewport = false;
   @Input() filtersOnly = false;
+  @Input() contextOnly = false;
+  @Input() canExpand = false;
+  @Input() expanding = false;
+  @Input() expansionFailed = false;
+  @Input() explorationLayers: number[] = [];
+  @Input() hiddenDepths: ReadonlySet<number> = new Set();
+  @Output() expandNode = new EventEmitter<void>();
+  @Output() toggleExplorationLayer = new EventEmitter<number>();
   @Input() nodeCount = 0;
   @Input() edgeCount = 0;
   @Input() selectedNode: GraphNode | null = null;

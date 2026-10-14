@@ -769,5 +769,10 @@
   "graph.zoomOut": "Zoom out graph",
   "graph.zoomIn": "Zoom in graph",
   "navigation.returnToExploration": "Back to exploration",
-  "navigation.entities": "Navigate entities"
+  "navigation.entities": "Navigate entities",
+  "graph.addConnections": "Add connections",
+  "graph.expandNode": "Add its connections",
+  "graph.expandingNode": "Adding connections…",
+  "graph.expansionError": "These connections could not be loaded. You can try again.",
+  "graph.explorationLayer": "Exploration layer"
 }

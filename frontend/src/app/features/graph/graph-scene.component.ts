@@ -72,6 +72,7 @@ export class GraphSceneComponent implements OnDestroy {
     this.failedImages.update((failed) => new Set([...failed, url]));
   }
 
+  @Input() arrivalNodeIds: ReadonlySet<string> = new Set();
   @Input() ambientFields: GraphAmbientField[] = [];
   @Input({ required: true }) markerDefs: Array<{ id: string; color: string }> = [];
   @Input({ required: true }) viewportTransform = '';

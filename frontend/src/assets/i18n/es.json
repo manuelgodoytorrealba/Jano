@@ -769,5 +769,10 @@
   "graph.zoomOut": "Alejar grafo",
   "graph.zoomIn": "Acercar grafo",
   "navigation.returnToExploration": "Volver al recorrido",
-  "navigation.entities": "Navegar entidades"
+  "navigation.entities": "Navegar entidades",
+  "graph.addConnections": "Añadir conexiones",
+  "graph.expandNode": "Añadir sus conexiones",
+  "graph.expandingNode": "Añadiendo conexiones…",
+  "graph.expansionError": "No se pudieron cargar estas conexiones. Puedes volver a intentarlo.",
+  "graph.explorationLayer": "Capa del recorrido"
 }

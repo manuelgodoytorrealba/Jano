@@ -17,6 +17,8 @@ function localizedEntityTypeLabel(type: string): string | null {
   const labels: Record<string, { es: string; en: string }> = {
     PERSON: { es: 'Persona', en: 'Person' },
     WORK: { es: 'Obra', en: 'Work' },
+    FASHION_COLLECTION: { es: 'Colección de moda', en: 'Fashion collection' },
+    FASHION_PIECE: { es: 'Pieza de moda', en: 'Fashion piece' },
     ABSTRACTION: { es: 'Abstracción', en: 'Abstraction' },
     EVENT: { es: 'Evento', en: 'Event' },
     ORGANIZATION: { es: 'Organización', en: 'Organization' },
@@ -284,10 +286,13 @@ export const GRAPH_RELATION_TYPE_CONFIG: Record<string, GraphRelationVisualConfi
 };
 
 export function getEntityTypeConfig(type: string): GraphEntityVisualConfig {
-  const config = GRAPH_ENTITY_TYPE_CONFIG[type] ?? {
-    ...DEFAULT_ENTITY_STYLE,
-    label: humanizeGraphKey(type),
-  };
+  const config = GRAPH_ENTITY_TYPE_CONFIG[type] ??
+    (type === 'FASHION_COLLECTION' || type === 'FASHION_PIECE'
+      ? GRAPH_ENTITY_TYPE_CONFIG['WORK']
+      : null) ?? {
+      ...DEFAULT_ENTITY_STYLE,
+      label: humanizeGraphKey(type),
+    };
 
   return {
     ...config,

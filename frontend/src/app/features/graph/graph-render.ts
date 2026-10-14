@@ -145,10 +145,16 @@ export function buildRenderedGraphNodes(options: {
       labelTextAnchor: 'middle',
       nodeVisual,
       titleLabel: compactGraphLabel(
-        node.label,
-        options.compactLabels ? 22 : isPrimaryLabel ? 34 : 30,
+        options.compactLabels && node.label.includes(' — ')
+          ? node.type === 'FASHION_COLLECTION'
+            ? node.label.split(' — ').slice(1).join(' — ')
+            : node.label.split(' — ')[0]
+          : node.label,
+        options.compactLabels ? 18 : isPrimaryLabel ? 34 : 30,
       ),
-      typeLabel: getEntityTypeConfig(graphNodeTypeKey(node)).label,
+      typeLabel:
+        getEntityTypeConfig(graphNodeTypeKey(node)).label +
+        (options.compactLabels && node.metadata?.startYear ? ' · ' + node.metadata.startYear : ''),
     };
   });
 }

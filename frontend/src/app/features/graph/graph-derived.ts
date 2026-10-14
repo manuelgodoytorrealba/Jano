@@ -46,6 +46,7 @@ export function buildGraphDerivedState(options: {
   overviewMode: boolean;
   showAllOverviewRelations: boolean;
   relationshipLimit: number;
+  revealedNodeIds?: ReadonlySet<string> | null;
 }): GraphDerivedState {
   const graph = options.graph;
   const nodeMap = new Map(graph?.nodes.map((node) => [node.id, node]) ?? []);
@@ -85,13 +86,18 @@ export function buildGraphDerivedState(options: {
       baseVisibleNodeIds.has(edge.source) &&
       baseVisibleNodeIds.has(edge.target),
   );
-  const relationshipEdges = isFocalRelationshipGraph(graph, baseFilteredEdges)
-    ? selectProgressiveRelationships({
-        graph,
-        edges: baseFilteredEdges,
-        limit: options.relationshipLimit,
-      })
-    : baseFilteredEdges;
+  const relationshipEdges = options.revealedNodeIds
+    ? baseFilteredEdges.filter(
+        (edge) =>
+          options.revealedNodeIds!.has(edge.source) && options.revealedNodeIds!.has(edge.target),
+      )
+    : isFocalRelationshipGraph(graph, baseFilteredEdges)
+      ? selectProgressiveRelationships({
+          graph,
+          edges: baseFilteredEdges,
+          limit: options.relationshipLimit,
+        })
+      : baseFilteredEdges;
   const relationshipNodeIds = new Set(
     relationshipEdges.flatMap((edge) => [edge.source, edge.target]),
   );
