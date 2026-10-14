@@ -1407,7 +1407,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   async togglePanelFullscreen(panel: 'image' | 'graph', event: MouseEvent): Promise<void> {
-    if (!this.detailLayout) {
+    if (!this.detailLayout || (this.isMobileViewport && this.workspaceFocused)) {
       this.workspaceFocusToggle.emit();
       return;
     }

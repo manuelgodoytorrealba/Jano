@@ -1290,7 +1290,7 @@
 
   .explorer-shell--focused.explorer-shell--mode-graph
     .explorer-graph-pane
-    > app-graph-controls-bar {
+    > app-graph-controls-bar:not(.graph-controls--footer) {
     position: absolute;
     top: calc(var(--app-safe-top) + 0.7rem);
     left: 0.7rem;
@@ -1652,4 +1652,17 @@
   > app-graph-inspector-panel::-webkit-scrollbar-thumb {
   background: var(--workspace-muted);
   border-color: var(--workspace-surface);
+}
+
+@media (max-width: 760px) {
+  .explorer-shell--focused.explorer-shell--mode-graph .explorer-graph-pane {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .explorer-shell--focused.explorer-shell--mode-graph .graph-stage {
+    min-height: 0;
+    height: 100%;
+  }
+  .explorer-shell--focused .stage-focus-toggle {
+    z-index: 7;
+  }
 }

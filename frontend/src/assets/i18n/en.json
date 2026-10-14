@@ -1,4 +1,8 @@
 {
+  "detail.mobileMapDescription": "Explore how this entity connects to others. The map opens in a dedicated view.",
+  "detail.mobileRelationList": "View relationships as a list",
+  "detail.mobileCredits": "Credits",
+  "detail.mobileOpenMap": "Open relationship map",
   "entity.imageCredit": "Image credit",
   "entity.fact.concepts": "Concepts",
   "entity.fact.movement": "Movement",

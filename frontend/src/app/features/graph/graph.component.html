@@ -138,17 +138,24 @@
               <button
                 type="button"
                 class="stage-focus-toggle"
-                [class.is-active]="detailLayout ? fullscreenPanel() !== null : workspaceFocused"
+                [class.is-active]="
+                  (isMobileViewport && workspaceFocused) ||
+                  (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
+                "
                 (pointerdown)="$event.stopPropagation()"
                 (click)="togglePanelFullscreen('image', $event)"
                 [attr.aria-label]="
+                  (isMobileViewport && workspaceFocused) ||
                   (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
                     ? i18n.t('workspace.exitFullscreen')
                     : i18n.t('workspace.fullscreen')
                 "
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                  @if (detailLayout ? fullscreenPanel() !== null : workspaceFocused) {
+                  @if (
+                    (isMobileViewport && workspaceFocused) ||
+                    (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
+                  ) {
                     <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
                     <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
                   } @else {
@@ -202,17 +209,24 @@
           <button
             type="button"
             class="stage-focus-toggle"
-            [class.is-active]="detailLayout ? fullscreenPanel() !== null : workspaceFocused"
+            [class.is-active]="
+              (isMobileViewport && workspaceFocused) ||
+              (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
+            "
             (pointerdown)="$event.stopPropagation()"
             (click)="togglePanelFullscreen('graph', $event)"
             [attr.aria-label]="
+              (isMobileViewport && workspaceFocused) ||
               (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
                 ? i18n.t('workspace.exitFullscreen')
                 : i18n.t('workspace.fullscreen')
             "
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              @if (detailLayout ? fullscreenPanel() !== null : workspaceFocused) {
+              @if (
+                (isMobileViewport && workspaceFocused) ||
+                (detailLayout ? fullscreenPanel() !== null : workspaceFocused)
+              ) {
                 <path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4" />
                 <path d="M9 9 4 4M15 9l5-5M9 15l-5 5M15 15l5 5" />
               } @else {

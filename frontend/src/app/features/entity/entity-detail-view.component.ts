@@ -93,7 +93,11 @@ type DetailVisitState = {
     EntityScrollProgressComponent,
   ],
   templateUrl: './entity-detail-view.component.html',
-  styleUrls: ['./entity-detail-view.component.scss', './entity-information-tabs.scss'],
+  styleUrls: [
+    './entity-detail-view.component.scss',
+    './entity-information-tabs.scss',
+    './entity-mobile.scss',
+  ],
 })
 export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   private static readonly MOBILE_BREAKPOINT = 760;
@@ -109,6 +113,7 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
   readonly navigation = inject(NavigationMemoryService);
   private readonly injector = inject(Injector);
   private restoredVisitKey = '';
+  private mobileReadingScrollY = 0;
   private pendingScroll: number | null = null;
   private transitionTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -341,18 +346,44 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
     this.workspaceMode = mode;
   }
 
+  showMobileRelations(): void {
+    this.informationTab = 'relations';
+    this.document.getElementById('entity-tab-relations')?.focus();
+  }
+
+  openMobileWorkspace(mode: 'image' | 'graph'): void {
+    this.setWorkspaceMode(mode);
+    if (!this.workspaceFocused) this.toggleWorkspaceFocus();
+  }
+
   toggleWorkspaceFocus(): void {
+    if (this.isBrowser && this.isMobileViewport && !this.workspaceFocused) {
+      this.mobileReadingScrollY = window.scrollY;
+    }
     this.beginWorkspaceTransition();
     this.workspaceFocused = !this.workspaceFocused;
     this.syncImmersiveBodyState();
+    if (this.isBrowser && this.isMobileViewport && !this.workspaceFocused) {
+      afterNextRender(
+        () => {
+          window.scrollTo({ top: this.mobileReadingScrollY, behavior: 'instant' });
+          this.document
+            .querySelector<HTMLButtonElement>(
+              this.workspaceMode === 'image'
+                ? '.entity-mobile-media__open'
+                : '.entity-mobile-map__open',
+            )
+            ?.focus({ preventScroll: true });
+        },
+        { injector: this.injector },
+      );
+    }
   }
 
   @HostListener('window:keydown.escape')
   exitWorkspaceFocus(): void {
     if (this.workspaceFocused) {
-      this.beginWorkspaceTransition();
-      this.workspaceFocused = false;
-      this.syncImmersiveBodyState();
+      this.toggleWorkspaceFocus();
     }
   }
 

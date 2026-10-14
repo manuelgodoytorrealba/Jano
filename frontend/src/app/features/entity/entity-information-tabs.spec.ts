@@ -60,3 +60,37 @@ describe('entity information tabs', () => {
     tablist.remove();
   });
 });
+
+describe('mobile entity workspace', () => {
+  it('opens the requested viewer and only enters focus once', () => {
+    const state = {
+      workspaceFocused: false,
+      setWorkspaceMode: vi.fn(),
+      toggleWorkspaceFocus: vi.fn(function () {
+        state.workspaceFocused = true;
+      }),
+    };
+    const open = (mode: 'image' | 'graph') =>
+      EntityDetailViewComponent.prototype.openMobileWorkspace.call(
+        state as unknown as EntityDetailViewComponent,
+        mode,
+      );
+    open('image');
+    expect(state.setWorkspaceMode).toHaveBeenLastCalledWith('image');
+    expect(state.toggleWorkspaceFocus).toHaveBeenCalledTimes(1);
+    open('graph');
+    expect(state.setWorkspaceMode).toHaveBeenLastCalledWith('graph');
+    expect(state.toggleWorkspaceFocus).toHaveBeenCalledTimes(1);
+  });
+});
+
+it('opens the readable relationship list and focuses its tab', () => {
+  const tab = document.createElement('button');
+  tab.id = 'entity-tab-relations';
+  document.body.append(tab);
+  const state = { informationTab: 'context', document } as unknown as EntityDetailViewComponent;
+  EntityDetailViewComponent.prototype.showMobileRelations.call(state);
+  expect(state.informationTab).toBe('relations');
+  expect(document.activeElement).toBe(tab);
+  tab.remove();
+});
