@@ -103,6 +103,9 @@ button svg {
   }
 }
 @media (max-width: 600px) {
+  .graph-footer__progress {
+    width: 100%;
+  }
   .graph-footer {
     flex-wrap: wrap;
   }

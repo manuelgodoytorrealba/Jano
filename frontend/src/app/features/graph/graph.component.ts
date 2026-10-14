@@ -235,6 +235,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly relationTypeFilters = signal<Record<string, boolean>>({});
   readonly relationshipLimit = signal(0);
   readonly revealedNodeIds = signal<Set<string> | null>(null);
+  readonly explorationBatches = signal<string[][]>([]);
   readonly expandingNodeId = signal<string | null>(null);
   readonly expansionError = signal(false);
   readonly contextVisible = signal(false);
@@ -601,6 +602,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         ...edges.flatMap((edge) => [edge.source, edge.target]),
       ]);
       this.revealedNodeIds.set(ids);
+      this.explorationBatches.set([]);
       this.explorationDepths.set(
         Object.fromEntries([...ids].map((id) => [id, id === loadedState.graph.centerId ? 0 : 1])),
       );
@@ -1400,6 +1402,18 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   showFewerRelationships(): void {
+    const visible = this.revealedNodeIds();
+    const batches = this.explorationBatches();
+    if (visible) {
+      const last = batches.at(-1);
+      if (!last) return;
+      this.revealedNodeIds.set(new Set([...visible].filter((id) => !last.includes(id))));
+      this.explorationBatches.set(batches.slice(0, -1));
+      this.contextVisible.set(false);
+      this.ensureSelectionVisible();
+      this.renderTick.update((value) => value + 1);
+      return;
+    }
     const total = this.graph()?.edges.length ?? 0;
     this.relationshipLimit.update((current) =>
       previousRelationshipLimit(current, total, this.isMobileViewport),
@@ -1413,6 +1427,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   canShowFewerRelationships(): boolean {
+    if (this.revealedNodeIds()) return this.explorationBatches().length > 0;
     const total = this.graph()?.edges.length ?? 0;
     return (
       !this.revealedNodeIds() &&
@@ -1449,7 +1464,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   relationshipExpansionLabel(): string {
-    return `${this.i18n.t('graph.addConnections')} · ${Math.min(this.graphDerived().hiddenRelationshipCount, this.isMobileViewport ? 3 : this.relationshipBatchSize())}`;
+    return `${this.i18n.t(this.isMobileViewport ? 'graph.moreEntities' : 'graph.addConnections')} · ${Math.min(this.graphDerived().hiddenRelationshipCount, this.isMobileViewport ? 3 : this.relationshipBatchSize())}`;
   }
 
   relationshipExpansionLayersLabel(): string {
@@ -1766,6 +1781,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     const parent = this.positions[parentId] ?? { x: 0, y: 0 };
     this.positions = placeExplorationNodes(ids, parent, this.positions, visible);
     this.revealedNodeIds.set(new Set([...visible, ...ids]));
+    this.explorationBatches.update((batches) => [...batches, ids]);
     this.arrivalNodeIds.set(new Set(ids));
     this.explorationDepths.update((depths) => ({
       ...depths,

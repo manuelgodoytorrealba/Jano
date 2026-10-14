@@ -276,6 +276,7 @@
         @if (showControls) {
           <app-graph-controls-bar
             [footerOnly]="true"
+            [isMobileViewport]="isMobileViewport"
             [labelsMode]="labelsMode()"
             [nodeCount]="graphDerived().filteredNodes.length"
             [edgeCount]="graphDerived().filteredEdges.length"
@@ -309,7 +310,8 @@
                       class="graph-progressive-disclosure__button"
                       (click)="showFewerRelationships()"
                     >
-                      {{ i18n.t('graph.showLess') }}
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
+                      {{ i18n.t(isMobileViewport ? 'graph.fewerEntities' : 'graph.showLess') }}
                     </button>
                   }
                 </div>

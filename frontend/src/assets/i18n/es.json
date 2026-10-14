@@ -778,5 +778,7 @@
   "graph.moreConnectionsHint": "Se muestran hasta 3 conexiones cada vez. Puedes seguir ampliando este mapa.",
   "graph.connectionsRemaining": "conexiones por mostrar",
   "graph.allConnectionsShown": "Ya se muestran todas sus conexiones.",
-  "graph.readFullProfile": "Ver ficha completa"
+  "graph.readFullProfile": "Ver ficha completa",
+  "graph.moreEntities": "Más entidades",
+  "graph.fewerEntities": "Menos entidades"
 }
