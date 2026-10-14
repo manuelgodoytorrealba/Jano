@@ -1386,7 +1386,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   showMoreRelationships(): void {
     const graph = this.graph();
     if (graph && this.revealedNodeIds()) {
-      this.revealConnections(graph.centerId);
+      const rootHasMore = explorationNeighbors(graph, graph.centerId).some(
+        (id) => !this.revealedNodeIds()?.has(id),
+      );
+      if (rootHasMore) this.revealConnections(graph.centerId);
+      else {
+        const next = this.nextExplorationNode();
+        if (next) this.expandSelectedNode(next.id);
+      }
       return;
     }
     const total = this.graphDerived().totalRelationshipCount;
@@ -1444,27 +1451,43 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     return `${derived.filteredEdges.length} ${this.i18n.t('graph.of')} ${derived.totalRelationshipCount} ${this.i18n.t('graph.relations')}`;
   }
 
+  private nextExplorationNode() {
+    const graph = this.graph();
+    const visible = this.revealedNodeIds();
+    if (!graph || !visible) return undefined;
+    return graph.nodes.find(
+      (node) =>
+        visible.has(node.id) &&
+        node.id !== graph.centerId &&
+        (!this.expandedNodeIds.has(node.id) ||
+          explorationNeighbors(graph, node.id).some((id) => !visible.has(id))),
+    );
+  }
+
   hasMoreRelationships(): boolean {
     const graph = this.graph();
     const visible = this.revealedNodeIds();
-    return graph && visible
-      ? explorationNeighbors(graph, graph.centerId).some(
-          (id) =>
-            !visible.has(id) &&
-            this.entityTypeFilters()[graphNodeTypeKey(this.graphDerived().nodeMap.get(id))] !==
-              false &&
-            graph.edges.some(
-              (edge) =>
-                ((edge.source === graph.centerId && edge.target === id) ||
-                  (edge.target === graph.centerId && edge.source === id)) &&
-                this.relationTypeFilters()[edge.relationType] !== false,
-            ),
-        )
-      : this.graphDerived().hiddenRelationshipCount > 0;
+    return (
+      !!this.nextExplorationNode() ||
+      (graph && visible
+        ? explorationNeighbors(graph, graph.centerId).some(
+            (id) =>
+              !visible.has(id) &&
+              this.entityTypeFilters()[graphNodeTypeKey(this.graphDerived().nodeMap.get(id))] !==
+                false &&
+              graph.edges.some(
+                (edge) =>
+                  ((edge.source === graph.centerId && edge.target === id) ||
+                    (edge.target === graph.centerId && edge.source === id)) &&
+                  this.relationTypeFilters()[edge.relationType] !== false,
+              ),
+          )
+        : this.graphDerived().hiddenRelationshipCount > 0)
+    );
   }
 
   relationshipExpansionLabel(): string {
-    return `${this.i18n.t(this.isMobileViewport ? 'graph.moreEntities' : 'graph.addConnections')}${this.isMobileViewport ? ' ' : ' · '}${Math.min(this.graphDerived().hiddenRelationshipCount, this.isMobileViewport ? 3 : this.relationshipBatchSize())}`;
+    return `${this.i18n.t(this.isMobileViewport ? 'graph.moreEntities' : 'graph.addConnections')}${this.isMobileViewport ? ' ' : ' · '}${Math.min(this.graphDerived().hiddenRelationshipCount || 3, this.isMobileViewport ? 3 : this.relationshipBatchSize())}`;
   }
 
   relationshipExpansionLayersLabel(): string {
@@ -1721,10 +1744,12 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     );
   }
 
-  expandSelectedNode(): void {
-    const node = this.graphDerived().selectedNode;
+  expandSelectedNode(nodeId?: string): void {
+    const node = nodeId
+      ? this.graph()?.nodes.find((item) => item.id === nodeId)
+      : this.graphDerived().selectedNode;
     const original = this.graph();
-    if (!node?.slug || !original || !this.canExpandSelectedNode()) return;
+    if (!node?.slug || !original || this.expandingNodeId()) return;
     this.expansionError.set(false);
     if (this.expandedNodeIds.has(node.id)) {
       this.revealConnections(node.id);
@@ -1745,7 +1770,15 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
         );
         this.expandedNodeIds.add(node.id);
         this.expandingNodeId.set(null);
+        const previousCount = this.revealedNodeIds()?.size;
         this.revealConnections(node.id);
+        if (
+          nodeId &&
+          this.revealedNodeIds()?.size === previousCount &&
+          this.nextExplorationNode()
+        ) {
+          this.showMoreRelationships();
+        }
       },
       error: () => {
         this.expandingNodeId.set(null);

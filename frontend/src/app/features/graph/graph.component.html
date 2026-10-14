@@ -299,6 +299,7 @@
                       [attr.aria-label]="
                         relationshipExpansionLabel() + ' ' + i18n.t('graph.entities')
                       "
+                      [disabled]="!!expandingNodeId()"
                       (click)="showMoreRelationships()"
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">
