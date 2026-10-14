@@ -200,7 +200,7 @@
             (toggleImages)="toggleGraphImages()"
             (centerSelection)="centerSelection()"
             (graphZoom)="adjustGraphZoom($event)"
-            (resetGraphView)="resetGraphView()"
+            (resetGraphView)="restartExploration()"
             (toggleInspector)="toggleInspector()"
           />
         }
@@ -281,16 +281,31 @@
             [nodeCount]="graphDerived().filteredNodes.length"
             [edgeCount]="graphDerived().filteredEdges.length"
             [scalePercent]="+(graphViewport().scale * 100).toFixed(0)"
-            [graphReady]="!!graphData"
+            [graphReady]="!!graph()"
             (centerSelection)="centerSelection()"
             (graphZoom)="adjustGraphZoom($event)"
-            (resetGraphView)="resetGraphView()"
+            (resetGraphView)="restartExploration()"
           >
-            @if (hasMoreRelationships() || canShowFewerRelationships()) {
+            @if (isMobileViewport || hasMoreRelationships() || canShowFewerRelationships()) {
               <div class="graph-progressive-disclosure">
                 <span>
-                  {{ isMobileViewport ? i18n.t('graph.entities') : relationshipProgressLabel() }}
+                  {{
+                    isMobileViewport
+                      ? graphDerived().filteredNodes.length + ' ' + i18n.t('graph.visibleEntities')
+                      : relationshipProgressLabel()
+                  }}
                 </span>
+                @if (isMobileViewport) {
+                  <span role="status">{{
+                    i18n.t(
+                      expandingNodeId()
+                        ? 'graph.expandingNode'
+                        : hasMoreRelationships()
+                          ? 'graph.explorationAvailable'
+                          : 'graph.explorationComplete'
+                    )
+                  }}</span>
+                }
                 <div class="graph-progressive-disclosure__actions">
                   @if (hasMoreRelationships()) {
                     <button

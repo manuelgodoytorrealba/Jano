@@ -404,7 +404,7 @@
   "graph.mapAndFilters": "Mapa y filtros",
   "graph.activeEntity": "Entidad activa",
   "graph.center": "Centrar",
-  "graph.reset": "Reset",
+  "graph.reset": "Reiniciar grafo",
   "graph.connections": "conexiones",
   "graph.types": "Tipos",
   "graph.allPlural": "Todos",
@@ -781,5 +781,8 @@
   "graph.readFullProfile": "Ver ficha completa",
   "graph.moreEntities": "Mostrar",
   "graph.fewerEntities": "Ocultar",
-  "graph.entities": "Entidades"
+  "graph.entities": "Entidades",
+  "graph.visibleEntities": "entidades visibles",
+  "graph.explorationAvailable": "Hasta 3 por paso · puedes seguir explorando",
+  "graph.explorationComplete": "No quedan más entidades en este recorrido"
 }

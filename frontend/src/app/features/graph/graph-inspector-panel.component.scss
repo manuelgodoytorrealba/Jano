@@ -607,7 +607,7 @@
     padding: 8px;
   }
   .filter-chip::after {
-    content: '✓';
+    content: '';
     margin-left: auto;
     border: 1px solid currentColor;
     border-radius: 4px;
@@ -617,8 +617,8 @@
     flex-shrink: 0;
     color: var(--chip-color);
   }
-  .filter-chip:not(.is-active)::after {
-    content: '';
+  .filter-chip.is-active::after {
+    background: currentColor;
   }
   .filter-chip:hover {
     background: rgba(255, 255, 255, 0.06);

@@ -1,22 +1,22 @@
 @if (footerOnly) {
   <div class="graph-footer">
     <div class="graph-footer__progress"><ng-content /></div>
-    @if (!isMobileViewport) {
-      <div class="surface-controls" role="group" [attr.aria-label]="i18n.t('graph.controls')">
-        <button
-          type="button"
-          class="surface-control"
-          [disabled]="!graphReady"
-          (click)="centerSelection.emit()"
-          [attr.aria-label]="i18n.t('graph.center')"
-          [title]="i18n.t('graph.center')"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="7" />
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
-          </svg>
-        </button>
+    <div class="surface-controls" role="group" [attr.aria-label]="i18n.t('graph.controls')">
+      <button
+        type="button"
+        class="surface-control"
+        [disabled]="!graphReady"
+        (click)="centerSelection.emit()"
+        [attr.aria-label]="i18n.t('graph.center')"
+        [title]="i18n.t('graph.center')"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="7" />
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+        </svg>
+      </button>
+      @if (!isMobileViewport) {
         <button
           type="button"
           class="surface-control"
@@ -36,21 +36,21 @@
         >
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
         </button>
-        <button
-          type="button"
-          class="surface-control"
-          [disabled]="!graphReady"
-          (click)="resetGraphView.emit()"
-          [attr.aria-label]="i18n.t('graph.reset')"
-          [title]="i18n.t('graph.reset')"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 9a7.5 7.5 0 1 1-.4 6" />
-            <path d="M5 4v5h5" />
-          </svg>
-        </button>
-      </div>
-    }
+      }
+      <button
+        type="button"
+        class="surface-control"
+        [disabled]="!graphReady"
+        (click)="resetGraphView.emit()"
+        [attr.aria-label]="i18n.t('graph.reset')"
+        [title]="i18n.t('graph.reset')"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 9a7.5 7.5 0 1 1-.4 6" />
+          <path d="M5 4v5h5" />
+        </svg>
+      </button>
+    </div>
   </div>
 } @else {
   <div class="graph-panel-bar">

@@ -404,7 +404,7 @@
   "graph.mapAndFilters": "Map and filters",
   "graph.activeEntity": "Active entity",
   "graph.center": "Center",
-  "graph.reset": "Reset",
+  "graph.reset": "Restart graph",
   "graph.connections": "connections",
   "graph.types": "Types",
   "graph.allPlural": "All",
@@ -781,5 +781,8 @@
   "graph.readFullProfile": "View full profile",
   "graph.moreEntities": "Show",
   "graph.fewerEntities": "Hide",
-  "graph.entities": "Entities"
+  "graph.entities": "Entities",
+  "graph.visibleEntities": "entities visible",
+  "graph.explorationAvailable": "Up to 3 per step · keep exploring",
+  "graph.explorationComplete": "No more entities in this exploration"
 }

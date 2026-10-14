@@ -1005,6 +1005,16 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       : 34;
   }
 
+  restartExploration(): void {
+    if (this.graphData || this.overviewMode) {
+      this.resetGraphView();
+      return;
+    }
+    this.persistedState = null;
+    this.inspectorVisible.set(false);
+    this.loadGraph();
+  }
+
   resetGraphView(animate = true): void {
     this.focusCurrentEntity(animate);
   }
