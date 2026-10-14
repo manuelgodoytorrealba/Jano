@@ -331,7 +331,7 @@ describe('ResearchAIService', () => {
     });
   });
 
-  it('persists Entity and Relation as proposals without creating private knowledge', async () => {
+  it('routes an unmapped relation to a private assertion proposal without creating knowledge', async () => {
     provider.isAvailable.mockReturnValue(true);
     provider.runStructured.mockResolvedValue({
       output: {
@@ -396,9 +396,11 @@ describe('ResearchAIService', () => {
     expect(tx.researchFindingProposal.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          type: 'RELATION',
-          relationFromKey: 'b1:entity:entity-1',
-          relationToKey: 'b1:entity:entity-2',
+          type: 'CLAIM',
+          claimKind: 'ASSERTION',
+          proposalKey: 'assertion:b1:relation:relation-1',
+          relationFromKey: null,
+          relationToKey: null,
           relationTypeId: null,
         }),
       }),

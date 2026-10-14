@@ -1,0 +1,64 @@
+{
+  "wave": "001",
+  "project": {
+    "id": "cmtnh34150000iefpoyajveba",
+    "title": "Controlled ingestion pilot 2026-09-04T21:35:18.557Z",
+    "createdAt": "2026-09-04T21:35:18.569Z"
+  },
+  "generatedAt": "2026-09-04T22:06:29.321Z",
+  "canonicalBaseline": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "sourceRefs": 838,
+    "citations": 1399,
+    "canonicalAssertions": 7
+  },
+  "canonicalAfter": {
+    "entities": 805,
+    "relations": 1388,
+    "sources": 590,
+    "sourceRefs": 838,
+    "citations": 1399,
+    "canonicalAssertions": 7
+  },
+  "sourcesSelected": 50,
+  "sourcesEffective": 13,
+  "excerpts": 32,
+  "evidence": 32,
+  "modelCalls": 23,
+  "aiExecutions": 52,
+  "cacheHits": 30,
+  "cacheMisses": 13,
+  "cacheInvalidations": 0,
+  "targeting": {
+    "TARGET_CONFIRMED": 2,
+    "MULTI_ENTITY_VALID": 19,
+    "TARGET_MISMATCH": 3,
+    "TARGET_AMBIGUOUS": 4,
+    "TARGET_NOT_ENTITY_CENTERED": 6
+  },
+  "identity": {
+    "NEW_ENTITY_HIGH_CONFIDENCE": 30,
+    "EXISTING_ENTITY": 4
+  },
+  "knowledgeCandidates": 23,
+  "entityProposals": 34,
+  "relationProposals": 23,
+  "reviewItems": 80,
+  "checkpoints": 13,
+  "resumedStages": 2,
+  "retriedJobs": 13,
+  "errorsRecovered": 9,
+  "finalErrors": 0,
+  "totalModelRuntimeMs": 1159999,
+  "canonicalDeltas": {
+    "entities": 0,
+    "relations": 0,
+    "sources": 0,
+    "sourceRefs": 0,
+    "citations": 0,
+    "canonicalAssertions": 0
+  },
+  "autoEditorialApply": 0
+}

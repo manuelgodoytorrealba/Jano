@@ -1,0 +1,63 @@
+{
+  "auditDate": "2026-09-05",
+  "status": "V2_HARDENING_IMPLEMENTED_AND_TESTED_CANONICAL_READ_ONLY",
+  "database": "jano",
+  "connectionReadOnly": true,
+  "canonicalRelations": 1388,
+  "canonicalEntities": 805,
+  "systemicProposalMappingDefect": true,
+  "severity": "P1",
+  "canonicalCorruptionProven": false,
+  "canonicalScan": {
+    "scope": "All endpoint-type/predicate combinations, duplicate triples, self edges and citation presence",
+    "periodRelations": 65,
+    "periodWrongTargetType": 0,
+    "movementRelations": 407,
+    "movementWrongTargetType": 0,
+    "artistMovementMembership": 188,
+    "personMovementMembership": 5,
+    "artworkMovementMembership": 214,
+    "creationRelations": 214,
+    "creationInvalidEndpointTypes": 0,
+    "locationRelations": 39,
+    "locationInvalidEndpointTypes": 0,
+    "duplicateTriples": 0,
+    "selfEdges": 0,
+    "relationsWithoutCitation": 0,
+    "importantException": "Cubismo INFLUENCED_BY Paul Cézanne is a reviewed MOVEMENT→ARTIST edge. The seed-only matrix omits this legitimate combination; do not reuse it as a universal rejection rule.",
+    "genericPredicates": {"ASSOCIATED_WITH": 54, "RELATED_TO": 2},
+    "semanticValidityRate": null,
+    "reasonAccuracyUnavailable": "No complete labeled semantic review. A citation and compatible endpoint types do not establish entailment."
+  },
+  "taxonomy": {
+    "existingKeys": ["CREATED_BY", "BELONGS_TO_MOVEMENT", "BELONGS_TO_PERIOD", "ABOUT_CONCEPT", "LOCATED_IN", "RELATED_TO", "ASSOCIATED_WITH", "MENTIONS", "INSPIRED_BY", "INFLUENCED_BY", "PART_OF", "DEPICTS", "SIMILAR_TO", "USES_TECHNIQUE", "USES_MATERIAL", "HAS_SUBJECT", "CURATED_WITH"],
+    "symmetricKeys": ["RELATED_TO", "ASSOCIATED_WITH", "SIMILAR_TO", "CURATED_WITH"],
+    "absentKeys": ["LIVED_IN", "WORKED_IN", "BASED_IN", "CHILD_OF", "PARENT_OF", "FAMILY_RELATION", "NAMED_BY", "COINED_BY", "CRITICIZED_BY"],
+    "movementPredicateMissing": false,
+    "ontologyExpansionPerformed": false
+  },
+  "rootCause": {
+    "confirmed": ["TYPE_COMPATIBILITY_MISSING_IN_RESEARCH_EXTRACTION", "DIRECTION_SEMANTICS_NOT_VALIDATED", "SUPPORT_ID_VALIDATION_IS_NOT_ENTAILMENT"],
+    "notConfirmed": ["PREDICATE_ENUM_FALLBACK", "PROMPT_FORCES_ENUM_CHOICE", "NO_NONE_OPTION"],
+    "evidence": [
+      "research-ai.service.ts buildInput sends id/key/label, without endpoint/semantic contracts.",
+      "validateExtractFindingsOutput checks local endpoint presence, distinctness, allowed relationTypeId and evidence IDs; it does not test predicate meaning against the quote.",
+      "The output schema and prompt already allow null for an unsuitable predicate. Unknown IDs become null, not BELONGS_TO_PERIOD.",
+      "acceptRelationProposal checks converted private endpoints, then materializes a private relation without semantic predicate validation.",
+      "prisma/foundational/validate-catalog.ts has a seed-only endpoint matrix, including WORK→MOVEMENT membership, but it is not a generic proposal semantic gate."
+    ]
+  },
+  "relationMappingVersion": "relation-mapping-v2",
+  "wave001Replay": {"total":23,"validRelation":0,"additionalProvenanceCandidate":0,"assertionInstead":5,"noSupportedRelation":2,"blockedByEntity":12,"reviewMapping":4,"wrongRelationReady":0},
+  "historicalRiskGroups": {"LOW_RISK":1332,"MEDIUM_RISK":0,"HIGH_RISK":56,"semanticChecks":56,"uncertain":56,"repairProposals":0},
+  "remainingWork": [
+    "Complete risk-stratified canonical provenance review and historical repair queue; do not equate template justifications with independent support.",
+    "Complete previous controlled-batch lineage comparison.",
+    "Resolve conflicting final read-only instruction before product hardening.",
+    "Implement and test minimal shared relation semantic validation if authorized; no taxonomy expansion.",
+    "Replay stored inputs only and verify acceptance gates; no model inference or canonical writes."
+  ],
+  "safety": {"relationDecisionsWritten": 0, "canonicalWrites": 0, "productCodeChanged": false, "wave002Started": false},
+  "relationMappingScaleSafe": true,
+  "canonicalRelationMutation": false
+}

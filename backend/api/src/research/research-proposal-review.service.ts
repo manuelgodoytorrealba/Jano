@@ -7,6 +7,7 @@ import {
   type Prisma,
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { validateRelationProposal } from './relation-proposal-validation';
 import { ReviewResearchProposalDto } from './dto/review-research-proposal.dto';
 import { ResearchProposalActionDto } from './dto/research-proposal-action.dto';
 import { UpdateResearchProposalDto } from './dto/update-research-proposal.dto';
@@ -101,9 +102,14 @@ export class ResearchProposalReviewService {
 
     const proposal = await this.prisma.researchFindingProposal.findFirst({
       where: { id: proposalId, projectId },
-      select: { id: true },
+      select: { id: true, type: true },
     });
     if (!proposal) throw new NotFoundException('Research proposal not found');
+
+    if (proposal.type === 'RELATION' && dto.reviewState === ResearchProposalReviewState.REVIEWED) {
+      const mapping = await validateRelationProposal(this.prisma, projectId, proposalId);
+      if (mapping.classification !== 'VALID_RELATION') throw new BadRequestException(mapping);
+    }
 
     await this.prisma.researchFindingProposal.update({
       where: { id: proposalId },

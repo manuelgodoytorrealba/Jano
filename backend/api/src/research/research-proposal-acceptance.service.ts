@@ -5,6 +5,7 @@ import {
   ResearchProposalReviewState,
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { validateRelationProposal } from './relation-proposal-validation';
 
 @Injectable()
 export class ResearchProposalAcceptanceService {
@@ -157,6 +158,8 @@ export class ResearchProposalAcceptanceService {
     },
   ) {
     if (proposal.convertedRelationId) return;
+    const mapping = await validateRelationProposal(this.prisma, projectId, proposal.id);
+    if (mapping.classification !== 'VALID_RELATION') throw new BadRequestException(mapping);
     if (!proposal.jobId || !proposal.relationFromKey || !proposal.relationToKey) {
       throw new BadRequestException('Relation proposal endpoints are unavailable');
     }
@@ -169,8 +172,8 @@ export class ResearchProposalAcceptanceService {
       select: { proposalKey: true, convertedEntityId: true },
     });
     const ids = new Map(endpoints.map((item) => [item.proposalKey, item.convertedEntityId]));
-    const fromEntityId = ids.get(proposal.relationFromKey);
-    const toEntityId = ids.get(proposal.relationToKey);
+    const fromEntityId = ids.get(mapping.fromKey);
+    const toEntityId = ids.get(mapping.toKey);
     if (!fromEntityId || !toEntityId) {
       throw new BadRequestException('Accept both entity proposals before accepting this relation');
     }
