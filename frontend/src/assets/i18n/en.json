@@ -779,6 +779,7 @@
   "graph.connectionsRemaining": "connections left to show",
   "graph.allConnectionsShown": "All its connections are now shown.",
   "graph.readFullProfile": "View full profile",
-  "graph.moreEntities": "More entities",
-  "graph.fewerEntities": "Fewer entities"
+  "graph.moreEntities": "Show",
+  "graph.fewerEntities": "Hide",
+  "graph.entities": "Entities"
 }

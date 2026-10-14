@@ -1464,7 +1464,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   relationshipExpansionLabel(): string {
-    return `${this.i18n.t(this.isMobileViewport ? 'graph.moreEntities' : 'graph.addConnections')} · ${Math.min(this.graphDerived().hiddenRelationshipCount, this.isMobileViewport ? 3 : this.relationshipBatchSize())}`;
+    return `${this.i18n.t(this.isMobileViewport ? 'graph.moreEntities' : 'graph.addConnections')}${this.isMobileViewport ? ' ' : ' · '}${Math.min(this.graphDerived().hiddenRelationshipCount, this.isMobileViewport ? 3 : this.relationshipBatchSize())}`;
   }
 
   relationshipExpansionLayersLabel(): string {

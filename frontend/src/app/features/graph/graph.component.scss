@@ -1642,11 +1642,9 @@
     align-items: stretch;
     gap: var(--space-2);
   }
-  .graph-progressive-disclosure__actions {
-    display: flex;
-    width: 100%;
-  }
   .graph-progressive-disclosure__button {
+    white-space: nowrap;
+    min-width: 0;
     flex: 1;
     display: flex;
     align-items: center;

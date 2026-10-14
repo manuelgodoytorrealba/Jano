@@ -779,6 +779,7 @@
   "graph.connectionsRemaining": "conexiones por mostrar",
   "graph.allConnectionsShown": "Ya se muestran todas sus conexiones.",
   "graph.readFullProfile": "Ver ficha completa",
-  "graph.moreEntities": "Más entidades",
-  "graph.fewerEntities": "Menos entidades"
+  "graph.moreEntities": "Mostrar",
+  "graph.fewerEntities": "Ocultar",
+  "graph.entities": "Entidades"
 }

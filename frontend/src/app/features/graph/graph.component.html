@@ -289,13 +289,16 @@
             @if (hasMoreRelationships() || canShowFewerRelationships()) {
               <div class="graph-progressive-disclosure">
                 <span>
-                  {{ relationshipProgressLabel() }}
+                  {{ isMobileViewport ? i18n.t('graph.entities') : relationshipProgressLabel() }}
                 </span>
                 <div class="graph-progressive-disclosure__actions">
                   @if (hasMoreRelationships()) {
                     <button
                       type="button"
                       class="graph-progressive-disclosure__button graph-progressive-disclosure__button--primary"
+                      [attr.aria-label]="
+                        relationshipExpansionLabel() + ' ' + i18n.t('graph.entities')
+                      "
                       (click)="showMoreRelationships()"
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -308,10 +311,20 @@
                     <button
                       type="button"
                       class="graph-progressive-disclosure__button"
+                      [attr.aria-label]="
+                        i18n.t('graph.fewerEntities') +
+                        ' ' +
+                        (explorationBatches().at(-1)?.length ?? '') +
+                        ' ' +
+                        i18n.t('graph.entities')
+                      "
                       (click)="showFewerRelationships()"
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
                       {{ i18n.t(isMobileViewport ? 'graph.fewerEntities' : 'graph.showLess') }}
+                      @if (isMobileViewport) {
+                        {{ explorationBatches().at(-1)?.length }}
+                      }
                     </button>
                   }
                 </div>
