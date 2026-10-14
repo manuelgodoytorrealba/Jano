@@ -1,0 +1,79 @@
+<section class="connections" aria-labelledby="connections-preview-title">
+  <p class="connections__eyebrow">{{ i18n.t('entity.relations') }}</p>
+  <h2 id="connections-preview-title">
+    {{
+      i18n.t(
+        entity.type === 'FASHION_COLLECTION'
+          ? 'detail.connectionsCollectionTitle'
+          : 'detail.connectionsTitle'
+      )
+    }}
+  </h2>
+  <p class="connections__intro">{{ i18n.t('detail.connectionsIntro') }}</p>
+  @if (loading()) {
+    <p class="connections__status" role="status">{{ i18n.t('detail.connectionsLoading') }}</p>
+  } @else if (connections().length) {
+    <div class="connections__map" [attr.aria-label]="i18n.t('entity.connectionMap')">
+      <svg
+        class="connections__lines"
+        viewBox="0 0 360 380"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path d="M180 158H128Q116 158 116 146V132Q116 120 104 120H54" />
+        @if (connections().length > 1) {
+          <path d="M180 158H236Q248 158 248 146V62Q248 50 260 50H306" />
+        }
+        @if (connections().length > 2) {
+          <path d="M180 158H236Q248 158 248 170V252Q248 264 260 264H306" />
+        }
+      </svg>
+      <button
+        class="connections__node connections__center"
+        type="button"
+        (click)="openMap.emit()"
+        [attr.aria-label]="i18n.t('detail.mobileOpenMap')"
+      >
+        @if (image) {
+          <img [src]="image" alt="" loading="lazy" />
+        } @else {
+          <svg class="connections__placeholder" viewBox="0 0 24 24" aria-hidden="true">
+            <path [attr.d]="symbol(entity.type, entity.kind).path" />
+          </svg>
+        }
+        <span class="connections__name">{{ centerTitle }}</span>
+      </button>
+      @for (item of connections(); track item.node.id; let index = $index) {
+        <a
+          class="connections__node"
+          [class]="'connections__node connections__node--' + index"
+          [routerLink]="['/entity', item.node.slug]"
+        >
+          @if (item.node.image) {
+            <img [src]="item.node.image" alt="" loading="lazy" />
+          } @else {
+            <svg
+              class="connections__placeholder"
+              viewBox="0 0 24 24"
+              [style.color]="symbol(item.node.type, item.node.kind).color"
+              aria-hidden="true"
+            >
+              <path [attr.d]="symbol(item.node.type, item.node.kind).path" />
+            </svg>
+          }
+          <span class="connections__name">{{ item.node.label }}</span>
+          <span class="connections__relation">{{ relationText(item) }}</span>
+        </a>
+      }
+    </div>
+  } @else if (failed()) {
+    <p class="connections__status">{{ i18n.t('detail.connectionsUnavailable') }}</p>
+  }
+  <button class="connections__open entity-mobile-map__open" type="button" (click)="openMap.emit()">
+    {{ i18n.t('detail.mobileOpenMap') }}
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" /></svg>
+  </button>
+  <button class="connections__read" type="button" (click)="readRelations.emit()">
+    {{ i18n.t('detail.mobileRelationList') }}
+  </button>
+</section>

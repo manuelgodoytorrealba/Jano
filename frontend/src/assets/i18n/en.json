@@ -1,8 +1,8 @@
 {
   "detail.mobileMapDescription": "Explore how this entity connects to others. The map opens in a dedicated view.",
-  "detail.mobileRelationList": "View relationships as a list",
+  "detail.mobileRelationList": "Read the relationships",
   "detail.mobileCredits": "Credits",
-  "detail.mobileOpenMap": "Open relationship map",
+  "detail.mobileOpenMap": "Explore connections",
   "entity.imageCredit": "Image credit",
   "entity.fact.concepts": "Concepts",
   "entity.fact.movement": "Movement",
@@ -784,5 +784,10 @@
   "graph.entities": "Entities",
   "graph.visibleEntities": "entities visible",
   "graph.explorationAvailable": "Up to 3 per step · keep exploring",
-  "graph.explorationComplete": "No more entities in this exploration"
+  "graph.explorationComplete": "No more entities in this exploration",
+  "detail.connectionsCollectionTitle": "What made this show possible?",
+  "detail.connectionsTitle": "Which stories meet here?",
+  "detail.connectionsIntro": "A network of perspectives, crafts and ideas. Discover what connects them.",
+  "detail.connectionsLoading": "Loading connections…",
+  "detail.connectionsUnavailable": "The preview is unavailable. You can still open the full map."
 }

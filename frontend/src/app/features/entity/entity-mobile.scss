@@ -192,48 +192,6 @@
   .relation-card__explanation summary {
     color: var(--color-accent);
   }
-  .entity-mobile-map {
-    min-width: 0;
-    padding: 20px;
-    border: 1px solid var(--color-border);
-    border-radius: 20px;
-    background: var(--color-surface);
-  }
-  .entity-mobile-map h2 {
-    margin: 0 0 12px;
-    font-size: 1.25rem;
-  }
-  .entity-mobile-map__description {
-    margin: 0;
-    color: var(--color-text-soft);
-    font-size: 1rem;
-    line-height: 1.6;
-  }
-  .entity-mobile-map__list {
-    width: 100%;
-    min-height: 44px;
-    margin-top: 8px;
-    padding: 8px;
-    border: 0;
-    border-radius: 10px;
-    background: transparent;
-    color: var(--color-text);
-    font: inherit;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    cursor: pointer;
-  }
-  .entity-mobile-map__open {
-    width: 100%;
-    min-height: 44px;
-    margin-top: 12px;
-    border: 1px solid var(--color-accent);
-    border-radius: 10px;
-    background: transparent;
-    color: var(--color-text);
-    font: inherit;
-    cursor: pointer;
-  }
   .entity-mobile-media__open:focus-visible,
   .entity-mobile-map__open:focus-visible,
   .entity-mobile-map__list:focus-visible,

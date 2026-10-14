@@ -1,3 +1,4 @@
+import { EntityConnectionsPreviewComponent } from './entity-connections-preview.component';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -86,6 +87,7 @@ type DetailVisitState = {
   imports: [
     NgTemplateOutlet,
     RelationControlsComponent,
+    EntityConnectionsPreviewComponent,
     RouterLink,
     GraphComponent,
     RichTextComponent,

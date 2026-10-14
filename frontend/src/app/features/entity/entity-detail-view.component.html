@@ -759,20 +759,12 @@
         </section>
       }
       @if (isMobileViewport && !isArticle(entity) && !workspaceFocused && renderGraph) {
-        <section class="entity-mobile-map" aria-labelledby="entity-mobile-map-title">
-          <h2 id="entity-mobile-map-title">{{ i18n.t('entity.connectionMap') }}</h2>
-          <p class="entity-mobile-map__description">{{ i18n.t('detail.mobileMapDescription') }}</p>
-          <button
-            type="button"
-            class="entity-mobile-map__open"
-            (click)="openMobileWorkspace('graph')"
-          >
-            {{ i18n.t('detail.mobileOpenMap') }} <span aria-hidden="true">↗</span>
-          </button>
-          <button type="button" class="entity-mobile-map__list" (click)="showMobileRelations()">
-            {{ i18n.t('detail.mobileRelationList') }}
-          </button>
-        </section>
+        <app-entity-connections-preview
+          [entity]="entity"
+          [image]="visualUrl(entity)"
+          (openMap)="openMobileWorkspace('graph')"
+          (readRelations)="showMobileRelations()"
+        />
       }
     </div>
   </div>

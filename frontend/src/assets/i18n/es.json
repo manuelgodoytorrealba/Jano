@@ -1,8 +1,8 @@
 {
   "detail.mobileMapDescription": "Explora visualmente cómo se conecta esta entidad con otras. El mapa se abre en una vista dedicada.",
-  "detail.mobileRelationList": "Ver relaciones en lista",
+  "detail.mobileRelationList": "Leer las relaciones",
   "detail.mobileCredits": "Créditos",
-  "detail.mobileOpenMap": "Abrir mapa de relaciones",
+  "detail.mobileOpenMap": "Explorar conexiones",
   "entity.imageCredit": "Crédito de la imagen",
   "entity.fact.concepts": "Conceptos",
   "entity.fact.movement": "Movimiento",
@@ -784,5 +784,10 @@
   "graph.entities": "Entidades",
   "graph.visibleEntities": "entidades visibles",
   "graph.explorationAvailable": "Hasta 3 por paso · puedes seguir explorando",
-  "graph.explorationComplete": "No quedan más entidades en este recorrido"
+  "graph.explorationComplete": "No quedan más entidades en este recorrido",
+  "detail.connectionsCollectionTitle": "¿Qué hizo posible este desfile?",
+  "detail.connectionsTitle": "¿Qué historias se cruzan aquí?",
+  "detail.connectionsIntro": "Una red de miradas, oficios e ideas. Descubre qué las conecta.",
+  "detail.connectionsLoading": "Cargando conexiones…",
+  "detail.connectionsUnavailable": "El adelanto no está disponible. Puedes abrir el mapa completo."
 }
