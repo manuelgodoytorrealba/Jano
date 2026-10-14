@@ -771,8 +771,8 @@
   "navigation.returnToExploration": "Back to exploration",
   "navigation.entities": "Navigate entities",
   "graph.addConnections": "Add connections",
-  "graph.expandNode": "Add its connections",
-  "graph.expandingNode": "Adding connections…",
+  "graph.expandNode": "Explore from here",
+  "graph.expandingNode": "Exploring…",
   "graph.expansionError": "These connections could not be loaded. You can try again.",
   "graph.explorationLayer": "Exploration layer"
 }

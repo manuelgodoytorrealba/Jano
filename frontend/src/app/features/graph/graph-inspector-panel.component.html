@@ -4,7 +4,7 @@
   [class.graph-panel-footer--mobile]="isMobileViewport"
   [class.graph-panel-footer--filters]="filtersOnly"
 >
-  @if (isMobileViewport || filtersOnly) {
+  @if ((isMobileViewport || filtersOnly) && !contextOnly) {
     <div class="graph-panel-footer__mobile-head">
       <div class="graph-panel-footer__mobile-intro">
         <span class="graph-panel-footer__eyebrow">{{ i18n.t('graph.info') }}</span>
@@ -41,6 +41,14 @@
     </div>
   }
   @if (contextOnly && selectedNode) {
+    <button
+      type="button"
+      class="graph-context-close graph-panel-footer__close"
+      (click)="closeInspector.emit()"
+      [attr.aria-label]="i18n.t('button.close')"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+    </button>
     <div class="selection-card graph-context-selection">
       @if (selectedNode.image) {
         <img [src]="selectedNode.image" [alt]="selectedNode.label" />
@@ -76,14 +84,14 @@
         [attr.aria-busy]="expanding"
         (click)="expandNode.emit()"
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
         {{ i18n.t(expanding ? 'graph.expandingNode' : 'graph.expandNode') }}
       </button>
+      <button class="graph-context-read" type="button" (click)="openSelectedEntity.emit()">
+        {{ i18n.t('entity.open') }}
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
+      </button>
     </div>
-    <button class="graph-context-read" type="button" (click)="openSelectedEntity.emit()">
-      {{ i18n.t('entity.open') }}
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
-    </button>
   } @else {
     @if (!filtersOnly) {
       @if (selectedNode && selectedNodeMeta) {
