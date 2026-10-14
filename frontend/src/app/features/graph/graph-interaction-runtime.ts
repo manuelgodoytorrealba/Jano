@@ -1,6 +1,7 @@
 import {
   clearPointerCapture,
   createImagePanSession,
+  exceedsPointerThreshold,
   GraphPointerSession,
   updateImagePanSession,
 } from './graph-interaction';
@@ -59,9 +60,14 @@ export class GraphInteractionRuntime {
     clearViewportTarget: () => void;
     clearTooltip: () => void;
   }): void {
-    if (options.isMobile) this.trackPointer(this.graphPointers, options.event);
+    if (
+      options.event.button !== 0 ||
+      (options.event.target as Element | null)?.closest('.graph-node, .graph-tooltip')
+    )
+      return;
+    if (options.isMobile)
+      this.graphPointers.set(options.event.pointerId, this.eventPoint(options.event));
     if (this.startGraphPinch(options)) return;
-
     const session = beginGraphPanSession(options.event);
     if (!session) return;
     options.cancelInitialFocus();
@@ -100,16 +106,24 @@ export class GraphInteractionRuntime {
     event: PointerEvent;
     flushViewport: () => void;
     persist: () => void;
-  }): void {
-    if (this.finishGraphPinch(options.event, options.persist)) return;
+  }): boolean {
+    if (this.finishGraphPinch(options.event, options.persist)) return false;
     const session = this.pointerSession;
+    let clickedCanvas = false;
     if (session?.kind === 'graph-pan' && session.pointerId === options.event.pointerId) {
+      clickedCanvas =
+        options.event.type === 'pointerup' &&
+        options.event.button === 0 &&
+        options.event.isPrimary &&
+        !session.moved &&
+        !exceedsPointerThreshold(session.originClient, this.eventPoint(options.event));
       endGraphPointerSession(options.event);
       options.flushViewport();
       options.persist();
       this.pointerSession = null;
     }
     this.untrackPointer(this.graphPointers, options.event);
+    return clickedCanvas;
   }
 
   nodePointerDown(options: {
@@ -274,6 +288,7 @@ export class GraphInteractionRuntime {
     clearViewportTarget: () => void;
   }): boolean {
     if (!options.isMobile || this.graphPointers.size < 2 || !options.stage) return false;
+    for (const pointerId of this.graphPointers.keys()) options.stage.setPointerCapture(pointerId);
     const [first, second] = Array.from(this.graphPointers.values());
     const rect = options.stage.getBoundingClientRect();
     const center = { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };

@@ -84,11 +84,17 @@ export function buildRenderedGraphNodes(options: {
   readableScale?: number;
   compactLabels?: boolean;
   viewportScale?: number;
+  fitScale?: number;
   imagesEnabled?: boolean;
 }): GraphRenderedNode[] {
   const centerPoint = options.centerId
     ? (options.positions[options.centerId] ?? { x: 0, y: 0 })
     : { x: 0, y: 0 };
+  const viewportScale = Math.max(options.viewportScale ?? options.readableScale ?? 1, 0.1);
+  const zoomSize = Math.min(
+    2.25,
+    Math.max(1, viewportScale / Math.max(options.fitScale ?? viewportScale, 0.1)),
+  );
 
   return options.nodes.map((node) => {
     const point = options.positions[node.id] ?? { x: 0, y: 0 };
@@ -107,8 +113,9 @@ export function buildRenderedGraphNodes(options: {
     };
     const imageUrl =
       options.imagesEnabled === false ? null : graphNodeImage(node, options.viewportScale ?? 1);
-    const size = node.id === options.centerId ? 34 : 28;
-    const renderScale = 1 / Math.max(options.viewportScale ?? options.readableScale ?? 1, 0.1);
+    // Grow geometry while compensating the group so captions and borders stay readable.
+    const size = (node.id === options.centerId ? 34 : 28) * zoomSize;
+    const renderScale = 1 / viewportScale;
     const isPrimaryLabel = node.id === options.centerId || options.selectedNodeId === node.id;
 
     return {

@@ -38,6 +38,7 @@ describe('graph runtime transitions', () => {
         target,
         currentTarget: target,
         pointerId: 1,
+        button: 0,
         clientX,
         clientY: 100,
       }) as unknown as PointerEvent;

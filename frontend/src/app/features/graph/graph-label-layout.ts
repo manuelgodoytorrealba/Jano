@@ -74,7 +74,7 @@ export function resolveEdgeLabelOcclusion(options: {
           Math.round((edge.edge.weight ?? 1) * 42) +
           Math.round(edge.relationVisual.width * 24),
         forced: isHovered,
-        box: approximateEdgeLabelBox(edge),
+        box: approximateEdgeLabelBox(edge, options.scale),
       };
     });
 
@@ -158,13 +158,14 @@ function approximateNodeLabelBox(node: GraphRenderedNode): GraphLabelBox {
       };
 }
 
-function approximateEdgeLabelBox(edge: GraphRenderedEdge): GraphLabelBox {
-  const width = approximateTextWidth(edge.displayLabel, 10.5, 0.6) + 12;
+function approximateEdgeLabelBox(edge: GraphRenderedEdge, viewportScale: number): GraphLabelBox {
+  const scale = 1 / Math.max(viewportScale, 0.1);
+  const width = (approximateTextWidth(edge.displayLabel, 10.5, 0.6) + 12) * scale;
   return {
     left: edge.labelPoint.x - width / 2,
     right: edge.labelPoint.x + width / 2,
-    top: edge.labelPoint.y - EDGE_LABEL_HEIGHT / 2,
-    bottom: edge.labelPoint.y + EDGE_LABEL_HEIGHT / 2,
+    top: edge.labelPoint.y - (EDGE_LABEL_HEIGHT * scale) / 2,
+    bottom: edge.labelPoint.y + (EDGE_LABEL_HEIGHT * scale) / 2,
   };
 }
 

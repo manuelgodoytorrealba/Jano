@@ -75,6 +75,7 @@ export class GraphSceneComponent implements OnDestroy {
   @Input() ambientFields: GraphAmbientField[] = [];
   @Input({ required: true }) markerDefs: Array<{ id: string; color: string }> = [];
   @Input({ required: true }) viewportTransform = '';
+  @Input() viewportScale = 1;
   @Input({ required: true }) renderedEdges: GraphRenderedEdge[] = [];
   @Input({ required: true }) renderedNodes: GraphRenderedNode[] = [];
   @Input({ required: true }) edgeLabelVisibility: Record<string, boolean> = {};

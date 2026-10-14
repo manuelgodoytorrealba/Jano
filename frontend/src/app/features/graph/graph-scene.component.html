@@ -103,6 +103,7 @@
         @if (edgeLabelVisibility[renderedEdge.edge.id]) {
           <text
             class="graph-edge-label"
+            [style.font-size.px]="10.5 / viewportScale"
             [attr.data-edge-id]="renderedEdge.edge.id"
             [class.is-muted]="renderedEdge.muted"
             [attr.x]="renderedEdge.labelPoint.x"

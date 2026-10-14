@@ -214,6 +214,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   readonly labelsMode = signal<'auto' | 'always' | 'hidden'>('auto');
   readonly graphViewport = signal<GraphViewport>({ x: 0, y: 0, scale: 0.82 });
   readonly graphScale = computed(() => this.graphViewport().scale);
+  readonly graphNodeFitScale = signal<number | null>(null);
   readonly imageViewport = signal<ImageViewport>({ x: 0, y: 0, scale: 1, fitScale: 1 });
   readonly imageZoomPercent = computed(() => {
     const viewport = this.imageViewport();
@@ -309,6 +310,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       selectedNeighbors,
       imagesEnabled: this.imagesEnabled(),
       viewportScale: this.graphViewportReady ? this.graphScale() : 0,
+      fitScale: this.graphNodeFitScale() ?? this.graphScale(),
       compactLabels: this.detailLayout && this.isMobileViewport,
       readableScale:
         this.detailLayout && (graph?.nodes.length ?? 0) <= 12
@@ -527,6 +529,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     const previousGraph = this.graph();
     const previousSelectedNodeId = this.selectedNodeId();
     const shouldPreserveRuntime = this.preserveRuntimeOnGraphChange && !!previousGraph;
+    if (!shouldPreserveRuntime) this.graphNodeFitScale.set(null);
     const loadedState = buildLoadedGraphRuntime({
       initialized: initializeLoadedGraphState(response, this.persistedState?.graph),
     });
@@ -1076,11 +1079,18 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onGraphStagePointerUp(event: PointerEvent): void {
-    this.interactions.graphStagePointerUp({
+    const clickedCanvas = this.interactions.graphStagePointerUp({
       event,
       flushViewport: () => this.flushPendingGraphViewport(),
       persist: () => this.persistExplorerState(),
     });
+    if (clickedCanvas) {
+      this.selectedNodeId.set(null);
+      this.selectedNodeSource = 'center';
+      this.lastNodeActivation = null;
+      this.dismissTooltip();
+      this.persistExplorerState();
+    }
     this.markGraphInteractionActive(120);
     if (
       this.tooltip() &&
@@ -1499,7 +1509,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private createFittedGraphViewport(): GraphViewport | null {
-    return createGraphFocusedViewport({
+    const viewport = createGraphFocusedViewport({
       graph: this.graph(),
       size: this.currentGraphStageSize(),
       positions: this.positions,
@@ -1514,6 +1524,10 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
             ? 72
             : 108,
     });
+    if (viewport && this.graphNodeFitScale() === null) {
+      this.graphNodeFitScale.set(viewport.scale);
+    }
+    return viewport;
   }
 
   private overviewViewportPadding(): number {
