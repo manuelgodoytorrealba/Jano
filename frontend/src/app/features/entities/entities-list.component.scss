@@ -80,7 +80,13 @@
 }
 
 @media (min-width: 721px) {
-  .entities-page--feed .entities-stage-shell--list {
-    padding-top: calc(var(--entities-stage-top-padding) + 116px);
+  .entities-page--feed .entities-hud__controls {
+    padding-right: 0;
+    transform: translateY(-24px);
+  }
+
+  .entities-feed-renew {
+    position: static;
+    flex-shrink: 0;
   }
 }
