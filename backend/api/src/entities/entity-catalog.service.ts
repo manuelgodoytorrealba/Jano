@@ -531,6 +531,11 @@ export class EntityCatalogService {
         colorToken: true,
         baseKind: true,
         systemType: true,
+        archiveTitleEs: true,
+        archiveTitleEn: true,
+        archiveDescriptionEs: true,
+        archiveDescriptionEn: true,
+        homeCoverMedia: { select: { url: true } },
       },
       orderBy: [{ systemType: 'desc' }, { singularName: 'asc' }],
     });

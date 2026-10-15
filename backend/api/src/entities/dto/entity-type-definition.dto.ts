@@ -41,3 +41,10 @@ export class UpdateEntityTypeFieldsDto {
   @Type(() => EntityTypeFieldDto)
   fields!: EntityTypeFieldDto[];
 }
+
+export class UpdateArchiveCardDto {
+  @IsString() @MaxLength(80) archiveTitleEs!: string;
+  @IsString() @MaxLength(80) archiveTitleEn!: string;
+  @IsString() @MaxLength(280) archiveDescriptionEs!: string;
+  @IsString() @MaxLength(280) archiveDescriptionEn!: string;
+}

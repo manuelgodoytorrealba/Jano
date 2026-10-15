@@ -1,0 +1,133 @@
+:host {
+  display: contents;
+}
+dialog {
+  width: min(680px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  padding: 24px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  background: var(--color-surface-solid, #202220);
+  color: var(--color-text);
+}
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+}
+header,
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+h3 {
+  font-size: 1rem;
+}
+p,
+small {
+  color: var(--color-text-soft);
+}
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.drop-zone {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  border: 1px dashed var(--color-text-muted);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+.dragging {
+  background: rgba(130, 180, 150, 0.2);
+  outline: 2px solid #85b4a3;
+}
+.drop-zone img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.choose {
+  position: relative;
+  display: inline-flex;
+  padding: 10px 18px;
+  border: 1px solid var(--color-text-muted);
+  border-radius: 24px;
+  cursor: pointer;
+}
+.choose:focus-within {
+  outline: 2px solid #85b4a3;
+}
+.choose input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  cursor: pointer;
+}
+.languages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 12px;
+}
+.languages label {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+}
+.languages input,
+.languages textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(128, 128, 128, 0.1);
+  border: 1px solid var(--color-text-muted);
+  border-radius: 10px;
+  padding: 10px;
+  color: inherit;
+  font: inherit;
+}
+textarea {
+  resize: vertical;
+}
+button {
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 1px solid var(--color-text-muted);
+  border-radius: 24px;
+  color: inherit;
+  background: rgba(128, 128, 128, 0.15);
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+footer {
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+footer button[type='submit'] {
+  background: #dce9de;
+  color: #152318;
+}
+@media (max-width: 600px) {
+  dialog {
+    padding: 20px;
+  }
+  .languages {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

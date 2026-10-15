@@ -235,7 +235,7 @@ body.jano-artwork-route-graph .explorer-graph-pane {
       linear-gradient(0deg, var(--app-mobile-edge-color), rgba(25, 35, 29, 0) 112px);
   }
 
-  .app-shell--entities .app-shell__mobile-edge-fade,
+  .app-shell--entities:not(.app-shell--immersive) .app-shell__mobile-edge-fade,
   .app-shell:has(.entity-detail) .app-shell__mobile-edge-fade {
     display: none;
   }

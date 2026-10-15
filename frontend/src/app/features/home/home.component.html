@@ -1,42 +1,143 @@
-<section class="home-page">
-  <h1 class="sr-only">{{ i18n.t('nav.explore') }}</h1>
-
-  @if (loadState() === 'ready' || loadState() === 'loading') {
-    <app-entity-deck
-      class="home-page__deck"
-      [class.home-page__deck--loading]="loadState() === 'loading'"
-      [attr.role]="loadState() === 'loading' ? 'status' : null"
-      [attr.aria-label]="loadState() === 'loading' ? i18n.t('home.state.loading') : null"
-      [attr.aria-busy]="loadState() === 'loading'"
-      [items]="deckItems()"
-      [backgroundImage]="backgroundImage()"
-      [mobileVariant]="'editorial'"
-      [showRail]="false"
-      [showDots]="true"
-      [showNav]="false"
-      [showBottomSearch]="false"
-      [showExpand]="false"
-      [fullViewport]="true"
-      [showAdminEdit]="showAdminEdit()"
-      (cardClick)="onCardClick($event)"
-      (expandClick)="onExpandClick($event)"
-      (adminEditClick)="onAdminEditClick($event)"
-    />
-  } @else {
-    <div
-      class="home-page__state"
-      [style.backgroundImage]="'url(' + backgroundImage() + ')'"
-      role="status"
-      aria-live="polite"
-    >
-      <div class="home-page__state-card">
-        <p>{{ i18n.t('home.state.' + loadState()) }}</p>
-        @if (loadState() === 'error') {
-          <button type="button" (click)="retryLoad()">
-            {{ i18n.t('home.retry') }}
-          </button>
+<section
+  #archivePage
+  class="archive-page"
+  [class.archive-page--selecting]="showAllTypes()"
+  [attr.aria-busy]="loadState() === 'loading'"
+>
+  <div
+    class="archive-page__background"
+    [style.backgroundImage]="'url(' + backgroundImage() + ')'"
+    aria-hidden="true"
+  ></div>
+  <div class="archive-page__content">
+    <h1 class="sr-only">{{ i18n.t('nav.explore') }}</h1>
+    @if (loadState() === 'ready') {
+      <div class="archive-page__controls" (keydown.escape)="closeTypes()">
+        <div class="archive-page__controls-label">
+          <span>{{ i18n.t('archive.moreWays') }}</span>
+          <span class="archive-page__count"
+            >{{ featuredItems().length }} {{ i18n.t('archive.selectedCount') }}</span
+          >
+        </div>
+        @if (auth.currentUser?.role === 'ADMIN') {
+          <a class="archive-page__admin" routerLink="/admin/entity-types">{{
+            i18n.t('explorer.typeOptions')
+          }}</a>
+        }
+        <button
+          #addTypesButton
+          type="button"
+          class="archive-page__add-toggle"
+          [attr.aria-expanded]="showAllTypes()"
+          aria-controls="archive-other-types"
+          (click)="toggleTypes()"
+        >
+          {{ i18n.t('archive.addTypes') }} <span aria-hidden="true">+</span>
+        </button>
+        @if (showAllTypes()) {
+          <div
+            id="archive-other-types"
+            class="archive-page__panel"
+            role="region"
+            [attr.aria-label]="i18n.t('archive.availableTypes')"
+          >
+            <div class="archive-page__panel-heading">
+              <h2>{{ i18n.t('archive.availableTypes') }}</h2>
+              <button type="button" class="archive-page__done" (click)="closeTypes()">
+                {{ i18n.t('archive.done') }}
+              </button>
+            </div>
+            <p class="archive-page__confirmation" aria-hidden="true">{{ additionMessage() }}</p>
+            <div class="archive-page__types">
+              @for (item of otherItems(); track item.id) {
+                <button
+                  type="button"
+                  class="archive-page__type"
+                  [attr.aria-label]="i18n.t('archive.addType') + ' ' + item.title"
+                  (click)="addType(item.key)"
+                >
+                  <span aria-hidden="true">{{ item.icon }}</span
+                  ><span>{{ item.title }}</span
+                  ><span aria-hidden="true">+</span>
+                </button>
+              } @empty {
+                <p>{{ i18n.t('archive.allAdded') }}</p>
+              }
+            </div>
+          </div>
         }
       </div>
-    </div>
-  }
+      <div class="archive-page__grid">
+        @for (item of featuredItems(); track item.id) {
+          <article
+            class="archive-page__category"
+            [attr.data-card-key]="item.key"
+            [class.archive-page__category--added]="recentKeys().includes(item.key)"
+          >
+            <span class="archive-page__fallback" aria-hidden="true">{{ item.icon }}</span>
+            @if (item.image) {
+              <img [src]="item.image" alt="" (error)="hideBrokenImage($event)" />
+            }
+            <a
+              class="archive-page__open"
+              [routerLink]="item.ctaRoute"
+              [attr.aria-label]="i18n.t('archive.exploreType') + ' ' + item.title"
+            ></a>
+            @if (auth.currentUser?.role === 'ADMIN') {
+              <button
+                type="button"
+                class="archive-page__remove archive-page__edit"
+                [id]="'archive-edit-' + item.key"
+                [attr.aria-label]="i18n.t('archive.editor.edit') + ' ' + item.title"
+                (click)="editCard(item.key)"
+              >
+                <svg
+                  width="17"
+                  height="17"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  aria-hidden="true"
+                >
+                  <path d="m16 3 5 5-13 13H3v-5L16 3Z M13 6l5 5" />
+                </svg>
+              </button>
+            }
+            <button
+              type="button"
+              class="archive-page__remove"
+              [attr.aria-label]="i18n.t('archive.removeType') + ' ' + item.title"
+              (click)="removeType(item.key)"
+            >
+              <span aria-hidden="true">−</span>
+            </button>
+            <div class="archive-page__copy">
+              <h2>{{ item.title }}</h2>
+              <span>{{ item.description }}</span>
+            </div>
+          </article>
+        } @empty {
+          <p class="archive-page__state">{{ i18n.t('archive.chooseTypes') }}</p>
+        }
+      </div>
+      <p class="sr-only" role="status" aria-live="polite">{{ announcement() }}</p>
+    } @else {
+      <div class="archive-page__state" role="status" aria-live="polite">
+        <p>{{ i18n.t('home.state.' + loadState()) }}</p>
+        @if (loadState() === 'error') {
+          <button type="button" (click)="retryLoad()">{{ i18n.t('home.retry') }}</button>
+        }
+      </div>
+    }
+  </div>
 </section>
+
+@if (editing(); as card) {
+  <app-archive-card-editor
+    [type]="card.type"
+    [image]="editorImage()"
+    (closed)="finishEditing()"
+    (saved)="finishEditing(true)"
+  />
+}

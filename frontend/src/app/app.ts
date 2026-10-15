@@ -77,11 +77,6 @@ export class App {
       const isMobile =
         typeof window !== 'undefined' && window.matchMedia('(max-width: 860px)').matches;
       const themeColor = isMobile ? (isDetail ? detailColor : '#19231d') : '#0a0a0a';
-      if (isMobile && !isDetail) {
-        this.setThemeColor('#111b16');
-        requestAnimationFrame(() => this.setThemeColor(themeColor));
-        return;
-      }
       this.setThemeColor(themeColor);
     });
   }
@@ -111,10 +106,10 @@ export class App {
   }
 
   private setThemeColor(color: string): void {
-    const existing = this.document.querySelector('meta[name="theme-color"]');
+    const existing = this.document.querySelectorAll('meta[name="theme-color"]');
 
-    if (existing) {
-      existing.setAttribute('content', color);
+    if (existing.length) {
+      existing.forEach((meta) => meta.setAttribute('content', color));
       return;
     }
 

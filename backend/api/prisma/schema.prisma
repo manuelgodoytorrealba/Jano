@@ -334,6 +334,10 @@ model EntityTypeDefinition {
   status           EntityTypeStatus        @default(DRAFT)
   systemType       Boolean                 @default(false)
   homeCoverMode    EntityTypeHomeCoverMode @default(ALGORITHM)
+  archiveTitleEs String?
+  archiveTitleEn String?
+  archiveDescriptionEs String?
+  archiveDescriptionEn String?
   homeCoverMediaId String?
   createdAt        DateTime                @default(now())
   updatedAt        DateTime                @updatedAt

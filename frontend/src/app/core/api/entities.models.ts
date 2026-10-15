@@ -251,6 +251,11 @@ export interface PublicHomeEntityTypeCard {
 }
 
 export interface PublicEntityTypeDefinition {
+  archiveTitleEs?: string | null;
+  archiveTitleEn?: string | null;
+  archiveDescriptionEs?: string | null;
+  archiveDescriptionEn?: string | null;
+  homeCoverMedia?: { url: string } | null;
   id: string;
   key: string;
   singularName: string;

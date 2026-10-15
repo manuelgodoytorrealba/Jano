@@ -68,6 +68,37 @@ describe('App', () => {
     const app = fixture.componentInstance as unknown as { title: () => string };
     expect(app.title()).toBe('jano-web-app');
   });
+  it('updates both browser theme variants without a different intermediate color', () => {
+    const media = window.matchMedia('(max-width: 860px)');
+    vi.spyOn(window, 'matchMedia').mockReturnValue({ ...media, matches: true });
+    const metas = ['dark', 'light'].map((theme) => {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.media = `(prefers-color-scheme: ${theme})`;
+      meta.content = '#old';
+      document.head.append(meta);
+      return meta;
+    });
+    try {
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(metas.map((meta) => meta.content)).toEqual(['#19231d', '#19231d']);
+      const detail = vi
+        .spyOn(fixture.componentInstance, 'isEntityDetailRoute')
+        .mockReturnValue(true);
+      TestBed.inject(AppAppearanceService).resolvedTheme.set('light');
+      fixture.detectChanges();
+      expect(metas.map((meta) => meta.content)).toEqual(['#e7e2d8', '#e7e2d8']);
+      detail.mockReturnValue(false);
+      TestBed.inject(AppAppearanceService).resolvedTheme.set('dark');
+      fixture.detectChanges();
+      expect(metas.map((meta) => meta.content)).toEqual(['#19231d', '#19231d']);
+      fixture.destroy();
+    } finally {
+      metas.forEach((meta) => meta.remove());
+    }
+  });
+
   it('matches the mobile browser chrome to the detail surface in both themes', () => {
     const media = window.matchMedia('(max-width: 860px)');
     vi.spyOn(window, 'matchMedia').mockReturnValue({ ...media, matches: true });

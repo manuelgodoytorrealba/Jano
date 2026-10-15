@@ -5,9 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EntityTypeStatus } from '@prisma/client';
+import sharp from 'sharp';
+import type { UploadedImageFile } from '../media/entity-media.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateEntityTypeDefinitionDto,
+  UpdateArchiveCardDto,
   EntityTypeFieldDto,
   UpdateEntityTypeDefinitionDto,
 } from './dto/entity-type-definition.dto';
@@ -49,6 +52,51 @@ export class EntityTypeDefinitionService {
     return this.prisma.entityTypeDefinition.update({
       where: { key },
       data: { ...dto, key: dto.key?.trim().toUpperCase() },
+    });
+  }
+
+  async updateArchiveCard(key: string, dto: UpdateArchiveCardDto, file?: UploadedImageFile) {
+    const current = await this.prisma.entityTypeDefinition.findUnique({ where: { key } });
+    if (!current) throw new NotFoundException('Entity type not found');
+    let dimensions: { width?: number; height?: number } = {};
+    if (file) {
+      try {
+        const metadata = await sharp(file.path, { limitInputPixels: 40000000 }).metadata();
+        if (
+          !metadata.width ||
+          !metadata.height ||
+          !['jpeg', 'png', 'webp', 'gif', 'avif', 'heif'].includes(metadata.format ?? '')
+        )
+          throw new Error('Invalid image');
+        dimensions = { width: metadata.width, height: metadata.height };
+      } catch {
+        throw new BadRequestException('Invalid or oversized image');
+      }
+    }
+    return this.prisma.$transaction(async (tx) => {
+      const media = file
+        ? await tx.media.create({
+            data: {
+              url: `/uploads/media/${file.filename}`,
+              originType: 'UPLOAD',
+              storageKey: `media/${file.filename}`,
+              originalFilename: file.originalname,
+              fileSize: file.size,
+              mimeType: file.mimetype,
+              ...dimensions,
+            },
+          })
+        : null;
+      return tx.entityTypeDefinition.update({
+        where: { key },
+        data: {
+          archiveTitleEs: dto.archiveTitleEs.trim() || null,
+          archiveTitleEn: dto.archiveTitleEn.trim() || null,
+          archiveDescriptionEs: dto.archiveDescriptionEs.trim() || null,
+          archiveDescriptionEn: dto.archiveDescriptionEn.trim() || null,
+          ...(media ? { homeCoverMediaId: media.id, homeCoverMode: 'MANUAL' } : {}),
+        },
+      });
     });
   }
 

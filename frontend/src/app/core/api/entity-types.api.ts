@@ -56,6 +56,12 @@ export class EntityTypesApi {
       { fields },
     );
   }
+  saveArchiveCard(key: string, data: FormData) {
+    return this.http.post(
+      apiUrl('/entity-types/' + encodeURIComponent(key) + '/archive-card'),
+      data,
+    );
+  }
   remove(key: string) {
     return this.http.delete<{ ok: true }>(apiUrl('/entity-types/' + encodeURIComponent(key)));
   }
