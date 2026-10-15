@@ -1,4 +1,6 @@
 {
+  "entity.viewAllRelations": "Ver todas las relaciones",
+  "common.showLess": "Mostrar menos",
   "detail.mobileMapDescription": "Explora visualmente cómo se conecta esta entidad con otras. El mapa se abre en una vista dedicada.",
   "detail.mobileRelationList": "Leer las relaciones",
   "detail.mobileCredits": "Créditos",
@@ -351,6 +353,7 @@
   "share.linkCopiedMessage": "Ya puedes compartir esta entidad donde quieras.",
   "share.copyFailed": "No se pudo copiar el enlace de esta entidad.",
   "share.notAvailable": "Compartir no está disponible en este navegador.",
+  "source.opensNewTab": "Se abre en otra pestaña",
   "source.book": "Libro",
   "source.article": "Artículo",
   "source.website": "Web",

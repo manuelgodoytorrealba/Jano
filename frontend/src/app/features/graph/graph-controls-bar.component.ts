@@ -2,9 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  ElementRef,
+  HostListener,
   Input,
   Output,
   inject,
+  signal,
 } from '@angular/core';
 import { I18nService } from '../../core/i18n/i18n.service';
 
@@ -20,6 +23,9 @@ import { I18nService } from '../../core/i18n/i18n.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GraphControlsBarComponent {
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly labelsMenuOpen = signal(false);
+  readonly labelsModes = ['auto', 'always', 'hidden'] as const;
   readonly i18n = inject(I18nService);
   @Input({ required: true }) labelsMode!: 'auto' | 'always' | 'hidden';
   @Input({ required: true }) nodeCount = 0;
@@ -41,12 +47,25 @@ export class GraphControlsBarComponent {
 
   setLabelsMode(mode: 'auto' | 'always' | 'hidden'): void {
     this.labelsModeChange.emit(mode);
+    this.labelsMenuOpen.set(false);
   }
 
-  cycleLabelsMode(): void {
-    const nextMode: 'auto' | 'always' | 'hidden' =
-      this.labelsMode === 'auto' ? 'always' : this.labelsMode === 'always' ? 'hidden' : 'auto';
-    this.labelsModeChange.emit(nextMode);
+  @HostListener('document:click', ['$event'])
+  closeLabelsOnOutsideClick(event: MouseEvent): void {
+    if (event.target instanceof Node && !this.element.nativeElement.contains(event.target)) {
+      this.labelsMenuOpen.set(false);
+    }
+  }
+
+  @HostListener('keydown.escape', ['$event'])
+  closeLabelsOnEscape(event: Event): void {
+    if (this.labelsMenuOpen()) {
+      event.stopPropagation();
+      this.labelsMenuOpen.set(false);
+      this.element.nativeElement
+        .querySelector<HTMLButtonElement>('.graph-utility-btn--mode')
+        ?.focus();
+    }
   }
 
   labelsModeLabel(): string {

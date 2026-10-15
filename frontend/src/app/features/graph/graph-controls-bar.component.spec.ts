@@ -5,6 +5,45 @@ import { GraphControlsBarComponent } from './graph-controls-bar.component';
 import { GraphInspectorPanelComponent } from './graph-inspector-panel.component';
 
 describe('graph toolbar and layers', () => {
+  it('selects all three label modes and dismisses the picker without cycling', () => {
+    TestBed.configureTestingModule({
+      imports: [GraphControlsBarComponent],
+      providers: [{ provide: I18nService, useValue: { t: (key: string) => key } }],
+    });
+    const fixture = TestBed.createComponent(GraphControlsBarComponent);
+    fixture.componentRef.setInput('labelsMode', 'auto');
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+    const trigger = root.querySelector<HTMLButtonElement>('.graph-utility-btn--mode')!;
+    const change = vi.fn();
+    fixture.componentInstance.labelsModeChange.subscribe(change);
+    for (const mode of ['always', 'hidden', 'auto']) {
+      trigger.click();
+      fixture.detectChanges();
+      expect(trigger.getAttribute('aria-expanded')).toBe('true');
+      expect(root.querySelectorAll('input[type="radio"]')).toHaveLength(3);
+      expect(root.querySelector<HTMLInputElement>('input:checked')!.value).toBe(
+        fixture.componentInstance.labelsMode,
+      );
+      root.querySelector<HTMLInputElement>(`input[value="${mode}"]`)!.click();
+      fixture.componentRef.setInput('labelsMode', mode);
+      fixture.detectChanges();
+      expect(change).toHaveBeenLastCalledWith(mode);
+      expect(root.querySelector('.graph-label-menu')).toBeNull();
+      expect(trigger.getAttribute('aria-label')).toBe(`graph.labels graph.labels.${mode}`);
+    }
+    trigger.click();
+    fixture.detectChanges();
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    trigger.click();
+    fixture.detectChanges();
+    document.body.click();
+    fixture.detectChanges();
+    expect(root.querySelector('.graph-label-menu')).toBeNull();
+    expect(change).toHaveBeenCalledTimes(3);
+  });
   it('exposes an accessible image toggle with a stable icon in both states', () => {
     TestBed.configureTestingModule({
       imports: [GraphControlsBarComponent],

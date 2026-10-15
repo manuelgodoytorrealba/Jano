@@ -121,6 +121,32 @@
   font-size: 1rem;
   line-height: 1.5;
 }
+.source-reference__link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  svg {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    vertical-align: baseline;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+  }
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+.source-reference__content .source-reference__link strong {
+  display: inline;
+}
+.source-reference__domain {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
 .entity-information .relation-source {
   padding: 20px 0;
   border-bottom: 1px solid var(--color-border);

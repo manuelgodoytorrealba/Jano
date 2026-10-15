@@ -53,39 +53,41 @@
         <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" />
       </svg>
     </button>
-    <div class="selection-card graph-context-selection">
-      @if (selectedNode.image) {
-        <img [src]="selectedNode.image" [alt]="selectedNode.label" />
-      }
-      <div>
-        <span class="selection-card__type">
-          <svg viewBox="0 0 32 32" aria-hidden="true">
-            <path [attr.d]="entitySymbol(selectedNode.type, selectedNode.kind).path" />
-          </svg>
-          {{ selectedNodeMeta?.label }}
-        </span>
-        <h3>{{ selectedNode.label }}</h3>
-      </div>
-    </div>
-    @for (item of primaryConnections(); track item.edgeId) {
-      <div class="graph-context-block">
-        <span class="graph-context-block__label"
-          >{{ item.relationLabel }} · {{ item.nodeLabel }}</span
-        >
-        @if (item.relationJustification) {
-          <p class="graph-connection-item__body">{{ item.relationJustification }}</p>
+    <div class="graph-context-body">
+      <div class="selection-card graph-context-selection">
+        @if (selectedNode.image) {
+          <img [src]="selectedNode.image" [alt]="selectedNode.label" />
         }
+        <div>
+          <span class="selection-card__type">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path [attr.d]="entitySymbol(selectedNode.type, selectedNode.kind).path" />
+            </svg>
+            {{ selectedNodeMeta?.label }}
+          </span>
+          <h3>{{ selectedNode.label }}</h3>
+        </div>
       </div>
-    }
-    <p class="graph-context-progress" aria-live="polite">
-      @if (remainingConnections === null) {
-        {{ i18n.t('graph.moreConnectionsHint') }}
-      } @else if (remainingConnections > 0) {
-        {{ remainingConnections }} {{ i18n.t('graph.connectionsRemaining') }}
-      } @else {
-        {{ i18n.t('graph.allConnectionsShown') }}
+      @for (item of primaryConnections(); track item.edgeId) {
+        <div class="graph-context-block">
+          <span class="graph-context-block__label"
+            >{{ item.relationLabel }} · {{ item.nodeLabel }}</span
+          >
+          @if (item.relationJustification) {
+            <p class="graph-connection-item__body">{{ item.relationJustification }}</p>
+          }
+        </div>
       }
-    </p>
+      <p class="graph-context-progress" aria-live="polite">
+        @if (remainingConnections === null) {
+          {{ i18n.t('graph.moreConnectionsHint') }}
+        } @else if (remainingConnections > 0) {
+          {{ remainingConnections }} {{ i18n.t('graph.connectionsRemaining') }}
+        } @else {
+          {{ i18n.t('graph.allConnectionsShown') }}
+        }
+      </p>
+    </div>
     <div class="graph-context-actions">
       @if (expansionFailed) {
         <p role="alert">{{ i18n.t('graph.expansionError') }}</p>

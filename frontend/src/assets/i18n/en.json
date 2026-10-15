@@ -1,4 +1,6 @@
 {
+  "entity.viewAllRelations": "View all connections",
+  "common.showLess": "Show less",
   "detail.mobileMapDescription": "Explore how this entity connects to others. The map opens in a dedicated view.",
   "detail.mobileRelationList": "Read the relationships",
   "detail.mobileCredits": "Credits",
@@ -351,6 +353,7 @@
   "share.linkCopiedMessage": "You can now share this entity wherever you want.",
   "share.copyFailed": "Could not copy this entity link.",
   "share.notAvailable": "Sharing is not available in this browser.",
+  "source.opensNewTab": "Opens in a new tab",
   "source.book": "Book",
   "source.article": "Article",
   "source.website": "Website",

@@ -573,13 +573,18 @@
                       </li>
                     }
                   </ul>
-                  @if (hiddenOutgoingRelations(entity) > 0) {
+                  @if ((entity.outgoing?.length ?? 0) > 3) {
                     <button
                       type="button"
                       class="relations-reveal"
-                      (click)="showAllOutgoingRelations(entity)"
+                      [attr.aria-expanded]="hiddenOutgoingRelations(entity) === 0"
+                      (click)="toggleOutgoingRelations(entity)"
                     >
-                      {{ i18n.t('common.show') }} {{ i18n.t('common.all') }}
+                      @if (hiddenOutgoingRelations(entity) > 0) {
+                        {{ i18n.t('entity.viewAllRelations') }} ({{ entity.outgoing?.length }})
+                      } @else {
+                        {{ i18n.t('common.showLess') }}
+                      }
                     </button>
                   }
                 }
@@ -634,13 +639,18 @@
                       </li>
                     }
                   </ul>
-                  @if (hiddenIncomingRelations(entity) > 0) {
+                  @if ((entity.incoming?.length ?? 0) > 3) {
                     <button
                       type="button"
                       class="relations-reveal"
-                      (click)="showAllIncomingRelations(entity)"
+                      [attr.aria-expanded]="hiddenIncomingRelations(entity) === 0"
+                      (click)="toggleIncomingRelations(entity)"
                     >
-                      {{ i18n.t('common.show') }} {{ i18n.t('common.all') }}
+                      @if (hiddenIncomingRelations(entity) > 0) {
+                        {{ i18n.t('entity.viewAllRelations') }} ({{ entity.incoming?.length }})
+                      } @else {
+                        {{ i18n.t('common.showLess') }}
+                      }
                     </button>
                   }
                 }
@@ -662,6 +672,7 @@
                 </div>
                 <ul class="relations-list">
                   @for (r of entity.sourceRefs; track r.id) {
+                    @let sourceLink = externalSourceLink(r.source?.url ?? r.url);
                     <li class="relation-source">
                       <div class="source-reference">
                         <span class="source-reference__icon" aria-hidden="true">
@@ -684,7 +695,30 @@
                             sourceTypeLabel(r.source?.type ?? r.sourceType)
                           }}</span>
                           <span class="relation-card__text">
-                            <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
+                            @if (sourceLink) {
+                              <a
+                                class="source-reference__link"
+                                [href]="sourceLink.href"
+                                target="_blank"
+                                rel="noopener"
+                                [attr.aria-label]="
+                                  (r.source?.title ?? r.sourceTitle ?? sourceLink.domain) +
+                                  ' · ' +
+                                  i18n.t('source.opensNewTab')
+                                "
+                              >
+                                <strong>{{
+                                  r.source?.title ?? r.sourceTitle ?? sourceLink.domain
+                                }}</strong>
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                  <path
+                                    d="M14 3h7v7m0-7L10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"
+                                  />
+                                </svg>
+                              </a>
+                            } @else {
+                              <strong>{{ r.source?.title ?? r.sourceTitle }}</strong>
+                            }
                             @if (r.source?.author || r.sourceAuthor) {
                               — {{ r.source?.author ?? r.sourceAuthor }}
                             }
@@ -704,6 +738,9 @@
                               — p. {{ r.page }}
                             }
                           </span>
+                          @if (sourceLink) {
+                            <span class="source-reference__domain">{{ sourceLink.domain }}</span>
+                          }
                         </div>
                       </div>
                       @if (r.quote) {

@@ -45,6 +45,7 @@ import {
   detailMedia,
   entityTags,
   entityTypeLabel,
+  externalSourceLink,
   firstRelated,
   incomingByType,
   isArticle,
@@ -102,8 +103,9 @@ type DetailVisitState = {
   ],
 })
 export class EntityDetailViewComponent implements OnDestroy, OnChanges {
+  readonly externalSourceLink = externalSourceLink;
   private static readonly MOBILE_BREAKPOINT = 760;
-  private static readonly INITIAL_RELATION_LIMIT = 6;
+  private static readonly INITIAL_RELATION_LIMIT = 3;
   private static readonly WORKSPACE_TRANSITION_MS = 320;
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly platformId = inject(PLATFORM_ID);
@@ -280,8 +282,14 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
       ? state.workspaceMode
       : 'split';
     this.workspaceFocused = Boolean(state.workspaceFocused);
-    this.outgoingRelationLimit = Math.max(6, state.outgoingLimit);
-    this.incomingRelationLimit = Math.max(6, state.incomingLimit);
+    this.outgoingRelationLimit = Math.max(
+      EntityDetailViewComponent.INITIAL_RELATION_LIMIT,
+      state.outgoingLimit,
+    );
+    this.incomingRelationLimit = Math.max(
+      EntityDetailViewComponent.INITIAL_RELATION_LIMIT,
+      state.incomingLimit,
+    );
     this.syncImmersiveBodyState(this.workspaceFocused);
     this.pendingScroll = state.windowY;
     afterNextRender(
@@ -565,12 +573,18 @@ export class EntityDetailViewComponent implements OnDestroy, OnChanges {
     return Math.max(0, (entity?.incoming?.length ?? 0) - this.incomingRelationLimit);
   }
 
-  showAllOutgoingRelations(entity: PublicEntity | null): void {
-    this.outgoingRelationLimit = entity?.outgoing?.length ?? 0;
+  toggleOutgoingRelations(entity: PublicEntity | null): void {
+    this.outgoingRelationLimit =
+      this.hiddenOutgoingRelations(entity) > 0
+        ? (entity?.outgoing?.length ?? 0)
+        : EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   }
 
-  showAllIncomingRelations(entity: PublicEntity | null): void {
-    this.incomingRelationLimit = entity?.incoming?.length ?? 0;
+  toggleIncomingRelations(entity: PublicEntity | null): void {
+    this.incomingRelationLimit =
+      this.hiddenIncomingRelations(entity) > 0
+        ? (entity?.incoming?.length ?? 0)
+        : EntityDetailViewComponent.INITIAL_RELATION_LIMIT;
   }
 
   private resetRelationLimits(): void {

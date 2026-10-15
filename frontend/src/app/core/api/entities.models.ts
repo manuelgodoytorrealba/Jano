@@ -58,6 +58,7 @@ export interface PublicEntityRelationEndpoint {
   type: string;
   kind?: PublicKnowledgeEntityKind | null;
   summary?: string | null;
+  resolvedMedia?: PublicEntityResolvedMedia | null;
 }
 
 export interface PublicEntityRelation {
@@ -131,6 +132,7 @@ export interface PublicEntityPeriodDetails {
 export interface PublicEntitySourceRef {
   id: string;
   source?: {
+    url?: string | null;
     type?: string | null;
     title?: string | null;
     author?: string | null;

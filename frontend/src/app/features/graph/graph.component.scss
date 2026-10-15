@@ -1396,7 +1396,7 @@
 :host(.graph-detail-layout) {
   .explorer-graph-pane {
     position: relative;
-    grid-template-rows: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
   }
   .graph-stage {
     height: 100%;
@@ -1460,14 +1460,12 @@
     display: none;
   }
 }
-:host .explorer-graph-pane,
-:host(.graph-detail-layout) .explorer-graph-pane,
-:host(.graph-detail-layout) .explorer-graph-pane:fullscreen {
+:host .explorer-graph-pane {
   grid-template-rows: auto minmax(0, 1fr) auto;
 }
 :host(.graph-detail-layout) .explorer-graph-pane,
 :host(.graph-detail-layout) .explorer-graph-pane:fullscreen {
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   gap: 0;
 }
 :host(.graph-detail-layout) .explorer-graph-pane .graph-stage {

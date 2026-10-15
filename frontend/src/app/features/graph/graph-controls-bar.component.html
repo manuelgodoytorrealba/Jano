@@ -59,19 +59,47 @@
       <span>{{ edgeCount }} {{ i18n.t('graph.edges') }}</span>
     </span>
     <div class="graph-panel-bar__toggles">
-      <button
-        type="button"
-        class="graph-utility-btn graph-utility-btn--mode"
-        [class.is-active]="labelsMode !== 'hidden'"
-        [attr.aria-label]="i18n.t('graph.labels') + ' ' + labelsModeLabel()"
-        [title]="i18n.t('graph.labels') + ' ' + labelsModeLabel()"
-        (click)="cycleLabelsMode()"
-      >
-        <span class="graph-utility-btn__symbol" aria-hidden="true">Aa</span>
-        <span class="graph-utility-btn__text"
-          >{{ i18n.t('graph.labels') }} {{ labelsModeLabel() }}</span
+      <div class="graph-label-picker">
+        <button
+          type="button"
+          class="graph-utility-btn graph-utility-btn--mode"
+          #labelsTrigger
+          [attr.aria-expanded]="labelsMenuOpen()"
+          [attr.aria-label]="i18n.t('graph.labels') + ' ' + labelsModeLabel()"
+          [title]="i18n.t('graph.labels') + ' ' + labelsModeLabel()"
+          (click)="labelsMenuOpen.set(!labelsMenuOpen())"
         >
-      </button>
+          <span class="graph-utility-btn__symbol" aria-hidden="true">Aa</span>
+          <span class="graph-utility-btn__text"
+            >{{ i18n.t('graph.labels') }} {{ labelsModeLabel() }}</span
+          >
+          <svg class="graph-label-picker__chevron" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m8 10 4 4 4-4" />
+          </svg>
+        </button>
+        @if (labelsMenuOpen()) {
+          <form
+            class="graph-label-menu"
+            role="radiogroup"
+            [attr.aria-label]="i18n.t('graph.labels')"
+          >
+            <div class="graph-label-menu__title">{{ i18n.t('graph.labels') }}</div>
+            @for (mode of labelsModes; track mode) {
+              <label class="graph-label-menu__option">
+                <input
+                  type="radio"
+                  name="labelsMode"
+                  [value]="mode"
+                  [checked]="labelsMode === mode"
+                  (change)="setLabelsMode(mode); labelsTrigger.focus()"
+                />
+                <span>{{ i18n.t('graph.labels.' + mode) }}</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+              </label>
+            }
+          </form>
+        }
+      </div>
       <button
         type="button"
         class="graph-utility-btn graph-utility-btn--images"
