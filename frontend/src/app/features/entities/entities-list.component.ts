@@ -121,7 +121,18 @@ export class EntitiesListComponent {
   readonly infoPanelOpen = signal(false);
   readonly openFilterMenu = signal<FilterMenuKey | null>(null);
 
-  viewMode: ViewMode = this.isDiscoveryFeed ? 'list' : 'explore';
+  viewMode: ViewMode = this.preferredView();
+
+  private preferredView(): ViewMode {
+    if (this.isDiscoveryFeed && typeof window !== 'undefined') {
+      try {
+        return window.localStorage.getItem('jano.home.view') === 'list' ? 'list' : 'explore';
+      } catch {
+        // Storage may be unavailable; keep Explorer as the default.
+      }
+    }
+    return 'explore';
+  }
 
   constructor() {
     this.restoreVisit();
@@ -273,6 +284,13 @@ export class EntitiesListComponent {
   setView(mode: ViewMode) {
     this.closeFilterMenu();
     this.viewMode = mode;
+    if (this.isDiscoveryFeed && typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem('jano.home.view', mode);
+      } catch {
+        // Switching views still works when storage is unavailable.
+      }
+    }
   }
 
   renewSelection(): void {

@@ -1,5 +1,5 @@
 import { ElementRef, signal } from '@angular/core';
-import { vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, map, of } from 'rxjs';
@@ -191,7 +191,13 @@ describe('EntitiesListComponent filters', () => {
       )[key] ?? key,
   };
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+    window.localStorage.removeItem('jano.home.view');
+  });
+
   beforeEach(async () => {
+    window.localStorage.removeItem('jano.home.view');
     routeStub.snapshot.data = {};
     i18nStub.locale.set('en');
     authStub.user$.next(null);
@@ -232,7 +238,7 @@ describe('EntitiesListComponent filters', () => {
       .compileComponents();
   });
 
-  it('starts the home feed as a stable shuffled list and renews without dropping filters', async () => {
+  it('starts the home feed in Explorer and renews without dropping filters', async () => {
     routeStub.snapshot.data = { discoveryFeed: true };
     queryParamMap$.next(
       convertToParamMap({ movement: 'surrealismo', page: '2', seed: 'saved-visit' }),
@@ -240,7 +246,7 @@ describe('EntitiesListComponent filters', () => {
     const fixture = TestBed.createComponent(EntitiesListComponent);
     const component = fixture.componentInstance;
     await firstValueFrom(component.pageVm$);
-    expect(component.viewMode).toBe('list');
+    expect(component.viewMode).toBe('explore');
     expect(
       listCalls.some(
         (params) =>
@@ -255,6 +261,64 @@ describe('EntitiesListComponent filters', () => {
     expect(options?.queryParams?.['page']).toBe(1);
     expect(options?.queryParams?.['seed']).toMatch(/^[a-zA-Z0-9-]{1,64}$/);
     expect(options?.queryParams?.['seed']).not.toBe('saved-visit');
+    fixture.destroy();
+  });
+
+  it('remembers the chosen home view across new visits and keeps it when renewing', () => {
+    routeStub.snapshot.data = { discoveryFeed: true };
+    const first = TestBed.createComponent(EntitiesListComponent);
+    first.componentInstance.setView('list');
+    expect(window.localStorage.getItem('jano.home.view')).toBe('list');
+    first.destroy();
+    const next = TestBed.createComponent(EntitiesListComponent);
+    expect(next.componentInstance.viewMode).toBe('list');
+    next.componentInstance.renewSelection();
+    expect(next.componentInstance.viewMode).toBe('list');
+    next.componentInstance.setView('explore');
+    expect(window.localStorage.getItem('jano.home.view')).toBe('explore');
+    next.destroy();
+    const returned = TestBed.createComponent(EntitiesListComponent);
+    expect(returned.componentInstance.viewMode).toBe('explore');
+    returned.destroy();
+  });
+
+  it('restores the original visit view ahead of the saved home preference', () => {
+    routeStub.snapshot.data = { discoveryFeed: true };
+    window.localStorage.setItem('jano.home.view', 'explore');
+    TestBed.overrideProvider(NavigationMemoryService, {
+      useValue: {
+        visit: () => ({ key: 'returning-home' }),
+        read: (slot: string) => (slot === 'archive' ? { viewMode: 'list' } : null),
+        write: () => undefined,
+        register: () => undefined,
+      },
+    });
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    expect(fixture.componentInstance.viewMode).toBe('list');
+    fixture.destroy();
+  });
+
+  it('keeps home preferences separate from category catalogs', () => {
+    window.localStorage.setItem('jano.home.view', 'list');
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    expect(fixture.componentInstance.viewMode).toBe('explore');
+    fixture.componentInstance.setView('explore');
+    expect(window.localStorage.getItem('jano.home.view')).toBe('list');
+    fixture.destroy();
+  });
+
+  it('falls back to Explorer and still switches views when storage is blocked', () => {
+    routeStub.snapshot.data = { discoveryFeed: true };
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    expect(fixture.componentInstance.viewMode).toBe('explore');
+    expect(() => fixture.componentInstance.setView('list')).not.toThrow();
+    expect(fixture.componentInstance.viewMode).toBe('list');
     fixture.destroy();
   });
 
