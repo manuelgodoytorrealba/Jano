@@ -1,8 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   combineLatest,
+  catchError,
   debounceTime,
   distinctUntilChanged,
   map,
@@ -10,6 +11,8 @@ import {
   of,
   switchMap,
   tap,
+  finalize,
+  throwError,
 } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import {
@@ -53,6 +56,7 @@ type FilterSupport = {
 };
 type EntitiesListFilterOptionVm = { slug: string; label: string };
 type EntitiesListQueryState = {
+  seed: string;
   title: string;
   type: string;
   typeLabel: string;
@@ -180,6 +184,13 @@ export class EntitiesListFacade {
   private readonly locale$ = toObservable(this.i18n.locale);
 
   private readonly navigation = inject(NavigationMemoryService);
+  readonly isDiscoveryFeed = this.route.snapshot.data?.['discoveryFeed'] === true;
+  readonly feedLoading = signal(false);
+  readonly feedError = signal(false);
+  private readonly initialFeedSeed = this.isDiscoveryFeed
+    ? (this.navigation.read<string>('feed-seed') ?? crypto.randomUUID())
+    : '';
+  private lastFeedResults: EntityListVm | null = null;
 
   private readonly limit = 24;
   private readonly contextualFilterKeys = [
@@ -262,6 +273,11 @@ export class EntitiesListFacade {
           : '';
 
       return {
+        seed: this.isDiscoveryFeed
+          ? /^[a-zA-Z0-9-]{1,64}$/.test(queryParamMap.get('seed') ?? '')
+            ? queryParamMap.get('seed')!
+            : this.initialFeedSeed
+          : '',
         title: type ? typeLabel : kind ? this.i18n.t(KIND_LABEL_KEYS[kind]) : 'Explorar',
         type,
         typeLabel,
@@ -304,16 +320,20 @@ export class EntitiesListFacade {
         user: user?.id,
       });
       const cached = this.navigation.read<{ signature: string; results: EntityListVm }>('catalog');
-      if (cached?.signature === signature) return of(cached.results);
+      if (cached?.signature === signature) {
+        if (this.isDiscoveryFeed) this.lastFeedResults = cached.results;
+        return of(cached.results);
+      }
       const key = this.navigation.visit().key;
       const request =
-        user && this.shouldUseArchiveRecommendations(state)
+        user && !this.isDiscoveryFeed && this.shouldUseArchiveRecommendations(state)
           ? this.searchApi.archiveRecommendations({
               ...(state.type ? { type: state.type } : {}),
               limit: this.limit,
               page: state.page,
             })
           : this.api.list({
+              ...(this.isDiscoveryFeed && state.sort === 'recent' ? { seed: state.seed } : {}),
               type: state.type || undefined,
               kind: state.kind || undefined,
               q: debouncedQuery || undefined,
@@ -332,8 +352,29 @@ export class EntitiesListFacade {
                 : undefined,
               tag: state.tag || undefined,
             });
+      if (this.isDiscoveryFeed) {
+        this.feedLoading.set(true);
+        this.feedError.set(false);
+      }
       return request.pipe(
-        tap((results) => this.navigation.write('catalog', { signature, results }, key)),
+        tap((results) => {
+          if (this.isDiscoveryFeed) this.lastFeedResults = results;
+          this.navigation.write('catalog', { signature, results }, key);
+        }),
+        catchError((error: unknown) => {
+          if (!this.isDiscoveryFeed) return throwError(() => error);
+          this.feedError.set(true);
+          return of(
+            this.lastFeedResults ?? {
+              items: [],
+              page: 1,
+              limit: this.limit,
+              total: 0,
+              totalPages: 1,
+            },
+          );
+        }),
+        finalize(() => this.feedLoading.set(false)),
       );
     }),
     shareReplay({ bufferSize: 1, refCount: true }),
@@ -561,6 +602,7 @@ export class EntitiesListFacade {
   );
 
   constructor() {
+    if (this.isDiscoveryFeed) this.navigation.write('feed-seed', this.initialFeedSeed);
     combineLatest([this.queryState$, this.route.queryParamMap])
       .pipe(
         map(([state, queryParamMap]) => this.obsoleteQueryParamsForType(state.type, queryParamMap)),
@@ -585,14 +627,20 @@ export class EntitiesListFacade {
         tap((state) => {
           const normalizedTitle = state.title || 'Entities';
           const normalizedQuery = state.q.trim();
-          const pageTitle = normalizedQuery
-            ? `Search ${normalizedTitle} for "${normalizedQuery}" | JANO`
-            : `${normalizedTitle} | JANO`;
+          const pageTitle = this.isDiscoveryFeed
+            ? `${this.i18n.t('nav.discover')} | JANO`
+            : normalizedQuery
+              ? `Search ${normalizedTitle} for "${normalizedQuery}" | JANO`
+              : `${normalizedTitle} | JANO`;
           const description = normalizedQuery
             ? `Browse JANO results for "${normalizedQuery}" inside ${normalizedTitle.toLowerCase()}.`
             : `Explore ${normalizedTitle.toLowerCase()} in JANO with visual browsing and editorial filters.`;
           const typeSlug = (state.type ?? '').trim().toLowerCase();
-          const basePath = typeSlug ? `/entities/${typeSlug}` : '/entities';
+          const basePath = this.isDiscoveryFeed
+            ? '/home'
+            : typeSlug
+              ? `/entities/${typeSlug}`
+              : '/entities';
           const params = new URLSearchParams();
           if (state.kind) params.set('kind', state.kind);
           if (normalizedQuery) params.set('q', normalizedQuery);
@@ -664,7 +712,7 @@ export class EntitiesListFacade {
   }
 
   setType(next: string): Promise<boolean> {
-    return this.router.navigate(['/entities'], {
+    return this.router.navigate([this.isDiscoveryFeed ? '/home' : '/entities'], {
       queryParams: { type: (next ?? '').trim().toLowerCase() || null, page: 1 },
       queryParamsHandling: 'merge',
     });
@@ -715,6 +763,10 @@ export class EntitiesListFacade {
 
   navigateHome(): Promise<boolean> {
     return this.router.navigate(['/']);
+  }
+
+  renewSelection(): Promise<boolean> {
+    return this.navigateQuery({ seed: crypto.randomUUID(), page: 1, sort: null });
   }
 
   private navigateQuery(queryParams: Record<string, string | number | null>): Promise<boolean> {

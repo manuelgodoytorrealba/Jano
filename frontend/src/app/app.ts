@@ -88,12 +88,14 @@ export class App {
 
   isImmersiveRoute(): boolean {
     const url = this.router.url.split('?')[0];
-    return url === '/' || url === '/home';
+    return url === '/entities' && !this.router.url.includes('?');
   }
 
   isEntitiesRoute(): boolean {
     const url = this.router.url.split('?')[0];
-    return url === '/research' || url === '/entities' || url.startsWith('/entities/');
+    return (
+      url === '/home' || url === '/research' || url === '/entities' || url.startsWith('/entities/')
+    );
   }
 
   isEntityDetailRoute(): boolean {

@@ -16,7 +16,7 @@ const STORAGE_KEY = 'jano-navigation-v1';
 const MAX_VISITS = 32;
 const internalUrl = (url: unknown): url is string =>
   typeof url === 'string' && /^\/(?!\/)/.test(url);
-const catalogUrl = (url: string) => /^\/entities(?:\/|\?|$)/.test(url);
+const catalogUrl = (url: string) => /^\/(?:entities|home)(?:\/|\?|$)/.test(url);
 const entityUrl = (url: string) => /^\/entity\//.test(url);
 
 @Injectable({ providedIn: 'root' })

@@ -4,6 +4,7 @@ import { resolveEntityMediaSlot } from '../media/media.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import { canonicalRelationTypeFilter } from '../relation-types/relation-type.utils';
 import { ListEntitiesQuery } from './dto/list-entities.query';
+import { feedOrder } from './entity-feed-order';
 import { localizedInclude, resolveLocalizedEntity } from './entity.presenter';
 import { normalizeLocale, translationStatusSummary } from './entity-translation.resolver';
 
@@ -215,7 +216,8 @@ export class EntityCatalogService {
 
     const totalPages = Math.max(1, Math.ceil(total / safeLimit));
 
-    const useRelevance = sort === 'relevance' && !!qValid;
+    const seed = query.seed;
+    const useRelevance = !seed && sort === 'relevance' && !!qValid;
 
     const orderBy =
       sort === 'title'
@@ -224,13 +226,23 @@ export class EntityCatalogService {
           ? { updatedAt: 'desc' as const }
           : { createdAt: 'desc' as const };
 
-    const useCuratedOrder = deckEntityOrder.length > 0 && sort !== 'title' && !useRelevance;
+    const useCuratedOrder =
+      !seed && deckEntityOrder.length > 0 && sort !== 'title' && !useRelevance;
 
     if (!useRelevance) {
+      // shortcut: rank matching IDs in memory; use database ranking above 50,000 entities.
+      const feedIds = seed
+        ? feedOrder(
+            (await this.prisma.entity.findMany({ where, select: { id: true } })).map(
+              ({ id }) => id,
+            ),
+            seed,
+          ).slice(skip, skip + safeLimit)
+        : null;
       const items = await this.prisma.entity.findMany({
-        where,
-        skip: useCuratedOrder ? undefined : skip,
-        take: useCuratedOrder ? undefined : safeLimit,
+        where: feedIds ? { AND: [where, { id: { in: feedIds } }] } : where,
+        skip: useCuratedOrder || feedIds ? undefined : skip,
+        take: useCuratedOrder || feedIds ? undefined : safeLimit,
         orderBy: useCuratedOrder ? undefined : orderBy,
         include: {
           translations: localizedInclude(locale),
@@ -274,11 +286,13 @@ export class EntityCatalogService {
         },
       });
 
-      const orderedItems = useCuratedOrder
-        ? items
-            .sort((a, b) => deckEntityOrder.indexOf(a.id) - deckEntityOrder.indexOf(b.id))
-            .slice(skip, skip + safeLimit)
-        : items;
+      const orderedItems = feedIds
+        ? items.sort((a, b) => feedIds.indexOf(a.id) - feedIds.indexOf(b.id))
+        : useCuratedOrder
+          ? items
+              .sort((a, b) => deckEntityOrder.indexOf(a.id) - deckEntityOrder.indexOf(b.id))
+              .slice(skip, skip + safeLimit)
+          : items;
 
       return {
         items: orderedItems.map((item) =>

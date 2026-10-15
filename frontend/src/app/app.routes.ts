@@ -11,7 +11,9 @@ export const routes: Routes = [
   },
   {
     path: 'home',
-    loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
+    data: { discoveryFeed: true },
+    loadComponent: () =>
+      import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
   },
   {
     path: 'search',
@@ -21,7 +23,7 @@ export const routes: Routes = [
   {
     path: 'entities',
     loadComponent: () =>
-      import('./features/entities/entities-list.component').then((m) => m.EntitiesListComponent),
+      import('./features/home/archive-entry.component').then((m) => m.ArchiveEntryComponent),
   },
   {
     path: 'entities/:type',

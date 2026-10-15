@@ -36,6 +36,7 @@ describe('EntitiesListComponent filters', () => {
     paramMap: paramMap$.asObservable(),
     queryParamMap: queryParamMap$.asObservable(),
     snapshot: {
+      data: {} as Record<string, unknown>,
       get queryParamMap() {
         return queryParamMap$.value;
       },
@@ -191,6 +192,7 @@ describe('EntitiesListComponent filters', () => {
   };
 
   beforeEach(async () => {
+    routeStub.snapshot.data = {};
     i18nStub.locale.set('en');
     authStub.user$.next(null);
     paramMap$.next(convertToParamMap({ type: 'artwork' }));
@@ -228,6 +230,32 @@ describe('EntitiesListComponent filters', () => {
         set: { template: '' },
       })
       .compileComponents();
+  });
+
+  it('starts the home feed as a stable shuffled list and renews without dropping filters', async () => {
+    routeStub.snapshot.data = { discoveryFeed: true };
+    queryParamMap$.next(
+      convertToParamMap({ movement: 'surrealismo', page: '2', seed: 'saved-visit' }),
+    );
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const component = fixture.componentInstance;
+    await firstValueFrom(component.pageVm$);
+    expect(component.viewMode).toBe('list');
+    expect(
+      listCalls.some(
+        (params) =>
+          params.seed === 'saved-visit' && params.page === 2 && params.movement === 'surrealismo',
+      ),
+    ).toBe(true);
+    component.activeIndex.set(2);
+    component.renewSelection();
+    expect(component.activeIndex()).toBe(0);
+    const options = navigateCalls.at(-1)?.[1];
+    expect(options?.queryParamsHandling).toBe('merge');
+    expect(options?.queryParams?.['page']).toBe(1);
+    expect(options?.queryParams?.['seed']).toMatch(/^[a-zA-Z0-9-]{1,64}$/);
+    expect(options?.queryParams?.['seed']).not.toBe('saved-visit');
+    fixture.destroy();
   });
 
   it('reuses the exact catalog snapshot when rebuilding a visited page', async () => {

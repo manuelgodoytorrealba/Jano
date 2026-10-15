@@ -1,4 +1,7 @@
 {
+  "home.feedRenew": "Renovar selección",
+  "home.feedRenewing": "Renovando…",
+  "home.feedError": "No se pudo renovar la selección. Puedes volver a intentarlo.",
   "entity.viewAllRelations": "Ver todas las relaciones",
   "common.showLess": "Mostrar menos",
   "detail.mobileMapDescription": "Explora visualmente cómo se conecta esta entidad con otras. El mapa se abre en una vista dedicada.",

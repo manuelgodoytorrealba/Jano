@@ -5,6 +5,7 @@ import { EntityMediaService } from '../media/entity-media.service';
 import { EntityGraphService } from './entity-graph.service';
 import { EntityEditorialService } from './entity-editorial.service';
 import { EntityCatalogService } from './entity-catalog.service';
+import { feedOrder } from './entity-feed-order';
 
 describe('EntityReadService.list filters', () => {
   let service: EntityReadService;
@@ -162,6 +163,31 @@ describe('EntityReadService.list filters', () => {
     catalogService = module.get(EntityCatalogService);
     graphService = module.get(EntityGraphService);
     editorialService = module.get(EntityEditorialService);
+  });
+
+  it('paginates the seeded selection while preserving public visibility and filters', async () => {
+    const ids = Array.from({ length: 10 }, (_, i) => `id-${i}`);
+    prisma.entity.count.mockResolvedValue(10);
+    prisma.entity.findMany
+      .mockResolvedValueOnce(ids.map((id) => ({ id })))
+      .mockResolvedValueOnce([]);
+    await catalogService.list({
+      seed: 'stable-visit',
+      type: 'ARTWORK',
+      tag: 'painting',
+      page: 2,
+      limit: 3,
+    });
+    const candidates = prisma.entity.findMany.mock.calls[0][0];
+    const selection = prisma.entity.findMany.mock.calls[1][0];
+    expect(candidates.select).toEqual({ id: true });
+    expect(candidates.where).toMatchObject({ type: 'ARTWORK', status: 'PUBLISHED' });
+    expect(JSON.stringify(candidates.where)).toContain('painting');
+    expect(selection.where).toEqual({
+      AND: [candidates.where, { id: { in: feedOrder(ids, 'stable-visit').slice(3, 6) } }],
+    });
+    expect(selection.skip).toBeUndefined();
+    expect(selection.take).toBeUndefined();
   });
 
   it('applies movement and period relation filters together with type, status and contentLevel', async () => {

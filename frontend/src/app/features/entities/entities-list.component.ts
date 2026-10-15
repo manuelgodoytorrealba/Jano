@@ -95,6 +95,9 @@ type ArchiveVisitState = {
 })
 export class EntitiesListComponent {
   private readonly facade = inject(EntitiesListFacade);
+  readonly isDiscoveryFeed = this.facade.isDiscoveryFeed;
+  readonly feedLoading = this.facade.feedLoading;
+  readonly feedError = this.facade.feedError;
   readonly i18n = inject(I18nService);
   readonly auth = inject(AuthService);
   readonly isAdmin = signal(this.auth.currentUser?.role === 'ADMIN');
@@ -118,7 +121,7 @@ export class EntitiesListComponent {
   readonly infoPanelOpen = signal(false);
   readonly openFilterMenu = signal<FilterMenuKey | null>(null);
 
-  viewMode: ViewMode = 'explore';
+  viewMode: ViewMode = this.isDiscoveryFeed ? 'list' : 'explore';
 
   constructor() {
     this.restoreVisit();
@@ -272,6 +275,14 @@ export class EntitiesListComponent {
     this.viewMode = mode;
   }
 
+  renewSelection(): void {
+    this.activeIndex.set(0);
+    this.infoPanelOpen.set(false);
+    this.pendingScroll = null;
+    this.scrollOnPageLoad = true;
+    void this.facade.renewSelection();
+  }
+
   toggleFiltersPanel() {
     this.filtersPanelOpen.update((value) => {
       const next = !value;
@@ -293,6 +304,7 @@ export class EntitiesListComponent {
   }
 
   breadcrumbSectionLabel(pageVm: { title: string; type: string }): string {
+    if (this.isDiscoveryFeed) return this.i18n.t('nav.discover');
     if ((pageVm.type ?? '').toUpperCase() === 'ARTICLE') {
       return this.i18n.t('nav.articles');
     }
@@ -302,7 +314,7 @@ export class EntitiesListComponent {
 
   breadcrumbSectionRoute(pageVm: { title: string; type: string }): string {
     void pageVm;
-    return '/entities';
+    return this.isDiscoveryFeed ? '/home' : '/entities';
   }
 
   breadcrumbCurrentLabel(pageVm: {

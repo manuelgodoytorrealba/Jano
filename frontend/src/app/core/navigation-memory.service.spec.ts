@@ -58,6 +58,17 @@ describe('navigation visit memory', () => {
     expect(memory.origin?.key).toBe(archive.key);
   });
 
+  it('preserves the home feed as the origin when opening an entity', () => {
+    const home = navigate(1, '/home?seed=saved-feed&page=2');
+    memory.write('feed-seed', 'saved-feed');
+    memory.write('view', { slug: 'selected', mode: 'explore' });
+    navigate(2, '/entity/selected');
+    expect(memory.origin?.key).toBe(home.key);
+    navigate(3, '/home?seed=saved-feed&page=2', { janoVisit: home });
+    expect(memory.read('feed-seed')).toBe('saved-feed');
+    expect(memory.read('view')).toEqual({ slug: 'selected', mode: 'explore' });
+  });
+
   it('does not invent an origin for direct links or cancelled navigation', () => {
     const direct = navigate(1, '/entity/man-ray');
     expect(memory.origin).toBeNull();

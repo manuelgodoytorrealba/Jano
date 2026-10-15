@@ -1,4 +1,7 @@
 {
+  "home.feedRenew": "Refresh selection",
+  "home.feedRenewing": "Refreshing…",
+  "home.feedError": "Could not refresh the selection. Please try again.",
   "entity.viewAllRelations": "View all connections",
   "common.showLess": "Show less",
   "detail.mobileMapDescription": "Explore how this entity connects to others. The map opens in a dedicated view.",

@@ -2,13 +2,14 @@
   class="entities-page page-shell"
   [class.entities-page--immersive]="viewMode === 'explore'"
   [class.entities-page--list-shell]="viewMode === 'list'"
+  [class.entities-page--feed]="isDiscoveryFeed"
 >
   <h1 class="sr-only">
     @if (pageVm$ | async; as pageVm) {
       @if (pageVm.query) {
         {{ i18n.t('explorer.searchResultsFor') }} {{ pageVm.query }}
       } @else {
-        {{ pageVm.title }}
+        {{ isDiscoveryFeed ? i18n.t('nav.discover') : pageVm.title }}
       }
     }
   </h1>
@@ -24,13 +25,17 @@
       @if (pageVm$ | async; as pageVm) {
         <nav class="entities-breadcrumbs ds-panel" [attr.aria-label]="i18n.t('common.breadcrumb')">
           <a class="entities-breadcrumbs__link" routerLink="/">{{ i18n.t('nav.discover') }}</a>
-          <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
-          <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{
-            breadcrumbSectionLabel(pageVm)
-          }}</a>
-          @if (breadcrumbCurrentLabel(pageVm)) {
+          @if (!isDiscoveryFeed) {
             <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
-            <span class="entities-breadcrumbs__current">{{ breadcrumbCurrentLabel(pageVm) }}</span>
+            <a class="entities-breadcrumbs__link" [routerLink]="breadcrumbSectionRoute(pageVm)">{{
+              breadcrumbSectionLabel(pageVm)
+            }}</a>
+            @if (breadcrumbCurrentLabel(pageVm)) {
+              <span class="entities-breadcrumbs__sep" aria-hidden="true">/</span>
+              <span class="entities-breadcrumbs__current">{{
+                breadcrumbCurrentLabel(pageVm)
+              }}</span>
+            }
           }
         </nav>
       }
@@ -90,7 +95,27 @@
           </div>
         </div>
       </div>
+      @if (isDiscoveryFeed) {
+        <button
+          type="button"
+          class="entities-feed-renew ds-panel"
+          [disabled]="feedLoading()"
+          [attr.aria-busy]="feedLoading()"
+          (click)="renewSelection()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 4-3 6-6s4-6 6-6h3m-4-4 4 4-4 4"
+            />
+          </svg>
+          {{ i18n.t(feedLoading() ? 'home.feedRenewing' : 'home.feedRenew') }}
+        </button>
+      }
     </header>
+
+    @if (isDiscoveryFeed && feedError()) {
+      <p class="entities-feed-error" role="alert">{{ i18n.t('home.feedError') }}</p>
+    }
 
     @if (pageVm$ | async; as pageVm) {
       @if (filtersPanelOpen()) {

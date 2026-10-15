@@ -1,10 +1,16 @@
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, Matches, Max, MaxLength, Min } from 'class-validator';
 
 const KINDS = ['PERSON', 'WORK', 'ABSTRACTION', 'EVENT', 'PLACE', 'ORGANIZATION'] as const;
 export type KnowledgeEntityKind = (typeof KINDS)[number];
 
 export class ListEntitiesQuery {
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  @Matches(/^[a-zA-Z0-9-]+$/)
+  seed?: string;
+
   @IsOptional()
   @IsString()
   type?: string;

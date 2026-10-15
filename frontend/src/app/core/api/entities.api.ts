@@ -12,6 +12,7 @@ import {
 } from './entities.models';
 
 export type EntitiesListParams = {
+  seed?: string;
   type?: string;
   kind?: PublicKnowledgeEntityKind;
   q?: string;

@@ -46,10 +46,10 @@ export class HomeComponent {
 
   constructor() {
     this.seo.setPageMeta({
-      title: 'JANO | Connected Cultural Knowledge',
+      title: `${this.i18n.t('nav.explore')} | JANO`,
       description:
         'Explore connected cultural knowledge in JANO through an immersive, visual-first discovery experience.',
-      path: '/',
+      path: '/entities',
       image: '/assets/home/artwork.jpg',
     });
 
