@@ -18,13 +18,17 @@ async function main() {
   for (const portrait of portraits) {
     assert.match(portrait.url, /^\/assets\/people\/margiela\/[a-z0-9-]+\.jpg$/);
     assert.ok(portrait.sourcePageUrl.startsWith('https://') && portrait.license);
-    const response = await fetch(new URL(portrait.url, origin), {
-      signal: AbortSignal.timeout(15000),
-    });
-    assert.ok(response.ok, `Portrait unavailable: ${portrait.slug} (${response.status})`);
-    const bytes = Buffer.from(await response.arrayBuffer());
-    assert.equal(bytes.readUInt16BE(0), 0xffd8, `Expected JPEG: ${portrait.slug}`);
-    assert.equal(createHash('sha256').update(bytes).digest('hex'), portrait.sha256, portrait.slug);
+    for (const [url, checksum] of [
+      [portrait.url, portrait.sha256],
+      [portrait.thumbnailUrl, portrait.thumbnailSha256],
+    ]) {
+      assert.match(url, /^\/assets\/people\/margiela\/(?:thumb\/)?[a-z0-9-]+\.jpg$/);
+      const response = await fetch(new URL(url, origin), { signal: AbortSignal.timeout(15000) });
+      assert.ok(response.ok, `Portrait unavailable: ${portrait.slug} (${response.status})`);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      assert.equal(bytes.readUInt16BE(0), 0xffd8, `Expected JPEG: ${portrait.slug}`);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), checksum, portrait.slug);
+    }
   }
   const client = await pool.connect();
   try {
@@ -61,43 +65,77 @@ async function main() {
     for (const portrait of portraits) {
       const entity = entities.find((item) => item.slug === portrait.slug);
       const mediaId = `margiela-portrait-${portrait.slug}`;
-      await client.query(
-        `INSERT INTO "Media" (id, url, "displayUrl", "canonicalUrl", "sourcePageUrl", alt, source, "photoBy", license, width, height, "mimeType", "focalX", "focalY")
+      const thumbnailId = `${mediaId}-thumbnail`;
+      for (const variant of [
+        { id: mediaId, url: portrait.url, width: portrait.width, height: portrait.height },
+        {
+          id: thumbnailId,
+          url: portrait.thumbnailUrl,
+          width: portrait.thumbnailWidth,
+          height: portrait.thumbnailHeight,
+        },
+      ]) {
+        await client.query(
+          `INSERT INTO "Media" (id, url, "displayUrl", "canonicalUrl", "sourcePageUrl", alt, source, "photoBy", license, width, height, "mimeType", "focalX", "focalY")
          VALUES ($1,$2,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
          ON CONFLICT (id) DO UPDATE SET url=EXCLUDED.url, "displayUrl"=EXCLUDED."displayUrl", "canonicalUrl"=EXCLUDED."canonicalUrl", "sourcePageUrl"=EXCLUDED."sourcePageUrl", alt=EXCLUDED.alt, source=EXCLUDED.source, "photoBy"=EXCLUDED."photoBy", license=EXCLUDED.license, width=EXCLUDED.width, height=EXCLUDED.height, "mimeType"=EXCLUDED."mimeType", "focalX"=EXCLUDED."focalX", "focalY"=EXCLUDED."focalY"`,
-        [
-          mediaId,
-          portrait.url,
-          portrait.imageUrl,
-          portrait.sourcePageUrl,
-          `Retrato de ${portrait.name}`,
-          `${portrait.sourcePageUrl} · ${portrait.changes}`,
-          portrait.photoBy,
-          portrait.license,
-          portrait.width,
-          portrait.height,
-          'image/jpeg',
-          portrait.focalX,
-          portrait.focalY,
-        ],
-      );
+          [
+            variant.id,
+            variant.url,
+            portrait.imageUrl,
+            portrait.sourcePageUrl,
+            `Retrato de ${portrait.name}`,
+            `${portrait.sourcePageUrl} · ${portrait.changes}`,
+            portrait.photoBy,
+            portrait.license,
+            variant.width,
+            variant.height,
+            'image/jpeg',
+            portrait.focalX,
+            portrait.focalY,
+          ],
+        );
+      }
       // Detach the person's old illustrations without changing media used by works or collections.
       await client.query('DELETE FROM "EntityMedia" WHERE "entityId"=$1', [entity.id]);
-      await client.query(
-        'INSERT INTO "EntityMedia" (id, "entityId", "mediaId", role, "isPrimary", "displayMode") VALUES ($1,$2,$3,$4,true,$5)',
-        [`margiela-portrait-link-${portrait.slug}`, entity.id, mediaId, 'HERO', 'CONTAIN'],
-      );
+      for (const [role, id] of [
+        ['HERO', mediaId],
+        ['CARD', mediaId],
+        ['THUMBNAIL', thumbnailId],
+      ]) {
+        await client.query(
+          'INSERT INTO "EntityMedia" (id, "entityId", "mediaId", role, "isPrimary", "displayMode") VALUES ($1,$2,$3,$4,$5,$6)',
+          [
+            `margiela-portrait-link-${portrait.slug}-${role.toLowerCase()}`,
+            entity.id,
+            id,
+            role,
+            role === 'HERO',
+            'CONTAIN',
+          ],
+        );
+      }
     }
     const links = (
       await client.query(
-        'SELECT em."entityId", m.url FROM "EntityMedia" em JOIN "Media" m ON m.id=em."mediaId" WHERE em."entityId"=ANY($1::text[])',
+        'SELECT em."entityId", em.role, m.url FROM "EntityMedia" em JOIN "Media" m ON m.id=em."mediaId" WHERE em."entityId"=ANY($1::text[])',
         [entities.map((entity) => entity.id)],
       )
     ).rows;
-    assert.equal(links.length, portraits.length);
+    assert.equal(links.length, portraits.length * 3);
     for (const portrait of portraits) {
       const entity = entities.find((item) => item.slug === portrait.slug);
-      assert.ok(links.some((link) => link.entityId === entity.id && link.url === portrait.url));
+      for (const [role, url] of [
+        ['HERO', portrait.url],
+        ['CARD', portrait.url],
+        ['THUMBNAIL', portrait.thumbnailUrl],
+      ]) {
+        assert.ok(
+          links.some(
+            (link) => link.entityId === entity.id && link.role === role && link.url === url,
+          ),
+        );
+      }
     }
     await client.query('COMMIT');
     console.log('Verified: ten people now use real portraits in every media slot.');
