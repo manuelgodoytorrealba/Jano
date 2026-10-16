@@ -39,6 +39,12 @@
               [lazy]="!card.active"
               [priority]="card.active ? 'high' : 'low'"
             ></app-jano-media>
+            @if (card.active) {
+              <span class="explorer-totem__card-caption" aria-hidden="true">
+                <span class="explorer-totem__card-type">{{ typeLabel(card.item.type) }}</span>
+                <span class="explorer-totem__card-title">{{ card.item.title }}</span>
+              </span>
+            }
           </a>
           @if (card.active) {
             <button
