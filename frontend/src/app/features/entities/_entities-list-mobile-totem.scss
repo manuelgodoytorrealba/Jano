@@ -13,6 +13,10 @@
     z-index: 90;
   }
 
+  .entities-explorer-layout.is-mobile-portrait-totem:not(.is-info-collapsed)::after {
+    z-index: 91;
+  }
+
   .entities-explorer-layout.is-mobile-portrait-totem:not(.is-info-collapsed) .entities-hud {
     z-index: 97;
   }
