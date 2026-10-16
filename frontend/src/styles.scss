@@ -5,6 +5,13 @@
 @use './styles/components';
 @use './styles/features/entities-explorer-shell';
 
+@media (max-width: 720px) {
+  body:has(.entities-page) .app-chrome__header-toggle--open {
+    left: auto;
+    right: calc(var(--app-safe-right) + var(--app-shell-gap));
+  }
+}
+
 @media (max-width: 1024px) {
   app-app-chrome:not(.app-chrome--ready) .app-chrome__header {
     visibility: hidden;

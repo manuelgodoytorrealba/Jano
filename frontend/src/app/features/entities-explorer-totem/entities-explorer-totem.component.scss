@@ -271,9 +271,51 @@
 }
 
 .explorer-totem__cta {
+  color: #f2f1ee;
   width: 100%;
   min-height: 38px;
   border-radius: 14px;
+}
+
+:host-context([data-theme='light']) {
+  .explorer-totem__info {
+    background: var(--color-surface-solid);
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-md);
+  }
+
+  .explorer-totem__title {
+    color: var(--color-text);
+  }
+
+  .explorer-totem__summary,
+  .explorer-totem__info-close {
+    color: var(--color-text-soft);
+  }
+
+  .explorer-totem__eyebrow,
+  .explorer-totem__meta span {
+    color: var(--color-text-muted);
+  }
+
+  .explorer-totem__panel,
+  .explorer-totem__info-close {
+    border-color: var(--color-border);
+  }
+
+  .explorer-totem__info-close {
+    background: var(--color-surface-strong);
+  }
+
+  .explorer-totem__cta {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-surface-solid);
+  }
+
+  .explorer-totem__cta:hover {
+    background: var(--color-accent-hover);
+  }
 }
 
 .explorer-totem::after {

@@ -83,7 +83,7 @@
     position: relative;
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: 54px minmax(0, 1fr) 44px;
+    grid-template-columns: 44px minmax(0, 1fr) 54px;
     align-items: start;
     gap: 8px;
     width: 100%;
@@ -132,14 +132,14 @@
     padding-inline: 0.9rem;
     border-color: transparent;
     background: transparent;
-    color: rgba(255, 247, 239, 0.72);
+    color: var(--color-text-soft);
     font-size: 0.8rem;
     box-shadow: none;
   }
 
   .entities-explorer-layout:not(.is-list) .entities-mode-pill .view-toggle__button.is-active,
   .entities-explorer-layout.is-list .entities-mode-pill .view-toggle__button.is-active {
-    color: rgba(255, 252, 248, 0.96);
+    color: var(--color-text);
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07)),
       rgba(255, 255, 255, 0.04);
@@ -152,7 +152,8 @@
   .entities-hud__filters {
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
+    right: auto;
     z-index: 2;
     width: 44px;
     height: 44px;
