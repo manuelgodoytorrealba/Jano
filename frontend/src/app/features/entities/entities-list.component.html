@@ -145,6 +145,9 @@
           <div class="entities-explorer-stage">
             @if (isMobilePortraitTotem()) {
               <app-entities-explorer-totem
+                [previousItems]="explorerPreviousItems()"
+                [nextItems]="explorerNextItems()"
+                [pageError]="feedError()"
                 [items]="pageVm.results.items"
                 [activeIndex]="activeIndex()"
                 [hasPreviousPage]="pageVm.results.page > 1"

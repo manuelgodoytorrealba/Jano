@@ -2,6 +2,8 @@ import { NgStyle } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import {
   AfterViewInit,
+  afterNextRender,
+  Injector,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -24,6 +26,7 @@ import { PublicEntityListItem } from '../../core/api/entities.models';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { mediaDisplayUrl, resolveEntityMediaItem } from '../../shared/media/media.utils';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
+import { advanceTotemMotion, TotemMotion } from './totem-motion';
 
 type Entity = PublicEntityListItem & {
   birthYear?: string | number | null;
@@ -33,14 +36,13 @@ type Entity = PublicEntityListItem & {
   sourceAuthor?: string | null;
   creator?: string | null;
 };
-type TotemWindowRole = -1 | 0 | 1;
 
 type TotemCardStyle = Record<string, string>;
 
 type RibbonCard = {
   item: Entity;
   index: number;
-  role: TotemWindowRole;
+  role: number;
   active: boolean;
 };
 
@@ -55,10 +57,13 @@ type RibbonCard = {
 export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() items: Entity[] = [];
   @Input() activeIndex = 0;
+  @Input() previousItems: Entity[] = [];
+  @Input() nextItems: Entity[] = [];
   @Input() hasPreviousPage = false;
   @Input() hasNextPage = false;
   @Output() pageChange = new EventEmitter<-1 | 1>();
   @Input() infoOpen = false;
+  @Input() pageError = false;
 
   @Output() activeIndexChange = new EventEmitter<number>();
   @Output() openEntity = new EventEmitter<string | EntityArtworkTransitionPayload>();
@@ -70,30 +75,36 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
 
   readonly i18n = inject(I18nService);
 
+  private readonly injector = inject(Injector);
+  private focusAfterMotion = false;
   private readonly isBrowser: boolean;
   private resizeObserver?: ResizeObserver;
   private pointerId: number | null = null;
   private pointerStartIndex: number | null = null;
   private startY = 0;
-  private pendingDragOffset = 0;
-  private dragFrame: number | null = null;
+  private lastY = 0;
+  private lastMoveTime = 0;
+  private travel = 0;
+  private caughtMotion = false;
   private clickSuppressedUntil = 0;
-  private animationTimer: number | null = null;
-  private settleResetTimer: number | null = null;
-  private panelUpdateTimer: number | null = null;
-
+  private motionFrame: number | null = null;
+  private motionTime = 0;
+  private motion: TotemMotion = { position: 0, velocity: 0, target: null };
+  private emittedIndex = 0;
+  private pendingPage: -1 | 1 | null = null;
+  private retainedPrevious: Entity[] = [];
+  private retainedNext: Entity[] = [];
   private readonly stageHeight = signal(0);
-  private readonly dragOffset = signal(0);
+  private readonly position = signal(0);
   private readonly dragging = signal(false);
   private readonly settling = signal(false);
-  private readonly panelIndex = signal(0);
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
   get activeItem(): Entity | null {
-    return this.items[this.activeIndex] ?? null;
+    return this.itemAt(Math.round(this.position()));
   }
 
   typeLabel(type: string | null | undefined): string {
@@ -101,7 +112,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   }
 
   get panelItem(): Entity | null {
-    return this.items[this.panelIndex()] ?? this.activeItem;
+    return this.activeItem;
   }
 
   get previousItem(): Entity | null {
@@ -117,7 +128,7 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   }
 
   get isSettling(): boolean {
-    return this.settling();
+    return this.settling() || this.pendingPage !== null;
   }
 
   ribbonCards(): RibbonCard[] {
@@ -126,18 +137,12 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
       return [];
     }
 
-    return ([-1, 0, 1] as TotemWindowRole[])
-      .map((role) => {
-        const index = this.activeIndex + role;
-        const item = this.items[index];
-
+    const center = Math.round(this.position());
+    return Array.from({ length: 5 }, (_, offset) => center + offset - 2)
+      .map((index) => {
+        const item = this.itemAt(index);
         return item
-          ? {
-              item,
-              index,
-              role,
-              active: role === 0,
-            }
+          ? { item, index, role: index - this.position(), active: index === center }
           : null;
       })
       .filter((card): card is RibbonCard => !!card);
@@ -151,26 +156,48 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['pageError']?.currentValue) {
+      this.pendingPage = null;
+      this.cancelStageInteraction();
+    }
+    if (changes['infoOpen']?.currentValue) {
+      this.cancelStageInteraction();
+    }
     if (changes['items']) {
-      this.dragOffset.set(0);
-      this.settling.set(false);
-      this.syncPanelIndex(false);
+      const oldItems: Entity[] = changes['items'].previousValue ?? [];
+      if (this.pendingPage !== null && oldItems.length) {
+        const shift = this.pendingPage === 1 ? oldItems.length : -this.items.length;
+        this.retainedPrevious = this.pendingPage === 1 ? oldItems.slice(-2) : [];
+        this.retainedNext = this.pendingPage === -1 ? oldItems.slice(0, 2) : [];
+        this.motion.position -= shift;
+        if (this.motion.target !== null) this.motion.target -= shift;
+        this.pendingPage = null;
+        this.position.set(this.motion.position);
+        this.emittedIndex = this.activeIndex;
+        this.publishPosition();
+        if (!this.dragging()) this.startMotion();
+      } else {
+        this.cancelStageInteraction();
+        this.retainedPrevious = [];
+        this.retainedNext = [];
+        this.setPosition(this.activeIndex);
+      }
       return;
     }
-
-    if (changes['activeIndex']) {
-      this.dragOffset.set(0);
-      this.syncPanelIndex(this.isBrowser && this.settling());
+    if (changes['activeIndex'] && this.activeIndex !== this.emittedIndex) {
+      this.cancelStageInteraction();
+      this.setPosition(this.activeIndex);
     }
   }
 
   ngOnDestroy(): void {
-    this.clearTimers();
-    this.cancelDragFrame();
+    this.stopMotion();
+    this.releasePointer();
     this.resizeObserver?.disconnect();
   }
 
   openInfoPanel(): void {
+    this.cancelStageInteraction();
     this.requestInfoOpen.emit();
   }
 
@@ -193,12 +220,9 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   }
 
   onPointerDown(event: PointerEvent): void {
-    if (this.infoOpen) {
-      this.cancelStageInteraction(event.pointerId);
-      return;
-    }
-
     if (
+      this.infoOpen ||
+      this.pointerId !== null ||
       !event.isPrimary ||
       event.button !== 0 ||
       event.ctrlKey ||
@@ -206,159 +230,251 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
       event.shiftKey ||
       event.altKey ||
       this.isInteractiveTarget(event.target)
-    ) {
+    )
       return;
-    }
 
-    this.clearTimers();
-    this.cancelDragFrame();
-    this.syncPanelIndex(false);
+    this.caughtMotion = this.isSettling || this.pendingPage !== null;
+    this.stopMotion();
+    this.motion.velocity = 0;
+    this.motion.target = null;
     this.pointerId = event.pointerId;
     const cardIndex =
       event.target instanceof Element
         ? event.target.closest('[data-index]')?.getAttribute('data-index')
         : null;
     this.pointerStartIndex = cardIndex == null ? null : Number(cardIndex);
-    this.startY = event.clientY;
-    this.pendingDragOffset = 0;
-    this.dragOffset.set(0);
+    this.startY = this.lastY = event.clientY;
+    this.lastMoveTime = performance.now();
+    this.travel = 0;
     this.dragging.set(true);
     this.stageRef.nativeElement.setPointerCapture(event.pointerId);
   }
 
   onPointerMove(event: PointerEvent): void {
+    if (this.pointerId !== event.pointerId || !this.dragging()) return;
     if (this.infoOpen) {
-      this.cancelStageInteraction(event.pointerId);
+      this.cancelStageInteraction();
       return;
     }
-
-    if (this.pointerId !== event.pointerId || !this.dragging()) {
-      return;
+    const now = performance.now();
+    const seconds = (now - this.lastMoveTime) / 1000;
+    const distance = this.cardSpacing();
+    const movement = event.clientY - this.lastY;
+    if (seconds > 0) {
+      const measured = -movement / distance / seconds;
+      this.motion.velocity = Math.max(
+        -8,
+        Math.min(8, this.motion.velocity * 0.25 + measured * 0.75),
+      );
     }
-
-    const limit = this.stageHeight() * 0.32 || 180;
-    const delta = Math.max(-limit, Math.min(limit, event.clientY - this.startY));
-    this.scheduleDragOffset(delta);
+    this.lastY = event.clientY;
+    this.lastMoveTime = now;
+    this.travel = Math.max(this.travel, Math.abs(event.clientY - this.startY));
+    const requested = this.motion.position - movement / distance;
+    const min = this.hasPreviousPage ? -0.6 : 0;
+    const max = this.items.length - 1 + (this.hasNextPage ? 0.6 : 0);
+    this.motion.position =
+      requested < min
+        ? min + Math.tanh(requested - min) * 0.22
+        : requested > max
+          ? max + Math.tanh(requested - max) * 0.22
+          : requested;
+    this.publishPosition();
     event.preventDefault();
   }
 
   onPointerUp(event: PointerEvent): void {
-    if (this.infoOpen) {
-      this.cancelStageInteraction(event.pointerId);
-      return;
-    }
-
-    if (this.pointerId !== event.pointerId) {
-      return;
-    }
-
-    this.releasePointer(event.pointerId);
-    this.flushDragOffset();
-
-    const delta = this.dragOffset();
-    const tapThreshold = 12;
-    const height = this.stageHeight() || 720;
-    const threshold = Math.max(72, height * 0.12);
-    const isTap = Math.abs(delta) < tapThreshold && performance.now() >= this.clickSuppressedUntil;
-
-    if (isTap && !this.isInteractiveTarget(event.target)) {
-      this.clearTimers();
-      this.dragging.set(false);
-      this.settling.set(false);
-      this.dragOffset.set(0);
-      if (this.pointerStartIndex !== null && this.pointerStartIndex !== this.activeIndex) {
-        this.activeIndexChange.emit(this.pointerStartIndex);
+    if (this.pointerId !== event.pointerId) return;
+    this.releasePointer();
+    this.dragging.set(false);
+    this.clickSuppressedUntil = performance.now() + 350;
+    if (this.infoOpen) return;
+    if (this.travel < 12 && !this.caughtMotion) {
+      if (
+        this.pointerStartIndex !== null &&
+        this.pointerStartIndex !== Math.round(this.position())
+      ) {
+        this.motion.target = this.pointerStartIndex;
+        this.motion.velocity = 0;
+        this.startMotion();
       } else {
         this.openActive();
       }
       return;
     }
-
-    if (delta <= -threshold && this.items.length > 1) {
-      this.animateToEditorialMove(1, Math.abs(delta), threshold);
-      return;
-    }
-
-    if (delta >= threshold && this.items.length > 1) {
-      this.animateToEditorialMove(-1, Math.abs(delta), threshold);
-      return;
-    }
-
-    this.clearTimers();
-    this.settling.set(true);
-    this.dragging.set(false);
-    this.dragOffset.set(0);
-    this.settleResetTimer = window.setTimeout(() => {
-      this.settling.set(false);
-      this.settleResetTimer = null;
-    }, 70);
+    if (performance.now() - this.lastMoveTime > 80 || this.travel < 12) this.motion.velocity = 0;
+    this.startMotion();
   }
 
   onPointerCancel(event: PointerEvent): void {
-    if (this.infoOpen) {
-      this.cancelStageInteraction(event.pointerId);
-      return;
-    }
-
-    if (this.pointerId !== event.pointerId) {
-      return;
-    }
-
-    this.releasePointer(event.pointerId);
-    this.cancelDragFrame();
-    this.dragOffset.set(0);
+    if (this.pointerId !== event.pointerId) return;
+    this.releasePointer();
     this.dragging.set(false);
+    this.motion.velocity = 0;
+    this.motion.target = null;
+    this.clickSuppressedUntil = performance.now() + 350;
+    this.startMotion();
   }
 
-  private cancelStageInteraction(pointerId?: number): void {
-    if (typeof pointerId === 'number' && this.stageRef.nativeElement.hasPointerCapture(pointerId)) {
-      this.stageRef.nativeElement.releasePointerCapture(pointerId);
+  onLinkClick(event: MouseEvent): void {
+    if (event.detail > 0 && (this.isSettling || performance.now() < this.clickSuppressedUntil)) {
+      event.preventDefault();
     }
-
-    this.pointerId = null;
-    this.cancelDragFrame();
-    this.dragOffset.set(0);
-    this.dragging.set(false);
-    this.settling.set(false);
   }
 
-  cardStyle(role: TotemWindowRole): TotemCardStyle {
-    const height = this.stageHeight() || 932;
-    const drag = this.dragOffset();
-    const dragLimit = height * 0.32 || 180;
-    const normalizedDrag = Math.max(-dragLimit, Math.min(dragLimit, drag));
-    const dragProgress = Math.abs(normalizedDrag) / Math.max(dragLimit, 1);
-    const emphasisProgress = 1 - Math.pow(1 - dragProgress, 2.2);
-    const direction = normalizedDrag < 0 ? 1 : -1;
-    const tapeTravel = normalizedDrag;
+  onKeyDown(event: KeyboardEvent): void {
+    if (
+      this.infoOpen ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      (event.target instanceof Element && event.target.closest('button'))
+    )
+      return;
+    const direction = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0;
+    if (!direction) return;
+    event.preventDefault();
+    this.stopMotion();
+    this.motion.velocity = 0;
+    this.focusAfterMotion = true;
+    this.motion.target = Math.round(this.position()) + direction;
+    this.startMotion();
+  }
 
-    const basePositions = {
-      [-1]: { top: -0.34, scale: 0.7, opacity: 0.34, blur: 1.1, x: -5, zIndex: 1 },
-      [0]: { top: 0, scale: 1.19, opacity: 1, blur: 0, x: 0, zIndex: 4 },
-      [1]: { top: 0.34, scale: 0.7, opacity: 0.36, blur: 1.0, x: 5, zIndex: 1 },
-    } as const;
+  private cancelStageInteraction(): void {
+    this.stopMotion();
+    this.releasePointer();
+    this.dragging.set(false);
+    this.setPosition(Math.max(0, Math.min(this.items.length - 1, Math.round(this.position()))));
+  }
 
-    const base = basePositions[role];
-    const incoming = (role === -1 && direction === -1) || (role === 1 && direction === 1);
-    const incomingFocus = incoming ? Math.min(1, emphasisProgress * 1.18) : 0;
-    const neighborGain = incomingFocus * 0.28;
-    const neighborFade = incomingFocus * 0.38;
-    const neighborClarity = incomingFocus * 0.88;
-    const activeScale = role === 0 ? emphasisProgress * 0.1 : 0;
-    const activeFade = role === 0 ? emphasisProgress * 0.24 : 0;
-    const activeSoftness = role === 0 ? emphasisProgress * 0.36 : 0;
-    const roleOffset = base.top * height;
-    const blur = this.dragging()
-      ? base.blur
-      : Math.max(0, base.blur - neighborClarity + activeSoftness);
-
+  cardStyle(role: number): TotemCardStyle {
+    const distance = Math.min(Math.abs(role), 2);
+    const focus = Math.max(0, 1 - distance);
     return {
-      top: `calc(50% + ${roleOffset.toFixed(2)}px)`,
-      transform: `translate3d(calc(-50% + ${base.x}px), calc(-50% + ${tapeTravel.toFixed(2)}px), 0) scale(${base.scale + neighborGain - activeScale})`,
-      opacity: `${Math.max(0, Math.min(1, base.opacity + neighborFade - activeFade))}`,
-      filter: `blur(${blur}px)`,
-      zIndex: `${base.zIndex + (role === 0 ? 3 : incomingFocus > 0.62 ? 4 : 0)}`,
+      top: '50%',
+      transform: `translate3d(calc(-50% + ${Math.max(-1, Math.min(1, role)) * 5}px), calc(-50% + ${(role * this.cardSpacing()).toFixed(2)}px), 0) scale(${0.7 + focus * 0.49})`,
+      opacity: `${Math.max(0, 0.35 + focus * 0.65 - Math.max(0, distance - 1) * 0.35)}`,
+      filter: `blur(${(1 - focus).toFixed(2)}px)`,
+      zIndex: `${Math.round(10 - distance * 3)}`,
     };
+  }
+
+  private cardSpacing(): number {
+    return (this.stageHeight() || 932) * 0.34;
+  }
+
+  private itemAt(index: number): Entity | null {
+    if (index < 0) {
+      const previous = this.previousItems.length ? this.previousItems : this.retainedPrevious;
+      return previous[previous.length + index] ?? null;
+    }
+    if (index >= this.items.length) {
+      return (
+        (this.nextItems.length ? this.nextItems : this.retainedNext)[index - this.items.length] ??
+        null
+      );
+    }
+    return this.items[index] ?? null;
+  }
+
+  private setPosition(index: number): void {
+    this.motion = { position: index, velocity: 0, target: null };
+    this.position.set(index);
+    this.emittedIndex = index;
+  }
+
+  private publishPosition(): void {
+    this.position.set(this.motion.position);
+    const index = Math.round(this.motion.position);
+    if (index >= 0 && index < this.items.length && index !== this.emittedIndex) {
+      this.emittedIndex = index;
+      this.activeIndexChange.emit(index);
+    }
+    const direction = index < 0 ? -1 : index >= this.items.length ? 1 : null;
+    if (
+      direction &&
+      this.pendingPage === null &&
+      (direction === -1 ? this.hasPreviousPage : this.hasNextPage)
+    ) {
+      this.pendingPage = direction;
+      this.pageChange.emit(direction);
+    }
+  }
+
+  private startMotion(): void {
+    this.stopMotion();
+    if (this.pendingPage !== null) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      const target = this.motion.target ?? Math.round(this.motion.position);
+      this.motion.position = Math.max(
+        this.hasPreviousPage ? -1 : 0,
+        Math.min(this.hasNextPage ? this.items.length : this.items.length - 1, target),
+      );
+      this.motion.velocity = 0;
+      this.publishPosition();
+      this.restoreKeyboardFocus();
+      return;
+    }
+    this.settling.set(true);
+    this.motionTime = performance.now();
+    this.motionFrame = requestAnimationFrame((time) => this.animateMotion(time));
+  }
+
+  private animateMotion(time: number): void {
+    this.motionFrame = null;
+    this.motion = advanceTotemMotion(this.motion, (time - this.motionTime) / 1000);
+    this.motionTime = time;
+    const min = this.hasPreviousPage ? -0.6 : 0;
+    const max = this.items.length - 1 + (this.hasNextPage ? 0.6 : 0);
+    if (this.motion.position < min || this.motion.position > max) {
+      const edge = this.motion.position < min ? min : max;
+      if (!Number.isInteger(edge)) {
+        this.motion.position = edge;
+        this.publishPosition();
+        this.settling.set(false);
+        return;
+      }
+      this.motion.target = edge;
+      if (
+        (edge === min && this.motion.velocity < 0) ||
+        (edge === max && this.motion.velocity > 0)
+      ) {
+        this.motion.velocity = 0;
+        this.motion.position = edge + Math.max(-0.22, Math.min(0.22, this.motion.position - edge));
+      }
+    }
+    this.publishPosition();
+    if (
+      this.pendingPage !== null ||
+      (this.motion.velocity === 0 && this.motion.position === this.motion.target)
+    ) {
+      this.settling.set(false);
+      if (this.pendingPage === null) this.restoreKeyboardFocus();
+      return;
+    }
+    this.motionFrame = requestAnimationFrame((next) => this.animateMotion(next));
+  }
+
+  private restoreKeyboardFocus(): void {
+    if (!this.focusAfterMotion) return;
+    this.focusAfterMotion = false;
+    afterNextRender(
+      () => {
+        this.stageRef.nativeElement
+          .querySelector<HTMLAnchorElement>(
+            '.explorer-totem__card--active .explorer-totem__card-link',
+          )
+          ?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+
+  private stopMotion(): void {
+    if (this.motionFrame !== null) cancelAnimationFrame(this.motionFrame);
+    this.motionFrame = null;
+    this.settling.set(false);
   }
 
   cleanWiki(text: string): string {
@@ -396,120 +512,10 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     return this.items[this.activeIndex + offset] ?? null;
   }
 
-  private wrapIndex(index: number, total: number): number {
-    return ((index % total) + total) % total;
-  }
-
-  private animateToEditorialMove(
-    direction: -1 | 1,
-    gestureMagnitude: number,
-    threshold: number,
-  ): void {
-    const height = this.stageHeight() || 932;
-    const transitDistance = height * 0.11;
-    const currentOffset = this.dragOffset();
-    const currentMagnitude = Math.abs(currentOffset);
-    const settleMagnitude = Math.max(currentMagnitude, transitDistance);
-    const overThresholdRatio = gestureMagnitude / Math.max(threshold, 1);
-    const commitDelay = overThresholdRatio < 1.16 ? 118 : 86;
-
-    this.clearTimers();
-    this.settling.set(true);
-    this.dragging.set(false);
-    this.clickSuppressedUntil = performance.now() + commitDelay + 34;
-
-    this.dragOffset.set(direction === 1 ? -settleMagnitude : settleMagnitude);
-
-    this.animationTimer = window.setTimeout(() => {
-      const next = this.activeIndex + direction;
-      if (next < 0 || next >= this.items.length) {
-        if (direction === -1 ? this.hasPreviousPage : this.hasNextPage) {
-          this.pageChange.emit(direction);
-        }
-      } else {
-        this.activeIndexChange.emit(next);
-      }
-      this.dragOffset.set(0);
-      this.animationTimer = null;
-
-      this.settleResetTimer = window.setTimeout(() => {
-        this.settling.set(false);
-        this.settleResetTimer = null;
-      }, 56);
-    }, commitDelay);
-  }
-
-  private syncPanelIndex(defer: boolean): void {
-    if (!this.items.length) {
-      this.panelIndex.set(0);
-      return;
-    }
-
-    if (this.panelUpdateTimer !== null) {
-      window.clearTimeout(this.panelUpdateTimer);
-      this.panelUpdateTimer = null;
-    }
-
-    const nextIndex = this.wrapIndex(this.activeIndex, this.items.length);
-    if (!defer || !this.isBrowser) {
-      this.panelIndex.set(nextIndex);
-      return;
-    }
-
-    this.panelUpdateTimer = window.setTimeout(() => {
-      this.panelIndex.set(nextIndex);
-      this.panelUpdateTimer = null;
-    }, 60);
-  }
-
-  private clearTimers(): void {
-    if (this.animationTimer !== null) {
-      window.clearTimeout(this.animationTimer);
-      this.animationTimer = null;
-    }
-
-    if (this.settleResetTimer !== null) {
-      window.clearTimeout(this.settleResetTimer);
-      this.settleResetTimer = null;
-    }
-
-    if (this.panelUpdateTimer !== null) {
-      window.clearTimeout(this.panelUpdateTimer);
-      this.panelUpdateTimer = null;
-    }
-  }
-
-  private scheduleDragOffset(offset: number): void {
-    this.pendingDragOffset = offset;
-    if (this.dragFrame !== null) {
-      return;
-    }
-
-    this.dragFrame = window.requestAnimationFrame(() => {
-      this.dragFrame = null;
-      this.dragOffset.set(this.pendingDragOffset);
-    });
-  }
-
-  private flushDragOffset(): void {
-    if (this.dragFrame !== null) {
-      window.cancelAnimationFrame(this.dragFrame);
-      this.dragFrame = null;
-    }
-
-    this.dragOffset.set(this.pendingDragOffset);
-  }
-
-  private cancelDragFrame(): void {
-    if (this.dragFrame !== null) {
-      window.cancelAnimationFrame(this.dragFrame);
-      this.dragFrame = null;
-    }
-  }
-
-  private releasePointer(pointerId: number): void {
+  private releasePointer(): void {
+    const pointerId = this.pointerId;
     this.pointerId = null;
-    if (this.stageRef.nativeElement.hasPointerCapture(pointerId)) {
+    if (pointerId !== null && this.stageRef?.nativeElement.hasPointerCapture(pointerId)) {
       this.stageRef.nativeElement.releasePointerCapture(pointerId);
     }
   }

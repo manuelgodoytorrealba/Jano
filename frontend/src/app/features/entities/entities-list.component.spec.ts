@@ -13,7 +13,7 @@ import { TagsApi } from '../../core/api/tags.api';
 import { AuthService } from '../../core/auth/auth.service';
 import { NavigationMemoryService } from '../../core/navigation-memory.service';
 import { EntitiesListComponent } from './entities-list.component';
-import { EntitiesListPageVm } from './entities-list.facade';
+import { EntitiesListFacade, EntitiesListPageVm } from './entities-list.facade';
 
 describe('EntitiesListComponent filters', () => {
   const paramMap$ = new BehaviorSubject(convertToParamMap({ type: 'artwork' }));
@@ -564,6 +564,41 @@ describe('EntitiesListComponent filters', () => {
     queryParamMap$.next(convertToParamMap({ page: '1' }));
     await new Promise((resolve) => setTimeout(resolve, 350));
     expect(component.activeIndex()).toBe(2);
+  });
+
+  it('reuses a prefetched page and invalidates it when the filters change', async () => {
+    queryParamMap$.next(convertToParamMap({}));
+    const fetchPage = vi.fn(apiStub.list);
+    TestBed.overrideProvider(EntitiesApi, { useValue: { ...apiStub, list: fetchPage } });
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const facade = fixture.debugElement.injector.get(EntitiesListFacade);
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    facade.prepareExplorerPages({ items: [], page: 1, limit: 24, total: 72, totalPages: 3 });
+    expect(facade.explorerNextItems().map((item) => item.slug)).toEqual([
+      'persistencia-1',
+      'persistencia-2',
+    ]);
+    expect(
+      fetchPage.mock.calls
+        .map(([params]) => params)
+        .filter((params) => params.page === 2 && params.limit === 24),
+    ).toHaveLength(1);
+    queryParamMap$.next(convertToParamMap({ page: '2' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(
+      fetchPage.mock.calls
+        .map(([params]) => params)
+        .filter((params) => params.page === 2 && params.limit === 24),
+    ).toHaveLength(1);
+    queryParamMap$.next(convertToParamMap({ page: '2', movement: 'cubismo' }));
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    expect(
+      fetchPage.mock.calls
+        .map(([params]) => params)
+        .filter((params) => params.page === 2 && params.movement === 'cubismo'),
+    ).toHaveLength(1);
+    expect(facade.explorerNextItems()).toEqual([]);
+    fixture.destroy();
   });
 
   it('scrolls to the start after the next list page arrives', async () => {

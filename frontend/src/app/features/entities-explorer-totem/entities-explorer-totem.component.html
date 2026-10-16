@@ -10,9 +10,11 @@
   (pointermove)="onPointerMove($event)"
   (pointerup)="onPointerUp($event)"
   (pointercancel)="onPointerCancel($event)"
+  (lostpointercapture)="onPointerCancel($event)"
+  (keydown)="onKeyDown($event)"
 >
   <div class="explorer-totem__stack">
-    @for (card of ribbonCards(); track card.index + ':' + card.role) {
+    @for (card of ribbonCards(); track card.item.slug) {
       <article
         class="explorer-totem__card"
         [class.explorer-totem__card--active]="card.active"
@@ -28,6 +30,7 @@
             class="explorer-totem__card-link"
             draggable="false"
             (dragstart)="$event.preventDefault()"
+            (click)="onLinkClick($event)"
             [routerLink]="card.active ? ['/entity', card.item.slug] : null"
             [attr.tabindex]="card.active ? 0 : -1"
             [attr.aria-label]="i18n.t('entity.open') + ' ' + card.item.title"
@@ -36,7 +39,7 @@
               [entity]="card.item"
               usage="explorer3d"
               [alt]="card.item.title"
-              [lazy]="!card.active"
+              [lazy]="false"
               [priority]="card.active ? 'high' : 'low'"
             ></app-jano-media>
             @if (card.active) {

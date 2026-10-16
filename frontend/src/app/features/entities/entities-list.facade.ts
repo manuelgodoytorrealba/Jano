@@ -1,5 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   combineLatest,
@@ -13,6 +13,7 @@ import {
   tap,
   finalize,
   throwError,
+  Observable,
 } from 'rxjs';
 import { EntitiesApi } from '../../core/api/entities.api';
 import {
@@ -192,6 +193,19 @@ export class EntitiesListFacade {
     : '';
   private lastFeedResults: EntityListVm | null = null;
 
+  private readonly destroyRef = inject(DestroyRef);
+  private explorerQueryKey = '';
+  private explorerQuery: {
+    state: EntitiesListQueryState;
+    query: string;
+    personalized: boolean;
+  } | null = null;
+  private readonly explorerPages = new Map<number, Observable<EntityListVm>>();
+  readonly explorerPreviousItems = signal<PublicEntityListItem[]>([]);
+  readonly explorerNextItems = signal<PublicEntityListItem[]>([]);
+  private explorerPage = 0;
+  private explorerResults: EntityListVm | null = null;
+
   private readonly limit = 24;
   private readonly contextualFilterKeys = [
     'movement',
@@ -319,45 +333,44 @@ export class EntitiesListFacade {
         locale: this.i18n.locale(),
         user: user?.id,
       });
+      const queryKey = JSON.stringify({
+        state: { ...state, page: 0 },
+        query: debouncedQuery,
+        locale: this.i18n.locale(),
+        user: user?.id,
+      });
+      if (queryKey !== this.explorerQueryKey) {
+        this.explorerQueryKey = queryKey;
+        this.explorerPages.clear();
+        this.explorerResults = null;
+        this.explorerPreviousItems.set([]);
+        this.explorerNextItems.set([]);
+      }
+      for (const page of this.explorerPages.keys()) {
+        if (Math.abs(page - state.page) > 1) this.explorerPages.delete(page);
+      }
+      this.explorerQuery = {
+        state,
+        query: debouncedQuery,
+        personalized:
+          !!user && !this.isDiscoveryFeed && this.shouldUseArchiveRecommendations(state),
+      };
       const cached = this.navigation.read<{ signature: string; results: EntityListVm }>('catalog');
       if (cached?.signature === signature) {
+        this.explorerPages.set(state.page, of(cached.results));
+        this.explorerResults = cached.results;
         if (this.isDiscoveryFeed) this.lastFeedResults = cached.results;
         return of(cached.results);
       }
       const key = this.navigation.visit().key;
-      const request =
-        user && !this.isDiscoveryFeed && this.shouldUseArchiveRecommendations(state)
-          ? this.searchApi.archiveRecommendations({
-              ...(state.type ? { type: state.type } : {}),
-              limit: this.limit,
-              page: state.page,
-            })
-          : this.api.list({
-              ...(this.isDiscoveryFeed && state.sort === 'recent' ? { seed: state.seed } : {}),
-              type: state.type || undefined,
-              kind: state.kind || undefined,
-              q: debouncedQuery || undefined,
-              page: state.page,
-              limit: this.limit,
-              sort: state.sort === 'relevance' && !debouncedQuery ? 'recent' : state.sort,
-              status: state.status || undefined,
-              contentLevel: state.contentLevel || undefined,
-              movement: state.filterSupport.movement ? state.movement || undefined : undefined,
-              period: state.filterSupport.period ? state.period || undefined : undefined,
-              institution: state.filterSupport.institution
-                ? state.institution || undefined
-                : undefined,
-              nationality: state.filterSupport.nationality
-                ? state.nationality || undefined
-                : undefined,
-              tag: state.tag || undefined,
-            });
+      const request = this.explorerPageRequest(state.page);
       if (this.isDiscoveryFeed) {
         this.feedLoading.set(true);
         this.feedError.set(false);
       }
       return request.pipe(
         tap((results) => {
+          this.explorerResults = results;
           if (this.isDiscoveryFeed) this.lastFeedResults = results;
           this.navigation.write('catalog', { signature, results }, key);
         }),
@@ -650,6 +663,74 @@ export class EntitiesListFacade {
         }),
       )
       .subscribe();
+  }
+
+  prepareExplorerPages(results: EntityListVm | null = this.explorerResults): void {
+    if (!results || !this.explorerQuery) return;
+    this.explorerPage = results.page;
+    const queryKey = this.explorerQueryKey;
+    this.explorerPreviousItems.set([]);
+    this.explorerNextItems.set([]);
+    for (const page of this.explorerPages.keys()) {
+      if (Math.abs(page - results.page) > 1) this.explorerPages.delete(page);
+    }
+    for (const direction of [-1, 1] as const) {
+      const page = results.page + direction;
+      if (page < 1 || page > results.totalPages) continue;
+      this.explorerPageRequest(page)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (neighbor) => {
+            if (queryKey !== this.explorerQueryKey || this.explorerPage !== results.page) return;
+            if (direction === -1) this.explorerPreviousItems.set(neighbor.items.slice(-2));
+            else this.explorerNextItems.set(neighbor.items.slice(0, 2));
+          },
+          // A failed prefetch must remain retryable through normal page navigation.
+          error: () => undefined,
+        });
+    }
+  }
+
+  private explorerPageRequest(page: number): Observable<EntityListVm> {
+    const cached = this.explorerPages.get(page);
+    if (cached) return cached;
+    const context = this.explorerQuery!;
+    const state = { ...context.state, page };
+    const query = context.query;
+    const personalized = context.personalized;
+    const request = personalized
+      ? this.searchApi.archiveRecommendations({
+          ...(state.type ? { type: state.type } : {}),
+          limit: this.limit,
+          page: state.page,
+        })
+      : this.api.list({
+          ...(this.isDiscoveryFeed && state.sort === 'recent' ? { seed: state.seed } : {}),
+          type: state.type || undefined,
+          kind: state.kind || undefined,
+          q: query || undefined,
+          page: state.page,
+          limit: this.limit,
+          sort: state.sort === 'relevance' && !query ? 'recent' : state.sort,
+          status: state.status || undefined,
+          contentLevel: state.contentLevel || undefined,
+          movement: state.filterSupport.movement ? state.movement || undefined : undefined,
+          period: state.filterSupport.period ? state.period || undefined : undefined,
+          institution: state.filterSupport.institution ? state.institution || undefined : undefined,
+          nationality: state.filterSupport.nationality ? state.nationality || undefined : undefined,
+          tag: state.tag || undefined,
+        });
+    const pages = this.explorerPages;
+    const queryKey = this.explorerQueryKey;
+    const shared = request.pipe(
+      catchError((error: unknown) => {
+        if (queryKey === this.explorerQueryKey) pages.delete(page);
+        return throwError(() => error);
+      }),
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
+    pages.set(page, shared);
+    return shared;
   }
 
   clearSearch(): Promise<boolean> {

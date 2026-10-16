@@ -98,6 +98,8 @@ export class EntitiesListComponent {
   readonly isDiscoveryFeed = this.facade.isDiscoveryFeed;
   readonly feedLoading = this.facade.feedLoading;
   readonly feedError = this.facade.feedError;
+  readonly explorerPreviousItems = this.facade.explorerPreviousItems;
+  readonly explorerNextItems = this.facade.explorerNextItems;
   readonly i18n = inject(I18nService);
   readonly auth = inject(AuthService);
   readonly isAdmin = signal(this.auth.currentUser?.role === 'ADMIN');
@@ -173,6 +175,7 @@ export class EntitiesListComponent {
         ),
         tap((results) => {
           this.items = results.items;
+          if (this.isMobilePortraitTotemActive()) this.facade.prepareExplorerPages(results);
           const restored = this.navigation.read<ArchiveVisitState>('archive');
           const restoredIndex = restored?.activeSlug
             ? results.items.findIndex((item) => item.slug === restored.activeSlug)
@@ -256,6 +259,7 @@ export class EntitiesListComponent {
     this.viewportHeight.set(window.innerHeight);
 
     if (this.isMobilePortraitTotem()) {
+      if (this.viewMode === 'explore') this.facade.prepareExplorerPages();
       this.infoPanelOpen.set(false);
       return;
     }
@@ -284,6 +288,7 @@ export class EntitiesListComponent {
   setView(mode: ViewMode) {
     this.closeFilterMenu();
     this.viewMode = mode;
+    if (this.isMobilePortraitTotemActive()) this.facade.prepareExplorerPages();
     if (this.isDiscoveryFeed && typeof window !== 'undefined') {
       try {
         window.localStorage.setItem('jano.home.view', mode);
