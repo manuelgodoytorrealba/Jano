@@ -263,8 +263,8 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
     if (seconds > 0) {
       const measured = -movement / distance / seconds;
       this.motion.velocity = Math.max(
-        -8,
-        Math.min(8, this.motion.velocity * 0.25 + measured * 0.75),
+        -3,
+        Math.min(3, this.motion.velocity * 0.25 + measured * 0.75),
       );
     }
     this.lastY = event.clientY;

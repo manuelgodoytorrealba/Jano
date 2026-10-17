@@ -9,7 +9,7 @@ export function advanceTotemMotion(motion: TotemMotion, seconds: number): TotemM
   const dt = Math.min(Math.max(seconds, 0), 0.05);
   let { position, velocity, target } = motion;
   if (target === null && Math.abs(velocity) > 1.1) {
-    const friction = 3.6;
+    const friction = 8;
     const decay = Math.exp(-friction * dt);
     position += (velocity * (1 - decay)) / friction;
     velocity *= decay;

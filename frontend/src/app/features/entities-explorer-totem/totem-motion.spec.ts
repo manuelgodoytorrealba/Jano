@@ -8,9 +8,9 @@ function settle(initial: TotemMotion, hz = 60): TotemMotion {
 }
 
 describe('totem momentum', () => {
-  it('carries a fast flick across several cards, then rests on a detent', () => {
-    const state = settle({ position: 0.2, velocity: 8, target: null });
-    expect(state.position).toBeGreaterThan(1);
+  it('settles an ordinary fast flick on the next card without skipping it', () => {
+    const state = settle({ position: 0.45, velocity: 3, target: null });
+    expect(state.position).toBe(1);
     expect(Number.isInteger(state.position)).toBe(true);
     expect(state.velocity).toBe(0);
   });

@@ -76,6 +76,16 @@ describe('totem gestures', () => {
     expect(component.activeItem?.slug).toBe('entity-1');
   });
 
+  it('does not skip the next entity after a short fast swipe', () => {
+    component.onPointerDown(pointer(500));
+    now += 30;
+    component.onPointerMove(pointer(350));
+    component.onPointerUp(pointer(350));
+    for (let frame = 0; frame < 180; frame++) tick();
+    expect(state().position).toBe(1);
+    expect(component.activeItem?.slug).toBe('entity-1');
+  });
+
   it('catches a moving card at its exact position and does not open it', () => {
     const open = vi.spyOn(component.openEntity, 'emit');
     component.onPointerDown(pointer(500));

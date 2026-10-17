@@ -275,6 +275,8 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   private loadSub?: Subscription;
   private graphResizeObserver?: ResizeObserver;
   private imageResizeObserver?: ResizeObserver;
+  private imageTapStart: { x: number; y: number; time: number; id: number } | null = null;
+  private lastImageTap: { x: number; y: number; time: number } | null = null;
   private graphStageRectCache: GraphStageRect | null = null;
   private hoverClearTimer: ReturnType<typeof setTimeout> | null = null;
   private graphInteractionSettleTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1252,6 +1254,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onImagePointerDown(event: PointerEvent): void {
+    this.imageTapStart =
+      event.isPrimary &&
+      event.button === 0 &&
+      !(event.target as Element | null)?.closest('button, a, input, textarea, select, label')
+        ? { x: event.clientX, y: event.clientY, time: performance.now(), id: event.pointerId }
+        : null;
+    if (!event.isPrimary) this.lastImageTap = null;
     this.interactions.imagePointerDown({
       event,
       stage: this.imageStage?.nativeElement,
@@ -1264,6 +1273,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   onImagePointerMove(event: PointerEvent): void {
+    if (
+      this.imageTapStart &&
+      Math.hypot(event.clientX - this.imageTapStart.x, event.clientY - this.imageTapStart.y) > 12
+    ) {
+      this.imageTapStart = null;
+      this.lastImageTap = null;
+    }
     this.interactions.imagePointerMove({
       event,
       stage: this.imageStage?.nativeElement,
@@ -1282,9 +1298,46 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   onImagePointerUp(event: PointerEvent): void {
     this.interactions.imagePointerEnd(event, () => this.persistExplorerState());
+    const start = this.imageTapStart;
+    this.imageTapStart = null;
+    const now = performance.now();
+    if (!start || start.id !== event.pointerId || now - start.time > 300) return;
+    const last = this.lastImageTap;
+    if (
+      last &&
+      now - last.time < 320 &&
+      Math.hypot(event.clientX - last.x, event.clientY - last.y) < 24
+    ) {
+      this.lastImageTap = null;
+      this.toggleImageZoom(event);
+    } else {
+      this.lastImageTap = { x: event.clientX, y: event.clientY, time: now };
+    }
+  }
+
+  toggleImageZoom(event: PointerEvent): void {
+    const stage = this.imageStage?.nativeElement;
+    const asset = this.imageAsset();
+    if (!stage || !asset) return;
+    const current = this.imageViewport();
+    if (current.scale > current.fitScale * 1.1) {
+      this.resetImageView();
+      return;
+    }
+    const rect = stage.getBoundingClientRect();
+    const next = zoomGraphImageViewport({
+      current,
+      factor: 2,
+      anchor: { x: event.clientX - rect.left, y: event.clientY - rect.top },
+      size: this.currentImageStageSize(),
+      asset,
+    });
+    if (next) this.applyImageViewport(next);
   }
 
   onImagePointerCancel(event: PointerEvent): void {
+    this.imageTapStart = null;
+    this.lastImageTap = null;
     this.interactions.imagePointerEnd(event, () => this.persistExplorerState());
   }
 
