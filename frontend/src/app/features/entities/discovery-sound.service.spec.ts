@@ -95,6 +95,21 @@ describe('DiscoverySoundService', () => {
     expect(context.createBuffer).toHaveBeenCalledTimes(1);
   });
 
+  it('produces two short mechanical impacts without clipping', async () => {
+    const samples = new Float32Array(2880);
+    context.createBuffer.mockReturnValue({ getChannelData: () => samples });
+    const { sound } = setup();
+    await sound.toggle();
+    const energy = (from: number, to: number) => {
+      const window = samples.slice(from * 48, to * 48);
+      return window.reduce((sum, value) => sum + value * value, 0) / window.length;
+    };
+    expect(energy(0, 3)).toBeGreaterThan(energy(11, 14) * 5);
+    expect(energy(14, 17)).toBeGreaterThan(energy(11, 14) * 5);
+    expect(Math.max(...samples.map(Math.abs))).toBeLessThan(0.5);
+    expect(samples.every(Number.isFinite)).toBe(true);
+  });
+
   it('cancels pending audio when muted and closes the context on leaving', async () => {
     const { fixture, sound } = setup();
     await sound.toggle();

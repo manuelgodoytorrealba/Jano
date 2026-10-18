@@ -74,19 +74,26 @@ export class DiscoverySoundService {
         const t = i / context.sampleRate;
         seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
         const noise = (seed / 0xffffffff) * 2 - 1;
-        const attack = 1 - Math.exp(-t / 0.0005);
-        samples[i] =
-          attack *
-          0.18 *
-          (noise * Math.exp(-t / 0.006) +
-            Math.sin(2 * Math.PI * 420 * t) * 0.55 * Math.exp(-t / 0.011));
+        // A latch releases, then catches: two bright impacts with brief metal resonances.
+        for (const onset of [0, 0.014]) {
+          const age = t - onset;
+          if (age < 0) continue;
+          const attack = 1 - Math.exp(-age / 0.00008);
+          samples[i] +=
+            (onset === 0 ? 0.16 : 0.11) *
+            attack *
+            (noise * 1.2 * Math.exp(-age / 0.0015) +
+              Math.sin(2 * Math.PI * 1750 * age) * 0.4 * Math.exp(-age / 0.005) +
+              Math.sin(2 * Math.PI * 2870 * age) * 0.28 * Math.exp(-age / 0.007) +
+              Math.sin(2 * Math.PI * 4630 * age) * 0.18 * Math.exp(-age / 0.003));
+        }
       }
     }
     const source = context.createBufferSource();
     const filter = context.createBiquadFilter();
     source.buffer = this.buffer;
     filter.type = 'lowpass';
-    filter.frequency.value = 2400;
+    filter.frequency.value = 7200;
     filter.Q.value = 0.5;
     source.connect(filter);
     filter.connect(context.destination);
