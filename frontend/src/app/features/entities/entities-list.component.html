@@ -104,7 +104,13 @@
               [class.is-active]="feedSound.enabled()"
               [attr.aria-pressed]="feedSound.enabled()"
               [attr.aria-label]="
-                i18n.t(feedSound.enabled() ? 'home.soundDisable' : 'home.soundEnable')
+                i18n.t(
+                  feedSound.unavailable()
+                    ? 'home.soundUnavailable'
+                    : feedSound.enabled()
+                      ? 'home.soundDisable'
+                      : 'home.soundEnable'
+                )
               "
               [attr.title]="
                 i18n.t(
@@ -125,9 +131,6 @@
                   <path d="m16 9 6 6m0-6-6 6" />
                 }
               </svg>
-              <span>{{
-                i18n.t(feedSound.unavailable() ? 'home.soundUnavailable' : 'home.sound')
-              }}</span>
             </button>
           }
           <button

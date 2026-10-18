@@ -65,7 +65,7 @@ export class DiscoverySoundService {
     if (!this.buffer) {
       this.buffer = context.createBuffer(
         1,
-        Math.ceil(context.sampleRate * 0.06),
+        Math.ceil(context.sampleRate * 0.04),
         context.sampleRate,
       );
       const samples = this.buffer.getChannelData(0);
@@ -74,27 +74,17 @@ export class DiscoverySoundService {
         const t = i / context.sampleRate;
         seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
         const noise = (seed / 0xffffffff) * 2 - 1;
-        // A latch releases, then catches: two bright impacts with brief metal resonances.
-        for (const onset of [0, 0.014]) {
-          const age = t - onset;
-          if (age < 0) continue;
-          const attack = 1 - Math.exp(-age / 0.00008);
-          samples[i] +=
-            (onset === 0 ? 0.16 : 0.11) *
-            attack *
-            (noise * 1.2 * Math.exp(-age / 0.0015) +
-              Math.sin(2 * Math.PI * 1750 * age) * 0.4 * Math.exp(-age / 0.005) +
-              Math.sin(2 * Math.PI * 2870 * age) * 0.28 * Math.exp(-age / 0.007) +
-              Math.sin(2 * Math.PI * 4630 * age) * 0.18 * Math.exp(-age / 0.003));
-        }
+        // A single soft detent, without a pitched body or a metallic second strike.
+        const envelope = (1 - Math.exp(-t / 0.00045)) * Math.exp(-t / 0.0018);
+        samples[i] = 0.22 * noise * envelope;
       }
     }
     const source = context.createBufferSource();
     const filter = context.createBiquadFilter();
     source.buffer = this.buffer;
-    filter.type = 'lowpass';
-    filter.frequency.value = 7200;
-    filter.Q.value = 0.5;
+    filter.type = 'bandpass';
+    filter.frequency.value = 2800;
+    filter.Q.value = 0.55;
     source.connect(filter);
     filter.connect(context.destination);
     source.onended = () => {

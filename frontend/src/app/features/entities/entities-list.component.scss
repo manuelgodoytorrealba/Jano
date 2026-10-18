@@ -62,10 +62,6 @@
 .entities-feed-sound {
   left: auto;
   right: 52px;
-  width: auto;
-  min-width: 94px;
-  padding: 0 12px;
-  gap: 7px;
   &.is-active {
     color: var(--color-text);
     border-color: currentColor;
@@ -86,7 +82,6 @@
   }
   .entities-feed-sound {
     right: 52px;
-    width: auto;
   }
   .entities-feed-error {
     top: calc(var(--app-safe-top) + 108px);
