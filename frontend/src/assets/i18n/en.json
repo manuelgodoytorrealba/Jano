@@ -1,4 +1,8 @@
 {
+  "home.sound": "Sound",
+  "home.soundEnable": "Enable sound",
+  "home.soundDisable": "Mute sound",
+  "home.soundUnavailable": "Sound unavailable",
   "home.feedRenew": "Refresh selection",
   "home.feedRenewing": "Refreshing…",
   "home.feedError": "Could not refresh the selection. Please try again.",

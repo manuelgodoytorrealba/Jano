@@ -238,6 +238,29 @@ describe('EntitiesListComponent filters', () => {
       .compileComponents();
   });
 
+  it('plays only for changed cards in the discovery feed', () => {
+    routeStub.snapshot.data = { discoveryFeed: true };
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const component = fixture.componentInstance;
+    const tick = vi.spyOn(component.feedSound, 'tick');
+    component.onExplorerActiveIndexChange(0);
+    expect(tick).not.toHaveBeenCalled();
+    component.onExplorerActiveIndexChange(1);
+    expect(tick).toHaveBeenCalledTimes(1);
+    expect(component.activeIndex()).toBe(1);
+    fixture.destroy();
+  });
+
+  it('keeps archive browsing silent', () => {
+    const fixture = TestBed.createComponent(EntitiesListComponent);
+    const component = fixture.componentInstance;
+    const tick = vi.spyOn(component.feedSound, 'tick');
+    component.onExplorerActiveIndexChange(1);
+    expect(component.activeIndex()).toBe(1);
+    expect(tick).not.toHaveBeenCalled();
+    fixture.destroy();
+  });
+
   it('starts the home feed in Explorer and renews without dropping filters', async () => {
     routeStub.snapshot.data = { discoveryFeed: true };
     queryParamMap$.next(
