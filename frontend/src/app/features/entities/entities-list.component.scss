@@ -59,14 +59,6 @@
   color: var(--color-text);
   font-size: 0.875rem;
 }
-.entities-feed-sound {
-  left: auto;
-  right: 52px;
-  &.is-active {
-    color: var(--color-text);
-    border-color: currentColor;
-  }
-}
 @media (max-width: 720px) {
   .entities-page--feed {
     --entities-explorer-inner-top: 64px;
@@ -79,9 +71,6 @@
     width: 40px;
     height: 40px;
     min-height: 40px;
-  }
-  .entities-feed-sound {
-    right: 52px;
   }
   .entities-feed-error {
     top: calc(var(--app-safe-top) + 108px);

@@ -3,8 +3,6 @@
   [class.entities-page--immersive]="viewMode === 'explore'"
   [class.entities-page--list-shell]="viewMode === 'list'"
   [class.entities-page--feed]="isDiscoveryFeed"
-  (pointerdown)="unlockFeedSound()"
-  (keydown)="unlockFeedSound()"
 >
   <h1 class="sr-only">
     @if (pageVm$ | async; as pageVm) {
@@ -97,42 +95,6 @@
           </div>
         </div>
         @if (isDiscoveryFeed) {
-          @if (viewMode === 'explore') {
-            <button
-              type="button"
-              class="entities-feed-sound entities-feed-renew ds-panel"
-              [class.is-active]="feedSound.enabled()"
-              [attr.aria-pressed]="feedSound.enabled()"
-              [attr.aria-label]="
-                i18n.t(
-                  feedSound.unavailable()
-                    ? 'home.soundUnavailable'
-                    : feedSound.enabled()
-                      ? 'home.soundDisable'
-                      : 'home.soundEnable'
-                )
-              "
-              [attr.title]="
-                i18n.t(
-                  feedSound.unavailable()
-                    ? 'home.soundUnavailable'
-                    : feedSound.enabled()
-                      ? 'home.soundDisable'
-                      : 'home.soundEnable'
-                )
-              "
-              (click)="feedSound.toggle()"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M11 4 6 8H3v8h3l5 4Z" />
-                @if (feedSound.enabled()) {
-                  <path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" />
-                } @else {
-                  <path d="m16 9 6 6m0-6-6 6" />
-                }
-              </svg>
-            </button>
-          }
           <button
             type="button"
             class="entities-feed-renew ds-panel"
@@ -192,7 +154,7 @@
                 [hasNextPage]="pageVm.results.page < pageVm.results.totalPages"
                 (pageChange)="changeExplorerPage($event, pageVm.results.totalPages)"
                 [infoOpen]="infoPanelOpen()"
-                (activeIndexChange)="onExplorerActiveIndexChange($event)"
+                (activeIndexChange)="activeIndex.set($event)"
                 (openEntity)="go($event)"
                 (requestInfoOpen)="openInfoPanel()"
                 (requestInfoClose)="closeInfoPanel()"
@@ -209,7 +171,7 @@
                 [infoOpen]="infoPanelOpen()"
                 [infoClosable]="true"
                 [infoModal]="isMobilePortraitTotem()"
-                (activeIndexChange)="onExplorerActiveIndexChange($event)"
+                (activeIndexChange)="activeIndex.set($event)"
                 (openEntity)="go($event)"
                 (requestInfoOpen)="openInfoPanel()"
                 (requestInfoClose)="closeInfoPanel()"

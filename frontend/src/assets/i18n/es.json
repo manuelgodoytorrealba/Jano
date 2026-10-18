@@ -1,8 +1,4 @@
 {
-  "home.sound": "Sonido",
-  "home.soundEnable": "Activar sonido",
-  "home.soundDisable": "Silenciar sonido",
-  "home.soundUnavailable": "Sonido no disponible",
   "home.feedRenew": "Renovar selección",
   "home.feedRenewing": "Renovando…",
   "home.feedError": "No se pudo renovar la selección. Puedes volver a intentarlo.",

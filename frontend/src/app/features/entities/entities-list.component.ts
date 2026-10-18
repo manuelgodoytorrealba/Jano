@@ -34,7 +34,6 @@ import {
 import { EntitiesListEmptyStateComponent } from './entities-list-empty-state.component';
 import { EntitiesListFilterRailComponent } from './entities-list-filter-rail.component';
 import { EntitiesListPagerComponent } from './entities-list-pager.component';
-import { DiscoverySoundService } from './discovery-sound.service';
 
 type ViewMode = 'explore' | 'list';
 
@@ -80,7 +79,7 @@ type ArchiveVisitState = {
   standalone: true,
   selector: 'app-entities-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [EntitiesListFacade, DiscoverySoundService],
+  providers: [EntitiesListFacade],
   imports: [
     AsyncPipe,
     RouterLink,
@@ -95,7 +94,6 @@ type ArchiveVisitState = {
   styleUrls: ['./entities-list.component.scss'],
 })
 export class EntitiesListComponent {
-  readonly feedSound = inject(DiscoverySoundService);
   private readonly facade = inject(EntitiesListFacade);
   readonly isDiscoveryFeed = this.facade.isDiscoveryFeed;
   readonly feedLoading = this.facade.feedLoading;
@@ -120,16 +118,6 @@ export class EntitiesListComponent {
   readonly viewportWidth = signal(typeof window !== 'undefined' ? window.innerWidth : 0);
   readonly viewportHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 0);
   readonly activeIndex = signal(0);
-
-  unlockFeedSound(): void {
-    if (this.isDiscoveryFeed) void this.feedSound.unlock();
-  }
-
-  onExplorerActiveIndexChange(index: number): void {
-    const changed = index !== this.activeIndex();
-    this.activeIndex.set(index);
-    if (this.isDiscoveryFeed && changed) this.feedSound.tick();
-  }
   readonly advancedFiltersOpen = signal(false);
   readonly filtersPanelOpen = signal(false);
   readonly infoPanelOpen = signal(false);
