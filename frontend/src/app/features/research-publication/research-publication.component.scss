@@ -321,7 +321,7 @@
   font-weight: 600;
 }
 .publication__prose {
-  width: min(100%, 72ch);
+  width: min(100%, 66ch);
   min-width: 0;
   margin-inline: auto;
 }
@@ -348,15 +348,17 @@
 }
 .publication__chapter app-rich-text {
   display: block;
-  font-size: 17px;
-  line-height: 1.75;
-  color: var(--research-text-soft);
+  --rt-reading-size: 1.1875rem;
+  --rt-reading-line-height: 1.75;
+  font-size: var(--rt-reading-size);
+  line-height: var(--rt-reading-line-height);
+  color: var(--research-text);
   overflow-wrap: anywhere;
 }
 .publication__section-summary,
 .publication__empty {
   color: var(--research-text-soft);
-  font-size: 16px;
+  font-size: 1.125rem;
   line-height: 1.75;
 }
 .publication__chapter-navigation {
@@ -498,6 +500,14 @@
   color: var(--research-text);
   box-shadow: 0 25px 100px rgba(0, 0, 0, 0.4);
 }
+.publication__overlay--map[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: calc(100vw - 32px);
+  height: calc(100dvh - 32px);
+  max-height: none;
+  margin: 16px;
+}
 .publication__overlay::backdrop {
   background: rgba(0, 0, 0, 0.74);
   backdrop-filter: blur(12px);
@@ -519,8 +529,7 @@
   object-fit: contain;
 }
 .publication__overlay-graph {
-  height: calc(100svh - 155px);
-  min-height: 260px;
+  min-height: 0;
   border-radius: 18px;
   overflow: hidden;
 }
@@ -631,8 +640,11 @@
     margin-bottom: 24px;
     background: var(--publication-surface);
   }
+  .publication__chapter app-rich-text {
+    --rt-reading-size: 1.125rem;
+  }
   .publication__introduction {
-    font-size: 17px;
+    font-size: 1.125rem;
     line-height: 1.65;
     margin-bottom: 24px !important;
   }
@@ -714,6 +726,24 @@
     max-height: calc(100svh - 16px);
     padding: 12px;
     border-radius: 18px;
+  }
+  .publication__overlay--map[open] {
+    display: block;
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .publication__overlay--map > header {
+    display: none;
+  }
+  .publication__overlay--map .publication__overlay-graph {
+    height: 100%;
+    border-radius: 0;
   }
   .publication__overlay header {
     gap: 8px;
