@@ -64,6 +64,8 @@ export class EntitiesExplorerTotemComponent implements AfterViewInit, OnChanges,
   @Output() pageChange = new EventEmitter<-1 | 1>();
   @Input() infoOpen = false;
   @Input() pageError = false;
+  @Input() routePrefix = '/entity';
+  @Input() openActionKey = 'entity.open';
 
   @Output() activeIndexChange = new EventEmitter<number>();
   @Output() openEntity = new EventEmitter<string | EntityArtworkTransitionPayload>();

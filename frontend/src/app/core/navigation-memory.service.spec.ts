@@ -69,6 +69,26 @@ describe('navigation visit memory', () => {
     expect(memory.read('view')).toEqual({ slug: 'selected', mode: 'explore' });
   });
 
+  it('retains the research reading visit through entity links and browser Back', () => {
+    const research = navigate(1, '/research/atlas?chapter=two');
+    memory.write('research-reading', {
+      publicationId: 'atlas',
+      chapterId: 'two',
+      tab: 'content',
+      top: 1800,
+    });
+    navigate(2, '/entity/masculinities');
+    expect(memory.origin?.key).toBe(research.key);
+    navigate(3, '/research/atlas?chapter=two', { janoVisit: research });
+    expect(window.history.scrollRestoration).toBe('manual');
+    expect(memory.read('research-reading')).toEqual({
+      publicationId: 'atlas',
+      chapterId: 'two',
+      tab: 'content',
+      top: 1800,
+    });
+  });
+
   it('does not invent an origin for direct links or cancelled navigation', () => {
     const direct = navigate(1, '/entity/man-ray');
     expect(memory.origin).toBeNull();

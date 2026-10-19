@@ -1,11 +1,19 @@
-import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  HostListener,
+  inject,
+  signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { map } from 'rxjs';
 import { PublicEntityListItem } from '../../core/api/entities.models';
 import { ResearchApi, ResearchProjectSummary } from '../../core/api/research.api';
 import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { EntitiesExplorer3dComponent } from '../entities-explorer-3d/entities-explorer-3d.component';
+import { EntitiesExplorerTotemComponent } from '../entities-explorer-totem/entities-explorer-totem.component';
 import { EntityArtworkTransitionPayload } from '../../core/entity-route-artwork-transition.service';
 import { EntitiesListFilterRailVm, Sort } from '../entities/entities-list.facade';
 import { EntitiesListFilterRailComponent } from '../entities/entities-list-filter-rail.component';
@@ -15,8 +23,8 @@ type ViewMode = 'explore' | 'list';
 @Component({
   standalone: true,
   imports: [
-    AsyncPipe,
     EntitiesExplorer3dComponent,
+    EntitiesExplorerTotemComponent,
     EntitiesListFilterRailComponent,
     JanoMediaComponent,
   ],
@@ -26,17 +34,30 @@ type ViewMode = 'explore' | 'list';
 })
 export class ResearchPublicationsComponent {
   private readonly router = inject(Router);
-  readonly publications$ = inject(ResearchApi)
-    .listPublished()
-    .pipe(
-      map((publications) => publications.map((publication) => this.toExplorerItem(publication))),
-    );
+  private readonly publications = toSignal(
+    inject(ResearchApi)
+      .listPublished()
+      .pipe(
+        map((publications) => publications.map((publication) => this.toExplorerItem(publication))),
+      ),
+    { initialValue: null },
+  );
   readonly activeIndex = signal(0);
   readonly filtersOpen = signal(false);
   readonly infoOpen = signal(false);
   readonly query = signal('');
   readonly sort = signal<Sort>('recent');
+  readonly isMobile = signal(typeof window !== 'undefined' && window.innerWidth <= 720);
+  readonly items = computed(() => {
+    const publications = this.publications();
+    return publications ? this.filtered(publications) : null;
+  });
   viewMode: ViewMode = 'explore';
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.isMobile.set(window.innerWidth <= 720);
+  }
 
   filtered(items: PublicEntityListItem[]): PublicEntityListItem[] {
     const query = this.query().trim().toLocaleLowerCase();

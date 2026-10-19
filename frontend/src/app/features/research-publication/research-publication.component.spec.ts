@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { NavigationMemoryService } from '../../core/navigation-memory.service';
 import { ResearchApi, ResearchPublicPublication } from '../../core/api/research.api';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { GraphComponent } from '../graph/graph.component';
@@ -53,12 +54,15 @@ const publication: ResearchPublicPublication = {
 describe('Public research reading', () => {
   const params = new BehaviorSubject(convertToParamMap({ id: 'atlas' }));
   const getPublished = vi.fn();
+  const memory = { read: vi.fn(), register: vi.fn() };
   let query = convertToParamMap({});
 
   beforeEach(async () => {
     params.next(convertToParamMap({ id: 'atlas' }));
     query = convertToParamMap({});
     getPublished.mockReset().mockReturnValue(of(publication));
+    memory.read.mockReset().mockReturnValue(null);
+    memory.register.mockReset();
     vi.stubGlobal('matchMedia', () => ({
       matches: false,
       addEventListener: vi.fn(),
@@ -85,6 +89,7 @@ describe('Public research reading', () => {
       imports: [ResearchPublicationComponent],
       providers: [
         provideRouter([]),
+        { provide: NavigationMemoryService, useValue: memory },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -118,6 +123,79 @@ describe('Public research reading', () => {
     fixture.detectChanges();
     return fixture;
   }
+
+  it('restores the reading visit in its actual scroll container after returning from an entity', async () => {
+    memory.read.mockReturnValue({
+      publicationId: 'atlas',
+      chapterId: 'two',
+      tab: 'content',
+      top: 920,
+    });
+    const fixture = TestBed.createComponent(ResearchPublicationComponent);
+    const scroller = document.createElement('main');
+    scroller.style.overflowY = 'auto';
+    Object.defineProperties(scroller, {
+      scrollHeight: { value: 2000 },
+      clientHeight: { value: 400 },
+    });
+    document.body.append(scroller);
+    scroller.append(fixture.nativeElement);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.chapterIndex(publication)).toBe(1);
+    expect(scroller.scrollTop).toBe(920);
+    const capture = memory.register.mock.calls[0][1] as () => { top: number };
+    scroller.scrollTop = 0;
+    expect(capture().top).toBe(920);
+    const cover = fixture.nativeElement.querySelector(
+      '.publication__cover img',
+    ) as HTMLImageElement;
+    Object.defineProperty(cover, 'complete', { value: true });
+    cover.dispatchEvent(new Event('load'));
+    expect(scroller.scrollTop).toBe(920);
+    scroller.scrollTop = 1100;
+    expect(capture()).toEqual({
+      publicationId: 'atlas',
+      chapterId: 'two',
+      tab: 'content',
+      top: 1100,
+    });
+    fixture.destroy();
+    scroller.remove();
+  });
+
+  it('restores the document when an overflow ancestor does not actually scroll', async () => {
+    memory.read.mockReturnValue({
+      publicationId: 'atlas',
+      chapterId: 'one',
+      tab: 'content',
+      top: 1500,
+    });
+    const fixture = TestBed.createComponent(ResearchPublicationComponent);
+    const shell = document.createElement('div');
+    shell.style.overflowY = 'auto';
+    document.body.append(shell);
+    shell.append(fixture.nativeElement);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(document.documentElement.scrollTop).toBe(1500);
+    expect(shell.scrollTop).toBe(0);
+    fixture.destroy();
+    shell.remove();
+    document.documentElement.scrollTop = 0;
+  });
+
+  it('ignores a reading visit belonging to a different publication', () => {
+    memory.read.mockReturnValue({
+      publicationId: 'other',
+      chapterId: 'two',
+      tab: 'sources',
+      top: 920,
+    });
+    const fixture = create();
+    expect(fixture.componentInstance.chapterIndex(publication)).toBe(0);
+    expect(fixture.componentInstance.activeTab()).toBe('content');
+  });
 
   it('shows one complete chapter and one introduction, with four linked tab panels', () => {
     const fixture = create();
@@ -162,6 +240,10 @@ describe('Public research reading', () => {
     const fixture = create();
     const scroller = document.createElement('div');
     scroller.style.overflowY = 'auto';
+    Object.defineProperties(scroller, {
+      scrollHeight: { value: 2000 },
+      clientHeight: { value: 400 },
+    });
     document.body.append(scroller);
     scroller.append(fixture.nativeElement);
     try {

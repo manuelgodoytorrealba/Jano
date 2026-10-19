@@ -20,6 +20,7 @@ import {
   ResearchPublicPublication,
   ResearchSourceReference,
 } from '../../core/api/research.api';
+import { NavigationMemoryService } from '../../core/navigation-memory.service';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/i18n.pipe';
@@ -28,6 +29,12 @@ import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { AppChromeRailService } from '../../shared/ui/app-chrome/app-chrome-rail.service';
 
 type PublicationTab = 'content' | 'index' | 'connections' | 'sources';
+type ReadingVisit = {
+  publicationId: string;
+  chapterId: string | null;
+  tab: PublicationTab;
+  top: number;
+};
 type PublicationView =
   | { status: 'loading' | 'error' | 'unavailable' }
   | {
@@ -53,6 +60,9 @@ type PublicationView =
 })
 export class ResearchPublicationComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
+  private readonly navigation = inject(NavigationMemoryService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private pendingReadingTop: number | null = null;
   private readonly router = inject(Router);
   private readonly api = inject(ResearchApi);
   private readonly i18n = inject(I18nService);
@@ -122,6 +132,15 @@ export class ResearchPublicationComponent implements OnDestroy {
             this.activeChapterId.set(this.route.snapshot.queryParamMap.get('chapter'));
             this.readingScroll = null;
             this.shareFeedback.set('');
+            const saved = this.navigation.read<ReadingVisit>('research-reading');
+            if (saved?.publicationId === publication.id) {
+              this.activeChapterId.set(saved.chapterId);
+              this.activeTab.set(
+                this.tabs.some((tab) => tab.id === saved.tab) ? saved.tab : 'content',
+              );
+              this.pendingReadingTop = Number.isFinite(saved.top) ? Math.max(0, saved.top) : 0;
+              this.afterRender(() => this.restoreReadingPosition());
+            }
           }
           this.chromeRail.setContextualRail({
             kind: 'publication',
@@ -142,6 +161,19 @@ export class ResearchPublicationComponent implements OnDestroy {
   );
 
   constructor() {
+    this.navigation.register(
+      'research-reading',
+      () =>
+        this.publicationId
+          ? ({
+              publicationId: this.publicationId,
+              chapterId: this.activeChapterId(),
+              tab: this.activeTab(),
+              top: this.pendingReadingTop ?? (this.isBrowser ? this.scrollOwner().scrollTop : 0),
+            } satisfies ReadingVisit)
+          : null,
+      this.destroyRef,
+    );
     afterNextRender(() => {
       const media = window.matchMedia?.('(max-width: 760px)');
       if (!media) return;
@@ -158,6 +190,19 @@ export class ResearchPublicationComponent implements OnDestroy {
     this.chromeRail.clearContextualRail();
   }
 
+  restoreReadingPosition(): void {
+    if (!this.isBrowser || this.pendingReadingTop === null) return;
+    this.scrollOwner().scrollTop = this.pendingReadingTop;
+    const images = this.host.nativeElement.querySelectorAll<HTMLImageElement>(
+      '.publication__cover img, .publication__chapter img',
+    );
+    if ([...images].every((image) => image.complete)) this.pendingReadingTop = null;
+  }
+
+  cancelReadingRestore(): void {
+    this.pendingReadingTop = null;
+  }
+
   retry(): void {
     this.reload.next();
   }
@@ -170,6 +215,7 @@ export class ResearchPublicationComponent implements OnDestroy {
   }
 
   selectChapter(id: string, publication: ResearchPublicPublication): void {
+    this.cancelReadingRestore();
     if (!publication.outlineSections.some((section) => section.id === id)) return;
     this.activeChapterId.set(id);
     this.activeTab.set('content');
@@ -234,7 +280,11 @@ export class ResearchPublicationComponent implements OnDestroy {
   private scrollOwner(): HTMLElement {
     let element = this.reading?.nativeElement.parentElement;
     while (element && element !== this.document.body) {
-      if (/auto|scroll/.test(window.getComputedStyle(element).overflowY)) return element;
+      if (
+        /auto|scroll/.test(window.getComputedStyle(element).overflowY) &&
+        (element.scrollHeight > element.clientHeight || element.scrollTop > 0)
+      )
+        return element;
       element = element.parentElement;
     }
     return (this.document.scrollingElement as HTMLElement | null) ?? this.document.documentElement;

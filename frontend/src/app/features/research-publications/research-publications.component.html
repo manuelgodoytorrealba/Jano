@@ -9,6 +9,7 @@
     [class.is-list]="viewMode === 'list'"
     [class.is-filters-collapsed]="!filtersOpen()"
     [class.is-info-collapsed]="!infoOpen()"
+    [class.is-mobile-portrait-totem]="isMobile() && viewMode === 'explore'"
   >
     <header class="entities-hud" aria-label="Explorador de publicaciones">
       <nav class="entities-breadcrumbs ds-panel" aria-label="Miga de pan">
@@ -66,23 +67,35 @@
       </div>
     </header>
 
-    @if (publications$ | async; as publications) {
-      @if (filtered(publications); as items) {
-        @if (filtersOpen()) {
-          <app-entities-list-filter-rail
-            [vm]="filterRailVm(items.length)"
-            [simple]="true"
-            [collapsed]="false"
-            (searchChange)="filter($event)"
-            (clearSearch)="filter('')"
-            (sortChange)="setSort($event)"
-            (resetFilters)="filter('')"
-          />
-        }
+    @if (items(); as items) {
+      @if (filtersOpen()) {
+        <app-entities-list-filter-rail
+          [vm]="filterRailVm(items.length)"
+          [simple]="true"
+          [collapsed]="false"
+          (searchChange)="filter($event)"
+          (clearSearch)="filter('')"
+          (sortChange)="setSort($event)"
+          (resetFilters)="filter('')"
+        />
+      }
 
-        @if (items.length) {
-          @if (viewMode === 'explore') {
-            <div class="entities-explorer-stage">
+      @if (items.length) {
+        @if (viewMode === 'explore') {
+          <div class="entities-explorer-stage">
+            @if (isMobile()) {
+              <app-entities-explorer-totem
+                [items]="items"
+                [activeIndex]="activeIndex()"
+                [infoOpen]="infoOpen()"
+                routePrefix="/research"
+                openActionKey="research.publication.open"
+                (activeIndexChange)="activeIndex.set($event)"
+                (requestInfoOpen)="infoOpen.set(true)"
+                (requestInfoClose)="infoOpen.set(false)"
+                (openEntity)="open($event)"
+              />
+            } @else {
               <app-entities-explorer-3d
                 [items]="items"
                 [activeIndex]="activeIndex()"
@@ -95,41 +108,37 @@
                 (requestInfoClose)="infoOpen.set(false)"
                 (openEntity)="open($event)"
               />
-            </div>
-          } @else {
-            <div class="entities-stage-shell entities-stage-shell--list">
-              <section class="entities-grid" aria-label="Lista de publicaciones">
-                @for (publication of items; track publication.id; let index = $index) {
-                  <article
-                    class="entity-card ds-card"
-                    role="button"
-                    tabindex="0"
-                    (click)="open(publication)"
-                    (keydown.enter)="open(publication)"
-                    (keydown.space)="open(publication); $event.preventDefault()"
-                  >
-                    <div class="entity-card__thumb">
-                      <app-jano-media
-                        [entity]="publication"
-                        usage="card"
-                        [alt]="publication.title"
-                      />
-                    </div>
-                    <div class="entity-card__body">
-                      <div class="entity-card__badges"><span class="ds-badge">Research</span></div>
-                      <div class="entity-card__title">{{ publication.title }}</div>
-                      <div class="entity-card__summary">{{ publication.summary }}</div>
-                    </div>
-                  </article>
-                }
-              </section>
-            </div>
-          }
+            }
+          </div>
         } @else {
-          <div class="entities-stage-shell entities-stage-shell--empty">
-            <p>No hay publicaciones que coincidan.</p>
+          <div class="entities-stage-shell entities-stage-shell--list">
+            <section class="entities-grid" aria-label="Lista de publicaciones">
+              @for (publication of items; track publication.id; let index = $index) {
+                <article
+                  class="entity-card ds-card"
+                  role="button"
+                  tabindex="0"
+                  (click)="open(publication)"
+                  (keydown.enter)="open(publication)"
+                  (keydown.space)="open(publication); $event.preventDefault()"
+                >
+                  <div class="entity-card__thumb">
+                    <app-jano-media [entity]="publication" usage="card" [alt]="publication.title" />
+                  </div>
+                  <div class="entity-card__body">
+                    <div class="entity-card__badges"><span class="ds-badge">Research</span></div>
+                    <div class="entity-card__title">{{ publication.title }}</div>
+                    <div class="entity-card__summary">{{ publication.summary }}</div>
+                  </div>
+                </article>
+              }
+            </section>
           </div>
         }
+      } @else {
+        <div class="entities-stage-shell entities-stage-shell--empty">
+          <p>No hay publicaciones que coincidan.</p>
+        </div>
       }
     }
   </section>

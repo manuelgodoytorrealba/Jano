@@ -1,7 +1,9 @@
-import { ElementRef, SimpleChange } from '@angular/core';
+import { ElementRef, NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nService } from '../../core/i18n/i18n.service';
+import { JanoMediaComponent } from '../../shared/media/jano-media.component';
 import { EntitiesExplorerTotemComponent } from './entities-explorer-totem.component';
 import { TotemMotion } from './totem-motion';
 
@@ -171,5 +173,49 @@ describe('totem gestures', () => {
     for (let frame = 0; frame < 100; frame++) tick();
     expect(Number.isInteger(state().position)).toBe(true);
     expect(state().velocity).toBe(0);
+  });
+});
+
+describe('totem destinations', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe() {}
+        disconnect() {}
+      },
+    );
+    TestBed.configureTestingModule({
+      imports: [EntitiesExplorerTotemComponent],
+      providers: [
+        provideRouter([]),
+        { provide: I18nService, useValue: { t: (key: string) => key } },
+      ],
+    }).overrideComponent(EntitiesExplorerTotemComponent, {
+      remove: { imports: [JanoMediaComponent] },
+      add: { schemas: [NO_ERRORS_SCHEMA] },
+    });
+  });
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('keeps entity routes by default and supports research links and accessible actions', () => {
+    const fixture = TestBed.createComponent(EntitiesExplorerTotemComponent);
+    fixture.componentRef.setInput('items', items(0, 1));
+    fixture.componentRef.setInput('infoOpen', true);
+    fixture.detectChanges();
+    const host: HTMLElement = fixture.nativeElement;
+    const card = host.querySelector<HTMLAnchorElement>('.explorer-totem__card-link');
+    const action = host.querySelector<HTMLAnchorElement>('.explorer-totem__cta');
+    expect(card?.getAttribute('href')).toBe('/entity/entity-0');
+    expect(action?.getAttribute('href')).toBe('/entity/entity-0');
+
+    fixture.componentRef.setInput('routePrefix', '/research');
+    fixture.componentRef.setInput('openActionKey', 'research.publication.open');
+    fixture.detectChanges();
+    expect(card?.getAttribute('href')).toBe('/research/entity-0');
+    expect(card?.getAttribute('aria-label')).toBe('research.publication.open Entity 0');
+    expect(action?.getAttribute('href')).toBe('/research/entity-0');
+    expect(action?.textContent?.trim()).toBe('research.publication.open');
   });
 });

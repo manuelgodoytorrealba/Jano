@@ -23,7 +23,7 @@
         [attr.aria-hidden]="!card.active"
         [attr.data-index]="card.index"
         [attr.role]="card.active ? 'group' : 'presentation'"
-        [attr.aria-label]="card.active ? i18n.t('entity.open') + ' ' + card.item.title : null"
+        [attr.aria-label]="card.active ? i18n.t(openActionKey) + ' ' + card.item.title : null"
       >
         <span class="explorer-totem__card-shell">
           <a
@@ -31,9 +31,9 @@
             draggable="false"
             (dragstart)="$event.preventDefault()"
             (click)="onLinkClick($event)"
-            [routerLink]="card.active ? ['/entity', card.item.slug] : null"
+            [routerLink]="card.active ? [routePrefix, card.item.slug] : null"
             [attr.tabindex]="card.active ? 0 : -1"
-            [attr.aria-label]="i18n.t('entity.open') + ' ' + card.item.title"
+            [attr.aria-label]="i18n.t(openActionKey) + ' ' + card.item.title"
           >
             <app-jano-media
               [entity]="card.item"
@@ -105,8 +105,8 @@
           <p class="explorer-totem__summary">{{ cleanWiki(active.summary) }}</p>
         }
 
-        <a class="ds-btn explorer-totem__cta" [routerLink]="['/entity', active.slug]">
-          {{ i18n.t('entity.open') }}
+        <a class="ds-btn explorer-totem__cta" [routerLink]="[routePrefix, active.slug]">
+          {{ i18n.t(openActionKey) }}
         </a>
       </div>
     </aside>
