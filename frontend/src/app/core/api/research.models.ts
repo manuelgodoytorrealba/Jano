@@ -593,7 +593,7 @@ export type ResearchPublicPublication = {
   }>;
   relations: Array<{
     id: string;
-    relationType: { label: string } | null;
+    relationType: { label: string; key?: string; directed?: boolean } | null;
     explanation?: string | null;
     fromEntity: { id: string; title: string; kind: string };
     toEntity: { id: string; title: string; kind: string };

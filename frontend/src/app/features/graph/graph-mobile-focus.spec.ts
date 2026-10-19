@@ -16,3 +16,24 @@ describe('mobile detail viewer', () => {
     expect(emit).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('publication detail exploration', () => {
+  it('reveals publication connections locally without fetching an entity graph', () => {
+    const node = { id: 'research-node', slug: 'canonical-slug' };
+    const revealConnections = vi.fn();
+    const fetch = vi.fn();
+    const state = {
+      graphData: {},
+      graph: () => ({ nodes: [node] }),
+      graphDerived: () => ({ selectedNode: node }),
+      expandingNodeId: () => null,
+      expansionError: { set: vi.fn() },
+      expandedNodeIds: new Set(),
+      revealConnections,
+      api: { graph: fetch },
+    } as unknown as GraphComponent;
+    GraphComponent.prototype.expandSelectedNode.call(state);
+    expect(revealConnections).toHaveBeenCalledWith('research-node');
+    expect(fetch).not.toHaveBeenCalled();
+  });
+});

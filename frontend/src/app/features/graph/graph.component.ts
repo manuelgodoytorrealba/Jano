@@ -594,10 +594,14 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.relationshipLimit.set(
       initialRelationshipLimit(loadedState.graph.edges.length, this.isMobileViewport),
     );
-    if (!this.graphData && !this.overviewMode && !shouldPreserveRuntime) {
+    if ((!this.graphData || this.detailLayout) && !this.overviewMode && !shouldPreserveRuntime) {
       const edges = selectProgressiveRelationships({
         graph: loadedState.graph,
-        edges: loadedState.graph.edges,
+        edges: loadedState.graph.edges.filter(
+          (edge) =>
+            edge.source === loadedState.graph.centerId ||
+            edge.target === loadedState.graph.centerId,
+        ),
         limit: this.relationshipLimit(),
       });
       const ids = new Set([
@@ -1009,6 +1013,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   restartExploration(): void {
+    if (this.graphData && this.detailLayout && !this.overviewMode) {
+      this.applyGraphResponse(this.graphData);
+      this.resetGraphView();
+      return;
+    }
     if (this.graphData || this.overviewMode) {
       this.resetGraphView();
       return;
@@ -1523,7 +1532,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       (node) =>
         visible.has(node.id) &&
         node.id !== graph.centerId &&
-        (!this.expandedNodeIds.has(node.id) ||
+        ((!this.graphData && !this.expandedNodeIds.has(node.id)) ||
           explorationNeighbors(graph, node.id).some((id) => !visible.has(id))),
     );
   }
@@ -1665,7 +1674,11 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.focusNode(nodeId);
     }
     this.emitNodeSelection(nodeId);
-    if (this.detailLayout && !this.graphData && nodeId !== this.graph()?.centerId) {
+    if (
+      this.detailLayout &&
+      (!this.graphData || this.revealedNodeIds()) &&
+      nodeId !== this.graph()?.centerId
+    ) {
       this.contextVisible.set(true);
       this.dismissTooltip();
     }
@@ -1803,7 +1816,7 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
     const node = this.graphDerived().selectedNode;
     return (
       !!node &&
-      !this.graphData &&
+      (!this.graphData || !!this.revealedNodeIds()) &&
       !this.expandingNodeId() &&
       (!this.expandedNodeIds.has(node.id) ||
         explorationNeighbors(this.graph()!, node.id).some((id) => !this.revealedNodeIds()?.has(id)))
@@ -1815,7 +1828,13 @@ export class GraphComponent implements OnChanges, AfterViewInit, OnDestroy {
       ? this.graph()?.nodes.find((item) => item.id === nodeId)
       : this.graphDerived().selectedNode;
     const original = this.graph();
-    if (!node?.slug || !original || this.expandingNodeId()) return;
+    if (!node || !original || this.expandingNodeId()) return;
+    if (this.graphData) {
+      this.expandedNodeIds.add(node.id);
+      this.revealConnections(node.id);
+      return;
+    }
+    if (!node.slug) return;
     this.expansionError.set(false);
     if (this.expandedNodeIds.has(node.id)) {
       this.revealConnections(node.id);

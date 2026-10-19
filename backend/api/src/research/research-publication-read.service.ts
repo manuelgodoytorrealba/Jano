@@ -91,7 +91,7 @@ export class ResearchPublicationReadService {
           where: { reviewState: ResearchProposalReviewState.REVIEWED },
           select: {
             id: true,
-            relationType: { select: { id: true, label: true } },
+            relationType: { select: { id: true, label: true, key: true, directed: true } },
             explanation: true,
             fromEntity: { select: { id: true, title: true, kind: true } },
             toEntity: { select: { id: true, title: true, kind: true } },
@@ -139,7 +139,7 @@ export class ResearchPublicationReadService {
           },
           select: {
             id: true,
-            relationType: { select: { id: true, label: true } },
+            relationType: { select: { id: true, label: true, key: true, directed: true } },
             justification: true,
             fromId: true,
             toId: true,
@@ -162,7 +162,7 @@ export class ResearchPublicationReadService {
       relationKeys.add(key);
       publishedRelations.push({
         id: `core:${relation.id}`,
-        relationType: { id: relation.relationType.id, label: relation.relationType.label },
+        relationType: relation.relationType,
         explanation: relation.justification,
         fromEntity: { id: fromEntity.id, title: fromEntity.title, kind: fromEntity.kind },
         toEntity: { id: toEntity.id, title: toEntity.title, kind: toEntity.kind },

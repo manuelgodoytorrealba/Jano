@@ -1,165 +1,474 @@
-@if (publication$ | async; as publication) {
-  <main class="publication jano-research-studio">
-    <a routerLink="/research" class="publication__back">
-      <svg class="publication__back-icon" viewBox="0 0 20 20" aria-hidden="true">
-        <path d="M16 10H4m5-5-5 5 5 5" />
-      </svg>
-      {{ 'research.publication.back' | t }}
-    </a>
-    <header class="publication__hero jano-editorial-surface">
-      <div class="publication__hero-copy">
-        <p class="publication__eyebrow">{{ 'research.publication.published' | t }}</p>
-        <h1>{{ publication.title }}</h1>
-        @if (publication.objective) {
-          <p class="publication__objective">{{ publication.objective }}</p>
-        }
-        @if (publication.publishedAt) {
-          <small>{{ publishedDate(publication.publishedAt) }}</small>
-        }
-      </div>
-      <div class="publication__cover">
-        @if (publication.coverImageUrl) {
-          <img [src]="publication.coverImageUrl" [alt]="publication.title" />
-        }
-      </div>
-    </header>
-    <nav
-      class="publication__tabs"
-      role="tablist"
-      [attr.aria-label]="'research.publication.tabs' | t"
-    >
-      @for (tab of tabs; track tab.id) {
-        @if (tab.id !== 'related' || publication.related.length) {
+<div class="publication jano-research-studio">
+  <a routerLink="/research" class="publication__back">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16 10H4m5-5-5 5 5 5" /></svg>
+    {{ 'research.publication.back' | t }}
+  </a>
+  @if (view$ | async; as view) {
+    @if (view.status === 'ready') {
+      @let publication = view.publication;
+      @let chapterIndex = this.chapterIndex(publication);
+      @let section = publication.outlineSections[chapterIndex];
+      <header class="publication__context publication__surface">
+        <div>
+          <p class="publication__eyebrow">{{ 'research.publication.published' | t }}</p>
+          <h1>{{ publication.title }}</h1>
+          <p class="publication__meta">
+            @if (publication.publishedAt) {
+              <time [attr.datetime]="publication.publishedAt">{{
+                publishedDate(publication.publishedAt)
+              }}</time>
+            }
+            @if (publication.outlineSections.length) {
+              <span
+                >{{ publication.outlineSections.length }}
+                {{ 'research.publication.chapters' | t }}</span
+              >
+            }
+          </p>
+        </div>
+        <div class="publication__actions">
           <button
             type="button"
-            role="tab"
-            [attr.aria-selected]="activeTab() === tab.id"
-            [class.is-active]="activeTab() === tab.id"
-            (click)="setTab(tab.id)"
+            class="publication__button publication__button--primary"
+            (click)="startReading()"
           >
-            {{ tab.label | t }}
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v15M12 5C8 2 4 3 2 4v15c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Z" />
+            </svg>
+            {{ 'research.publication.read' | t }}
           </button>
-        }
-      }
-    </nav>
-    @if (activeTab() === 'content') {
-      <article class="publication__reading jano-editorial-surface" role="tabpanel">
-        <div class="publication__introduction">
-          <p class="publication__eyebrow">{{ 'research.publication.reading' | t }}</p>
-          <p>{{ publication.objective || ('research.publication.noIntroduction' | t) }}</p>
+          <button
+            type="button"
+            class="publication__button"
+            (click)="sharePublication(publication.title, publication.objective)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <path d="m9 10 6-4M9 14l6 4" />
+            </svg>
+            {{ 'button.share' | t }}
+          </button>
         </div>
-        @for (section of publication.outlineSections; track section.id; let index = $index) {
-          <section class="publication__section">
-            <header>
-              <span>{{ (index + 1).toString().padStart(2, '0') }}</span>
-              <h2>{{ section.title }}</h2>
+        @if (shareFeedback()) {
+          <p class="publication__feedback" role="status">{{ shareFeedback() | t }}</p>
+        }
+      </header>
+
+      <ng-template #knowledgeMap>
+        <app-graph
+          [slug]="publication.id + (overlayKind() === 'map' ? '-map' : '-preview')"
+          workspaceMode="graph"
+          [detailLayout]="true"
+          [graphData]="overlayKind() === 'map' ? view.graph : view.previewGraph"
+          [hideImagePane]="true"
+          [openNodeOnSelect]="false"
+          [showInspector]="overlayKind() === 'map'"
+          [showControls]="overlayKind() === 'map'"
+          [isMobileViewport]="isMobile()"
+          [workspaceFocused]="overlayKind() === 'map'"
+          (workspaceFocusToggle)="overlayKind() === 'map' ? closeOverlay() : openOverlay('map')"
+        />
+      </ng-template>
+      <ng-template #mapInvite>
+        <button type="button" class="publication__map-invite" (click)="openOverlay('map')">
+          <span
+            >{{ 'research.publication.exploreConnections' | t
+            }}<small
+              >{{ publication.entities.length }} {{ 'research.publication.entities' | t }} ·
+              {{ publication.relations.length }} {{ 'research.publication.relations' | t }}</small
+            ></span
+          >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            aria-hidden="true"
+          >
+            <rect x="9" y="2" width="6" height="6" rx="1" />
+            <path d="M12 8v5M5 17v-4h14v4" />
+            <rect x="2" y="17" width="6" height="5" rx="1" />
+            <rect x="16" y="17" width="6" height="5" rx="1" />
+          </svg>
+        </button>
+      </ng-template>
+      <div
+        class="publication__workspace"
+        [class.publication__workspace--no-cover]="!publication.coverImageUrl"
+      >
+        @if (publication.coverImageUrl) {
+          <figure class="publication__cover publication__surface">
+            <button
+              type="button"
+              class="publication__cover-open"
+              (click)="openOverlay('image')"
+              [attr.aria-label]="'research.publication.expandImage' | t"
+            >
+              <img
+                [src]="publication.coverImageUrl"
+                [alt]="publication.title"
+                fetchpriority="high"
+              />
+              <span class="publication__expand" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" /></svg
+              ></span>
+            </button>
+            <figcaption>{{ 'research.publication.cover' | t }}</figcaption>
+          </figure>
+        }
+        @if (!isMobile()) {
+          <section
+            class="publication__map publication__surface"
+            [attr.aria-label]="'research.publication.knowledgeMap' | t"
+          >
+            <header class="publication__map-head">
+              <span>{{ 'research.publication.connectedKnowledge' | t }}</span>
+              @if (publication.entities.length) {
+                <button
+                  #mapTrigger
+                  type="button"
+                  class="publication__icon-button"
+                  (click)="openOverlay('map')"
+                  [attr.aria-label]="'research.publication.expandMap' | t"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+                  </svg>
+                </button>
+              }
             </header>
-            @if (section.imageUrl) {
-              <img [src]="section.imageUrl" [alt]="section.title" />
-            }
-            @if (section.drafts[0]?.currentRevision?.content) {
-              <app-rich-text [text]="section.drafts[0].currentRevision!.content" />
-            } @else if (section.objective || section.notes) {
-              <p class="publication__section-summary">{{ section.objective || section.notes }}</p>
+            @if (publication.entities.length) {
+              <div class="publication__graph">
+                @if (overlayKind() !== 'map') {
+                  <ng-container *ngTemplateOutlet="knowledgeMap" />
+                }
+              </div>
+            } @else {
+              <p class="publication__empty">{{ 'research.publication.noMap' | t }}</p>
             }
           </section>
-        } @empty {
-          <p class="publication__empty">{{ 'research.publication.noContent' | t }}</p>
         }
-      </article>
-    } @else if (activeTab() === 'knowledge-map') {
-      <section class="publication__panel jano-editorial-surface" role="tabpanel">
-        <p class="publication__eyebrow">{{ 'research.publication.connectedKnowledge' | t }}</p>
-        <h2>{{ 'research.publication.knowledgeMap' | t }}</h2>
-        @if (publication.entities.length) {
-          <div class="publication__graph">
-            <app-graph
-              slug="research-publication"
-              workspaceMode="graph"
-              [graphData]="graphData(publication)"
-              [hideImagePane]="true"
-              [openNodeOnSelect]="true"
-              [showInspector]="true"
-              [showControls]="true"
-              [overviewMode]="true"
-              [showAllOverviewRelations]="true"
-              [preserveRuntimeOnGraphChange]="true"
-            />
+      </div>
+
+      <section
+        #reading
+        class="publication__information publication__surface"
+        [attr.aria-label]="'research.publication.tabs' | t"
+      >
+        <nav
+          class="publication__tabs"
+          role="tablist"
+          [attr.aria-label]="'research.publication.tabs' | t"
+        >
+          @for (tab of tabs; track tab.id; let index = $index) {
+            <button
+              type="button"
+              role="tab"
+              [id]="'publication-tab-' + tab.id"
+              [attr.aria-controls]="'publication-panel-' + tab.id"
+              [attr.aria-selected]="activeTab() === tab.id"
+              [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
+              (click)="setTab(tab.id)"
+              (keydown)="onTabKeydown($event, index)"
+            >
+              <span>{{ tab.label | t }}</span
+              ><small>{{ tab.description | t }}</small>
+            </button>
+          }
+        </nav>
+        <div
+          id="publication-panel-content"
+          role="tabpanel"
+          aria-labelledby="publication-tab-content"
+          [hidden]="activeTab() !== 'content'"
+        >
+          <div class="publication__reading">
+            <aside class="publication__toc" [attr.aria-label]="'research.publication.index' | t">
+              <p class="publication__eyebrow">{{ 'research.publication.inThisResearch' | t }}</p>
+              <nav>
+                @for (item of publication.outlineSections; track item.id; let index = $index) {
+                  <button
+                    type="button"
+                    [attr.aria-current]="section?.id === item.id ? 'step' : null"
+                    (click)="selectChapter(item.id, publication)"
+                  >
+                    <span>{{ (index + 1).toString().padStart(2, '0') }}</span
+                    >{{ item.title }}
+                  </button>
+                }
+              </nav>
+            </aside>
+            <div class="publication__prose">
+              @if (section) {
+                <button
+                  type="button"
+                  class="publication__chapter-picker publication__button"
+                  (click)="setTab('index')"
+                >
+                  <span
+                    >{{ (chapterIndex + 1).toString().padStart(2, '0') }} /
+                    {{ publication.outlineSections.length }} ·
+                    {{ 'research.publication.index' | t }}</span
+                  >
+                  <span aria-hidden="true">⌄</span>
+                </button>
+                @if (chapterIndex === 0 && publication.objective) {
+                  <p class="publication__introduction">{{ publication.objective }}</p>
+                }
+                <article class="publication__chapter">
+                  <p class="publication__eyebrow">
+                    {{ 'research.publication.chapter' | t }}
+                    {{ (chapterIndex + 1).toString().padStart(2, '0') }}
+                  </p>
+                  <h2 #chapterTitle tabindex="-1">{{ section.title }}</h2>
+                  @if (section.imageUrl) {
+                    <img
+                      class="publication__section-image"
+                      [src]="section.imageUrl"
+                      [alt]="section.title"
+                      loading="lazy"
+                    />
+                  }
+                  @if (section.drafts[0]?.currentRevision?.content) {
+                    <app-rich-text [text]="section.drafts[0].currentRevision!.content" />
+                  } @else if (section.objective || section.notes) {
+                    <p class="publication__section-summary">
+                      {{ section.objective || section.notes }}
+                    </p>
+                  } @else {
+                    <p class="publication__empty">{{ 'research.publication.noContent' | t }}</p>
+                  }
+                </article>
+                <nav
+                  class="publication__chapter-navigation"
+                  [attr.aria-label]="'research.publication.chapterNavigation' | t"
+                >
+                  @if (chapterIndex > 0) {
+                    <button
+                      type="button"
+                      class="publication__button"
+                      (click)="
+                        selectChapter(publication.outlineSections[chapterIndex - 1].id, publication)
+                      "
+                    >
+                      ← {{ 'research.publication.previousChapter' | t }}
+                    </button>
+                  }
+                  @if (chapterIndex + 1 < publication.outlineSections.length) {
+                    <button
+                      type="button"
+                      class="publication__button publication__next"
+                      (click)="
+                        selectChapter(publication.outlineSections[chapterIndex + 1].id, publication)
+                      "
+                    >
+                      {{ 'research.publication.nextChapter' | t }} →
+                    </button>
+                  }
+                </nav>
+              } @else {
+                @if (publication.objective) {
+                  <p class="publication__introduction">{{ publication.objective }}</p>
+                }
+                <p class="publication__empty">{{ 'research.publication.noContent' | t }}</p>
+              }
+              @if (isMobile() && publication.entities.length) {
+                <ng-container *ngTemplateOutlet="mapInvite" />
+              }
+            </div>
           </div>
-        } @else {
-          <p class="publication__empty">{{ 'research.publication.noMap' | t }}</p>
-        }
-      </section>
-    } @else if (activeTab() === 'entities') {
-      <section class="publication__panel jano-editorial-surface" role="tabpanel">
-        <p class="publication__eyebrow">{{ 'research.publication.connectedKnowledge' | t }}</p>
-        <h2>{{ 'research.publication.entities' | t }}</h2>
-        @if (publication.entities.length) {
+        </div>
+        <section
+          id="publication-panel-index"
+          role="tabpanel"
+          aria-labelledby="publication-tab-index"
+          [hidden]="activeTab() !== 'index'"
+          class="publication__panel"
+        >
+          <h2>{{ 'research.publication.indexHint' | t }}</h2>
+          <nav class="publication__index" [attr.aria-label]="'research.publication.index' | t">
+            @for (item of publication.outlineSections; track item.id; let index = $index) {
+              <button
+                type="button"
+                [attr.aria-current]="section?.id === item.id ? 'step' : null"
+                (click)="selectChapter(item.id, publication)"
+              >
+                <span>{{ (index + 1).toString().padStart(2, '0') }}</span
+                ><span>{{ item.title }}</span
+                ><span aria-hidden="true">→</span>
+              </button>
+            } @empty {
+              <p class="publication__empty">{{ 'research.publication.noContent' | t }}</p>
+            }
+          </nav>
+        </section>
+        <section
+          id="publication-panel-connections"
+          role="tabpanel"
+          aria-labelledby="publication-tab-connections"
+          [hidden]="activeTab() !== 'connections'"
+          class="publication__panel"
+        >
+          <header class="publication__panel-head">
+            <h2>{{ 'research.publication.connectionsHint' | t }}</h2>
+            @if (publication.entities.length) {
+              @if (isMobile()) {
+                <ng-container *ngTemplateOutlet="mapInvite" />
+              } @else {
+                <button type="button" class="publication__button" (click)="openOverlay('map')">
+                  {{ 'research.publication.exploreConnections' | t }} ↗
+                </button>
+              }
+            }
+          </header>
           <div class="publication__entities">
             @for (item of publication.entities; track item.id) {
               @if (item.canonicalEntity) {
-                <a [routerLink]="['/entity', item.canonicalEntity.slug]">
-                  @if (item.canonicalEntity.imageUrl) {
-                    <img [src]="item.canonicalEntity.imageUrl" [alt]="item.canonicalEntity.title" />
-                  }
-                  <span>{{ item.canonicalEntity.type }}</span>
-                  <h3>{{ item.canonicalEntity.title }}</h3>
-                  <p>{{ item.summary }}</p></a
+                <a
+                  class="publication__entity"
+                  [routerLink]="['/entity', item.canonicalEntity.slug]"
                 >
+                  @if (item.canonicalEntity.imageUrl) {
+                    <img
+                      [src]="item.canonicalEntity.imageUrl"
+                      [alt]="item.canonicalEntity.title"
+                      loading="lazy"
+                    />
+                  }
+                  <div>
+                    <h3>{{ item.canonicalEntity.title }}</h3>
+                    @if (item.summary) {
+                      <p>{{ item.summary }}</p>
+                    }
+                  </div>
+                </a>
               } @else {
-                <article>
-                  <span>{{ item.kind }}</span>
-                  <h3>{{ item.title }}</h3>
-                  <p>{{ item.summary }}</p>
+                <article class="publication__entity">
+                  <div>
+                    <h3>{{ item.title }}</h3>
+                    @if (item.summary) {
+                      <p>{{ item.summary }}</p>
+                    }
+                  </div>
                 </article>
               }
+            } @empty {
+              <p class="publication__empty">{{ 'research.publication.noEntities' | t }}</p>
             }
           </div>
-        } @else {
-          <p class="publication__empty">{{ 'research.publication.noEntities' | t }}</p>
-        }
-      </section>
-    } @else if (activeTab() === 'sources') {
-      <section class="publication__panel jano-editorial-surface" role="tabpanel">
-        <p class="publication__eyebrow">{{ 'research.publication.provenance' | t }}</p>
-        <h2>{{ 'research.publication.sources' | t }}</h2>
-        @if (publication.sources.length) {
+        </section>
+        <section
+          id="publication-panel-sources"
+          role="tabpanel"
+          aria-labelledby="publication-tab-sources"
+          [hidden]="activeTab() !== 'sources'"
+          class="publication__panel"
+        >
+          <p class="publication__eyebrow">{{ 'research.publication.provenance' | t }}</p>
+          <h2>{{ 'research.publication.sources' | t }}</h2>
           <ol class="publication__sources">
             @for (item of publication.sources; track item.source.id) {
               <li>
-                <span>{{ item.source.type }}</span>
                 <div>
                   <h3>{{ item.source.title }}</h3>
-                  <p>{{ sourceMeta(item.source) }}</p>
+                  @if (sourceMeta(item.source)) {
+                    <p>{{ sourceMeta(item.source) }}</p>
+                  }
                 </div>
                 @if (item.source.url) {
-                  <a [href]="item.source.url" target="_blank" rel="noopener"
+                  <a [href]="item.source.url" target="_blank" rel="noopener noreferrer"
                     >{{ 'research.publication.openSource' | t }} ↗</a
                   >
                 }
               </li>
+            } @empty {
+              <li>
+                <p class="publication__empty">{{ 'research.publication.noSources' | t }}</p>
+              </li>
             }
           </ol>
-        } @else {
-          <p class="publication__empty">{{ 'research.publication.noSources' | t }}</p>
+        </section>
+      </section>
+      @if (publication.related.length) {
+        <section
+          class="publication__related"
+          [attr.aria-label]="'research.publication.related' | t"
+        >
+          <p class="publication__eyebrow">{{ 'research.publication.continueExploring' | t }}</p>
+          <h2>{{ 'research.publication.related' | t }}</h2>
+          <div class="publication__related-grid">
+            @for (item of publication.related; track item.id) {
+              <a
+                class="publication__entity publication__surface"
+                [routerLink]="['/research', item.id]"
+              >
+                @if (item.coverImageUrl) {
+                  <img [src]="item.coverImageUrl" [alt]="item.title" loading="lazy" />
+                }
+                <div>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.objective }}</p>
+                </div>
+              </a>
+            }
+          </div>
+        </section>
+      }
+      <dialog
+        #overlay
+        class="publication__overlay"
+        [class.publication__overlay--map]="overlayKind() === 'map'"
+        aria-labelledby="publication-overlay-title"
+        (close)="onOverlayClosed()"
+      >
+        <header>
+          <h2 id="publication-overlay-title">
+            {{
+              (overlayKind() === 'map'
+                ? 'research.publication.knowledgeMap'
+                : 'research.publication.cover'
+              ) | t
+            }}
+          </h2>
+          <button type="button" class="publication__button" (click)="closeOverlay()">
+            {{ 'button.close' | t }} <span aria-hidden="true">×</span>
+          </button>
+        </header>
+        @if (overlayKind() === 'image' && publication.coverImageUrl) {
+          <img [src]="publication.coverImageUrl" [alt]="publication.title" />
+        }
+        @if (overlayKind() === 'map') {
+          <div class="publication__overlay-graph">
+            <ng-container *ngTemplateOutlet="knowledgeMap" />
+          </div>
+        }
+      </dialog>
+    } @else if (view.status === 'loading') {
+      <section class="publication__loading publication__surface" role="status" aria-busy="true">
+        <p>{{ 'common.loading' | t }}</p>
+        <div class="publication__skeleton" aria-hidden="true"></div>
+        <div class="publication__skeleton" aria-hidden="true"></div>
+      </section>
+    } @else {
+      <section class="publication__error publication__surface" role="alert">
+        <h1>
+          {{
+            (view.status === 'unavailable'
+              ? 'research.publication.unavailable'
+              : 'research.publication.loadFailed'
+            ) | t
+          }}
+        </h1>
+        @if (view.status === 'error') {
+          <button type="button" class="publication__button" (click)="retry()">
+            {{ 'research.publication.retry' | t }}
+          </button>
         }
       </section>
-    } @else if (publication.related.length) {
-      <section class="publication__panel jano-editorial-surface" role="tabpanel">
-        <p class="publication__eyebrow">{{ 'research.publication.continueExploring' | t }}</p>
-        <h2>{{ 'research.publication.related' | t }}</h2>
-        <div class="publication__related">
-          @for (item of publication.related; track item.id) {
-            <a [routerLink]="['/research', item.id]">
-              @if (item.coverImageUrl) {
-                <img [src]="item.coverImageUrl" [alt]="item.title" />
-              }
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.objective }}</p></a
-            >
-          }
-        </div>
-      </section>
     }
-  </main>
-}
+  }
+</div>

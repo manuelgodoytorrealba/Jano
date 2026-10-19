@@ -73,7 +73,7 @@ export class App {
     effect(() => {
       this.routeTransitioning();
       const detailColor = this.appearance.resolvedTheme() === 'light' ? '#e7e2d8' : '#222222';
-      const isDetail = this.isEntityDetailRoute();
+      const isDetail = this.isPublicDetailRoute();
       const isMobile =
         typeof window !== 'undefined' && window.matchMedia('(max-width: 860px)').matches;
       const themeColor = isMobile ? (isDetail ? detailColor : '#19231d') : '#0a0a0a';
@@ -91,6 +91,11 @@ export class App {
     return (
       url === '/home' || url === '/research' || url === '/entities' || url.startsWith('/entities/')
     );
+  }
+
+  isPublicDetailRoute(): boolean {
+    const url = this.router.url.split(/[?#]/)[0];
+    return this.isEntityDetailRoute() || /^\/research\/[^/]+$/.test(url);
   }
 
   isEntityDetailRoute(): boolean {

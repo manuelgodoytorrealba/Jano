@@ -1,8 +1,25 @@
-import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { switchMap, tap } from 'rxjs';
-import { ResearchApi, ResearchSourceReference } from '../../core/api/research.api';
+import { AsyncPipe, DOCUMENT, NgTemplateOutlet, isPlatformBrowser } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Injector,
+  OnDestroy,
+  PLATFORM_ID,
+  ViewChild,
+  afterNextRender,
+  inject,
+  signal,
+} from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Subject, catchError, combineLatest, map, of, startWith, switchMap, tap } from 'rxjs';
+import {
+  ResearchApi,
+  ResearchPublicPublication,
+  ResearchSourceReference,
+} from '../../core/api/research.api';
 import { GraphResponseDto } from '../../core/api/graph.models';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../core/i18n/i18n.pipe';
@@ -10,58 +27,265 @@ import { GraphComponent } from '../graph/graph.component';
 import { RichTextComponent } from '../../shared/rich-text/rich-text.component';
 import { AppChromeRailService } from '../../shared/ui/app-chrome/app-chrome-rail.service';
 
+type PublicationTab = 'content' | 'index' | 'connections' | 'sources';
+type PublicationView =
+  | { status: 'loading' | 'error' | 'unavailable' }
+  | {
+      status: 'ready';
+      publication: ResearchPublicPublication;
+      graph: GraphResponseDto;
+      previewGraph: GraphResponseDto;
+    };
+
 @Component({
   standalone: true,
-  imports: [AsyncPipe, RouterLink, RichTextComponent, TranslatePipe, GraphComponent],
+  imports: [
+    AsyncPipe,
+    NgTemplateOutlet,
+    RouterLink,
+    TranslatePipe,
+    GraphComponent,
+    RichTextComponent,
+  ],
   templateUrl: './research-publication.component.html',
   styleUrl: './research-publication.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResearchPublicationComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly api = inject(ResearchApi);
   private readonly i18n = inject(I18nService);
   private readonly chromeRail = inject(AppChromeRailService);
-  readonly activeTab = signal<'content' | 'knowledge-map' | 'entities' | 'sources' | 'related'>(
-    'content',
-  );
+  private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly reload = new Subject<void>();
+  private publicationId: string | null = null;
+  private readingScroll: { element: HTMLElement; top: number } | null = null;
+  private lockedScrollElement: HTMLElement | null = null;
+  private previousOverflow = '';
+  private overlayTrigger: HTMLElement | null = null;
+
+  @ViewChild('reading') private reading?: ElementRef<HTMLElement>;
+  @ViewChild('chapterTitle') private chapterTitle?: ElementRef<HTMLElement>;
+  @ViewChild('overlay') private overlay?: ElementRef<HTMLDialogElement>;
+  @ViewChild('mapTrigger') private mapTrigger?: ElementRef<HTMLButtonElement>;
+
+  readonly activeTab = signal<PublicationTab>('content');
+  readonly activeChapterId = signal<string | null>(null);
+  readonly isMobile = signal(false);
+  readonly overlayKind = signal<'image' | 'map' | null>(null);
+  readonly shareFeedback = signal('');
   readonly tabs = [
-    { id: 'content' as const, label: 'research.publication.content' },
-    { id: 'knowledge-map' as const, label: 'research.publication.knowledgeMap' },
-    { id: 'entities' as const, label: 'research.publication.entities' },
-    { id: 'sources' as const, label: 'research.publication.sources' },
-    { id: 'related' as const, label: 'research.publication.related' },
-  ];
-  readonly publication$ = this.route.paramMap.pipe(
-    switchMap((params) => this.api.getPublished(params.get('id') ?? '')),
-    tap((publication) =>
-      this.chromeRail.setContextualRail({
-        kind: 'publication',
-        onShare: () => this.sharePublication(publication.title, publication.objective),
-        onFocus: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
-      }),
+    {
+      id: 'content',
+      label: 'research.publication.reading',
+      description: 'research.publication.readingHint',
+    },
+    {
+      id: 'index',
+      label: 'research.publication.index',
+      description: 'research.publication.indexHint',
+    },
+    {
+      id: 'connections',
+      label: 'research.publication.connections',
+      description: 'research.publication.connectionsHint',
+    },
+    {
+      id: 'sources',
+      label: 'research.publication.sources',
+      description: 'research.publication.sourcesHint',
+    },
+  ] as const;
+
+  readonly view$ = combineLatest([
+    this.route.paramMap,
+    this.reload.pipe(startWith(undefined)),
+  ]).pipe(
+    tap(() => this.closeOverlay()),
+    switchMap(([params]) =>
+      this.api.getPublished(params.get('id') ?? '').pipe(
+        map((publication): PublicationView => {
+          const graph = this.graphData(publication);
+          return { status: 'ready', publication, graph, previewGraph: this.previewGraph(graph) };
+        }),
+        tap((view) => {
+          if (view.status !== 'ready') return;
+          const publication = view.publication;
+          if (this.publicationId !== publication.id) {
+            this.closeOverlay();
+            this.publicationId = publication.id;
+            this.activeTab.set('content');
+            this.activeChapterId.set(this.route.snapshot.queryParamMap.get('chapter'));
+            this.readingScroll = null;
+            this.shareFeedback.set('');
+          }
+          this.chromeRail.setContextualRail({
+            kind: 'publication',
+            onShare: () => void this.sharePublication(publication.title, publication.objective),
+            onFocus: () => this.startReading(),
+          });
+        }),
+        catchError((error: unknown) => {
+          this.chromeRail.clearContextualRail();
+          return of<PublicationView>({
+            status:
+              error instanceof HttpErrorResponse && error.status === 404 ? 'unavailable' : 'error',
+          });
+        }),
+        startWith<PublicationView>({ status: 'loading' }),
+      ),
     ),
   );
 
+  constructor() {
+    afterNextRender(() => {
+      const media = window.matchMedia?.('(max-width: 760px)');
+      if (!media) return;
+      const update = () => this.isMobile.set(media.matches);
+      update();
+      media.addEventListener('change', update);
+      this.destroyRef.onDestroy(() => media.removeEventListener('change', update));
+    });
+  }
+
   ngOnDestroy(): void {
+    this.closeOverlay();
+    this.reload.complete();
     this.chromeRail.clearContextualRail();
   }
 
-  setTab(tab: (typeof this.tabs)[number]['id']): void {
-    this.activeTab.set(tab);
+  retry(): void {
+    this.reload.next();
   }
 
-  private sharePublication(title: string, text: string | null): void {
-    if (typeof navigator === 'undefined') return;
+  chapterIndex(publication: ResearchPublicPublication): number {
+    return Math.max(
+      0,
+      publication.outlineSections.findIndex((section) => section.id === this.activeChapterId()),
+    );
+  }
 
-    const payload = { title, text: text ?? '', url: window.location.href };
-    if (typeof navigator.share === 'function') {
-      void navigator.share(payload).catch(() => undefined);
-      return;
+  selectChapter(id: string, publication: ResearchPublicPublication): void {
+    if (!publication.outlineSections.some((section) => section.id === id)) return;
+    this.activeChapterId.set(id);
+    this.activeTab.set('content');
+    this.readingScroll = null;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { chapter: id },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+    this.afterRender(() => {
+      this.scrollToReading();
+      this.chapterTitle?.nativeElement.focus({ preventScroll: true });
+    });
+  }
+
+  setTab(tab: PublicationTab): void {
+    if (tab === this.activeTab()) return;
+    if (this.isBrowser && this.activeTab() === 'content') {
+      const element = this.scrollOwner();
+      this.readingScroll = { element, top: element.scrollTop };
     }
+    this.activeTab.set(tab);
+    if (tab === 'content' && this.readingScroll !== null) {
+      const saved = this.readingScroll;
+      this.afterRender(() => {
+        saved.element.scrollTop = saved.top;
+      });
+    }
+  }
 
-    if (navigator.clipboard?.writeText) {
-      void navigator.clipboard.writeText(payload.url);
+  onTabKeydown(event: KeyboardEvent, index: number): void {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const next =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? this.tabs.length - 1
+          : (index + (event.key === 'ArrowRight' ? 1 : -1) + this.tabs.length) % this.tabs.length;
+    this.setTab(this.tabs[next].id);
+    const button = (
+      event.currentTarget as HTMLElement
+    ).parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next];
+    button?.focus();
+  }
+
+  startReading(): void {
+    this.activeTab.set('content');
+    this.afterRender(() => this.scrollToReading());
+  }
+
+  private scrollToReading(): void {
+    this.reading?.nativeElement.scrollIntoView({
+      block: 'start',
+      behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+        ? 'instant'
+        : 'smooth',
+    });
+  }
+
+  private scrollOwner(): HTMLElement {
+    let element = this.reading?.nativeElement.parentElement;
+    while (element && element !== this.document.body) {
+      if (/auto|scroll/.test(window.getComputedStyle(element).overflowY)) return element;
+      element = element.parentElement;
+    }
+    return (this.document.scrollingElement as HTMLElement | null) ?? this.document.documentElement;
+  }
+
+  private afterRender(callback: () => void): void {
+    if (this.isBrowser) afterNextRender(callback, { injector: this.injector });
+  }
+
+  openOverlay(kind: 'image' | 'map'): void {
+    const dialog = this.overlay?.nativeElement;
+    if (!this.isBrowser || !dialog || dialog.open) return;
+    this.overlayTrigger = this.document.activeElement as HTMLElement | null;
+    this.lockedScrollElement = this.scrollOwner();
+    this.previousOverflow = this.lockedScrollElement.style.overflow;
+    this.overlayKind.set(kind);
+    dialog.showModal();
+    this.lockedScrollElement.style.overflow = 'hidden';
+  }
+
+  closeOverlay(): void {
+    const dialog = this.overlay?.nativeElement;
+    if (this.isBrowser && dialog?.open) dialog.close();
+    this.onOverlayClosed();
+  }
+
+  onOverlayClosed(): void {
+    if (this.overlay?.nativeElement.open || !this.overlayKind()) return;
+    this.overlayKind.set(null);
+    if (this.lockedScrollElement) this.lockedScrollElement.style.overflow = this.previousOverflow;
+    this.lockedScrollElement = null;
+    const target = this.overlayTrigger?.isConnected
+      ? this.overlayTrigger
+      : this.mapTrigger?.nativeElement;
+    target?.focus({ preventScroll: true });
+    this.overlayTrigger = null;
+  }
+
+  async sharePublication(title: string, text: string | null): Promise<void> {
+    if (!this.isBrowser) return;
+    this.shareFeedback.set('');
+    try {
+      const payload = { title, text: text ?? '', url: window.location.href };
+      if (typeof navigator.share === 'function') await navigator.share(payload);
+      else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(payload.url);
+        this.shareFeedback.set('research.publication.linkCopied');
+      } else this.shareFeedback.set('research.publication.shareFailed');
+    } catch (error) {
+      if (!(error instanceof Error && error.name === 'AbortError'))
+        this.shareFeedback.set('research.publication.shareFailed');
     }
   }
 
@@ -77,9 +301,21 @@ export class ResearchPublicationComponent implements OnDestroy {
       .join(' · ');
   }
 
-  graphData(
-    publication: import('../../core/api/research.api').ResearchPublicPublication,
-  ): GraphResponseDto {
+  private previewGraph(graph: GraphResponseDto): GraphResponseDto {
+    const ids = new Set([graph.centerId]);
+    for (const edge of graph.edges) {
+      if (ids.size >= 6) break;
+      if (edge.source === graph.centerId) ids.add(edge.target);
+      else if (edge.target === graph.centerId) ids.add(edge.source);
+    }
+    return {
+      ...graph,
+      nodes: graph.nodes.filter((node) => ids.has(node.id)),
+      edges: graph.edges.filter((edge) => ids.has(edge.source) && ids.has(edge.target)),
+    };
+  }
+
+  graphData(publication: ResearchPublicPublication): GraphResponseDto {
     return {
       centerId: publication.entities[0]?.id ?? '',
       nodes: publication.entities.map((entity) => ({
@@ -87,7 +323,9 @@ export class ResearchPublicationComponent implements OnDestroy {
         slug: entity.canonicalEntity?.slug ?? '',
         label: entity.canonicalEntity?.title ?? entity.title,
         type: entity.canonicalEntity?.type ?? entity.kind,
-        image: entity.canonicalEntity?.imageUrl,
+        image: entity.canonicalEntity?.imageUrl
+          ? `/api/entities/${encodeURIComponent(entity.canonicalEntity.slug)}/graph-thumbnail`
+          : undefined,
         metadata: { summary: entity.summary },
         state: 'confirmed',
       })),
@@ -95,9 +333,9 @@ export class ResearchPublicationComponent implements OnDestroy {
         id: relation.id,
         source: relation.fromEntity.id,
         target: relation.toEntity.id,
-        relationType: relation.relationType?.label ?? 'RELATED_TO',
+        relationType: relation.relationType?.key ?? relation.relationType?.label ?? 'RELATED_TO',
         label: relation.relationType?.label ?? this.i18n.t('research.publication.relatedTo'),
-        directed: true,
+        directed: relation.relationType?.directed ?? true,
         justification: relation.explanation ?? undefined,
         state: 'confirmed',
       })),
@@ -109,7 +347,10 @@ export class ResearchPublicationComponent implements OnDestroy {
         ],
         relationTypes: [
           ...new Set(
-            publication.relations.map((relation) => relation.relationType?.label ?? 'RELATED_TO'),
+            publication.relations.map(
+              (relation) =>
+                relation.relationType?.key ?? relation.relationType?.label ?? 'RELATED_TO',
+            ),
           ),
         ],
       },

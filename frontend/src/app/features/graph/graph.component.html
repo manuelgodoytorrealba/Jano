@@ -178,6 +178,7 @@
 
       <section
         class="explorer-graph-pane"
+        [class.explorer-graph-pane--without-controls]="!showControls"
         [class.explorer-graph-pane--arrival-hidden]="
           !hideImagePane && !artworkTransition.shouldRevealGraph(slug)
         "

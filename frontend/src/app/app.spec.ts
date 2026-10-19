@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { App } from './app';
 import { AppAppearanceService } from './core/app-appearance.service';
 import { EntityRouteArtworkTransitionService } from './core/entity-route-artwork-transition.service';
@@ -61,6 +61,18 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
+  });
+
+  it('uses detail chrome for public research without treating the admin as public detail', () => {
+    const fixture = TestBed.createComponent(App);
+    const url = vi.spyOn(TestBed.inject(Router), 'url', 'get');
+    url.mockReturnValue('/research/atlas?chapter=one');
+    expect(fixture.componentInstance.isPublicDetailRoute()).toBe(true);
+    expect(fixture.componentInstance.isEntityDetailRoute()).toBe(false);
+    url.mockReturnValue('/research');
+    expect(fixture.componentInstance.isPublicDetailRoute()).toBe(false);
+    url.mockReturnValue('/admin/research/atlas');
+    expect(fixture.componentInstance.isPublicDetailRoute()).toBe(false);
   });
 
   it('should expose the app title signal', () => {
